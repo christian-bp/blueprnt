@@ -32,17 +32,13 @@ vi.mock("@/components/org-context", () => ({
 import type { PayMappingRunDetail } from "@/components/pay-mapping/pay-mapping-gap-types"
 import { PayMappingRunIndicator } from "@/components/pay-mapping/pay-mapping-run-indicator"
 import { onQuery } from "@/test/convex-mocks"
+import { makeRunDetail } from "@/test/pay-mapping-fixtures"
 
 const t = messages.dashboard.payMapping
 
-const RUN_2026: PayMappingRunDetail = {
+const RUN_2026: PayMappingRunDetail = makeRunDetail({
   runId: "run-2026" as PayMappingRunDetail["runId"],
-  label: "Pay mapping 2026",
-  status: "active",
-  referenceDate: Date.UTC(2026, 6, 1),
-  rows: [],
-  collaboration: null,
-}
+})
 
 const RUNS_LIST = [
   { runId: "run-2026", slug: "pay-2026", label: "Pay mapping 2026" },

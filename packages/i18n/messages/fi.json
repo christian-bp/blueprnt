@@ -849,19 +849,12 @@
         "evening": "Hyvää iltaa{hasName, select, yes{, {name}} other{}}"
       },
       "subtitle": "Sinulla on {count, plural, =0 {ei mitään odottamassa} one {# tehtävä odottamassa} other {# tehtävää odottamassa}} juuri nyt.",
-      "viewAll": "Näytä kaikki {count}",
       "sectionTodo": "Tehtävät",
-      "sectionOverview": "Yleiskatsaus",
       "todo": {
-        "evaluateProgress": "{rated}/{total} arvioitu",
         "groupCount": "{count} kpl",
         "classifyPeopleCount": "{count, plural, one {# työntekijä} other {# työntekijää}}",
         "startPayMappingItem": "Aloita palkkakartoitus",
         "importPeopleItem": "Tuo työntekijäsi",
-        "empty": {
-          "title": "Kaikki on ajan tasalla",
-          "body": "Mikään rooli, työntekijä tai kriteeri ei vaadi huomiotasi juuri nyt."
-        },
         "groups": {
           "classifyPeople": "Luokittele työntekijät rooleihin",
           "describeRoles": "Kuvaa nämä roolit",
@@ -873,37 +866,55 @@
         }
       },
       "quickActions": {
-        "importEmployees": "Tuo työntekijöitä",
-        "classify": "Luokittele",
-        "roles": "Roolit",
-        "startPayMapping": "Aloita palkkakartoitus"
+        "importEmployees": {
+          "label": "Tuo työntekijät",
+          "detail": "Lataa henkilöstötiedosto"
+        },
+        "classify": {
+          "label": "Luokittele",
+          "detail": "Yhdistä henkilöt rooleihin"
+        },
+        "roles": {
+          "label": "Roolit",
+          "detail": "Kuvaa ja arvioi"
+        },
+        "startPayMapping": {
+          "label": "Aloita palkkakartoitus",
+          "detail": "Suorita tämän vuoden analyysi"
+        }
       },
       "widgets": {
         "workforce": {
           "label": "Työvoima",
-          "view": "Henkilöstö",
-          "headcount": "{count, plural, one {# työntekijä tällä hetkellä} other {# työntekijää tällä hetkellä}}",
           "unclassified": "{count} luokittelematta",
           "allClassified": "Kaikki luokiteltu",
           "importPrompt": "Tuo tietoja aloittaaksesi",
-          "trendLabel": "Työntekijät"
+          "trendLabel": "Työntekijät",
+          "trendTitle": "Henkilöstö ajan myötä",
+          "action": "Henkilöt"
         },
         "levels": {
           "label": "Vaativuustasojen jakauma",
-          "view": "Työarkkitehtuuri",
-          "headline": "{roles, plural, one {# rooli} other {# roolia}} kattaa {levels, plural, one {# vaativuustason} other {# vaativuustasoa}}",
           "empty": "Arvioi rooleja nähdäksesi jakauman",
-          "seriesLabel": "Roolit",
-          "barLabel": "Taso {level}"
+          "caption": "{count, plural, one {# rooli} other {# roolia}} sijoitettu"
         },
         "gap": {
           "label": "Palkkaero",
-          "view": "Avaa",
           "notStarted": "Ei aloitettu",
           "prompt": "Aloita ensimmäinen palkkakartoituksesi",
-          "insufficientValue": "Ei tarpeeksi tietoa",
-          "quartileLabel": "Kvartiili {index}"
-        }
+          "insufficientValue": "Ei tarpeeksi tietoa"
+        },
+        "roles": {
+          "label": "Roolit",
+          "caption": "{count, plural, one {# tasolla} other {# tasolla}}",
+          "empty": "Arvioi rooleja nähdäksesi ne täällä"
+        },
+        "gapTrend": {
+          "title": "Palkkaero ajan myötä",
+          "action": "Palkkakartoitus",
+          "unmeasured": "Ei mitattavissa"
+        },
+        "trendEmpty": "Trendi näkyy, kun vertailtavana on kaksi palkkakartoitusta."
       }
     },
     "roleSheet": {
@@ -1224,11 +1235,11 @@
           "count": "Määrä",
           "womenShare": "Naisten osuus",
           "mean": "Keskipalkka",
-          "diffPct": "Ero %",
-          "diffSek": "Ero",
           "reason": "Palkkatasoon vaikuttaa",
           "selectRow": "Näytä {label} kaaviossa",
-          "actions": "Toimet"
+          "actions": "Toimet",
+          "diffPct": "Ero %",
+          "diffSek": "Ero"
         }
       },
       "gap": {
@@ -1290,6 +1301,7 @@
           "noMatches": "Yksikään ryhmä ei vastaa hakua."
         },
         "chapterOf": "Luku {position}/{total} · {chapter}",
+        "chapterTab": "{position}. {chapter}",
         "duty": {
           "start": "Laki edellyttää, että työnantaja tekee palkkakartoituksen yhdessä työntekijöiden kanssa, tavallisesti ammattiliiton kautta.",
           "praxis": "Laki edellyttää, että käytte läpi palkkaa koskevat määräykset ja käytännöt ja dokumentoitte sen, mikä osoittautuu epätasa-arvoiseksi.",
@@ -1304,32 +1316,32 @@
         "stepsSheet": "Kaikki vaiheet",
         "stepPosition": "Vaihe {position}/{total} · {chapter}",
         "chapterNav": "Analyysin luvut",
-        "progressBarLabel": "Koko palkkakartoituksen edistyminen",
-        "chapterTab": "{position}. {chapter}"
+        "progressBarLabel": "Koko palkkakartoituksen edistyminen"
       },
       "overview": {
         "headlineGapLabel": "Palkkaero",
         "insufficient": "Riittämättömät tiedot organisaatiotason palkkaeroa varten.",
+        "populationFirstRun": "Ensimmäinen palkkakartoitus",
+        "populationDeltaVs": "vs. {label}",
+        "populationDeltaNone": "Ennallaan vs. {label}",
+        "populationDeltaMore": "{count, plural, one {# henkilö enemmän kuin {label}} other {# henkilöä enemmän kuin {label}}}",
+        "populationDeltaFewer": "{count, plural, one {# henkilö vähemmän kuin {label}} other {# henkilöä vähemmän kuin {label}}}",
+        "meanComparisonTitle": "Keskipalkka sukupuolen mukaan",
         "statisticsHeading": "Tilastot",
         "wholeSurveyTitle": "Koko kartoitus",
         "quartileTitle": "Sukupuolijakauma palkkatason mukaan",
-        "ageTitle": "Ikäjakauma",
         "quartiles": {
           "upper": "Ylin neljännes",
           "upperMiddle": "Ylempi keski",
           "lowerMiddle": "Alempi keski",
           "lower": "Alin neljännes"
-        },
-        "birthDateUnknown": "{count, plural, one {# henkilöltä puuttuu syntymäaika} other {# henkilöltä puuttuu syntymäaika}}"
+        }
       },
       "clock": {
         "label": "Tasa-arvokello",
         "womenBehind": "Naiset tekevät käytännössä näin pitkään palkatonta työtä joka työpäivä.",
         "menBehind": "Miehet tekevät käytännössä näin pitkään palkatonta työtä joka työpäivä.",
-        "noGap": "Ei mitattavaa palkkaeroa.",
-        "hours": "Tunnit",
-        "minutes": "Minuutit",
-        "seconds": "Sekunnit"
+        "noGap": "Ei mitattavaa palkkaeroa."
       },
       "report": {
         "comingSoonTitle": "Raportti ja vienti",
@@ -1384,13 +1396,7 @@
         "cancel": "Peruuta"
       },
       "journey": {
-        "title": "Palkkakartoituksesi vaiheet",
         "count": "{done}/{total}",
-        "state": {
-          "notStarted": "Ei aloitettu",
-          "inProgress": "Kesken",
-          "done": "Valmis"
-        },
         "countRich": "<done></done> / <total></total>"
       },
       "review": {

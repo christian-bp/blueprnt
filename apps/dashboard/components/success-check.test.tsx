@@ -9,7 +9,8 @@ vi.mock("motion/react", async (importOriginal) => ({
   useReducedMotion: () => reducedMotionMock(),
 }))
 
-import { CONFETTI, SuccessCheck } from "./success-check"
+import { CONFETTI, ConfettiBurst } from "./confetti-burst"
+import { SuccessCheck } from "./success-check"
 
 afterEach(() => {
   cleanup()
@@ -68,5 +69,78 @@ describe("SuccessCheck", () => {
     expect(
       container.querySelector('[data-testid="success-confetti"]')
     ).toBeNull()
+  })
+})
+
+describe("ConfettiBurst edge origin", () => {
+  // Every piece starts where its own ray leaves the box, so at least one of
+  // its two coordinates is pinned to a border. Inside-the-box origins would
+  // mean the burst erupts through whatever the card is showing.
+  // Within a rounding error of the border, not exactly on it: the dominant
+  // axis is cos/|cos| = 1 in real arithmetic and 0.9999999999999999 in
+  // floating point.
+  const onBorder = (value: number) =>
+    Math.abs(value) < 1e-9 || Math.abs(value - 100) < 1e-9
+
+  it("puts every piece on the border of its box", () => {
+    for (const piece of CONFETTI) {
+      const onVertical = onBorder(piece.edgeX)
+      const onHorizontal = onBorder(piece.edgeY)
+      expect(onVertical || onHorizontal).toBe(true)
+      expect(piece.edgeX).toBeGreaterThanOrEqual(0)
+      expect(piece.edgeX).toBeLessThanOrEqual(100)
+      expect(piece.edgeY).toBeGreaterThanOrEqual(0)
+      expect(piece.edgeY).toBeLessThanOrEqual(100)
+    }
+  })
+
+  // All four edges throw. A burst that left one side of the card bare would
+  // read as a mistake rather than as an effect.
+  it("throws from all four edges", () => {
+    const edges = new Set(
+      CONFETTI.map((piece) =>
+        Math.abs(piece.edgeX) < 1e-9
+          ? "left"
+          : Math.abs(piece.edgeX - 100) < 1e-9
+            ? "right"
+            : Math.abs(piece.edgeY) < 1e-9
+              ? "top"
+              : "bottom"
+      )
+    )
+    expect(edges).toEqual(new Set(["left", "right", "top", "bottom"]))
+  })
+
+  it("renders the pieces at those origins, not at the center", () => {
+    const { container } = render(<ConfettiBurst origin="edges" />)
+    const pieces = confettiPieces(container)
+    expect(pieces).toHaveLength(CONFETTI.length)
+    const centered = pieces.filter(
+      (piece) => piece.style.left === "50%" && piece.style.top === "50%"
+    )
+    expect(centered).toHaveLength(0)
+  })
+})
+
+describe("ConfettiBurst intensity", () => {
+  it("throws every piece at full intensity", () => {
+    const { container } = render(<ConfettiBurst />)
+    expect(confettiPieces(container)).toHaveLength(CONFETTI.length)
+  })
+
+  // Fewer pieces, not the same burst scaled: forty-five smaller pieces still
+  // read as a party.
+  it("thins the burst when soft", () => {
+    const { container } = render(<ConfettiBurst intensity="soft" />)
+    const pieces = confettiPieces(container)
+    expect(pieces.length).toBeLessThan(CONFETTI.length)
+    expect(pieces.length).toBeGreaterThan(0)
+  })
+
+  // Thinned by index, so the palette stays even: slicing the front of the
+  // list would drop whole colors and leave a bare arc.
+  it("keeps every color in the soft burst", () => {
+    const kept = CONFETTI.filter((_, index) => index % 2 === 0)
+    expect(new Set(kept.map((piece) => piece.color)).size).toBe(5)
   })
 })

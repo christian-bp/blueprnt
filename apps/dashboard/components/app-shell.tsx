@@ -55,9 +55,11 @@ export function AppShell(props: {
   // and the view scrolls inside. Every other page keeps the capped reading
   // width and normal page flow.
   const fullBleed = pathname === "/work"
-  // The analysis section (its index and every chapter page) is a data
-  // surface: wide tables and plots, not prose.
-  const wide = /^\/pay-mappings\/[^/]+\/analysis(\/|$)/.test(pathname)
+  // The whole run workspace (overview, analysis, actions, report) is a data
+  // surface: wide tables and plots, not prose. The overview's KPI strip wants
+  // four tiles across at the same cap its analysis tables use, and a run that
+  // changed width from tab to tab read as two different pages.
+  const wide = /^\/pay-mappings\/[^/]+(\/|$)/.test(pathname)
   return (
     <OrganizationProvider value={props.organization}>
       {/* This ui package's sidebar variant does not bundle a TooltipProvider;

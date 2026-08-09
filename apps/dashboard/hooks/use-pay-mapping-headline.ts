@@ -11,7 +11,6 @@ export type PayMappingHeadline = {
   status: "active" | "paused" | "underReview" | "completed"
   gapPct: number | null
   flag: PayGapFlag
-  quartiles: { women: number; men: number }[]
 }
 
 // Picks the run the overview's pay-mapping card should headline (the same
@@ -43,6 +42,5 @@ export function usePayMappingHeadline(
     status: target.status,
     gapPct: gap.org.gapPct,
     flag: gap.org.flag,
-    quartiles: gap.quartiles,
   }
 }

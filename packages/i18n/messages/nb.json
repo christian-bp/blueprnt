@@ -849,19 +849,12 @@
         "evening": "God kveld{hasName, select, yes{, {name}} other{}}"
       },
       "subtitle": "Du har {count, plural, =0 {ingenting som venter} other {# oppdrag som venter}} akkurat nå.",
-      "viewAll": "Vis alle {count}",
       "sectionTodo": "Å gjøre",
-      "sectionOverview": "Oversikt",
       "todo": {
-        "evaluateProgress": "{rated}/{total} vurdert",
         "groupCount": "{count} stk",
         "classifyPeopleCount": "{count, plural, one {# ansatt} other {# ansatte}}",
         "startPayMappingItem": "Start lønnskartleggingen",
         "importPeopleItem": "Importer dine ansatte",
-        "empty": {
-          "title": "Du er à jour",
-          "body": "Ingen roller, ansatte eller kriterier trenger oppmerksomheten din akkurat nå."
-        },
         "groups": {
           "classifyPeople": "Klassifiser ansatte til roller",
           "describeRoles": "Beskriv disse rollene",
@@ -873,37 +866,55 @@
         }
       },
       "quickActions": {
-        "importEmployees": "Importer ansatte",
-        "classify": "Klassifiser",
-        "roles": "Roller",
-        "startPayMapping": "Start lønnskartlegging"
+        "importEmployees": {
+          "label": "Importer ansatte",
+          "detail": "Les inn personalfilen din"
+        },
+        "classify": {
+          "label": "Klassifiser",
+          "detail": "Koble personer til roller"
+        },
+        "roles": {
+          "label": "Roller",
+          "detail": "Beskriv og vurder"
+        },
+        "startPayMapping": {
+          "label": "Start lønnskartlegging",
+          "detail": "Kjør årets analyse"
+        }
       },
       "widgets": {
         "workforce": {
           "label": "Arbeidsstyrke",
-          "view": "Ansatte",
-          "headcount": "{count, plural, one {# ansatt i dag} other {# ansatte i dag}}",
           "unclassified": "{count} uklassifiserte",
           "allClassified": "Alle klassifisert",
           "importPrompt": "Importer for å komme i gang",
-          "trendLabel": "Ansatte"
+          "trendLabel": "Ansatte",
+          "trendTitle": "Bemanning over tid",
+          "action": "Personer"
         },
         "levels": {
           "label": "Nivåfordeling",
-          "view": "Jobbarkitektur",
-          "headline": "{roles, plural, one {# rolle} other {# roller}} over {levels, plural, one {# nivå} other {# nivåer}}",
           "empty": "Vurder roller for å se fordelingen",
-          "seriesLabel": "Roller",
-          "barLabel": "Nivå {level}"
+          "caption": "{count, plural, one {# rolle} other {# roller}} plassert"
         },
         "gap": {
           "label": "Lønnsgap",
-          "view": "Åpne",
           "notStarted": "Ikke startet",
           "prompt": "Start din første lønnskartlegging",
-          "insufficientValue": "Ikke nok data",
-          "quartileLabel": "Kvartil {index}"
-        }
+          "insufficientValue": "Ikke nok data"
+        },
+        "roles": {
+          "label": "Roller",
+          "caption": "på tvers av {count, plural, one {# nivå} other {# nivåer}}",
+          "empty": "Vurder roller for å se dem her"
+        },
+        "gapTrend": {
+          "title": "Lønnsgap over tid",
+          "action": "Lønnskartlegging",
+          "unmeasured": "Kan ikke måles"
+        },
+        "trendEmpty": "En trend vises når du har to lønnskartlegginger å sammenligne."
       }
     },
     "roleSheet": {
@@ -1224,11 +1235,11 @@
           "count": "Antall",
           "womenShare": "Andel kvinner",
           "mean": "Gjennomsnittslønn",
-          "diffPct": "Forskjell %",
-          "diffSek": "Forskjell",
           "reason": "Lønnsnivået påvirkes av",
           "selectRow": "Vis {label} i diagrammet",
-          "actions": "Tiltak"
+          "actions": "Tiltak",
+          "diffPct": "Forskjell %",
+          "diffSek": "Forskjell"
         }
       },
       "gap": {
@@ -1290,6 +1301,7 @@
           "noMatches": "Ingen gruppe matcher søket."
         },
         "chapterOf": "Kapittel {position} av {total} · {chapter}",
+        "chapterTab": "{position}. {chapter}",
         "duty": {
           "start": "Loven krever at arbeidsgiveren gjennomfører lønnskartleggingen sammen med arbeidstakerne, normalt gjennom fagforeningen.",
           "praxis": "Loven krever at dere går gjennom bestemmelsene og praksisen dere bruker for lønn, og dokumenterer det som viser seg å være ulikt.",
@@ -1304,32 +1316,32 @@
         "stepsSheet": "Alle steg",
         "stepPosition": "Steg {position} av {total} · {chapter}",
         "chapterNav": "Analysens kapitler",
-        "progressBarLabel": "Hele lønnskartleggingens framdrift",
-        "chapterTab": "{position}. {chapter}"
+        "progressBarLabel": "Hele lønnskartleggingens framdrift"
       },
       "overview": {
         "headlineGapLabel": "Lønnsgap",
         "insufficient": "Utilstrekkelig grunnlag for et lønnsgap på organisasjonsnivå.",
+        "populationFirstRun": "Første lønnskartlegging",
+        "populationDeltaVs": "mot {label}",
+        "populationDeltaNone": "Uendret mot {label}",
+        "populationDeltaMore": "{count, plural, one {# person flere enn {label}} other {# personer flere enn {label}}}",
+        "populationDeltaFewer": "{count, plural, one {# person færre enn {label}} other {# personer færre enn {label}}}",
+        "meanComparisonTitle": "Gjennomsnittslønn per kjønn",
         "statisticsHeading": "Statistikk",
         "wholeSurveyTitle": "Hele kartleggingen",
         "quartileTitle": "Kjønnsfordeling etter lønnsnivå",
-        "ageTitle": "Aldersfordeling",
         "quartiles": {
           "upper": "Øvre kvartil",
           "upperMiddle": "Øvre midtre",
           "lowerMiddle": "Nedre midtre",
           "lower": "Nedre kvartil"
-        },
-        "birthDateUnknown": "{count, plural, one {# person uten fødselsdato} other {# personer uten fødselsdato}}"
+        }
       },
       "clock": {
         "label": "Likestillingsklokke",
         "womenBehind": "Kvinner arbeider i praksis så lenge ubetalt hver arbeidsdag.",
         "menBehind": "Menn arbeider i praksis så lenge ubetalt hver arbeidsdag.",
-        "noGap": "Ingen målbar lønnsforskjell.",
-        "hours": "Timer",
-        "minutes": "Minutter",
-        "seconds": "Sekunder"
+        "noGap": "Ingen målbar lønnsforskjell."
       },
       "report": {
         "comingSoonTitle": "Rapport og eksport",
@@ -1384,13 +1396,7 @@
         "cancel": "Avbryt"
       },
       "journey": {
-        "title": "Din reise gjennom lønnskartleggingen",
         "count": "{done} av {total}",
-        "state": {
-          "notStarted": "Ikke påbegynt",
-          "inProgress": "Pågår",
-          "done": "Fullført"
-        },
         "countRich": "<done></done> av <total></total>"
       },
       "review": {

@@ -103,7 +103,7 @@ describe("OverviewPage", () => {
   beforeEach(() => useQueryMock.mockReset())
   afterEach(() => cleanup())
 
-  it("renders a subtitle skeleton and section skeletons while queries are loading, with quick actions' static chrome already real", () => {
+  it("renders a subtitle skeleton and section skeletons while queries are loading, with the to-do row holding its shape", () => {
     useQueryMock.mockReturnValue(undefined)
     renderPage()
     // Skeleton bars are present (data-slot="skeleton") in place of the
@@ -113,12 +113,14 @@ describe("OverviewPage", () => {
     // The section labels are static i18n text, so they render for real even
     // while their data is still loading.
     expect(screen.getByText(tOverview.sectionTodo)).toBeDefined()
-    expect(screen.getByText(tOverview.sectionOverview)).toBeDefined()
-    // Quick actions carry no data dependency, so they render for real even
-    // while the queries are still loading.
+    // The to-do row waits rather than showing destinations it may replace:
+    // which cards it holds is data, so it renders four skeleton slots and
+    // nothing moves when the real ones arrive.
     expect(
-      screen.getByRole("link", { name: tOverview.quickActions.importEmployees })
-    ).toBeDefined()
+      screen.queryByRole("link", {
+        name: tOverview.quickActions.importEmployees.label,
+      })
+    ).toBeNull()
   })
 
   it("resolves the subtitle's other two ICU plural branches (one, other)", () => {
@@ -154,16 +156,17 @@ describe("OverviewPage", () => {
     // The classifyPeople group card is the to-do work item this fixture
     // produces.
     expect(screen.getByText(tOverview.todo.groups.classifyPeople)).toBeDefined()
-    expect(
-      screen.getByRole("heading", { name: tOverview.sectionOverview })
-    ).toBeDefined()
+    // The stat strip carries no heading of its own: four labelled figures
+    // need no label above them.
     expect(screen.getByText(tOverview.widgets.workforce.label)).toBeDefined()
   })
 
-  it("shows the all-caught-up line in the To do section and still renders the Overview widgets when there is no work", () => {
+  it("falls back to the standing destinations in the To do row, and still renders the stat strip, when there is no work", () => {
     mockNeutralQueries()
     renderPage()
-    expect(screen.getByText(tOverview.todo.empty.title)).toBeDefined()
+    expect(
+      screen.getByText(tOverview.quickActions.importEmployees.label)
+    ).toBeDefined()
     expect(screen.getByText(tOverview.widgets.workforce.label)).toBeDefined()
     expect(screen.getByText(tOverview.widgets.levels.label)).toBeDefined()
     expect(screen.getByText(tOverview.widgets.gap.label)).toBeDefined()

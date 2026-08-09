@@ -1,6 +1,10 @@
 "use client"
 
-import { AGE_BUCKETS } from "@workspace/core"
+import {
+  ChartAverageIcon,
+  Clock01Icon,
+  JusticeScale01Icon,
+} from "@hugeicons/core-free-icons"
 import {
   type ChartConfig,
   ChartContainer,
@@ -8,20 +12,25 @@ import {
 } from "@workspace/ui/components/chart"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useFormatter, useTranslations } from "next-intl"
+import type { ReactNode } from "react"
 import { Bar, BarChart, Cell, Pie, PieChart, XAxis, YAxis } from "recharts"
 import {
   GenderHatch,
   GenderMenIcon,
-  GENDER_MARK_BORDER,
+  genderMarkBorder,
   GenderLegend,
   GenderTooltipContent,
   useGenderMarks,
 } from "@/components/gender-mark"
+import { PanelCard } from "@/components/panel-card"
 import { WidgetCard } from "@/components/widget-card"
-import { EqualityClock, EqualityClockSkeleton } from "./equality-clock"
+import {
+  EqualityClock,
+  equalityClockDirection,
+  EqualityClockSkeleton,
+} from "./equality-clock"
 import { MeanComparisonBars } from "./mean-comparison-bars"
-import { PayGapFlagBadge } from "./pay-gap-flag-badge"
-import { PayMappingJourneyCard } from "./pay-mapping-journey-card"
+import { PayMappingPopulationCard } from "./pay-mapping-population-card"
 import type {
   GenderTally,
   OrgAggregate,
@@ -30,15 +39,55 @@ import type {
 import { BAR_RADIUS, CHART_AXIS_FONT_SIZE } from "@/lib/chart-style"
 import { percentText } from "@/lib/percent"
 
-// The unadjusted org-level gap, sentence-first: a plain-language finding
-// (unsigned percent, direction spelled out in the word, same convention and
+// The unadjusted org-level gap as a KPI figure: the unsigned percent, and
+// nothing else. The severity flag used to sit beside it as a chip, which put
+// a second reading on a tile whose whole job is one number; the flag still
+// rides on every group in the analysis, where it decides what has to be
+// documented. The direction and the two means live in the finding card below
+// the strip.
+// An org too small to measure has no figure at all, so the tile says so in
+// words where the figure would be.
+function gapStat(
+  org: OrgAggregate | undefined,
+  tOverview: ReturnType<
+    typeof useTranslations<"dashboard.payMapping.overview">
+  >,
+  format: ReturnType<typeof useFormatter>
+): { value: ReactNode; footer?: ReactNode } {
+  if (org === undefined) {
+    // Centred in the figure's own line box; a bare bar leaves the tile
+    // shorter than it will be once the percent lands.
+    return {
+      value: (
+        <span className="flex items-center">
+          <Skeleton className="h-7 w-20" />
+        </span>
+      ),
+    }
+  }
+  if (org.flag === "insufficient" || org.gapPct === null) {
+    return {
+      value: (
+        <span className="font-normal text-base text-muted-foreground">
+          {tOverview("insufficient")}
+        </span>
+      ),
+    }
+  }
+  return { value: percentText(org.gapPct, format) }
+}
+
+// The finding itself, sentence-first: a plain-language reading of the same
+// gap (direction spelled out in the word, same convention and
 // dashboard.payMapping.review.finding namespace as the review journey's own
 // per-group findings; see review-group-step.tsx's equalWorkFindingVariant)
 // over the two gender means as the shared MeanComparisonBars widget, so the
 // reader gets the story before the chart.
-// The severity flag itself moves to the WidgetCard header (see
-// PayMappingOverview below), which is why it is not rendered here.
-function GapStat({
+//
+// Full width under the KPI strip rather than inside the gap tile: a
+// three-line sentence and two labelled bars are not a stat, and they would
+// have set the height of every tile on the row.
+function GapFinding({
   org,
   currency,
 }: {
@@ -192,7 +241,7 @@ function WholeSurveyStat({
             innerRadius={expanded ? 80 : 40}
           >
             {data.map((d) => (
-              <Cell key={d.key} fill={d.fill} {...GENDER_MARK_BORDER} />
+              <Cell key={d.key} fill={d.fill} {...genderMarkBorder(d.swatch)} />
             ))}
           </Pie>
         </PieChart>
@@ -283,14 +332,14 @@ function QuartileStat({
             dataKey="men"
             stackId="a"
             fill={marks.men}
-            {...GENDER_MARK_BORDER}
+            {...genderMarkBorder("men")}
             radius={[BAR_RADIUS, 0, 0, BAR_RADIUS]}
           />
           <Bar
             dataKey="women"
             stackId="a"
             fill={marks.women}
-            {...GENDER_MARK_BORDER}
+            {...genderMarkBorder("women")}
             radius={[0, BAR_RADIUS, BAR_RADIUS, 0]}
           />
         </BarChart>
@@ -305,100 +354,16 @@ function QuartileStat({
   )
 }
 
-// Age distribution by gender over the whole frozen population, as the
-// standard shadcn multiple bar chart per age band (digit-only band labels
-// render as-is in every locale); exact counts on hover.
-function AgeStat({
-  age,
-  expanded = false,
-}: {
-  age: { buckets: GenderTally[]; unknown: number } | undefined
-  expanded?: boolean
-}) {
-  const tOverview = useTranslations("dashboard.payMapping.overview")
-  const tGap = useTranslations("dashboard.payMapping.gap.columns")
-  const marks = useGenderMarks()
-  if (age === undefined) {
-    return <Skeleton className="h-40 w-full" />
-  }
-  const config = {
-    men: {
-      label: tGap("men"),
-      color: "var(--gender-man)",
-      icon: GenderMenIcon,
-    },
-    women: { label: tGap("women"), color: "var(--gender-woman)" },
-  } satisfies ChartConfig
-  const data = AGE_BUCKETS.map((bucket, index) => ({
-    bucket,
-    women: age.buckets[index]?.women ?? 0,
-    men: age.buckets[index]?.men ?? 0,
-  }))
-  return (
-    <div className="space-y-2">
-      <ChartContainer
-        config={config}
-        className={
-          expanded ? "aspect-auto h-96 w-full" : "aspect-auto h-40 w-full"
-        }
-      >
-        <BarChart accessibilityLayer data={data}>
-          <XAxis
-            dataKey="bucket"
-            tickLine={false}
-            axisLine={false}
-            fontSize={CHART_AXIS_FONT_SIZE}
-            interval={0}
-          />
-          <defs>
-            <GenderHatch id={marks.hatchId} />
-          </defs>
-          <ChartTooltip
-            content={
-              <GenderTooltipContent
-                labels={{ women: tGap("women"), men: tGap("men") }}
-              />
-            }
-          />
-          <Bar
-            dataKey="men"
-            fill={marks.men}
-            {...GENDER_MARK_BORDER}
-            radius={BAR_RADIUS}
-          />
-          <Bar
-            dataKey="women"
-            fill={marks.women}
-            {...GENDER_MARK_BORDER}
-            radius={BAR_RADIUS}
-          />
-        </BarChart>
-      </ChartContainer>
-      <GenderLegend
-        items={[
-          { series: "women", label: tGap("women") },
-          { series: "men", label: tGap("men") },
-        ]}
-      />
-      {age.unknown > 0 && (
-        <p className="text-muted-foreground text-xs">
-          {tOverview("birthDateUnknown", { count: age.unknown })}
-        </p>
-      )}
-    </div>
-  )
-}
-
-// The survey Overview, shaped as a guided hub (ADR-0012): the journey card
-// (the single progress source and completion gate, superseding the old
-// flag-summary KPI and documentation card) over "Läget" (the org-level
-// finding, sentence-first, plus the equality clock) over "Statistics", a
-// row of expandable standard shadcn charts (donut, stacked bars, grouped
-// bars) with their normal tooltip + legend anatomy. Everything derives from
-// the gap aggregate (the population figure included). Each widget renders
-// its real title while loading and owns its content bars, so the page
-// needs no separate skeleton component; `gap` is undefined while the query
-// loads. The adjusted gap + adjusted clock join Läget later.
+// The survey Overview, shaped as a guided hub (ADR-0012): a KPI strip of
+// three stat tiles (population, gap, equality clock) over the finding
+// itself, sentence-first with the two gender means, over "Statistics", a row
+// of expandable standard shadcn charts (a donut and stacked bars) with their
+// normal tooltip + legend anatomy.
+// Everything derives from the gap aggregate (the population figure
+// included). Each widget renders its real title while loading and owns its
+// content bars, so the page needs no separate skeleton component; `gap` is
+// undefined while the query loads. The adjusted gap + adjusted clock join
+// the strip later.
 export function PayMappingOverview({
   gap,
 }: {
@@ -408,50 +373,58 @@ export function PayMappingOverview({
   const tOverview = useTranslations("dashboard.payMapping.overview")
   const tClock = useTranslations("dashboard.payMapping.clock")
   const tHelp = useTranslations("dashboard.help")
+  const format = useFormatter()
   const org = gap?.org
 
   return (
     <div className="space-y-4">
-      {/* The journey card is the Overview's single progress source and
-          completion gate (ADR-0012): it reads run/gap/analyses from the run
-          shell's context itself (self-contained, like the header
-          components), so this component's own `gap` prop stays untouched. */}
-      <PayMappingJourneyCard />
-      {/* Läget: the org-level finding, sentence-first, with its own severity
-          flag beside the heading, next to the equality clock. */}
-      <div className="grid gap-4 md:grid-cols-2">
+      {/* The KPI strip: how big this mapping is, what it found, and what
+          that costs in time. The population tile reads the run shell's
+          context itself (self-contained, like the header components), so
+          this component's own `gap` prop stays untouched. Finishing the run
+          is not here: it belongs at the end of the analysis flow, not on a
+          dashboard tile beside the figures. */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <PayMappingPopulationCard />
         <WidgetCard
           title={tOverview("headlineGapLabel")}
+          icon={JusticeScale01Icon}
           help={{
             label: tHelp("headlineGapLabel"),
             body: tHelp("headlineGapBody"),
           }}
-          headerExtra={
-            org === undefined ? (
-              <Skeleton className="h-5 w-16" />
-            ) : (
-              <PayGapFlagBadge flag={org.flag} />
-            )
-          }
-        >
-          <GapStat org={org} currency={gap?.currency ?? null} />
-        </WidgetCard>
+          {...gapStat(org, tOverview, format)}
+        />
         <WidgetCard
           title={tClock("label")}
+          icon={Clock01Icon}
           help={{
             label: tHelp("equalityClockLabel"),
             body: tHelp("equalityClockBody"),
           }}
+          // Which way the reading goes. Without it the tile is identical for
+          // two orgs with mirrored gaps.
+          footer={
+            org === undefined || org.gapPct === null
+              ? undefined
+              : tClock(equalityClockDirection(org.gapPct))
+          }
         >
           <ClockStat org={org} />
         </WidgetCard>
       </div>
+      {/* The finding in words, under the numbers it explains. */}
+      <PanelCard
+        title={tOverview("meanComparisonTitle")}
+        icon={ChartAverageIcon}
+      >
+        <GapFinding org={org} currency={gap?.currency ?? null} />
+      </PanelCard>
       <h2 className="font-semibold text-lg">
         {tOverview("statisticsHeading")}
       </h2>
       {/* Distribution charts, each expandable to a large dialog: the donut
-          keeps a single column, the quartile chart takes the remaining two,
-          the age distribution gets the full row below. */}
+          keeps a single column, the quartile chart takes the remaining two. */}
       <div className="grid gap-4 md:grid-cols-3">
         <WidgetCard
           title={tOverview("wholeSurveyTitle")}
@@ -482,14 +455,6 @@ export function PayMappingOverview({
           }
         >
           <QuartileStat quartiles={gap?.quartiles} />
-        </WidgetCard>
-        <WidgetCard
-          className="md:col-span-3"
-          title={tOverview("ageTitle")}
-          expandable
-          expandedChildren={<AgeStat age={gap?.age} expanded />}
-        >
-          <AgeStat age={gap?.age} />
         </WidgetCard>
       </div>
     </div>

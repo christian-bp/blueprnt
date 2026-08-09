@@ -30,17 +30,14 @@ vi.mock("@/components/org-context", () => ({
 import type { PayMappingRunDetail } from "@/components/pay-mapping/pay-mapping-gap-types"
 import { PayMappingRunShell } from "@/components/pay-mapping/pay-mapping-run-shell"
 import { onQuery } from "@/test/convex-mocks"
+import { makeRunDetail } from "@/test/pay-mapping-fixtures"
 
 const m = messages.dashboard.payMapping
 
-const RUN: PayMappingRunDetail = {
+const RUN: PayMappingRunDetail = makeRunDetail({
   runId: "run1" as PayMappingRunDetail["runId"],
   label: "Lonekartlaggning 2026",
-  status: "active",
-  referenceDate: Date.UTC(2026, 6, 1),
-  rows: [],
-  collaboration: null,
-}
+})
 
 // Swapped per test: the run query's result (undefined = loading, null = not
 // found). The gap query is skipped until the run resolves and its value is

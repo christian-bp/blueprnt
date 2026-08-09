@@ -12,3 +12,18 @@ export function percentText(
     maximumFractionDigits: 1,
   })
 }
+
+// The same figure with its sign kept: a pay-gap trend plots signed readings
+// (a negative gap means women are ahead), so the unsigned form above would
+// draw two opposite years identically. Locale-formatted like its sibling,
+// because "4.1%" is "4,1 %" in every Nordic locale this app ships.
+export function signedPercentText(
+  pct: number,
+  format: ReturnType<typeof useFormatter>
+): string {
+  return format.number(pct / 100, {
+    style: "percent",
+    maximumFractionDigits: 1,
+    signDisplay: "exceptZero",
+  })
+}

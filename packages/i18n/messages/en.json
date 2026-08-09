@@ -849,19 +849,12 @@
         "evening": "Good evening{hasName, select, yes{, {name}} other{}}"
       },
       "subtitle": "You have {count, plural, =0 {nothing waiting} one {# item waiting} other {# items waiting}} right now.",
-      "viewAll": "View all {count}",
       "sectionTodo": "To do",
-      "sectionOverview": "Overview",
       "todo": {
-        "evaluateProgress": "{rated}/{total} evaluated",
         "groupCount": "{count, plural, one {# item} other {# items}}",
         "classifyPeopleCount": "{count, plural, one {# person} other {# people}}",
         "startPayMappingItem": "Start the pay mapping",
         "importPeopleItem": "Import your employees",
-        "empty": {
-          "title": "You're all caught up",
-          "body": "No roles, people, or criteria need your attention right now."
-        },
         "groups": {
           "classifyPeople": "Classify people into roles",
           "describeRoles": "Describe these roles",
@@ -873,37 +866,55 @@
         }
       },
       "quickActions": {
-        "importEmployees": "Import employees",
-        "classify": "Classify",
-        "roles": "Roles",
-        "startPayMapping": "Start pay mapping"
+        "importEmployees": {
+          "label": "Import employees",
+          "detail": "Bring in your people file"
+        },
+        "classify": {
+          "label": "Classify",
+          "detail": "Match people to roles"
+        },
+        "roles": {
+          "label": "Roles",
+          "detail": "Describe and evaluate"
+        },
+        "startPayMapping": {
+          "label": "Start pay mapping",
+          "detail": "Run this year's analysis"
+        }
       },
       "widgets": {
         "workforce": {
           "label": "Workforce",
-          "view": "People",
-          "headcount": "{count, plural, one {# person today} other {# people today}}",
           "unclassified": "{count} unclassified",
           "allClassified": "All classified",
           "importPrompt": "Import to get started",
-          "trendLabel": "Employees"
+          "trendLabel": "Employees",
+          "trendTitle": "Workforce over time",
+          "action": "People"
         },
         "levels": {
           "label": "Level distribution",
-          "view": "Job architecture",
-          "headline": "{roles, plural, one {# role} other {# roles}} across {levels, plural, one {# level} other {# levels}}",
           "empty": "Evaluate roles to see the distribution",
-          "seriesLabel": "Roles",
-          "barLabel": "Level {level}"
+          "caption": "{count, plural, one {# role} other {# roles}} placed"
         },
         "gap": {
           "label": "Pay gap",
-          "view": "Open",
           "notStarted": "Not started",
           "prompt": "Start your first pay mapping",
-          "insufficientValue": "Not enough data",
-          "quartileLabel": "Quartile {index}"
-        }
+          "insufficientValue": "Not enough data"
+        },
+        "roles": {
+          "label": "Roles",
+          "caption": "across {count, plural, one {# level} other {# levels}}",
+          "empty": "Evaluate roles to see them here"
+        },
+        "gapTrend": {
+          "title": "Pay gap over time",
+          "action": "Pay mapping",
+          "unmeasured": "Not measurable"
+        },
+        "trendEmpty": "A trend appears once you have two pay mappings to compare."
       }
     },
     "roleSheet": {
@@ -1224,11 +1235,11 @@
           "count": "People",
           "womenShare": "Women",
           "mean": "Average pay",
-          "diffPct": "Diff %",
-          "diffSek": "Diff",
           "reason": "Pay affected by",
           "selectRow": "Show {label} in the plot",
-          "actions": "Actions"
+          "actions": "Actions",
+          "diffPct": "Diff %",
+          "diffSek": "Diff"
         }
       },
       "gap": {
@@ -1290,6 +1301,7 @@
           "noMatches": "No group matches the search."
         },
         "chapterOf": "Chapter {position} of {total} · {chapter}",
+        "chapterTab": "{position}. {chapter}",
         "duty": {
           "start": "The law requires the employer to carry out the pay mapping together with the employees, normally through the union.",
           "praxis": "The law requires you to review the provisions and practice you apply to pay, and to record any that are found to be unequal.",
@@ -1304,32 +1316,32 @@
         "stepsSheet": "All steps",
         "stepPosition": "Step {position} of {total} · {chapter}",
         "chapterNav": "Analysis chapters",
-        "progressBarLabel": "Overall pay mapping progress",
-        "chapterTab": "{position}. {chapter}"
+        "progressBarLabel": "Overall pay mapping progress"
       },
       "overview": {
         "headlineGapLabel": "Pay gap",
         "insufficient": "Not enough data for an organization-level gap.",
+        "populationFirstRun": "First pay mapping",
+        "populationDeltaVs": "vs {label}",
+        "populationDeltaNone": "Unchanged vs {label}",
+        "populationDeltaMore": "{count, plural, one {# person more than {label}} other {# people more than {label}}}",
+        "populationDeltaFewer": "{count, plural, one {# person fewer than {label}} other {# people fewer than {label}}}",
+        "meanComparisonTitle": "Average pay by gender",
         "statisticsHeading": "Statistics",
         "wholeSurveyTitle": "The whole survey",
         "quartileTitle": "Gender split by pay level",
-        "ageTitle": "Age distribution",
         "quartiles": {
           "upper": "Upper quartile",
           "upperMiddle": "Upper middle",
           "lowerMiddle": "Lower middle",
           "lower": "Lower quartile"
-        },
-        "birthDateUnknown": "{count, plural, one {# person without a birth date} other {# people without a birth date}}"
+        }
       },
       "clock": {
         "label": "Equality clock",
         "womenBehind": "Women effectively work this long unpaid each working day.",
         "menBehind": "Men effectively work this long unpaid each working day.",
-        "noGap": "No measurable pay gap.",
-        "hours": "Hours",
-        "minutes": "Minutes",
-        "seconds": "Seconds"
+        "noGap": "No measurable pay gap."
       },
       "report": {
         "comingSoonTitle": "Report and export",
@@ -1384,13 +1396,7 @@
         "cancel": "Cancel"
       },
       "journey": {
-        "title": "Your pay mapping journey",
         "count": "{done} of {total}",
-        "state": {
-          "notStarted": "Not started",
-          "inProgress": "In progress",
-          "done": "Done"
-        },
         "countRich": "<done></done> of <total></total>"
       },
       "review": {

@@ -23,12 +23,6 @@ const RUN = {
 
 const GAP = {
   org: { gapPct: 4.2, flag: "elevated" },
-  quartiles: [
-    { women: 3, men: 1 },
-    { women: 2, men: 2 },
-    { women: 1, men: 3 },
-    { women: 0, men: 4 },
-  ],
 }
 
 describe("usePayMappingHeadline", () => {
@@ -40,14 +34,15 @@ describe("usePayMappingHeadline", () => {
     cleanup()
   })
 
-  it("carries the gap query's quartiles alongside the org headline", () => {
+  it("carries the headlined run's identity and its org-level gap", () => {
     useQueryMock.mockImplementation((ref: string) => {
       if (ref === "payMapping.runs.listPayMappingRuns") return [RUN]
       if (ref === "payMapping.gap.getPayMappingGap") return GAP
       return undefined
     })
     const { result } = renderHook(() => usePayMappingHeadline("org-1"))
-    expect(result.current?.quartiles).toHaveLength(4)
-    expect(result.current?.quartiles[0]).toEqual({ women: 3, men: 1 })
+    expect(result.current?.slug).toBe(RUN.slug)
+    expect(result.current?.gapPct).toBe(4.2)
+    expect(result.current?.flag).toBe("elevated")
   })
 })

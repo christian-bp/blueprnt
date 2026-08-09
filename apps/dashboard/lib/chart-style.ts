@@ -29,4 +29,4 @@ export const CHART_AXIS_FONT_SIZE = 12
 // strip's top edge, and a short strip pushed a four-row tooltip (run name,
 // date, two series) past the card's clipped bottom. At 96px the strip is over
 // half the card and the tooltip clears it.
-export const WIDGET_CHART_HEIGHT = "h-24"
+export const WIDGET_CHART_HEIGHT = "h-32"

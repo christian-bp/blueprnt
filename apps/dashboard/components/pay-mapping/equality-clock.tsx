@@ -14,57 +14,39 @@ import { useEffect } from "react"
 import { clockUnits, equalityClock } from "@/lib/equality-clock"
 
 // One digit box of the clock (hours / minutes / seconds): the animated
-// two-digit value in a bordered box with its unit label beneath.
-function ClockUnit({
-  value,
-  label,
-}: {
-  value: MotionValue<string>
-  label: string
-}) {
+// two-digit value in a bordered box. No unit label beneath: the boxes sit on
+// a KPI tile beside single-figure stats, the colons already read the group
+// as a time, and the sr-only line below carries the value in words anyway.
+function ClockUnit({ value }: { value: MotionValue<string> }) {
   return (
-    <div className="flex flex-col items-center gap-1">
-      <div className="rounded-md border bg-muted/50 px-2.5 py-1.5 font-semibold text-2xl tabular-nums">
-        <motion.span>{value}</motion.span>
-      </div>
-      <span className="text-muted-foreground text-xs">{label}</span>
+    <div className="rounded-md border bg-muted/50 px-2 py-1 font-semibold text-2xl tabular-nums">
+      <motion.span>{value}</motion.span>
     </div>
   )
 }
 
+const COLON_CLASS = "py-1 font-semibold text-2xl text-muted-foreground"
+
 // Content-shaped loading state, exported next to the component it mirrors so
-// the two cannot drift: the digit-box frames, the colons between them, and
-// the unit labels are static chrome and render real; only the digits and the
-// sentence are bars (the inner h-6 + my-1 bar fills the text-2xl digit line
-// exactly, so both states measure identical).
+// the two cannot drift: the digit-box frames and the colons between them are
+// static chrome and render real; only the digits are bars (the transparent
+// "00" fills the text-2xl digit line exactly, so both states measure
+// identical).
 export function EqualityClockSkeleton() {
-  const t = useTranslations("dashboard.payMapping.clock")
-  const unit = (label: string) => (
-    <div className="flex flex-col items-center gap-1">
-      <div className="rounded-md border bg-muted/50 px-2.5 py-1.5 font-semibold text-2xl tabular-nums">
-        {/* A transparent "00" sizes the bar from the same font metrics as
-            the real digits, so the box is pixel-identical in both states. */}
-        <Skeleton className="text-transparent">00</Skeleton>
-      </div>
-      <span className="text-muted-foreground text-xs">{label}</span>
+  const unit = (
+    <div className="rounded-md border bg-muted/50 px-2 py-1 font-semibold text-2xl tabular-nums">
+      {/* A transparent "00" sizes the bar from the same font metrics as the
+          real digits, so the box is pixel-identical in both states. */}
+      <Skeleton className="text-transparent">00</Skeleton>
     </div>
   )
   return (
-    <div className="space-y-3">
-      <div aria-hidden className="flex items-start gap-1.5">
-        {unit(t("hours"))}
-        <span className="py-1.5 font-semibold text-2xl text-muted-foreground">
-          :
-        </span>
-        {unit(t("minutes"))}
-        <span className="py-1.5 font-semibold text-2xl text-muted-foreground">
-          :
-        </span>
-        {unit(t("seconds"))}
-      </div>
-      <div className="flex min-h-5 items-center">
-        <Skeleton className="h-4 w-48 max-w-full" />
-      </div>
+    <div aria-hidden className="flex items-center gap-1.5">
+      {unit}
+      <span className={COLON_CLASS}>:</span>
+      {unit}
+      <span className={COLON_CLASS}>:</span>
+      {unit}
     </div>
   )
 }
@@ -94,9 +76,11 @@ export function EqualityClock({ gapPct }: { gapPct: number | null }) {
     return () => controls.stop()
   }, [seconds, reduce, count])
 
-  // The sentence names the direction only (the digit boxes carry the value,
-  // per the graphs-speak-for-themselves feedback); the sr-only time keeps the
-  // value available to assistive tech since the boxes are aria-hidden.
+  // The sr-only line carries the value in words, since the digit boxes are
+  // aria-hidden. The DIRECTION is exported separately (equalityClockDirection
+  // below) and rendered as the card's footer: without it the tile reads
+  // identically for two organizations with mirrored gaps, which is the one
+  // thing a KPI must never do.
   const sentence =
     direction === "womenBehind"
       ? t("womenBehind")
@@ -105,22 +89,28 @@ export function EqualityClock({ gapPct }: { gapPct: number | null }) {
         : t("noGap")
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-start gap-1.5" aria-hidden>
-        <ClockUnit value={hours} label={t("hours")} />
-        <span className="py-1.5 font-semibold text-2xl text-muted-foreground">
-          :
-        </span>
-        <ClockUnit value={minutes} label={t("minutes")} />
-        <span className="py-1.5 font-semibold text-2xl text-muted-foreground">
-          :
-        </span>
-        <ClockUnit value={secs} label={t("seconds")} />
+    <div className="flex items-center gap-1.5">
+      <span className="sr-only">
+        {display} {sentence}
+      </span>
+      <div className="flex items-center gap-1.5" aria-hidden>
+        <ClockUnit value={hours} />
+        <span className={COLON_CLASS}>:</span>
+        <ClockUnit value={minutes} />
+        <span className={COLON_CLASS}>:</span>
+        <ClockUnit value={secs} />
       </div>
-      <p className="text-muted-foreground text-sm">
-        <span className="sr-only">{display} </span>
-        {sentence}
-      </p>
     </div>
   )
+}
+
+// Which way the clock's reading goes, as a translation key under
+// dashboard.payMapping.clock. The hosting card renders it as its footer, so
+// the direction is visible and not only announced. The engine's own "none"
+// maps to the noGap message key.
+export function equalityClockDirection(
+  gapPct: number | null
+): "womenBehind" | "menBehind" | "noGap" {
+  const { direction } = equalityClock(gapPct)
+  return direction === "none" ? "noGap" : direction
 }

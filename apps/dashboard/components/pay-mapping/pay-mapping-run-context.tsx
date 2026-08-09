@@ -10,12 +10,16 @@ import type {
 } from "./pay-mapping-gap-types"
 import { buildReviewQueue, type ReviewQueue } from "./review-queue"
 
-// The run summaries the queue needs, structurally: only whether an EARLIER
-// run was completed, which decides whether the "previous actions" praxis
-// area belongs in this run's own queue.
+// The run summaries this context's consumers need, structurally. The queue
+// reads whether an EARLIER run was completed, which decides whether the
+// "previous actions" praxis area belongs in this run's own queue; the
+// population card reads the previous run's frozen headcount and names that
+// run by its own label. Every field is already on listPayMappingRuns' wire.
 export interface PayMappingRunSummary {
   status: string
   referenceDate: number
+  label: string
+  populationCount: number
 }
 
 // What the shell subscribes to and hands down.

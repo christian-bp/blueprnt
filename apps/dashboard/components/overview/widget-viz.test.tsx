@@ -4,11 +4,7 @@ import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import type { ReactNode } from "react"
 import { afterEach, describe, expect, it } from "vitest"
-import {
-  HeadcountTrend,
-  LevelBars,
-  QuartileSplitBars,
-} from "@/components/overview/widget-viz"
+import { HeadcountTrend, PayGapTrend } from "@/components/overview/widget-viz"
 
 // recharts renders no meaningful SVG geometry in jsdom (no layout, no
 // dimensions), so these tests assert mount-without-crash and the presence
@@ -21,85 +17,9 @@ function renderWithIntl(children: ReactNode) {
   )
 }
 
-describe("LevelBars", () => {
-  afterEach(cleanup)
-
-  it("mounts a chart container for representative data", () => {
-    const { container } = renderWithIntl(
-      <LevelBars
-        counts={[
-          { level: 1, count: 2 },
-          { level: 2, count: 0 },
-          { level: 3, count: 4 },
-        ]}
-      />
-    )
-    expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
-  })
-
-  it("mounts without crashing for an empty counts array", () => {
-    const { container } = renderWithIntl(<LevelBars counts={[]} />)
-    expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
-  })
-
-  it("is decorative", () => {
-    const { container } = renderWithIntl(
-      <LevelBars counts={[{ level: 1, count: 1 }]} />
-    )
-    expect(
-      container
-        .querySelector('[data-slot="chart"]')
-        ?.getAttribute("aria-hidden")
-    ).toBe("true")
-  })
-})
-
-describe("QuartileSplitBars", () => {
-  afterEach(cleanup)
-
-  it("mounts a chart container for representative data", () => {
-    const { container } = renderWithIntl(
-      <QuartileSplitBars
-        quartiles={[
-          { women: 3, men: 1 },
-          { women: 1, men: 3 },
-          { women: 2, men: 2 },
-          { women: 0, men: 4 },
-        ]}
-      />
-    )
-    expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
-  })
-
-  it("mounts without crashing for an all-zero quartiles input", () => {
-    const { container } = renderWithIntl(
-      <QuartileSplitBars
-        quartiles={[
-          { women: 0, men: 0 },
-          { women: 0, men: 0 },
-          { women: 0, men: 0 },
-          { women: 0, men: 0 },
-        ]}
-      />
-    )
-    expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
-  })
-
-  it("is decorative", () => {
-    const { container } = renderWithIntl(
-      <QuartileSplitBars quartiles={[{ women: 1, men: 1 }]} />
-    )
-    expect(
-      container
-        .querySelector('[data-slot="chart"]')
-        ?.getAttribute("aria-hidden")
-    ).toBe("true")
-  })
-})
+afterEach(cleanup)
 
 describe("HeadcountTrend", () => {
-  afterEach(cleanup)
-
   const config = {
     women: { label: "Women", color: "var(--gender-woman)" },
     men: { label: "Men", color: "var(--gender-man)" },
@@ -188,5 +108,59 @@ describe("HeadcountTrend", () => {
         .querySelector('[data-slot="chart"]')
         ?.getAttribute("aria-hidden")
     ).toBe("true")
+  })
+})
+
+describe("PayGapTrend", () => {
+  const config = {
+    gapPct: { label: "Pay gap", color: "var(--brand)" },
+  } satisfies ChartConfig
+
+  it("mounts a chart for a measured history", () => {
+    const { container } = renderWithIntl(
+      <PayGapTrend
+        data={[
+          { label: "2025", caption: "1 Jan 2025", gapPct: 5.2 },
+          { label: "2026", caption: "1 Jan 2026", gapPct: 4.1 },
+        ]}
+        config={config}
+        seriesLabel="Pay gap"
+        unmeasuredLabel="Not measurable"
+      />
+    )
+    expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
+  })
+
+  // A mapping with no measurable gap is a break in the line, not a zero, so
+  // a null point must not crash the chart either.
+  it("mounts with an unmeasured point in the middle", () => {
+    const { container } = renderWithIntl(
+      <PayGapTrend
+        data={[
+          { label: "2024", caption: "1 Jan 2024", gapPct: 6 },
+          { label: "2025", caption: "1 Jan 2025", gapPct: null },
+          { label: "2026", caption: "1 Jan 2026", gapPct: 4.1 },
+        ]}
+        config={config}
+        seriesLabel="Pay gap"
+        unmeasuredLabel="Not measurable"
+      />
+    )
+    expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
+  })
+
+  it("mounts for a negative gap (women ahead)", () => {
+    const { container } = renderWithIntl(
+      <PayGapTrend
+        data={[
+          { label: "2025", caption: "1 Jan 2025", gapPct: -1.4 },
+          { label: "2026", caption: "1 Jan 2026", gapPct: -2.8 },
+        ]}
+        config={config}
+        seriesLabel="Pay gap"
+        unmeasuredLabel="Not measurable"
+      />
+    )
+    expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 })

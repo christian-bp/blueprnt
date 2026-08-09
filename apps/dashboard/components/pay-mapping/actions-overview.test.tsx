@@ -39,7 +39,11 @@ import type {
 import { PayMappingRunProvider } from "@/components/pay-mapping/pay-mapping-run-context"
 import { mockMutation } from "@/test/convex-mocks"
 import { pickSelectOption } from "@/test/select"
-import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
+import {
+  makeExcluded,
+  makeGapGroup,
+  makeRunDetail,
+} from "@/test/pay-mapping-fixtures"
 import { toast } from "@/lib/toast"
 
 const m = messages.dashboard.payMapping.actions
@@ -48,14 +52,10 @@ const tToast = messages.dashboard.toast
 
 const setStatus = mockMutation("payMapping.actions.setActionStatus")
 
-const RUN: PayMappingRunDetail = {
+const RUN: PayMappingRunDetail = makeRunDetail({
   runId: "run-1" as Id<"payMappingRuns">,
   label: "2026",
-  status: "active",
-  referenceDate: Date.UTC(2026, 6, 1),
-  rows: [],
-  collaboration: null,
-}
+})
 
 const GAP: PayMappingGapResult = {
   currency: "SEK",
@@ -78,10 +78,6 @@ const GAP: PayMappingGapResult = {
     { women: 0, men: 0 },
     { women: 0, men: 0 },
   ],
-  age: {
-    buckets: Array.from({ length: 7 }, () => ({ women: 0, men: 0 })),
-    unknown: 0,
-  },
 }
 
 function action(

@@ -1,102 +1,221 @@
 "use client"
 
+import {
+  Briefcase01Icon,
+  ChartHistogramIcon,
+  JusticeScale01Icon,
+  UserGroupIcon,
+} from "@hugeicons/core-free-icons"
+import type { IconSvgElement } from "@hugeicons/react"
 import type { ChartConfig } from "@workspace/ui/components/chart"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useFormatter, useTranslations } from "next-intl"
 import type { ReactNode } from "react"
-import { OverviewWidgetCard } from "@/components/overview/widget-card"
-import {
-  LevelBars,
-  HeadcountTrend,
-  QuartileSplitBars,
-} from "@/components/overview/widget-viz"
-import type { PayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
-import type { LevelOverview } from "@/lib/level-overview"
 import { GenderMenIcon } from "@/components/gender-mark"
+import { HeadcountTrend, PayGapTrend } from "@/components/overview/widget-viz"
+import { PanelCard } from "@/components/panel-card"
+import { WidgetCard } from "@/components/widget-card"
+import type { PayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
 import { WIDGET_CHART_HEIGHT } from "@/lib/chart-style"
 import { type HeadcountPoint, headcountTotal } from "@/lib/headcount-trend"
+import { hasTrendShape, type PayGapPoint } from "@/lib/pay-gap-trend"
+import type { LevelOverview } from "@/lib/level-overview"
 import { percentText } from "@/lib/percent"
 import type { OverviewStats } from "@/lib/todo"
 
-// Shared loading placeholder for a single OverviewWidgetCard slot: the same
-// chrome (title, skeleton headline, real action link) used both for the
-// initial three-up load (stats undefined) and for a single card whose own
-// independent query (levelOverview, payMappingHeadline) resolves after
-// stats, so every loading state in this grid measures identically and
-// there is one source of truth for the skeleton card. The viz area itself
-// stays empty (no shimmer bar) rather than a skeleton, reserving the exact
-// h-14 the loaded chart occupies so the card does not change height when
-// the chart appears.
-function renderSkeletonCard(label: string, viewLabel: string, href: string) {
+// A skeleton bar centred in its own line, so the slot measures whatever the
+// surrounding type would have measured rather than the bar's own height.
+function StatBar({ className }: { className: string }) {
   return (
-    <OverviewWidgetCard
+    <span className="flex items-center">
+      <Skeleton className={className} />
+    </span>
+  )
+}
+
+// One tile of the stat strip: the label, the figure it labels, and the line
+// that qualifies it, in that order down the card. A figure that has not
+// resolved yet renders as a bar in the same slot, so a tile never changes
+// height between its two states.
+function StatTile({
+  label,
+  icon,
+  href,
+  value,
+  caption,
+}: {
+  label: string
+  icon: IconSvgElement
+  href: string
+  value: ReactNode | undefined
+  caption: ReactNode
+}) {
+  return (
+    <WidgetCard
       title={label}
-      headline={<Skeleton className="h-6 w-24" />}
-      action={{ label: viewLabel, href }}
-      viz={<div className={cn("w-full", WIDGET_CHART_HEIGHT)} />}
+      icon={icon}
+      href={href}
+      // The bars sit in the SAME line boxes the loaded type creates, not at
+      // their own heights: CardTitle is leading-normal at text-2xl/text-3xl
+      // (36-45px) and the footer is text-sm (20px), so bare h-8/h-4 bars left
+      // each tile short and the whole strip grew on arrival.
+      value={value ?? <StatBar className="h-7 w-16" />}
+      footer={value === undefined ? <StatBar className="h-4 w-24" /> : caption}
     />
   )
 }
 
-// The overview's three always-present data cards: Workforce, Level
-// distribution, and Pay gap. Unlike the previous domain-card grid, no item
-// rows live here (they moved to TodoList): each card is a stat headline plus
-// a decorative viz on the shared OverviewWidgetCard chrome, and every card
-// renders a graceful empty state rather than being omitted, so the 3-card
-// grid never reflows as its own data arrives.
+// The dashboard's stat strip: four figures that say where the organization
+// stands, each one line, each linking to its own surface. The charts that
+// used to live inside these cards moved to the panels below: a tile carries
+// one number, a panel carries a shape.
 export function OverviewWidgets({
   stats,
   levelOverview,
   payMappingHeadline,
-  headcountTrend,
 }: {
   stats: OverviewStats | undefined
   levelOverview: LevelOverview | undefined | null
   payMappingHeadline: PayMappingHeadline | undefined | null
+}) {
+  const t = useTranslations("dashboard.overview.widgets")
+  const format = useFormatter()
+
+  const gapValue =
+    payMappingHeadline === undefined
+      ? undefined
+      : payMappingHeadline === null
+        ? t("gap.notStarted")
+        : payMappingHeadline.gapPct === null ||
+            payMappingHeadline.flag === "insufficient"
+          ? t("gap.insufficientValue")
+          : percentText(payMappingHeadline.gapPct, format)
+
+  return (
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <StatTile
+        label={t("workforce.label")}
+        icon={UserGroupIcon}
+        href="/people"
+        value={stats?.totalPeople}
+        caption={
+          stats === undefined
+            ? ""
+            : stats.totalPeople === 0
+              ? t("workforce.importPrompt")
+              : stats.unclassifiedCount > 0
+                ? t("workforce.unclassified", {
+                    count: stats.unclassifiedCount,
+                  })
+                : t("workforce.allClassified")
+        }
+      />
+      <StatTile
+        label={t("roles.label")}
+        icon={Briefcase01Icon}
+        href="/roles"
+        value={
+          levelOverview === undefined
+            ? undefined
+            : (levelOverview?.totalRoles ?? 0)
+        }
+        caption={
+          levelOverview === undefined || levelOverview === null
+            ? t("roles.empty")
+            : t("roles.caption", { count: levelOverview.levelCount })
+        }
+      />
+      <StatTile
+        label={t("gap.label")}
+        icon={JusticeScale01Icon}
+        href={
+          payMappingHeadline === undefined || payMappingHeadline === null
+            ? "/pay-mappings"
+            : `/pay-mappings/${payMappingHeadline.slug}`
+        }
+        value={gapValue}
+        caption={
+          payMappingHeadline === undefined || payMappingHeadline === null
+            ? t("gap.prompt")
+            : payMappingHeadline.label
+        }
+      />
+      <StatTile
+        label={t("levels.label")}
+        icon={ChartHistogramIcon}
+        href="/work"
+        value={
+          levelOverview === undefined
+            ? undefined
+            : (levelOverview?.levelCount ?? 0)
+        }
+        caption={
+          levelOverview === undefined || levelOverview === null
+            ? t("levels.empty")
+            : t("levels.caption", { count: levelOverview.totalRoles })
+        }
+      />
+    </div>
+  )
+}
+
+type TrendState = "loading" | "empty" | "ready"
+
+// What a trend panel shows when it has no line to draw, in the exact height
+// the chart will occupy so the panel never changes size.
+//
+// While the data is still loading it shows a placeholder line, NOT the empty
+// sentence: "you need two pay mappings" is a claim about the org, and a
+// surface that has not heard back yet cannot make it.
+//
+// The sentence is deliberately not aria-hidden, unlike the charts it stands
+// in for. A chart is decorative here (the tiles above carry its numbers in
+// words) but this sentence IS the content: it is the only thing telling a
+// reader why the panel is blank.
+function TrendBody({ state, empty }: { state: TrendState; empty: string }) {
+  return (
+    <div
+      className={cn(
+        "flex w-full items-center justify-center",
+        WIDGET_CHART_HEIGHT
+      )}
+    >
+      {state === "loading" ? (
+        <Skeleton className="h-4 w-48 max-w-full" />
+      ) : (
+        <p className="max-w-64 text-balance text-center text-muted-foreground text-sm">
+          {empty}
+        </p>
+      )}
+    </div>
+  )
+}
+
+// The two things that MOVE, as panels: how the workforce and the pay gap
+// have gone across pay mappings. Each chart is decorative in the
+// accessibility sense (the tiles above carry the numbers in words), so it is
+// aria-hidden inside its own titled panel.
+//
+// Both are histories, on purpose. A front page's job is "how are we doing",
+// and a distribution (roles per level, the gender split per pay quartile)
+// answers "how are we arranged" instead: a shape that barely changes between
+// visits, already shown full-size on the surface that owns it. The two
+// panels that used to draw those distributions were the least useful things
+// on the page.
+export function OverviewCharts({
+  stats,
+  headcountTrend,
+  gapTrend,
+}: {
+  stats: OverviewStats | undefined
   headcountTrend: HeadcountPoint[] | undefined | null
+  gapTrend: PayGapPoint[] | undefined | null
 }) {
   const t = useTranslations("dashboard.overview.widgets")
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
   const format = useFormatter()
 
-  if (stats === undefined) {
-    return (
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {renderSkeletonCard(
-          t("workforce.label"),
-          t("workforce.view"),
-          "/people"
-        )}
-        {renderSkeletonCard(t("levels.label"), t("levels.view"), "/work")}
-        {renderSkeletonCard(t("gap.label"), t("gap.view"), "/pay-mappings")}
-      </div>
-    )
-  }
-
-  // --- Workforce: headcount, classified/unclassified split. ---
-  const workforceHeadline =
-    stats.totalPeople === 0 ? (
-      t("workforce.importPrompt")
-    ) : (
-      <div className="flex flex-col gap-1">
-        <span>{t("workforce.headcount", { count: stats.totalPeople })}</span>
-        <span className="font-normal text-muted-foreground text-xs">
-          {stats.unclassifiedCount > 0
-            ? t("workforce.unclassified", { count: stats.unclassifiedCount })
-            : t("workforce.allClassified")}
-        </span>
-      </div>
-    )
-
-  // --- Workforce viz: an area chart of headcount per pay-mapping run over
-  // time (Polyform stat-card style), reserving the same h-14 the other
-  // cards' viz occupies so nothing shifts as headcountTrend's own
-  // subscription resolves. No chart while there are no people yet (the
-  // import prompt already carries that state), while the trend is still
-  // loading, or until there are at least TWO runs to plot: a single run is
-  // just one dot, not a trend, so it stays an empty reserved area until a
-  // second run gives the curve two points.
   const genderLabels = { women: tGap("women"), men: tGap("men") }
   const trendConfig = {
     women: { label: genderLabels.women, color: "var(--gender-woman)" },
@@ -106,145 +225,91 @@ export function OverviewWidgets({
       icon: GenderMenIcon,
     },
   } satisfies ChartConfig
-  let workforceViz: ReactNode
-  if (
-    stats.totalPeople === 0 ||
-    headcountTrend === undefined ||
-    headcountTrend === null ||
-    headcountTrend.length < 2 ||
-    !headcountTrend.some((p) => headcountTotal(p) > 0)
-  ) {
-    workforceViz = <div className={cn("w-full", WIDGET_CHART_HEIGHT)} />
-  } else {
-    workforceViz = (
-      <HeadcountTrend
-        data={headcountTrend.map((point) => ({
-          label: point.runLabel,
-          caption: format.dateTime(new Date(point.date), {
-            dateStyle: "medium",
-          }),
-          women: point.women,
-          men: point.men,
-        }))}
-        config={trendConfig}
-        labels={genderLabels}
-        totalLabel={t("workforce.trendLabel")}
-      />
-    )
-  }
 
-  // --- Level distribution: role/level narrative, empty until a level
-  // resolves. levelOverview is its own subscription (getResults) that can
-  // still be loading after stats resolves, so its own undefined is a
-  // skeleton card, never the null empty state.
-  let levelCard: ReactNode
-  if (levelOverview === undefined) {
-    levelCard = renderSkeletonCard(t("levels.label"), t("levels.view"), "/work")
-  } else {
-    const levelsHeadline =
-      levelOverview === null
-        ? t("levels.empty")
-        : t("levels.headline", {
-            roles: levelOverview.totalRoles,
-            levels: levelOverview.levelCount,
-          })
-    const levelCounts = levelOverview === null ? [] : levelOverview.levelCounts
-    levelCard = (
-      <OverviewWidgetCard
-        title={t("levels.label")}
-        headline={levelsHeadline}
-        action={{ label: t("levels.view"), href: "/work" }}
-        viz={<LevelBars counts={levelCounts} />}
-      />
-    )
-  }
+  // THREE states, not two. Folding "still loading" into the same branch as
+  // "not enough runs" made both panels assert "a trend appears once you have
+  // two pay mappings" on first paint, which the app cannot know yet and which
+  // was sometimes false a moment later.
+  const workforceState: TrendState =
+    stats === undefined || headcountTrend === undefined
+      ? "loading"
+      : stats.totalPeople > 0 &&
+          headcountTrend !== null &&
+          hasTrendShape(headcountTrend.filter((p) => headcountTotal(p) > 0))
+        ? "ready"
+        : "empty"
 
-  // --- Pay gap: measurable headline once a run's gap resolves; a run that
-  // exists but has no measurable gap (too few people, or an "insufficient"
-  // flag) gets its own state so it never reads as "Not started"; else the
-  // plain not-started text. payMappingHeadline is its own subscription
-  // (listPayMappingRuns + getPayMappingGap) that can still be loading after
-  // stats resolves, so its own undefined is a skeleton card, never the
-  // not-started text.
-  let gapCard: ReactNode
-  if (payMappingHeadline === undefined) {
-    gapCard = renderSkeletonCard(t("gap.label"), t("gap.view"), "/pay-mappings")
-  } else if (payMappingHeadline === null) {
-    // Four flat, zero-total quartile columns: an empty-but-shaped
-    // placeholder, keeping the pay-gap card's viz area the same size before
-    // and after a measurable gap resolves.
-    const emptyQuartiles = Array.from({ length: 4 }, () => ({
-      women: 0,
-      men: 0,
-    }))
-    gapCard = (
-      <OverviewWidgetCard
-        title={t("gap.label")}
-        headline={
-          <div className="flex flex-col gap-1">
-            <span>{t("gap.notStarted")}</span>
-            <span className="font-normal text-muted-foreground text-xs">
-              {t("gap.prompt")}
-            </span>
-          </div>
-        }
-        action={{ label: t("gap.view"), href: "/pay-mappings" }}
-        viz={<QuartileSplitBars quartiles={emptyQuartiles} />}
-      />
-    )
-  } else if (
-    payMappingHeadline.gapPct === null ||
-    payMappingHeadline.flag === "insufficient"
-  ) {
-    gapCard = (
-      <OverviewWidgetCard
-        title={t("gap.label")}
-        headline={
-          <div className="flex flex-col gap-1">
-            <span>{t("gap.insufficientValue")}</span>
-            <span className="font-normal text-muted-foreground text-xs">
-              {payMappingHeadline.label}
-            </span>
-          </div>
-        }
-        action={{
-          label: t("gap.view"),
-          href: `/pay-mappings/${payMappingHeadline.slug}`,
-        }}
-        viz={<QuartileSplitBars quartiles={payMappingHeadline.quartiles} />}
-      />
-    )
-  } else {
-    gapCard = (
-      <OverviewWidgetCard
-        title={t("gap.label")}
-        headline={
-          <div className="flex flex-col gap-1">
-            <span>{percentText(payMappingHeadline.gapPct, format)}</span>
-            <span className="font-normal text-muted-foreground text-xs">
-              {payMappingHeadline.label}
-            </span>
-          </div>
-        }
-        action={{
-          label: t("gap.view"),
-          href: `/pay-mappings/${payMappingHeadline.slug}`,
-        }}
-        viz={<QuartileSplitBars quartiles={payMappingHeadline.quartiles} />}
-      />
-    )
-  }
+  // Same rule: one mapping is a dot, not a trend, and a mapping with no
+  // measurable gap contributes no reading at all.
+  const gapState: TrendState =
+    gapTrend === undefined
+      ? "loading"
+      : gapTrend !== null &&
+          hasTrendShape(gapTrend.filter((point) => point.gapPct !== null))
+        ? "ready"
+        : "empty"
+
+  const gapConfig = {
+    gapPct: { label: t("gap.label"), color: "var(--brand)" },
+  } satisfies ChartConfig
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <OverviewWidgetCard
-        title={t("workforce.label")}
-        headline={workforceHeadline}
-        action={{ label: t("workforce.view"), href: "/people" }}
-        viz={workforceViz}
-      />
-      {levelCard}
-      {gapCard}
+    <div className="grid gap-3 lg:grid-cols-2">
+      <PanelCard
+        title={t("workforce.trendTitle")}
+        icon={UserGroupIcon}
+        action={{ label: t("workforce.action"), href: "/people" }}
+        bleed
+      >
+        {workforceState === "ready" ? (
+          <div aria-hidden="true">
+            <HeadcountTrend
+              data={(headcountTrend ?? []).map((point) => ({
+                label: point.runLabel,
+                caption: format.dateTime(new Date(point.date), {
+                  dateStyle: "medium",
+                }),
+                women: point.women,
+                men: point.men,
+              }))}
+              config={trendConfig}
+              labels={genderLabels}
+              totalLabel={t("workforce.trendLabel")}
+            />
+          </div>
+        ) : (
+          <TrendBody state={workforceState} empty={t("trendEmpty")} />
+        )}
+      </PanelCard>
+      {/* Bleeds for the same reason its sibling does, and because the row
+          sizes to its tallest card: a padded panel beside a bleeding one
+          stretches the bleeding one, which then holds its chart 16px above
+          its own bottom edge. The two have to agree. */}
+      <PanelCard
+        title={t("gapTrend.title")}
+        icon={JusticeScale01Icon}
+        action={{ label: t("gapTrend.action"), href: "/pay-mappings" }}
+        bleed
+      >
+        {gapState === "ready" ? (
+          <div aria-hidden="true">
+            <PayGapTrend
+              data={(gapTrend ?? []).map((point) => ({
+                label: point.runLabel,
+                caption: format.dateTime(new Date(point.date), {
+                  dateStyle: "medium",
+                }),
+                gapPct: point.gapPct,
+              }))}
+              config={gapConfig}
+              seriesLabel={t("gap.label")}
+              unmeasuredLabel={t("gapTrend.unmeasured")}
+            />
+          </div>
+        ) : (
+          <TrendBody state={gapState} empty={t("trendEmpty")} />
+        )}
+      </PanelCard>
     </div>
   )
 }

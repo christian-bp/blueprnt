@@ -28,7 +28,11 @@ vi.mock("@/components/org-context", () => ({
 }))
 
 import { onQuery } from "@/test/convex-mocks"
-import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
+import {
+  makeExcluded,
+  makeGapGroup,
+  makeRunDetail,
+} from "@/test/pay-mapping-fixtures"
 import type {
   GapGroup,
   GroupAnalysis,
@@ -73,33 +77,14 @@ function gap(
       { women: 0, men: 1 },
       { women: 0, men: 1 },
     ],
-    age: {
-      buckets: [
-        { women: 0, men: 0 },
-        { women: 1, men: 0 },
-        { women: 2, men: 2 },
-        { women: 0, men: 1 },
-        { women: 0, men: 0 },
-        { women: 0, men: 0 },
-        { women: 0, men: 0 },
-      ],
-      unknown: 1,
-    },
   }
 }
 
-// The run the journey card (rendered inside PayMappingOverview) reads from
-// context. Present alongside `gap` so the card renders its resolved
+// The run the status + population cards (rendered inside PayMappingOverview)
+// read from context. Present alongside `gap` so they render their resolved
 // content; absent (undefined) together with `gap` for the loading case,
 // mirroring the run shell's own undefined-until-resolved queries.
-const RUN: PayMappingRunDetail = {
-  runId: "run-1" as PayMappingRunDetail["runId"],
-  label: "Pay mapping 2026",
-  status: "active",
-  referenceDate: Date.UTC(2026, 6, 1),
-  rows: [],
-  collaboration: null,
-}
+const RUN: PayMappingRunDetail = makeRunDetail()
 
 function renderOverview(
   g: PayMappingGapResult | undefined,
@@ -136,31 +121,39 @@ describe("PayMappingOverview", () => {
     })
   })
 
-  it("orders the journey card, then the sentence-led gap + clock, then the statistics heading and chart titles", () => {
+  it("orders the KPI strip, then the finding, then the statistics heading and chart titles", () => {
     renderOverview(gap())
     const text = document.body.textContent ?? ""
-    const journeyAt = text.indexOf(m.journey.title)
+    const populationAt = text.indexOf(m.detail.population)
     const gapAt = text.indexOf(m.overview.headlineGapLabel)
     const clockAt = text.indexOf(m.clock.label)
+    const findingAt = text.indexOf(m.overview.meanComparisonTitle)
     const statsAt = text.indexOf(m.overview.statisticsHeading)
     const chartsAt = text.indexOf(m.overview.wholeSurveyTitle)
 
-    expect(journeyAt).toBeGreaterThan(-1)
-    expect(gapAt).toBeGreaterThan(journeyAt)
+    expect(populationAt).toBeGreaterThan(-1)
+    expect(gapAt).toBeGreaterThan(populationAt)
     expect(clockAt).toBeGreaterThan(gapAt)
-    expect(statsAt).toBeGreaterThan(clockAt)
+    expect(findingAt).toBeGreaterThan(clockAt)
+    expect(statsAt).toBeGreaterThan(findingAt)
     expect(chartsAt).toBeGreaterThan(statsAt)
 
     expect(screen.getByText(m.overview.quartileTitle)).toBeDefined()
-    expect(screen.getByText(m.overview.ageTitle)).toBeDefined()
-    expect(screen.getByText("6")).toBeDefined()
-    expect(screen.getByText(/1 person without a birth date/)).toBeDefined()
+    // Twice: the population card's headline figure and the donut's total.
+    // Both report the same frozen population, from the run row and from the
+    // gender tallies of the same snapshot.
+    expect(screen.getAllByText("6")).toHaveLength(2)
   })
 
-  it("no longer renders the flag-summary widget: progress and the way in live on the journey card", () => {
+  it("carries no process readout of its own: no flag summary, no chapter breakdown", () => {
     renderOverview(gap())
     expect(screen.queryByText("Flagged groups")).toBeNull()
     expect(screen.queryByText(/need(s)? attention/)).toBeNull()
+    // The per-chapter standing belongs to the analysis section's spine and
+    // tab row; repeating it here was what made this page a second process
+    // surface.
+    expect(screen.queryByText(m.review.chapters.equalWork)).toBeNull()
+    expect(screen.queryByText(m.analysis.progressLabel)).toBeNull()
   })
 
   it("states the org-level finding as a sentence, unsigned percent with the direction in the word, above the mean bars", () => {
@@ -196,9 +189,9 @@ describe("PayMappingOverview", () => {
     const expandButtons = screen.getAllByRole("button", {
       name: en.dashboard.widgetCard.expand,
     })
-    // The three distribution charts are expandable; the journey card and the
-    // gap/clock KPI cards are not.
-    expect(expandButtons).toHaveLength(3)
+    // The two distribution charts are expandable; the population, gap and
+    // clock tiles and the finding panel are not.
+    expect(expandButtons).toHaveLength(2)
     const first = expandButtons[0]
     if (first === undefined) throw new Error("missing expand button")
     fireEvent.click(first)
@@ -206,7 +199,7 @@ describe("PayMappingOverview", () => {
     expect(screen.getAllByText(m.overview.wholeSurveyTitle).length).toBe(2)
   })
 
-  it("shows the insufficient line in the gap and clock widgets when the org gap is insufficient", () => {
+  it("shows the insufficient line in the gap KPI, the clock and the finding when the org gap is insufficient", () => {
     renderOverview(
       gap({
         menCount: 0,
@@ -215,21 +208,20 @@ describe("PayMappingOverview", () => {
         flag: "insufficient",
       })
     )
-    expect(screen.getAllByText(m.overview.insufficient)).toHaveLength(2)
+    expect(screen.getAllByText(m.overview.insufficient)).toHaveLength(3)
     expect(document.querySelectorAll('[data-testid="mean-bar"]').length).toBe(0)
   })
 
   it("keeps widget titles and static chrome real while the gap loads", () => {
     renderOverview(undefined)
-    expect(screen.getByText(m.journey.title)).toBeDefined()
+    expect(screen.getByText(m.detail.population)).toBeDefined()
     expect(screen.getByText(m.overview.headlineGapLabel)).toBeDefined()
     expect(screen.getByText(m.overview.statisticsHeading)).toBeDefined()
     expect(screen.getByText(m.overview.wholeSurveyTitle)).toBeDefined()
     expect(screen.getByText(m.overview.quartileTitle)).toBeDefined()
-    // Static chrome renders real during loading: the clock's unit labels and
-    // colons (its href derives from the URL), so nothing pops in or shifts
-    // when the counts land.
-    expect(screen.getByText(m.clock.hours)).toBeDefined()
+    // Static chrome renders real during loading: the clock's digit-box
+    // frames and the colons between them, so nothing pops in or shifts when
+    // the counts land.
     expect(screen.getAllByText(":")).toHaveLength(2)
   })
 })

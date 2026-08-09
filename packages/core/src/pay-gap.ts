@@ -70,8 +70,8 @@ export function computeGenderGap(
   }
 }
 
-// Per-gender headcounts for one distribution bucket (a pay quartile or an
-// age band). Counts only, never pay values.
+// Per-gender headcounts for one distribution bucket (a pay quartile).
+// Counts only, never pay values.
 export interface GenderTally {
   women: number
   men: number
@@ -100,23 +100,11 @@ export function quartileGenderTallies(
   return tallies
 }
 
-// The fixed age bands of the age-distribution view, aligned by index with
-// ageGenderTallies' buckets. Digit-only labels, so they render as-is in
-// every locale.
-export const AGE_BUCKETS = [
-  "0-19",
-  "20-29",
-  "30-39",
-  "40-49",
-  "50-59",
-  "60-69",
-  "70+",
-] as const
-
 // Full years of age at `asOfMs`, from an ISO birth-date string. Null when the
 // date does not parse or lies in the future. Pure: the reference instant is
-// an input, never the clock. Also used for tenure (years since
-// employmentStartDate): the same whole-years-at-instant math applies.
+// an input, never the clock. The pay-mapping scatter is its caller, for both
+// age and tenure (years since employmentStartDate): the same
+// whole-years-at-instant math applies.
 export function ageAt(birthDate: string, asOfMs: number): number | null {
   const birth = new Date(birthDate)
   if (Number.isNaN(birth.getTime())) return null
@@ -128,43 +116,6 @@ export function ageAt(birthDate: string, asOfMs: number): number | null {
       asOf.getUTCDate() < birth.getUTCDate())
   if (beforeBirthday) age -= 1
   return age < 0 ? null : age
-}
-
-function ageBucketIndex(age: number): number {
-  if (age < 20) return 0
-  if (age < 30) return 1
-  if (age < 40) return 2
-  if (age < 50) return 3
-  if (age < 60) return 4
-  if (age < 70) return 5
-  return 6
-}
-
-// Per-age-band gender headcounts at a reference instant (buckets aligned with
-// AGE_BUCKETS). Entries without a parseable birth date land in `unknown`
-// instead of being silently dropped.
-export function ageGenderTallies(
-  entries: ReadonlyArray<{ birthDate: string | undefined; woman: boolean }>,
-  asOfMs: number
-): { buckets: GenderTally[]; unknown: number } {
-  const buckets: GenderTally[] = Array.from(
-    { length: AGE_BUCKETS.length },
-    () => ({ women: 0, men: 0 })
-  )
-  let unknown = 0
-  for (const entry of entries) {
-    const age =
-      entry.birthDate === undefined ? null : ageAt(entry.birthDate, asOfMs)
-    if (age === null) {
-      unknown += 1
-      continue
-    }
-    const bucket = buckets[ageBucketIndex(age)]
-    if (bucket === undefined) continue
-    if (entry.woman) bucket.women += 1
-    else bucket.men += 1
-  }
-  return { buckets, unknown }
 }
 
 // DO praxis: a group "brukar anses" women-dominated at 60 % women or more.

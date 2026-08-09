@@ -1,11 +1,13 @@
-// Shared GapGroup fixture builders for the pay-mapping tests: one home for
-// the wire shape's defaults so a shape change edits one file, not one
-// copy-pasted builder per test file.
+// Shared fixture builders for the pay-mapping tests: one home for the wire
+// shapes' defaults so a shape change edits one file, not one copy-pasted
+// builder per test file.
 import type {
   ExcludedGroupsWire,
   GapGroup,
   GapMetric,
+  PayMappingRunDetail,
 } from "@/components/pay-mapping/pay-mapping-gap-types"
+import type { PayMappingRunSummary } from "@/components/pay-mapping/pay-mapping-run-context"
 
 // Defaults mirror the classic seed: 2 women @ 90k vs 2 men @ 100k => a 10%
 // women-behind gap.
@@ -46,6 +48,36 @@ export function makeGapGroup(
     flag: "elevated",
     tccDriven: false,
     ...rest,
+  }
+}
+
+// The resolved run every run-scoped surface reads from context. Active, no
+// samverkan record, no snapshot rows: the shape a test overrides from.
+export function makeRunDetail(
+  overrides: Partial<PayMappingRunDetail> = {}
+): PayMappingRunDetail {
+  return {
+    runId: "run-1" as PayMappingRunDetail["runId"],
+    label: "Pay mapping 2026",
+    status: "active",
+    referenceDate: Date.UTC(2026, 6, 1),
+    populationCount: 6,
+    rows: [],
+    collaboration: null,
+    ...overrides,
+  }
+}
+
+// One entry of the org's run list, as the context narrows it.
+export function makeRunSummary(
+  overrides: Partial<PayMappingRunSummary> = {}
+): PayMappingRunSummary {
+  return {
+    status: "completed",
+    referenceDate: Date.UTC(2025, 6, 1),
+    label: "Pay mapping 2025",
+    populationCount: 6,
+    ...overrides,
   }
 }
 

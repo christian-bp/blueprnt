@@ -18,7 +18,6 @@ import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { useOrganization } from "@/components/org-context"
 import { toast } from "@/lib/toast"
-import { ANALYSIS_CHAPTERS } from "./analysis-chapters"
 import type { PayMappingRunDetail } from "./pay-mapping-gap-types"
 import type { ReviewQueue } from "./review-queue"
 import { ReviewStepActions } from "./review-step-actions"
@@ -39,11 +38,17 @@ export function isGateUnmetError(error: unknown): boolean {
 }
 
 // The end of the ladder, in ONE place. Three surfaces used to render their
-// own version of this gate (the analysis pane, the wizard's finale, the
-// overview's journey card), which meant three answers to "is the duty met"
-// derived from the same state. This is the only one now: the chapter
-// breakdown, the completion action with its remaining hint, the completed
-// note, and Reopen.
+// own version of this gate, which meant three answers to "is the duty met"
+// derived from the same state. This is the only one now: the completion
+// action with its remaining hint, the completed note, and Reopen. Its one
+// home is the end of a chapter's worklist: finishing is the last thing you
+// do in the flow, so it lives where the work does, not on a dashboard tile
+// beside the figures.
+//
+// It used to open with a per-chapter breakdown of the standing. That is the
+// analysis section's job: the spine's segments are weighted by how much work
+// each chapter holds and the tab row marks the finished ones, so the list
+// here was the same four numbers in a place where nothing could act on them.
 export function PayMappingCompletionPanel({
   queue,
   run,
@@ -56,9 +61,7 @@ export function PayMappingCompletionPanel({
   crossLevelCount?: number
 }) {
   const t = useTranslations("dashboard.payMapping.review")
-  const tChapters = useTranslations("dashboard.payMapping.review.chapters")
   const tDoc = useTranslations("dashboard.payMapping.documentation")
-  const tJourney = useTranslations("dashboard.payMapping.journey")
   const tToast = useTranslations("dashboard.toast")
   const tErrors = useTranslations("errors")
   const { orgId } = useOrganization()
@@ -105,33 +108,8 @@ export function PayMappingCompletionPanel({
     }
   }
 
-  // The start chapter is binary (the samverkan record is filled in or it is
-  // not); the other three carry their own done/total.
-  function chapterMetaFor(chapter: (typeof ANALYSIS_CHAPTERS)[number]) {
-    if (chapter === "start")
-      return tJourney(
-        `state.${queue.progress.collaborationDone ? "done" : "notStarted"}`
-      )
-    const count = queue.progress[chapter]
-    if (count.total === 0) return tJourney("state.done")
-    return tJourney("count", count)
-  }
-
   return (
     <div className="space-y-4">
-      <dl className="space-y-1">
-        {ANALYSIS_CHAPTERS.map((chapter) => (
-          <div
-            key={chapter}
-            className="flex items-center justify-between gap-2"
-          >
-            <dt className="text-sm">{tChapters(chapter)}</dt>
-            <dd className="text-muted-foreground text-sm tabular-nums">
-              {chapterMetaFor(chapter)}
-            </dd>
-          </div>
-        ))}
-      </dl>
       <p className="text-muted-foreground text-sm">{t("finishActionsNote")}</p>
       {completed ? (
         <div className="space-y-2">

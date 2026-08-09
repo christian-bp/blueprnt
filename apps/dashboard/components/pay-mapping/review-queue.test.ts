@@ -122,10 +122,6 @@ const GAP: PayMappingGapResult = {
     { women: 2, men: 2 },
     { women: 1, men: 1 },
   ],
-  age: {
-    buckets: Array.from({ length: 7 }, () => ({ women: 0, men: 0 })),
-    unknown: 0,
-  },
 }
 
 // All praxis areas + all requiring groups marked done, and collaboration

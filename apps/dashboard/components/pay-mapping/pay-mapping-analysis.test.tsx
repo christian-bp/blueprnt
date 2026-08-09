@@ -45,7 +45,11 @@ vi.mock("@number-flow/react", () => ({
 
 import { toast } from "@/lib/toast"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
+import {
+  makeExcluded,
+  makeGapGroup,
+  makeRunDetail,
+} from "@/test/pay-mapping-fixtures"
 import type {
   GapGroup,
   GroupAnalysis,
@@ -178,20 +182,11 @@ const GAP: PayMappingGapResult = {
     { women: 2, men: 2 },
     { women: 2, men: 2 },
   ],
-  age: {
-    buckets: Array.from({ length: 7 }, () => ({ women: 0, men: 0 })),
-    unknown: 0,
-  },
 }
 
-const RUN: PayMappingRunDetail = {
+const RUN: PayMappingRunDetail = makeRunDetail({
   runId: "run-1" as Id<"payMappingRuns">,
-  label: "Pay mapping 2026",
-  status: "active",
-  referenceDate: Date.UTC(2026, 6, 1),
-  rows: [],
-  collaboration: null,
-}
+})
 
 function praxisDone(area: string): GroupAnalysis {
   return {

@@ -1,9 +1,13 @@
 import { cleanup, render, screen } from "@testing-library/react"
+import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
-import messages from "@workspace/i18n/messages/en.json"
-import { OverviewWidgets } from "@/components/overview/overview-widgets"
+import {
+  OverviewCharts,
+  OverviewWidgets,
+} from "@/components/overview/overview-widgets"
 import type { PayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
+import type { PayGapPoint } from "@/lib/pay-gap-trend"
 import type { HeadcountPoint } from "@/lib/headcount-trend"
 import type { LevelOverview } from "@/lib/level-overview"
 import type { OverviewStats } from "@/lib/todo"
@@ -19,279 +23,261 @@ const ALL_DONE: OverviewStats = {
   approveCount: 0,
 }
 
-// Deliberately NOT default-destructured: a default parameter kicks in
-// whenever the property is `undefined`, which would silently swallow the
-// loading test's explicit `stats: undefined`. `in` tells "key omitted" (use
-// the fixture) apart from "key explicitly undefined" (the loading state
-// under test).
-function renderWidgets(
+const LEVELS: LevelOverview = {
+  totalRoles: 4,
+  levelCount: 2,
+  levelCounts: [
+    { level: 1, count: 1 },
+    { level: 2, count: 3 },
+    { level: 3, count: 0 },
+  ],
+}
+
+const HEADLINE: PayMappingHeadline = {
+  slug: "pay-2026",
+  label: "Pay mapping 2026",
+  status: "active",
+  gapPct: 4.2,
+  flag: "elevated",
+}
+
+// Each argument defaults to its RESOLVED state (the loaded dashboard); a
+// test passes `undefined` explicitly to exercise a loading branch, so an
+// omitted key never silently means "still loading".
+function renderStrip(
   options: {
     stats?: OverviewStats | undefined
     levelOverview?: LevelOverview | undefined | null
     payMappingHeadline?: PayMappingHeadline | undefined | null
-    headcountTrend?: HeadcountPoint[] | undefined | null
   } = {}
 ) {
-  const stats = "stats" in options ? options.stats : ALL_DONE
-  const levelOverview =
-    "levelOverview" in options ? options.levelOverview : null
-  const payMappingHeadline =
-    "payMappingHeadline" in options ? options.payMappingHeadline : null
-  const headcountTrend =
-    "headcountTrend" in options ? options.headcountTrend : null
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <OverviewWidgets
-        stats={stats}
-        levelOverview={levelOverview}
-        payMappingHeadline={payMappingHeadline}
-        headcountTrend={headcountTrend}
+        stats={"stats" in options ? options.stats : ALL_DONE}
+        levelOverview={
+          "levelOverview" in options ? options.levelOverview : LEVELS
+        }
+        payMappingHeadline={
+          "payMappingHeadline" in options ? options.payMappingHeadline : null
+        }
       />
     </NextIntlClientProvider>
   )
 }
 
+const GAP_TREND: PayGapPoint[] = [
+  {
+    date: Date.UTC(2025, 0, 1),
+    runLabel: "2025",
+    gapPct: 5.2,
+    flag: "elevated",
+  },
+  {
+    date: Date.UTC(2026, 0, 1),
+    runLabel: "2026",
+    gapPct: 4.1,
+    flag: "ok",
+  },
+]
+
+function renderCharts(
+  options: {
+    stats?: OverviewStats | undefined
+    headcountTrend?: HeadcountPoint[] | undefined | null
+    gapTrend?: PayGapPoint[] | undefined | null
+  } = {}
+) {
+  return render(
+    <NextIntlClientProvider
+      locale="en"
+      timeZone="Europe/Stockholm"
+      messages={messages}
+    >
+      <OverviewCharts
+        stats={"stats" in options ? options.stats : ALL_DONE}
+        headcountTrend={
+          "headcountTrend" in options ? options.headcountTrend : null
+        }
+        gapTrend={"gapTrend" in options ? options.gapTrend : GAP_TREND}
+      />
+    </NextIntlClientProvider>
+  )
+}
+
+const TWO_RUNS: HeadcountPoint[] = [
+  { date: 1, runLabel: "Pay mapping 2025", women: 3, men: 4 },
+  { date: 2, runLabel: "Pay mapping 2026", women: 5, men: 5 },
+]
+
+afterEach(cleanup)
+
 describe("OverviewWidgets", () => {
-  afterEach(cleanup)
-
-  it("renders exactly three cards", () => {
-    renderWidgets()
-    expect(screen.getByText(t.workforce.label)).toBeDefined()
-    expect(screen.getByText(t.levels.label)).toBeDefined()
-    expect(screen.getByText(t.gap.label)).toBeDefined()
+  it("renders four labelled figures, each linking to its own surface", () => {
+    renderStrip()
+    for (const [label, href] of [
+      [t.workforce.label, "/people"],
+      [t.roles.label, "/roles"],
+      [t.gap.label, "/pay-mappings"],
+      [t.levels.label, "/work"],
+    ] as const) {
+      expect(screen.getByText(label)).toBeDefined()
+      expect(
+        screen.getByRole("link", { name: label }).getAttribute("href")
+      ).toBe(href)
+    }
   })
 
-  it("shows the workforce card's headcount, its trend chart, and a link to /people", () => {
-    renderWidgets({
+  // A tile is one number: the charts moved to the panels below, so nothing
+  // in the strip mounts a chart.
+  it("carries no charts", () => {
+    const { container } = renderStrip()
+    expect(container.querySelectorAll('[data-slot="chart"]')).toHaveLength(0)
+  })
+
+  it("shows the headcount with its unclassified caption", () => {
+    renderStrip({
       stats: { ...ALL_DONE, totalPeople: 10, unclassifiedCount: 3 },
-      headcountTrend: [
-        { date: 1, runLabel: "Pay mapping 2025", women: 3, men: 4 },
-        { date: 2, runLabel: "Pay mapping 2026", women: 5, men: 5 },
-      ],
     })
-    expect(screen.getByText("10 people today")).toBeDefined()
+    expect(screen.getByText("10")).toBeDefined()
     expect(screen.getByText("3 unclassified")).toBeDefined()
-    const workforceCard = screen
-      .getByText(t.workforce.label)
-      .closest('[data-slot="card"]')
-    expect(workforceCard?.querySelector('[data-slot="chart"]')).not.toBeNull()
-    const action = screen.getByRole("link", { name: t.workforce.view })
-    expect(action.getAttribute("href")).toBe("/people")
   })
 
-  it("shows no chart for a single pay-mapping run (one dot is not a trend)", () => {
-    renderWidgets({
-      stats: { ...ALL_DONE, totalPeople: 10 },
-      headcountTrend: [
-        { date: 1, runLabel: "Pay mapping 2026", women: 5, men: 5 },
-      ],
-    })
-    const workforceCard = screen
-      .getByText(t.workforce.label)
-      .closest('[data-slot="card"]')
-    expect(workforceCard?.querySelector('[data-slot="chart"]')).toBeNull()
-  })
-
-  it("shows no chart in the workforce card while its own headcount trend is still loading", () => {
-    renderWidgets({
-      stats: { ...ALL_DONE, totalPeople: 10 },
-      headcountTrend: undefined,
-    })
-    const workforceCard = screen
-      .getByText(t.workforce.label)
-      .closest('[data-slot="card"]')
-    expect(workforceCard?.querySelector('[data-slot="chart"]')).toBeNull()
-  })
-
-  it("shows no chart in the workforce card when there is no pay-mapping run yet", () => {
-    renderWidgets({
-      stats: { ...ALL_DONE, totalPeople: 10 },
-      headcountTrend: null,
-    })
-    const workforceCard = screen
-      .getByText(t.workforce.label)
-      .closest('[data-slot="card"]')
-    expect(workforceCard?.querySelector('[data-slot="chart"]')).toBeNull()
-  })
-
-  it("shows no chart in the workforce card when every run's headcount is zero", () => {
-    renderWidgets({
-      stats: { ...ALL_DONE, totalPeople: 10 },
-      headcountTrend: [
-        { date: 1, runLabel: "Pay mapping 2026", women: 0, men: 0 },
-      ],
-    })
-    const workforceCard = screen
-      .getByText(t.workforce.label)
-      .closest('[data-slot="card"]')
-    expect(workforceCard?.querySelector('[data-slot="chart"]')).toBeNull()
-  })
-
-  it("shows the workforce card's all-classified line when nothing is unclassified", () => {
-    renderWidgets({ stats: { ...ALL_DONE, totalPeople: 5 } })
-    expect(screen.getByText(t.workforce.allClassified)).toBeDefined()
-  })
-
-  it("shows no chart when there are no people yet, even if a trend already exists", () => {
-    renderWidgets({
-      stats: { ...ALL_DONE, totalPeople: 0 },
-      headcountTrend: [
-        { date: 1, runLabel: "Pay mapping 2026", women: 2, men: 3 },
-      ],
-    })
-    const workforceCard = screen
-      .getByText(t.workforce.label)
-      .closest('[data-slot="card"]')
-    expect(workforceCard?.querySelector('[data-slot="chart"]')).toBeNull()
-  })
-
-  it("shows the workforce card's import prompt and no chart when there are no people yet", () => {
-    renderWidgets({ stats: { ...ALL_DONE, totalPeople: 0 } })
+  it("prompts for an import when there are no people yet", () => {
+    renderStrip({ stats: { ...ALL_DONE, totalPeople: 0 } })
     expect(screen.getByText(t.workforce.importPrompt)).toBeDefined()
-    const workforceCard = screen
-      .getByText(t.workforce.label)
-      .closest('[data-slot="card"]')
-    expect(workforceCard?.querySelector('[data-slot="chart"]')).toBeNull()
   })
 
-  it("shows the level card's role/level headline, its bars, and a link to /work", () => {
-    const levelOverview: LevelOverview = {
-      totalRoles: 4,
-      levelCount: 2,
-      levelCounts: [
-        { level: 1, count: 1 },
-        { level: 2, count: 3 },
-        { level: 3, count: 0 },
-      ],
-    }
-    renderWidgets({ levelOverview })
-    expect(screen.getByText("4 roles across 2 levels")).toBeDefined()
-    const levelCard = screen
-      .getByText(t.levels.label)
-      .closest('[data-slot="card"]')
-    expect(levelCard?.querySelector('[data-slot="chart"]')).not.toBeNull()
-    const action = screen.getByRole("link", { name: t.levels.view })
-    expect(action.getAttribute("href")).toBe("/work")
+  it("splits roles and levels into their own figures", () => {
+    renderStrip()
+    expect(screen.getByText("4")).toBeDefined() // roles
+    expect(screen.getByText("2")).toBeDefined() // levels
+    expect(screen.getByText("across 2 levels")).toBeDefined()
+    expect(screen.getByText("4 roles placed")).toBeDefined()
   })
 
-  it("shows the level card's empty line, with the chart still at its usual height, when there is no level overview", () => {
-    renderWidgets({ levelOverview: null })
+  it("shows the empty level state, and a zero figure, with no level overview", () => {
+    renderStrip({ levelOverview: null })
     expect(screen.getByText(t.levels.empty)).toBeDefined()
-    const levelCard = screen
-      .getByText(t.levels.label)
-      .closest('[data-slot="card"]')
-    expect(levelCard?.querySelector('[data-slot="chart"]')).not.toBeNull()
+    expect(screen.getByText(t.roles.empty)).toBeDefined()
   })
 
-  it("upgrades the pay-gap card to the percent and quartile bars once a run's gap is measurable", () => {
-    const payMappingHeadline: PayMappingHeadline = {
-      slug: "pay-2026",
-      label: "Pay 2026",
-      status: "completed",
-      gapPct: 4.2,
-      flag: "elevated",
-      quartiles: [
-        { women: 3, men: 1 },
-        { women: 2, men: 2 },
-        { women: 1, men: 3 },
-        { women: 0, men: 4 },
-      ],
-    }
-    renderWidgets({ payMappingHeadline })
+  it("shows the gap percent and its run label once a run's gap is measurable", () => {
+    renderStrip({ payMappingHeadline: HEADLINE })
     expect(screen.getByText("4.2%")).toBeDefined()
-    // The severity badge belongs to the run page, not this card: on the
-    // overview it added a second colour system to a card whose own number
-    // already carries the state.
+    expect(screen.getByText(HEADLINE.label)).toBeDefined()
     expect(
-      screen.queryByText(messages.dashboard.payMapping.gap.flag.elevated)
-    ).toBeNull()
-    const gapCard = screen.getByText(t.gap.label).closest('[data-slot="card"]')
-    expect(gapCard?.querySelector('[data-slot="chart"]')).not.toBeNull()
-    const action = screen.getByRole("link", { name: t.gap.view })
-    expect(action.getAttribute("href")).toBe("/pay-mappings/pay-2026")
+      screen.getByRole("link", { name: t.gap.label }).getAttribute("href")
+    ).toBe("/pay-mappings/pay-2026")
   })
 
-  it("shows the pay-gap card's not-started state and a link to /pay-mappings when there is no headline", () => {
-    renderWidgets({ payMappingHeadline: null })
+  it("shows the insufficient-data value, not not-started, when a run exists but its gap is not measurable", () => {
+    renderStrip({
+      payMappingHeadline: { ...HEADLINE, gapPct: null, flag: "insufficient" },
+    })
+    expect(screen.getByText(t.gap.insufficientValue)).toBeDefined()
+    expect(screen.queryByText(t.gap.notStarted)).toBeNull()
+  })
+
+  it("shows not-started with its prompt when no run exists", () => {
+    renderStrip({ payMappingHeadline: null })
     expect(screen.getByText(t.gap.notStarted)).toBeDefined()
     expect(screen.getByText(t.gap.prompt)).toBeDefined()
-    const action = screen.getByRole("link", { name: t.gap.view })
-    expect(action.getAttribute("href")).toBe("/pay-mappings")
   })
 
-  it("shows the insufficient-data state, not not-started, when a run exists but its gap is not measurable", () => {
-    renderWidgets({
-      payMappingHeadline: {
-        slug: "pay-2026",
-        label: "Pay 2026",
-        status: "completed",
-        gapPct: null,
-        flag: "insufficient",
-        quartiles: [
-          { women: 0, men: 0 },
-          { women: 0, men: 0 },
-          { women: 0, men: 0 },
-          { women: 0, men: 0 },
-        ],
-      },
-    })
-    // The value states "Not enough data" once; the run label gives context.
-    // No flag badge here (it would just repeat the value wording); the badge
-    // stays in the measurable-gap state where the flag color carries meaning.
-    expect(screen.getByText(t.gap.insufficientValue)).toBeDefined()
-    expect(screen.getByText("Pay 2026")).toBeDefined()
-    const gapCard = screen.getByText(t.gap.label).closest('[data-slot="card"]')
-    expect(gapCard?.querySelector('[data-flag="insufficient"]')).toBeNull()
-    expect(gapCard?.querySelector('[data-slot="chart"]')).not.toBeNull()
-    expect(screen.queryByText(t.gap.notStarted)).toBeNull()
-    const action = screen.getByRole("link", { name: t.gap.view })
-    expect(action.getAttribute("href")).toBe("/pay-mappings/pay-2026")
-  })
-
-  it("shows a skeleton headline, an empty viz (no chart, no viz skeleton), and not the empty state, while levelOverview is still loading", () => {
-    renderWidgets({ levelOverview: undefined })
-    const levelCard = screen
-      .getByText(t.levels.label)
-      .closest('[data-slot="card"]')
-    expect(levelCard).not.toBeNull()
-    // Only the headline skeleton remains; the chart area itself is empty
-    // (no shimmer, no chart) until its own data resolves.
-    expect(levelCard?.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
-      1
-    )
-    expect(levelCard?.querySelector('[data-slot="chart"]')).toBeNull()
-    expect(screen.queryByText(t.levels.empty)).toBeNull()
-    const action = screen.getByRole("link", { name: t.levels.view })
-    expect(action.getAttribute("href")).toBe("/work")
-  })
-
-  it("shows a skeleton headline, an empty viz (no chart, no viz skeleton), and not the not-started state, while payMappingHeadline is still loading", () => {
-    renderWidgets({
-      stats: ALL_DONE,
+  // Titles and links are static chrome and render real; only the figures
+  // and their captions wait.
+  it("keeps every tile's title and link real while its figure loads", () => {
+    const { container } = renderStrip({
+      stats: undefined,
+      levelOverview: undefined,
       payMappingHeadline: undefined,
     })
-    const gapCard = screen.getByText(t.gap.label).closest('[data-slot="card"]')
-    expect(gapCard).not.toBeNull()
-    expect(gapCard?.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(1)
-    expect(gapCard?.querySelector('[data-slot="chart"]')).toBeNull()
-    expect(screen.queryByText(t.gap.notStarted)).toBeNull()
-    const action = screen.getByRole("link", { name: t.gap.view })
-    expect(action.getAttribute("href")).toBe("/pay-mappings")
-  })
-
-  it("renders three skeleton cards with real titles, empty (not shimmering) viz areas, and no data values while loading", () => {
-    const { container } = renderWidgets({ stats: undefined })
+    expect(screen.getByText(t.workforce.label)).toBeDefined()
+    expect(screen.getByText(t.gap.label)).toBeDefined()
     expect(
       container.querySelectorAll('[data-slot="skeleton"]').length
     ).toBeGreaterThan(0)
-    // No chart mounts anywhere yet: every viz area is a plain empty div.
-    expect(container.querySelectorAll('[data-slot="chart"]')).toHaveLength(0)
-    expect(screen.getByText(t.workforce.label)).toBeDefined()
-    expect(screen.getByText(t.levels.label)).toBeDefined()
-    expect(screen.getByText(t.gap.label)).toBeDefined()
-    expect(screen.queryByText("10 people today")).toBeNull()
     expect(screen.queryByText("4.2%")).toBeNull()
-    const peopleLink = screen.getByRole("link", { name: t.workforce.view })
-    expect(peopleLink.getAttribute("href")).toBe("/people")
+    expect(
+      screen.getByRole("link", { name: t.workforce.label }).getAttribute("href")
+    ).toBe("/people")
+  })
+})
+
+describe("OverviewCharts", () => {
+  it("renders each chart in its own titled panel with a way out to its surface", () => {
+    renderCharts({ headcountTrend: TWO_RUNS })
+    for (const [title, action, href] of [
+      [t.workforce.trendTitle, t.workforce.action, "/people"],
+      [t.gapTrend.title, t.gapTrend.action, "/pay-mappings"],
+    ] as const) {
+      expect(screen.getByText(title)).toBeDefined()
+      expect(
+        screen.getByRole("link", { name: action }).getAttribute("href")
+      ).toBe(href)
+    }
+  })
+
+  it("plots the workforce trend once two runs exist", () => {
+    renderCharts({
+      stats: { ...ALL_DONE, totalPeople: 10 },
+      headcountTrend: TWO_RUNS,
+    })
+    const panel = screen
+      .getByText(t.workforce.trendTitle)
+      .closest('[data-slot="card"]')
+    expect(panel?.querySelector('[data-slot="chart"]')).not.toBeNull()
+  })
+
+  // One run is a dot, not a trend; the panel holds its reserved height
+  // empty rather than drawing a single point.
+  it.each([
+    ["a single run", [TWO_RUNS[0]] as HeadcountPoint[]],
+    ["a still-loading trend", undefined],
+    ["no run at all", null],
+    [
+      "runs whose headcount is zero",
+      [
+        { date: 1, runLabel: "a", women: 0, men: 0 },
+        { date: 2, runLabel: "b", women: 0, men: 0 },
+      ] as HeadcountPoint[],
+    ],
+  ])("draws no workforce trend for %s", (_case, headcountTrend) => {
+    renderCharts({
+      stats: { ...ALL_DONE, totalPeople: 10 },
+      headcountTrend,
+    })
+    const panel = screen
+      .getByText(t.workforce.trendTitle)
+      .closest('[data-slot="card"]')
+    expect(panel?.querySelector('[data-slot="chart"]')).toBeNull()
+  })
+
+  // An empty frame tells a reader nothing; the panel says why it is blank
+  // and what would fill it.
+  it("says what a trend needs instead of leaving the panel empty", () => {
+    renderCharts({ headcountTrend: null, gapTrend: null })
+    expect(screen.getAllByText(t.trendEmpty)).toHaveLength(2)
+  })
+
+  it("drops the empty line once a trend can be drawn", () => {
+    renderCharts({
+      stats: { ...ALL_DONE, totalPeople: 10 },
+      headcountTrend: TWO_RUNS,
+    })
+    // The gap trend still has its own line: this fixture gives it points.
+    expect(screen.queryAllByText(t.trendEmpty)).toHaveLength(0)
+  })
+
+  it("draws no workforce trend when there are no people yet, even if a trend exists", () => {
+    renderCharts({
+      stats: { ...ALL_DONE, totalPeople: 0 },
+      headcountTrend: TWO_RUNS,
+    })
+    const panel = screen
+      .getByText(t.workforce.trendTitle)
+      .closest('[data-slot="card"]')
+    expect(panel?.querySelector('[data-slot="chart"]')).toBeNull()
   })
 })

@@ -1,172 +1,36 @@
 "use client"
 
-// Decorative viz primitives for the overview's data-widget cards: real
-// shadcn/recharts bar and area charts (ChartContainer + ChartTooltip +
-// ChartTooltipContent) so hovering a bar or the area gets the standard
-// shadcn chart tooltip. Every chart stays aria-hidden since the narrative
-// sentence next to it already carries the meaning for assistive tech.
-// recharts' default tooltip label only falls back to the raw axis value
-// when that value is a string (a numeric dataKey resolves through a
-// config-label lookup instead), so each bar chart's category axis points at
-// a pre-formatted `label` field rather than the raw number (mirrors
-// QuartileStat/AgeStat in pay-mapping-overview.tsx); HeadcountArea, whose
-// labels can repeat, keys on a synthetic axis value and prints its label
-// through a labelFormatter instead.
+// The overview's two trend lines: how the workforce and the pay gap have
+// moved across pay mappings. Both are real shadcn/recharts charts
+// (ChartContainer + ChartTooltip) with hand-built tooltip content, so a hover
+// reads as one composed statement rather than a list of series rows.
+//
+// Every chart here is aria-hidden: the stat tiles above them carry the same
+// figures in words, so the charts are decorative and the panel's own title
+// names them.
+//
+// Two mappings can share a name AND a reference date, which would give the
+// category axis duplicate values and kill recharts' active-tooltip
+// resolution, so both charts key the axis on a synthetic per-point value and
+// take the heading from the row.
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@workspace/ui/components/chart"
 import { cn } from "@workspace/ui/lib/utils"
-import { useTranslations } from "next-intl"
-import { Bar, BarChart, Line, LineChart, XAxis, YAxis } from "recharts"
-import {
-  type GenderSeries,
-  GENDER_MARK_BORDER,
-  GenderHatch,
-  GenderMenIcon,
-  GenderTooltipContent,
-  useGenderMarks,
-} from "@/components/gender-mark"
-import {
-  BAR_RADIUS,
-  CHART_TOOLTIP_TEXT,
-  WIDGET_CHART_HEIGHT,
-} from "@/lib/chart-style"
-import { headcountTrendDomain } from "@/lib/headcount-trend"
+import { useFormatter } from "next-intl"
+import { type ReactElement, useId } from "react"
+import { Area, AreaChart, XAxis, YAxis } from "recharts"
+import type { GenderSeries } from "@/components/gender-mark"
+import { CHART_TOOLTIP_TEXT, WIDGET_CHART_HEIGHT } from "@/lib/chart-style"
+import { signedPercentText } from "@/lib/percent"
+import { trendDomain } from "@/lib/trend-domain"
 
-// Every widget chart sits in the bottom strip of a card that CLIPS its
-// overflow (the fill bleeds to the rounded bottom edge), and recharts renders
-// the tooltip inside the chart's own wrapper. Left to place itself the tooltip
-// opens downward from the cursor and the card cuts it in half, so all three
-// charts pin it above the strip, where the card still has room.
+// recharts renders the tooltip inside the chart's own wrapper, and left to
+// place itself it opens downward from the cursor, where the panel's edge cuts
+// it. Both charts pin it above the plot instead.
 const TOOLTIP_ABOVE = { y: -40 }
-
-// A minimal vertical mini bar chart (Midday Profit-card style): one bar per
-// configured level, left-to-right ascending (Level 1 first), height scaled to
-// the largest count by recharts' own auto domain.
-export function LevelBars({
-  counts,
-}: {
-  counts: { level: number; count: number }[]
-}) {
-  const t = useTranslations("dashboard.overview.widgets")
-  const config = {
-    count: { label: t("levels.seriesLabel"), color: "var(--brand)" },
-  } satisfies ChartConfig
-  const data = counts.map((c) => ({
-    ...c,
-    label: t("levels.barLabel", { level: c.level }),
-  }))
-
-  return (
-    <ChartContainer
-      aria-hidden="true"
-      config={config}
-      className={cn("aspect-auto w-full", WIDGET_CHART_HEIGHT)}
-    >
-      <BarChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-        <XAxis dataKey="label" hide />
-        <ChartTooltip
-          cursor={false}
-          position={TOOLTIP_ABOVE}
-          content={<ChartTooltipContent className={CHART_TOOLTIP_TEXT} />}
-        />
-        {/* minPointSize forces a visible sliver even for a level that holds
-            zero roles, so every configured level stays present in the chart
-            (buildLevelOverview zero-fills them); the tooltip still reads the
-            true 0 count. */}
-        {/* Top corners only: this strip bleeds to the card's bottom edge, so a
-            bottom radius would cut a notch out against it. */}
-        <Bar
-          dataKey="count"
-          fill="var(--color-count)"
-          radius={[BAR_RADIUS, BAR_RADIUS, 0, 0]}
-          minPointSize={2}
-        />
-      </BarChart>
-    </ChartContainer>
-  )
-}
-
-// One stacked column per pay quartile, lower quartile first: women's share
-// below men's share of that quartile's headcount. The moving split boundary is
-// the reading (the glass-ceiling view); the columns themselves come out the
-// same height because quartiles hold near-equal headcounts by construction.
-//
-// Do NOT normalize this with stackOffset="expand" to force exactly equal
-// columns: recharts then resolves an active tooltip index only for the FIRST
-// category, so every column but the leftmost goes dead to hover (measured in a
-// browser). It buys nothing here anyway, for the reason above.
-//
-// An all-zero input (no measurable gap yet) still renders the chart at the same
-// height with zero-height columns; recharts handles that natively.
-export function QuartileSplitBars({
-  quartiles,
-}: {
-  quartiles: { women: number; men: number }[]
-}) {
-  const t = useTranslations("dashboard.overview.widgets")
-  const tGap = useTranslations("dashboard.payMapping.gap.columns")
-  const marks = useGenderMarks()
-  const config = {
-    women: { label: tGap("women"), color: "var(--gender-woman)" },
-    // The icon is what makes the tooltip's key hatched. Without it both series
-    // draw the same solid dot, because both colors are the same ink now.
-    men: {
-      label: tGap("men"),
-      color: "var(--gender-man)",
-      icon: GenderMenIcon,
-    },
-  } satisfies ChartConfig
-  const data = quartiles.map((q, index) => ({
-    q: index + 1,
-    ...q,
-    label: t("gap.quartileLabel", { index: index + 1 }),
-  }))
-
-  return (
-    <ChartContainer
-      aria-hidden="true"
-      config={config}
-      className={cn("aspect-auto w-full", WIDGET_CHART_HEIGHT)}
-    >
-      <BarChart
-        data={data}
-        barCategoryGap="18%"
-        margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-      >
-        <defs>
-          <GenderHatch id={marks.hatchId} />
-        </defs>
-        <XAxis dataKey="label" hide />
-        <ChartTooltip
-          cursor={false}
-          position={TOOLTIP_ABOVE}
-          content={
-            <GenderTooltipContent
-              labels={{ women: tGap("women"), men: tGap("men") }}
-            />
-          }
-        />
-        <Bar
-          dataKey="women"
-          stackId="a"
-          fill={marks.women}
-          {...GENDER_MARK_BORDER}
-        />
-        <Bar
-          dataKey="men"
-          stackId="a"
-          fill={marks.men}
-          {...GENDER_MARK_BORDER}
-          radius={[BAR_RADIUS, BAR_RADIUS, 0, 0]}
-        />
-      </BarChart>
-    </ChartContainer>
-  )
-}
 
 function TrendTooltipContent({
   active,
@@ -179,6 +43,7 @@ function TrendTooltipContent({
   labels: Record<GenderSeries, string>
   totalLabel: string
 }) {
+  const format = useFormatter()
   if (active !== true) return null
   const row = payload?.[0]?.payload as
     | { label: string; caption: string; women: number; men: number }
@@ -216,32 +81,111 @@ function TrendTooltipContent({
           />
           {totalLabel}
         </span>
-        <span className="font-semibold text-base tabular-nums">{total}</span>
+        <span className="font-semibold text-base tabular-nums">
+          {format.number(total)}
+        </span>
       </div>
       {/* Indented past the swatch so the split hangs off the total it breaks
           down rather than starting a new column of its own. */}
       <div className="pl-[calc(0.625rem+0.5rem)] text-muted-foreground text-xs tabular-nums">
-        {labels.women} {row.women} · {labels.men} {row.men}
+        {labels.women} {format.number(row.women)} · {labels.men}{" "}
+        {format.number(row.men)}
       </div>
     </div>
   )
 }
 
-// The workforce over pay-mapping runs, as ONE line of total headcount bleeding
-// to the card's bottom edge. The hover breaks that total into women and men.
+// The one plot both trends draw: a gradient area under a stroked curve,
+// bleeding to its card's edges, with both axes hidden and the reading carried
+// by the hover.
 //
-// One line, not two, and not the stacked areas this started as. An area encodes
-// magnitude so it must sit on zero, which draws a 118 -> 121 change as about a
-// pixel. A line per gender does not fix it either: the two series sit ~20 apart
-// while each moves by 1-2, and no single axis can both fit that gap and magnify
-// that movement. A single total line is sized to its own movement, so the
-// change is finally legible, and the split moves to the hover where it costs
-// nothing. That also leaves the mark free of the gender encoding, which is why
-// this chart no longer needs the hatch.
+// Shared rather than written twice, because the two sit side by side: a
+// difference in fill, margin or dot size between them would read as a
+// difference in what is being measured, not in how it was coded.
 //
-// No axis chrome (both axes hidden); the caller passes each point's heading
-// (`label`, the pay mapping's name) and sub-heading (`caption`, its formatted
-// reference date) so this stays i18n-free, plus the series labels for the hover.
+// NOTE, and it is a real trade: an area fill normally has to sit on zero,
+// because a filled shape encodes magnitude and a floating baseline overstates
+// the change. Neither of these does. A realistic annual move (118 -> 121
+// people, 4.3 -> 4.1 percent) against a zero baseline is about one pixel of
+// this strip, i.e. a flat line. So the fill is shading under a curve rather
+// than a quantity to read off: the figure lives in words on the tile above
+// and exactly in the hover, and the gradient fading out downward is what
+// keeps the bottom edge from reading as zero.
+function TrendArea({
+  rows,
+  dataKey,
+  domainValues,
+  config,
+  tooltip,
+  // A null reading is a BREAK in the curve, not a zero. Only the gap trend
+  // has them (a mapping with no measurable gap).
+  connectNulls = true,
+}: {
+  rows: { key: string }[]
+  dataKey: string
+  domainValues: number[]
+  config: ChartConfig
+  tooltip: ReactElement
+  connectNulls?: boolean
+}) {
+  // Unique per instance: two charts sharing a gradient id would have the
+  // second one paint with the first one's stops.
+  const gradientId = useId()
+
+  return (
+    <ChartContainer
+      aria-hidden="true"
+      config={config}
+      className={cn("aspect-auto w-full", WIDGET_CHART_HEIGHT)}
+    >
+      {/* No side or bottom margin: the fill runs to the card's own edges,
+          which is what makes it read as the card's surface rather than a
+          picture sitting on it. The top margin is the stroke's headroom. */}
+      <AreaChart data={rows} margin={{ top: 8, left: 0, right: 0, bottom: 0 }}>
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--brand)" stopOpacity={0.3} />
+            <stop offset="100%" stopColor="var(--brand)" stopOpacity={0.02} />
+          </linearGradient>
+        </defs>
+        <XAxis dataKey="key" hide />
+        <YAxis hide domain={trendDomain(domainValues)} />
+        <ChartTooltip
+          cursor={false}
+          position={TOOLTIP_ABOVE}
+          content={tooltip}
+        />
+        {/* The stroke is what makes the series read as a curve; the fill is
+            shading under it. Dots on every point: with as few as two mappings
+            the curve alone gives no sense of where the readings are. */}
+        <Area
+          dataKey={dataKey}
+          type="monotone"
+          connectNulls={connectNulls}
+          stroke="var(--brand)"
+          strokeWidth={2}
+          fill={`url(#${gradientId})`}
+          dot={{ r: 2.5, strokeWidth: 0, fill: "var(--brand)" }}
+          activeDot={{ r: 4 }}
+        />
+      </AreaChart>
+    </ChartContainer>
+  )
+}
+
+// The workforce over pay-mapping runs, as ONE total headcount. The hover
+// breaks that total into women and men.
+//
+// One series, not two. A line per gender does not work here: the two sit ~20
+// apart while each moves by 1-2, and no single axis can both fit that gap and
+// magnify that movement. A single total, sized to its own movement, makes the
+// change legible, and the split moves to the hover where it costs nothing.
+// That also leaves the mark free of the gender encoding, which is why this
+// chart needs no hatch.
+//
+// The caller passes each point's heading (`label`, the pay mapping's name) and
+// sub-heading (`caption`, its formatted reference date) so this stays
+// i18n-free, plus the series labels for the hover.
 export function HeadcountTrend({
   data,
   config,
@@ -266,32 +210,107 @@ export function HeadcountTrend({
   }))
 
   return (
-    <ChartContainer
-      aria-hidden="true"
+    <TrendArea
+      rows={rows}
+      dataKey="total"
+      domainValues={rows.map((r) => r.total)}
       config={config}
-      className={cn("aspect-auto w-full", WIDGET_CHART_HEIGHT)}
+      tooltip={<TrendTooltipContent labels={labels} totalLabel={totalLabel} />}
+    />
+  )
+}
+
+// The organization's unadjusted gap across its pay mappings, on the same
+// TrendArea its neighbour uses: they sit side by side, and a different-looking
+// plot would read as a different KIND of measurement.
+//
+// A gap can be negative (women ahead), which trendDomain handles by never
+// clamping the low end above the smallest value.
+export function PayGapTrend({
+  data,
+  config,
+  seriesLabel,
+  unmeasuredLabel,
+}: {
+  data: { label: string; caption: string; gapPct: number | null }[]
+  config: ChartConfig
+  seriesLabel: string
+  // What the hover says for a mapping with no measurable gap.
+  unmeasuredLabel: string
+}) {
+  // Same reason as HeadcountTrend: two mappings can share a name and a
+  // reference date, and a duplicated category value kills the tooltip.
+  const rows = data.map((point, index) => ({ ...point, key: String(index) }))
+  const measured = rows
+    .map((r) => r.gapPct)
+    .filter((value): value is number => value !== null)
+
+  return (
+    <TrendArea
+      rows={rows}
+      dataKey="gapPct"
+      domainValues={measured}
+      config={config}
+      // A mapping with no measurable gap breaks the curve rather than
+      // dropping it to zero, which would read as "no gap".
+      connectNulls={false}
+      tooltip={
+        <GapTrendTooltipContent
+          seriesLabel={seriesLabel}
+          unmeasuredLabel={unmeasuredLabel}
+        />
+      }
+    />
+  )
+}
+
+function GapTrendTooltipContent({
+  active,
+  payload,
+  seriesLabel,
+  unmeasuredLabel,
+}: {
+  active?: boolean
+  payload?: readonly { payload?: unknown }[]
+  seriesLabel: string
+  unmeasuredLabel: string
+}) {
+  const format = useFormatter()
+  if (active !== true) return null
+  const row = payload?.[0]?.payload as
+    | { label: string; caption: string; gapPct: number | null }
+    | undefined
+  if (row === undefined) return null
+
+  return (
+    <div
+      className={cn(
+        "grid min-w-36 max-w-48 gap-1 rounded-lg border border-border/50 bg-background px-2.5 py-2 shadow-xl",
+        CHART_TOOLTIP_TEXT
+      )}
     >
-      <LineChart data={rows} margin={{ top: 8, left: 0, right: 0, bottom: 8 }}>
-        <XAxis dataKey="key" hide />
-        <YAxis hide domain={headcountTrendDomain(rows.map((r) => r.total))} />
-        <ChartTooltip
-          cursor={false}
-          position={TOOLTIP_ABOVE}
-          content={
-            <TrendTooltipContent labels={labels} totalLabel={totalLabel} />
-          }
-        />
-        {/* Dots on every point: with as few as two runs the line alone gives no
-            sense of where the readings actually are. */}
-        <Line
-          dataKey="total"
-          type="monotone"
-          stroke="var(--brand)"
-          strokeWidth={2}
-          dot={{ r: 2.5, strokeWidth: 0, fill: "var(--brand)" }}
-          activeDot={{ r: 4 }}
-        />
-      </LineChart>
-    </ChartContainer>
+      <div className="grid gap-0.5">
+        <span className="break-words font-medium leading-snug">
+          {row.label}
+        </span>
+        <span className="text-muted-foreground text-xs">{row.caption}</span>
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        <span className="flex items-center gap-2 text-muted-foreground">
+          <span
+            aria-hidden
+            className="size-2.5 shrink-0 rounded-[2px] bg-brand"
+          />
+          {seriesLabel}
+        </span>
+        {/* Locale-formatted, and SIGNED: a negative gap means women are
+            ahead, and an unsigned figure draws two opposite years the same. */}
+        <span className="font-semibold text-base tabular-nums">
+          {row.gapPct === null
+            ? unmeasuredLabel
+            : signedPercentText(row.gapPct, format)}
+        </span>
+      </div>
+    </div>
   )
 }

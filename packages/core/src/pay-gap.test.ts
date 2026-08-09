@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
-  AGE_BUCKETS,
   ageAt,
-  ageGenderTallies,
   classifyPayGap,
   type ComparableGroup,
   computeGenderGap,
@@ -52,41 +50,6 @@ describe("quartileGenderTallies", () => {
       { women: 0, men: 0 },
       { women: 0, men: 0 },
     ])
-  })
-})
-
-describe("ageGenderTallies", () => {
-  // 2023-11-14 (a fixed reference instant, never the clock).
-  const AS_OF = 1_700_000_000_000
-
-  it("buckets ages at the reference instant, aligned with AGE_BUCKETS", () => {
-    const result = ageGenderTallies(
-      [
-        { birthDate: "1990-01-01", woman: true }, // 33 -> 30-39
-        { birthDate: "1990-12-31", woman: false }, // 32 (birthday pending) -> 30-39
-        { birthDate: "1955-06-01", woman: false }, // 68 -> 60-69
-        { birthDate: "1950-01-01", woman: true }, // 73 -> 70+
-      ],
-      AS_OF
-    )
-    expect(AGE_BUCKETS[2]).toBe("30-39")
-    expect(result.buckets[2]).toEqual({ women: 1, men: 1 })
-    expect(result.buckets[5]).toEqual({ women: 0, men: 1 })
-    expect(result.buckets[6]).toEqual({ women: 1, men: 0 })
-    expect(result.unknown).toBe(0)
-  })
-
-  it("counts missing or unparseable birth dates as unknown", () => {
-    const result = ageGenderTallies(
-      [
-        { birthDate: undefined, woman: true },
-        { birthDate: "not-a-date", woman: false },
-        { birthDate: "1990-01-01", woman: true },
-      ],
-      AS_OF
-    )
-    expect(result.unknown).toBe(2)
-    expect(result.buckets[2]).toEqual({ women: 1, men: 0 })
   })
 })
 
