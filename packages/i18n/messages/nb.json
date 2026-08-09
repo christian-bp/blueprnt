@@ -912,7 +912,8 @@
         "gapTrend": {
           "title": "Lønnsgap over tid",
           "action": "Lønnskartlegging",
-          "unmeasured": "Kan ikke måles"
+          "unmeasured": "Kan ikke måles",
+          "unmeasuredEmpty": "Bare én av lønnskartleggingene dine har et målbart lønnsgap, så det er ikke noe å sammenligne ennå."
         },
         "trendEmpty": "En trend vises når du har to lønnskartlegginger å sammenligne."
       }

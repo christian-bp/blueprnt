@@ -912,7 +912,8 @@
         "gapTrend": {
           "title": "Lönegap över tid",
           "action": "Lönekartläggning",
-          "unmeasured": "Går inte att mäta"
+          "unmeasured": "Går inte att mäta",
+          "unmeasuredEmpty": "Bara en av dina lönekartläggningar har ett mätbart lönegap, så det finns inget att jämföra ännu."
         },
         "trendEmpty": "En trend visas när du har två lönekartläggningar att jämföra."
       }

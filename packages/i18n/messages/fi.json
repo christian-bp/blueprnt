@@ -912,7 +912,8 @@
         "gapTrend": {
           "title": "Palkkaero ajan myötä",
           "action": "Palkkakartoitus",
-          "unmeasured": "Ei mitattavissa"
+          "unmeasured": "Ei mitattavissa",
+          "unmeasuredEmpty": "Vain yhdessä palkkakartoituksessasi on mitattava palkkaero, joten vertailtavaa ei vielä ole."
         },
         "trendEmpty": "Trendi näkyy, kun vertailtavana on kaksi palkkakartoitusta."
       }

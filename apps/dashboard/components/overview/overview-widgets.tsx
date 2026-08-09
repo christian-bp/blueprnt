@@ -249,6 +249,19 @@ export function OverviewCharts({
         ? "ready"
         : "empty"
 
+  // Why the gap panel is empty, which is not always "you need two mappings":
+  // an org can have four and still have fewer than two MEASURABLE gaps (a
+  // mapping where one gender is absent among the priced rows produces no
+  // reading). Telling that org to run another mapping is both false about
+  // their own data and a next step that would not fix anything.
+  const gapEmptyText =
+    gapTrend !== null &&
+    gapTrend !== undefined &&
+    hasTrendShape(gapTrend) &&
+    !hasTrendShape(gapTrend.filter((point) => point.gapPct !== null))
+      ? t("gapTrend.unmeasuredEmpty")
+      : t("trendEmpty")
+
   const gapConfig = {
     gapPct: { label: t("gap.label"), color: "var(--brand)" },
   } satisfies ChartConfig
@@ -307,7 +320,7 @@ export function OverviewCharts({
             />
           </div>
         ) : (
-          <TrendBody state={gapState} empty={t("trendEmpty")} />
+          <TrendBody state={gapState} empty={gapEmptyText} />
         )}
       </PanelCard>
     </div>

@@ -26,11 +26,6 @@ const ALL_DONE: OverviewStats = {
 const LEVELS: LevelOverview = {
   totalRoles: 4,
   levelCount: 2,
-  levelCounts: [
-    { level: 1, count: 1 },
-    { level: 2, count: 3 },
-    { level: 3, count: 0 },
-  ],
 }
 
 const HEADLINE: PayMappingHeadline = {
