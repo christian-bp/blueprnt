@@ -41,12 +41,25 @@ import {
 // work of equal or lower value that pays more, which is what this ordering
 // states.
 export function ComparatorTable({
+  baseline,
   comparisons,
   currency,
   selectedKey,
   onSelect,
   documentation,
 }: {
+  // The women-dominated group every row below is measured against. It leads
+  // the table as its own row: the comparators' whole meaning is "more than
+  // THIS", and a difference column with the thing being differed from
+  // nowhere on screen asks the reader to hold it in their head.
+  baseline: {
+    roleTitle: string | null
+    seniority: string | null
+    level: number
+    headcount: number
+    womenSharePct: number
+    meanComp: number
+  }
   comparisons: WomenDominatedComparisonWire[]
   currency: string
   // The row the reader is looking at. Selecting one lights up that job's
@@ -90,6 +103,12 @@ export function ComparatorTable({
             <TableHead className="w-16 text-right">{t("count")}</TableHead>
             <TableHead className="w-28 text-right">{t("womenShare")}</TableHead>
             <TableHead className="w-32 text-right">{t("mean")}</TableHead>
+            {/* Short, and never carrying the baseline's name. A job title is
+                free text a customer chooses, so a header holding one cannot
+                be given a width: in a table-fixed layout it overprinted the
+                two columns beside it. The washed first row, its position and
+                its empty difference cells say what the figures are measured
+                against. */}
             <TableHead className="w-24 text-right">{t("diffPct")}</TableHead>
             <TableHead className="w-28 text-right">{t("diffSek")}</TableHead>
             {documentation !== undefined && (
@@ -106,6 +125,37 @@ export function ComparatorTable({
           </TableRow>
         </TableHeader>
         <TableBody>
+          {/* The baseline, first and washed in brand, so it reads as the
+              thing the rows under it are compared with rather than as
+              another comparator. The difference columns name it too, so the
+              wash is a mark rather than the only signal. Its two difference
+              cells stay empty on purpose: nothing is a difference from
+              itself. */}
+          <TableRow className="bg-brand/8 hover:bg-brand/8">
+            <TableCell className="font-medium tabular-nums">
+              {baseline.level}
+            </TableCell>
+            <TableCell className="truncate font-medium">
+              {groupLabel(baseline)}
+            </TableCell>
+            <TableCell className="text-right font-medium tabular-nums">
+              {baseline.headcount}
+            </TableCell>
+            <TableCell className="text-right font-medium tabular-nums">
+              {percentText(baseline.womenSharePct, format)}
+            </TableCell>
+            <TableCell className="text-right font-medium tabular-nums">
+              {money(baseline.meanComp, currency)}
+            </TableCell>
+            <TableCell />
+            <TableCell />
+            {documentation !== undefined && (
+              <>
+                <TableCell />
+                <TableCell />
+              </>
+            )}
+          </TableRow>
           {comparisons.map((comparison) => {
             const target: ActionTargetWire | null =
               documentation === undefined

@@ -40,12 +40,27 @@ function comparison(
   }
 }
 
+// The women-dominated group every comparator is measured against.
+const BASELINE = {
+  roleTitle: "Nurse",
+  seniority: null,
+  level: 3,
+  headcount: 10,
+  womenSharePct: 90,
+  meanComp: 40000,
+}
+
 function renderTable(
   props: Partial<Parameters<typeof ComparatorTable>[0]> = {}
 ) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <ComparatorTable comparisons={[comparison()]} currency="SEK" {...props} />
+      <ComparatorTable
+        baseline={BASELINE}
+        comparisons={[comparison()]}
+        currency="SEK"
+        {...props}
+      />
     </NextIntlClientProvider>
   )
 }
@@ -56,14 +71,22 @@ function renderTable(
 // table-fixed makes this invisible in a screenshot until you read the
 // heading above the control, so it is pinned here rather than by eye.
 describe("ComparatorTable columns", () => {
-  it("gives every heading a cell when there is no documentation", () => {
-    const { container } = renderTable()
-    expect(container.querySelectorAll("thead th")).toHaveLength(
-      container.querySelectorAll("tbody td").length
+  // Per ROW, not across the body: the table leads with the baseline row and
+  // then lists the comparators, so a body-wide count would pass while one
+  // row was short.
+  function cellsPerRow(container: HTMLElement): number[] {
+    return [...container.querySelectorAll("tbody tr")].map(
+      (row) => row.querySelectorAll("td").length
     )
+  }
+
+  it("gives every heading a cell in every row when there is no documentation", () => {
+    const { container } = renderTable()
+    const headings = container.querySelectorAll("thead th").length
+    expect(cellsPerRow(container)).toEqual([headings, headings])
   })
 
-  it("gives every heading a cell when documentation is shown", () => {
+  it("gives every heading a cell in every row when documentation is shown", () => {
     const { container } = renderTable({
       documentation: {
         runId: "run1" as never,
@@ -73,9 +96,8 @@ describe("ComparatorTable columns", () => {
         locked: false,
       },
     })
-    expect(container.querySelectorAll("thead th")).toHaveLength(
-      container.querySelectorAll("tbody td").length
-    )
+    const headings = container.querySelectorAll("thead th").length
+    expect(cellsPerRow(container)).toEqual([headings, headings])
   })
 
   it("puts the row menu in its own column, not under a value heading", () => {
@@ -88,7 +110,10 @@ describe("ComparatorTable columns", () => {
         locked: false,
       },
     })
-    const cells = [...container.querySelectorAll("tbody td")]
+    // The comparator row, not the baseline: the baseline carries no menu.
+    const rows = [...container.querySelectorAll("tbody tr")]
+    const comparatorRow = rows[rows.length - 1] as HTMLElement
+    const cells = [...comparatorRow.querySelectorAll("td")]
     const menuIndex = cells.findIndex(
       (cell) => within(cell as HTMLElement).queryByRole("button") !== null
     )

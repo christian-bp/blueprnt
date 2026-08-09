@@ -406,17 +406,31 @@ describe("ReviewGroupStep", () => {
       renderWdStep(WD_GROUP_ONE)
       // A row per comparator, not a sentence per comparator: at 16 of them
       // the same clause repeated sixteen times is unreadable, and the
-      // figures never line up to be compared.
+      // figures never line up to be compared. Three rows here: the header,
+      // the group itself as the baseline, and the one comparator.
       const table = screen.getByRole("table")
-      expect(within(table).getAllByRole("row")).toHaveLength(2)
+      expect(within(table).getAllByRole("row")).toHaveLength(3)
       expect(within(table).getByText("Technician · Mid")).toBeDefined()
       expect(within(table).getByText(`+${sek(4_000)}`)).toBeDefined()
+    })
+
+    // The group being compared against leads the table, washed in brand and
+    // with both difference cells empty, so "more than what" is on screen
+    // rather than in the reader's head.
+    it("leads with the group itself, with no difference of its own", () => {
+      renderWdStep(WD_GROUP_ONE)
+      const table = screen.getByRole("table")
+      const first = within(table).getAllByRole("row")[1]
+      expect(first?.textContent).toContain("Nurse")
+      // Nothing is a difference from itself.
+      expect(first?.textContent).not.toContain("+")
     })
 
     it("tables every comparator, in the order the engine produced", () => {
       renderWdStep(WD_GROUP_TWO)
       const table = screen.getByRole("table")
-      const rows = within(table).getAllByRole("row").slice(1)
+      // Past the header AND the baseline row.
+      const rows = within(table).getAllByRole("row").slice(2)
       expect(rows).toHaveLength(2)
       // The order IS the finding, so it must survive untouched: the engine
       // puts the largest difference first within a level.

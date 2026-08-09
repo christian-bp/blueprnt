@@ -402,6 +402,7 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
           ) : (
             <>
               <ComparatorTable
+                baseline={props.group}
                 comparisons={props.group.comparisons}
                 currency={currency}
                 selectedKey={selectedComparison}
