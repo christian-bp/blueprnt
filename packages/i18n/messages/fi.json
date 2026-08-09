@@ -1304,7 +1304,8 @@
         "stepsSheet": "Kaikki vaiheet",
         "stepPosition": "Vaihe {position}/{total} · {chapter}",
         "chapterNav": "Analyysin luvut",
-        "progressBarLabel": "Koko palkkakartoituksen edistyminen"
+        "progressBarLabel": "Koko palkkakartoituksen edistyminen",
+        "chapterTab": "{position}. {chapter}"
       },
       "overview": {
         "headlineGapLabel": "Palkkaero",

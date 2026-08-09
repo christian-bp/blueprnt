@@ -1304,7 +1304,8 @@
         "stepsSheet": "Alle trin",
         "stepPosition": "Trin {position} af {total} · {chapter}",
         "chapterNav": "Analysens kapitler",
-        "progressBarLabel": "Hele lønkortlægningens fremdrift"
+        "progressBarLabel": "Hele lønkortlægningens fremdrift",
+        "chapterTab": "{position}. {chapter}"
       },
       "overview": {
         "headlineGapLabel": "Løngab",

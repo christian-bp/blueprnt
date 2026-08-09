@@ -1304,7 +1304,8 @@
         "stepsSheet": "Alla steg",
         "stepPosition": "Steg {position} av {total} · {chapter}",
         "chapterNav": "Analysens kapitel",
-        "progressBarLabel": "Hela lönekartläggningens framsteg"
+        "progressBarLabel": "Hela lönekartläggningens framsteg",
+        "chapterTab": "{position}. {chapter}"
       },
       "overview": {
         "headlineGapLabel": "Lönegap",

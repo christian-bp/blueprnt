@@ -1304,7 +1304,8 @@
         "stepsSheet": "All steps",
         "stepPosition": "Step {position} of {total} · {chapter}",
         "chapterNav": "Analysis chapters",
-        "progressBarLabel": "Overall pay mapping progress"
+        "progressBarLabel": "Overall pay mapping progress",
+        "chapterTab": "{position}. {chapter}"
       },
       "overview": {
         "headlineGapLabel": "Pay gap",

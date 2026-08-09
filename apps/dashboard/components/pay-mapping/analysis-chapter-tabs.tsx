@@ -36,7 +36,7 @@ export function AnalysisChapterTabs() {
   const { queue } = usePayMappingRun()
   const active = currentChapter(pathname)
 
-  const tabs = ANALYSIS_CHAPTERS.map((chapter) => {
+  const tabs = ANALYSIS_CHAPTERS.map((chapter, index) => {
     // The queue is null until the run's queries resolve; the labels are
     // static i18n text, so the row renders real and only the counts wait.
     const progress =
@@ -53,7 +53,16 @@ export function AnalysisChapterTabs() {
       // statute's own terms (lika/likvärdigt arbete) are both shorter and
       // more precise. The descriptive titles stay on the chapter page,
       // where there is room for them to explain.
-      label: t(`chaptersShort.${chapter}`),
+      //
+      // Numbered, because the chapters are a sequence: the number says
+      // where in the analysis a tab sits and gives the reader the same
+      // handle the chapter's own bar uses ("Chapter 2 of 4"). The format is
+      // a message rather than string concatenation, so a locale can punctuate
+      // its own way.
+      label: tAnalysis("chapterTab", {
+        position: index + 1,
+        chapter: t(`chaptersShort.${chapter}`),
+      }),
       href: chapterHref(pathname, chapter),
 
       current: active === chapter,
