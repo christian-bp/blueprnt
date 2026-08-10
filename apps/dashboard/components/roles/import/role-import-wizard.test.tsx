@@ -50,6 +50,7 @@ vi.mock("@number-flow/react", () => ({
 }))
 
 import { RoleImportWizard } from "@/components/roles/import/role-import-wizard"
+import { openMenu } from "@/test/menu"
 
 const t = messages.dashboard.roles.import
 const tTable = messages.dashboard.familyTable
@@ -77,17 +78,15 @@ const familyActions = (name: string) =>
 /**
  * The family's one trailing row-actions menu, opened, and its items.
  *
- * Awaits the popup rather than reading it synchronously. The menu mounts its
- * content asynchronously, and the review step animates in, so a synchronous
- * read raced the mount and failed roughly one run in six. It also returns the
- * items so a caller asserting an item is ABSENT has to prove the menu opened
- * at all: `queryByRole(...)).toBeNull()` on its own passes just as happily
- * when nothing ever mounted, which is the state this race produced.
+ * The gesture itself is now retry-safe (test/menu.ts), which is what used to
+ * fail here roughly one run in six: the menu mounts its content
+ * asynchronously and the review step animates in. This still awaits the items
+ * and returns them, because a caller asserting an item is ABSENT has to prove
+ * the menu opened at all: `queryByRole(...)).toBeNull()` on its own passes
+ * just as happily when nothing ever mounted.
  */
 async function openFamilyMenu(name: string) {
-  const trigger = screen.getByRole("button", { name: familyActions(name) })
-  fireEvent.pointerDown(trigger)
-  fireEvent.click(trigger)
+  await openMenu(screen.getByRole("button", { name: familyActions(name) }))
   return await screen.findAllByRole("menuitem")
 }
 

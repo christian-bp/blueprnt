@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import { cleanup, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -15,6 +15,7 @@ vi.mock(
 )
 
 import { RoleEvaluationCard } from "@/components/roles/role-evaluation-card"
+import { openMenu } from "@/test/menu"
 
 const detail = messages.dashboard.roles.detail
 const roles = messages.dashboard.roles
@@ -116,12 +117,8 @@ function renderCard(
   )
 }
 
-function openMenu() {
-  const trigger = screen.getByRole("button", {
-    name: detail.manageCta,
-  })
-  fireEvent.pointerDown(trigger)
-  fireEvent.click(trigger)
+function openManageMenu() {
+  return openMenu(screen.getByRole("button", { name: detail.manageCta }))
 }
 
 describe("RoleEvaluationCard", () => {
@@ -156,19 +153,19 @@ describe("RoleEvaluationCard", () => {
     expect(screen.getByText("Complexity")).toBeDefined()
   })
 
-  it("puts Adjust ratings in the actions menu, not as a body button", () => {
+  it("puts Adjust ratings in the actions menu, not as a body button", async () => {
     setResult(completeResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     // No standalone Adjust link in the card body.
     expect(
       screen.queryByRole("link", { name: detail.adjustRateCta })
     ).toBeNull()
-    openMenu()
+    await openManageMenu()
     const adjust = screen.getByRole("menuitem", { name: detail.adjustRateCta })
     expect(adjust.getAttribute("href")).toBe("/roles/r1/rate")
   })
 
-  it("offers Designate in the menu for an admin with no anchor, and shows no status row", () => {
+  it("offers Designate in the menu for an admin with no anchor, and shows no status row", async () => {
     setResult(completeResult)
     renderCard({
       ratedCount: 3,
@@ -177,13 +174,13 @@ describe("RoleEvaluationCard", () => {
       anchorRole: null,
     })
     expect(screen.queryByText(anchor.heading)).toBeNull()
-    openMenu()
+    await openManageMenu()
     expect(
       screen.getByRole("menuitem", { name: anchor.designateCta })
     ).toBeDefined()
   })
 
-  it("leads with the computed level and flags the anchor deviation", () => {
+  it("leads with the computed level and flags the anchor deviation", async () => {
     setResult(completeResult)
     renderCard({
       ratedCount: 3,
@@ -209,13 +206,13 @@ describe("RoleEvaluationCard", () => {
     expect(
       screen.getByText("Reference role for the platform track")
     ).toBeDefined()
-    openMenu()
+    await openManageMenu()
     expect(
       screen.getByRole("menuitem", { name: anchor.manageCta })
     ).toBeDefined()
   })
 
-  it("gives a non-admin only Adjust in the menu for an anchor role", () => {
+  it("gives a non-admin only Adjust in the menu for an anchor role", async () => {
     setResult(completeResult)
     renderCard({
       ratedCount: 3,
@@ -225,7 +222,7 @@ describe("RoleEvaluationCard", () => {
     })
     // The computed level is shown; the role is still marked as an anchor.
     expect(screen.getByText("Level 3")).toBeDefined()
-    openMenu()
+    await openManageMenu()
     expect(
       screen.getByRole("menuitem", { name: detail.adjustRateCta })
     ).toBeDefined()

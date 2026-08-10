@@ -56,6 +56,7 @@ vi.mock("@number-flow/react", () => ({
 }))
 
 import { FamiliesStep } from "@/components/onboarding/families-step"
+import { openMenu } from "@/test/menu"
 
 const t = messages.dashboard.onboarding.families
 const nextCta = messages.dashboard.onboarding.screens.nextCta
@@ -219,9 +220,7 @@ async function reviewRendered() {
 
 /** Removes a family through its row-actions menu and the confirm dialog. */
 async function removeFamily(name: string) {
-  const trigger = screen.getByRole("button", { name: familyActionsFor(name) })
-  fireEvent.pointerDown(trigger)
-  fireEvent.click(trigger)
+  await openMenu(screen.getByRole("button", { name: familyActionsFor(name) }))
   fireEvent.click(
     await screen.findByRole("menuitem", { name: familyMenu.removeCta })
   )
@@ -234,9 +233,7 @@ async function removeFamily(name: string) {
 
 /** Opens one family's name field through its row-actions menu. */
 async function openFamilyName(name: string) {
-  const trigger = screen.getByRole("button", { name: familyActionsFor(name) })
-  fireEvent.pointerDown(trigger)
-  fireEvent.click(trigger)
+  await openMenu(screen.getByRole("button", { name: familyActionsFor(name) }))
   fireEvent.click(
     await screen.findByRole("menuitem", { name: familyMenu.renameCta })
   )

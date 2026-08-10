@@ -35,6 +35,7 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 }))
 
 import { PayMappingRunActions } from "@/components/pay-mapping/pay-mapping-run-actions"
+import { openMenu } from "@/test/menu"
 
 const labels = messages.dashboard.payMapping.table
 
@@ -50,12 +51,12 @@ function renderActions(label = "Lonekartlaggning 2026") {
   )
 }
 
-function openMenu(label = "Lonekartlaggning 2026") {
-  const trigger = screen.getByRole("button", {
-    name: labels.rowActionsLabel.replace("{label}", label),
-  })
-  fireEvent.pointerDown(trigger)
-  fireEvent.click(trigger)
+function openRowMenu(label = "Lonekartlaggning 2026") {
+  return openMenu(
+    screen.getByRole("button", {
+      name: labels.rowActionsLabel.replace("{label}", label),
+    })
+  )
 }
 
 describe("PayMappingRunActions", () => {
@@ -66,9 +67,9 @@ describe("PayMappingRunActions", () => {
   })
   afterEach(() => cleanup())
 
-  it("opens the delete confirmation dialog from the destructive item, without calling the mutation yet", () => {
+  it("opens the delete confirmation dialog from the destructive item, without calling the mutation yet", async () => {
     renderActions()
-    openMenu()
+    await openRowMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: labels.deleteCta }))
 
     expect(screen.getByRole("alertdialog")).toBeDefined()
@@ -83,7 +84,7 @@ describe("PayMappingRunActions", () => {
   it("confirming deletes the run and shows the success toast", async () => {
     deleteRunMock.mockResolvedValue(null)
     renderActions()
-    openMenu()
+    await openRowMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: labels.deleteCta }))
     fireEvent.click(screen.getByRole("button", { name: labels.deleteConfirm }))
 
@@ -98,9 +99,9 @@ describe("PayMappingRunActions", () => {
     )
   })
 
-  it("cancel closes the dialog without deleting", () => {
+  it("cancel closes the dialog without deleting", async () => {
     renderActions()
-    openMenu()
+    await openRowMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: labels.deleteCta }))
     fireEvent.click(screen.getByRole("button", { name: labels.deleteCancel }))
 
@@ -110,7 +111,7 @@ describe("PayMappingRunActions", () => {
   it("shows an error toast when the mutation rejects, and keeps the dialog open", async () => {
     deleteRunMock.mockRejectedValue(new Error("boom"))
     renderActions()
-    openMenu()
+    await openRowMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: labels.deleteCta }))
     fireEvent.click(screen.getByRole("button", { name: labels.deleteConfirm }))
 

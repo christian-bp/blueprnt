@@ -48,6 +48,7 @@ import {
   RoleProfileCard,
   type RoleProfile,
 } from "@/components/roles/role-profile-card"
+import { openMenu } from "@/test/menu"
 
 const labels = messages.dashboard.roles.detail
 const roleLabels = messages.assessment.role
@@ -90,14 +91,12 @@ function renderCard(
 }
 
 function openManageMenu() {
-  const trigger = screen.getByRole("button", { name: labels.manageCta })
-  fireEvent.pointerDown(trigger)
-  fireEvent.click(trigger)
+  return openMenu(screen.getByRole("button", { name: labels.manageCta }))
 }
 
 // Read mode -> manage menu -> Edit -> edit mode (fields become inputs).
-function startEditing() {
-  openManageMenu()
+async function startEditing() {
+  await openManageMenu()
   fireEvent.click(screen.getByRole("menuitem", { name: labels.editCta }))
 }
 
@@ -129,7 +128,7 @@ describe("RoleProfileCard", () => {
   it("opens the manage menu, edits, saves only the changed fields, and exits edit mode", async () => {
     updateRoleMock.mockResolvedValue({ senioritiesReset: 0 })
     renderCard(makeRole())
-    startEditing()
+    await startEditing()
     fireEvent.change(
       screen.getByRole("textbox", { name: roleLabels.purpose }),
       {
@@ -155,7 +154,7 @@ describe("RoleProfileCard", () => {
   it("stays in edit mode with an alert when the save fails", async () => {
     updateRoleMock.mockRejectedValue(new Error("ConvexError: roleLocked"))
     renderCard(makeRole())
-    startEditing()
+    await startEditing()
     fireEvent.change(screen.getByRole("textbox", { name: roleLabels.team }), {
       target: { value: "Other" },
     })
@@ -181,7 +180,7 @@ describe("RoleProfileCard", () => {
   it("leaves the family untouched when only a text field changes", async () => {
     updateRoleMock.mockResolvedValue({ senioritiesReset: 0 })
     renderCard(makeRole({ familyId: "f-tech", familyName: "Tech" }))
-    startEditing()
+    await startEditing()
     fireEvent.change(
       screen.getByRole("textbox", { name: roleLabels.purpose }),
       {
@@ -199,18 +198,18 @@ describe("RoleProfileCard", () => {
     })
   })
 
-  it("offers Edit and Archive in the manage menu for an admin", () => {
+  it("offers Edit and Archive in the manage menu for an admin", async () => {
     renderCard(makeRole())
-    openManageMenu()
+    await openManageMenu()
     expect(screen.getByRole("menuitem", { name: labels.editCta })).toBeDefined()
     expect(
       screen.getByRole("menuitem", { name: archiveLabels.cta })
     ).toBeDefined()
   })
 
-  it("hides Archive in the manage menu for a non-admin", () => {
+  it("hides Archive in the manage menu for a non-admin", async () => {
     renderCard(makeRole(), false)
-    openManageMenu()
+    await openManageMenu()
     expect(screen.getByRole("menuitem", { name: labels.editCta })).toBeDefined()
     expect(
       screen.queryByRole("menuitem", { name: archiveLabels.cta })
@@ -220,7 +219,7 @@ describe("RoleProfileCard", () => {
   it("archives through the confirm dialog, then navigates to /roles", async () => {
     archiveRoleMock.mockResolvedValue(null)
     renderCard(makeRole())
-    openManageMenu()
+    await openManageMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: archiveLabels.cta }))
 
     expect(screen.getByRole("alertdialog")).toBeDefined()
@@ -241,7 +240,7 @@ describe("RoleProfileCard", () => {
     expect(screen.queryByRole("button", { name: labels.manageCta })).toBeNull()
   })
 
-  it("hides the AI draft button in read mode and shows it in edit mode", () => {
+  it("hides the AI draft button in read mode and shows it in edit mode", async () => {
     renderCard(makeRole())
     // The AI draft trigger is inside the edit-mode branch; read mode shows
     // only the manage menu trigger, not the AI button.
@@ -251,7 +250,7 @@ describe("RoleProfileCard", () => {
       })
     ).toBeNull()
     // Once in edit mode the AI draft trigger becomes visible.
-    startEditing()
+    await startEditing()
     expect(
       screen.getByRole("button", {
         name: messages.dashboard.ai.fillCta,
@@ -259,9 +258,9 @@ describe("RoleProfileCard", () => {
     ).toBeDefined()
   })
 
-  it("cancel discards edits and returns to read mode", () => {
+  it("cancel discards edits and returns to read mode", async () => {
     renderCard(makeRole())
-    startEditing()
+    await startEditing()
     // Edit mode: update the purpose textarea.
     fireEvent.change(
       screen.getByRole("textbox", { name: roleLabels.purpose }),
@@ -301,7 +300,7 @@ describe("RoleProfileCard", () => {
         </form>
       </NextIntlClientProvider>
     )
-    startEditing()
+    await startEditing()
     // The track Select carries name="trackKey" so its hidden input is
     // unambiguous among the card's other Base UI selects (e.g. the family
     // picker's, which has no name).

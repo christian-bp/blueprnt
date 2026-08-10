@@ -51,6 +51,7 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 }))
 
 import { ModelBuilder } from "@/components/model/model-builder"
+import { openMenu } from "@/test/menu"
 
 const editor = messages.dashboard.model.editor
 const builder = messages.dashboard.model.builder
@@ -241,11 +242,11 @@ describe("ModelBuilder", () => {
   it("Define phase: Remove confirms then calls removeCriterion", async () => {
     removeCriterionMock.mockResolvedValue(undefined)
     renderBuilder("define")
-    const trigger = screen.getByRole("button", {
-      name: editor.rowMenuLabel.replace("{name}", "Problem solving"),
-    })
-    fireEvent.pointerDown(trigger)
-    fireEvent.click(trigger)
+    await openMenu(
+      screen.getByRole("button", {
+        name: editor.rowMenuLabel.replace("{name}", "Problem solving"),
+      })
+    )
     fireEvent.click(screen.getByRole("menuitem", { name: editor.removeCta }))
     fireEvent.click(
       within(screen.getByRole("alertdialog")).getByRole("button", {

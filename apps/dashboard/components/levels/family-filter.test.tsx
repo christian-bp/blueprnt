@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { FamilyFilter } from "@/components/levels/family-filter"
+import { openMenu } from "@/test/menu"
 
 const OPTIONS = [
   { id: "f1", name: "Engineering" },
@@ -22,11 +23,8 @@ function renderFilter(hidden: Set<string>, onHiddenChange = vi.fn()) {
   return onHiddenChange
 }
 
-// Radix menus open on pointerdown + click (the nav-user.test idiom).
-function openMenu() {
-  const trigger = screen.getByRole("button")
-  fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
-  fireEvent.click(trigger)
+function openFilterMenu() {
+  return openMenu(screen.getByRole("button"))
 }
 
 describe("FamilyFilter", () => {
@@ -39,7 +37,7 @@ describe("FamilyFilter", () => {
 
   it("shows a checked item per family and hides one on toggle", async () => {
     const onHiddenChange = renderFilter(new Set())
-    openMenu()
+    await openFilterMenu()
     const eng = await screen.findByRole("menuitemcheckbox", {
       name: "Engineering",
     })
@@ -57,7 +55,7 @@ describe("FamilyFilter", () => {
           .replace("{total}", "2")
       )
     ).toBeDefined()
-    openMenu()
+    await openFilterMenu()
     const eng = await screen.findByRole("menuitemcheckbox", {
       name: "Engineering",
     })
@@ -68,7 +66,7 @@ describe("FamilyFilter", () => {
 
   it("'Select all' shows every family again", async () => {
     const onHiddenChange = renderFilter(new Set(["f1", "f2"]))
-    openMenu()
+    await openFilterMenu()
     fireEvent.click(
       await screen.findByRole("menuitem", {
         name: messages.dashboard.levels.selectAll,

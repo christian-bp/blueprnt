@@ -27,6 +27,7 @@ vi.mock("@/lib/auth-client", () => ({
 }))
 
 import { OrgSwitchMenuSub } from "@/components/org-switch-menu"
+import { openMenu } from "@/test/menu"
 
 function renderSub() {
   return render(
@@ -41,11 +42,8 @@ function renderSub() {
   )
 }
 
-// Radix menus open on pointerdown + click (the established idiom).
-function openMenu() {
-  const trigger = screen.getByRole("button", { name: "open" })
-  fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
-  fireEvent.click(trigger)
+function openSwitcher() {
+  return openMenu(screen.getByRole("button", { name: "open" }))
 }
 
 describe("OrgSwitchMenuSub", () => {
@@ -62,7 +60,7 @@ describe("OrgSwitchMenuSub", () => {
 
   it("switches to another company from the submenu", async () => {
     renderSub()
-    openMenu()
+    await openSwitcher()
     // The submenu trigger shows the active company; open it via ArrowRight.
     const subTrigger = await screen.findByRole("menuitem", { name: /Acme/ })
     fireEvent.keyDown(subTrigger, { key: "ArrowRight" })
@@ -75,11 +73,11 @@ describe("OrgSwitchMenuSub", () => {
     })
   })
 
-  it("renders nothing when the user belongs to fewer than two companies", () => {
+  it("renders nothing when the user belongs to fewer than two companies", async () => {
     orgsData = [{ id: "a", name: "Acme" }]
     activeData = { id: "a", name: "Acme" }
     renderSub()
-    openMenu()
+    await openSwitcher()
     // Single company => no switch submenu at all.
     expect(screen.queryByText("Acme")).toBeNull()
   })

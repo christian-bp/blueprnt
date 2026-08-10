@@ -1,10 +1,4 @@
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  within,
-} from "@testing-library/react"
+import { cleanup, render, screen, within } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -33,6 +27,7 @@ import type { PayMappingRunDetail } from "@/components/pay-mapping/pay-mapping-g
 import { PayMappingRunIndicator } from "@/components/pay-mapping/pay-mapping-run-indicator"
 import { onQuery } from "@/test/convex-mocks"
 import { makeRunDetail } from "@/test/pay-mapping-fixtures"
+import { openMenu } from "@/test/menu"
 
 const t = messages.dashboard.payMapping
 
@@ -64,10 +59,8 @@ function renderIndicator() {
   )
 }
 
-function openMenu() {
-  const trigger = screen.getByRole("button", { name: /Pay mapping 2026/ })
-  fireEvent.pointerDown(trigger)
-  fireEvent.click(trigger)
+function openIndicatorMenu() {
+  return openMenu(screen.getByRole("button", { name: /Pay mapping 2026/ }))
 }
 
 beforeEach(() => {
@@ -97,9 +90,9 @@ describe("PayMappingRunIndicator", () => {
     expect(screen.getByText(t.status.active)).toBeDefined()
   })
 
-  it("lists every run in the switcher menu, marking only the active one aria-current", () => {
+  it("lists every run in the switcher menu, marking only the active one aria-current", async () => {
     renderIndicator()
-    openMenu()
+    await openIndicatorMenu()
     const menu = screen.getByRole("menu")
     const activeItem = within(menu).getByRole("menuitem", {
       name: "Pay mapping 2026",
@@ -111,10 +104,10 @@ describe("PayMappingRunIndicator", () => {
     expect(otherItem.getAttribute("aria-current")).toBeNull()
   })
 
-  it("links each switcher item to the same sub-page under its own slug", () => {
+  it("links each switcher item to the same sub-page under its own slug", async () => {
     pathState.current = "/pay-mappings/pay-2026/analysis"
     renderIndicator()
-    openMenu()
+    await openIndicatorMenu()
     const menu = screen.getByRole("menu")
     const otherLink = within(menu).getByRole("menuitem", {
       name: "Pay mapping 2025",
@@ -124,9 +117,9 @@ describe("PayMappingRunIndicator", () => {
     )
   })
 
-  it('links the switcher\'s "all" item back to the plain list', () => {
+  it('links the switcher\'s "all" item back to the plain list', async () => {
     renderIndicator()
-    openMenu()
+    await openIndicatorMenu()
     const menu = screen.getByRole("menu")
     const allItem = within(menu).getByRole("menuitem", {
       name: t.switcher.all,

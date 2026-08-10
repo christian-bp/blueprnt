@@ -18,6 +18,7 @@ import {
   FamilyReviewTable,
 } from "@/components/family-review-table"
 import type { DraftFamily } from "@/lib/family-dnd"
+import { openMenu } from "@/test/menu"
 
 const t = messages.dashboard.familyTable
 
@@ -39,22 +40,21 @@ const familyActions = (name: string) => t.familyActions.replace("{name}", name)
 const familyMenu = messages.dashboard.roles.family
 
 /** The family's one trailing row-actions menu, opened. */
-function openFamilyMenu(name: string) {
+async function openFamilyMenu(name: string) {
   const trigger = screen.getByRole("button", { name: familyActions(name) })
-  fireEvent.pointerDown(trigger)
-  fireEvent.click(trigger)
+  await openMenu(trigger)
   return trigger
 }
 
 /** Picks one item out of a family's open row-actions menu. */
-function chooseFamilyAction(name: string, item: string) {
-  openFamilyMenu(name)
+async function chooseFamilyAction(name: string, item: string) {
+  await openFamilyMenu(name)
   fireEvent.click(screen.getByRole("menuitem", { name: item }))
 }
 
 /** Opens a created family's name field, which is closed until asked for. */
-function openName(name: string) {
-  chooseFamilyAction(name, familyMenu.renameCta)
+async function openName(name: string) {
+  await chooseFamilyAction(name, familyMenu.renameCta)
   return screen.getByLabelText(familyLabel) as HTMLInputElement
 }
 
@@ -299,13 +299,13 @@ describe("FamilyReviewTable structure", () => {
   // group rather than a field in one and a label in another. The field is
   // behind the menu's Rename, and only a family this import would create has
   // that item at all.
-  it("renders every family's name as text, with Rename only on a created one", () => {
+  it("renders every family's name as text, with Rename only on a created one", async () => {
     render(<Harness />)
     expect(screen.queryByLabelText(familyLabel)).toBeNull()
     for (const name of ["Engineering", "Legal", "Finance"]) {
       expect(screen.getByText(name)).toBeTruthy()
     }
-    openFamilyMenu("Legal")
+    await openFamilyMenu("Legal")
     expect(
       screen.getByRole("menuitem", { name: familyMenu.renameCta })
     ).toBeTruthy()
@@ -313,9 +313,9 @@ describe("FamilyReviewTable structure", () => {
 
   // The field is what Rename reveals, and it closes again on Enter, so the
   // band returns to one line without a second control to find.
-  it("opens the name as a field on rename and closes it on Enter", () => {
+  it("opens the name as a field on rename and closes it on Enter", async () => {
     render(<Harness />)
-    const field = openName("Legal")
+    const field = await openName("Legal")
     expect(field.value).toBe("Legal")
     fireEvent.change(field, { target: { value: "Legal & Compliance" } })
     fireEvent.keyDown(field, { key: "Enter" })
@@ -406,10 +406,10 @@ describe("FamilyReviewTable structure", () => {
   // add-role and NOTHING else. Rename would suggest a rename this screen
   // cannot perform, and remove would confirm, take the group off the screen
   // and change nothing.
-  it("offers no rename and no remove on a family the org already has", () => {
+  it("offers no rename and no remove on a family the org already has", async () => {
     render(<Harness />)
     for (const name of ["Engineering", "Finance"]) {
-      openFamilyMenu(name)
+      await openFamilyMenu(name)
       const items = screen.getAllByRole("menuitem")
       expect(items.map((item) => item.textContent)).toEqual([t.addRoleShort])
       expect(
@@ -431,9 +431,9 @@ describe("FamilyReviewTable structure", () => {
 
   // A family this import would create carries the full menu, and a proposed
   // row inside a family that already exists keeps its own remove control.
-  it("offers add, rename and remove on a family this import would create", () => {
+  it("offers add, rename and remove on a family this import would create", async () => {
     render(<Harness />)
-    openFamilyMenu("Legal")
+    await openFamilyMenu("Legal")
     expect(screen.getAllByRole("menuitem").map((i) => i.textContent)).toEqual([
       t.addRoleShort,
       familyMenu.renameCta,
@@ -457,7 +457,7 @@ describe("FamilyReviewTable structure", () => {
   it("warns that removing an existing family archives its roles", async () => {
     render(<Harness register={new Map()} />)
     // Engineering carries a familyId; with no register it is still removable.
-    chooseFamilyAction("Engineering", familyMenu.removeCta)
+    await chooseFamilyAction("Engineering", familyMenu.removeCta)
     const dialog = await screen.findByRole("alertdialog")
     expect(dialog.textContent).toContain(t.removeFamilyDescriptionExisting)
     expect(dialog.textContent).not.toContain(t.removeFamilyDescription)
@@ -467,7 +467,7 @@ describe("FamilyReviewTable structure", () => {
   // copy, which is accurate for it.
   it("says nothing changes when removing a family that does not exist yet", async () => {
     render(<Harness register={new Map()} />)
-    chooseFamilyAction("Legal", familyMenu.removeCta)
+    await chooseFamilyAction("Legal", familyMenu.removeCta)
     const dialog = await screen.findByRole("alertdialog")
     expect(dialog.textContent).toContain(t.removeFamilyDescription)
     expect(dialog.textContent).not.toContain(t.removeFamilyDescriptionExisting)
@@ -498,7 +498,7 @@ describe("FamilyReviewTable structure", () => {
         ]}
       />
     )
-    chooseFamilyAction("Other roles", familyMenu.removeCta)
+    await chooseFamilyAction("Other roles", familyMenu.removeCta)
     const dialog = await screen.findByRole("alertdialog")
     expect(dialog.textContent).toContain(t.removeFamilyDescriptionExisting)
     expect(dialog.textContent).not.toContain(t.removeFamilyDescription)
@@ -511,7 +511,7 @@ describe("FamilyReviewTable structure", () => {
   // survive and the one every other test in this file skips past.
   it("keeps the name field open when focus returns to its own menu trigger", async () => {
     render(<Harness />)
-    const field = openName("Legal")
+    const field = await openName("Legal")
     const trigger = screen.getByRole("button", {
       name: familyActions("Legal"),
     })
@@ -526,7 +526,7 @@ describe("FamilyReviewTable structure", () => {
   // leave a field that can never be closed.
   it("closes the name field when focus leaves the row", async () => {
     render(<Harness />)
-    const field = openName("Legal")
+    const field = await openName("Legal")
     fireEvent.blur(field, { relatedTarget: document.body })
     await Promise.resolve()
     expect(screen.queryByLabelText(familyLabel)).toBeNull()
@@ -536,7 +536,7 @@ describe("FamilyReviewTable structure", () => {
   // through an AlertDialog rather than dropping the group on the click.
   it("removes a created family only after the alert dialog is confirmed", async () => {
     const view = render(<Harness />)
-    chooseFamilyAction("Legal", familyMenu.removeCta)
+    await chooseFamilyAction("Legal", familyMenu.removeCta)
     expect(await screen.findByRole("alertdialog")).toBeTruthy()
     // Nothing gone yet: the group is still on screen behind the dialog.
     expect(groups(view.container)).toHaveLength(3)
@@ -548,7 +548,7 @@ describe("FamilyReviewTable structure", () => {
 
   it("keeps a created family when the removal is cancelled", async () => {
     const view = render(<Harness />)
-    chooseFamilyAction("Legal", familyMenu.removeCta)
+    await chooseFamilyAction("Legal", familyMenu.removeCta)
     expect(await screen.findByRole("alertdialog")).toBeTruthy()
     fireEvent.click(screen.getByRole("button", { name: familyMenu.cancel }))
     expect(groups(view.container)).toHaveLength(3)
@@ -566,9 +566,9 @@ describe("FamilyReviewTable structure", () => {
   // The caps are enforced by the server over the whole payload, so a field
   // that accepts more than the write will take turns one long paste into an
   // untargeted rejection of the entire list.
-  it("caps the family name and role title at the import's field limits", () => {
+  it("caps the family name and role title at the import's field limits", async () => {
     render(<Harness />)
-    expect(openName("Legal").maxLength).toBe(MAX_FAMILY_NAME)
+    expect((await openName("Legal")).maxLength).toBe(MAX_FAMILY_NAME)
     expect(
       (screen.getByDisplayValue("Counsel") as HTMLInputElement).maxLength
     ).toBe(MAX_ROLE_TITLE)
@@ -611,9 +611,9 @@ describe("FamilyReviewTable structure", () => {
   // Every family's menu offers add-role, including the one nothing is proposed
   // for and the ones the org already has: adding a role to an existing family
   // is the whole feature, and it is additive, so it breaks no invariant.
-  it("adds a role to any family from its menu", () => {
+  it("adds a role to any family from its menu", async () => {
     render(<Harness />)
-    chooseFamilyAction("Finance", t.addRoleShort)
+    await chooseFamilyAction("Finance", t.addRoleShort)
     const finance = groupOf(screen.getByText("Finance"))
     const added = within(finance).getAllByLabelText(titleLabel)
     expect(added).toHaveLength(1)
@@ -697,12 +697,12 @@ describe("FamilyReviewTable structure", () => {
   // family's own group would sit right beside a group duplicating it, offering
   // a removable menu next to Finance's own name. The group that carries the
   // roles is the honest one; the register's steps aside.
-  it("drops the register group for a family a new one already names", () => {
+  it("drops the register group for a family a new one already names", async () => {
     const view = render(<Harness />)
     // One tbody per family. Add-family lives below the frame, not in the table.
     expect(groups(view.container)).toHaveLength(3)
 
-    const legal = openName("Legal")
+    const legal = await openName("Legal")
     fireEvent.change(legal, { target: { value: "  finance  " } })
 
     // One family group fewer, and exactly one menu naming Finance: the new

@@ -9,6 +9,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { CriterionItem } from "@/components/model/criterion-item"
+import { openMenu } from "@/test/menu"
 
 const editor = messages.dashboard.model.editor
 
@@ -71,17 +72,15 @@ describe("CriterionItem anchor scale section", () => {
   })
 })
 
-describe("CriterionItem row menu", () => {
+describe("CriterionItem row menu", async () => {
   afterEach(() => {
     cleanup()
   })
 
-  function openMenu() {
-    const trigger = screen.getByRole("button", {
-      name: "Actions for Complexity",
-    })
-    fireEvent.pointerDown(trigger)
-    fireEvent.click(trigger)
+  function openItemMenu() {
+    return openMenu(
+      screen.getByRole("button", { name: "Actions for Complexity" })
+    )
   }
 
   it("renders no menu in read mode", () => {
@@ -91,10 +90,10 @@ describe("CriterionItem row menu", () => {
     ).toBeNull()
   })
 
-  it("forwards Edit from the menu", () => {
+  it("forwards Edit from the menu", async () => {
     const onEdit = vi.fn()
     renderItem({ editable: true, onEdit })
-    openMenu()
+    await openItemMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: editor.editCta }))
     expect(onEdit).toHaveBeenCalledTimes(1)
   })
@@ -102,7 +101,7 @@ describe("CriterionItem row menu", () => {
   it("confirms removal through the alert dialog", async () => {
     const onRemove = vi.fn().mockResolvedValue(undefined)
     renderItem({ editable: true, onRemove })
-    openMenu()
+    await openItemMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: editor.removeCta }))
 
     // The destructive action is gated behind the AlertDialog; nothing has
@@ -119,7 +118,7 @@ describe("CriterionItem row menu", () => {
   it("cancelling the alert dialog removes nothing", async () => {
     const onRemove = vi.fn()
     renderItem({ editable: true, onRemove })
-    openMenu()
+    await openItemMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: editor.removeCta }))
     fireEvent.click(
       screen.getByRole("button", {

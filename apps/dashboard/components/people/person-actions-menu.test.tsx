@@ -43,6 +43,7 @@ vi.mock("@/components/org-context", () => ({
 }))
 
 import { PersonActionsMenu } from "@/components/people/person-actions-menu"
+import { openMenu } from "@/test/menu"
 
 const m = messages.dashboard.people
 
@@ -76,10 +77,8 @@ function renderMenu(
   )
 }
 
-function openMenu() {
-  const trigger = screen.getByRole("button", { name: m.detail.actionsMenu })
-  fireEvent.pointerDown(trigger)
-  fireEvent.click(trigger)
+function openActionsMenu() {
+  return openMenu(screen.getByRole("button", { name: m.detail.actionsMenu }))
 }
 
 describe("PersonActionsMenu", () => {
@@ -90,16 +89,16 @@ describe("PersonActionsMenu", () => {
   })
   afterEach(() => cleanup())
 
-  it("opens the erase dialog from the destructive item", () => {
+  it("opens the erase dialog from the destructive item", async () => {
     renderMenu()
-    openMenu()
+    await openActionsMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: m.erase.trigger }))
     expect(screen.getByRole("alertdialog")).toBeDefined()
   })
 
   it("edits the role: a track swap resets the seniority and saves a confirmed assignment", async () => {
     renderMenu()
-    openMenu()
+    await openActionsMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: m.editPerson.title }))
     expect(screen.getByRole("dialog")).toBeDefined()
 
@@ -135,9 +134,9 @@ describe("PersonActionsMenu", () => {
     )
   })
 
-  it("gates saving on a change: the pre-filled form starts disabled", () => {
+  it("gates saving on a change: the pre-filled form starts disabled", async () => {
     renderMenu()
-    openMenu()
+    await openActionsMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: m.editPerson.title }))
     const save = screen.getByRole("button", {
       name: m.editPerson.cta,
@@ -147,7 +146,7 @@ describe("PersonActionsMenu", () => {
 
   it("assigns an unclassified person (empty form, valid after picking)", async () => {
     renderMenu(null)
-    openMenu()
+    await openActionsMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: m.editPerson.title }))
     await pickSelectOption(
       screen.getByRole("combobox", {

@@ -16,6 +16,8 @@ export default mergeConfig(
       },
     },
     test: {
+      // Raises Testing Library's async-utility timeout; see test/setup.ts.
+      setupFiles: ["./test/setup.ts"],
       server: {
         deps: {
           // next-intl uses package.json exports conditions that need inlining

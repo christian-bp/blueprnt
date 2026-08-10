@@ -41,6 +41,7 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: pushMock }) }))
 
 import { FamilyActionsMenu } from "@/components/roles/family-actions-menu"
+import { openMenu } from "@/test/menu"
 
 const labels = messages.dashboard.roles.family
 
@@ -57,10 +58,8 @@ function renderMenu(roleTitles = ["Senior Engineer", "Staff Engineer"]) {
   )
 }
 
-function openMenu() {
-  const trigger = screen.getByRole("button", { name: labels.actionsMenu })
-  fireEvent.pointerDown(trigger)
-  fireEvent.click(trigger)
+function openActionsMenu() {
+  return openMenu(screen.getByRole("button", { name: labels.actionsMenu }))
 }
 
 describe("FamilyActionsMenu", () => {
@@ -73,9 +72,9 @@ describe("FamilyActionsMenu", () => {
   })
   afterEach(() => cleanup())
 
-  it("opens the rename dialog from the menu", () => {
+  it("opens the rename dialog from the menu", async () => {
     renderMenu()
-    openMenu()
+    await openActionsMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: labels.renameCta }))
     expect(screen.getByRole("dialog")).toBeDefined()
     expect(screen.getByText(labels.renameDialogTitle)).toBeDefined()
@@ -84,7 +83,7 @@ describe("FamilyActionsMenu", () => {
   it("delete lists the affected roles and removes on confirm, then navigates", async () => {
     removeFamilyMock.mockResolvedValue(null)
     renderMenu(["Senior Engineer", "Staff Engineer"])
-    openMenu()
+    await openActionsMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: labels.removeCta }))
 
     // The affected roles are listed; nothing removed yet.
@@ -107,9 +106,9 @@ describe("FamilyActionsMenu", () => {
     )
   })
 
-  it("omits the affected-roles list for an empty family", () => {
+  it("omits the affected-roles list for an empty family", async () => {
     renderMenu([])
-    openMenu()
+    await openActionsMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: labels.removeCta }))
     expect(screen.queryByText(labels.removeListLabel)).toBeNull()
   })

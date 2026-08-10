@@ -8,6 +8,7 @@ import {
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
+import { openMenu } from "@/test/menu"
 
 const setUiLocaleMock = vi.fn()
 const setPreviewLocaleMock = vi.fn()
@@ -79,12 +80,10 @@ function renderNavUser() {
   )
 }
 
-// Radix menus open on pointerdown + click (the established Radix dropdown idiom).
-function openMenu() {
+function openUserMenu() {
   const trigger = screen.getByText("HR Person").closest("button")
   if (!trigger) throw new Error("trigger not found")
-  fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
-  fireEvent.click(trigger)
+  return openMenu(trigger)
 }
 
 describe("NavUser", () => {
@@ -101,7 +100,7 @@ describe("NavUser", () => {
 
   it("shows the current language (flag + autonym) as the submenu trigger", async () => {
     renderNavUser()
-    openMenu()
+    await openUserMenu()
     // Locale is en in the test provider, so the trigger row reads English.
     const subTrigger = await screen.findByRole("menuitem", {
       name: languages.en,
@@ -114,7 +113,7 @@ describe("NavUser", () => {
 
   it("picking a language previews it and persists the per-user override", async () => {
     renderNavUser()
-    openMenu()
+    await openUserMenu()
 
     // Open the submenu via keyboard (the Radix way that works in happy-dom).
     const subTrigger = await screen.findByRole("menuitem", {
@@ -136,7 +135,7 @@ describe("NavUser", () => {
   it("drops the preview when the persist rejects", async () => {
     setUiLocaleMock.mockRejectedValue(new Error("ConvexError: invalidInput"))
     renderNavUser()
-    openMenu()
+    await openUserMenu()
 
     const subTrigger = await screen.findByRole("menuitem", {
       name: languages.en,

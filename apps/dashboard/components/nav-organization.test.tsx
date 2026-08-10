@@ -53,6 +53,7 @@ vi.mock("@workspace/ui/components/sidebar", () => ({
 }))
 
 import { NavOrganization } from "@/components/nav-organization"
+import { openMenu } from "@/test/menu"
 
 function renderSwitcher() {
   return render(
@@ -62,12 +63,10 @@ function renderSwitcher() {
   )
 }
 
-// Radix menus open on pointerdown + click (idiom from nav-user.test.tsx).
-function openMenu(triggerText: string) {
+function openNavMenu(triggerText: string) {
   const trigger = screen.getByText(triggerText).closest("button")
   if (!trigger) throw new Error("trigger not found")
-  fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
-  fireEvent.click(trigger)
+  return openMenu(trigger)
 }
 
 describe("NavOrganization", () => {
@@ -89,7 +88,7 @@ describe("NavOrganization", () => {
 
   it("lists the companies and marks the active one", async () => {
     renderSwitcher()
-    openMenu("Acme")
+    await openNavMenu("Acme")
     const acme = await screen.findByRole("menuitem", { name: /Acme/ })
     const beta = await screen.findByRole("menuitem", { name: /Beta/ })
     expect(acme.getAttribute("aria-current")).toBe("true")
@@ -98,7 +97,7 @@ describe("NavOrganization", () => {
 
   it("switches to another company on click and never offers create", async () => {
     renderSwitcher()
-    openMenu("Acme")
+    await openNavMenu("Acme")
     const beta = await screen.findByRole("menuitem", { name: /Beta/ })
     fireEvent.click(beta)
     await waitFor(() => {
@@ -109,7 +108,7 @@ describe("NavOrganization", () => {
 
   it("does not switch when the active company is reselected", async () => {
     renderSwitcher()
-    openMenu("Acme")
+    await openNavMenu("Acme")
     const acme = await screen.findByRole("menuitem", { name: /Acme/ })
     fireEvent.click(acme)
     expect(setActiveMock).not.toHaveBeenCalled()
@@ -119,7 +118,7 @@ describe("NavOrganization", () => {
     orgsData = [{ id: "a", name: "Acme" }]
     activeData = { id: "a", name: "Acme" }
     renderSwitcher()
-    openMenu("Acme")
+    await openNavMenu("Acme")
     expect(await screen.findByRole("menuitem", { name: /Acme/ })).toBeDefined()
     expect(screen.queryByRole("menuitem", { name: /Beta/ })).toBeNull()
   })

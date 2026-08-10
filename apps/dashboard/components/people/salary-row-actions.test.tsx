@@ -30,6 +30,7 @@ vi.mock("@/components/org-context", () => ({
 }))
 
 import { SalaryRowActions } from "@/components/people/salary-row-actions"
+import { openMenu } from "@/test/menu"
 
 const m = messages.dashboard.people.detail
 
@@ -44,10 +45,8 @@ function renderActions() {
   )
 }
 
-function openMenu() {
-  const trigger = screen.getByRole("button", { name: m.salaryRowActions })
-  fireEvent.pointerDown(trigger)
-  fireEvent.click(trigger)
+function openRowMenu() {
+  return openMenu(screen.getByRole("button", { name: m.salaryRowActions }))
 }
 
 describe("SalaryRowActions", () => {
@@ -59,7 +58,7 @@ describe("SalaryRowActions", () => {
 
   it("deletes the record after the confirm dialog and toasts", async () => {
     renderActions()
-    openMenu()
+    await openRowMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: m.deleteSalaryCta }))
     // The AlertDialog confirms the destructive action first.
     expect(deleteSalaryMock).not.toHaveBeenCalled()
@@ -77,7 +76,7 @@ describe("SalaryRowActions", () => {
 
   it("cancel closes the dialog without deleting", async () => {
     renderActions()
-    openMenu()
+    await openRowMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: m.deleteSalaryCta }))
     fireEvent.click(screen.getByRole("button", { name: m.deleteSalaryCancel }))
     await waitFor(() => {

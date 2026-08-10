@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import { cleanup, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -33,6 +33,7 @@ vi.mock("@/components/org-context", () => ({
 
 import { SiteHeader } from "@/components/site-header"
 import { onQuery } from "@/test/convex-mocks"
+import { openMenu } from "@/test/menu"
 
 // RUN_2026 doubles as the detail-query result (runId/label/status/rows) and
 // a list-query summary (slug for the switcher's active mark and hrefs).
@@ -163,11 +164,9 @@ describe("SiteHeader", () => {
   it("opens the run switcher: other runs keep the sub-page, plus the way to the list", async () => {
     pathState.current = "/pay-mappings/pay-2026/analysis"
     renderHeader()
-    const trigger = screen.getByRole("button", {
-      name: /Lonekartlaggning 2026/,
-    })
-    fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
-    fireEvent.click(trigger)
+    await openMenu(
+      screen.getByRole("button", { name: /Lonekartlaggning 2026/ })
+    )
     // Swapping the run lands on the SAME sub-page in the other run.
     const other = await screen.findByRole("menuitem", {
       name: "Lonekartlaggning 2025",
