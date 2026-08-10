@@ -205,4 +205,40 @@ describe("ComparatorTable selection", () => {
     renderTable()
     expect(screen.queryByRole("button", { name: NAME })).toBeNull()
   })
+
+  // The baseline and the picked row share one wash, so what tells them apart
+  // is the row itself: the baseline leads the table and leaves its two
+  // difference cells empty, while a picked row sits among the comparators with
+  // its differences filled in. That is pinned here because it is now load
+  // bearing, not decoration.
+  it("marks the baseline and the picked row alike, and lets the row say which is which", () => {
+    const { container } = renderTable({
+      onSelect: vi.fn(),
+      selectedKey: "IT Manager|5",
+    })
+    const rows = [...container.querySelectorAll("tbody tr")]
+    const classesOf = (row: Element) =>
+      (row.getAttribute("class") ?? "").split(/\s+/)
+    const baseline = rows[0] as Element
+    const picked = rows[rows.length - 1] as Element
+
+    for (const row of [baseline, picked]) {
+      expect(classesOf(row)).toContain("bg-muted")
+      // Neither lightens under the cursor: TableRow hovers to bg-muted/50,
+      // which would read as the row losing its mark.
+      expect(classesOf(row)).toContain("hover:bg-muted")
+    }
+
+    // The two difference columns: empty on the baseline (nothing is a
+    // difference from itself), filled on a comparator.
+    const differences = (row: Element) =>
+      [...row.querySelectorAll("td")]
+        .slice(5, 7)
+        .map((cell) => cell.textContent ?? "")
+    expect(differences(baseline)).toEqual(["", ""])
+    // Matched loosely: the money format carries a non-breaking space, and what
+    // has to hold is that these cells are filled at all.
+    expect(differences(picked)[0]).toContain("7.1%")
+    expect(differences(picked)[1]).toContain("4,843")
+  })
 })

@@ -26,6 +26,19 @@ import {
   type WomenDominatedComparisonWire,
 } from "./pay-mapping-gap-types"
 
+// One wash, for both of the table's marked rows: the baseline at the top and
+// whichever comparator the reader has picked. Colour is not what tells them
+// apart, and does not need to be: the baseline always leads the table, reads
+// bold, and leaves its two difference cells empty, while a picked row sits
+// among the comparators with its differences filled in. A second wash was
+// tried twice (brand, then a darker step of the same grey) and both spent
+// either a colour or a shade comparison on a distinction the row already
+// makes.
+//
+// The hover repeats it on purpose: TableRow hovers to bg-muted/50, so without
+// this a marked row LIGHTENS under the cursor and reads as losing its mark.
+const MARKED_ROW = "bg-muted hover:bg-muted"
+
 // The higher-paid comparators for a women-dominated group, as a table.
 //
 // This was a bulleted list of sentences, one per comparator, each ending
@@ -125,13 +138,18 @@ export function ComparatorTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {/* The baseline, first and washed in brand, so it reads as the
-              thing the rows under it are compared with rather than as
-              another comparator. The difference columns name it too, so the
-              wash is a mark rather than the only signal. Its two difference
-              cells stay empty on purpose: nothing is a difference from
-              itself. */}
-          <TableRow className="bg-brand/8 hover:bg-brand/8">
+          {/* The baseline, first and washed, so it reads as the thing the rows
+              under it are compared with rather than as another comparator.
+              The difference columns name it too, so the wash is a mark rather
+              than the only signal. Its two difference cells stay empty on
+              purpose: nothing is a difference from itself.
+
+              Muted, not brand: brand is this app's ink for judgements, and the
+              baseline is not making one. It is structure, the same row
+              whatever the reader does. Its wash is the same one a picked row
+              wears (MARKED_ROW), which is why the rest of the row has to keep
+              saying what it is. */}
+          <TableRow className={MARKED_ROW}>
             <TableCell className="font-medium tabular-nums">
               {baseline.level}
             </TableCell>
@@ -191,7 +209,7 @@ export function ComparatorTable({
                 onClick={select}
                 className={cn(
                   onSelect !== undefined && "cursor-pointer",
-                  selected && "bg-muted"
+                  selected && MARKED_ROW
                 )}
               >
                 <TableCell className="tabular-nums">
