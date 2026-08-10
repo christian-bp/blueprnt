@@ -21,6 +21,56 @@ export const CHART_TOOLTIP_TEXT = "text-sm"
 // hover; recharts otherwise inherits ChartContainer's text-xs, which is this.
 export const CHART_AXIS_FONT_SIZE = 12
 
+// Hover motion for every chart, spread onto the ChartTooltip.
+//
+// Recharts positions its tooltip by translating one absolutely positioned
+// wrapper and, while animation is on, puts `transition: transform 400ms ease`
+// on it. The wrapper starts at the chart's own origin, so the first hover
+// slides the panel in from the top-left corner and every move after that
+// slides it between points: the tooltip is always arriving from somewhere
+// other than the thing it describes, and on a dense scatter it visibly trails
+// the pointer.
+//
+// Turning that off leaves the panel appearing AT the mark, which is where it
+// belongs; the content fades instead (TOOLTIP_APPEAR), which reads as the
+// hover answering rather than as a panel travelling across the chart.
+//
+// There is no recharts setting for "fade but do not slide": the only knob is
+// this transition, so the fade has to live on our own content.
+export const CHART_TOOLTIP_MOTION = { isAnimationActive: false } as const
+
+// How the tooltip content appears, in place of the slide above.
+//
+// Fade AND a zoom, the same entrance every other overlay in the app uses (see
+// the popover primitive). A bare fade was tried first and still read as a pop:
+// 150ms of opacity on a small panel already at its final size gives the eye
+// nothing to follow, and the panel opens under the pointer where attention
+// already is. The zoom gives it somewhere to arrive from without moving it
+// away from the mark it describes.
+//
+// One step deeper than the popovers' 95%. A tooltip is smaller than they are
+// and it opens where the reader is already looking, so the same 5% covers a
+// couple of pixels and passes unseen; the overlays that use 95% are larger,
+// and open somewhere the eye has to travel to.
+//
+// motion-safe, not bare: the app's reduced-motion promise is kept by
+// MotionConfig, which governs Motion only, and globals.css collapses CSS
+// durations for toasts alone. A CSS animation added anywhere else has to
+// carry its own guard or it plays for a reader who asked for no motion.
+export const TOOLTIP_APPEAR =
+  "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-90 duration-150"
+
+// Width reserved for a vertical axis whose ticks are money.
+//
+// A money tick is the widest label a chart draws (currency + grouped digits),
+// and recharts CLIPS the overflow instead of widening the axis, so an axis
+// sized to the salaries in front of you silently eats a character the first
+// time a customer has a six-figure one: "SEK 106,208" rendered as "iEK
+// 106,208" at the 72px this used to be. Sized for a seven-digit amount at
+// CHART_AXIS_FONT_SIZE, which covers a monthly salary in every currency we
+// support, including the ones with small units.
+export const MONEY_AXIS_WIDTH = 92
+
 // Height of the plot strip in an overview widget card, as a Tailwind class so
 // the three cards and their loading placeholders can never drift apart.
 //

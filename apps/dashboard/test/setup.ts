@@ -15,4 +15,14 @@ import { configure } from "@testing-library/react"
 // This is the floor under the whole suite, not a fix for a specific race: a
 // gesture that can miss its target still has to be made retry-safe where it is
 // written (see test/menu.ts).
-configure({ asyncUtilTimeout: 5000 })
+configure({
+  asyncUtilTimeout: 5000,
+  // Recharts measures label widths by writing the text into a hidden span it
+  // parks on document.body (#recharts_measurement_span) and never removes, so
+  // it outlives the test that rendered the chart and still holds the last
+  // string measured. A text query would then match it, which is how one chart
+  // test made a later, unrelated one fail on "found multiple elements": the
+  // second match was an invisible node from a component that was no longer
+  // mounted. It is not content, so no query should ever see it.
+  defaultIgnore: "script, style, #recharts_measurement_span",
+})

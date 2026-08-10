@@ -147,7 +147,7 @@ type ReviewGroupStepProps =
 // severity/level chips), the plain-language finding sentence(s) that
 // restate the group's own numbers so the reader never has to translate a
 // raw percentage into a judgment, the EqualWorkDetail view (equalWork only:
-// summary strip, swimlane dot plot, member table; Iteration 2 note 3),
+// summary strip, scatter, member table; Iteration 2 note 3),
 // PayMappingGroupAnalysisForm (the reasons/note documentation surface), the
 // WomenDominatedUnderlyingData disclosure (equivalentWork only: the cross-level
 // comparison tables/scatter), and the shared ReviewStepActions row.
@@ -436,13 +436,14 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
         </div>
 
         {/* The detail view leads (Iteration 2 note 3): summary strip, the
-            swimlane dot plot, then the individual member table, all before
-            the documentation form. */}
+            scatter, then the individual member table, all before the
+            documentation form. */}
         {props.scope === "equalWork" && (
           <EqualWorkDetail
             group={props.group}
             rows={rows}
             currency={currency}
+            referenceDateMs={referenceDateMs}
             documentation={{ runId, actions, notes, locked }}
           />
         )}

@@ -12,15 +12,16 @@ import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import type { ReactNode } from "react"
 import { EvidenceDisclosure } from "./evidence-disclosure"
 import { GroupMemberTable } from "./group-member-table"
-import { PayGapDotPlot } from "./pay-gap-dot-plot"
 import {
   type GapGroup,
   type GapMetric,
+  membersOf,
   type PayMappingActionWire,
   type PayMappingNoteWire,
   type PayMappingSnapshotRow,
   primaryGapMetric,
 } from "./pay-mapping-gap-types"
+import { PayMappingScatter } from "./pay-mapping-scatter"
 
 // One metric's compact "Kv. medel · M. medel · gap" line for the summary
 // strip; null means when a side is missing render nothing (the entry
@@ -132,8 +133,16 @@ function GapCard({
 }
 
 // The equal-work detail view (Iteration 2 note 3): a compact summary strip
-// (counts, per-gender means, the gap in kr and %), the swimlane dot plot as
-// the first visual, then the individual member table. The group's primary
+// (counts, per-gender means, the gap in kr and %), the scatter as the first
+// visual, then the individual member table.
+//
+// The visual used to be a swimlane dot plot: pay along the x axis, one lane
+// per gender. It was replaced by the SAME scatter the equivalent-work chapter
+// draws, on review feedback that gender on an axis reads as unclear. Pay
+// against age or tenure answers the question this step actually asks the
+// documenter, which is whether something objective explains the difference; a
+// lane per gender only restated the averages the badges above already carry.
+// One chart family across both chapters also means one place to improve. The group's primary
 // metric leads (base salary, or total comp for a tccDriven group); the
 // other metric rides along as a muted parallel line, and the table always
 // carries both columns.
@@ -141,11 +150,16 @@ export function EqualWorkDetail({
   group,
   rows,
   currency,
+  referenceDateMs,
   documentation,
 }: {
   group: GapGroup
   rows: PayMappingSnapshotRow[]
   currency: string
+  // The run's frozen freeze time (ADR-0011), which is what the scatter's age
+  // and tenure axes count to. Never the live clock, or a group's plot would
+  // drift with every day that passes after the run.
+  referenceDateMs: number
   // The run's work layer (ADR-0015): present, the group heading and every
   // member row carry their own documentation badge + "..." menu.
   documentation?: {
@@ -157,6 +171,7 @@ export function EqualWorkDetail({
 }) {
   const t = useTranslations("dashboard.payMapping.detail")
   const tGapRoot = useTranslations("dashboard.payMapping.gap")
+  const tScatter = useTranslations("dashboard.payMapping.scatter")
   const tHelp = useTranslations("dashboard.help")
 
   const primary = primaryGapMetric(group)
@@ -215,7 +230,20 @@ export function EqualWorkDetail({
           )}
         </div>
       </div>
-      <PayGapDotPlot group={group} rows={rows} currency={currency} />
+      {/* This group's members only, drawn on the SAME measure the badges
+          above state (base salary, or total comp for a tccDriven group) with
+          that measure's own averages as the two reference lines. All three
+          have to agree: a card reading "SEK 84,000 on average" over a line
+          labelled "Women's avg" sitting at 98,333 is one screen contradicting
+          itself. */}
+      <PayMappingScatter
+        rows={membersOf(rows, group)}
+        currency={currency}
+        referenceDateMs={referenceDateMs}
+        yMetric={group.tccDriven ? "total" : "base"}
+        means={{ women: primary.womenMean, men: primary.menMean }}
+        title={tScatter("titleEqualWork")}
+      />
       {/* The summary strip and the plot stay visible: they are WHY this
           group is flagged. The per-person table is the evidence behind
           that, collapsed so every opened step starts at roughly the same

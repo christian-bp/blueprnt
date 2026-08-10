@@ -1201,13 +1201,6 @@
         "noteBadge": "{count, plural, one {# note} other {# notes}}",
         "priorityLabel": "Priority"
       },
-      "dotPlot": {
-        "title": "Pay positions in the group",
-        "pay": "Pay",
-        "diff": "Vs men's average",
-        "womenMean": "Women's avg",
-        "menMean": "Men's avg"
-      },
       "detail": {
         "population": "People included",
         "notFound": "That pay mapping was not found.",
@@ -1367,7 +1360,7 @@
         "lockedHint": "The pay mapping is completed and locked. Reopen it from the overview to edit."
       },
       "scatter": {
-        "titleEqualWork": "People in the group",
+        "titleEqualWork": "Pay positions in the group",
         "titleEquivalentWork": "People in the comparison",
         "xAge": "Age",
         "xTenure": "Tenure (years)",
@@ -1380,7 +1373,9 @@
         "omittedAge": "{count, plural, one {# person without a birth date is not shown} other {# people without a birth date are not shown}}",
         "omittedTenure": "{count, plural, one {# person without a start date is not shown} other {# people without a start date are not shown}}",
         "emptyAge": "No one here has both a recorded salary and a birth date yet.",
-        "emptyTenure": "No one here has both a recorded salary and a start date yet."
+        "emptyTenure": "No one here has both a recorded salary and a start date yet.",
+        "womenMean": "Women's avg",
+        "menMean": "Men's avg"
       },
       "documentation": {
         "complete": "Complete the pay mapping",
@@ -1936,10 +1931,6 @@
       "payMappingBody": "A pay mapping (Swedish: lönekartläggning) is a frozen snapshot of your pay, roles and demographics at a point in time. All equal-pay analysis runs against the frozen copy, never live data, so the numbers cannot shift under you.",
       "referenceDateLabel": "What is the reference date?",
       "referenceDateBody": "The date the snapshot represents. It is set to today when you start the mapping.",
-      "payGapEqualWorkLabel": "Equal work",
-      "payGapEqualWorkBody": "People doing the same job at the same seniority (Swedish: lika arbete). We compare the average pay of women and men in each such group.",
-      "payGapFlagsLabel": "What the flags mean",
-      "payGapFlagsBody": "The flag is the pay gap between women and men in the group: over 10% needs action, 5-10% is worth watching, under 5% is fine. Groups with only one gender show no gap: there is no comparison to make.",
       "equalityClockLabel": "Equality clock",
       "equalityClockBody": "The pay gap shown as time: the share of an 8-hour working day that the lower-paid gender works without matching pay. It is derived from the average gap, not a schedule.",
       "headlineGapLabel": "Organization pay gap",
@@ -1948,8 +1939,6 @@
       "payQuartilesBody": "Everyone with a salary is ranked by pay and split into four equal groups, from the lowest-paid quarter to the highest. If women cluster in the lower quartiles and men in the upper, pay levels are unevenly distributed (a glass-ceiling pattern).",
       "payGapReasonsLabel": "Objective reasons",
       "payGapReasonsBody": "Swedish law requires an objective reason, for example market conditions or experience, for every pay difference between comparable groups. Pick the factors that apply and elaborate in the text field.",
-      "payGapDotPlotLabel": "What does the dot plot show?",
-      "payGapDotPlotBody": "Each dot is one person's pay in this group, on the group's primary measure: FTE-adjusted base salary (or total compensation when the group's difference sits in variable pay). The women's row sits above the men's, the dashed lines mark each gender's average, and the shaded band between them is the pay gap in kronor and percent. Hover a dot to see who it is and how far they sit from the men's average.",
       "payGapMemberDiffLabel": "What does 'vs men's average' mean?",
       "payGapMemberDiffBody": "The person's FTE-adjusted pay minus the average of the men in this group, on the group's primary measure. A negative value means the person earns less than the men's average; a positive value means more. Part-time salaries are grossed up to full-time equivalents so the comparison is like for like.",
       "payGapScatterLabel": "What does this chart show?",
@@ -1957,7 +1946,8 @@
       "collaborationLabel": "What is collaboration?",
       "collaborationBody": "Collaboration (Swedish: samverkan) means cooperating with employees and their union representatives at every step of the pay mapping (Diskrimineringslagen 3 kap. 11 §). If your organization is bound by a collective agreement, the union representatives have a right to the information they need to take part (12 §).",
       "analysisProgressLabel": "What is counted here?",
-      "analysisProgressBody": "The count covers the steps that must be documented before the pay mapping can be completed: the collaboration record, the pay-practice review, every equal-work group with a pay difference to the women's disadvantage, and every women-dominated group with a higher-paid comparison. Analyses that carry no documentation duty are not counted."
+      "analysisProgressBody": "The count covers the steps that must be documented before the pay mapping can be completed: the collaboration record, the pay-practice review, every equal-work group with a pay difference to the women's disadvantage, and every women-dominated group with a higher-paid comparison. Analyses that carry no documentation duty are not counted.",
+      "payGapScatterMeansBody": "The two dashed lines are each gender's average pay in the group, so you can see who sits above and below their own group's average."
     },
     "widgetCard": {
       "expand": "Expand"

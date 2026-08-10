@@ -322,7 +322,7 @@ describe("ReviewGroupStep", () => {
       expect(screen.getByText(sek(90_000))).toBeDefined()
       expect(screen.getByText(sek(100_000))).toBeDefined()
       expect(screen.getByText(`-${sek(10_000)}`)).toBeDefined()
-      expect(screen.getByText(m.dotPlot.title)).toBeDefined()
+      expect(screen.getByText(m.scatter.titleEqualWork)).toBeDefined()
       expect(screen.getByText(m.gap.groupMembers)).toBeDefined()
     })
 
@@ -369,12 +369,12 @@ describe("ReviewGroupStep", () => {
       renderEqualWorkStep(GROUP_MASKED)
       expect(screen.queryByText(/Women's average/)).toBeNull()
       // The chrome still renders: no crash on an all-null metric.
-      expect(screen.getByText(m.dotPlot.title)).toBeDefined()
+      expect(screen.getByText(m.scatter.titleEqualWork)).toBeDefined()
     })
 
     it("renders no detail view for an equivalentWork (women-dominated) group", () => {
       renderWdStep(WD_GROUP_ONE)
-      expect(screen.queryByText(m.dotPlot.title)).toBeNull()
+      expect(screen.queryByText(m.scatter.titleEqualWork)).toBeNull()
     })
   })
 

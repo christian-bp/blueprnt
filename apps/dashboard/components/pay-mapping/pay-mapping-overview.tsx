@@ -36,7 +36,11 @@ import type {
   OrgAggregate,
   PayMappingGapResult,
 } from "./pay-mapping-gap-types"
-import { BAR_RADIUS, CHART_AXIS_FONT_SIZE } from "@/lib/chart-style"
+import {
+  BAR_RADIUS,
+  CHART_AXIS_FONT_SIZE,
+  CHART_TOOLTIP_MOTION,
+} from "@/lib/chart-style"
 import { percentText } from "@/lib/percent"
 
 // The unadjusted org-level gap as a KPI figure: the unsigned percent, and
@@ -227,6 +231,7 @@ function WholeSurveyStat({
               slices "Man" found no config entry, fell back to a swatch whose
               colour was the hatch's url(...) paint, and drew nothing. */}
           <ChartTooltip
+            {...CHART_TOOLTIP_MOTION}
             content={
               <GenderTooltipContent
                 hideLabel
@@ -333,6 +338,7 @@ function QuartileStat({
             <GenderHatch id={marks.hatchId} />
           </defs>
           <ChartTooltip
+            {...CHART_TOOLTIP_MOTION}
             content={
               <GenderTooltipContent
                 labels={{ women: tGap("women"), men: tGap("men") }}

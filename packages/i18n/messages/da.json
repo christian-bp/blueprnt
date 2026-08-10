@@ -1201,13 +1201,6 @@
         "noteBadge": "{count, plural, one {# notat} other {# notater}}",
         "priorityLabel": "Prioritet"
       },
-      "dotPlot": {
-        "title": "Lønpositioner i gruppen",
-        "pay": "Løn",
-        "diff": "Mod mændenes gennemsnit",
-        "womenMean": "Kv. gns.",
-        "menMean": "M. gns."
-      },
       "detail": {
         "population": "Personer inkluderet",
         "notFound": "Den lønkortlægning blev ikke fundet.",
@@ -1367,7 +1360,7 @@
         "lockedHint": "Lønkortlægningen er afsluttet og låst. Genåbn den fra oversigten for at redigere."
       },
       "scatter": {
-        "titleEqualWork": "Personer i gruppen",
+        "titleEqualWork": "Lønpositioner i gruppen",
         "titleEquivalentWork": "Personer i sammenligningen",
         "xAge": "Alder",
         "xTenure": "Anciennitet (år)",
@@ -1380,7 +1373,9 @@
         "omittedAge": "{count, plural, one {# person uden fødselsdato vises ikke} other {# personer uden fødselsdato vises ikke}}",
         "omittedTenure": "{count, plural, one {# person uden ansættelsesdato vises ikke} other {# personer uden ansættelsesdato vises ikke}}",
         "emptyAge": "Ingen her har både registreret løn og fødselsdato endnu.",
-        "emptyTenure": "Ingen her har både registreret løn og ansættelsesdato endnu."
+        "emptyTenure": "Ingen her har både registreret løn og ansættelsesdato endnu.",
+        "womenMean": "Kv. gns.",
+        "menMean": "M. gns."
       },
       "documentation": {
         "complete": "Afslut lønkortlægningen",
@@ -1936,10 +1931,6 @@
       "payMappingBody": "En lønkortlægning er et frosset øjebliksbillede af jeres løn, roller og demografi på et givent tidspunkt. Al ligelønsanalyse køres mod den frosne kopi, aldrig mod livedata, så tallene ikke kan ændre sig under jer.",
       "referenceDateLabel": "Hvad er referencedatoen?",
       "referenceDateBody": "Datoen øjebliksbilledet repræsenterer. Den sættes til dags dato, når I starter kortlægningen.",
-      "payGapEqualWorkLabel": "Lige arbejde",
-      "payGapEqualWorkBody": "Personer, der udfører samme arbejde på samme senioritet. Vi sammenligner gennemsnitslønnen for kvinder og mænd i hver sådan gruppe.",
-      "payGapFlagsLabel": "Hvad flagene betyder",
-      "payGapFlagsBody": "Flaget er løngabet mellem kvinder og mænd i gruppen: over 10 % kræver handling, 5-10 % bør holdes øje med, under 5 % er ok. Grupper med kun ét køn viser intet gab: der er ingen sammenligning at foretage.",
       "equalityClockLabel": "Ligestillingsur",
       "equalityClockBody": "Løngabet udtrykt som tid: hvor stor en del af en 8-timers arbejdsdag det lavere lønnede køn arbejder uden tilsvarende løn. Det udledes af det gennemsnitlige gab, ikke af et skema.",
       "headlineGapLabel": "Løngab på organisationsniveau",
@@ -1948,8 +1939,6 @@
       "payQuartilesBody": "Alle med løn rangeres efter løn og deles i fire lige store grupper, fra den lavest betalte fjerdedel til den højeste. Hvis kvinder samler sig i de nedre kvartiler og mænd i de øvre, er lønniveauerne ujævnt fordelt (et glasloftmønster).",
       "payGapReasonsLabel": "Saglige grunde",
       "payGapReasonsBody": "Svensk lov kræver en saglig grund, for eksempel markedsforhold eller erfaring, for enhver lønforskel mellem sammenlignelige grupper. Vælg de faktorer, der gælder, og uddyb i tekstfeltet.",
-      "payGapDotPlotLabel": "Hvad viser prikdiagrammet?",
-      "payGapDotPlotBody": "Hver prik er én persons løn i denne gruppe, på gruppens primære mål: FTE-justeret grundløn (eller samlet løn, når gruppens forskel ligger i variable dele). Kvindernes række ligger over mændenes, de stiplede linjer markerer hvert køns gennemsnit, og det tonede bånd imellem dem er løngabet i kroner og procent. Hold musen over en prik for at se, hvem det er, og hvor langt personen ligger fra mændenes gennemsnit.",
       "payGapMemberDiffLabel": "Hvad betyder 'mod mændenes gennemsnit'?",
       "payGapMemberDiffBody": "Personens FTE-justerede løn minus gennemsnittet for mændene i denne gruppe, på gruppens primære mål. En negativ værdi betyder, at personen tjener mindre end mændenes gennemsnit; en positiv værdi mere. Deltidslønninger regnes op til fuldtidsækvivalent, så sammenligningen bliver lige for lige.",
       "payGapScatterLabel": "Hvad viser diagrammet?",
@@ -1957,7 +1946,8 @@
       "collaborationLabel": "Hvad er samarbejde?",
       "collaborationBody": "Samarbejde betyder at involvere medarbejderne og deres faglige repræsentanter i hvert trin af lønkortlægningen (diskrimineringslovens 3 kap. 11 §). Hvis organisationen er bundet af en kollektiv overenskomst, har de faglige repræsentanter ret til de oplysninger, de har brug for for at deltage (12 §).",
       "analysisProgressLabel": "Hvad tælles her?",
-      "analysisProgressBody": "Tællingen omfatter de trin, der skal dokumenteres, før lønkortlægningen kan afsluttes: samarbejdsredegørelsen, gennemgangen af lønfastsættelsespraksis, hver gruppe med lige arbejde, hvor der er en lønforskel til kvindernes ulempe, og hver kvindedomineret gruppe med en højere lønnet sammenligningsgruppe. Analyser uden dokumentationspligt tælles ikke."
+      "analysisProgressBody": "Tællingen omfatter de trin, der skal dokumenteres, før lønkortlægningen kan afsluttes: samarbejdsredegørelsen, gennemgangen af lønfastsættelsespraksis, hver gruppe med lige arbejde, hvor der er en lønforskel til kvindernes ulempe, og hver kvindedomineret gruppe med en højere lønnet sammenligningsgruppe. Analyser uden dokumentationspligt tælles ikke.",
+      "payGapScatterMeansBody": "De to stiplede linjer er kvindernes og mændenes gennemsnitsløn i gruppen, så du kan se, hvem der ligger over og under deres egen gruppes gennemsnit."
     },
     "widgetCard": {
       "expand": "Forstør"

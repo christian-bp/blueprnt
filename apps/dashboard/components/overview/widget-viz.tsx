@@ -23,7 +23,12 @@ import { useFormatter } from "next-intl"
 import { type ReactElement, useId } from "react"
 import { Area, AreaChart, XAxis, YAxis } from "recharts"
 import type { GenderSeries } from "@/components/gender-mark"
-import { CHART_TOOLTIP_TEXT, WIDGET_CHART_HEIGHT } from "@/lib/chart-style"
+import {
+  CHART_TOOLTIP_MOTION,
+  CHART_TOOLTIP_TEXT,
+  TOOLTIP_APPEAR,
+  WIDGET_CHART_HEIGHT,
+} from "@/lib/chart-style"
 import { signedPercentText } from "@/lib/percent"
 import { trendDomain } from "@/lib/trend-domain"
 
@@ -59,7 +64,8 @@ function TrendTooltipContent({
     <div
       className={cn(
         "grid min-w-36 max-w-48 gap-1 rounded-lg border border-border/50 bg-background px-2.5 py-2 shadow-xl",
-        CHART_TOOLTIP_TEXT
+        CHART_TOOLTIP_TEXT,
+        TOOLTIP_APPEAR
       )}
     >
       <div className="grid gap-0.5">
@@ -163,6 +169,7 @@ function TrendArea({
         <XAxis dataKey="key" hide />
         <YAxis hide domain={trendDomain(domainValues)} />
         <ChartTooltip
+          {...CHART_TOOLTIP_MOTION}
           cursor={false}
           position={TOOLTIP_ABOVE}
           content={tooltip}
@@ -298,7 +305,8 @@ function GapTrendTooltipContent({
     <div
       className={cn(
         "grid min-w-36 max-w-48 gap-1 rounded-lg border border-border/50 bg-background px-2.5 py-2 shadow-xl",
-        CHART_TOOLTIP_TEXT
+        CHART_TOOLTIP_TEXT,
+        TOOLTIP_APPEAR
       )}
     >
       <div className="grid gap-0.5">

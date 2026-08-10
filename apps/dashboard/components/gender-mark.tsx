@@ -2,7 +2,7 @@
 
 import { ChartTooltipContent } from "@workspace/ui/components/chart"
 import { cn } from "@workspace/ui/lib/utils"
-import { CHART_TOOLTIP_TEXT } from "@/lib/chart-style"
+import { CHART_TOOLTIP_TEXT, TOOLTIP_APPEAR } from "@/lib/chart-style"
 import type { ComponentProps, CSSProperties } from "react"
 import { useId } from "react"
 
@@ -107,39 +107,53 @@ export function genderMarkBorder(series: GenderSeries) {
 // d3-shape, where `size` is AREA in square pixels, so a triangle and a
 // circle at the same size cover the same amount of ink.
 //
-// Each mark carries a hairline stroke in the CARD's colour, not the ink.
-// Solid marks in one colour merge into a single blob where they overlap,
-// and a dot plot of 22 salaries overlaps constantly; a background-coloured
-// edge separates neighbours without adding a second visual channel. This is
-// the point family's counterpart to genderMarkBorder, which gives a
-// hatched AREA the silhouette it otherwise lacks.
-export const GENDER_DOT = {
-  women: {
-    shape: "triangle",
-    fill: "var(--gender-woman)",
-    stroke: "var(--card)",
-    strokeWidth: 1,
-  },
-  men: {
-    shape: "circle",
-    fill: "var(--gender-man)",
-    stroke: "var(--card)",
-    strokeWidth: 1,
-  },
-} as const
-
-// One point mark, drawn at (cx, cy) in SVG. Charts that let recharts place
-// their symbols get the shape through GENDER_DOT's `shape`; a chart that
-// renders its own dots (to add a selection ring, say) uses this, so the two
-// paths cannot drift into drawing different shapes for the same series.
+// A point mark's AREA, in square pixels, matching d3-shape's own convention
+// so a triangle and a circle at one size carry the same weight of ink. Every
+// scatter in the app draws at this one size; two of them had already drifted
+// to 64 and 78, which is a difference you cannot see side by side but which
+// makes the same person a different size on two surfaces.
 //
-// `size` is the mark's AREA, matching d3-shape's own convention, so a
-// triangle and a circle at one size cover the same ink.
+// Sized for a plot that overlaps: bigger marks read more easily on their own
+// and hide their neighbours in a cluster, and these charts exist to show
+// where INDIVIDUALS sit. Pointing at one is solved by the hit area below
+// rather than by ink.
+export const GENDER_POINT_SIZE = 90
+
+// Radius of each mark's invisible pointer target: 24px across, the minimum
+// WCAG 2.2 asks of a pointer target, against the ~11px the visible mark
+// covers.
+const GENDER_POINT_HIT_RADIUS = 12
+
+// A point's pointer target: invisible, and much larger than the mark it
+// stands for. SVG hit-testing follows the PAINT, so a 10px mark is a 10px
+// target, and landing on one takes aim.
+//
+// It is a SEPARATE element from the mark on purpose, and every chart drawing
+// these has to paint the whole hit LAYER before any mark (see the scatter's
+// series order). Drawn together with its own mark, a target 24px wide covers
+// the neighbours in a cluster: two people a few pixels apart, and whichever
+// is drawn second buries the first under its target, so the point behind
+// becomes unhoverable. Under all the marks, a target can only ever claim
+// EMPTY space, and every pixel of visible ink still answers for its own
+// point.
+//
+// `transparent`, never `none`: they look identical and only the former is
+// painted, so `none` would leave this catching nothing at all.
+export function GenderPointHitArea({ cx, cy }: { cx: number; cy: number }) {
+  return (
+    <circle cx={cx} cy={cy} r={GENDER_POINT_HIT_RADIUS} fill="transparent" />
+  )
+}
+
+// One point mark, drawn at (cx, cy) in SVG. Every scatter draws through this,
+// whether recharts places the symbol or the chart places its own (to add a
+// selection ring, say), so no two of them can drift into different shapes,
+// sizes or hit areas for the same series.
 export function GenderPointMark({
   cx,
   cy,
   series,
-  size = 64,
+  size = GENDER_POINT_SIZE,
 }: {
   cx: number
   cy: number
@@ -283,7 +297,7 @@ export function GenderTooltipContent({
     <ChartTooltipContent
       {...props}
       payload={payload}
-      className={cn(CHART_TOOLTIP_TEXT, className)}
+      className={cn(CHART_TOOLTIP_TEXT, TOOLTIP_APPEAR, className)}
       // The `formatter` slot replaces ChartTooltipContent's whole row, which is
       // the only way to get the hover and the legend byte-identical: matching
       // the vendor row's own classes from outside is impossible, because it

@@ -187,7 +187,7 @@ in the same change.
   raderingsförbehåll.
 - [ ] **Native review of the Iteration 2 pay-mapping strings (nb/da/fi).**
   The 2026-08-06 analysis-views rebuild added ~140 keys per locale
-  (`dashboard.payMapping.detail/dotPlot/crossLevel/actions/actionsOverview/
+  (`dashboard.payMapping.detail/scatter/crossLevel/actions/actionsOverview/
   deepDive/womenAhead.*`, the `finding.lessTcc`/`lessTccWorse` variants,
   action/note toasts, audit event/field/value labels, and the five new
   `dashboard.help.*` pairs), plus slice C2's two new reason labels
@@ -215,7 +215,10 @@ in the same change.
   format (`dashboard.payMapping.analysis.chapterTab`). All machine-drafted.
   One phrasing needs particular care because a reader may take it as a claim
   about their own data: `widgets.gapTrend.unmeasuredEmpty`, which says a
-  mapping had no MEASURABLE gap, not that it had no gap.
+  mapping had no MEASURABLE gap, not that it had no gap. The same wave's
+  `dashboard.help.payGapScatterMeansBody` (the sentence explaining the two
+  average lines the equal-work scatter draws) is machine-drafted too and
+  belongs in this review.
 - [ ] **Gate `deletePayMappingRun` on run status.** The mutation currently
   hard-deletes a run (and its snapshot rows + group analyses) regardless of
   `status`, including a `completed` run, which is the statutory kartläggning

@@ -1201,13 +1201,6 @@
         "noteBadge": "{count, plural, one {# merkintä} other {# merkintää}}",
         "priorityLabel": "Prioriteetti"
       },
-      "dotPlot": {
-        "title": "Palkka-asemat ryhmässä",
-        "pay": "Palkka",
-        "diff": "Ero miesten keskiarvoon",
-        "womenMean": "Naisten ka.",
-        "menMean": "Miesten ka."
-      },
       "detail": {
         "population": "Mukana olevat henkilöt",
         "notFound": "Palkkakartoitusta ei löytynyt.",
@@ -1367,7 +1360,7 @@
         "lockedHint": "Palkkakartoitus on valmis ja lukittu. Avaa se uudelleen yleiskatsauksesta muokataksesi."
       },
       "scatter": {
-        "titleEqualWork": "Ryhmän henkilöt",
+        "titleEqualWork": "Palkka-asemat ryhmässä",
         "titleEquivalentWork": "Vertailun henkilöt",
         "xAge": "Ikä",
         "xTenure": "Palvelusaika (vuotta)",
@@ -1380,7 +1373,9 @@
         "omittedAge": "{count, plural, one {# henkilöä ei näytetä: syntymäaika puuttuu} other {# henkilöä ei näytetä: syntymäaika puuttuu}}",
         "omittedTenure": "{count, plural, one {# henkilöä ei näytetä: aloituspäivä puuttuu} other {# henkilöä ei näytetä: aloituspäivä puuttuu}}",
         "emptyAge": "Kenelläkään täällä ei ole vielä sekä kirjattua palkkaa että syntymäaikaa.",
-        "emptyTenure": "Kenelläkään täällä ei ole vielä sekä kirjattua palkkaa että aloituspäivää."
+        "emptyTenure": "Kenelläkään täällä ei ole vielä sekä kirjattua palkkaa että aloituspäivää.",
+        "womenMean": "Naisten ka.",
+        "menMean": "Miesten ka."
       },
       "documentation": {
         "complete": "Viimeistele palkkakartoitus",
@@ -1936,10 +1931,6 @@
       "payMappingBody": "Palkkakartoitus on jäädytetty tilannekuva palkoista, rooleista ja demografiasta yhtenä ajankohtana. Kaikki tasa-arvoanalyysi tehdään jäädytetystä kopiosta, ei koskaan elävästä datasta, jotta luvut eivät voi muuttua altanne.",
       "referenceDateLabel": "Mikä on viitepäivä?",
       "referenceDateBody": "Päivä, jota tilannekuva edustaa. Se asetetaan tämän päivän päivämääräksi, kun aloitatte kartoituksen.",
-      "payGapEqualWorkLabel": "Sama työ",
-      "payGapEqualWorkBody": "Henkilöt, jotka tekevät samaa työtä samalla senioriteetilla. Vertaamme naisten ja miesten keskipalkkaa kussakin tällaisessa ryhmässä.",
-      "payGapFlagsLabel": "Mitä merkinnät tarkoittavat",
-      "payGapFlagsBody": "Merkintä on naisten ja miesten välinen palkkaero ryhmässä: yli 10 % vaatii toimia, 5-10 % kannattaa seurata, alle 5 % on ok. Ryhmät, joissa on vain yksi sukupuoli, eivät näytä eroa: vertailtavaa ei ole.",
       "equalityClockLabel": "Tasa-arvokello",
       "equalityClockBody": "Palkkaero ilmaistuna aikana: kuinka suuren osan 8-tuntisesta työpäivästä pienempipalkkainen sukupuoli tekee ilman vastaavaa palkkaa. Se johdetaan keskimääräisestä erosta, ei työvuorolistasta.",
       "headlineGapLabel": "Organisaatiotason palkkaero",
@@ -1948,8 +1939,6 @@
       "payQuartilesBody": "Kaikki palkalliset asetetaan palkan mukaan järjestykseen ja jaetaan neljään yhtä suureen ryhmään, pienipalkkaisimmasta neljänneksestä suurimpaan. Jos naiset keskittyvät alempiin neljänneksiin ja miehet ylempiin, palkkatasot jakautuvat epätasaisesti (lasikattokuvio).",
       "payGapReasonsLabel": "Asialliset perusteet",
       "payGapReasonsBody": "Ruotsin laki edellyttää asiallista perustetta, esimerkiksi markkinatilannetta tai kokemusta, jokaiselle vertailukelpoisten ryhmien väliselle palkkaerolle. Valitse tekijät, jotka koskevat tilannetta, ja tarkenna tekstikentässä.",
-      "payGapDotPlotLabel": "Mitä pisteet kertovat?",
-      "payGapDotPlotBody": "Jokainen piste on yhden henkilön palkka tässä ryhmässä ryhmän ensisijaisella mittarilla: FTE-korjattu peruspalkka (tai kokonaiskorvaus, kun ryhmän ero on muuttuvissa osissa). Naisten rivi on miesten yläpuolella, katkoviivat merkitsevät kummankin sukupuolen keskiarvon, ja niiden välinen sävytetty kaista on palkkaero kruunuina ja prosentteina. Vie osoitin pisteen päälle nähdäksesi kuka henkilö on ja kuinka kaukana hän on miesten keskiarvosta.",
       "payGapMemberDiffLabel": "Mitä 'ero miesten keskiarvoon' tarkoittaa?",
       "payGapMemberDiffBody": "Henkilön FTE-korjattu palkka miinus tämän ryhmän miesten keskiarvo ryhmän ensisijaisella mittarilla. Negatiivinen arvo tarkoittaa, että henkilö ansaitsee vähemmän kuin miesten keskiarvo; positiivinen arvo enemmän. Osa-aikapalkat korotetaan kokoaikavastaaviksi, jotta vertailu on yhdenmukainen.",
       "payGapScatterLabel": "Mitä kaavio näyttää?",
@@ -1957,7 +1946,8 @@
       "collaborationLabel": "Mitä yhteistoiminta tarkoittaa?",
       "collaborationBody": "Yhteistoiminta tarkoittaa henkilöstön ja heidän luottamusmiestensä osallistamista palkkakartoituksen kaikissa vaiheissa (syrjintälain 3 luvun 11 §). Jos organisaationne on sidottu työehtosopimukseen, luottamusmiehillä on oikeus saada tarvitsemansa tiedot osallistuakseen (12 §).",
       "analysisProgressLabel": "Mitä tässä lasketaan?",
-      "analysisProgressBody": "Laskenta kattaa vaiheet, jotka on dokumentoitava ennen palkkakartoituksen viimeistelyä: yhteistoimintaselvitys, palkanmäärityskäytännön läpikäynti, jokainen samanarvoisen työn ryhmä, jossa on naisten kannalta epäedullinen palkkaero, ja jokainen naisvaltainen ryhmä, jolla on korkeammin palkattu vertailuryhmä. Analyyseja ilman dokumentointivelvoitetta ei lasketa."
+      "analysisProgressBody": "Laskenta kattaa vaiheet, jotka on dokumentoitava ennen palkkakartoituksen viimeistelyä: yhteistoimintaselvitys, palkanmäärityskäytännön läpikäynti, jokainen samanarvoisen työn ryhmä, jossa on naisten kannalta epäedullinen palkkaero, ja jokainen naisvaltainen ryhmä, jolla on korkeammin palkattu vertailuryhmä. Analyyseja ilman dokumentointivelvoitetta ei lasketa.",
+      "payGapScatterMeansBody": "Katkoviivat ovat naisten ja miesten keskipalkat ryhmässä, joten näet ketkä ovat oman ryhmänsä keskiarvon ylä- ja alapuolella."
     },
     "widgetCard": {
       "expand": "Suurenna"

@@ -3,8 +3,9 @@ import { join } from "node:path"
 import { cleanup, render } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
 import {
-  GENDER_DOT,
+  GENDER_POINT_SIZE,
   genderMarkBorder,
+  GenderPointHitArea,
   GenderPointMark,
   GenderHatch,
   GenderMenIcon,
@@ -70,26 +71,95 @@ describe("gender marks", () => {
     expect(new Set(ids).size).toBe(2)
   })
 
+  // These two used to be asserted against a constant of shape/fill/stroke
+  // values that every scatter spread onto its series. Its last consumer went
+  // with the swimlane dot plot, so the invariants moved onto the mark that
+  // actually draws: the DOM is now the thing under test, which a constant
+  // could only stand in for.
   it("separates point marks by SHAPE, not by colour or by fill", () => {
     // Shape carries the whole distinction on a point mark: two overlapping
     // marks differing only in fill cannot be counted, and a hatch cannot
     // survive a mark narrower than its pattern tile.
-    expect(GENDER_DOT.women.shape).toBe("triangle")
-    expect(GENDER_DOT.men.shape).toBe("circle")
+    const { container } = render(
+      <svg aria-label="marks">
+        <GenderPointMark cx={20} cy={20} series="women" />
+        <GenderPointMark cx={60} cy={20} series="men" />
+      </svg>
+    )
+    // The triangle is a path, the circle a circle. Each mark's own shape, and
+    // never the other's.
+    const triangle = container.querySelector("path")
+    const circle = container.querySelector("circle")
+    expect(triangle).not.toBeNull()
+    expect(circle).not.toBeNull()
     // Both solid, each in its own ink. Outlining one series made it read as
     // the secondary case and was the harder hover target.
-    expect(GENDER_DOT.women.fill).toBe("var(--gender-woman)")
-    expect(GENDER_DOT.men.fill).toBe("var(--gender-man)")
+    expect(triangle?.getAttribute("fill")).toBe("var(--gender-woman)")
+    expect(circle?.getAttribute("fill")).toBe("var(--gender-man)")
   })
 
   it("edges every point mark in the card's colour, never its own ink", () => {
-    // Solid marks in one colour merge where they overlap, and a dot plot of
-    // 22 salaries overlaps constantly. A background-coloured hairline
-    // separates neighbours without adding a second visual channel.
-    for (const mark of [GENDER_DOT.women, GENDER_DOT.men]) {
-      expect(mark.stroke).toBe("var(--card)")
-      expect(mark.strokeWidth).toBeGreaterThan(0)
+    // Solid marks in one colour merge where they overlap, and a plot of 22
+    // salaries overlaps constantly. A background-coloured hairline separates
+    // neighbours without adding a second visual channel.
+    const { container } = render(
+      <svg aria-label="marks">
+        <GenderPointMark cx={20} cy={20} series="women" />
+        <GenderPointMark cx={60} cy={20} series="men" />
+      </svg>
+    )
+    for (const mark of container.querySelectorAll("path, circle")) {
+      expect(mark.getAttribute("stroke")).toBe("var(--card)")
+      expect(Number(mark.getAttribute("stroke-width"))).toBeGreaterThan(0)
     }
+  })
+
+  // Pointing at a 10px mark takes aim, and a reader checking a dozen people
+  // gives up. The target is an invisible circle instead, because growing the
+  // mark would hide the neighbours these plots exist to show.
+  it("gives a point a pointer target far larger than its ink", () => {
+    const { container } = render(
+      <svg aria-label="targets">
+        <GenderPointHitArea cx={20} cy={20} />
+      </svg>
+    )
+    const hit = container.querySelector("circle")
+    // 24px across: the minimum WCAG 2.2 asks of a pointer target, and well
+    // over twice the visible mark.
+    expect(Number(hit?.getAttribute("r")) * 2).toBeGreaterThanOrEqual(24)
+    // `transparent`, not `none`: SVG hit-testing follows the paint, so `none`
+    // would look identical and catch nothing.
+    expect(hit?.getAttribute("fill")).toBe("transparent")
+  })
+
+  // The target ships SEPARATELY from the mark, and that is the whole point of
+  // it: drawn together, a 24px target buries the neighbour behind it, and two
+  // people a few pixels apart left the one behind unhoverable. A chart has to
+  // paint the whole target layer before any mark, so a target can only claim
+  // empty space.
+  it("keeps the mark free of its own target, so a mark can never bury a neighbour", () => {
+    const { container } = render(
+      <svg aria-label="marks">
+        <GenderPointMark cx={20} cy={20} series="women" />
+        <GenderPointMark cx={60} cy={20} series="men" />
+      </svg>
+    )
+    expect(
+      container.querySelectorAll("circle[fill='transparent']")
+    ).toHaveLength(0)
+  })
+
+  // One size for every scatter in the app. Two of them had drifted to 64 and
+  // 78, a difference invisible side by side that still made the same person a
+  // different size on two surfaces.
+  it("draws every scatter's marks at one shared size", () => {
+    const { container } = render(
+      <svg aria-label="default">
+        <GenderPointMark cx={20} cy={20} series="men" />
+      </svg>
+    )
+    const radius = Number(container.querySelector("circle")?.getAttribute("r"))
+    expect(Math.PI * radius * radius).toBeCloseTo(GENDER_POINT_SIZE, 1)
   })
 
   it("draws both point shapes at equal area", () => {
@@ -206,6 +276,63 @@ describe("gender ChartConfigs", () => {
           offenders.push(`${path}: ${tooltip.slice(0, 40)}`)
         }
       }
+    }
+    expect(offenders).toEqual([])
+  })
+
+  // Recharts positions its tooltip by translating one wrapper and transitions
+  // that transform, so a tooltip left on the default slides in from the
+  // chart's top-left corner on the first hover and slides between points
+  // after that: it arrives from somewhere other than the thing it describes.
+  // One chart forgetting this reads differently from every other.
+  it("turns off the sliding tooltip on every chart", () => {
+    const offenders: string[] = []
+    for (const [path, source] of files) {
+      if (path.includes(".test.")) continue
+      for (const [tooltip] of source.matchAll(/<ChartTooltip\b[\s\S]*?\/>/g)) {
+        if (!tooltip.includes("CHART_TOOLTIP_MOTION")) {
+          offenders.push(`${path}: ${tooltip.slice(0, 40)}`)
+        }
+      }
+    }
+    expect(offenders).toEqual([])
+  })
+
+  // With the slide gone, the panel would pop. The fade that replaces it lives
+  // on the panel's own class list, so it has to be added per tooltip; this
+  // guards at file granularity (a file that builds a tooltip panel mentions
+  // CHART_TOOLTIP_TEXT), which is coarse but catches the whole-surface misses
+  // this is actually about.
+  it("fades in every tooltip panel it stopped sliding", () => {
+    const offenders: string[] = []
+    for (const [path, source] of files) {
+      if (path.includes(".test.")) continue
+      if (!source.includes("CHART_TOOLTIP_TEXT")) continue
+      if (!source.includes("TOOLTIP_APPEAR")) offenders.push(path)
+    }
+    expect(offenders).toEqual([])
+  })
+
+  // Targets ride in their own series, declared before the marks, so recharts
+  // paints the whole target layer first. Getting that order wrong is what made
+  // a point behind another unhoverable, and it is invisible on screen: nothing
+  // about the drawing changes, only which element answers the pointer.
+  it("paints every chart's target layer before any of its marks", () => {
+    const offenders: string[] = []
+    for (const [path, source] of files) {
+      if (path.includes(".test.") || !source.includes("target")) continue
+      const series = [...source.matchAll(/<Scatter\s+name="([\w-]+)"/g)].map(
+        (match) => match[1] ?? ""
+      )
+      if (series.length === 0) continue
+      const lastTarget = series.reduce(
+        (last, name, index) => (name.endsWith("-target") ? index : last),
+        -1
+      )
+      const firstMark = series.findIndex((name) => !name.endsWith("-target"))
+      if (lastTarget === -1 || firstMark === -1) continue
+      if (lastTarget > firstMark)
+        offenders.push(`${path}: ${series.join(", ")}`)
     }
     expect(offenders).toEqual([])
   })

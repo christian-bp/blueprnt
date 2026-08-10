@@ -22,6 +22,7 @@ import {
 } from "recharts"
 import {
   GenderDotIcon,
+  GenderPointHitArea,
   GenderPointMark,
   GenderLegend,
   GenderMenIcon,
@@ -29,7 +30,11 @@ import {
 import { useOrganization } from "@/components/org-context"
 import { WidgetCard } from "@/components/widget-card"
 import { useMoney } from "@/hooks/use-money"
-import { CHART_TOOLTIP_TEXT } from "@/lib/chart-style"
+import {
+  CHART_TOOLTIP_MOTION,
+  CHART_TOOLTIP_TEXT,
+  TOOLTIP_APPEAR,
+} from "@/lib/chart-style"
 import {
   buildPayComparisonRows,
   type PayComparisonPoint,
@@ -169,7 +174,8 @@ export function PayComparisonTooltip({
     <div
       className={cn(
         "min-w-40 rounded-md border bg-popover px-3 py-2 text-popover-foreground shadow-md",
-        CHART_TOOLTIP_TEXT
+        CHART_TOOLTIP_TEXT,
+        TOOLTIP_APPEAR
       )}
     >
       {/* Identity: name (brand for the viewed person) over a muted subtitle,
@@ -260,10 +266,14 @@ function GenderDot({
         cx={cx}
         cy={cy}
         series={payload?.gender === "Man" ? "men" : "women"}
-        size={78}
       />
     </>
   )
+}
+
+function GenderHit({ cx, cy }: { cx?: number; cy?: number }) {
+  if (cx === undefined || cy === undefined) return null
+  return <GenderPointHitArea cx={cx} cy={cy} />
 }
 
 function PayComparisonChart({
@@ -348,6 +358,7 @@ function PayComparisonChart({
             strokeDasharray="4 4"
           />
           <ChartTooltip
+            {...CHART_TOOLTIP_MOTION}
             cursor={false}
             content={({ active, payload }) => {
               if (active !== true || payload === undefined) return null
@@ -364,6 +375,10 @@ function PayComparisonChart({
               )
             }}
           />
+          {/* Pointer targets first, as their own layer: see
+              GenderPointHitArea for why they cannot ride with their marks. */}
+          <Scatter name="man-target" data={men} shape={GenderHit} />
+          <Scatter name="woman-target" data={women} shape={GenderHit} />
           <Scatter name="man" data={men} shape={GenderDot} />
           <Scatter name="woman" data={women} shape={GenderDot} />
         </ScatterChart>
