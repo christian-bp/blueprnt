@@ -14,38 +14,34 @@ vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
-const createRoleMock = vi.fn()
 const pushMock = vi.fn()
 
-vi.mock("convex/react", () => ({
-  useMutation: (ref: unknown) => {
-    if (ref === "assessment.roles.createRole") return createRoleMock
-    return vi.fn()
-  },
-  // The nested FamilyPicker lists families; no families needed for these tests.
-  useQuery: () => [],
-}))
-
-vi.mock("@workspace/backend/convex/_generated/api", () => ({
-  api: {
-    assessment: {
-      roles: { createRole: "assessment.roles.createRole" },
-      families: {
-        listRoleFamilies: "assessment.families.listRoleFamilies",
-        createRoleFamily: "assessment.families.createRoleFamily",
-      },
-    },
-  },
-}))
+vi.mock(
+  "convex/react",
+  async () => (await import("@/test/convex-mocks")).convexReactModule
+)
+vi.mock(
+  "@workspace/backend/convex/_generated/api",
+  async () => (await import("@/test/convex-mocks")).apiModule
+)
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: pushMock }),
 }))
 
 import { toast } from "@/lib/toast"
+import { mockAction, mockMutation, onQuery } from "@/test/convex-mocks"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
 
+const createRoleMock = mockMutation("assessment.roles.createRole")
+const draftMock = mockAction("ai.draft.draftNewRoleProfile")
+// The nested FamilyPicker lists families; no families needed for these tests.
+onQuery(() => [])
+
 const labels = messages.dashboard.roles.create
+const profile = messages.assessment.role
+const ai = messages.dashboard.ai
+const rolesAi = messages.dashboard.roles.ai
 
 const TRACKS = [
   { key: "IC", name: "Individual contributor", order: 1 },
@@ -77,6 +73,7 @@ function renderDialog(
 describe("CreateRoleDialog", () => {
   beforeEach(() => {
     createRoleMock.mockReset()
+    draftMock.mockReset()
     pushMock.mockReset()
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
@@ -197,6 +194,80 @@ describe("CreateRoleDialog", () => {
       expect(screen.getByText(messages.errors.roleExists)).toBeDefined()
     })
     // The duplicate never reaches the server (no thrown ConvexError).
+    expect(createRoleMock).not.toHaveBeenCalled()
+  })
+
+  it("submits the job profile when purpose and responsibilities are filled", async () => {
+    createRoleMock.mockResolvedValue({ roleId: "role-new", slug: "role-new" })
+    renderDialog()
+    fireEvent.click(screen.getByRole("button", { name: labels.title }))
+    fireEvent.change(screen.getByLabelText(labels.titleLabel), {
+      target: { value: "Junior Developer" },
+    })
+    fireEvent.change(screen.getByLabelText(profile.purpose), {
+      target: { value: "Builds the product." },
+    })
+    fireEvent.change(screen.getByLabelText(profile.responsibilities), {
+      target: { value: "Ships features\nReviews code" },
+    })
+    const form = screen
+      .getByLabelText(labels.titleLabel)
+      .closest("form") as HTMLFormElement
+    fireEvent.submit(form)
+    await waitFor(() => {
+      expect(createRoleMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        title: "Junior Developer",
+        function: "",
+        team: "",
+        trackKey: "IC",
+        purpose: "Builds the product.",
+        responsibilities: "Ships features\nReviews code",
+      })
+    })
+  })
+
+  it("fills both profile fields from the AI draft, keyed to the typed identity", async () => {
+    draftMock.mockResolvedValue({
+      purpose: "Builds and runs the services.",
+      responsibilities: "Owns delivery",
+    })
+    renderDialog()
+    fireEvent.click(screen.getByRole("button", { name: labels.title }))
+    fireEvent.change(screen.getByLabelText(labels.titleLabel), {
+      target: { value: "Backend Developer" },
+    })
+    fireEvent.change(screen.getByLabelText(labels.functionLabel), {
+      target: { value: "Engineering" },
+    })
+
+    fireEvent.click(screen.getByRole("button", { name: ai.fillCta }))
+    fireEvent.click(
+      await screen.findByRole("button", { name: rolesAi.draftCta })
+    )
+
+    await waitFor(() => {
+      // The draft is generated from what is CURRENTLY typed, not from the
+      // values the dialog opened with.
+      expect(draftMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        locale: "en",
+        title: "Backend Developer",
+        function: "Engineering",
+        team: "",
+        trackKey: "IC",
+      })
+    })
+    await waitFor(() => {
+      expect(
+        (screen.getByLabelText(profile.purpose) as HTMLTextAreaElement).value
+      ).toBe("Builds and runs the services.")
+    })
+    expect(
+      (screen.getByLabelText(profile.responsibilities) as HTMLTextAreaElement)
+        .value
+    ).toBe("Owns delivery")
+    // Drafting never creates the role: the user reviews, then submits.
     expect(createRoleMock).not.toHaveBeenCalled()
   })
 

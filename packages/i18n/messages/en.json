@@ -538,7 +538,7 @@
       "empty": "No employees imported yet. Import your payroll data to start classifying.",
       "createRole": {
         "title": "Create role",
-        "description": "Create a new role and assign it to these employees.",
+        "description": "Create a new role and assign it to these employees. You can draft purpose and responsibilities with AI, or leave them for later.",
         "titleLabel": "Title",
         "functionLabel": "Function/department (optional)",
         "teamLabel": "Team (optional)",
@@ -988,7 +988,7 @@
       },
       "create": {
         "title": "New role",
-        "description": "The basics first. Purpose and responsibilities can be drafted with AI on the role page.",
+        "description": "Fill in the basics. You can draft purpose and responsibilities with AI, or leave them for later.",
         "titleLabel": "Title",
         "titlePlaceholder": "e.g. Junior Software Developer",
         "functionLabel": "Function/department (optional)",
@@ -997,6 +997,10 @@
         "cta": "Create role",
         "cancel": "Cancel",
         "error": "The role could not be created. Try again."
+      },
+      "form": {
+        "responsibilitiesHint": "One responsibility per line",
+        "aiProvenance": "Review and edit the draft before you create the role."
       },
       "family": {
         "none": "No family",
@@ -1030,7 +1034,6 @@
         "doneCta": "Done",
         "saveCta": "Save",
         "saveError": "Could not save. Try again.",
-        "responsibilitiesHint": "One responsibility per line",
         "profileIncompleteTitle": "Complete the job profile first",
         "profileIncomplete": "Fill in purpose and responsibilities before rating.",
         "rateCta": "Rate role",
@@ -1059,7 +1062,8 @@
       "ai": {
         "descriptionLabel": "Describe the role (optional)",
         "draftCta": "Draft job profile with AI",
-        "error": "Something went wrong. Try again."
+        "error": "Something went wrong. Try again.",
+        "titleFirst": "Enter a role title first, so the AI has something to work from."
       },
       "anchor": {
         "heading": "Anchor role",

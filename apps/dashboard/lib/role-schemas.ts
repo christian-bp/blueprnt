@@ -1,3 +1,4 @@
+import { MAX_ROLE_PROFILE_FIELD } from "@workspace/constants"
 import { z } from "zod"
 import type { ValidationT } from "@/lib/validation"
 
@@ -26,6 +27,15 @@ export function makeCreateRoleSchema(
       team: z.string().trim(),
       trackKey: z.enum(["IC", "Lead", "M"], { message: t("required") }),
       familyId: z.string().nullable(),
+      // The job profile core, optional at creation: a role may be created
+      // empty and completed later (profileComplete gates rating, not create).
+      // The cap mirrors the backend's per-field limit so anything the form
+      // accepts can always be saved.
+      purpose: z.string().trim().max(MAX_ROLE_PROFILE_FIELD, t("maxLength")),
+      responsibilities: z
+        .string()
+        .trim()
+        .max(MAX_ROLE_PROFILE_FIELD, t("maxLength")),
     })
     .superRefine((data, ctx) => {
       const lowered = data.title.trim().toLowerCase()

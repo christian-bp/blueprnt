@@ -538,7 +538,7 @@
       "empty": "Inga anställda importerade ännu. Importera lönedata för att börja klassificera.",
       "createRole": {
         "title": "Skapa roll",
-        "description": "Skapa en ny roll och tilldela den till dessa anställda.",
+        "description": "Skapa en ny roll och koppla den till dessa medarbetare. Du kan skapa syfte och ansvarsområden med AI, eller lämna dem till senare.",
         "titleLabel": "Titel",
         "functionLabel": "Funktion/avdelning (valfritt)",
         "teamLabel": "Team (valfritt)",
@@ -988,7 +988,7 @@
       },
       "create": {
         "title": "Ny roll",
-        "description": "Grunderna först. Syfte och ansvarsområden kan tas fram med hjälp av AI på rollsidan.",
+        "description": "Fyll i grunderna. Du kan skapa syfte och ansvarsområden med AI, eller lämna dem till senare.",
         "titleLabel": "Titel",
         "titlePlaceholder": "t.ex. Junior Software Developer",
         "functionLabel": "Funktion/avdelning (valfritt)",
@@ -997,6 +997,10 @@
         "cta": "Skapa roll",
         "cancel": "Avbryt",
         "error": "Rollen kunde inte skapas. Försök igen."
+      },
+      "form": {
+        "responsibilitiesHint": "Ett ansvarsområde per rad",
+        "aiProvenance": "Granska och redigera utkastet innan du skapar rollen."
       },
       "family": {
         "none": "Ingen familj",
@@ -1030,7 +1034,6 @@
         "doneCta": "Klar",
         "saveCta": "Spara",
         "saveError": "Kunde inte spara. Försök igen.",
-        "responsibilitiesHint": "Ett ansvarsområde per rad",
         "profileIncompleteTitle": "Slutför jobbprofilen först",
         "profileIncomplete": "Fyll i syfte och ansvarsområden innan betygsättning.",
         "rateCta": "Betygsätt roll",
@@ -1059,7 +1062,8 @@
       "ai": {
         "descriptionLabel": "Beskriv rollen (frivilligt)",
         "draftCta": "Skapa utkast med hjälp av AI",
-        "error": "Något gick fel. Försök igen."
+        "error": "Något gick fel. Försök igen.",
+        "titleFirst": "Ange en rolltitel först, så att AI:n har något att utgå från."
       },
       "anchor": {
         "heading": "Ankarroll",

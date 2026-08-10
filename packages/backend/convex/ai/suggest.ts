@@ -1,13 +1,14 @@
 import {
   MAX_FAMILIES,
+  MAX_ROLE_TITLE,
   MAX_ROLES,
   MAX_STARTER_IMPORT_TEXT,
   SUGGESTION_KINDS,
 } from "@workspace/constants"
 import { isWeightPoints } from "@workspace/core"
-import { v } from "convex/values"
+import { type Infer, v } from "convex/values"
 import { components, internal } from "../_generated/api"
-import type { MutationCtx } from "../_generated/server"
+import type { MutationCtx, QueryCtx } from "../_generated/server"
 import { internalQuery } from "../_generated/server"
 import { deriveResults } from "../assessment/compute"
 import {
@@ -25,10 +26,11 @@ import {
   TRACK_KEYS,
   templateContent,
 } from "../evaluationModel/standardTemplate"
+import { trackKeyValidator } from "../evaluationModel/tables"
 import { AUDIT_EVENTS, buildCreateChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
-import { AI_MODEL_ID, AI_PROVIDER } from "./config"
+import { AI_MODEL_ID, AI_PROVIDER, MAX_PROMPT_IDENTITY_FIELD } from "./config"
 import { isSuggestionClosed } from "./persist"
 import { repairDraftWeights } from "./weights"
 
@@ -784,6 +786,101 @@ export const rejectSuggestion = orgMutation({
   },
 })
 
+// The prompt context both role-draft collectors return: org framing plus the
+// role's identity. Declared once so the saved-role and unsaved-role collectors
+// cannot drift apart (they feed the same generateRoleProfileText input).
+const roleDraftContextValidator = v.object({
+  actorId: v.string(),
+  input: v.object({
+    locale: v.string(),
+    industry: v.string(),
+    employeeCount: v.optional(v.number()),
+    country: v.string(),
+    title: v.string(),
+    trackName: v.string(),
+    roleFunction: v.string(),
+    team: v.string(),
+    family: v.optional(v.string()),
+  }),
+})
+
+// Membership re-check for the draft collectors: the action only has the
+// caller's identity, so org scope is established here before any read.
+async function requireDraftMembership(
+  ctx: QueryCtx,
+  orgId: string,
+  userId: string
+): Promise<void> {
+  let membership: { role: string } | null
+  try {
+    membership = await ctx.runQuery(
+      components.betterAuth.membership.getMembership,
+      { organizationId: orgId, userId }
+    )
+  } catch {
+    throw appError(ERROR_CODES.membershipConflict)
+  }
+  if (membership === null) throw appError(ERROR_CODES.notAMember)
+}
+
+// Builds the role-profile prompt input from a role's identity (saved or not).
+// Takes the family NAME already resolved, because resolving it is where the
+// two callers legitimately differ: a stored id is trusted and degrades to
+// family-less if it dangles, a caller-supplied one is checked and rejected.
+async function buildRoleDraftInput(
+  ctx: QueryCtx,
+  args: {
+    orgId: string
+    locale: string | undefined
+    role: {
+      title: string
+      trackKey: Infer<typeof trackKeyValidator>
+      roleFunction: string
+      team: string
+      family: string | undefined
+    }
+  }
+) {
+  const settings = await ctx.db
+    .query("organizations")
+    .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+    .unique()
+  if (
+    settings === null ||
+    !settings.country ||
+    !settings.language ||
+    !settings.industry
+  ) {
+    throw appError(ERROR_CODES.profileIncomplete)
+  }
+
+  const generationLocale = promptLocale(args.locale, settings.language)
+  const trackName = templateContent(clampLocale(generationLocale)).trackNames[
+    args.role.trackKey
+  ]
+
+  // Identity fields are clamped HERE rather than at each caller so both paths
+  // are bounded: neither a caller-supplied value nor a stored one (function
+  // and team have no length check on the way in) can grow the model call.
+  const clamp = (value: string) => value.slice(0, MAX_PROMPT_IDENTITY_FIELD)
+
+  return {
+    locale: generationLocale,
+    industry: settings.industry,
+    country: settings.country,
+    ...(settings.employeeCount !== undefined
+      ? { employeeCount: settings.employeeCount }
+      : {}),
+    title: clamp(args.role.title),
+    trackName,
+    roleFunction: clamp(args.role.roleFunction),
+    team: clamp(args.role.team),
+    ...(args.role.family !== undefined
+      ? { family: clamp(args.role.family) }
+      : {}),
+  }
+}
+
 // Resolves ONE role's prompt context for the interactive draft action, in a
 // single org-scoped read. Membership is re-checked here (the action only has
 // the caller's identity), mirroring collectPrefillTargets: a foreign org, a
@@ -796,31 +893,9 @@ export const collectRoleDraftContext = internalQuery({
     roleId: v.id("roles"),
     locale: v.optional(v.string()),
   },
-  returns: v.object({
-    actorId: v.string(),
-    input: v.object({
-      locale: v.string(),
-      industry: v.string(),
-      employeeCount: v.optional(v.number()),
-      country: v.string(),
-      title: v.string(),
-      trackName: v.string(),
-      roleFunction: v.string(),
-      team: v.string(),
-      family: v.optional(v.string()),
-    }),
-  }),
+  returns: roleDraftContextValidator,
   handler: async (ctx, { orgId, userId, roleId, locale }) => {
-    let membership: { role: string } | null
-    try {
-      membership = await ctx.runQuery(
-        components.betterAuth.membership.getMembership,
-        { organizationId: orgId, userId }
-      )
-    } catch {
-      throw appError(ERROR_CODES.membershipConflict)
-    }
-    if (membership === null) throw appError(ERROR_CODES.notAMember)
+    await requireDraftMembership(ctx, orgId, userId)
 
     const role = await ctx.db.get(roleId)
     if (role === null || role.orgId !== orgId) {
@@ -830,23 +905,9 @@ export const collectRoleDraftContext = internalQuery({
       throw appError(ERROR_CODES.roleLocked)
     }
 
-    const settings = await ctx.db
-      .query("organizations")
-      .withIndex("by_org", (q) => q.eq("orgId", orgId))
-      .unique()
-    if (
-      settings === null ||
-      !settings.country ||
-      !settings.language ||
-      !settings.industry
-    ) {
-      throw appError(ERROR_CODES.profileIncomplete)
-    }
-
-    const generationLocale = promptLocale(locale, settings.language)
-    const trackName = templateContent(clampLocale(generationLocale)).trackNames[
-      role.trackKey
-    ]
+    // The role's own stored family id: trusted, and the family is optional
+    // prompt context, so a dangling id degrades to family-less rather than
+    // failing the draft (the behavior this path has always had).
     const family =
       role.familyId !== undefined
         ? (await ctx.db.get(role.familyId))?.name
@@ -854,19 +915,75 @@ export const collectRoleDraftContext = internalQuery({
 
     return {
       actorId: userId,
-      input: {
-        locale: generationLocale,
-        industry: settings.industry,
-        country: settings.country,
-        ...(settings.employeeCount !== undefined
-          ? { employeeCount: settings.employeeCount }
-          : {}),
-        title: role.title,
-        trackName,
-        roleFunction: role.function,
-        team: role.team,
-        ...(family !== undefined ? { family } : {}),
-      },
+      input: await buildRoleDraftInput(ctx, {
+        orgId,
+        locale,
+        role: {
+          title: role.title,
+          trackKey: role.trackKey,
+          roleFunction: role.function,
+          team: role.team,
+          family,
+        },
+      }),
+    }
+  },
+})
+
+// Resolves the prompt context for a role that does NOT exist yet: the create
+// dialog drafts a job profile from what the user has typed, before the role is
+// saved. Same org framing and the same tenant checks as the saved-role
+// collector; the identity comes from the caller's unsaved form instead of a
+// row. The title is gated exactly as createRole gates it, so a draft can never
+// be requested for a title the create would reject.
+export const collectNewRoleDraftContext = internalQuery({
+  args: {
+    orgId: v.string(),
+    userId: v.string(),
+    title: v.string(),
+    roleFunction: v.string(),
+    team: v.string(),
+    trackKey: trackKeyValidator,
+    familyId: v.optional(v.id("roleFamilies")),
+    locale: v.optional(v.string()),
+  },
+  returns: roleDraftContextValidator,
+  handler: async (
+    ctx,
+    { orgId, userId, title, roleFunction, team, trackKey, familyId, locale }
+  ) => {
+    await requireDraftMembership(ctx, orgId, userId)
+
+    const trimmed = title.trim()
+    if (trimmed.length === 0 || trimmed.length > MAX_ROLE_TITLE) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+
+    // The family id comes from the CALLER here, so it is checked rather than
+    // trusted: a foreign or unknown family is rejected, never read into a
+    // prompt.
+    let family: string | undefined
+    if (familyId !== undefined) {
+      const doc = await ctx.db.get(familyId)
+      if (doc === null || doc.orgId !== orgId) {
+        throw appError(ERROR_CODES.notFound)
+      }
+      family = doc.name
+    }
+
+    return {
+      actorId: userId,
+      input: await buildRoleDraftInput(ctx, {
+        orgId,
+        locale,
+        role: {
+          title: trimmed,
+          trackKey,
+          roleFunction: roleFunction.trim(),
+          team: team.trim(),
+          family,
+        },
+      }),
     }
   },
 })

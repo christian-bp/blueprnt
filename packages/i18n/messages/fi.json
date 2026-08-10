@@ -538,7 +538,7 @@
       "empty": "Ei tuotuja työntekijöitä vielä. Tuo palkkatiedot aloittaaksesi luokittelun.",
       "createRole": {
         "title": "Luo rooli",
-        "description": "Luo uusi rooli ja määritä se näille työntekijöille.",
+        "description": "Luo uusi rooli ja liitä se näihin työntekijöihin. Voit luonnostella tarkoituksen ja vastuualueet tekoälyllä tai jättää ne myöhemmäksi.",
         "titleLabel": "Nimike",
         "functionLabel": "Toiminto/osasto (valinnainen)",
         "teamLabel": "Tiimi (valinnainen)",
@@ -988,7 +988,7 @@
       },
       "create": {
         "title": "Uusi rooli",
-        "description": "Perustiedot ensin. Tarkoitus ja vastuualueet voidaan luonnostella tekoälyllä roolisivulla.",
+        "description": "Täytä perustiedot. Voit luonnostella tarkoituksen ja vastuualueet tekoälyllä tai jättää ne myöhemmäksi.",
         "titleLabel": "Tehtävänimike",
         "titlePlaceholder": "esim. Junior Software Developer",
         "functionLabel": "Toiminto/osasto (valinnainen)",
@@ -997,6 +997,10 @@
         "cta": "Luo rooli",
         "cancel": "Peruuta",
         "error": "Roolia ei voitu luoda. Yritä uudelleen."
+      },
+      "form": {
+        "responsibilitiesHint": "Yksi vastuualue riviä kohden",
+        "aiProvenance": "Tarkista ja muokkaa luonnosta ennen kuin luot roolin."
       },
       "family": {
         "none": "Ei perhettä",
@@ -1030,7 +1034,6 @@
         "doneCta": "Valmis",
         "saveCta": "Tallenna",
         "saveError": "Tallennus epäonnistui. Yritä uudelleen.",
-        "responsibilitiesHint": "Yksi vastuualue riviä kohden",
         "profileIncompleteTitle": "Täydennä tehtäväprofiili ensin",
         "profileIncomplete": "Täytä tarkoitus ja vastuualueet ennen arviointia.",
         "rateCta": "Arvioi rooli",
@@ -1059,7 +1062,8 @@
       "ai": {
         "descriptionLabel": "Kuvaile roolia (valinnainen)",
         "draftCta": "Luonnostele tehtäväprofiili tekoälyllä",
-        "error": "Jokin meni pieleen. Yritä uudelleen."
+        "error": "Jokin meni pieleen. Yritä uudelleen.",
+        "titleFirst": "Anna ensin roolin nimike, jotta tekoälyllä on jotain, mistä lähteä."
       },
       "anchor": {
         "heading": "Ankkurirooli",

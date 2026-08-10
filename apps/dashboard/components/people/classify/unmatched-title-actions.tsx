@@ -12,48 +12,31 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@workspace/ui/components/form"
-import { Input } from "@workspace/ui/components/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
+import { Form } from "@workspace/ui/components/form"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { toast } from "@/lib/toast"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
-import { HelpMorphButton } from "@/components/help-morph-button"
+import {
+  RoleFormFields,
+  type RoleFormTrack,
+} from "@/components/role-form-fields"
 import { SubmitButton } from "@/components/submit-button"
 import { type CreateRoleValues, makeCreateRoleSchema } from "@/lib/role-schemas"
+import { FORM_DIALOG_CONTENT } from "@/lib/dialog-style"
 
 // ---------------------------------------------------------------------------
 // UnmatchedTitleActions
 //
 // Renders the "Create role" action for an unmatched title row: a dialog to
 // create a new role (family-less), prefilled with the unmatched title, then
-// calls onRoleCreated so the parent selects the new role for this row.
+// calls onRoleCreated so the parent selects the new role for this row. The
+// dialog carries the full job profile (purpose, responsibilities, and the AI
+// draft), so a role created while classifying is ready to rate.
 // Mapping to an existing role needs no action here: the row's role Select
 // is the way to pick one.
 // ---------------------------------------------------------------------------
-
-// Structural subset: key is string at the JS layer; the form schema validates
-// that it is a known track literal before submitting.
-interface TrackOption {
-  key: string
-  name: string
-  order: number
-}
 
 export function UnmatchedTitleActions({
   orgId,
@@ -63,12 +46,11 @@ export function UnmatchedTitleActions({
 }: {
   orgId: string
   title: string
-  tracks: TrackOption[]
+  tracks: (RoleFormTrack & { order: number })[]
   onRoleCreated: (roleId: Id<"roles">) => void
 }) {
   const t = useTranslations("dashboard.classify")
   const tCreate = useTranslations("dashboard.classify.createRole")
-  const tHelp = useTranslations("dashboard.help")
   const tv = useTranslations("dashboard.validation")
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
@@ -88,28 +70,31 @@ export function UnmatchedTitleActions({
     [tv, tErrors]
   )
 
-  const form = useForm<CreateRoleValues>({
-    resolver: zodResolver(schema),
-    mode: "onTouched",
-    defaultValues: {
+  // One definition of the empty form, used both to seed it and to reset it on
+  // close, so the two can never disagree about what "clean" means.
+  const defaults: CreateRoleValues = useMemo(
+    () => ({
       title,
       roleFunction: "",
       team: "",
       trackKey: (firstTrack?.key ?? "IC") as CreateRoleValues["trackKey"],
       familyId: null,
-    },
+      purpose: "",
+      responsibilities: "",
+    }),
+    [title, firstTrack?.key]
+  )
+
+  const form = useForm<CreateRoleValues>({
+    resolver: zodResolver(schema),
+    mode: "onTouched",
+    defaultValues: defaults,
   })
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen)
     if (!nextOpen) {
-      form.reset({
-        title,
-        roleFunction: "",
-        team: "",
-        trackKey: (firstTrack?.key ?? "IC") as CreateRoleValues["trackKey"],
-        familyId: null,
-      })
+      form.reset(defaults)
       setFailure(null)
     }
   }
@@ -124,6 +109,12 @@ export function UnmatchedTitleActions({
         function: values.roleFunction,
         team: values.team,
         trackKey: values.trackKey,
+        // The profile fields are optional: send them only when filled, so an
+        // untouched create writes exactly what it did before.
+        ...(values.purpose !== "" ? { purpose: values.purpose } : {}),
+        ...(values.responsibilities !== ""
+          ? { responsibilities: values.responsibilities }
+          : {}),
       })
       toast.success(tToast("roleCreated"))
       setOpen(false)
@@ -145,93 +136,24 @@ export function UnmatchedTitleActions({
       </Button>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent>
+        <DialogContent className={FORM_DIALOG_CONTENT}>
           <DialogHeader>
             <DialogTitle>{tCreate("title")}</DialogTitle>
             <DialogDescription>{tCreate("description")}</DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{tCreate("titleLabel")}</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="grid gap-4 sm:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="roleFunction"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{tCreate("functionLabel")}</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="team"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{tCreate("teamLabel")}</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="trackKey"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex items-center gap-1.5">
-                      <FormLabel>{tCreate("trackLabel")}</FormLabel>
-                      <HelpMorphButton label={tHelp("trackLabel")}>
-                        {tHelp("trackBody")}
-                      </HelpMorphButton>
-                    </div>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      items={tracks.map((track) => ({
-                        value: track.key,
-                        label: track.name,
-                      }))}
-                    >
-                      <FormControl>
-                        <SelectTrigger
-                          ref={field.ref}
-                          onBlur={field.onBlur}
-                          className="w-full"
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {tracks.map((track) => (
-                          <SelectItem key={track.key} value={track.key}>
-                            {track.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <RoleFormFields
+                orgId={orgId}
+                form={form}
+                tracks={tracks}
+                showFamily={false}
+                labels={{
+                  title: tCreate("titleLabel"),
+                  roleFunction: tCreate("functionLabel"),
+                  team: tCreate("teamLabel"),
+                  track: tCreate("trackLabel"),
+                }}
               />
               {failure !== null && (
                 <p role="alert" className="text-destructive text-sm">

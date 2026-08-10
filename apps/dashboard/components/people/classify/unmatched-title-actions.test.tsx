@@ -27,7 +27,7 @@ vi.mock(
 )
 
 import { toast } from "@/lib/toast"
-import { mockMutation } from "@/test/convex-mocks"
+import { mockAction, mockMutation } from "@/test/convex-mocks"
 import { UnmatchedTitleActions } from "@/components/people/classify/unmatched-title-actions"
 
 // ---------------------------------------------------------------------------
@@ -36,6 +36,11 @@ import { UnmatchedTitleActions } from "@/components/people/classify/unmatched-ti
 
 const m = messages.dashboard.classify
 const tCreate = messages.dashboard.classify.createRole
+const profile = messages.assessment.role
+const ai = messages.dashboard.ai
+const rolesAi = messages.dashboard.roles.ai
+
+const draftMock = mockAction("ai.draft.draftNewRoleProfile")
 
 const TRACKS = [
   { key: "IC", name: "Individual contributor", order: 0 },
@@ -73,6 +78,7 @@ describe("UnmatchedTitleActions", () => {
       createRoleMock
     )
     createRoleMock.mockReset()
+    draftMock.mockReset()
     vi.mocked(toast.success).mockReset()
   })
 
@@ -161,5 +167,94 @@ describe("UnmatchedTitleActions", () => {
 
     // onRoleCreated should be called with the new role id
     expect(onRoleCreated).toHaveBeenCalledWith("role-new")
+  })
+
+  it("submits the job profile when purpose and responsibilities are filled", async () => {
+    createRoleMock.mockResolvedValue({ roleId: "role-new", slug: "role-new" })
+    renderActions({ title: "Product Manager" })
+    fireEvent.click(screen.getByRole("button", { name: m.createRoleCta }))
+
+    await waitFor(() => {
+      expect(screen.getByRole("dialog")).toBeDefined()
+    })
+    fireEvent.change(screen.getByLabelText(profile.purpose), {
+      target: { value: "Owns the product direction." },
+    })
+    fireEvent.change(screen.getByLabelText(profile.responsibilities), {
+      target: { value: "Runs discovery\nOwns the roadmap" },
+    })
+
+    const form = screen
+      .getByLabelText(tCreate.titleLabel)
+      .closest("form") as HTMLFormElement
+    fireEvent.submit(form)
+
+    await waitFor(() => {
+      expect(createRoleMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        title: "Product Manager",
+        function: "",
+        team: "",
+        trackKey: "IC",
+        purpose: "Owns the product direction.",
+        responsibilities: "Runs discovery\nOwns the roadmap",
+      })
+    })
+  })
+
+  it("drafts the profile with AI from the prefilled title, family-less", async () => {
+    draftMock.mockResolvedValue({
+      purpose: "Owns the product direction.",
+      responsibilities: "Runs discovery",
+    })
+    renderActions({ title: "Product Manager" })
+    fireEvent.click(screen.getByRole("button", { name: m.createRoleCta }))
+
+    await waitFor(() => {
+      expect(screen.getByRole("dialog")).toBeDefined()
+    })
+    fireEvent.click(screen.getByRole("button", { name: ai.fillCta }))
+    fireEvent.click(
+      await screen.findByRole("button", { name: rolesAi.draftCta })
+    )
+
+    await waitFor(() => {
+      // Classification create is family-less, so no familyId is sent.
+      expect(draftMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        locale: "en",
+        title: "Product Manager",
+        function: "",
+        team: "",
+        trackKey: "IC",
+      })
+    })
+    await waitFor(() => {
+      expect(
+        (screen.getByLabelText(profile.purpose) as HTMLTextAreaElement).value
+      ).toBe("Owns the product direction.")
+    })
+    expect(
+      (screen.getByLabelText(profile.responsibilities) as HTMLTextAreaElement)
+        .value
+    ).toBe("Runs discovery")
+    expect(createRoleMock).not.toHaveBeenCalled()
+  })
+
+  it("tells the user a title is needed before the AI can draft", async () => {
+    renderActions({ title: "" })
+    fireEvent.click(screen.getByRole("button", { name: m.createRoleCta }))
+
+    await waitFor(() => {
+      expect(screen.getByRole("dialog")).toBeDefined()
+    })
+    fireEvent.click(screen.getByRole("button", { name: ai.fillCta }))
+
+    const draftCta = await screen.findByRole("button", {
+      name: rolesAi.draftCta,
+    })
+    expect(screen.getByText(rolesAi.titleFirst)).toBeDefined()
+    expect(draftCta.hasAttribute("disabled")).toBe(true)
+    expect(draftMock).not.toHaveBeenCalled()
   })
 })

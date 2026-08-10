@@ -3,6 +3,7 @@ import { api, components, internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { slugify } from "@workspace/constants"
 import { initConvexTest } from "../testing.helpers"
+import { MAX_PROMPT_DESCRIPTION, MAX_PROMPT_IDENTITY_FIELD } from "./config"
 
 // The mock is hoisted by vi.mock, so generateTextMock captures calls from both
 // draftRoleProfile and draftCriterionCompliance — they share the same module.
@@ -163,6 +164,39 @@ describe("draftRoleProfile", () => {
     expect(generateTextMock).toHaveBeenCalledTimes(0)
   })
 
+  it("still drafts when the role's stored family no longer exists", async () => {
+    const t = initConvexTest()
+    const { orgId, asUser } = await seedOrg(t, "draft-dangling@acme.se")
+    const roleId = await insertRole(t, orgId, { title: "Backend Developer" })
+    // Point the role at a family, then delete the family out from under it.
+    // The family is optional prompt context, so a dangling id must degrade to
+    // family-less rather than fail the draft.
+    await t.run(async (ctx) => {
+      const familyId = await ctx.db.insert("roleFamilies", {
+        orgId,
+        name: "Engineering",
+        slug: "engineering",
+      })
+      await ctx.db.patch(roleId, { familyId })
+      await ctx.db.delete(familyId)
+    })
+    let capturedPrompt = ""
+    generateTextMock.mockImplementation(async (options: { prompt: string }) => {
+      capturedPrompt = options.prompt
+      return {
+        output: { purpose: "P", responsibilities: "R" },
+        totalUsage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+      }
+    })
+
+    const result = await asUser.action(api.ai.draft.draftRoleProfile, {
+      orgId,
+      roleId,
+    })
+    expect(result).toEqual({ purpose: "P", responsibilities: "R" })
+    expect(capturedPrompt).not.toContain("role family")
+  })
+
   it("passes the optional description into the prompt", async () => {
     const t = initConvexTest()
     const { orgId, asUser } = await seedOrg(t, "draft-desc@acme.se")
@@ -182,6 +216,192 @@ describe("draftRoleProfile", () => {
       description: "Owns the payments platform",
     })
     expect(capturedPrompt).toContain("Owns the payments platform")
+  })
+})
+
+describe("draftNewRoleProfile", () => {
+  beforeEach(() => {
+    generateTextMock.mockReset()
+    vi.stubEnv("MISTRAL_API_KEY", "test-key")
+  })
+
+  async function insertFamily(
+    t: ReturnType<typeof initConvexTest>,
+    orgId: string,
+    name: string
+  ): Promise<Id<"roleFamilies">> {
+    return await t.run(async (ctx) =>
+      ctx.db.insert("roleFamilies", { orgId, name, slug: slugify(name) })
+    )
+  }
+
+  it("drafts from the unsaved identity, records usage, and creates no role", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, asUser } = await seedOrg(t, "new-draft-ok@acme.se")
+
+    generateTextMock.mockImplementation(async () => ({
+      output: {
+        purpose: "  Runs the payroll cycle.  ",
+        responsibilities: "Owns payroll\nAdvises managers",
+      },
+      totalUsage: { inputTokens: 10, outputTokens: 20, totalTokens: 30 },
+    }))
+
+    const result = await asUser.action(api.ai.draft.draftNewRoleProfile, {
+      orgId,
+      title: "Payroll Specialist",
+      function: "People",
+      team: "Comp & Ben",
+      trackKey: "IC",
+    })
+
+    expect(result).toEqual({
+      purpose: "Runs the payroll cycle.",
+      responsibilities: "Owns payroll\nAdvises managers",
+    })
+    expect(generateTextMock).toHaveBeenCalledTimes(1)
+
+    await t.run(async (ctx) => {
+      // The action returns text only: creating the role stays the client's
+      // job (createRole carries the reviewed values).
+      const roles = await ctx.db
+        .query("roles")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(roles).toHaveLength(0)
+      const usage = await ctx.db
+        .query("aiUsageEvents")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(usage).toHaveLength(1)
+      expect(usage[0]?.kind).toBe("role.profile")
+      expect(usage[0]?.actorId).toBe(userId)
+      expect(usage[0]?.totalTokens).toBe(30)
+    })
+  })
+
+  it("puts the typed identity, family, and description in the prompt", async () => {
+    const t = initConvexTest()
+    const { orgId, asUser } = await seedOrg(t, "new-draft-prompt@acme.se")
+    const familyId = await insertFamily(t, orgId, "People Operations")
+    let capturedPrompt = ""
+    generateTextMock.mockImplementation(async (options: { prompt: string }) => {
+      capturedPrompt = options.prompt
+      return {
+        output: { purpose: "P", responsibilities: "R" },
+        totalUsage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+      }
+    })
+
+    await asUser.action(api.ai.draft.draftNewRoleProfile, {
+      orgId,
+      title: "Payroll Specialist",
+      function: "People",
+      team: "Comp & Ben",
+      trackKey: "IC",
+      familyId,
+      description: "Owns the monthly payroll run",
+    })
+
+    expect(capturedPrompt).toContain("Payroll Specialist")
+    expect(capturedPrompt).toContain("People Operations")
+    expect(capturedPrompt).toContain("Owns the monthly payroll run")
+    // Org framing still comes from the settings row, not the caller.
+    expect(capturedPrompt).toContain("itTelecom")
+  })
+
+  it("clamps oversized free text before it reaches the model", async () => {
+    const t = initConvexTest()
+    const { orgId, asUser } = await seedOrg(t, "new-draft-clamp@acme.se")
+    let capturedPrompt = ""
+    generateTextMock.mockImplementation(async (options: { prompt: string }) => {
+      capturedPrompt = options.prompt
+      return {
+        output: { purpose: "P", responsibilities: "R" },
+        totalUsage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+      }
+    })
+
+    // function/team are never length-checked on the way into a role, and the
+    // guidance text is never stored at all, so without a clamp any member
+    // could spend the org's tokens on an arbitrarily large call.
+    await asUser.action(api.ai.draft.draftNewRoleProfile, {
+      orgId,
+      title: "Payroll Specialist",
+      function: "F".repeat(50_000),
+      team: "T".repeat(50_000),
+      trackKey: "IC",
+      description: "D".repeat(50_000),
+    })
+
+    expect(capturedPrompt).not.toContain(
+      "F".repeat(MAX_PROMPT_IDENTITY_FIELD + 1)
+    )
+    expect(capturedPrompt).not.toContain(
+      "T".repeat(MAX_PROMPT_IDENTITY_FIELD + 1)
+    )
+    expect(capturedPrompt).not.toContain("D".repeat(MAX_PROMPT_DESCRIPTION + 1))
+    // The clamp bounds the call rather than rejecting it: the draft still ran.
+    expect(generateTextMock).toHaveBeenCalledTimes(1)
+  })
+
+  it("rejects a caller who is not a member of the org", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedOrg(t, "new-draft-owner@acme.se")
+    const { userId: outsiderId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "new-draft-outsider@evil.se", name: "Outsider", role: "admin" }
+    )
+    const asOutsider = t.withIdentity({ subject: outsiderId })
+
+    await expect(
+      asOutsider.action(api.ai.draft.draftNewRoleProfile, {
+        orgId,
+        title: "Payroll Specialist",
+        function: "",
+        team: "",
+        trackKey: "IC",
+      })
+    ).rejects.toThrow(/errors.notAMember/)
+    expect(generateTextMock).toHaveBeenCalledTimes(0)
+  })
+
+  it("rejects a blank title before any model call", async () => {
+    const t = initConvexTest()
+    const { orgId, asUser } = await seedOrg(t, "new-draft-blank@acme.se")
+
+    await expect(
+      asUser.action(api.ai.draft.draftNewRoleProfile, {
+        orgId,
+        title: "   ",
+        function: "",
+        team: "",
+        trackKey: "IC",
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+    expect(generateTextMock).toHaveBeenCalledTimes(0)
+  })
+
+  it("rejects a family belonging to another org with notFound", async () => {
+    const t = initConvexTest()
+    const { orgId: orgA, asUser: asUserA } = await seedOrg(
+      t,
+      "new-draft-orga@acme.se"
+    )
+    const { orgId: orgB } = await seedOrg(t, "new-draft-orgb@acme.se")
+    const familyFromB = await insertFamily(t, orgB, "Secret Family")
+
+    await expect(
+      asUserA.action(api.ai.draft.draftNewRoleProfile, {
+        orgId: orgA,
+        title: "Payroll Specialist",
+        function: "",
+        team: "",
+        trackKey: "IC",
+        familyId: familyFromB,
+      })
+    ).rejects.toThrow(/errors.notFound/)
+    expect(generateTextMock).toHaveBeenCalledTimes(0)
   })
 })
 

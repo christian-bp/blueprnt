@@ -76,6 +76,8 @@ export function RoleProfileCard({
   tracks: { key: string; name: string }[]
 }) {
   const t = useTranslations("dashboard.roles.detail")
+  // Shared with the create dialogs: the same job-profile field copy.
+  const tForm = useTranslations("dashboard.roles.form")
   const tRole = useTranslations("assessment.role")
   const tFamily = useTranslations("dashboard.roles.family")
   const tModel = useTranslations("model")
@@ -232,7 +234,7 @@ export function RoleProfileCard({
                   {(close) => (
                     <RoleAiPanel
                       orgId={orgId}
-                      roleId={role.roleId}
+                      source={{ kind: "saved", roleId: role.roleId }}
                       onFilled={({ purpose, responsibilities }) => {
                         if (purpose.trim()) setField("purpose", purpose)
                         if (responsibilities.trim())
@@ -415,7 +417,7 @@ export function RoleProfileCard({
                     editor to write one per row. */}
                 {row.key === "responsibilities" && (
                   <p className="text-muted-foreground text-xs">
-                    {t("responsibilitiesHint")}
+                    {tForm("responsibilitiesHint")}
                   </p>
                 )}
               </>
