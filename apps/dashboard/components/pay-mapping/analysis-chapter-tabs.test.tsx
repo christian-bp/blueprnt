@@ -7,39 +7,15 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/pay-mappings/pay-2026/analysis/equal-work",
 }))
 
-// The tabs read only `queue` off the run context. Mocking the hook keeps
-// the test on the row's own logic (which label, which mark, which href)
-// instead of on assembling a gap fixture that happens to produce the
-// per-chapter counts each case needs.
-const queueRef: { current: ReviewQueue | null } = { current: null }
-vi.mock("@/components/pay-mapping/pay-mapping-run-context", () => ({
-  usePayMappingRun: () => ({ queue: queueRef.current }),
-}))
-
 import { AnalysisChapterTabs } from "@/components/pay-mapping/analysis-chapter-tabs"
-import type { ReviewQueue } from "@/components/pay-mapping/review-queue"
 
 const m = messages.dashboard.payMapping.review
 const mAnalysis = messages.dashboard.payMapping.analysis
 
-function queue(
-  overrides: Partial<ReviewQueue["progress"]> = {}
-): ReviewQueue["progress"] {
-  return {
-    overall: { done: 5, total: 29 },
-    praxis: { done: 4, total: 4 },
-    equalWork: { done: 0, total: 3 },
-    equivalentWork: { done: 0, total: 21 },
-    collaborationDone: true,
-    ...overrides,
-  }
-}
-
-function renderTabs(progress: ReviewQueue["progress"] | null = queue()) {
-  queueRef.current =
-    progress === null
-      ? null
-      : ({ steps: [], resumeIndex: 0, progress } as ReviewQueue)
+// The row reads nothing but the path: no run context, no queue, no progress.
+// It carried a per-chapter done mark for a while, and with it a dependency on
+// the run's queries; the spine above already draws every chapter's progress.
+function renderTabs() {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <AnalysisChapterTabs />
@@ -79,28 +55,18 @@ describe("AnalysisChapterTabs", () => {
     )
   })
 
-  it("carries a done mark but never a count", () => {
-    // Four pairs of numbers in one row, when the reader only ever needs the
-    // one they are working in. That count is the spine's heading now, and
-    // the four side by side live on the completion panel.
+  // A tab is its number and its name, nothing else. Four pairs of numbers in
+  // one row read as a status table when the reader only ever needs the pair
+  // they are working in, and the done mark that replaced them still spent a
+  // slot the row had to keep empty on every unfinished chapter, so both are
+  // gone: progress lives in the spine above and on the completion panel.
+  it("carries neither a count nor a done mark", () => {
     renderTabs()
-    const praxis = tab(m.chaptersShort.praxis)
-    expect(praxis?.textContent).toContain(m.status.done)
-    expect(praxis?.textContent).not.toMatch(/\d+ of \d+/)
-
-    const equalWork = tab(m.chaptersShort.equalWork)
-    expect(equalWork?.textContent).not.toMatch(/\d+ of \d+/)
-    expect(equalWork?.textContent).not.toContain(m.status.done)
-  })
-
-  it("treats the one-step start chapter's boolean as done", () => {
-    // The queue carries start as `collaborationDone`, not as a done/total
-    // pair, so it needs normalising before it can read as done.
-    renderTabs()
-    expect(tab(m.chaptersShort.start)?.textContent).toContain(m.status.done)
-    cleanup()
-    renderTabs(queue({ collaborationDone: false }))
-    expect(tab(m.chaptersShort.start)?.textContent).not.toContain(m.status.done)
+    for (const link of screen.getAllByRole("link")) {
+      expect(link.textContent).not.toMatch(/\d+ of \d+/)
+      expect(link.textContent).not.toContain(m.status.done)
+      expect(link.querySelector("[aria-hidden]")).toBeNull()
+    }
   })
 
   it("marks the current chapter, and only it, as the current page", () => {
@@ -112,36 +78,38 @@ describe("AnalysisChapterTabs", () => {
     expect(current[0]?.textContent).toContain(m.chaptersShort.equalWork)
   })
 
-  // The done slot is always in the layout, so an underline measured against
-  // the whole tab ran 20px past the start of the text on every chapter that
-  // was not yet finished, reading as a bar left behind by a missing mark. It
-  // is anchored to the label instead, which also makes its width independent
-  // of whether the chapter is done. jsdom cannot measure boxes, so what is
-  // pinned here is the anchoring: the underline's own positioning parent holds
-  // the label text and not the mark.
-  it("anchors the current chapter's underline to its label, not the whole tab", () => {
+  // The underline is positioned against the TAB (inset-x-2, matching the row
+  // above), which only hugs the text while the tab holds nothing but its
+  // label. It once held a done mark's slot in front of the label and the bar
+  // ran 20px past the start of the text on every unfinished chapter, with
+  // nothing above that stretch. jsdom cannot measure boxes, so what is pinned
+  // is the condition the geometry rests on.
+  it("keeps the tab a label, so its underline hugs the text", () => {
     renderTabs()
     const current = screen
       .getAllByRole("link")
       .find((link) => link.getAttribute("aria-current") === "page")
     const underline = current?.querySelector(".bg-foreground")
-    const anchor = underline?.parentElement
-    expect(anchor).not.toBe(current)
-    expect(anchor?.className).toContain("relative")
-    expect(anchor?.textContent).toContain(m.chaptersShort.equalWork)
-    // The mark and its screen-reader text stay outside, so the bar cannot
-    // stretch to cover them.
-    expect(anchor?.querySelector("[aria-hidden]")).toBeNull()
+    expect(underline?.parentElement).toBe(current)
+    expect(underline?.className).toContain("inset-x-2")
+    // Only the label and the bar itself: nothing sits beside the text that the
+    // bar would then have to stretch across.
+    expect(current?.querySelectorAll("span")).toHaveLength(2)
   })
 
-  it("renders the real labels while the queue is still loading", () => {
-    // Static i18n text renders as its real control during a load; only the
-    // counts, which are unknown until the data lands, are held back.
-    renderTabs(null)
-    expect(screen.getAllByRole("link")).toHaveLength(4)
-    // Nothing claims to be done before the queue says so.
-    expect(tab(m.chaptersShort.praxis)?.textContent).not.toContain(
-      m.status.done
+  // The position recedes to muted so the four names carry the row, which means
+  // it is styled apart from the name and therefore has to stay inside the
+  // message rather than being concatenated around it.
+  it("mutes the chapter's position without splitting the label", () => {
+    renderTabs()
+    const current = screen
+      .getAllByRole("link")
+      .find((link) => link.getAttribute("aria-current") === "page")
+    const number = [...(current?.querySelectorAll("span") ?? [])].find((span) =>
+      span.className.includes("text-muted-foreground")
     )
+    expect(number?.textContent).toBe("3.")
+    // The tab still reads as one label, number included.
+    expect(current?.textContent).toBe(`3. ${m.chaptersShort.equalWork}`)
   })
 })
