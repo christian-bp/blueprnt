@@ -1,0 +1,22 @@
+apps/dashboard/components/pay-mapping/analysis-chapter-tabs.tsx
+  s_32434e36a70429::t_d82e708b53ce7b 77,83-96,98
+  s_32434e36a70429::t_2d54ffd6b0187c 25-29
+apps/dashboard/components/pay-mapping/analysis-chapter-tabs.test.tsx
+  s_32434e36a70429::t_1a72bf659d69eb 15-18,58-63,65-69,81-87,93-97,100-109,111-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "29a6038c4d031fb476ad7f7cac55b2bc38fbd507",
+  "prompts": {},
+  "sessions": {
+    "s_32434e36a70429": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "267e4255-45a7-45c3-9cf7-2431019cef56",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
