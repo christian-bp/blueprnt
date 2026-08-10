@@ -94,12 +94,32 @@ function renderSection() {
   )
 }
 
-function openRowMenu(name: string) {
-  const trigger = screen.getByRole("button", {
-    name: t.memberActions.replace("{name}", name),
+// Opening a Base UI menu is a gesture, and the gesture can land before React
+// has finished wiring the trigger up. The invitation row arrives from a
+// promise, so findByRole resolves on the DOM mutation and a pointerDown fired
+// at that instant opens nothing, leaving the test to time out on an item that
+// was never rendered: that row is the only one here that does not come from the
+// synchronous roster, and it is the only test that failed on CI, where a loaded
+// machine widens the gap. Retrying until the item is on screen covers it
+// without having to know which tick was too early, and the data-popup-open
+// guard keeps a retry from toggling an already-open menu shut.
+async function openMenu(trigger: HTMLElement, itemText: string) {
+  await waitFor(() => {
+    if (!trigger.hasAttribute("data-popup-open")) {
+      fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
+      fireEvent.click(trigger)
+    }
+    expect(screen.getByText(itemText)).toBeDefined()
   })
-  fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
-  fireEvent.click(trigger)
+}
+
+async function openRowMenu(name: string, itemText: string) {
+  await openMenu(
+    screen.getByRole("button", {
+      name: t.memberActions.replace("{name}", name),
+    }),
+    itemText
+  )
 }
 
 beforeEach(() => useQueryMock.mockReturnValue(roster))
@@ -136,8 +156,8 @@ describe("OrganizationMembersSection", () => {
 
   it("removing an editor confirms then calls removeMember and fires memberRemoved toast", async () => {
     renderSection()
-    openRowMenu("Editor Two")
-    fireEvent.click(await screen.findByText(t.remove))
+    await openRowMenu("Editor Two", t.remove)
+    fireEvent.click(screen.getByText(t.remove))
     const dialog = await screen.findByRole("alertdialog")
     fireEvent.click(
       within(dialog).getByRole("button", { name: t.removeConfirmCta })
@@ -154,8 +174,8 @@ describe("OrganizationMembersSection", () => {
 
   it("disables removing the sole admin", async () => {
     renderSection()
-    openRowMenu("Admin One")
-    const removeItem = await screen.findByText(t.remove)
+    await openRowMenu("Admin One", t.remove)
+    const removeItem = screen.getByText(t.remove)
     expect(
       removeItem.closest("[role=menuitem]")?.getAttribute("aria-disabled")
     ).toBe("true")
@@ -166,9 +186,8 @@ describe("OrganizationMembersSection", () => {
     const trigger = await screen.findByRole("button", {
       name: ti.invitationActions.replace("{email}", "pending@x.se"),
     })
-    fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
-    fireEvent.click(trigger)
-    fireEvent.click(await screen.findByText(ti.revoke))
+    await openMenu(trigger, ti.revoke)
+    fireEvent.click(screen.getByText(ti.revoke))
     const dialog = await screen.findByRole("alertdialog")
     fireEvent.click(
       within(dialog).getByRole("button", { name: ti.revokeConfirmCta })
