@@ -179,22 +179,14 @@ describe("CriterionComplianceDialog", () => {
 
   it("renders inline field descriptions instead of per-field help icons", () => {
     renderDialog()
-    // Each field shows its help text as a FormDescription (inline, no popover button)
-    expect(
-      screen.getByText(
-        "What this criterion measures and the outcome it captures."
-      )
-    ).toBeDefined()
-    expect(
-      screen.getByText(
-        "Why this criterion is relevant to the work's value, and why it is gender-neutral."
-      )
-    ).toBeDefined()
-    expect(
-      screen.getByText(
-        "The risk that this criterion over- or under-values gender-coded work, for example favouring visible mandate or budget size over actual complexity and responsibility."
-      )
-    ).toBeDefined()
+    // Each field shows its help text as a FormDescription (inline, no popover
+    // button). Read the copy from en.json rather than repeating it: the point
+    // of the assertion is WHICH help text lands on WHICH field, not its exact
+    // wording, and a hardcoded literal turns every copy edit into a failure.
+    const help = messages.dashboard.help
+    expect(screen.getByText(help.methodPurposeBody)).toBeDefined()
+    expect(screen.getByText(help.methodWhyRelevantBody)).toBeDefined()
+    expect(screen.getByText(help.methodBiasRiskBody)).toBeDefined()
   })
 
   it("renders nothing when target is null", () => {

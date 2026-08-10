@@ -116,6 +116,36 @@ describe("typewriter placeholder phrases stay single-line", () => {
   }
 })
 
+// Help bodies render inside HelpMorphButton's 26rem panel, so a long one turns
+// the morph into a wall of text nobody reads. The rule is two sentences: what
+// the thing is, plus the single mistake worth preventing (usually the boundary
+// against the neighbouring term). en is the locale we author and is held to the
+// 200 the rule targets; the others get 240 so a translation has room, since fi
+// runs about 7% longer than en across this corpus.
+const HELP_BODY_CAP: Record<string, number> = {
+  en: 200,
+  sv: 240,
+  nb: 240,
+  da: 240,
+  fi: 240,
+}
+
+describe("help bodies stay short", () => {
+  const allLocales = { en, ...locales }
+  for (const [locale, messages] of Object.entries(allLocales)) {
+    it(`${locale}.json keeps every help body within its cap`, () => {
+      const cap = HELP_BODY_CAP[locale] as number
+      const offenders = flattenStringValues(messages)
+        .filter(
+          ([key]) => key.startsWith("dashboard.help.") && key.endsWith("Body")
+        )
+        .filter(([, value]) => value.length > cap)
+        .map(([key, value]) => `${key} is ${value.length}, cap is ${cap}`)
+      expect(offenders).toEqual([])
+    })
+  }
+})
+
 import { routing } from "./routing"
 
 it("messages folder matches routing.locales exactly", () => {
