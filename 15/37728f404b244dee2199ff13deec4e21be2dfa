@@ -1,0 +1,23 @@
+apps/dashboard/next.config.ts
+  s_f0eeb0888092d3::t_405bb5cd5e4d04 52-57
+apps/dashboard/i18n/request.ts
+  s_f0eeb0888092d3::t_e08e622b0aa3ce 14,16-17,19-31
+  s_f0eeb0888092d3::t_f811a8cf98cd6c 1-5,11-13,18,32-36,44
+  s_f0eeb0888092d3::t_4c09b2b46c6c56 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "1537728f404b244dee2199ff13deec4e21be2dfa",
+  "prompts": {},
+  "sessions": {
+    "s_f0eeb0888092d3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ea673dc0-d0a4-411b-bd3e-e94bfe3fbd32",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
