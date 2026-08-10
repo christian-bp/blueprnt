@@ -1,0 +1,47 @@
+packages/i18n/messages/fi.json
+  s_32434e36a70429::t_bb82b48c445171 1237
+  s_32434e36a70429::t_4f015b191a34d1 1238-1240
+packages/i18n/messages/en.json
+  s_32434e36a70429::t_bb82b48c445171 1237-1240
+packages/i18n/messages/sv.json
+  s_32434e36a70429::t_532c549f1c6447 1238,1240
+  s_32434e36a70429::t_bb82b48c445171 1237,1239
+packages/i18n/messages/nb.json
+  s_32434e36a70429::t_c7c75f00fcc5d5 1238,1240
+  s_32434e36a70429::t_bb82b48c445171 1237,1239
+apps/dashboard/components/pay-mapping/review-group-step.test.tsx
+  s_32434e36a70429::t_fd4be0ed823ab4 326-327,333-334,336,339
+  s_32434e36a70429::t_c0412d2238e21d 328-332,335,337-338,340-342
+apps/dashboard/components/pay-mapping/group-member-table.tsx
+  s_32434e36a70429::t_37a5c1a3d3245c 95-100
+  s_32434e36a70429::t_1023552d17ca9c 101,134,166-176,189
+  s_32434e36a70429::t_a268a4390e5a31 374-386
+  s_32434e36a70429::t_c26e140c7a15de 27
+  s_32434e36a70429::t_f08c0486ee2f1a 238-247,251-259
+  s_32434e36a70429::t_aa3397a8b24d68 248-250
+apps/dashboard/components/pay-mapping/group-member-table.test.tsx
+  s_32434e36a70429::t_fb6be30a7bfc4f 261-263
+  s_32434e36a70429::t_3e140641b1cf60 154-162,216-221,225,229-260,264-275
+packages/i18n/messages/da.json
+  s_32434e36a70429::t_ba798c5c9e6de6 1238,1240
+  s_32434e36a70429::t_bb82b48c445171 1237,1239
+apps/dashboard/components/pay-mapping/equal-work-detail.tsx
+  s_32434e36a70429::t_36c0b64b4fd842 249-256
+  s_32434e36a70429::t_37a5c1a3d3245c 247-248
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f6aad13334aa6ec15537722b9152f0789c191e9f",
+  "prompts": {},
+  "sessions": {
+    "s_32434e36a70429": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "267e4255-45a7-45c3-9cf7-2431019cef56",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
