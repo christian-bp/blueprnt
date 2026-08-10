@@ -850,6 +850,7 @@
       },
       "subtitle": "You have {count, plural, =0 {nothing waiting} one {# item waiting} other {# items waiting}} right now.",
       "sectionTodo": "To do",
+      "sectionQuickActions": "Quick actions",
       "todo": {
         "groupCount": "{count, plural, one {# item} other {# items}}",
         "classifyPeopleCount": "{count, plural, one {# person} other {# people}}",

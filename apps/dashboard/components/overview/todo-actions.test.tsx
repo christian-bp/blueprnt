@@ -216,6 +216,32 @@ describe("TodoActions", () => {
     }
   })
 
+  // The heading follows the cards. "To do" over four standing destinations
+  // would tell a reader who has finished everything that work is waiting.
+  it("heads the band as work while something is outstanding", () => {
+    renderActions(todoWith([APPROVE]))
+    expect(screen.getByRole("heading", { name: t.sectionTodo })).toBeDefined()
+    expect(screen.queryByText(t.sectionQuickActions)).toBeNull()
+  })
+
+  it("heads the band as destinations when nothing is outstanding", () => {
+    renderActions(todoWith([]))
+    expect(
+      screen.getByRole("heading", { name: t.sectionQuickActions })
+    ).toBeDefined()
+    expect(screen.queryByText(t.sectionTodo)).toBeNull()
+  })
+
+  // Which heading it is, is data. Guessing one and renaming it on arrival
+  // reads as the page changing its mind, so the line is held with a bar and
+  // the row below does not move either way.
+  it("holds the heading's line while the to-do is still loading", () => {
+    renderActions(undefined)
+    expect(screen.queryByRole("heading")).toBeNull()
+    expect(screen.queryByText(t.sectionTodo)).toBeNull()
+    expect(screen.queryByText(t.sectionQuickActions)).toBeNull()
+  })
+
   // Which cards these are is data, so the row waits rather than showing four
   // decisive destinations that then become four different cards.
   it("holds the row with skeletons while the to-do is still loading", () => {

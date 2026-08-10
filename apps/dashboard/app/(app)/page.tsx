@@ -20,7 +20,8 @@ import { useTodo } from "@/hooks/use-todo"
 // Front page, read top to bottom as what-to-do / where-we-stand / how it
 // moved: a welcome heading + subtitle (the total from buildTodo), the "To
 // do" row (an action card per outstanding buildTodo group, or the standing
-// destinations when there is nothing waiting), the stat strip (four figures,
+// destinations under their own heading when there is nothing waiting), the
+// stat strip (four figures,
 // each linking to its own surface), and the chart panels behind those
 // figures. buildTodo and buildOverviewStats share one counting pass
 // (computeCounts in lib/todo.ts); nothing here is stored.
@@ -49,10 +50,7 @@ export default function OverviewPage() {
           </p>
         )}
       </div>
-      <section className="flex flex-col gap-3">
-        <h2 className="font-medium text-sm">{t("sectionTodo")}</h2>
-        <TodoActions todo={todo} />
-      </section>
+      <TodoActions todo={todo} />
       <OverviewWidgets
         stats={stats}
         levelOverview={levelOverview}

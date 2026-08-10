@@ -9,8 +9,9 @@ import {
   UserGroup03Icon,
 } from "@hugeicons/core-free-icons"
 import type { IconSvgElement } from "@hugeicons/react"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useTranslations } from "next-intl"
-import { useEffect, useState } from "react"
+import { type ReactNode, useEffect, useState } from "react"
 import { ActionCard, ActionCardSkeleton } from "@/components/action-card"
 import { ConfettiBurst } from "@/components/confetti-burst"
 import { useOrganization } from "@/components/org-context"
@@ -85,6 +86,9 @@ const SHORTCUTS: {
 // where it goes. A second heading would spend a whole band saying what the
 // chip already says, and would leave an empty "To do" band on a fresh org.
 //
+// The band's own heading follows the cards for the same reason: see
+// TodoSection.
+//
 // While the query is still in flight the row is skeletons, not the standing
 // destinations: which cards these are is data, and showing four decisive
 // cards that then become four different ones reads as the page changing its
@@ -116,12 +120,12 @@ export function TodoActions({ todo }: { todo: Todo | undefined }) {
   // row does not move when the real ones arrive.
   if (todo === undefined) {
     return (
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <TodoSection label={null}>
         {Array.from({ length: MAX_CARDS }, (_, index) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
           <ActionCardSkeleton key={index} />
         ))}
-      </div>
+      </TodoSection>
     )
   }
 
@@ -149,7 +153,9 @@ export function TodoActions({ todo }: { todo: Todo | undefined }) {
   )
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <TodoSection
+      label={work.length > 0 ? t("sectionTodo") : t("sectionQuickActions")}
+    >
       {[...work, ...links].slice(0, MAX_CARDS).map((card, index) => (
         // The burst is a SIBLING of the card, not a child: a Card clips its
         // overflow, so confetti thrown inside one is cut off at its edge in a
@@ -203,7 +209,44 @@ export function TodoActions({ todo }: { todo: Todo | undefined }) {
           />
         </div>
       ))}
-    </div>
+    </TodoSection>
+  )
+}
+
+// The band's frame: its heading and the row of slots. Shared by the loading
+// and loaded branches, so the grid is declared once and the two states cannot
+// measure differently.
+//
+// The heading is not a constant. "To do" is only true while something is
+// waiting, and a settled org's row is four standing destinations, so a fixed
+// "To do" would tell a reader who has finished everything that they still
+// have work outstanding. The label therefore follows the cards, and the band
+// keeps its heading either way: four cards with no label above them read as
+// loose page furniture rather than one group, and dropping the line entirely
+// would move the whole row up the moment the query lands.
+function TodoSection({
+  label,
+  children,
+}: {
+  label: string | null
+  children: ReactNode
+}) {
+  return (
+    <section className="flex flex-col gap-3">
+      {label === null ? (
+        // Which of the two this band is, is data. It holds the heading's line
+        // rather than guessing "To do" and renaming itself a moment later,
+        // which reads as the page changing its mind exactly as four cards
+        // turning into four others would. h-5 is text-sm's line box and the
+        // bar is centred in it, so the row below does not move on arrival.
+        <div className="flex h-5 items-center">
+          <Skeleton className="h-4 w-20" />
+        </div>
+      ) : (
+        <h2 className="font-medium text-sm">{label}</h2>
+      )}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{children}</div>
+    </section>
   )
 }
 

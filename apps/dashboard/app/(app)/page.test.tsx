@@ -110,9 +110,11 @@ describe("OverviewPage", () => {
     // subtitle's count and the sections' data-driven content.
     expect(document.querySelector("[data-slot='skeleton']")).not.toBeNull()
     expect(screen.queryByText(/right now\./)).toBeNull()
-    // The section labels are static i18n text, so they render for real even
-    // while their data is still loading.
-    expect(screen.getByText(tOverview.sectionTodo)).toBeDefined()
+    // The row's heading names what the row holds, which is data too, so it
+    // waits with the cards rather than claiming work is outstanding and
+    // renaming itself when the query lands.
+    expect(screen.queryByText(tOverview.sectionTodo)).toBeNull()
+    expect(screen.queryByText(tOverview.sectionQuickActions)).toBeNull()
     // The to-do row waits rather than showing destinations it may replace:
     // which cards it holds is data, so it renders four skeleton slots and
     // nothing moves when the real ones arrive.
@@ -167,6 +169,12 @@ describe("OverviewPage", () => {
     expect(
       screen.getByText(tOverview.quickActions.importEmployees.label)
     ).toBeDefined()
+    // Nothing is waiting, so the band is not a to-do list and does not say it
+    // is: the heading names the destinations it now holds.
+    expect(
+      screen.getByRole("heading", { name: tOverview.sectionQuickActions })
+    ).toBeDefined()
+    expect(screen.queryByText(tOverview.sectionTodo)).toBeNull()
     expect(screen.getByText(tOverview.widgets.workforce.label)).toBeDefined()
     expect(screen.getByText(tOverview.widgets.levels.label)).toBeDefined()
     expect(screen.getByText(tOverview.widgets.gap.label)).toBeDefined()
