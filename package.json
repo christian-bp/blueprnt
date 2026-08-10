@@ -36,7 +36,7 @@
     "fast-uri": "3.1.5",
     "hono": "4.13.0",
     "ip-address": "10.4.0",
-    "js-yaml": "4.3.0",
+    "js-yaml": "4.3.1",
     "postcss": "8.5.25",
     "socket.io-parser": "4.2.7",
     "undici": "7.29.0",
