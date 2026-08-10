@@ -1234,7 +1234,10 @@
           "actions": "Actions",
           "diffPct": "Diff %",
           "diffSek": "Diff"
-        }
+        },
+        "searchPlaceholder": "Search by name",
+        "resultCount": "{shown} of {total} people",
+        "noMatches": "No one in this group matches the search."
       },
       "gap": {
         "levelLabel": "Level {level}",

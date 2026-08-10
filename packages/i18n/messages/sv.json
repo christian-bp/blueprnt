@@ -1234,7 +1234,10 @@
           "actions": "Åtgärder",
           "diffPct": "Skillnad %",
           "diffSek": "Skillnad"
-        }
+        },
+        "searchPlaceholder": "Sök på namn",
+        "resultCount": "{shown} av {total} personer",
+        "noMatches": "Ingen i gruppen matchar sökningen."
       },
       "gap": {
         "levelLabel": "Nivå {level}",

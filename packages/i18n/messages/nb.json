@@ -1234,7 +1234,10 @@
           "actions": "Tiltak",
           "diffPct": "Forskjell %",
           "diffSek": "Forskjell"
-        }
+        },
+        "searchPlaceholder": "Søk på navn",
+        "resultCount": "{shown} av {total} personer",
+        "noMatches": "Ingen i gruppen samsvarer med søket."
       },
       "gap": {
         "levelLabel": "Nivå {level}",

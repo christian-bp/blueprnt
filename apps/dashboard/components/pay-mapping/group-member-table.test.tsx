@@ -151,6 +151,15 @@ describe("GroupMemberTable", () => {
     }
   })
 
+  function manyMembers(count: number) {
+    return Array.from({ length: count }, (_, i) =>
+      memberRow({
+        displayName: `Person ${String(i).padStart(2, "0")}`,
+        basicMonthly: 50000 + i * 100,
+      })
+    )
+  }
+
   it("defaults to women first, lowest base salary on top, and scopes to the group's members", () => {
     renderTable({ group: GROUP, rows: ROWS, currency: "SEK" })
     expect(renderedNames()).toEqual(["Anna", "Wilma", "Erik", "Mats"])
@@ -204,20 +213,64 @@ describe("GroupMemberTable", () => {
     ).toBeDefined()
   })
 
-  it("paginates past 25 rows with a full first page", () => {
-    const many = Array.from({ length: 30 }, (_, i) =>
-      memberRow({
-        displayName: `Person ${String(i).padStart(2, "0")}`,
-        basicMonthly: 50000 + i * 100,
-      })
-    )
-    renderTable({ group: GROUP, rows: many, currency: "SEK" })
-    expect(renderedNames()).toHaveLength(25)
+  // Five rows a page, not the registers' 25: this table sits ABOVE the plot,
+  // so its height is what a reader scrolls past to reach the chart and the
+  // form under it. A 30-person group at 25 rows pushed both off the screen.
+  it("shows a short page and pages the rest", () => {
+    renderTable({ group: GROUP, rows: manyMembers(30), currency: "SEK" })
+    expect(renderedNames()).toHaveLength(5)
     expect(screen.getByRole("navigation")).toBeDefined()
   })
 
-  it("renders no pagination at 25 rows or fewer", () => {
+  it("renders no pagination for a group that fits on one page", () => {
     renderTable({ group: GROUP, rows: ROWS, currency: "SEK" })
     expect(screen.queryByRole("navigation")).toBeNull()
+  })
+
+  // With five rows a page, paging to a particular person is no way to find
+  // them: the search is. It narrows on the name, which is the only thing that
+  // tells rows in an equal-work group apart (they share a role by definition).
+  it("narrows to the searched name and reports how many matched", () => {
+    renderTable({ group: GROUP, rows: manyMembers(30), currency: "SEK" })
+    fireEvent.change(screen.getByLabelText(m.detail.searchPlaceholder), {
+      target: { value: "Person 07" },
+    })
+    expect(renderedNames()).toEqual(["Person 07"])
+    expect(
+      screen.getByText(
+        m.detail.resultCount.replace("{shown}", "1").replace("{total}", "30")
+      )
+    ).toBeDefined()
+    // Nothing to page through once one person matches.
+    expect(screen.queryByRole("navigation")).toBeNull()
+  })
+
+  // The count is chrome the reader did not ask for until they start
+  // narrowing, and a group that fits on a page should carry none of it.
+  it("hides the count until the search is narrowing", () => {
+    renderTable({ group: GROUP, rows: manyMembers(30), currency: "SEK" })
+    expect(screen.queryByText(/of 30 people/)).toBeNull()
+  })
+
+  // An empty table under its own headings reads as a load that failed.
+  it("says so in the table when nothing matches", () => {
+    renderTable({ group: GROUP, rows: manyMembers(30), currency: "SEK" })
+    fireEvent.change(screen.getByLabelText(m.detail.searchPlaceholder), {
+      target: { value: "nobody" },
+    })
+    // The one row left IS the message, in the table's own first column, so
+    // the headings keep their place instead of standing over nothing.
+    expect(renderedNames()).toEqual([m.detail.noMatches])
+  })
+
+  // Page 3 of a 30-person group has nothing on it once the search narrows to
+  // two matches, so a stale page index would show an empty table.
+  it("returns to the first page when the search narrows", () => {
+    renderTable({ group: GROUP, rows: manyMembers(30), currency: "SEK" })
+    fireEvent.click(screen.getByRole("button", { name: m.toolbar.next }))
+    fireEvent.change(screen.getByLabelText(m.detail.searchPlaceholder), {
+      target: { value: "Person 0" },
+    })
+    expect(renderedNames()[0]).toBe("Person 00")
   })
 })

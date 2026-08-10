@@ -1234,7 +1234,10 @@
           "actions": "Toimet",
           "diffPct": "Ero %",
           "diffSek": "Ero"
-        }
+        },
+        "searchPlaceholder": "Hae nimellä",
+        "resultCount": "{shown} / {total} henkilöä",
+        "noMatches": "Kukaan ryhmässä ei vastaa hakua."
       },
       "gap": {
         "levelLabel": "Taso {level}",

@@ -24,6 +24,7 @@ import { useMemo, useState } from "react"
 import { GenderDotIcon } from "@/components/gender-mark"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { TablePagination } from "@/components/table-pagination"
+import { TableSearchField } from "@/components/table-search-field"
 import { ariaSort, TableSortButton } from "@/components/table-sort-button"
 import { useMoney } from "@/hooks/use-money"
 import { percentText } from "@/lib/percent"
@@ -91,7 +92,13 @@ export function buildMemberRows(
   })
 }
 
-const PAGE_SIZE = 25
+// Five, not the registers' 25. This table opens inside a disclosure that sits
+// between the plot and the documentation form, so its height is what pushes
+// both off the screen: a 30-person group at 25 rows a page did exactly that,
+// and the reader had to scroll back up to the chart they opened it against.
+// Five keeps the step's shape whatever the group's size, and the search is
+// how a reader reaches a particular person instead of paging to them.
+const PAGE_SIZE = 5
 
 // v9 registers features explicitly (same idiom as the people register).
 const features = tableFeatures({
@@ -124,7 +131,7 @@ const columns = columnHelper.columns([
 // member with FTE-adjusted base salary and total comp, plus the signed
 // difference against the men's mean on the group's primary metric. Default
 // sort: the women first, lowest paid on top; every heading re-sorts freely.
-// Client pagination past 25 rows.
+// Client pagination at PAGE_SIZE rows, with a name search above the table.
 export function GroupMemberTable({
   group,
   rows,
@@ -156,6 +163,17 @@ export function GroupMemberTable({
     [rows, group]
   )
 
+  // Free-text over the member's own name, which is the only thing that
+  // distinguishes rows here: every member of an equal-work group shares its
+  // role and seniority by definition, so there is nothing else to filter on.
+  // An erased member matches the tombstone, which is what their row shows.
+  const [query, setQuery] = useState("")
+  const filtered = useMemo(() => {
+    const needle = query.trim().toLowerCase()
+    if (needle === "") return data
+    return data.filter((row) => row.name.toLowerCase().includes(needle))
+  }, [data, query])
+
   // Default order: women first, then lowest base salary on top.
   const [sorting, setSorting] = useState<SortingState>([
     { id: "gender", desc: false },
@@ -168,7 +186,7 @@ export function GroupMemberTable({
 
   const table = useTable({
     features,
-    data,
+    data: filtered,
     columns,
     state: { sorting, pagination },
     onSortingChange: setSorting,
@@ -217,6 +235,28 @@ export function GroupMemberTable({
 
   return (
     <div className="space-y-2">
+      {/* The toolbar: a search, and the narrowed count beside it. The count
+          only appears while the search is narrowing, so a group that fits on
+          one page carries no chrome it does not need (register anatomy). */}
+      <div className="flex items-center gap-2">
+        <TableSearchField
+          placeholder={t("searchPlaceholder")}
+          value={query}
+          onChange={(value) => {
+            setQuery(value)
+            // A narrowed list is shorter than the page the reader is on.
+            setPagination((p) =>
+              p.pageIndex === 0 ? p : { ...p, pageIndex: 0 }
+            )
+          }}
+          className="w-full sm:w-56"
+        />
+        {query.trim() !== "" && (
+          <span className="ml-auto shrink-0 text-muted-foreground text-sm tabular-nums">
+            {t("resultCount", { shown: filtered.length, total: data.length })}
+          </span>
+        )}
+      </div>
       {/* Six columns do not fit the analysis pane's width, and table-fixed
           answers that by collapsing the one flexible column (the name) to
           nothing. The table keeps a readable minimum and scrolls inside its
@@ -331,6 +371,19 @@ export function GroupMemberTable({
                 </TableRow>
               )
             })}
+            {/* A search that matches nobody leaves an empty table with its
+                headings, which reads as a load that failed. One row saying so,
+                inside the table, so the columns stay put. */}
+            {pageRows.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={documentation === undefined ? 5 : 6}
+                  className="text-muted-foreground"
+                >
+                  {t("noMatches")}
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

@@ -323,7 +323,23 @@ describe("ReviewGroupStep", () => {
       expect(screen.getByText(sek(100_000))).toBeDefined()
       expect(screen.getByText(`-${sek(10_000)}`)).toBeDefined()
       expect(screen.getByText(m.scatter.titleEqualWork)).toBeDefined()
-      expect(screen.getByText(m.gap.groupMembers)).toBeDefined()
+    })
+
+    // The chart is what this step is FOR: the gap, and whether age or tenure
+    // explains it. The roster is the detail behind that, so it sits under the
+    // chart behind a disclosure. Open and above the chart was tried and pushed
+    // the chart, and the form under it, down the screen on every group.
+    it("leads with the chart and keeps the roster behind a disclosure", () => {
+      renderEqualWorkStep(GROUP_LESS)
+      const chart = screen.getByText(m.scatter.titleEqualWork)
+      const disclosure = screen.getByText(m.gap.groupMembers)
+      expect(
+        chart.compareDocumentPosition(disclosure) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+      // Closed: the table and its caption are not on screen until asked for.
+      expect(screen.queryByRole("table")).toBeNull()
+      expect(screen.queryByText(m.detail.diffCaption)).toBeNull()
     })
 
     it("badges a second measure that tells a different story", () => {

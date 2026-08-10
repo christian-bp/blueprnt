@@ -244,17 +244,21 @@ export function EqualWorkDetail({
         means={{ women: primary.womenMean, men: primary.menMean }}
         title={tScatter("titleEqualWork")}
       />
-      {/* The summary strip and the plot stay visible: they are WHY this
-          group is flagged. The per-person table is the evidence behind
-          that, collapsed so every opened step starts at roughly the same
-          height with the form at the bottom (rung 3). */}
+      {/* The roster, collapsed under the plot. The chart is what this step
+          is FOR: it shows the gap and whether age or tenure explains it, at a
+          glance. Who is in the group is the detail behind that. It was
+          briefly open and above the chart, which pushed the chart, and the
+          documentation form under it, down the screen on every group.
+
+          Collapsed, every opened step also starts at roughly the same height,
+          so "mark done and continue" stays a rhythm instead of a scroll
+          lottery (the ladder's rung 3). The count on the trigger says what
+          opening it costs. */}
       <EvidenceDisclosure
         label={tGapRoot("groupMembers")}
         count={group.womenCount + group.menCount}
       >
         <div className="space-y-2">
-          {/* The caption gives the help button something to sit beside: a
-              lone icon at the top of the panel explains nothing. */}
           <p className="flex items-center gap-1.5 text-muted-foreground text-sm">
             {t("diffCaption")}
             <HelpMorphButton label={tHelp("payGapMemberDiffLabel")}>
