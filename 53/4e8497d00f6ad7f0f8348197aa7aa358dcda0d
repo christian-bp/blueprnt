@@ -1,0 +1,22 @@
+apps/dashboard/components/pay-mapping/group-member-table.tsx
+  s_32434e36a70429::t_0c96ac5e3d5cba 24,261-269
+apps/dashboard/components/pay-mapping/group-member-table.test.tsx
+  s_32434e36a70429::t_87278947c142b4 138-139
+  s_32434e36a70429::t_5ae41aa58e17c5 127-137,140-153
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "534e8497d00f6ad7f0f8348197aa7aa358dcda0d",
+  "prompts": {},
+  "sessions": {
+    "s_32434e36a70429": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "267e4255-45a7-45c3-9cf7-2431019cef56",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
