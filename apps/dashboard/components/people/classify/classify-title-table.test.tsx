@@ -303,6 +303,60 @@ describe("ClassifyTitleTable", () => {
     })
   })
 
+  it("collapses the panel once the group is confirmed", async () => {
+    renderTable()
+    expandFirst()
+    await waitFor(() => {
+      expect(screen.getByText("Alice Svensson")).toBeDefined()
+    })
+
+    fireEvent.click(screen.getByRole("button", { name: m.assignCta }))
+
+    // The group's work is done, so its review panel closes instead of
+    // burying the rows still to classify.
+    await waitFor(() => {
+      expect(screen.queryByText("Alice Svensson")).toBeNull()
+    })
+    expect(screen.getByRole("button", { name: m.expandLabel })).toBeDefined()
+  })
+
+  it("keeps the panel open when confirming fails", async () => {
+    assignMock.mockRejectedValueOnce(new Error("network"))
+    renderTable()
+    expandFirst()
+    await waitFor(() => {
+      expect(screen.getByText("Alice Svensson")).toBeDefined()
+    })
+
+    fireEvent.click(screen.getByRole("button", { name: m.assignCta }))
+
+    // Nothing landed, so the panel stays put for the retry.
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalled()
+    })
+    expect(screen.getByText("Alice Svensson")).toBeDefined()
+  })
+
+  it("scrolls a newly opened panel into view", async () => {
+    // jsdom has no scrollIntoView, and the panel scrolls only after its
+    // height animation settles, so this asserts the call rather than a
+    // scroll position.
+    const scrollIntoView = vi.fn()
+    const original = Element.prototype.scrollIntoView
+    Element.prototype.scrollIntoView = scrollIntoView
+    try {
+      renderTable()
+      expandFirst()
+      await waitFor(() => {
+        expect(scrollIntoView).toHaveBeenCalledWith(
+          expect.objectContaining({ block: "nearest" })
+        )
+      })
+    } finally {
+      Element.prototype.scrollIntoView = original
+    }
+  })
+
   it("fires assignPeopleToRole ONCE with every person on Confirm", async () => {
     renderTable()
     expandFirst()

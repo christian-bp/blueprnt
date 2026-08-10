@@ -47,8 +47,8 @@ import {
 } from "@workspace/ui/components/table"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation } from "convex/react"
-import { AnimatePresence, motion } from "motion/react"
-import { Fragment, useMemo, useState } from "react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
+import { Fragment, useMemo, useRef, useState } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "@/lib/toast"
 import { SPRING } from "@/lib/motion"
@@ -454,14 +454,38 @@ export function ClassifyTitleTable({
   // offer the track Select. roleById is used for correctness checks on
   // track change (see handleRoleChange).
 
+  // The group whose panel was just opened, so it can be scrolled into view
+  // once it has finished expanding. Null while nothing is pending.
+  const [justExpanded, setJustExpanded] = useState<string | null>(null)
+  // Only one panel is ever pending a scroll, so a single ref is enough: it is
+  // attached to that panel alone.
+  const openedPanelRef = useRef<HTMLDivElement | null>(null)
+  const reduceMotion = useReducedMotion()
+
   function toggleExpanded(key: string) {
     setExpanded((prev) => {
       const next = new Set(prev)
       if (next.has(key)) {
         next.delete(key)
+        setJustExpanded(null)
       } else {
         next.add(key)
+        // Opening a row near the bottom puts its panel below the fold, and
+        // the panel is the whole point of opening it. Scroll it into view
+        // once expanded (see the panel's onAnimationComplete): doing it now
+        // would measure a zero-height box mid-animation.
+        setJustExpanded(key)
       }
+      return next
+    })
+  }
+
+  // Collapses a group's panel. Called when a group is confirmed: its work is
+  // done, so leaving the review panel open buries the rows still to classify.
+  function collapse(keys: string[]) {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      for (const key of keys) next.delete(key)
       return next
     })
   }
@@ -616,6 +640,7 @@ export function ClassifyTitleTable({
     try {
       await submitAssignments(buildAssignments(group))
       toast.success(tToast("classificationConfirmed"))
+      collapse([key])
     } catch {
       toast.error(tToast("error"))
     } finally {
@@ -655,6 +680,7 @@ export function ClassifyTitleTable({
         setBulkProgress({ done, total })
       })
       toast.success(tToast("classificationConfirmed"))
+      collapse(selectedGroups.map(rowKey))
       setSelected(new Set())
       setBulkOpen(false)
     } catch {
@@ -870,10 +896,28 @@ export function ClassifyTitleTable({
                         style={{ padding: 0 }}
                       >
                         <motion.div
+                          // The ref is attached to the just-opened panel only,
+                          // so the scroll below can never target another row's.
+                          ref={
+                            justExpanded === key ? openedPanelRef : undefined
+                          }
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={SPRING}
+                          // Bring a newly opened panel into view once it has
+                          // reached full height: opening a row near the bottom
+                          // otherwise leaves the content the user just asked
+                          // for below the fold. "nearest" is a no-op when the
+                          // panel already fits, so an in-view row never jumps.
+                          onAnimationComplete={() => {
+                            if (justExpanded !== key) return
+                            openedPanelRef.current?.scrollIntoView({
+                              block: "nearest",
+                              behavior: reduceMotion ? "auto" : "smooth",
+                            })
+                            setJustExpanded(null)
+                          }}
                           // overflow-hidden on the block div so height:0
                           // truly clips; no visual box styles on this element
                           // (rule 2: outer carries geometry, inner carries style).
