@@ -49,22 +49,12 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@workspace/backend", "@workspace/i18n", "@workspace/ui"],
-  experimental: {
-    // Turbopack's persistent dev cache (default since Next 16.1) keeps its
-    // compilation under .next/dev/cache/turbopack across runs. With it on,
-    // an edit to a message file in packages/i18n never reaches the RUNNING
-    // dev server: Turbopack emits a fresh chunk containing the new key
-    // within a second, but the server keeps serving a bundle without it, so
-    // every new string renders as its raw key until the server is
-    // restarted. Measured: the emitted chunk had the key, and a
-    // cache-bypassing fetch of the page showed the server's own serialized
-    // messages did not.
-    //
-    // Off until that invalidation is trustworthy. The cost is a colder
-    // start; the cost of leaving it on is that no message edit is visible
-    // without a restart.
-    turbopackFileSystemCacheForDev: false,
-  },
+  // experimental.turbopackFileSystemCacheForDev was pinned to false here to
+  // stop the dev server serving stale i18n messages. It never did: measuring
+  // the same edit against a running server showed the cause is the message
+  // files being reached through `import()` (see i18n/request.ts), and with
+  // that fixed the cache makes no difference. Removed so dev keeps Next's
+  // default warm start.
   async headers() {
     return [
       {
