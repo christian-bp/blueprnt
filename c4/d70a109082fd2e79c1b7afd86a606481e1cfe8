@@ -1,0 +1,84 @@
+apps/dashboard/components/roles/family-actions-menu.test.tsx
+  s_32434e36a70429::t_15983f89221f7a 44,75,77,86,109,111
+  s_32434e36a70429::t_c4c71c6a47e72e 61-62
+apps/dashboard/components/organization/organization-members-section.test.tsx
+  s_32434e36a70429::t_d51dcdead6b65e 98,102,140-141,158-159,170-171
+  s_32434e36a70429::t_15983f89221f7a 12
+apps/dashboard/components/roles/import/role-import-wizard.test.tsx
+  s_32434e36a70429::t_d51dcdead6b65e 89
+  s_32434e36a70429::t_15983f89221f7a 53
+  s_32434e36a70429::t_b04bd5e6100453 81-86
+apps/dashboard/components/people/person-actions-menu.test.tsx
+  s_32434e36a70429::t_15983f89221f7a 46,92,94,101,137,139,149
+  s_32434e36a70429::t_c4c71c6a47e72e 80-81
+apps/dashboard/test/setup.ts
+  s_32434e36a70429::t_172f48eb82585a 1-18
+apps/dashboard/vitest.config.ts
+  s_32434e36a70429::t_faa44779d994f4 19-20
+apps/dashboard/components/people/salary-row-actions.test.tsx
+  s_32434e36a70429::t_c4c71c6a47e72e 48-49
+  s_32434e36a70429::t_15983f89221f7a 33,61,79
+apps/dashboard/components/nav-user.test.tsx
+  s_32434e36a70429::t_15983f89221f7a 11,103,116,138
+  s_32434e36a70429::t_c4c71c6a47e72e 83,86
+apps/dashboard/components/levels/family-filter.test.tsx
+  s_32434e36a70429::t_15983f89221f7a 6,40,58,69
+  s_32434e36a70429::t_c4c71c6a47e72e 26-27
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.test.tsx
+  s_32434e36a70429::t_c4c71c6a47e72e 54-59
+  s_32434e36a70429::t_15983f89221f7a 38,70,72,87,102,104,114
+apps/dashboard/test/menu.ts
+  s_32434e36a70429::t_cff2af46ba08f6 1-42
+apps/dashboard/components/model/criterion-item.test.tsx
+  s_32434e36a70429::t_15983f89221f7a 12,75,93,96,104,121
+  s_32434e36a70429::t_c4c71c6a47e72e 80-83
+apps/dashboard/components/roles/role-profile-card.test.tsx
+  s_32434e36a70429::t_15983f89221f7a 51,99,201,203,210,212,222
+  s_32434e36a70429::t_c4c71c6a47e72e 94
+  s_32434e36a70429::t_fc58887b5afb26 98,131,157,183,243,253,261,263,303
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_32434e36a70429::t_15983f89221f7a 18,156,163,168,177,183,209,215,225
+  s_32434e36a70429::t_1b132f644e37e5 1
+  s_32434e36a70429::t_c4c71c6a47e72e 120-121
+apps/dashboard/components/site-header.test.tsx
+  s_32434e36a70429::t_d51dcdead6b65e 167-169
+  s_32434e36a70429::t_1b132f644e37e5 1
+  s_32434e36a70429::t_15983f89221f7a 36
+apps/dashboard/components/family-review-table.test.tsx
+  s_32434e36a70429::t_15983f89221f7a 21,51,302,308,409,412,434,436
+  s_32434e36a70429::t_51b95ccdd8ddf0 318,514,529,571,705
+  s_32434e36a70429::t_c4c71c6a47e72e 43,45
+  s_32434e36a70429::t_fc58887b5afb26 50,56-57,316,460,470,501,539,551,569,614,616,700
+apps/dashboard/components/org-switch-menu.test.tsx
+  s_32434e36a70429::t_c4c71c6a47e72e 45-46
+  s_32434e36a70429::t_15983f89221f7a 30,63,76,80
+apps/dashboard/components/pay-mapping/pay-mapping-run-indicator.test.tsx
+  s_32434e36a70429::t_c4c71c6a47e72e 62-63
+  s_32434e36a70429::t_15983f89221f7a 30,93,95,107,110,120,122
+  s_32434e36a70429::t_088f95b735869a 1
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_32434e36a70429::t_15983f89221f7a 59
+  s_32434e36a70429::t_d51dcdead6b65e 223,236
+apps/dashboard/components/model/model-builder.test.tsx
+  s_32434e36a70429::t_d51dcdead6b65e 245-249
+  s_32434e36a70429::t_15983f89221f7a 54
+apps/dashboard/components/nav-organization.test.tsx
+  s_32434e36a70429::t_15983f89221f7a 56,91,100,111,121
+  s_32434e36a70429::t_c4c71c6a47e72e 66,69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "c4d70a109082fd2e79c1b7afd86a606481e1cfe8",
+  "prompts": {},
+  "sessions": {
+    "s_32434e36a70429": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "267e4255-45a7-45c3-9cf7-2431019cef56",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
