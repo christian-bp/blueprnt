@@ -37,6 +37,7 @@ import { useForm } from "react-hook-form"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SubmitButton } from "@/components/submit-button"
+import { FORM_DIALOG_CONTENT } from "@/lib/dialog-style"
 import {
   type CriterionComplianceValues,
   makeCriterionComplianceSchema,
@@ -440,7 +441,7 @@ export function CriterionComplianceDialog({
 }) {
   return (
     <Dialog open={target !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[85svh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className={FORM_DIALOG_CONTENT}>
         {target !== null && (
           <CriterionComplianceForm
             key={target.criterionId}

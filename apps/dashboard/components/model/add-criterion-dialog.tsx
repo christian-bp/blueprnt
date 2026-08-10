@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { toast } from "@/lib/toast"
 import { CriterionForm } from "@/components/model/criterion-form"
+import { FORM_DIALOG_CONTENT } from "@/lib/dialog-style"
 
 // Wraps the shared CriterionForm in a dialog so the tall form does not push
 // the criteria list down. The trigger is the default primary button, the same
@@ -37,7 +38,7 @@ export function AddCriterionDialog({ orgId }: { orgId: string }) {
       </DialogTrigger>
       {/* The form is tall; cap the height and scroll inside so the dialog stays
           centered and the overlay shifts nothing behind it. */}
-      <DialogContent className="max-h-[85svh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className={FORM_DIALOG_CONTENT}>
         <DialogHeader>
           <DialogTitle>{tEditor("addCta")}</DialogTitle>
           <DialogDescription>

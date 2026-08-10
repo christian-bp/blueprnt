@@ -12,6 +12,7 @@ import {
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { toast } from "@/lib/toast"
+import { FORM_DIALOG_CONTENT } from "@/lib/dialog-style"
 import {
   CriterionForm,
   type CriterionFormValues,
@@ -45,7 +46,7 @@ export function EditCriterionDialog({
   return (
     <Dialog open={target !== null} onOpenChange={(open) => !open && onClose()}>
       {/* Same shell as the add dialog: tall form, scroll inside. */}
-      <DialogContent className="max-h-[85svh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className={FORM_DIALOG_CONTENT}>
         <DialogHeader>
           <DialogTitle>{tEditor("editDialogTitle")}</DialogTitle>
           <DialogDescription>

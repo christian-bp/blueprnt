@@ -53,6 +53,8 @@ import {
   orgSettingsSchema,
 } from "@/lib/admin-schemas"
 import { onSelectValue } from "@/lib/select"
+import { cn } from "@workspace/ui/lib/utils"
+import { FORM_DIALOG_CONTENT } from "@/lib/dialog-style"
 
 interface AdminOrg {
   orgId: string
@@ -138,7 +140,7 @@ export function ManageOrganizationDialog(props: {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className={cn(FORM_DIALOG_CONTENT, "sm:max-w-2xl")}>
         <DialogHeader>
           <DialogTitle>{t("title", { name: org.name })}</DialogTitle>
           <DialogDescription>{org.slug}</DialogDescription>

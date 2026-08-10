@@ -47,6 +47,7 @@ import {
   type MembershipRole,
 } from "@/lib/admin-schemas"
 import { onSelectValue } from "@/lib/select"
+import { FORM_DIALOG_CONTENT } from "@/lib/dialog-style"
 
 export function ManageUserOrganizationsDialog(props: {
   user: { authId: string; name: string; email: string }
@@ -124,7 +125,7 @@ export function ManageUserOrganizationsDialog(props: {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className={FORM_DIALOG_CONTENT}>
         <DialogHeader>
           <DialogTitle>{t("title", { name: user.name })}</DialogTitle>
           <DialogDescription>{user.email}</DialogDescription>
