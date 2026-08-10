@@ -34,6 +34,7 @@ export function MorphPopover({
   children,
   className,
   panelClassName,
+  contentClassName = "w-[26rem] max-w-[85vw]",
 }: {
   triggerLabel: string
   triggerIcon?: IconSvgElement
@@ -49,6 +50,10 @@ export function MorphPopover({
   children: ReactNode | ((close: () => void) => ReactNode)
   className?: string
   panelClassName?: string
+  // The panel's fixed content width. Fixed (not fluid) so text lays out at its
+  // final measure while the box morphs; overridable because the default is
+  // sized for a card and overflows a narrower host such as a dialog.
+  contentClassName?: string
 }) {
   const [open, setOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -127,7 +132,12 @@ export function MorphPopover({
               panelClassName
             )}
             onKeyDown={(event) => {
-              if (event.key === "Escape") closePanel()
+              if (event.key !== "Escape") return
+              // Escape closes the PANEL only. Without stopping propagation a
+              // host that also listens for Escape (a Dialog) would close
+              // underneath it, dismissing the whole form on the first press.
+              event.stopPropagation()
+              closePanel()
             }}
           >
             {/* Fixed content width so text lays out at its final measure
@@ -137,7 +147,7 @@ export function MorphPopover({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: { delay: 0.12 } }}
               exit={{ opacity: 0, transition: { duration: 0.08 } }}
-              className="w-[26rem] max-w-[85vw] space-y-4 p-4"
+              className={cn("space-y-4 p-4", contentClassName)}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="space-y-1">
