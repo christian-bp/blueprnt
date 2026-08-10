@@ -124,6 +124,33 @@ describe("GroupMemberTable", () => {
     memberRow({ displayName: "Other", roleTitle: "Other" }),
   ]
 
+  // The mark family follows the surface, not the component: this table is the
+  // evidence behind the scatter above it, so a person is a triangle or a
+  // circle here exactly as they are in the plot. It drew the area charts' key
+  // (a solid or hatched square) once, which made one surface show the same
+  // person as two different shapes.
+  it("marks gender with the point mark the plot above it uses", () => {
+    const { container } = renderTable({
+      group: GROUP,
+      rows: ROWS,
+      currency: "SEK",
+    })
+    const cells = [...container.querySelectorAll("tbody tr")].map(
+      (row) => row.querySelectorAll("td")[1]
+    )
+    // Women are triangles (a path), men circles: both point marks, neither a
+    // square swatch.
+    expect(cells[0]?.querySelector("svg path")).not.toBeNull()
+    expect(cells[0]?.querySelector("svg circle")).toBeNull()
+    const men = cells[cells.length - 1]
+    expect(men?.querySelector("svg circle")).not.toBeNull()
+    // A CSS-painted swatch is what the area-chart key uses; nothing here may
+    // carry one.
+    for (const cell of cells) {
+      expect(cell?.querySelector("span[style]")).toBeNull()
+    }
+  })
+
   it("defaults to women first, lowest base salary on top, and scopes to the group's members", () => {
     renderTable({ group: GROUP, rows: ROWS, currency: "SEK" })
     expect(renderedNames()).toEqual(["Anna", "Wilma", "Erik", "Mats"])

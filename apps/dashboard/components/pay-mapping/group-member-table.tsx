@@ -21,7 +21,7 @@ import {
 } from "@tanstack/react-table"
 import { useFormatter, useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
-import { genderKeyStyle } from "@/components/gender-mark"
+import { GenderDotIcon } from "@/components/gender-mark"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { TablePagination } from "@/components/table-pagination"
 import { ariaSort, TableSortButton } from "@/components/table-sort-button"
@@ -258,11 +258,15 @@ export function GroupMemberTable({
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     <span className="flex items-center gap-1.5">
-                      <span
-                        aria-hidden="true"
-                        className="size-2 shrink-0 rounded-[2px]"
-                        style={genderKeyStyle(row.woman ? "women" : "men")}
-                      />
+                      {/* The POINT mark (triangle / circle), because this
+                          table is the evidence behind the scatter directly
+                          above it and sits under the same badges. It drew the
+                          area charts' key here, a solid or hatched square, so
+                          one surface showed the same person as a square in the
+                          table and a circle in the plot. */}
+                      <span aria-hidden="true" className="size-2.5 shrink-0">
+                        <GenderDotIcon series={row.woman ? "women" : "men"} />
+                      </span>
                       {tGender(row.woman ? "Kvinna" : "Man")}
                     </span>
                   </TableCell>
