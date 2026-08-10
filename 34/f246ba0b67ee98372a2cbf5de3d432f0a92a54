@@ -1,0 +1,36 @@
+packages/i18n/messages/en.json
+  s_e168c6910fbb9e::t_50051fed6a6185 1887,1889,1891,1893,1895,1897,1899,1901,1903,1905,1907,1909,1911,1913,1915,1921,1925,1929,1931,1937,1939,1941,1943,1945,1947,1949,1951-1952
+  s_e168c6910fbb9e::t_aa59ec02cc06fb 1933
+packages/i18n/messages/fi.json
+  s_e168c6910fbb9e::t_23fcdd4d62cfb4 1887,1889,1891,1893,1895,1897,1899,1901,1903,1905,1907,1909,1911,1913,1915,1917,1919,1921-1927,1929,1931,1933,1935,1937,1939,1941,1943,1945,1947,1949,1951-1952
+packages/i18n/messages/da.json
+  s_e168c6910fbb9e::t_23fcdd4d62cfb4 1887,1889,1891,1893,1895,1897,1899,1901,1903,1905,1907,1909,1911,1913,1915,1917,1919,1921-1927,1929,1931,1933,1935,1937,1939,1941,1943,1945,1947,1949,1951-1952
+apps/dashboard/components/model/criterion-compliance-dialog.test.tsx
+  s_e168c6910fbb9e::t_f3d1a71bb4f16d 182-189
+docs/superpowers/specs/2026-08-10-help-text-tightening-design.md
+  s_e168c6910fbb9e::t_59351388269df2 1-55
+packages/i18n/messages/nb.json
+  s_e168c6910fbb9e::t_23fcdd4d62cfb4 1887,1889,1891,1893,1895,1897,1899,1901,1903,1905,1907,1909,1911,1913,1915,1917,1919,1921-1927,1929,1931,1933,1935,1937,1939,1941,1943,1945,1947,1949,1951-1952
+packages/i18n/src/messages.test.ts
+  s_e168c6910fbb9e::t_bf09a838c917a6 119-148
+packages/i18n/messages/sv.json
+  s_e168c6910fbb9e::t_23fcdd4d62cfb4 1887,1889,1891,1893,1895,1897,1899,1901,1903,1905,1907,1909,1911,1913,1915,1917,1919,1921-1922,1924-1927,1929,1931,1933,1935,1937,1939,1941,1943,1945,1947,1949,1951-1952
+CLAUDE.md
+  s_e168c6910fbb9e::t_63dfdfd6294973 69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "34f246ba0b67ee98372a2cbf5de3d432f0a92a54",
+  "prompts": {},
+  "sessions": {
+    "s_e168c6910fbb9e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "38e5a4ea-e2db-4d45-991b-3f19f16bd3a7",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
