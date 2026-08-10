@@ -127,6 +127,10 @@ export function RatingStepper({
         return
       }
       if (/^[0-9]$/.test(event.key)) {
+        // Not while saving: the in-flight save already captured the step it is
+        // writing, so accepting another digit here would leave the UI showing a
+        // value the server never received (see handleNext).
+        if (keys.pending) return
         const step = Number(event.key)
         if (keys.anchors.some((anchor) => anchor.step === step)) {
           event.preventDefault()
@@ -142,8 +146,17 @@ export function RatingStepper({
   if (current === undefined) return null
   const selected = values[current.criterionId]
 
+  // Reads the step and motivation ONCE, up front, then awaits. Everything that
+  // can change either one is frozen while this runs (the anchors, the digit
+  // shortcut, the motivation field), because a change landing mid-save would
+  // not reach the server and would then be carried to the next criterion as
+  // local state the save never wrote.
   async function handleNext() {
     if (current === undefined || selected === undefined) return
+    // A second submit cannot start while one is in flight. The Next button is
+    // disabled and the Enter shortcut checks pending, so this is the backstop
+    // for two activations landing before the re-render publishes pending.
+    if (pending) return
     setPending(true)
     setFailed(false)
     try {
@@ -250,11 +263,18 @@ export function RatingStepper({
                       type="button"
                       role="radio"
                       aria-checked={isSelected}
+                      // Frozen while the step is saving, so a click cannot
+                      // change the selection out from under the in-flight
+                      // write. Deliberately no disabled styling: the save is
+                      // brief, and greying six anchors for it would flash.
+                      // enabled: keeps the hover cue off while locked, so a
+                      // locked anchor never looks clickable.
+                      disabled={pending}
                       className={cn(
                         "flex w-full items-baseline gap-3 rounded-md border p-3 text-left text-sm transition-colors",
                         isSelected
                           ? "border-brand bg-brand/5"
-                          : "hover:bg-muted/50"
+                          : "enabled:hover:bg-muted/50"
                       )}
                       onClick={() =>
                         setValues((currentValues) => ({
@@ -286,6 +306,11 @@ export function RatingStepper({
                   value={motivations[current.criterionId] ?? ""}
                   placeholder={t("motivationPlaceholder")}
                   rows={2}
+                  // readOnly, not disabled: the motivation is read once when
+                  // Next fires, so text typed after that would be dropped
+                  // silently. readOnly stops the edit without greying the
+                  // field or dropping focus for the moment the save takes.
+                  readOnly={pending}
                   onChange={(event) =>
                     setMotivations((currentMotivations) => ({
                       ...currentMotivations,
