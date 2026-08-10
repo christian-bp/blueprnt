@@ -1299,7 +1299,7 @@
           "noMatches": "No group matches the search."
         },
         "chapterOf": "Chapter {position} of {total} · {chapter}",
-        "chapterTab": "{position}. {chapter}",
+        "chapterTab": "<num>{position}.</num> {chapter}",
         "duty": {
           "start": "The law requires the employer to carry out the pay mapping together with the employees, normally through the union.",
           "praxis": "The law requires you to review the provisions and practice you apply to pay, and to record any that are found to be unequal.",

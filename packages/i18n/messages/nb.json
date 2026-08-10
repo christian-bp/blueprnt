@@ -1299,7 +1299,7 @@
           "noMatches": "Ingen gruppe matcher søket."
         },
         "chapterOf": "Kapittel {position} av {total} · {chapter}",
-        "chapterTab": "{position}. {chapter}",
+        "chapterTab": "<num>{position}.</num> {chapter}",
         "duty": {
           "start": "Loven krever at arbeidsgiveren gjennomfører lønnskartleggingen sammen med arbeidstakerne, normalt gjennom fagforeningen.",
           "praxis": "Loven krever at dere går gjennom bestemmelsene og praksisen dere bruker for lønn, og dokumenterer det som viser seg å være ulikt.",

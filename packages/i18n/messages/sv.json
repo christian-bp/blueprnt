@@ -1299,7 +1299,7 @@
           "noMatches": "Ingen grupp matchar sökningen."
         },
         "chapterOf": "Kapitel {position} av {total} · {chapter}",
-        "chapterTab": "{position}. {chapter}",
+        "chapterTab": "<num>{position}.</num> {chapter}",
         "duty": {
           "start": "Lagen kräver att arbetsgivaren genomför lönekartläggningen tillsammans med arbetstagarna, normalt genom facket.",
           "praxis": "Lagen kräver att ni går igenom de bestämmelser och den praxis ni tillämpar för löner, och dokumenterar det som visar sig vara ojämställt.",

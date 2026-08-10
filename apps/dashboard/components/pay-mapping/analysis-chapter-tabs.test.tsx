@@ -112,6 +112,28 @@ describe("AnalysisChapterTabs", () => {
     expect(current[0]?.textContent).toContain(m.chaptersShort.equalWork)
   })
 
+  // The done slot is always in the layout, so an underline measured against
+  // the whole tab ran 20px past the start of the text on every chapter that
+  // was not yet finished, reading as a bar left behind by a missing mark. It
+  // is anchored to the label instead, which also makes its width independent
+  // of whether the chapter is done. jsdom cannot measure boxes, so what is
+  // pinned here is the anchoring: the underline's own positioning parent holds
+  // the label text and not the mark.
+  it("anchors the current chapter's underline to its label, not the whole tab", () => {
+    renderTabs()
+    const current = screen
+      .getAllByRole("link")
+      .find((link) => link.getAttribute("aria-current") === "page")
+    const underline = current?.querySelector(".bg-foreground")
+    const anchor = underline?.parentElement
+    expect(anchor).not.toBe(current)
+    expect(anchor?.className).toContain("relative")
+    expect(anchor?.textContent).toContain(m.chaptersShort.equalWork)
+    // The mark and its screen-reader text stay outside, so the bar cannot
+    // stretch to cover them.
+    expect(anchor?.querySelector("[aria-hidden]")).toBeNull()
+  })
+
   it("renders the real labels while the queue is still loading", () => {
     // Static i18n text renders as its real control during a load; only the
     // counts, which are unknown until the data lands, are held back.

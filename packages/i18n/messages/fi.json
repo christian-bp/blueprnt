@@ -1299,7 +1299,7 @@
           "noMatches": "Yksikään ryhmä ei vastaa hakua."
         },
         "chapterOf": "Luku {position}/{total} · {chapter}",
-        "chapterTab": "{position}. {chapter}",
+        "chapterTab": "<num>{position}.</num> {chapter}",
         "duty": {
           "start": "Laki edellyttää, että työnantaja tekee palkkakartoituksen yhdessä työntekijöiden kanssa, tavallisesti ammattiliiton kautta.",
           "praxis": "Laki edellyttää, että käytte läpi palkkaa koskevat määräykset ja käytännöt ja dokumentoitte sen, mikä osoittautuu epätasa-arvoiseksi.",

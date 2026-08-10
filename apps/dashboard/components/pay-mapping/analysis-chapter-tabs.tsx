@@ -59,9 +59,16 @@ export function AnalysisChapterTabs() {
       // handle the chapter's own bar uses ("Chapter 2 of 4"). The format is
       // a message rather than string concatenation, so a locale can punctuate
       // its own way.
-      label: tAnalysis("chapterTab", {
+      label: tAnalysis.rich("chapterTab", {
         position: index + 1,
         chapter: t(`chaptersShort.${chapter}`),
+        // The position recedes: four numbers at full strength compete with the
+        // four names for the same glance, and the name is what the reader is
+        // choosing between. Muted in every state, so an active or hovered tab
+        // reads the same way as the rest of the row.
+        num: (chunks) => (
+          <span className="text-muted-foreground">{chunks}</span>
+        ),
       }),
       href: chapterHref(pathname, chapter),
 
@@ -107,14 +114,24 @@ export function AnalysisChapterTabs() {
               state has to survive as text. Same wording as the checklist rows
               use for a documented step. */}
           {tab.done && <span className="sr-only">{t("status.done")}</span>}
-          {tab.label}
-          {tab.current && (
-            <motion.span
-              layoutId="analysis-chapter-tab-underline"
-              transition={SPRING}
-              className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground"
-            />
-          )}
+          {/* The underline spans the LABEL, not the whole tab. The done slot
+              is always in the layout, so measuring the tab left the bar
+              running 20px past the start of the text with nothing above that
+              stretch on every chapter that is not yet finished, which read as
+              a bar belonging to a missing mark. Anchored to the label's own
+              box and pushed down by the link's py-2, so it still lands exactly
+              on the row's bottom edge, and PayMappingTabs above it (no slot,
+              so inset-x-2 already hugs its label) now measures the same. */}
+          <span className="relative">
+            {tab.label}
+            {tab.current && (
+              <motion.span
+                layoutId="analysis-chapter-tab-underline"
+                transition={SPRING}
+                className="absolute inset-x-0 -bottom-2 h-0.5 rounded-full bg-foreground"
+              />
+            )}
+          </span>
         </Link>
       ))}
     </nav>
