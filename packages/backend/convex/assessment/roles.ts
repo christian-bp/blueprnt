@@ -1,4 +1,8 @@
-import { isValidSeniorityForTrack } from "@workspace/constants"
+import {
+  MAX_ROLE_PROFILE_FIELD,
+  MAX_ROLE_TITLE,
+  isValidSeniorityForTrack,
+} from "@workspace/constants"
 import { suggestSeniorityForPerson } from "@workspace/core"
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
@@ -33,9 +37,6 @@ import { deriveResults } from "./compute"
 export const PROFILE_TEXT_FIELDS = ["purpose", "responsibilities"] as const
 export type ProfileTextField = (typeof PROFILE_TEXT_FIELDS)[number]
 
-const MAX_TITLE_LENGTH = 200
-const MAX_FIELD_LENGTH = 5000
-
 const optionalProfileArgs = {
   purpose: v.optional(v.string()),
   responsibilities: v.optional(v.string()),
@@ -52,7 +53,8 @@ export function isProfileComplete(role: {
 }
 
 function assertFieldLength(value: string): void {
-  if (value.length > MAX_FIELD_LENGTH) throw appError(ERROR_CODES.invalidInput)
+  if (value.length > MAX_ROLE_PROFILE_FIELD)
+    throw appError(ERROR_CODES.invalidInput)
 }
 
 // Used by updateRole and archiveRole.
@@ -133,7 +135,7 @@ export const createRole = orgMutation({
     // the title is required.
     const roleFunction = args.function.trim()
     const team = args.team.trim()
-    if (title.length === 0 || title.length > MAX_TITLE_LENGTH) {
+    if (title.length === 0 || title.length > MAX_ROLE_TITLE) {
       throw appError(ERROR_CODES.invalidInput)
     }
     let familySlug: string | undefined
@@ -418,7 +420,7 @@ export const updateRole = orgMutation({
     const patch: Record<string, unknown> = {}
     if (args.title !== undefined) {
       const title = args.title.trim()
-      if (title.length === 0 || title.length > MAX_TITLE_LENGTH) {
+      if (title.length === 0 || title.length > MAX_ROLE_TITLE) {
         throw appError(ERROR_CODES.invalidInput)
       }
       patch.title = title

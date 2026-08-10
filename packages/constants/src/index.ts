@@ -23,6 +23,7 @@ export { SLUG_PATTERN, isValidSlug, slugify } from "./slug"
 export {
   MAX_FAMILIES,
   MAX_FAMILY_NAME,
+  MAX_ROLE_PROFILE_FIELD,
   MAX_ROLE_TITLE,
   MAX_ROLES,
 } from "./starterSet"
