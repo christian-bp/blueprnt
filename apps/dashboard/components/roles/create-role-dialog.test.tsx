@@ -88,9 +88,10 @@ describe("CreateRoleDialog", () => {
     // A substring check for "border" would never fail either way: the
     // vendor Button's BASE classes (packages/ui/src/components/button.tsx)
     // apply "border border-transparent" to every variant, so it is present
-    // even on the default button. bg-brand is the class the default variant
-    // alone owns, so its presence is a real signal.
-    expect(trigger.className).toContain("bg-brand")
+    // even on the default button. bg-primary is the class the default
+    // variant alone owns, so its presence is a real signal. It reads as the
+    // brand rose because globals.css sets --primary to var(--brand).
+    expect(trigger.className).toContain("bg-primary")
   })
 
   it("renders its trigger in the requested variant", () => {
@@ -98,7 +99,7 @@ describe("CreateRoleDialog", () => {
     const trigger = screen.getByRole("button", { name: labels.title })
     // bg-background is the class the outline variant alone owns.
     expect(trigger.className).toContain("bg-background")
-    expect(trigger.className).not.toContain("bg-brand")
+    expect(trigger.className).not.toContain("bg-primary")
   })
 
   it("opens on the trigger and submits the basics, then navigates", async () => {

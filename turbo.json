@@ -18,6 +18,7 @@
       "persistent": true
     },
     "test": {
+      "dependsOn": ["^test"],
       "outputs": []
     },
     "test:watch": {

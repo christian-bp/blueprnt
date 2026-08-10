@@ -154,10 +154,12 @@ describe("PayMappingsSection", () => {
     const emptyButton = buttons.find((button) =>
       button.closest('[data-slot="empty"]')
     )
+    // bg-primary is the class the default variant alone owns; it reads as the
+    // brand rose because globals.css sets --primary to var(--brand).
     expect(emptyButton?.className).toContain("border-border")
-    expect(emptyButton?.className).not.toContain("bg-brand")
+    expect(emptyButton?.className).not.toContain("bg-primary")
     const headerButton = buttons.find((button) => button !== emptyButton)
-    expect(headerButton?.className).toContain("bg-brand")
+    expect(headerButton?.className).toContain("bg-primary")
     expect(
       document.querySelector('[data-slot="empty-icon"] svg')
     ).not.toBeNull()
