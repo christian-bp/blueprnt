@@ -1,0 +1,42 @@
+apps/dashboard/app/(app)/page.tsx
+  s_32434e36a70429::t_b0d82a99113bc8 53
+  s_32434e36a70429::t_a25d2faee388b3 23-24
+packages/i18n/messages/nb.json
+  s_32434e36a70429::t_d9d6bbd2fff6d4 853
+apps/dashboard/components/overview/todo-actions.tsx
+  s_32434e36a70429::t_12486ef21c36fb 212-249
+  s_32434e36a70429::t_d3d40cf33f76d9 12,14
+  s_32434e36a70429::t_baadaf83282ac7 89-91
+  s_32434e36a70429::t_26bacff1386de4 156-158
+  s_32434e36a70429::t_e8e3bef0507ab1 123,128
+apps/dashboard/app/(app)/page.test.tsx
+  s_32434e36a70429::t_c29bfaeb8332bc 172-177
+  s_32434e36a70429::t_56323528166a69 113-117
+packages/i18n/messages/da.json
+  s_32434e36a70429::t_5e0f5b1327e1cc 853
+apps/dashboard/components/overview/todo-actions.test.tsx
+  s_32434e36a70429::t_7603d7c9d22e46 223
+  s_32434e36a70429::t_17e84eebd4fffa 219-222,224-244
+packages/i18n/messages/en.json
+  s_32434e36a70429::t_aa0b53e30550b9 853
+packages/i18n/messages/sv.json
+  s_32434e36a70429::t_bac848faad0ae9 853
+packages/i18n/messages/fi.json
+  s_32434e36a70429::t_675c3c31f384d2 853
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "7a2bbd09752e55431511dad385a4954612ae49c3",
+  "prompts": {},
+  "sessions": {
+    "s_32434e36a70429": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "267e4255-45a7-45c3-9cf7-2431019cef56",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
