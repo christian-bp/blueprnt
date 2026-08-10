@@ -1,0 +1,17 @@
+# empty.tsx local deviation
+# Brand-tinted icon media instead of neutral.
+# Regenerate with: bun run ui:refresh-patches
+diff --git a/packages/ui/src/components/empty.tsx b/packages/ui/src/components/empty.tsx
+--- a/packages/ui/src/components/empty.tsx
++++ b/packages/ui/src/components/empty.tsx
+@@ -31,7 +31,9 @@ const emptyMediaVariants = cva(
+     variants: {
+       variant: {
+         default: "bg-transparent",
+-        icon: "flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground [&_svg:not([class*='size-'])]:size-6",
++        // Local deviation from upstream shadcn: the icon media is brand-tinted
++        // rather than neutral, so an empty state reads as ours.
++        icon: "flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand dark:bg-brand/20 [&_svg:not([class*='size-'])]:size-6",
+       },
+     },
+     defaultVariants: {

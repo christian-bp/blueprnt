@@ -1,0 +1,39 @@
+# tooltip.tsx local deviation
+# No arrow unless asked for; upstream always draws one.
+# Regenerate with: bun run ui:refresh-patches
+diff --git a/packages/ui/src/components/tooltip.tsx b/packages/ui/src/components/tooltip.tsx
+--- a/packages/ui/src/components/tooltip.tsx
++++ b/packages/ui/src/components/tooltip.tsx
+@@ -31,13 +31,18 @@ function TooltipContent({
+   sideOffset = 4,
+   align = "center",
+   alignOffset = 0,
++  // Local fix: tooltips are plain pills by default; opt in to a pointer arrow
++  // per tooltip (small inline triggers where the association is not obvious).
++  arrow = false,
+   children,
+   ...props
+ }: TooltipPrimitive.Popup.Props &
+   Pick<
+     TooltipPrimitive.Positioner.Props,
+     "align" | "alignOffset" | "side" | "sideOffset"
+-  >) {
++  > & {
++    arrow?: boolean
++  }) {
+   return (
+     <TooltipPrimitive.Portal>
+       <TooltipPrimitive.Positioner
+@@ -56,7 +61,11 @@ function TooltipContent({
+           {...props}
+         >
+           {children}
+-          <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-foreground fill-foreground data-[side=bottom]:top-1 data-[side=inline-end]:top-1/2! data-[side=inline-end]:-left-1 data-[side=inline-end]:-translate-y-1/2 data-[side=inline-start]:top-1/2! data-[side=inline-start]:-right-1 data-[side=inline-start]:-translate-y-1/2 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" />
++          {/* Local fix: no arrow by default; opt in with `arrow` (fills to match
++              the bg-foreground pill). */}
++          {arrow && (
++            <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-foreground fill-foreground data-[side=bottom]:top-1 data-[side=inline-end]:top-1/2! data-[side=inline-end]:-left-1 data-[side=inline-end]:-translate-y-1/2 data-[side=inline-start]:top-1/2! data-[side=inline-start]:-right-1 data-[side=inline-start]:-translate-y-1/2 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" />
++          )}
+         </TooltipPrimitive.Popup>
+       </TooltipPrimitive.Positioner>
+     </TooltipPrimitive.Portal>

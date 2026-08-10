@@ -52,3 +52,8 @@ next-env.d.ts
 
 # CycloneDX SBOM artifact
 sbom.json
+
+# Pristine shadcn output, rewritten by `bun run ui:update`. It is the base the
+# patches in packages/ui/patches are defined against, needed only to regenerate
+# them; committing it would duplicate every vendored component.
+packages/ui/.vendor/
