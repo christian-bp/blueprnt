@@ -12,7 +12,7 @@ import en from "@workspace/i18n/messages/en.json"
 
 // The page reads the reset token from the URL and talks to the auth client;
 // stub both so we can exercise the client-side validation in isolation.
-const { resetPassword, push, isPasswordPwned } = vi.hoisted(() => ({
+const { resetPassword, push } = vi.hoisted(() => ({
   resetPassword: vi.fn(
     async (): Promise<{
       error: { message: string; code?: string } | null
@@ -21,7 +21,6 @@ const { resetPassword, push, isPasswordPwned } = vi.hoisted(() => ({
     })
   ),
   push: vi.fn(),
-  isPasswordPwned: vi.fn(async (): Promise<boolean> => false),
 }))
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
@@ -35,7 +34,6 @@ vi.mock("next/link", () => ({
 vi.mock("@/lib/auth-client", () => ({
   authClient: { resetPassword },
 }))
-vi.mock("@/lib/pwned-password", () => ({ isPasswordPwned }))
 
 import ResetPasswordPage from "./page"
 
@@ -67,8 +65,6 @@ describe("ResetPasswordPage", () => {
     resetPassword.mockReset()
     resetPassword.mockResolvedValue({ error: null })
     push.mockReset()
-    isPasswordPwned.mockReset()
-    isPasswordPwned.mockResolvedValue(false)
   })
   afterEach(() => {
     cleanup()
@@ -112,21 +108,6 @@ describe("ResetPasswordPage", () => {
     })
   })
 
-  it("shows the compromised-password message when the password is breached", async () => {
-    resetPassword.mockResolvedValue({
-      error: { message: "compromised", code: "PASSWORD_COMPROMISED" },
-    })
-    renderPage()
-    fillPasswords("longeno8")
-    submit()
-    await waitFor(() => {
-      expect(
-        screen.getByText(en.dashboard.auth.resetPassword.compromised)
-      ).toBeDefined()
-      expect(push).not.toHaveBeenCalled()
-    })
-  })
-
   it("blocks submit and shows the mismatch error when the fields differ", async () => {
     renderPage()
     fireEvent.change(screen.getByLabelText(passwordLabel), {
@@ -161,19 +142,6 @@ describe("ResetPasswordPage", () => {
         })
       ).toBeDefined()
       expect(push).not.toHaveBeenCalled()
-    })
-  })
-
-  it("catches a breached password before submitting, so the token is not spent", async () => {
-    isPasswordPwned.mockResolvedValue(true)
-    renderPage()
-    fillPasswords("longeno8")
-    submit()
-    await waitFor(() => {
-      expect(
-        screen.getByText(en.dashboard.auth.resetPassword.compromised)
-      ).toBeDefined()
-      expect(resetPassword).not.toHaveBeenCalled()
     })
   })
 })

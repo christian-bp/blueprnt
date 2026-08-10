@@ -1586,7 +1586,6 @@
         "cta": "Tallenna salasana",
         "missingToken": "Linkki on virheellinen tai vanhentunut. Pyydä järjestelmänvalvojaa lähettämään kutsu uudelleen.",
         "error": "Jokin meni pieleen. Yritä uudelleen.",
-        "compromised": "Tämä salasana on esiintynyt tietomurrossa. Valitse toinen.",
         "confirmLabel": "Toista salasana",
         "expired": "Tämä linkki on vanhentunut tai jo käytetty.",
         "requestNew": "Pyydä uusi linkki"
@@ -2264,8 +2263,7 @@
           "cta": "Vaihda salasana",
           "saved": "Salasana vaihdettu.",
           "error": "Salasanaa ei voitu vaihtaa. Yritä uudelleen.",
-          "wrongPassword": "Nykyinen salasana on virheellinen.",
-          "compromised": "Tämä salasana on esiintynyt tietomurrossa. Valitse toinen salasana."
+          "wrongPassword": "Nykyinen salasana on virheellinen."
         },
         "twoFactor": {
           "title": "Kaksivaiheinen vahvistus",

@@ -1586,7 +1586,6 @@
         "cta": "Spara lösenord",
         "missingToken": "Länken är ogiltig eller har gått ut. Be en administratör skicka inbjudan igen.",
         "error": "Något gick fel. Försök igen.",
-        "compromised": "Det här lösenordet har förekommit i en dataläcka. Välj ett annat.",
         "confirmLabel": "Upprepa lösenordet",
         "expired": "Den här länken har gått ut eller har redan använts.",
         "requestNew": "Begär en ny länk"
@@ -2264,8 +2263,7 @@
           "cta": "Byt lösenord",
           "saved": "Lösenord ändrat.",
           "error": "Det gick inte att byta lösenord. Försök igen.",
-          "wrongPassword": "Det nuvarande lösenordet är felaktigt.",
-          "compromised": "Det här lösenordet har förekommit i ett dataintrång. Välj ett annat lösenord."
+          "wrongPassword": "Det nuvarande lösenordet är felaktigt."
         },
         "twoFactor": {
           "title": "Tvåstegsverifiering",

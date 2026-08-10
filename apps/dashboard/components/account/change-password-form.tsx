@@ -27,7 +27,6 @@ import {
   makeChangePasswordSchema,
   type ChangePasswordValues,
 } from "@/lib/account-schemas"
-import { isPasswordPwned } from "@/lib/pwned-password"
 
 // Better Auth surfaces a wrong current password as INVALID_PASSWORD (see
 // dist/api/routes/update-user.mjs: it verifyPassword on the current password
@@ -41,19 +40,7 @@ function isWrongPassword(error: unknown): boolean {
   )
 }
 
-// Better Auth's haveIBeenPwned plugin rejects a breached password with
-// PASSWORD_COMPROMISED. We also pre-check client-side (see isPasswordPwned
-// usage below), so the server stays the backstop but we surface it early.
-function isPasswordCompromised(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    (error as { code?: unknown }).code === "PASSWORD_COMPROMISED"
-  )
-}
-
-type ErrorState = "generic" | "compromised" | "wrongPassword" | null
+type ErrorState = "generic" | "wrongPassword" | null
 
 export function ChangePasswordForm() {
   const t = useTranslations("dashboard.account.security.password")
@@ -76,12 +63,6 @@ export function ChangePasswordForm() {
   async function onSubmit(values: ChangePasswordValues) {
     setErrorState(null)
     setSaved(false)
-    // Pre-check before submitting: avoids sending a potentially breached
-    // password to the server. The server plugin stays the authority.
-    if (await isPasswordPwned(values.newPassword)) {
-      setErrorState("compromised")
-      return
-    }
     try {
       const { error } = await authClient.changePassword({
         currentPassword: values.currentPassword,
@@ -89,13 +70,7 @@ export function ChangePasswordForm() {
         revokeOtherSessions: true,
       })
       if (error) {
-        setErrorState(
-          isPasswordCompromised(error)
-            ? "compromised"
-            : isWrongPassword(error)
-              ? "wrongPassword"
-              : "generic"
-        )
+        setErrorState(isWrongPassword(error) ? "wrongPassword" : "generic")
         return
       }
       form.reset()
@@ -169,13 +144,7 @@ export function ChangePasswordForm() {
           )}
           {errorState && (
             <p role="alert" className="text-destructive text-sm">
-              {t(
-                errorState === "compromised"
-                  ? "compromised"
-                  : errorState === "wrongPassword"
-                    ? "wrongPassword"
-                    : "error"
-              )}
+              {t(errorState === "wrongPassword" ? "wrongPassword" : "error")}
             </p>
           )}
         </div>

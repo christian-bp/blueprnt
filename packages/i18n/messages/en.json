@@ -1586,7 +1586,6 @@
         "cta": "Set password",
         "missingToken": "This link is invalid or has expired. Ask an administrator to resend your invitation.",
         "error": "Something went wrong. Try again.",
-        "compromised": "This password has appeared in a data breach. Please choose a different one.",
         "confirmLabel": "Repeat password",
         "expired": "This link has expired or was already used.",
         "requestNew": "Request a new link"
@@ -2264,8 +2263,7 @@
           "cta": "Change password",
           "saved": "Password changed.",
           "error": "Could not change your password. Please try again.",
-          "wrongPassword": "Current password is incorrect.",
-          "compromised": "This password has appeared in a data breach. Please choose a different password."
+          "wrongPassword": "Current password is incorrect."
         },
         "twoFactor": {
           "title": "Two-step verification",

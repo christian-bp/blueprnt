@@ -1586,7 +1586,6 @@
         "cta": "Gem adgangskode",
         "missingToken": "Linket er ugyldigt eller udløbet. Bed en administrator om at sende invitationen igen.",
         "error": "Noget gik galt. Prøv igen.",
-        "compromised": "Denne adgangskode er forekommet i et databrud. Vælg en anden.",
         "confirmLabel": "Gentag adgangskoden",
         "expired": "Dette link er udløbet eller allerede brugt.",
         "requestNew": "Anmod om et nyt link"
@@ -2264,8 +2263,7 @@
           "cta": "Skift adgangskode",
           "saved": "Adgangskode ændret.",
           "error": "Kunne ikke skifte din adgangskode. Prøv igen.",
-          "wrongPassword": "Nuværende adgangskode er forkert.",
-          "compromised": "Denne adgangskode er dukket op i et databrud. Vælg en anden adgangskode."
+          "wrongPassword": "Nuværende adgangskode er forkert."
         },
         "twoFactor": {
           "title": "To-trins-bekræftelse",

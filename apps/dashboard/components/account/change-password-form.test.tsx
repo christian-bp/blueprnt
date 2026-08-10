@@ -9,9 +9,9 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import en from "@workspace/i18n/messages/en.json"
 
-// Stub auth client and the HIBP helper so we can test client-side paths in
-// isolation without real network calls.
-const { changePassword, isPasswordPwned } = vi.hoisted(() => ({
+// Stub the auth client so we can test client-side paths in isolation without
+// real network calls.
+const { changePassword } = vi.hoisted(() => ({
   changePassword: vi.fn(
     async (): Promise<{
       error: { message: string; code?: string } | null
@@ -19,13 +19,11 @@ const { changePassword, isPasswordPwned } = vi.hoisted(() => ({
       error: null,
     })
   ),
-  isPasswordPwned: vi.fn(async (): Promise<boolean> => false),
 }))
 
 vi.mock("@/lib/auth-client", () => ({
   authClient: { changePassword },
 }))
-vi.mock("@/lib/pwned-password", () => ({ isPasswordPwned }))
 
 import { ChangePasswordForm } from "./change-password-form"
 
@@ -70,8 +68,6 @@ describe("ChangePasswordForm", () => {
   beforeEach(() => {
     changePassword.mockReset()
     changePassword.mockResolvedValue({ error: null })
-    isPasswordPwned.mockReset()
-    isPasswordPwned.mockResolvedValue(false)
   })
   afterEach(() => {
     cleanup()
@@ -113,17 +109,6 @@ describe("ChangePasswordForm", () => {
         newPassword: "longeno8",
         revokeOtherSessions: true,
       })
-    })
-  })
-
-  it("shows the compromised message and does not call changePassword when HIBP pre-check is breached", async () => {
-    isPasswordPwned.mockResolvedValue(true)
-    renderForm()
-    fill("current123", "longeno8")
-    submit()
-    await waitFor(() => {
-      expect(screen.getByText(t.compromised)).toBeDefined()
-      expect(changePassword).not.toHaveBeenCalled()
     })
   })
 

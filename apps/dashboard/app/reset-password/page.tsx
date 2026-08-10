@@ -23,24 +23,11 @@ import {
   type ResetPasswordValues,
 } from "@/lib/auth-schemas"
 import { authClient } from "@/lib/auth-client"
-import { isPasswordPwned } from "@/lib/pwned-password"
 import { usePageTitle } from "@/hooks/use-page-title"
 
-// Better Auth's haveIBeenPwned plugin rejects a breached password with a 400
-// carrying code "PASSWORD_COMPROMISED"; surface a specific message for it.
-function isPasswordCompromised(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    (error as { code?: unknown }).code === "PASSWORD_COMPROMISED"
-  )
-}
-
-// Better Auth burns the one-time reset token before hashing the new password, so
-// a rejected attempt (e.g. a breached password) leaves the token spent and a
-// retry 400s with code "INVALID_TOKEN". Surface a clear "request a new link"
-// message rather than the generic failure.
+// A reset token is one-time and expires; Better Auth rejects a spent or stale
+// one with a 400 carrying code "INVALID_TOKEN". Surface a clear "request a new
+// link" message rather than the generic failure.
 function isInvalidToken(error: unknown): boolean {
   return (
     typeof error === "object" &&
@@ -57,9 +44,7 @@ function ResetPasswordForm() {
   const router = useRouter()
   const params = useSearchParams()
   const token = params.get("token")
-  const [error, setError] = useState<
-    "generic" | "compromised" | "invalidToken" | null
-  >(null)
+  const [error, setError] = useState<"generic" | "invalidToken" | null>(null)
 
   const schema = useMemo(() => makeResetPasswordSchema(tv), [tv])
   const form = useForm<ResetPasswordValues>({
@@ -71,26 +56,13 @@ function ResetPasswordForm() {
   async function onSubmit(values: ResetPasswordValues) {
     if (token === null) return
     setError(null)
-    // Catch a breached password BEFORE submitting: Better Auth consumes the
-    // one-time token before its own breach check, so submitting a breached
-    // password would burn the link. The server plugin stays the backstop.
-    if (await isPasswordPwned(values.password)) {
-      setError("compromised")
-      return
-    }
     try {
       const { error: resetError } = await authClient.resetPassword({
         newPassword: values.password,
         token,
       })
       if (resetError) {
-        setError(
-          isPasswordCompromised(resetError)
-            ? "compromised"
-            : isInvalidToken(resetError)
-              ? "invalidToken"
-              : "generic"
-        )
+        setError(isInvalidToken(resetError) ? "invalidToken" : "generic")
         return
       }
       router.push("/")
@@ -156,7 +128,7 @@ function ResetPasswordForm() {
                 </p>
               ) : error ? (
                 <p role="alert" className="text-destructive text-sm">
-                  {t(error === "compromised" ? "compromised" : "error")}
+                  {t("error")}
                 </p>
               ) : null}
             </form>

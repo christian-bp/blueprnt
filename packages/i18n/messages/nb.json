@@ -1586,7 +1586,6 @@
         "cta": "Lagre passord",
         "missingToken": "Lenken er ugyldig eller har utløpt. Be en administrator sende invitasjonen på nytt.",
         "error": "Noe gikk galt. Prøv igjen.",
-        "compromised": "Dette passordet har dukket opp i en datalekkasje. Velg et annet.",
         "confirmLabel": "Gjenta passordet",
         "expired": "Denne lenken er utløpt eller allerede brukt.",
         "requestNew": "Be om en ny lenke"
@@ -2264,8 +2263,7 @@
           "cta": "Bytt passord",
           "saved": "Passord endret.",
           "error": "Kunne ikke endre passordet ditt. Prøv igjen.",
-          "wrongPassword": "Gjeldende passord er feil.",
-          "compromised": "Dette passordet har dukket opp i et datainnbrudd. Velg et annet passord."
+          "wrongPassword": "Gjeldende passord er feil."
         },
         "twoFactor": {
           "title": "To-trinns bekreftelse",
