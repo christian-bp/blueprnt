@@ -167,6 +167,7 @@
       "salarySaved": "Lønn lagret",
       "salaryDeleted": "Lønnsoppføring slettet",
       "personErased": "Ansatt slettet",
+      "peopleErased": "{count, plural, one {# ansatt slettet} other {# ansatte slettet}}",
       "personCreated": "Ansatt lagt til",
       "personUpdated": "Ansatt oppdatert",
       "roleTrackChanged": "Tracket er endret. {count, plural, one {# persons senioritet må} other {# personers senioritet må}} bekreftes på nytt.",
@@ -496,6 +497,18 @@
         "confirm": "Slett permanent",
         "cancel": "Avbryt",
         "error": "Den ansatte kunne ikke slettes. Prøv igjen."
+      },
+      "bulk": {
+        "selectAll": "Velg alle ansatte på denne siden",
+        "selectRow": "Velg {name}",
+        "selectedCount": "{count, plural, one {# ansatt valgt} other {# ansatte valgt}}",
+        "cta": "{count, plural, one {Slett # ansatt} other {Slett # ansatte}}",
+        "dialogTitle": "Slett valgte ansatte?",
+        "dialogDescription": "{count, plural, one {# ansatt} other {# ansatte}} slettes permanent sammen med alle tildelinger og lønnsoppføringer. Dette kan ikke angres.",
+        "confirmLabel": "Skriv DELETE for å bekrefte",
+        "confirm": "Slett permanent",
+        "progress": "<done></done> / <total></total>",
+        "error": "De ansatte kunne ikke slettes. Prøv igjen."
       }
     },
     "classify": {

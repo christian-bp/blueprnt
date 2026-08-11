@@ -167,6 +167,7 @@
       "salarySaved": "Salary saved",
       "salaryDeleted": "Salary record deleted",
       "personErased": "Employee deleted",
+      "peopleErased": "{count, plural, one {# employee deleted} other {# employees deleted}}",
       "personCreated": "Employee added",
       "personUpdated": "Employee updated",
       "roleTrackChanged": "Track changed. {count, plural, one {# person's seniority needs} other {# people's seniority needs}} re-confirming.",
@@ -496,6 +497,18 @@
         "confirm": "Delete permanently",
         "cancel": "Cancel",
         "error": "The employee could not be deleted. Try again."
+      },
+      "bulk": {
+        "selectAll": "Select all employees on this page",
+        "selectRow": "Select {name}",
+        "selectedCount": "{count, plural, one {# employee selected} other {# employees selected}}",
+        "cta": "{count, plural, one {Delete # employee} other {Delete # employees}}",
+        "dialogTitle": "Delete selected employees?",
+        "dialogDescription": "{count, plural, one {# employee} other {# employees}} will be permanently deleted, together with all their assignments and salary records. This cannot be undone.",
+        "confirmLabel": "Type DELETE to confirm",
+        "confirm": "Delete permanently",
+        "progress": "<done></done> / <total></total>",
+        "error": "The employees could not be deleted. Try again."
       }
     },
     "classify": {

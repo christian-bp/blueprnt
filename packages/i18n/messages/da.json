@@ -167,6 +167,7 @@
       "salarySaved": "Løn gemt",
       "salaryDeleted": "Lønpost slettet",
       "personErased": "Medarbejder slettet",
+      "peopleErased": "{count, plural, one {# medarbejder slettet} other {# medarbejdere slettet}}",
       "personCreated": "Medarbejder tilføjet",
       "personUpdated": "Medarbejder opdateret",
       "roleTrackChanged": "Tracket er ændret. {count, plural, one {# persons senioritet skal} other {# personers senioritet skal}} bekræftes igen.",
@@ -496,6 +497,18 @@
         "confirm": "Slet permanent",
         "cancel": "Annuller",
         "error": "Medarbejderen kunne ikke slettes. Prøv igen."
+      },
+      "bulk": {
+        "selectAll": "Vælg alle medarbejdere på denne side",
+        "selectRow": "Vælg {name}",
+        "selectedCount": "{count, plural, one {# medarbejder valgt} other {# medarbejdere valgt}}",
+        "cta": "{count, plural, one {Slet # medarbejder} other {Slet # medarbejdere}}",
+        "dialogTitle": "Slet valgte medarbejdere?",
+        "dialogDescription": "{count, plural, one {# medarbejder} other {# medarbejdere}} slettes permanent sammen med alle tildelinger og lønposter. Dette kan ikke fortrydes.",
+        "confirmLabel": "Skriv DELETE for at bekræfte",
+        "confirm": "Slet permanent",
+        "progress": "<done></done> / <total></total>",
+        "error": "Medarbejderne kunne ikke slettes. Prøv igen."
       }
     },
     "classify": {

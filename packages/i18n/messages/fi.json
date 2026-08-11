@@ -167,6 +167,7 @@
       "salarySaved": "Palkka tallennettu",
       "salaryDeleted": "Palkkatietue poistettu",
       "personErased": "Työntekijä poistettu",
+      "peopleErased": "{count, plural, one {# työntekijä poistettu} other {# työntekijää poistettu}}",
       "personCreated": "Työntekijä lisätty",
       "personUpdated": "Työntekijä päivitetty",
       "roleTrackChanged": "Track muutettu. {count, plural, one {# henkilön senioriteetti on} other {# henkilön senioriteetti on}} vahvistettava uudelleen.",
@@ -496,6 +497,18 @@
         "confirm": "Poista pysyvästi",
         "cancel": "Peruuta",
         "error": "Työntekijää ei voitu poistaa. Yritä uudelleen."
+      },
+      "bulk": {
+        "selectAll": "Valitse kaikki tämän sivun työntekijät",
+        "selectRow": "Valitse {name}",
+        "selectedCount": "{count, plural, one {# työntekijä valittu} other {# työntekijää valittu}}",
+        "cta": "{count, plural, one {Poista # työntekijä} other {Poista # työntekijää}}",
+        "dialogTitle": "Poistetaanko valitut työntekijät?",
+        "dialogDescription": "{count, plural, one {# työntekijä} other {# työntekijää}} poistetaan pysyvästi kaikkine tehtävineen ja palkkatietoineen. Toimintoa ei voi kumota.",
+        "confirmLabel": "Kirjoita DELETE vahvistaaksesi",
+        "confirm": "Poista pysyvästi",
+        "progress": "<done></done> / <total></total>",
+        "error": "Työntekijöitä ei voitu poistaa. Yritä uudelleen."
       }
     },
     "classify": {

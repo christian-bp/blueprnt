@@ -167,6 +167,7 @@
       "salarySaved": "Lönen sparades",
       "salaryDeleted": "Lönepost borttagen",
       "personErased": "Anställd raderad",
+      "peopleErased": "{count, plural, one {# anställd raderad} other {# anställda raderade}}",
       "personCreated": "Anställd tillagd",
       "personUpdated": "Anställd uppdaterad",
       "roleTrackChanged": "Tracket har ändrats. {count, plural, one {# persons senioritet behöver} other {# personers senioritet behöver}} bekräftas på nytt.",
@@ -496,6 +497,18 @@
         "confirm": "Radera permanent",
         "cancel": "Avbryt",
         "error": "Den anställda kunde inte raderas. Försök igen."
+      },
+      "bulk": {
+        "selectAll": "Markera alla anställda på den här sidan",
+        "selectRow": "Markera {name}",
+        "selectedCount": "{count, plural, one {# anställd markerad} other {# anställda markerade}}",
+        "cta": "{count, plural, one {Radera # anställd} other {Radera # anställda}}",
+        "dialogTitle": "Radera markerade anställda?",
+        "dialogDescription": "{count, plural, one {# anställd} other {# anställda}} raderas permanent tillsammans med alla tilldelningar och löneuppgifter. Det kan inte ångras.",
+        "confirmLabel": "Skriv DELETE för att bekräfta",
+        "confirm": "Radera permanent",
+        "progress": "<done></done> / <total></total>",
+        "error": "De anställda kunde inte raderas. Försök igen."
       }
     },
     "classify": {
