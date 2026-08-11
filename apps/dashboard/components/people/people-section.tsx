@@ -18,7 +18,8 @@ import {
   useTable,
 } from "@tanstack/react-table"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { buttonVariants } from "@workspace/ui/components/button"
+import { Button, buttonVariants } from "@workspace/ui/components/button"
+import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
   Empty,
   EmptyDescription,
@@ -50,6 +51,7 @@ import { NoMatchesEmpty } from "@/components/no-matches-empty"
 import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
 import { AddPersonDialog } from "@/components/people/add-person-dialog"
+import { BulkDeletePeopleDialog } from "@/components/people/bulk-delete-people-dialog"
 import { SuggestedRoleBadge } from "@/components/suggested-role-badge"
 import { TablePagination } from "@/components/table-pagination"
 import { TableSearchField } from "@/components/table-search-field"
@@ -59,6 +61,7 @@ import {
   type TableSkeletonColumn,
 } from "@/components/table-skeleton"
 import { onSelectValue } from "@/lib/select"
+import { selectionState } from "@/lib/selection"
 
 // The people list surface. Displays active (non-archived) people imported from
 // payroll as a searchable, filterable, paginated data table (the shadcn data
@@ -162,10 +165,19 @@ const columns = columnHelper.columns([
   }),
 ])
 
-// Skeleton shape per column, mirroring the real row content (name link, short
-// gender word, department, tiny FTE value) so the loading table has the same
-// silhouette as the loaded one.
+// Skeleton shape per column, mirroring the real row content (selection
+// checkbox, name link, short gender word, department, tiny FTE value) so the
+// loading table has the same silhouette as the loaded one. The checkbox is
+// per-row chrome that is identical on every row, not data, so it renders as
+// its real control (muted, non-interactive) rather than a bar.
 const PEOPLE_SKELETON_COLUMNS: TableSkeletonColumn[] = [
+  {
+    content: (
+      <span className="flex items-center">
+        <Checkbox disabled aria-hidden="true" tabIndex={-1} />
+      </span>
+    ),
+  },
   { className: "w-36 max-w-full" },
   { className: "w-16" },
   { className: "w-28 max-w-full" },
@@ -179,6 +191,7 @@ export function PeopleSection() {
   const tTabs = useTranslations("dashboard.people.tabs")
   const tToolbar = useTranslations("dashboard.people.toolbar")
   const tGender = useTranslations("dashboard.people.gender")
+  const tBulk = useTranslations("dashboard.people.bulk")
   const { orgId } = useOrganization()
   const locale = useLocale()
 
@@ -211,6 +224,10 @@ export function PeopleSection() {
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   })
+  // Selected people, keyed by personId. Survives paging and filtering; the
+  // EFFECTIVE selection below is what any action reads.
+  const [selected, setSelected] = useState<Set<string>>(() => new Set())
+  const [bulkOpen, setBulkOpen] = useState(false)
 
   const table = useTable({
     features,
@@ -252,6 +269,47 @@ export function PeopleSection() {
   // The suggested-assignment badge is shown only while narrowing by role: it
   // answers "which of these are still unconfirmed in this role?".
   const roleFilterActive = roleFilter !== "all"
+
+  // One selection, two questions. The header checkbox reads the CURRENT PAGE
+  // (a select-all must never arm an irreversible delete over rows the user
+  // cannot see), while the bulk action reads the whole FILTERED set, so a
+  // selection built across pages stays actionable and rows hidden by a filter
+  // or already erased drop out on their own.
+  const pageIds = pageRows.map((row) => row.personId)
+  const filteredIds = table
+    .getFilteredRowModel()
+    .rows.map((row) => row.original.personId)
+  const pageSelection = selectionState(selected, pageIds)
+  const selection = selectionState(selected, filteredIds)
+  const selectedCount = selection.effective.size
+
+  function toggleSelected(personId: string, checked: boolean) {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (checked) {
+        next.add(personId)
+      } else {
+        next.delete(personId)
+      }
+      return next
+    })
+  }
+
+  // Adds or removes exactly the rows on screen, leaving a selection made on
+  // another page untouched.
+  function togglePage(checked: boolean) {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      for (const personId of pageIds) {
+        if (checked) {
+          next.add(personId)
+        } else {
+          next.delete(personId)
+        }
+      }
+      return next
+    })
+  }
 
   // Shared handler for the toolbar's column-filter selects: "all" clears.
   function setColumnFilter(columnId: string, value: string) {
@@ -332,6 +390,17 @@ export function PeopleSection() {
   const tableHeader = (
     <TableHeader>
       <TableRow>
+        {/* Fixed-width selection slot. The label is static i18n text, so this
+            renders live (and enabled) during loading like the rest of the page
+            chrome; with no rows on screen a click selects nothing. */}
+        <TableHead className="w-10">
+          <Checkbox
+            aria-label={tBulk("selectAll")}
+            checked={pageSelection.all}
+            indeterminate={pageSelection.some}
+            onCheckedChange={(checked) => togglePage(checked === true)}
+          />
+        </TableHead>
         {sortableHead("name", t("columns.name"))}
         {sortableHead("gender", t("columns.gender"), "w-28")}
         {sortableHead("department", t("columns.department"), "w-[22%]")}
@@ -456,11 +525,38 @@ export function PeopleSection() {
           </SelectContent>
         </Select>
       )}
-      {filtersActive && (
-        <span className="ml-auto text-muted-foreground text-sm tabular-nums">
-          {tToolbar("resultCount", { shown, total: rows.length })}
+      {/* The right-aligned end of the filter row: the result count, then the
+          bulk action last so it sits hard against the right edge. Grouping
+          them means the pair wraps together on a narrow viewport instead of
+          the count and the button splitting across lines. */}
+      <div className="ml-auto flex items-center gap-2">
+        {filtersActive && (
+          <span className="text-muted-foreground text-sm tabular-nums">
+            {tToolbar("resultCount", { shown, total: rows.length })}
+          </span>
+        )}
+        {/* Appears only once something is selected, and takes the default
+            Button size so it matches the height of the search field and the
+            filter selects beside it (never a hand-picked size). Its label
+            carries the count, so no separate counter text is needed. */}
+        {selectedCount > 0 && (
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={() => setBulkOpen(true)}
+          >
+            {tBulk("cta", { count: selectedCount })}
+          </Button>
+        )}
+        {/* The button's label states the count visually, but a changing label
+            is not announced: this is what tells a screen reader the selection
+            changed, and it is the only thing that does. */}
+        <span aria-live="polite" className="sr-only">
+          {selectedCount > 0
+            ? tBulk("selectedCount", { count: selectedCount })
+            : ""}
         </span>
-      )}
+      </div>
     </div>
   )
 
@@ -538,6 +634,23 @@ export function PeopleSection() {
                   {pageRows.map((row) => {
                     return (
                       <TableRow key={row.personId}>
+                        <TableCell className="w-10">
+                          {/* Block flex wrapper: an inline-flex control sitting
+                              directly on a cell's text baseline inflates the
+                              line box, which would desync data rows from the
+                              skeleton's row height. */}
+                          <div className="flex items-center">
+                            <Checkbox
+                              aria-label={tBulk("selectRow", {
+                                name: row.name,
+                              })}
+                              checked={selection.effective.has(row.personId)}
+                              onCheckedChange={(checked) =>
+                                toggleSelected(row.personId, checked === true)
+                              }
+                            />
+                          </div>
+                        </TableCell>
                         <TableCell className="font-medium">
                           {/* Name truncates; the suggested badge (shown only
                               while narrowing by role) stays visible beside it. */}
@@ -588,6 +701,13 @@ export function PeopleSection() {
           )}
         </>
       )}
+
+      <BulkDeletePeopleDialog
+        open={bulkOpen}
+        onOpenChange={setBulkOpen}
+        personIds={[...selection.effective]}
+        onDeleted={() => setSelected(new Set())}
+      />
     </div>
   )
 }

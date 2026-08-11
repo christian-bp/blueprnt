@@ -1,9 +1,19 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
-import { afterEach, describe, expect, it, vi } from "vitest"
-import { onQuery } from "@/test/convex-mocks"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { mockMutation, onQuery } from "@/test/convex-mocks"
 import { pickSelectOption } from "@/test/select"
+
+vi.mock("@/lib/toast", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}))
 
 vi.mock(
   "convex/react",
@@ -37,7 +47,9 @@ import {
   matchesPersonQuery,
   PeopleSection,
 } from "@/components/people/people-section"
+import { toast } from "@/lib/toast"
 
+const eraseMock = mockMutation("people.erase.erasePersonAsOrg")
 const m = messages.dashboard.people
 
 // Fixtures
@@ -95,6 +107,26 @@ const PEOPLE = [
     senioritySource: null,
   },
 ]
+
+// 30 people so the register paginates (PAGE_SIZE is 25): sorted by name
+// ascending, page 1 holds "Person 01".."Person 25" and page 2 the rest.
+const MANY_PEOPLE = Array.from({ length: 30 }, (_, i) => ({
+  personId: `p${i + 1}`,
+  publicId: `pub-${i + 1}`,
+  displayName: `Person ${String(i + 1).padStart(2, "0")}`,
+  gender: null,
+  department: null,
+  ftePercent: null,
+  externalRef: null,
+  birthDate: null,
+  employmentStartDate: null,
+  country: null,
+  isManager: null,
+  statisticalCode: null,
+  archivedAt: null,
+  roleId: null,
+  senioritySource: null,
+}))
 
 // listRoles options for the role filter (only role1 has people here).
 const ROLES = [
@@ -429,24 +461,7 @@ describe("PeopleSection", () => {
   })
 
   it("sorts across all pages: a descending sort surfaces page-2 rows on page 1", () => {
-    const manyPeople = Array.from({ length: 30 }, (_, i) => ({
-      personId: `p${i + 1}`,
-      publicId: `pub-${i + 1}`,
-      displayName: `Person ${String(i + 1).padStart(2, "0")}`,
-      gender: null,
-      department: null,
-      ftePercent: null,
-      externalRef: null,
-      birthDate: null,
-      employmentStartDate: null,
-      country: null,
-      isManager: null,
-      statisticalCode: null,
-      archivedAt: null,
-      roleId: null,
-      senioritySource: null,
-    }))
-    onQuery((ref) => queryRouter(ref, manyPeople, []))
+    onQuery((ref) => queryRouter(ref, MANY_PEOPLE, []))
     renderSection()
 
     // Unsorted, Person 30 lives on page 2.
@@ -467,24 +482,7 @@ describe("PeopleSection", () => {
   })
 
   it("search resets to the first page", () => {
-    const manyPeople = Array.from({ length: 30 }, (_, i) => ({
-      personId: `p${i + 1}`,
-      publicId: `pub-${i + 1}`,
-      displayName: `Person ${String(i + 1).padStart(2, "0")}`,
-      gender: null,
-      department: null,
-      ftePercent: null,
-      externalRef: null,
-      birthDate: null,
-      employmentStartDate: null,
-      country: null,
-      isManager: null,
-      statisticalCode: null,
-      archivedAt: null,
-      roleId: null,
-      senioritySource: null,
-    }))
-    onQuery((ref) => queryRouter(ref, manyPeople, []))
+    onQuery((ref) => queryRouter(ref, MANY_PEOPLE, []))
     renderSection()
     fireEvent.click(screen.getByLabelText(m.toolbar.next))
     expect(screen.getByText("Person 26")).toBeDefined()
@@ -493,6 +491,192 @@ describe("PeopleSection", () => {
       target: { value: "person 0" },
     })
     expect(screen.getByText("Person 01")).toBeDefined()
+  })
+
+  // ---------------------------------------------------------------------------
+  // Row selection and bulk delete
+  // ---------------------------------------------------------------------------
+
+  describe("selection", () => {
+    beforeEach(() => {
+      eraseMock.mockReset()
+      eraseMock.mockResolvedValue(null)
+      vi.mocked(toast.success).mockReset()
+      vi.mocked(toast.error).mockReset()
+    })
+
+    // Selecting one named row, by the aria-label the register builds per row.
+    function selectRow(name: string) {
+      fireEvent.click(
+        screen.getByRole("checkbox", {
+          name: m.bulk.selectRow.replace("{name}", name),
+        })
+      )
+    }
+
+    // The CTA's label carries the count, so it is matched by shape rather than
+    // by a fixed string.
+    const CTA = /^Delete \d+ employees?$/
+
+    it("hides the delete button entirely until something is selected", () => {
+      onQuery((ref) => queryRouter(ref))
+      renderSection()
+      expect(screen.queryByRole("button", { name: CTA })).toBeNull()
+      expect(screen.queryByText(/employees? selected/)).toBeNull()
+    })
+
+    it("selects a single row and puts the count in the button label", () => {
+      onQuery((ref) => queryRouter(ref))
+      renderSection()
+      selectRow("Alice Svensson")
+      expect(
+        screen.getByRole("button", { name: "Delete 1 employee" })
+      ).toBeDefined()
+      // The visible count lives only in the button; the announcement for
+      // screen readers is the visually-hidden live region.
+      const live = screen.getByText("1 employee selected")
+      expect(live.className).toContain("sr-only")
+      expect(live.getAttribute("aria-live")).toBe("polite")
+    })
+
+    it("pluralizes the button label as the selection grows", () => {
+      onQuery((ref) => queryRouter(ref))
+      renderSection()
+      selectRow("Alice Svensson")
+      selectRow("Bob Larsson")
+      expect(
+        screen.getByRole("button", { name: "Delete 2 employees" })
+      ).toBeDefined()
+      expect(
+        screen.queryByRole("button", { name: "Delete 1 employee" })
+      ).toBeNull()
+    })
+
+    it("puts the delete button in the filter row at the same height as the other controls", () => {
+      onQuery((ref) => queryRouter(ref))
+      renderSection()
+      selectRow("Alice Svensson")
+      const search = screen.getByLabelText(m.toolbar.searchPlaceholder)
+      const button = screen.getByRole("button", { name: "Delete 1 employee" })
+      // The button shares the toolbar with the search field rather than
+      // sitting in a row of its own.
+      const toolbar = search.closest("div.flex.flex-wrap")
+      expect(toolbar).not.toBeNull()
+      expect(toolbar?.contains(button)).toBe(true)
+      // It takes the default Button size, so it is exactly as tall as the
+      // search field beside it (size="sm" made it a notch shorter).
+      expect(search.className).toContain("h-9")
+      expect(button.className).toContain("h-9")
+    })
+
+    it("puts the delete button last, hard against the right edge", () => {
+      onQuery((ref) => queryRouter(ref))
+      renderSection()
+      // Narrow the table so the result count renders beside the button.
+      fireEvent.change(screen.getByLabelText(m.toolbar.searchPlaceholder), {
+        target: { value: "Alice" },
+      })
+      selectRow("Alice Svensson")
+      const button = screen.getByRole("button", { name: "Delete 1 employee" })
+      const count = screen.getByText(
+        m.toolbar.resultCount.replace("{shown}", "1").replace("{total}", "3")
+      )
+      // Both live in the row's right-aligned group, the button after the count.
+      const rightGroup = button.parentElement
+      expect(rightGroup?.className).toContain("ml-auto")
+      expect(rightGroup?.contains(count)).toBe(true)
+      expect(
+        count.compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+    })
+
+    it("puts the header checkbox in the mixed state on a partial page", () => {
+      onQuery((ref) => queryRouter(ref))
+      renderSection()
+      selectRow("Alice Svensson")
+      const headerBox = screen.getByRole("checkbox", { name: m.bulk.selectAll })
+      expect(headerBox.getAttribute("aria-checked")).toBe("mixed")
+      // Selecting the rest of the page flips it to fully checked.
+      selectRow("Bob Larsson")
+      selectRow("Charlie Nilsson")
+      expect(headerBox.getAttribute("aria-checked")).toBe("true")
+    })
+
+    it("select-all covers only the current page, not the whole filtered set", () => {
+      onQuery((ref) => queryRouter(ref, MANY_PEOPLE, []))
+      renderSection()
+      fireEvent.click(screen.getByRole("checkbox", { name: m.bulk.selectAll }))
+      // 30 people, page size 25: select-all takes the page, never all 30.
+      expect(screen.getByText("25 employees selected")).toBeDefined()
+    })
+
+    it("keeps the selection when paging, and select-all on page 2 adds to it", () => {
+      onQuery((ref) => queryRouter(ref, MANY_PEOPLE, []))
+      renderSection()
+      fireEvent.click(screen.getByRole("checkbox", { name: m.bulk.selectAll }))
+      fireEvent.click(screen.getByLabelText(m.toolbar.next))
+      // The 25 from page 1 are still selected while page 2 is shown.
+      expect(screen.getByText("25 employees selected")).toBeDefined()
+      fireEvent.click(screen.getByRole("checkbox", { name: m.bulk.selectAll }))
+      expect(screen.getByText("30 employees selected")).toBeDefined()
+    })
+
+    it("prunes the selection to what the filter still shows", () => {
+      onQuery((ref) => queryRouter(ref))
+      renderSection()
+      fireEvent.click(screen.getByRole("checkbox", { name: m.bulk.selectAll }))
+      expect(screen.getByText("3 employees selected")).toBeDefined()
+      // Narrowing to Alice drops the other two from the effective selection.
+      fireEvent.change(screen.getByLabelText(m.toolbar.searchPlaceholder), {
+        target: { value: "Alice" },
+      })
+      expect(screen.getByText("1 employee selected")).toBeDefined()
+    })
+
+    it("deletes exactly the selected people, one call each, then clears the selection", async () => {
+      onQuery((ref) => queryRouter(ref))
+      renderSection()
+      selectRow("Alice Svensson")
+      selectRow("Bob Larsson")
+      fireEvent.click(screen.getByRole("button", { name: CTA }))
+      fireEvent.change(screen.getByLabelText(m.bulk.confirmLabel), {
+        target: { value: "DELETE" },
+      })
+      await waitFor(() =>
+        expect(
+          screen.getByRole("button", { name: m.bulk.confirm })
+        ).toHaveProperty("disabled", false)
+      )
+      fireEvent.click(screen.getByRole("button", { name: m.bulk.confirm }))
+
+      await waitFor(() => expect(toast.success).toHaveBeenCalled())
+      expect(eraseMock).toHaveBeenCalledTimes(2)
+      expect(eraseMock.mock.calls.map((c) => c[0])).toEqual([
+        { orgId: "org1", personId: "p1" },
+        { orgId: "org1", personId: "p2" },
+      ])
+      // The dialog closed and the selection reset. The fixture query still
+      // returns all three people, so a stale selection would still count here.
+      await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull())
+      expect(screen.queryByRole("button", { name: CTA })).toBeNull()
+    })
+
+    it("renders the checkbox column in the loading skeleton", () => {
+      onQuery(() => undefined)
+      renderSection()
+      // The header checkbox is real chrome with a static label, so it renders
+      // live during loading rather than as a gray bar.
+      expect(
+        screen.getByRole("checkbox", { name: m.bulk.selectAll })
+      ).toBeDefined()
+      // Skeleton rows carry a real, non-interactive checkbox in the same slot.
+      // They are aria-hidden (decorative chrome standing in for nothing), so
+      // they are absent from the role tree by design: query the DOM directly.
+      expect(
+        document.querySelectorAll('[data-slot="checkbox"][aria-hidden="true"]')
+          .length
+      ).toBeGreaterThan(0)
+    })
   })
 })
 
