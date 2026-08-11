@@ -919,7 +919,7 @@
           "notStarted": "Not started",
           "prompt": "Start your first pay mapping",
           "insufficientValue": "Not enough data",
-          "note": "From your most recent pay mapping"
+          "note": "From your latest pay mapping"
         },
         "roles": {
           "label": "Roles",
@@ -1349,7 +1349,7 @@
         "gapDeltaNarrowed": "Down from {previous} in {label}",
         "gapDeltaWidened": "Up from {previous} in {label}",
         "gapNoComparison": "Nothing to compare with yet",
-        "gapNote": "Average pay difference between women and men",
+        "gapNote": "Average pay difference, women vs men",
         "clockNote": "Across an 8-hour working day"
       },
       "clock": {

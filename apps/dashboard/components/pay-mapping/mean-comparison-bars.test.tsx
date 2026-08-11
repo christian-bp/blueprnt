@@ -66,6 +66,23 @@ describe("MeanComparisonBars", () => {
     expect(holder.style.right).not.toBe("")
   })
 
+  // The marker is absolutely positioned, so sitting inside the rows' spacing
+  // stack cost nothing visible but made the LAST bar row no longer last: it
+  // kept a trailing 8px margin under it that nothing occupies, both as dead
+  // space below the bars and as 8px no skeleton beside them could account
+  // for. The rows own the rhythm; the marker sits outside it.
+  it("keeps the marker out of the rows' spacing rhythm", () => {
+    const { container } = renderBars(50_000, 100_000)
+    const marker = container.querySelector('[data-testid="mean-marker"]')
+    const bars = container.querySelectorAll('[data-testid="mean-bar"]')
+    const stack = bars[1]?.closest(".space-y-2")
+    expect(stack).not.toBeNull()
+    expect(stack?.contains(marker)).toBe(false)
+    // The second row is genuinely the stack's last child, so no margin hangs
+    // below it.
+    expect(stack?.lastElementChild?.contains(bars[1] ?? null)).toBe(true)
+  })
+
   it("puts the marker at the men's level when the women earn more", () => {
     const { container } = renderBars(100_000, 75_000)
     const marker = container.querySelector(

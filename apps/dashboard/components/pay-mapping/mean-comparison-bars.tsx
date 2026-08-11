@@ -80,21 +80,28 @@ export function MeanComparisonBars({
   const markerPct = max > 0 && lo < 100 ? lo : null
 
   return (
-    <div className="relative space-y-2">
-      <MeanBarRow
-        label={tColumns("women")}
-        value={womenMean}
-        currency={currency}
-        widthPct={widthPct(womenMean)}
-        series="women"
-      />
-      <MeanBarRow
-        label={tColumns("men")}
-        value={menMean}
-        currency={currency}
-        widthPct={widthPct(menMean)}
-        series="men"
-      />
+    // The rows carry the spacing rhythm, the marker sits OUTSIDE it. With the
+    // marker inside, it was the last child of the space-y stack, so the last
+    // bar row was no longer last and kept a trailing 8px margin under it that
+    // nothing occupies: dead space below the bars wherever this renders, and
+    // 8px a loading skeleton beside it could never account for.
+    <div className="relative">
+      <div className="space-y-2">
+        <MeanBarRow
+          label={tColumns("women")}
+          value={womenMean}
+          currency={currency}
+          widthPct={widthPct(womenMean)}
+          series="women"
+        />
+        <MeanBarRow
+          label={tColumns("men")}
+          value={menMean}
+          currency={currency}
+          widthPct={widthPct(menMean)}
+          series="men"
+        />
+      </div>
       {markerPct !== null && (
         <div
           aria-hidden

@@ -15,7 +15,7 @@ import type { ReactNode } from "react"
 import { GenderMenIcon } from "@/components/gender-mark"
 import { HeadcountTrend, PayGapTrend } from "@/components/overview/widget-viz"
 import { PanelCard } from "@/components/panel-card"
-import { WidgetCard } from "@/components/widget-card"
+import { StatBar, WidgetCard } from "@/components/widget-card"
 import type { PayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
 import { WIDGET_CHART_HEIGHT } from "@/lib/chart-style"
 import { type HeadcountPoint, headcountTotal } from "@/lib/headcount-trend"
@@ -23,16 +23,6 @@ import { hasTrendShape, type PayGapPoint } from "@/lib/pay-gap-trend"
 import type { LevelOverview } from "@/lib/level-overview"
 import { percentText } from "@/lib/percent"
 import type { OverviewStats } from "@/lib/todo"
-
-// A skeleton bar centred in its own line, so the slot measures whatever the
-// surrounding type would have measured rather than the bar's own height.
-function StatBar({ className }: { className: string }) {
-  return (
-    <span className="flex items-center">
-      <Skeleton className={className} />
-    </span>
-  )
-}
 
 // One tile of the stat strip: the label, the figure it labels, then the two
 // lines that qualify it, in that order down the card. `caption` is the

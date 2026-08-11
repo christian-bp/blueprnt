@@ -5,9 +5,8 @@ import {
   ArrowUpRight01Icon,
   UserGroupIcon,
 } from "@hugeicons/core-free-icons"
-import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useTranslations } from "next-intl"
-import { WidgetCard } from "@/components/widget-card"
+import { StatBar, WidgetCard } from "@/components/widget-card"
 import { populationTrend } from "./pay-mapping-trends"
 import { usePayMappingRun } from "./pay-mapping-run-context"
 
@@ -35,21 +34,9 @@ export function PayMappingPopulationCard() {
       <WidgetCard
         title={t("detail.population")}
         icon={UserGroupIcon}
-        value={
-          <span className="flex items-center">
-            <Skeleton className="h-7 w-16" />
-          </span>
-        }
-        footer={
-          <span className="flex items-center">
-            <Skeleton className="h-4 w-36" />
-          </span>
-        }
-        note={
-          <span className="flex items-center">
-            <Skeleton className="h-4 w-28" />
-          </span>
-        }
+        value={<StatBar className="h-7 w-16" />}
+        footer={<StatBar className="h-4 w-36" />}
+        note={<StatBar className="h-4 w-28" />}
       />
     )
   }

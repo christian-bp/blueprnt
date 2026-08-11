@@ -1349,7 +1349,7 @@
         "gapDeltaNarrowed": "Ned fra {previous} i {label}",
         "gapDeltaWidened": "Opp fra {previous} i {label}",
         "gapNoComparison": "Ingenting å sammenligne med ennå",
-        "gapNote": "Gjennomsnittlig lønnsforskjell mellom kvinner og menn",
+        "gapNote": "Gjennomsnittlig lønnsforskjell, kvinner mot menn",
         "clockNote": "Regnet på en 8-timers arbeidsdag"
       },
       "clock": {

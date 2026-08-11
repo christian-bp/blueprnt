@@ -1349,7 +1349,7 @@
         "gapDeltaNarrowed": "Ned fra {previous} i {label}",
         "gapDeltaWidened": "Op fra {previous} i {label}",
         "gapNoComparison": "Intet at sammenligne med endnu",
-        "gapNote": "Gennemsnitlig lønforskel mellem kvinder og mænd",
+        "gapNote": "Gennemsnitlig lønforskel, kvinder mod mænd",
         "clockNote": "Beregnet på en 8-timers arbejdsdag"
       },
       "clock": {

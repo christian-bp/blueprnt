@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
-import { WidgetCard } from "@/components/widget-card"
+import { StatBar, WidgetCard } from "@/components/widget-card"
 import { UserGroupIcon } from "@hugeicons/core-free-icons"
 
 function renderCard(ui: React.ReactElement) {
@@ -138,6 +138,63 @@ describe("WidgetCard", () => {
     )
     const chip = container.querySelector('[data-slot="card-action"] span')
     expect(chip?.getAttribute("aria-hidden")).toBe("true")
+  })
+
+  // A bar's own height is not the slot's height. The wrapper is a flex
+  // container, which sizes to its content and has no line box of its own, so
+  // without the strut a figure sat in 28px instead of 45 and each footer line
+  // in 16 instead of 20: a strip of tiles stood 25px short and everything
+  // under it moved when the figures arrived. Measured in headless Chrome,
+  // which is the only place it shows, so the test guards the mechanism.
+  it("stands a loading bar in the line box its own type would have made", () => {
+    const { container } = renderCard(
+      <WidgetCard
+        title="Workforce"
+        value={<StatBar className="h-7 w-16" />}
+        footer={<StatBar className="h-4 w-28" />}
+      />
+    )
+    const bars = container.querySelectorAll('[data-slot="skeleton"]')
+    expect(bars).toHaveLength(2)
+    for (const bar of bars) {
+      const strut = bar.previousElementSibling
+      // Zero width, so it reinstates the line box without moving the bar.
+      expect(strut?.className).toContain("w-0")
+      // A non-breaking space: an empty box makes no line box at all.
+      expect(strut?.textContent).toBe("\u00a0")
+      // No type of its own: it has to INHERIT the size and leading of the slot
+      // it sits in, which is what lets one bar fit a 45px figure and a 20px
+      // footer line.
+      expect(strut?.className).not.toMatch(/\btext-|\bleading-/)
+    }
+  })
+
+  // A tile's height cannot depend on how long a sentence happens to be in the
+  // reader's language. The same note fits one line in Swedish and took two in
+  // English and Finnish at the width a 1280px window leaves, which grew the
+  // strip by 20px in those locales the moment its figures landed. Both lines
+  // are one line, clipped; the copy is written to fit, so the ellipsis is the
+  // guard rather than the normal state.
+  it("holds each footer line to one line", () => {
+    const { container } = renderCard(
+      <WidgetCard
+        title="Pay gap"
+        value="4.2%"
+        footer="Down from 4.8% in 2025"
+        footerIcon={UserGroupIcon}
+        note="Average pay difference, women vs men"
+      />
+    )
+    const footer = container.querySelector('[data-slot="card-footer"]')
+    const statement = footer?.children[0]
+    const note = footer?.children[1]
+    // The statement clips its TEXT, not the row: the direction icon sits
+    // outside the clipped box so it cannot be eaten by a long sentence.
+    expect(statement?.querySelector(".truncate")?.textContent).toBe(
+      "Down from 4.8% in 2025"
+    )
+    expect(statement?.querySelector("svg")).not.toBeNull()
+    expect(note?.className).toContain("truncate")
   })
 
   it("opens the expanded view from the header control", () => {

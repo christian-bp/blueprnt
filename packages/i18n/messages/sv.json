@@ -1349,7 +1349,7 @@
         "gapDeltaNarrowed": "Ned från {previous} i {label}",
         "gapDeltaWidened": "Upp från {previous} i {label}",
         "gapNoComparison": "Inget att jämföra med ännu",
-        "gapNote": "Genomsnittlig löneskillnad mellan kvinnor och män",
+        "gapNote": "Genomsnittlig löneskillnad, kvinnor mot män",
         "clockNote": "Räknat på en 8-timmars arbetsdag"
       },
       "clock": {

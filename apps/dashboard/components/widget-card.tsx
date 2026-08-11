@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useState } from "react"
@@ -74,6 +75,33 @@ interface WidgetCardBase {
   headerExtra?: ReactNode
   className?: string
   children?: ReactNode
+}
+
+// The bar that stands in for one of the three slots above (`value`, `footer`,
+// `note`) while a tile waits for its figure. It lives here rather than at each
+// call site because it is the same bar in the same slots everywhere, and four
+// hand-rolled copies had all made the same mistake.
+//
+// The zero-width strut is what makes the slot measure right. A wrapper
+// carrying only `flex items-center` has no line box at all: a flex container
+// sizes to its content, so the slot measured the BAR (28px under a 45px
+// figure, 16px under each 20px footer line) and a strip of tiles stood 25px
+// short until its data arrived, taking everything below it down the page. The
+// strut is an empty inline box that inherits the surrounding size and leading,
+// so it reinstates exactly the line box the loaded text would have made, at
+// every size a tile uses: 45px inside a text-3xl figure, 36px when the tile is
+// narrow enough to drop to text-2xl, 20px in a text-sm footer line. A fixed
+// height would have to restate the figure's container query to do the same,
+// and would drift the moment either size changed.
+export function StatBar({ className }: { className: string }) {
+  return (
+    <span className="flex items-center">
+      <span aria-hidden="true" className="w-0 overflow-hidden">
+        &nbsp;
+      </span>
+      <Skeleton className={className} />
+    </span>
+  )
 }
 
 // A card either NAVIGATES or holds its own controls, never both. The link is
@@ -183,11 +211,21 @@ export function WidgetCard({
         </CardAction>
       </CardHeader>
       {children !== undefined && <CardContent>{children}</CardContent>}
+      {/* Both lines are ONE line each, clipped rather than wrapped. A tile's
+          height cannot depend on how long a sentence happens to be in the
+          reader's language: at the width a 1280px window leaves (232px per
+          tile), the same note fits on one line in Swedish and takes two in
+          English and Finnish, so the strip grew by 20px in those locales the
+          moment its figures landed. Clipping makes the height a constant of
+          the card instead, in every locale and at every width. The copy is
+          written to fit, so the ellipsis is the guard rather than the normal
+          state. Same decision as ActionCard, which truncates both its lines
+          for the same reason. */}
       {(footer !== undefined || note !== undefined) && (
         <CardFooter className="flex-col items-start gap-0.5 text-sm">
           {footer !== undefined && (
-            <div className="flex items-center gap-1.5 font-medium">
-              {footer}
+            <div className="flex w-full min-w-0 items-center gap-1.5 font-medium">
+              <span className="truncate">{footer}</span>
               {footerIcon !== undefined && (
                 <HugeiconsIcon
                   icon={footerIcon}
@@ -200,7 +238,7 @@ export function WidgetCard({
             </div>
           )}
           {note !== undefined && (
-            <div className="text-muted-foreground">{note}</div>
+            <div className="w-full truncate text-muted-foreground">{note}</div>
           )}
         </CardFooter>
       )}

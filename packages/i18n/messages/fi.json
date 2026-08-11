@@ -919,7 +919,7 @@
           "notStarted": "Ei aloitettu",
           "prompt": "Aloita ensimmäinen palkkakartoituksesi",
           "insufficientValue": "Ei tarpeeksi tietoa",
-          "note": "Viimeisimmästä palkkakartoituksestanne"
+          "note": "Uusimmasta palkkakartoituksesta"
         },
         "roles": {
           "label": "Roolit",

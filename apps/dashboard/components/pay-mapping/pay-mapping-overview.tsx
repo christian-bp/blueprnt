@@ -26,7 +26,7 @@ import {
   useGenderMarks,
 } from "@/components/gender-mark"
 import { PanelCard } from "@/components/panel-card"
-import { WidgetCard } from "@/components/widget-card"
+import { StatBar, WidgetCard } from "@/components/widget-card"
 import {
   EqualityClock,
   equalityClockDirection,
@@ -76,24 +76,13 @@ function gapStat(
   note?: ReactNode
 } {
   if (org === undefined) {
-    // Centred in the figure's own line box; a bare bar leaves the tile
-    // shorter than it will be once the percent lands.
+    // Each bar sits in the line box its own type would have made (StatBar);
+    // a bare bar leaves the tile shorter than it will be once the percent
+    // lands.
     return {
-      value: (
-        <span className="flex items-center">
-          <Skeleton className="h-7 w-20" />
-        </span>
-      ),
-      footer: (
-        <span className="flex items-center">
-          <Skeleton className="h-4 w-36" />
-        </span>
-      ),
-      note: (
-        <span className="flex items-center">
-          <Skeleton className="h-4 w-28" />
-        </span>
-      ),
+      value: <StatBar className="h-7 w-20" />,
+      footer: <StatBar className="h-4 w-36" />,
+      note: <StatBar className="h-4 w-28" />,
     }
   }
   const note = tOverview("gapNote")
@@ -154,17 +143,18 @@ function GapFinding({
   const format = useFormatter()
 
   if (org === undefined) {
-    // Mirrors the loaded layout: two sentence-line bars over two bar-chart
-    // rows, so nothing shifts when the data lands.
+    // Mirrors the loaded layout: ONE sentence line over the two bar-chart
+    // rows. The finding is a single sentence and the panel runs the full
+    // width of the page, so it sets one line here; reserving two made the
+    // panel 18px TALLER than its loaded self and collapsed the page upward
+    // when the aggregate landed, which is the same defect as coming up short,
+    // read backwards. A sentence that does wrap on a narrow screen is the one
+    // case this cannot cover: how many lines an unknown sentence takes is
+    // exactly what a skeleton does not know, so it holds the common case.
     return (
       <div className="space-y-4">
-        <div className="space-y-1.5">
-          <div className="flex min-h-5 items-center">
-            <Skeleton className="h-4 w-full max-w-md" />
-          </div>
-          <div className="flex min-h-5 items-center">
-            <Skeleton className="h-4 w-2/3 max-w-md" />
-          </div>
+        <div className="flex min-h-5 items-center">
+          <Skeleton className="h-4 w-full max-w-md" />
         </div>
         <div className="space-y-2">
           <Skeleton className="h-5 w-full" />
@@ -493,18 +483,14 @@ export function PayMappingOverview({
           // strip grew when the gap landed.
           footer={
             org === undefined ? (
-              <span className="flex items-center">
-                <Skeleton className="h-4 w-36" />
-              </span>
+              <StatBar className="h-4 w-36" />
             ) : org.gapPct === null ? undefined : (
               tClock(equalityClockDirection(org.gapPct))
             )
           }
           note={
             org === undefined ? (
-              <span className="flex items-center">
-                <Skeleton className="h-4 w-28" />
-              </span>
+              <StatBar className="h-4 w-28" />
             ) : (
               tOverview("clockNote")
             )

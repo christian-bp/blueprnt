@@ -209,6 +209,23 @@ describe("OverviewWidgets", () => {
       screen.getByRole("link", { name: t.workforce.label }).getAttribute("href")
     ).toBe("/people")
   })
+
+  // Every waiting slot goes through StatBar, whose strut holds the line box
+  // the loaded type will make (see widget-card.test.tsx). Hand-rolled wrappers
+  // left the strip 25px short of its loaded height and dropped the trend
+  // panels when the figures arrived.
+  it("stands every loading bar in its line box, so the strip does not grow on arrival", () => {
+    const { container } = renderStrip({
+      stats: undefined,
+      levelOverview: undefined,
+      payMappingHeadline: undefined,
+    })
+    const bars = container.querySelectorAll('[data-slot="skeleton"]')
+    expect(bars.length).toBeGreaterThan(0)
+    for (const bar of bars) {
+      expect(bar.previousElementSibling?.className).toContain("w-0")
+    }
+  })
 })
 
 describe("OverviewCharts", () => {

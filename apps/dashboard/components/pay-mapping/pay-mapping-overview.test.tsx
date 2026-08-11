@@ -231,6 +231,23 @@ describe("PayMappingOverview", () => {
     expect(screen.getAllByText(":")).toHaveLength(2)
   })
 
+  // The finding is ONE sentence across the full width of the page, so its
+  // placeholder is one line. Reserving two made the panel taller than its
+  // loaded self and collapsed the page upward by 18px when the aggregate
+  // landed, which is the same defect as coming up short, read backwards.
+  it("holds one sentence line, not two, while the finding loads", () => {
+    const { container } = renderOverview(undefined)
+    const panel = screen
+      .getByText(m.overview.meanComparisonTitle)
+      .closest('[data-slot="card"]')
+    const bars = panel?.querySelectorAll('[data-slot="skeleton"]') ?? []
+    // One sentence bar over the two mean-comparison rows.
+    expect(bars).toHaveLength(3)
+    expect(container.querySelectorAll('[data-testid="mean-bar"]')).toHaveLength(
+      0
+    )
+  })
+
   // The gap tile's statement line: how the gap moved since the mapping before
   // it, quoted from that mapping's own frozen gap. A bare point difference
   // ("0.6") means nothing without both ends of it.
