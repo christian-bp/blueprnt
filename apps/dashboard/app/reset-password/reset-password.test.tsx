@@ -12,7 +12,7 @@ import en from "@workspace/i18n/messages/en.json"
 
 // The page reads the reset token from the URL and talks to the auth client;
 // stub both so we can exercise the client-side validation in isolation.
-const { resetPassword, push } = vi.hoisted(() => ({
+const { resetPassword, push, search } = vi.hoisted(() => ({
   resetPassword: vi.fn(
     async (): Promise<{
       error: { message: string; code?: string } | null
@@ -21,10 +21,14 @@ const { resetPassword, push } = vi.hoisted(() => ({
     })
   ),
   push: vi.fn(),
+  // Mutable so a test can drive the page with the query Better Auth actually
+  // produces: a good link carries ?token=, a spent one carries only
+  // ?error=INVALID_TOKEN.
+  search: { value: "token=tok" },
 }))
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
-  useSearchParams: () => new URLSearchParams("token=tok"),
+  useSearchParams: () => new URLSearchParams(search.value),
 }))
 vi.mock("next/link", () => ({
   default: ({ href, children }: { href: string; children: ReactNode }) => (
@@ -65,9 +69,45 @@ describe("ResetPasswordPage", () => {
     resetPassword.mockReset()
     resetPassword.mockResolvedValue({ error: null })
     push.mockReset()
+    search.value = "token=tok"
   })
   afterEach(() => {
     cleanup()
+  })
+
+  // Better Auth's /reset-password/:token endpoint redirects a spent or expired
+  // link here with ?error=INVALID_TOKEN and no token at all. The page used to
+  // key only on the missing token and showed the invitation-flow copy with no
+  // way forward, which is the state a user reaches by clicking a day-old email.
+  it("treats an expired link as expired and offers a new one", () => {
+    search.value = "error=INVALID_TOKEN"
+    renderPage()
+    expect(
+      screen.getByText(en.dashboard.auth.resetPassword.expired, {
+        exact: false,
+      })
+    ).toBeDefined()
+    expect(
+      screen.getByRole("link", {
+        name: en.dashboard.auth.resetPassword.requestNew,
+      })
+    ).toBeDefined()
+    expect(screen.queryByLabelText(passwordLabel)).toBeNull()
+  })
+
+  it("offers a new link when the url carries no token at all", () => {
+    search.value = ""
+    renderPage()
+    expect(
+      screen.getByText(en.dashboard.auth.resetPassword.missingToken, {
+        exact: false,
+      })
+    ).toBeDefined()
+    expect(
+      screen.getByRole("link", {
+        name: en.dashboard.auth.resetPassword.requestNew,
+      })
+    ).toBeDefined()
   })
 
   it("shows the min-length error and does not call reset when the password is too short", async () => {

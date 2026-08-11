@@ -1584,7 +1584,7 @@
         "description": "Valitse salasana viimeistelläksesi tilisi.",
         "passwordLabel": "Uusi salasana",
         "cta": "Tallenna salasana",
-        "missingToken": "Linkki on virheellinen tai vanhentunut. Pyydä järjestelmänvalvojaa lähettämään kutsu uudelleen.",
+        "missingToken": "Linkki on virheellinen tai vanhentunut.",
         "error": "Jokin meni pieleen. Yritä uudelleen.",
         "confirmLabel": "Toista salasana",
         "expired": "Tämä linkki on vanhentunut tai jo käytetty.",

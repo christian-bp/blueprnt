@@ -1584,7 +1584,7 @@
         "description": "Velg et passord for å fullføre kontoen din.",
         "passwordLabel": "Nytt passord",
         "cta": "Lagre passord",
-        "missingToken": "Lenken er ugyldig eller har utløpt. Be en administrator sende invitasjonen på nytt.",
+        "missingToken": "Lenken er ugyldig eller har utløpt.",
         "error": "Noe gikk galt. Prøv igjen.",
         "confirmLabel": "Gjenta passordet",
         "expired": "Denne lenken er utløpt eller allerede brukt.",

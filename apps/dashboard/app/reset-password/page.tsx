@@ -37,6 +37,21 @@ function isInvalidToken(error: unknown): boolean {
   )
 }
 
+// Every way a link can fail ends in the same recovery, so the message varies
+// but the way out does not. Shared by both failure paths: the token rejected on
+// submit, and the link that arrives already spent.
+function LinkProblem({ message }: { message: string }) {
+  const t = useTranslations("dashboard.auth.resetPassword")
+  return (
+    <p role="alert" className="text-destructive text-sm">
+      {message}{" "}
+      <Link href="/forgot-password" className="underline underline-offset-4">
+        {t("requestNew")}
+      </Link>
+    </p>
+  )
+}
+
 function ResetPasswordForm() {
   const t = useTranslations("dashboard.auth.resetPassword")
   const tv = useTranslations("dashboard.validation")
@@ -44,6 +59,11 @@ function ResetPasswordForm() {
   const router = useRouter()
   const params = useSearchParams()
   const token = params.get("token")
+  // Better Auth's /reset-password/:token endpoint redirects a spent or expired
+  // link here with `?error=INVALID_TOKEN` and NO token at all, so the token has
+  // to be read together with the error: on its own, a missing token cannot tell
+  // an expired link apart from a malformed one.
+  const linkExpired = params.get("error") === "INVALID_TOKEN"
   const [error, setError] = useState<"generic" | "invalidToken" | null>(null)
 
   const schema = useMemo(() => makeResetPasswordSchema(tv), [tv])
@@ -76,9 +96,9 @@ function ResetPasswordForm() {
       <div className="flex flex-col gap-6">
         <AuthHeading title={t("title")} description={t("description")} />
         {token === null ? (
-          <p role="alert" className="text-destructive text-sm">
-            {t("missingToken")}
-          </p>
+          <LinkProblem
+            message={linkExpired ? t("expired") : t("missingToken")}
+          />
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -117,15 +137,7 @@ function ResetPasswordForm() {
                 {t("cta")}
               </SubmitButton>
               {error === "invalidToken" ? (
-                <p role="alert" className="text-destructive text-sm">
-                  {t("expired")}{" "}
-                  <Link
-                    href="/forgot-password"
-                    className="underline underline-offset-4"
-                  >
-                    {t("requestNew")}
-                  </Link>
-                </p>
+                <LinkProblem message={t("expired")} />
               ) : error ? (
                 <p role="alert" className="text-destructive text-sm">
                   {t("error")}

@@ -1584,7 +1584,7 @@
         "description": "Choose a password to finish setting up your account.",
         "passwordLabel": "New password",
         "cta": "Set password",
-        "missingToken": "This link is invalid or has expired. Ask an administrator to resend your invitation.",
+        "missingToken": "This link is invalid or has expired.",
         "error": "Something went wrong. Try again.",
         "confirmLabel": "Repeat password",
         "expired": "This link has expired or was already used.",

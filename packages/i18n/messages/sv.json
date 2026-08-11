@@ -1584,7 +1584,7 @@
         "description": "Välj ett lösenord för att slutföra ditt konto.",
         "passwordLabel": "Nytt lösenord",
         "cta": "Spara lösenord",
-        "missingToken": "Länken är ogiltig eller har gått ut. Be en administratör skicka inbjudan igen.",
+        "missingToken": "Länken är ogiltig eller har gått ut.",
         "error": "Något gick fel. Försök igen.",
         "confirmLabel": "Upprepa lösenordet",
         "expired": "Den här länken har gått ut eller har redan använts.",

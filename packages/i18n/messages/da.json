@@ -1584,7 +1584,7 @@
         "description": "Vælg en adgangskode for at fuldføre din konto.",
         "passwordLabel": "Ny adgangskode",
         "cta": "Gem adgangskode",
-        "missingToken": "Linket er ugyldigt eller udløbet. Bed en administrator om at sende invitationen igen.",
+        "missingToken": "Linket er ugyldigt eller udløbet.",
         "error": "Noget gik galt. Prøv igen.",
         "confirmLabel": "Gentag adgangskoden",
         "expired": "Dette link er udløbet eller allerede brugt.",
