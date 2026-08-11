@@ -1,0 +1,24 @@
+docs/superpowers/specs/2026-08-11-people-register-bulk-delete-design.md
+  s_e5ebf18f272ef3::t_ba46e23e36ecfd 1-158
+docs/superpowers/plans/2026-08-11-people-register-bulk-delete.md
+  s_e5ebf18f272ef3::t_292b062733dd37 944-946,948-949
+  s_e5ebf18f272ef3::t_cd3a24c8376733 849-872
+  s_e5ebf18f272ef3::t_b1418d141728e1 1137-1139
+  s_e5ebf18f272ef3::t_28ae1f83ac136a 1-848,873-943,947,950-1136,1140-1214
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "63aa0adb01f2bd2ec09522127cd179494111e801",
+  "prompts": {},
+  "sessions": {
+    "s_e5ebf18f272ef3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0109f3eb-bb2f-46cf-9c24-181761ef9ec5",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
