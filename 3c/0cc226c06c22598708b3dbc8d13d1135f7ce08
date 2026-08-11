@@ -1,0 +1,19 @@
+apps/dashboard/components/pay-mapping/mean-comparison-bars.tsx
+  s_bb49403e827479::t_892a8973cbf952 36-43,46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3c0cc226c06c22598708b3dbc8d13d1135f7ce08",
+  "prompts": {},
+  "sessions": {
+    "s_bb49403e827479": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ff4fdc39-691e-4b02-b731-89edd2db0cc1",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
