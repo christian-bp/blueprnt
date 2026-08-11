@@ -33,9 +33,17 @@ function MeanBarRow({
       <span className="w-20 shrink-0 text-muted-foreground text-sm">
         {label}
       </span>
+      {/* h-4, not the h-3 this started at: the track is the widget's whole
+          picture and read as a hairline beside the type either side of it.
+          It stops there rather than filling the row, because the row is a
+          text-sm line box (20px) and a track at that height leaves the label
+          and the amount looking squeezed between two pills; at 16px the bar
+          is clearly the heavier element and the row still measures its own
+          line. Growing it further would push the row past 20px and every
+          skeleton standing in for one. */}
       <div
         aria-hidden
-        className="h-3 flex-1 overflow-hidden rounded-full bg-muted"
+        className="h-4 flex-1 overflow-hidden rounded-full bg-muted"
       >
         <div
           data-testid="mean-bar"
