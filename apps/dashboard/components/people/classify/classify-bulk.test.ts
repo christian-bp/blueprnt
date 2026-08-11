@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest"
-import {
-  type BulkAssignment,
-  packAssignmentChunks,
-  selectionState,
-} from "./classify-bulk"
+import { type BulkAssignment, packAssignmentChunks } from "./classify-bulk"
 
 const a = (n: number, offset: number = 0): BulkAssignment[] =>
   Array.from({ length: n }, (_, i) => ({
@@ -11,28 +7,6 @@ const a = (n: number, offset: number = 0): BulkAssignment[] =>
     roleId: "r1",
     seniority: "IC1",
   }))
-
-describe("selectionState", () => {
-  it("prunes selected keys that are no longer actionable", () => {
-    const state = selectionState(new Set(["a", "b", "gone"]), ["a", "b", "c"])
-    expect([...state.effective].sort()).toEqual(["a", "b"])
-  })
-
-  it("is all when every actionable key is selected, some when partial", () => {
-    expect(selectionState(new Set(["a", "b"]), ["a", "b"]).all).toBe(true)
-    const partial = selectionState(new Set(["a"]), ["a", "b"])
-    expect(partial.all).toBe(false)
-    expect(partial.some).toBe(true)
-  })
-
-  it("is neither all nor some when nothing is selected or nothing is actionable", () => {
-    expect(selectionState(new Set(), ["a"]).some).toBe(false)
-    const empty = selectionState(new Set(["a"]), [])
-    expect(empty.all).toBe(false)
-    expect(empty.some).toBe(false)
-    expect(empty.effective.size).toBe(0)
-  })
-})
 
 describe("packAssignmentChunks", () => {
   it("keeps whole groups together within the limit", () => {

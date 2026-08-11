@@ -54,11 +54,8 @@ import { toast } from "@/lib/toast"
 import { SPRING } from "@/lib/motion"
 import { ariaSort, TableSortButton } from "@/components/table-sort-button"
 import type { TableSkeletonColumn } from "@/components/table-skeleton"
-import {
-  type BulkAssignment,
-  packAssignmentChunks,
-  selectionState,
-} from "./classify-bulk"
+import { selectionState } from "@/lib/selection"
+import { type BulkAssignment, packAssignmentChunks } from "./classify-bulk"
 import { ClassifyPersonRows } from "./classify-person-rows"
 import { UnmatchedTitleActions } from "./unmatched-title-actions"
 import { onSelectValue } from "@/lib/select"

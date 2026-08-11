@@ -1,23 +1,12 @@
-// Pure selection and chunk-packing math for the classify surface's bulk
-// confirm, extracted so it is unit-testable without the table component.
+// Pure chunk-packing math for the classify surface's bulk confirm, extracted
+// so it is unit-testable without the table component. The selection math it
+// used to hold moved to @/lib/selection when the people register became its
+// second consumer.
 
 export type BulkAssignment = {
   personId: string
   roleId: string
   seniority: string
-}
-
-// The effective selection given what is currently actionable: stale keys
-// (groups confirmed meanwhile, or whose role pick was cleared) drop out, and
-// the header checkbox derives its checked/indeterminate state from the
-// result.
-export function selectionState(
-  selected: ReadonlySet<string>,
-  actionable: readonly string[]
-): { effective: Set<string>; all: boolean; some: boolean } {
-  const effective = new Set(actionable.filter((key) => selected.has(key)))
-  const all = actionable.length > 0 && effective.size === actionable.length
-  return { effective, all, some: effective.size > 0 && !all }
 }
 
 // Packs per-group assignment lists into chunks of at most `limit` people,
