@@ -1,0 +1,41 @@
+apps/dashboard/components/pay-mapping/pay-mapping-overview.tsx
+  s_e5ebf18f272ef3::t_5745596763378f 37-38
+  s_e5ebf18f272ef3::t_a14e2a40d1954e 4-5,130
+  s_e5ebf18f272ef3::t_b1655d30362370 59-64,67,72-77,87-96,99,107,110-129,131-132
+  s_e5ebf18f272ef3::t_e2751db1409da7 478
+  s_e5ebf18f272ef3::t_56b1b90868a6eb 10
+  s_e5ebf18f272ef3::t_5a1960895ed37a 449-455
+  s_e5ebf18f272ef3::t_58da261c3201b1 456-459
+  s_e5ebf18f272ef3::t_27b60c939ed9f0 497,503-509
+  s_e5ebf18f272ef3::t_3aaeca4ae554b8 510-511
+apps/dashboard/components/pay-mapping/pay-mapping-overview.test.tsx
+  s_e5ebf18f272ef3::t_016e22d781f91a 233-238,243-246,248-252,254-257,259-284
+  s_e5ebf18f272ef3::t_382f3f24de90f8 253,258
+  s_e5ebf18f272ef3::t_9e9302434563b6 239-242,247
+  s_e5ebf18f272ef3::t_5aeddd79df4421 97-98,104,112
+  s_e5ebf18f272ef3::t_402ca4f668e18b 34
+  s_e5ebf18f272ef3::t_fea1c7ebf2775a 43-46
+  s_e5ebf18f272ef3::t_388958d9596b9d 285
+apps/dashboard/components/pay-mapping/pay-mapping-population-card.test.tsx
+  s_e5ebf18f272ef3::t_56fc3b060106a8 71-74,76-79,82,86-87,90-93,95-100
+apps/dashboard/components/pay-mapping/pay-mapping-population-card.tsx
+  s_e5ebf18f272ef3::t_80ef91875fc933 9,11,19-27,44-48,58,60,66-68,70-71,82-85,87
+  s_e5ebf18f272ef3::t_a14e2a40d1954e 86
+  s_e5ebf18f272ef3::t_6766d83fa8f16f 69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "fd0eeae96c0e44cbc36e6d05b56b47615ba7425a",
+  "prompts": {},
+  "sessions": {
+    "s_e5ebf18f272ef3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0109f3eb-bb2f-46cf-9c24-181761ef9ec5",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
