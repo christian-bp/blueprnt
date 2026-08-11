@@ -1,10 +1,13 @@
 "use client"
 
 import {
+  ArrowDownRight01Icon,
+  ArrowUpRight01Icon,
   ChartAverageIcon,
   Clock01Icon,
   JusticeScale01Icon,
 } from "@hugeicons/core-free-icons"
+import type { IconSvgElement } from "@hugeicons/react"
 import {
   type ChartConfig,
   ChartContainer,
@@ -31,6 +34,8 @@ import {
 } from "./equality-clock"
 import { MeanComparisonBars } from "./mean-comparison-bars"
 import { PayMappingPopulationCard } from "./pay-mapping-population-card"
+import { type GapTrend, gapTrend } from "./pay-mapping-trends"
+import { usePayMappingRun } from "./pay-mapping-run-context"
 import type {
   GenderTally,
   OrgAggregate,
@@ -51,13 +56,25 @@ import { percentText } from "@/lib/percent"
 // the strip.
 // An org too small to measure has no figure at all, so the tile says so in
 // words where the figure would be.
+//
+// Under the figure sit the same two lines every widget carries: how the gap
+// moved since the mapping before it, then what the figure measures. The
+// movement is quoted from the earlier mapping's own frozen gap ("down from
+// 4.1% in 2025") rather than as a bare point difference, because "0.6" means
+// nothing without both ends of it.
 function gapStat(
   org: OrgAggregate | undefined,
+  trend: GapTrend | null,
   tOverview: ReturnType<
     typeof useTranslations<"dashboard.payMapping.overview">
   >,
   format: ReturnType<typeof useFormatter>
-): { value: ReactNode; footer?: ReactNode } {
+): {
+  value: ReactNode
+  footer?: ReactNode
+  footerIcon?: IconSvgElement
+  note?: ReactNode
+} {
   if (org === undefined) {
     // Centred in the figure's own line box; a bare bar leaves the tile
     // shorter than it will be once the percent lands.
@@ -67,8 +84,19 @@ function gapStat(
           <Skeleton className="h-7 w-20" />
         </span>
       ),
+      footer: (
+        <span className="flex items-center">
+          <Skeleton className="h-4 w-36" />
+        </span>
+      ),
+      note: (
+        <span className="flex items-center">
+          <Skeleton className="h-4 w-28" />
+        </span>
+      ),
     }
   }
+  const note = tOverview("gapNote")
   if (org.flag === "insufficient" || org.gapPct === null) {
     return {
       value: (
@@ -76,9 +104,32 @@ function gapStat(
           {tOverview("insufficient")}
         </span>
       ),
+      note,
     }
   }
-  return { value: percentText(org.gapPct, format) }
+  const value = percentText(org.gapPct, format)
+  // No earlier mapping, or an earlier mapping whose own gap could not be
+  // measured: both are "there is no second end to this comparison".
+  if (trend === null || trend.previous === null || trend.delta === null) {
+    return { value, footer: tOverview("gapNoComparison"), note }
+  }
+  if (trend.delta === 0) {
+    return {
+      value,
+      footer: tOverview("deltaUnchanged", { label: trend.previous.label }),
+      note,
+    }
+  }
+  const widened = trend.delta > 0
+  return {
+    value,
+    footer: tOverview(widened ? "gapDeltaWidened" : "gapDeltaNarrowed", {
+      previous: percentText(trend.previous.gapPct, format),
+      label: trend.previous.label,
+    }),
+    footerIcon: widened ? ArrowUpRight01Icon : ArrowDownRight01Icon,
+    note,
+  }
 }
 
 // The finding itself, sentence-first: a plain-language reading of the same
@@ -395,6 +446,17 @@ export function PayMappingOverview({
   const tHelp = useTranslations("dashboard.help")
   const format = useFormatter()
   const org = gap?.org
+  // The gap tile compares against the previous mapping's own frozen gap, so
+  // it reads the run shell's context the way the population tile does. Both
+  // figures ride on rows this component's parent already subscribes to.
+  const { run, runsList } = usePayMappingRun()
+  const trend =
+    run === undefined || runsList === undefined || org === undefined
+      ? null
+      : gapTrend(
+          { referenceDate: run.referenceDate, gapPct: org.gapPct },
+          runsList
+        )
 
   return (
     <div className="space-y-4">
@@ -413,7 +475,7 @@ export function PayMappingOverview({
             label: tHelp("headlineGapLabel"),
             body: tHelp("headlineGapBody"),
           }}
-          {...gapStat(org, tOverview, format)}
+          {...gapStat(org, trend, tOverview, format)}
         />
         <WidgetCard
           title={tClock("label")}
@@ -432,10 +494,19 @@ export function PayMappingOverview({
           footer={
             org === undefined ? (
               <span className="flex items-center">
-                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-36" />
               </span>
             ) : org.gapPct === null ? undefined : (
               tClock(equalityClockDirection(org.gapPct))
+            )
+          }
+          note={
+            org === undefined ? (
+              <span className="flex items-center">
+                <Skeleton className="h-4 w-28" />
+              </span>
+            ) : (
+              tOverview("clockNote")
             )
           }
         >

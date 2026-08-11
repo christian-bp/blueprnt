@@ -68,24 +68,36 @@ describe("PayMappingPopulationCard", () => {
     expect(screen.getByText("121")).toBeDefined()
   })
 
-  it("shows the signed delta and names the mapping it is measured against", () => {
+  // The comparison is ONE visible sentence carrying its own amount, not a
+  // pill in the corner plus a "vs 2025" fragment that only meant something
+  // together with it (and so needed a screen-reader-only rewrite).
+  it("states the change with its amount and names the mapping it is measured against", () => {
     renderCard({ runsList: [PREVIOUS_2025] })
-    expect(screen.getByText("+3")).toBeDefined()
-    expect(screen.getByText("vs 2025")).toBeDefined()
+    expect(screen.getByText("3 people more than 2025")).toBeDefined()
+    // No delta pill, and no fragment left over from one.
+    expect(screen.queryByText("+3")).toBeNull()
+    expect(screen.queryByText("vs 2025")).toBeNull()
   })
 
-  it("signs a shrinking population negative", () => {
+  it("states a shrinking population as fewer", () => {
     renderCard({
       runsList: [makeRunSummary({ label: "2025", populationCount: 130 })],
     })
-    expect(screen.getByText("-9")).toBeDefined()
+    expect(screen.getByText("9 people fewer than 2025")).toBeDefined()
+    expect(screen.queryByText("-9")).toBeNull()
   })
 
-  // The pill and the "vs 2025" fragment mean nothing apart when read out, so
-  // the accessible text is one sentence and the visual halves are hidden.
-  it("reads the comparison out as a single sentence", () => {
+  // The statement is visible to everyone: the sentence a screen reader used
+  // to get privately is now the line on screen, so there is exactly one copy
+  // of it in the tree.
+  it("renders the comparison once, not as a visible half plus a hidden sentence", () => {
     renderCard({ runsList: [PREVIOUS_2025] })
-    expect(screen.getByText("3 people more than 2025")).toBeDefined()
+    expect(screen.getAllByText("3 people more than 2025")).toHaveLength(1)
+  })
+
+  it("says what the figure covers under the comparison", () => {
+    renderCard({ runsList: [PREVIOUS_2025] })
+    expect(screen.getByText(m.overview.populationNote)).toBeDefined()
   })
 
   it("says first mapping instead of a delta when there is no earlier run", () => {

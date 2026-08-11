@@ -31,6 +31,7 @@ import {
   makeExcluded,
   makeGapGroup,
   makeRunDetail,
+  makeRunSummary,
 } from "@/test/pay-mapping-fixtures"
 import type {
   GapGroup,
@@ -39,7 +40,10 @@ import type {
   PayMappingRunDetail,
 } from "./pay-mapping-gap-types"
 import { PayMappingOverview } from "./pay-mapping-overview"
-import { PayMappingRunProvider } from "./pay-mapping-run-context"
+import {
+  PayMappingRunProvider,
+  type PayMappingRunSummary,
+} from "./pay-mapping-run-context"
 
 const m = en.dashboard.payMapping
 
@@ -90,11 +94,14 @@ function renderOverview(
   options: {
     run?: PayMappingRunDetail | undefined
     analyses?: GroupAnalysis[] | undefined
+    // The org's earlier mappings, which is what the gap tile trends against.
+    runsList?: PayMappingRunSummary[] | undefined
   } = {}
 ) {
   const run = "run" in options ? options.run : g === undefined ? undefined : RUN
   const analyses =
     "analyses" in options ? options.analyses : g === undefined ? undefined : []
+  const runsList = "runsList" in options ? options.runsList : []
   return render(
     <NextIntlClientProvider
       locale="en"
@@ -102,7 +109,7 @@ function renderOverview(
       messages={en}
     >
       <PayMappingRunProvider
-        value={{ run, gap: g, analyses, actions: [], notes: [], runsList: [] }}
+        value={{ run, gap: g, analyses, actions: [], notes: [], runsList }}
       >
         <PayMappingOverview gap={g} />
       </PayMappingRunProvider>
@@ -222,5 +229,58 @@ describe("PayMappingOverview", () => {
     // frames and the colons between them, so nothing pops in or shifts when
     // the counts land.
     expect(screen.getAllByText(":")).toHaveLength(2)
+  })
+
+  // The gap tile's statement line: how the gap moved since the mapping before
+  // it, quoted from that mapping's own frozen gap. A bare point difference
+  // ("0.6") means nothing without both ends of it.
+  describe("gap trend", () => {
+    // RUN's reference date is 2026; an earlier mapping is what it trends
+    // against. Its headcount differs from RUN's on purpose: the population
+    // and gap tiles share the "unchanged" wording, so a matching headcount
+    // would put the same sentence in two cards and make the assertions below
+    // ambiguous rather than wrong.
+    const earlier = (orgGapPct: number | null) =>
+      makeRunSummary({
+        label: "2025",
+        referenceDate: Date.UTC(2025, 0, 1),
+        populationCount: 4,
+        orgGapPct,
+      })
+
+    it("says the gap came down, quoting the earlier mapping's own gap", () => {
+      renderOverview(gap({ gapPct: 10 }), { runsList: [earlier(14)] })
+      expect(screen.getByText("Down from 14% in 2025")).toBeDefined()
+    })
+
+    it("says the gap went up when it widened", () => {
+      renderOverview(gap({ gapPct: 10 }), { runsList: [earlier(6)] })
+      expect(screen.getByText("Up from 6% in 2025")).toBeDefined()
+    })
+
+    it("distinguishes an unchanged gap from having nothing to compare", () => {
+      renderOverview(gap({ gapPct: 10 }), { runsList: [earlier(10)] })
+      expect(screen.getByText("Unchanged vs 2025")).toBeDefined()
+      expect(screen.queryByText(m.overview.gapNoComparison)).toBeNull()
+    })
+
+    it("says there is nothing to compare on the org's first mapping", () => {
+      renderOverview(gap({ gapPct: 10 }), { runsList: [] })
+      expect(screen.getByText(m.overview.gapNoComparison)).toBeDefined()
+    })
+
+    // An earlier mapping whose own gap could not be measured is part of the
+    // history but is not a second end for this comparison.
+    it("says there is nothing to compare when the earlier gap was unmeasurable", () => {
+      renderOverview(gap({ gapPct: 10 }), { runsList: [earlier(null)] })
+      expect(screen.getByText(m.overview.gapNoComparison)).toBeDefined()
+    })
+
+    it("says what each KPI figure covers under its statement", () => {
+      renderOverview(gap({ gapPct: 10 }), { runsList: [earlier(14)] })
+      expect(screen.getByText(m.overview.gapNote)).toBeDefined()
+      expect(screen.getByText(m.overview.clockNote)).toBeDefined()
+      expect(screen.getByText(m.overview.populationNote)).toBeDefined()
+    })
   })
 })
