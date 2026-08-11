@@ -905,23 +905,27 @@
           "importPrompt": "Tuo tietoja aloittaaksesi",
           "trendLabel": "Työntekijät",
           "trendTitle": "Henkilöstö ajan myötä",
-          "action": "Henkilöt"
+          "action": "Henkilöt",
+          "note": "Työntekijät rekisterissänne"
         },
         "levels": {
           "label": "Vaativuustasojen jakauma",
           "empty": "Arvioi rooleja nähdäksesi jakauman",
-          "caption": "{count, plural, one {# rooli} other {# roolia}} sijoitettu"
+          "caption": "{count, plural, one {# rooli} other {# roolia}} sijoitettu",
+          "note": "Tasot joille roolinne sijoittuvat"
         },
         "gap": {
           "label": "Palkkaero",
           "notStarted": "Ei aloitettu",
           "prompt": "Aloita ensimmäinen palkkakartoituksesi",
-          "insufficientValue": "Ei tarpeeksi tietoa"
+          "insufficientValue": "Ei tarpeeksi tietoa",
+          "note": "Viimeisimmästä palkkakartoituksestanne"
         },
         "roles": {
           "label": "Roolit",
           "caption": "{count, plural, one {# tasolla} other {# tasolla}}",
-          "empty": "Arvioi rooleja nähdäksesi ne täällä"
+          "empty": "Arvioi rooleja nähdäksesi ne täällä",
+          "note": "Luomanne roolit"
         },
         "gapTrend": {
           "title": "Palkkaero ajan myötä",
@@ -1328,8 +1332,6 @@
         "headlineGapLabel": "Palkkaero",
         "insufficient": "Riittämättömät tiedot organisaatiotason palkkaeroa varten.",
         "populationFirstRun": "Ensimmäinen palkkakartoitus",
-        "populationDeltaVs": "vs. {label}",
-        "populationDeltaNone": "Ennallaan vs. {label}",
         "populationDeltaMore": "{count, plural, one {# henkilö enemmän kuin {label}} other {# henkilöä enemmän kuin {label}}}",
         "populationDeltaFewer": "{count, plural, one {# henkilö vähemmän kuin {label}} other {# henkilöä vähemmän kuin {label}}}",
         "meanComparisonTitle": "Keskipalkka sukupuolen mukaan",
@@ -1341,7 +1343,14 @@
           "upperMiddle": "Ylempi keski",
           "lowerMiddle": "Alempi keski",
           "lower": "Alin neljännes"
-        }
+        },
+        "deltaUnchanged": "Ennallaan verrattuna {label}",
+        "populationNote": "Kaikki tähän palkkakartoitukseen kuuluvat",
+        "gapDeltaNarrowed": "Alas lukemasta {previous} vuonna {label}",
+        "gapDeltaWidened": "Ylös lukemasta {previous} vuonna {label}",
+        "gapNoComparison": "Ei vielä vertailukohtaa",
+        "gapNote": "Naisten ja miesten keskimääräinen palkkaero",
+        "clockNote": "Laskettuna 8 tunnin työpäivälle"
       },
       "clock": {
         "label": "Tasa-arvokello",

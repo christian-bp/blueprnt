@@ -905,23 +905,27 @@
           "importPrompt": "Import to get started",
           "trendLabel": "Employees",
           "trendTitle": "Workforce over time",
-          "action": "People"
+          "action": "People",
+          "note": "Employees in your register"
         },
         "levels": {
           "label": "Level distribution",
           "empty": "Evaluate roles to see the distribution",
-          "caption": "{count, plural, one {# role} other {# roles}} placed"
+          "caption": "{count, plural, one {# role} other {# roles}} placed",
+          "note": "Levels your roles fall into"
         },
         "gap": {
           "label": "Pay gap",
           "notStarted": "Not started",
           "prompt": "Start your first pay mapping",
-          "insufficientValue": "Not enough data"
+          "insufficientValue": "Not enough data",
+          "note": "From your most recent pay mapping"
         },
         "roles": {
           "label": "Roles",
-          "caption": "across {count, plural, one {# level} other {# levels}}",
-          "empty": "Evaluate roles to see them here"
+          "caption": "Across {count, plural, one {# level} other {# levels}}",
+          "empty": "Evaluate roles to see them here",
+          "note": "Roles you have created"
         },
         "gapTrend": {
           "title": "Pay gap over time",
@@ -1328,8 +1332,6 @@
         "headlineGapLabel": "Pay gap",
         "insufficient": "Not enough data for an organization-level gap.",
         "populationFirstRun": "First pay mapping",
-        "populationDeltaVs": "vs {label}",
-        "populationDeltaNone": "Unchanged vs {label}",
         "populationDeltaMore": "{count, plural, one {# person more than {label}} other {# people more than {label}}}",
         "populationDeltaFewer": "{count, plural, one {# person fewer than {label}} other {# people fewer than {label}}}",
         "meanComparisonTitle": "Average pay by gender",
@@ -1341,7 +1343,14 @@
           "upperMiddle": "Upper middle",
           "lowerMiddle": "Lower middle",
           "lower": "Lower quartile"
-        }
+        },
+        "deltaUnchanged": "Unchanged vs {label}",
+        "populationNote": "Everyone included in this pay mapping",
+        "gapDeltaNarrowed": "Down from {previous} in {label}",
+        "gapDeltaWidened": "Up from {previous} in {label}",
+        "gapNoComparison": "Nothing to compare with yet",
+        "gapNote": "Average pay difference between women and men",
+        "clockNote": "Across an 8-hour working day"
       },
       "clock": {
         "label": "Equality clock",

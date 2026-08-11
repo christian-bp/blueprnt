@@ -905,23 +905,27 @@
           "importPrompt": "Importér for at komme i gang",
           "trendLabel": "Medarbejdere",
           "trendTitle": "Medarbejdere over tid",
-          "action": "Personer"
+          "action": "Personer",
+          "note": "Medarbejdere i jeres register"
         },
         "levels": {
           "label": "Niveaudistribution",
           "empty": "Vurdér roller for at se fordelingen",
-          "caption": "{count, plural, one {# rolle} other {# roller}} placeret"
+          "caption": "{count, plural, one {# rolle} other {# roller}} placeret",
+          "note": "Niveauer jeres roller lander på"
         },
         "gap": {
           "label": "Løngab",
           "notStarted": "Ikke startet",
           "prompt": "Start din første lønkortlægning",
-          "insufficientValue": "Ikke nok data"
+          "insufficientValue": "Ikke nok data",
+          "note": "Fra jeres seneste lønkortlægning"
         },
         "roles": {
           "label": "Roller",
-          "caption": "på tværs af {count, plural, one {# niveau} other {# niveauer}}",
-          "empty": "Vurder roller for at se dem her"
+          "caption": "På tværs af {count, plural, one {# niveau} other {# niveauer}}",
+          "empty": "Vurder roller for at se dem her",
+          "note": "Roller I har oprettet"
         },
         "gapTrend": {
           "title": "Løngab over tid",
@@ -1328,8 +1332,6 @@
         "headlineGapLabel": "Løngab",
         "insufficient": "Utilstrækkeligt grundlag for et løngab på organisationsniveau.",
         "populationFirstRun": "Første lønkortlægning",
-        "populationDeltaVs": "mod {label}",
-        "populationDeltaNone": "Uændret mod {label}",
         "populationDeltaMore": "{count, plural, one {# person flere end {label}} other {# personer flere end {label}}}",
         "populationDeltaFewer": "{count, plural, one {# person færre end {label}} other {# personer færre end {label}}}",
         "meanComparisonTitle": "Gennemsnitsløn per køn",
@@ -1341,7 +1343,14 @@
           "upperMiddle": "Øvre midte",
           "lowerMiddle": "Nedre midte",
           "lower": "Nedre kvartil"
-        }
+        },
+        "deltaUnchanged": "Uændret i forhold til {label}",
+        "populationNote": "Alle der indgår i denne lønkortlægning",
+        "gapDeltaNarrowed": "Ned fra {previous} i {label}",
+        "gapDeltaWidened": "Op fra {previous} i {label}",
+        "gapNoComparison": "Intet at sammenligne med endnu",
+        "gapNote": "Gennemsnitlig lønforskel mellem kvinder og mænd",
+        "clockNote": "Beregnet på en 8-timers arbejdsdag"
       },
       "clock": {
         "label": "Ligestillingsur",
