@@ -1,0 +1,39 @@
+apps/dashboard/components/overview/todo-actions.test.tsx
+  s_bb49403e827479::t_b73dd74473a60c 92-94
+  s_bb49403e827479::t_5c2d24965accbf 119,121-123,126-127
+  s_bb49403e827479::t_b0e64892022afe 1,10,12-13,16,27-47
+  s_bb49403e827479::t_645afd43c83ea8 98,103-106
+  s_bb49403e827479::t_01846cf32c0b9e 120,125,135-138,140,149
+  s_bb49403e827479::t_d12b80324ec832 22-26,99-101,162-166
+  s_bb49403e827479::t_79b017515707c4 170
+  s_bb49403e827479::t_b4acef6bae34cc 134,141-143,148,150-161,167-169,171-173
+  s_bb49403e827479::t_7ad38d268cda1d 48
+apps/dashboard/components/overview/todo-actions.tsx
+  s_bb49403e827479::t_dd04f9c36357d0 98,100-102,104-105,107,116-124,128,131
+  s_bb49403e827479::t_532f0ac0cb4dd8 18
+  s_bb49403e827479::t_208a1ba3bd822e 99,103,106
+  s_bb49403e827479::t_48cf7cad991c3a 126
+apps/dashboard/hooks/use-page-settled.test.tsx
+  s_bb49403e827479::t_ca0b2776efd6cf 1-106
+apps/dashboard/app/(app)/page.tsx
+  s_bb49403e827479::t_fc52a234d0d446 73
+  s_bb49403e827479::t_fbcd29aa767ae2 41-55
+apps/dashboard/hooks/use-page-settled.ts
+  s_bb49403e827479::t_2d62cc1c5d25c2 1-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "dc59f838b13b4304d967925c03cbff4588dbb401",
+  "prompts": {},
+  "sessions": {
+    "s_bb49403e827479": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ff4fdc39-691e-4b02-b731-89edd2db0cc1",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
