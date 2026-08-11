@@ -15,6 +15,7 @@ import { type ReactNode, useEffect, useState } from "react"
 import { ActionCard, ActionCardSkeleton } from "@/components/action-card"
 import { ConfettiBurst } from "@/components/confetti-burst"
 import { useOrganization } from "@/components/org-context"
+import { usePageSettled } from "@/hooks/use-page-settled"
 import type { Todo, TodoGroup, TodoGroupKey } from "@/lib/todo"
 
 // Where each kind of outstanding work is done. Total over the group keys, so
@@ -94,7 +95,16 @@ const SHORTCUTS: {
 // cards that then become four different ones reads as the page changing its
 // mind. The confetti hangs off the same moment, so it cannot fire over
 // placeholder content either.
-export function TodoActions({ todo }: { todo: Todo | undefined }) {
+//
+// `pageLoaded` is every query on the page, not just this row's: see the burst
+// below.
+export function TodoActions({
+  todo,
+  pageLoaded,
+}: {
+  todo: Todo | undefined
+  pageLoaded: boolean
+}) {
   const t = useTranslations("dashboard.overview")
   const tQuick = useTranslations("dashboard.overview.quickActions")
   const { orgId } = useOrganization()
@@ -103,12 +113,22 @@ export function TodoActions({ todo }: { todo: Todo | undefined }) {
   // Fires once per company, when its row first has work to point at. The
   // to-do query resolves after the first paint, so this cannot be read at
   // mount: it has to wait for the moment the cards actually appear.
+  //
+  // And a beat longer than that. Having the cards is not the same as having a
+  // browser free to animate them: the row's own query is one of six on this
+  // page, the last of them mounts the charts, and a burst thrown into that
+  // render burns through its 1.2s inside blocked frames and reaches the screen
+  // as its own last frame, or as nothing. Which is what made it intermittent:
+  // it played whenever the page happened to be cheap that load. usePageSettled
+  // holds the shot until the whole page is in AND frames are coming back on
+  // time, so the burst is spent only where it can be seen.
   const [celebrating, setCelebrating] = useState<string | null>(null)
+  const settled = usePageSettled(pageLoaded)
   useEffect(() => {
-    if (burstShownFor.has(orgId) || groups.length === 0) return
+    if (!settled || burstShownFor.has(orgId) || groups.length === 0) return
     burstShownFor.add(orgId)
     setCelebrating(orgId)
-  }, [orgId, groups.length])
+  }, [settled, orgId, groups.length])
   // Compared against the current company rather than held as a bare boolean:
   // switching company keeps this component mounted, so a plain flag would
   // leave the new company's row wearing the old one's burst.

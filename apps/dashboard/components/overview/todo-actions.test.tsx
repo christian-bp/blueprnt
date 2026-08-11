@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, render, screen, waitFor } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
@@ -7,15 +7,43 @@ import { TodoActions } from "@/components/overview/todo-actions"
 import type { Todo, TodoGroup } from "@/lib/todo"
 
 const t = messages.dashboard.overview
+const BURST = '[data-testid="success-confetti"]'
 
-function renderActions(todo: Todo | undefined, orgId = "org-1") {
-  return render(
+function tree(todo: Todo | undefined, orgId: string, pageLoaded: boolean) {
+  return (
     <NextIntlClientProvider locale="en" messages={messages}>
       <OrganizationProvider value={{ orgId, name: "Acme", role: "admin" }}>
-        <TodoActions todo={todo} />
+        <TodoActions todo={todo} pageLoaded={pageLoaded} />
       </OrganizationProvider>
     </NextIntlClientProvider>
   )
+}
+
+function renderActions(
+  todo: Todo | undefined,
+  orgId = "org-1",
+  pageLoaded = true
+) {
+  return render(tree(todo, orgId, pageLoaded))
+}
+
+// The burst waits for frames that came back on time, so it appears a few
+// frames after the render rather than inside it. Waiting a fixed handful of
+// frames is what lets a test assert the burst is NOT there: a waitFor can only
+// ever prove something arrived.
+function nextFrames(count = 6): Promise<void> {
+  return new Promise((resolve) => {
+    let left = count
+    function step() {
+      left -= 1
+      if (left <= 0) {
+        resolve()
+        return
+      }
+      requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  })
 }
 
 function roleItem(id: string) {
@@ -61,17 +89,21 @@ function todoWith(groups: TodoGroup[]): Todo {
 
 afterEach(cleanup)
 
-// The burst is an arrival effect that fires once per session, so a test that
-// asserts it has to run before any other render consumes that one shot.
+// The burst is an arrival effect with one shot per company, so each test
+// arrives as a company of its own: sharing an id would make a test pass or
+// fail on which one ran first.
 describe("TodoActions arrival burst", () => {
   // The burst marks which of the four cards are work, so every work card
   // throws one and the padding links throw none.
-  it("throws a burst on each work card and none on the padding links", () => {
-    const { container } = renderActions(todoWith([CLASSIFY, DESCRIBE]))
-    const bursts = container.querySelectorAll(
-      '[data-testid="success-confetti"]'
+  it("throws a burst on each work card and none on the padding links", async () => {
+    const { container } = renderActions(
+      todoWith([CLASSIFY, DESCRIBE]),
+      "burst-cards"
     )
-    expect(bursts).toHaveLength(2)
+    await waitFor(() => {
+      expect(container.querySelectorAll(BURST)).toHaveLength(2)
+    })
+    const bursts = container.querySelectorAll(BURST)
     for (const burst of bursts) {
       // A sibling of the card, never a child: a Card clips its overflow and
       // would cut the pieces off at its edge.
@@ -84,35 +116,61 @@ describe("TodoActions arrival burst", () => {
     }
   })
 
-  it("does not throw it again later in the session", () => {
-    renderActions(todoWith([CLASSIFY]))
+  it("does not throw it again later in the session", async () => {
+    const first = renderActions(todoWith([CLASSIFY]), "burst-once")
+    await waitFor(() => {
+      expect(first.container.querySelectorAll(BURST)).toHaveLength(1)
+    })
     cleanup()
-    const { container } = renderActions(todoWith([CLASSIFY]))
-    expect(
-      container.querySelectorAll('[data-testid="success-confetti"]')
-    ).toHaveLength(0)
+    const { container } = renderActions(todoWith([CLASSIFY]), "burst-once")
+    await nextFrames()
+    expect(container.querySelectorAll(BURST)).toHaveLength(0)
   })
 
   // Once per COMPANY, not once per app. A single flag meant the first company
   // to show work spent the only burst there was, so switching company never
   // celebrated again, and finishing onboarding for a new company landed on a
   // dashboard the previous one had already used up.
-  it("throws it again for a company that has not arrived yet", () => {
-    renderActions(todoWith([CLASSIFY]), "org-1")
+  it("throws it again for a company that has not arrived yet", async () => {
+    const first = renderActions(todoWith([CLASSIFY]), "burst-company-a")
+    await waitFor(() => {
+      expect(first.container.querySelectorAll(BURST)).toHaveLength(1)
+    })
     cleanup()
-    const { container } = renderActions(todoWith([CLASSIFY]), "org-2")
-    expect(
-      container.querySelectorAll('[data-testid="success-confetti"]')
-    ).toHaveLength(1)
+    const { container } = renderActions(todoWith([CLASSIFY]), "burst-company-b")
+    await waitFor(() => {
+      expect(container.querySelectorAll(BURST)).toHaveLength(1)
+    })
   })
 
   // Nothing to point at, nothing to celebrate: the standing destinations are
   // not work.
-  it("throws nothing when the row is only standing destinations", () => {
-    const { container } = renderActions(todoWith([]))
-    expect(
-      container.querySelectorAll('[data-testid="success-confetti"]')
-    ).toHaveLength(0)
+  it("throws nothing when the row is only standing destinations", async () => {
+    const { container } = renderActions(todoWith([]), "burst-no-work")
+    await nextFrames()
+    expect(container.querySelectorAll(BURST)).toHaveLength(0)
+  })
+
+  // The row's own query is one of six on this page. Firing on that one alone
+  // threw the burst into the render that mounts the widgets and the charts,
+  // where it ran out its life inside blocked frames and reached the screen as
+  // its own last frame or as nothing at all. It waits for the whole page, and
+  // waiting must not COST the burst: the one shot per company is still unspent
+  // when the page finishes arriving.
+  it("holds the burst until the whole page has loaded, without spending it", async () => {
+    const todo = todoWith([CLASSIFY])
+    const { container, rerender } = renderActions(
+      todo,
+      "burst-late-page",
+      false
+    )
+    await nextFrames()
+    expect(container.querySelectorAll(BURST)).toHaveLength(0)
+
+    rerender(tree(todo, "burst-late-page", true))
+    await waitFor(() => {
+      expect(container.querySelectorAll(BURST)).toHaveLength(1)
+    })
   })
 })
 

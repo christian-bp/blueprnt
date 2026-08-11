@@ -38,6 +38,21 @@ export default function OverviewPage() {
   const headcountTrend = useHeadcountTrend(orgId)
   const gapTrend = usePayGapTrend(orgId)
 
+  // Whether the page is done arriving. The To do row's arrival burst waits for
+  // this rather than for its own query: the queries land in separate batches,
+  // the later ones mount the widgets and the charts, and an animation started
+  // in that render is spent inside blocked frames instead of on screen. Every
+  // result on the page, so adding a hook here also holds the burst until it
+  // has landed. undefined is loading; null is a loaded answer of "nothing yet".
+  const pageLoaded = [
+    todo,
+    stats,
+    levelOverview,
+    payMappingHeadline,
+    headcountTrend,
+    gapTrend,
+  ].every((result) => result !== undefined)
+
   return (
     // One spacing rhythm for the whole page: the gap between the bands is the
     // same as the gap between the widgets inside them, which is what the
@@ -55,7 +70,7 @@ export default function OverviewPage() {
           </p>
         )}
       </div>
-      <TodoActions todo={todo} />
+      <TodoActions todo={todo} pageLoaded={pageLoaded} />
       <OverviewWidgets
         stats={stats}
         levelOverview={levelOverview}
