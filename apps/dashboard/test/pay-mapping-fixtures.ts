@@ -77,6 +77,9 @@ export function makeRunSummary(
     referenceDate: Date.UTC(2025, 6, 1),
     label: "Pay mapping 2025",
     populationCount: 6,
+    // Frozen beside the headcount; null is the "no measurable gap" case, so
+    // the default is a real reading that a trend can compare against.
+    orgGapPct: 4,
     ...overrides,
   }
 }

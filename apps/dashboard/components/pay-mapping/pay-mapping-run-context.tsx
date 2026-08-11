@@ -12,14 +12,18 @@ import { buildReviewQueue, type ReviewQueue } from "./review-queue"
 
 // The run summaries this context's consumers need, structurally. The queue
 // reads whether an EARLIER run was completed, which decides whether the
-// "previous actions" praxis area belongs in this run's own queue; the
-// population card reads the previous run's frozen headcount and names that
-// run by its own label. Every field is already on listPayMappingRuns' wire.
+// "previous actions" praxis area belongs in this run's own queue; the KPI
+// tiles read the previous run's frozen headcount and gap and name that run by
+// its own label. Every field is already on listPayMappingRuns' wire.
 export interface PayMappingRunSummary {
   status: string
   referenceDate: number
   label: string
   populationCount: number
+  // Frozen at snapshot time beside populationCount, so a trend against an
+  // earlier mapping never rescans that mapping's snapshot rows. Null when
+  // that mapping had no measurable org-level gap.
+  orgGapPct: number | null
 }
 
 // What the shell subscribes to and hands down.
