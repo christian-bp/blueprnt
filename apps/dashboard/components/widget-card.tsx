@@ -52,9 +52,23 @@ interface WidgetCardBase {
   // becomes its label; without one (a chart card), `title` stays the card's
   // own heading.
   value?: ReactNode
-  // What qualifies the figure: a comparison, a state, a run's name. Below
-  // the figure, never beside it.
+  // What qualifies the figure, as two lines under it (the shadcn stat-card
+  // anatomy). `footer` is the STATEMENT: how the figure moved, or what state
+  // it is in, in foreground weight because it is the second thing worth
+  // reading after the number. `note` is the muted line under it saying what
+  // the figure covers.
+  //
+  // The statement is where a delta belongs, spelled out with its amount
+  // ("25 people fewer than 2026"), not a pill in the corner. A pill splits
+  // one reading into two fragments that only mean something together, sits
+  // where the identity chip already is, and forces a screen reader to be
+  // handed a separate sentence to make up for it.
   footer?: ReactNode
+  // Trailing direction arrow on the statement line. aria-hidden: the
+  // statement already says which way it went, so the arrow exists to make the
+  // direction survive a glance (and greyscale), not to carry it.
+  footerIcon?: IconSvgElement
+  note?: ReactNode
   // An extra header control beside the icon chip (e.g. a severity badge or
   // a delta pill). Never interactive on a linked card: see below.
   headerExtra?: ReactNode
@@ -93,6 +107,8 @@ export function WidgetCard({
   help,
   value,
   footer,
+  footerIcon,
+  note,
   headerExtra,
   href,
   expandable = false,
@@ -167,9 +183,25 @@ export function WidgetCard({
         </CardAction>
       </CardHeader>
       {children !== undefined && <CardContent>{children}</CardContent>}
-      {footer !== undefined && (
-        <CardFooter className="text-muted-foreground text-sm">
-          {footer}
+      {(footer !== undefined || note !== undefined) && (
+        <CardFooter className="flex-col items-start gap-0.5 text-sm">
+          {footer !== undefined && (
+            <div className="flex items-center gap-1.5 font-medium">
+              {footer}
+              {footerIcon !== undefined && (
+                <HugeiconsIcon
+                  icon={footerIcon}
+                  size={16}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                  className="shrink-0"
+                />
+              )}
+            </div>
+          )}
+          {note !== undefined && (
+            <div className="text-muted-foreground">{note}</div>
+          )}
         </CardFooter>
       )}
       {href !== undefined && (

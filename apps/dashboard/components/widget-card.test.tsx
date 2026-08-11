@@ -34,6 +34,74 @@ describe("WidgetCard", () => {
     ).toBe("All classified")
   })
 
+  // The footer is two lines: the statement (how the figure moved, or what
+  // state it is in) in foreground weight, then the muted line saying what the
+  // figure covers. A delta belongs in the statement, spelled out, not in a
+  // pill beside the identity chip.
+  it("stacks the statement over its muted note", () => {
+    const { container } = renderCard(
+      <WidgetCard
+        title="People included"
+        value={95}
+        footer="25 people fewer than 2026"
+        note="Everyone included in this pay mapping"
+      />
+    )
+    const footer = container.querySelector('[data-slot="card-footer"]')
+    const lines = footer?.children
+    expect(lines).toHaveLength(2)
+    expect(lines?.[0]?.textContent).toBe("25 people fewer than 2026")
+    expect(lines?.[1]?.textContent).toBe(
+      "Everyone included in this pay mapping"
+    )
+    // The statement reads at foreground weight, the note is muted.
+    expect(lines?.[0]?.className).toContain("font-medium")
+    expect(lines?.[1]?.className).toContain("text-muted-foreground")
+  })
+
+  it("renders a note without a statement, and a statement without a note", () => {
+    const { container: noteOnly } = renderCard(
+      <WidgetCard title="Pay gap" value="3.5%" note="Women vs men" />
+    )
+    expect(
+      noteOnly.querySelector('[data-slot="card-footer"]')?.textContent
+    ).toBe("Women vs men")
+    cleanup()
+    const { container: statementOnly } = renderCard(
+      <WidgetCard title="Roles" value={42} footer="12 need a level" />
+    )
+    expect(
+      statementOnly.querySelector('[data-slot="card-footer"]')?.textContent
+    ).toBe("12 need a level")
+  })
+
+  it("omits the footer entirely when there is neither line", () => {
+    const { container } = renderCard(<WidgetCard title="Roles" value={42} />)
+    expect(container.querySelector('[data-slot="card-footer"]')).toBeNull()
+  })
+
+  // The arrow repeats a direction the statement already spells out, so it is
+  // decorative: it exists to survive a glance and greyscale, not to carry the
+  // reading.
+  it("draws the direction arrow decoratively beside the statement", () => {
+    const { container } = renderCard(
+      <WidgetCard
+        title="People included"
+        value={95}
+        footer="25 people fewer than 2026"
+        footerIcon={UserGroupIcon}
+        note="Everyone in this mapping"
+      />
+    )
+    const statement = container.querySelector('[data-slot="card-footer"]')
+      ?.children[0]
+    const svg = statement?.querySelector("svg")
+    expect(svg).not.toBeNull()
+    expect(svg?.getAttribute("aria-hidden")).toBe("true")
+    // The arrow adds no text, so the statement still reads as one sentence.
+    expect(statement?.textContent).toBe("25 people fewer than 2026")
+  })
+
   it("keeps the title as the heading when there is no figure", () => {
     const { container } = renderCard(
       <WidgetCard title="Age distribution">
