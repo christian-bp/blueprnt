@@ -179,4 +179,26 @@ describe("OverviewPage", () => {
     expect(screen.getByText(tOverview.widgets.levels.label)).toBeDefined()
     expect(screen.getByText(tOverview.widgets.gap.label)).toBeDefined()
   })
+
+  // One spacing rhythm for the page: the gap BETWEEN the bands is the same as
+  // the gap between the widgets inside them, in both directions. The page used
+  // to stack its bands 32px apart while its cards sat 12px apart, so the same
+  // cards were spaced differently depending on which way you read them.
+  it("spaces every band and every widget grid by the same gap", () => {
+    mockNeutralQueries()
+    const { container } = renderPage()
+
+    const page = container.querySelector("div.flex.flex-col")
+    expect(page?.className).toContain("gap-4")
+
+    // Each band that lays widgets out in a grid, plus the to-do section's own
+    // heading-to-cards stack. None may carry a different gap.
+    const bands = [
+      ...(page?.querySelectorAll("div.grid, section") ?? []),
+    ].filter((el) => !el.className.includes("card-header"))
+    expect(bands.length).toBeGreaterThanOrEqual(3)
+    for (const band of bands) {
+      expect(band.className).toContain("gap-4")
+    }
+  })
 })

@@ -34,22 +34,27 @@ function StatBar({ className }: { className: string }) {
   )
 }
 
-// One tile of the stat strip: the label, the figure it labels, and the line
-// that qualifies it, in that order down the card. A figure that has not
-// resolved yet renders as a bar in the same slot, so a tile never changes
-// height between its two states.
+// One tile of the stat strip: the label, the figure it labels, then the two
+// lines that qualify it, in that order down the card. `caption` is the
+// statement (what state the figure is in) and `note` says what the figure
+// counts; these tiles have no history to trend against, so the statement
+// carries a state rather than a movement. A figure that has not resolved yet
+// renders as a bar in the same slot, so a tile never changes height between
+// its two states.
 function StatTile({
   label,
   icon,
   href,
   value,
   caption,
+  note,
 }: {
   label: string
   icon: IconSvgElement
   href: string
   value: ReactNode | undefined
   caption: ReactNode
+  note: ReactNode
 }) {
   return (
     <WidgetCard
@@ -58,10 +63,11 @@ function StatTile({
       href={href}
       // The bars sit in the SAME line boxes the loaded type creates, not at
       // their own heights: CardTitle is leading-normal at text-2xl/text-3xl
-      // (36-45px) and the footer is text-sm (20px), so bare h-8/h-4 bars left
-      // each tile short and the whole strip grew on arrival.
+      // (36-45px) and the footer lines are text-sm (20px), so bare h-8/h-4
+      // bars left each tile short and the whole strip grew on arrival.
       value={value ?? <StatBar className="h-7 w-16" />}
-      footer={value === undefined ? <StatBar className="h-4 w-24" /> : caption}
+      footer={value === undefined ? <StatBar className="h-4 w-28" /> : caption}
+      note={value === undefined ? <StatBar className="h-4 w-24" /> : note}
     />
   )
 }
@@ -93,7 +99,7 @@ export function OverviewWidgets({
           : percentText(payMappingHeadline.gapPct, format)
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <StatTile
         label={t("workforce.label")}
         icon={UserGroupIcon}
@@ -110,6 +116,7 @@ export function OverviewWidgets({
                   })
                 : t("workforce.allClassified")
         }
+        note={t("workforce.note")}
       />
       <StatTile
         label={t("roles.label")}
@@ -125,6 +132,7 @@ export function OverviewWidgets({
             ? t("roles.empty")
             : t("roles.caption", { count: levelOverview.levelCount })
         }
+        note={t("roles.note")}
       />
       <StatTile
         label={t("gap.label")}
@@ -140,6 +148,7 @@ export function OverviewWidgets({
             ? t("gap.prompt")
             : payMappingHeadline.label
         }
+        note={t("gap.note")}
       />
       <StatTile
         label={t("levels.label")}
@@ -155,6 +164,7 @@ export function OverviewWidgets({
             ? t("levels.empty")
             : t("levels.caption", { count: levelOverview.totalRoles })
         }
+        note={t("levels.note")}
       />
     </div>
   )
@@ -267,7 +277,7 @@ export function OverviewCharts({
   } satisfies ChartConfig
 
   return (
-    <div className="grid gap-3 lg:grid-cols-2">
+    <div className="grid gap-4 lg:grid-cols-2">
       <PanelCard
         title={t("workforce.trendTitle")}
         icon={UserGroupIcon}

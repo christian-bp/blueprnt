@@ -232,7 +232,7 @@ function TodoSection({
   children: ReactNode
 }) {
   return (
-    <section className="flex flex-col gap-3">
+    <section className="flex flex-col gap-4">
       {label === null ? (
         // Which of the two this band is, is data. It holds the heading's line
         // rather than guessing "To do" and renaming itself a moment later,
@@ -245,7 +245,7 @@ function TodoSection({
       ) : (
         <h2 className="font-medium text-sm">{label}</h2>
       )}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{children}</div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{children}</div>
     </section>
   )
 }

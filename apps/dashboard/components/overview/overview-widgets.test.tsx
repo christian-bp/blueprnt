@@ -147,8 +147,19 @@ describe("OverviewWidgets", () => {
     renderStrip()
     expect(screen.getByText("4")).toBeDefined() // roles
     expect(screen.getByText("2")).toBeDefined() // levels
-    expect(screen.getByText("across 2 levels")).toBeDefined()
+    // Capitalized: the caption is the footer's STATEMENT line now, not a
+    // muted trailing fragment, so it starts a sentence.
+    expect(screen.getByText("Across 2 levels")).toBeDefined()
     expect(screen.getByText("4 roles placed")).toBeDefined()
+  })
+
+  // Every tile carries two lines: the statement, then what the figure counts.
+  it("says what each figure counts under its statement", () => {
+    renderStrip()
+    expect(screen.getByText(t.workforce.note)).toBeDefined()
+    expect(screen.getByText(t.roles.note)).toBeDefined()
+    expect(screen.getByText(t.gap.note)).toBeDefined()
+    expect(screen.getByText(t.levels.note)).toBeDefined()
   })
 
   it("shows the empty level state, and a zero figure, with no level overview", () => {

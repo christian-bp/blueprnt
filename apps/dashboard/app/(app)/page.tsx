@@ -39,7 +39,12 @@ export default function OverviewPage() {
   const gapTrend = usePayGapTrend(orgId)
 
   return (
-    <div className="flex flex-col gap-8">
+    // One spacing rhythm for the whole page: the gap between the bands is the
+    // same as the gap between the widgets inside them, which is what the
+    // pay-mapping overview already uses. The page used to separate its bands
+    // by 32px while its cards sat 12px apart, so the same cards were spaced
+    // differently depending on the direction you read them in.
+    <div className="flex flex-col gap-4">
       <div>
         <WelcomeGreeting />
         {todo === undefined ? (
