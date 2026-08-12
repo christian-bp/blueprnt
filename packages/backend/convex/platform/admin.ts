@@ -660,13 +660,14 @@ export const updateOrganization = platformMutation({
 
 // GDPR erasure. Deletes every identity/membership/invitation row (via the
 // component), the app users mirror, the person's email history in the Sweego
-// component (messages + deliveries + events addressed to them), and anonymizes
-// the person's snapshotted actorName in both audit logs (the rows are kept for
-// the trail's legitimate-interest basis, and their payloads carry IDs/codes
-// only, never PII). The erasure itself is recorded in the ADMIN log only;
-// nothing is written to any org's auditLog. Self-delete is blocked. The
-// admin-log payload carries a non-identifying org count, never the erased
-// name/email.
+// component (messages + deliveries + events addressed to them), every
+// assistant chat thread and message they own across all orgs (ADR-0018), and
+// anonymizes the person's snapshotted actorName in both audit logs (the rows
+// are kept for the trail's legitimate-interest basis, and their payloads
+// carry IDs/codes only, never PII). The erasure itself is recorded in the
+// ADMIN log only; nothing is written to any org's auditLog. Self-delete is
+// blocked. The admin-log payload carries a non-identifying org count, never
+// the erased name/email.
 export const deleteUser = platformMutation({
   args: { authId: v.string() },
   returns: v.null(),
@@ -688,6 +689,14 @@ export const deleteUser = platformMutation({
         { email }
       )
     }
+    // GDPR erasure of the person's assistant chat PII: hard-delete every
+    // thread and message they own, across all orgs (ADR-0018). Scheduled so
+    // it commits with the erasure; self-reschedules until done.
+    await ctx.scheduler.runAfter(
+      0,
+      internal.assistant.erase.eraseAssistantDataForUser,
+      { userId: authId }
+    )
     // App mirror.
     const mirror = await ctx.db
       .query("users")

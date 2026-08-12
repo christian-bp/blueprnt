@@ -224,6 +224,14 @@ export const eraseSelf = internalMutation({
         { email }
       )
     }
+    // GDPR erasure of the person's assistant chat PII: hard-delete every
+    // thread and message they own, across all orgs (ADR-0018). Scheduled so
+    // it commits with the erasure; self-reschedules until done.
+    await ctx.scheduler.runAfter(
+      0,
+      internal.assistant.erase.eraseAssistantDataForUser,
+      { userId: authUserId }
+    )
     // App mirror.
     const mirror = await ctx.db
       .query("users")

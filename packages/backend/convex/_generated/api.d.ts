@@ -43,6 +43,7 @@ import type * as assessment_seed from "../assessment/seed.js";
 import type * as assessment_starters from "../assessment/starters.js";
 import type * as assessment_tables from "../assessment/tables.js";
 import type * as assistant_chat from "../assistant/chat.js";
+import type * as assistant_erase from "../assistant/erase.js";
 import type * as assistant_generate from "../assistant/generate.js";
 import type * as assistant_insights from "../assistant/insights.js";
 import type * as assistant_knowledge from "../assistant/knowledge.js";
@@ -142,6 +143,7 @@ declare const fullApi: ApiFromModules<{
   "assessment/starters": typeof assessment_starters;
   "assessment/tables": typeof assessment_tables;
   "assistant/chat": typeof assistant_chat;
+  "assistant/erase": typeof assistant_erase;
   "assistant/generate": typeof assistant_generate;
   "assistant/insights": typeof assistant_insights;
   "assistant/knowledge": typeof assistant_knowledge;
