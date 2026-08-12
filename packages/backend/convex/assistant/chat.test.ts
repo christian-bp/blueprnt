@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
+import { ASSISTANT_THREAD_LIST_LIMIT } from "../ai/config"
 import { ERROR_CODES } from "../lib/errors"
 import { initConvexTest } from "../testing.helpers"
 
@@ -496,6 +497,19 @@ describe("assistant chat", () => {
       text: "a",
       locale: "en",
     })
+    // Baseline lastMessageAt, captured right after creation and before every
+    // later operation below (finalize, newConversation, a second send, and
+    // the switch itself), so the eventual "increased" assertion compares
+    // against threadA's ORIGINAL touch, not a value already inflated by one
+    // of those steps.
+    const beforeSwitch = await asMember.query(api.assistant.chat.listThreads, {
+      orgId,
+    })
+    const beforeLastMessageAt = beforeSwitch.find(
+      (thread) => thread._id === threadA
+    )?.lastMessageAt
+    if (beforeLastMessageAt === undefined) throw new Error("seed")
+
     const messagesA = await asMember.query(api.assistant.chat.listMessages, {
       orgId,
       threadId: threadA,
@@ -535,12 +549,55 @@ describe("assistant chat", () => {
       orgId,
     })
     expect(active?._id).toBe(threadA)
+    // The positive half of the busy-guard story: switching bumps the
+    // selected thread's lastMessageAt (not just its status), which is what
+    // lets it sort back to the top of the next listThreads read.
+    expect(active?.lastMessageAt).toBeGreaterThan(beforeLastMessageAt)
     const threads = await asMember.query(api.assistant.chat.listThreads, {
       orgId,
     })
     expect(threads.find((thread) => thread._id === threadB)?.status).toBe(
       "archived"
     )
+    // threadA now carries the largest lastMessageAt of the two, so it sorts
+    // first: the same recency ordering listThreads relies on.
+    expect(threads[0]?._id).toBe(threadA)
+  })
+
+  it("listThreads truncates to ASSISTANT_THREAD_LIST_LIMIT, keeping the most recently active", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seedOrgWithMember(t)
+    const total = ASSISTANT_THREAD_LIST_LIMIT + 1
+    const threadIds = await t.run(async (ctx) => {
+      const ids = []
+      for (let i = 0; i < total; i += 1) {
+        ids.push(
+          await ctx.db.insert("assistantThreads", {
+            orgId,
+            userId,
+            status: "archived",
+            // Ascending: index i is the i-th oldest by activity, so the
+            // single dropped thread is deterministically the oldest (index 0).
+            lastMessageAt: i,
+          })
+        )
+      }
+      return ids
+    })
+
+    const asMember = t.withIdentity({ subject: userId })
+    const threads = await asMember.query(api.assistant.chat.listThreads, {
+      orgId,
+    })
+
+    expect(threads).toHaveLength(ASSISTANT_THREAD_LIST_LIMIT)
+    const returnedIds = new Set(threads.map((thread) => thread._id))
+    expect(returnedIds.has(threadIds[0])).toBe(false)
+    for (let i = 1; i < total; i += 1) {
+      expect(returnedIds.has(threadIds[i])).toBe(true)
+    }
+    // Most recently active first: the newest-seeded thread leads the page.
+    expect(threads[0]?._id).toBe(threadIds[total - 1])
   })
 
   it("switchConversation throws assistantBusy when the current active thread is still streaming", async () => {
