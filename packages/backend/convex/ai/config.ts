@@ -43,6 +43,8 @@ export const ASSISTANT_MAX_TOOL_STEPS = 3
 // aborted server-side, so a stuck stream never holds a message in
 // "streaming" forever.
 export const ASSISTANT_GENERATION_TIMEOUT_MS = 120_000
+// Bounds a single reply's spend; the 120s timeout above bounds latency.
+export const ASSISTANT_MAX_OUTPUT_TOKENS = 4096
 // How long recordUsage waits for the SDK's usage promise to settle on an
 // aborted stream before giving up and recording nothing.
 export const ASSISTANT_USAGE_RACE_MS = 2_000

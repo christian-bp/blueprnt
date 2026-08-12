@@ -10,7 +10,11 @@ import { promptLocale } from "../evaluationModel/localize"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { orgSettingsRow } from "../lib/orgSettings"
-import { type AssistantMessagePart, assistantMessagePart } from "./tables"
+import {
+  type AssistantMessagePart,
+  assistantActivityKind,
+  assistantMessagePart,
+} from "./tables"
 
 const HOUR_MS = 60 * 60 * 1000
 // The UI shows one bounded conversation; older messages age out of the
@@ -28,6 +32,7 @@ const messageShape = v.object({
   ),
   parts: v.array(assistantMessagePart),
   errorCode: v.optional(v.string()),
+  activity: v.optional(assistantActivityKind),
 })
 
 // One text view of a message's parts, used both for the model's history and
@@ -102,6 +107,7 @@ export const listMessages = orgQuery({
       status: m.status,
       parts: m.parts,
       ...(m.errorCode !== undefined ? { errorCode: m.errorCode } : {}),
+      ...(m.activity !== undefined ? { activity: m.activity } : {}),
     }))
   },
 })
@@ -296,6 +302,12 @@ export const updateParts = internalMutation({
   args: {
     messageId: v.id("assistantMessages"),
     parts: v.array(assistantMessagePart),
+    // Omitted (undefined) clears the field: patch removes a key whose value
+    // is explicitly undefined, so a flush that has no activity to report
+    // (the text-delta interval flush, the tool-result flush once a tool
+    // resolves) always overwrites a stale "checkingData" left by an earlier
+    // flush in the same generation.
+    activity: v.optional(assistantActivityKind),
   },
   returns: v.boolean(),
   handler: async (ctx, args) => {
@@ -304,7 +316,10 @@ export const updateParts = internalMutation({
     // writing (erasure, archive, or a competing finalize won).
     if (message === null || message.status !== "streaming") return true
     if (message.stopRequested === true) return true
-    await ctx.db.patch(args.messageId, { parts: args.parts })
+    await ctx.db.patch(args.messageId, {
+      parts: args.parts,
+      activity: args.activity,
+    })
     return false
   },
 })
@@ -327,6 +342,9 @@ export const finalizeReply = internalMutation({
     await ctx.db.patch(args.messageId, {
       status: args.status,
       parts: args.parts,
+      // Every terminal status clears the in-progress activity marker: a
+      // finalized message never shows a "checking your data" shimmer.
+      activity: undefined,
       ...(args.errorCode !== undefined ? { errorCode: args.errorCode } : {}),
     })
     return null

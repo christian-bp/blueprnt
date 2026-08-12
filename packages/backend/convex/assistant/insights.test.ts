@@ -233,8 +233,8 @@ describe("assistant insights", () => {
     expect(trend.points.every((p) => typeof p.value === "number")).toBe(true)
     expect(trend.points[0]?.value).toBeCloseTo(6.1)
     expect(trend.points[1]?.value).toBeCloseTo(4.2)
-    // C2: period is composed in code from the numeric referenceDate, never
-    // the run's user-typed label.
+    // period is composed in code from the numeric referenceDate, never the
+    // run's user-typed label.
     expect(trend.points[0]?.period).toMatch(/^\d{4}-\d{2}$/)
     expect(trend.points[0]?.period).not.toBe("Mapping 1")
     expect(trend.summary.length).toBeGreaterThan(0)
@@ -396,9 +396,9 @@ describe("assistant insights", () => {
     expect(men?.suppressed).toBe(false)
     expect(men?.count).toBe(5)
 
-    // C1: the "all" bucket is suppressed too, whenever any gender bucket is,
-    // so the disclosed men average plus the disclosed all average could
-    // never be used to back out the suppressed women average.
+    // The "all" bucket is suppressed too, whenever any gender bucket is, so
+    // the disclosed men average plus the disclosed all average could never
+    // be used to back out the suppressed women average.
     const all = stats.groups.find((g) => g.key === "all")
     expect(all?.suppressed).toBe(true)
     expect(all?.averagePay).toBeNull()

@@ -246,6 +246,8 @@ in the same change.
 
 - [ ] **Assistant: revisit the simple per-user hourly message cap.** The V1 cost guard is a naive 30 messages per user per hour. If real usage shows abuse patterns or if per-org token budgets become policy, upgrade to @convex-dev/rate-limiter.
 
+- [ ] **Assistant: decide a spend cap / circuit breaker for assistant AI usage.** The `aiUsageEvents`/`aiUsageMonthly` rows already exist, but nothing enforces a ceiling today (the per-message output token cap only bounds a single reply). Options: a Mistral account budget alarm, or an internal cap read from the monthly rollup that refuses new generations once an org crosses it.
+
 ## V1 conformance follow-ups (from the 2026-07-01 audit)
 
 Re-verified 2026-07-03: the audit's build/copy/doc gaps (the rationale +

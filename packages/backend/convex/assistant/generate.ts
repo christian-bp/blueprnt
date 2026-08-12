@@ -9,13 +9,14 @@ import {
   AI_PROVIDER,
   ASSISTANT_FLUSH_INTERVAL_MS,
   ASSISTANT_GENERATION_TIMEOUT_MS,
+  ASSISTANT_MAX_OUTPUT_TOKENS,
   ASSISTANT_MAX_TOOL_STEPS,
   ASSISTANT_USAGE_RACE_MS,
 } from "../ai/config"
 import { aiModel } from "../ai/provider"
 import { ERROR_CODES } from "../lib/errors"
 import { assistantSystemPrompt } from "./knowledge"
-import type { AssistantMessagePart } from "./tables"
+import type { AssistantActivityKind, AssistantMessagePart } from "./tables"
 import { buildAssistantTools, chartForTool } from "./tools"
 
 export const generateAssistantReply = internalAction({
@@ -100,6 +101,7 @@ export const generateAssistantReply = internalAction({
       const result = streamText({
         model,
         abortSignal: controller.signal,
+        maxOutputTokens: ASSISTANT_MAX_OUTPUT_TOKENS,
         system: assistantSystemPrompt({
           locale: args.locale,
           ...(args.industry !== undefined ? { industry: args.industry } : {}),
@@ -154,10 +156,16 @@ export const generateAssistantReply = internalAction({
       }
 
       let lastFlush = 0
-      const flush = async (): Promise<boolean> => {
+      const flush = async (
+        activity?: AssistantActivityKind
+      ): Promise<boolean> => {
         const stopRequested = await ctx.runMutation(
           internal.assistant.chat.updateParts,
-          { messageId: args.assistantMessageId, parts: snapshot() }
+          {
+            messageId: args.assistantMessageId,
+            parts: snapshot(),
+            ...(activity !== undefined ? { activity } : {}),
+          }
         )
         if (stopRequested) {
           stopped = true
@@ -178,6 +186,22 @@ export const generateAssistantReply = internalAction({
       // an `{ type: "abort" }` or `{ type: "error", error }` part and closes
       // the stream gracefully (dist/index.js's `pull`/`eventProcessor`), so
       // both are handled here, not in the catch block below.
+      //
+      // The model REQUESTS a tool through a short chain of parts, verified in
+      // the same d.ts: `tool-input-start` fires first (as soon as the model
+      // begins producing a call, before its input is fully assembled),
+      // followed by `tool-input-delta`/`tool-input-end`, then `tool-call`
+      // once the input is complete; execution (and `tool-result`) only
+      // happens after that. `tool-call` is used here, not the earlier
+      // `tool-input-start` family, because it is the single, stable event per
+      // invocation with a plain `toolName` (matching the existing
+      // `tool-result` handling below), while the input-streaming family can
+      // fire multiple partial deltas per call. Mistral's provider (checked in
+      // @ai-sdk/mistral's dist/index.js) enqueues its whole input-start/
+      // delta/end/call sequence back-to-back with no await between them (it
+      // never streams partial JSON), so for our model the two are
+      // indistinguishable in timing; `tool-call` is still the correct,
+      // provider-independent choice.
       for await (const part of result.stream) {
         if (part.type === "text-delta") {
           currentText += part.text
@@ -186,6 +210,12 @@ export const generateAssistantReply = internalAction({
             lastFlush = now
             if (await flush()) break
           }
+        } else if (part.type === "tool-call") {
+          // Any of our tools about to run: surface the "checking your data"
+          // shimmer below the parts already shown. Cleared by the very next
+          // flush, whichever branch it comes from (the tool-result branch
+          // below passes no activity, and so does the next text-delta flush).
+          if (await flush("checkingData")) break
         } else if (part.type === "tool-result") {
           const chart = chartForTool(part.toolName)
           if (chart !== null) {
@@ -260,6 +290,7 @@ export const generateAssistantReply = internalAction({
         error: error instanceof Error ? error.message : String(error),
       })
       await finalize("failed", ERROR_CODES.aiGenerationFailed)
+      await recordUsage()
       return null
     } finally {
       clearTimeout(timeoutId)

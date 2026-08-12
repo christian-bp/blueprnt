@@ -39,9 +39,20 @@ export const assistantMessagePart = v.union(
 )
 export type AssistantMessagePart = Infer<typeof assistantMessagePart>
 
+// The assistant's in-progress work signal while a reply is streaming: a
+// transient hint the UI renders as a "checking your data" shimmer below the
+// parts already shown. A literal union of one so a future second signal is a
+// type-checked addition, never a magic string; cleared (unset, not just
+// overwritten) once the triggering tool resolves or the reply finalizes, so
+// it never lingers as stale history.
+export const assistantActivityKind = v.union(v.literal("checkingData"))
+export type AssistantActivityKind = Infer<typeof assistantActivityKind>
+
 // parts on an assistant row grow while status is "streaming" (the generation
 // action flushes its accumulated parts); "stopped" keeps the partial parts.
 // stopRequested is the cooperative abort flag the action reads at each flush.
+// activity is transient UI state, not conversation content: it is never read
+// by getGenerationContext and carries no history value once cleared.
 // No audit rows and no person fields, ever (ADR-0018): conversational
 // telemetry only. by_org_user backs the per-user hourly send cap.
 export const assistantMessages = defineTable({
@@ -58,6 +69,7 @@ export const assistantMessages = defineTable({
   parts: v.array(assistantMessagePart),
   errorCode: v.optional(v.string()),
   stopRequested: v.optional(v.boolean()),
+  activity: v.optional(assistantActivityKind),
 })
   .index("by_thread", ["threadId"])
   .index("by_org_user", ["orgId", "userId"])

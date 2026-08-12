@@ -131,6 +131,77 @@ describe("assistant chat", () => {
     expect(stop).toBe(true)
   })
 
+  it("updateParts sets and clears the activity marker", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "how has the gap developed",
+      locale: "en",
+    })
+    const messages = await asMember.query(api.assistant.chat.listMessages, {
+      orgId,
+      threadId,
+    })
+    const placeholderId = messages[1]?._id
+    if (placeholderId === undefined) throw new Error("seed")
+
+    await t.mutation(internal.assistant.chat.updateParts, {
+      messageId: placeholderId,
+      parts: [],
+      activity: "checkingData",
+    })
+    let updated = await asMember.query(api.assistant.chat.listMessages, {
+      orgId,
+      threadId,
+    })
+    expect(updated[1]?.activity).toBe("checkingData")
+
+    // Omitting the arg clears it (patch removes a key set to undefined):
+    // the next flush after a tool resolves carries no activity.
+    await t.mutation(internal.assistant.chat.updateParts, {
+      messageId: placeholderId,
+      parts: [{ type: "text", text: "partial" }],
+    })
+    updated = await asMember.query(api.assistant.chat.listMessages, {
+      orgId,
+      threadId,
+    })
+    expect(updated[1]?.activity).toBeUndefined()
+  })
+
+  it("finalizeReply clears a leftover activity marker", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "how has the gap developed",
+      locale: "en",
+    })
+    const messages = await asMember.query(api.assistant.chat.listMessages, {
+      orgId,
+      threadId,
+    })
+    const placeholderId = messages[1]?._id
+    if (placeholderId === undefined) throw new Error("seed")
+
+    await t.mutation(internal.assistant.chat.updateParts, {
+      messageId: placeholderId,
+      parts: [],
+      activity: "checkingData",
+    })
+    await t.mutation(internal.assistant.chat.finalizeReply, {
+      messageId: placeholderId,
+      status: "complete",
+      parts: [{ type: "text", text: "The gap improved." }],
+    })
+    const finalized = await asMember.query(api.assistant.chat.listMessages, {
+      orgId,
+      threadId,
+    })
+    expect(finalized[1]?.activity).toBeUndefined()
+  })
+
   it("getGenerationContext folds chart parts into text and skips empty rows", async () => {
     const t = initConvexTest()
     const { orgId, asMember } = await seedOrgWithMember(t)
@@ -163,6 +234,39 @@ describe("assistant chat", () => {
     expect(context[1]?.role).toBe("assistant")
     expect(context[1]?.text).toContain("payGapTrend")
     expect(context[1]?.text).toContain("The gap is improving.")
+  })
+
+  it("getGenerationContext is unaffected by a streaming row's activity marker", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "how has the gap developed",
+      locale: "en",
+    })
+    const messages = await asMember.query(api.assistant.chat.listMessages, {
+      orgId,
+      threadId,
+    })
+    const placeholderId = messages[1]?._id
+    if (placeholderId === undefined) throw new Error("seed")
+
+    // A "checkingData" activity on the still-streaming row is transient UI
+    // state, not conversation content: it must not appear in the model's
+    // history text, and getGenerationContext's empty-parts filter still
+    // drops the row while it carries no parts yet.
+    await t.mutation(internal.assistant.chat.updateParts, {
+      messageId: placeholderId,
+      parts: [],
+      activity: "checkingData",
+    })
+    const context = await t.query(
+      internal.assistant.chat.getGenerationContext,
+      { threadId }
+    )
+    expect(context).toHaveLength(1)
+    expect(context[0]?.role).toBe("user")
+    expect(context.some((m) => m.text.includes("checkingData"))).toBe(false)
   })
 
   it("getGenerationContext hides a personal-data-flagged turn from later prompts", async () => {
