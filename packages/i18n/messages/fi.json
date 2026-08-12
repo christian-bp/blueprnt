@@ -205,7 +205,8 @@
       "organization": "Organisaatio",
       "signOut": "Kirjaudu ulos",
       "people": "Henkilöstö",
-      "payMapping": "Palkkakartoitukset"
+      "payMapping": "Palkkakartoitukset",
+      "assistant": "Avustaja"
     },
     "people": {
       "description": "Palkanlaskentajärjestelmästä tuodut työntekijät.",
@@ -1971,7 +1972,8 @@
       "collaborationBody": "Yhteistoimintaa työntekijöiden ja heidän luottamusmiestensä kanssa koko palkkakartoituksen ajan. Työehtosopimuksen piirissä he voivat myös vaatia tarvitsemansa tiedot.",
       "analysisProgressLabel": "Mitä tässä lasketaan?",
       "analysisProgressBody": "Vaiheet, jotka on dokumentoitava ennen palkkakartoituksen valmistumista: yhteistoiminta, palkkakäytäntöjen arviointi ja jokainen ryhmä, jonka palkkaero vaatii perustelun. Muuta ei lasketa.",
-      "payGapScatterMeansBody": "Katkoviivat ovat kummankin sukupuolen keskipalkka ryhmässä, joten näet ketkä ovat oman keskiarvonsa ylä- ja alapuolella."
+      "payGapScatterMeansBody": "Katkoviivat ovat kummankin sukupuolen keskipalkka ryhmässä, joten näet ketkä ovat oman keskiarvonsa ylä- ja alapuolella.",
+      "assistant": "Avustaja selittää käsitteet, näyttää organisaation luvut ja ohjaa oikealle sivulle. Se voi lukea koosteita, mutta ei koskaan muuttaa mitään."
     },
     "widgetCard": {
       "expand": "Suurenna"
@@ -2396,6 +2398,21 @@
     "datePicker": {
       "placeholder": "Valitse päivä",
       "clear": "Tyhjennä"
+    },
+    "assistant": {
+      "title": "Avustaja",
+      "inputPlaceholder": "Kysy käsitteistä, luvuistanne tai mistä asiat löytyvät",
+      "send": "Lähetä",
+      "stop": "Pysäytä",
+      "newConversation": "Uusi keskustelu",
+      "emptyTitle": "Kysy avustajalta",
+      "emptyDescription": "Saat apua käsitteisiin, organisaation lukuihin ja siihen, missä asiat tehdään blueprntissä. Älä koskaan sisällytä henkilötietoja, kuten nimiä tai palkkoja.",
+      "suggestionCriterion": "Mikä on kriteeri?",
+      "suggestionGapTrend": "Miten palkkaeromme on kehittynyt?",
+      "suggestionPayMapping": "Miten teen palkkakartoituksen?",
+      "failed": "Avustaja ei voinut vastata. Yritä uudelleen.",
+      "stoppedNote": "Pysäytetty.",
+      "disclaimer": "Avustaja voi erehtyä. Tarkista tärkeät luvut niiden omilta sivuilta."
     }
   },
   "errors": {

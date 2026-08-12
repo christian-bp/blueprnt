@@ -205,7 +205,8 @@
       "organization": "Organisation",
       "signOut": "Log ud",
       "people": "Medarbejdere",
-      "payMapping": "Lønkortlægninger"
+      "payMapping": "Lønkortlægninger",
+      "assistant": "Assistent"
     },
     "people": {
       "description": "Medarbejdere importeret fra lønsystemet.",
@@ -1971,7 +1972,8 @@
       "collaborationBody": "At samarbejde med medarbejderne og deres tillidsrepræsentanter gennem hele lønkortlægningen (ligebehandlingsloven). Ved overenskomst kan de også kræve informationen.",
       "analysisProgressLabel": "Hvad tælles her?",
       "analysisProgressBody": "De trin, der skal dokumenteres, før lønkortlægningen kan afsluttes: samarbejdet, gennemgangen af lønpraksis, og hver gruppe hvis lønforskel kræver en begrundelse. Intet andet tælles med.",
-      "payGapScatterMeansBody": "De stiplede linjer er hvert køns gennemsnitsløn i gruppen, så du kan se, hvem der ligger over og under deres eget gennemsnit."
+      "payGapScatterMeansBody": "De stiplede linjer er hvert køns gennemsnitsløn i gruppen, så du kan se, hvem der ligger over og under deres eget gennemsnit.",
+      "assistant": "Assistenten forklarer begreber, viser organisationens tal og leder dig til den rigtige side. Den kan læse aggregater, men aldrig ændre noget."
     },
     "widgetCard": {
       "expand": "Forstør"
@@ -2396,6 +2398,21 @@
     "datePicker": {
       "placeholder": "Vælg dato",
       "clear": "Ryd"
+    },
+    "assistant": {
+      "title": "Assistent",
+      "inputPlaceholder": "Spørg om begreber, jeres tal, eller hvor du gør ting",
+      "send": "Send",
+      "stop": "Stop",
+      "newConversation": "Ny samtale",
+      "emptyTitle": "Spørg assistenten",
+      "emptyDescription": "Få hjælp til begreber, organisationens tal og til, hvor du gør ting i blueprnt. Medtag aldrig persondata som navne eller lønninger.",
+      "suggestionCriterion": "Hvad er et kriterium?",
+      "suggestionGapTrend": "Hvordan har vores løngab udviklet sig?",
+      "suggestionPayMapping": "Hvordan laver jeg en lønkortlægning?",
+      "failed": "Assistenten kunne ikke svare. Prøv igen.",
+      "stoppedNote": "Stoppet.",
+      "disclaimer": "Assistenten kan tage fejl. Tjek vigtige tal på deres egne sider."
     }
   },
   "errors": {

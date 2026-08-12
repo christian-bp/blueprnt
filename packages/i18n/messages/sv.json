@@ -205,7 +205,8 @@
       "organization": "Organisation",
       "signOut": "Logga ut",
       "people": "Medarbetare",
-      "payMapping": "Lönekartläggningar"
+      "payMapping": "Lönekartläggningar",
+      "assistant": "Assistent"
     },
     "people": {
       "description": "Medarbetare importerade från ert lönesystem.",
@@ -1971,7 +1972,8 @@
       "collaborationBody": "Att samverka med arbetstagarna och deras fackliga representanter genom hela lönekartläggningen (diskrimineringslagen 3 kap. 11 §). Vid kollektivavtal kan de också begära informationen (12 §).",
       "analysisProgressLabel": "Vad räknas här?",
       "analysisProgressBody": "Stegen som måste dokumenteras innan lönekartläggningen kan slutföras: samverkan, granskningen av lönepraxis, och varje grupp vars löneskillnad kräver en förklaring. Inget annat räknas.",
-      "payGapScatterMeansBody": "De streckade linjerna är respektive köns medellön i gruppen, så du ser vilka som ligger över och under sitt eget medel."
+      "payGapScatterMeansBody": "De streckade linjerna är respektive köns medellön i gruppen, så du ser vilka som ligger över och under sitt eget medel.",
+      "assistant": "Assistenten förklarar begrepp, visar organisationens siffror och leder dig till rätt sida. Den kan läsa aggregat men aldrig ändra något."
     },
     "widgetCard": {
       "expand": "Förstora"
@@ -2396,6 +2398,21 @@
     "datePicker": {
       "placeholder": "Välj datum",
       "clear": "Rensa"
+    },
+    "assistant": {
+      "title": "Assistent",
+      "inputPlaceholder": "Fråga om begrepp, era siffror eller var du gör saker",
+      "send": "Skicka",
+      "stop": "Stoppa",
+      "newConversation": "Ny konversation",
+      "emptyTitle": "Fråga assistenten",
+      "emptyDescription": "Få hjälp med begrepp, organisationens siffror och var du gör saker i blueprnt. Ta aldrig med persondata som namn eller löner.",
+      "suggestionCriterion": "Vad är ett kriterium?",
+      "suggestionGapTrend": "Hur har vårt lönegap utvecklats?",
+      "suggestionPayMapping": "Hur gör jag en lönekartläggning?",
+      "failed": "Assistenten kunde inte svara. Försök igen.",
+      "stoppedNote": "Stoppad.",
+      "disclaimer": "Assistenten kan ha fel. Kontrollera viktiga siffror på deras egna sidor."
     }
   },
   "errors": {

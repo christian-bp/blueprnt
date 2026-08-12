@@ -205,7 +205,8 @@
       "organization": "Organisasjon",
       "signOut": "Logg ut",
       "people": "Ansatte",
-      "payMapping": "Lønnskartlegginger"
+      "payMapping": "Lønnskartlegginger",
+      "assistant": "Assistent"
     },
     "people": {
       "description": "Ansatte importert fra lønnssystemet.",
@@ -1971,7 +1972,8 @@
       "collaborationBody": "Å samarbeide med de ansatte og deres tillitsvalgte gjennom hele lønnskartleggingen (diskrimineringsloven 3 kap. 11 §). Ved tariffavtale kan de også kreve informasjonen (12 §).",
       "analysisProgressLabel": "Hva telles her?",
       "analysisProgressBody": "Stegene som må dokumenteres før lønnskartleggingen kan fullføres: samarbeidet, gjennomgangen av lønnspraksis, og hver gruppe hvis lønnsforskjell krever en begrunnelse. Ingenting annet telles.",
-      "payGapScatterMeansBody": "De stiplede linjene er hvert kjønns gjennomsnittslønn i gruppen, så du ser hvem som ligger over og under sitt eget gjennomsnitt."
+      "payGapScatterMeansBody": "De stiplede linjene er hvert kjønns gjennomsnittslønn i gruppen, så du ser hvem som ligger over og under sitt eget gjennomsnitt.",
+      "assistant": "Assistenten forklarer begreper, viser organisasjonens tall og leder deg til riktig side. Den kan lese aggregater, men aldri endre noe."
     },
     "widgetCard": {
       "expand": "Forstørr"
@@ -2396,6 +2398,21 @@
     "datePicker": {
       "placeholder": "Velg dato",
       "clear": "Tøm"
+    },
+    "assistant": {
+      "title": "Assistent",
+      "inputPlaceholder": "Spør om begreper, tallene deres eller hvor du gjør ting",
+      "send": "Send",
+      "stop": "Stopp",
+      "newConversation": "Ny samtale",
+      "emptyTitle": "Spør assistenten",
+      "emptyDescription": "Få hjelp med begreper, organisasjonens tall og hvor du gjør ting i blueprnt. Ta aldri med persondata som navn eller lønn.",
+      "suggestionCriterion": "Hva er et kriterium?",
+      "suggestionGapTrend": "Hvordan har lønnsgapet vårt utviklet seg?",
+      "suggestionPayMapping": "Hvordan gjennomfører jeg en lønnskartlegging?",
+      "failed": "Assistenten kunne ikke svare. Prøv igjen.",
+      "stoppedNote": "Stoppet.",
+      "disclaimer": "Assistenten kan ta feil. Kontroller viktige tall på deres egne sider."
     }
   },
   "errors": {
