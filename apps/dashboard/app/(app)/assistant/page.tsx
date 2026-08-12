@@ -36,7 +36,16 @@ export default function AssistantPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-3xl flex-col gap-4">
+    // AppShell locks SidebarInset's own height to the viewport for this route
+    // (app-shell.tsx: assistantBounded) and propagates min-h-0/flex-1 down to
+    // here, so this wrapper only needs to fill that bounded height, never
+    // define one of its own: min-h-0 (a floor would let the column grow past
+    // the viewport) lets it shrink to fit, and overflow-hidden is a second
+    // line of defense so nothing inside can force a page-level scrollbar.
+    // MessageScrollerViewport (inside AssistantPanel) stays the only element
+    // that actually scrolls, and the composer below it never moves,
+    // regardless of thread length.
+    <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-4 overflow-hidden">
       <div className="flex items-center justify-end gap-2">
         <HelpMorphButton label={t("title")}>
           {tHelp("assistantBody")}

@@ -39,6 +39,56 @@ export const PAGE_WIDE_MAX_W = "max-w-[85rem]"
 export const PAGE_CONTENT_MAX_W =
   "max-w-[calc(72rem-2rem)] lg:max-w-[calc(72rem-3rem)]"
 
+// The per-route class strings for the four shell layers between SidebarInset
+// and the page's own content, keyed off the pathname alone. Pure so a
+// regression here (the wrong route matched, a class dropped) is a plain unit
+// test, not a render of the whole authenticated shell (sidebar nav, org
+// context, auth-backed user menu) just to read a class off a div.
+export function shellLayoutClasses(pathname: string) {
+  // The level-architecture views (/work: ladder, matrix, families) are wide
+  // grid surfaces that earn the whole viewport, width AND height: the inset
+  // card locks to the viewport (its rounded bottom never pushed off-screen)
+  // and the view scrolls inside. Every other page keeps the capped reading
+  // width and normal page flow.
+  const fullBleed = pathname === "/work"
+  // /assistant needs the same viewport-locked SidebarInset as /work's
+  // fullBleed: a long message thread must never grow the page past the
+  // viewport, or MessageScrollerViewport (its one intended scroller) never
+  // gets a bounded height to scroll within, pushing the composer out of
+  // reach with no scroller that leads to it. Unlike fullBleed it keeps the
+  // normal reading width (PAGE_MAX_W below), and the lock holds at every
+  // breakpoint, not just md+: the assistant's height must stay constant
+  // regardless of thread length on mobile too.
+  const assistantBounded = pathname === "/assistant"
+  const heightLocked = fullBleed || assistantBounded
+  // The whole run workspace (overview, analysis, actions, report) is a data
+  // surface: wide tables and plots, not prose. The overview's KPI strip wants
+  // four tiles across at the same cap its analysis tables use, and a run that
+  // changed width from tab to tab read as two different pages.
+  const wide = /^\/pay-mappings\/[^/]+(\/|$)/.test(pathname)
+  return {
+    sidebarInset: cn(
+      // 1rem = the inset variant's own m-2 top+bottom margins.
+      fullBleed && "md:h-[calc(100svh_-_1rem)] md:overflow-hidden",
+      // No md: gate on this rule: unlike the inset card's own margin (md:
+      // only), the assistant lock must hold on mobile too, where
+      // SidebarInset has no side margin at all (hence the plain h-svh,
+      // gaining the inset's -1rem only once md: adds the margin back).
+      assistantBounded && "h-svh overflow-hidden md:h-[calc(100svh_-_1rem)]"
+    ),
+    flexShell: cn("flex flex-1 flex-col", heightLocked && "min-h-0"),
+    containerMain: cn(
+      "@container/main flex flex-1 flex-col gap-2",
+      heightLocked && "min-h-0"
+    ),
+    pageContent: cn(
+      "flex w-full flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6",
+      heightLocked && "min-h-0 flex-1",
+      !fullBleed && (wide ? PAGE_WIDE_MAX_W : PAGE_MAX_W)
+    ),
+  }
+}
+
 export function AppShell(props: {
   organization: OrganizationInfo
   children: ReactNode
@@ -49,17 +99,7 @@ export function AppShell(props: {
   // sidebar persists every toggle to a cookie but never reads it back, so the
   // mount-time read here is what makes the choice survive a reload.
   const [defaultOpen] = useState(initialSidebarOpen)
-  // The level-architecture views (/work: ladder, matrix, families) are wide
-  // grid surfaces that earn the whole viewport, width AND height: the inset
-  // card locks to the viewport (its rounded bottom never pushed off-screen)
-  // and the view scrolls inside. Every other page keeps the capped reading
-  // width and normal page flow.
-  const fullBleed = pathname === "/work"
-  // The whole run workspace (overview, analysis, actions, report) is a data
-  // surface: wide tables and plots, not prose. The overview's KPI strip wants
-  // four tiles across at the same cap its analysis tables use, and a run that
-  // changed width from tab to tab read as two different pages.
-  const wide = /^\/pay-mappings\/[^/]+(\/|$)/.test(pathname)
+  const layout = shellLayoutClasses(pathname)
   return (
     <OrganizationProvider value={props.organization}>
       {/* This ui package's sidebar variant does not bundle a TooltipProvider;
@@ -77,30 +117,11 @@ export function AppShell(props: {
           }
         >
           <AppSidebar variant="inset" />
-          <SidebarInset
-            className={cn(
-              // 1rem = the inset variant's own m-2 top+bottom margins.
-              fullBleed && "md:h-[calc(100svh_-_1rem)] md:overflow-hidden"
-            )}
-          >
+          <SidebarInset className={layout.sidebarInset}>
             <SiteHeader />
-            <div className={cn("flex flex-1 flex-col", fullBleed && "min-h-0")}>
-              <div
-                className={cn(
-                  "@container/main flex flex-1 flex-col gap-2",
-                  fullBleed && "min-h-0"
-                )}
-              >
-                <div
-                  className={cn(
-                    "flex w-full flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6",
-                    fullBleed
-                      ? "min-h-0 flex-1"
-                      : wide
-                        ? PAGE_WIDE_MAX_W
-                        : PAGE_MAX_W
-                  )}
-                >
+            <div className={layout.flexShell}>
+              <div className={layout.containerMain}>
+                <div className={layout.pageContent}>
                   {/* Role quick-look sheet, openable from any role chip in the
                       app (e.g. the Overview); renders nothing and runs no
                       queries until a role is opened. */}

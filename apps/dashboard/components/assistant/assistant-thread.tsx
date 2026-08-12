@@ -42,9 +42,11 @@ export function AssistantThread(props: {
 
   if (props.loading) {
     // Content-shaped skeleton: two message-height bars in the same layout so
-    // nothing reflows when data arrives.
+    // nothing reflows when data arrives. min-h-0 alongside flex-1 keeps this
+    // in the same bounded-height chain as the loaded thread (page.tsx), so a
+    // short viewport shrinks it instead of forcing a page-level scrollbar.
     return (
-      <div className="flex flex-1 flex-col gap-4 py-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 py-4">
         <Skeleton className="h-10 w-3/5 self-end" />
         <Skeleton className="h-16 w-4/5" />
       </div>
@@ -53,7 +55,10 @@ export function AssistantThread(props: {
 
   if (props.messages.length === 0) {
     return (
-      <Empty className="flex-1">
+      // min-h-0: Empty (vendor) omits it, but this sits in the same bounded
+      // flex chain as the loaded thread (page.tsx), so it must be able to
+      // shrink like everything else there.
+      <Empty className="min-h-0 flex-1">
         <EmptyHeader>
           <EmptyTitle>{t("emptyTitle")}</EmptyTitle>
           <EmptyDescription>{t("emptyDescription")}</EmptyDescription>

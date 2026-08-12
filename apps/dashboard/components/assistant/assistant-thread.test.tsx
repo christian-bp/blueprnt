@@ -36,6 +36,49 @@ describe("AssistantThread", () => {
     expect(container.querySelectorAll('[data-slot="skeleton"]').length).toBe(2)
   })
 
+  // Every branch here is a direct flex child of AssistantPanel's bounded
+  // min-h-0/flex-1 column (assistant-panel.tsx): each must carry min-h-0
+  // itself (and flex-1, to actually fill that space) or it refuses to
+  // shrink below its own content height, which is exactly what let the
+  // page grow past the viewport and push the composer out of reach.
+  it("carries min-h-0 and flex-1 on the loading branch", () => {
+    const { container } = renderThread({
+      loading: true,
+      messages: [],
+      onSuggestion: vi.fn(),
+    })
+    const wrapper = container.firstElementChild as HTMLElement
+    const classes = wrapper.className.split(/\s+/)
+    expect(classes).toContain("min-h-0")
+    expect(classes).toContain("flex-1")
+  })
+
+  it("carries min-h-0 and flex-1 on the empty-state branch", () => {
+    const { container } = renderThread({
+      loading: false,
+      messages: [],
+      onSuggestion: vi.fn(),
+    })
+    const empty = container.querySelector('[data-slot="empty"]') as HTMLElement
+    const classes = empty.className.split(/\s+/)
+    expect(classes).toContain("min-h-0")
+    expect(classes).toContain("flex-1")
+  })
+
+  it("carries flex-1 on the message-scroller branch (min-h-0 is the vendor's own default)", () => {
+    const { container } = renderThread({
+      loading: false,
+      messages: [{ _id: "1", role: "user", status: "complete", parts: [] }],
+      onSuggestion: vi.fn(),
+    })
+    const scroller = container.querySelector(
+      '[data-slot="message-scroller"]'
+    ) as HTMLElement
+    const classes = scroller.className.split(/\s+/)
+    expect(classes).toContain("flex-1")
+    expect(classes).toContain("min-h-0")
+  })
+
   it("shows the empty state with three suggestion buttons calling onSuggestion with localized text", () => {
     const onSuggestion = vi.fn()
     renderThread({ loading: false, messages: [], onSuggestion })

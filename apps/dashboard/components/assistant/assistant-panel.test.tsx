@@ -93,6 +93,19 @@ describe("AssistantPanel", () => {
     expect(thread.dataset.count).toBe("0")
   })
 
+  // min-h-0 lets this div shrink inside the page's bounded height (page.tsx)
+  // instead of forcing it to grow past the viewport, which is what pushed
+  // the composer below the fold before this fix; flex-1 is what makes it
+  // fill that bounded height in the first place.
+  it("carries min-h-0 and flex-1 so it can shrink inside the page's bounded height", () => {
+    onQuery(() => undefined)
+    const { container } = renderPanel()
+    const wrapper = container.firstElementChild as HTMLElement
+    const classes = wrapper.className.split(/\s+/)
+    expect(classes).toContain("min-h-0")
+    expect(classes).toContain("flex-1")
+  })
+
   it("resolves to the empty thread (not loading) when there is no active conversation", () => {
     onQuery((ref) =>
       ref === "assistant.chat.getActiveThread" ? null : undefined
