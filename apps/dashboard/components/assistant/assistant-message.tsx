@@ -1,5 +1,6 @@
 "use client"
 
+import type { AssistantChartKind } from "@workspace/backend/convex/assistant/tables"
 import { Bubble, BubbleContent } from "@workspace/ui/components/bubble"
 import { Message, MessageContent } from "@workspace/ui/components/message"
 import { useTranslations } from "next-intl"
@@ -18,7 +19,7 @@ export interface AssistantChatMessage {
     | { type: "text"; text: string }
     | {
         type: "chart"
-        chart: "headcountTrend" | "payGapTrend"
+        chart: AssistantChartKind
         summary: string
       }
   >

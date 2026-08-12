@@ -1,5 +1,6 @@
 "use client"
 
+import type { AssistantChartKind } from "@workspace/backend/convex/assistant/tables"
 import { useFormatter, useTranslations } from "next-intl"
 import { useOrganization } from "@/components/org-context"
 import { HeadcountTrend, PayGapTrend } from "@/components/assistant/widget-viz"
@@ -24,9 +25,7 @@ import { hasTrendShape } from "@/lib/pay-gap-trend"
 // The chart is never aria-hidden: chat has no stat tile stating the same
 // figures in words, so the chart IS the content a screen reader needs to
 // reach.
-export function AssistantChartPart(props: {
-  chart: "headcountTrend" | "payGapTrend"
-}) {
+export function AssistantChartPart(props: { chart: AssistantChartKind }) {
   const { orgId } = useOrganization()
   const headcount = useHeadcountTrend(orgId)
   const gap = usePayGapTrend(orgId)
