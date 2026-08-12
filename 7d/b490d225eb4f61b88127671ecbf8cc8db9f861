@@ -1,0 +1,68 @@
+apps/dashboard/app/(app)/assistant/page.tsx
+  s_c6f9c899f4809f::t_6f9c469cc8adc4 3-4
+  s_c6f9c899f4809f::t_dd54d97b3506e5 54-59
+packages/i18n/messages/da.json
+  s_c6f9c899f4809f::t_bebe05904088ef 2403,2408,2413,2415-2417
+  s_c6f9c899f4809f::t_2934ceda72205d 1976
+  s_c6f9c899f4809f::t_2184f9a9be2c5d 2448
+  s_c6f9c899f4809f::t_d318aaf26e9989 209
+packages/i18n/messages/sv.json
+  s_c6f9c899f4809f::t_75c82663a4e129 2403,2408,2413,2415-2417
+  s_c6f9c899f4809f::t_df0c10278839cb 2448
+  s_c6f9c899f4809f::t_963bf04d067137 209
+  s_c6f9c899f4809f::t_8225bdcbb90820 1976
+apps/dashboard/components/assistant/assistant-markdown.tsx
+  s_c6f9c899f4809f::t_601586bb970477 6-9,12
+apps/dashboard/components/assistant/assistant-thread.tsx
+  s_c6f9c899f4809f::t_4aa97742c437dc 83
+packages/i18n/messages/fi.json
+  s_c6f9c899f4809f::t_30799155b748f8 1976
+  s_c6f9c899f4809f::t_c9849e684072f4 209
+  s_c6f9c899f4809f::t_f4e160ccb171b5 2448
+  s_c6f9c899f4809f::t_f5c97edac7fcaf 2403,2408,2413,2415-2417
+packages/i18n/messages/en.json
+  s_c6f9c899f4809f::t_490dad58ffedd5 2403,2408,2413,2415-2417
+  s_c6f9c899f4809f::t_2afb142fd3bd15 2448
+  s_c6f9c899f4809f::t_b6537f93402d24 1976
+  s_c6f9c899f4809f::t_0aeeb1a4e4aa06 209
+packages/ui/src/styles/globals.css
+  s_c6f9c899f4809f::t_58b0a14b58a17b 11-23
+packages/i18n/messages/nb.json
+  s_c6f9c899f4809f::t_69b78d6d191311 2403,2408,2413,2415-2417
+  s_c6f9c899f4809f::t_f206b059183e3b 1976
+  s_c6f9c899f4809f::t_ce8e2fb9d306e2 2448
+  s_c6f9c899f4809f::t_0aeb57b6a7efd7 209
+apps/dashboard/components/assistant/assistant-message.tsx
+  s_c6f9c899f4809f::t_d856eabeecab78 67,97
+  s_c6f9c899f4809f::t_59c97a9fd03dea 69,93-96,98-100
+  s_c6f9c899f4809f::t_f659b16c24ffb0 29-31
+  s_c6f9c899f4809f::t_df68101ce9b00b 46
+  s_c6f9c899f4809f::t_19ba7457e1e307 101
+apps/dashboard/components/assistant/assistant-message.test.tsx
+  s_c6f9c899f4809f::t_135ba87598702e 26-27,34
+  s_c6f9c899f4809f::t_30bfe54dde1af3 85
+  s_c6f9c899f4809f::t_81ffe83c650285 58,65-84,86-97
+apps/dashboard/components/assistant/assistant-panel.tsx
+  s_c6f9c899f4809f::t_e3db1a3a56c8a4 52-59
+apps/dashboard/components/assistant/assistant-composer.tsx
+  s_c6f9c899f4809f::t_d2617ec04652fa 61
+  s_c6f9c899f4809f::t_f02cb9371d6b7a 3-4
+  s_c6f9c899f4809f::t_bd44099189cf7f 35,55-60,65-66
+  s_c6f9c899f4809f::t_f76b261d1687e6 71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "7db490d225eb4f61b88127671ecbf8cc8db9f861",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
