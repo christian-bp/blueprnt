@@ -16,6 +16,7 @@ import {
 import { aiModel } from "../ai/provider"
 import { ERROR_CODES } from "../lib/errors"
 import { assistantSystemPrompt } from "./knowledge"
+import { classifyStreamOutcome } from "./streamOutcome"
 import type { AssistantActivityKind, AssistantMessagePart } from "./tables"
 import { generateThreadTitle } from "./title"
 import { buildAssistantTools, chartForTool } from "./tools"
@@ -263,19 +264,21 @@ export const generateAssistantReply = internalAction({
           // user-requested stop. Any OTHER abort (the generation timeout
           // firing) reaches here with `stopped` still false, which is a
           // failure, not a user stop.
-          if (stopped) {
-            await finalize("stopped")
-            await recordUsage()
-            return null
-          }
-          console.error("assistant stream aborted without a user stop", {
-            messageId: args.assistantMessageId,
-            reason: part.reason,
+          const outcome = classifyStreamOutcome({
+            terminal: "abortPart",
+            stopped,
           })
-          await finalize("failed", ERROR_CODES.aiGenerationFailed)
-          await recordUsage()
+          if (outcome.status === "failed") {
+            console.error("assistant stream aborted without a user stop", {
+              messageId: args.assistantMessageId,
+              reason: part.reason,
+            })
+          }
+          await finalize(outcome.status, outcome.errorCode)
+          if (outcome.recordUsage) await recordUsage()
           return null
         } else if (part.type === "error") {
+          const outcome = classifyStreamOutcome({ terminal: "errorPart" })
           console.error("assistant stream reported an error part", {
             messageId: args.assistantMessageId,
             error:
@@ -283,36 +286,29 @@ export const generateAssistantReply = internalAction({
                 ? part.error.message
                 : String(part.error),
           })
-          await finalize("failed", ERROR_CODES.aiGenerationFailed)
-          await recordUsage()
+          await finalize(outcome.status, outcome.errorCode)
+          if (outcome.recordUsage) await recordUsage()
           return null
         }
       }
 
-      // A blank successful bubble is a lie (and getGenerationContext's
-      // empty-parts filter would hide it from the model on the next turn
-      // anyway): reachable when the tool-step budget is exhausted with no
-      // prose step left, so treat it as a failure instead of "complete".
-      if (!stopped && done.length === 0 && currentText === "") {
-        await finalize("failed", ERROR_CODES.aiGenerationFailed)
-        await recordUsage()
-        return null
-      }
-
-      await finalize(stopped ? "stopped" : "complete")
-      await recordUsage()
+      const outcome = classifyStreamOutcome({
+        terminal: "completed",
+        stopped,
+        hasContent: snapshot().length > 0,
+      })
+      await finalize(outcome.status, outcome.errorCode)
+      if (outcome.recordUsage) await recordUsage()
       return null
     } catch (error) {
-      if (stopped) {
-        await finalize("stopped")
-        await recordUsage()
-        return null
+      const outcome = classifyStreamOutcome({ terminal: "exception", stopped })
+      if (outcome.status === "failed") {
+        console.error("assistant generation failed", {
+          error: error instanceof Error ? error.message : String(error),
+        })
       }
-      console.error("assistant generation failed", {
-        error: error instanceof Error ? error.message : String(error),
-      })
-      await finalize("failed", ERROR_CODES.aiGenerationFailed)
-      await recordUsage()
+      await finalize(outcome.status, outcome.errorCode)
+      if (outcome.recordUsage) await recordUsage()
       return null
     } finally {
       clearTimeout(timeoutId)

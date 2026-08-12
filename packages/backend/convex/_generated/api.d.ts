@@ -47,6 +47,7 @@ import type * as assistant_erase from "../assistant/erase.js";
 import type * as assistant_generate from "../assistant/generate.js";
 import type * as assistant_insights from "../assistant/insights.js";
 import type * as assistant_knowledge from "../assistant/knowledge.js";
+import type * as assistant_streamOutcome from "../assistant/streamOutcome.js";
 import type * as assistant_tables from "../assistant/tables.js";
 import type * as assistant_title from "../assistant/title.js";
 import type * as assistant_tools from "../assistant/tools.js";
@@ -148,6 +149,7 @@ declare const fullApi: ApiFromModules<{
   "assistant/generate": typeof assistant_generate;
   "assistant/insights": typeof assistant_insights;
   "assistant/knowledge": typeof assistant_knowledge;
+  "assistant/streamOutcome": typeof assistant_streamOutcome;
   "assistant/tables": typeof assistant_tables;
   "assistant/title": typeof assistant_title;
   "assistant/tools": typeof assistant_tools;
