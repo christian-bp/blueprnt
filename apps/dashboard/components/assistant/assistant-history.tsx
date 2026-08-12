@@ -7,6 +7,7 @@ import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
 import { useMutation } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
+import type { Variants } from "motion/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { useOrganization } from "@/components/org-context"
 import { useAssistantThreads } from "@/hooks/use-assistant-threads"
@@ -22,11 +23,37 @@ import { toast } from "@/lib/toast"
 const RAIL_WIDTH = 280
 const RAIL_GAP = 16
 
+// The content's own exit-fade duration. The rail's CLOSE-direction
+// width/marginRight collapse delays by roughly this long (rule 4,
+// criterion-item.tsx's staged-exit pattern: fade first, then collapse the
+// now-invisible box) so the panel does not visibly retract text mid-fade.
+// Opening carries no such delay on the box itself: it widens immediately and
+// the content fades in after (see the inner motion.div's own enter delay).
+const CONTENT_FADE_OUT = 0.1
+
+// Variants (not a single inline `animate` object) so the CLOSE direction can
+// carry its own delayed transition without affecting the OPEN direction,
+// same reasoning as criterion-item.tsx's rowVariants.
+const railVariants: Variants = {
+  open: {
+    width: RAIL_WIDTH,
+    marginRight: RAIL_GAP,
+    transition: SPRING,
+  },
+  closed: {
+    width: 0,
+    marginRight: 0,
+    transition: { ...SPRING, delay: CONTENT_FADE_OUT },
+  },
+}
+
 // The chat header's history trigger opens this rail (superseding the earlier
-// dropdown): an inline slide-out on the left edge of the chat page's own
-// bounded layout, width 0 <-> RAIL_WIDTH, `open`/`busy` owned by the page
-// (app/(app)/assistant/page.tsx) so the toggle button and this panel can
-// never disagree on state.
+// dropdown): an inline slide-out at the boundary between the page content
+// and the app sidebar, width 0 <-> RAIL_WIDTH, `open`/`busy` owned by the
+// page (app/(app)/assistant/page.tsx) so the toggle button and this panel
+// can never disagree on state. The page keeps this rail on a full-width row
+// (no reading-width cap of its own) precisely so this left edge is the real
+// page-content/sidebar boundary, not merely the chat column's own edge.
 //
 // Split per docs/ui-animation.md #2 (height/width vs the CSS box model): the
 // OUTER motion.div carries ONLY animated geometry (width, marginRight) and no
@@ -73,11 +100,8 @@ export function AssistantHistoryRail({
   return (
     <motion.div
       initial={false}
-      animate={{
-        width: open ? RAIL_WIDTH : 0,
-        marginRight: open ? RAIL_GAP : 0,
-      }}
-      transition={SPRING}
+      variants={railVariants}
+      animate={open ? "open" : "closed"}
       className="min-h-0 shrink-0 overflow-hidden"
     >
       <AnimatePresence>
@@ -86,7 +110,7 @@ export function AssistantHistoryRail({
             key="rail-content"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { delay: 0.08 } }}
-            exit={{ opacity: 0, transition: { duration: 0.1 } }}
+            exit={{ opacity: 0, transition: { duration: CONTENT_FADE_OUT } }}
             className="flex h-full min-h-0 w-70 flex-col"
           >
             <div className="flex h-10 shrink-0 items-center px-3 font-medium text-muted-foreground text-xs">

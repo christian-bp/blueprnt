@@ -50,15 +50,17 @@ export default function AssistantPage() {
     // define one of its own: min-h-0 (a floor would let the row grow past
     // the viewport) lets it shrink to fit, and overflow-hidden is a second
     // line of defense so nothing inside can force a page-level scrollbar.
-    // Now a horizontal row rather than a column: the history rail slides out
-    // from this wrapper's own left edge, and the main column (below) keeps
-    // the exact height-bounding classes the whole wrapper used to carry, so
-    // its scroll behavior (MessageScrollerViewport inside AssistantPanel
-    // stays the only element that actually scrolls) is unchanged by the
-    // rail's addition.
-    <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 overflow-hidden">
+    // A horizontal row, deliberately FULL WIDTH (no mx-auto/max-w here): the
+    // history rail has to reach the real boundary between the page content
+    // and the app sidebar (the user's own wording), which only works if
+    // nothing narrower sits between this row and that edge. The row is
+    // bounded only by the shell's own page cap (app-shell.tsx: PAGE_MAX_W).
+    // The reading-width cap moves to the main column alone, so the chat
+    // column re-centers in whatever width the rail leaves behind as it
+    // opens and closes, while keeping its own historical width otherwise.
+    <div className="flex min-h-0 w-full flex-1 overflow-hidden">
       <AssistantHistoryRail open={historyOpen} busy={busy} />
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
+      <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-4 overflow-hidden">
         {/* Three regions: history left, the animated title centered, New
             conversation right. The outer flex-1 wrappers (not the title
             itself) hold the left/right controls pinned to their edges, so the
