@@ -1,0 +1,61 @@
+apps/dashboard/components/account-menu.tsx
+  s_645da53990af71::t_5aa878a4857b1e 32
+  s_645da53990af71::t_fac726c93ac3f9 21
+  s_645da53990af71::t_5f9dd23eb693c5 43
+apps/dashboard/components/admin/users-section.tsx
+  s_645da53990af71::t_317171baa33ce8 146-161
+  s_645da53990af71::t_945f8fa7e6ed70 43
+  s_645da53990af71::t_cb9d500eca50bd 6-10
+apps/dashboard/components/admin/manage-user-organizations-dialog.tsx
+  s_645da53990af71::t_35b2a49011a1d0 56
+  s_645da53990af71::t_30a0b388feb006 153-166
+  s_645da53990af71::t_7b3eaf2bdc3d1d 7-11
+apps/dashboard/components/nav-user.tsx
+  s_645da53990af71::t_46af4e197d7fdc 48
+  s_645da53990af71::t_b41147aaf67102 37
+apps/dashboard/components/admin/manage-organization-dialog.tsx
+  s_645da53990af71::t_869bbbaa4ffaf4 12-16
+  s_645da53990af71::t_44d3abaa16fa69 166-183
+  s_645da53990af71::t_4bdf00ebdfe64b 63
+apps/dashboard/components/nav-organization.tsx
+  s_645da53990af71::t_d3d1bc4dfe0e3e 29
+apps/dashboard/components/account/avatar-section.tsx
+  s_645da53990af71::t_bf9a6d47eec120 55
+  s_645da53990af71::t_24da029fbc8d41 18
+apps/dashboard/components/admin/organizations-section.tsx
+  s_645da53990af71::t_929881f97fdf0a 42
+  s_645da53990af71::t_167ec269231f63 6-10
+  s_645da53990af71::t_76b3ce12dca395 112-126
+apps/dashboard/components/organization/organization-logo-section.tsx
+  s_645da53990af71::t_ea68f8e0d9c8a0 18
+  s_645da53990af71::t_08a39492030e81 55
+apps/dashboard/lib/initials.test.ts
+  s_645da53990af71::t_178a73fc5d7f95 1-31
+apps/dashboard/components/organization/organization-members-section.tsx
+  s_645da53990af71::t_8e924277961c15 7-10
+  s_645da53990af71::t_8da44794f9eb2e 198,200-214,216
+  s_645da53990af71::t_9839f985c85724 280-289
+  s_645da53990af71::t_ce9409e9854e35 199
+  s_645da53990af71::t_1ddab2d76f2eca 49
+  s_645da53990af71::t_5f1919a37d0707 6
+apps/dashboard/components/org-switch-menu.tsx
+  s_645da53990af71::t_f15ac0f299c959 16
+apps/dashboard/lib/initials.ts
+  s_645da53990af71::t_cb55338b75838d 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1725def7dbc0a191c2785f89177e582065295b50",
+  "prompts": {},
+  "sessions": {
+    "s_645da53990af71": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ba97851a-49ad-4d9f-9753-91df3213e15d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
