@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -25,6 +31,7 @@ import AssistantPage from "@/app/(app)/assistant/page"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 
 const newConversationMock = mockMutation("assistant.chat.newConversation")
+const switchConversationMock = mockMutation("assistant.chat.switchConversation")
 
 function renderPage() {
   return render(
@@ -37,6 +44,7 @@ function renderPage() {
 describe("AssistantPage", () => {
   beforeEach(() => {
     newConversationMock.mockReset()
+    switchConversationMock.mockReset()
     onQuery((ref) =>
       ref === "assistant.chat.getActiveThread" ? null : undefined
     )
@@ -127,5 +135,141 @@ describe("AssistantPage", () => {
     // into the leftover space between them.
     expect(regions[1]?.contains(historyButton)).toBe(false)
     expect(regions[1]?.contains(newConversationButton)).toBe(false)
+  })
+
+  it("keeps the history rail closed by default, so its thread list is absent from the page", () => {
+    onQuery((ref) => {
+      if (ref === "assistant.chat.getActiveThread") return null
+      if (ref === "assistant.chat.listThreads") {
+        return [
+          {
+            _id: "thread-1",
+            title: "Pay gap trend",
+            status: "archived",
+            lastMessageAt: Date.parse("2026-08-01T12:00:00Z"),
+          },
+        ]
+      }
+      return undefined
+    })
+    renderPage()
+    const historyButton = screen.getByRole("button", {
+      name: messages.dashboard.assistant.history,
+    })
+    expect(historyButton.getAttribute("aria-expanded")).toBe("false")
+    expect(screen.queryByText("Pay gap trend")).toBeNull()
+  })
+
+  it("opens the rail on toggle (revealing the thread list) and closes it again on a second click", async () => {
+    onQuery((ref) => {
+      if (ref === "assistant.chat.getActiveThread") return null
+      if (ref === "assistant.chat.listThreads") {
+        return [
+          {
+            _id: "thread-1",
+            title: "Pay gap trend",
+            status: "archived",
+            lastMessageAt: Date.parse("2026-08-01T12:00:00Z"),
+          },
+        ]
+      }
+      return undefined
+    })
+    renderPage()
+    const historyButton = screen.getByRole("button", {
+      name: messages.dashboard.assistant.history,
+    })
+
+    fireEvent.click(historyButton)
+    expect(historyButton.getAttribute("aria-expanded")).toBe("true")
+    expect(screen.getByRole("button", { name: /Pay gap trend/ })).toBeDefined()
+
+    fireEvent.click(historyButton)
+    expect(historyButton.getAttribute("aria-expanded")).toBe("false")
+    // The rail's content exits via AnimatePresence (a fast fade before the
+    // outer width collapses, docs/ui-animation.md rule 4), so the unmount
+    // lands a tick after the click, not synchronously with it.
+    await waitFor(() => {
+      expect(screen.queryByText("Pay gap trend")).toBeNull()
+    })
+  })
+
+  it("switching to a thread from the rail keeps the rail open, since the user is browsing", async () => {
+    onQuery((ref) => {
+      if (ref === "assistant.chat.getActiveThread") return null
+      if (ref === "assistant.chat.listThreads") {
+        return [
+          {
+            _id: "thread-active",
+            title: "Current chat",
+            status: "active",
+            lastMessageAt: 200,
+          },
+          {
+            _id: "thread-old",
+            title: "Older chat",
+            status: "archived",
+            lastMessageAt: 100,
+          },
+        ]
+      }
+      return undefined
+    })
+    switchConversationMock.mockResolvedValue(null)
+    renderPage()
+    const historyButton = screen.getByRole("button", {
+      name: messages.dashboard.assistant.history,
+    })
+    fireEvent.click(historyButton)
+    fireEvent.click(screen.getByRole("button", { name: /Older chat/ }))
+
+    await waitFor(() => {
+      expect(switchConversationMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        threadId: "thread-old",
+      })
+    })
+    expect(historyButton.getAttribute("aria-expanded")).toBe("true")
+    expect(screen.getByRole("button", { name: /Older chat/ })).toBeDefined()
+  })
+
+  // The rail must scroll on its own (its list can outgrow the page) without
+  // ever turning the main column into a second vertical scroller: only
+  // MessageScrollerViewport inside AssistantPanel may own that job.
+  it("never gives the main column its own vertical scroller when the rail opens", () => {
+    onQuery((ref) => {
+      if (ref === "assistant.chat.getActiveThread") return null
+      if (ref === "assistant.chat.listThreads") {
+        return [
+          {
+            _id: "thread-1",
+            title: "Pay gap trend",
+            status: "archived",
+            lastMessageAt: 0,
+          },
+        ]
+      }
+      return undefined
+    })
+    const { container } = renderPage()
+    fireEvent.click(
+      screen.getByRole("button", { name: messages.dashboard.assistant.history })
+    )
+
+    const mainColumn = screen.getByTestId("panel").parentElement as HTMLElement
+    const mainColumnClasses = mainColumn.className.split(/\s+/)
+    expect(mainColumnClasses).toContain("overflow-hidden")
+    expect(mainColumnClasses.some((c) => c.startsWith("overflow-y-"))).toBe(
+      false
+    )
+    expect(mainColumnClasses.some((c) => c.startsWith("overflow-auto"))).toBe(
+      false
+    )
+    // Exactly one vertical scroller exists anywhere in the rendered tree
+    // (the rail's own list), never two.
+    const verticalScrollers = container.querySelectorAll(
+      '[class*="overflow-y-auto"]'
+    )
+    expect(verticalScrollers).toHaveLength(1)
   })
 })

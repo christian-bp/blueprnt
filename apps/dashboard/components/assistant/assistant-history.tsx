@@ -1,34 +1,60 @@
 "use client"
 
-import { HistoryIcon, Tick02Icon } from "@hugeicons/core-free-icons"
+import { Tick02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
 import { useMutation } from "convex/react"
+import { AnimatePresence, motion } from "motion/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { useOrganization } from "@/components/org-context"
 import { useAssistantThreads } from "@/hooks/use-assistant-threads"
+import { SPRING } from "@/lib/motion"
 import { toast } from "@/lib/toast"
 
-// The chat header's history trigger: a ghost icon button opening a
-// DropdownMenu of the caller's own conversations (useAssistantThreads, most
-// recently active first). Each row shows its AI-generated title, or a
-// localized "untitled" fallback, with its last-activity date; the currently
-// active thread (status "active", there is at most one) is checked rather
-// than clickable, so revisiting the conversation you are already in never
-// fires a redundant mutation (DropdownMenuItem's own `disabled` blocks the
-// click at the source, same as any other disabled control here). The
-// trigger disables while busy, the same orphan guard New conversation uses
-// (app/(app)/assistant/page.tsx): switching away mid-stream would silently
-// orphan the in-flight reply.
-export function AssistantHistory({ busy }: { busy: boolean }) {
+// The rail's open width and the gap it carries to the main column, both
+// carried by the rail's OWN animated geometry rather than a flex `gap` on
+// the row: a container gap does not collapse with a shrinking flex item
+// (docs/ui-animation.md #3), so a `gap-*` on the row would still reserve
+// dead space once the rail's width reached 0. Animating both together means
+// closed truly means zero footprint, no gap artifact left behind.
+const RAIL_WIDTH = 280
+const RAIL_GAP = 16
+
+// The chat header's history trigger opens this rail (superseding the earlier
+// dropdown): an inline slide-out on the left edge of the chat page's own
+// bounded layout, width 0 <-> RAIL_WIDTH, `open`/`busy` owned by the page
+// (app/(app)/assistant/page.tsx) so the toggle button and this panel can
+// never disagree on state.
+//
+// Split per docs/ui-animation.md #2 (height/width vs the CSS box model): the
+// OUTER motion.div carries ONLY animated geometry (width, marginRight) and no
+// visual box styles, so `width: 0` truly means zero; the INNER div carries the
+// fixed width (so text never rewraps mid-slide, same reasoning as
+// MorphPopover's fixed content width), the padding, and the
+// flex-col + min-h-0 + overflow-y-auto chain that lets the thread list scroll
+// on its own without the bounded row ever growing taller than intended
+// (docs/ui-animation.md's box-model warning applies to a flex item's default
+// min-height:auto too: without min-h-0 here, a long list could force this
+// rail, and the row it sits in, to grow past the page's locked height).
+//
+// The list itself mounts only while open (AnimatePresence, a fast fade per
+// rule 4's staged-exit guidance) so a closed rail carries no thread rows in
+// the tree at all, not merely a clipped one.
+//
+// Selecting a thread keeps the rail open (the caller is browsing); only the
+// header's toggle button closes it. Each row disables while `busy` (switching
+// mid-stream would silently orphan the in-flight reply, the same orphan guard
+// New conversation and the header toggle use), and the active thread (status
+// "active", at most one) is marked rather than clickable.
+export function AssistantHistoryRail({
+  open,
+  busy,
+}: {
+  open: boolean
+  busy: boolean
+}) {
   const t = useTranslations("dashboard.assistant")
   const tToast = useTranslations("dashboard.toast")
   const format = useFormatter()
@@ -45,50 +71,66 @@ export function AssistantHistory({ busy }: { busy: boolean }) {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            disabled={busy}
-            aria-label={t("history")}
-          />
-        }
-      >
-        <HugeiconsIcon icon={HistoryIcon} strokeWidth={2} aria-hidden="true" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
-        {threads.map((thread) => {
-          const isActive = thread.status === "active"
-          return (
-            <DropdownMenuItem
-              key={thread._id}
-              disabled={isActive}
-              aria-current={isActive ? "true" : undefined}
-              className="gap-2"
-              onClick={() => void handleSwitch(thread._id)}
-            >
-              <span className="min-w-0 flex-1 truncate">
-                {thread.title ?? t("untitled")}
-              </span>
-              <span className="shrink-0 text-muted-foreground text-xs">
-                {format.dateTime(new Date(thread.lastMessageAt), {
-                  dateStyle: "medium",
+    <motion.div
+      initial={false}
+      animate={{
+        width: open ? RAIL_WIDTH : 0,
+        marginRight: open ? RAIL_GAP : 0,
+      }}
+      transition={SPRING}
+      className="min-h-0 shrink-0 overflow-hidden"
+    >
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="rail-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { delay: 0.08 } }}
+            exit={{ opacity: 0, transition: { duration: 0.1 } }}
+            className="flex h-full min-h-0 w-70 flex-col"
+          >
+            <div className="flex h-10 shrink-0 items-center px-3 font-medium text-muted-foreground text-xs">
+              {t("history")}
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
+              <div className="flex flex-col gap-1">
+                {threads.map((thread) => {
+                  const isActive = thread.status === "active"
+                  return (
+                    <Button
+                      key={thread._id}
+                      type="button"
+                      variant="ghost"
+                      disabled={isActive || busy}
+                      aria-current={isActive ? "true" : undefined}
+                      className="h-auto w-full flex-col items-start gap-0.5 whitespace-normal px-2 py-2 text-left"
+                      onClick={() => void handleSwitch(thread._id)}
+                    >
+                      <span className="flex w-full items-center gap-1.5">
+                        <span className="min-w-0 flex-1 truncate text-sm">
+                          {thread.title ?? t("untitled")}
+                        </span>
+                        {isActive && (
+                          <HugeiconsIcon
+                            icon={Tick02Icon}
+                            strokeWidth={2}
+                            className="size-4 shrink-0"
+                          />
+                        )}
+                      </span>
+                      <span className="w-full truncate text-muted-foreground text-xs">
+                        {format.dateTime(new Date(thread.lastMessageAt), {
+                          dateStyle: "medium",
+                        })}
+                      </span>
+                    </Button>
+                  )
                 })}
-              </span>
-              {isActive && (
-                <HugeiconsIcon
-                  icon={Tick02Icon}
-                  strokeWidth={2}
-                  className="size-4 shrink-0"
-                />
-              )}
-            </DropdownMenuItem>
-          )
-        })}
-      </DropdownMenuContent>
-    </DropdownMenu>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }

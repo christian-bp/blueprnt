@@ -1,12 +1,13 @@
 "use client"
 
-import { PlusSignIcon } from "@hugeicons/core-free-icons"
+import { HistoryIcon, PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
-import { AssistantHistory } from "@/components/assistant/assistant-history"
+import { useState } from "react"
+import { AssistantHistoryRail } from "@/components/assistant/assistant-history"
 import { AssistantPanel } from "@/components/assistant/assistant-panel"
 import { AssistantTitle } from "@/components/assistant/assistant-title"
 import { useOrganization } from "@/components/org-context"
@@ -25,10 +26,14 @@ export default function AssistantPage() {
   // conversation button while a reply streams (archiving the active thread
   // mid-stream would silently orphan it) can never lag the panel by a
   // render, unlike a state mirror fed through an effect would. `title` feeds
-  // the centered AssistantTitle; AssistantHistory reads its own thread list
-  // via useAssistantThreads, a deliberately separate subscription so this
-  // hook (read by every chat render) never pays for the full history.
+  // the centered AssistantTitle; AssistantHistoryRail reads its own thread
+  // list via useAssistantThreads, a deliberately separate subscription so
+  // this hook (read by every chat render) never pays for the full history.
   const { busy, title } = useAssistantChat(orgId)
+  // Local to the page, no persistence: the rail reopens closed on every
+  // visit. Selecting a thread never closes it (the user is browsing); only
+  // the toggle button below does.
+  const [historyOpen, setHistoryOpen] = useState(false)
 
   const handleNewConversation = async () => {
     try {
@@ -42,41 +47,61 @@ export default function AssistantPage() {
     // AppShell locks SidebarInset's own height to the viewport for this route
     // (app-shell.tsx: assistantBounded) and propagates min-h-0/flex-1 down to
     // here, so this wrapper only needs to fill that bounded height, never
-    // define one of its own: min-h-0 (a floor would let the column grow past
+    // define one of its own: min-h-0 (a floor would let the row grow past
     // the viewport) lets it shrink to fit, and overflow-hidden is a second
     // line of defense so nothing inside can force a page-level scrollbar.
-    // MessageScrollerViewport (inside AssistantPanel) stays the only element
-    // that actually scrolls, and the composer below it never moves,
-    // regardless of thread length.
-    <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-4 overflow-hidden">
-      {/* Three regions: history left, the animated title centered, New
-          conversation right. The outer flex-1 wrappers (not the title
-          itself) hold the left/right controls pinned to their edges, so the
-          title animating its own width from 0 to auto on arrival never
-          shifts either button; only the leftover space between them
-          changes. */}
-      <div className="flex items-center justify-between">
-        <div className="flex flex-1 justify-start">
-          <AssistantHistory busy={busy} />
+    // Now a horizontal row rather than a column: the history rail slides out
+    // from this wrapper's own left edge, and the main column (below) keeps
+    // the exact height-bounding classes the whole wrapper used to carry, so
+    // its scroll behavior (MessageScrollerViewport inside AssistantPanel
+    // stays the only element that actually scrolls) is unchanged by the
+    // rail's addition.
+    <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 overflow-hidden">
+      <AssistantHistoryRail open={historyOpen} busy={busy} />
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
+        {/* Three regions: history left, the animated title centered, New
+            conversation right. The outer flex-1 wrappers (not the title
+            itself) hold the left/right controls pinned to their edges, so the
+            title animating its own width from 0 to auto on arrival never
+            shifts either button; only the leftover space between them
+            changes. */}
+        <div className="flex items-center justify-between">
+          <div className="flex flex-1 justify-start">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              disabled={busy}
+              aria-expanded={historyOpen}
+              aria-label={t("history")}
+              onClick={() => setHistoryOpen((open) => !open)}
+            >
+              <HugeiconsIcon
+                icon={HistoryIcon}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            </Button>
+          </div>
+          <AssistantTitle title={title} />
+          <div className="flex flex-1 justify-end">
+            <Button
+              variant="outline"
+              disabled={busy}
+              onClick={() => void handleNewConversation()}
+            >
+              <HugeiconsIcon
+                icon={PlusSignIcon}
+                size={16}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+              {t("newConversation")}
+            </Button>
+          </div>
         </div>
-        <AssistantTitle title={title} />
-        <div className="flex flex-1 justify-end">
-          <Button
-            variant="outline"
-            disabled={busy}
-            onClick={() => void handleNewConversation()}
-          >
-            <HugeiconsIcon
-              icon={PlusSignIcon}
-              size={16}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
-            {t("newConversation")}
-          </Button>
-        </div>
+        <AssistantPanel />
       </div>
-      <AssistantPanel />
     </div>
   )
 }
