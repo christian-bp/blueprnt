@@ -30,8 +30,8 @@ export const assistantThreads = defineTable({
   .index("by_user", ["userId"])
 
 // The chart kinds the assistant can display. A chart part stores ONLY the
-// kind: the client renders from live org data through the same components the
-// overview uses, so no data series is ever duplicated into chat storage.
+// kind: the client renders from live org data through the app's own chart
+// components, so no data series is ever duplicated into chat storage.
 export const assistantChartKind = v.union(
   v.literal("headcountTrend"),
   v.literal("payGapTrend")

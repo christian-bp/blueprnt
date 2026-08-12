@@ -13,10 +13,9 @@ export type TrendPanelState = "loading" | "empty" | "ready"
 // sentence: an empty sentence ("you need two pay mappings") is a claim about
 // the org, and a surface that has not heard back yet cannot make it.
 //
-// The sentence is deliberately not aria-hidden, unlike the charts it stands
-// in for. A chart is decorative here (the tiles above carry its numbers in
-// words) but this sentence IS the content: it is the only thing telling a
-// reader why the panel is blank.
+// The sentence is never aria-hidden, whatever the caller decides for its
+// chart: it is the only thing telling a reader why the panel is blank, so
+// it IS the content rather than a decoration.
 function TrendBody({
   state,
   emptyText,
