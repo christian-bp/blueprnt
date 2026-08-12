@@ -1,13 +1,13 @@
 "use client"
 
-// The overview's two trend lines: how the workforce and the pay gap have
+// The assistant's two trend lines: how the workforce and the pay gap have
 // moved across pay mappings. Both are real shadcn/recharts charts
 // (ChartContainer + ChartTooltip) with hand-built tooltip content, so a hover
 // reads as one composed statement rather than a list of series rows.
 //
-// Every chart here is aria-hidden: the stat tiles above them carry the same
-// figures in words, so the charts are decorative and the panel's own title
-// names them.
+// Neither chart is aria-hidden here: chat has no stat tile stating the same
+// figures in words, so the chart itself is the content a screen reader needs
+// to reach, and the hover/summary text is what carries the gender split.
 //
 // Two mappings can share a name AND a reference date, which would give the
 // category axis duplicate values and kill recharts' active-tooltip
@@ -140,7 +140,6 @@ function TrendArea({
 
   return (
     <ChartContainer
-      aria-hidden="true"
       config={config}
       className={cn("aspect-auto w-full", WIDGET_CHART_HEIGHT)}
     >
@@ -148,15 +147,11 @@ function TrendArea({
           which is what makes it read as the card's surface rather than a
           picture sitting on it. The top margin is the stroke's headroom.
 
-          accessibilityLayer OFF, unlike every other chart in the app. It
-          defaults on, and it puts tabIndex=0 and role="application" on the
-          plot surface, which inside this aria-hidden container makes a tab
-          stop that a screen reader cannot announce at all. These trends are
-          hidden on purpose (the tile above states the same figures in text),
-          so the keyboard has nothing to reach here. A chart that is NOT
-          aria-hidden keeps the layer. */}
+          accessibilityLayer on, like every other chart in the app: it puts
+          tabIndex=0 and role="application" on the plot surface, which is the
+          only way a screen reader user in chat can reach the data at all. */}
       <AreaChart
-        accessibilityLayer={false}
+        accessibilityLayer
         data={rows}
         margin={{ top: 8, left: 0, right: 0, bottom: 0 }}
       >

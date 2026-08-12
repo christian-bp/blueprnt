@@ -94,7 +94,7 @@ describe("HeadcountTrend", () => {
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 
-  it("is decorative", () => {
+  it("exposes its chart to assistive tech", () => {
     const { container } = renderWithIntl(
       <HeadcountTrend
         data={[point("Pay mapping 2026", "Jan 1", 2, 3)]}
@@ -107,7 +107,7 @@ describe("HeadcountTrend", () => {
       container
         .querySelector('[data-slot="chart"]')
         ?.getAttribute("aria-hidden")
-    ).toBe("true")
+    ).toBeNull()
   })
 })
 
