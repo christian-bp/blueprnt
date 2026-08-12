@@ -1,0 +1,42 @@
+packages/backend/convex/assistant/chat.test.ts
+  s_c6f9c899f4809f::t_84a01facd5da36 239-271
+  s_c6f9c899f4809f::t_d95f3170026953 134-204
+packages/backend/convex/assistant/tables.ts
+  s_c6f9c899f4809f::t_4e34d774561864 42-50,54-55,72
+packages/backend/convex/assistant/knowledge.ts
+  s_c6f9c899f4809f::t_14bc65a3e5d285 25
+packages/backend/convex/ai/config.ts
+  s_c6f9c899f4809f::t_debb1cf7327d3b 46-47
+packages/backend/convex/assistant/chat.ts
+  s_c6f9c899f4809f::t_5742636fba8cd8 35
+  s_c6f9c899f4809f::t_275eeb835db176 345-347
+  s_c6f9c899f4809f::t_60eaed09a7fee9 13-17
+  s_c6f9c899f4809f::t_8d39fe5c2e6017 110
+  s_c6f9c899f4809f::t_fb65ecbe146c13 305-310,319-322
+docs/go-live-checklist.md
+  s_c6f9c899f4809f::t_a1f88fe861947e 249-250
+packages/backend/convex/assistant/generate.ts
+  s_c6f9c899f4809f::t_d2e93005310188 159-161,164-168,189-204,213-218
+  s_c6f9c899f4809f::t_618c8792450961 12,19
+  s_c6f9c899f4809f::t_157b85a52e0ff0 104
+  s_c6f9c899f4809f::t_ab7287f2065b43 293
+packages/backend/convex/assistant/insights.test.ts
+  s_c6f9c899f4809f::t_0142d46eca4480 236-237
+  s_c6f9c899f4809f::t_10aa5423c6e764 399-401
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "22473a66483b48b66941958e5fd1b3de01741df0",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
