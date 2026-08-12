@@ -1,0 +1,28 @@
+apps/dashboard/components/overview/overview-widgets.tsx
+  s_c6f9c899f4809f::t_eb2cd38cb99c76 198
+  s_c6f9c899f4809f::t_fed90359ecaea3 209
+  s_c6f9c899f4809f::t_b35a06b3376b4d 15
+  s_c6f9c899f4809f::t_a8b8ef99287a26 236,240-241,243-263,267-268,270-284
+apps/dashboard/components/trend-panel.tsx
+  s_c6f9c899f4809f::t_a22a7baf9400fd 48-51
+  s_c6f9c899f4809f::t_f1100d8669ac45 1-47,52-81
+apps/dashboard/components/trend-panel.test.tsx
+  s_c6f9c899f4809f::t_536719096e5c2e 1-10,16-26,32-41,47-54
+  s_c6f9c899f4809f::t_d232ff26eed70e 11-15,27-31,42-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6ba808b77c508653199aa164b0a0ce2600ce906d",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
