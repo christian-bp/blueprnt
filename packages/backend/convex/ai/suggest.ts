@@ -30,6 +30,7 @@ import { trackKeyValidator } from "../evaluationModel/tables"
 import { AUDIT_EVENTS, buildCreateChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
+import { orgSettingsRow } from "../lib/orgSettings"
 import { AI_MODEL_ID, AI_PROVIDER, MAX_PROMPT_IDENTITY_FIELD } from "./config"
 import { isSuggestionClosed } from "./persist"
 import { repairDraftWeights } from "./weights"
@@ -45,10 +46,7 @@ async function requireCompleteSettings(
   ctx: MutationCtx,
   orgId: string
 ): Promise<SettingsContext> {
-  const settings = await ctx.db
-    .query("organizations")
-    .withIndex("by_org", (q) => q.eq("orgId", orgId))
-    .unique()
+  const settings = await orgSettingsRow(ctx, orgId)
   if (
     settings === null ||
     !settings.country ||
