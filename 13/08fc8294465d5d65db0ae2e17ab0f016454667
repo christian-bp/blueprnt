@@ -1,0 +1,36 @@
+apps/dashboard/components/app-shell.test.tsx
+  s_c6f9c899f4809f::t_77fd705e2c6290 1-76
+apps/dashboard/components/assistant/assistant-panel.test.tsx
+  s_c6f9c899f4809f::t_bf91bbc4c3c729 96-108
+apps/dashboard/app/(app)/assistant/page.tsx
+  s_c6f9c899f4809f::t_32f279aa03f584 48
+  s_c6f9c899f4809f::t_7fbf20c45b0991 39-47
+apps/dashboard/components/app-shell.tsx
+  s_c6f9c899f4809f::t_58b51b43f90959 57-61
+  s_c6f9c899f4809f::t_1fc7dacb0af6aa 42-47,69-102,120,122-124
+  s_c6f9c899f4809f::t_51a65fe7ac9483 54-56,62-63
+apps/dashboard/app/(app)/assistant/page.test.tsx
+  s_c6f9c899f4809f::t_0ef5d83a20ee86 1-77,80-93
+  s_c6f9c899f4809f::t_8056b197a15afd 78-79
+apps/dashboard/components/assistant/assistant-thread.tsx
+  s_c6f9c899f4809f::t_54f09c6086b889 45-47,49,58-61
+apps/dashboard/components/assistant/assistant-thread.test.tsx
+  s_c6f9c899f4809f::t_76929c54566780 39-49,52-81
+  s_c6f9c899f4809f::t_7ca105df83f674 50-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1308fc8294465d5d65db0ae2e17ab0f016454667",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
