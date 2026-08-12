@@ -1,0 +1,37 @@
+apps/dashboard/components/assistant/assistant-thread.test.tsx
+  s_c6f9c899f4809f::t_b5f78618c2020a 1-35,37-75
+  s_c6f9c899f4809f::t_93aa52193462e2 36
+apps/dashboard/components/assistant/assistant-markdown.tsx
+  s_c6f9c899f4809f::t_6300717797b4f4 5-8,11
+apps/dashboard/components/assistant/assistant-message.tsx
+  s_c6f9c899f4809f::t_8a30f253c9dd4c 78,81
+  s_c6f9c899f4809f::t_6b1d55114c4cc7 1-30,36-45,50-61,66-77,79-80,82-85,89-95
+  s_c6f9c899f4809f::t_578d0c322d7ca1 47
+  s_c6f9c899f4809f::t_93aa52193462e2 31-35,46,48-49,62-65,86-88
+apps/dashboard/components/assistant/assistant-panel.test.tsx
+  s_c6f9c899f4809f::t_45a6b7e2e07629 12
+apps/dashboard/components/assistant/assistant-message.test.tsx
+  s_c6f9c899f4809f::t_5d6655a2da4d2d 1-57,64-97
+  s_c6f9c899f4809f::t_93aa52193462e2 58-63
+apps/dashboard/components/assistant/assistant-thread.tsx
+  s_c6f9c899f4809f::t_d23dceec7d9b5c 3-24,26-30,32-35,41-98
+apps/dashboard/components/assistant/assistant-chart-part.tsx
+  s_c6f9c899f4809f::t_93aa52193462e2 53-57
+  s_c6f9c899f4809f::t_fd1336679c6fe6 1-52,58-107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "308af7cc97edc3dfa183992038a1485e59da71a0",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
