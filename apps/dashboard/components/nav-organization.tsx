@@ -26,15 +26,7 @@ import {
 } from "@workspace/ui/components/sidebar"
 import { useTranslations } from "next-intl"
 import { UpDownChevrons } from "@/components/updown-chevrons"
-
-function initialsOf(name: string): string {
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((part) => part[0] ?? "")
-    .join("")
-    .toUpperCase()
-}
+import { initialsOf } from "@/lib/initials"
 
 // Switch-only company picker. Additional companies and memberships are
 // provisioned by the back-office platform admin (ADR-0009); only the first org

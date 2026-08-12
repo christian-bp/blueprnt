@@ -15,6 +15,7 @@ import { toast } from "@/lib/toast"
 import { AvatarUpload } from "@/components/avatar-upload"
 import { useOrganization } from "@/components/org-context"
 import { useImageUpload } from "@/hooks/use-image-upload"
+import { initialsOf } from "@/lib/initials"
 
 // Org logo section for the General tab. Owns the org-specific Convex bindings
 // (admin-gated set/remove) and renders the shared AvatarUpload via the shared
@@ -51,12 +52,7 @@ export function OrganizationLogoSection(props: { imageUrl: string | null }) {
     },
   })
 
-  const initials = name
-    .split(" ")
-    .slice(0, 2)
-    .map((p) => p[0] ?? "")
-    .join("")
-    .toUpperCase()
+  const initials = initialsOf(name)
 
   return (
     <Card>

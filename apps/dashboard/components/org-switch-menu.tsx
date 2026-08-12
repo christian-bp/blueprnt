@@ -13,15 +13,7 @@ import {
   DropdownMenuSubTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { useTranslations } from "next-intl"
-
-function initialsOf(name: string): string {
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((part) => part[0] ?? "")
-    .join("")
-    .toUpperCase()
-}
+import { initialsOf } from "@/lib/initials"
 
 // Switch-only company picker as a submenu for an avatar/account menu. Used in
 // the onboarding header so a user can leave a bare company's onboarding wizard

@@ -3,6 +3,11 @@
 import { Building01Icon, MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -34,6 +39,7 @@ import { CreateOrganizationDialog } from "@/components/admin/create-organization
 import { ManageOrganizationDialog } from "@/components/admin/manage-organization-dialog"
 import { CountryDisplay } from "@/components/country-display"
 import { PageHeading } from "@/components/page-heading"
+import { initialsOf } from "@/lib/initials"
 
 export function OrganizationsSection() {
   const t = useTranslations("dashboard.admin.orgs")
@@ -103,7 +109,21 @@ export function OrganizationsSection() {
           <TableBody>
             {filtered.map((org) => (
               <TableRow key={org.orgId}>
-                <TableCell className="font-medium">{org.name}</TableCell>
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    <Avatar
+                      key={org.imageUrl ?? "no-logo"}
+                      variant="brand"
+                      className="shrink-0"
+                    >
+                      {org.imageUrl ? (
+                        <AvatarImage src={org.imageUrl} alt={org.name} />
+                      ) : null}
+                      <AvatarFallback>{initialsOf(org.name)}</AvatarFallback>
+                    </Avatar>
+                    <span>{org.name}</span>
+                  </div>
+                </TableCell>
                 <TableCell className="text-muted-foreground">
                   {org.slug}
                 </TableCell>

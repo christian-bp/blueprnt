@@ -3,6 +3,11 @@
 import { MoreVerticalIcon, UserMultipleIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -35,6 +40,7 @@ import { DeleteUserDialog } from "@/components/admin/delete-user-dialog"
 import { ManageUserOrganizationsDialog } from "@/components/admin/manage-user-organizations-dialog"
 import { PageHeading } from "@/components/page-heading"
 import { authClient } from "@/lib/auth-client"
+import { initialsOf } from "@/lib/initials"
 
 export function UsersSection() {
   const t = useTranslations("dashboard.admin.users")
@@ -137,7 +143,22 @@ export function UsersSection() {
           <TableBody>
             {filtered.map((user) => (
               <TableRow key={user.authId}>
-                <TableCell className="font-medium">{user.name}</TableCell>
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    <Avatar
+                      key={user.image ?? "no-avatar"}
+                      className="shrink-0"
+                    >
+                      {user.image ? (
+                        <AvatarImage src={user.image} alt={user.name} />
+                      ) : null}
+                      <AvatarFallback>
+                        {initialsOf(user.name, user.email)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>{user.name}</span>
+                  </div>
+                </TableCell>
                 <TableCell className="text-muted-foreground">
                   {user.email}
                 </TableCell>

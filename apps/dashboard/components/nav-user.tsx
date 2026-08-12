@@ -34,6 +34,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LanguageMenuSub } from "@/components/language-menu"
 import { UpDownChevrons } from "@/components/updown-chevrons"
+import { initialsOf } from "@/lib/initials"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -44,12 +45,7 @@ export function NavUser() {
 
   const name = session?.user?.name ?? ""
   const email = session?.user?.email ?? ""
-  const initials = name
-    .split(" ")
-    .slice(0, 2)
-    .map((part) => part[0] ?? "")
-    .join("")
-    .toUpperCase()
+  const initials = initialsOf(name, email)
 
   async function handleSignOut() {
     await authClient.signOut()

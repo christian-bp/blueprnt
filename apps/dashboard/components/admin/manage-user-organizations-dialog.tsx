@@ -4,6 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -48,6 +53,7 @@ import {
 } from "@/lib/admin-schemas"
 import { onSelectValue } from "@/lib/select"
 import { FORM_DIALOG_CONTENT } from "@/lib/dialog-style"
+import { initialsOf } from "@/lib/initials"
 
 export function ManageUserOrganizationsDialog(props: {
   user: { authId: string; name: string; email: string }
@@ -144,7 +150,20 @@ export function ManageUserOrganizationsDialog(props: {
                   key={m.orgId}
                   className="flex items-center justify-between gap-2"
                 >
-                  <span className="min-w-0 truncate text-sm">{m.name}</span>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <Avatar
+                      key={m.imageUrl ?? "no-logo"}
+                      size="sm"
+                      variant="brand"
+                      className="shrink-0"
+                    >
+                      {m.imageUrl ? (
+                        <AvatarImage src={m.imageUrl} alt={m.name} />
+                      ) : null}
+                      <AvatarFallback>{initialsOf(m.name)}</AvatarFallback>
+                    </Avatar>
+                    <span className="min-w-0 truncate text-sm">{m.name}</span>
+                  </div>
                   <div className="flex items-center gap-2">
                     <Select
                       items={{ admin: tRole("admin"), editor: tRole("editor") }}

@@ -15,6 +15,7 @@ import { toast } from "@/lib/toast"
 import { AvatarUpload } from "@/components/avatar-upload"
 import { useImageUpload } from "@/hooks/use-image-upload"
 import { authClient } from "@/lib/auth-client"
+import { initialsOf } from "@/lib/initials"
 
 // Profile picture section for the account profile tab. Owns the account-specific
 // bindings (Convex avatar functions + the Better Auth image mirror) and renders
@@ -51,12 +52,7 @@ export function AvatarSection() {
   })
 
   const name = session?.user?.name ?? ""
-  const initials = name
-    .split(" ")
-    .slice(0, 2)
-    .map((p) => p[0] ?? "")
-    .join("")
-    .toUpperCase()
+  const initials = initialsOf(name, session?.user?.email ?? "")
 
   return (
     <Card>

@@ -18,25 +18,7 @@ import { useRouter } from "next/navigation"
 import { LanguageMenuSub } from "@/components/language-menu"
 import { OrgSwitchMenuSub } from "@/components/org-switch-menu"
 import { authClient } from "@/lib/auth-client"
-
-// Derive at most two initials from the display name, or fall back to the
-// first letter of the email address, or "?" if neither is available.
-function deriveInitials(name: string, email: string): string {
-  if (name.trim().length > 0) {
-    return name
-      .trim()
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0] ?? "")
-      .join("")
-      .toUpperCase()
-  }
-  if (email.length > 0) {
-    return (email[0] ?? "").toUpperCase()
-  }
-  return "?"
-}
+import { initialsOf } from "@/lib/initials"
 
 // The signed-in user's account menu: switch company, change language, sign out.
 // Used in the auth/onboarding shell's headerRight slot.
@@ -47,7 +29,7 @@ export function AccountMenu() {
 
   const name = session?.user?.name ?? ""
   const email = session?.user?.email ?? ""
-  const initials = deriveInitials(name, email)
+  const initials = initialsOf(name, email)
 
   async function handleSignOut() {
     await authClient.signOut()
@@ -58,7 +40,7 @@ export function AccountMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label={t("accountMenu")}
-        className="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Avatar key={session?.user?.image || "no-avatar"} className="h-8 w-8">
           {session?.user?.image ? (

@@ -4,6 +4,11 @@ import { MoreVerticalIcon, UserMultipleIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar"
+import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
@@ -41,6 +46,7 @@ import { useCallback, useEffect, useState } from "react"
 import { toast } from "@/lib/toast"
 import { useOrganization } from "@/components/org-context"
 import { authClient } from "@/lib/auth-client"
+import { initialsOf } from "@/lib/initials"
 
 type ListResult = Awaited<
   ReturnType<typeof authClient.organization.listInvitations>
@@ -189,13 +195,25 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
               return (
                 <TableRow key={m.userId}>
                   <TableCell className="font-medium">
-                    {m.name}
-                    {m.userId === myId ? (
-                      <span className="text-muted-foreground">
-                        {" "}
-                        ({t("you")})
+                    <div className="flex items-center gap-2">
+                      <Avatar key={m.image ?? "no-avatar"} className="shrink-0">
+                        {m.image ? (
+                          <AvatarImage src={m.image} alt={m.name} />
+                        ) : null}
+                        <AvatarFallback>
+                          {initialsOf(m.name, m.email)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span>
+                        {m.name}
+                        {m.userId === myId ? (
+                          <span className="text-muted-foreground">
+                            {" "}
+                            ({t("you")})
+                          </span>
+                        ) : null}
                       </span>
-                    ) : null}
+                    </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {m.email}
@@ -259,7 +277,16 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
             {pending.map((inv) => (
               <TableRow key={inv.id}>
                 <TableCell>
-                  <Badge variant="outline">{t("pending")}</Badge>
+                  <div className="flex items-center gap-2">
+                    {/* No account yet: the invitee's avatar falls back to the
+                        email's first letter. */}
+                    <Avatar className="shrink-0">
+                      <AvatarFallback>
+                        {initialsOf("", inv.email)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <Badge variant="outline">{t("pending")}</Badge>
+                  </div>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {inv.email}

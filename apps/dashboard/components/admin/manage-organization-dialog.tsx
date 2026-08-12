@@ -9,6 +9,11 @@ import {
   countryForLanguage,
   LANGUAGE_BY_COUNTRY,
 } from "@workspace/constants"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -55,6 +60,7 @@ import {
 import { onSelectValue } from "@/lib/select"
 import { cn } from "@workspace/ui/lib/utils"
 import { FORM_DIALOG_CONTENT } from "@/lib/dialog-style"
+import { initialsOf } from "@/lib/initials"
 
 interface AdminOrg {
   orgId: string
@@ -157,10 +163,24 @@ export function ManageOrganizationDialog(props: {
                   key={m.authId}
                   className="flex items-center justify-between gap-2"
                 >
-                  <span className="min-w-0 truncate text-sm">
-                    {m.name}{" "}
-                    <span className="text-muted-foreground">{m.email}</span>
-                  </span>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <Avatar
+                      key={m.image ?? "no-avatar"}
+                      size="sm"
+                      className="shrink-0"
+                    >
+                      {m.image ? (
+                        <AvatarImage src={m.image} alt={m.name} />
+                      ) : null}
+                      <AvatarFallback>
+                        {initialsOf(m.name, m.email)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="min-w-0 truncate text-sm">
+                      {m.name}{" "}
+                      <span className="text-muted-foreground">{m.email}</span>
+                    </span>
+                  </div>
                   <div className="flex items-center gap-2">
                     <Select
                       items={{ admin: t("roleAdmin"), editor: t("roleEditor") }}
