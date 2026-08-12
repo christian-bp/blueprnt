@@ -39,13 +39,6 @@ describe("vendored shadcn deviations", () => {
     cleanup()
   })
 
-  it("avatar uses the theme radius, not a circle", () => {
-    const { container } = render(<Avatar />)
-    const root = container.querySelector("[data-slot=avatar]")
-    expect(root?.className).toContain("rounded-md")
-    expect(root?.className).not.toContain("rounded-full")
-  })
-
   it("avatar exposes a brand variant that tints the ring and the fallback", () => {
     const { container } = render(
       <Avatar variant="brand">

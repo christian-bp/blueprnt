@@ -24,14 +24,11 @@ function Avatar({
       data-slot="avatar"
       data-size={size}
       data-variant={variant}
-      // Local deviation from upstream shadcn: avatars use the theme's rounded
-      // radius (rounded-md), not a full circle, for both org and user avatars.
-      // The after: ring radius must match the root radius or the image/fallback
-      // pokes past it. The ring uses the brand color in the "brand" variant so
-      // those identity avatars read as branded; the mix-blend keeps it sitting
-      // naturally over an uploaded image in either theme.
+      // Local deviation from upstream shadcn: the "brand" variant colors the
+      // after: ring with the brand color so branded identity avatars read as
+      // branded even over an uploaded image.
       className={cn(
-        "group/avatar relative flex size-8 shrink-0 rounded-md select-none after:absolute after:inset-0 after:rounded-md after:border after:border-border after:mix-blend-darken data-[variant=brand]:after:border-brand data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
+        "group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[variant=brand]:after:border-brand data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
         className
       )}
       {...props}
@@ -44,7 +41,7 @@ function AvatarImage({ className, ...props }: AvatarPrimitive.Image.Props) {
     <AvatarPrimitive.Image
       data-slot="avatar-image"
       className={cn(
-        "aspect-square size-full rounded-md object-cover",
+        "aspect-square size-full rounded-full object-cover",
         className
       )}
       {...props}
@@ -64,7 +61,7 @@ function AvatarFallback({
       // a soft brand tint (pale brand fill + brand initials) so branded identity
       // avatars (e.g. the organization) read as branded.
       className={cn(
-        "flex size-full items-center justify-center rounded-md bg-muted text-sm text-muted-foreground group-data-[variant=brand]/avatar:bg-brand/10 group-data-[variant=brand]/avatar:text-brand group-data-[size=sm]/avatar:text-xs",
+        "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[variant=brand]/avatar:bg-brand/10 group-data-[variant=brand]/avatar:text-brand group-data-[size=sm]/avatar:text-xs",
         className
       )}
       {...props}
@@ -109,7 +106,7 @@ function AvatarGroupCount({
     <div
       data-slot="avatar-group-count"
       className={cn(
-        "relative flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-sm text-muted-foreground ring-2 ring-background group-has-data-[size=lg]/avatar-group:size-10 group-has-data-[size=sm]/avatar-group:size-6 [&>svg]:size-4 group-has-data-[size=lg]/avatar-group:[&>svg]:size-5 group-has-data-[size=sm]/avatar-group:[&>svg]:size-3",
+        "relative flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm text-muted-foreground ring-2 ring-background group-has-data-[size=lg]/avatar-group:size-10 group-has-data-[size=sm]/avatar-group:size-6 [&>svg]:size-4 group-has-data-[size=lg]/avatar-group:[&>svg]:size-5 group-has-data-[size=sm]/avatar-group:[&>svg]:size-3",
         className
       )}
       {...props}

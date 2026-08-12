@@ -34,7 +34,7 @@ const PATCHES = path.join(PKG, "patches")
 // enter the set without a stated reason.
 const DEVIATIONS: Record<string, string> = {
   avatar:
-    "Theme radius instead of circles, plus a brand variant for identity avatars.",
+    "A brand variant for identity avatars (brand ring + tinted initials fallback).",
   badge: "A success variant; the email log maps delivered and sent onto it.",
   checkbox:
     "Base UI omits data-checked while indeterminate, so the mixed state needs its own fill and a minus glyph.",
