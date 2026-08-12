@@ -909,7 +909,6 @@
           "importPrompt": "Import to get started",
           "trendLabel": "Employees",
           "trendTitle": "Workforce over time",
-          "action": "People",
           "note": "Employees in your register"
         },
         "levels": {
@@ -933,7 +932,6 @@
         },
         "gapTrend": {
           "title": "Pay gap over time",
-          "action": "Pay mapping",
           "unmeasured": "Not measurable",
           "unmeasuredEmpty": "Only one of your pay mappings has a measurable pay gap, so there is nothing to compare yet."
         },

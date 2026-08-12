@@ -209,6 +209,31 @@ describe("OverviewPage", () => {
     expect(screen.getByText(tOverview.widgets.gap.label)).toBeDefined()
   })
 
+  // The two trend panels (workforce and pay gap over time) moved into the
+  // assistant; the overview itself carries only the stat strip's figures.
+  // A TrendPanel renders its title in every state (loading, empty, ready),
+  // so this holds regardless of which fixture is mocked.
+  it("no longer renders the workforce or pay-gap trend charts", () => {
+    mockNeutralQueries()
+    renderPage()
+    expect(
+      screen.queryByText(tOverview.widgets.workforce.trendTitle)
+    ).toBeNull()
+    expect(screen.queryByText(tOverview.widgets.gapTrend.title)).toBeNull()
+  })
+
+  // The hero used to fill roughly one viewport (min-h-[calc(100vh-...)] +
+  // justify-center) before the rest of the page picked up, which is exactly
+  // the "pushed below the fold" regression this compacts. Guards against it
+  // coming back.
+  it("keeps the hero in normal page flow, not pinned to the viewport height", () => {
+    mockNeutralQueries()
+    const { container } = renderPage()
+    const page = container.querySelector("div.flex.flex-col")
+    const hero = page?.firstElementChild
+    expect(hero?.className).not.toMatch(/min-h-|vh|justify-center/)
+  })
+
   // One spacing rhythm for the page: the gap BETWEEN the bands is the same as
   // the gap between the widgets inside them, in both directions. The page used
   // to stack its bands 32px apart while its cards sat 12px apart, so the same

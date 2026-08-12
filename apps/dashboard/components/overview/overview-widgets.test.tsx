@@ -2,13 +2,8 @@ import { cleanup, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
-import {
-  OverviewCharts,
-  OverviewWidgets,
-} from "@/components/overview/overview-widgets"
+import { OverviewWidgets } from "@/components/overview/overview-widgets"
 import type { PayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
-import type { PayGapPoint } from "@/lib/pay-gap-trend"
-import type { HeadcountPoint } from "@/lib/headcount-trend"
 import type { LevelOverview } from "@/lib/level-overview"
 import type { OverviewStats } from "@/lib/todo"
 
@@ -61,50 +56,6 @@ function renderStrip(
   )
 }
 
-const GAP_TREND: PayGapPoint[] = [
-  {
-    date: Date.UTC(2025, 0, 1),
-    runLabel: "2025",
-    gapPct: 5.2,
-    flag: "elevated",
-  },
-  {
-    date: Date.UTC(2026, 0, 1),
-    runLabel: "2026",
-    gapPct: 4.1,
-    flag: "ok",
-  },
-]
-
-function renderCharts(
-  options: {
-    stats?: OverviewStats | undefined
-    headcountTrend?: HeadcountPoint[] | undefined | null
-    gapTrend?: PayGapPoint[] | undefined | null
-  } = {}
-) {
-  return render(
-    <NextIntlClientProvider
-      locale="en"
-      timeZone="Europe/Stockholm"
-      messages={messages}
-    >
-      <OverviewCharts
-        stats={"stats" in options ? options.stats : ALL_DONE}
-        headcountTrend={
-          "headcountTrend" in options ? options.headcountTrend : null
-        }
-        gapTrend={"gapTrend" in options ? options.gapTrend : GAP_TREND}
-      />
-    </NextIntlClientProvider>
-  )
-}
-
-const TWO_RUNS: HeadcountPoint[] = [
-  { date: 1, runLabel: "Pay mapping 2025", women: 3, men: 4 },
-  { date: 2, runLabel: "Pay mapping 2026", women: 5, men: 5 },
-]
-
 afterEach(cleanup)
 
 describe("OverviewWidgets", () => {
@@ -123,8 +74,8 @@ describe("OverviewWidgets", () => {
     }
   })
 
-  // A tile is one number: the charts moved to the panels below, so nothing
-  // in the strip mounts a chart.
+  // A tile is one number: the trend charts live in the assistant now, so
+  // nothing in the strip mounts a chart.
   it("carries no charts", () => {
     const { container } = renderStrip()
     expect(container.querySelectorAll('[data-slot="chart"]')).toHaveLength(0)
@@ -225,82 +176,5 @@ describe("OverviewWidgets", () => {
     for (const bar of bars) {
       expect(bar.previousElementSibling?.className).toContain("w-0")
     }
-  })
-})
-
-describe("OverviewCharts", () => {
-  it("renders each chart in its own titled panel with a way out to its surface", () => {
-    renderCharts({ headcountTrend: TWO_RUNS })
-    for (const [title, action, href] of [
-      [t.workforce.trendTitle, t.workforce.action, "/people"],
-      [t.gapTrend.title, t.gapTrend.action, "/pay-mappings"],
-    ] as const) {
-      expect(screen.getByText(title)).toBeDefined()
-      expect(
-        screen.getByRole("link", { name: action }).getAttribute("href")
-      ).toBe(href)
-    }
-  })
-
-  it("plots the workforce trend once two runs exist", () => {
-    renderCharts({
-      stats: { ...ALL_DONE, totalPeople: 10 },
-      headcountTrend: TWO_RUNS,
-    })
-    const panel = screen
-      .getByText(t.workforce.trendTitle)
-      .closest('[data-slot="card"]')
-    expect(panel?.querySelector('[data-slot="chart"]')).not.toBeNull()
-  })
-
-  // One run is a dot, not a trend; the panel holds its reserved height
-  // empty rather than drawing a single point.
-  it.each([
-    ["a single run", [TWO_RUNS[0]] as HeadcountPoint[]],
-    ["a still-loading trend", undefined],
-    ["no run at all", null],
-    [
-      "runs whose headcount is zero",
-      [
-        { date: 1, runLabel: "a", women: 0, men: 0 },
-        { date: 2, runLabel: "b", women: 0, men: 0 },
-      ] as HeadcountPoint[],
-    ],
-  ])("draws no workforce trend for %s", (_case, headcountTrend) => {
-    renderCharts({
-      stats: { ...ALL_DONE, totalPeople: 10 },
-      headcountTrend,
-    })
-    const panel = screen
-      .getByText(t.workforce.trendTitle)
-      .closest('[data-slot="card"]')
-    expect(panel?.querySelector('[data-slot="chart"]')).toBeNull()
-  })
-
-  // An empty frame tells a reader nothing; the panel says why it is blank
-  // and what would fill it.
-  it("says what a trend needs instead of leaving the panel empty", () => {
-    renderCharts({ headcountTrend: null, gapTrend: null })
-    expect(screen.getAllByText(t.trendEmpty)).toHaveLength(2)
-  })
-
-  it("drops the empty line once a trend can be drawn", () => {
-    renderCharts({
-      stats: { ...ALL_DONE, totalPeople: 10 },
-      headcountTrend: TWO_RUNS,
-    })
-    // The gap trend still has its own line: this fixture gives it points.
-    expect(screen.queryAllByText(t.trendEmpty)).toHaveLength(0)
-  })
-
-  it("draws no workforce trend when there are no people yet, even if a trend exists", () => {
-    renderCharts({
-      stats: { ...ALL_DONE, totalPeople: 0 },
-      headcountTrend: TWO_RUNS,
-    })
-    const panel = screen
-      .getByText(t.workforce.trendTitle)
-      .closest('[data-slot="card"]')
-    expect(panel?.querySelector('[data-slot="chart"]')).toBeNull()
   })
 })

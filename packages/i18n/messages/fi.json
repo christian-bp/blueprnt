@@ -909,7 +909,6 @@
           "importPrompt": "Tuo tietoja aloittaaksesi",
           "trendLabel": "Työntekijät",
           "trendTitle": "Henkilöstö ajan myötä",
-          "action": "Henkilöt",
           "note": "Työntekijät rekisterissänne"
         },
         "levels": {
@@ -933,7 +932,6 @@
         },
         "gapTrend": {
           "title": "Palkkaero ajan myötä",
-          "action": "Palkkakartoitus",
           "unmeasured": "Ei mitattavissa",
           "unmeasuredEmpty": "Vain yhdessä palkkakartoituksessasi on mitattava palkkaero, joten vertailtavaa ei vielä ole."
         },

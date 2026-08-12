@@ -909,7 +909,6 @@
           "importPrompt": "Importer for å komme i gang",
           "trendLabel": "Ansatte",
           "trendTitle": "Bemanning over tid",
-          "action": "Personer",
           "note": "Ansatte i registeret deres"
         },
         "levels": {
@@ -933,7 +932,6 @@
         },
         "gapTrend": {
           "title": "Lønnsgap over tid",
-          "action": "Lønnskartlegging",
           "unmeasured": "Kan ikke måles",
           "unmeasuredEmpty": "Bare én av lønnskartleggingene dine har et målbart lønnsgap, så det er ikke noe å sammenligne ennå."
         },

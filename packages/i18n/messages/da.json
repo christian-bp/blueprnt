@@ -909,7 +909,6 @@
           "importPrompt": "Importér for at komme i gang",
           "trendLabel": "Medarbejdere",
           "trendTitle": "Medarbejdere over tid",
-          "action": "Personer",
           "note": "Medarbejdere i jeres register"
         },
         "levels": {
@@ -933,7 +932,6 @@
         },
         "gapTrend": {
           "title": "Løngab over tid",
-          "action": "Lønkortlægning",
           "unmeasured": "Kan ikke måles",
           "unmeasuredEmpty": "Kun én af dine lønkortlægninger har et målbart løngab, så der er endnu ikke noget at sammenligne."
         },

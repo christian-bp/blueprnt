@@ -909,7 +909,6 @@
           "importPrompt": "Importera för att komma igång",
           "trendLabel": "Anställda",
           "trendTitle": "Personalstyrkan över tid",
-          "action": "Personer",
           "note": "Anställda i ert register"
         },
         "levels": {
@@ -933,7 +932,6 @@
         },
         "gapTrend": {
           "title": "Lönegap över tid",
-          "action": "Lönekartläggning",
           "unmeasured": "Går inte att mäta",
           "unmeasuredEmpty": "Bara en av dina lönekartläggningar har ett mätbart lönegap, så det finns inget att jämföra ännu."
         },
