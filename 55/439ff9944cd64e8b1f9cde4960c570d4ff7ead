@@ -1,0 +1,23 @@
+apps/dashboard/components/overview/welcome-greeting.tsx
+  s_c6f9c899f4809f::t_00a6bfd72154c3 22-24,37,45
+apps/dashboard/components/overview/welcome-greeting.test.tsx
+  s_c6f9c899f4809f::t_ba5d3e48b38712 48,50
+apps/dashboard/app/(app)/page.tsx
+  s_c6f9c899f4809f::t_504cd35387b674 62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "55439ff9944cd64e8b1f9cde4960c570d4ff7ead",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
