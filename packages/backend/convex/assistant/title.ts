@@ -5,7 +5,14 @@ import { z } from "zod"
 import { internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import type { ActionCtx } from "../_generated/server"
-import { AI_PROFILE_MODEL_ID, AI_PROVIDER, LANGUAGE_NAMES } from "../ai/config"
+import {
+  AI_PROFILE_MODEL_ID,
+  AI_PROVIDER,
+  ASSISTANT_TITLE_GENERATION_TIMEOUT_MS,
+  ASSISTANT_TITLE_MAX_OUTPUT_TOKENS,
+  ASSISTANT_TITLE_MAX_RETRIES,
+  LANGUAGE_NAMES,
+} from "../ai/config"
 import { aiModel } from "../ai/provider"
 
 const titleSchema = z.object({
@@ -48,8 +55,9 @@ export async function generateThreadTitle(
     const result = await generateText({
       model,
       output: Output.object({ schema: titleSchema }),
-      maxRetries: 5,
-      abortSignal: AbortSignal.timeout(30_000),
+      maxOutputTokens: ASSISTANT_TITLE_MAX_OUTPUT_TOKENS,
+      maxRetries: ASSISTANT_TITLE_MAX_RETRIES,
+      abortSignal: AbortSignal.timeout(ASSISTANT_TITLE_GENERATION_TIMEOUT_MS),
       prompt: [
         `Write a concise 3-5 word title for this chat conversation, in ${language}.`,
         "Never include any person's name in the title.",
@@ -67,11 +75,10 @@ export async function generateThreadTitle(
       provider: AI_PROVIDER,
       model: AI_PROFILE_MODEL_ID,
       actorId: args.userId,
-      inputTokens: result.totalUsage.inputTokens ?? 0,
-      outputTokens: result.totalUsage.outputTokens ?? 0,
-      totalTokens: result.totalUsage.totalTokens ?? 0,
-      cachedInputTokens:
-        result.totalUsage.inputTokenDetails?.cacheReadTokens ?? 0,
+      inputTokens: result.usage.inputTokens ?? 0,
+      outputTokens: result.usage.outputTokens ?? 0,
+      totalTokens: result.usage.totalTokens ?? 0,
+      cachedInputTokens: result.usage.inputTokenDetails?.cacheReadTokens ?? 0,
     })
   } catch (error) {
     console.error("assistant title generation failed", {
