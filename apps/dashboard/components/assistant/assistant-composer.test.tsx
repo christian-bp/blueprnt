@@ -89,4 +89,11 @@ describe("AssistantComposer", () => {
       screen.getByText(messages.dashboard.assistant.disclaimer)
     ).toBeDefined()
   })
+
+  it("reserves a minimum height for the disclaimer slot instead of a fixed one, so wrapped text can grow it", () => {
+    renderComposer()
+    const disclaimer = screen.getByText(messages.dashboard.assistant.disclaimer)
+    expect(disclaimer.className).toContain("min-h-4")
+    expect(disclaimer.className).not.toMatch(/(?<!min-)h-4\b/)
+  })
 })

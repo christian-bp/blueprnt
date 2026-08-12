@@ -91,9 +91,11 @@ export function AssistantComposer(props: {
           )}
         </InputGroupAddon>
       </InputGroup>
-      {/* Fixed-height slot: an appearing error or the disclaimer never
-          reflows the thread above. */}
-      <p className="h-4 pt-1 text-muted-foreground text-xs">
+      {/* Reserved-minimum slot, not a fixed height: an appearing error or
+          the disclaimer never reflows the thread above, but wrapped text at
+          narrow widths can still grow the slot downward instead of
+          clipping. */}
+      <p className="min-h-4 pt-1 text-muted-foreground text-xs">
         {props.error !== undefined ? (
           <span role="alert" className="text-destructive">
             {props.error}

@@ -110,8 +110,10 @@ export function AssistantPrompt() {
           </Button>
         ))}
       </div>
-      {/* Fixed-height slot so an appearing error never reflows the page. */}
-      <p className="h-4 text-destructive text-xs">
+      {/* Reserved-minimum slot, not a fixed height: an appearing error never
+          reflows the page, but wrapped text can still grow the slot
+          downward instead of overlapping the row below. */}
+      <p className="min-h-4 text-destructive text-xs">
         {error !== undefined ? <span role="alert">{error}</span> : ""}
       </p>
     </div>
