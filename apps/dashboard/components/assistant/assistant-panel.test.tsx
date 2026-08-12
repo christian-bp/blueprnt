@@ -70,10 +70,10 @@ import { mockMutation, onQuery } from "@/test/convex-mocks"
 const sendMessageMock = mockMutation("assistant.chat.sendMessage")
 const stopGenerationMock = mockMutation("assistant.chat.stopGeneration")
 
-function renderPanel(onBusyChange?: (busy: boolean) => void) {
+function renderPanel() {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <AssistantPanel onBusyChange={onBusyChange} />
+      <AssistantPanel />
     </NextIntlClientProvider>
   )
 }
@@ -126,23 +126,6 @@ describe("AssistantPanel", () => {
     expect(thread.dataset.loading).toBe("false")
     expect(thread.dataset.count).toBe("2")
     expect(screen.getByTestId("composer").dataset.busy).toBe("true")
-  })
-
-  it("reports busy changes to the caller via onBusyChange", () => {
-    const onBusyChange = vi.fn()
-    onQuery((ref) => {
-      if (ref === "assistant.chat.getActiveThread") {
-        return { _id: "thread-1", lastMessageAt: 0 }
-      }
-      if (ref === "assistant.chat.listMessages") {
-        return [
-          { _id: "m2", role: "assistant", status: "streaming", parts: [] },
-        ]
-      }
-      return undefined
-    })
-    renderPanel(onBusyChange)
-    expect(onBusyChange).toHaveBeenLastCalledWith(true)
   })
 
   it("stops generation for the last message while busy", () => {

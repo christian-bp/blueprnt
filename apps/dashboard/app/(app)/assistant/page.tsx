@@ -4,11 +4,11 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
 import { AssistantPanel } from "@/components/assistant/assistant-panel"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
+import { useAssistantChat } from "@/hooks/use-assistant-chat"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 export default function AssistantPage() {
@@ -17,11 +17,12 @@ export default function AssistantPage() {
   usePageTitle(t("title"))
   const { orgId } = useOrganization()
   const newConversation = useMutation(api.assistant.chat.newConversation)
-  // Lifted out of AssistantPanel (the data owner) so the New conversation
-  // button can live in the page header action slot per house convention,
-  // while still disabling itself while a reply is streaming: archiving the
-  // active thread mid-stream would silently orphan that reply.
-  const [busy, setBusy] = useState(false)
+  // The same hook AssistantPanel reads: Convex dedupes the identical
+  // subscriptions, so this costs nothing extra, and disabling the New
+  // conversation button while a reply streams (archiving the active thread
+  // mid-stream would silently orphan it) can never lag the panel by a
+  // render, unlike a state mirror fed through an effect would.
+  const { busy } = useAssistantChat(orgId)
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-3xl flex-col gap-4">
@@ -42,7 +43,7 @@ export default function AssistantPage() {
           </Button>
         }
       />
-      <AssistantPanel onBusyChange={setBusy} />
+      <AssistantPanel />
     </div>
   )
 }
