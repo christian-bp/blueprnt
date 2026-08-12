@@ -1,0 +1,48 @@
+packages/backend/convex/assistant/chat.ts
+  s_c6f9c899f4809f::t_8d990e374aa311 68-70,76,84-87,93
+  s_c6f9c899f4809f::t_415e065cd4352c 213
+  s_c6f9c899f4809f::t_f3aa974d599dae 71-75,77-83
+packages/backend/convex/ai/config.ts
+  s_c6f9c899f4809f::t_7098892de0385b 24-30
+  s_c6f9c899f4809f::t_47a6c2168f2aab 42-48
+packages/backend/convex/assistant/tools.ts
+  s_c6f9c899f4809f::t_30885de00209cb 88-89
+  s_c6f9c899f4809f::t_5422c0ee87bf2a 90,97,100
+  s_c6f9c899f4809f::t_48277a8387d997 14,70
+  s_c6f9c899f4809f::t_652ef026a02432 86
+  s_c6f9c899f4809f::t_1fa46ab1773e56 71-85,91-96,98-99
+  s_c6f9c899f4809f::t_f351e1b7ce8181 87
+packages/backend/convex/payMapping/runs.ts
+  s_c6f9c899f4809f::t_8803e95579598e 246
+packages/backend/convex/assistant/insights.ts
+  s_c6f9c899f4809f::t_cfc4a7de667370 99-100
+  s_c6f9c899f4809f::t_554a205de7b2eb 388
+  s_c6f9c899f4809f::t_a03462c3868a5a 339-340
+  s_c6f9c899f4809f::t_68a89491de1009 180
+  s_c6f9c899f4809f::t_2126ef74c371d7 232-233
+  s_c6f9c899f4809f::t_5b1a42dd8058de 270-273
+  s_c6f9c899f4809f::t_ab6e19b9c508f3 348-352
+  s_c6f9c899f4809f::t_89d4fde4ae0907 436
+packages/backend/convex/assistant/generate.ts
+  s_c6f9c899f4809f::t_b66bb2d9dc3200 11,13,19,83-98,102,117-124,129,190-191,211-213,224,235,246,256,264-265
+packages/backend/convex/assistant/insights.test.ts
+  s_c6f9c899f4809f::t_a3fe80ca9492dd 153-155
+  s_c6f9c899f4809f::t_e16587fa25b4dd 409
+  s_c6f9c899f4809f::t_69c6a0ff62ceec 453
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d0711196b01b3585613b451587d593f6b7ac44b4",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
