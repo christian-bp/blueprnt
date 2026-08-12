@@ -25,6 +25,10 @@ vi.mock("@/lib/auth-client", () => ({
     useSession: () => ({ data: { user: { name: "Ada Lovelace" } } }),
   },
 }))
+// AssistantPrompt (rendered on this page) reads the router for its
+// post-send navigation; none of these tests exercise sending, so a no-op
+// push is enough to satisfy the hook.
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }))
 
 import OverviewPage from "@/app/(app)/page"
 

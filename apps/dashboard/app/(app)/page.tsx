@@ -2,6 +2,7 @@
 
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useLocale, useTranslations } from "next-intl"
+import { AssistantPrompt } from "@/components/assistant/assistant-prompt"
 import {
   OverviewCharts,
   OverviewWidgets,
@@ -70,6 +71,7 @@ export default function OverviewPage() {
           </p>
         )}
       </div>
+      <AssistantPrompt />
       <TodoActions todo={todo} pageLoaded={pageLoaded} />
       <OverviewWidgets
         stats={stats}
