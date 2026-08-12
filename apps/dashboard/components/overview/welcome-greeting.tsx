@@ -1,6 +1,7 @@
 "use client"
 
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { authClient } from "@/lib/auth-client"
@@ -17,7 +18,16 @@ const HEADING_CLASS = "font-semibold text-3xl"
 // cause a hydration mismatch; a heading-sized skeleton holds the space until
 // the hour and session are ready. Re-checked every 5 minutes to cross hour
 // boundaries without a reload.
-export function WelcomeGreeting() {
+//
+// `centered` is additive: the overview hero renders this text-centered
+// inside its own centered column, every other (hypothetical) caller keeps
+// the left-aligned default, and the prop touches nothing existing callers
+// already rely on.
+export function WelcomeGreeting({
+  centered = false,
+}: {
+  centered?: boolean
+} = {}) {
   const t = useTranslations("dashboard.overview.greeting")
   const { data: session } = authClient.useSession()
   const [hour, setHour] = useState<number | null>(null)
@@ -30,7 +40,7 @@ export function WelcomeGreeting() {
 
   if (hour === null || session === undefined) {
     return (
-      <h1 className={HEADING_CLASS}>
+      <h1 className={cn(HEADING_CLASS, centered && "text-center")}>
         <Skeleton className="h-9 w-72" />
       </h1>
     )
@@ -38,7 +48,7 @@ export function WelcomeGreeting() {
 
   const firstName = session?.user?.name?.split(" ")[0] ?? ""
   return (
-    <h1 className={HEADING_CLASS}>
+    <h1 className={cn(HEADING_CLASS, centered && "text-center")}>
       {t(greetingBucket(hour), {
         hasName: firstName ? "yes" : "no",
         name: firstName,

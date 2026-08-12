@@ -862,7 +862,10 @@
         "afternoon": "Hyvää iltapäivää{hasName, select, yes{, {name}} other{}}",
         "evening": "Hyvää iltaa{hasName, select, yes{, {name}} other{}}"
       },
-      "subtitle": "Sinulla on {count, plural, =0 {ei mitään odottamassa} one {# tehtävä odottamassa} other {# tehtävää odottamassa}} juuri nyt.",
+      "hero": {
+        "todoSummary": "{count, plural, one {Sinulla on <link>1 asia hoidettavana</link>.} other {Sinulla on <link># asiaa hoidettavana</link>.}}",
+        "allCaughtUp": "Olet ajan tasalla. Mikään ei vaadi huomiotasi juuri nyt."
+      },
       "sectionTodo": "Tehtävät",
       "sectionQuickActions": "Pikatoiminnot",
       "todo": {

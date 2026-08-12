@@ -1,12 +1,13 @@
 "use client"
 
-import { Skeleton } from "@workspace/ui/components/skeleton"
+import { cn } from "@workspace/ui/lib/utils"
 import { useLocale, useTranslations } from "next-intl"
 import { AssistantPrompt } from "@/components/assistant/assistant-prompt"
 import {
   OverviewCharts,
   OverviewWidgets,
 } from "@/components/overview/overview-widgets"
+import { OverviewStatusLine } from "@/components/overview/overview-status-line"
 import { TodoActions } from "@/components/overview/todo-actions"
 import { WelcomeGreeting } from "@/components/overview/welcome-greeting"
 import { useOrganization } from "@/components/org-context"
@@ -18,17 +19,30 @@ import { usePayGapTrend } from "@/hooks/use-pay-gap-trend"
 import { usePayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
 import { useTodo } from "@/hooks/use-todo"
 
+// The hero fills roughly one viewport before the page's ordinary content
+// picks up below it (midday: `min-h-[calc(100vh-120px)]`). The chrome
+// subtracted from 100vh is AppShell's own real numbers, not a guessed
+// constant, so it never drifts from what the shell actually renders above
+// and around this div:
+//   --header-height: calc(var(--spacing) * 12) = 12 * 0.25rem = 3rem
+//   SidebarInset's own inset-variant margin (`md:...m-2`, 0.5rem top +
+//     0.5rem bottom = 1rem total), which only applies from md: up
+//   this route's own vertical padding on `pageContent` (`py-4 md:py-6`):
+//     1rem top + 1rem bottom = 2rem below md, 1.5rem top + 1.5rem bottom =
+//     3rem at md+
+// Below md: 3rem + 2rem = 5rem. At md+: 3rem + 1rem + 3rem = 7rem.
+const HERO_MIN_H = "min-h-[calc(100vh-5rem)] md:min-h-[calc(100vh-7rem)]"
+
 // Front page, read top to bottom as what-to-do / where-we-stand / how it
-// moved: a welcome heading + subtitle (the total from buildTodo), the "To
-// do" row (an action card per outstanding buildTodo group, or the standing
-// destinations under their own heading when there is nothing waiting), the
-// stat strip (four figures,
-// each linking to its own surface), and the chart panels behind those
-// figures. buildTodo and buildOverviewStats share one counting pass
-// (computeCounts in lib/todo.ts); nothing here is stored.
+// moved: a centered hero (greeting, one status line, the chat prompt), the
+// "To do" row (an action card per outstanding buildTodo group, or the
+// standing destinations under their own heading when there is nothing
+// waiting), the stat strip (four figures, each linking to its own surface),
+// and the chart panels behind those figures. buildTodo and
+// buildOverviewStats share one counting pass (computeCounts in lib/todo.ts);
+// nothing here is stored.
 export default function OverviewPage() {
   const tNav = useTranslations("dashboard.nav")
-  const t = useTranslations("dashboard.overview")
   usePageTitle(tNav("home"))
   const { orgId } = useOrganization()
   const locale = useLocale()
@@ -61,17 +75,21 @@ export default function OverviewPage() {
     // by 32px while its cards sat 12px apart, so the same cards were spaced
     // differently depending on the direction you read them in.
     <div className="flex flex-col gap-4">
-      <div>
-        <WelcomeGreeting />
-        {todo === undefined ? (
-          <Skeleton className="mt-2 h-4 w-64" />
-        ) : (
-          <p className="mt-1 text-muted-foreground text-sm">
-            {t("subtitle", { count: todo.total })}
-          </p>
+      {/* The hero: plain flex divs throughout, deliberately no `grid` class
+          and no `<section>`, so the page's band-gap invariant (every
+          `div.grid`/`section` carries the same gap-4) never scans it. */}
+      <div
+        className={cn(
+          "mx-auto flex w-full max-w-3xl flex-col justify-center",
+          HERO_MIN_H
         )}
+      >
+        <div className="flex flex-col items-center pt-6 pb-10 text-center">
+          <WelcomeGreeting centered />
+          <OverviewStatusLine todo={todo} />
+        </div>
+        <AssistantPrompt />
       </div>
-      <AssistantPrompt />
       <TodoActions todo={todo} pageLoaded={pageLoaded} />
       <OverviewWidgets
         stats={stats}

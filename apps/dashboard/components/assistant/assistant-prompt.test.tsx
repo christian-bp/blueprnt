@@ -57,6 +57,7 @@ describe("AssistantPrompt", () => {
         orgId: "org-1",
         text: "How many roles do we have?",
         locale: "en",
+        fresh: true,
       })
     })
     await waitFor(() =>
@@ -117,6 +118,7 @@ describe("AssistantPrompt", () => {
         orgId: "org-1",
         text: tAssistant.suggestionCriterion,
         locale: "en",
+        fresh: true,
       })
     })
     await waitFor(() =>

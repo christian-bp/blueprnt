@@ -107,7 +107,7 @@ describe("OverviewPage", () => {
   beforeEach(() => useQueryMock.mockReset())
   afterEach(() => cleanup())
 
-  it("renders a subtitle skeleton and section skeletons while queries are loading, with the to-do row holding its shape", () => {
+  it("renders a hero status skeleton and section skeletons while queries are loading, with the to-do row holding its shape", () => {
     useQueryMock.mockReturnValue(undefined)
     renderPage()
     // Skeleton bars are present (data-slot="skeleton") in place of the
@@ -129,7 +129,7 @@ describe("OverviewPage", () => {
     ).toBeNull()
   })
 
-  it("resolves the subtitle's other two ICU plural branches (one, other)", () => {
+  it("resolves the hero status line's singular and plural branches, each linking to the To do section", () => {
     // A fresh, truly empty org: the importPeople row is buildTodo's single
     // outstanding item (the "one" branch).
     useQueryMock.mockImplementation((ref: string) => {
@@ -142,15 +142,40 @@ describe("OverviewPage", () => {
       return undefined
     })
     const { unmount } = renderPage()
-    expect(screen.getByText("You have 1 item waiting right now.")).toBeDefined()
+    const singularLink = screen.getByRole("link", { name: "1 thing to do" })
+    expect(singularLink.getAttribute("href")).toBe("#todo")
     unmount()
 
     // Two imported titles awaiting classification: the "other" branch.
     mockWorkFixture()
     renderPage()
+    expect(screen.getByRole("link", { name: "2 things to do" })).toBeDefined()
+  })
+
+  it("falls back to the all-caught-up line when nothing is outstanding", () => {
+    mockNeutralQueries()
+    renderPage()
     expect(
-      screen.getByText("You have 2 items waiting right now.")
+      screen.getByText(
+        "You're all caught up. Nothing needs your attention right now."
+      )
     ).toBeDefined()
+  })
+
+  it("renders the hero in document order: greeting, then the status line, then the assistant prompt", () => {
+    mockWorkFixture()
+    renderPage()
+    const heading = screen.getByRole("heading", { level: 1 })
+    const link = screen.getByRole("link", { name: "2 things to do" })
+    const input = screen.getByPlaceholderText(
+      messages.dashboard.assistant.inputPlaceholder
+    )
+    expect(
+      heading.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      link.compareDocumentPosition(input) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
   })
 
   it("renders the To do section's work group and the Overview section's widgets when there is work outstanding", () => {

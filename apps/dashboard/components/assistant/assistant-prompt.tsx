@@ -46,7 +46,10 @@ export function AssistantPrompt() {
     setSending(true)
     setError(undefined)
     try {
-      await sendMessage({ orgId, text: trimmed, locale })
+      // fresh: true, always: the overview prompt is the app's "start a new
+      // conversation" entry point, never a continuation of whatever thread
+      // happens to still be active.
+      await sendMessage({ orgId, text: trimmed, locale, fresh: true })
       router.push("/assistant")
       // No setSending(false) on success: the navigation above unmounts this
       // component, and clearing it first would re-enable the button for a

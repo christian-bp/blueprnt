@@ -862,7 +862,10 @@
         "afternoon": "Good afternoon{hasName, select, yes{, {name}} other{}}",
         "evening": "Good evening{hasName, select, yes{, {name}} other{}}"
       },
-      "subtitle": "You have {count, plural, =0 {nothing waiting} one {# item waiting} other {# items waiting}} right now.",
+      "hero": {
+        "todoSummary": "{count, plural, one {You have <link>1 thing to do</link>.} other {You have <link># things to do</link>.}}",
+        "allCaughtUp": "You're all caught up. Nothing needs your attention right now."
+      },
       "sectionTodo": "To do",
       "sectionQuickActions": "Quick actions",
       "todo": {
