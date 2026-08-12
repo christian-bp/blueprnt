@@ -15,29 +15,12 @@ import { AUDIT_EVENTS, resolveActorName } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { uniqueSlug } from "../lib/slug"
+import { payRecordAt } from "../people/pay"
 import { requiredDocumentationKeys } from "./gap"
 import { orgGap, type PricedRow } from "./orgGap"
 import { payGapFlag, payMappingRunStatus } from "./tables"
 
 const SYSTEM_VERSION = "v2-slice1"
-
-// The pay record active at `asOf`: greatest effectiveAt <= asOf (mirrors
-// getCurrentSalary's inner rule; raw Doc, not the wire shape).
-function payRecordAt(
-  rows: readonly Doc<"payRecords">[],
-  asOf: number
-): Doc<"payRecords"> | null {
-  let current: Doc<"payRecords"> | null = null
-  for (const row of rows) {
-    if (
-      row.effectiveAt <= asOf &&
-      (current === null || row.effectiveAt > current.effectiveAt)
-    ) {
-      current = row
-    }
-  }
-  return current
-}
 
 // One role blocking the gate: staffed (holds at least one open assignment)
 // but not fully evaluated (resolves no level).

@@ -15,6 +15,27 @@ import { orgMutation, orgQuery } from "../lib/functions"
 import { assignmentActiveAt, loadRoleAssignments } from "./assignments"
 import { sameSalaryValues } from "./importDiff"
 
+// The pay record active at `asOf`: the row with the greatest effectiveAt
+// that is <= asOf. The single source of this selection rule: getCurrentSalary
+// below, payMapping/runs.ts's freeze (a person's snapshot salary), and
+// assistant/insights.ts's payStats all resolve "current pay" through this one
+// function, so a change to the rule can never drift between the three.
+export function payRecordAt(
+  rows: readonly Doc<"payRecords">[],
+  asOf: number
+): Doc<"payRecords"> | null {
+  let current: Doc<"payRecords"> | null = null
+  for (const row of rows) {
+    if (
+      row.effectiveAt <= asOf &&
+      (current === null || row.effectiveAt > current.effectiveAt)
+    ) {
+      current = row
+    }
+  }
+  return current
+}
+
 // Tenant-isolation assert for a point-read: throws notFound when the person
 // does not exist or belongs to a different org.
 async function requireOwnPerson(
@@ -351,16 +372,7 @@ export const getCurrentSalary = orgQuery({
       )
       .collect()
 
-    // Find the row with the greatest effectiveAt that is <= asOf.
-    let current: Doc<"payRecords"> | null = null
-    for (const row of rows) {
-      if (row.effectiveAt <= asOf) {
-        if (current === null || row.effectiveAt > current.effectiveAt) {
-          current = row
-        }
-      }
-    }
-
+    const current = payRecordAt(rows, asOf)
     return current !== null ? toPayRecordShape(current) : null
   },
 })

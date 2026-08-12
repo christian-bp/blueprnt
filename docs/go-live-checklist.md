@@ -430,6 +430,14 @@ suite covers them before go-live:
   limits at a full 100-role import before large-org onboarding, and bound
   `insertAdditiveRoles`' uniqueness read if a register ever reaches thousands
   of roles.
+  Same class, read-side, added by the assistant's input-side PII screen:
+  `containsEmployeeName` (convex/assistant/insights.ts) collects every person
+  in the org via `by_org` once per assistant generation request, to check the
+  user's message against every employee's full display name before it can
+  reach the model (ADR-0018). That read scales with the org's headcount on a
+  per-message hot path, not a per-org-onboarding one, so it deserves bounding
+  (e.g. a cached/derived per-org name set, or a name-indexed lookup) before
+  large-org onboarding.
 
 - [ ] **Re-introducing an erased employee: decide suppression vs controller
   process.** Nothing records that an `externalRef` has been erased, so a later
