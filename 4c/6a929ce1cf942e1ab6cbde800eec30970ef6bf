@@ -1,0 +1,26 @@
+packages/ui/patches/avatar.patch
+  s_645da53990af71::t_9353a0fc671628 2,7,27-29,32,36,46
+packages/ui/src/components/avatar.tsx
+  s_645da53990af71::t_171361b5e66334 109
+  s_645da53990af71::t_b75b028bb84278 44
+  s_645da53990af71::t_81b65b8997f763 27-29,31
+  s_645da53990af71::t_eba8effe7762c1 64
+packages/ui/scripts/update-shadcn.ts
+  s_645da53990af71::t_0794ccf688fed4 37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4c6a929ce1cf942e1ab6cbde800eec30970ef6bf",
+  "prompts": {},
+  "sessions": {
+    "s_645da53990af71": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ba97851a-49ad-4d9f-9753-91df3213e15d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
