@@ -220,6 +220,7 @@ export const listUsers = platformQuery({
       authId: v.string(),
       name: v.string(),
       email: v.string(),
+      image: v.union(v.string(), v.null()),
       isPlatformAdmin: v.boolean(),
     })
   ),
@@ -233,6 +234,7 @@ export const listUsers = platformQuery({
       authId: string
       name: string
       email: string
+      image: string | null
       isPlatformAdmin: boolean
     }[] = []
     for (const u of baUsers) {
@@ -244,6 +246,7 @@ export const listUsers = platformQuery({
         authId: u.userId,
         name: u.name,
         email: u.email,
+        image: u.image,
         isPlatformAdmin: mirror?.isPlatformAdmin === true,
       })
     }
@@ -263,6 +266,7 @@ export const listOrganizations = platformQuery({
       currency: v.union(v.null(), v.string()),
       language: v.union(v.null(), v.string()),
       industry: v.union(v.null(), v.string()),
+      imageUrl: v.union(v.null(), v.string()),
       onboarded: v.boolean(),
     })
   ),
@@ -279,6 +283,7 @@ export const listOrganizations = platformQuery({
       currency: string | null
       language: string | null
       industry: string | null
+      imageUrl: string | null
       onboarded: boolean
     }[] = []
     for (const o of baOrgs) {
@@ -294,6 +299,10 @@ export const listOrganizations = platformQuery({
         currency: settings?.currency ?? null,
         language: settings?.language ?? null,
         industry: settings?.industry ?? null,
+        imageUrl:
+          settings?.imageId != null
+            ? await ctx.storage.getUrl(settings.imageId)
+            : null,
         onboarded: typeof settings?.onboardingCompletedAt === "number",
       })
     }
@@ -504,6 +513,7 @@ export const listOrganizationsForUser = platformQuery({
       orgId: v.string(),
       name: v.string(),
       role: v.string(),
+      imageUrl: v.union(v.null(), v.string()),
     })
   ),
   handler: async (ctx, { authId }) => {
@@ -511,11 +521,28 @@ export const listOrganizationsForUser = platformQuery({
       components.betterAuth.membership.listMembershipsForUser,
       { userId: authId }
     )
-    return memberships.map((m) => ({
-      orgId: m.organizationId,
-      name: m.organizationName,
-      role: m.role,
-    }))
+    const result: {
+      orgId: string
+      name: string
+      role: string
+      imageUrl: string | null
+    }[] = []
+    for (const m of memberships) {
+      const settings = await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", m.organizationId))
+        .unique()
+      result.push({
+        orgId: m.organizationId,
+        name: m.organizationName,
+        role: m.role,
+        imageUrl:
+          settings?.imageId != null
+            ? await ctx.storage.getUrl(settings.imageId)
+            : null,
+      })
+    }
+    return result
   },
 })
 
@@ -528,6 +555,7 @@ export const listOrganizationMembers = platformQuery({
       name: v.string(),
       email: v.string(),
       role: v.string(),
+      image: v.union(v.string(), v.null()),
     })
   ),
   handler: async (ctx, { orgId }) => {
@@ -540,6 +568,7 @@ export const listOrganizationMembers = platformQuery({
       name: m.name,
       email: m.email,
       role: m.role,
+      image: m.image,
     }))
   },
 })

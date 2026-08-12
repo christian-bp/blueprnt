@@ -1876,14 +1876,25 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         "query",
         "internal",
         {},
-        Array<{ email: string; name: string; userId: string }>,
+        Array<{
+          email: string;
+          image: string | null;
+          name: string;
+          userId: string;
+        }>,
         Name
       >;
       listMembers: FunctionReference<
         "query",
         "internal",
         { organizationId: string },
-        Array<{ email: string; name: string; role: string; userId: string }>,
+        Array<{
+          email: string;
+          image: string | null;
+          name: string;
+          role: string;
+          userId: string;
+        }>,
         Name
       >;
       provisionOrganization: FunctionReference<
@@ -2033,6 +2044,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         "internal",
         { email: string; name: string },
         { userId: string },
+        Name
+      >;
+      setUserImage: FunctionReference<
+        "mutation",
+        "internal",
+        { image: string | null; userId: string },
+        null,
         Name
       >;
     };

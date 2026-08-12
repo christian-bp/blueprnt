@@ -562,6 +562,74 @@ describe("platform queries + updateOrganization", () => {
   })
 })
 
+describe("list query avatars", () => {
+  it("surfaces user avatars and org logos, null when absent", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const orgId = await seedOrg(t, adminId, "acme-avatars")
+    const { authId } = await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "Pictured Person",
+      email: "pictured@acme.se",
+      orgId,
+      role: "editor",
+    })
+
+    // Absent avatar and logo read as null, not missing.
+    const usersBefore = await asAdmin.query(api.platform.admin.listUsers, {})
+    expect(usersBefore.find((u) => u.authId === authId)?.image).toBeNull()
+    const orgsBefore = await asAdmin.query(
+      api.platform.admin.listOrganizations,
+      {}
+    )
+    expect(orgsBefore.find((o) => o.orgId === orgId)?.imageUrl).toBeNull()
+
+    await t.mutation(components.betterAuth.testing.setUserImage, {
+      userId: authId,
+      image: "https://example.com/avatar.png",
+    })
+    // Attach a logo to the org settings mirror (upsert: createOrganization may
+    // not have seeded the row).
+    const storageId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["logo-bytes"]))
+    )
+    await t.run(async (ctx) => {
+      const settings = await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (settings === null) {
+        await ctx.db.insert("organizations", { orgId, imageId: storageId })
+      } else {
+        await ctx.db.patch(settings._id, { imageId: storageId })
+      }
+    })
+
+    const users = await asAdmin.query(api.platform.admin.listUsers, {})
+    expect(users.find((u) => u.authId === authId)?.image).toBe(
+      "https://example.com/avatar.png"
+    )
+    const members = await asAdmin.query(
+      api.platform.admin.listOrganizationMembers,
+      { orgId }
+    )
+    expect(members.find((m) => m.authId === authId)?.image).toBe(
+      "https://example.com/avatar.png"
+    )
+    const orgs = await asAdmin.query(api.platform.admin.listOrganizations, {})
+    const orgRow = orgs.find((o) => o.orgId === orgId)
+    expect(typeof orgRow?.imageUrl).toBe("string")
+    expect(orgRow?.imageUrl?.length).toBeGreaterThan(0)
+    const memberships = await asAdmin.query(
+      api.platform.admin.listOrganizationsForUser,
+      { authId }
+    )
+    const membershipRow = memberships.find((m) => m.orgId === orgId)
+    expect(typeof membershipRow?.imageUrl).toBe("string")
+    expect(membershipRow?.imageUrl?.length).toBeGreaterThan(0)
+  })
+})
+
 describe("listOrganizationsForUser", () => {
   it("returns the membership's orgId, name, and role for a user in one org", async () => {
     const t = initConvexTest()

@@ -351,6 +351,7 @@ export const listOrgMembers = adminQuery({
       name: v.string(),
       email: v.string(),
       role: v.string(),
+      image: v.union(v.string(), v.null()),
     })
   ),
   handler: async (ctx) => {

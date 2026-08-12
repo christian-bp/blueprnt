@@ -167,6 +167,23 @@ export const seedTwoFactorRow = mutation({
   },
 })
 
+// Test-only: set a user's mirrored avatar url, so the member/user list
+// queries can assert the image passthrough.
+export const setUserImage = mutation({
+  args: { userId: v.string(), image: v.union(v.string(), v.null()) },
+  returns: v.null(),
+  handler: async (ctx, { userId, image }) => {
+    assertTestEnv()
+    const uid = ctx.db.normalizeId("user", userId)
+    if (uid === null) {
+      // Keep in sync with ERROR_CODES in convex/lib/errors.ts (component boundary prevents the import).
+      throw new ConvexError({ code: "errors.notFound" })
+    }
+    await ctx.db.patch(uid, { image })
+    return null
+  },
+})
+
 // Test-only: count twoFactor rows for a user, so erasure can assert removal.
 export const countTwoFactorForUser = query({
   args: { userId: v.string() },

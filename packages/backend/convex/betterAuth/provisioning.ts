@@ -284,7 +284,12 @@ export const purgeInvitationsForEmail = mutation({
 export const listAllUsers = query({
   args: {},
   returns: v.array(
-    v.object({ userId: v.string(), name: v.string(), email: v.string() })
+    v.object({
+      userId: v.string(),
+      name: v.string(),
+      email: v.string(),
+      image: v.union(v.string(), v.null()),
+    })
   ),
   handler: async (ctx) => {
     const rows = await ctx.db.query("user").take(500)
@@ -292,6 +297,7 @@ export const listAllUsers = query({
       userId: u._id.toString(),
       name: u.name,
       email: u.email,
+      image: u.image ?? null,
     }))
   },
 })
@@ -320,6 +326,7 @@ export const listMembers = query({
       name: v.string(),
       email: v.string(),
       role: v.string(),
+      image: v.union(v.string(), v.null()),
     })
   ),
   handler: async (ctx, { organizationId }) => {
@@ -334,6 +341,7 @@ export const listMembers = query({
       name: string
       email: string
       role: string
+      image: string | null
     }[] = []
     for (const m of members) {
       const uid = ctx.db.normalizeId("user", m.userId)
@@ -343,6 +351,7 @@ export const listMembers = query({
         name: user?.name ?? "",
         email: user?.email ?? "",
         role: m.role,
+        image: user?.image ?? null,
       })
     }
     return result

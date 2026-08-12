@@ -670,12 +670,25 @@ describe("organization members", () => {
   }
 
   it("listOrgMembers returns the roster for an admin", async () => {
-    const { t, orgId, adminId } = await setupWithSecond("editor")
+    const { t, orgId, adminId, secondId } = await setupWithSecond("editor")
     const rows = await t
       .withIdentity({ subject: adminId })
       .query(api.accounts.organization.listOrgMembers, { orgId })
     expect(rows).toHaveLength(2)
     expect(rows.map((r) => r.role).sort()).toEqual(["admin", "editor"])
+    // No avatar uploaded: the image passthrough is null, not missing.
+    expect(rows.map((r) => r.image)).toEqual([null, null])
+
+    await t.mutation(components.betterAuth.testing.setUserImage, {
+      userId: secondId,
+      image: "https://example.com/avatar.png",
+    })
+    const after = await t
+      .withIdentity({ subject: adminId })
+      .query(api.accounts.organization.listOrgMembers, { orgId })
+    expect(after.find((r) => r.userId === secondId)?.image).toBe(
+      "https://example.com/avatar.png"
+    )
   })
 
   it("listOrgMembers is admin-only", async () => {
