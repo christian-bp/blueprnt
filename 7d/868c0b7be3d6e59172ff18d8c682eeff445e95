@@ -1,0 +1,21 @@
+apps/dashboard/components/trend-panel.tsx
+  s_c6f9c899f4809f::t_378f65e837a54d 16-18
+packages/backend/convex/assistant/tables.ts
+  s_c6f9c899f4809f::t_faebf9038c46de 33-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "7d868c0b7be3d6e59172ff18d8c682eeff445e95",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
