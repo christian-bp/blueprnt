@@ -80,7 +80,7 @@ export function AssistantThread(props: {
     <MessageScrollerProvider>
       <MessageScroller className="flex-1">
         <MessageScrollerViewport>
-          <MessageScrollerContent className="flex flex-col gap-4 py-4">
+          <MessageScrollerContent className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-6 py-6">
             {props.messages.map((message) => (
               <MessageScrollerItem
                 key={message._id}

@@ -206,7 +206,7 @@
       "signOut": "Logga ut",
       "people": "Medarbetare",
       "payMapping": "Lönekartläggningar",
-      "assistant": "Assistent"
+      "assistant": "Blueprnt AI"
     },
     "people": {
       "description": "Medarbetare importerade från ert lönesystem.",
@@ -1973,7 +1973,7 @@
       "analysisProgressLabel": "Vad räknas här?",
       "analysisProgressBody": "Stegen som måste dokumenteras innan lönekartläggningen kan slutföras: samverkan, granskningen av lönepraxis, och varje grupp vars löneskillnad kräver en förklaring. Inget annat räknas.",
       "payGapScatterMeansBody": "De streckade linjerna är respektive köns medellön i gruppen, så du ser vilka som ligger över och under sitt eget medel.",
-      "assistantBody": "Assistenten förklarar begrepp, visar organisationens siffror och leder dig till rätt sida. Den kan läsa aggregat men aldrig ändra något."
+      "assistantBody": "Blueprnt AI förklarar begrepp, visar organisationens siffror och leder dig till rätt sida. Den kan läsa aggregat men aldrig ändra något."
     },
     "widgetCard": {
       "expand": "Förstora"
@@ -2400,19 +2400,21 @@
       "clear": "Rensa"
     },
     "assistant": {
-      "title": "Assistent",
+      "title": "Blueprnt AI",
       "inputPlaceholder": "Fråga om begrepp, era siffror eller var du gör saker",
       "send": "Skicka",
       "stop": "Stoppa",
       "newConversation": "Ny konversation",
-      "emptyTitle": "Fråga assistenten",
+      "emptyTitle": "Fråga Blueprnt AI",
       "emptyDescription": "Få hjälp med begrepp, organisationens siffror och var du gör saker i blueprnt. Ta aldrig med persondata som namn eller löner.",
       "suggestionCriterion": "Vad är ett kriterium?",
       "suggestionGapTrend": "Hur har vårt lönegap utvecklats?",
       "suggestionPayMapping": "Hur gör jag en lönekartläggning?",
-      "failed": "Assistenten kunde inte svara. Försök igen.",
+      "failed": "Blueprnt AI kunde inte svara. Försök igen.",
       "stoppedNote": "Stoppad.",
-      "disclaimer": "Assistenten kan ha fel. Kontrollera viktiga siffror på deras egna sidor."
+      "disclaimer": "Blueprnt AI kan ha fel. Kontrollera viktiga siffror på deras egna sidor.",
+      "thinking": "Tänker…",
+      "checkingData": "Kontrollerar era data…"
     }
   },
   "errors": {
@@ -2443,7 +2445,7 @@
     "payMappingDocumentationRequired": "Lägg till ett sakligt skäl eller en fördjupad analys innan du klarmarkerar gruppen.",
     "payMappingGateUnmet": "Det finns steg kvar i granskningen innan lönekartläggningen kan slutföras.",
     "payMappingPreconditionsUnmet": "Personer eller roller saknar klassificering eller utvärdering, så lönekartläggningen kan inte startas än.",
-    "assistantBusy": "Assistenten svarar fortfarande. Vänta tills den är klar eller stoppa den.",
+    "assistantBusy": "Blueprnt AI svarar fortfarande. Vänta tills den är klar eller stoppa den.",
     "assistantRateLimited": "Du har skickat många meddelanden på kort tid. Försök igen om en stund.",
     "assistantInvalidMessage": "Skriv ett meddelande innan du skickar.",
     "assistantPersonalData": "Meddelandet verkar innehålla en anställds personuppgifter. Ta bort dem och ställ frågan mer generellt."

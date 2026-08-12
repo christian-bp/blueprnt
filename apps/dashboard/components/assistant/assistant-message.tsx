@@ -2,7 +2,6 @@
 
 import { Bubble, BubbleContent } from "@workspace/ui/components/bubble"
 import { Message, MessageContent } from "@workspace/ui/components/message"
-import { Spinner } from "@workspace/ui/components/spinner"
 import { useTranslations } from "next-intl"
 import { AssistantChartPart } from "@/components/assistant/assistant-chart-part"
 import { AssistantMarkdown } from "@/components/assistant/assistant-markdown"
@@ -27,6 +26,9 @@ export interface AssistantChatMessage {
   // gets its own explanation, anything else falls back to the generic
   // failure text.
   errorCode?: string
+  // Transient in-progress signal while streaming (e.g. a tool is running).
+  // Never present on a finalized reply.
+  activity?: "checkingData"
 }
 
 export function AssistantMessage({
@@ -41,7 +43,7 @@ export function AssistantMessage({
     return (
       <Message align="end">
         <MessageContent>
-          <Bubble>
+          <Bubble variant="muted">
             <BubbleContent>
               {message.parts.map((part, index) =>
                 part.type === "text" ? (
@@ -62,9 +64,9 @@ export function AssistantMessage({
         {message.status === "streaming" && message.parts.length === 0 ? (
           <div
             data-testid="assistant-pending"
-            className="flex items-center py-1"
+            className="shimmer flex items-center gap-2 px-3 text-muted-foreground text-sm"
           >
-            <Spinner className="size-4" />
+            {t("thinking")}
           </div>
         ) : message.status === "failed" ? (
           <p className="text-destructive text-sm">
@@ -87,6 +89,15 @@ export function AssistantMessage({
               <p className="text-muted-foreground text-xs">
                 {t("stoppedNote")}
               </p>
+            ) : null}
+            {message.status === "streaming" &&
+            message.activity === "checkingData" ? (
+              <div
+                data-testid="assistant-activity"
+                className="shimmer flex items-center gap-2 px-3 text-muted-foreground text-sm"
+              >
+                {t("checkingData")}
+              </div>
             ) : null}
           </>
         )}

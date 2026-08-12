@@ -206,7 +206,7 @@
       "signOut": "Kirjaudu ulos",
       "people": "Henkilöstö",
       "payMapping": "Palkkakartoitukset",
-      "assistant": "Avustaja"
+      "assistant": "Blueprnt AI"
     },
     "people": {
       "description": "Palkanlaskentajärjestelmästä tuodut työntekijät.",
@@ -1973,7 +1973,7 @@
       "analysisProgressLabel": "Mitä tässä lasketaan?",
       "analysisProgressBody": "Vaiheet, jotka on dokumentoitava ennen palkkakartoituksen valmistumista: yhteistoiminta, palkkakäytäntöjen arviointi ja jokainen ryhmä, jonka palkkaero vaatii perustelun. Muuta ei lasketa.",
       "payGapScatterMeansBody": "Katkoviivat ovat kummankin sukupuolen keskipalkka ryhmässä, joten näet ketkä ovat oman keskiarvonsa ylä- ja alapuolella.",
-      "assistantBody": "Avustaja selittää käsitteet, näyttää organisaation luvut ja ohjaa oikealle sivulle. Se voi lukea koosteita, mutta ei koskaan muuttaa mitään."
+      "assistantBody": "Blueprnt AI selittää käsitteet, näyttää organisaation luvut ja ohjaa oikealle sivulle. Se voi lukea koosteita, mutta ei koskaan muuttaa mitään."
     },
     "widgetCard": {
       "expand": "Suurenna"
@@ -2400,19 +2400,21 @@
       "clear": "Tyhjennä"
     },
     "assistant": {
-      "title": "Avustaja",
+      "title": "Blueprnt AI",
       "inputPlaceholder": "Kysy käsitteistä, luvuistanne tai mistä asiat löytyvät",
       "send": "Lähetä",
       "stop": "Pysäytä",
       "newConversation": "Uusi keskustelu",
-      "emptyTitle": "Kysy avustajalta",
+      "emptyTitle": "Kysy Blueprnt AI:lta",
       "emptyDescription": "Saat apua käsitteisiin, organisaation lukuihin ja siihen, missä asiat tehdään blueprntissä. Älä koskaan sisällytä henkilötietoja, kuten nimiä tai palkkoja.",
       "suggestionCriterion": "Mikä on kriteeri?",
       "suggestionGapTrend": "Miten palkkaeromme on kehittynyt?",
       "suggestionPayMapping": "Miten teen palkkakartoituksen?",
-      "failed": "Avustaja ei voinut vastata. Yritä uudelleen.",
+      "failed": "Blueprnt AI ei voinut vastata. Yritä uudelleen.",
       "stoppedNote": "Pysäytetty.",
-      "disclaimer": "Avustaja voi erehtyä. Tarkista tärkeät luvut niiden omilta sivuilta."
+      "disclaimer": "Blueprnt AI voi erehtyä. Tarkista tärkeät luvut niiden omilta sivuilta.",
+      "thinking": "Miettii…",
+      "checkingData": "Tarkistaa tietojanne…"
     }
   },
   "errors": {
@@ -2443,7 +2445,7 @@
     "payMappingDocumentationRequired": "Lisää asiallinen peruste tai syventävä analyysi ennen kuin merkitset ryhmän valmiiksi.",
     "payMappingGateUnmet": "Tarkastuksessa on vielä vaiheita ennen kuin palkkakartoituksen voi viimeistellä.",
     "payMappingPreconditionsUnmet": "Henkilöiltä tai rooleilta puuttuu luokittelu tai arviointi, joten palkkakartoitusta ei voi vielä aloittaa.",
-    "assistantBusy": "Avustaja vastaa vielä. Odota, että se on valmis, tai pysäytä se.",
+    "assistantBusy": "Blueprnt AI vastaa vielä. Odota, että se on valmis, tai pysäytä se.",
     "assistantRateLimited": "Olet lähettänyt monta viestiä lyhyessä ajassa. Yritä hetken kuluttua uudelleen.",
     "assistantInvalidMessage": "Kirjoita viesti ennen lähettämistä.",
     "assistantPersonalData": "Viesti näyttää sisältävän työntekijän henkilötietoja. Poista ne ja kysy yleisemmällä tasolla."

@@ -1,5 +1,7 @@
 "use client"
 
+import { PlusSignIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
 import { useMutation } from "convex/react"
@@ -49,6 +51,12 @@ export default function AssistantPage() {
             disabled={busy}
             onClick={() => void handleNewConversation()}
           >
+            <HugeiconsIcon
+              icon={PlusSignIcon}
+              size={16}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
             {t("newConversation")}
           </Button>
         }

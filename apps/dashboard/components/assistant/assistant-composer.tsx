@@ -1,5 +1,7 @@
 "use client"
 
+import { ArrowUp02Icon, StopIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
   InputGroup,
   InputGroupAddon,
@@ -30,7 +32,7 @@ export function AssistantComposer(props: {
   }
 
   return (
-    <div className="border-t pt-3">
+    <div className="pt-3">
       <InputGroup>
         <InputGroupTextarea
           value={text}
@@ -50,16 +52,23 @@ export function AssistantComposer(props: {
         />
         <InputGroupAddon align="inline-end">
           {props.busy ? (
-            <InputGroupButton onClick={props.onStop} aria-label={t("stop")}>
-              {t("stop")}
+            <InputGroupButton
+              size="icon-sm"
+              variant="outline"
+              onClick={props.onStop}
+              aria-label={t("stop")}
+            >
+              <HugeiconsIcon icon={StopIcon} strokeWidth={2} />
             </InputGroupButton>
           ) : (
             <InputGroupButton
+              size="icon-sm"
+              variant="default"
               onClick={send}
               disabled={!canSend}
               aria-label={t("send")}
             >
-              {t("send")}
+              <HugeiconsIcon icon={ArrowUp02Icon} strokeWidth={2} />
             </InputGroupButton>
           )}
         </InputGroupAddon>

@@ -23,14 +23,15 @@ function renderMessage(
 }
 
 describe("AssistantMessage", () => {
-  it("renders a user text part", () => {
-    renderMessage({
+  it("renders a user text part in a muted bubble", () => {
+    const { container } = renderMessage({
       _id: "1",
       role: "user",
       status: "complete",
       parts: [{ type: "text", text: "hello" }],
     })
     expect(screen.getByText("hello")).toBeDefined()
+    expect(container.querySelector('[data-variant="muted"]')).not.toBeNull()
   })
 
   it("renders assistant markdown and a chart part in order", () => {
@@ -54,14 +55,46 @@ describe("AssistantMessage", () => {
     ).toBeTruthy()
   })
 
-  it("shows a pending indicator while streaming with no parts yet", () => {
+  it("shows a shimmering thinking indicator while streaming with no parts yet", () => {
     renderMessage({
       _id: "3",
       role: "assistant",
       status: "streaming",
       parts: [],
     })
-    expect(screen.getByTestId("assistant-pending")).toBeDefined()
+    const pending = screen.getByTestId("assistant-pending")
+    expect(pending.className).toContain("shimmer")
+    expect(pending.textContent).toBe(messages.dashboard.assistant.thinking)
+  })
+
+  it("shows the checking-data shimmer after already-streamed parts", () => {
+    renderMessage({
+      _id: "3b",
+      role: "assistant",
+      status: "streaming",
+      parts: [{ type: "text", text: "So far" }],
+      activity: "checkingData",
+    })
+    const activity = screen.getByTestId("assistant-activity")
+    expect(activity.className).toContain("shimmer")
+    expect(activity.textContent).toBe(messages.dashboard.assistant.checkingData)
+    // The already-streamed part stays visible, and the shimmer renders
+    // after it, not instead of it.
+    const soFar = screen.getByText("So far")
+    expect(
+      soFar.compareDocumentPosition(activity) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
+  it("does not show the checking-data shimmer once a reply is no longer streaming", () => {
+    renderMessage({
+      _id: "3c",
+      role: "assistant",
+      status: "complete",
+      parts: [{ type: "text", text: "Done" }],
+      activity: "checkingData",
+    })
+    expect(screen.queryByTestId("assistant-activity")).toBeNull()
   })
 
   it("shows the failure text for a failed reply", () => {

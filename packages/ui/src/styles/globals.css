@@ -8,6 +8,19 @@
 @source "../../../components/**/*.{ts,tsx}";
 @source "../**/*.{ts,tsx}";
 
+/* App-owned addition (not part of the shadcn/typeset vendor file above):
+   copied verbatim from the shadcn chatbot template's app/globals.css. Pins
+   the assistant's prose to a smaller, chat-appropriate size than the
+   library's own 1em default. */
+.typeset-docs {
+  --typeset-font-body: var(--font-sans);
+  --typeset-font-heading: var(--font-sans);
+  --typeset-font-mono: var(--font-mono);
+  --typeset-size: 15px;
+  --typeset-leading: 1.75;
+  --typeset-flow: 1.25em;
+}
+
 :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
