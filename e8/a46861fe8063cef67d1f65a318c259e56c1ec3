@@ -1,0 +1,29 @@
+packages/backend/convex/assistant/chat.ts
+  s_c6f9c899f4809f::t_3aa194cbed2d35 247-271
+  s_c6f9c899f4809f::t_6eb34f75bdf166 273,276-281
+packages/backend/convex/assistant/tools.ts
+  s_c6f9c899f4809f::t_aef9a69337a3c8 33
+  s_c6f9c899f4809f::t_b3000ebfc3238f 23-28
+packages/backend/convex/assistant/chat.test.ts
+  s_c6f9c899f4809f::t_327bd5a0a5fe01 168-224
+  s_c6f9c899f4809f::t_1d8c5cb4aca348 3
+packages/backend/convex/assistant/generate.ts
+  s_c6f9c899f4809f::t_54700f2c783971 101-138,160-163,192-200,202-204,206-214,216-217,221-228
+  s_c6f9c899f4809f::t_58bc8c5d411c31 229
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e8a46861fe8063cef67d1f65a318c259e56c1ec3",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
