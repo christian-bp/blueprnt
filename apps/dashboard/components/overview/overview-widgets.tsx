@@ -7,13 +7,17 @@ import {
   UserGroupIcon,
 } from "@hugeicons/core-free-icons"
 import type { IconSvgElement } from "@hugeicons/react"
-import type { ChartConfig } from "@workspace/ui/components/chart"
 import { useFormatter, useTranslations } from "next-intl"
 import type { ReactNode } from "react"
-import { GenderMenIcon } from "@/components/gender-mark"
 import { HeadcountTrend, PayGapTrend } from "@/components/overview/widget-viz"
 import { TrendPanel, type TrendPanelState } from "@/components/trend-panel"
 import { StatBar, WidgetCard } from "@/components/widget-card"
+import {
+  gapChartConfig,
+  headcountChartConfig,
+  toGapTrendRows,
+  toHeadcountTrendRows,
+} from "@/lib/gender-trend-chart-config"
 import type { PayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
 import { type HeadcountPoint, headcountTotal } from "@/lib/headcount-trend"
 import { hasTrendShape, type PayGapPoint } from "@/lib/pay-gap-trend"
@@ -182,14 +186,7 @@ export function OverviewCharts({
   const format = useFormatter()
 
   const genderLabels = { women: tGap("women"), men: tGap("men") }
-  const trendConfig = {
-    women: { label: genderLabels.women, color: "var(--gender-woman)" },
-    men: {
-      label: genderLabels.men,
-      color: "var(--gender-man)",
-      icon: GenderMenIcon,
-    },
-  } satisfies ChartConfig
+  const trendConfig = headcountChartConfig(genderLabels)
 
   // THREE states, not two. Folding "still loading" into the same branch as
   // "not enough runs" made both panels assert "a trend appears once you have
@@ -227,9 +224,7 @@ export function OverviewCharts({
       ? t("gapTrend.unmeasuredEmpty")
       : t("trendEmpty")
 
-  const gapConfig = {
-    gapPct: { label: t("gap.label"), color: "var(--brand)" },
-  } satisfies ChartConfig
+  const gapConfig = gapChartConfig(t("gap.label"))
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -246,14 +241,7 @@ export function OverviewCharts({
             chart to stay in the tree. */}
         <div aria-hidden="true">
           <HeadcountTrend
-            data={(headcountTrend ?? []).map((point) => ({
-              label: point.runLabel,
-              caption: format.dateTime(new Date(point.date), {
-                dateStyle: "medium",
-              }),
-              women: point.women,
-              men: point.men,
-            }))}
+            data={toHeadcountTrendRows(headcountTrend ?? [], format.dateTime)}
             config={trendConfig}
             labels={genderLabels}
             totalLabel={t("workforce.trendLabel")}
@@ -269,13 +257,7 @@ export function OverviewCharts({
       >
         <div aria-hidden="true">
           <PayGapTrend
-            data={(gapTrend ?? []).map((point) => ({
-              label: point.runLabel,
-              caption: format.dateTime(new Date(point.date), {
-                dateStyle: "medium",
-              }),
-              gapPct: point.gapPct,
-            }))}
+            data={toGapTrendRows(gapTrend ?? [], format.dateTime)}
             config={gapConfig}
             seriesLabel={t("gap.label")}
             unmeasuredLabel={t("gapTrend.unmeasured")}

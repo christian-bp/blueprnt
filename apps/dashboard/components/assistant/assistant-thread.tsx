@@ -92,7 +92,10 @@ export function AssistantThread(props: {
             ))}
           </MessageScrollerContent>
         </MessageScrollerViewport>
-        <MessageScrollerButton aria-label={t("title")} />
+        {/* No aria-label override: an explicit one wins over subtree text in
+            accessible-name computation and would erase the vendor's own
+            "Scroll to end" sr-only label with the wrong name. */}
+        <MessageScrollerButton />
       </MessageScroller>
     </MessageScrollerProvider>
   )
