@@ -20,14 +20,17 @@ export const VISUAL_TOOL_CHARTS: Record<string, AssistantChartKind> = {
 // returns (numbers + composed summary), which is what the model sees.
 //
 // Each description states its figures' DATA BASIS explicitly (I5 in
-// insights.ts): get_org_stats and the two trend tools read the frozen
-// pay-mapping population, get_pay_stats reads the live register as of now.
-// The two bases can disagree and the model must never conflate them.
+// insights.ts). get_org_stats is SPLIT: workforce size and the pay gap come
+// from the latest completed pay mapping's frozen data (same as the two trend
+// tools, one point per pay mapping each), while its role counts come from
+// the live roles register, because that count changes as roles are added or
+// evaluated between pay mappings. get_pay_stats reads the live register as
+// of now. The bases can disagree and the model must never conflate them.
 export function buildAssistantTools(ctx: ActionCtx, args: { orgId: string }) {
   return {
     get_org_stats: tool({
       description:
-        "Current organization-level numbers: workforce size, number of roles, how many roles are evaluated, and the latest pay gap percentage. These figures come from the latest completed pay mapping's frozen population, not the live register. Use for any question about the organization's current state.",
+        "Current organization-level numbers: workforce size, number of roles, how many roles are evaluated, and the latest pay gap percentage. Workforce size and the pay gap come from the latest completed pay mapping's frozen data; the role counts come from the live roles register, not the pay mapping. Use for any question about the organization's current state.",
       inputSchema: z.object({}),
       execute: async () =>
         await ctx.runQuery(internal.assistant.insights.orgStats, {

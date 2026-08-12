@@ -244,12 +244,41 @@ export const getGenerationContext = internalQuery({
       .withIndex("by_thread", (q) => q.eq("threadId", args.threadId))
       .order("desc")
       .take(ASSISTANT_HISTORY_LIMIT)
+    const ascending = recent.reverse()
+
+    // ADR-0018's personal-data screen flags a USER message only after it is
+    // already stored (sendMessage writes it eagerly, before generation
+    // runs), so the flagged row itself is never empty and never "failed": it
+    // is the ASSISTANT reply right after it that gets status "failed" /
+    // errorCode assistantPersonalData. That reply is dropped below by the
+    // existing failed-row filter, but the user row that triggered it is not,
+    // so it would otherwise ride into every later prompt for as long as it
+    // stays inside the history window. Find each such reply and drop the
+    // user row immediately before it too, so a flagged turn is invisible to
+    // the model on every subsequent generation, not just its own.
+    const flaggedUserIndexes = new Set<number>()
+    ascending.forEach((message, index) => {
+      if (
+        message.role === "assistant" &&
+        message.errorCode === ERROR_CODES.assistantPersonalData
+      ) {
+        const prior = ascending[index - 1]
+        if (prior !== undefined && prior.role === "user") {
+          flaggedUserIndexes.add(index - 1)
+        }
+      }
+    })
+
     return (
-      recent
-        .reverse()
+      ascending
         // The in-flight placeholder (empty parts) and failed rows carry no
         // signal; stopped rows keep their partial parts and stay in context.
-        .filter((m) => m.parts.length > 0 && m.status !== "failed")
+        .filter(
+          (m, index) =>
+            m.parts.length > 0 &&
+            m.status !== "failed" &&
+            !flaggedUserIndexes.has(index)
+        )
         .map((m) => ({ role: m.role, text: contextText(m.parts) }))
     )
   },

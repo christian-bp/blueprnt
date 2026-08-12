@@ -98,62 +98,12 @@ export const generateAssistantReply = internalAction({
         stopWhen: stepCountIs(ASSISTANT_MAX_TOOL_STEPS),
       })
 
-      let lastFlush = 0
-      const flush = async (): Promise<boolean> => {
-        const stopRequested = await ctx.runMutation(
-          internal.assistant.chat.updateParts,
-          { messageId: args.assistantMessageId, parts: snapshot() }
-        )
-        if (stopRequested) {
-          stopped = true
-          controller.abort()
-        }
-        return stopRequested
-      }
-
-      // Part type names and fields verified against node_modules/ai@7.0.51's
-      // dist/index.d.ts (the bundled docs describe an older shape for the
-      // `stream`/`fullStream` union): a text-delta part carries `text`; a
-      // tool-result part carries `toolName` (widens to `string` because the
-      // union also includes the dynamic-tool branch) and `output` (typed
-      // `unknown` for the same reason, so it is narrowed defensively below
-      // rather than cast). `stream` is the current, non-deprecated property
-      // (`fullStream` is `@deprecated Use stream instead`, identical type).
-      for await (const part of result.stream) {
-        if (part.type === "text-delta") {
-          currentText += part.text
-          const now = Date.now()
-          if (now - lastFlush >= ASSISTANT_FLUSH_INTERVAL_MS) {
-            lastFlush = now
-            if (await flush()) break
-          }
-        } else if (part.type === "tool-result") {
-          const chart = VISUAL_TOOL_CHARTS[part.toolName]
-          if (chart !== undefined) {
-            if (currentText !== "") {
-              done.push({ type: "text", text: currentText })
-              currentText = ""
-            }
-            done.push({
-              type: "chart",
-              chart,
-              summary:
-                typeof part.output === "object" &&
-                part.output !== null &&
-                "summary" in part.output &&
-                typeof part.output.summary === "string"
-                  ? part.output.summary
-                  : "",
-            })
-            if (await flush()) break
-          }
-        }
-      }
-
       // Every generation that consumed tokens gets a usage row, including
       // stopped ones: on abort the SDK's usage promise may reject or never
       // settle, so it is raced against a short timeout and the row is only
-      // skipped when the provider reported nothing.
+      // skipped when the provider reported nothing. Defined before the loop
+      // because the abort branch below (a user-requested stop) also needs
+      // it, matching the fall-through complete/stopped path.
       const recordUsage = async () => {
         try {
           const usage = await Promise.race([
@@ -184,6 +134,97 @@ export const generateAssistantReply = internalAction({
             error: error instanceof Error ? error.message : String(error),
           })
         }
+      }
+
+      let lastFlush = 0
+      const flush = async (): Promise<boolean> => {
+        const stopRequested = await ctx.runMutation(
+          internal.assistant.chat.updateParts,
+          { messageId: args.assistantMessageId, parts: snapshot() }
+        )
+        if (stopRequested) {
+          stopped = true
+          controller.abort()
+        }
+        return stopRequested
+      }
+
+      // Part type names and fields verified against node_modules/ai@7.0.51's
+      // dist/index.d.ts (the bundled docs describe an older shape for the
+      // `stream`/`fullStream` union): a text-delta part carries `text`; a
+      // tool-result part carries `toolName` (widens to `string` because the
+      // union also includes the dynamic-tool branch) and `output` (typed
+      // `unknown` for the same reason, so it is narrowed defensively below
+      // rather than cast). `stream` is the current, non-deprecated property
+      // (`fullStream` is `@deprecated Use stream instead`, identical type).
+      // The SDK does NOT throw on abort or on a non-fatal error: it enqueues
+      // an `{ type: "abort" }` or `{ type: "error", error }` part and closes
+      // the stream gracefully (dist/index.js's `pull`/`eventProcessor`), so
+      // both are handled here, not in the catch block below.
+      for await (const part of result.stream) {
+        if (part.type === "text-delta") {
+          currentText += part.text
+          const now = Date.now()
+          if (now - lastFlush >= ASSISTANT_FLUSH_INTERVAL_MS) {
+            lastFlush = now
+            if (await flush()) break
+          }
+        } else if (part.type === "tool-result") {
+          const chart = VISUAL_TOOL_CHARTS[part.toolName]
+          if (chart !== undefined) {
+            if (currentText !== "") {
+              done.push({ type: "text", text: currentText })
+              currentText = ""
+            }
+            done.push({
+              type: "chart",
+              chart,
+              summary:
+                typeof part.output === "object" &&
+                part.output !== null &&
+                "summary" in part.output &&
+                typeof part.output.summary === "string"
+                  ? part.output.summary
+                  : "",
+            })
+            if (await flush()) break
+          }
+        } else if (part.type === "abort") {
+          // `stopped` is only ever set by our own flush() reporting a
+          // user-requested stop. Any OTHER abort (the 120s timeout leg of
+          // the AbortSignal.any race) reaches here with `stopped` still
+          // false, which is a failure, not a user stop.
+          if (stopped) {
+            await finalize("stopped")
+            await recordUsage()
+            return null
+          }
+          console.error("assistant stream aborted without a user stop", {
+            messageId: args.assistantMessageId,
+            reason: part.reason,
+          })
+          await finalize("failed", ERROR_CODES.aiGenerationFailed)
+          return null
+        } else if (part.type === "error") {
+          console.error("assistant stream reported an error part", {
+            messageId: args.assistantMessageId,
+            error:
+              part.error instanceof Error
+                ? part.error.message
+                : String(part.error),
+          })
+          await finalize("failed", ERROR_CODES.aiGenerationFailed)
+          return null
+        }
+      }
+
+      // A blank successful bubble is a lie (and getGenerationContext's
+      // empty-parts filter would hide it from the model on the next turn
+      // anyway): reachable when the tool-step budget is exhausted with no
+      // prose step left, so treat it as a failure instead of "complete".
+      if (!stopped && done.length === 0 && currentText === "") {
+        await finalize("failed", ERROR_CODES.aiGenerationFailed)
+        return null
       }
 
       await finalize(stopped ? "stopped" : "complete")

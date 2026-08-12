@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
+import { ERROR_CODES } from "../lib/errors"
 import { initConvexTest } from "../testing.helpers"
 
 // Seeds one org with a single member, mirroring the canonical
@@ -162,6 +163,63 @@ describe("assistant chat", () => {
     expect(context[1]?.role).toBe("assistant")
     expect(context[1]?.text).toContain("payGapTrend")
     expect(context[1]?.text).toContain("The gap is improving.")
+  })
+
+  it("getGenerationContext hides a personal-data-flagged turn from later prompts", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "What is Anna Andersson's pay?",
+      locale: "en",
+    })
+    const flaggedMessages = await asMember.query(
+      api.assistant.chat.listMessages,
+      { orgId, threadId }
+    )
+    const flaggedAssistantId = flaggedMessages[1]?._id
+    if (flaggedAssistantId === undefined) throw new Error("seed")
+    await t.mutation(internal.assistant.chat.finalizeReply, {
+      messageId: flaggedAssistantId,
+      status: "failed",
+      parts: [],
+      errorCode: ERROR_CODES.assistantPersonalData,
+    })
+
+    await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "What is a criterion?",
+      locale: "en",
+    })
+    const cleanMessages = await asMember.query(
+      api.assistant.chat.listMessages,
+      { orgId, threadId }
+    )
+    const cleanAssistantId = cleanMessages[3]?._id
+    if (cleanAssistantId === undefined) throw new Error("seed")
+    await t.mutation(internal.assistant.chat.finalizeReply, {
+      messageId: cleanAssistantId,
+      status: "complete",
+      parts: [
+        {
+          type: "text",
+          text: "A criterion is a dimension roles are evaluated on.",
+        },
+      ],
+    })
+
+    const context = await t.query(
+      internal.assistant.chat.getGenerationContext,
+      { threadId }
+    )
+    expect(context.some((m) => m.text.includes("Anna Andersson"))).toBe(false)
+    expect(context).toHaveLength(2)
+    expect(context[0]).toMatchObject({
+      role: "user",
+      text: "What is a criterion?",
+    })
+    expect(context[1]?.role).toBe("assistant")
+    expect(context[1]?.text).toContain("A criterion is a dimension")
   })
 
   it("enforces the hourly cap", async () => {
