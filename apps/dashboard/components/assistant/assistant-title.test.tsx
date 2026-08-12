@@ -21,6 +21,13 @@ describe("AssistantTitle", () => {
 
     rerender(<AssistantTitle title="Headcount overview" />)
 
+    // Synchronous, before any waiting: mode="wait" keeps the OUTGOING title
+    // mounted through its own exit animation rather than swapping instantly,
+    // so it is still in the DOM in this same tick. This is what an `exit`
+    // prop on the motion.span buys: without one, there is nothing to
+    // sequence and the old node would already be gone here.
+    expect(screen.getByText("Pay gap trend")).toBeDefined()
+
     await waitFor(() => {
       expect(screen.getByText("Headcount overview")).toBeDefined()
       expect(screen.queryByText("Pay gap trend")).toBeNull()
