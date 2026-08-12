@@ -1,0 +1,22 @@
+packages/backend/convex/assistant/erase.test.ts
+  s_c6f9c899f4809f::t_4c87e60c38b1b4 139-197
+packages/backend/convex/assistant/erase.ts
+  s_c6f9c899f4809f::t_6a9905215de071 17-19,23,46-54
+  s_c6f9c899f4809f::t_05292af1fabc73 55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e34772606506aa8e42dda4798388b28b3d93c9f1",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
