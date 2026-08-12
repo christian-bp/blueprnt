@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { api, components, internal } from "../_generated/api"
 import { ASSISTANT_THREAD_LIST_LIMIT } from "../ai/config"
 import { ERROR_CODES } from "../lib/errors"
@@ -492,76 +492,94 @@ describe("assistant chat", () => {
   it("switchConversation archives the current active thread and activates the selected one", async () => {
     const t = initConvexTest()
     const { orgId, asMember } = await seedOrgWithMember(t)
-    const threadA = await asMember.mutation(api.assistant.chat.sendMessage, {
-      orgId,
-      text: "a",
-      locale: "en",
-    })
-    // Baseline lastMessageAt, captured right after creation and before every
-    // later operation below (finalize, newConversation, a second send, and
-    // the switch itself), so the eventual "increased" assertion compares
-    // against threadA's ORIGINAL touch, not a value already inflated by one
-    // of those steps.
-    const beforeSwitch = await asMember.query(api.assistant.chat.listThreads, {
-      orgId,
-    })
-    const beforeLastMessageAt = beforeSwitch.find(
-      (thread) => thread._id === threadA
-    )?.lastMessageAt
-    if (beforeLastMessageAt === undefined) throw new Error("seed")
 
-    const messagesA = await asMember.query(api.assistant.chat.listMessages, {
-      orgId,
-      threadId: threadA,
-    })
-    const assistantA = messagesA[1]?._id
-    if (assistantA === undefined) throw new Error("seed")
-    await t.mutation(internal.assistant.chat.finalizeReply, {
-      messageId: assistantA,
-      status: "complete",
-      parts: [{ type: "text", text: "ok" }],
-    })
-    await asMember.mutation(api.assistant.chat.newConversation, { orgId })
+    // The switch's lastMessageAt bump is asserted against threadA's original
+    // touch below; both come from the same Date.now() the handlers call
+    // internally, so two real-clock reads can land in the same millisecond
+    // and tie. A fake clock, advanced explicitly right before the switch,
+    // makes the "after" reading deterministically later than the "before"
+    // one instead of racing the real clock's resolution.
+    vi.useFakeTimers({ now: 1_700_000_000_000 })
+    try {
+      const threadA = await asMember.mutation(api.assistant.chat.sendMessage, {
+        orgId,
+        text: "a",
+        locale: "en",
+      })
+      // Baseline lastMessageAt, captured right after creation and before every
+      // later operation below (finalize, newConversation, a second send, and
+      // the switch itself), so the eventual "increased" assertion compares
+      // against threadA's ORIGINAL touch, not a value already inflated by one
+      // of those steps.
+      const beforeSwitch = await asMember.query(
+        api.assistant.chat.listThreads,
+        { orgId }
+      )
+      const beforeLastMessageAt = beforeSwitch.find(
+        (thread) => thread._id === threadA
+      )?.lastMessageAt
+      if (beforeLastMessageAt === undefined) throw new Error("seed")
 
-    const threadB = await asMember.mutation(api.assistant.chat.sendMessage, {
-      orgId,
-      text: "b",
-      locale: "en",
-    })
-    const messagesB = await asMember.query(api.assistant.chat.listMessages, {
-      orgId,
-      threadId: threadB,
-    })
-    const assistantB = messagesB[1]?._id
-    if (assistantB === undefined) throw new Error("seed")
-    await t.mutation(internal.assistant.chat.finalizeReply, {
-      messageId: assistantB,
-      status: "complete",
-      parts: [{ type: "text", text: "ok" }],
-    })
+      const messagesA = await asMember.query(api.assistant.chat.listMessages, {
+        orgId,
+        threadId: threadA,
+      })
+      const assistantA = messagesA[1]?._id
+      if (assistantA === undefined) throw new Error("seed")
+      await t.mutation(internal.assistant.chat.finalizeReply, {
+        messageId: assistantA,
+        status: "complete",
+        parts: [{ type: "text", text: "ok" }],
+      })
+      await asMember.mutation(api.assistant.chat.newConversation, { orgId })
 
-    await asMember.mutation(api.assistant.chat.switchConversation, {
-      orgId,
-      threadId: threadA,
-    })
+      const threadB = await asMember.mutation(api.assistant.chat.sendMessage, {
+        orgId,
+        text: "b",
+        locale: "en",
+      })
+      const messagesB = await asMember.query(api.assistant.chat.listMessages, {
+        orgId,
+        threadId: threadB,
+      })
+      const assistantB = messagesB[1]?._id
+      if (assistantB === undefined) throw new Error("seed")
+      await t.mutation(internal.assistant.chat.finalizeReply, {
+        messageId: assistantB,
+        status: "complete",
+        parts: [{ type: "text", text: "ok" }],
+      })
 
-    const active = await asMember.query(api.assistant.chat.getActiveThread, {
-      orgId,
-    })
-    expect(active?._id).toBe(threadA)
-    // The positive half of the busy-guard story: switching bumps the
-    // selected thread's lastMessageAt (not just its status), which is what
-    // lets it sort back to the top of the next listThreads read.
-    expect(active?.lastMessageAt).toBeGreaterThan(beforeLastMessageAt)
-    const threads = await asMember.query(api.assistant.chat.listThreads, {
-      orgId,
-    })
-    expect(threads.find((thread) => thread._id === threadB)?.status).toBe(
-      "archived"
-    )
-    // threadA now carries the largest lastMessageAt of the two, so it sorts
-    // first: the same recency ordering listThreads relies on.
-    expect(threads[0]?._id).toBe(threadA)
+      // Advance the clock between threadA's original touch and the switch,
+      // so the switch's Date.now() call is a fixed, later instant rather
+      // than a second real-clock read racing the first.
+      vi.setSystemTime(1_700_000_005_000)
+
+      await asMember.mutation(api.assistant.chat.switchConversation, {
+        orgId,
+        threadId: threadA,
+      })
+
+      const active = await asMember.query(api.assistant.chat.getActiveThread, {
+        orgId,
+      })
+      expect(active?._id).toBe(threadA)
+      // The positive half of the busy-guard story: switching bumps the
+      // selected thread's lastMessageAt (not just its status), which is what
+      // lets it sort back to the top of the next listThreads read.
+      expect(active?.lastMessageAt).toBeGreaterThan(beforeLastMessageAt)
+      const threads = await asMember.query(api.assistant.chat.listThreads, {
+        orgId,
+      })
+      expect(threads.find((thread) => thread._id === threadB)?.status).toBe(
+        "archived"
+      )
+      // threadA now carries the largest lastMessageAt of the two, so it sorts
+      // first: the same recency ordering listThreads relies on.
+      expect(threads[0]?._id).toBe(threadA)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it("listThreads truncates to ASSISTANT_THREAD_LIST_LIMIT, keeping the most recently active", async () => {
