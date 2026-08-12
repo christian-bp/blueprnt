@@ -13,8 +13,20 @@ export const assistantThreads = defineTable({
   userId: v.string(),
   status: v.union(v.literal("active"), v.literal("archived")),
   lastMessageAt: v.number(),
+  // Set once, by the title-generation pipeline (generate.ts) after the
+  // thread's first user turn: a short AI-generated label. Absent until that
+  // completes (and forever on a thread whose first reply never completed);
+  // the history list falls back to a localized "untitled" + date.
+  title: v.optional(v.string()),
 })
   .index("by_org_user_status", ["orgId", "userId", "status"])
+  // Both statuses at once, ordered by recency of ACTIVITY for the history
+  // list (listThreads): an archived thread's lastMessageAt is frozen at its
+  // last touch before archival, so this stays a true "most recently active
+  // first" order even though _creationTime alone would not (switching back
+  // into an old thread bumps its lastMessageAt without changing when the
+  // thread was first created).
+  .index("by_org_user_lastMessageAt", ["orgId", "userId", "lastMessageAt"])
   .index("by_user", ["userId"])
 
 // The chart kinds the assistant can display. A chart part stores ONLY the

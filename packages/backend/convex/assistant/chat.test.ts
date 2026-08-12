@@ -369,4 +369,283 @@ describe("assistant chat", () => {
       await asMember.query(api.assistant.chat.getActiveThread, { orgId })
     ).toBeNull()
   })
+
+  it("sendMessage with fresh archives the active thread and starts a new one", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const firstThreadId = await asMember.mutation(
+      api.assistant.chat.sendMessage,
+      { orgId, text: "first", locale: "en" }
+    )
+    const firstMessages = await asMember.query(
+      api.assistant.chat.listMessages,
+      {
+        orgId,
+        threadId: firstThreadId,
+      }
+    )
+    const firstAssistantId = firstMessages[1]?._id
+    if (firstAssistantId === undefined) throw new Error("seed")
+    await t.mutation(internal.assistant.chat.finalizeReply, {
+      messageId: firstAssistantId,
+      status: "complete",
+      parts: [{ type: "text", text: "ok" }],
+    })
+
+    const secondThreadId = await asMember.mutation(
+      api.assistant.chat.sendMessage,
+      { orgId, text: "second", locale: "en", fresh: true }
+    )
+
+    expect(secondThreadId).not.toBe(firstThreadId)
+    const active = await asMember.query(api.assistant.chat.getActiveThread, {
+      orgId,
+    })
+    expect(active?._id).toBe(secondThreadId)
+    const threads = await asMember.query(api.assistant.chat.listThreads, {
+      orgId,
+    })
+    expect(threads.find((thread) => thread._id === firstThreadId)?.status).toBe(
+      "archived"
+    )
+  })
+
+  it("sendMessage with fresh throws assistantBusy instead of orphaning a streaming reply", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "first",
+      locale: "en",
+    })
+    // The placeholder assistant reply is never finalized here, so it is still
+    // "streaming"; a fresh send must refuse to archive it rather than
+    // silently orphan the in-flight reply.
+    await expect(
+      asMember.mutation(api.assistant.chat.sendMessage, {
+        orgId,
+        text: "second",
+        locale: "en",
+        fresh: true,
+      })
+    ).rejects.toThrow(/assistantBusy/)
+  })
+
+  it("listThreads returns only the caller's own threads, most recently active first", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, otherUserId } = await seedOrgWithTwoMembers(t)
+    const older = await t.run((ctx) =>
+      ctx.db.insert("assistantThreads", {
+        orgId,
+        userId,
+        status: "archived",
+        lastMessageAt: 1_000,
+        title: "Older conversation",
+      })
+    )
+    const newer = await t.run((ctx) =>
+      ctx.db.insert("assistantThreads", {
+        orgId,
+        userId,
+        status: "active",
+        lastMessageAt: 2_000,
+      })
+    )
+    await t.run((ctx) =>
+      ctx.db.insert("assistantThreads", {
+        orgId,
+        userId: otherUserId,
+        status: "active",
+        lastMessageAt: 3_000,
+      })
+    )
+
+    const asMember = t.withIdentity({ subject: userId })
+    const threads = await asMember.query(api.assistant.chat.listThreads, {
+      orgId,
+    })
+    expect(threads.map((thread) => thread._id)).toEqual([newer, older])
+    expect(threads[1]).toMatchObject({
+      title: "Older conversation",
+      status: "archived",
+      lastMessageAt: 1_000,
+    })
+    expect(threads[0]?.title).toBeUndefined()
+  })
+
+  it("switchConversation denies switching into another user's thread", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember, asOtherMember } = await seedOrgWithTwoMembers(t)
+    const otherThreadId = await asOtherMember.mutation(
+      api.assistant.chat.sendMessage,
+      { orgId, text: "not yours", locale: "en" }
+    )
+    await expect(
+      asMember.mutation(api.assistant.chat.switchConversation, {
+        orgId,
+        threadId: otherThreadId,
+      })
+    ).rejects.toThrow()
+  })
+
+  it("switchConversation archives the current active thread and activates the selected one", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadA = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "a",
+      locale: "en",
+    })
+    const messagesA = await asMember.query(api.assistant.chat.listMessages, {
+      orgId,
+      threadId: threadA,
+    })
+    const assistantA = messagesA[1]?._id
+    if (assistantA === undefined) throw new Error("seed")
+    await t.mutation(internal.assistant.chat.finalizeReply, {
+      messageId: assistantA,
+      status: "complete",
+      parts: [{ type: "text", text: "ok" }],
+    })
+    await asMember.mutation(api.assistant.chat.newConversation, { orgId })
+
+    const threadB = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "b",
+      locale: "en",
+    })
+    const messagesB = await asMember.query(api.assistant.chat.listMessages, {
+      orgId,
+      threadId: threadB,
+    })
+    const assistantB = messagesB[1]?._id
+    if (assistantB === undefined) throw new Error("seed")
+    await t.mutation(internal.assistant.chat.finalizeReply, {
+      messageId: assistantB,
+      status: "complete",
+      parts: [{ type: "text", text: "ok" }],
+    })
+
+    await asMember.mutation(api.assistant.chat.switchConversation, {
+      orgId,
+      threadId: threadA,
+    })
+
+    const active = await asMember.query(api.assistant.chat.getActiveThread, {
+      orgId,
+    })
+    expect(active?._id).toBe(threadA)
+    const threads = await asMember.query(api.assistant.chat.listThreads, {
+      orgId,
+    })
+    expect(threads.find((thread) => thread._id === threadB)?.status).toBe(
+      "archived"
+    )
+  })
+
+  it("switchConversation throws assistantBusy when the current active thread is still streaming", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadA = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "a",
+      locale: "en",
+    })
+    const messagesA = await asMember.query(api.assistant.chat.listMessages, {
+      orgId,
+      threadId: threadA,
+    })
+    const assistantA = messagesA[1]?._id
+    if (assistantA === undefined) throw new Error("seed")
+    await t.mutation(internal.assistant.chat.finalizeReply, {
+      messageId: assistantA,
+      status: "complete",
+      parts: [{ type: "text", text: "ok" }],
+    })
+    await asMember.mutation(api.assistant.chat.newConversation, { orgId })
+
+    // threadB's assistant placeholder is never finalized: it stays the
+    // current active thread's still-streaming last message.
+    await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "b",
+      locale: "en",
+    })
+
+    await expect(
+      asMember.mutation(api.assistant.chat.switchConversation, {
+        orgId,
+        threadId: threadA,
+      })
+    ).rejects.toThrow(/assistantBusy/)
+  })
+
+  it("switchConversation to the already-active thread is a no-op", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "hello",
+      locale: "en",
+    })
+    const before = await asMember.query(api.assistant.chat.getActiveThread, {
+      orgId,
+    })
+
+    await asMember.mutation(api.assistant.chat.switchConversation, {
+      orgId,
+      threadId,
+    })
+
+    const after = await asMember.query(api.assistant.chat.getActiveThread, {
+      orgId,
+    })
+    expect(after).toEqual(before)
+  })
+
+  it("setThreadTitle writes the title once and never overwrites an existing one", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "hello",
+      locale: "en",
+    })
+
+    await t.mutation(internal.assistant.chat.setThreadTitle, {
+      threadId,
+      title: "Pay gap overview",
+    })
+    expect(
+      (await asMember.query(api.assistant.chat.getActiveThread, { orgId }))
+        ?.title
+    ).toBe("Pay gap overview")
+
+    await t.mutation(internal.assistant.chat.setThreadTitle, {
+      threadId,
+      title: "A different title",
+    })
+    expect(
+      (await asMember.query(api.assistant.chat.getActiveThread, { orgId }))
+        ?.title
+    ).toBe("Pay gap overview")
+  })
+
+  it("setThreadTitle is a no-op once the thread no longer exists", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "hello",
+      locale: "en",
+    })
+    await t.run((ctx) => ctx.db.delete(threadId))
+
+    await expect(
+      t.mutation(internal.assistant.chat.setThreadTitle, {
+        threadId,
+        title: "Pay gap overview",
+      })
+    ).resolves.toBeNull()
+  })
 })

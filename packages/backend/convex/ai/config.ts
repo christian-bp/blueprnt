@@ -36,8 +36,15 @@ export const AI_ASSISTANT_MODEL_ID =
 // in-flight generation ARE rejected, with their own error codes.
 export const MAX_ASSISTANT_MESSAGE_LENGTH = 4000
 export const ASSISTANT_HISTORY_LIMIT = 20
+// The history list (listThreads) caps at this many threads, most recently
+// active first; a heavier user's older conversations still exist and stay
+// reachable if this cap is ever paginated, but are not shown today.
+export const ASSISTANT_THREAD_LIST_LIMIT = 50
 export const ASSISTANT_HOURLY_MESSAGE_CAP = 30
-export const ASSISTANT_FLUSH_INTERVAL_MS = 250
+// Paired with the client's staggered word reveal (streamdown's per-word
+// fadeIn): a tighter flush cadence keeps multi-word chunks small enough that
+// the reveal reads as a continuous stream rather than chunky bursts.
+export const ASSISTANT_FLUSH_INTERVAL_MS = 150
 export const ASSISTANT_MAX_TOOL_STEPS = 3
 // Generation hard-stop: a reply that has not finished within this window is
 // aborted server-side, so a stuck stream never holds a message in

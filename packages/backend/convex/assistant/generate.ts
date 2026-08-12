@@ -17,6 +17,7 @@ import { aiModel } from "../ai/provider"
 import { ERROR_CODES } from "../lib/errors"
 import { assistantSystemPrompt } from "./knowledge"
 import type { AssistantActivityKind, AssistantMessagePart } from "./tables"
+import { generateThreadTitle } from "./title"
 import { buildAssistantTools, chartForTool } from "./tools"
 
 export const generateAssistantReply = internalAction({
@@ -78,6 +79,27 @@ export const generateAssistantReply = internalAction({
         return null
       }
     }
+
+    // Title generation (once per thread, on its first user turn): fired here,
+    // NOT awaited, so it runs in parallel with the reply stream below rather
+    // than adding its own latency to it. "First user turn" mirrors the
+    // history-based guard elsewhere in this file: exactly one user message in
+    // context means this send is the thread's first. Awaited later, in the
+    // finally block, after every branch below has already run its own
+    // finalize/recordUsage sequence, so a slow or failed title call never
+    // delays or breaks the reply itself (title.ts catches its own errors).
+    const isFirstUserTurn =
+      history.filter((m) => m.role === "user").length === 1
+    const titlePromise: Promise<void> | null =
+      isFirstUserTurn && lastUser !== undefined
+        ? generateThreadTitle(ctx, {
+            threadId: args.threadId,
+            orgId: args.orgId,
+            userId: args.userId,
+            locale: args.locale,
+            firstUserMessage: lastUser.text,
+          })
+        : null
 
     const controller = new AbortController()
     let stopped = false
@@ -294,6 +316,11 @@ export const generateAssistantReply = internalAction({
       return null
     } finally {
       clearTimeout(timeoutId)
+      // Runs after every return above, once this generation's own
+      // finalize/recordUsage sequence has already completed: title.ts never
+      // throws (it catches and logs internally), so this can never turn a
+      // successful or already-failed reply into a failure.
+      if (titlePromise !== null) await titlePromise
     }
   },
 })
