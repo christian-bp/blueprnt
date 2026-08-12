@@ -5,8 +5,10 @@ import { internalMutation } from "../_generated/server"
 // Erasure batch: bounded writes per transaction (org-scale conventions); the
 // mutation reschedules itself until nothing remains. Hard delete, never a
 // flag: chat content is user-typed and may incidentally contain personal
-// data (ADR-0018), so every user-erasure path schedules this.
-const ERASE_BATCH = 200
+// data (ADR-0018), so every user-erasure path schedules this. Exported so the
+// batch-boundary test can size its fixture off the real constant instead of a
+// hardcoded duplicate.
+export const ERASE_BATCH = 200
 
 export const eraseAssistantDataForUser = internalMutation({
   args: { userId: v.string() },
