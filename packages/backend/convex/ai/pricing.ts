@@ -5,7 +5,9 @@
 // historical cost. To change a price, edit this map; do not mutate stored
 // rows. Verified against mistral.ai/pricing on 2026-06-10 (Mistral Large 3:
 // $0.50/1M input, $1.50/1M output; Mistral Small 3: $0.10/1M input,
-// $0.30/1M output). Flag for re-verification at launch.
+// $0.30/1M output). Verified against mistral.ai/pricing/api on 2026-08-12
+// (Mistral Medium 3.5: $1.50/1M input, $7.50/1M output). Flag for
+// re-verification at launch.
 interface ModelPrice {
   inNanosPerToken: number
   outNanosPerToken: number
@@ -17,6 +19,7 @@ interface ModelPrice {
 export const MODEL_PRICING: Record<string, ModelPrice | undefined> = {
   "mistral-large-latest": { inNanosPerToken: 500, outNanosPerToken: 1500 },
   "mistral-small-latest": { inNanosPerToken: 100, outNanosPerToken: 300 },
+  "mistral-medium-latest": { inNanosPerToken: 1500, outNanosPerToken: 7500 },
 }
 
 // Returns integer nano-USD, or null when the model has no pricing entry (the

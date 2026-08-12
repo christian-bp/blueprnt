@@ -2425,6 +2425,10 @@
     "payMappingRunCompleted": "The pay mapping is completed and locked. Reopen it to edit.",
     "payMappingDocumentationRequired": "Add an objective reason or a deepened analysis before marking the group done.",
     "payMappingGateUnmet": "Steps remain in the review before the pay mapping can be completed.",
-    "payMappingPreconditionsUnmet": "People or roles are missing classification or evaluation, so the pay mapping cannot start yet."
+    "payMappingPreconditionsUnmet": "People or roles are missing classification or evaluation, so the pay mapping cannot start yet.",
+    "assistantBusy": "The assistant is still answering. Wait for it to finish or stop it.",
+    "assistantRateLimited": "You have sent many messages in a short time. Try again in a little while.",
+    "assistantInvalidMessage": "Write a message before sending.",
+    "assistantPersonalData": "The message seems to include an employee's personal details. Remove them and ask again in general terms."
   }
 }

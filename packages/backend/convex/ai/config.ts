@@ -20,3 +20,31 @@ export const AI_PROFILE_MODEL_ID =
 // should have to satisfy.
 export const MAX_PROMPT_IDENTITY_FIELD = 200
 export const MAX_PROMPT_DESCRIPTION = 2000
+
+// The assistant chat model: conversational latency matters more than draft
+// quality, so the default is the mid tier. Env-overridable like the others.
+export const AI_ASSISTANT_MODEL_ID =
+  process.env.MISTRAL_ASSISTANT_MODEL ?? "mistral-medium-latest"
+
+// Assistant guardrails. The message cap is clamped, not rejected (same
+// rationale as MAX_PROMPT_DESCRIPTION); the hourly cap and the single
+// in-flight generation ARE rejected, with their own error codes.
+export const MAX_ASSISTANT_MESSAGE_LENGTH = 4000
+export const ASSISTANT_HISTORY_LIMIT = 20
+export const ASSISTANT_HOURLY_MESSAGE_CAP = 30
+export const ASSISTANT_FLUSH_INTERVAL_MS = 250
+export const ASSISTANT_MAX_TOOL_STEPS = 3
+// Statistical disclosure floor: a pay statistic over fewer people than this
+// is suppressed before it reaches the model, because a tiny group's average
+// IS an individual's salary (ADR-0018).
+export const ASSISTANT_MIN_GROUP_SIZE = 3
+
+// The prompt instructs the model to respond in the requester's UI language.
+// Lives here (not in generate.ts) so V8-runtime modules can build prompts.
+export const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",
+  sv: "Swedish",
+  nb: "Norwegian (Bokmal)",
+  da: "Danish",
+  fi: "Finnish",
+}

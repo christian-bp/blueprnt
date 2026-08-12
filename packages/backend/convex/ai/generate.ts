@@ -31,16 +31,8 @@ async function recordUsage(
   }
 }
 
-// The prompt instructs the model to respond in the requester's UI language.
-const LANGUAGE_NAMES: Record<string, string> = {
-  en: "English",
-  sv: "Swedish",
-  nb: "Norwegian (Bokmal)",
-  da: "Danish",
-  fi: "Finnish",
-}
 import { ERROR_CODES } from "../lib/errors"
-import { AI_PROFILE_MODEL_ID } from "./config"
+import { AI_PROFILE_MODEL_ID, LANGUAGE_NAMES } from "./config"
 import { aiModel } from "./provider"
 import { withSchemaRetry } from "./retry"
 import { sanitizeStarterImport } from "./starterImport"

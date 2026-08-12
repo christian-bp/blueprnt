@@ -2425,6 +2425,10 @@
     "payMappingRunCompleted": "Lønkortlægningen er afsluttet og låst. Genåbn den for at redigere.",
     "payMappingDocumentationRequired": "Tilføj en saglig grund eller en uddybet analyse, før du markerer gruppen som udført.",
     "payMappingGateUnmet": "Der er trin tilbage i gennemgangen, før lønkortlægningen kan afsluttes.",
-    "payMappingPreconditionsUnmet": "Personer eller roller mangler klassificering eller vurdering, så lønkortlægningen kan ikke startes endnu."
+    "payMappingPreconditionsUnmet": "Personer eller roller mangler klassificering eller vurdering, så lønkortlægningen kan ikke startes endnu.",
+    "assistantBusy": "Assistenten svarer stadig. Vent til den er færdig, eller stop den.",
+    "assistantRateLimited": "Du har sendt mange beskeder på kort tid. Prøv igen om lidt.",
+    "assistantInvalidMessage": "Skriv en besked, før du sender.",
+    "assistantPersonalData": "Beskeden ser ud til at indeholde en medarbejders personoplysninger. Fjern dem, og stil spørgsmålet mere generelt."
   }
 }

@@ -31,6 +31,10 @@ export const ERROR_CODES = {
   payMappingDocumentationRequired: "errors.payMappingDocumentationRequired",
   payMappingGateUnmet: "errors.payMappingGateUnmet",
   payMappingPreconditionsUnmet: "errors.payMappingPreconditionsUnmet",
+  assistantBusy: "errors.assistantBusy",
+  assistantRateLimited: "errors.assistantRateLimited",
+  assistantInvalidMessage: "errors.assistantInvalidMessage",
+  assistantPersonalData: "errors.assistantPersonalData",
 } as const
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES]

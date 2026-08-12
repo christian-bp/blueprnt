@@ -2425,6 +2425,10 @@
     "payMappingRunCompleted": "Lönekartläggningen är slutförd och låst. Öppna den igen för att redigera.",
     "payMappingDocumentationRequired": "Lägg till ett sakligt skäl eller en fördjupad analys innan du klarmarkerar gruppen.",
     "payMappingGateUnmet": "Det finns steg kvar i granskningen innan lönekartläggningen kan slutföras.",
-    "payMappingPreconditionsUnmet": "Personer eller roller saknar klassificering eller utvärdering, så lönekartläggningen kan inte startas än."
+    "payMappingPreconditionsUnmet": "Personer eller roller saknar klassificering eller utvärdering, så lönekartläggningen kan inte startas än.",
+    "assistantBusy": "Assistenten svarar fortfarande. Vänta tills den är klar eller stoppa den.",
+    "assistantRateLimited": "Du har skickat många meddelanden på kort tid. Försök igen om en stund.",
+    "assistantInvalidMessage": "Skriv ett meddelande innan du skickar.",
+    "assistantPersonalData": "Meddelandet verkar innehålla en anställds personuppgifter. Ta bort dem och ställ frågan mer generellt."
   }
 }

@@ -2425,6 +2425,10 @@
     "payMappingRunCompleted": "Palkkakartoitus on valmis ja lukittu. Avaa se uudelleen muokataksesi.",
     "payMappingDocumentationRequired": "Lisää asiallinen peruste tai syventävä analyysi ennen kuin merkitset ryhmän valmiiksi.",
     "payMappingGateUnmet": "Tarkastuksessa on vielä vaiheita ennen kuin palkkakartoituksen voi viimeistellä.",
-    "payMappingPreconditionsUnmet": "Henkilöiltä tai rooleilta puuttuu luokittelu tai arviointi, joten palkkakartoitusta ei voi vielä aloittaa."
+    "payMappingPreconditionsUnmet": "Henkilöiltä tai rooleilta puuttuu luokittelu tai arviointi, joten palkkakartoitusta ei voi vielä aloittaa.",
+    "assistantBusy": "Avustaja vastaa vielä. Odota, että se on valmis, tai pysäytä se.",
+    "assistantRateLimited": "Olet lähettänyt monta viestiä lyhyessä ajassa. Yritä hetken kuluttua uudelleen.",
+    "assistantInvalidMessage": "Kirjoita viesti ennen lähettämistä.",
+    "assistantPersonalData": "Viesti näyttää sisältävän työntekijän henkilötietoja. Poista ne ja kysy yleisemmällä tasolla."
   }
 }
