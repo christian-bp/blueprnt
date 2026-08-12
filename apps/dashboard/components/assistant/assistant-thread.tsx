@@ -18,16 +18,11 @@ import {
 } from "@workspace/ui/components/message-scroller"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useTranslations } from "next-intl"
+import { SUGGESTION_KEYS } from "@/components/assistant/assistant-composer"
 import {
   AssistantMessage,
   type AssistantChatMessage,
 } from "@/components/assistant/assistant-message"
-
-const SUGGESTION_KEYS = [
-  "suggestionCriterion",
-  "suggestionGapTrend",
-  "suggestionPayMapping",
-] as const
 
 // The thread's three states: a content-shaped loading skeleton, an empty
 // state with starter suggestions, or the scrollable message list. The

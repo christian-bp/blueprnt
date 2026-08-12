@@ -25,6 +25,15 @@ export const ASSISTANT_INPUT_GROUP_CLASS =
 // template's roomier p-3.5 in place of the vendored px-2.5/py-2.
 export const ASSISTANT_TEXTAREA_CLASS = "p-3.5"
 
+// The starter prompts shown as suggestion chips both on the overview's
+// AssistantPrompt and in the chat thread's own empty state, so the two
+// surfaces can never drift to different suggestions.
+export const SUGGESTION_KEYS = [
+  "suggestionCriterion",
+  "suggestionGapTrend",
+  "suggestionPayMapping",
+] as const
+
 // The assistant page's presentational input: send/stop live in the same
 // slot (only one control is ever mounted, matching busy), and Enter submits
 // while Shift+Enter and an in-progress IME composition both fall through to

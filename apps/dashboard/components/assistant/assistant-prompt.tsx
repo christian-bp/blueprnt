@@ -15,15 +15,10 @@ import { useState } from "react"
 import {
   ASSISTANT_INPUT_GROUP_CLASS,
   ASSISTANT_TEXTAREA_CLASS,
+  SUGGESTION_KEYS,
 } from "@/components/assistant/assistant-composer"
 import { useOrganization } from "@/components/org-context"
 import { translateErrorCode } from "@/lib/convex-error"
-
-const SUGGESTION_KEYS = [
-  "suggestionCriterion",
-  "suggestionGapTrend",
-  "suggestionPayMapping",
-] as const
 
 // The overview's entry into the assistant (midday-style: the prompt lives on
 // the landing page, the conversation lives on /assistant). Because messages
