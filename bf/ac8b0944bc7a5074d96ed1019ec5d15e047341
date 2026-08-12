@@ -1,0 +1,37 @@
+packages/i18n/messages/fi.json
+  s_c6f9c899f4809f::t_4c22b11562efc1 2401-2415
+  s_c6f9c899f4809f::t_3a5937f8d45973 1975-1976
+  s_c6f9c899f4809f::t_52e3bef532cfe0 208-209
+packages/i18n/messages/sv.json
+  s_c6f9c899f4809f::t_325b359f085f9a 2401-2415
+  s_c6f9c899f4809f::t_825fa5e940c468 1975-1976
+  s_c6f9c899f4809f::t_8dadfb6802cd3a 208-209
+packages/i18n/messages/en.json
+  s_c6f9c899f4809f::t_9b679fc3012b4d 208-209
+  s_c6f9c899f4809f::t_652ef7b3a028ef 2401-2415
+  s_c6f9c899f4809f::t_c68365a01eac00 1975-1976
+packages/i18n/messages/da.json
+  s_c6f9c899f4809f::t_fa0d6d31ffb002 208-209
+  s_c6f9c899f4809f::t_7243a2be9f1958 1975-1976
+  s_c6f9c899f4809f::t_24643f6acab228 2401-2415
+packages/i18n/messages/nb.json
+  s_c6f9c899f4809f::t_8ed86be27698c5 2401-2415
+  s_c6f9c899f4809f::t_5e1e7b656be5a6 208-209
+  s_c6f9c899f4809f::t_6db787d9bae385 1975-1976
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "bfac8b0944bc7a5074d96ed1019ec5d15e047341",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
