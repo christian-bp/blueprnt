@@ -1,4 +1,3 @@
-import type { IconSvgElement } from "@hugeicons/react"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import type { ReactNode } from "react"
@@ -61,21 +60,17 @@ function TrendBody({
 // to stay in the tree.
 export function TrendPanel({
   title,
-  icon,
-  action,
   state,
   emptyText,
   children,
 }: {
   title: string
-  icon?: IconSvgElement
-  action?: { label: string; href: string }
   state: TrendPanelState
   emptyText: string
   children: ReactNode
 }) {
   return (
-    <PanelCard title={title} icon={icon} action={action} bleed>
+    <PanelCard title={title} bleed>
       {state === "ready" ? (
         children
       ) : (

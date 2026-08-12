@@ -32,9 +32,3 @@ export function buildHeadcountTrend(
       men: r.menCount,
     }))
 }
-
-// The population a point represents, for the gates that ask whether there is
-// anything to plot.
-export function headcountTotal(point: HeadcountPoint): number {
-  return point.women + point.men
-}
