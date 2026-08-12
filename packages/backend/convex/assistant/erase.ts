@@ -14,10 +14,13 @@ export const eraseAssistantDataForUser = internalMutation({
   args: { userId: v.string() },
   returns: v.null(),
   handler: async (ctx, args) => {
+    // Threads are bounded the same way messages are: an org-scale user can
+    // hold more threads than fit one transaction, and erasure is the one
+    // path that must never fail at org scale.
     const threads = await ctx.db
       .query("assistantThreads")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .collect()
+      .take(ERASE_BATCH)
     let deleted = 0
     for (const thread of threads) {
       const messages = await ctx.db
@@ -39,6 +42,16 @@ export const eraseAssistantDataForUser = internalMutation({
         return null
       }
       await ctx.db.delete(thread._id)
+    }
+    if (threads.length >= ERASE_BATCH) {
+      // The thread page itself may have been cut short by the take() above,
+      // independent of the message-count cap: more threads may remain even
+      // though every thread fetched this run finished within budget.
+      await ctx.scheduler.runAfter(
+        0,
+        internal.assistant.erase.eraseAssistantDataForUser,
+        { userId: args.userId }
+      )
     }
     return null
   },

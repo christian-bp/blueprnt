@@ -136,4 +136,63 @@ describe("assistant erasure", () => {
       expect(messages[0].userId).toBe("user-2")
     })
   })
+
+  it("bounds thread collection itself, self-rescheduling past a full ERASE_BATCH page of threads", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      // ERASE_BATCH + 1 threads for the erased user, each with no messages,
+      // so message batching never fires and only the thread-count boundary
+      // is exercised: the first run's take(ERASE_BATCH) fetches exactly a
+      // full page, deletes every one of them (nothing left to bound their
+      // own message loop), and must still reschedule because a further
+      // thread may remain beyond that page.
+      for (let i = 0; i < ERASE_BATCH + 1; i += 1) {
+        await ctx.db.insert("assistantThreads", {
+          orgId: "org1",
+          userId: "user-1",
+          status: "active",
+          lastMessageAt: i,
+        })
+      }
+      // Another user's thread, which must survive every run untouched.
+      const otherThread = await ctx.db.insert("assistantThreads", {
+        orgId: "org1",
+        userId: "user-2",
+        status: "active",
+        lastMessageAt: 0,
+      })
+      await ctx.db.insert("assistantMessages", {
+        orgId: "org1",
+        userId: "user-2",
+        threadId: otherThread,
+        role: "user",
+        status: "complete",
+        parts: [{ type: "text", text: "keep me" }],
+      })
+    })
+
+    vi.useFakeTimers()
+    try {
+      await t.mutation(internal.assistant.erase.eraseAssistantDataForUser, {
+        userId: "user-1",
+      })
+      await t.finishAllScheduledFunctions(vi.runAllTimers)
+    } finally {
+      vi.useRealTimers()
+    }
+
+    const scheduled = await t.run((ctx) =>
+      ctx.db.system.query("_scheduled_functions").collect()
+    )
+    const reschedules = scheduled.filter((s) =>
+      s.name.includes("eraseAssistantDataForUser")
+    )
+    expect(reschedules.length).toBeGreaterThan(0)
+
+    await t.run(async (ctx) => {
+      const threads = await ctx.db.query("assistantThreads").collect()
+      expect(threads).toHaveLength(1)
+      expect(threads[0].userId).toBe("user-2")
+    })
+  })
 })
