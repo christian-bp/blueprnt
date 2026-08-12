@@ -1,0 +1,22 @@
+apps/dashboard/components/trend-panel.tsx
+  s_c6f9c899f4809f::t_a5b0c8c2e84c1a 73
+apps/dashboard/lib/headcount-trend.test.ts
+  s_c6f9c899f4809f::t_07dfe1f76fdc06 32
+  s_c6f9c899f4809f::t_1593c066accd73 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a5aee4a0c213337a202a420b204086e842958a22",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
