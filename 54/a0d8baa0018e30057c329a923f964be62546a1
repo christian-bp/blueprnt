@@ -1,0 +1,39 @@
+apps/dashboard/components/assistant/assistant-markdown.test.tsx
+  s_c6f9c899f4809f::t_e77fb0bb36d325 26
+apps/dashboard/app/(app)/assistant/page.tsx
+  s_c6f9c899f4809f::t_1fbf461f2cf6ba 13,18,29-35
+  s_c6f9c899f4809f::t_e1e1668c6d239c 50
+  s_c6f9c899f4809f::t_5eeb34f57da007 36
+apps/dashboard/components/assistant/assistant-message.tsx
+  s_c6f9c899f4809f::t_8713cf054ccda2 9
+  s_c6f9c899f4809f::t_2a9dc1c7499fd3 71
+apps/dashboard/components/assistant/assistant-panel.tsx
+  s_c6f9c899f4809f::t_86dbef3ab75866 21,35,37-41
+  s_c6f9c899f4809f::t_bfcd7b98b1e38e 12
+apps/dashboard/components/assistant/assistant-composer.tsx
+  s_c6f9c899f4809f::t_83054cff7136ec 15
+apps/dashboard/components/assistant/assistant-prompt.tsx
+  s_c6f9c899f4809f::t_7eaf88704d9efb 103-105
+apps/dashboard/lib/convex-error.test.ts
+  s_c6f9c899f4809f::t_a02e3d1fa07b73 1,4
+  s_c6f9c899f4809f::t_93d86f59016e8e 50-60
+apps/dashboard/lib/convex-error.ts
+  s_c6f9c899f4809f::t_a10723d92ebc1b 3-7,16,24-26
+  s_c6f9c899f4809f::t_31bf1e78c96114 10-12,19-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "54a0d8baa0018e30057c329a923f964be62546a1",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
