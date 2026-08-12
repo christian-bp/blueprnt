@@ -252,7 +252,7 @@ function TodoSection({
   children: ReactNode
 }) {
   return (
-    // id="todo": the hero's status line (Task 24) links here when there is
+    // id="todo": the hero's status line links here when there is
     // outstanding work, so this band is the link's actual destination.
     <section id="todo" className="flex flex-col gap-4">
       {label === null ? (

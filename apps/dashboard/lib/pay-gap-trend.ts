@@ -1,6 +1,6 @@
 import type { PayGapFlag } from "@workspace/core"
 
-// Pure derivation of the overview's pay-gap trend: one point per pay-mapping
+// Pure derivation of the assistant's pay-gap trend: one point per pay-mapping
 // run's reference date and frozen org-level gap, oldest first (so the chart
 // reads left-to-right chronologically), from the same listPayMappingRuns rows
 // use-pay-mapping-headline.ts already subscribes to (Convex dedupes the

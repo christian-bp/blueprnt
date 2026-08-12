@@ -14,19 +14,16 @@ import {
 } from "@/lib/gender-trend-chart-config"
 import { hasTrendShape } from "@/lib/pay-gap-trend"
 
-// A chart part renders LIVE, through the same hooks and chart components the
-// overview page reads (both hooks subscribe to the same listPayMappingRuns
-// query use-pay-mapping-headline.ts already reads; Convex dedupes identical
-// subscriptions, so calling both here costs nothing extra even though only
-// one is shown). Reusing the overview's own title/empty strings, chart
-// components, and chart config (gender-trend-chart-config.ts, shared with
-// OverviewCharts) means the two surfaces can never disagree about what a
-// chart is called or how it is drawn.
+// A chart part renders LIVE, through the same two hooks (both subscribe to
+// the same listPayMappingRuns query use-pay-mapping-headline.ts already
+// reads; Convex dedupes identical subscriptions, so calling both here costs
+// nothing extra even though only one is shown). Reusing the overview's own
+// title/empty strings and chart config (gender-trend-chart-config.ts) means
+// this chart can never disagree with the overview about what it is called.
 //
-// Unlike the overview's instances, this chart is never aria-hidden: the
-// overview hides its charts because the stat tiles above already state the
-// same figures in words, and in chat there is no such tile, so the chart IS
-// the content a screen reader needs to reach.
+// The chart is never aria-hidden: chat has no stat tile stating the same
+// figures in words, so the chart IS the content a screen reader needs to
+// reach.
 export function AssistantChartPart(props: {
   chart: "headcountTrend" | "payGapTrend"
 }) {
@@ -67,8 +64,8 @@ export function AssistantChartPart(props: {
   // A run with no measurable gap (a gender absent among its priced rows)
   // contributes no reading at all: without this gate, one run whose only
   // point is null rendered a titled "ready" panel with an invisible chart.
-  // Mirrors OverviewCharts' own gate (and its "only one is measurable" empty
-  // text) for this exact case, via the same hasTrendShape predicate.
+  // hasTrendShape is what tells "no runs yet" apart from "runs exist but
+  // none is measurable", which get different empty text below.
   const measuredGap = gap?.filter((point) => point.gapPct !== null) ?? []
   const gapReady =
     gap !== undefined && gap !== null && hasTrendShape(measuredGap)

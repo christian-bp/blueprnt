@@ -64,6 +64,26 @@ describe("AssistantHistoryRail", () => {
     expect(screen.queryByRole("button")).toBeNull()
   })
 
+  it("shows a content-shaped skeleton while the thread list is loading", () => {
+    onQuery(() => undefined)
+    const { container } = renderRail(true)
+    expect(
+      container.querySelectorAll('[data-slot="skeleton"]').length
+    ).toBeGreaterThan(0)
+    expect(screen.queryByRole("button")).toBeNull()
+    // The heading stays the real component while rows load.
+    expect(screen.getByText(t.history)).toBeDefined()
+  })
+
+  it("does not subscribe to the thread list while closed, only while open", () => {
+    const listThreadsQuery = vi.fn(() => [])
+    onQuery((ref) =>
+      ref === "assistant.chat.listThreads" ? listThreadsQuery() : undefined
+    )
+    renderRail(false)
+    expect(listThreadsQuery).not.toHaveBeenCalled()
+  })
+
   it("lists each thread's AI-generated title with its date while open", () => {
     onQuery((ref) =>
       ref === "assistant.chat.listThreads"

@@ -52,8 +52,8 @@ export default function AssistantPage() {
     // line of defense so nothing inside can force a page-level scrollbar.
     // A horizontal row, deliberately FULL WIDTH (no mx-auto/max-w here): the
     // history rail has to reach the real boundary between the page content
-    // and the app sidebar (the user's own wording), which only works if
-    // nothing narrower sits between this row and that edge. The row is
+    // and the app sidebar, which only works if nothing narrower sits between
+    // this row and that edge. The row is
     // bounded only by the shell's own page cap (app-shell.tsx: PAGE_MAX_W).
     // The reading-width cap moves to the main column alone, so the chat
     // column re-centers in whatever width the rail leaves behind as it

@@ -4,10 +4,9 @@ import { GenderMenIcon, type GenderSeries } from "@/components/gender-mark"
 import type { HeadcountPoint } from "@/lib/headcount-trend"
 import type { PayGapPoint } from "@/lib/pay-gap-trend"
 
-// Shared by OverviewCharts (overview-widgets.tsx) and AssistantChartPart, so
-// the dashboard and the in-chat chart can never draw the headcount/gap
-// trends with different colors, labels, or date formatting for the same
-// underlying rows.
+// The chart config both AssistantChartPart instances (headcount and pay-gap
+// trend) draw from, so the two in-chat charts can never draw with different
+// colors, labels, or date formatting for the same underlying rows.
 //
 // Kept pure and hook-free on purpose: callers pass in their own already
 // resolved translations and a date formatter (next-intl's

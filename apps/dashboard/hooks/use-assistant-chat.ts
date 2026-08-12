@@ -19,8 +19,8 @@ import { useQuery } from "convex/react"
 // title-generation pipeline finishes (or forever, on a thread whose first
 // reply never completed): AssistantTitle renders nothing in that case. The
 // full conversation HISTORY (every thread, not just the active one) is
-// deliberately not exposed here: it is read only by the rarely-opened
-// history dropdown via its own useAssistantThreads hook, so this hook (read
+// deliberately not exposed here: it is read only by the history rail's own
+// thread-list node, via its own useAssistantThreads hook, so this hook (read
 // by every chat render) never pays for that extra subscription.
 export function useAssistantChat(orgId: string) {
   const thread = useQuery(api.assistant.chat.getActiveThread, { orgId })

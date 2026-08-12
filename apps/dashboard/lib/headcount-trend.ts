@@ -1,4 +1,4 @@
-// Pure derivation of the overview's workforce trend chart: one point per
+// Pure derivation of the assistant's workforce trend chart: one point per
 // pay-mapping run's reference date and headcount, oldest first (so the area
 // chart's x-axis reads left-to-right chronologically), from the same
 // listPayMappingRuns rows use-pay-mapping-headline.ts already subscribes to
