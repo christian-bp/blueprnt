@@ -47,6 +47,7 @@ import type * as assistant_generate from "../assistant/generate.js";
 import type * as assistant_insights from "../assistant/insights.js";
 import type * as assistant_knowledge from "../assistant/knowledge.js";
 import type * as assistant_tables from "../assistant/tables.js";
+import type * as assistant_tools from "../assistant/tools.js";
 import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
 import type * as devReset from "../devReset.js";
@@ -145,6 +146,7 @@ declare const fullApi: ApiFromModules<{
   "assistant/insights": typeof assistant_insights;
   "assistant/knowledge": typeof assistant_knowledge;
   "assistant/tables": typeof assistant_tables;
+  "assistant/tools": typeof assistant_tools;
   auth: typeof auth;
   crons: typeof crons;
   devReset: typeof devReset;
