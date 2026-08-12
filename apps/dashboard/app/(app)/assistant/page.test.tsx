@@ -60,7 +60,7 @@ describe("AssistantPage", () => {
     expect(classes.some((c) => c.startsWith("min-h-["))).toBe(false)
   })
 
-  it("starts a new conversation and disables the button while a reply streams", async () => {
+  it("starts a new conversation and disables both edge controls while a reply streams", async () => {
     onQuery((ref) => {
       if (ref === "assistant.chat.getActiveThread") {
         return { _id: "thread-1", lastMessageAt: 0 }
@@ -77,6 +77,13 @@ describe("AssistantPage", () => {
       name: messages.dashboard.assistant.newConversation,
     }) as HTMLButtonElement
     expect(button.disabled).toBe(true)
+    // History shares the same orphan-guard rationale: switching threads
+    // mid-stream would silently orphan the in-flight reply, same as
+    // archiving the active thread via New conversation would.
+    const historyButton = screen.getByRole("button", {
+      name: messages.dashboard.assistant.history,
+    }) as HTMLButtonElement
+    expect(historyButton.disabled).toBe(true)
   })
 
   it("starts a new conversation on click when not busy", () => {
@@ -89,5 +96,36 @@ describe("AssistantPage", () => {
     expect(newConversationMock).toHaveBeenCalledExactlyOnceWith({
       orgId: "org-1",
     })
+  })
+
+  it("lays out the header as three regions, history left and new conversation right, so the centered title cannot shift either edge control", () => {
+    // A thread with a title, so the centered AssistantTitle actually mounts
+    // a region between the two edge controls (AnimatePresence renders no
+    // node at all while there is no title, per assistant-title.test.tsx).
+    onQuery((ref) =>
+      ref === "assistant.chat.getActiveThread"
+        ? { _id: "thread-1", lastMessageAt: 0, title: "Pay gap trend" }
+        : undefined
+    )
+    renderPage()
+    const historyButton = screen.getByRole("button", {
+      name: messages.dashboard.assistant.history,
+    })
+    const newConversationButton = screen.getByRole("button", {
+      name: messages.dashboard.assistant.newConversation,
+    })
+    const row = historyButton.closest(".justify-between") as HTMLElement
+    expect(row).not.toBeNull()
+    expect(row.contains(newConversationButton)).toBe(true)
+    expect(screen.getByText("Pay gap trend")).toBeDefined()
+    const regions = Array.from(row.children)
+    expect(regions).toHaveLength(3)
+    expect(regions[0]?.contains(historyButton)).toBe(true)
+    expect(regions.at(-1)?.contains(newConversationButton)).toBe(true)
+    // The title's own region sits between the two edge wrappers, never
+    // inside either one: growing from width 0 to auto can only ever eat
+    // into the leftover space between them.
+    expect(regions[1]?.contains(historyButton)).toBe(false)
+    expect(regions[1]?.contains(newConversationButton)).toBe(false)
   })
 })

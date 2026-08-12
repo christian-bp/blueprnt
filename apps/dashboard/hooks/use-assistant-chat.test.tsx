@@ -40,6 +40,31 @@ describe("useAssistantChat", () => {
     expect(result.current.loading).toBe(false)
     expect(result.current.messages).toEqual([])
     expect(result.current.thread).toBeNull()
+    expect(result.current.title).toBeUndefined()
+  })
+
+  it("exposes the active thread's AI-generated title", () => {
+    useQueryMock.mockImplementation((ref: string) => {
+      if (ref === "assistant.chat.getActiveThread") {
+        return { _id: "thread-1", lastMessageAt: 0, title: "Pay gap trend" }
+      }
+      if (ref === "assistant.chat.listMessages") return []
+      return undefined
+    })
+    const { result } = renderHook(() => useAssistantChat("org-1"))
+    expect(result.current.title).toBe("Pay gap trend")
+  })
+
+  it("leaves title undefined for a thread whose title has not landed yet", () => {
+    useQueryMock.mockImplementation((ref: string) => {
+      if (ref === "assistant.chat.getActiveThread") {
+        return { _id: "thread-1", lastMessageAt: 0 }
+      }
+      if (ref === "assistant.chat.listMessages") return []
+      return undefined
+    })
+    const { result } = renderHook(() => useAssistantChat("org-1"))
+    expect(result.current.title).toBeUndefined()
   })
 
   it("derives busy=true when the last message is streaming", () => {

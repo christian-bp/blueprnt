@@ -2404,6 +2404,8 @@
       "send": "Send",
       "stop": "Stopp",
       "newConversation": "Ny samtale",
+      "history": "Samtalehistorikk",
+      "untitled": "Ny samtale",
       "emptyTitle": "Spør Blueprnt AI",
       "emptyDescription": "Få hjelp med begreper, organisasjonens tall og hvor du gjør ting i blueprnt. Ta aldri med persondata som navn eller lønn.",
       "suggestionCriterion": "Hva er et kriterium?",

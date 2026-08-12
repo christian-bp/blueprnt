@@ -14,6 +14,14 @@ import { useQuery } from "convex/react"
 // thread undefined = still loading. thread null = no conversation yet (the
 // message list stays skipped, so `messages` resolves to the empty array
 // without a second round trip).
+//
+// `title` is the active thread's AI-generated label, undefined until the
+// title-generation pipeline finishes (or forever, on a thread whose first
+// reply never completed): AssistantTitle renders nothing in that case. The
+// full conversation HISTORY (every thread, not just the active one) is
+// deliberately not exposed here: it is read only by the rarely-opened
+// history dropdown via its own useAssistantThreads hook, so this hook (read
+// by every chat render) never pays for that extra subscription.
 export function useAssistantChat(orgId: string) {
   const thread = useQuery(api.assistant.chat.getActiveThread, { orgId })
   const messages = useQuery(
@@ -25,5 +33,12 @@ export function useAssistantChat(orgId: string) {
   const resolvedMessages = thread === null ? [] : (messages ?? [])
   const last = resolvedMessages.at(-1)
   const busy = last?.status === "streaming"
-  return { thread, messages: resolvedMessages, loading, busy, last }
+  return {
+    thread,
+    messages: resolvedMessages,
+    loading,
+    busy,
+    last,
+    title: thread?.title,
+  }
 }
