@@ -243,7 +243,7 @@ export const startPayMappingRun = orgMutation({
       // level-less row is impossible by construction past this point.
       // Reaching this with one means the gate and this loop have diverged:
       // fail loud rather than silently freezing the exact level-less row the
-      // gate exists to prevent (the C1 defect). Mirrors the classifyOrg
+      // gate exists to prevent. Mirrors the classifyOrg
       // invariant throw (people/classification.ts): a plain Error, not an
       // appError code, since this guards an internal programming error, not
       // a condition a user can trigger or that needs a translated message.

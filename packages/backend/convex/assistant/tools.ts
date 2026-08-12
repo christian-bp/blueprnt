@@ -6,20 +6,12 @@ import { internal } from "../_generated/api"
 import type { ActionCtx } from "../_generated/server"
 import type { AssistantChartKind } from "./tables"
 
-// Tool name -> chart kind. The generation loop consults this to append a
-// chart part when one of the visual tools completes; get_org_stats and
-// get_pay_stats are numbers-only and append nothing.
-export const VISUAL_TOOL_CHARTS: Record<string, AssistantChartKind> = {
-  show_headcount_trend: "headcountTrend",
-  show_pay_gap_trend: "payGapTrend",
-}
-
 // All tools are read-only org-level aggregates (ADR-0018): execute closures
 // capture the action ctx and the caller's already-authorized orgId; the
 // model never chooses an org. Tool outputs are exactly the insight query
 // returns (numbers + composed summary), which is what the model sees.
 //
-// Each description states its figures' DATA BASIS explicitly (I5 in
+// Each description states its figures' DATA BASIS explicitly (see
 // insights.ts). get_org_stats is SPLIT: workforce size and the pay gap come
 // from the latest completed pay mapping's frozen data (same as the two trend
 // tools, one point per pay mapping each), while its role counts come from
@@ -74,4 +66,35 @@ export function buildAssistantTools(ctx: ActionCtx, args: { orgId: string }) {
         }),
     }),
   }
+}
+
+type AssistantToolName = keyof ReturnType<typeof buildAssistantTools>
+
+// Tool name -> chart kind. Keyed off AssistantToolName (derived from
+// buildAssistantTools's own return type) via `satisfies`, so a typo in
+// either this map's key or a tool's name above is a compile error (an
+// excess/unknown property), never a silently-dropped chart. get_org_stats
+// and get_pay_stats are numbers-only and are intentionally absent.
+//
+// Kept module-private (not exported) and referenced from exactly one
+// exported declaration below: TS's declaration-emit checker (this project
+// builds with `declaration: true`) hits a pathological, whole-program
+// instantiation blowup when a type this deep, derived from the "ai"
+// package's generic `tool()` schemas, is echoed into more than one exported
+// signature. chartForTool's own signature below uses only plain `string` and
+// `AssistantChartKind | null`, so it never re-prints this type.
+const VISUAL_TOOL_CHARTS = {
+  show_headcount_trend: "headcountTrend",
+  show_pay_gap_trend: "payGapTrend",
+} satisfies Partial<Record<AssistantToolName, AssistantChartKind>>
+
+// The generation loop's only entry point into the map above: a plain
+// `string` in, `AssistantChartKind | null` out, so generate.ts never needs
+// to narrow part.toolName (widened to `string` by the SDK's tool-result
+// union) or cast anything itself. The cast here is internal and sound: the
+// `in` check on the line above it is exactly what it asserts.
+export function chartForTool(name: string): AssistantChartKind | null {
+  return name in VISUAL_TOOL_CHARTS
+    ? VISUAL_TOOL_CHARTS[name as keyof typeof VISUAL_TOOL_CHARTS]
+    : null
 }

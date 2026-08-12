@@ -21,8 +21,13 @@ export const AI_PROFILE_MODEL_ID =
 export const MAX_PROMPT_IDENTITY_FIELD = 200
 export const MAX_PROMPT_DESCRIPTION = 2000
 
-// The assistant chat model: conversational latency matters more than draft
-// quality, so the default is the mid tier. Env-overridable like the others.
+// The assistant chat model: mistral-medium-latest is the default because its
+// conversational latency fits a chat UX. Despite the "medium" name this is
+// NOT the cheap tier: verified pricing (ai/pricing.ts) has it priced above
+// mistral-large-latest ($1.50/$7.50 per 1M tokens vs large's $0.50/$1.50).
+// Mistral's tier names track model generation, not a price ranking, so the
+// tradeoff picked here is latency, not token cost. Env-overridable like the
+// others.
 export const AI_ASSISTANT_MODEL_ID =
   process.env.MISTRAL_ASSISTANT_MODEL ?? "mistral-medium-latest"
 
@@ -34,6 +39,13 @@ export const ASSISTANT_HISTORY_LIMIT = 20
 export const ASSISTANT_HOURLY_MESSAGE_CAP = 30
 export const ASSISTANT_FLUSH_INTERVAL_MS = 250
 export const ASSISTANT_MAX_TOOL_STEPS = 3
+// Generation hard-stop: a reply that has not finished within this window is
+// aborted server-side, so a stuck stream never holds a message in
+// "streaming" forever.
+export const ASSISTANT_GENERATION_TIMEOUT_MS = 120_000
+// How long recordUsage waits for the SDK's usage promise to settle on an
+// aborted stream before giving up and recording nothing.
+export const ASSISTANT_USAGE_RACE_MS = 2_000
 // Statistical disclosure floor: a pay statistic over fewer people than this
 // is suppressed before it reaches the model, because a tiny group's average
 // IS an individual's salary (ADR-0018).

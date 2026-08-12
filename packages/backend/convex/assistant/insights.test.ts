@@ -150,9 +150,9 @@ async function seedPersonWithPay(
   })
 }
 
-// The reviewer's exact differencing example (C1): women n=2 avg 41000, men
-// n=5 avg 46000. Before the fix, "all" (n=7) reported avg 44571.43, from
-// which the withheld women's average is recoverable by subtraction:
+// A differencing example: women n=2 avg 41000, men n=5 avg 46000. Before the
+// fix, "all" (n=7) reported avg 44571.43, from which the withheld women's
+// average is recoverable by subtraction:
 // (7 * 44571.43 - 5 * 46000) / 2 = 41000 exactly.
 async function seedDifferencingScenario(
   t: ReturnType<typeof initConvexTest>,
@@ -406,7 +406,7 @@ describe("assistant insights", () => {
     expect(all?.count).toBe(7)
   })
 
-  it("C1: no combination of the returned buckets reproduces a withheld average (n=1)", async () => {
+  it("suppresses the all bucket when a gender bucket is floored (n=1)", async () => {
     const t = initConvexTest()
     await seedPersonWithPay(t, "org1", {
       publicId: "w1",
@@ -450,7 +450,7 @@ describe("assistant insights", () => {
     expect(all?.count).toBe(6)
   })
 
-  it("C1: no combination of the returned buckets reproduces a withheld average (n=2, reviewer's example)", async () => {
+  it("suppresses the all bucket when a gender bucket is floored (n=2)", async () => {
     const t = initConvexTest()
     await seedDifferencingScenario(t, "org1")
 

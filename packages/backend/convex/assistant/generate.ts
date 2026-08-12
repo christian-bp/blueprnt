@@ -8,13 +8,15 @@ import {
   AI_ASSISTANT_MODEL_ID,
   AI_PROVIDER,
   ASSISTANT_FLUSH_INTERVAL_MS,
+  ASSISTANT_GENERATION_TIMEOUT_MS,
   ASSISTANT_MAX_TOOL_STEPS,
+  ASSISTANT_USAGE_RACE_MS,
 } from "../ai/config"
 import { aiModel } from "../ai/provider"
 import { ERROR_CODES } from "../lib/errors"
 import { assistantSystemPrompt } from "./knowledge"
 import type { AssistantMessagePart } from "./tables"
-import { buildAssistantTools, VISUAL_TOOL_CHARTS } from "./tools"
+import { buildAssistantTools, chartForTool } from "./tools"
 
 export const generateAssistantReply = internalAction({
   args: {
@@ -78,13 +80,26 @@ export const generateAssistantReply = internalAction({
 
     const controller = new AbortController()
     let stopped = false
+    // Reassigned inside the try below once `result` exists; declared out
+    // here (rather than as a `const` inside the try) so the catch block's
+    // stopped branch can call it too. Never invoked before that assignment:
+    // `stopped` can only become true via flush(), which only runs after
+    // streamText() has already returned.
+    let recordUsage: () => Promise<void> = async () => {}
+    // A single AbortController whose signal the SDK sees exactly once: both
+    // the stop path (flush(), below) and this timeout call controller.abort()
+    // on it directly, rather than racing two signals via AbortSignal.any
+    // (which some runtimes lack). Cleared in the finally below so a
+    // generation that finishes well within the window never leaves a timer
+    // running.
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      ASSISTANT_GENERATION_TIMEOUT_MS
+    )
     try {
       const result = streamText({
         model,
-        abortSignal: AbortSignal.any([
-          controller.signal,
-          AbortSignal.timeout(120_000),
-        ]),
+        abortSignal: controller.signal,
         system: assistantSystemPrompt({
           locale: args.locale,
           ...(args.industry !== undefined ? { industry: args.industry } : {}),
@@ -99,17 +114,19 @@ export const generateAssistantReply = internalAction({
       })
 
       // Every generation that consumed tokens gets a usage row, including
-      // stopped ones: on abort the SDK's usage promise may reject or never
-      // settle, so it is raced against a short timeout and the row is only
-      // skipped when the provider reported nothing. Defined before the loop
-      // because the abort branch below (a user-requested stop) also needs
-      // it, matching the fall-through complete/stopped path.
-      const recordUsage = async () => {
+      // stopped and failed ones: on abort the SDK's usage promise may reject
+      // or never settle, so it is raced against a short timeout and the row
+      // is only skipped when the provider reported nothing. Assigned before
+      // the loop because every terminal branch below (the abort branches,
+      // the error-part branch, the empty-snapshot failure, and the catch
+      // block's stopped path) needs it, not just the fall-through
+      // complete/stopped path.
+      recordUsage = async () => {
         try {
           const usage = await Promise.race([
             result.usage,
             new Promise<null>((resolve) =>
-              setTimeout(() => resolve(null), 2_000)
+              setTimeout(() => resolve(null), ASSISTANT_USAGE_RACE_MS)
             ),
           ]).catch(() => null)
           if (usage === null) {
@@ -170,8 +187,8 @@ export const generateAssistantReply = internalAction({
             if (await flush()) break
           }
         } else if (part.type === "tool-result") {
-          const chart = VISUAL_TOOL_CHARTS[part.toolName]
-          if (chart !== undefined) {
+          const chart = chartForTool(part.toolName)
+          if (chart !== null) {
             if (currentText !== "") {
               done.push({ type: "text", text: currentText })
               currentText = ""
@@ -191,9 +208,9 @@ export const generateAssistantReply = internalAction({
           }
         } else if (part.type === "abort") {
           // `stopped` is only ever set by our own flush() reporting a
-          // user-requested stop. Any OTHER abort (the 120s timeout leg of
-          // the AbortSignal.any race) reaches here with `stopped` still
-          // false, which is a failure, not a user stop.
+          // user-requested stop. Any OTHER abort (the generation timeout
+          // firing) reaches here with `stopped` still false, which is a
+          // failure, not a user stop.
           if (stopped) {
             await finalize("stopped")
             await recordUsage()
@@ -204,6 +221,7 @@ export const generateAssistantReply = internalAction({
             reason: part.reason,
           })
           await finalize("failed", ERROR_CODES.aiGenerationFailed)
+          await recordUsage()
           return null
         } else if (part.type === "error") {
           console.error("assistant stream reported an error part", {
@@ -214,6 +232,7 @@ export const generateAssistantReply = internalAction({
                 : String(part.error),
           })
           await finalize("failed", ERROR_CODES.aiGenerationFailed)
+          await recordUsage()
           return null
         }
       }
@@ -224,6 +243,7 @@ export const generateAssistantReply = internalAction({
       // prose step left, so treat it as a failure instead of "complete".
       if (!stopped && done.length === 0 && currentText === "") {
         await finalize("failed", ERROR_CODES.aiGenerationFailed)
+        await recordUsage()
         return null
       }
 
@@ -233,6 +253,7 @@ export const generateAssistantReply = internalAction({
     } catch (error) {
       if (stopped) {
         await finalize("stopped")
+        await recordUsage()
         return null
       }
       console.error("assistant generation failed", {
@@ -240,6 +261,8 @@ export const generateAssistantReply = internalAction({
       })
       await finalize("failed", ERROR_CODES.aiGenerationFailed)
       return null
+    } finally {
+      clearTimeout(timeoutId)
     }
   },
 })

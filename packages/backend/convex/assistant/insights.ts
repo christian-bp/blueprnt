@@ -96,8 +96,8 @@ export const orgStats = internalQuery({
     // live people rows: those two figures are ENGINE OUTPUT frozen at freeze
     // time (payMapping/tables.ts), the same fields the headcount/pay-gap
     // trend charts plot. This is a different population BASIS than
-    // payStats below (that one reads the live register as of now); Task 7's
-    // tool descriptions must state each figure's basis to the model.
+    // payStats below (that one reads the live register as of now); the tool
+    // descriptions state each figure's basis to the model.
     const workforceCount = latest?.populationCount ?? 0
     const currentGapPercent = latest?.orgGapPct ?? null
 
@@ -177,7 +177,7 @@ export const payMappingTrend = internalQuery({
     // Total pay mappings the org has run, regardless of lifecycle status:
     // the denominator behind "N measurable readings across M pay mappings",
     // so a run whose gap could not be measured is still accounted for
-    // instead of silently vanishing from the history (I4).
+    // instead of silently vanishing from the history.
     runCount: v.number(),
     summary: v.string(),
   }),
@@ -229,8 +229,8 @@ type PayGroup = Infer<typeof payGroupShape>
 // own count is below ASSISTANT_MIN_GROUP_SIZE. "complementary": the group's
 // own count clears the floor, but it is suppressed anyway because a sibling
 // gender bucket is below the floor and disclosing this one's exact mean
-// would let a reader subtract it out (C1: differencing the suppressed
-// group's average from the other two).
+// would let a reader subtract it out: differencing the suppressed group's
+// average from the other two's disclosed averages.
 type SuppressionReason = "floor" | "complementary" | null
 interface BuiltGroup {
   group: PayGroup
@@ -267,11 +267,10 @@ function buildPayGroup(
   }
 }
 
-// The "all" bucket, forced suppressed because a sibling gender bucket is
-// (C1). Its own count is still safe to report; only the statistics are
-// withheld, since count is exactly what a reader would need alongside the
-// other bucket's disclosed mean to reconstruct the withheld figure by
-// subtraction.
+// The "all" bucket, forced suppressed whenever a sibling gender bucket is.
+// Its own count is still safe to report; only the statistics are withheld,
+// since count is exactly what a reader would need alongside the other
+// bucket's disclosed mean to reconstruct the withheld figure by subtraction.
 function suppressedAllGroup(count: number): BuiltGroup {
   return {
     group: {
@@ -337,8 +336,8 @@ function composePayStatsSummary(
         ? [allBuilt]
         : []
   const body = parts.map((b) => formatGroupSummary(b, unit)).join(", ")
-  // I5: payStats and orgStats read different population bases (this one is
-  // the live register as of `asOf`, orgStats is the newest run's frozen
+  // payStats and orgStats read different population bases (this one is the
+  // live register as of `asOf`, orgStats is the newest run's frozen
   // population); the fixed phrase keeps that basis explicit in the
   // model-facing text rather than implied.
   return `Average monthly pay in the current register: ${body}.`
@@ -346,11 +345,11 @@ function composePayStatsSummary(
 
 const CURRENCY_CODE_PATTERN = /^[A-Z]{3}$/
 
-// C2: a payRecord's currency is CSV-imported, unconstrained free text. Gate
-// it through a strict ISO-4217-shaped allowlist before it ever reaches a
-// return value or a summary string; anything else is withheld as null rather
-// than interpolated, closing the indirect prompt-injection channel a
-// malformed import column could otherwise open.
+// A payRecord's currency is CSV-imported, unconstrained free text. Gate it
+// through a strict ISO-4217-shaped allowlist before it ever reaches a return
+// value or a summary string; anything else is withheld as null rather than
+// interpolated, closing the indirect prompt-injection channel a malformed
+// import column could otherwise open.
 function validCurrencyCode(value: string | null): string | null {
   return value !== null && CURRENCY_CODE_PATTERN.test(value) ? value : null
 }
@@ -386,7 +385,7 @@ export const payStats = internalQuery({
 
     // One org-scoped indexed read of payRecords (by_org) instead of one
     // query per person: an org-scaled read stays a single bounded index scan
-    // rather than an N+1 fan-out (I7).
+    // rather than an N+1 fan-out.
     const allPayRows = await ctx.db
       .query("payRecords")
       .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
@@ -434,7 +433,7 @@ export const payStats = internalQuery({
           )
         : null
 
-    // 3. C1 (ADR-0018 disclosure floor): the "all" bucket's exact mean, read
+    // 3. Disclosure floor (ADR-0018): the "all" bucket's exact mean, read
     //    together with the OTHER gender's disclosed exact mean, lets a
     //    reader difference out a suppressed gender bucket's exact average by
     //    subtraction. Whenever either gender bucket is suppressed, the "all"

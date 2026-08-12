@@ -65,18 +65,32 @@ export const getActiveThread = orgQuery({
   },
 })
 
+// Shared ownership check for both a thread and a message row: neither exists
+// (or belongs to the caller) outside its own org and its own user, so a
+// mismatch on either field throws the same "not a member" code a stranger's
+// id would. An assertion function (rather than returning a boolean) so the
+// caller's row narrows from nullable to present without a redundant check.
+// Used by both listMessages (a thread) and stopGeneration (a message), which
+// share this exact shape.
+function assertOwned<T extends { orgId: string; userId: string }>(
+  ctx: { orgId: string; authUserId: string },
+  row: T | null
+): asserts row is T {
+  if (
+    row === null ||
+    row.orgId !== ctx.orgId ||
+    row.userId !== ctx.authUserId
+  ) {
+    throw appError(ERROR_CODES.notAMember)
+  }
+}
+
 export const listMessages = orgQuery({
   args: { threadId: v.id("assistantThreads") },
   returns: v.array(messageShape),
   handler: async (ctx, args) => {
     const thread = await ctx.db.get(args.threadId)
-    if (
-      thread === null ||
-      thread.orgId !== ctx.orgId ||
-      thread.userId !== ctx.authUserId
-    ) {
-      throw appError(ERROR_CODES.notAMember)
-    }
+    assertOwned(ctx, thread)
     const recent = await ctx.db
       .query("assistantMessages")
       .withIndex("by_thread", (q) => q.eq("threadId", args.threadId))
@@ -196,13 +210,7 @@ export const stopGeneration = orgMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const message = await ctx.db.get(args.messageId)
-    if (
-      message === null ||
-      message.orgId !== ctx.orgId ||
-      message.userId !== ctx.authUserId
-    ) {
-      throw appError(ERROR_CODES.notAMember)
-    }
+    assertOwned(ctx, message)
     if (message.status === "streaming") {
       await ctx.db.patch(args.messageId, { stopRequested: true })
     }
