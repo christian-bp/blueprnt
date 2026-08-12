@@ -8,16 +8,13 @@ import {
 } from "@hugeicons/core-free-icons"
 import type { IconSvgElement } from "@hugeicons/react"
 import type { ChartConfig } from "@workspace/ui/components/chart"
-import { Skeleton } from "@workspace/ui/components/skeleton"
-import { cn } from "@workspace/ui/lib/utils"
 import { useFormatter, useTranslations } from "next-intl"
 import type { ReactNode } from "react"
 import { GenderMenIcon } from "@/components/gender-mark"
 import { HeadcountTrend, PayGapTrend } from "@/components/overview/widget-viz"
-import { PanelCard } from "@/components/panel-card"
+import { TrendPanel, type TrendPanelState } from "@/components/trend-panel"
 import { StatBar, WidgetCard } from "@/components/widget-card"
 import type { PayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
-import { WIDGET_CHART_HEIGHT } from "@/lib/chart-style"
 import { type HeadcountPoint, headcountTotal } from "@/lib/headcount-trend"
 import { hasTrendShape, type PayGapPoint } from "@/lib/pay-gap-trend"
 import type { LevelOverview } from "@/lib/level-overview"
@@ -160,38 +157,6 @@ export function OverviewWidgets({
   )
 }
 
-type TrendState = "loading" | "empty" | "ready"
-
-// What a trend panel shows when it has no line to draw, in the exact height
-// the chart will occupy so the panel never changes size.
-//
-// While the data is still loading it shows a placeholder line, NOT the empty
-// sentence: "you need two pay mappings" is a claim about the org, and a
-// surface that has not heard back yet cannot make it.
-//
-// The sentence is deliberately not aria-hidden, unlike the charts it stands
-// in for. A chart is decorative here (the tiles above carry its numbers in
-// words) but this sentence IS the content: it is the only thing telling a
-// reader why the panel is blank.
-function TrendBody({ state, empty }: { state: TrendState; empty: string }) {
-  return (
-    <div
-      className={cn(
-        "flex w-full items-center justify-center",
-        WIDGET_CHART_HEIGHT
-      )}
-    >
-      {state === "loading" ? (
-        <Skeleton className="h-4 w-48 max-w-full" />
-      ) : (
-        <p className="max-w-64 text-balance text-center text-muted-foreground text-sm">
-          {empty}
-        </p>
-      )}
-    </div>
-  )
-}
-
 // The two things that MOVE, as panels: how the workforce and the pay gap
 // have gone across pay mappings. Each chart is decorative in the
 // accessibility sense (the tiles above carry the numbers in words), so it is
@@ -230,7 +195,7 @@ export function OverviewCharts({
   // "not enough runs" made both panels assert "a trend appears once you have
   // two pay mappings" on first paint, which the app cannot know yet and which
   // was sometimes false a moment later.
-  const workforceState: TrendState =
+  const workforceState: TrendPanelState =
     stats === undefined || headcountTrend === undefined
       ? "loading"
       : stats.totalPeople > 0 &&
@@ -241,7 +206,7 @@ export function OverviewCharts({
 
   // Same rule: one mapping is a dot, not a trend, and a mapping with no
   // measurable gap contributes no reading at all.
-  const gapState: TrendState =
+  const gapState: TrendPanelState =
     gapTrend === undefined
       ? "loading"
       : gapTrend !== null &&
@@ -268,61 +233,55 @@ export function OverviewCharts({
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <PanelCard
+      <TrendPanel
         title={t("workforce.trendTitle")}
         icon={UserGroupIcon}
         action={{ label: t("workforce.action"), href: "/people" }}
-        bleed
+        state={workforceState}
+        emptyText={t("trendEmpty")}
       >
-        {workforceState === "ready" ? (
-          <div aria-hidden="true">
-            <HeadcountTrend
-              data={(headcountTrend ?? []).map((point) => ({
-                label: point.runLabel,
-                caption: format.dateTime(new Date(point.date), {
-                  dateStyle: "medium",
-                }),
-                women: point.women,
-                men: point.men,
-              }))}
-              config={trendConfig}
-              labels={genderLabels}
-              totalLabel={t("workforce.trendLabel")}
-            />
-          </div>
-        ) : (
-          <TrendBody state={workforceState} empty={t("trendEmpty")} />
-        )}
-      </PanelCard>
-      {/* Bleeds for the same reason its sibling does, and because the row
-          sizes to its tallest card: a padded panel beside a bleeding one
-          stretches the bleeding one, which then holds its chart 16px above
-          its own bottom edge. The two have to agree. */}
-      <PanelCard
+        {/* Decorative: the tiles above already carry these numbers in words.
+            Hidden here, at the call site, not inside TrendPanel, because a
+            surface with no matching tile (an in-chat chart, say) needs its
+            chart to stay in the tree. */}
+        <div aria-hidden="true">
+          <HeadcountTrend
+            data={(headcountTrend ?? []).map((point) => ({
+              label: point.runLabel,
+              caption: format.dateTime(new Date(point.date), {
+                dateStyle: "medium",
+              }),
+              women: point.women,
+              men: point.men,
+            }))}
+            config={trendConfig}
+            labels={genderLabels}
+            totalLabel={t("workforce.trendLabel")}
+          />
+        </div>
+      </TrendPanel>
+      <TrendPanel
         title={t("gapTrend.title")}
         icon={JusticeScale01Icon}
         action={{ label: t("gapTrend.action"), href: "/pay-mappings" }}
-        bleed
+        state={gapState}
+        emptyText={gapEmptyText}
       >
-        {gapState === "ready" ? (
-          <div aria-hidden="true">
-            <PayGapTrend
-              data={(gapTrend ?? []).map((point) => ({
-                label: point.runLabel,
-                caption: format.dateTime(new Date(point.date), {
-                  dateStyle: "medium",
-                }),
-                gapPct: point.gapPct,
-              }))}
-              config={gapConfig}
-              seriesLabel={t("gap.label")}
-              unmeasuredLabel={t("gapTrend.unmeasured")}
-            />
-          </div>
-        ) : (
-          <TrendBody state={gapState} empty={gapEmptyText} />
-        )}
-      </PanelCard>
+        <div aria-hidden="true">
+          <PayGapTrend
+            data={(gapTrend ?? []).map((point) => ({
+              label: point.runLabel,
+              caption: format.dateTime(new Date(point.date), {
+                dateStyle: "medium",
+              }),
+              gapPct: point.gapPct,
+            }))}
+            config={gapConfig}
+            seriesLabel={t("gap.label")}
+            unmeasuredLabel={t("gapTrend.unmeasured")}
+          />
+        </div>
+      </TrendPanel>
     </div>
   )
 }
