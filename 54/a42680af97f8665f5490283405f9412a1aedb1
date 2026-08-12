@@ -1,0 +1,57 @@
+apps/dashboard/hooks/use-assistant-chat.test.tsx
+  s_c6f9c899f4809f::t_d319167d34456e 43-67
+packages/i18n/messages/nb.json
+  s_c6f9c899f4809f::t_f73ef9a66ea374 2407-2408
+apps/dashboard/app/(app)/assistant/page.test.tsx
+  s_c6f9c899f4809f::t_5017c3eb3288b1 102-109,120,125-129
+  s_c6f9c899f4809f::t_4d185fe59cf502 63,80-86,100-101,110-119,121-124
+  s_c6f9c899f4809f::t_98e8b67d8a1930 130
+apps/dashboard/components/assistant/assistant-title.tsx
+  s_c6f9c899f4809f::t_60fa3dbd59101f 1-23,25-31
+  s_c6f9c899f4809f::t_650b7732c90826 24
+packages/i18n/messages/fi.json
+  s_c6f9c899f4809f::t_5aa79d6232de8f 2407-2408
+apps/dashboard/app/(app)/assistant/page.tsx
+  s_c6f9c899f4809f::t_f5982f61ec0d26 27-31,52-77
+  s_c6f9c899f4809f::t_c3fc89084cde3c 9,11
+apps/dashboard/components/assistant/assistant-history.test.tsx
+  s_c6f9c899f4809f::t_22ace49232ff5c 8-32,34-69,71-177
+  s_c6f9c899f4809f::t_9bb0a4a0150661 1-7,33
+  s_c6f9c899f4809f::t_3601bbe9df7266 70
+apps/dashboard/hooks/use-assistant-threads.ts
+  s_c6f9c899f4809f::t_9bbcae5b12fd42 1-18
+packages/i18n/messages/en.json
+  s_c6f9c899f4809f::t_9167f8119d3196 2407-2408
+packages/i18n/messages/sv.json
+  s_c6f9c899f4809f::t_c7ec43ba2a5ecf 2407-2408
+apps/dashboard/components/assistant/assistant-history.tsx
+  s_c6f9c899f4809f::t_9bb0a4a0150661 37
+  s_c6f9c899f4809f::t_903c513941e02e 1-36,38-94
+apps/dashboard/hooks/use-assistant-threads.test.tsx
+  s_c6f9c899f4809f::t_713f8443de7876 1-61
+packages/i18n/messages/da.json
+  s_c6f9c899f4809f::t_de6bb871bce781 2407-2408
+apps/dashboard/hooks/use-assistant-chat.ts
+  s_c6f9c899f4809f::t_c6321a5ea6ad81 17-24,36-43
+apps/dashboard/components/assistant/assistant-title.test.tsx
+  s_c6f9c899f4809f::t_3a63c04e27588a 2-9,11-12,14-17,31-33,40-41
+  s_c6f9c899f4809f::t_18081214b2bbfd 10,38
+  s_c6f9c899f4809f::t_84725a58a10a2d 18
+  s_c6f9c899f4809f::t_2b186c09447652 1,13,19-30,34-37,39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "54a42680af97f8665f5490283405f9412a1aedb1",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
