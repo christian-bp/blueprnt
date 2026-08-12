@@ -45,21 +45,9 @@ describe("WelcomeGreeting", () => {
     expect(screen.getByText("Good morning")).toBeDefined()
   })
 
-  it("stays left-aligned by default and centers only when asked", () => {
+  it("always centers the heading", () => {
     hoisted.sessionName = "Christian Ek"
-    const { unmount } = render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <WelcomeGreeting />
-      </NextIntlClientProvider>
-    )
-    expect(screen.getByRole("heading").className).not.toContain("text-center")
-    unmount()
-
-    render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <WelcomeGreeting centered />
-      </NextIntlClientProvider>
-    )
+    renderGreeting()
     expect(screen.getByRole("heading").className).toContain("text-center")
   })
 })

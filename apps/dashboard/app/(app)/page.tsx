@@ -59,7 +59,7 @@ export default function OverviewPage() {
           strip below the fold on an ordinary laptop screen. */}
       <div className="mx-auto flex w-full max-w-3xl flex-col">
         <div className="flex flex-col items-center pt-2 pb-6 text-center">
-          <WelcomeGreeting centered />
+          <WelcomeGreeting />
           <OverviewStatusLine todo={todo} />
         </div>
         <AssistantPrompt />

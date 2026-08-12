@@ -19,15 +19,9 @@ const HEADING_CLASS = "font-semibold text-3xl"
 // the hour and session are ready. Re-checked every 5 minutes to cross hour
 // boundaries without a reload.
 //
-// `centered` is additive: the overview hero renders this text-centered
-// inside its own centered column, every other (hypothetical) caller keeps
-// the left-aligned default, and the prop touches nothing existing callers
-// already rely on.
-export function WelcomeGreeting({
-  centered = false,
-}: {
-  centered?: boolean
-} = {}) {
+// Always centered: the overview hero is its only caller, and the hero's own
+// column is centered.
+export function WelcomeGreeting() {
   const t = useTranslations("dashboard.overview.greeting")
   const { data: session } = authClient.useSession()
   const [hour, setHour] = useState<number | null>(null)
@@ -40,7 +34,7 @@ export function WelcomeGreeting({
 
   if (hour === null || session === undefined) {
     return (
-      <h1 className={cn(HEADING_CLASS, centered && "text-center")}>
+      <h1 className={cn(HEADING_CLASS, "text-center")}>
         <Skeleton className="h-9 w-72" />
       </h1>
     )
@@ -48,7 +42,7 @@ export function WelcomeGreeting({
 
   const firstName = session?.user?.name?.split(" ")[0] ?? ""
   return (
-    <h1 className={cn(HEADING_CLASS, centered && "text-center")}>
+    <h1 className={cn(HEADING_CLASS, "text-center")}>
       {t(greetingBucket(hour), {
         hasName: firstName ? "yes" : "no",
         name: firstName,
