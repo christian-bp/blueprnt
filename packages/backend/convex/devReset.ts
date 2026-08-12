@@ -25,6 +25,8 @@ const APP_TABLES = [
   "suggestions",
   "aiUsageEvents",
   "aiUsageMonthly",
+  "assistantThreads",
+  "assistantMessages",
   "people",
   "personAssignments",
   "payRecords",

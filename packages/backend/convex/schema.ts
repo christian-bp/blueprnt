@@ -1,6 +1,7 @@
 import { defineSchema } from "convex/server"
 import { users, organizations } from "./accounts/tables"
 import { aiUsageEvents, aiUsageMonthly } from "./ai/tables"
+import { assistantThreads, assistantMessages } from "./assistant/tables"
 import { roleFamilies, roles, ratings } from "./assessment/tables"
 import { models, criteria } from "./evaluationModel/tables"
 import {
@@ -41,6 +42,9 @@ export default defineSchema({
   suggestions,
   aiUsageEvents,
   aiUsageMonthly,
+  // assistant bounded context (ADR-0018): conversational guidance, telemetry-only
+  assistantThreads,
+  assistantMessages,
   // people/pay bounded context
   people,
   personAssignments,
