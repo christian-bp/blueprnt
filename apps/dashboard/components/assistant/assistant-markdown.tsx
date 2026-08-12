@@ -39,7 +39,8 @@ const components = {
   td: "td",
   blockquote: "blockquote",
   code: "code",
-  img: "img",
+  // Model-authored image references are always hallucinations; charts render natively
+  img: () => null,
   pre: "pre",
   sup: "sup",
   sub: "sub",

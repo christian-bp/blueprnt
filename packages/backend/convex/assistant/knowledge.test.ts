@@ -16,6 +16,13 @@ describe("assistantSystemPrompt", () => {
     expect(prompt).toContain("tool results")
   })
 
+  it("instructs the model never to include images", () => {
+    const prompt = assistantSystemPrompt({ locale: "en" })
+    expect(prompt).toContain(
+      "Never include images or image links in your answers"
+    )
+  })
+
   it("includes company context only when provided", () => {
     const withContext = assistantSystemPrompt({
       locale: "en",

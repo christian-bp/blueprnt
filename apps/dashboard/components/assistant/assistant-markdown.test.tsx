@@ -50,4 +50,17 @@ describe("AssistantMarkdown", () => {
     // original sentence once the spans are flattened back together.
     expect(container.textContent).toBe("Several words in a row.")
   })
+
+  it("does not render model-authored image elements", () => {
+    const { container } = render(
+      <AssistantMarkdown
+        text={
+          "Here is some text.\n\n![Trend](https://example.com/chart.png)\n\nMore text."
+        }
+      />
+    )
+    expect(container.querySelector("img")).toBeNull()
+    expect(container.textContent).toContain("Here is some text")
+    expect(container.textContent).toContain("More text")
+  })
 })
