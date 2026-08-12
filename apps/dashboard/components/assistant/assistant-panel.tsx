@@ -49,7 +49,7 @@ export function AssistantPanel() {
         messages={messages}
         onSuggestion={handleSend}
       />
-      <div className="mx-auto w-full max-w-2xl">
+      <div className="mx-auto w-full max-w-2xl px-6">
         <AssistantComposer
           busy={busy}
           onSend={handleSend}

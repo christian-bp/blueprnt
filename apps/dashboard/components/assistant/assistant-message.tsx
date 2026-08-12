@@ -66,7 +66,9 @@ export function AssistantMessage({
             data-testid="assistant-pending"
             className="shimmer flex items-center gap-2 px-3 text-muted-foreground text-sm"
           >
-            {t("thinking")}
+            {message.activity === "checkingData"
+              ? t("checkingData")
+              : t("thinking")}
           </div>
         ) : message.status === "failed" ? (
           <p className="text-destructive text-sm">

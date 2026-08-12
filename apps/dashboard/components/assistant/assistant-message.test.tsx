@@ -67,6 +67,20 @@ describe("AssistantMessage", () => {
     expect(pending.textContent).toBe(messages.dashboard.assistant.thinking)
   })
 
+  it("shows the checking-data text in the pending slot when a tool call is the first stream event", () => {
+    renderMessage({
+      _id: "3a",
+      role: "assistant",
+      status: "streaming",
+      parts: [],
+      activity: "checkingData",
+    })
+    const pending = screen.getByTestId("assistant-pending")
+    expect(pending.className).toContain("shimmer")
+    expect(pending.textContent).toBe(messages.dashboard.assistant.checkingData)
+    expect(screen.queryByText(messages.dashboard.assistant.thinking)).toBeNull()
+  })
+
   it("shows the checking-data shimmer after already-streamed parts", () => {
     renderMessage({
       _id: "3b",
