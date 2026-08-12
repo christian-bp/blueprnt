@@ -2,7 +2,7 @@
 
 import { useFormatter, useTranslations } from "next-intl"
 import { useOrganization } from "@/components/org-context"
-import { HeadcountTrend, PayGapTrend } from "@/components/overview/widget-viz"
+import { HeadcountTrend, PayGapTrend } from "@/components/assistant/widget-viz"
 import { TrendPanel, type TrendPanelState } from "@/components/trend-panel"
 import { useHeadcountTrend } from "@/hooks/use-headcount-trend"
 import { usePayGapTrend } from "@/hooks/use-pay-gap-trend"

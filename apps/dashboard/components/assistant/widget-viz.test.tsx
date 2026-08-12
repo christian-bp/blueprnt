@@ -4,7 +4,7 @@ import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import type { ReactNode } from "react"
 import { afterEach, describe, expect, it } from "vitest"
-import { HeadcountTrend, PayGapTrend } from "@/components/overview/widget-viz"
+import { HeadcountTrend, PayGapTrend } from "@/components/assistant/widget-viz"
 
 // recharts renders no meaningful SVG geometry in jsdom (no layout, no
 // dimensions), so these tests assert mount-without-crash and the presence
