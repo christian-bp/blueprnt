@@ -1,0 +1,47 @@
+apps/dashboard/hooks/use-assistant-threads.ts
+  s_c6f9c899f4809f::t_33a7c242cc1c9c 7-15
+apps/dashboard/lib/headcount-trend.ts
+  s_c6f9c899f4809f::t_a43009f9ff1742 1
+apps/dashboard/lib/pay-gap-trend.ts
+  s_c6f9c899f4809f::t_58fa1055638218 3
+apps/dashboard/app/(app)/assistant/page.tsx
+  s_c6f9c899f4809f::t_acba9ab40a6c61 55-56
+apps/dashboard/components/assistant/assistant-chart-part.tsx
+  s_c6f9c899f4809f::t_d50b7d273067a5 67-68
+  s_c6f9c899f4809f::t_a477257abad0b4 17-22,24-26
+apps/dashboard/components/assistant/assistant-history.test.tsx
+  s_c6f9c899f4809f::t_c5564c2fb713a0 67,69-77
+  s_c6f9c899f4809f::t_52ad7d3fae32b5 80-82
+  s_c6f9c899f4809f::t_e2106e95309a6b 78-79,83-86
+  s_c6f9c899f4809f::t_e102dc832d9f9e 68
+apps/dashboard/hooks/use-assistant-chat.ts
+  s_c6f9c899f4809f::t_6cc1857b6837af 22-23
+apps/dashboard/lib/gender-trend-chart-config.ts
+  s_c6f9c899f4809f::t_a44dc18091474e 7-9
+apps/dashboard/components/overview/todo-actions.tsx
+  s_c6f9c899f4809f::t_a4f8a29a066db3 255
+apps/dashboard/components/assistant/assistant-history.tsx
+  s_c6f9c899f4809f::t_b911442e21dede 27-32
+  s_c6f9c899f4809f::t_e42152cecae809 108-109
+  s_c6f9c899f4809f::t_c489ab31615344 132,141-158
+  s_c6f9c899f4809f::t_0830efa8d36933 57-59
+  s_c6f9c899f4809f::t_903af7e01d5a13 114,121-131,133-140,159-197
+  s_c6f9c899f4809f::t_d38cad2a1bc8e6 8
+  s_c6f9c899f4809f::t_50cbd84cab2b8c 198-199
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2e58c42c4db3b1e7b8906bf9a6a34cb703973667",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
