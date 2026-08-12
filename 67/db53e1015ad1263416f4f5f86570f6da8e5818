@@ -1,0 +1,31 @@
+apps/dashboard/package.json
+  s_c6f9c899f4809f::t_46121b4c603954 37-38
+apps/dashboard/components/assistant/assistant-markdown.test.tsx
+  s_c6f9c899f4809f::t_1854ac3efa14d2 1-9,13-14,21-24,26-27
+  s_c6f9c899f4809f::t_911616350bf3f3 10-12
+  s_c6f9c899f4809f::t_de6a6cb482af77 15-20,25
+packages/ui/src/styles/typeset.css
+  s_c6f9c899f4809f::t_b0a5217c2b98b8 1-490
+packages/ui/src/styles/globals.css
+  s_c6f9c899f4809f::t_d902ceb35cf6a3 4
+apps/dashboard/components/assistant/assistant-markdown.tsx
+  s_c6f9c899f4809f::t_60e1fcc4d22549 1-24
+bun.lock
+  s_c6f9c899f4809f::t_93a40c2af0cc29 39-40,912-913,918-925,936-937,986-987,1058-1059,1104-1105,1110-1117,1150-1151,1222-1223,1244-1245,1316-1317,1322-1323,1344-1345,1416-1419,1430-1431,1454-1455,1466-1469,1472-1473,1482-1483,1580-1581,1594-1595,1600-1629,1642-1697,1780-1781,1840-1841,1868-1869,1890-1897,1978-1979,1992-1993,2006-2009,2040-2043,2072-2083,2104-2107,2154-2155,2276-2277
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "67db53e1015ad1263416f4f5f86570f6da8e5818",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
