@@ -80,8 +80,12 @@ export function AssistantMessage({
           <>
             {message.parts.map((part, index) =>
               part.type === "text" ? (
-                // biome-ignore lint/suspicious/noArrayIndexKey: parts are append-only within a message, so index is stable
-                <AssistantMarkdown key={index} text={part.text} />
+                <AssistantMarkdown
+                  // biome-ignore lint/suspicious/noArrayIndexKey: parts are append-only within a message, so index is stable
+                  key={index}
+                  text={part.text}
+                  isAnimating={message.status === "streaming"}
+                />
               ) : (
                 // biome-ignore lint/suspicious/noArrayIndexKey: parts are append-only within a message, so index is stable
                 <AssistantChartPart key={index} chart={part.chart} />

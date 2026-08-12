@@ -82,7 +82,7 @@ describe("AssistantMessage", () => {
   })
 
   it("shows the checking-data shimmer after already-streamed parts", () => {
-    renderMessage({
+    const { container } = renderMessage({
       _id: "3b",
       role: "assistant",
       status: "streaming",
@@ -93,10 +93,16 @@ describe("AssistantMessage", () => {
     expect(activity.className).toContain("shimmer")
     expect(activity.textContent).toBe(messages.dashboard.assistant.checkingData)
     // The already-streamed part stays visible, and the shimmer renders
-    // after it, not instead of it.
-    const soFar = screen.getByText("So far")
+    // after it, not instead of it. This message is still streaming, so
+    // AssistantMarkdown animates its text: "So far" renders as two
+    // per-word spans rather than one text node, so we query the paragraph
+    // element directly and compare textContent instead of getByText("So far").
+    const soFar = container.querySelector("p")
+    expect(soFar?.textContent).toBe("So far")
     expect(
-      soFar.compareDocumentPosition(activity) & Node.DOCUMENT_POSITION_FOLLOWING
+      soFar &&
+        soFar.compareDocumentPosition(activity) &
+          Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
   })
 

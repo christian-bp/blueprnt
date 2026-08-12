@@ -2,6 +2,17 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "./typeset.css";
+@import "streamdown/styles.css";
+
+/* App-owned addition (not part of the streamdown vendor file above): the
+   package's own [data-sd-animate] keyframes have no reduced-motion guard,
+   so we add one here. Never bypass this; the global MotionConfig
+   reducedMotion="user" convention applies to this animation too. */
+@media (prefers-reduced-motion: reduce) {
+  [data-sd-animate] {
+    animation: none;
+  }
+}
 
 @custom-variant dark (&:is(.dark *));
 @source "../../../apps/**/*.{ts,tsx}";
