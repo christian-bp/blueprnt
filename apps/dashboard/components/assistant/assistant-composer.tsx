@@ -12,7 +12,7 @@ import { useState } from "react"
 // The assistant page's presentational input: send/stop live in the same
 // slot (only one control is ever mounted, matching busy), and Enter submits
 // while Shift+Enter and an in-progress IME composition both fall through to
-// a plain newline. AssistantPanel (Task 12) owns the data and passes props.
+// a plain newline. AssistantPanel owns the data and passes props.
 export function AssistantComposer(props: {
   busy: boolean
   onSend: (text: string) => void

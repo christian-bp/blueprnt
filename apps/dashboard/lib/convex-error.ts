@@ -1,15 +1,29 @@
 import { ConvexError } from "convex/values"
 
+// The leaf name is its own constant (rather than a second literal below) so
+// the personal-data screen's full wire code can be derived from it instead
+// of repeating the string.
+const ASSISTANT_PERSONAL_DATA_KEY = "assistantPersonalData" as const
+
 // The assistant's own error codes (packages/backend/convex/lib/errors.ts),
 // leaf-only (the "errors." namespace prefix is stripped before lookup).
-const ASSISTANT_ERROR_KEYS = [
+// convex-error.test.ts guards these against the backend's ERROR_CODES so a
+// backend rename fails the suite instead of silently falling back here.
+export const ASSISTANT_ERROR_KEYS = [
   "assistantBusy",
   "assistantRateLimited",
   "assistantInvalidMessage",
-  "assistantPersonalData",
+  ASSISTANT_PERSONAL_DATA_KEY,
 ] as const
 
-type AssistantErrorKey = (typeof ASSISTANT_ERROR_KEYS)[number]
+export type AssistantErrorKey = (typeof ASSISTANT_ERROR_KEYS)[number]
+
+// The full wire code (with the "errors." namespace prefix) for the
+// personal-data screen, the one assistant code a UI surface outside this
+// module compares against directly (assistant-message.tsx, for a failed
+// reply's stored errorCode).
+export const ASSISTANT_PERSONAL_DATA_ERROR_CODE =
+  `errors.${ASSISTANT_PERSONAL_DATA_KEY}` as const
 
 function isAssistantErrorKey(value: string): value is AssistantErrorKey {
   return (ASSISTANT_ERROR_KEYS as readonly string[]).includes(value)

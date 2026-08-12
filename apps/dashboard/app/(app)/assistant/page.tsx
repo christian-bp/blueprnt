@@ -10,10 +10,12 @@ import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
 import { useAssistantChat } from "@/hooks/use-assistant-chat"
 import { usePageTitle } from "@/hooks/use-page-title"
+import { toast } from "@/lib/toast"
 
 export default function AssistantPage() {
   const t = useTranslations("dashboard.assistant")
   const tHelp = useTranslations("dashboard.help")
+  const tToast = useTranslations("dashboard.toast")
   usePageTitle(t("title"))
   const { orgId } = useOrganization()
   const newConversation = useMutation(api.assistant.chat.newConversation)
@@ -23,6 +25,14 @@ export default function AssistantPage() {
   // mid-stream would silently orphan it) can never lag the panel by a
   // render, unlike a state mirror fed through an effect would.
   const { busy } = useAssistantChat(orgId)
+
+  const handleNewConversation = async () => {
+    try {
+      await newConversation({ orgId })
+    } catch {
+      toast.error(tToast("error"))
+    }
+  }
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-3xl flex-col gap-4">
@@ -37,7 +47,7 @@ export default function AssistantPage() {
           <Button
             variant="outline"
             disabled={busy}
-            onClick={() => void newConversation({ orgId })}
+            onClick={() => void handleNewConversation()}
           >
             {t("newConversation")}
           </Button>

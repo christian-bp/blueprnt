@@ -6,6 +6,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useTranslations } from "next-intl"
 import { AssistantChartPart } from "@/components/assistant/assistant-chart-part"
 import { AssistantMarkdown } from "@/components/assistant/assistant-markdown"
+import { ASSISTANT_PERSONAL_DATA_ERROR_CODE } from "@/lib/convex-error"
 
 // The listMessages element shape every assistant surface renders. A user
 // message carries only text; an assistant reply's parts are append-only
@@ -67,7 +68,7 @@ export function AssistantMessage({
           </div>
         ) : message.status === "failed" ? (
           <p className="text-destructive text-sm">
-            {message.errorCode === "errors.assistantPersonalData"
+            {message.errorCode === ASSISTANT_PERSONAL_DATA_ERROR_CODE
               ? tErrors("assistantPersonalData")
               : t("failed")}
           </p>

@@ -9,6 +9,7 @@ import { AssistantThread } from "@/components/assistant/assistant-thread"
 import { useOrganization } from "@/components/org-context"
 import { useAssistantChat } from "@/hooks/use-assistant-chat"
 import { translateErrorCode } from "@/lib/convex-error"
+import { toast } from "@/lib/toast"
 
 // The assistant page's data owner: reads the shared chat hook (also read by
 // AssistantPage, so a value like `busy` can never lag between the two) and
@@ -17,6 +18,7 @@ export function AssistantPanel() {
   const { orgId } = useOrganization()
   const locale = useLocale()
   const tErrors = useTranslations("errors")
+  const tToast = useTranslations("dashboard.toast")
   const { messages, loading, busy, last } = useAssistantChat(orgId)
   const sendMessage = useMutation(api.assistant.chat.sendMessage)
   const stopGeneration = useMutation(api.assistant.chat.stopGeneration)
@@ -30,9 +32,13 @@ export function AssistantPanel() {
       setSendError(translateErrorCode(error, tErrors))
     }
   }
-  const handleStop = () => {
+  const handleStop = async () => {
     if (busy && last !== undefined) {
-      void stopGeneration({ orgId, messageId: last._id })
+      try {
+        await stopGeneration({ orgId, messageId: last._id })
+      } catch {
+        toast.error(tToast("error"))
+      }
     }
   }
 

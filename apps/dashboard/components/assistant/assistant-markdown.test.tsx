@@ -23,5 +23,6 @@ describe("AssistantMarkdown", () => {
   it("opens links in a new tab", () => {
     render(<AssistantMarkdown text={"[link](https://example.com)"} />)
     expect(screen.getByRole("link").getAttribute("target")).toBe("_blank")
+    expect(screen.getByRole("link").getAttribute("rel")).toBe("noreferrer")
   })
 })

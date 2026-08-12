@@ -100,7 +100,9 @@ export function AssistantPrompt() {
         ))}
       </div>
       {/* Fixed-height slot so an appearing error never reflows the page. */}
-      <p className="h-4 text-destructive text-xs">{error ?? ""}</p>
+      <p className="h-4 text-destructive text-xs">
+        {error !== undefined ? <span role="alert">{error}</span> : ""}
+      </p>
     </div>
   )
 }
