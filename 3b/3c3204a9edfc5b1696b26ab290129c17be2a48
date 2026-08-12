@@ -1,0 +1,54 @@
+apps/dashboard/components/overview/welcome-greeting.tsx
+  s_c6f9c899f4809f::t_eccba4ddcf02e9 4,21-25,43,51
+  s_c6f9c899f4809f::t_db3c112396182a 26-30
+apps/dashboard/components/assistant/assistant-prompt.test.tsx
+  s_c6f9c899f4809f::t_f0bd7cf2bd3a4c 121
+  s_c6f9c899f4809f::t_8aace7ce195490 60
+apps/dashboard/components/overview/overview-status-line.tsx
+  s_c6f9c899f4809f::t_52b9f678f1a9f5 32-36
+  s_c6f9c899f4809f::t_2cc7eb64a35ef0 1-31,37-41
+apps/dashboard/components/overview/welcome-greeting.test.tsx
+  s_c6f9c899f4809f::t_d542e45e4b7111 47-64
+packages/i18n/messages/fi.json
+  s_c6f9c899f4809f::t_7bd50ec1885f72 865-868
+apps/dashboard/app/(app)/page.test.tsx
+  s_c6f9c899f4809f::t_db3c112396182a 152
+  s_c6f9c899f4809f::t_58b53d84cef67c 110
+  s_c6f9c899f4809f::t_9d250073b80ce0 132,145-146,153-157,159-161,165-179
+  s_c6f9c899f4809f::t_141fba32580c5f 180
+packages/i18n/messages/en.json
+  s_c6f9c899f4809f::t_a9189226185666 865-868
+packages/i18n/messages/nb.json
+  s_c6f9c899f4809f::t_6582396ce319ee 865-868
+packages/i18n/messages/da.json
+  s_c6f9c899f4809f::t_403114792976fd 865-868
+apps/dashboard/components/overview/todo-actions.tsx
+  s_c6f9c899f4809f::t_9e9fb436113da3 255-257
+apps/dashboard/app/(app)/page.tsx
+  s_c6f9c899f4809f::t_ad3556dd99983b 81-84,86
+  s_c6f9c899f4809f::t_d9ca3357a2d914 10,22-35,37-43,78-80,87-91
+  s_c6f9c899f4809f::t_a97f1b4cd06ac5 3
+apps/dashboard/components/overview/overview-status-line.test.tsx
+  s_c6f9c899f4809f::t_0fb81dfd05df74 1-47,49-50
+  s_c6f9c899f4809f::t_db3c112396182a 48
+packages/i18n/messages/sv.json
+  s_c6f9c899f4809f::t_7608e1dca26b4e 865-868
+apps/dashboard/components/assistant/assistant-prompt.tsx
+  s_c6f9c899f4809f::t_0f4ef5498f70bc 49-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3b3c3204a9edfc5b1696b26ab290129c17be2a48",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
