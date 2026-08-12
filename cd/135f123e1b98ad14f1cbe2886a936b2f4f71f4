@@ -1,0 +1,20 @@
+packages/backend/convex/assistant/chat.test.ts
+  s_c6f9c899f4809f::t_622e311c9f08b1 500-512,552-555,562-600
+  s_c6f9c899f4809f::t_fd4dfb9e4ad763 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "cd135f123e1b98ad14f1cbe2886a936b2f4f71f4",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
