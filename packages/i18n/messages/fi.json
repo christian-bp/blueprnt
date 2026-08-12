@@ -1973,7 +1973,7 @@
       "analysisProgressLabel": "Mitä tässä lasketaan?",
       "analysisProgressBody": "Vaiheet, jotka on dokumentoitava ennen palkkakartoituksen valmistumista: yhteistoiminta, palkkakäytäntöjen arviointi ja jokainen ryhmä, jonka palkkaero vaatii perustelun. Muuta ei lasketa.",
       "payGapScatterMeansBody": "Katkoviivat ovat kummankin sukupuolen keskipalkka ryhmässä, joten näet ketkä ovat oman keskiarvonsa ylä- ja alapuolella.",
-      "assistant": "Avustaja selittää käsitteet, näyttää organisaation luvut ja ohjaa oikealle sivulle. Se voi lukea koosteita, mutta ei koskaan muuttaa mitään."
+      "assistantBody": "Avustaja selittää käsitteet, näyttää organisaation luvut ja ohjaa oikealle sivulle. Se voi lukea koosteita, mutta ei koskaan muuttaa mitään."
     },
     "widgetCard": {
       "expand": "Suurenna"

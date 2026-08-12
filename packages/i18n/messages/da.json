@@ -1973,7 +1973,7 @@
       "analysisProgressLabel": "Hvad tælles her?",
       "analysisProgressBody": "De trin, der skal dokumenteres, før lønkortlægningen kan afsluttes: samarbejdet, gennemgangen af lønpraksis, og hver gruppe hvis lønforskel kræver en begrundelse. Intet andet tælles med.",
       "payGapScatterMeansBody": "De stiplede linjer er hvert køns gennemsnitsløn i gruppen, så du kan se, hvem der ligger over og under deres eget gennemsnit.",
-      "assistant": "Assistenten forklarer begreber, viser organisationens tal og leder dig til den rigtige side. Den kan læse aggregater, men aldrig ændre noget."
+      "assistantBody": "Assistenten forklarer begreber, viser organisationens tal og leder dig til den rigtige side. Den kan læse aggregater, men aldrig ændre noget."
     },
     "widgetCard": {
       "expand": "Forstør"

@@ -1973,7 +1973,7 @@
       "analysisProgressLabel": "Hva telles her?",
       "analysisProgressBody": "Stegene som må dokumenteres før lønnskartleggingen kan fullføres: samarbeidet, gjennomgangen av lønnspraksis, og hver gruppe hvis lønnsforskjell krever en begrunnelse. Ingenting annet telles.",
       "payGapScatterMeansBody": "De stiplede linjene er hvert kjønns gjennomsnittslønn i gruppen, så du ser hvem som ligger over og under sitt eget gjennomsnitt.",
-      "assistant": "Assistenten forklarer begreper, viser organisasjonens tall og leder deg til riktig side. Den kan lese aggregater, men aldri endre noe."
+      "assistantBody": "Assistenten forklarer begreper, viser organisasjonens tall og leder deg til riktig side. Den kan lese aggregater, men aldri endre noe."
     },
     "widgetCard": {
       "expand": "Forstørr"

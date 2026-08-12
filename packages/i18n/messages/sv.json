@@ -1973,7 +1973,7 @@
       "analysisProgressLabel": "Vad räknas här?",
       "analysisProgressBody": "Stegen som måste dokumenteras innan lönekartläggningen kan slutföras: samverkan, granskningen av lönepraxis, och varje grupp vars löneskillnad kräver en förklaring. Inget annat räknas.",
       "payGapScatterMeansBody": "De streckade linjerna är respektive köns medellön i gruppen, så du ser vilka som ligger över och under sitt eget medel.",
-      "assistant": "Assistenten förklarar begrepp, visar organisationens siffror och leder dig till rätt sida. Den kan läsa aggregat men aldrig ändra något."
+      "assistantBody": "Assistenten förklarar begrepp, visar organisationens siffror och leder dig till rätt sida. Den kan läsa aggregat men aldrig ändra något."
     },
     "widgetCard": {
       "expand": "Förstora"
