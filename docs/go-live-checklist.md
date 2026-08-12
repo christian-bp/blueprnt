@@ -242,6 +242,10 @@ in the same change.
   export/report module (guide Modul 8) at the point data leaves the system,
   not as a per-view log on the detail page.
 
+- [ ] **Assistant: decide the retention policy for archived assistant threads.** ADR-0018 stage-gates this decision: auto-delete after N days vs keep until user erasure. Implement the chosen policy before onboarding real organizations.
+
+- [ ] **Assistant: revisit the simple per-user hourly message cap.** The V1 cost guard is a naive 30 messages per user per hour. If real usage shows abuse patterns or if per-org token budgets become policy, upgrade to @convex-dev/rate-limiter.
+
 ## V1 conformance follow-ups (from the 2026-07-01 audit)
 
 Re-verified 2026-07-03: the audit's build/copy/doc gaps (the rationale +
