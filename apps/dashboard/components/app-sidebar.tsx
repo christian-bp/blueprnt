@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  AiChat02Icon,
   Audit02Icon,
   Briefcase01Icon,
   ChartColumnIcon,
@@ -46,6 +47,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t("nav.home"),
       url: "/",
       icon: <HugeiconsIcon icon={DashboardSquare02Icon} strokeWidth={2} />,
+    },
+    {
+      title: t("nav.assistant"),
+      url: "/assistant",
+      icon: <HugeiconsIcon icon={AiChat02Icon} strokeWidth={2} />,
     },
   ]
 
