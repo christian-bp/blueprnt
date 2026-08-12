@@ -1972,8 +1972,7 @@
       "collaborationBody": "Å samarbeide med de ansatte og deres tillitsvalgte gjennom hele lønnskartleggingen (diskrimineringsloven 3 kap. 11 §). Ved tariffavtale kan de også kreve informasjonen (12 §).",
       "analysisProgressLabel": "Hva telles her?",
       "analysisProgressBody": "Stegene som må dokumenteres før lønnskartleggingen kan fullføres: samarbeidet, gjennomgangen av lønnspraksis, og hver gruppe hvis lønnsforskjell krever en begrunnelse. Ingenting annet telles.",
-      "payGapScatterMeansBody": "De stiplede linjene er hvert kjønns gjennomsnittslønn i gruppen, så du ser hvem som ligger over og under sitt eget gjennomsnitt.",
-      "assistantBody": "Blueprnt AI forklarer begreper, viser organisasjonens tall og leder deg til riktig side. Den kan lese aggregater, men aldri endre noe."
+      "payGapScatterMeansBody": "De stiplede linjene er hvert kjønns gjennomsnittslønn i gruppen, så du ser hvem som ligger over og under sitt eget gjennomsnitt."
     },
     "widgetCard": {
       "expand": "Forstørr"

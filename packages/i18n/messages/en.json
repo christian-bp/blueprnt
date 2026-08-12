@@ -1972,8 +1972,7 @@
       "collaborationBody": "Cooperating with employees and union representatives through the whole pay mapping (Diskrimineringslagen 3 kap. 11 §). Under a collective agreement they may also require the information (12 §).",
       "analysisProgressLabel": "What is counted here?",
       "analysisProgressBody": "The steps that must be documented before the pay mapping can be completed: collaboration, the pay-practice review, and every group whose pay difference needs a reason. Nothing else is counted.",
-      "payGapScatterMeansBody": "The dashed lines are each gender's average pay in the group, so you can see who sits above and below their own average.",
-      "assistantBody": "Blueprnt AI explains concepts, shows your organization's numbers, and guides you to the right page. It can read aggregates but never change anything."
+      "payGapScatterMeansBody": "The dashed lines are each gender's average pay in the group, so you can see who sits above and below their own average."
     },
     "widgetCard": {
       "expand": "Expand"

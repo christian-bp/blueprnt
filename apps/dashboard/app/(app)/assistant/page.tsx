@@ -7,7 +7,6 @@ import { Button } from "@workspace/ui/components/button"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { AssistantPanel } from "@/components/assistant/assistant-panel"
-import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import { useAssistantChat } from "@/hooks/use-assistant-chat"
 import { usePageTitle } from "@/hooks/use-page-title"
@@ -15,7 +14,6 @@ import { toast } from "@/lib/toast"
 
 export default function AssistantPage() {
   const t = useTranslations("dashboard.assistant")
-  const tHelp = useTranslations("dashboard.help")
   const tToast = useTranslations("dashboard.toast")
   usePageTitle(t("title"))
   const { orgId } = useOrganization()
@@ -46,10 +44,7 @@ export default function AssistantPage() {
     // that actually scrolls, and the composer below it never moves,
     // regardless of thread length.
     <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-4 overflow-hidden">
-      <div className="flex items-center justify-end gap-2">
-        <HelpMorphButton label={t("title")}>
-          {tHelp("assistantBody")}
-        </HelpMorphButton>
+      <div className="flex items-center justify-end">
         <Button
           variant="outline"
           disabled={busy}
