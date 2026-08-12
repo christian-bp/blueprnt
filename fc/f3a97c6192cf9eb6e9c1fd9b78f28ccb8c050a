@@ -1,0 +1,21 @@
+docs/go-live-checklist.md
+  s_c6f9c899f4809f::t_e278af542de0de 245-248
+docs/adr/0018-assistent-som-chatt.md
+  s_c6f9c899f4809f::t_f4c07124de1825 1-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "fcf3a97c6192cf9eb6e9c1fd9b78f28ccb8c050a",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
