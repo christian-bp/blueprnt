@@ -1,0 +1,35 @@
+packages/backend/convex/ai/generate.ts
+  s_c6f9c899f4809f::t_64a922fc7b2145 35
+packages/backend/convex/ai/config.ts
+  s_c6f9c899f4809f::t_61b7ac170cef21 23-50
+packages/backend/convex/ai/pricing.ts
+  s_c6f9c899f4809f::t_e56a2aa21e38c9 8-10,22
+packages/i18n/messages/da.json
+  s_c6f9c899f4809f::t_c6a17a31c8b69f 2428-2432
+packages/i18n/messages/fi.json
+  s_c6f9c899f4809f::t_5b3527f1f23e72 2428-2432
+packages/i18n/messages/sv.json
+  s_c6f9c899f4809f::t_2d047fe067e48f 2428-2432
+packages/backend/convex/lib/errors.ts
+  s_c6f9c899f4809f::t_8da90f9bb61a98 34-37
+packages/i18n/messages/en.json
+  s_c6f9c899f4809f::t_4808eb2170abff 2428-2432
+packages/i18n/messages/nb.json
+  s_c6f9c899f4809f::t_eb6febf678f572 2428-2432
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "de55b36462114bf73f993c404d8aa8d0268958cf",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
