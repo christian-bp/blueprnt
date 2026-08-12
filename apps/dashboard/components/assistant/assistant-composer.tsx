@@ -11,6 +11,20 @@ import {
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 
+// Call-site override, not a vendored-file edit: the assistant surfaces
+// deliberately deviate from the app's default input shell (rounded-md,
+// border-input, shadow-xs, a ring-ring/50 focus ring) to read as a chat pill
+// instead of a form field, matching the reference chatbot template's
+// InputGroup (rounded-2xl, a transparent border over a bg-input/50 tint, no
+// shadow, a softer ring-ring/30 focus). Shared by AssistantComposer and
+// AssistantPrompt so the two composers never drift apart.
+export const ASSISTANT_INPUT_GROUP_CLASS =
+  "rounded-2xl border-transparent bg-input/50 shadow-none has-[[data-slot=input-group-control]:focus-visible]:ring-ring/30"
+// The vendored Textarea already auto-grows via field-sizing-content +
+// min-h-16 (identical to the template's), so only the padding needs the
+// template's roomier p-3.5 in place of the vendored px-2.5/py-2.
+export const ASSISTANT_TEXTAREA_CLASS = "p-3.5"
+
 // The assistant page's presentational input: send/stop live in the same
 // slot (only one control is ever mounted, matching busy), and Enter submits
 // while Shift+Enter and an in-progress IME composition both fall through to
@@ -33,8 +47,12 @@ export function AssistantComposer(props: {
 
   return (
     <div className="pt-3">
-      <InputGroup>
+      {/* Deliberate deviation from the app's default input shell to match
+          the chat pill treatment (call-site override per design-system
+          rules). */}
+      <InputGroup className={ASSISTANT_INPUT_GROUP_CLASS}>
         <InputGroupTextarea
+          className={ASSISTANT_TEXTAREA_CLASS}
           value={text}
           placeholder={t("inputPlaceholder")}
           rows={1}

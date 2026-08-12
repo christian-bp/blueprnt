@@ -9,7 +9,6 @@ import { useTranslations } from "next-intl"
 import { AssistantPanel } from "@/components/assistant/assistant-panel"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
-import { PageHeader } from "@/components/page-header"
 import { useAssistantChat } from "@/hooks/use-assistant-chat"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { toast } from "@/lib/toast"
@@ -38,29 +37,24 @@ export default function AssistantPage() {
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-3xl flex-col gap-4">
-      <PageHeader
-        title={t("title")}
-        titleAdornment={
-          <HelpMorphButton label={t("title")}>
-            {tHelp("assistantBody")}
-          </HelpMorphButton>
-        }
-        action={
-          <Button
-            variant="outline"
-            disabled={busy}
-            onClick={() => void handleNewConversation()}
-          >
-            <HugeiconsIcon
-              icon={PlusSignIcon}
-              size={16}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
-            {t("newConversation")}
-          </Button>
-        }
-      />
+      <div className="flex items-center justify-end gap-2">
+        <HelpMorphButton label={t("title")}>
+          {tHelp("assistantBody")}
+        </HelpMorphButton>
+        <Button
+          variant="outline"
+          disabled={busy}
+          onClick={() => void handleNewConversation()}
+        >
+          <HugeiconsIcon
+            icon={PlusSignIcon}
+            size={16}
+            strokeWidth={2}
+            aria-hidden="true"
+          />
+          {t("newConversation")}
+        </Button>
+      </div>
       <AssistantPanel />
     </div>
   )

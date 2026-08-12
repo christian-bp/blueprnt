@@ -12,6 +12,10 @@ import { useMutation } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import {
+  ASSISTANT_INPUT_GROUP_CLASS,
+  ASSISTANT_TEXTAREA_CLASS,
+} from "@/components/assistant/assistant-composer"
 import { useOrganization } from "@/components/org-context"
 import { translateErrorCode } from "@/lib/convex-error"
 
@@ -59,8 +63,12 @@ export function AssistantPrompt() {
     // suggestions, error slot), not a "band" the page's between-band gap-4
     // rhythm applies to.
     <div className="flex flex-col gap-2">
-      <InputGroup>
+      {/* Deliberate deviation from the app's default input shell to match
+          the chat pill treatment (call-site override per design-system
+          rules). */}
+      <InputGroup className={ASSISTANT_INPUT_GROUP_CLASS}>
         <InputGroupTextarea
+          className={ASSISTANT_TEXTAREA_CLASS}
           value={text}
           placeholder={t("inputPlaceholder")}
           rows={1}
