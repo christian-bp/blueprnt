@@ -1,0 +1,24 @@
+docs/adr/0018-assistent-som-chatt.md
+  s_c6f9c899f4809f::t_4a2b1c6e638c29 19
+  s_c6f9c899f4809f::t_f54d81c5c31f12 7
+  s_c6f9c899f4809f::t_17fce635d8d2aa 11
+  s_c6f9c899f4809f::t_1d769af5385b46 17
+  s_c6f9c899f4809f::t_3f6eb7a2321274 21
+  s_c6f9c899f4809f::t_0499ef8217386c 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "78f6e4f3891718fd75544cb7ed8a0121cacd34de",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
