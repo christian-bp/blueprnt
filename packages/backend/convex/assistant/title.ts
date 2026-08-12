@@ -1,6 +1,7 @@
 "use node"
 
-import { generateText, Output } from "ai"
+import { generateText, NoObjectGeneratedError, Output } from "ai"
+import type { LanguageModelUsage } from "ai"
 import { z } from "zod"
 import { internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
@@ -18,6 +19,53 @@ import { aiModel } from "../ai/provider"
 const titleSchema = z.object({
   title: z.string().min(3).max(60),
 })
+
+// Usage the provider reported on a title call that billed tokens but
+// produced no usable title. NoObjectGeneratedError carries the failed step's
+// usage directly, because it is thrown from inside the awaited generateText
+// call (finishReason === "stop" but the JSON output could not be parsed or
+// did not match the schema), before any result exists. Any other error,
+// including NoOutputGeneratedError (thrown from the `.output` getter after
+// generateText already resolved, when finishReason !== "stop"), carries no
+// usage of its own; that case is covered by the caller already holding the
+// resolved result's usage.
+export function usageFromTitleFailure(
+  error: unknown
+): LanguageModelUsage | null {
+  if (NoObjectGeneratedError.isInstance(error) && error.usage !== undefined) {
+    return error.usage
+  }
+  return null
+}
+
+// Best-effort: a failure recording usage is logged and swallowed, never
+// rethrown, so it can be called from both the success and failure paths of
+// generateThreadTitle below without either one risking a second attempt at
+// the same write.
+async function recordTitleUsage(
+  ctx: ActionCtx,
+  args: { threadId: Id<"assistantThreads">; orgId: string; userId: string },
+  usage: LanguageModelUsage
+): Promise<void> {
+  try {
+    await ctx.runMutation(internal.ai.usage.recordAiUsageDirect, {
+      orgId: args.orgId,
+      kind: "assistant.title",
+      provider: AI_PROVIDER,
+      model: AI_PROFILE_MODEL_ID,
+      actorId: args.userId,
+      inputTokens: usage.inputTokens ?? 0,
+      outputTokens: usage.outputTokens ?? 0,
+      totalTokens: usage.totalTokens ?? 0,
+      cachedInputTokens: usage.inputTokenDetails?.cacheReadTokens ?? 0,
+    })
+  } catch (error) {
+    console.error("assistant title usage recording failed", {
+      threadId: args.threadId,
+      error: error instanceof Error ? error.message : String(error),
+    })
+  }
+}
 
 // Fired once per thread, on its first user turn (generate.ts's guard), in
 // PARALLEL with the main reply stream: called without awaiting, before
@@ -48,6 +96,11 @@ export async function generateThreadTitle(
     firstUserMessage: string
   }
 ): Promise<void> {
+  // Set as soon as generateText resolves, so a later throw from the
+  // `.output` getter (finishReason !== "stop") still has the billed usage on
+  // hand in the catch block below: NoOutputGeneratedError carries none of
+  // its own.
+  let usage: LanguageModelUsage | null = null
   try {
     const model = aiModel(AI_PROFILE_MODEL_ID)
     if (model === null) return
@@ -65,25 +118,24 @@ export async function generateThreadTitle(
         `<user_message>${args.firstUserMessage}</user_message>`,
       ].join("\n"),
     })
+    usage = result.usage
     await ctx.runMutation(internal.assistant.chat.setThreadTitle, {
       threadId: args.threadId,
       title: result.output.title,
     })
-    await ctx.runMutation(internal.ai.usage.recordAiUsageDirect, {
-      orgId: args.orgId,
-      kind: "assistant.title",
-      provider: AI_PROVIDER,
-      model: AI_PROFILE_MODEL_ID,
-      actorId: args.userId,
-      inputTokens: result.usage.inputTokens ?? 0,
-      outputTokens: result.usage.outputTokens ?? 0,
-      totalTokens: result.usage.totalTokens ?? 0,
-      cachedInputTokens: result.usage.inputTokenDetails?.cacheReadTokens ?? 0,
-    })
+    await recordTitleUsage(ctx, args, usage)
   } catch (error) {
     console.error("assistant title generation failed", {
       threadId: args.threadId,
       error: error instanceof Error ? error.message : String(error),
     })
+    const failureUsage = usage ?? usageFromTitleFailure(error)
+    if (failureUsage === null) {
+      console.error("assistant title usage unavailable", {
+        threadId: args.threadId,
+      })
+      return
+    }
+    await recordTitleUsage(ctx, args, failureUsage)
   }
 }
