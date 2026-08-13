@@ -1,0 +1,34 @@
+apps/dashboard/components/app-shell.test.tsx
+  s_c6f9c899f4809f::t_a4546f8f635364 10-16
+apps/dashboard/components/assistant/assistant-panel.tsx
+  s_c6f9c899f4809f::t_cf2aa5897aee27 52-54
+apps/dashboard/components/assistant/assistant-panel.test.tsx
+  s_c6f9c899f4809f::t_2bc6e4e6e607b5 110
+apps/dashboard/components/assistant/assistant-chart-part.tsx
+  s_c6f9c899f4809f::t_c3b5c3b6ac9719 32-37
+apps/dashboard/app/(app)/assistant/page.test.tsx
+  s_c6f9c899f4809f::t_e9e7a642c83b8b 266-268
+apps/dashboard/components/app-shell.tsx
+  s_c6f9c899f4809f::t_2b0d612ac0f85b 56-61
+apps/dashboard/components/assistant/assistant-thread.tsx
+  s_c6f9c899f4809f::t_15eb6d1df0433a 14-18
+  s_c6f9c899f4809f::t_6acfe97ed254c4 77-87
+apps/dashboard/components/assistant/assistant-thread.test.tsx
+  s_c6f9c899f4809f::t_bb4ebfddbe62ad 68,74-75,77,82-85,92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3992b38b6e1990418fc425b31bad718a3dec3d71",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
