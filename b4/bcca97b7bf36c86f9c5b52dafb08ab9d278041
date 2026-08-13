@@ -1,0 +1,28 @@
+apps/dashboard/components/assistant/assistant-composer.tsx
+  s_c6f9c899f4809f::t_87f6edda6d333e 27-38
+  s_c6f9c899f4809f::t_b5e5d312622c0c 92,97,107
+apps/dashboard/components/assistant/assistant-prompt.test.tsx
+  s_c6f9c899f4809f::t_0d38bc217b77f6 84
+  s_c6f9c899f4809f::t_de52d6f4fc865c 85-90
+apps/dashboard/components/assistant/assistant-prompt.tsx
+  s_c6f9c899f4809f::t_2aff300c5f0576 3-4,19-20
+  s_c6f9c899f4809f::t_045dc858f67121 89,91-93,98
+apps/dashboard/components/assistant/assistant-composer.test.tsx
+  s_c6f9c899f4809f::t_be3fc9f44eb353 67-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b4bcca97b7bf36c86f9c5b52dafb08ab9d278041",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
