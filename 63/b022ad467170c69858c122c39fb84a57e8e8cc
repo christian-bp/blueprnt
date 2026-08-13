@@ -1,0 +1,27 @@
+apps/dashboard/components/admin/ai-usage-kpis.tsx
+  s_c6f9c899f4809f::t_6b38e21bdd780f 68
+  s_c6f9c899f4809f::t_e3ad348e86c9da 14-19,73-75,83-87,93-95,101-103,109,115-119
+  s_c6f9c899f4809f::t_7690d9d2c93648 1-13,20-46,63-67,69-72,77-82,88-92,96-100,104-108,110-114,120-124
+  s_c6f9c899f4809f::t_23bc5243092f56 47-62,76
+apps/dashboard/components/admin/ai-usage-chart.test.tsx
+  s_c6f9c899f4809f::t_b107d7b54d2e26 1-68
+apps/dashboard/components/admin/ai-usage-chart.tsx
+  s_c6f9c899f4809f::t_26874305e954f9 1-44,48-149,152-218
+  s_c6f9c899f4809f::t_6b38e21bdd780f 45-47,150-151
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "63b022ad467170c69858c122c39fb84a57e8e8cc",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
