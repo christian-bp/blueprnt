@@ -1,0 +1,31 @@
+apps/dashboard/components/admin/ai-usage-chart.tsx
+  s_c6f9c899f4809f::t_a47441d63b7ccb 147-149
+apps/dashboard/lib/admin-ai-usage.ts
+  s_c6f9c899f4809f::t_8ff55037f8d3ee 193-194
+packages/i18n/messages/sv.json
+  s_c6f9c899f4809f::t_a29ee7db7990db 2243
+packages/backend/convex/ai/usage.test.ts
+  s_c6f9c899f4809f::t_a55ca540c0bf69 252-285
+docs/go-live-checklist.md
+  s_c6f9c899f4809f::t_cd24c595f872ce 251-252
+apps/dashboard/components/admin/ai-usage-section.tsx
+  s_c6f9c899f4809f::t_d66aaea4909f04 46-48
+apps/dashboard/components/admin/ai-usage-table.test.tsx
+  s_c6f9c899f4809f::t_5570ce89604ce4 70-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "7505b73838258e72e746abd6852d8aa5e5207f9a",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
