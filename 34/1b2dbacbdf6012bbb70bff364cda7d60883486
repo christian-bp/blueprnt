@@ -1,0 +1,25 @@
+packages/backend/convex/assistant/generate.ts
+  s_c6f9c899f4809f::t_9f1a9e07a496bd 3,14
+  s_c6f9c899f4809f::t_966ab30aecd7f0 25-35
+  s_c6f9c899f4809f::t_4efde7310e5f16 140-145
+packages/backend/convex/assistant/generate.test.ts
+  s_c6f9c899f4809f::t_a66e372d68da78 1-12
+packages/backend/convex/ai/config.ts
+  s_c6f9c899f4809f::t_743928e37db198 55-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "341b2dbacbdf6012bbb70bff364cda7d60883486",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
