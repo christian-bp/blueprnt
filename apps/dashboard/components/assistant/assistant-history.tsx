@@ -3,7 +3,7 @@
 import {
   MoreVerticalIcon,
   PlusSignIcon,
-  SidebarLeftIcon,
+  HistoryIcon,
   Tick02Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -152,8 +152,11 @@ export function AssistantHistoryPanel({
                 aria-label={t("history")}
                 onClick={onCollapse}
               >
+                {/* HistoryIcon, not SidebarLeftIcon: the header's app-sidebar
+                    trigger already wears the sidebar glyph, and two identical
+                    icons for two different panels read as one control. */}
                 <HugeiconsIcon
-                  icon={SidebarLeftIcon}
+                  icon={HistoryIcon}
                   strokeWidth={2}
                   aria-hidden="true"
                 />

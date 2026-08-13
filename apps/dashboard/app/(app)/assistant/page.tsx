@@ -1,6 +1,6 @@
 "use client"
 
-import { SidebarLeftIcon } from "@hugeicons/core-free-icons"
+import { HistoryIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
@@ -87,8 +87,11 @@ export default function AssistantPage() {
               aria-label={t("history")}
               onClick={() => togglePanel(true)}
             >
+              {/* HistoryIcon, not SidebarLeftIcon: the header's app-sidebar
+                  trigger already wears the sidebar glyph, and two identical
+                  icons for two different panels read as one control. */}
               <HugeiconsIcon
-                icon={SidebarLeftIcon}
+                icon={HistoryIcon}
                 strokeWidth={2}
                 aria-hidden="true"
               />
