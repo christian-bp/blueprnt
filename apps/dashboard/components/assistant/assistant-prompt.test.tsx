@@ -88,6 +88,20 @@ describe("AssistantPrompt", () => {
     expect(button.textContent?.trim()).toBe("")
   })
 
+  it("renders the send control gray until there is typed text, then switches to the brand look", () => {
+    renderPrompt()
+    const button = screen.getByRole("button", {
+      name: tAssistant.send,
+    }) as HTMLButtonElement
+    expect(button.className).toContain("bg-secondary")
+    expect(button.className).not.toContain("bg-primary")
+
+    const input = screen.getByPlaceholderText(tAssistant.inputPlaceholder)
+    fireEvent.change(input, { target: { value: "hello" } })
+    expect(button.className).toContain("bg-primary")
+    expect(button.className).not.toContain("bg-secondary")
+  })
+
   it("disables the send button for empty input, and while a send is pending", async () => {
     let resolveSend: () => void = () => {}
     sendMessageMock.mockImplementation(

@@ -103,7 +103,7 @@ export function AssistantComposer(props: {
           ) : (
             <InputGroupButton
               size="icon-sm"
-              variant="default"
+              variant={text.trim() === "" ? "secondary" : "default"}
               className={ASSISTANT_SEND_BUTTON_CLASS}
               onClick={send}
               disabled={!canSend}

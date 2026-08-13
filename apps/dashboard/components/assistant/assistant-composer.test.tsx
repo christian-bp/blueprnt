@@ -73,6 +73,22 @@ describe("AssistantComposer", () => {
     expect(button.textContent?.trim()).toBe("")
   })
 
+  it("renders the send control gray until there is typed text, then switches to the brand look", () => {
+    renderComposer()
+    const button = screen.getByRole("button", {
+      name: messages.dashboard.assistant.send,
+    }) as HTMLButtonElement
+    expect(button.className).toContain("bg-secondary")
+    expect(button.className).not.toContain("bg-primary")
+
+    const input = screen.getByPlaceholderText(
+      messages.dashboard.assistant.inputPlaceholder
+    )
+    fireEvent.change(input, { target: { value: "hello" } })
+    expect(button.className).toContain("bg-primary")
+    expect(button.className).not.toContain("bg-secondary")
+  })
+
   it("shows stop instead of send while busy, and stop calls onStop", () => {
     const { onStop } = renderComposer({ busy: true })
     expect(

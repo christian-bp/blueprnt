@@ -89,7 +89,7 @@ export function AssistantPrompt() {
         <InputGroupAddon align="block-end" className={ASSISTANT_SEND_ROW_CLASS}>
           <InputGroupButton
             size="icon-sm"
-            variant="default"
+            variant={text.trim() === "" ? "secondary" : "default"}
             className={ASSISTANT_SEND_BUTTON_CLASS}
             onClick={() => void send(text)}
             disabled={text.trim() === "" || sending}
