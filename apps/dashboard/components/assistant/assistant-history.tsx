@@ -1,9 +1,9 @@
 "use client"
 
 import {
+  HistoryIcon,
   MoreVerticalIcon,
   PlusSignIcon,
-  HistoryIcon,
   Tick02Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"

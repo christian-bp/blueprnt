@@ -83,7 +83,7 @@ describe("AssistantThread", () => {
   // so it needs real breathing room from the viewport's paint containment
   // (contain-content, MessageScrollerViewport), not just the composer's own
   // px-6, or its rounded border gets cut. assistant-panel.tsx's composer
-  // wrapper carries the same px-8 on the same max-w-2xl, so the two columns
+  // wrapper carries the same px-8 on the same max-w-3xl, so the two columns
   // stay left/right aligned.
   it("carries the clip-safe inset on the message list container", () => {
     const { container } = renderThread({
@@ -96,7 +96,7 @@ describe("AssistantThread", () => {
     ) as HTMLElement
     const classes = content.className.split(/\s+/)
     expect(classes).toContain("px-8")
-    expect(classes).toContain("max-w-2xl")
+    expect(classes).toContain("max-w-3xl")
   })
 
   it("shows the empty state with three suggestion buttons calling onSuggestion with localized text", () => {

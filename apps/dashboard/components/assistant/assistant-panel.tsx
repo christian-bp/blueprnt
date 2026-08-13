@@ -50,9 +50,9 @@ export function AssistantPanel() {
         onSuggestion={handleSend}
       />
       {/* px-8, matching AssistantThread's own MessageScrollerContent inset
-          (assistant-thread.tsx) on the same max-w-2xl: the composer pill and
+          (assistant-thread.tsx) on the same max-w-3xl: the composer pill and
           the message column must keep the same left/right edges. */}
-      <div className="mx-auto w-full max-w-2xl px-8">
+      <div className="mx-auto w-full max-w-3xl px-8">
         <AssistantComposer
           busy={busy}
           onSend={handleSend}

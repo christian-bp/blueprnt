@@ -107,7 +107,7 @@ describe("AssistantPanel", () => {
   })
 
   // Matches AssistantThread's own MessageScrollerContent inset
-  // (assistant-thread.test.tsx): the same max-w-2xl px-8 on both keeps the
+  // (assistant-thread.test.tsx): the same max-w-3xl px-8 on both keeps the
   // composer and the message column's visible content left/right aligned.
   it("insets the composer wrapper the same way as the message column", () => {
     onQuery(() => undefined)
@@ -115,7 +115,7 @@ describe("AssistantPanel", () => {
     const wrapper = screen.getByTestId("composer").parentElement as HTMLElement
     const classes = wrapper.className.split(/\s+/)
     expect(classes).toContain("px-8")
-    expect(classes).toContain("max-w-2xl")
+    expect(classes).toContain("max-w-3xl")
   })
 
   it("resolves to the empty thread (not loading) when there is no active conversation", () => {
