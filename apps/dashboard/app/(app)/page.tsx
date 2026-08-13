@@ -65,14 +65,14 @@ export default function OverviewPage() {
     // pay-mapping overview already uses. The page used to separate its bands
     // by 32px while its cards sat 12px apart, so the same cards were spaced
     // differently depending on the direction you read them in.
-    <div className="flex flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
       {/* The hero: plain flex divs throughout, deliberately no `grid` class
           and no `<section>`, so the page's band-gap invariant (every
           `div.grid`/`section` carries the same gap-4) never scans it. Fills
           roughly the first viewport (HERO_MIN_H) and centers its content
           vertically, at the same full content width as the To do row and the
-          stat strip below it: no `max-w` cap of its own, so the chat prompt
-          spans exactly what those bands span. */}
+          stat strip below it: no `max-w` cap of its own, since the inner
+          cap sits on this shared root div instead. */}
       <div className={cn("flex w-full flex-col justify-center", HERO_MIN_H)}>
         <div className="flex flex-col items-center pt-6 pb-10 text-center">
           <WelcomeGreeting />
