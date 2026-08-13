@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from "vitest"
 import { api, components, internal } from "../_generated/api"
-import { ASSISTANT_THREAD_LIST_LIMIT } from "../ai/config"
+import {
+  ASSISTANT_THREAD_LIST_LIMIT,
+  ASSISTANT_TITLE_MAX_LENGTH,
+} from "../ai/config"
 import { ERROR_CODES } from "../lib/errors"
 import { initConvexTest } from "../testing.helpers"
 import { ERASE_BATCH } from "./erase"
@@ -370,6 +373,132 @@ describe("assistant chat", () => {
     expect(
       await asMember.query(api.assistant.chat.getActiveThread, { orgId })
     ).toBeNull()
+  })
+
+  it("renameConversation denies renaming another user's thread", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember, asOtherMember } = await seedOrgWithTwoMembers(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "mine",
+      locale: "en",
+    })
+    await expect(
+      asOtherMember.mutation(api.assistant.chat.renameConversation, {
+        orgId,
+        threadId,
+        title: "Not yours",
+      })
+    ).rejects.toThrow()
+  })
+
+  it("renameConversation trims the title and rejects an empty one", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "hello",
+      locale: "en",
+    })
+
+    await asMember.mutation(api.assistant.chat.renameConversation, {
+      orgId,
+      threadId,
+      title: "  Pay gap overview  ",
+    })
+    expect(
+      (await asMember.query(api.assistant.chat.getActiveThread, { orgId }))
+        ?.title
+    ).toBe("Pay gap overview")
+
+    await expect(
+      asMember.mutation(api.assistant.chat.renameConversation, {
+        orgId,
+        threadId,
+        title: "   ",
+      })
+    ).rejects.toThrow(/invalidInput/)
+  })
+
+  it("renameConversation rejects a title over ASSISTANT_TITLE_MAX_LENGTH", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "hello",
+      locale: "en",
+    })
+
+    await expect(
+      asMember.mutation(api.assistant.chat.renameConversation, {
+        orgId,
+        threadId,
+        title: "x".repeat(ASSISTANT_TITLE_MAX_LENGTH + 1),
+      })
+    ).rejects.toThrow(/invalidInput/)
+
+    // Exactly at the bound is accepted.
+    const atBound = "x".repeat(ASSISTANT_TITLE_MAX_LENGTH)
+    await asMember.mutation(api.assistant.chat.renameConversation, {
+      orgId,
+      threadId,
+      title: atBound,
+    })
+    expect(
+      (await asMember.query(api.assistant.chat.getActiveThread, { orgId }))
+        ?.title
+    ).toBe(atBound)
+  })
+
+  it("renameConversation persists and listThreads reflects it", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "hello",
+      locale: "en",
+    })
+
+    await asMember.mutation(api.assistant.chat.renameConversation, {
+      orgId,
+      threadId,
+      title: "Renamed by hand",
+    })
+
+    const threads = await asMember.query(api.assistant.chat.listThreads, {
+      orgId,
+    })
+    expect(threads.find((thread) => thread._id === threadId)?.title).toBe(
+      "Renamed by hand"
+    )
+  })
+
+  it("a rename makes a later AI setThreadTitle call a no-op (write-once interplay)", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "hello",
+      locale: "en",
+    })
+
+    await asMember.mutation(api.assistant.chat.renameConversation, {
+      orgId,
+      threadId,
+      title: "My own name",
+    })
+    // The AI title side call fires after the user already renamed the
+    // thread: setThreadTitle only ever writes when the thread has no title
+    // yet, so the manual rename must survive it untouched.
+    await t.mutation(internal.assistant.chat.setThreadTitle, {
+      threadId,
+      title: "AI generated title",
+    })
+
+    expect(
+      (await asMember.query(api.assistant.chat.getActiveThread, { orgId }))
+        ?.title
+    ).toBe("My own name")
   })
 
   it("sendMessage with fresh archives the active thread and starts a new one", async () => {

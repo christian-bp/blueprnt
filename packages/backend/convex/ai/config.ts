@@ -61,6 +61,11 @@ export const ASSISTANT_USAGE_RACE_MS = 2_000
 // this call must never outlive the reply thread it runs alongside.
 export const ASSISTANT_TITLE_MAX_OUTPUT_TOKENS = 64
 export const ASSISTANT_TITLE_GENERATION_TIMEOUT_MS = 30_000
+// The AI title's own max length (title.ts's schema) and the user-driven
+// renameConversation mutation's max length share this one bound, so a
+// manual rename can never exceed what the AI title itself is allowed to
+// produce.
+export const ASSISTANT_TITLE_MAX_LENGTH = 60
 // Mistral's free tier is ~1 rps, so a title call running concurrently with
 // the main reply's own model call is the likelier of the two to hit a 429.
 export const ASSISTANT_TITLE_MAX_RETRIES = 5

@@ -7,6 +7,7 @@ import {
   ASSISTANT_HISTORY_LIMIT,
   ASSISTANT_HOURLY_MESSAGE_CAP,
   ASSISTANT_THREAD_LIST_LIMIT,
+  ASSISTANT_TITLE_MAX_LENGTH,
   MAX_ASSISTANT_MESSAGE_LENGTH,
 } from "../ai/config"
 import { promptLocale } from "../evaluationModel/localize"
@@ -320,6 +321,32 @@ export const newConversation = orgMutation({
     if (thread !== null) {
       await archiveThread(ctx, thread._id)
     }
+    return null
+  },
+})
+
+// User-driven rename from the history panel's row menu. Trimmed and bounded
+// to the same length the AI title obeys (ASSISTANT_TITLE_MAX_LENGTH), so a
+// manual rename can never exceed what the model's own title is allowed to
+// produce. No busy guard: renaming a thread mid-stream touches only its
+// title, never the message it is generating, so it is harmless regardless of
+// whether the thread is currently active or streaming. Once this patches
+// `title`, setThreadTitle's own write-once guard (it never overwrites an
+// existing title) makes a later AI-generated title for this thread a no-op,
+// so a rename can never be clobbered by a still-in-flight title call. No
+// audit row: assistant chat is telemetry, not domain state (ADR-0018), the
+// same stance deleteConversation already takes.
+export const renameConversation = orgMutation({
+  args: { threadId: v.id("assistantThreads"), title: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const thread = await ctx.db.get(args.threadId)
+    assertOwned(ctx, thread)
+    const title = args.title.trim()
+    if (title === "" || title.length > ASSISTANT_TITLE_MAX_LENGTH) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+    await ctx.db.patch(args.threadId, { title })
     return null
   },
 })

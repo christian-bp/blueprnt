@@ -10,6 +10,7 @@ import {
   AI_PROFILE_MODEL_ID,
   AI_PROVIDER,
   ASSISTANT_TITLE_GENERATION_TIMEOUT_MS,
+  ASSISTANT_TITLE_MAX_LENGTH,
   ASSISTANT_TITLE_MAX_OUTPUT_TOKENS,
   ASSISTANT_TITLE_MAX_RETRIES,
   LANGUAGE_NAMES,
@@ -17,7 +18,7 @@ import {
 import { aiModel } from "../ai/provider"
 
 const titleSchema = z.object({
-  title: z.string().min(3).max(60),
+  title: z.string().min(3).max(ASSISTANT_TITLE_MAX_LENGTH),
 })
 
 // Usage the provider reported on a title call that billed tokens but
