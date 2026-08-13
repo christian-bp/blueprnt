@@ -1,15 +1,23 @@
 "use client"
 
-import { Tick02Icon } from "@hugeicons/core-free-icons"
+import { MoreVerticalIcon, Tick02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useMutation } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useFormatter, useTranslations } from "next-intl"
+import { useState } from "react"
+import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { useOrganization } from "@/components/org-context"
 import { useAssistantThreads } from "@/hooks/use-assistant-threads"
 import { SPRING } from "@/lib/motion"
@@ -125,20 +133,8 @@ export function AssistantHistoryRail({
 // for the outer rail's own lifetime, which the page mounts unconditionally
 // on every /assistant visit.
 function AssistantHistoryThreadList({ busy }: { busy: boolean }) {
-  const t = useTranslations("dashboard.assistant")
-  const tToast = useTranslations("dashboard.toast")
-  const format = useFormatter()
   const { orgId } = useOrganization()
   const { threads, loading } = useAssistantThreads(orgId)
-  const switchConversation = useMutation(api.assistant.chat.switchConversation)
-
-  async function handleSwitch(threadId: Id<"assistantThreads">) {
-    try {
-      await switchConversation({ orgId, threadId })
-    } catch {
-      toast.error(tToast("error"))
-    }
-  }
 
   if (loading) {
     return (
@@ -161,39 +157,126 @@ function AssistantHistoryThreadList({ busy }: { busy: boolean }) {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
       <div className="flex flex-col gap-1">
-        {threads.map((thread) => {
-          const isActive = thread.status === "active"
-          return (
+        {threads.map((thread) => (
+          <AssistantHistoryThreadRow
+            key={thread._id}
+            thread={thread}
+            busy={busy}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// One rail row: the switch-conversation control plus its trailing row-actions
+// menu, in a plain div rather than a single wrapping Button (a button cannot
+// contain a button). The menu trigger sits in an always-rendered, fixed-size
+// slot next to the switch control, so its presence never reflows the title
+// truncation beside it.
+function AssistantHistoryThreadRow({
+  thread,
+  busy,
+}: {
+  thread: {
+    _id: Id<"assistantThreads">
+    title?: string
+    status: "active" | "archived"
+    lastMessageAt: number
+  }
+  busy: boolean
+}) {
+  const t = useTranslations("dashboard.assistant")
+  const tToast = useTranslations("dashboard.toast")
+  const format = useFormatter()
+  const { orgId } = useOrganization()
+  const switchConversation = useMutation(api.assistant.chat.switchConversation)
+  const deleteConversation = useMutation(api.assistant.chat.deleteConversation)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const isActive = thread.status === "active"
+
+  async function handleSwitch() {
+    try {
+      await switchConversation({ orgId, threadId: thread._id })
+    } catch {
+      toast.error(tToast("error"))
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-1">
+      <Button
+        type="button"
+        variant="ghost"
+        disabled={isActive || busy}
+        aria-current={isActive ? "true" : undefined}
+        className="h-auto min-w-0 flex-1 flex-col items-start gap-0.5 whitespace-normal px-2 py-2 text-left"
+        onClick={() => void handleSwitch()}
+      >
+        <span className="flex w-full items-center gap-1.5">
+          <span className="min-w-0 flex-1 truncate text-sm">
+            {thread.title ?? t("untitled")}
+          </span>
+          {isActive && (
+            <HugeiconsIcon
+              icon={Tick02Icon}
+              strokeWidth={2}
+              className="size-4 shrink-0"
+            />
+          )}
+        </span>
+        <span className="w-full truncate text-muted-foreground text-xs">
+          {format.dateTime(new Date(thread.lastMessageAt), {
+            dateStyle: "medium",
+          })}
+        </span>
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
             <Button
-              key={thread._id}
               type="button"
               variant="ghost"
-              disabled={isActive || busy}
-              aria-current={isActive ? "true" : undefined}
-              className="h-auto w-full flex-col items-start gap-0.5 whitespace-normal px-2 py-2 text-left"
-              onClick={() => void handleSwitch(thread._id)}
-            >
-              <span className="flex w-full items-center gap-1.5">
-                <span className="min-w-0 flex-1 truncate text-sm">
-                  {thread.title ?? t("untitled")}
-                </span>
-                {isActive && (
-                  <HugeiconsIcon
-                    icon={Tick02Icon}
-                    strokeWidth={2}
-                    className="size-4 shrink-0"
-                  />
-                )}
-              </span>
-              <span className="w-full truncate text-muted-foreground text-xs">
-                {format.dateTime(new Date(thread.lastMessageAt), {
-                  dateStyle: "medium",
-                })}
-              </span>
-            </Button>
-          )
-        })}
-      </div>
+              size="icon"
+              disabled={busy}
+              aria-label={t("rowActionsLabel")}
+              className="shrink-0 text-muted-foreground hover:text-foreground"
+            />
+          }
+        >
+          <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => setConfirmOpen(true)}
+          >
+            {t("deleteConversation")}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <ConfirmDeleteDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title={t("deleteConversationTitle")}
+        description={t("deleteConversationDescription")}
+        confirmLabel={t("deleteConversationConfirm")}
+        cancelLabel={t("deleteConversationCancel")}
+        pending={deleting}
+        onConfirm={async () => {
+          setDeleting(true)
+          try {
+            await deleteConversation({ orgId, threadId: thread._id })
+            toast.success(tToast("conversationDeleted"))
+          } catch (error) {
+            toast.error(tToast("error"))
+            throw error
+          } finally {
+            setDeleting(false)
+          }
+        }}
+      />
     </div>
   )
 }

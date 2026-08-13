@@ -183,7 +183,8 @@
       "payMappingActionStatusChanged": "Statusen uppdaterades",
       "payMappingNoteCreated": "Noteringen lades till",
       "payMappingNoteUpdated": "Noteringen uppdaterades",
-      "payMappingNoteDeleted": "Noteringen togs bort"
+      "payMappingNoteDeleted": "Noteringen togs bort",
+      "conversationDeleted": "Konversation borttagen"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -2410,7 +2411,13 @@
       "stoppedNote": "Stoppad.",
       "disclaimer": "Blueprnt AI kan ha fel. Kontrollera viktiga siffror på deras egna sidor.",
       "thinking": "Tänker…",
-      "checkingData": "Kontrollerar era data…"
+      "checkingData": "Kontrollerar era data…",
+      "rowActionsLabel": "Konversationsåtgärder",
+      "deleteConversation": "Ta bort konversation",
+      "deleteConversationTitle": "Ta bort den här konversationen?",
+      "deleteConversationDescription": "Alla meddelanden i konversationen tas bort permanent. Det går inte att ångra.",
+      "deleteConversationConfirm": "Ja, ta bort",
+      "deleteConversationCancel": "Avbryt"
     }
   },
   "errors": {

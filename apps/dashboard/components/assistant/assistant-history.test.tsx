@@ -27,9 +27,11 @@ vi.mock("@/lib/toast", () => ({
 import { AssistantHistoryRail } from "@/components/assistant/assistant-history"
 import { toast } from "@/lib/toast"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
+import { openMenu } from "@/test/menu"
 
 const t = messages.dashboard.assistant
 const switchConversationMock = mockMutation("assistant.chat.switchConversation")
+const deleteConversationMock = mockMutation("assistant.chat.deleteConversation")
 
 function renderRail(open: boolean, busy = false) {
   return render(
@@ -42,6 +44,7 @@ function renderRail(open: boolean, busy = false) {
 describe("AssistantHistoryRail", () => {
   beforeEach(() => {
     switchConversationMock.mockReset()
+    deleteConversationMock.mockReset()
     onQuery((ref) => (ref === "assistant.chat.listThreads" ? [] : undefined))
   })
   afterEach(() => cleanup())
@@ -222,5 +225,116 @@ describe("AssistantHistoryRail", () => {
     for (const row of screen.getAllByRole("button")) {
       expect((row as HTMLButtonElement).disabled).toBe(true)
     }
+  })
+
+  it("opens the row menu and shows the delete action, without deleting yet", async () => {
+    onQuery((ref) =>
+      ref === "assistant.chat.listThreads"
+        ? [
+            {
+              _id: "thread-old",
+              title: "Older chat",
+              status: "archived",
+              lastMessageAt: 100,
+            },
+          ]
+        : undefined
+    )
+    renderRail(true)
+    await openMenu(screen.getByRole("button", { name: t.rowActionsLabel }))
+    expect(
+      screen.getByRole("menuitem", { name: t.deleteConversation })
+    ).toBeDefined()
+    expect(deleteConversationMock).not.toHaveBeenCalled()
+  })
+
+  it("confirming the delete dialog calls deleteConversation and shows a success toast", async () => {
+    onQuery((ref) =>
+      ref === "assistant.chat.listThreads"
+        ? [
+            {
+              _id: "thread-old",
+              title: "Older chat",
+              status: "archived",
+              lastMessageAt: 100,
+            },
+          ]
+        : undefined
+    )
+    deleteConversationMock.mockResolvedValue(null)
+    renderRail(true)
+    await openMenu(screen.getByRole("button", { name: t.rowActionsLabel }))
+    fireEvent.click(
+      screen.getByRole("menuitem", { name: t.deleteConversation })
+    )
+    fireEvent.click(
+      screen.getByRole("button", { name: t.deleteConversationConfirm })
+    )
+
+    await waitFor(() => {
+      expect(deleteConversationMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        threadId: "thread-old",
+      })
+    })
+    expect(vi.mocked(toast.success)).toHaveBeenCalledWith(
+      messages.dashboard.toast.conversationDeleted
+    )
+  })
+
+  it("shows an error toast and keeps the dialog open when deleting fails", async () => {
+    onQuery((ref) =>
+      ref === "assistant.chat.listThreads"
+        ? [
+            {
+              _id: "thread-old",
+              title: "Older chat",
+              status: "archived",
+              lastMessageAt: 100,
+            },
+          ]
+        : undefined
+    )
+    deleteConversationMock.mockRejectedValue(new Error("boom"))
+    renderRail(true)
+    await openMenu(screen.getByRole("button", { name: t.rowActionsLabel }))
+    fireEvent.click(
+      screen.getByRole("menuitem", { name: t.deleteConversation })
+    )
+    fireEvent.click(
+      screen.getByRole("button", { name: t.deleteConversationConfirm })
+    )
+
+    await waitFor(() => {
+      expect(vi.mocked(toast.error)).toHaveBeenCalledWith(
+        messages.dashboard.toast.error
+      )
+    })
+    // The failed delete must not close the dialog: the user can retry
+    // without re-opening it from the row menu.
+    expect(screen.getByRole("alertdialog")).toBeDefined()
+  })
+
+  it("disables the row menu trigger while busy, so it can never be opened mid-stream", () => {
+    onQuery((ref) =>
+      ref === "assistant.chat.listThreads"
+        ? [
+            {
+              _id: "thread-old",
+              title: "Older chat",
+              status: "archived",
+              lastMessageAt: 100,
+            },
+          ]
+        : undefined
+    )
+    renderRail(true, true)
+    expect(
+      (
+        screen.getByRole("button", {
+          name: t.rowActionsLabel,
+        }) as HTMLButtonElement
+      ).disabled
+    ).toBe(true)
   })
 })

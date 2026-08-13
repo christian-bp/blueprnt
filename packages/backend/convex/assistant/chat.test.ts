@@ -3,6 +3,7 @@ import { api, components, internal } from "../_generated/api"
 import { ASSISTANT_THREAD_LIST_LIMIT } from "../ai/config"
 import { ERROR_CODES } from "../lib/errors"
 import { initConvexTest } from "../testing.helpers"
+import { ERASE_BATCH } from "./erase"
 
 // Seeds one org with a single member, mirroring the canonical
 // seedTemplateOrganization pattern (assessment/roles.test.ts): seedMembership
@@ -722,5 +723,159 @@ describe("assistant chat", () => {
         title: "Pay gap overview",
       })
     ).resolves.toBeNull()
+  })
+
+  it("deleteConversation denies deleting another user's thread", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember, asOtherMember } = await seedOrgWithTwoMembers(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "mine",
+      locale: "en",
+    })
+    await expect(
+      asOtherMember.mutation(api.assistant.chat.deleteConversation, {
+        orgId,
+        threadId,
+      })
+    ).rejects.toThrow()
+  })
+
+  it("deleteConversation refuses while the thread's last message is still streaming", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "hello",
+      locale: "en",
+    })
+    // The placeholder assistant reply is never finalized, so it is still
+    // "streaming": deleting must refuse rather than delete out from under
+    // the generation still writing to it.
+    await expect(
+      asMember.mutation(api.assistant.chat.deleteConversation, {
+        orgId,
+        threadId,
+      })
+    ).rejects.toThrow(/assistantBusy/)
+  })
+
+  it("deleteConversation hard-deletes every message and the thread itself", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "hello",
+      locale: "en",
+    })
+    const messages = await asMember.query(api.assistant.chat.listMessages, {
+      orgId,
+      threadId,
+    })
+    const assistantId = messages[1]?._id
+    if (assistantId === undefined) throw new Error("seed")
+    await t.mutation(internal.assistant.chat.finalizeReply, {
+      messageId: assistantId,
+      status: "complete",
+      parts: [{ type: "text", text: "ok" }],
+    })
+
+    await asMember.mutation(api.assistant.chat.deleteConversation, {
+      orgId,
+      threadId,
+    })
+
+    await t.run(async (ctx) => {
+      expect(await ctx.db.get(threadId)).toBeNull()
+      const remaining = await ctx.db
+        .query("assistantMessages")
+        .withIndex("by_thread", (q) => q.eq("threadId", threadId))
+        .collect()
+      expect(remaining).toHaveLength(0)
+    })
+  })
+
+  it("deleteConversation on the active thread leaves no active thread", async () => {
+    const t = initConvexTest()
+    const { orgId, asMember } = await seedOrgWithMember(t)
+    const threadId = await asMember.mutation(api.assistant.chat.sendMessage, {
+      orgId,
+      text: "hello",
+      locale: "en",
+    })
+    const messages = await asMember.query(api.assistant.chat.listMessages, {
+      orgId,
+      threadId,
+    })
+    const assistantId = messages[1]?._id
+    if (assistantId === undefined) throw new Error("seed")
+    await t.mutation(internal.assistant.chat.finalizeReply, {
+      messageId: assistantId,
+      status: "complete",
+      parts: [{ type: "text", text: "ok" }],
+    })
+
+    await asMember.mutation(api.assistant.chat.deleteConversation, {
+      orgId,
+      threadId,
+    })
+
+    expect(
+      await asMember.query(api.assistant.chat.getActiveThread, { orgId })
+    ).toBeNull()
+  })
+
+  it("deleteConversation completes via the rechain for a thread holding more than ERASE_BATCH messages", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, asMember } = await seedOrgWithMember(t)
+    const threadId = await t.run(async (ctx) => {
+      const id = await ctx.db.insert("assistantThreads", {
+        orgId,
+        userId,
+        status: "active",
+        lastMessageAt: Date.now(),
+      })
+      for (let i = 0; i < ERASE_BATCH + 1; i += 1) {
+        await ctx.db.insert("assistantMessages", {
+          orgId,
+          userId,
+          threadId: id,
+          role: "user",
+          status: "complete",
+          parts: [{ type: "text", text: `m${i}` }],
+        })
+      }
+      return id
+    })
+
+    vi.useFakeTimers()
+    try {
+      await asMember.mutation(api.assistant.chat.deleteConversation, {
+        orgId,
+        threadId,
+      })
+      await t.finishAllScheduledFunctions(vi.runAllTimers)
+    } finally {
+      vi.useRealTimers()
+    }
+
+    // The rechain actually fired: a single transaction only ever deletes one
+    // ERASE_BATCH-sized page, so a thread one message over that page must
+    // have scheduled a follow-up batch to finish.
+    const scheduled = await t.run((ctx) =>
+      ctx.db.system.query("_scheduled_functions").collect()
+    )
+    expect(
+      scheduled.some((s) => s.name.includes("deleteConversationBatch"))
+    ).toBe(true)
+
+    await t.run(async (ctx) => {
+      expect(await ctx.db.get(threadId)).toBeNull()
+      const remaining = await ctx.db
+        .query("assistantMessages")
+        .withIndex("by_thread", (q) => q.eq("threadId", threadId))
+        .collect()
+      expect(remaining).toHaveLength(0)
+    })
   })
 })

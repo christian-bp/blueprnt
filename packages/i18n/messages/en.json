@@ -183,7 +183,8 @@
       "payMappingActionStatusChanged": "Status updated",
       "payMappingNoteCreated": "Note added",
       "payMappingNoteUpdated": "Note updated",
-      "payMappingNoteDeleted": "Note deleted"
+      "payMappingNoteDeleted": "Note deleted",
+      "conversationDeleted": "Conversation deleted"
     },
     "accountMenu": "Account menu",
     "nav": {
@@ -2410,7 +2411,13 @@
       "stoppedNote": "Stopped.",
       "disclaimer": "Blueprnt AI can make mistakes. Verify important numbers on their own pages.",
       "thinking": "Thinking…",
-      "checkingData": "Checking your data…"
+      "checkingData": "Checking your data…",
+      "rowActionsLabel": "Conversation actions",
+      "deleteConversation": "Delete conversation",
+      "deleteConversationTitle": "Delete this conversation?",
+      "deleteConversationDescription": "Every message in this conversation is permanently deleted. This cannot be undone.",
+      "deleteConversationConfirm": "Yes, delete",
+      "deleteConversationCancel": "Cancel"
     }
   },
   "errors": {

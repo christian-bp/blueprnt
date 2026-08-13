@@ -13,6 +13,7 @@ import { promptLocale } from "../evaluationModel/localize"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { orgSettingsRow } from "../lib/orgSettings"
+import { ERASE_BATCH } from "./erase"
 import {
   type AssistantMessagePart,
   assistantActivityKind,
@@ -348,6 +349,70 @@ export const switchConversation = orgMutation({
       status: "active",
       lastMessageAt: Date.now(),
     })
+    return null
+  },
+})
+
+// Deletes up to ERASE_BATCH of the thread's messages (shared with
+// assistant/erase.ts, so one constant governs every per-transaction
+// message-deletion budget in this table). Child-first: the thread row is
+// deleted only once none of its messages remain, so a page that exactly
+// fills the budget defers the thread delete and reschedules a follow-up
+// batch instead.
+async function deleteThreadBatch(
+  ctx: GenericMutationCtx<DataModel>,
+  threadId: Id<"assistantThreads">
+): Promise<void> {
+  const messages = await ctx.db
+    .query("assistantMessages")
+    .withIndex("by_thread", (q) => q.eq("threadId", threadId))
+    .take(ERASE_BATCH)
+  for (const message of messages) {
+    await ctx.db.delete(message._id)
+  }
+  if (messages.length >= ERASE_BATCH) {
+    await ctx.scheduler.runAfter(
+      0,
+      internal.assistant.chat.deleteConversationBatch,
+      { threadId }
+    )
+    return
+  }
+  await ctx.db.delete(threadId)
+}
+
+// Scheduled continuation once a thread's messages outgrow one transaction.
+// The public deleteConversation entry already checked ownership and the busy
+// guard once; a race that erases the thread before this runs (another
+// erasure path, a duplicate schedule) leaves nothing to do.
+export const deleteConversationBatch = internalMutation({
+  args: { threadId: v.id("assistantThreads") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const thread = await ctx.db.get(args.threadId)
+    if (thread === null) return null
+    await deleteThreadBatch(ctx, args.threadId)
+    return null
+  },
+})
+
+// Hard-deletes a conversation from the caller's own history: never an
+// archive. Refuses while the thread's last message is still streaming, the
+// same orphan hazard newConversation/switchConversation guard against, so an
+// in-flight reply can never be deleted out from under the generation writing
+// it. Deleting the active thread is allowed while idle: afterwards
+// getActiveThread simply returns null and the page shows its empty state.
+// No audit row: assistant chat is telemetry, not domain state (ADR-0018).
+export const deleteConversation = orgMutation({
+  args: { threadId: v.id("assistantThreads") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const thread = await ctx.db.get(args.threadId)
+    assertOwned(ctx, thread)
+    if (await isThreadStreaming(ctx, args.threadId)) {
+      throw appError(ERROR_CODES.assistantBusy)
+    }
+    await deleteThreadBatch(ctx, args.threadId)
     return null
   },
 })

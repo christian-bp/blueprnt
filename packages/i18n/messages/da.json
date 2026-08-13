@@ -183,7 +183,8 @@
       "payMappingActionStatusChanged": "Statussen blev opdateret",
       "payMappingNoteCreated": "Notatet blev tilføjet",
       "payMappingNoteUpdated": "Notatet blev opdateret",
-      "payMappingNoteDeleted": "Notatet blev slettet"
+      "payMappingNoteDeleted": "Notatet blev slettet",
+      "conversationDeleted": "Samtale slettet"
     },
     "accountMenu": "Kontomenu",
     "nav": {
@@ -2410,7 +2411,13 @@
       "stoppedNote": "Stoppet.",
       "disclaimer": "Blueprnt AI kan tage fejl. Tjek vigtige tal på deres egne sider.",
       "thinking": "Tænker…",
-      "checkingData": "Tjekker jeres data…"
+      "checkingData": "Tjekker jeres data…",
+      "rowActionsLabel": "Samtalehandlinger",
+      "deleteConversation": "Slet samtale",
+      "deleteConversationTitle": "Slet denne samtale?",
+      "deleteConversationDescription": "Alle beskeder i samtalen slettes permanent. Dette kan ikke fortrydes.",
+      "deleteConversationConfirm": "Ja, slet",
+      "deleteConversationCancel": "Annuller"
     }
   },
   "errors": {

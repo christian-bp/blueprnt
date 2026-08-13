@@ -183,7 +183,8 @@
       "payMappingActionStatusChanged": "Tila päivitettiin",
       "payMappingNoteCreated": "Merkintä lisättiin",
       "payMappingNoteUpdated": "Merkintä päivitettiin",
-      "payMappingNoteDeleted": "Merkintä poistettiin"
+      "payMappingNoteDeleted": "Merkintä poistettiin",
+      "conversationDeleted": "Keskustelu poistettu"
     },
     "accountMenu": "Tilivalikko",
     "nav": {
@@ -2410,7 +2411,13 @@
       "stoppedNote": "Pysäytetty.",
       "disclaimer": "Blueprnt AI voi erehtyä. Tarkista tärkeät luvut niiden omilta sivuilta.",
       "thinking": "Miettii…",
-      "checkingData": "Tarkistaa tietojanne…"
+      "checkingData": "Tarkistaa tietojanne…",
+      "rowActionsLabel": "Keskustelun toiminnot",
+      "deleteConversation": "Poista keskustelu",
+      "deleteConversationTitle": "Poistetaanko tämä keskustelu?",
+      "deleteConversationDescription": "Kaikki keskustelun viestit poistetaan pysyvästi. Tätä ei voi kumota.",
+      "deleteConversationConfirm": "Kyllä, poista",
+      "deleteConversationCancel": "Peruuta"
     }
   },
   "errors": {
