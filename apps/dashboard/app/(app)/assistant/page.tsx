@@ -60,7 +60,7 @@ export default function AssistantPage() {
     // opens and closes, while keeping its own historical width otherwise.
     <div className="flex min-h-0 w-full flex-1 overflow-hidden">
       <AssistantHistoryRail open={historyOpen} busy={busy} />
-      <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-4 overflow-hidden">
+      <div className="mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col gap-4 overflow-hidden">
         {/* Three regions: history left, the animated title centered, New
             conversation right. The outer flex-1 wrappers (not the title
             itself) hold the left/right controls pinned to their edges, so the
