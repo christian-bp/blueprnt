@@ -26,6 +26,15 @@ import { hasTrendShape } from "@/lib/pay-gap-trend"
 // figures in words, so the chart IS the content a screen reader needs to
 // reach.
 
+// A real border, not the Card's default ring: the ring is a box-shadow,
+// and inside MessageScrollerViewport (contain: content, composited
+// scrolling) box-shadows drop along the card's straight edges, so the
+// frame rendered as bare corner arcs and read as clipped. Verified
+// empirically: a solid red 2px test box-shadow lost its sides in place
+// while border and outline painted whole. A border paints inside the box
+// and is immune.
+const CHART_CARD_FRAME_CLASS = "border border-border"
+
 export function AssistantChartPart(props: { chart: AssistantChartKind }) {
   const { orgId } = useOrganization()
   const headcount = useHeadcountTrend(orgId)
@@ -48,6 +57,7 @@ export function AssistantChartPart(props: { chart: AssistantChartKind }) {
         title={t("workforce.trendTitle")}
         state={state}
         emptyText={t("trendEmpty")}
+        className={CHART_CARD_FRAME_CLASS}
       >
         {headcount ? (
           <HeadcountTrend
@@ -84,6 +94,7 @@ export function AssistantChartPart(props: { chart: AssistantChartKind }) {
       title={t("gapTrend.title")}
       state={gapState}
       emptyText={gapEmptyText}
+      className={CHART_CARD_FRAME_CLASS}
     >
       {gap && gapReady ? (
         <PayGapTrend

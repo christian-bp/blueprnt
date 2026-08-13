@@ -86,19 +86,17 @@ describe("AssistantChartPart (headcountTrend)", () => {
     expect(panel?.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 
-  it("insets the plot inside the card's padding instead of bleeding to its edges", () => {
+  it("frames the card with a real border, since rings do not paint in the scroller", () => {
     useHeadcountTrendMock.mockReturnValue(TWO_RUNS)
     usePayGapTrendMock.mockReturnValue(undefined)
     renderChart("headcountTrend")
     const panel = panelFor(t.workforce.trendTitle)
-    // A bleeding plot puts the pale gradient right against the card's
-    // hairline frame with nothing showing where the card ends, which reads
-    // as a clipped border wherever the hairline drops out. The card keeps
-    // its normal padding (bleed sets pb-0) and its default frame (no ring
-    // override).
-    const card = panel?.closest('[class*="ring-"]') ?? panel
-    expect(card?.className).not.toContain("pb-0")
-    expect(card?.className).not.toContain("ring-foreground/20")
+    // The Card's default frame is a ring (box-shadow), and box-shadows drop
+    // along the straight edges inside MessageScrollerViewport's containment,
+    // so the chat chart card must carry a real border, which always paints.
+    const card = panel?.closest('[class*="group/card"]') ?? panel
+    expect(card?.className).toContain("border-border")
+    expect(card?.className).toMatch(/(^|\s)border(\s|$)/)
   })
 })
 
