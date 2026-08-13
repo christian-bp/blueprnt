@@ -71,6 +71,17 @@ export const TOOLTIP_APPEAR =
 // support, including the ones with small units.
 export const MONEY_AXIS_WIDTH = 92
 
+// Horizontal breathing room for a chart whose stroke and point marks reach
+// the very edge of the plot area (a trend line spanning its full domain).
+// Without it, the endpoint mark and half the stroke sit exactly ON the
+// card's own border, so the card's rounded corners and overflow clipping
+// cut them off: a mark loses its edge instead of just fading toward it.
+// Sized past the largest mark that can sit at an endpoint (the active dot's
+// radius, 4px) plus a couple of pixels of clearance. Left/right only: the
+// gradient area's fill is allowed to bleed to the card's bottom edge by
+// design, so no vertical inset is added.
+export const CHART_EDGE_INSET = 6
+
 // Height of the plot strip in an overview widget card, as a Tailwind class so
 // the three cards and their loading placeholders can never drift apart.
 //

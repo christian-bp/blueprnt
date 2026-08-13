@@ -24,6 +24,7 @@ import { type ReactElement, useId } from "react"
 import { Area, AreaChart, XAxis, YAxis } from "recharts"
 import type { GenderSeries } from "@/components/gender-mark"
 import {
+  CHART_EDGE_INSET,
   CHART_TOOLTIP_MOTION,
   CHART_TOOLTIP_TEXT,
   TOOLTIP_APPEAR,
@@ -143,9 +144,12 @@ function TrendArea({
       config={config}
       className={cn("aspect-auto w-full", WIDGET_CHART_HEIGHT)}
     >
-      {/* No side or bottom margin: the fill runs to the card's own edges,
+      {/* No bottom margin: the fill runs to the card's own bottom edge,
           which is what makes it read as the card's surface rather than a
-          picture sitting on it. The top margin is the stroke's headroom.
+          picture sitting on it. The top margin is the stroke's headroom;
+          left/right carry CHART_EDGE_INSET instead of 0, because an endpoint's
+          mark and half its stroke otherwise sit exactly on the card's own
+          border and get clipped by its rounded corners.
 
           accessibilityLayer on, like every other chart in the app: it puts
           tabIndex=0 and role="application" on the plot surface, which is the
@@ -153,7 +157,12 @@ function TrendArea({
       <AreaChart
         accessibilityLayer
         data={rows}
-        margin={{ top: 8, left: 0, right: 0, bottom: 0 }}
+        margin={{
+          top: 8,
+          left: CHART_EDGE_INSET,
+          right: CHART_EDGE_INSET,
+          bottom: 0,
+        }}
       >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
