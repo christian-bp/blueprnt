@@ -103,8 +103,8 @@ function TrendTooltipContent({
 }
 
 // The one plot both trends draw: a gradient area under a stroked curve,
-// bleeding to its card's edges, with both axes hidden and the reading carried
-// by the hover.
+// inset within its card's padding, with both axes hidden and the reading
+// carried by the hover.
 //
 // Shared rather than written twice, because the two sit side by side: a
 // difference in fill, margin or dot size between them would read as a
@@ -144,12 +144,12 @@ function TrendArea({
       config={config}
       className={cn("aspect-auto w-full", WIDGET_CHART_HEIGHT)}
     >
-      {/* No bottom margin: the fill runs to the card's own bottom edge,
-          which is what makes it read as the card's surface rather than a
-          picture sitting on it. The top margin is the stroke's headroom;
-          left/right carry CHART_EDGE_INSET instead of 0, because an endpoint's
-          mark and half its stroke otherwise sit exactly on the card's own
-          border and get clipped by its rounded corners.
+      {/* No bottom margin: the fill runs to the plot's own bottom edge,
+          fading out inside the card's padding (the panel never bleeds, so
+          the card's frame keeps clear ground on every side). The top margin
+          is the stroke's headroom; left/right carry CHART_EDGE_INSET instead
+          of 0 so an endpoint's mark and its hover-grown dot render whole
+          inside the plot.
 
           accessibilityLayer on, like every other chart in the app: it puts
           tabIndex=0 and role="application" on the plot surface, which is the

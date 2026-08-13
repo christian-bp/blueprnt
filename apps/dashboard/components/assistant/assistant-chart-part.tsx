@@ -26,15 +26,6 @@ import { hasTrendShape } from "@/lib/pay-gap-trend"
 // figures in words, so the chart IS the content a screen reader needs to
 // reach.
 
-// Deliberate deviation from the Card default (ring-foreground/10): the
-// trend's pale gradient bleeds to the card's own edges, and where it meets
-// the page through the default ring the straight edges visually vanish,
-// leaving only corner arcs, which reads as a clipped frame. Same reasoning
-// as the chart-anatomy border rule: a pale wash that reaches its boundary
-// needs a real contour. Strengthened here, at the one surface that bleeds
-// against bare page background, never on the Card itself.
-const CHART_CARD_CONTOUR_CLASS = "ring-foreground/20"
-
 export function AssistantChartPart(props: { chart: AssistantChartKind }) {
   const { orgId } = useOrganization()
   const headcount = useHeadcountTrend(orgId)
@@ -57,7 +48,6 @@ export function AssistantChartPart(props: { chart: AssistantChartKind }) {
         title={t("workforce.trendTitle")}
         state={state}
         emptyText={t("trendEmpty")}
-        className={CHART_CARD_CONTOUR_CLASS}
       >
         {headcount ? (
           <HeadcountTrend
@@ -94,7 +84,6 @@ export function AssistantChartPart(props: { chart: AssistantChartKind }) {
       title={t("gapTrend.title")}
       state={gapState}
       emptyText={gapEmptyText}
-      className={CHART_CARD_CONTOUR_CLASS}
     >
       {gap && gapReady ? (
         <PayGapTrend

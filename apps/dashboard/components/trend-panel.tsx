@@ -48,9 +48,12 @@ function TrendBody({
 // elsewhere, renders through this so it inherits the house chart anatomy by
 // construction rather than by convention.
 //
-// Always bleeds: a trend chart is meant to reach the card's own edges (see
-// PanelCard's `bleed`), and a trend panel never appears half-bled beside a
-// padded sibling of its own kind.
+// Never bleeds: the plot sits inside the card's own padding, with clear
+// ground on every side. Its one consumer is the chat, where the card sits
+// on bare page background: a pale gradient that reaches the card boundary
+// meets the frame's hairline ring with nothing showing where the card
+// ends, and reads as clipped on any screen where the hairline drops out.
+// The inset margin is what makes the frame legible, not the ring's weight.
 //
 // Takes no view on accessibility: whether `children` should be hidden from
 // the tree is the CALLER's decision, never baked in here. The overview hides
@@ -71,7 +74,7 @@ export function TrendPanel({
   children: ReactNode
 }) {
   return (
-    <PanelCard title={title} bleed className={className}>
+    <PanelCard title={title} className={className}>
       {state === "ready" ? (
         children
       ) : (
