@@ -61,6 +61,12 @@ export function shellLayoutClasses(pathname: string) {
   // must stay constant regardless of thread length on mobile too.
   const assistantBounded = pathname === "/assistant"
   const heightLocked = fullBleed || assistantBounded
+  // Screen-centering is per-page opt-in, not the default: today only the
+  // overview centers its capped column (the assistant centers its own
+  // reading column inside an uncapped row, so it needs nothing here);
+  // every other page keeps the left-aligned column. A page that should
+  // center later opts in here.
+  const centered = pathname === "/"
   // The whole run workspace (overview, analysis, actions, report) is a data
   // surface: wide tables and plots, not prose. The overview's KPI strip wants
   // four tiles across at the same cap its analysis tables use, and a run that
@@ -82,7 +88,8 @@ export function shellLayoutClasses(pathname: string) {
       heightLocked && "min-h-0"
     ),
     pageContent: cn(
-      "mx-auto flex w-full flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6",
+      "flex w-full flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6",
+      centered && "mx-auto",
       heightLocked && "min-h-0 flex-1",
       // /assistant is uncapped like /work: its conversations panel must sit
       // against the sidebar border, which no centered cap allows; the page

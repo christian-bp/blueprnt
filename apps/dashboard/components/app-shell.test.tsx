@@ -67,10 +67,15 @@ describe("shellLayoutClasses", () => {
     expect(content).not.toContain("min-h-0")
     expect(content).not.toContain("flex-1")
     expect(content).toContain(PAGE_MAX_W)
-    // The capped column centers on screens wider than its cap; without
-    // mx-auto it hugs the left edge and a wide monitor shows a page-wide
-    // blank right half.
-    expect(content).toContain("mx-auto")
+    // Screen-centering is per-page opt-in: an ordinary route keeps the
+    // left-aligned column until it deliberately opts in.
+    expect(content).not.toContain("mx-auto")
+  })
+
+  it("centers only the overview's capped column", () => {
+    const overview = classList(shellLayoutClasses("/").pageContent)
+    expect(overview).toContain("mx-auto")
+    expect(overview).toContain(PAGE_MAX_W)
   })
 
   it("applies the wide cap inside a pay-mapping run, unbounded in height", () => {
