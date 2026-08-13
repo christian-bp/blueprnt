@@ -1,0 +1,24 @@
+apps/dashboard/components/assistant/assistant-markdown.tsx
+  s_c6f9c899f4809f::t_13929759f8e772 4-7
+  s_c6f9c899f4809f::t_9231000a861487 85-94
+apps/dashboard/components/assistant/assistant-markdown.test.tsx
+  s_c6f9c899f4809f::t_5ab8af39080bbb 66-71,75
+packages/backend/convex/ai/config.ts
+  s_c6f9c899f4809f::t_a72ef070065052 44-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "11b10fa9b40eb5d54f092b58b72176c2ea67a159",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
