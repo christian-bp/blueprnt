@@ -1,0 +1,39 @@
+packages/i18n/messages/fi.json
+  s_c6f9c899f4809f::t_4ba4c20368f3e8 2406-2407
+packages/i18n/messages/en.json
+  s_c6f9c899f4809f::t_0d6f6a1392387f 2406-2407
+packages/i18n/messages/sv.json
+  s_c6f9c899f4809f::t_78ccbb1078acf1 2406-2407
+apps/dashboard/components/assistant/assistant-history.test.tsx
+  s_c6f9c899f4809f::t_db299337f33269 159-207
+apps/dashboard/components/assistant/assistant-history.tsx
+  s_c6f9c899f4809f::t_9a4768c31f3617 243-246,251-258
+  s_c6f9c899f4809f::t_43c1ad67b959c2 247-250
+  s_c6f9c899f4809f::t_f15379508293af 291
+  s_c6f9c899f4809f::t_709595c3f379f5 30
+packages/i18n/messages/nb.json
+  s_c6f9c899f4809f::t_85f6995ceee718 2406-2407
+packages/i18n/messages/da.json
+  s_c6f9c899f4809f::t_88ae01aab670e3 2406-2407
+apps/dashboard/lib/relative-day.ts
+  s_c6f9c899f4809f::t_8f464ee2b62a00 1-19
+apps/dashboard/lib/relative-day.test.ts
+  s_c6f9c899f4809f::t_c6b9a8c8b8b554 1-7,9-45
+  s_c6f9c899f4809f::t_43c1ad67b959c2 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ee40809cf230a7e966afa43b302a397d3e4abfaa",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
