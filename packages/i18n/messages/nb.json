@@ -208,7 +208,7 @@
       "signOut": "Logg ut",
       "people": "Ansatte",
       "payMapping": "Lønnskartlegginger",
-      "assistant": "Blueprnt AI"
+      "assistant": "Assistent"
     },
     "people": {
       "description": "Ansatte importert fra lønnssystemet.",
