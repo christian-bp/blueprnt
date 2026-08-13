@@ -1,0 +1,25 @@
+apps/dashboard/components/assistant/assistant-chart-part.test.tsx
+  s_c6f9c899f4809f::t_d722bbe037fdc6 88-101
+apps/dashboard/components/trend-panel.tsx
+  s_c6f9c899f4809f::t_d7e8f4efa5c27c 64,70,74
+apps/dashboard/components/assistant/assistant-chart-part.tsx
+  s_c6f9c899f4809f::t_de7722ed4f67ae 28-37
+  s_c6f9c899f4809f::t_eef7dced110996 97
+  s_c6f9c899f4809f::t_ab887bb9387c00 60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a03a2c1aa1d765834eb058bd484e150a4d67f0de",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
