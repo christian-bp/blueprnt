@@ -1,5 +1,5 @@
 import { v } from "convex/values"
-import { isValidPeriod, previousPeriod } from "../ai/usage"
+import { isValidPeriod, periodMonthWindow, previousPeriod } from "../ai/usage"
 import { ERROR_CODES, appError } from "../lib/errors"
 import { platformQuery } from "../lib/functions"
 import { orgNameMap } from "../lib/organizations"
@@ -59,3 +59,57 @@ export const usageByOrg = platformQuery({
     })
   },
 })
+
+const vUsageDailyRow = v.object({
+  orgId: v.string(),
+  orgName: v.string(),
+  dailyCostNanos: v.array(v.number()),
+})
+
+// Per-org daily cost for one billing period: the chart's area-per-org, x axis
+// per day series. aiUsageMonthly has no day granularity, so this reads the
+// per-call event log instead, scoped to the period's UTC month window via the
+// built-in by_creation_time index (never a full table collect) and reduced
+// into per-org day sums server-side. Orgs sorted by their period total desc,
+// same ordering rule as usageByOrg's chart.
+export const usageByOrgDaily = platformQuery({
+  args: { period: v.string() },
+  returns: v.object({ days: v.number(), rows: v.array(vUsageDailyRow) }),
+  handler: async (ctx, { period }) => {
+    if (!isValidPeriod(period)) throw appError(ERROR_CODES.invalidInput)
+    const { startMs, endMs, days } = periodMonthWindow(period)
+
+    const events = await ctx.db
+      .query("aiUsageEvents")
+      .withIndex("by_creation_time", (q) =>
+        q.gte("_creationTime", startMs).lt("_creationTime", endMs)
+      )
+      .collect()
+
+    const byOrg = new Map<string, number[]>()
+    for (const event of events) {
+      // The index range already confines every event to this UTC month, so
+      // the calendar day of _creationTime is a safe 0-based day-of-month index.
+      const dayIndex = new Date(event._creationTime).getUTCDate() - 1
+      const dailyCostNanos = byOrg.get(event.orgId) ?? new Array(days).fill(0)
+      dailyCostNanos[dayIndex] =
+        (dailyCostNanos[dayIndex] ?? 0) + event.estimatedCostNanos
+      byOrg.set(event.orgId, dailyCostNanos)
+    }
+
+    const orgLabel = await orgNameMap(ctx)
+    const rows = [...byOrg.entries()]
+      .map(([orgId, dailyCostNanos]) => ({
+        orgId,
+        orgName: orgLabel.get(orgId) ?? orgId,
+        dailyCostNanos,
+      }))
+      .sort((a, b) => sumOf(b.dailyCostNanos) - sumOf(a.dailyCostNanos))
+
+    return { days, rows }
+  },
+})
+
+function sumOf(values: number[]): number {
+  return values.reduce((total, value) => total + value, 0)
+}

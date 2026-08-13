@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest"
 import { internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
-import { isValidPeriod, monthKey, previousPeriod } from "./usage"
+import {
+  isValidPeriod,
+  monthKey,
+  periodMonthWindow,
+  previousPeriod,
+} from "./usage"
 
 // Insert a suggestion row to attribute usage to. orgId is a plain string;
 // recordAiUsage is internal and derives everything off the suggestion.
@@ -56,6 +61,29 @@ describe("previousPeriod", () => {
 
   it("crosses a year boundary from January to the prior December", () => {
     expect(previousPeriod("2026-01")).toBe("2025-12")
+  })
+})
+
+describe("periodMonthWindow", () => {
+  it("computes the UTC [start, end) window and day count for a 31-day month", () => {
+    const { startMs, endMs, days } = periodMonthWindow("2026-08")
+    expect(startMs).toBe(Date.UTC(2026, 7, 1))
+    expect(endMs).toBe(Date.UTC(2026, 8, 1))
+    expect(days).toBe(31)
+  })
+
+  it("counts 28 days for February in a non-leap year", () => {
+    expect(periodMonthWindow("2026-02").days).toBe(28)
+  })
+
+  it("counts 29 days for February in a leap year", () => {
+    expect(periodMonthWindow("2024-02").days).toBe(29)
+  })
+
+  it("crosses a year boundary for December", () => {
+    const { startMs, endMs } = periodMonthWindow("2026-12")
+    expect(startMs).toBe(Date.UTC(2026, 11, 1))
+    expect(endMs).toBe(Date.UTC(2027, 0, 1))
   })
 })
 

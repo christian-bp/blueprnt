@@ -28,6 +28,30 @@ export function previousPeriod(period: string): string {
   return `${year}-${String(month - 1).padStart(2, "0")}`
 }
 
+// The UTC [startMs, endMs) window a "YYYY-MM" period spans, plus how many
+// days the month has. Date.UTC arithmetic only (no timezone to get wrong),
+// so a caller can bucket an event's _creationTime into a day-of-month index
+// via a by_creation_time range read instead of a full collect. Callers must
+// validate the input with isValidPeriod first; behavior on a malformed
+// string is undefined.
+export function periodMonthWindow(period: string): {
+  startMs: number
+  endMs: number
+  days: number
+} {
+  const [yearStr, monthStr] = period.split("-")
+  const year = Number(yearStr)
+  const month = Number(monthStr)
+  return {
+    startMs: Date.UTC(year, month - 1, 1),
+    // Exclusive: the first instant of the FOLLOWING month, so the range read
+    // is a plain gte/lt pair with no end-of-day rounding to get wrong.
+    endMs: Date.UTC(year, month, 1),
+    // Day 0 of the following month is the last day of this one.
+    days: new Date(Date.UTC(year, month, 0)).getUTCDate(),
+  }
+}
+
 // One AI call's recorded usage: org/kind/provider/model/actor plus token
 // counts. Both the suggestion-derived path (recordAiUsage, which reads these
 // off the suggestion) and the context-based path (recordAiUsageDirect, which
@@ -202,10 +226,11 @@ export const recordAiUsageDirect = internalMutation({
 
 // Internal ops reads (V1: no client-callable usage surface). Used from the
 // Convex dashboard to answer "how much has org X spent" and "where is the
-// spend concentrated". Full-table scan in getTopOrgsByCost is fine at alpha
-// volume; add a by_period index if the rollup ever grows large. Note:
-// getTopOrgsByCost without a period ranks (org, period) rows, not org lifetime
-// totals; pass a period for the "spend this month" view.
+// spend concentrated". getTopOrgsByCost rides the by_period index whenever a
+// period is given; the period-less branch (lifetime ranking across every
+// (org, period) row) still collects the full table, an ops-only, non-org-
+// scaled surface. Note: getTopOrgsByCost without a period ranks (org, period)
+// rows, not org lifetime totals; pass a period for the "spend this month" view.
 export const getOrgUsage = internalQuery({
   args: { orgId: v.string(), period: v.optional(v.string()) },
   returns: v.array(
@@ -254,9 +279,13 @@ export const getTopOrgsByCost = internalQuery({
     })
   ),
   handler: async (ctx, { period }) => {
-    const all = await ctx.db.query("aiUsageMonthly").collect()
     const rows =
-      period === undefined ? all : all.filter((r) => r.period === period)
+      period === undefined
+        ? await ctx.db.query("aiUsageMonthly").collect()
+        : await ctx.db
+            .query("aiUsageMonthly")
+            .withIndex("by_period", (q) => q.eq("period", period))
+            .collect()
     return rows
       .sort((a, b) => b.costNanos - a.costNanos)
       .map((r) => ({
