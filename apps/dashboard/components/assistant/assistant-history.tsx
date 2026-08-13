@@ -1,7 +1,7 @@
 "use client"
 
 import {
-  HistoryIcon,
+  ArrowLeft01Icon,
   MoreVerticalIcon,
   PlusSignIcon,
   Tick02Icon,
@@ -152,11 +152,11 @@ export function AssistantHistoryPanel({
                 aria-label={t("history")}
                 onClick={onCollapse}
               >
-                {/* HistoryIcon, not SidebarLeftIcon: the header's app-sidebar
-                    trigger already wears the sidebar glyph, and two identical
-                    icons for two different panels read as one control. */}
+                {/* The app's standard chevron glyph, pointing the way the
+                    panel folds; the history glyph belongs to the collapsed
+                    state's expand button, where it names what comes back. */}
                 <HugeiconsIcon
-                  icon={HistoryIcon}
+                  icon={ArrowLeft01Icon}
                   strokeWidth={2}
                   aria-hidden="true"
                 />

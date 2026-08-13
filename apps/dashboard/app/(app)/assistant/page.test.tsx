@@ -77,11 +77,10 @@ describe("AssistantPage", () => {
 
   it("keeps the conversations panel open by default", () => {
     renderPage()
-    // The panel's own header (New conversation + collapse) is real content
-    // only while open; a collapsed panel renders neither.
-    expect(
-      screen.getByRole("button", { name: t.newConversation })
-    ).toBeDefined()
+    // Open: the panel's own header carries New conversation, in normal flow
+    // (the absolutely positioned compact stand-in exists only collapsed).
+    const newButton = screen.getByRole("button", { name: t.newConversation })
+    expect(newButton.closest("div.absolute")).toBeNull()
     // Exactly one control carries this accessible name: the panel's own
     // collapse button (open and closed share the same name, the same idiom
     // as the vendor sidebar's single "Toggle Sidebar" trigger), never two.
@@ -94,7 +93,11 @@ describe("AssistantPage", () => {
       "initialAssistantHistoryOpen"
     ).mockReturnValue(false)
     renderPage()
-    expect(screen.queryByRole("button", { name: t.newConversation })).toBeNull()
+    // Collapsed: the compact stand-in carries BOTH of the header's actions
+    // as stacked icon buttons (new chat + expand), absolutely positioned at
+    // the column's top-left.
+    const newButton = screen.getByRole("button", { name: t.newConversation })
+    expect(newButton.closest("div.absolute")).not.toBeNull()
     expect(screen.getByRole("button", { name: t.history })).toBeDefined()
   })
 

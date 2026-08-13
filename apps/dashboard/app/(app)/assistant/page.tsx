@@ -1,6 +1,6 @@
 "use client"
 
-import { HistoryIcon } from "@hugeicons/core-free-icons"
+import { HistoryIcon, PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
@@ -76,10 +76,31 @@ export default function AssistantPage() {
       {/* relative: anchors the expand button that appears at this column's
           top-left while the panel is collapsed. */}
       <div className="relative flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
+        {/* The collapsed panel's compact stand-in: the two actions its
+            header carried, as small stacked icon buttons. */}
         {!panelOpen && (
-          <div className="absolute top-2 left-2 z-10">
-            {/* Never busy-gated, same as the panel's own collapse button:
-                expanding the panel touches no thread. */}
+          <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+            {/* Busy-gated exactly like the panel's own New conversation
+                button: archiving the active thread mid-stream would silently
+                orphan it. */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label={t("newConversation")}
+              disabled={busy}
+              onClick={() => void handleNewConversation()}
+            >
+              <HugeiconsIcon
+                icon={PlusSignIcon}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            </Button>
+            {/* Never busy-gated: expanding the panel touches no thread.
+                HistoryIcon, not SidebarLeftIcon: the header's app-sidebar
+                trigger already wears the sidebar glyph, and two identical
+                icons for two different panels read as one control. */}
             <Button
               type="button"
               variant="ghost"
@@ -87,9 +108,6 @@ export default function AssistantPage() {
               aria-label={t("history")}
               onClick={() => togglePanel(true)}
             >
-              {/* HistoryIcon, not SidebarLeftIcon: the header's app-sidebar
-                  trigger already wears the sidebar glyph, and two identical
-                  icons for two different panels read as one control. */}
               <HugeiconsIcon
                 icon={HistoryIcon}
                 strokeWidth={2}
