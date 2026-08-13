@@ -240,7 +240,9 @@ function AssistantHistoryThreadRow({
               variant="ghost"
               size="icon"
               disabled={busy}
-              aria-label={t("rowActionsLabel")}
+              aria-label={t("rowActionsLabel", {
+                title: thread.title ?? t("untitled"),
+              })}
               className="shrink-0 text-muted-foreground hover:text-foreground"
             />
           }

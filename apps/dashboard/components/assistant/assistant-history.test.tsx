@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
@@ -39,6 +40,19 @@ function renderRail(open: boolean, busy = false) {
       <AssistantHistoryRail open={open} busy={busy} />
     </NextIntlClientProvider>
   )
+}
+
+// Scopes a lookup to one thread row, the same idiom as
+// family-review-table.test.tsx's rowOf: the trigger's accessible name is now
+// per-thread, so two rows can share a query without colliding.
+function rowOf(element: Element): HTMLElement {
+  const row = element.closest("div.flex.items-center.gap-1")
+  if (row === null) throw new Error("no row found for element")
+  return row as HTMLElement
+}
+
+function rowActionsLabelFor(title: string): string {
+  return t.rowActionsLabel.replace("{title}", title)
 }
 
 describe("AssistantHistoryRail", () => {
@@ -101,7 +115,10 @@ describe("AssistantHistoryRail", () => {
         : undefined
     )
     renderRail(true)
-    const row = screen.getByRole("button", { name: /Pay gap trend/ })
+    // Anchored: the row's actions trigger also carries this title in its
+    // own accessible name ("Actions for Pay gap trend"), so an unanchored
+    // match would hit both buttons.
+    const row = screen.getByRole("button", { name: /^Pay gap trend/ })
     expect(row.textContent).toContain("Aug 1, 2026")
   })
 
@@ -118,8 +135,10 @@ describe("AssistantHistoryRail", () => {
         : undefined
     )
     renderRail(true)
+    // Anchored for the same reason as the titled-thread case above: the
+    // row's actions trigger falls back to this same untitled label too.
     expect(
-      screen.getByRole("button", { name: new RegExp(t.untitled) })
+      screen.getByRole("button", { name: new RegExp(`^${t.untitled}`) })
     ).toBeDefined()
   })
 
@@ -145,11 +164,11 @@ describe("AssistantHistoryRail", () => {
     switchConversationMock.mockResolvedValue(null)
     renderRail(true)
 
-    const activeRow = screen.getByRole("button", { name: /Current chat/ })
+    const activeRow = screen.getByRole("button", { name: /^Current chat/ })
     expect(activeRow.getAttribute("aria-current")).toBe("true")
     expect((activeRow as HTMLButtonElement).disabled).toBe(true)
 
-    fireEvent.click(screen.getByRole("button", { name: /Older chat/ }))
+    fireEvent.click(screen.getByRole("button", { name: /^Older chat/ }))
     await waitFor(() => {
       expect(switchConversationMock).toHaveBeenCalledWith({
         orgId: "org-1",
@@ -158,7 +177,7 @@ describe("AssistantHistoryRail", () => {
     })
     // Selecting a thread never closes the rail itself; that decision belongs
     // to the page's toggle button, not this component.
-    expect(screen.getByRole("button", { name: /Older chat/ })).toBeDefined()
+    expect(screen.getByRole("button", { name: /^Older chat/ })).toBeDefined()
   })
 
   it("never calls switchConversation for the already-active thread", () => {
@@ -175,7 +194,7 @@ describe("AssistantHistoryRail", () => {
         : undefined
     )
     renderRail(true)
-    fireEvent.click(screen.getByRole("button", { name: /Current chat/ }))
+    fireEvent.click(screen.getByRole("button", { name: /^Current chat/ }))
     expect(switchConversationMock).not.toHaveBeenCalled()
   })
 
@@ -194,7 +213,7 @@ describe("AssistantHistoryRail", () => {
     )
     switchConversationMock.mockRejectedValue(new Error("boom"))
     renderRail(true)
-    fireEvent.click(screen.getByRole("button", { name: /Older chat/ }))
+    fireEvent.click(screen.getByRole("button", { name: /^Older chat/ }))
     await waitFor(() => {
       expect(vi.mocked(toast.error)).toHaveBeenCalledWith(
         messages.dashboard.toast.error
@@ -241,7 +260,12 @@ describe("AssistantHistoryRail", () => {
         : undefined
     )
     renderRail(true)
-    await openMenu(screen.getByRole("button", { name: t.rowActionsLabel }))
+    const row = rowOf(screen.getByText("Older chat"))
+    await openMenu(
+      within(row).getByRole("button", {
+        name: rowActionsLabelFor("Older chat"),
+      })
+    )
     expect(
       screen.getByRole("menuitem", { name: t.deleteConversation })
     ).toBeDefined()
@@ -263,7 +287,12 @@ describe("AssistantHistoryRail", () => {
     )
     deleteConversationMock.mockResolvedValue(null)
     renderRail(true)
-    await openMenu(screen.getByRole("button", { name: t.rowActionsLabel }))
+    const row = rowOf(screen.getByText("Older chat"))
+    await openMenu(
+      within(row).getByRole("button", {
+        name: rowActionsLabelFor("Older chat"),
+      })
+    )
     fireEvent.click(
       screen.getByRole("menuitem", { name: t.deleteConversation })
     )
@@ -297,7 +326,12 @@ describe("AssistantHistoryRail", () => {
     )
     deleteConversationMock.mockRejectedValue(new Error("boom"))
     renderRail(true)
-    await openMenu(screen.getByRole("button", { name: t.rowActionsLabel }))
+    const row = rowOf(screen.getByText("Older chat"))
+    await openMenu(
+      within(row).getByRole("button", {
+        name: rowActionsLabelFor("Older chat"),
+      })
+    )
     fireEvent.click(
       screen.getByRole("menuitem", { name: t.deleteConversation })
     )
@@ -329,12 +363,46 @@ describe("AssistantHistoryRail", () => {
         : undefined
     )
     renderRail(true, true)
+    const row = rowOf(screen.getByText("Older chat"))
     expect(
       (
-        screen.getByRole("button", {
-          name: t.rowActionsLabel,
+        within(row).getByRole("button", {
+          name: rowActionsLabelFor("Older chat"),
         }) as HTMLButtonElement
       ).disabled
     ).toBe(true)
+  })
+
+  it("gives each row's actions trigger a distinct, thread-specific accessible name", () => {
+    onQuery((ref) =>
+      ref === "assistant.chat.listThreads"
+        ? [
+            {
+              _id: "thread-old",
+              title: "Older chat",
+              status: "archived",
+              lastMessageAt: 100,
+            },
+            {
+              _id: "thread-older",
+              title: "Even older chat",
+              status: "archived",
+              lastMessageAt: 50,
+            },
+          ]
+        : undefined
+    )
+    renderRail(true)
+    const oldRow = rowOf(screen.getByText("Older chat"))
+    const olderRow = rowOf(screen.getByText("Even older chat"))
+    const oldTrigger = within(oldRow).getByRole("button", {
+      name: rowActionsLabelFor("Older chat"),
+    })
+    const olderTrigger = within(olderRow).getByRole("button", {
+      name: rowActionsLabelFor("Even older chat"),
+    })
+    expect(oldTrigger.getAttribute("aria-label")).not.toBe(
+      olderTrigger.getAttribute("aria-label")
+    )
   })
 })

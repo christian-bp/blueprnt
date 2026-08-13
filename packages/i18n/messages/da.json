@@ -2412,7 +2412,7 @@
       "disclaimer": "Blueprnt AI kan tage fejl. Tjek vigtige tal på deres egne sider.",
       "thinking": "Tænker…",
       "checkingData": "Tjekker jeres data…",
-      "rowActionsLabel": "Samtalehandlinger",
+      "rowActionsLabel": "Handlinger for {title}",
       "deleteConversation": "Slet samtale",
       "deleteConversationTitle": "Slet denne samtale?",
       "deleteConversationDescription": "Alle beskeder i samtalen slettes permanent. Dette kan ikke fortrydes.",

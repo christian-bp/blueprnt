@@ -2412,7 +2412,7 @@
       "disclaimer": "Blueprnt AI voi erehtyä. Tarkista tärkeät luvut niiden omilta sivuilta.",
       "thinking": "Miettii…",
       "checkingData": "Tarkistaa tietojanne…",
-      "rowActionsLabel": "Keskustelun toiminnot",
+      "rowActionsLabel": "Toiminnot: {title}",
       "deleteConversation": "Poista keskustelu",
       "deleteConversationTitle": "Poistetaanko tämä keskustelu?",
       "deleteConversationDescription": "Kaikki keskustelun viestit poistetaan pysyvästi. Tätä ei voi kumota.",

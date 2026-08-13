@@ -190,7 +190,10 @@ describe("AssistantPage", () => {
 
     fireEvent.click(historyButton)
     expect(historyButton.getAttribute("aria-expanded")).toBe("true")
-    expect(screen.getByRole("button", { name: /Pay gap trend/ })).toBeDefined()
+    // Anchored: the row's actions trigger also carries this title in its
+    // own accessible name ("Actions for Pay gap trend"), so an unanchored
+    // match would hit both buttons.
+    expect(screen.getByRole("button", { name: /^Pay gap trend/ })).toBeDefined()
 
     fireEvent.click(historyButton)
     expect(historyButton.getAttribute("aria-expanded")).toBe("false")
@@ -229,7 +232,7 @@ describe("AssistantPage", () => {
       name: messages.dashboard.assistant.history,
     })
     fireEvent.click(historyButton)
-    fireEvent.click(screen.getByRole("button", { name: /Older chat/ }))
+    fireEvent.click(screen.getByRole("button", { name: /^Older chat/ }))
 
     await waitFor(() => {
       expect(switchConversationMock).toHaveBeenCalledWith({
@@ -238,7 +241,7 @@ describe("AssistantPage", () => {
       })
     })
     expect(historyButton.getAttribute("aria-expanded")).toBe("true")
-    expect(screen.getByRole("button", { name: /Older chat/ })).toBeDefined()
+    expect(screen.getByRole("button", { name: /^Older chat/ })).toBeDefined()
   })
 
   // The rail must scroll on its own (its list can outgrow the page) without

@@ -2412,7 +2412,7 @@
       "disclaimer": "Blueprnt AI kan ha fel. Kontrollera viktiga siffror på deras egna sidor.",
       "thinking": "Tänker…",
       "checkingData": "Kontrollerar era data…",
-      "rowActionsLabel": "Konversationsåtgärder",
+      "rowActionsLabel": "Åtgärder för {title}",
       "deleteConversation": "Ta bort konversation",
       "deleteConversationTitle": "Ta bort den här konversationen?",
       "deleteConversationDescription": "Alla meddelanden i konversationen tas bort permanent. Det går inte att ångra.",
