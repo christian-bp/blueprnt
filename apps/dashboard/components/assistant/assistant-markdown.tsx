@@ -1,14 +1,22 @@
 import Link from "next/link"
 import { Streamdown, type StreamdownProps } from "streamdown"
 
-// Word-fade tuned to the arrival rate, never slower (see the animated prop
-// below for the arithmetic). sep "word" matches the server's word-sized
-// chunks; duration is the softness, stagger is the drain rate.
+// Word-fade tuned on two measured constraints (see the animated prop below
+// for the failure mode each guards against). Streamdown staggers new words
+// GLOBALLY in document order (verified in its dist: one newIndex counter
+// per rehype pass), so ordering is safe at any values; what the values set:
+// - drain rate = 1000/stagger words/s, and it must clear the measured
+//   arrival (~20 words/s) with margin or an invisible tail accumulates and
+//   list markers stand empty. 20ms drains 50 words/s, 2.5x margin.
+// - the visible "writing head" spans duration/stagger words fading at
+//   once; near 10 it straddles paragraph boundaries and reads as two
+//   paragraphs printing simultaneously. 80/20 keeps it at ~4 words, the
+//   reference client's ratio.
 const ASSISTANT_TEXT_FADE = {
   animation: "fadeIn",
   sep: "word",
-  duration: 100,
-  stagger: 10,
+  duration: 80,
+  stagger: 20,
 } satisfies StreamdownProps["animated"]
 
 // Assistant answers are model-generated markdown, revealed word by word as
