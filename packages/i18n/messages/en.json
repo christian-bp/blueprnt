@@ -2234,16 +2234,16 @@
         "empty": "No AI usage recorded for this period.",
         "kpi": {
           "costLabel": "Total cost",
-          "costNote": "Estimated AI spend this period, in USD",
+          "costNote": "Spend this period",
           "callsLabel": "AI calls",
-          "callsNote": "Calls made this period",
+          "callsNote": "Calls this period",
           "tokensLabel": "Tokens",
-          "tokensNote": "Tokens processed this period",
+          "tokensNote": "Tokens this period",
           "momChangeLabel": "Cost vs last period",
-          "momChangeNote": "Compared to the previous period",
+          "momChangeNote": "Vs. the previous period",
           "momChangeNoBaseline": "No data",
           "activeOrgsLabel": "Active organizations",
-          "activeOrgsNote": "Organizations with AI calls this period"
+          "activeOrgsNote": "Used AI this period"
         },
         "chart": {
           "title": "Cost by organization",
@@ -2259,6 +2259,7 @@
           "change": "Vs last period",
           "kinds": "By kind",
           "flagged": "Flagged",
+          "flaggedCaption": "A row is flagged when its cost is more than 3 times the median, or above $1, whichever is higher.",
           "new": "New",
           "searchPlaceholder": "Search organizations",
           "noMatches": "No organizations match your search.",

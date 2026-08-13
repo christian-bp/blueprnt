@@ -2234,16 +2234,16 @@
         "empty": "Ingen AI-användning registrerad för denna period.",
         "kpi": {
           "costLabel": "Total kostnad",
-          "costNote": "Uppskattad AI-kostnad denna period, i USD",
+          "costNote": "Kostnad denna period",
           "callsLabel": "AI-anrop",
-          "callsNote": "Anrop gjorda denna period",
+          "callsNote": "Anrop denna period",
           "tokensLabel": "Token",
-          "tokensNote": "Token bearbetade denna period",
+          "tokensNote": "Token denna period",
           "momChangeLabel": "Kostnad jämfört med förra perioden",
-          "momChangeNote": "Jämfört med föregående period",
+          "momChangeNote": "Jämfört med förra perioden",
           "momChangeNoBaseline": "Inga data",
           "activeOrgsLabel": "Aktiva organisationer",
-          "activeOrgsNote": "Organisationer med AI-anrop denna period"
+          "activeOrgsNote": "Använde AI denna period"
         },
         "chart": {
           "title": "Kostnad per organisation",
@@ -2256,9 +2256,10 @@
           "calls": "Anrop",
           "tokens": "Token",
           "share": "Andel",
-          "change": "Jämfört med förra perioden",
+          "change": "Vs. förra perioden",
           "kinds": "Per typ",
           "flagged": "Flaggad",
+          "flaggedCaption": "En rad flaggas när dess kostnad är mer än 3 gånger medianen, eller över $1, beroende på vilket som är högst.",
           "new": "Ny",
           "searchPlaceholder": "Sök organisationer",
           "noMatches": "Inga organisationer matchar din sökning.",

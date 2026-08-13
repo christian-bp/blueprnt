@@ -64,9 +64,12 @@ describe("AiUsageTable", () => {
     expect(screen.getByRole("table")).toBeTruthy()
   })
 
-  it("shows the empty sentence when the period has no usage at all", () => {
+  it("shows the empty sentence when the period has no usage at all, titled by the page heading", () => {
     renderTable({ rows: [] })
     expect(screen.getByText(t.empty)).toBeTruthy()
+    // The page heading, not the "Organization" column header (review Minor
+    // #3): matches the roles/people/email-log precedent.
+    expect(screen.getByText(t.heading)).toBeTruthy()
     expect(screen.queryByRole("table")).toBeNull()
   })
 
@@ -142,13 +145,19 @@ describe("AiUsageTable", () => {
     expect(screen.getByText("Globex")).toBeTruthy()
   })
 
-  it("shows the no-matches state when a search matches nothing", () => {
+  it("shows the no-matches state when a search matches nothing, titled by the page heading", () => {
     renderTable({ rows: [row({ orgId: "a", orgName: "Acme" })] })
     fireEvent.change(
       screen.getByRole("textbox", { name: tTable.searchPlaceholder }),
       { target: { value: "nope" } }
     )
     expect(screen.getByText(tTable.noMatches)).toBeTruthy()
+    expect(screen.getByText(t.heading)).toBeTruthy()
+  })
+
+  it("states the flagging rule in a caption once rows resolve", () => {
+    renderTable({ rows: [row({ orgId: "a", orgName: "Acme" })] })
+    expect(screen.getByText(tTable.flaggedCaption)).toBeTruthy()
   })
 
   it("paginates past 25 rows", () => {

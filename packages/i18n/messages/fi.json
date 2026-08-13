@@ -2234,16 +2234,16 @@
         "empty": "Tälle jaksolle ei ole rekisteröity tekoälyn käyttöä.",
         "kpi": {
           "costLabel": "Kokonaiskustannus",
-          "costNote": "Arvioitu tekoälykustannus tällä jaksolla, USD",
+          "costNote": "Kustannus tällä jaksolla",
           "callsLabel": "Tekoälykutsut",
           "callsNote": "Kutsut tällä jaksolla",
           "tokensLabel": "Tokenit",
-          "tokensNote": "Käsitellyt tokenit tällä jaksolla",
+          "tokensNote": "Tokenit tällä jaksolla",
           "momChangeLabel": "Kustannus vs. edellinen jakso",
-          "momChangeNote": "Verrattuna edelliseen jaksoon",
+          "momChangeNote": "Vs. edellinen jakso",
           "momChangeNoBaseline": "Ei tietoja",
           "activeOrgsLabel": "Aktiiviset organisaatiot",
-          "activeOrgsNote": "Organisaatiot, joilla on tekoälykutsuja tällä jaksolla"
+          "activeOrgsNote": "Käytti tekoälyä jaksolla"
         },
         "chart": {
           "title": "Kustannus organisaatioittain",
@@ -2259,6 +2259,7 @@
           "change": "Vs. edellinen jakso",
           "kinds": "Tyypin mukaan",
           "flagged": "Merkitty",
+          "flaggedCaption": "Rivi merkitään, kun sen kustannus on yli 3 kertaa mediaani tai yli 1 dollarin, sen mukaan, kumpi on suurempi.",
           "new": "Uusi",
           "searchPlaceholder": "Hae organisaatioita",
           "noMatches": "Yksikään organisaatio ei vastaa hakuasi.",

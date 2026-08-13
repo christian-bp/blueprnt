@@ -166,11 +166,11 @@ function AiUsageTableHeadings({
     <TableHeader>
       <TableRow>
         {head("org", t("org"), "")}
-        {head("cost", t("cost"), "w-24")}
-        {head("calls", t("calls"), "w-20")}
+        {head("cost", t("cost"), "w-28")}
+        {head("calls", t("calls"), "w-32")}
         {head("tokens", t("tokens"), "w-24")}
         {head("share", t("share"), "w-20")}
-        <TableHead className="w-28">{t("change")}</TableHead>
+        <TableHead className="w-40">{t("change")}</TableHead>
         <TableHead className="w-44">{t("kinds")}</TableHead>
         <TableHead className="w-24">{t("flagged")}</TableHead>
       </TableRow>
@@ -295,7 +295,7 @@ export function AiUsageTable({
     return (
       <Empty>
         <EmptyHeader>
-          <EmptyTitle>{t("org")}</EmptyTitle>
+          <EmptyTitle>{tPage("heading")}</EmptyTitle>
           <EmptyDescription>{tPage("empty")}</EmptyDescription>
         </EmptyHeader>
       </Empty>
@@ -307,7 +307,7 @@ export function AiUsageTable({
       {toolbar}
       {shown === 0 ? (
         <NoMatchesEmpty
-          title={t("org")}
+          title={tPage("heading")}
           description={t("noMatches")}
           clearLabel={t("clearFilters")}
           onClear={clearFilters}
@@ -389,6 +389,11 @@ export function AiUsageTable({
               />
             </div>
           )}
+          {/* The outlier rule, in words, so the flagged badge is never a
+              mystery. Sits with the table rather than the chart above it
+              (the flags live here): the chart no longer colors by outlier
+              status, it carries period context only. */}
+          <p className="text-muted-foreground text-xs">{t("flaggedCaption")}</p>
         </>
       )}
     </div>

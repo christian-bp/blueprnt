@@ -2234,16 +2234,16 @@
         "empty": "Intet AI-forbrug registreret for denne periode.",
         "kpi": {
           "costLabel": "Samlet omkostning",
-          "costNote": "Estimeret AI-omkostning denne periode, i USD",
+          "costNote": "Omkostning denne periode",
           "callsLabel": "AI-opkald",
-          "callsNote": "Opkald foretaget denne periode",
+          "callsNote": "Opkald i perioden",
           "tokensLabel": "Token",
-          "tokensNote": "Token behandlet denne periode",
+          "tokensNote": "Token i perioden",
           "momChangeLabel": "Omkostning vs. sidste periode",
-          "momChangeNote": "Sammenlignet med forrige periode",
+          "momChangeNote": "Vs. forrige periode",
           "momChangeNoBaseline": "Ingen data",
           "activeOrgsLabel": "Aktive organisationer",
-          "activeOrgsNote": "Organisationer med AI-opkald denne periode"
+          "activeOrgsNote": "Brugte AI i perioden"
         },
         "chart": {
           "title": "Omkostning pr. organisation",
@@ -2259,6 +2259,7 @@
           "change": "Vs. sidste periode",
           "kinds": "Efter type",
           "flagged": "Markeret",
+          "flaggedCaption": "En række markeres, når omkostningen er mere end 3 gange medianen, eller over $1, afhængigt af hvad der er højest.",
           "new": "Ny",
           "searchPlaceholder": "Søg i organisationer",
           "noMatches": "Ingen organisationer matcher din søgning.",

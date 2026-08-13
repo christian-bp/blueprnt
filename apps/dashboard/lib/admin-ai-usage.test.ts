@@ -211,6 +211,15 @@ describe("computeOutlierOrgIds", () => {
     expect(computeOutlierOrgIds(rows)).toEqual(new Set(["c"]))
   })
 
+  it("does not flag a cost at exactly 3x the median (strict >, not >=)", () => {
+    const rows = [
+      row({ orgId: "a", costNanos: 2_000_000_000 }), // $2
+      row({ orgId: "b", costNanos: 2_000_000_000 }), // $2, median of the three is $2
+      row({ orgId: "c", costNanos: 6_000_000_000 }), // $6, exactly 3x the median
+    ]
+    expect(computeOutlierOrgIds(rows)).toEqual(new Set())
+  })
+
   it("flags nothing when every org spends the same amount", () => {
     const rows = [
       row({ orgId: "a", costNanos: 3_000_000_000 }),
