@@ -1,0 +1,55 @@
+apps/dashboard/components/assistant/rename-conversation-dialog.test.tsx
+  s_c6f9c899f4809f::t_8ea0bf28d383cd 81
+  s_c6f9c899f4809f::t_a4c252f0228342 1-80,83-105,109-133
+  s_c6f9c899f4809f::t_733dfafad0f1ed 106-108
+  s_c6f9c899f4809f::t_140d498612eb0c 82
+apps/dashboard/components/assistant/assistant-history.test.tsx
+  s_c6f9c899f4809f::t_dd8bedb7eaf888 318-323
+  s_c6f9c899f4809f::t_c2061370cbfb69 72
+  s_c6f9c899f4809f::t_b87834a48d79f8 291-317,324-329
+  s_c6f9c899f4809f::t_a82dd96a3113b3 36
+packages/i18n/messages/sv.json
+  s_c6f9c899f4809f::t_7c02ad51540b1b 2421-2426
+  s_c6f9c899f4809f::t_530b8d894e9b8e 187-188
+packages/i18n/messages/nb.json
+  s_c6f9c899f4809f::t_059942ce9e52f4 187-188
+  s_c6f9c899f4809f::t_9b09f0e337399b 2421-2426
+apps/dashboard/lib/assistant-schemas.test.ts
+  s_c6f9c899f4809f::t_a5a5f2d386564c 1-20
+apps/dashboard/components/assistant/assistant-history.tsx
+  s_c6f9c899f4809f::t_2add7960bb3b94 294-296,305-311
+  s_c6f9c899f4809f::t_7bfdb49fb8971a 27
+  s_c6f9c899f4809f::t_96442bfc443f52 237
+packages/i18n/messages/da.json
+  s_c6f9c899f4809f::t_590f1e29160761 187-188
+  s_c6f9c899f4809f::t_13a58e392d1482 2421-2426
+apps/dashboard/components/assistant/rename-conversation-dialog.tsx
+  s_c6f9c899f4809f::t_0b55870b6bddf2 66-68,125-126
+  s_c6f9c899f4809f::t_8f2a6bb3ab9b07 124
+  s_c6f9c899f4809f::t_ac5d580bdd14b0 1-65,69-76,81-85,87-123,127-136
+  s_c6f9c899f4809f::t_dce17da0fd9422 77-80,86
+apps/dashboard/lib/assistant-schemas.ts
+  s_c6f9c899f4809f::t_e1829278c72d2c 1-21
+packages/i18n/messages/en.json
+  s_c6f9c899f4809f::t_90323e53a84954 2421-2426
+  s_c6f9c899f4809f::t_e8b714675b5a1a 187-188
+packages/i18n/messages/fi.json
+  s_c6f9c899f4809f::t_9199b3209ce74b 187-188
+  s_c6f9c899f4809f::t_6858de3fd83073 2421-2426
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "fbc091376ec7c6c618458f21cddc8a8e70eb5325",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
