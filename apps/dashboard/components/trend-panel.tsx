@@ -61,15 +61,17 @@ export function TrendPanel({
   title,
   state,
   emptyText,
+  className,
   children,
 }: {
   title: string
   state: TrendPanelState
   emptyText: string
+  className?: string
   children: ReactNode
 }) {
   return (
-    <PanelCard title={title} bleed>
+    <PanelCard title={title} bleed className={className}>
       {state === "ready" ? (
         children
       ) : (

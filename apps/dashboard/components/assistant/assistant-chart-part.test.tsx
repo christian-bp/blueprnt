@@ -85,6 +85,20 @@ describe("AssistantChartPart (headcountTrend)", () => {
     const panel = panelFor(t.workforce.trendTitle)
     expect(panel?.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
+
+  it("carries the strengthened contour ring so the bleeding gradient stays bounded", () => {
+    useHeadcountTrendMock.mockReturnValue(TWO_RUNS)
+    usePayGapTrendMock.mockReturnValue(undefined)
+    renderChart("headcountTrend")
+    const panel = panelFor(t.workforce.trendTitle)
+    // The default ring-foreground/10 visually vanishes where the pale
+    // gradient meets the page, reading as a clipped frame; the stronger
+    // ring must both be present and beat the default (twMerge drops the
+    // weaker class, so exactly one ring alpha survives).
+    const card = panel?.closest('[class*="ring-"]') ?? panel
+    expect(card?.className).toContain("ring-foreground/20")
+    expect(card?.className).not.toContain("ring-foreground/10")
+  })
 })
 
 describe("AssistantChartPart (payGapTrend)", () => {
