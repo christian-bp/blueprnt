@@ -1,0 +1,19 @@
+apps/dashboard/components/assistant/assistant-markdown.tsx
+  s_c6f9c899f4809f::t_8d38ad5af249e5 4-13,17-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f175b71cf03ac7e8148cd38d7a54249f7a709bf2",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
