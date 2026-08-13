@@ -115,7 +115,7 @@ describe("AssistantPage", () => {
         ? { _id: "thread-1", lastMessageAt: 0, title: "Pay gap trend" }
         : undefined
     )
-    renderPage()
+    const { container } = renderPage()
     const historyButton = screen.getByRole("button", {
       name: messages.dashboard.assistant.history,
     })
@@ -135,6 +135,14 @@ describe("AssistantPage", () => {
     // into the leftover space between them.
     expect(regions[1]?.contains(historyButton)).toBe(false)
     expect(regions[1]?.contains(newConversationButton)).toBe(false)
+    // The header row is a direct child of the full-width page wrapper, a
+    // sibling of the rail+column row below it, never nested inside the
+    // capped reading column: that is what pins both edge controls to the
+    // page content's own corners instead of letting them drift with the
+    // column as the rail opens and closes.
+    const wrapper = container.firstElementChild as HTMLElement
+    expect(row.parentElement).toBe(wrapper)
+    expect(wrapper.className).not.toMatch(/max-w-/)
   })
 
   it("keeps the history rail closed by default, so its thread list is absent from the page", () => {
