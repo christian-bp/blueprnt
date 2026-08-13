@@ -860,9 +860,9 @@
     },
     "overview": {
       "greeting": {
-        "morning": "God morgen{hasName, select, yes{, {name}} other{}}",
-        "afternoon": "God ettermiddag{hasName, select, yes{, {name}} other{}}",
-        "evening": "God kveld{hasName, select, yes{, {name}} other{}}"
+        "morning": "God morgen{hasName, select, yes{, <muted>{name}</muted>} other{}}",
+        "afternoon": "God ettermiddag{hasName, select, yes{, <muted>{name}</muted>} other{}}",
+        "evening": "God kveld{hasName, select, yes{, <muted>{name}</muted>} other{}}"
       },
       "hero": {
         "todoSummary": "{count, plural, one {Du har <link>1 sak å gjøre</link>.} other {Du har <link># saker å gjøre</link>.}}",

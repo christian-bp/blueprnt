@@ -33,10 +33,16 @@ function renderGreeting() {
 describe("WelcomeGreeting", () => {
   afterEach(cleanup)
 
-  it("greets by time of day with the first name", () => {
+  it("greets by time of day with the first name in muted ink", () => {
     hoisted.sessionName = "Christian Ek"
-    renderGreeting()
-    expect(screen.getByText("Good morning, Christian")).toBeDefined()
+    const { container } = renderGreeting()
+    // The rich message splits the heading into nodes: the greeting text,
+    // then the name inside its own muted span (the hero's treatment: the
+    // greeting carries the weight, the name recedes).
+    const heading = container.querySelector("h1")
+    expect(heading?.textContent).toBe("Good morning, Christian")
+    const muted = heading?.querySelector("span.text-muted-foreground")
+    expect(muted?.textContent).toBe("Christian")
   })
 
   it("omits the name when the session has none", () => {

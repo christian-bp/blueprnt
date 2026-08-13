@@ -860,9 +860,9 @@
     },
     "overview": {
       "greeting": {
-        "morning": "Good morning{hasName, select, yes{, {name}} other{}}",
-        "afternoon": "Good afternoon{hasName, select, yes{, {name}} other{}}",
-        "evening": "Good evening{hasName, select, yes{, {name}} other{}}"
+        "morning": "Good morning{hasName, select, yes{, <muted>{name}</muted>} other{}}",
+        "afternoon": "Good afternoon{hasName, select, yes{, <muted>{name}</muted>} other{}}",
+        "evening": "Good evening{hasName, select, yes{, <muted>{name}</muted>} other{}}"
       },
       "hero": {
         "todoSummary": "{count, plural, one {You have <link>1 thing to do</link>.} other {You have <link># things to do</link>.}}",

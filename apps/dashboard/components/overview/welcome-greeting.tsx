@@ -47,9 +47,16 @@ export function WelcomeGreeting() {
   const firstName = session?.user?.name?.split(" ")[0] ?? ""
   return (
     <h1 className={cn(HEADING_CLASS, "text-center")}>
-      {t(greetingBucket(hour), {
+      {/* The name renders in muted ink (the reference hero's treatment:
+          the greeting carries the weight, the name recedes). The tag is
+          named muted, not name, because next-intl resolves tags and string
+          arguments from the same values object. */}
+      {t.rich(greetingBucket(hour), {
         hasName: firstName ? "yes" : "no",
         name: firstName,
+        muted: (chunks) => (
+          <span className="text-muted-foreground">{chunks}</span>
+        ),
       })}
     </h1>
   )

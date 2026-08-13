@@ -860,9 +860,9 @@
     },
     "overview": {
       "greeting": {
-        "morning": "Hyvää huomenta{hasName, select, yes{, {name}} other{}}",
-        "afternoon": "Hyvää iltapäivää{hasName, select, yes{, {name}} other{}}",
-        "evening": "Hyvää iltaa{hasName, select, yes{, {name}} other{}}"
+        "morning": "Hyvää huomenta{hasName, select, yes{, <muted>{name}</muted>} other{}}",
+        "afternoon": "Hyvää iltapäivää{hasName, select, yes{, <muted>{name}</muted>} other{}}",
+        "evening": "Hyvää iltaa{hasName, select, yes{, <muted>{name}</muted>} other{}}"
       },
       "hero": {
         "todoSummary": "{count, plural, one {Sinulla on <link>1 asia hoidettavana</link>.} other {Sinulla on <link># asiaa hoidettavana</link>.}}",
