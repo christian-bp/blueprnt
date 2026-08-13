@@ -120,7 +120,7 @@ describe("OverviewPage", () => {
     expect(screen.queryByText(tOverview.sectionTodo)).toBeNull()
     expect(screen.queryByText(tOverview.sectionQuickActions)).toBeNull()
     // The to-do row waits rather than showing destinations it may replace:
-    // which cards it holds is data, so it renders four skeleton slots and
+    // which cards it holds is data, so it renders three skeleton slots and
     // nothing moves when the real ones arrive.
     expect(
       screen.queryByRole("link", {
@@ -187,7 +187,7 @@ describe("OverviewPage", () => {
     // The classifyPeople group card is the to-do work item this fixture
     // produces.
     expect(screen.getByText(tOverview.todo.groups.classifyPeople)).toBeDefined()
-    // The stat strip carries no heading of its own: four labelled figures
+    // The stat strip carries no heading of its own: three labelled figures
     // need no label above them.
     expect(screen.getByText(tOverview.widgets.workforce.label)).toBeDefined()
   })
@@ -205,7 +205,6 @@ describe("OverviewPage", () => {
     ).toBeDefined()
     expect(screen.queryByText(tOverview.sectionTodo)).toBeNull()
     expect(screen.getByText(tOverview.widgets.workforce.label)).toBeDefined()
-    expect(screen.getByText(tOverview.widgets.levels.label)).toBeDefined()
     expect(screen.getByText(tOverview.widgets.gap.label)).toBeDefined()
   })
 

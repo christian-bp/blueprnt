@@ -93,7 +93,7 @@ afterEach(cleanup)
 // arrives as a company of its own: sharing an id would make a test pass or
 // fail on which one ran first.
 describe("TodoActions arrival burst", () => {
-  // The burst marks which of the four cards are work, so every work card
+  // The burst marks which of the three cards are work, so every work card
   // throws one and the padding links throw none.
   it("throws a burst on each work card and none on the padding links", async () => {
     const { container } = renderActions(
@@ -205,20 +205,21 @@ describe("TodoActions", () => {
   })
 
   // buildTodo emits its groups in priority order, so the row keeps the first
-  // four rather than picking or wrapping to a second line.
-  it("caps the row at four cards, keeping the most pressing", () => {
+  // three rather than picking or wrapping to a second line.
+  it("caps the row at three cards, keeping the most pressing", () => {
     renderActions(
       todoWith([IMPORT, CLASSIFY, DESCRIBE, EVALUATE, APPROVE, START])
     )
-    expect(screen.getAllByRole("link")).toHaveLength(4)
-    expect(screen.queryByText(t.todo.groups.approveCriteria)).toBeNull()
+    expect(screen.getAllByRole("link")).toHaveLength(3)
+    expect(screen.getByText(t.todo.groups.describeRoles)).toBeDefined()
+    expect(screen.queryByText(t.todo.groups.evaluateRoles)).toBeNull()
   })
 
-  // A band with one card and three holes reads as broken, so the standing
+  // A band with one card and two holes reads as broken, so the standing
   // destinations pad the row out.
   it("fills the rest of the row with standing destinations", () => {
     renderActions(todoWith([APPROVE]))
-    expect(screen.getAllByRole("link")).toHaveLength(4)
+    expect(screen.getAllByRole("link")).toHaveLength(3)
     expect(screen.getByText(t.todo.groups.approveCriteria)).toBeDefined()
     expect(screen.getByText(t.quickActions.importEmployees.label)).toBeDefined()
   })
@@ -246,7 +247,7 @@ describe("TodoActions", () => {
     const tones = [...container.querySelectorAll("[data-tone]")].map((card) =>
       card.getAttribute("data-tone")
     )
-    expect(tones).toEqual(["brand", "muted", "muted", "muted"])
+    expect(tones).toEqual(["brand", "muted", "muted"])
   })
 
   // The same surface twice reads as a bug rather than as emphasis.
@@ -255,16 +256,18 @@ describe("TodoActions", () => {
     expect(
       screen.queryAllByRole("link", { name: t.quickActions.roles.label })
     ).toHaveLength(0)
-    expect(screen.getAllByRole("link")).toHaveLength(4)
+    expect(screen.getAllByRole("link")).toHaveLength(3)
   })
 
-  it("shows only the standing destinations when nothing is outstanding", () => {
+  // No destination is deleted from the standing set, the row just stops
+  // filling once it holds MAX_CARDS: the fourth shortcut sits unused rather
+  // than wrapping to a second line.
+  it("shows the first three standing destinations when nothing is outstanding", () => {
     renderActions(todoWith([]))
     for (const [key, href] of [
       ["importEmployees", "/people/import"],
       ["classify", "/people/classify"],
       ["roles", "/roles"],
-      ["startPayMapping", "/pay-mappings"],
     ] as const) {
       expect(
         screen
@@ -272,9 +275,12 @@ describe("TodoActions", () => {
           .getAttribute("href")
       ).toBe(href)
     }
+    expect(
+      screen.queryByRole("link", { name: t.quickActions.startPayMapping.label })
+    ).toBeNull()
   })
 
-  // The heading follows the cards. "To do" over four standing destinations
+  // The heading follows the cards. "To do" over three standing destinations
   // would tell a reader who has finished everything that work is waiting.
   it("heads the band as work while something is outstanding", () => {
     renderActions(todoWith([APPROVE]))
@@ -300,16 +306,16 @@ describe("TodoActions", () => {
     expect(screen.queryByText(t.sectionQuickActions)).toBeNull()
   })
 
-  // Which cards these are is data, so the row waits rather than showing four
-  // decisive destinations that then become four different cards.
+  // Which cards these are is data, so the row waits rather than showing three
+  // decisive destinations that then become three different cards.
   it("holds the row with skeletons while the to-do is still loading", () => {
     const { container } = renderActions(undefined)
     expect(
       container.querySelectorAll('[data-slot="skeleton"]').length
     ).toBeGreaterThan(0)
     expect(screen.queryAllByRole("link")).toHaveLength(0)
-    // Still four slots, so nothing moves when the real cards arrive.
-    expect(container.querySelectorAll('[data-slot="card"]')).toHaveLength(4)
+    // Still three slots, so nothing moves when the real cards arrive.
+    expect(container.querySelectorAll('[data-slot="card"]')).toHaveLength(3)
   })
 
   // The burst points at work. Over placeholders it would be pointing at

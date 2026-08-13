@@ -911,12 +911,6 @@
           "trendTitle": "Personalstyrkan över tid",
           "note": "Anställda i ert register"
         },
-        "levels": {
-          "label": "Nivåfördelning",
-          "empty": "Utvärdera roller för att se fördelningen",
-          "caption": "{count, plural, one {# roll} other {# roller}} placerade",
-          "note": "Nivåer som era roller hamnar på"
-        },
         "gap": {
           "label": "Lönegap",
           "notStarted": "Inte påbörjad",

@@ -2,7 +2,6 @@
 
 import {
   Briefcase01Icon,
-  ChartHistogramIcon,
   JusticeScale01Icon,
   UserGroupIcon,
 } from "@hugeicons/core-free-icons"
@@ -53,7 +52,7 @@ function StatTile({
   )
 }
 
-// The dashboard's stat strip: four figures that say where the organization
+// The dashboard's stat strip: three figures that say where the organization
 // stands, each one line, each linking to its own surface. The two trend
 // panels that used to sit below this strip (workforce and pay-gap over time)
 // moved into the assistant (AssistantChartPart); a tile here carries one
@@ -81,7 +80,7 @@ export function OverviewWidgets({
           : percentText(payMappingHeadline.gapPct, format)
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <StatTile
         label={t("workforce.label")}
         icon={UserGroupIcon}
@@ -131,22 +130,6 @@ export function OverviewWidgets({
             : payMappingHeadline.label
         }
         note={t("gap.note")}
-      />
-      <StatTile
-        label={t("levels.label")}
-        icon={ChartHistogramIcon}
-        href="/work"
-        value={
-          levelOverview === undefined
-            ? undefined
-            : (levelOverview?.levelCount ?? 0)
-        }
-        caption={
-          levelOverview === undefined || levelOverview === null
-            ? t("levels.empty")
-            : t("levels.caption", { count: levelOverview.totalRoles })
-        }
-        note={t("levels.note")}
       />
     </div>
   )

@@ -911,12 +911,6 @@
           "trendTitle": "Workforce over time",
           "note": "Employees in your register"
         },
-        "levels": {
-          "label": "Level distribution",
-          "empty": "Evaluate roles to see the distribution",
-          "caption": "{count, plural, one {# role} other {# roles}} placed",
-          "note": "Levels your roles fall into"
-        },
         "gap": {
           "label": "Pay gap",
           "notStarted": "Not started",

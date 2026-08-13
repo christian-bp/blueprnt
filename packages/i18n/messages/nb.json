@@ -911,12 +911,6 @@
           "trendTitle": "Bemanning over tid",
           "note": "Ansatte i registeret deres"
         },
-        "levels": {
-          "label": "Nivåfordeling",
-          "empty": "Vurder roller for å se fordelingen",
-          "caption": "{count, plural, one {# rolle} other {# roller}} plassert",
-          "note": "Nivåer rollene deres havner på"
-        },
         "gap": {
           "label": "Lønnsgap",
           "notStarted": "Ikke startet",

@@ -59,13 +59,12 @@ function renderStrip(
 afterEach(cleanup)
 
 describe("OverviewWidgets", () => {
-  it("renders four labelled figures, each linking to its own surface", () => {
+  it("renders three labelled figures, each linking to its own surface", () => {
     renderStrip()
     for (const [label, href] of [
       [t.workforce.label, "/people"],
       [t.roles.label, "/roles"],
       [t.gap.label, "/pay-mappings"],
-      [t.levels.label, "/work"],
     ] as const) {
       expect(screen.getByText(label)).toBeDefined()
       expect(
@@ -94,14 +93,12 @@ describe("OverviewWidgets", () => {
     expect(screen.getByText(t.workforce.importPrompt)).toBeDefined()
   })
 
-  it("splits roles and levels into their own figures", () => {
+  it("shows the roles count with its level caption", () => {
     renderStrip()
     expect(screen.getByText("4")).toBeDefined() // roles
-    expect(screen.getByText("2")).toBeDefined() // levels
     // Capitalized: the caption is the footer's STATEMENT line now, not a
     // muted trailing fragment, so it starts a sentence.
     expect(screen.getByText("Across 2 levels")).toBeDefined()
-    expect(screen.getByText("4 roles placed")).toBeDefined()
   })
 
   // Every tile carries two lines: the statement, then what the figure counts.
@@ -110,12 +107,10 @@ describe("OverviewWidgets", () => {
     expect(screen.getByText(t.workforce.note)).toBeDefined()
     expect(screen.getByText(t.roles.note)).toBeDefined()
     expect(screen.getByText(t.gap.note)).toBeDefined()
-    expect(screen.getByText(t.levels.note)).toBeDefined()
   })
 
-  it("shows the empty level state, and a zero figure, with no level overview", () => {
+  it("shows the roles empty state with no level overview", () => {
     renderStrip({ levelOverview: null })
-    expect(screen.getByText(t.levels.empty)).toBeDefined()
     expect(screen.getByText(t.roles.empty)).toBeDefined()
   })
 

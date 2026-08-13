@@ -911,12 +911,6 @@
           "trendTitle": "Henkilöstö ajan myötä",
           "note": "Työntekijät rekisterissänne"
         },
-        "levels": {
-          "label": "Vaativuustasojen jakauma",
-          "empty": "Arvioi rooleja nähdäksesi jakauman",
-          "caption": "{count, plural, one {# rooli} other {# roolia}} sijoitettu",
-          "note": "Tasot joille roolinne sijoittuvat"
-        },
         "gap": {
           "label": "Palkkaero",
           "notStarted": "Ei aloitettu",

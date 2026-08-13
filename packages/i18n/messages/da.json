@@ -911,12 +911,6 @@
           "trendTitle": "Medarbejdere over tid",
           "note": "Medarbejdere i jeres register"
         },
-        "levels": {
-          "label": "Niveaudistribution",
-          "empty": "Vurdér roller for at se fordelingen",
-          "caption": "{count, plural, one {# rolle} other {# roller}} placeret",
-          "note": "Niveauer jeres roller lander på"
-        },
         "gap": {
           "label": "Løngab",
           "notStarted": "Ikke startet",

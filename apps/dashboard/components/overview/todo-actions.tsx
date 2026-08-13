@@ -42,8 +42,8 @@ const GROUP_ICONS: Record<TodoGroupKey, IconSvgElement> = {
 
 // The row holds one line of cards. buildTodo already emits its groups in
 // priority order (import, classify, describe, evaluate, document, approve,
-// start the mapping), so the first four ARE the four most pressing things.
-const MAX_CARDS = 4
+// start the mapping), so the first three ARE the three most pressing things.
+const MAX_CARDS = 3
 
 // Which companies have already had their burst this session. Module-level, so
 // returning to the dashboard does not throw it again; a reload starts a new
@@ -81,7 +81,7 @@ const SHORTCUTS: {
 //
 // The row always fills to MAX_CARDS: outstanding work first, then standing
 // destinations to pad it, so the top of the dashboard is never a band with
-// one card and three holes. What separates the two kinds is the card, not a
+// one card and two holes. What separates the two kinds is the card, not a
 // second heading: work carries the brand chip and a COUNT of what is
 // waiting, a plain destination carries a muted chip and a description of
 // where it goes. A second heading would spend a whole band saying what the
@@ -91,8 +91,8 @@ const SHORTCUTS: {
 // TodoSection.
 //
 // While the query is still in flight the row is skeletons, not the standing
-// destinations: which cards these are is data, and showing four decisive
-// cards that then become four different ones reads as the page changing its
+// destinations: which cards these are is data, and showing three decisive
+// cards that then become three different ones reads as the page changing its
 // mind. The confetti hangs off the same moment, so it cannot fire over
 // placeholder content either.
 //
@@ -182,7 +182,7 @@ export function TodoActions({
         // straight line. The wrapper is the positioned parent it throws from
         // and nothing clips it.
         //
-        // Keyed by SLOT, not by the card in it. The row is always four slots
+        // Keyed by SLOT, not by the card in it. The row is always three slots
         // and the to-do query keeps pushing while an org's data settles, so
         // keying by card would remount the wrapper every time a group's
         // membership changed and restart the burst from its first frame,
@@ -203,13 +203,13 @@ export function TodoActions({
               not move the origin back to center without moving this too.
 
               Every work card, and only the first time THIS COMPANY's row
-              shows work this session: the burst marks WHICH of the four cards
+              shows work this session: the burst marks WHICH of the three cards
               are waiting on the reader, so lighting one of three would point
               at the wrong thing. Never the padding links, which are not
               work.
 
               Staggered along the row so it reads as one sweep rather than
-              four simultaneous pops, and a small spread keeps the pieces
+              three simultaneous pops, and a small spread keeps the pieces
               around each card instead of across the dashboard. */}
           {card.tone === "brand" && (
             <ConfettiBurst
@@ -267,7 +267,7 @@ function TodoSection({
       ) : (
         <h2 className="font-medium text-sm">{label}</h2>
       )}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{children}</div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
     </section>
   )
 }
