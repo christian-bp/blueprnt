@@ -82,12 +82,13 @@ export const MONEY_AXIS_WIDTH = 92
 // design, so no vertical inset is added.
 export const CHART_EDGE_INSET = 6
 
-// Height of the plot strip in an overview widget card, as a Tailwind class so
-// the three cards and their loading placeholders can never drift apart.
+// Height of the plot strip in the assistant's chart-part cards (TrendPanel,
+// via widget-viz.tsx), as a Tailwind class so the strip and its loading
+// placeholder (trend-panel.tsx's TrendBody) can never drift apart.
 //
-// The card is min-h-[188px] and the strip bleeds to its bottom edge, so this is
-// also what decides whether a hover fits: the tooltip opens upward from the
-// strip's top edge, and a short strip pushed a four-row tooltip (run name,
-// date, two series) past the card's clipped bottom. At 96px the strip is over
-// half the card and the tooltip clears it.
+// The strip sits inset within the card's own padding (TrendPanel never
+// bleeds to the card's edges), so this is also what decides whether a hover
+// fits: the tooltip opens upward from the strip's top edge, and a short
+// strip pushed a four-row tooltip (run name, date, two series) past the
+// card's clipped bottom. At 96px the strip clears it.
 export const WIDGET_CHART_HEIGHT = "h-32"

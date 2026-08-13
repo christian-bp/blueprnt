@@ -23,9 +23,10 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org-1", name: "Acme", role: "admin" }),
 }))
 
-// AssistantThread/AssistantComposer are stubs Tasks 13-14 replace; this test
-// covers the panel's own data wiring, so both are mocked with a minimal
-// interactive stand-in that exposes the props it received.
+// AssistantThread/AssistantComposer are mocked with a minimal interactive
+// stand-in so this file stays focused on the panel's own data wiring; their
+// own behavior is covered by assistant-thread.test.tsx and
+// assistant-composer.test.tsx.
 vi.mock("@/components/assistant/assistant-thread", () => ({
   AssistantThread: (props: {
     loading: boolean

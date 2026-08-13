@@ -40,13 +40,14 @@ export function AssistantMessage({
   const t = useTranslations("dashboard.assistant")
   const tErrors = useTranslations("errors")
 
-  // Parts render EXACTLY as they have arrived, with no client-side reveal
-  // pacing: the reading-paced flow comes from the SOURCE (generate.ts's
-  // smoothStream re-chunks the model's output to one word per tick, so a
-  // flush carries a few words, never paragraphs) and Streamdown's per-word
-  // fade rides on those small increments in document order. A client-side
+  // Parts render EXACTLY as they have arrived, with no animation of any
+  // kind: no client-side reveal pacing and no Streamdown fade (see
+  // assistant-markdown.tsx's isAnimating comment). The reading-paced flow
+  // comes entirely from the SOURCE: generate.ts's smoothStream re-chunks the
+  // model's output to one word per tick, so a flush carries a few words,
+  // never paragraphs, and what has arrived is simply shown. A client-side
   // pacing layer was tried on top of this and REGRESSED it: whenever its
-  // catch-up ran ahead of the fade, whole blocks mounted with their text
+  // catch-up ran ahead of arrival, whole blocks mounted with their text
   // still transparent, and list markers (::marker pseudo-elements, which no
   // text-span opacity can hide) stood empty on screen. Arrival order also
   // makes chart gating unnecessary: the backend appends a chart part only

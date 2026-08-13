@@ -80,13 +80,14 @@ export function AssistantThread(props: {
     <MessageScrollerProvider>
       <MessageScroller className="flex-1">
         <MessageScrollerViewport>
-          {/* px-8: a chart card (TrendPanel, "bleed") fills this column edge
-              to edge, so its rounded corner must clear the viewport's own
-              paint containment (contain-content, MessageScrollerViewport) or
-              that border gets cut. The composer's own wrapper
-              (assistant-panel.tsx) carries the same px-8, on the same
-              max-w-3xl, so the two columns' visible content still lines up
-              left/right, not just their outer box. */}
+          {/* px-8: the in-chat chart card (AssistantChartPart's TrendPanel)
+              renders inset within its own padding, never bleeding to this
+              column's edges, but its border still needs clearance from the
+              viewport's own paint containment (contain-content,
+              MessageScrollerViewport) or the corner gets cut. The composer's
+              own wrapper (assistant-panel.tsx) carries the same px-8, on the
+              same max-w-3xl, so the two columns' visible content still lines
+              up left/right, not just their outer box. */}
           <MessageScrollerContent className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-8 py-6">
             {props.messages.map((message) => (
               <MessageScrollerItem

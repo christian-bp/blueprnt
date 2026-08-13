@@ -94,10 +94,7 @@ describe("AssistantMessage", () => {
     expect(activity.className).toContain("shimmer")
     expect(activity.textContent).toBe(messages.dashboard.assistant.checkingData)
     // The already-streamed part stays visible, and the shimmer renders
-    // after it, not instead of it. This message is still streaming, so
-    // AssistantMarkdown animates its text: "So far" renders as two
-    // per-word spans rather than one text node, so we query the paragraph
-    // element directly and compare textContent instead of getByText("So far").
+    // after it, not instead of it.
     const soFar = container.querySelector("p")
     expect(soFar?.textContent).toBe("So far")
     expect(

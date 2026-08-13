@@ -79,12 +79,13 @@ describe("AssistantThread", () => {
     expect(classes).toContain("min-h-0")
   })
 
-  // The clipping defect: a chart card bleeds to this container's own edges,
-  // so it needs real breathing room from the viewport's paint containment
-  // (contain-content, MessageScrollerViewport), not just the composer's own
-  // px-6, or its rounded border gets cut. assistant-panel.tsx's composer
-  // wrapper carries the same px-8 on the same max-w-3xl, so the two columns
-  // stay left/right aligned.
+  // Even though the in-chat chart card renders inset and never bleeds to
+  // this container's own edges, its border still needs real breathing room
+  // from the viewport's paint containment (contain-content,
+  // MessageScrollerViewport), not just the composer's own px-6, or the
+  // rounded corner gets cut. assistant-panel.tsx's composer wrapper carries
+  // the same px-8 on the same max-w-3xl, so the two columns stay left/right
+  // aligned.
   it("carries the clip-safe inset on the message list container", () => {
     const { container } = renderThread({
       loading: false,
@@ -135,8 +136,4 @@ describe("AssistantThread", () => {
     expect(rendered.length).toBe(3)
     expect(rendered.map((el) => el.dataset.id)).toEqual(["1", "2", "3"])
   })
-
-  // Only the thread's very last message paces its reveal (assistant-message.tsx
-  // gates pacing on this flag): every earlier message, even one that oddly
-  // still says "streaming", must not receive it.
 })

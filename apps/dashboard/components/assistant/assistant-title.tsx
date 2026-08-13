@@ -10,9 +10,11 @@ import { AnimatePresence, motion } from "motion/react"
 // animation instead of the text swapping mid-span. mode="wait" so an
 // outgoing title fully exits before the next one enters, never overlapping;
 // `exit` mirrors `initial` (deliberately added, not in midday's source,
-// which leaves mode="wait" with nothing to wait on: see docs/ui-animation.md
-// #6, dropping an exit must be a stated choice, never a silent default) so
-// there is an actual animation for mode="wait" to sequence.
+// which leaves mode="wait" with nothing to wait on: dropping an exit must be
+// a stated choice, never a silent default, per docs/ui-animation.md's
+// standing convention that legitimate enter/leave transitions are animated,
+// never instant) so there is an actual animation for mode="wait" to
+// sequence.
 // Renders nothing while there is no title yet (a fresh thread, or one whose
 // generation has not landed): the header row's own flex spacers, not this
 // component, keep the three-region layout centered either way.
