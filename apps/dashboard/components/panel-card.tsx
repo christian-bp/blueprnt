@@ -19,7 +19,6 @@ export function PanelCard({
   icon,
   meta,
   action,
-  bleed = false,
   className,
   children,
 }: {
@@ -28,18 +27,11 @@ export function PanelCard({
   // A short trailing readout in the header (e.g. how many items there are).
   meta?: ReactNode
   action?: { label: string; href: string }
-  // Renders the body flush to the card's edges instead of inside the card's
-  // padding, and drops the bottom padding with it. For a chart that is
-  // meant to reach the card's own boundary: a plot inset by the card's
-  // padding reads as a picture placed ON the card, one that bleeds reads as
-  // the card's own surface. The card already clips its overflow, so the
-  // fill takes the rounded bottom corners.
-  bleed?: boolean
   className?: string
   children: ReactNode
 }) {
   return (
-    <Card size="sm" className={cn("gap-3", bleed && "pb-0", className)}>
+    <Card size="sm" className={cn("gap-3", className)}>
       <CardHeader className="flex flex-row items-center gap-3">
         {icon !== undefined && <Medallion icon={icon} size="sm" />}
         {/* A heading, not a paragraph: these panels are the page's sections,
@@ -62,7 +54,7 @@ export function PanelCard({
           </Link>
         )}
       </CardHeader>
-      {bleed ? children : <CardContent>{children}</CardContent>}
+      <CardContent>{children}</CardContent>
     </Card>
   )
 }
