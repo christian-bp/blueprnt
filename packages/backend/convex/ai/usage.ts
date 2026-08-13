@@ -10,6 +10,24 @@ export function monthKey(timestampMs: number): string {
   return new Date(timestampMs).toISOString().slice(0, 7)
 }
 
+const PERIOD_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/
+
+// True for a well-formed "YYYY-MM" bucket key, the shape monthKey produces.
+export function isValidPeriod(period: string): boolean {
+  return PERIOD_PATTERN.test(period)
+}
+
+// The bucket immediately before `period`, string arithmetic only (no Date
+// parsing, so there is no timezone to get wrong). Callers must validate the
+// input with isValidPeriod first; behavior on a malformed string is undefined.
+export function previousPeriod(period: string): string {
+  const [yearStr, monthStr] = period.split("-")
+  const year = Number(yearStr)
+  const month = Number(monthStr)
+  if (month === 1) return `${year - 1}-12`
+  return `${year}-${String(month - 1).padStart(2, "0")}`
+}
+
 // One AI call's recorded usage: org/kind/provider/model/actor plus token
 // counts. Both the suggestion-derived path (recordAiUsage, which reads these
 // off the suggestion) and the context-based path (recordAiUsageDirect, which

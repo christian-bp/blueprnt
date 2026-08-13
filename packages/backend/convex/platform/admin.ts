@@ -14,6 +14,7 @@ import {
 } from "../lib/audit"
 import { ERROR_CODES, appError } from "../lib/errors"
 import { platformMutation, platformQuery } from "../lib/functions"
+import { orgNameMap } from "../lib/organizations"
 
 const roleArg = v.union(v.literal("admin"), v.literal("editor"))
 
@@ -370,12 +371,8 @@ async function resolvePlatformTargets(
     components.betterAuth.provisioning.listAllUsers,
     {}
   )
-  const orgs = await ctx.runQuery(
-    components.betterAuth.provisioning.listAllOrganizations,
-    {}
-  )
   const userLabel = new Map(users.map((u) => [u.userId, u.name || u.email]))
-  const orgLabel = new Map(orgs.map((o) => [o.orgId, o.name]))
+  const orgLabel = await orgNameMap(ctx)
   return rows.map((r) => {
     const targetUser =
       r.targetUserId !== undefined

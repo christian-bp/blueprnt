@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
-import { monthKey } from "./usage"
+import { isValidPeriod, monthKey, previousPeriod } from "./usage"
 
 // Insert a suggestion row to attribute usage to. orgId is a plain string;
 // recordAiUsage is internal and derives everything off the suggestion.
@@ -28,6 +28,34 @@ describe("monthKey", () => {
     // Month is 0-indexed: 5 = June.
     expect(monthKey(Date.UTC(2026, 5, 10, 23, 30))).toBe("2026-06")
     expect(monthKey(Date.UTC(2026, 0, 1))).toBe("2026-01")
+  })
+})
+
+describe("isValidPeriod", () => {
+  it("accepts a well-formed YYYY-MM string", () => {
+    expect(isValidPeriod("2026-01")).toBe(true)
+    expect(isValidPeriod("2026-12")).toBe(true)
+  })
+
+  it("rejects malformed shapes", () => {
+    expect(isValidPeriod("2026-13")).toBe(false)
+    expect(isValidPeriod("2026-00")).toBe(false)
+    expect(isValidPeriod("2026-1")).toBe(false)
+    expect(isValidPeriod("2026/01")).toBe(false)
+    expect(isValidPeriod("26-01")).toBe(false)
+    expect(isValidPeriod("")).toBe(false)
+    expect(isValidPeriod("not-a-period")).toBe(false)
+  })
+})
+
+describe("previousPeriod", () => {
+  it("steps back a month within the same year", () => {
+    expect(previousPeriod("2026-06")).toBe("2026-05")
+    expect(previousPeriod("2026-12")).toBe("2026-11")
+  })
+
+  it("crosses a year boundary from January to the prior December", () => {
+    expect(previousPeriod("2026-01")).toBe("2025-12")
   })
 })
 

@@ -35,4 +35,8 @@ export const aiUsageMonthly = defineTable({
   totalTokens: v.number(),
   costNanos: v.number(),
   byKind: v.record(v.string(), v.number()),
-}).index("by_org_period", ["orgId", "period"])
+})
+  .index("by_org_period", ["orgId", "period"])
+  // Platform-wide reads (one period across every org) must ride an index
+  // rather than scan the whole table.
+  .index("by_period", ["period"])
