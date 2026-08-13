@@ -1,0 +1,43 @@
+packages/i18n/messages/sv.json
+  s_c6f9c899f4809f::t_d1d9c221f18a7a 2237,2239,2241,2243,2246
+  s_c6f9c899f4809f::t_2e9ab4bdc0fe3e 2259
+  s_c6f9c899f4809f::t_eda04c4d4608f6 2262
+apps/dashboard/components/admin/ai-usage-table.test.tsx
+  s_c6f9c899f4809f::t_e2d3ac63728181 148,155-160
+  s_c6f9c899f4809f::t_612b84e20921c9 67,70-72
+apps/dashboard/lib/admin-ai-usage.test.ts
+  s_c6f9c899f4809f::t_19f15bfa3ec1c0 214-222
+packages/i18n/messages/nb.json
+  s_c6f9c899f4809f::t_e82d190f04da0b 2237,2239,2241,2243,2246
+  s_c6f9c899f4809f::t_d3f5ccec77cb68 2262
+packages/i18n/messages/da.json
+  s_c6f9c899f4809f::t_4abeb03db1d028 2237,2239,2241,2243,2246
+  s_c6f9c899f4809f::t_e8394bcad410bd 2262
+packages/i18n/messages/en.json
+  s_c6f9c899f4809f::t_bfec3e93472645 2237,2239,2241,2243,2246
+  s_c6f9c899f4809f::t_fa170ad397c58a 2262
+apps/dashboard/components/admin/ai-usage-table.tsx
+  s_c6f9c899f4809f::t_96a169867e0501 169-170,173
+  s_c6f9c899f4809f::t_7fbeba4065bd87 298,310
+  s_c6f9c899f4809f::t_c003df5b40551f 392-395
+  s_c6f9c899f4809f::t_34c89eceff25e5 396
+packages/i18n/messages/fi.json
+  s_c6f9c899f4809f::t_e7f01438f961be 2262
+  s_c6f9c899f4809f::t_734587b3134fd6 2237,2241,2243,2246
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0021705a71dd9a95441cd74624489e76572c3e04",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
