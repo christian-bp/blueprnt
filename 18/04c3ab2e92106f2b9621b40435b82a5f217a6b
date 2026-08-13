@@ -1,0 +1,25 @@
+apps/dashboard/components/submit-button.tsx
+  s_c6f9c899f4809f::t_d043b9b42900e2 18-21,23
+apps/dashboard/components/pay-mapping/rename-pay-mapping-dialog.test.tsx
+  s_c6f9c899f4809f::t_9a4d0b24226b26 1-119
+apps/dashboard/components/pay-mapping/rename-pay-mapping-dialog.tsx
+  s_c6f9c899f4809f::t_743e686cf24cbb 84
+  s_c6f9c899f4809f::t_f31e54d986b33f 120-121
+  s_c6f9c899f4809f::t_4c1a3b60ed0f8d 66-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1804c3ab2e92106f2b9621b40435b82a5f217a6b",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
