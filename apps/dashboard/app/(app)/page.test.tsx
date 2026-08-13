@@ -222,16 +222,28 @@ describe("OverviewPage", () => {
     expect(screen.queryByText(tOverview.widgets.gapTrend.title)).toBeNull()
   })
 
-  // The hero used to fill roughly one viewport (min-h-[calc(100vh-...)] +
-  // justify-center) before the rest of the page picked up, which is exactly
-  // the "pushed below the fold" regression this compacts. Guards against it
-  // coming back.
-  it("keeps the hero in normal page flow, not pinned to the viewport height", () => {
+  // The hero fills roughly one viewport and centers its content within it,
+  // so the greeting, status line, and chat prompt land in the first screen
+  // rather than wherever normal flow happens to put them.
+  it("pins the hero to roughly the viewport height and centers its content", () => {
     mockNeutralQueries()
     const { container } = renderPage()
     const page = container.querySelector("div.flex.flex-col")
     const hero = page?.firstElementChild
-    expect(hero?.className).not.toMatch(/min-h-|vh|justify-center/)
+    expect(hero?.className).toMatch(/min-h-/)
+    expect(hero?.className).toMatch(/vh/)
+    expect(hero?.className).toContain("justify-center")
+  })
+
+  // The AI chat prompt must span the same width as the To do row and the
+  // stat strip below it, not a narrower centered column: no `max-w` cap
+  // between the page's own container and the AssistantPrompt.
+  it("gives the hero the same full content width as the To do row and the stat strip", () => {
+    mockNeutralQueries()
+    const { container } = renderPage()
+    const page = container.querySelector("div.flex.flex-col")
+    const hero = page?.firstElementChild
+    expect(hero?.className).not.toMatch(/max-w/)
   })
 
   // One spacing rhythm for the page: the gap BETWEEN the bands is the same as
