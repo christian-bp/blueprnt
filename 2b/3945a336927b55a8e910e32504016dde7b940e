@@ -1,0 +1,23 @@
+apps/dashboard/hooks/use-stream-reveal.test.tsx
+  s_c6f9c899f4809f::t_5bb9bb91ec1091 40-43
+  s_c6f9c899f4809f::t_0fee7630da67cc 1-39,44-127
+apps/dashboard/hooks/use-stream-reveal.ts
+  s_c6f9c899f4809f::t_472bafe3f6b17b 1-57,64-70,80-91
+  s_c6f9c899f4809f::t_4601b0590c8aa9 58-63,71-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2b3945a336927b55a8e910e32504016dde7b940e",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
