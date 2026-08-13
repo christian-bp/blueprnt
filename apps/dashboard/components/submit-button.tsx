@@ -15,7 +15,12 @@ export function SubmitButton({
   ...props
 }: ComponentProps<typeof Button> & { isSubmitting: boolean }) {
   return (
+    // type="submit" by default: the vendor Button defaults to type="button",
+    // so a SubmitButton inside a form would otherwise never submit it unless
+    // every call site remembered to say so. Callers can still override via
+    // the spread (e.g. a click-driven action outside a form).
     <Button
+      type="submit"
       disabled={isSubmitting || disabled}
       variant={variant}
       className={cn("relative", className)}

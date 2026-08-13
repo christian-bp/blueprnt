@@ -63,6 +63,11 @@ export function RenamePayMappingDialog({
     mode: "onTouched",
     defaultValues: { label },
   })
+  // Destructured once, never read inline in JSX: RHF's formState is a proxy
+  // that only tracks the fields actually accessed, and a short-circuited
+  // inline read can skip a field on the renders that matter, leaving the
+  // save button's disabled state stale.
+  const { isValid, isDirty, isSubmitting } = form.formState
 
   // The row keeps this component mounted between openings, so the field has to
   // be reset to the run's current name each time rather than keeping whatever
@@ -76,9 +81,8 @@ export function RenamePayMappingDialog({
       await renameRun({ orgId, runId, label: values.label })
       toast.success(tToast("payMappingRenamed"))
       onOpenChange(false)
-    } catch (error) {
+    } catch {
       toast.error(tToast("error"))
-      throw error
     }
   })
 
@@ -113,8 +117,8 @@ export function RenamePayMappingDialog({
                 {t("renameCancel")}
               </Button>
               <SubmitButton
-                disabled={!(form.formState.isValid && form.formState.isDirty)}
-                isSubmitting={form.formState.isSubmitting}
+                disabled={!(isValid && isDirty)}
+                isSubmitting={isSubmitting}
               >
                 {t("renameSave")}
               </SubmitButton>
