@@ -1,0 +1,26 @@
+apps/dashboard/components/assistant/assistant-markdown.test.tsx
+  s_c6f9c899f4809f::t_0aaaa213f58783 25,31-36
+  s_c6f9c899f4809f::t_b7a7e38140951c 37-38
+apps/dashboard/components/assistant/assistant-markdown.tsx
+  s_c6f9c899f4809f::t_3d134ab8361c07 19-20
+  s_c6f9c899f4809f::t_dee0b6a2636e87 1,6-12
+  s_c6f9c899f4809f::t_62fae22b0604e3 54-59
+  s_c6f9c899f4809f::t_76a81957db26c6 51-53,61-63
+  s_c6f9c899f4809f::t_b4e81bf2f80ded 60,64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "609021b278fe9c65087a3af84cb5d4e3cb2d1e02",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
