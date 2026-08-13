@@ -4,7 +4,7 @@ import type { Locale } from "@workspace/i18n/routing"
 import { cn } from "@workspace/ui/lib/utils"
 import type { Metadata } from "next"
 import { getLocale, getMessages, getTranslations } from "next-intl/server"
-import { Geist_Mono, Source_Sans_3 } from "next/font/google"
+import { Geist_Mono, Hedvig_Letters_Sans } from "next/font/google"
 import type { ReactNode } from "react"
 import { LocaleProvider } from "@/components/locale-provider"
 import { Providers } from "@/components/providers"
@@ -24,11 +24,12 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-// Same fonts and variable names as apps/web. The base-vega preset maps
-// font-heading to font-sans in the shared globals.css, so no separate
-// heading font is loaded.
-const sourceSans = Source_Sans_3({
+// One UI sans, on --font-sans; the shared globals.css maps font-heading to
+// font-sans too, so no separate heading font is loaded.
+const fontSans = Hedvig_Letters_Sans({
+  weight: "400",
   subsets: ["latin"],
+  display: "swap",
   variable: "--font-sans",
 })
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
@@ -54,7 +55,7 @@ export default async function RootLayout(props: { children: ReactNode }) {
         "antialiased",
         "font-sans",
         fontMono.variable,
-        sourceSans.variable
+        fontSans.variable
       )}
     >
       <body>
