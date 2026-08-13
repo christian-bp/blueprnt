@@ -28,8 +28,10 @@ vi.mock("@/components/assistant/assistant-panel", () => ({
 }))
 
 import AssistantPage from "@/app/(app)/assistant/page"
+import * as assistantHistoryState from "@/lib/assistant-history-state"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 
+const t = messages.dashboard.assistant
 const newConversationMock = mockMutation("assistant.chat.newConversation")
 const switchConversationMock = mockMutation("assistant.chat.switchConversation")
 
@@ -45,11 +47,16 @@ describe("AssistantPage", () => {
   beforeEach(() => {
     newConversationMock.mockReset()
     switchConversationMock.mockReset()
-    onQuery((ref) =>
-      ref === "assistant.chat.getActiveThread" ? null : undefined
-    )
+    onQuery((ref) => {
+      if (ref === "assistant.chat.getActiveThread") return null
+      if (ref === "assistant.chat.listThreads") return []
+      return undefined
+    })
   })
-  afterEach(() => cleanup())
+  afterEach(() => {
+    cleanup()
+    vi.restoreAllMocks()
+  })
 
   // A wrapper sized by min-h-* is a FLOOR, not a ceiling: once the thread
   // outgrows the viewport the column grows past it, the message scroller
@@ -68,7 +75,69 @@ describe("AssistantPage", () => {
     expect(classes.some((c) => c.startsWith("min-h-["))).toBe(false)
   })
 
-  it("starts a new conversation and disables both edge controls while a reply streams", async () => {
+  it("keeps the conversations panel open by default", () => {
+    renderPage()
+    // The panel's own header (New conversation + collapse) is real content
+    // only while open; a collapsed panel renders neither.
+    expect(
+      screen.getByRole("button", { name: t.newConversation })
+    ).toBeDefined()
+    // Exactly one control carries this accessible name: the panel's own
+    // collapse button (open and closed share the same name, the same idiom
+    // as the vendor sidebar's single "Toggle Sidebar" trigger), never two.
+    expect(screen.getAllByRole("button", { name: t.history })).toHaveLength(1)
+  })
+
+  it("starts collapsed when the persisted choice is closed (mocking the storage read)", () => {
+    vi.spyOn(
+      assistantHistoryState,
+      "initialAssistantHistoryOpen"
+    ).mockReturnValue(false)
+    renderPage()
+    expect(screen.queryByRole("button", { name: t.newConversation })).toBeNull()
+    expect(screen.getByRole("button", { name: t.history })).toBeDefined()
+  })
+
+  it("collapsing the panel hides it and shows the expand button; expanding restores it", async () => {
+    onQuery((ref) => {
+      if (ref === "assistant.chat.getActiveThread") return null
+      if (ref === "assistant.chat.listThreads") {
+        return [
+          {
+            _id: "thread-1",
+            title: "Pay gap trend",
+            status: "archived",
+            lastMessageAt: Date.parse("2026-08-01T12:00:00Z"),
+          },
+        ]
+      }
+      return undefined
+    })
+    renderPage()
+    expect(screen.getByText("Pay gap trend")).toBeDefined()
+
+    fireEvent.click(screen.getByRole("button", { name: t.history }))
+    await waitFor(() => {
+      expect(screen.queryByText("Pay gap trend")).toBeNull()
+    })
+    const expandButton = screen.getByRole("button", { name: t.history })
+    expect(expandButton).toBeDefined()
+
+    fireEvent.click(expandButton)
+    await waitFor(() => {
+      expect(screen.getByText("Pay gap trend")).toBeDefined()
+    })
+  })
+
+  it("the New conversation button lives in the panel and starts a new conversation on click when not busy", () => {
+    renderPage()
+    fireEvent.click(screen.getByRole("button", { name: t.newConversation }))
+    expect(newConversationMock).toHaveBeenCalledExactlyOnceWith({
+      orgId: "org-1",
+    })
+  })
+
+  it("disables the New conversation button while a reply streams", () => {
     onQuery((ref) => {
       if (ref === "assistant.chat.getActiveThread") {
         return { _id: "thread-1", lastMessageAt: 0 }
@@ -78,134 +147,49 @@ describe("AssistantPage", () => {
           { _id: "m1", role: "assistant", status: "streaming", parts: [] },
         ]
       }
+      if (ref === "assistant.chat.listThreads") return []
       return undefined
     })
     renderPage()
     const button = screen.getByRole("button", {
-      name: messages.dashboard.assistant.newConversation,
+      name: t.newConversation,
     }) as HTMLButtonElement
     expect(button.disabled).toBe(true)
-    // History shares the same orphan-guard rationale: switching threads
-    // mid-stream would silently orphan the in-flight reply, same as
-    // archiving the active thread via New conversation would.
-    const historyButton = screen.getByRole("button", {
-      name: messages.dashboard.assistant.history,
-    }) as HTMLButtonElement
-    expect(historyButton.disabled).toBe(true)
   })
 
-  it("starts a new conversation on click when not busy", () => {
-    renderPage()
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: messages.dashboard.assistant.newConversation,
-      })
-    )
-    expect(newConversationMock).toHaveBeenCalledExactlyOnceWith({
-      orgId: "org-1",
-    })
-  })
-
-  it("lays out the header as three regions, history left and new conversation right, so the centered title cannot shift either edge control", () => {
+  it("lays out the header as three regions, with no buttons and only the centered animated title", () => {
     // A thread with a title, so the centered AssistantTitle actually mounts
-    // a region between the two edge controls (AnimatePresence renders no
+    // a region between the two spacer regions (AnimatePresence renders no
     // node at all while there is no title, per assistant-title.test.tsx).
-    onQuery((ref) =>
-      ref === "assistant.chat.getActiveThread"
-        ? { _id: "thread-1", lastMessageAt: 0, title: "Pay gap trend" }
-        : undefined
-    )
+    onQuery((ref) => {
+      if (ref === "assistant.chat.getActiveThread") {
+        return { _id: "thread-1", lastMessageAt: 0, title: "Pay gap trend" }
+      }
+      if (ref === "assistant.chat.listThreads") return []
+      return undefined
+    })
     const { container } = renderPage()
-    const historyButton = screen.getByRole("button", {
-      name: messages.dashboard.assistant.history,
-    })
-    const newConversationButton = screen.getByRole("button", {
-      name: messages.dashboard.assistant.newConversation,
-    })
-    const row = historyButton.closest(".justify-between") as HTMLElement
-    expect(row).not.toBeNull()
-    expect(row.contains(newConversationButton)).toBe(true)
     expect(screen.getByText("Pay gap trend")).toBeDefined()
-    const regions = Array.from(row.children)
+    const row = screen.getByText("Pay gap trend").closest(".justify-between")
+    expect(row).not.toBeNull()
+    const regions = Array.from((row as HTMLElement).children)
     expect(regions).toHaveLength(3)
-    expect(regions[0]?.contains(historyButton)).toBe(true)
-    expect(regions.at(-1)?.contains(newConversationButton)).toBe(true)
-    // The title's own region sits between the two edge wrappers, never
-    // inside either one: growing from width 0 to auto can only ever eat
-    // into the leftover space between them.
-    expect(regions[1]?.contains(historyButton)).toBe(false)
-    expect(regions[1]?.contains(newConversationButton)).toBe(false)
+    expect(regions[1]?.textContent).toBe("Pay gap trend")
+    // Neither spacer region carries a button: the history toggle and New
+    // conversation both moved into the panel below.
+    expect(regions[0]?.querySelector("button")).toBeNull()
+    expect(regions.at(-1)?.querySelector("button")).toBeNull()
     // The header row is a direct child of the full-width page wrapper, a
-    // sibling of the rail+column row below it, never nested inside the
-    // capped reading column: that is what pins both edge controls to the
-    // page content's own corners instead of letting them drift with the
-    // column as the rail opens and closes.
+    // sibling of the panel+column row below it, never nested inside the
+    // capped reading column: that is what pins it to the page content's own
+    // corners instead of letting it drift with the column as the panel opens
+    // and closes.
     const wrapper = container.firstElementChild as HTMLElement
-    expect(row.parentElement).toBe(wrapper)
+    expect((row as HTMLElement).parentElement).toBe(wrapper)
     expect(wrapper.className).not.toMatch(/max-w-/)
   })
 
-  it("keeps the history rail closed by default, so its thread list is absent from the page", () => {
-    onQuery((ref) => {
-      if (ref === "assistant.chat.getActiveThread") return null
-      if (ref === "assistant.chat.listThreads") {
-        return [
-          {
-            _id: "thread-1",
-            title: "Pay gap trend",
-            status: "archived",
-            lastMessageAt: Date.parse("2026-08-01T12:00:00Z"),
-          },
-        ]
-      }
-      return undefined
-    })
-    renderPage()
-    const historyButton = screen.getByRole("button", {
-      name: messages.dashboard.assistant.history,
-    })
-    expect(historyButton.getAttribute("aria-expanded")).toBe("false")
-    expect(screen.queryByText("Pay gap trend")).toBeNull()
-  })
-
-  it("opens the rail on toggle (revealing the thread list) and closes it again on a second click", async () => {
-    onQuery((ref) => {
-      if (ref === "assistant.chat.getActiveThread") return null
-      if (ref === "assistant.chat.listThreads") {
-        return [
-          {
-            _id: "thread-1",
-            title: "Pay gap trend",
-            status: "archived",
-            lastMessageAt: Date.parse("2026-08-01T12:00:00Z"),
-          },
-        ]
-      }
-      return undefined
-    })
-    renderPage()
-    const historyButton = screen.getByRole("button", {
-      name: messages.dashboard.assistant.history,
-    })
-
-    fireEvent.click(historyButton)
-    expect(historyButton.getAttribute("aria-expanded")).toBe("true")
-    // Anchored: the row's actions trigger also carries this title in its
-    // own accessible name ("Actions for Pay gap trend"), so an unanchored
-    // match would hit both buttons.
-    expect(screen.getByRole("button", { name: /^Pay gap trend/ })).toBeDefined()
-
-    fireEvent.click(historyButton)
-    expect(historyButton.getAttribute("aria-expanded")).toBe("false")
-    // The rail's content exits via AnimatePresence (a fast fade before the
-    // outer width collapses, docs/ui-animation.md rule 4), so the unmount
-    // lands a tick after the click, not synchronously with it.
-    await waitFor(() => {
-      expect(screen.queryByText("Pay gap trend")).toBeNull()
-    })
-  })
-
-  it("switching to a thread from the rail keeps the rail open, since the user is browsing", async () => {
+  it("switching to a thread from the panel keeps the panel open, since the user is browsing", async () => {
     onQuery((ref) => {
       if (ref === "assistant.chat.getActiveThread") return null
       if (ref === "assistant.chat.listThreads") {
@@ -228,10 +212,6 @@ describe("AssistantPage", () => {
     })
     switchConversationMock.mockResolvedValue(null)
     renderPage()
-    const historyButton = screen.getByRole("button", {
-      name: messages.dashboard.assistant.history,
-    })
-    fireEvent.click(historyButton)
     fireEvent.click(screen.getByRole("button", { name: /^Older chat/ }))
 
     await waitFor(() => {
@@ -240,14 +220,13 @@ describe("AssistantPage", () => {
         threadId: "thread-old",
       })
     })
-    expect(historyButton.getAttribute("aria-expanded")).toBe("true")
     expect(screen.getByRole("button", { name: /^Older chat/ })).toBeDefined()
   })
 
-  // The rail must scroll on its own (its list can outgrow the page) without
+  // The panel must scroll on its own (its list can outgrow the page) without
   // ever turning the main column into a second vertical scroller: only
   // MessageScrollerViewport inside AssistantPanel may own that job.
-  it("never gives the main column its own vertical scroller when the rail opens", () => {
+  it("never gives the main column its own vertical scroller while the panel is open", () => {
     onQuery((ref) => {
       if (ref === "assistant.chat.getActiveThread") return null
       if (ref === "assistant.chat.listThreads") {
@@ -263,9 +242,6 @@ describe("AssistantPage", () => {
       return undefined
     })
     const { container } = renderPage()
-    fireEvent.click(
-      screen.getByRole("button", { name: messages.dashboard.assistant.history })
-    )
 
     const mainColumn = screen.getByTestId("panel").parentElement as HTMLElement
     const mainColumnClasses = mainColumn.className.split(/\s+/)
@@ -277,7 +253,7 @@ describe("AssistantPage", () => {
       false
     )
     // Exactly one vertical scroller exists anywhere in the rendered tree
-    // (the rail's own list), never two.
+    // (the panel's own list), never two.
     const verticalScrollers = container.querySelectorAll(
       '[class*="overflow-y-auto"]'
     )

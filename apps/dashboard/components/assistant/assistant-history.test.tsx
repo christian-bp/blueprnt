@@ -25,7 +25,7 @@ vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
-import { AssistantHistoryRail } from "@/components/assistant/assistant-history"
+import { AssistantHistoryPanel } from "@/components/assistant/assistant-history"
 import { toast } from "@/lib/toast"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 import { openMenu } from "@/test/menu"
@@ -34,10 +34,19 @@ const t = messages.dashboard.assistant
 const switchConversationMock = mockMutation("assistant.chat.switchConversation")
 const deleteConversationMock = mockMutation("assistant.chat.deleteConversation")
 
-function renderRail(open: boolean, busy = false) {
+function renderPanel(
+  open: boolean,
+  busy = false,
+  overrides: { onCollapse?: () => void; onNewConversation?: () => void } = {}
+) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <AssistantHistoryRail open={open} busy={busy} />
+      <AssistantHistoryPanel
+        open={open}
+        busy={busy}
+        onCollapse={overrides.onCollapse ?? vi.fn()}
+        onNewConversation={overrides.onNewConversation ?? vi.fn()}
+      />
     </NextIntlClientProvider>
   )
 }
@@ -55,7 +64,7 @@ function rowActionsLabelFor(title: string): string {
   return t.rowActionsLabel.replace("{title}", title)
 }
 
-describe("AssistantHistoryRail", () => {
+describe("AssistantHistoryPanel", () => {
   beforeEach(() => {
     switchConversationMock.mockReset()
     deleteConversationMock.mockReset()
@@ -63,7 +72,7 @@ describe("AssistantHistoryRail", () => {
   })
   afterEach(() => cleanup())
 
-  it("keeps its thread list out of the tree while closed", () => {
+  it("renders nothing while closed", () => {
     onQuery((ref) =>
       ref === "assistant.chat.listThreads"
         ? [
@@ -76,20 +85,21 @@ describe("AssistantHistoryRail", () => {
           ]
         : undefined
     )
-    renderRail(false)
+    renderPanel(false)
     expect(screen.queryByText("Pay gap trend")).toBeNull()
     expect(screen.queryByRole("button")).toBeNull()
   })
 
-  it("shows a content-shaped skeleton while the thread list is loading", () => {
+  it("shows the New conversation and collapse controls as real components while the thread list loads", () => {
     onQuery(() => undefined)
-    const { container } = renderRail(true)
+    const { container } = renderPanel(true)
+    expect(
+      screen.getByRole("button", { name: t.newConversation })
+    ).toBeDefined()
+    expect(screen.getByRole("button", { name: t.history })).toBeDefined()
     expect(
       container.querySelectorAll('[data-slot="skeleton"]').length
     ).toBeGreaterThan(0)
-    expect(screen.queryByRole("button")).toBeNull()
-    // The heading stays the real component while rows load.
-    expect(screen.getByText(t.history)).toBeDefined()
   })
 
   it("does not subscribe to the thread list while closed, only while open", () => {
@@ -97,8 +107,30 @@ describe("AssistantHistoryRail", () => {
     onQuery((ref) =>
       ref === "assistant.chat.listThreads" ? listThreadsQuery() : undefined
     )
-    renderRail(false)
+    renderPanel(false)
     expect(listThreadsQuery).not.toHaveBeenCalled()
+  })
+
+  it("calls onNewConversation when its button is clicked", () => {
+    const onNewConversation = vi.fn()
+    renderPanel(true, false, { onNewConversation })
+    fireEvent.click(screen.getByRole("button", { name: t.newConversation }))
+    expect(onNewConversation).toHaveBeenCalledOnce()
+  })
+
+  it("disables the New conversation button while busy", () => {
+    renderPanel(true, true)
+    const button = screen.getByRole("button", {
+      name: t.newConversation,
+    }) as HTMLButtonElement
+    expect(button.disabled).toBe(true)
+  })
+
+  it("calls onCollapse when its button is clicked", () => {
+    const onCollapse = vi.fn()
+    renderPanel(true, false, { onCollapse })
+    fireEvent.click(screen.getByRole("button", { name: t.history }))
+    expect(onCollapse).toHaveBeenCalledOnce()
   })
 
   it("lists each thread's AI-generated title with its date while open", () => {
@@ -114,7 +146,7 @@ describe("AssistantHistoryRail", () => {
           ]
         : undefined
     )
-    renderRail(true)
+    renderPanel(true)
     // Anchored: the row's actions trigger also carries this title in its
     // own accessible name ("Actions for Pay gap trend"), so an unanchored
     // match would hit both buttons.
@@ -134,11 +166,16 @@ describe("AssistantHistoryRail", () => {
           ]
         : undefined
     )
-    renderRail(true)
-    // Anchored for the same reason as the titled-thread case above: the
-    // row's actions trigger falls back to this same untitled label too.
+    renderPanel(true)
+    // Scoped to the row itself (via its date, which is unique in the tree):
+    // the untitled label "New conversation" also happens to be the header's
+    // own New-conversation button text, so an unscoped name match would hit
+    // both.
+    const row = rowOf(screen.getByText("Aug 1, 2026"))
     expect(
-      screen.getByRole("button", { name: new RegExp(`^${t.untitled}`) })
+      within(row).getByRole("button", {
+        name: new RegExp(`^${t.untitled}`),
+      })
     ).toBeDefined()
   })
 
@@ -162,7 +199,7 @@ describe("AssistantHistoryRail", () => {
         : undefined
     )
     switchConversationMock.mockResolvedValue(null)
-    renderRail(true)
+    renderPanel(true)
 
     const activeRow = screen.getByRole("button", { name: /^Current chat/ })
     expect(activeRow.getAttribute("aria-current")).toBe("true")
@@ -175,8 +212,8 @@ describe("AssistantHistoryRail", () => {
         threadId: "thread-old",
       })
     })
-    // Selecting a thread never closes the rail itself; that decision belongs
-    // to the page's toggle button, not this component.
+    // Selecting a thread never closes the panel itself; that decision
+    // belongs to the collapse button, not this component.
     expect(screen.getByRole("button", { name: /^Older chat/ })).toBeDefined()
   })
 
@@ -193,7 +230,7 @@ describe("AssistantHistoryRail", () => {
           ]
         : undefined
     )
-    renderRail(true)
+    renderPanel(true)
     fireEvent.click(screen.getByRole("button", { name: /^Current chat/ }))
     expect(switchConversationMock).not.toHaveBeenCalled()
   })
@@ -212,7 +249,7 @@ describe("AssistantHistoryRail", () => {
         : undefined
     )
     switchConversationMock.mockRejectedValue(new Error("boom"))
-    renderRail(true)
+    renderPanel(true)
     fireEvent.click(screen.getByRole("button", { name: /^Older chat/ }))
     await waitFor(() => {
       expect(vi.mocked(toast.error)).toHaveBeenCalledWith(
@@ -221,7 +258,7 @@ describe("AssistantHistoryRail", () => {
     })
   })
 
-  it("disables every non-active row while busy, so switching can never orphan an in-flight reply", () => {
+  it("disables every row while busy, so switching can never orphan an in-flight reply", () => {
     onQuery((ref) =>
       ref === "assistant.chat.listThreads"
         ? [
@@ -240,8 +277,11 @@ describe("AssistantHistoryRail", () => {
           ]
         : undefined
     )
-    renderRail(true, true)
-    for (const row of screen.getAllByRole("button")) {
+    renderPanel(true, true)
+    for (const row of [
+      screen.getByRole("button", { name: /^Older chat/ }),
+      screen.getByRole("button", { name: /^Even older chat/ }),
+    ]) {
       expect((row as HTMLButtonElement).disabled).toBe(true)
     }
   })
@@ -259,7 +299,7 @@ describe("AssistantHistoryRail", () => {
           ]
         : undefined
     )
-    renderRail(true)
+    renderPanel(true)
     const row = rowOf(screen.getByText("Older chat"))
     await openMenu(
       within(row).getByRole("button", {
@@ -286,7 +326,7 @@ describe("AssistantHistoryRail", () => {
         : undefined
     )
     deleteConversationMock.mockResolvedValue(null)
-    renderRail(true)
+    renderPanel(true)
     const row = rowOf(screen.getByText("Older chat"))
     await openMenu(
       within(row).getByRole("button", {
@@ -325,7 +365,7 @@ describe("AssistantHistoryRail", () => {
         : undefined
     )
     deleteConversationMock.mockRejectedValue(new Error("boom"))
-    renderRail(true)
+    renderPanel(true)
     const row = rowOf(screen.getByText("Older chat"))
     await openMenu(
       within(row).getByRole("button", {
@@ -362,7 +402,7 @@ describe("AssistantHistoryRail", () => {
           ]
         : undefined
     )
-    renderRail(true, true)
+    renderPanel(true, true)
     const row = rowOf(screen.getByText("Older chat"))
     expect(
       (
@@ -392,7 +432,7 @@ describe("AssistantHistoryRail", () => {
           ]
         : undefined
     )
-    renderRail(true)
+    renderPanel(true)
     const oldRow = rowOf(screen.getByText("Older chat"))
     const olderRow = rowOf(screen.getByText("Even older chat"))
     const oldTrigger = within(oldRow).getByRole("button", {

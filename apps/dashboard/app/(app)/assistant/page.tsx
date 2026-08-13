@@ -1,18 +1,22 @@
 "use client"
 
-import { HistoryIcon, PlusSignIcon } from "@hugeicons/core-free-icons"
+import { SidebarLeftIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
-import { AssistantHistoryRail } from "@/components/assistant/assistant-history"
+import { AssistantHistoryPanel } from "@/components/assistant/assistant-history"
 import { AssistantPanel } from "@/components/assistant/assistant-panel"
 import { AssistantTitle } from "@/components/assistant/assistant-title"
 import { useOrganization } from "@/components/org-context"
 import { useAssistantChat } from "@/hooks/use-assistant-chat"
 import { usePageTitle } from "@/hooks/use-page-title"
+import {
+  initialAssistantHistoryOpen,
+  persistAssistantHistoryOpen,
+} from "@/lib/assistant-history-state"
 import { toast } from "@/lib/toast"
 
 export default function AssistantPage() {
@@ -26,14 +30,14 @@ export default function AssistantPage() {
   // conversation button while a reply streams (archiving the active thread
   // mid-stream would silently orphan it) can never lag the panel by a
   // render, unlike a state mirror fed through an effect would. `title` feeds
-  // the centered AssistantTitle; AssistantHistoryRail reads its own thread
+  // the centered AssistantTitle; AssistantHistoryPanel reads its own thread
   // list via useAssistantThreads, a deliberately separate subscription so
   // this hook (read by every chat render) never pays for the full history.
   const { busy, title } = useAssistantChat(orgId)
-  // Local to the page, no persistence: the rail reopens closed on every
-  // visit. Selecting a thread never closes it (the user is browsing); only
-  // the toggle button below does.
-  const [historyOpen, setHistoryOpen] = useState(false)
+  // Persisted across visits the same way the app sidebar's own open state is
+  // (lib/assistant-history-state.ts, one shared cookie idiom); no stored
+  // choice defaults to open, since the panel is the default view.
+  const [panelOpen, setPanelOpen] = useState(initialAssistantHistoryOpen)
 
   const handleNewConversation = async () => {
     try {
@@ -41,6 +45,11 @@ export default function AssistantPage() {
     } catch {
       toast.error(tToast("error"))
     }
+  }
+
+  function togglePanel(next: boolean) {
+    setPanelOpen(next)
+    persistAssistantHistoryOpen(next)
   }
 
   return (
@@ -51,61 +60,54 @@ export default function AssistantPage() {
     // the viewport) lets it shrink to fit, and overflow-hidden is a second
     // line of defense so nothing inside can force a page-level scrollbar.
     // A column, deliberately FULL WIDTH (no mx-auto/max-w here): both this
-    // header and the rail below it have to reach the real boundary between
+    // header and the panel below it have to reach the real boundary between
     // the page content and the app sidebar, which only works if nothing
     // narrower sits between them and that edge. The column is bounded only
     // by the shell's own page cap (app-shell.tsx: PAGE_MAX_W), which is also
     // what centers the reading column beneath it, so the two share the same
-    // midpoint regardless of the rail's width.
+    // midpoint regardless of the panel's width.
     <div className="flex min-h-0 w-full flex-1 flex-col gap-4 overflow-hidden">
-      {/* Header spans the full page width, outside the reading-width cap
-          (midday's chat treatment): the history toggle and New conversation
-          sit in the page content's own corners, pinned to the same left/right
-          edges the rail below reaches, instead of drifting with the capped
-          column as it re-centers on open/close. Three regions: history left,
-          the animated title centered, New conversation right. The outer
-          flex-1 wrappers (not the title itself) hold the left/right controls
-          pinned to their edges, so the title animating its own width from 0
-          to auto on arrival never shifts either button; only the leftover
-          space between them changes. */}
+      {/* Header spans the full page width, outside the reading-width cap:
+          only the animated title lives here now (the history toggle and New
+          conversation both moved into the panel below). The two flex-1
+          spacers stay so the title keeps animating its own width from 0 to
+          auto without shifting either edge of the row; without them the
+          title, as the row's only child, would not be centered at all. */}
       <div className="flex shrink-0 items-center justify-between">
-        <div className="flex flex-1 justify-start">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            disabled={busy}
-            aria-expanded={historyOpen}
-            aria-label={t("history")}
-            onClick={() => setHistoryOpen((open) => !open)}
-          >
-            <HugeiconsIcon
-              icon={HistoryIcon}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
-          </Button>
-        </div>
+        <div className="flex flex-1 justify-start" />
         <AssistantTitle title={title} />
-        <div className="flex flex-1 justify-end">
-          <Button
-            variant="outline"
-            disabled={busy}
-            onClick={() => void handleNewConversation()}
-          >
-            <HugeiconsIcon
-              icon={PlusSignIcon}
-              size={16}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
-            {t("newConversation")}
-          </Button>
-        </div>
+        <div className="flex flex-1 justify-end" />
       </div>
       <div className="flex min-h-0 w-full flex-1 overflow-hidden">
-        <AssistantHistoryRail open={historyOpen} busy={busy} />
-        <div className="mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col overflow-hidden">
+        <AssistantHistoryPanel
+          open={panelOpen}
+          busy={busy}
+          onCollapse={() => togglePanel(false)}
+          onNewConversation={() => void handleNewConversation()}
+        />
+        {/* relative: anchors the expand button that appears here, at the far
+            left of the content area, while the panel is collapsed (where the
+            history toggle used to sit). */}
+        <div className="relative mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col overflow-hidden">
+          {!panelOpen && (
+            <div className="absolute top-2 left-2 z-10">
+              {/* Never busy-gated, same as the panel's own collapse button:
+                  expanding the panel touches no thread. */}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label={t("history")}
+                onClick={() => togglePanel(true)}
+              >
+                <HugeiconsIcon
+                  icon={SidebarLeftIcon}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
+              </Button>
+            </div>
+          )}
           <AssistantPanel />
         </div>
       </div>
