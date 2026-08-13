@@ -65,35 +65,31 @@ describe("AssistantThread", () => {
     expect(classes).toContain("flex-1")
   })
 
-  it("carries flex-1 on the message-scroller branch (min-h-0 is the vendor's own default)", () => {
+  it("carries flex-1 on the conversation branch (min-h-0 is the component's own default)", () => {
     const { container } = renderThread({
       loading: false,
       messages: [{ _id: "1", role: "user", status: "complete", parts: [] }],
       onSuggestion: vi.fn(),
     })
-    const scroller = container.querySelector(
-      '[data-slot="message-scroller"]'
+    const conversation = container.querySelector(
+      '[data-slot="assistant-conversation"]'
     ) as HTMLElement
-    const classes = scroller.className.split(/\s+/)
+    const classes = conversation.className.split(/\s+/)
     expect(classes).toContain("flex-1")
     expect(classes).toContain("min-h-0")
   })
 
-  // Even though the in-chat chart card renders inset and never bleeds to
-  // this container's own edges, its border still needs real breathing room
-  // from the viewport's paint containment (contain-content,
-  // MessageScrollerViewport), not just the composer's own px-6, or the
-  // rounded corner gets cut. assistant-panel.tsx's composer wrapper carries
-  // the same px-8 on the same max-w-3xl, so the two columns stay left/right
-  // aligned.
-  it("carries the clip-safe inset on the message list container", () => {
+  // assistant-panel.tsx's composer wrapper carries the same px-8 on the
+  // same max-w-3xl, so the two columns' visible content lines up
+  // left/right, not just their outer box.
+  it("aligns the message column's inset with the composer", () => {
     const { container } = renderThread({
       loading: false,
       messages: [{ _id: "1", role: "user", status: "complete", parts: [] }],
       onSuggestion: vi.fn(),
     })
     const content = container.querySelector(
-      '[data-slot="message-scroller-content"]'
+      '[data-slot="assistant-conversation-content"]'
     ) as HTMLElement
     const classes = content.className.split(/\s+/)
     expect(classes).toContain("px-8")

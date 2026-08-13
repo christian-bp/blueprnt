@@ -8,17 +8,14 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
-import {
-  MessageScroller,
-  MessageScrollerButton,
-  MessageScrollerContent,
-  MessageScrollerItem,
-  MessageScrollerProvider,
-  MessageScrollerViewport,
-} from "@workspace/ui/components/message-scroller"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useTranslations } from "next-intl"
 import { SUGGESTION_KEYS } from "@/components/assistant/assistant-composer"
+import {
+  AssistantConversation,
+  AssistantConversationContent,
+  AssistantConversationScrollButton,
+} from "@/components/assistant/assistant-conversation"
 import {
   AssistantMessage,
   type AssistantChatMessage,
@@ -77,34 +74,16 @@ export function AssistantThread(props: {
   }
 
   return (
-    <MessageScrollerProvider>
-      <MessageScroller className="flex-1">
-        <MessageScrollerViewport>
-          {/* px-8: the in-chat chart card (AssistantChartPart's TrendPanel)
-              renders inset within its own padding, never bleeding to this
-              column's edges, but its border still needs clearance from the
-              viewport's own paint containment (contain-content,
-              MessageScrollerViewport) or the corner gets cut. The composer's
-              own wrapper (assistant-panel.tsx) carries the same px-8, on the
-              same max-w-3xl, so the two columns' visible content still lines
-              up left/right, not just their outer box. */}
-          <MessageScrollerContent className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-8 py-6">
-            {props.messages.map((message) => (
-              <MessageScrollerItem
-                key={message._id}
-                messageId={message._id}
-                scrollAnchor={message.role === "user"}
-              >
-                <AssistantMessage message={message} />
-              </MessageScrollerItem>
-            ))}
-          </MessageScrollerContent>
-        </MessageScrollerViewport>
-        {/* No aria-label override: an explicit one wins over subtree text in
-            accessible-name computation and would erase the vendor's own
-            "Scroll to end" sr-only label with the wrong name. */}
-        <MessageScrollerButton />
-      </MessageScroller>
-    </MessageScrollerProvider>
+    <AssistantConversation className="flex-1">
+      {/* px-8, matching the composer's own wrapper (assistant-panel.tsx) on
+          the same max-w-3xl: the two columns' visible content lines up
+          left/right, not just their outer box. */}
+      <AssistantConversationContent>
+        {props.messages.map((message) => (
+          <AssistantMessage key={message._id} message={message} />
+        ))}
+      </AssistantConversationContent>
+      <AssistantConversationScrollButton />
+    </AssistantConversation>
   )
 }

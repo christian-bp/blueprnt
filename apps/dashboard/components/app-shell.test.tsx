@@ -7,12 +7,13 @@ import {
 
 // A page wrapper that only carries min-h-* (a floor, never a ceiling) can
 // grow past the viewport once its content outgrows it: the flex chain never
-// gets pressure to shrink, so an inner overflow-y-auto region (e.g.
-// MessageScrollerViewport) never becomes the scroll container and content
-// below it (the assistant composer) is pushed out of reach. These
-// assertions guard the route-to-class mapping that fixed that: /assistant's
-// SidebarInset must carry a real height (not a floor) with overflow-hidden,
-// and every layer below it must carry min-h-0 so it can actually shrink.
+// gets pressure to shrink, so an inner overflow-y-auto region (e.g. the
+// conversation's own scroll container) never becomes the scroll container
+// and content below it (the assistant composer) is pushed out of reach.
+// These assertions guard the route-to-class mapping that fixed that:
+// /assistant's SidebarInset must carry a real height (not a floor) with
+// overflow-hidden, and every layer below it must carry min-h-0 so it can
+// actually shrink.
 function classList(classes: string) {
   return classes.split(/\s+/).filter(Boolean)
 }

@@ -107,7 +107,7 @@ describe("AssistantPanel", () => {
     expect(classes).toContain("flex-1")
   })
 
-  // Matches AssistantThread's own MessageScrollerContent inset
+  // Matches AssistantThread's own AssistantConversationContent inset
   // (assistant-thread.test.tsx): the same max-w-3xl px-8 on both keeps the
   // composer and the message column's visible content left/right aligned.
   it("insets the composer wrapper the same way as the message column", () => {

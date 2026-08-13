@@ -263,8 +263,9 @@ describe("AssistantPage", () => {
   })
 
   // The panel must scroll on its own (its list can outgrow the page) without
-  // ever turning the main column into a second vertical scroller: only
-  // MessageScrollerViewport inside AssistantPanel may own that job.
+  // ever turning the main column into a second vertical scroller: only the
+  // conversation's own scroll container inside AssistantPanel may own that
+  // job.
   it("never gives the main column its own vertical scroller while the panel is open", () => {
     onQuery((ref) => {
       if (ref === "assistant.chat.getActiveThread") return null

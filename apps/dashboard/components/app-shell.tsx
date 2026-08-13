@@ -53,12 +53,12 @@ export function shellLayoutClasses(pathname: string) {
   const fullBleed = pathname === "/work"
   // /assistant needs the same viewport-locked SidebarInset as /work's
   // fullBleed: a long message thread must never grow the page past the
-  // viewport, or MessageScrollerViewport (its one intended scroller) never
-  // gets a bounded height to scroll within, pushing the composer out of
-  // reach with no scroller that leads to it. Unlike fullBleed it keeps the
-  // normal reading width (PAGE_MAX_W below), and the lock holds at every
-  // breakpoint, not just md+: the assistant's height must stay constant
-  // regardless of thread length on mobile too.
+  // viewport, or the conversation's own scroll container (its one intended
+  // scroller) never gets a bounded height to scroll within, pushing the
+  // composer out of reach with no scroller that leads to it. Unlike
+  // fullBleed it keeps the normal reading width (PAGE_MAX_W below), and the
+  // lock holds at every breakpoint, not just md+: the assistant's height
+  // must stay constant regardless of thread length on mobile too.
   const assistantBounded = pathname === "/assistant"
   const heightLocked = fullBleed || assistantBounded
   // The whole run workspace (overview, analysis, actions, report) is a data
