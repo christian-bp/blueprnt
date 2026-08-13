@@ -79,6 +79,26 @@ describe("AssistantThread", () => {
     expect(classes).toContain("min-h-0")
   })
 
+  // The clipping defect: a chart card bleeds to this container's own edges,
+  // so it needs real breathing room from the viewport's paint containment
+  // (contain-content, MessageScrollerViewport), not just the composer's own
+  // px-6, or its rounded border gets cut. assistant-panel.tsx's composer
+  // wrapper carries the same px-8 on the same max-w-2xl, so the two columns
+  // stay left/right aligned.
+  it("carries the clip-safe inset on the message list container", () => {
+    const { container } = renderThread({
+      loading: false,
+      messages: [{ _id: "1", role: "user", status: "complete", parts: [] }],
+      onSuggestion: vi.fn(),
+    })
+    const content = container.querySelector(
+      '[data-slot="message-scroller-content"]'
+    ) as HTMLElement
+    const classes = content.className.split(/\s+/)
+    expect(classes).toContain("px-8")
+    expect(classes).toContain("max-w-2xl")
+  })
+
   it("shows the empty state with three suggestion buttons calling onSuggestion with localized text", () => {
     const onSuggestion = vi.fn()
     renderThread({ loading: false, messages: [], onSuggestion })

@@ -88,7 +88,7 @@ export default function AssistantPage() {
         {/* relative: anchors the expand button that appears here, at the far
             left of the content area, while the panel is collapsed (where the
             history toggle used to sit). */}
-        <div className="relative mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col overflow-hidden">
+        <div className="relative mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col overflow-hidden">
           {!panelOpen && (
             <div className="absolute top-2 left-2 z-10">
               {/* Never busy-gated, same as the panel's own collapse button:

@@ -259,4 +259,12 @@ describe("AssistantPage", () => {
     )
     expect(verticalScrollers).toHaveLength(1)
   })
+
+  it("widens the chat column to max-w-5xl", () => {
+    renderPage()
+    const mainColumn = screen.getByTestId("panel").parentElement as HTMLElement
+    const mainColumnClasses = mainColumn.className.split(/\s+/)
+    expect(mainColumnClasses).toContain("max-w-5xl")
+    expect(mainColumnClasses).not.toContain("max-w-4xl")
+  })
 })
