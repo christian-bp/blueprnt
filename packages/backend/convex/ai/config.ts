@@ -52,6 +52,15 @@ export const ASSISTANT_MAX_TOOL_STEPS = 3
 export const ASSISTANT_GENERATION_TIMEOUT_MS = 120_000
 // Bounds a single reply's spend; the 120s timeout above bounds latency.
 export const ASSISTANT_MAX_OUTPUT_TOKENS = 4096
+// Word-paced text arrival at the SOURCE (the streamText call's smoothStream
+// transform), not only at the client: a fast model still emits its whole
+// output in a handful of large provider-side chunks, and pacing only on the
+// client turns each of those into one huge reveal step. At one word per this
+// many milliseconds (~100 words/s), the largest possible reply
+// (ASSISTANT_MAX_OUTPUT_TOKENS tokens, roughly 3000 words at ~0.75 words per
+// token) still finishes streaming in well under a minute, comfortably inside
+// ASSISTANT_GENERATION_TIMEOUT_MS.
+export const ASSISTANT_STREAM_SMOOTHING_MS = 10
 // How long recordUsage waits for the SDK's usage promise to settle on an
 // aborted stream before giving up and recording nothing.
 export const ASSISTANT_USAGE_RACE_MS = 2_000

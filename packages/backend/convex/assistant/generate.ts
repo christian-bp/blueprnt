@@ -1,6 +1,6 @@
 "use node"
 
-import { stepCountIs, streamText } from "ai"
+import { smoothStream, stepCountIs, streamText } from "ai"
 import { v } from "convex/values"
 import { internal } from "../_generated/api"
 import { internalAction } from "../_generated/server"
@@ -11,6 +11,7 @@ import {
   ASSISTANT_GENERATION_TIMEOUT_MS,
   ASSISTANT_MAX_OUTPUT_TOKENS,
   ASSISTANT_MAX_TOOL_STEPS,
+  ASSISTANT_STREAM_SMOOTHING_MS,
   ASSISTANT_USAGE_RACE_MS,
 } from "../ai/config"
 import { aiModel } from "../ai/provider"
@@ -20,6 +21,17 @@ import { classifyStreamOutcome } from "./streamOutcome"
 import type { AssistantActivityKind, AssistantMessagePart } from "./tables"
 import { generateThreadTitle } from "./title"
 import { buildAssistantTools, chartForTool } from "./tools"
+
+// The smoothStream call itself stays inline in streamText's options below
+// (its TOOLS generic is inferred from that call site's whole argument
+// object; routing it through a wrapping function loses that inference and
+// widens the type). This piece, the delay and chunking mode, is the only
+// part of that call that is ours to choose rather than the AI SDK's, so it
+// is exported here for a direct unit test rather than only asserted
+// end-to-end through a live stream.
+export function assistantStreamSmoothingOptions() {
+  return { delayInMs: ASSISTANT_STREAM_SMOOTHING_MS, chunking: "word" as const }
+}
 
 export const generateAssistantReply = internalAction({
   args: {
@@ -125,6 +137,12 @@ export const generateAssistantReply = internalAction({
         model,
         abortSignal: controller.signal,
         maxOutputTokens: ASSISTANT_MAX_OUTPUT_TOKENS,
+        // Re-chunks text-delta/reasoning-delta parts into word-paced pieces
+        // ONLY (verified in ai@7.0.51's dist/index.js): every other part
+        // (tool-call, tool-result, abort, error) flushes through untouched,
+        // so the stream-part handling loop below sees the same part types
+        // and timing it always has, just smaller text-delta parts.
+        experimental_transform: smoothStream(assistantStreamSmoothingOptions()),
         system: assistantSystemPrompt({
           locale: args.locale,
           ...(args.industry !== undefined ? { industry: args.industry } : {}),
