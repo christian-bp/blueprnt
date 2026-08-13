@@ -5,8 +5,18 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import type { AssistantChatMessage } from "@/components/assistant/assistant-message"
 
 vi.mock("@/components/assistant/assistant-message", () => ({
-  AssistantMessage: ({ message }: { message: AssistantChatMessage }) => (
-    <div data-testid="message" data-id={message._id} />
+  AssistantMessage: ({
+    message,
+    isLastMessage,
+  }: {
+    message: AssistantChatMessage
+    isLastMessage?: boolean
+  }) => (
+    <div
+      data-testid="message"
+      data-id={message._id}
+      data-is-last={String(isLastMessage ?? false)}
+    />
   ),
 }))
 
@@ -134,5 +144,23 @@ describe("AssistantThread", () => {
     const rendered = screen.getAllByTestId("message")
     expect(rendered.length).toBe(3)
     expect(rendered.map((el) => el.dataset.id)).toEqual(["1", "2", "3"])
+  })
+
+  // Only the thread's very last message paces its reveal (assistant-message.tsx
+  // gates pacing on this flag): every earlier message, even one that oddly
+  // still says "streaming", must not receive it.
+  it("marks only the last message as the last message", () => {
+    const msgs: AssistantChatMessage[] = [
+      { _id: "1", role: "user", status: "complete", parts: [] },
+      { _id: "2", role: "assistant", status: "complete", parts: [] },
+      { _id: "3", role: "assistant", status: "streaming", parts: [] },
+    ]
+    renderThread({ loading: false, messages: msgs, onSuggestion: vi.fn() })
+    const rendered = screen.getAllByTestId("message")
+    expect(rendered.map((el) => el.dataset.isLast)).toEqual([
+      "false",
+      "false",
+      "true",
+    ])
   })
 })

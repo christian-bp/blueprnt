@@ -6,6 +6,7 @@ import { Message, MessageContent } from "@workspace/ui/components/message"
 import { useTranslations } from "next-intl"
 import { AssistantChartPart } from "@/components/assistant/assistant-chart-part"
 import { AssistantMarkdown } from "@/components/assistant/assistant-markdown"
+import { useStreamReveal } from "@/hooks/use-stream-reveal"
 import { ASSISTANT_PERSONAL_DATA_ERROR_CODE } from "@/lib/convex-error"
 
 // The listMessages element shape every assistant surface renders. A user
@@ -34,11 +35,66 @@ export interface AssistantChatMessage {
 
 export function AssistantMessage({
   message,
+  isLastMessage = false,
 }: {
   message: AssistantChatMessage
+  // True only for the thread's last message: pacing (see useStreamReveal
+  // below) applies there and nowhere else, so history never re-paces on
+  // mount and an earlier message that happens to still say "streaming"
+  // (there should only ever be one) never fights the current one for it.
+  isLastMessage?: boolean
 }) {
   const t = useTranslations("dashboard.assistant")
   const tErrors = useTranslations("errors")
+
+  // The parts array's text so far, concatenated in arrival order with chart
+  // parts contributing no characters: this is what generate.ts's snapshot()
+  // actually produces (completed text/chart parts followed by, at most, one
+  // still-growing text part), and concatenating it into one string lets a
+  // single pacing chase cover every text part in order, not only the
+  // trailing one. Chart parts don't need their own reveal, only a gate: see
+  // the cumulative offset below.
+  const combinedText = message.parts
+    .filter((part) => part.type === "text")
+    .map((part) => part.text)
+    .join("")
+  const revealedText = useStreamReveal(
+    combinedText,
+    isLastMessage && message.status === "streaming"
+  )
+
+  // Walks the parts in order, tracking how much combined text precedes each
+  // one (offset): a text part shows only the slice of itself that falls
+  // within revealedText's length, and a chart part renders only once offset
+  // (everything ahead of it) has fully revealed, so a chart can never
+  // appear before the text that precedes it. Unpaced messages (isLastMessage
+  // false, or not streaming) reach here with revealedText already equal to
+  // combinedText, so every slice and gate resolves to "fully shown" and
+  // nothing changes for them.
+  let offset = 0
+  const partNodes = message.parts.map((part, index) => {
+    if (part.type === "text") {
+      const start = offset
+      offset += part.text.length
+      const shown = part.text.slice(
+        0,
+        Math.max(0, Math.min(part.text.length, revealedText.length - start))
+      )
+      return (
+        <AssistantMarkdown
+          // biome-ignore lint/suspicious/noArrayIndexKey: parts are append-only within a message, so index is stable
+          key={index}
+          text={shown}
+          isAnimating={message.status === "streaming"}
+        />
+      )
+    }
+    if (revealedText.length < offset) return null
+    return (
+      // biome-ignore lint/suspicious/noArrayIndexKey: parts are append-only within a message, so index is stable
+      <AssistantChartPart key={index} chart={part.chart} />
+    )
+  })
 
   if (message.role === "user") {
     return (
@@ -79,19 +135,7 @@ export function AssistantMessage({
           </p>
         ) : (
           <>
-            {message.parts.map((part, index) =>
-              part.type === "text" ? (
-                <AssistantMarkdown
-                  // biome-ignore lint/suspicious/noArrayIndexKey: parts are append-only within a message, so index is stable
-                  key={index}
-                  text={part.text}
-                  isAnimating={message.status === "streaming"}
-                />
-              ) : (
-                // biome-ignore lint/suspicious/noArrayIndexKey: parts are append-only within a message, so index is stable
-                <AssistantChartPart key={index} chart={part.chart} />
-              )
-            )}
+            {partNodes}
             {message.status === "stopped" ? (
               <p className="text-muted-foreground text-xs">
                 {t("stoppedNote")}
