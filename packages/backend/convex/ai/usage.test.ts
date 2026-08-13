@@ -249,4 +249,38 @@ describe("usage read queries", () => {
     expect(top[0]?.orgId).toBe("org-b")
     expect(top[1]?.orgId).toBe("org-a")
   })
+
+  it("getTopOrgsByCost with a period returns only that period's rows", async () => {
+    const t = initConvexTest()
+    // Rollup rows inserted directly: the period filter is a read-path
+    // concern, independent of how recordAiUsage stamps periods.
+    await t.run(async (ctx) => {
+      await ctx.db.insert("aiUsageMonthly", {
+        orgId: "org-jan",
+        period: "2025-01",
+        callCount: 2,
+        inputTokens: 10,
+        outputTokens: 10,
+        totalTokens: 20,
+        costNanos: 5_000,
+        byKind: { "model.draft": 2 },
+      })
+      await ctx.db.insert("aiUsageMonthly", {
+        orgId: "org-feb",
+        period: "2025-02",
+        callCount: 1,
+        inputTokens: 5,
+        outputTokens: 5,
+        totalTokens: 10,
+        costNanos: 9_000,
+        byKind: { "model.draft": 1 },
+      })
+    })
+    const jan = await t.query(internal.ai.usage.getTopOrgsByCost, {
+      period: "2025-01",
+    })
+    expect(jan).toHaveLength(1)
+    expect(jan[0]?.orgId).toBe("org-jan")
+    expect(jan[0]?.period).toBe("2025-01")
+  })
 })

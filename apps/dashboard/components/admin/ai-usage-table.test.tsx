@@ -67,8 +67,8 @@ describe("AiUsageTable", () => {
   it("shows the empty sentence when the period has no usage at all, titled by the page heading", () => {
     renderTable({ rows: [] })
     expect(screen.getByText(t.empty)).toBeTruthy()
-    // The page heading, not the "Organization" column header (review Minor
-    // #3): matches the roles/people/email-log precedent.
+    // The page heading, not the "Organization" column header: matches the
+    // roles/people/email-log precedent for register empty states.
     expect(screen.getByText(t.heading)).toBeTruthy()
     expect(screen.queryByRole("table")).toBeNull()
   })

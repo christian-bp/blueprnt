@@ -190,8 +190,8 @@ export function rowChange(row: AiUsageOrgRow): AiUsageRowChange {
 
 // ---- Daily series (the area-per-org trend chart) ----
 
-// One org's per-day cost for a period, mirroring usageByOrgDaily's row shape
-// (Task 53), the same local-structural-type precedent as AiUsageOrgRow above.
+// One org's per-day cost for a period, mirroring usageByOrgDaily's row
+// shape, the same local-structural-type precedent as AiUsageOrgRow above.
 export interface AiUsageDailyOrgRow {
   orgId: string
   orgName: string

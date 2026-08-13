@@ -144,10 +144,9 @@ function ChartPointTooltip({
   )
 }
 
-// The overview's big chart (owner direction 2026-08-13): one stacked area per
-// org, x axis the days of the selected month. Replaces the earlier ranked-
-// bars chart; outlier flagging now lives with the table's flagged column, so
-// this panel carries period context only. Orgs beyond CHART_SERIES_CAP fold
+// The page's big chart: one stacked area per org, x axis the days of the
+// selected month. Outlier flagging lives with the table's flagged column,
+// so this panel carries period context only. Orgs beyond CHART_SERIES_CAP fold
 // into one muted "Others" band (lib/admin-ai-usage.ts's capDailySeries),
 // stated in the caption only when it engages. AI_USAGE_TREND_HEIGHT
 // (lib/chart-style.ts) sizes every state (loading, empty, ready) the same,

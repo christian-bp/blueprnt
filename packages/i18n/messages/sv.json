@@ -2240,7 +2240,7 @@
           "tokensLabel": "Token",
           "tokensNote": "Token denna period",
           "momChangeLabel": "Kostnad jämfört med förra perioden",
-          "momChangeNote": "Jämfört med förra perioden",
+          "momChangeNote": "Vs. förra perioden",
           "momChangeNoBaseline": "Inga data",
           "activeOrgsLabel": "Aktiva organisationer",
           "activeOrgsNote": "Använde AI denna period"
