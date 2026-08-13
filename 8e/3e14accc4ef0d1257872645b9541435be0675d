@@ -1,0 +1,36 @@
+apps/dashboard/components/assistant/assistant-history.test.tsx
+  s_c6f9c899f4809f::t_79f87b85ead369 28,37-41,44-49,67,75,88,93,95-99,110,115-118,120,124,127-135,149,169,202,215-216,233,252,261,280-284,302,329,368,405,435
+  s_c6f9c899f4809f::t_4098a44f520ef7 170-174,176-178
+  s_c6f9c899f4809f::t_593caa0ab64cdb 114,119,121-123,125-126
+apps/dashboard/app/(app)/assistant/page.tsx
+  s_c6f9c899f4809f::t_6b26d15d173592 3,10,16-19,33,37-40,50-54,63,68,70-75,77,79,82-93,96-110
+  s_c6f9c899f4809f::t_da075df25d075c 94-95
+apps/dashboard/lib/assistant-history-state.test.ts
+  s_c6f9c899f4809f::t_c1926de0cd73db 1-45
+apps/dashboard/components/assistant/assistant-history.tsx
+  s_c6f9c899f4809f::t_9d4a2ecae4ea62 144-146
+  s_c6f9c899f4809f::t_68bff090e8635e 3-8,31-32,35,37-38,43,46,57,59-60,70-76,87,90,93-98,101-102,106-107,114,121,126,128-143,147-159,169,172,211
+apps/dashboard/lib/assistant-history-state.ts
+  s_c6f9c899f4809f::t_f091cbdd6b2442 31-35
+  s_c6f9c899f4809f::t_47d6f8815bbd60 1-30,36-37
+apps/dashboard/app/(app)/assistant/page.test.tsx
+  s_c6f9c899f4809f::t_41f70b34cacbb0 31,34,50-58,78,82-84,91,97-98,101,117-128,132-140,142-145,147,150,154-158,160-169,171-189,192,226,229,256
+  s_c6f9c899f4809f::t_249089adc4d4ba 80-81,85-88
+  s_c6f9c899f4809f::t_278523cb88c62c 92-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8e3e14accc4ef0d1257872645b9541435be0675d",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
