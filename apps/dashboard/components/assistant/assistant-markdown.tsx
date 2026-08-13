@@ -1,20 +1,23 @@
+import Link from "next/link"
 import { Streamdown, type StreamdownProps } from "streamdown"
 
 // Assistant answers are model-generated markdown, revealed word by word as
 // the reply streams in (Streamdown's animated pass; see AssistantMessage for
-// which message gets isAnimating). Links open in a new tab so the
-// conversation is not lost, and the typeset class carries the prose look
-// (same stylesheet the shadcn chatbot template uses). typeset-docs (in
-// globals.css) pins the size at 15px the template's way, so no separate
-// text-sm override is needed here.
+// which message gets isAnimating). A link to one of the app's own pages
+// (the assistant's system prompt only ever links its fixed page allowlist,
+// starting with "/") navigates client-side via next/link; any other link
+// opens in a new tab so the conversation is not lost. The typeset class
+// carries the prose look (same stylesheet the shadcn chatbot template
+// uses). typeset-docs (in globals.css) pins the size at 15px the
+// template's way, so no separate text-sm override is needed here.
 //
 // Streamdown ships its own Tailwind utility classes for every prose tag
 // (headings, lists, tables, code, links, ...). Mapping each one to its own
 // tag NAME (rather than a component) tells hast-util-to-jsx-runtime to
 // render the bare native element with none of Streamdown's classes, so
 // typeset.css is the only thing styling the output, matching the previous
-// react-markdown behaviour. `a` keeps our external-link treatment; every
-// other entry here is a tag Streamdown would otherwise skin on its own
+// react-markdown behaviour. `a` keeps our internal/external link split;
+// every other entry here is a tag Streamdown would otherwise skin on its own
 // (verified against the installed dist/index.d.ts and its default
 // component map). GFM (tables, task lists, strikethrough) ships in
 // Streamdown by default, so no remark-gfm plugin is needed.
@@ -45,9 +48,20 @@ const components = {
   sup: "sup",
   sub: "sub",
   section: "section",
-  a: ({ node: _node, ...props }) => (
-    <a {...props} target="_blank" rel="noreferrer" />
-  ),
+  // href starting with "/" is one of the assistant's own linked pages
+  // (knowledge.ts's fixed allowlist): navigate through Link, in-app, with
+  // no target/rel. Streamdown's sanitizer passes relative hrefs through
+  // unchanged, so the path reaches here untouched. Streamdown's own rehype
+  // pass already stamps every link's props with target/rel of its own
+  // (hardening plain "a" output); target and rel are destructured out here
+  // so that stamp never leaks onto the internal Link, and the external
+  // branch's explicit values are the only ones that apply.
+  a: ({ node: _node, href, target: _target, rel: _rel, ...props }) =>
+    href?.startsWith("/") ? (
+      <Link {...props} href={href} />
+    ) : (
+      <a {...props} href={href} target="_blank" rel="noreferrer" />
+    ),
 } satisfies StreamdownProps["components"]
 
 export function AssistantMarkdown({

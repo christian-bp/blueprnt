@@ -22,10 +22,18 @@ describe("AssistantMarkdown", () => {
     expect(screen.getByRole("listitem").textContent).toBe("item")
   })
 
-  it("opens links in a new tab", () => {
+  it("opens external links in a new tab", () => {
     render(<AssistantMarkdown text={"[link](https://example.com)"} />)
     expect(screen.getByRole("link").getAttribute("target")).toBe("_blank")
     expect(screen.getByRole("link").getAttribute("rel")).toBe("noreferrer")
+  })
+
+  it("renders a link to one of the app's own pages as in-app navigation", () => {
+    render(<AssistantMarkdown text={"[Roller](/roles)"} />)
+    const link = screen.getByRole("link")
+    expect(link.getAttribute("href")).toBe("/roles")
+    expect(link.getAttribute("target")).toBeNull()
+    expect(link.getAttribute("rel")).toBeNull()
   })
 
   it("does not mark any content as animating by default", () => {
