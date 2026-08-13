@@ -63,6 +63,10 @@ describe("shellLayoutClasses", () => {
     expect(content).not.toContain("min-h-0")
     expect(content).not.toContain("flex-1")
     expect(content).toContain(PAGE_MAX_W)
+    // The capped column centers on screens wider than its cap; without
+    // mx-auto it hugs the left edge and a wide monitor shows a page-wide
+    // blank right half.
+    expect(content).toContain("mx-auto")
   })
 
   it("applies the wide cap inside a pay-mapping run, unbounded in height", () => {
