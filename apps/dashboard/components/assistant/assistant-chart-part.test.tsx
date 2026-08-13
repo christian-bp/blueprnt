@@ -44,13 +44,13 @@ const TWO_RUNS: HeadcountPoint[] = [
 ]
 
 const MEASURED_GAP: PayGapPoint[] = [
-  { date: 1, runLabel: "2025", gapPct: 5.2, flag: "elevated" },
-  { date: 2, runLabel: "2026", gapPct: 4.1, flag: "ok" },
+  { date: 1, runLabel: "2025", gapPct: 5.2 },
+  { date: 2, runLabel: "2026", gapPct: 4.1 },
 ]
 
 const ALL_NULL_GAP: PayGapPoint[] = [
-  { date: 1, runLabel: "2025", gapPct: null, flag: "insufficient" },
-  { date: 2, runLabel: "2026", gapPct: null, flag: "insufficient" },
+  { date: 1, runLabel: "2025", gapPct: null },
+  { date: 2, runLabel: "2026", gapPct: null },
 ]
 
 afterEach(() => {

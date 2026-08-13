@@ -54,13 +54,11 @@ describe("toGapTrendRows", () => {
           date: Date.UTC(2026, 0, 1),
           runLabel: "2026",
           gapPct: 4.1,
-          flag: "ok",
         },
         {
           date: Date.UTC(2027, 0, 1),
           runLabel: "2027",
           gapPct: null,
-          flag: "insufficient",
         },
       ],
       formatDate

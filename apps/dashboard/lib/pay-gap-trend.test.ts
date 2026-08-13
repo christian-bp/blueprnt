@@ -8,9 +8,8 @@ import {
 const run = (
   label: string,
   year: number,
-  gap: Pick<PayGapTrendRun, "orgGapPct" | "orgGapFlag"> = {
+  gap: Pick<PayGapTrendRun, "orgGapPct"> = {
     orgGapPct: null,
-    orgGapFlag: "insufficient",
   }
 ): PayGapTrendRun => ({
   label,
@@ -27,9 +26,9 @@ describe("buildPayGapTrend", () => {
   // first.
   it("orders points oldest first, whatever order the runs arrive in", () => {
     const trend = buildPayGapTrend([
-      run("2026", 2026, { orgGapPct: 4.1, orgGapFlag: "ok" }),
-      run("2024", 2024, { orgGapPct: 6.2, orgGapFlag: "elevated" }),
-      run("2025", 2025, { orgGapPct: 5.2, orgGapFlag: "elevated" }),
+      run("2026", 2026, { orgGapPct: 4.1 }),
+      run("2024", 2024, { orgGapPct: 6.2 }),
+      run("2025", 2025, { orgGapPct: 5.2 }),
     ])
     expect(trend.map((p) => p.runLabel)).toEqual(["2024", "2025", "2026"])
     expect(trend.map((p) => p.gapPct)).toEqual([6.2, 5.2, 4.1])
@@ -38,18 +37,15 @@ describe("buildPayGapTrend", () => {
   // A mapping that could not be measured is part of the history: the line
   // breaks there rather than dropping to zero.
   it("keeps an unmeasurable mapping as a null point", () => {
-    const trend = buildPayGapTrend([
-      run("2025", 2025, { orgGapPct: null, orgGapFlag: "insufficient" }),
-    ])
+    const trend = buildPayGapTrend([run("2025", 2025, { orgGapPct: null })])
     expect(trend).toHaveLength(1)
     expect(trend[0]?.gapPct).toBeNull()
-    expect(trend[0]?.flag).toBe("insufficient")
   })
 
   it("does not mutate the caller's array", () => {
     const runs = [
-      run("2026", 2026, { orgGapPct: 4.1, orgGapFlag: "ok" }),
-      run("2024", 2024, { orgGapPct: 6.2, orgGapFlag: "elevated" }),
+      run("2026", 2026, { orgGapPct: 4.1 }),
+      run("2024", 2024, { orgGapPct: 6.2 }),
     ]
     buildPayGapTrend(runs)
     expect(runs.map((r) => r.label)).toEqual(["2026", "2024"])

@@ -1,5 +1,3 @@
-import type { PayGapFlag } from "@workspace/core"
-
 // Pure derivation of the assistant's pay-gap trend: one point per pay-mapping
 // run's reference date and frozen org-level gap, oldest first (so the chart
 // reads left-to-right chronologically), from the same listPayMappingRuns rows
@@ -17,14 +15,12 @@ export type PayGapPoint = {
   // part of the history, and the line breaks there rather than dropping to
   // zero.
   gapPct: number | null
-  flag: PayGapFlag
 }
 
 export type PayGapTrendRun = {
   label: string
   referenceDate: number
   orgGapPct: number | null
-  orgGapFlag: PayGapFlag
 }
 
 // Every mapping is a point: the gap is written at freeze, so a run always
@@ -38,7 +34,6 @@ export function buildPayGapTrend(runs: PayGapTrendRun[]): PayGapPoint[] {
       date: run.referenceDate,
       runLabel: run.label,
       gapPct: run.orgGapPct,
-      flag: run.orgGapFlag,
     }))
 }
 
