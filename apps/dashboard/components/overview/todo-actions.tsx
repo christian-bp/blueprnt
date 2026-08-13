@@ -238,10 +238,10 @@ export function TodoActions({
 // measure differently.
 //
 // The heading is not a constant. "To do" is only true while something is
-// waiting, and a settled org's row is four standing destinations, so a fixed
+// waiting, and a settled org's row is three standing destinations, so a fixed
 // "To do" would tell a reader who has finished everything that they still
 // have work outstanding. The label therefore follows the cards, and the band
-// keeps its heading either way: four cards with no label above them read as
+// keeps its heading either way: three cards with no label above them read as
 // loose page furniture rather than one group, and dropping the line entirely
 // would move the whole row up the moment the query lands.
 function TodoSection({
@@ -258,8 +258,8 @@ function TodoSection({
       {label === null ? (
         // Which of the two this band is, is data. It holds the heading's line
         // rather than guessing "To do" and renaming itself a moment later,
-        // which reads as the page changing its mind exactly as four cards
-        // turning into four others would. h-5 is text-sm's line box and the
+        // which reads as the page changing its mind exactly as three cards
+        // turning into three others would. h-5 is text-sm's line box and the
         // bar is centred in it, so the row below does not move on arrival.
         <div className="flex h-5 items-center">
           <Skeleton className="h-4 w-20" />
