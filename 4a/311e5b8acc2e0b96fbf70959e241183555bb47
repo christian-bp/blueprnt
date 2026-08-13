@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-08-13-admin-ai-usage.md
+  s_c6f9c899f4809f::t_2311c51b89cce7 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4a311e5b8acc2e0b96fbf70959e241183555bb47",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
