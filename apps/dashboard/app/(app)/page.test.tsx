@@ -221,17 +221,22 @@ describe("OverviewPage", () => {
     expect(screen.queryByText(tOverview.widgets.gapTrend.title)).toBeNull()
   })
 
-  // The hero fills roughly one viewport and centers its content within it,
-  // so the greeting, status line, and chat prompt land in the first screen
-  // rather than wherever normal flow happens to put them.
-  it("pins the hero to roughly the viewport height and centers its content", () => {
+  // The page column reserves the first viewport and the hero absorbs the
+  // LEFTOVER height (flex-1, no height of its own): on a tall screen the
+  // hero centers in generous space with the bands anchored at the fold, on
+  // a short one the gap collapses so the bands stay reachable without
+  // scrolling. A min-h on the hero itself is exactly the bug this replaces:
+  // a fixed reservation keeps the gap even when the bands no longer fit.
+  it("reserves the viewport on the page column and lets the hero absorb the leftover height", () => {
     mockNeutralQueries()
     const { container } = renderPage()
     const page = container.querySelector("div.flex.flex-col")
+    expect(page?.className).toMatch(/min-h-/)
+    expect(page?.className).toMatch(/svh/)
     const hero = page?.firstElementChild
-    expect(hero?.className).toMatch(/min-h-/)
-    expect(hero?.className).toMatch(/vh/)
+    expect(hero?.className).toContain("flex-1")
     expect(hero?.className).toContain("justify-center")
+    expect(hero?.className).not.toMatch(/min-h-/)
   })
 
   // The AI chat prompt must span the same width as the To do row and the
