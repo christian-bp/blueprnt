@@ -88,16 +88,13 @@ export function AssistantThread(props: {
               max-w-3xl, so the two columns' visible content still lines up
               left/right, not just their outer box. */}
           <MessageScrollerContent className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-8 py-6">
-            {props.messages.map((message, index) => (
+            {props.messages.map((message) => (
               <MessageScrollerItem
                 key={message._id}
                 messageId={message._id}
                 scrollAnchor={message.role === "user"}
               >
-                <AssistantMessage
-                  message={message}
-                  isLastMessage={index === props.messages.length - 1}
-                />
+                <AssistantMessage message={message} />
               </MessageScrollerItem>
             ))}
           </MessageScrollerContent>

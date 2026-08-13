@@ -1,12 +1,7 @@
-import { act, cleanup, render, screen } from "@testing-library/react"
+import { cleanup, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-
-const reducedMotionMock = vi.fn(() => false)
-vi.mock("motion/react", () => ({
-  useReducedMotion: () => reducedMotionMock(),
-}))
+import { afterEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("@/components/assistant/assistant-chart-part", () => ({
   AssistantChartPart: ({ chart }: { chart: string }) => (
@@ -19,12 +14,11 @@ import { AssistantMessage } from "@/components/assistant/assistant-message"
 afterEach(cleanup)
 
 function renderMessage(
-  message: Parameters<typeof AssistantMessage>[0]["message"],
-  isLastMessage?: boolean
+  message: Parameters<typeof AssistantMessage>[0]["message"]
 ) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <AssistantMessage message={message} isLastMessage={isLastMessage} />
+      <AssistantMessage message={message} />
     </NextIntlClientProvider>
   )
 }
@@ -153,123 +147,5 @@ describe("AssistantMessage", () => {
     expect(
       screen.getByText(messages.dashboard.assistant.stoppedNote)
     ).toBeDefined()
-  })
-})
-
-describe("AssistantMessage reveal pacing", () => {
-  // Mirrors use-stream-reveal.test.tsx's own driver: the hook's clock is the
-  // frame, so the test owns the frames instead of hoping real timers land
-  // inside the assertions.
-  let pending: FrameRequestCallback | undefined
-
-  function frame(at: number) {
-    const callback = pending
-    pending = undefined
-    if (callback === undefined) throw new Error("no frame was requested")
-    act(() => {
-      callback(at)
-    })
-  }
-
-  function advanceFrames(count: number) {
-    let now = 0
-    for (let i = 0; i < count && pending !== undefined; i++) {
-      now += 16
-      frame(now)
-    }
-  }
-
-  beforeEach(() => {
-    pending = undefined
-    reducedMotionMock.mockReturnValue(false)
-    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
-      pending = callback
-      return 1
-    })
-    vi.stubGlobal("cancelAnimationFrame", () => {
-      pending = undefined
-    })
-  })
-
-  afterEach(() => {
-    vi.unstubAllGlobals()
-  })
-
-  it("reveals the last streaming message's text as a growing prefix, in order", () => {
-    const full = "This reply arrives in one large flush from the model."
-    const { container } = renderMessage(
-      {
-        _id: "6",
-        role: "assistant",
-        status: "streaming",
-        parts: [{ type: "text", text: full }],
-      },
-      true
-    )
-    // Nothing has rendered yet: the very first frame has not fired, and an
-    // empty string renders no paragraph at all (Streamdown emits nothing for
-    // empty markdown).
-    expect(container.querySelector("p")?.textContent ?? "").toBe("")
-
-    advanceFrames(1)
-    const firstShown = container.querySelector("p")?.textContent ?? ""
-    expect(firstShown.length).toBeGreaterThan(0)
-    expect(full.startsWith(firstShown)).toBe(true)
-    expect(firstShown).not.toBe(full)
-
-    advanceFrames(30)
-    expect(container.querySelector("p")?.textContent).toBe(full)
-  })
-
-  it("holds a chart part until the text ahead of it has fully revealed", () => {
-    const full = "A paragraph of analysis that leads into the chart below."
-    renderMessage(
-      {
-        _id: "7",
-        role: "assistant",
-        status: "streaming",
-        parts: [
-          { type: "text", text: full },
-          { type: "chart", chart: "payGapTrend", summary: "s" },
-        ],
-      },
-      true
-    )
-    advanceFrames(1)
-    expect(screen.queryByTestId("chart-payGapTrend")).toBeNull()
-
-    advanceFrames(30)
-    expect(screen.getByTestId("chart-payGapTrend")).toBeDefined()
-  })
-
-  it("renders a completed message's full text immediately, without waiting on frames", () => {
-    const full = "Already finished streaming."
-    const { container } = renderMessage(
-      {
-        _id: "8",
-        role: "assistant",
-        status: "complete",
-        parts: [{ type: "text", text: full }],
-      },
-      true
-    )
-    expect(container.querySelector("p")?.textContent).toBe(full)
-    expect(pending).toBeUndefined()
-  })
-
-  it("renders arrivals directly under reduced motion, with no pacing", () => {
-    reducedMotionMock.mockReturnValue(true)
-    const full = "Shows whole under reduced motion."
-    const { container } = renderMessage(
-      {
-        _id: "9",
-        role: "assistant",
-        status: "streaming",
-        parts: [{ type: "text", text: full }],
-      },
-      true
-    )
-    expect(container.querySelector("p")?.textContent).toBe(full)
-    expect(pending).toBeUndefined()
   })
 })
