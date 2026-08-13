@@ -1,6 +1,16 @@
 import Link from "next/link"
 import { Streamdown, type StreamdownProps } from "streamdown"
 
+// Word-fade tuned to the arrival rate, never slower (see the animated prop
+// below for the arithmetic). sep "word" matches the server's word-sized
+// chunks; duration is the softness, stagger is the drain rate.
+const ASSISTANT_TEXT_FADE = {
+  animation: "fadeIn",
+  sep: "word",
+  duration: 100,
+  stagger: 10,
+} satisfies StreamdownProps["animated"]
+
 // Assistant answers are model-generated markdown, revealed word by word as
 // the reply streams in (Streamdown's animated pass; see AssistantMessage for
 // which message gets isAnimating). A link to one of the app's own pages
@@ -102,7 +112,16 @@ export function AssistantMarkdown({
         // hardcoding a second, driftable number.
         className="space-y-(--typeset-flow)"
         controls={false}
-        animated={true}
+        // The fade must drain FASTER than words arrive or an invisible tail
+        // accumulates: text arrives word-paced from the server in ~150ms
+        // flushes of roughly 15 words, and Streamdown's defaults (150ms
+        // fade, 40ms per-word stagger) drain one flush in ~750ms, so the
+        // queue grew without bound and a list item whose text sat queued
+        // showed as a bare marker for seconds (a ::marker pseudo-element
+        // ignores text-span opacity). 10ms stagger drains a 15-word flush
+        // in the same 150ms the next one takes to arrive; the short fade
+        // keeps the word-by-word softness without ever falling behind.
+        animated={ASSISTANT_TEXT_FADE}
         isAnimating={isAnimating}
         components={components}
       >
