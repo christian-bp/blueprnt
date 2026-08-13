@@ -4,7 +4,11 @@ import type { Locale } from "@workspace/i18n/routing"
 import { cn } from "@workspace/ui/lib/utils"
 import type { Metadata } from "next"
 import { getLocale, getMessages, getTranslations } from "next-intl/server"
-import { Geist_Mono, Hedvig_Letters_Sans } from "next/font/google"
+import {
+  Geist_Mono,
+  Hedvig_Letters_Serif,
+  Source_Sans_3,
+} from "next/font/google"
 import type { ReactNode } from "react"
 import { LocaleProvider } from "@/components/locale-provider"
 import { Providers } from "@/components/providers"
@@ -26,11 +30,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
 // One UI sans, on --font-sans; the shared globals.css maps font-heading to
 // font-sans too, so no separate heading font is loaded.
-const fontSans = Hedvig_Letters_Sans({
+const fontSans = Source_Sans_3({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
+// The display serif, on --font-serif: used ONLY where a surface opts in with
+// font-serif (today the overview hero greeting). Single-weight family: never
+// pair it with a bold utility, the browser would synthesize a faux bold.
+const fontSerif = Hedvig_Letters_Serif({
   weight: "400",
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-sans",
+  variable: "--font-serif",
 })
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
@@ -55,7 +66,8 @@ export default async function RootLayout(props: { children: ReactNode }) {
         "antialiased",
         "font-sans",
         fontMono.variable,
-        fontSans.variable
+        fontSans.variable,
+        fontSerif.variable
       )}
     >
       <body>

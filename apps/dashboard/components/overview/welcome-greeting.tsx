@@ -11,10 +11,11 @@ import { greetingBucket } from "@/lib/greeting"
 // title (PageHeading is text-lg), in the same regular ink as every other
 // heading. Brand rose is a data-viz colour too, so it stays off headings
 // and lands on the accents instead (links, CTAs, the widget icon chips).
-// True weight only: the app sans ships a single weight (400), so any bolder
-// utility here makes the browser synthesize a faux bold that distorts the
-// letterforms; size, not weight, is what carries the hero scale.
-const HEADING_CLASS = "text-4xl"
+// The one serif surface in the app: the display serif carries the hero's
+// warmth while everything else stays on the sans. Single-weight family:
+// never add a bold utility, the browser would synthesize a faux bold; size
+// alone carries the hero scale.
+const HEADING_CLASS = "font-serif text-4xl"
 
 // Personal welcome heading: a time-of-day greeting plus the user's first name.
 // The hour is read AFTER mount (never during SSR) so the server clock cannot
