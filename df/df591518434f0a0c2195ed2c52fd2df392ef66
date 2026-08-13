@@ -1,0 +1,41 @@
+apps/dashboard/components/overview/todo-actions.test.tsx
+  s_c6f9c899f4809f::t_ac807138e7b6e3 96
+  s_c6f9c899f4809f::t_777cd773ad6eda 283
+  s_c6f9c899f4809f::t_aea7d0a85af956 208-209,213,218,222
+  s_c6f9c899f4809f::t_0d8a924570c188 250,259,262-265,278-280
+  s_c6f9c899f4809f::t_ac3df025f8e156 309-310,317-318
+  s_c6f9c899f4809f::t_5f8b4975293b7b 214-215
+apps/dashboard/components/overview/overview-widgets.tsx
+  s_c6f9c899f4809f::t_317b2545e41fde 55
+  s_c6f9c899f4809f::t_f765007ded2a18 83
+apps/dashboard/app/(app)/page.test.tsx
+  s_c6f9c899f4809f::t_a6c15da2d290bf 190
+  s_c6f9c899f4809f::t_7194bb26685a2e 123
+apps/dashboard/components/overview/overview-widgets.test.tsx
+  s_c6f9c899f4809f::t_1b1cfb13c25860 62
+  s_c6f9c899f4809f::t_ff1491f9580f27 96
+  s_c6f9c899f4809f::t_a2e30844e61ef3 112
+apps/dashboard/components/overview/todo-actions.tsx
+  s_c6f9c899f4809f::t_2e91528f837731 45-46
+  s_c6f9c899f4809f::t_570bd5cfd907bb 94-95
+  s_c6f9c899f4809f::t_5fd386eb8d131a 185
+  s_c6f9c899f4809f::t_daa0f7faddf7fc 84
+  s_c6f9c899f4809f::t_38108d9252fc4a 206,212
+  s_c6f9c899f4809f::t_e16340337253c3 270
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "dfdf591518434f0a0c2195ed2c52fd2df392ef66",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
