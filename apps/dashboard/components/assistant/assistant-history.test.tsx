@@ -156,6 +156,55 @@ describe("AssistantHistoryPanel", () => {
     expect(row.textContent).toContain("Aug 1, 2026")
   })
 
+  it("shows the localized Today label for a thread last updated earlier today", () => {
+    vi.useFakeTimers({ now: new Date(2026, 7, 13, 10, 0).getTime() })
+    try {
+      onQuery((ref) =>
+        ref === "assistant.chat.listThreads"
+          ? [
+              {
+                _id: "thread-1",
+                title: "Pay gap trend",
+                status: "archived",
+                lastMessageAt: new Date(2026, 7, 13, 8, 0).getTime(),
+              },
+            ]
+          : undefined
+      )
+      renderPanel(true)
+      const row = screen.getByRole("button", { name: /^Pay gap trend/ })
+      expect(row.textContent).toContain(t.dateToday)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  // The rolling-24h-window bug this guards against: the thread is only 20
+  // minutes old at the moment it is checked, but it was created on the
+  // PREVIOUS calendar day, so it must read "Yesterday", not "Today".
+  it("shows the localized Yesterday label for a thread from just before midnight, checked just after", () => {
+    vi.useFakeTimers({ now: new Date(2026, 7, 13, 0, 10).getTime() })
+    try {
+      onQuery((ref) =>
+        ref === "assistant.chat.listThreads"
+          ? [
+              {
+                _id: "thread-1",
+                title: "Pay gap trend",
+                status: "archived",
+                lastMessageAt: new Date(2026, 7, 12, 23, 50).getTime(),
+              },
+            ]
+          : undefined
+      )
+      renderPanel(true)
+      const row = screen.getByRole("button", { name: /^Pay gap trend/ })
+      expect(row.textContent).toContain(t.dateYesterday)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it("falls back to the localized untitled label for a thread with no title yet", () => {
     onQuery((ref) =>
       ref === "assistant.chat.listThreads"

@@ -2403,6 +2403,8 @@
       "newConversation": "New conversation",
       "history": "Conversation history",
       "untitled": "New conversation",
+      "dateToday": "Today",
+      "dateYesterday": "Yesterday",
       "emptyTitle": "Ask Blueprnt AI",
       "emptyDescription": "Get help with concepts, your organization's numbers, and where to do things in blueprnt. Never include personal data such as names or salaries.",
       "suggestionCriterion": "What is a criterion?",

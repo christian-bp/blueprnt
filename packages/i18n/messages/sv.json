@@ -2403,6 +2403,8 @@
       "newConversation": "Ny konversation",
       "history": "Konversationshistorik",
       "untitled": "Ny konversation",
+      "dateToday": "Idag",
+      "dateYesterday": "Igår",
       "emptyTitle": "Fråga Blueprnt AI",
       "emptyDescription": "Få hjälp med begrepp, organisationens siffror och var du gör saker i blueprnt. Ta aldrig med persondata som namn eller löner.",
       "suggestionCriterion": "Vad är ett kriterium?",

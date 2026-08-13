@@ -27,6 +27,7 @@ import { useOrganization } from "@/components/org-context"
 import { RenameConversationDialog } from "@/components/assistant/rename-conversation-dialog"
 import { useAssistantThreads } from "@/hooks/use-assistant-threads"
 import { SPRING } from "@/lib/motion"
+import { relativeDayBucket } from "@/lib/relative-day"
 import { toast } from "@/lib/toast"
 
 // The panel's open width and the gap it carries to the main column, both
@@ -239,6 +240,22 @@ function AssistantHistoryThreadRow({
   const [deleting, setDeleting] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
   const isActive = thread.status === "active"
+  // `now` is read once per render, not on a timer: the label can go stale
+  // (still reading "Today" a few seconds into the next day) until the next
+  // render, which is acceptable for a conversations panel that re-renders
+  // often (any switch, rename, or delete) and never worth a dedicated timer.
+  const dateBucket = relativeDayBucket(
+    new Date(thread.lastMessageAt),
+    new Date()
+  )
+  const dateLabel =
+    dateBucket === "today"
+      ? t("dateToday")
+      : dateBucket === "yesterday"
+        ? t("dateYesterday")
+        : format.dateTime(new Date(thread.lastMessageAt), {
+            dateStyle: "medium",
+          })
 
   async function handleSwitch() {
     try {
@@ -271,9 +288,7 @@ function AssistantHistoryThreadRow({
           )}
         </span>
         <span className="w-full truncate text-muted-foreground text-xs">
-          {format.dateTime(new Date(thread.lastMessageAt), {
-            dateStyle: "medium",
-          })}
+          {dateLabel}
         </span>
       </Button>
       <DropdownMenu>

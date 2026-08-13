@@ -2403,6 +2403,8 @@
       "newConversation": "Uusi keskustelu",
       "history": "Keskusteluhistoria",
       "untitled": "Uusi keskustelu",
+      "dateToday": "Tänään",
+      "dateYesterday": "Eilen",
       "emptyTitle": "Kysy Blueprnt AI:lta",
       "emptyDescription": "Saat apua käsitteisiin, organisaation lukuihin ja siihen, missä asiat tehdään blueprntissä. Älä koskaan sisällytä henkilötietoja, kuten nimiä tai palkkoja.",
       "suggestionCriterion": "Mikä on kriteeri?",
