@@ -41,7 +41,14 @@ function renderPanel(
   overrides: { onCollapse?: () => void; onNewConversation?: () => void } = {}
 ) {
   return render(
-    <NextIntlClientProvider locale="en" messages={messages}>
+    // Explicit timeZone: the row's time label formats a clock time, and
+    // next-intl treats a missing zone as an environment fallback error; a
+    // fixed zone also keeps the asserted times deterministic.
+    <NextIntlClientProvider
+      locale="en"
+      messages={messages}
+      timeZone="Europe/Stockholm"
+    >
       <AssistantHistoryPanel
         open={open}
         busy={busy}
@@ -174,6 +181,9 @@ describe("AssistantHistoryPanel", () => {
       renderPanel(true)
       const row = screen.getByRole("button", { name: /^Pay gap trend/ })
       expect(row.textContent).toContain(t.dateToday)
+      // The day word alone cannot separate two same-day conversations, so
+      // the clock time always rides beside it (8:00 AM in the en locale).
+      expect(row.textContent).toMatch(/\d{1,2}[:.]\d{2}/)
     } finally {
       vi.useRealTimers()
     }
@@ -222,7 +232,7 @@ describe("AssistantHistoryPanel", () => {
     // the untitled label "New conversation" also happens to be the header's
     // own New-conversation button text, so an unscoped name match would hit
     // both.
-    const row = rowOf(screen.getByText("Aug 1, 2026"))
+    const row = rowOf(screen.getByText(/Aug 1, 2026/))
     expect(
       within(row).getByRole("button", {
         name: new RegExp(`^${t.untitled}`),

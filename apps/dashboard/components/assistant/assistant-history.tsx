@@ -248,7 +248,13 @@ function AssistantHistoryThreadRow({
     new Date(thread.lastMessageAt),
     new Date()
   )
-  const dateLabel =
+  // Every bucket keeps the clock time beside the day label ("Today 14:32",
+  // "12 Aug 2026 09:15"): the day word alone cannot separate two
+  // conversations from the same day.
+  const timeLabel = format.dateTime(new Date(thread.lastMessageAt), {
+    timeStyle: "short",
+  })
+  const dayLabel =
     dateBucket === "today"
       ? t("dateToday")
       : dateBucket === "yesterday"
@@ -256,6 +262,7 @@ function AssistantHistoryThreadRow({
         : format.dateTime(new Date(thread.lastMessageAt), {
             dateStyle: "medium",
           })
+  const dateLabel = `${dayLabel} ${timeLabel}`
 
   async function handleSwitch() {
     try {
