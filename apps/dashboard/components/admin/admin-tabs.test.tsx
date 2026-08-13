@@ -14,6 +14,7 @@ import { AdminTabs } from "@/components/admin/admin-tabs"
 const USERS = messages.dashboard.admin.tabs.users
 const ORGANIZATIONS = messages.dashboard.admin.tabs.organizations
 const AUDIT_LOG = messages.dashboard.admin.tabs.auditLog
+const AI_USAGE = messages.dashboard.admin.tabs.aiUsage
 
 function renderTabs() {
   return render(
@@ -40,6 +41,9 @@ describe("AdminTabs", () => {
     expect(
       screen.getByRole("link", { name: AUDIT_LOG }).getAttribute("href")
     ).toBe("/admin/audit-log")
+    expect(
+      screen.getByRole("link", { name: AI_USAGE }).getAttribute("href")
+    ).toBe("/admin/ai-usage")
   })
 
   it("marks Users as current on /admin", () => {
@@ -100,6 +104,17 @@ describe("AdminTabs", () => {
       screen
         .getByRole("link", { name: ORGANIZATIONS })
         .getAttribute("aria-current")
+    ).toBeNull()
+  })
+
+  it("marks AI usage as current on /admin/ai-usage", () => {
+    pathState.current = "/admin/ai-usage"
+    renderTabs()
+    expect(
+      screen.getByRole("link", { name: AI_USAGE }).getAttribute("aria-current")
+    ).toBe("page")
+    expect(
+      screen.getByRole("link", { name: USERS }).getAttribute("aria-current")
     ).toBeNull()
   })
 })

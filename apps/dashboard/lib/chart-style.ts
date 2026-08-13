@@ -92,3 +92,11 @@ export const CHART_EDGE_INSET = 6
 // strip pushed a four-row tooltip (run name, date, two series) past the
 // card's clipped bottom. At 96px the strip clears it.
 export const WIDGET_CHART_HEIGHT = "h-32"
+
+// Height allotted to each row (org label + bar + gap) in the admin AI-usage
+// overview's ranked bar chart, one bar per org. The chart's total height is
+// this times the row count (with a floor for a one- or two-org period)
+// rather than a single fixed height: a fixed height either wastes space for
+// two orgs or crowds fifty, and "spot the outlier among all of them" is
+// exactly the shape that has to stay legible at both extremes.
+export const RANKED_BAR_ROW_HEIGHT_PX = 36

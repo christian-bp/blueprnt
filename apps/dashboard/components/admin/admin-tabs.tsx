@@ -16,6 +16,7 @@ const TABS = [
   { labelKey: "organizations", href: "/admin/organizations" },
   { labelKey: "auditLog", href: "/admin/audit-log" },
   { labelKey: "emailLog", href: "/admin/email-log" },
+  { labelKey: "aiUsage", href: "/admin/ai-usage" },
 ] as const
 
 // The index tab (Users, /admin) is active only when no sub-route matches.

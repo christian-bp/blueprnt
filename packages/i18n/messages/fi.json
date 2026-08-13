@@ -1979,7 +1979,8 @@
         "users": "Käyttäjät",
         "organizations": "Organisaatiot",
         "auditLog": "Tapahtumaloki",
-        "emailLog": "Sähköpostiloki"
+        "emailLog": "Sähköpostiloki",
+        "aiUsage": "Tekoälyn käyttö"
       },
       "notAuthorized": "Sinulla ei ole pääsyä tälle sivulle.",
       "users": {
@@ -2224,6 +2225,49 @@
           "placeholder": "Aikaväli",
           "clear": "Tyhjennä",
           "today": "Tänään"
+        }
+      },
+      "aiUsage": {
+        "heading": "Tekoälyn käyttö",
+        "description": "Tekoälyn kustannukset ja kutsut kaikissa organisaatioissa jaksoittain.",
+        "periodLabel": "Jakso",
+        "empty": "Tälle jaksolle ei ole rekisteröity tekoälyn käyttöä.",
+        "kpi": {
+          "costLabel": "Kokonaiskustannus",
+          "costNote": "Arvioitu tekoälykustannus tällä jaksolla, USD",
+          "callsLabel": "Tekoälykutsut",
+          "callsNote": "Kutsut tällä jaksolla",
+          "tokensLabel": "Tokenit",
+          "tokensNote": "Käsitellyt tokenit tällä jaksolla",
+          "momChangeLabel": "Kustannus vs. edellinen jakso",
+          "momChangeNote": "Verrattuna edelliseen jaksoon",
+          "momChangeNoBaseline": "Ei tietoja",
+          "activeOrgsLabel": "Aktiiviset organisaatiot",
+          "activeOrgsNote": "Organisaatiot, joilla on tekoälykutsuja tällä jaksolla"
+        },
+        "chart": {
+          "title": "Kustannus organisaatioittain",
+          "caption": "Merkitään, kun organisaation kustannus on yli 3 kertaa mediaani tai yli 1 dollarin, sen mukaan, kumpi on suurempi.",
+          "tooltipCost": "Kustannus",
+          "tooltipCalls": "Kutsut",
+          "tooltipTokens": "Tokenit",
+          "costSeries": "Kustannus"
+        },
+        "table": {
+          "org": "Organisaatio",
+          "cost": "Kustannus",
+          "calls": "Kutsut",
+          "tokens": "Tokenit",
+          "share": "Osuus",
+          "change": "Vs. edellinen jakso",
+          "kinds": "Tyypin mukaan",
+          "flagged": "Merkitty",
+          "new": "Uusi",
+          "searchPlaceholder": "Hae organisaatioita",
+          "noMatches": "Yksikään organisaatio ei vastaa hakuasi.",
+          "clearFilters": "Tyhjennä suodattimet",
+          "previous": "Edellinen",
+          "next": "Seuraava"
         }
       }
     },

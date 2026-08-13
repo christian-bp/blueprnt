@@ -1979,7 +1979,8 @@
         "users": "Users",
         "organizations": "Organizations",
         "auditLog": "Audit log",
-        "emailLog": "Email log"
+        "emailLog": "Email log",
+        "aiUsage": "AI usage"
       },
       "notAuthorized": "You do not have access to this page.",
       "users": {
@@ -2224,6 +2225,49 @@
           "placeholder": "Date range",
           "clear": "Clear",
           "today": "Today"
+        }
+      },
+      "aiUsage": {
+        "heading": "AI usage",
+        "description": "AI spend and calls across every organization, by period.",
+        "periodLabel": "Period",
+        "empty": "No AI usage recorded for this period.",
+        "kpi": {
+          "costLabel": "Total cost",
+          "costNote": "Estimated AI spend this period, in USD",
+          "callsLabel": "AI calls",
+          "callsNote": "Calls made this period",
+          "tokensLabel": "Tokens",
+          "tokensNote": "Tokens processed this period",
+          "momChangeLabel": "Cost vs last period",
+          "momChangeNote": "Compared to the previous period",
+          "momChangeNoBaseline": "No data",
+          "activeOrgsLabel": "Active organizations",
+          "activeOrgsNote": "Organizations with AI calls this period"
+        },
+        "chart": {
+          "title": "Cost by organization",
+          "caption": "Flagged when an organization's cost is more than 3 times the median, or above $1, whichever is higher.",
+          "tooltipCost": "Cost",
+          "tooltipCalls": "Calls",
+          "tooltipTokens": "Tokens",
+          "costSeries": "Cost"
+        },
+        "table": {
+          "org": "Organization",
+          "cost": "Cost",
+          "calls": "Calls",
+          "tokens": "Tokens",
+          "share": "Share",
+          "change": "Vs last period",
+          "kinds": "By kind",
+          "flagged": "Flagged",
+          "new": "New",
+          "searchPlaceholder": "Search organizations",
+          "noMatches": "No organizations match your search.",
+          "clearFilters": "Clear filters",
+          "previous": "Previous",
+          "next": "Next"
         }
       }
     },

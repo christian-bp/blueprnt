@@ -1979,7 +1979,8 @@
         "users": "Användare",
         "organizations": "Organisationer",
         "auditLog": "Händelselogg",
-        "emailLog": "E-postlogg"
+        "emailLog": "E-postlogg",
+        "aiUsage": "AI-användning"
       },
       "notAuthorized": "Du har inte åtkomst till den här sidan.",
       "users": {
@@ -2224,6 +2225,49 @@
           "placeholder": "Datumintervall",
           "clear": "Rensa",
           "today": "Idag"
+        }
+      },
+      "aiUsage": {
+        "heading": "AI-användning",
+        "description": "AI-kostnader och anrop för alla organisationer, per period.",
+        "periodLabel": "Period",
+        "empty": "Ingen AI-användning registrerad för denna period.",
+        "kpi": {
+          "costLabel": "Total kostnad",
+          "costNote": "Uppskattad AI-kostnad denna period, i USD",
+          "callsLabel": "AI-anrop",
+          "callsNote": "Anrop gjorda denna period",
+          "tokensLabel": "Token",
+          "tokensNote": "Token bearbetade denna period",
+          "momChangeLabel": "Kostnad jämfört med förra perioden",
+          "momChangeNote": "Jämfört med föregående period",
+          "momChangeNoBaseline": "Inga data",
+          "activeOrgsLabel": "Aktiva organisationer",
+          "activeOrgsNote": "Organisationer med AI-anrop denna period"
+        },
+        "chart": {
+          "title": "Kostnad per organisation",
+          "caption": "Flaggas när en organisations kostnad är mer än 3 gånger medianen, eller över $1, beroende på vilket som är högst.",
+          "tooltipCost": "Kostnad",
+          "tooltipCalls": "Anrop",
+          "tooltipTokens": "Token",
+          "costSeries": "Kostnad"
+        },
+        "table": {
+          "org": "Organisation",
+          "cost": "Kostnad",
+          "calls": "Anrop",
+          "tokens": "Token",
+          "share": "Andel",
+          "change": "Jämfört med förra perioden",
+          "kinds": "Per typ",
+          "flagged": "Flaggad",
+          "new": "Ny",
+          "searchPlaceholder": "Sök organisationer",
+          "noMatches": "Inga organisationer matchar din sökning.",
+          "clearFilters": "Rensa filter",
+          "previous": "Föregående",
+          "next": "Nästa"
         }
       }
     },

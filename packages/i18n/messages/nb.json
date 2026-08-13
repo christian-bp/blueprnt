@@ -1979,7 +1979,8 @@
         "users": "Brukere",
         "organizations": "Organisasjoner",
         "auditLog": "Hendelseslogg",
-        "emailLog": "E-postlogg"
+        "emailLog": "E-postlogg",
+        "aiUsage": "AI-bruk"
       },
       "notAuthorized": "Du har ikke tilgang til denne siden.",
       "users": {
@@ -2224,6 +2225,49 @@
           "placeholder": "Datointervall",
           "clear": "Tøm",
           "today": "I dag"
+        }
+      },
+      "aiUsage": {
+        "heading": "AI-bruk",
+        "description": "AI-kostnader og forespørsler for alle organisasjoner, per periode.",
+        "periodLabel": "Periode",
+        "empty": "Ingen AI-bruk registrert for denne perioden.",
+        "kpi": {
+          "costLabel": "Total kostnad",
+          "costNote": "Estimert AI-kostnad denne perioden, i USD",
+          "callsLabel": "AI-forespørsler",
+          "callsNote": "Forespørsler denne perioden",
+          "tokensLabel": "Token",
+          "tokensNote": "Token behandlet denne perioden",
+          "momChangeLabel": "Kostnad vs. forrige periode",
+          "momChangeNote": "Sammenlignet med forrige periode",
+          "momChangeNoBaseline": "Ingen data",
+          "activeOrgsLabel": "Aktive organisasjoner",
+          "activeOrgsNote": "Organisasjoner med AI-forespørsler denne perioden"
+        },
+        "chart": {
+          "title": "Kostnad per organisasjon",
+          "caption": "Flagges når en organisasjons kostnad er mer enn 3 ganger medianen, eller over $1, avhengig av hva som er høyest.",
+          "tooltipCost": "Kostnad",
+          "tooltipCalls": "Forespørsler",
+          "tooltipTokens": "Token",
+          "costSeries": "Kostnad"
+        },
+        "table": {
+          "org": "Organisasjon",
+          "cost": "Kostnad",
+          "calls": "Forespørsler",
+          "tokens": "Token",
+          "share": "Andel",
+          "change": "Vs. forrige periode",
+          "kinds": "Etter type",
+          "flagged": "Flagget",
+          "new": "Ny",
+          "searchPlaceholder": "Søk i organisasjoner",
+          "noMatches": "Ingen organisasjoner samsvarer med søket ditt.",
+          "clearFilters": "Tøm filtre",
+          "previous": "Forrige",
+          "next": "Neste"
         }
       }
     },

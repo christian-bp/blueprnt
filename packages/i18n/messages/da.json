@@ -1979,7 +1979,8 @@
         "users": "Brugere",
         "organizations": "Organisationer",
         "auditLog": "Hændelseslog",
-        "emailLog": "E-maillog"
+        "emailLog": "E-maillog",
+        "aiUsage": "AI-forbrug"
       },
       "notAuthorized": "Du har ikke adgang til denne side.",
       "users": {
@@ -2224,6 +2225,49 @@
           "placeholder": "Datointerval",
           "clear": "Ryd",
           "today": "I dag"
+        }
+      },
+      "aiUsage": {
+        "heading": "AI-forbrug",
+        "description": "AI-omkostninger og opkald for alle organisationer, pr. periode.",
+        "periodLabel": "Periode",
+        "empty": "Intet AI-forbrug registreret for denne periode.",
+        "kpi": {
+          "costLabel": "Samlet omkostning",
+          "costNote": "Estimeret AI-omkostning denne periode, i USD",
+          "callsLabel": "AI-opkald",
+          "callsNote": "Opkald foretaget denne periode",
+          "tokensLabel": "Token",
+          "tokensNote": "Token behandlet denne periode",
+          "momChangeLabel": "Omkostning vs. sidste periode",
+          "momChangeNote": "Sammenlignet med forrige periode",
+          "momChangeNoBaseline": "Ingen data",
+          "activeOrgsLabel": "Aktive organisationer",
+          "activeOrgsNote": "Organisationer med AI-opkald denne periode"
+        },
+        "chart": {
+          "title": "Omkostning pr. organisation",
+          "caption": "Markeres, når en organisations omkostning er mere end 3 gange medianen, eller over $1, afhængigt af hvad der er højest.",
+          "tooltipCost": "Omkostning",
+          "tooltipCalls": "Opkald",
+          "tooltipTokens": "Token",
+          "costSeries": "Omkostning"
+        },
+        "table": {
+          "org": "Organisation",
+          "cost": "Omkostning",
+          "calls": "Opkald",
+          "tokens": "Token",
+          "share": "Andel",
+          "change": "Vs. sidste periode",
+          "kinds": "Efter type",
+          "flagged": "Markeret",
+          "new": "Ny",
+          "searchPlaceholder": "Søg i organisationer",
+          "noMatches": "Ingen organisationer matcher din søgning.",
+          "clearFilters": "Ryd filtre",
+          "previous": "Forrige",
+          "next": "Næste"
         }
       }
     },
