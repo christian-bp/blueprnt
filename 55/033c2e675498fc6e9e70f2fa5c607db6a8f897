@@ -1,0 +1,50 @@
+packages/i18n/messages/sv.json
+  s_c6f9c899f4809f::t_4f2e28132af333 1982-1983
+  s_c6f9c899f4809f::t_3773601c3b651e 2229-2271
+packages/i18n/messages/da.json
+  s_c6f9c899f4809f::t_875d31c7dde534 1982-1983
+  s_c6f9c899f4809f::t_2bea7b8a2407b4 2229-2271
+apps/dashboard/components/admin/admin-tabs.test.tsx
+  s_c6f9c899f4809f::t_3d986f3e46d4ae 44-46
+  s_c6f9c899f4809f::t_7a2dcd00664123 109-119
+  s_c6f9c899f4809f::t_9e60049ee7af46 17
+apps/dashboard/lib/admin-ai-usage.test.ts
+  s_c6f9c899f4809f::t_0d3ae0fdef0eec 6
+  s_c6f9c899f4809f::t_bf14690418d6d6 82-91
+  s_c6f9c899f4809f::t_6b38e21bdd780f 95-115,139-147,152-158,161-167,272-276
+  s_c6f9c899f4809f::t_d5e0e0047ce0ca 77-78
+  s_c6f9c899f4809f::t_63e66582b91092 1-5,7-76,79-81,92-94,116-138,148-151,159-160,168-271,277-287
+apps/dashboard/lib/chart-style.ts
+  s_c6f9c899f4809f::t_3c4d9da02e100d 95-102
+packages/i18n/messages/fi.json
+  s_c6f9c899f4809f::t_2a4e023b8ff414 2229-2271
+  s_c6f9c899f4809f::t_6f423ce80cad71 1982-1983
+packages/i18n/messages/nb.json
+  s_c6f9c899f4809f::t_c99646d580b1d1 2229-2271
+  s_c6f9c899f4809f::t_2956549051f882 1982-1983
+apps/dashboard/components/admin/admin-tabs.tsx
+  s_c6f9c899f4809f::t_720a1881836610 19
+packages/i18n/messages/en.json
+  s_c6f9c899f4809f::t_d94d27debd43d0 1982-1983
+  s_c6f9c899f4809f::t_2d424207c11aef 2229-2271
+apps/dashboard/lib/admin-ai-usage.ts
+  s_c6f9c899f4809f::t_b995fa62f316e4 62,68,79-83
+  s_c6f9c899f4809f::t_6b38e21bdd780f 202
+  s_c6f9c899f4809f::t_d1df28352a3484 1-61,63-67,69-78,84-201,203-206
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "55033c2e675498fc6e9e70f2fa5c607db6a8f897",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
