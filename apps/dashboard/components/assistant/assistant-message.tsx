@@ -58,9 +58,14 @@ export function AssistantMessage({
     .filter((part) => part.type === "text")
     .map((part) => part.text)
     .join("")
+  // Only the thread's last message ever paces: a message that is not the
+  // last one is always rendered as "stopped" here regardless of its real
+  // status, both to snap history straight to its full text and to defend
+  // against an earlier message that happens to still say "streaming" (there
+  // should only ever be one) never fighting the current one for pacing.
   const revealedText = useStreamReveal(
     combinedText,
-    isLastMessage && message.status === "streaming"
+    isLastMessage ? message.status : "stopped"
   )
 
   // Walks the parts in order, tracking how much combined text precedes each
