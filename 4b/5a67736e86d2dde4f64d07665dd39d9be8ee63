@@ -1,0 +1,32 @@
+packages/backend/convex/ai/usage.ts
+  s_c6f9c899f4809f::t_135c22156d0d5f 229-233
+  s_c6f9c899f4809f::t_5a41caaef0371f 31-54
+  s_c6f9c899f4809f::t_7a95195418be15 283-288
+packages/backend/convex/platform/aiUsage.ts
+  s_c6f9c899f4809f::t_54743bcdc20da4 2
+  s_c6f9c899f4809f::t_6a009ea08a428a 62-115
+packages/backend/convex/ai/usage.test.ts
+  s_c6f9c899f4809f::t_25224c5a84df30 67-89
+  s_c6f9c899f4809f::t_7ab31f410247e6 4-9
+packages/backend/convex/platform/aiUsage.test.ts
+  s_c6f9c899f4809f::t_414c200c540cb3 237-271,276,281,283-285,287-289,291-296,298-315,319-326,328-348
+  s_c6f9c899f4809f::t_d29245dd00ced1 68-90
+  s_c6f9c899f4809f::t_ae518d750805bd 1
+  s_c6f9c899f4809f::t_ca2abc71239a9b 272-275,277-280,282,286,290,297,316-318,327
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4b5a67736e86d2dde4f64d07665dd39d9be8ee63",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
