@@ -248,6 +248,8 @@ in the same change.
 
 - [ ] **Assistant: decide a spend cap / circuit breaker for assistant AI usage.** The `aiUsageEvents`/`aiUsageMonthly` rows already exist, but nothing enforces a ceiling today (the per-message output token cap only bounds a single reply). Options: a Mistral account budget alarm, or an internal cap read from the monthly rollup that refuses new generations once an org crosses it.
 
+- [ ] **Assistant: revisit the word-cadence flush rate under real load.** `ASSISTANT_FLUSH_INTERVAL_MS` is 40ms so replies appear word by word (the whole visible typing flow rides on it; the client deliberately has no animation). That is ~25 snapshot writes per second per streaming reply, each rewriting the message's parts array. Fine at V1 scale; at many concurrent streaming users, either raise the interval (the flow gets chunkier per step) or move the hot path off per-flush document rewrites before this becomes the deployment's dominant write load.
+
 ## V1 conformance follow-ups (from the 2026-07-01 audit)
 
 Re-verified 2026-07-03: the audit's build/copy/doc gaps (the rationale +
