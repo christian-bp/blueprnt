@@ -14,26 +14,18 @@ import { usePageTitle } from "@/hooks/use-page-title"
 import { usePayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
 import { useTodo } from "@/hooks/use-todo"
 
-// The hero fills roughly one viewport, so the greeting, the status line, and
-// the chat prompt sit centered in the first screen the user sees, with the
-// To do row starting just below the fold. The chrome subtracted from 100vh
-// is AppShell's own real numbers, not a guessed constant, so it never drifts
-// from what the shell actually renders above and around this div:
-//   --header-height: calc(var(--spacing) * 12) = 12 * 0.25rem = 3rem
-//   SidebarInset's own inset-variant margin (`md:...m-2`, 0.5rem top +
-//     0.5rem bottom = 1rem total), which only applies from md: up
-//   this route's own vertical padding on `pageContent` (`py-4 md:py-6`):
-//     1rem top + 1rem bottom = 2rem below md, 1.5rem top + 1.5rem bottom =
-//     3rem at md+
-// Below md: 3rem + 2rem = 5rem. At md+: 3rem + 1rem + 3rem = 7rem.
-const HERO_MIN_H = "min-h-[calc(100vh-5rem)] md:min-h-[calc(100vh-7rem)]"
+// The constraint: the hero reads centered while the band below stays visible
+// above the fold, so the page never looks finished at the chat box. svh, not
+// vh, so a mobile browser's own chrome does not lie about how much of the
+// screen the hero actually gets.
+const HERO_MIN_H = "min-h-[65svh]"
 
 // Front page, read top to bottom as what-to-do / where-we-stand: a centered
-// hero (greeting, one status line, the chat prompt) that fills roughly the
+// hero (greeting, one status line, the chat prompt) that fills most of the
 // first viewport, then the page's ordinary content, the "To do" row (an
 // action card per outstanding buildTodo group, or the standing destinations
 // under their own heading when there is nothing waiting), and the stat strip
-// (four figures, each linking to its own surface). buildTodo and
+// (three figures, each linking to its own surface). buildTodo and
 // buildOverviewStats share one counting pass (computeCounts in
 // lib/todo.ts); nothing here is stored.
 // The two trend charts that used to sit below the strip moved into the
@@ -69,7 +61,7 @@ export default function OverviewPage() {
       {/* The hero: plain flex divs throughout, deliberately no `grid` class
           and no `<section>`, so the page's band-gap invariant (every
           `div.grid`/`section` carries the same gap-4) never scans it. Fills
-          roughly the first viewport (HERO_MIN_H) and centers its content
+          most of the first viewport (HERO_MIN_H) and centers its content
           vertically, at the same full content width as the To do row and the
           stat strip below it: no `max-w` cap of its own, since the inner
           cap sits on this shared root div instead. */}
