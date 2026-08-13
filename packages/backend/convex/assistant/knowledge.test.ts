@@ -40,4 +40,14 @@ describe("assistantSystemPrompt", () => {
       "Level 1 is the highest"
     )
   })
+
+  it("instructs the model to link pages instead of only naming them", () => {
+    const prompt = assistantSystemPrompt({ locale: "en" })
+    expect(prompt).toContain(
+      "write its name as a markdown link to the page's path"
+    )
+    expect(prompt).toContain("never link to anything outside this list")
+    expect(prompt).toContain("/roles")
+    expect(prompt).toContain("/model")
+  })
 })
