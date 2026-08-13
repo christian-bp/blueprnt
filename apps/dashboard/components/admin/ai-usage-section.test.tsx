@@ -37,6 +37,7 @@ function row(overrides: Partial<AiUsageOrgRow>): AiUsageOrgRow {
 }
 
 let currentRows: AiUsageOrgRow[] | undefined
+let currentDaily: { days: number; rows: unknown[] } | undefined
 
 function renderSection() {
   return render(
@@ -72,9 +73,13 @@ describe("AiUsageSection", () => {
         prevCostNanos: 0,
       }),
     ]
+    // Empty rather than undefined, so the chart renders its empty state
+    // instead of loading forever in every test that does not care about it.
+    currentDaily = { days: 31, rows: [] }
     useQueryMock.mockReset()
     useQueryMock.mockImplementation((ref: string) => {
       if (ref === "platform.aiUsage.usageByOrg") return currentRows
+      if (ref === "platform.aiUsage.usageByOrgDaily") return currentDaily
       return undefined
     })
   })
@@ -122,5 +127,9 @@ describe("AiUsageSection", () => {
     expect(useQueryMock).toHaveBeenCalledWith("platform.aiUsage.usageByOrg", {
       period: "2026-07",
     })
+    expect(useQueryMock).toHaveBeenCalledWith(
+      "platform.aiUsage.usageByOrgDaily",
+      { period: "2026-07" }
+    )
   })
 })

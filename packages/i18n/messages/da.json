@@ -2247,11 +2247,8 @@
         },
         "chart": {
           "title": "Omkostning pr. organisation",
-          "caption": "Markeres, når en organisations omkostning er mere end 3 gange medianen, eller over $1, afhængigt af hvad der er højest.",
-          "tooltipCost": "Omkostning",
-          "tooltipCalls": "Opkald",
-          "tooltipTokens": "Token",
-          "costSeries": "Omkostning"
+          "othersLabel": "Andre",
+          "seriesCap": "Viser de {cap} organisationer med højest omkostning; {count, plural, one {1 organisation mere er} other {# organisationer mere er}} grupperet som {othersLabel}."
         },
         "table": {
           "org": "Organisation",

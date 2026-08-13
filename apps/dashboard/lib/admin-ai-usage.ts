@@ -188,6 +188,70 @@ export function rowChange(row: AiUsageOrgRow): AiUsageRowChange {
   }
 }
 
+// ---- Daily series (the area-per-org trend chart) ----
+
+// One org's per-day cost for a period, mirroring usageByOrgDaily's row shape
+// (Task 53), the same local-structural-type precedent as AiUsageOrgRow above.
+export interface AiUsageDailyOrgRow {
+  orgId: string
+  orgName: string
+  dailyCostNanos: number[]
+}
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+
+// The calendar Date for one day of a "YYYY-MM" period, for the chart's x-axis
+// ticks and tooltip header. dayIndex is 0-based (0 = the 1st). Display only;
+// periodMonthWindow (the backend's own period-math helper) never routes
+// through this.
+export function dayDate(period: string, dayIndex: number): Date {
+  return new Date(periodToDate(period).getTime() + dayIndex * MS_PER_DAY)
+}
+
+// The chart's series cap: an org beyond the top N by period total folds into
+// one "Others" band instead of getting its own area, so the plot stays
+// readable how many organizations ever use it.
+export const CHART_SERIES_CAP = 8
+
+export interface CappedDailySeries {
+  // The top-N orgs, own series, in the order usageByOrgDaily already returns
+  // them (period total desc), so this never re-sorts what the backend sorted.
+  series: AiUsageDailyOrgRow[]
+  // Present only when more orgs exist than the cap: every remaining org's
+  // daily cost summed into one series, plus how many orgs it folds together
+  // (the caption's ICU count).
+  others: { dailyCostNanos: number[]; count: number } | null
+}
+
+// Splits usageByOrgDaily's rows into the series the chart draws on their own
+// and, when there are more orgs than the cap, one folded "Others" series
+// summed day-by-day from everything past it.
+export function capDailySeries(
+  rows: AiUsageDailyOrgRow[],
+  days: number,
+  cap: number = CHART_SERIES_CAP
+): CappedDailySeries {
+  if (rows.length <= cap) return { series: rows, others: null }
+  const rest = rows.slice(cap)
+  const dailyCostNanos = new Array(days).fill(0)
+  for (const row of rest) {
+    for (let day = 0; day < days; day++) {
+      dailyCostNanos[day] += row.dailyCostNanos[day] ?? 0
+    }
+  }
+  return {
+    series: rows.slice(0, cap),
+    others: { dailyCostNanos, count: rest.length },
+  }
+}
+
+// How many ticks the x-axis SKIPS between labeled ones (recharts' `interval`
+// prop is a skip count, not a shown-tick count: 0 draws every tick), so a
+// 28-31 day month shows roughly `targetTicks` labels instead of one per day.
+export function chartTickInterval(days: number, targetTicks = 10): number {
+  return Math.max(0, Math.ceil(days / targetTicks) - 1)
+}
+
 // ---- byKind chips ----
 
 export interface AiUsageKindCount {

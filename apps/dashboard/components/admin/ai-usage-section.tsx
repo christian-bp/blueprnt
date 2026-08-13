@@ -43,6 +43,10 @@ export function AiUsageSection() {
   const [period, setPeriod] = useState<string>(periods[0] ?? "")
 
   const rows = useQuery(api.platform.aiUsage.usageByOrg, { period })
+  // The chart's own query (Task 53): per-org daily cost for the same period,
+  // read separately from usageByOrg because the daily breakdown comes off
+  // the raw event log, not the monthly rollup the tiles and table use.
+  const daily = useQuery(api.platform.aiUsage.usageByOrgDaily, { period })
 
   const totals = rows === undefined ? undefined : computeTotals(rows)
   // Computed once here (not inside the chart or the table) so an outlier
@@ -94,7 +98,7 @@ export function AiUsageSection() {
 
       <AiUsageKpis totals={totals} />
 
-      <AiUsageChart rows={rows} outliers={outliers} />
+      <AiUsageChart data={daily} period={period} />
 
       <AiUsageTable
         rows={rows}

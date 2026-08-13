@@ -2247,11 +2247,8 @@
         },
         "chart": {
           "title": "Kostnad per organisasjon",
-          "caption": "Flagges når en organisasjons kostnad er mer enn 3 ganger medianen, eller over $1, avhengig av hva som er høyest.",
-          "tooltipCost": "Kostnad",
-          "tooltipCalls": "Forespørsler",
-          "tooltipTokens": "Token",
-          "costSeries": "Kostnad"
+          "othersLabel": "Andre",
+          "seriesCap": "Viser de {cap} organisasjonene med høyest kostnad; {count, plural, one {1 organisasjon til er} other {# organisasjoner til er}} gruppert som {othersLabel}."
         },
         "table": {
           "org": "Organisasjon",

@@ -93,10 +93,23 @@ export const CHART_EDGE_INSET = 6
 // card's clipped bottom. At 96px the strip clears it.
 export const WIDGET_CHART_HEIGHT = "h-32"
 
-// Height allotted to each row (org label + bar + gap) in the admin AI-usage
-// overview's ranked bar chart, one bar per org. The chart's total height is
-// this times the row count (with a floor for a one- or two-org period)
-// rather than a single fixed height: a fixed height either wastes space for
-// two orgs or crowds fifty, and "spot the outlier among all of them" is
-// exactly the shape that has to stay legible at both extremes.
-export const RANKED_BAR_ROW_HEIGHT_PX = 36
+// Height of the admin AI-usage overview's daily cost trend (one area per
+// org, x axis per day of the selected month), as a Tailwind class shared by
+// all three states: loading, empty, and ready. Unlike a ranked bar chart
+// (one row per org, so its height had to grow with the row count), a stacked
+// area plot draws the same number of vertical pixels whatever it holds, so
+// the panel never resizes once real data arrives.
+export const AI_USAGE_TREND_HEIGHT = "h-72"
+
+// The ink for the Nth series (0-based) of a categorical, non-gender chart:
+// cycles through the five --chart-* tokens shadcn ships. gender-mark.tsx's
+// hue/mark rules are for the women/men split specifically and do not apply
+// to org-categorical data like this one. A chart with more series than
+// tokens repeats them; distinguishing more than five adjacent stacked bands
+// by hue alone is already past what a reader can hold, so a repeat this far
+// into the cycle reads as "another one of these", which is honest about
+// what the chart can actually show.
+export function chartSeriesInk(index: number): string {
+  const CHART_TOKEN_COUNT = 5
+  return `var(--chart-${(index % CHART_TOKEN_COUNT) + 1})`
+}

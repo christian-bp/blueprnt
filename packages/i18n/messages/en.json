@@ -2247,11 +2247,8 @@
         },
         "chart": {
           "title": "Cost by organization",
-          "caption": "Flagged when an organization's cost is more than 3 times the median, or above $1, whichever is higher.",
-          "tooltipCost": "Cost",
-          "tooltipCalls": "Calls",
-          "tooltipTokens": "Tokens",
-          "costSeries": "Cost"
+          "othersLabel": "Others",
+          "seriesCap": "Showing the top {cap} organizations by cost; {count, plural, one {1 more organization is} other {# more organizations are}} grouped as {othersLabel}."
         },
         "table": {
           "org": "Organization",

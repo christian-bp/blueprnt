@@ -2247,11 +2247,8 @@
         },
         "chart": {
           "title": "Kustannus organisaatioittain",
-          "caption": "Merkitään, kun organisaation kustannus on yli 3 kertaa mediaani tai yli 1 dollarin, sen mukaan, kumpi on suurempi.",
-          "tooltipCost": "Kustannus",
-          "tooltipCalls": "Kutsut",
-          "tooltipTokens": "Tokenit",
-          "costSeries": "Kustannus"
+          "othersLabel": "Muut",
+          "seriesCap": "Näytetään {cap} organisaatiota kustannuksen mukaan; {count, plural, one {1 organisaatio} other {# organisaatiota}} on ryhmitelty nimellä {othersLabel}."
         },
         "table": {
           "org": "Organisaatio",

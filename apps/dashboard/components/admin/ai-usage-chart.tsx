@@ -1,6 +1,6 @@
 "use client"
 
-import { BarChartHorizontalIcon } from "@hugeicons/core-free-icons"
+import { ChartAreaIcon } from "@hugeicons/core-free-icons"
 import {
   type ChartConfig,
   ChartContainer,
@@ -9,208 +9,337 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
-import { Bar, BarChart, Cell, XAxis, YAxis } from "recharts"
+import { useId } from "react"
+import { Area, AreaChart, XAxis, YAxis } from "recharts"
 import { PanelCard } from "@/components/panel-card"
 import {
-  type AiUsageOrgRow,
+  type AiUsageDailyOrgRow,
+  CHART_SERIES_CAP,
+  capDailySeries,
+  chartTickInterval,
+  dayDate,
   formatUsd,
-  kindCounts,
   nanosToUsd,
 } from "@/lib/admin-ai-usage"
 import {
-  BAR_RADIUS,
+  AI_USAGE_TREND_HEIGHT,
   CHART_AXIS_FONT_SIZE,
+  CHART_EDGE_INSET,
   CHART_TOOLTIP_MOTION,
   CHART_TOOLTIP_TEXT,
-  RANKED_BAR_ROW_HEIGHT_PX,
+  chartSeriesInk,
+  MONEY_AXIS_WIDTH,
   TOOLTIP_APPEAR,
 } from "@/lib/chart-style"
 
-// Rows sized to a fixed number of "empty" bar-heights while loading or empty,
-// so the panel holds one height across all three states (loading, empty,
-// ready) instead of resizing once the row count is known.
-const PLACEHOLDER_ROWS = 3
+const OTHERS_KEY = "others"
+const OTHERS_INK = "var(--muted-foreground)"
 
-interface ChartRow {
-  orgId: string
-  orgName: string
-  costNanos: number
-  costUsd: number
-  callCount: number
-  totalTokens: number
-  byKind: Record<string, number>
-  isOutlier: boolean
+// One day's stacked-area point: the day of month, a localized date label for
+// the tooltip header, and each drawn series' USD cost that day, keyed by
+// orgId (or OTHERS_KEY for the folded remainder).
+interface ChartPoint {
+  day: number
+  dateLabel: string
+  [seriesKey: string]: number | string
 }
 
-type ChartT = ReturnType<
-  typeof useTranslations<"dashboard.admin.aiUsage.chart">
->
-
-// The chart's custom hover: one org's cost, calls, tokens, and kind split.
-// ChartTooltipContent's anatomy is a legend row per SERIES; this chart draws
-// one bar per ORG, so there is no series to label and every figure instead
-// gets its own row. Styled to match ChartTooltipContent's own container
-// (border/background/shadow, CHART_TOOLTIP_TEXT, TOOLTIP_APPEAR) so every
-// chart's hover still reads as the same hover, only the content differs.
-function UsageTooltip({
-  active,
-  payload,
-  locale,
-  t,
-  format,
+// The row both the legend and the tooltip render (chart-anatomy rule: the
+// two must draw the same object, not two hand-matched look-alikes). A square
+// swatch in the series' own ink, the org name, and an optional right-aligned
+// value.
+function SeriesKeyRow({
+  color,
+  label,
+  value,
 }: {
-  active?: boolean
-  payload?: Array<{ payload: ChartRow }>
-  locale: string
-  t: ChartT
-  format: ReturnType<typeof useFormatter>
+  color: string
+  label: string
+  value?: string
 }) {
-  if (!active || !payload?.length) return null
-  const row = payload[0]?.payload
-  if (!row) return null
-  const kinds = kindCounts(row.byKind)
-
   return (
-    <div
-      className={cn(
-        "min-w-48 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 shadow-xl",
-        CHART_TOOLTIP_TEXT,
-        TOOLTIP_APPEAR
-      )}
-    >
-      <div className="font-medium">{row.orgName}</div>
-      <div className="mt-1 space-y-0.5">
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-muted-foreground">{t("tooltipCost")}</span>
-          <span className="font-mono tabular-nums">
-            {formatUsd(row.costUsd, locale)}
-          </span>
-        </div>
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-muted-foreground">{t("tooltipCalls")}</span>
-          <span className="font-mono tabular-nums">
-            {format.number(row.callCount)}
-          </span>
-        </div>
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-muted-foreground">{t("tooltipTokens")}</span>
-          <span className="font-mono tabular-nums">
-            {format.number(row.totalTokens)}
-          </span>
-        </div>
-      </div>
-      {kinds.length > 0 && (
-        <div className="mt-1.5 border-border/50 border-t pt-1.5 text-muted-foreground">
-          {kinds.map((k) => `${k.kind} ${format.number(k.count)}`).join(" · ")}
-        </div>
+    <div className="flex w-full items-center gap-2">
+      <span
+        aria-hidden
+        className="size-2.5 shrink-0 rounded-[2px]"
+        style={{ backgroundColor: color }}
+      />
+      <span className="truncate text-muted-foreground">{label}</span>
+      {value !== undefined && (
+        <span className="ml-auto shrink-0 font-medium text-foreground tabular-nums">
+          {value}
+        </span>
       )}
     </div>
   )
 }
 
-// The overview's big chart: one horizontal bar per org, sorted by cost
-// descending, full-width PanelCard (design doc item 2). An outlier bar
-// (`outliers`, computed once by the section from lib/admin-ai-usage.ts so
-// this chart and the table below it can never disagree) renders in
-// --flag-elevated instead of the house --chart-1 ink; the caption under the
-// chart states the rule in words so the flag is never a mystery. Sizes
-// itself to the row count (RANKED_BAR_ROW_HEIGHT_PX) rather than a single
-// fixed height, so two orgs and fifty both stay legible.
-export function AiUsageChart({
-  rows,
-  outliers,
+// The chart's key, outside the plot (never recharts' own ChartLegend, which
+// draws chart furniture inside the plot area): every drawn series, top orgs
+// first in the backend's period-total-desc order, Others last when present.
+function SeriesLegend({
+  items,
 }: {
-  rows: AiUsageOrgRow[] | undefined
-  outliers: Set<string>
+  items: { key: string; color: string; label: string }[]
+}) {
+  return (
+    <div className="grid gap-1.5 text-sm sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((item) => (
+        <SeriesKeyRow key={item.key} color={item.color} label={item.label} />
+      ))}
+    </div>
+  )
+}
+
+// The chart's hover: every drawn series' cost for the hovered day, ordered by
+// size (largest first), each row the same SeriesKeyRow the legend draws.
+function ChartPointTooltip({
+  active,
+  payload,
+  seriesLabels,
+  seriesColors,
+  locale,
+}: {
+  active?: boolean
+  payload?: Array<{
+    dataKey?: string | number
+    value?: unknown
+    payload?: unknown
+  }>
+  seriesLabels: Record<string, string>
+  seriesColors: Record<string, string>
+  locale: string
+}) {
+  if (!active || !payload?.length) return null
+  const point = payload[0]?.payload as ChartPoint | undefined
+  if (point === undefined) return null
+
+  const rows = payload
+    .filter(
+      (entry): entry is { dataKey: string; value: number } =>
+        typeof entry.dataKey === "string" && typeof entry.value === "number"
+    )
+    .sort((a, b) => b.value - a.value)
+
+  return (
+    <div
+      className={cn(
+        "min-w-48 max-w-64 rounded-lg border border-border/50 bg-background px-2.5 py-2 shadow-xl",
+        CHART_TOOLTIP_TEXT,
+        TOOLTIP_APPEAR
+      )}
+    >
+      <div className="font-medium">{point.dateLabel}</div>
+      <div className="mt-1 space-y-1">
+        {rows.map((row) => (
+          <SeriesKeyRow
+            key={row.dataKey}
+            color={seriesColors[row.dataKey] ?? OTHERS_INK}
+            label={seriesLabels[row.dataKey] ?? row.dataKey}
+            value={formatUsd(row.value, locale)}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// The overview's big chart (owner direction 2026-08-13): one stacked area per
+// org, x axis the days of the selected month. Replaces the earlier ranked-
+// bars chart; outlier flagging now lives with the table's flagged column, so
+// this panel carries period context only. Orgs beyond CHART_SERIES_CAP fold
+// into one muted "Others" band (lib/admin-ai-usage.ts's capDailySeries),
+// stated in the caption only when it engages. AI_USAGE_TREND_HEIGHT
+// (lib/chart-style.ts) sizes every state (loading, empty, ready) the same,
+// so the panel never resizes once real data arrives.
+export function AiUsageChart({
+  data,
+  period,
+}: {
+  data: { days: number; rows: AiUsageDailyOrgRow[] } | undefined
+  period: string
 }) {
   const t = useTranslations("dashboard.admin.aiUsage.chart")
   const tPage = useTranslations("dashboard.admin.aiUsage")
   const format = useFormatter()
   const locale = useLocale()
+  const gradientBase = useId()
 
-  const config = { cost: { label: t("costSeries") } } satisfies ChartConfig
+  if (data === undefined) {
+    return (
+      <PanelCard title={t("title")} icon={ChartAreaIcon}>
+        <div
+          className={cn(
+            "flex w-full items-center justify-center",
+            AI_USAGE_TREND_HEIGHT
+          )}
+        >
+          <Skeleton className="h-4 w-48 max-w-full" />
+        </div>
+      </PanelCard>
+    )
+  }
 
-  const data: ChartRow[] = (rows ?? [])
-    .slice()
-    .sort((a, b) => b.costNanos - a.costNanos)
-    .map((row) => ({
-      orgId: row.orgId,
-      orgName: row.orgName,
-      costNanos: row.costNanos,
-      costUsd: nanosToUsd(row.costNanos),
-      callCount: row.callCount,
-      totalTokens: row.totalTokens,
-      byKind: row.byKind,
-      isOutlier: outliers.has(row.orgId),
+  if (data.rows.length === 0) {
+    return (
+      <PanelCard title={t("title")} icon={ChartAreaIcon}>
+        <div
+          className={cn(
+            "flex w-full items-center justify-center",
+            AI_USAGE_TREND_HEIGHT
+          )}
+        >
+          <p className="max-w-64 text-balance text-center text-muted-foreground text-sm">
+            {tPage("empty")}
+          </p>
+        </div>
+      </PanelCard>
+    )
+  }
+
+  const capped = capDailySeries(data.rows, data.days)
+  const legendItems: { key: string; color: string; label: string }[] =
+    capped.series.map((row, index) => ({
+      key: row.orgId,
+      color: chartSeriesInk(index),
+      label: row.orgName,
     }))
+  if (capped.others !== null) {
+    legendItems.push({
+      key: OTHERS_KEY,
+      color: OTHERS_INK,
+      label: t("othersLabel"),
+    })
+  }
+  const seriesLabels: Record<string, string> = Object.fromEntries(
+    legendItems.map((item) => [item.key, item.label])
+  )
+  const seriesColors: Record<string, string> = Object.fromEntries(
+    legendItems.map((item) => [item.key, item.color])
+  )
 
-  const loading = rows === undefined
-  const empty = !loading && data.length === 0
-  const placeholderHeight = PLACEHOLDER_ROWS * RANKED_BAR_ROW_HEIGHT_PX
-  const chartHeight =
-    Math.max(data.length, PLACEHOLDER_ROWS) * RANKED_BAR_ROW_HEIGHT_PX
+  const points: ChartPoint[] = Array.from({ length: data.days }, (_, i) => {
+    const point: ChartPoint = {
+      day: i + 1,
+      dateLabel: format.dateTime(dayDate(period, i), {
+        day: "numeric",
+        month: "long",
+      }),
+    }
+    for (const row of capped.series) {
+      point[row.orgId] = nanosToUsd(row.dailyCostNanos[i] ?? 0)
+    }
+    if (capped.others !== null) {
+      point[OTHERS_KEY] = nanosToUsd(capped.others.dailyCostNanos[i] ?? 0)
+    }
+    return point
+  })
+
+  const config: ChartConfig = Object.fromEntries(
+    legendItems.map((item) => [item.key, { label: item.label }])
+  )
 
   return (
-    <PanelCard title={t("title")} icon={BarChartHorizontalIcon}>
-      <div className="space-y-2">
-        {loading ? (
-          <div
-            className="flex w-full items-center justify-center"
-            style={{ height: placeholderHeight }}
+    <PanelCard title={t("title")} icon={ChartAreaIcon}>
+      <div className="space-y-3">
+        <ChartContainer
+          config={config}
+          className={cn("aspect-auto w-full", AI_USAGE_TREND_HEIGHT)}
+        >
+          <AreaChart
+            accessibilityLayer
+            data={points}
+            margin={{
+              top: 8,
+              left: CHART_EDGE_INSET,
+              right: CHART_EDGE_INSET,
+              bottom: 0,
+            }}
           >
-            <Skeleton className="h-4 w-48 max-w-full" />
-          </div>
-        ) : empty ? (
-          <div
-            className="flex w-full items-center justify-center"
-            style={{ height: placeholderHeight }}
-          >
-            <p className="max-w-64 text-balance text-center text-muted-foreground text-sm">
-              {tPage("empty")}
-            </p>
-          </div>
-        ) : (
-          <ChartContainer
-            config={config}
-            className="aspect-auto w-full"
-            style={{ height: chartHeight }}
-          >
-            <BarChart accessibilityLayer layout="vertical" data={data}>
-              <XAxis
-                type="number"
-                tickLine={false}
-                axisLine={false}
-                fontSize={CHART_AXIS_FONT_SIZE}
-                tickFormatter={(value: number) => formatUsd(value, locale)}
-              />
-              <YAxis
-                type="category"
-                dataKey="orgName"
-                tickLine={false}
-                axisLine={false}
-                width={160}
-                fontSize={CHART_AXIS_FONT_SIZE}
-              />
-              <ChartTooltip
-                {...CHART_TOOLTIP_MOTION}
-                cursor={{ fill: "var(--muted)" }}
-                content={<UsageTooltip locale={locale} t={t} format={format} />}
-              />
-              <Bar dataKey="costUsd" radius={BAR_RADIUS}>
-                {data.map((row) => (
-                  <Cell
-                    key={row.orgId}
-                    fill={
-                      row.isOutlier ? "var(--flag-elevated)" : "var(--chart-1)"
-                    }
+            <defs>
+              {legendItems.map((item) => (
+                <linearGradient
+                  key={item.key}
+                  id={`${gradientBase}-${item.key}`}
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="0%" stopColor={item.color} stopOpacity={0.3} />
+                  <stop
+                    offset="100%"
+                    stopColor={item.color}
+                    stopOpacity={0.02}
                   />
-                ))}
-              </Bar>
-            </BarChart>
-          </ChartContainer>
-        )}
-        {!loading && !empty && (
-          <p className="text-muted-foreground text-xs">{t("caption")}</p>
+                </linearGradient>
+              ))}
+            </defs>
+            <XAxis
+              dataKey="day"
+              type="category"
+              tickLine={false}
+              axisLine={false}
+              fontSize={CHART_AXIS_FONT_SIZE}
+              interval={chartTickInterval(data.days)}
+              tickFormatter={(day: number) =>
+                format.dateTime(dayDate(period, day - 1), {
+                  day: "numeric",
+                  month: "short",
+                })
+              }
+            />
+            <YAxis
+              type="number"
+              tickLine={false}
+              axisLine={false}
+              fontSize={CHART_AXIS_FONT_SIZE}
+              width={MONEY_AXIS_WIDTH}
+              tickFormatter={(value: number) => formatUsd(value, locale)}
+            />
+            <ChartTooltip
+              {...CHART_TOOLTIP_MOTION}
+              cursor={{ stroke: "var(--border)" }}
+              content={
+                <ChartPointTooltip
+                  seriesLabels={seriesLabels}
+                  seriesColors={seriesColors}
+                  locale={locale}
+                />
+              }
+            />
+            {capped.series.map((row, index) => (
+              <Area
+                key={row.orgId}
+                dataKey={row.orgId}
+                type="monotone"
+                stackId="cost"
+                stroke={chartSeriesInk(index)}
+                strokeWidth={2}
+                fill={`url(#${gradientBase}-${row.orgId})`}
+              />
+            ))}
+            {capped.others !== null && (
+              <Area
+                dataKey={OTHERS_KEY}
+                type="monotone"
+                stackId="cost"
+                stroke={OTHERS_INK}
+                strokeWidth={2}
+                fill={`url(#${gradientBase}-${OTHERS_KEY})`}
+              />
+            )}
+          </AreaChart>
+        </ChartContainer>
+        <SeriesLegend items={legendItems} />
+        {capped.others !== null && (
+          <p className="text-muted-foreground text-xs">
+            {t("seriesCap", {
+              cap: CHART_SERIES_CAP,
+              count: capped.others.count,
+              othersLabel: t("othersLabel"),
+            })}
+          </p>
         )}
       </div>
     </PanelCard>

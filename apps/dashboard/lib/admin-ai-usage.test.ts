@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest"
 import {
+  type AiUsageDailyOrgRow,
   type AiUsageOrgRow,
+  capDailySeries,
+  CHART_SERIES_CAP,
+  chartTickInterval,
   computeOutlierOrgIds,
   computeTotals,
+  dayDate,
   formatUsd,
   formatUsdCost,
   kindCounts,
@@ -283,5 +288,98 @@ describe("kindCounts", () => {
 
   it("is empty for an empty record", () => {
     expect(kindCounts({})).toEqual([])
+  })
+})
+
+function dailyRow(
+  overrides: Partial<AiUsageDailyOrgRow> = {}
+): AiUsageDailyOrgRow {
+  return {
+    orgId: "org-1",
+    orgName: "Acme",
+    dailyCostNanos: [0, 0, 0],
+    ...overrides,
+  }
+}
+
+describe("dayDate", () => {
+  it("returns the UTC calendar date for a 0-based day index", () => {
+    const date = dayDate("2026-08", 0)
+    expect(date.getUTCFullYear()).toBe(2026)
+    expect(date.getUTCMonth()).toBe(7)
+    expect(date.getUTCDate()).toBe(1)
+  })
+
+  it("advances by whole days without touching the month's own arithmetic", () => {
+    expect(dayDate("2026-08", 30).getUTCDate()).toBe(31)
+    expect(dayDate("2026-08", 4).getUTCDate()).toBe(5)
+  })
+})
+
+describe("capDailySeries", () => {
+  it("keeps every org as its own series when there are cap or fewer", () => {
+    const rows = [dailyRow({ orgId: "a" }), dailyRow({ orgId: "b" })]
+    const result = capDailySeries(rows, 3, 8)
+    expect(result.series).toBe(rows)
+    expect(result.others).toBeNull()
+  })
+
+  it("keeps every org as its own series at exactly the cap", () => {
+    const rows = Array.from({ length: 8 }, (_, i) =>
+      dailyRow({ orgId: `org-${i}` })
+    )
+    expect(capDailySeries(rows, 3, 8).others).toBeNull()
+  })
+
+  it("folds every org past the cap into one summed Others series", () => {
+    const rows = [
+      dailyRow({ orgId: "a", dailyCostNanos: [10, 0, 5] }),
+      dailyRow({ orgId: "b", dailyCostNanos: [1, 2, 3] }),
+      dailyRow({ orgId: "c", dailyCostNanos: [100, 200, 300] }),
+    ]
+    const result = capDailySeries(rows, 3, 2)
+    expect(result.series).toEqual([rows[0], rows[1]])
+    expect(result.others).toEqual({
+      dailyCostNanos: [100, 200, 300],
+      count: 1,
+    })
+  })
+
+  it("sums Others day-by-day across more than one folded org", () => {
+    const rows = [
+      dailyRow({ orgId: "a", dailyCostNanos: [10, 10] }),
+      dailyRow({ orgId: "b", dailyCostNanos: [1, 2] }),
+      dailyRow({ orgId: "c", dailyCostNanos: [3, 4] }),
+    ]
+    const result = capDailySeries(rows, 2, 1)
+    expect(result.others).toEqual({ dailyCostNanos: [4, 6], count: 2 })
+  })
+
+  it("uses CHART_SERIES_CAP as its own default", () => {
+    const rows = Array.from({ length: CHART_SERIES_CAP + 1 }, (_, i) =>
+      dailyRow({ orgId: `org-${i}` })
+    )
+    const result = capDailySeries(rows, 3)
+    expect(result.series).toHaveLength(CHART_SERIES_CAP)
+    expect(result.others?.count).toBe(1)
+  })
+
+  it("returns no Others for an empty row list", () => {
+    expect(capDailySeries([], 3)).toEqual({ series: [], others: null })
+  })
+})
+
+describe("chartTickInterval", () => {
+  it("shows every tick for a handful of days", () => {
+    expect(chartTickInterval(5, 10)).toBe(0)
+  })
+
+  it("keeps the shown-tick count within 8-10 across every real month length", () => {
+    for (const days of [28, 29, 30, 31]) {
+      const interval = chartTickInterval(days)
+      const shown = Math.ceil(days / (interval + 1))
+      expect(shown).toBeGreaterThanOrEqual(8)
+      expect(shown).toBeLessThanOrEqual(10)
+    }
   })
 })
