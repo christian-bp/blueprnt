@@ -1,0 +1,23 @@
+apps/dashboard/components/assistant/assistant-history.tsx
+  s_c6f9c899f4809f::t_fc15a2710e4b0a 6
+  s_c6f9c899f4809f::t_a3a683bfff0c2b 155-157,159
+apps/dashboard/app/(app)/assistant/page.tsx
+  s_c6f9c899f4809f::t_34e8560a848c01 3
+  s_c6f9c899f4809f::t_1683dd62870feb 90-92,94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "707995ca5c4cfc7c1defcc4a2dd8af3f21d44c07",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
