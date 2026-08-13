@@ -24,6 +24,7 @@ import { useFormatter, useTranslations } from "next-intl"
 import { useState } from "react"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { useOrganization } from "@/components/org-context"
+import { RenameConversationDialog } from "@/components/assistant/rename-conversation-dialog"
 import { useAssistantThreads } from "@/hooks/use-assistant-threads"
 import { SPRING } from "@/lib/motion"
 import { toast } from "@/lib/toast"
@@ -233,6 +234,7 @@ function AssistantHistoryThreadRow({
   const deleteConversation = useMutation(api.assistant.chat.deleteConversation)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [renameOpen, setRenameOpen] = useState(false)
   const isActive = thread.status === "active"
 
   async function handleSwitch() {
@@ -289,6 +291,9 @@ function AssistantHistoryThreadRow({
           <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => setRenameOpen(true)}>
+            {t("renameConversation")}
+          </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
             onClick={() => setConfirmOpen(true)}
@@ -297,6 +302,13 @@ function AssistantHistoryThreadRow({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <RenameConversationDialog
+        orgId={orgId}
+        threadId={thread._id}
+        currentTitle={thread.title ?? ""}
+        open={renameOpen}
+        onOpenChange={setRenameOpen}
+      />
       <ConfirmDeleteDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}

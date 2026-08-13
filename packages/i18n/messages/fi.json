@@ -184,7 +184,8 @@
       "payMappingNoteCreated": "Merkintä lisättiin",
       "payMappingNoteUpdated": "Merkintä päivitettiin",
       "payMappingNoteDeleted": "Merkintä poistettiin",
-      "conversationDeleted": "Keskustelu poistettu"
+      "conversationDeleted": "Keskustelu poistettu",
+      "conversationRenamed": "Keskustelu nimetty uudelleen"
     },
     "accountMenu": "Tilivalikko",
     "nav": {
@@ -2417,7 +2418,12 @@
       "deleteConversationTitle": "Poistetaanko tämä keskustelu?",
       "deleteConversationDescription": "Kaikki keskustelun viestit poistetaan pysyvästi. Tätä ei voi kumota.",
       "deleteConversationConfirm": "Kyllä, poista",
-      "deleteConversationCancel": "Peruuta"
+      "deleteConversationCancel": "Peruuta",
+      "renameConversation": "Nimeä keskustelu uudelleen",
+      "renameConversationDescription": "Anna keskustelulle uusi nimi.",
+      "renameConversationLabel": "Otsikko",
+      "renameConversationSave": "Tallenna",
+      "renameConversationCancel": "Peruuta"
     }
   },
   "errors": {

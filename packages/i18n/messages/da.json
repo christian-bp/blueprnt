@@ -184,7 +184,8 @@
       "payMappingNoteCreated": "Notatet blev tilføjet",
       "payMappingNoteUpdated": "Notatet blev opdateret",
       "payMappingNoteDeleted": "Notatet blev slettet",
-      "conversationDeleted": "Samtale slettet"
+      "conversationDeleted": "Samtale slettet",
+      "conversationRenamed": "Samtale omdøbt"
     },
     "accountMenu": "Kontomenu",
     "nav": {
@@ -2417,7 +2418,12 @@
       "deleteConversationTitle": "Slet denne samtale?",
       "deleteConversationDescription": "Alle beskeder i samtalen slettes permanent. Dette kan ikke fortrydes.",
       "deleteConversationConfirm": "Ja, slet",
-      "deleteConversationCancel": "Annuller"
+      "deleteConversationCancel": "Annuller",
+      "renameConversation": "Omdøb samtale",
+      "renameConversationDescription": "Giv samtalen et nyt navn.",
+      "renameConversationLabel": "Titel",
+      "renameConversationSave": "Gem",
+      "renameConversationCancel": "Annuller"
     }
   },
   "errors": {

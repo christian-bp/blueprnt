@@ -184,7 +184,8 @@
       "payMappingNoteCreated": "Note added",
       "payMappingNoteUpdated": "Note updated",
       "payMappingNoteDeleted": "Note deleted",
-      "conversationDeleted": "Conversation deleted"
+      "conversationDeleted": "Conversation deleted",
+      "conversationRenamed": "Conversation renamed"
     },
     "accountMenu": "Account menu",
     "nav": {
@@ -2417,7 +2418,12 @@
       "deleteConversationTitle": "Delete this conversation?",
       "deleteConversationDescription": "Every message in this conversation is permanently deleted. This cannot be undone.",
       "deleteConversationConfirm": "Yes, delete",
-      "deleteConversationCancel": "Cancel"
+      "deleteConversationCancel": "Cancel",
+      "renameConversation": "Rename conversation",
+      "renameConversationDescription": "Give this conversation a new name.",
+      "renameConversationLabel": "Title",
+      "renameConversationSave": "Save",
+      "renameConversationCancel": "Cancel"
     }
   },
   "errors": {

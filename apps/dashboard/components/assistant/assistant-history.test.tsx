@@ -33,6 +33,7 @@ import { openMenu } from "@/test/menu"
 const t = messages.dashboard.assistant
 const switchConversationMock = mockMutation("assistant.chat.switchConversation")
 const deleteConversationMock = mockMutation("assistant.chat.deleteConversation")
+const renameConversationMock = mockMutation("assistant.chat.renameConversation")
 
 function renderPanel(
   open: boolean,
@@ -68,6 +69,7 @@ describe("AssistantHistoryPanel", () => {
   beforeEach(() => {
     switchConversationMock.mockReset()
     deleteConversationMock.mockReset()
+    renameConversationMock.mockReset()
     onQuery((ref) => (ref === "assistant.chat.listThreads" ? [] : undefined))
   })
   afterEach(() => cleanup())
@@ -284,6 +286,45 @@ describe("AssistantHistoryPanel", () => {
     ]) {
       expect((row as HTMLButtonElement).disabled).toBe(true)
     }
+  })
+
+  it("shows rename above delete in the row menu, and opens the rename dialog on click", async () => {
+    onQuery((ref) =>
+      ref === "assistant.chat.listThreads"
+        ? [
+            {
+              _id: "thread-old",
+              title: "Older chat",
+              status: "archived",
+              lastMessageAt: 100,
+            },
+          ]
+        : undefined
+    )
+    renderPanel(true)
+    const row = rowOf(screen.getByText("Older chat"))
+    await openMenu(
+      within(row).getByRole("button", {
+        name: rowActionsLabelFor("Older chat"),
+      })
+    )
+    const menuItems = screen.getAllByRole("menuitem")
+    expect(menuItems.map((item) => item.textContent)).toEqual([
+      t.renameConversation,
+      t.deleteConversation,
+    ])
+    expect(renameConversationMock).not.toHaveBeenCalled()
+
+    fireEvent.click(
+      screen.getByRole("menuitem", { name: t.renameConversation })
+    )
+    expect(
+      screen.getByRole("dialog", { name: t.renameConversation })
+    ).toBeDefined()
+    // Prefilled with the row's own current title.
+    expect((screen.getByRole("textbox") as HTMLInputElement).value).toBe(
+      "Older chat"
+    )
   })
 
   it("opens the row menu and shows the delete action, without deleting yet", async () => {

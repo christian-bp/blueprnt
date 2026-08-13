@@ -184,7 +184,8 @@
       "payMappingNoteCreated": "Noteringen lades till",
       "payMappingNoteUpdated": "Noteringen uppdaterades",
       "payMappingNoteDeleted": "Noteringen togs bort",
-      "conversationDeleted": "Konversation borttagen"
+      "conversationDeleted": "Konversation borttagen",
+      "conversationRenamed": "Konversation omdöpt"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -2417,7 +2418,12 @@
       "deleteConversationTitle": "Ta bort den här konversationen?",
       "deleteConversationDescription": "Alla meddelanden i konversationen tas bort permanent. Det går inte att ångra.",
       "deleteConversationConfirm": "Ja, ta bort",
-      "deleteConversationCancel": "Avbryt"
+      "deleteConversationCancel": "Avbryt",
+      "renameConversation": "Byt namn på konversation",
+      "renameConversationDescription": "Ge konversationen ett nytt namn.",
+      "renameConversationLabel": "Titel",
+      "renameConversationSave": "Spara",
+      "renameConversationCancel": "Avbryt"
     }
   },
   "errors": {
