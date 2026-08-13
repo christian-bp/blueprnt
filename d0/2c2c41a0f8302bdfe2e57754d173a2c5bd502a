@@ -1,0 +1,40 @@
+packages/i18n/messages/en.json
+  s_c6f9c899f4809f::t_aed87b4310ef8b 2405
+packages/i18n/messages/fi.json
+  s_c6f9c899f4809f::t_8fbe8000890eee 2405
+packages/i18n/messages/nb.json
+  s_c6f9c899f4809f::t_06d0c7fbd0b416 2405
+packages/i18n/messages/da.json
+  s_c6f9c899f4809f::t_14f834fd1c18cc 2405
+apps/dashboard/components/assistant/assistant-conversation.test.tsx
+  s_c6f9c899f4809f::t_a31103e4646cf6 114-118
+  s_c6f9c899f4809f::t_74146a8e7c5c12 95-97
+  s_c6f9c899f4809f::t_553414b4c31433 1-94,98-113,119-132,138-151,157-175,179-191
+  s_c6f9c899f4809f::t_ecc728cc8dab91 152-156
+  s_c6f9c899f4809f::t_afa89119c4ae83 133-137
+  s_c6f9c899f4809f::t_4ef80cc79a0bcb 176-178
+apps/dashboard/package.json
+  s_c6f9c899f4809f::t_6bea0a0efc0f51 38
+apps/dashboard/components/assistant/assistant-conversation.tsx
+  s_c6f9c899f4809f::t_2169b9a041b06b 1-113
+packages/i18n/messages/sv.json
+  s_c6f9c899f4809f::t_510501e4482827 2405
+bun.lock
+  s_c6f9c899f4809f::t_75eb4bd75fc81d 40,2272-2273
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d02c2c41a0f8302bdfe2e57754d173a2c5bd502a",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
