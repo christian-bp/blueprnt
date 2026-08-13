@@ -26,14 +26,16 @@ import { hasTrendShape } from "@/lib/pay-gap-trend"
 // figures in words, so the chart IS the content a screen reader needs to
 // reach.
 
-// A real border, not the Card's default ring: the ring is a box-shadow,
+// The reference design's chart-card recipe (one plain 1px border, no ring,
+// no shadow, content inset by the card's padding): the border must be the
+// ONLY frame stroke. The Card's default ring and shadow are box-shadows,
 // and inside MessageScrollerViewport (contain: content, composited
-// scrolling) box-shadows drop along the card's straight edges, so the
-// frame rendered as bare corner arcs and read as clipped. Verified
-// empirically: a solid red 2px test box-shadow lost its sides in place
-// while border and outline painted whole. A border paints inside the box
-// and is immune.
-const CHART_CARD_FRAME_CLASS = "border border-border"
+// scrolling) box-shadows paint patchily, mostly at the corners (verified
+// empirically: a solid red 2px test box-shadow lost its straight edges in
+// place while border and outline painted whole). Leaving them under a real
+// border reads as an uneven, sometimes-double line; removing them leaves
+// one even border that always paints.
+const CHART_CARD_FRAME_CLASS = "border border-border ring-0 shadow-none"
 
 export function AssistantChartPart(props: { chart: AssistantChartKind }) {
   const { orgId } = useOrganization()

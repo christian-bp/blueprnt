@@ -86,17 +86,21 @@ describe("AssistantChartPart (headcountTrend)", () => {
     expect(panel?.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 
-  it("frames the card with a real border, since rings do not paint in the scroller", () => {
+  it("frames the card with one plain border and no box-shadow strokes", () => {
     useHeadcountTrendMock.mockReturnValue(TWO_RUNS)
     usePayGapTrendMock.mockReturnValue(undefined)
     renderChart("headcountTrend")
     const panel = panelFor(t.workforce.trendTitle)
-    // The Card's default frame is a ring (box-shadow), and box-shadows drop
-    // along the straight edges inside MessageScrollerViewport's containment,
-    // so the chat chart card must carry a real border, which always paints.
+    // The border must be the ONLY frame stroke: the Card's default ring and
+    // shadow are box-shadows, which paint patchily inside the message
+    // scroller's containment and read as an uneven, sometimes-double line
+    // under a real border. The plot sits inset (no bleed, so no pb-0).
     const card = panel?.closest('[class*="group/card"]') ?? panel
     expect(card?.className).toContain("border-border")
     expect(card?.className).toMatch(/(^|\s)border(\s|$)/)
+    expect(card?.className).toContain("ring-0")
+    expect(card?.className).toContain("shadow-none")
+    expect(card?.className).not.toContain("pb-0")
   })
 })
 

@@ -48,13 +48,13 @@ function TrendBody({
 // elsewhere, renders through this so it inherits the house chart anatomy by
 // construction rather than by convention.
 //
-// Always bleeds: a trend chart is meant to reach the card's own edges (see
-// PanelCard's `bleed`). The frame that bounds the bleed must come from the
-// CALLER as a real border class where the surface needs one: the Card's
-// default frame is a ring (a box-shadow), and box-shadows do not reliably
-// paint inside the chat's message scroller (contain: content plus
-// composited scrolling drops them along the straight edges, verified
-// empirically with a solid red test shadow), while a border always paints.
+// Never bleeds: the plot sits inset within the card's padding, the
+// reference design's chart anatomy (a plain bordered box with the chart
+// inside it). The frame itself comes from the CALLER as a real border
+// class where the surface needs one: the Card's default ring and shadow
+// are box-shadows, which paint patchily inside the chat's message
+// scroller (contain: content plus composited scrolling), so the caller
+// also zeroes them and the border is the one stroke that always paints.
 //
 // Takes no view on accessibility: whether `children` should be hidden from
 // the tree is the CALLER's decision, never baked in here. The overview hides
@@ -75,7 +75,7 @@ export function TrendPanel({
   children: ReactNode
 }) {
   return (
-    <PanelCard title={title} bleed className={className}>
+    <PanelCard title={title} className={className}>
       {state === "ready" ? (
         children
       ) : (
