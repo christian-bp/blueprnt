@@ -1,0 +1,35 @@
+apps/dashboard/components/assistant/assistant-title.tsx
+  s_c6f9c899f4809f::t_0de6ea9f9663b3 13-17
+apps/dashboard/components/assistant/assistant-thread.tsx
+  s_c6f9c899f4809f::t_cf1b75a0df2a02 83-90
+apps/dashboard/lib/chart-style.ts
+  s_c6f9c899f4809f::t_2e9873b00af46c 85-87,89-93
+apps/dashboard/hooks/use-assistant-chat.ts
+  s_c6f9c899f4809f::t_54c6394deab89c 22-25
+apps/dashboard/hooks/use-assistant-threads.ts
+  s_c6f9c899f4809f::t_20edb71bd98331 7,9,12,14-15
+apps/dashboard/components/assistant/assistant-message.tsx
+  s_c6f9c899f4809f::t_f9be541325504e 43-48,50
+apps/dashboard/components/assistant/assistant-thread.test.tsx
+  s_c6f9c899f4809f::t_652ead5e7c9585 82-88
+apps/dashboard/components/assistant/assistant-panel.test.tsx
+  s_c6f9c899f4809f::t_13b33b0e07449f 26-29
+apps/dashboard/components/assistant/assistant-message.test.tsx
+  s_c6f9c899f4809f::t_9ce8761533e2c0 97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d269df7f5ded0dd25ca764fe2e5bbd64a5dd23c4",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
