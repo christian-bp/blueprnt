@@ -24,6 +24,18 @@ export const ASSISTANT_INPUT_GROUP_CLASS =
 // min-h-16 (identical to the template's), so only the padding needs the
 // template's roomier p-3.5 in place of the vendored px-2.5/py-2.
 export const ASSISTANT_TEXTAREA_CLASS = "p-3.5"
+// The send/stop control's row: `align="block-end"` (not "inline-end") puts it
+// in its own row below the textarea instead of vertically centered beside it,
+// which is what gives the pill the template's two-row feel; `justify-end`
+// overrides the addon's own default left alignment so the round button sits
+// in the pill's lower-right corner, matching the reference chatbot template
+// and midday's overview prompt. Shared so both composers can never drift
+// into different anatomies.
+export const ASSISTANT_SEND_ROW_CLASS = "justify-end"
+// Round rather than the vendored square icon-button shape, matching the same
+// reference: a send/stop control reads as the pill's own action, not a form
+// button docked to its edge.
+export const ASSISTANT_SEND_BUTTON_CLASS = "rounded-full"
 
 // The starter prompts shown as suggestion chips both on the overview's
 // AssistantPrompt and in the chat thread's own empty state, so the two
@@ -77,11 +89,12 @@ export function AssistantComposer(props: {
             }
           }}
         />
-        <InputGroupAddon align="inline-end">
+        <InputGroupAddon align="block-end" className={ASSISTANT_SEND_ROW_CLASS}>
           {props.busy ? (
             <InputGroupButton
               size="icon-sm"
               variant="outline"
+              className={ASSISTANT_SEND_BUTTON_CLASS}
               onClick={props.onStop}
               aria-label={t("stop")}
             >
@@ -91,6 +104,7 @@ export function AssistantComposer(props: {
             <InputGroupButton
               size="icon-sm"
               variant="default"
+              className={ASSISTANT_SEND_BUTTON_CLASS}
               onClick={send}
               disabled={!canSend}
               aria-label={t("send")}

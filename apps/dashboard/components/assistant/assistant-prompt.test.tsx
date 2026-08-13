@@ -81,6 +81,13 @@ describe("AssistantPrompt", () => {
     expect(sendMessageMock).not.toHaveBeenCalled()
   })
 
+  it('renders the send control as a round icon button with no visible "Send" text, but keeps its accessible name', () => {
+    renderPrompt()
+    const button = screen.getByRole("button", { name: tAssistant.send })
+    expect(button.className).toContain("rounded-full")
+    expect(button.textContent?.trim()).toBe("")
+  })
+
   it("disables the send button for empty input, and while a send is pending", async () => {
     let resolveSend: () => void = () => {}
     sendMessageMock.mockImplementation(

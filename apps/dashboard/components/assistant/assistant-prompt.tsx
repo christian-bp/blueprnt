@@ -1,5 +1,7 @@
 "use client"
 
+import { ArrowUp02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -14,6 +16,8 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import {
   ASSISTANT_INPUT_GROUP_CLASS,
+  ASSISTANT_SEND_BUTTON_CLASS,
+  ASSISTANT_SEND_ROW_CLASS,
   ASSISTANT_TEXTAREA_CLASS,
   SUGGESTION_KEYS,
 } from "@/components/assistant/assistant-composer"
@@ -82,13 +86,16 @@ export function AssistantPrompt() {
             }
           }}
         />
-        <InputGroupAddon align="inline-end">
+        <InputGroupAddon align="block-end" className={ASSISTANT_SEND_ROW_CLASS}>
           <InputGroupButton
+            size="icon-sm"
+            variant="default"
+            className={ASSISTANT_SEND_BUTTON_CLASS}
             onClick={() => void send(text)}
             disabled={text.trim() === "" || sending}
             aria-label={t("send")}
           >
-            {t("send")}
+            <HugeiconsIcon icon={ArrowUp02Icon} strokeWidth={2} />
           </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>

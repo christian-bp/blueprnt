@@ -64,6 +64,15 @@ describe("AssistantComposer", () => {
     expect(onSend).not.toHaveBeenCalled()
   })
 
+  it("renders the send control as a round icon button with no visible text label", () => {
+    renderComposer()
+    const button = screen.getByRole("button", {
+      name: messages.dashboard.assistant.send,
+    })
+    expect(button.className).toContain("rounded-full")
+    expect(button.textContent?.trim()).toBe("")
+  })
+
   it("shows stop instead of send while busy, and stop calls onStop", () => {
     const { onStop } = renderComposer({ busy: true })
     expect(
