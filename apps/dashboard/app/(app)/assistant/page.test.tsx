@@ -179,14 +179,19 @@ describe("AssistantPage", () => {
     // conversation both moved into the panel below.
     expect(regions[0]?.querySelector("button")).toBeNull()
     expect(regions.at(-1)?.querySelector("button")).toBeNull()
-    // The header row is a direct child of the full-width page wrapper, a
-    // sibling of the panel+column row below it, never nested inside the
-    // capped reading column: that is what pins it to the page content's own
-    // corners instead of letting it drift with the column as the panel opens
-    // and closes.
+    // The header row lives INSIDE the chat-side column (the panel's flex-1
+    // sibling), never at the page level: the title must center over the
+    // chat, not over the page, so it stays aligned with the conversation as
+    // the panel opens and closes. The page wrapper itself carries no width
+    // cap; the panel's left edge is what reaches the sidebar border.
     const wrapper = container.firstElementChild as HTMLElement
-    expect((row as HTMLElement).parentElement).toBe(wrapper)
     expect(wrapper.className).not.toMatch(/max-w-/)
+    const chatColumn = (row as HTMLElement).parentElement as HTMLElement
+    expect(chatColumn.className).toContain("flex-1")
+    expect(chatColumn.parentElement).toBe(wrapper)
+    // The header's own row is above the capped reading column, not inside
+    // it: the title spans the chat side's full width.
+    expect((row as HTMLElement).className).not.toMatch(/max-w-/)
   })
 
   it("switching to a thread from the panel keeps the panel open, since the user is browsing", async () => {

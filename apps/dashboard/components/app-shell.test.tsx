@@ -33,8 +33,11 @@ describe("shellLayoutClasses", () => {
     const content = classList(layout.pageContent)
     expect(content).toContain("min-h-0")
     expect(content).toContain("flex-1")
-    // Unlike /work, /assistant keeps the normal reading width cap.
-    expect(content).toContain(PAGE_MAX_W)
+    // Uncapped like /work: the conversations panel must reach the sidebar
+    // border, which a centered width cap would hold away from it. The page
+    // centers its own reading column beside the panel instead.
+    expect(content).not.toContain(PAGE_MAX_W)
+    expect(content).not.toContain(PAGE_WIDE_MAX_W)
   })
 
   it("keeps /work full-bleed and height-locked only from md up", () => {

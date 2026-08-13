@@ -84,7 +84,10 @@ export function shellLayoutClasses(pathname: string) {
     pageContent: cn(
       "mx-auto flex w-full flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6",
       heightLocked && "min-h-0 flex-1",
-      !fullBleed && (wide ? PAGE_WIDE_MAX_W : PAGE_MAX_W)
+      // /assistant is uncapped like /work: its conversations panel must sit
+      // against the sidebar border, which no centered cap allows; the page
+      // centers its own reading column in the space beside the panel.
+      !heightLocked && (wide ? PAGE_WIDE_MAX_W : PAGE_MAX_W)
     ),
   }
 }

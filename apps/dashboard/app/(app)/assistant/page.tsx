@@ -59,55 +59,52 @@ export default function AssistantPage() {
     // define one of its own: min-h-0 (a floor would let the row grow past
     // the viewport) lets it shrink to fit, and overflow-hidden is a second
     // line of defense so nothing inside can force a page-level scrollbar.
-    // A column, deliberately FULL WIDTH (no mx-auto/max-w here): both this
-    // header and the panel below it have to reach the real boundary between
-    // the page content and the app sidebar, which only works if nothing
-    // narrower sits between them and that edge. The column is bounded only
-    // by the shell's own page cap (app-shell.tsx: PAGE_MAX_W), which is also
-    // what centers the reading column beneath it, so the two share the same
-    // midpoint regardless of the panel's width.
-    <div className="flex min-h-0 w-full flex-1 flex-col gap-4 overflow-hidden">
-      {/* Header spans the full page width, outside the reading-width cap:
-          only the animated title lives here now (the history toggle and New
-          conversation both moved into the panel below). The two flex-1
-          spacers stay so the title keeps animating its own width from 0 to
-          auto without shifting either edge of the row; without them the
-          title, as the row's only child, would not be centered at all. */}
-      <div className="flex shrink-0 items-center justify-between">
-        <div className="flex flex-1 justify-start" />
-        <AssistantTitle title={title} />
-        <div className="flex flex-1 justify-end" />
-      </div>
-      <div className="flex min-h-0 w-full flex-1 overflow-hidden">
-        <AssistantHistoryPanel
-          open={panelOpen}
-          busy={busy}
-          onCollapse={() => togglePanel(false)}
-          onNewConversation={() => void handleNewConversation()}
-        />
-        {/* relative: anchors the expand button that appears here, at the far
-            left of the content area, while the panel is collapsed (where the
-            history toggle used to sit). */}
-        <div className="relative mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col overflow-hidden">
-          {!panelOpen && (
-            <div className="absolute top-2 left-2 z-10">
-              {/* Never busy-gated, same as the panel's own collapse button:
-                  expanding the panel touches no thread. */}
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label={t("history")}
-                onClick={() => togglePanel(true)}
-              >
-                <HugeiconsIcon
-                  icon={SidebarLeftIcon}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-              </Button>
-            </div>
-          )}
+    // A row, deliberately FULL WIDTH: the shell leaves this route uncapped
+    // (app-shell.tsx: assistantBounded skips PAGE_MAX_W) precisely so the
+    // panel's left edge reaches the real boundary between the page content
+    // and the app sidebar, with nothing narrower in between. The chat side
+    // centers its own reading column in whatever width remains beside the
+    // panel, so the header title always sits over the CHAT, not over the
+    // page as a whole.
+    <div className="flex min-h-0 w-full flex-1 overflow-hidden">
+      <AssistantHistoryPanel
+        open={panelOpen}
+        busy={busy}
+        onCollapse={() => togglePanel(false)}
+        onNewConversation={() => void handleNewConversation()}
+      />
+      {/* relative: anchors the expand button that appears at this column's
+          top-left while the panel is collapsed. */}
+      <div className="relative flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
+        {!panelOpen && (
+          <div className="absolute top-2 left-2 z-10">
+            {/* Never busy-gated, same as the panel's own collapse button:
+                expanding the panel touches no thread. */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label={t("history")}
+              onClick={() => togglePanel(true)}
+            >
+              <HugeiconsIcon
+                icon={SidebarLeftIcon}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            </Button>
+          </div>
+        )}
+        {/* Only the animated title lives in the header. The two flex-1
+            spacers stay so the title animates its own width from 0 to auto
+            without shifting either edge of the row; without them the title,
+            as the row's only child, would not be centered at all. */}
+        <div className="flex shrink-0 items-center justify-between">
+          <div className="flex flex-1 justify-start" />
+          <AssistantTitle title={title} />
+          <div className="flex flex-1 justify-end" />
+        </div>
+        <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col overflow-hidden">
           <AssistantPanel />
         </div>
       </div>
