@@ -31,6 +31,15 @@ describe("AssistantMarkdown", () => {
     expect(screen.getByRole("link").getAttribute("rel")).toBe("noreferrer")
   })
 
+  it("carries the chat typography accents on the wrapper", () => {
+    const { container } = render(<AssistantMarkdown text={"1. item"} />)
+    const wrapper = container.firstElementChild as HTMLElement
+    // marker: is inheritable, so the one wrapper class colours every list
+    // marker; the link underline-offset rides the same wrapper.
+    expect(wrapper.className).toContain("marker:text-brand")
+    expect(wrapper.className).toContain("[&_a]:underline-offset-4")
+  })
+
   it("renders a link to one of the app's own pages as in-app navigation", () => {
     render(<AssistantMarkdown text={"[Roller](/roles)"} />)
     const link = screen.getByRole("link")

@@ -86,7 +86,10 @@ export function AssistantMarkdown({
   isAnimating?: boolean
 }) {
   return (
-    <div className="typeset typeset-docs px-1.5">
+    // marker: is inheritable, so one class here colours every bullet and
+    // ordered-list number in the reply; underline-offset lifts link
+    // underscores clear of the descenders.
+    <div className="typeset typeset-docs px-1.5 marker:text-brand [&_a]:underline-offset-4">
       <Streamdown
         // Streamdown's own wrapper div always carries a hardcoded
         // `space-y-4` regardless of `components`/`controls` (it is not a
