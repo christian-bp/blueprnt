@@ -59,9 +59,10 @@ describe("AssistantPage", () => {
   })
 
   // A wrapper sized by min-h-* is a FLOOR, not a ceiling: once the thread
-  // outgrows the viewport the column grows past it, the message scroller
-  // never becomes the scroll container, and the composer is pushed below
-  // the fold with no scroller that reaches it. AppShell locks the ancestor
+  // outgrows the viewport the column grows past it, the conversation's own
+  // scroll container never becomes the scroll container, and the composer
+  // is pushed below the fold with no scroller that reaches it. AppShell
+  // locks the ancestor
   // chrome's height for this route (app-shell.test.tsx), so this wrapper
   // must only ever fill it (min-h-0, flex-1) and never define its own
   // height, with overflow-hidden as a second line of defense.

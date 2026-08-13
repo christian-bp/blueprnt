@@ -52,9 +52,10 @@ function TrendBody({
 // reference design's chart anatomy (a plain bordered box with the chart
 // inside it). The frame itself comes from the CALLER as a real border
 // class where the surface needs one: the Card's default ring and shadow
-// are box-shadows, which paint patchily inside the chat's message
-// scroller (contain: content plus composited scrolling), so the caller
-// also zeroes them and the border is the one stroke that always paints.
+// are box-shadows, which paint patchily inside the chat's composited
+// scroll container (verified empirically with a solid test shadow), so
+// the caller also zeroes them and the border is the one stroke that
+// always paints.
 //
 // Takes no view on accessibility: whether `children` should be hidden from
 // the tree is the CALLER's decision, never baked in here. The overview hides

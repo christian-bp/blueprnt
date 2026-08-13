@@ -92,9 +92,9 @@ describe("AssistantChartPart (headcountTrend)", () => {
     renderChart("headcountTrend")
     const panel = panelFor(t.workforce.trendTitle)
     // The border must be the ONLY frame stroke: the Card's default ring and
-    // shadow are box-shadows, which paint patchily inside the message
-    // scroller's containment and read as an uneven, sometimes-double line
-    // under a real border. The plot sits inset (no bleed, so no pb-0).
+    // shadow are box-shadows, which paint patchily inside the thread's
+    // composited scroll container and read as an uneven, sometimes-double
+    // line under a real border. The plot sits inset (no bleed, so no pb-0).
     const card = panel?.closest('[class*="group/card"]') ?? panel
     expect(card?.className).toContain("border-border")
     expect(card?.className).toMatch(/(^|\s)border(\s|$)/)
