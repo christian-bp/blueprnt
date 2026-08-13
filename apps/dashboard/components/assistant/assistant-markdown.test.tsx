@@ -63,26 +63,16 @@ describe("AssistantMarkdown", () => {
     expect(isInternalHref("")).toBe(false)
   })
 
-  it("does not mark any content as animating by default", () => {
-    const { container } = render(
-      <AssistantMarkdown text="Several words in a row." />
-    )
-    expect(container.querySelectorAll("[data-sd-animate]")).toHaveLength(0)
-    expect(container.textContent).toBe("Several words in a row.")
-  })
-
-  it("marks content with data-sd-animate spans when isAnimating is true", () => {
-    // Streamdown's animate plugin wraps every "new" word in its own span
-    // (offset-based newness detection: nothing was rendered before this
-    // call, so the whole sentence is new). This runs in happy-dom, so we
-    // assert the real markup rather than just the prop threading.
+  it("never wraps content in animation spans, even while streaming", () => {
+    // Arrived text is shown exactly as it is: the word-by-word appearance
+    // comes from the backend's word-cadence flushes. Any client animation
+    // re-ordered visibly across markdown blocks (Streamdown memoizes per
+    // block while the animate plugin's seen-before threshold is shared),
+    // so an animation span here is a regression, not a nicety.
     const { container } = render(
       <AssistantMarkdown text="Several words in a row." isAnimating={true} />
     )
-    const spans = container.querySelectorAll("[data-sd-animate]")
-    expect(spans.length).toBeGreaterThan(0)
-    // Wrapping is markup noise: the visible text must still read as the
-    // original sentence once the spans are flattened back together.
+    expect(container.querySelectorAll("[data-sd-animate]")).toHaveLength(0)
     expect(container.textContent).toBe("Several words in a row.")
   })
 

@@ -41,10 +41,15 @@ export const ASSISTANT_HISTORY_LIMIT = 20
 // reachable if this cap is ever paginated, but are not shown today.
 export const ASSISTANT_THREAD_LIST_LIMIT = 50
 export const ASSISTANT_HOURLY_MESSAGE_CAP = 30
-// Paired with the client's staggered word reveal (streamdown's per-word
-// fadeIn): a tighter flush cadence keeps multi-word chunks small enough that
-// the reveal reads as a continuous stream rather than chunky bursts.
-export const ASSISTANT_FLUSH_INTERVAL_MS = 150
+// The flush cadence IS the visible typing granularity: the client renders
+// arrived text with no animation at all (any client-side reveal or fade
+// re-ordered visibly across markdown blocks), so each flush appears as one
+// atomic append. At the word-paced stream rate (~20-30 words/s via
+// smoothStream) a 40ms flush carries about one word, which is the
+// reference client's word-by-word appearance reproduced at the source.
+// Cost: ~25 snapshot writes/s per streaming reply instead of ~7; tracked
+// in docs/go-live-checklist.md beside the other assistant scaling items.
+export const ASSISTANT_FLUSH_INTERVAL_MS = 40
 export const ASSISTANT_MAX_TOOL_STEPS = 3
 // Generation hard-stop: a reply that has not finished within this window is
 // aborted server-side, so a stuck stream never holds a message in

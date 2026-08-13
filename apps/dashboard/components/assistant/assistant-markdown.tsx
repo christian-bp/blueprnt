@@ -1,26 +1,10 @@
 import Link from "next/link"
 import { Streamdown, type StreamdownProps } from "streamdown"
 
-// The reference client's look, reproduced exactly: no fade at all, each
-// word POPS in complete, one at a time, in document order. Their client
-// renders per-word arrivals with no animation; ours arrives in ~150ms
-// flushes, so the pop is sequenced by the animate plugin instead:
-// duration ~0 means a word is fully visible the instant its turn comes
-// (the [data-sd-animate] rule's `both` fill-mode keeps it hidden until
-// then), and the stagger is the typewriter cadence. One constraint
-// remains: 1000/stagger words/s must clear the measured arrival peak
-// (~28 words/s) or an invisible tail accumulates and list markers stand
-// empty; 30ms drains 33 words/s.
-const ASSISTANT_TEXT_FADE = {
-  animation: "fadeIn",
-  sep: "word",
-  duration: 1,
-  stagger: 30,
-} satisfies StreamdownProps["animated"]
-
-// Assistant answers are model-generated markdown, revealed word by word as
-// the reply streams in (Streamdown's animated pass; see AssistantMessage for
-// which message gets isAnimating). A link to one of the app's own pages
+// Assistant answers are model-generated markdown, shown exactly as arrived
+// (the word-by-word appearance comes from the backend's word-cadence
+// flushes, never from a client animation; see the isAnimating prop's
+// comment). A link to one of the app's own pages
 // (the assistant's system prompt only ever links its fixed page allowlist,
 // starting with "/") navigates client-side via next/link; any other link
 // opens in a new tab so the conversation is not lost. The typeset class
@@ -98,8 +82,16 @@ export function AssistantMarkdown({
 }: {
   text: string
   // Threaded from AssistantMessage: true only for the message currently
-  // streaming (midday's pattern). Both this AND `animated` must be truthy
-  // for Streamdown's per-word fade to run; a settled message renders static.
+  // streaming. Streaming-mode parsing only (incomplete-markdown repair,
+  // caret handling), NEVER an animation: the reference client passes the
+  // same flag with no animated prop, and every animation attempt here
+  // re-ordered visibly, because Streamdown renders per markdown block
+  // with memoization while the animate plugin's seen-before threshold is
+  // one shared counter across blocks, so blocks re-rendering at different
+  // times misclassify later text as seen (instant) while earlier text
+  // still waits. The word-by-word appearance comes from the SOURCE: the
+  // backend flushes at word cadence (ASSISTANT_FLUSH_INTERVAL_MS), and
+  // what has arrived is simply shown.
   isAnimating?: boolean
 }) {
   return (
@@ -119,16 +111,6 @@ export function AssistantMarkdown({
         // hardcoding a second, driftable number.
         className="space-y-(--typeset-flow)"
         controls={false}
-        // The fade must drain FASTER than words arrive or an invisible tail
-        // accumulates: text arrives word-paced from the server in ~150ms
-        // flushes of roughly 15 words, and Streamdown's defaults (150ms
-        // fade, 40ms per-word stagger) drain one flush in ~750ms, so the
-        // queue grew without bound and a list item whose text sat queued
-        // showed as a bare marker for seconds (a ::marker pseudo-element
-        // ignores text-span opacity). 10ms stagger drains a 15-word flush
-        // in the same 150ms the next one takes to arrive; the short fade
-        // keeps the word-by-word softness without ever falling behind.
-        animated={ASSISTANT_TEXT_FADE}
         isAnimating={isAnimating}
         components={components}
       >
