@@ -1,0 +1,21 @@
+apps/dashboard/lib/pay-gap-trend.test.ts
+  s_c6f9c899f4809f::t_15405a36d8b89b 11,29-31,40,47-48
+apps/dashboard/components/assistant/assistant-chart-part.test.tsx
+  s_c6f9c899f4809f::t_e87ed12456dcd1 47-48,52-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "cc077af33c1bdab87c30b3d258dc3f46ff5ffb3e",
+  "prompts": {},
+  "sessions": {
+    "s_c6f9c899f4809f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1577cce8-6a9f-486c-935b-fd8e73cf796b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
