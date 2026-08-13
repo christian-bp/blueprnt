@@ -2396,7 +2396,7 @@
     },
     "assistant": {
       "title": "Blueprnt AI",
-      "inputPlaceholder": "Ask about concepts, your data, or where to do things",
+      "inputPlaceholder": "How can I help you today?",
       "send": "Send",
       "stop": "Stop",
       "newConversation": "New conversation",

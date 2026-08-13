@@ -2396,7 +2396,7 @@
     },
     "assistant": {
       "title": "Blueprnt AI",
-      "inputPlaceholder": "Spørg om begreber, jeres tal, eller hvor du gør ting",
+      "inputPlaceholder": "Hvordan kan jeg hjælpe dig i dag?",
       "send": "Send",
       "stop": "Stop",
       "newConversation": "Ny samtale",

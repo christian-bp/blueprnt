@@ -2396,7 +2396,7 @@
     },
     "assistant": {
       "title": "Blueprnt AI",
-      "inputPlaceholder": "Kysy käsitteistä, luvuistanne tai mistä asiat löytyvät",
+      "inputPlaceholder": "Miten voin auttaa sinua tänään?",
       "send": "Lähetä",
       "stop": "Pysäytä",
       "newConversation": "Uusi keskustelu",

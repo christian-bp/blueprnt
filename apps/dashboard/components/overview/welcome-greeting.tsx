@@ -14,7 +14,7 @@ import { greetingBucket } from "@/lib/greeting"
 // True weight only: the app sans ships a single weight (400), so any bolder
 // utility here makes the browser synthesize a faux bold that distorts the
 // letterforms; size, not weight, is what carries the hero scale.
-const HEADING_CLASS = "text-3xl"
+const HEADING_CLASS = "text-4xl"
 
 // Personal welcome heading: a time-of-day greeting plus the user's first name.
 // The hour is read AFTER mount (never during SSR) so the server clock cannot
@@ -38,7 +38,7 @@ export function WelcomeGreeting() {
   if (hour === null || session === undefined) {
     return (
       <h1 className={cn(HEADING_CLASS, "text-center")}>
-        <Skeleton className="h-9 w-72" />
+        <Skeleton className="h-10 w-80" />
       </h1>
     )
   }
