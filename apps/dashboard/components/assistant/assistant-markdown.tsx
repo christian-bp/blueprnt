@@ -48,21 +48,32 @@ const components = {
   sup: "sup",
   sub: "sub",
   section: "section",
-  // href starting with "/" is one of the assistant's own linked pages
+  // An internal href is one of the assistant's own linked pages
   // (knowledge.ts's fixed allowlist): navigate through Link, in-app, with
-  // no target/rel. Streamdown's sanitizer passes relative hrefs through
-  // unchanged, so the path reaches here untouched. Streamdown's own rehype
-  // pass already stamps every link's props with target/rel of its own
-  // (hardening plain "a" output); target and rel are destructured out here
-  // so that stamp never leaks onto the internal Link, and the external
+  // no target/rel. Streamdown's rehype harden pass rewrites anything it
+  // classifies as path-relative (including a protocol-relative "//host")
+  // down to pathname+search+hash before this component sees it, but that
+  // is an upstream implementation detail, not a contract: the predicate
+  // must hold on its own, so it rejects "//" and "/\\" shapes that a
+  // browser would resolve to another host. Harden also stamps every
+  // link's props with target/rel of its own; they are destructured out so
+  // the stamp never leaks onto the internal Link, and the external
   // branch's explicit values are the only ones that apply.
   a: ({ node: _node, href, target: _target, rel: _rel, ...props }) =>
-    href?.startsWith("/") ? (
+    href !== undefined && isInternalHref(href) ? (
       <Link {...props} href={href} />
     ) : (
       <a {...props} href={href} target="_blank" rel="noreferrer" />
     ),
 } satisfies StreamdownProps["components"]
+
+// A single "/" followed by neither "/" nor "\": exactly a same-origin path.
+// "//evil.com" is protocol-relative and "/\\evil.com" normalizes to it in
+// browsers; both must take the external branch no matter what upstream
+// sanitization did or did not run.
+export function isInternalHref(href: string) {
+  return /^\/(?![/\\])/.test(href)
+}
 
 export function AssistantMarkdown({
   text,

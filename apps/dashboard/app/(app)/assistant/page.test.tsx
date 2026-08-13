@@ -160,6 +160,37 @@ describe("AssistantPage", () => {
     expect(button.disabled).toBe(true)
   })
 
+  it("disables the collapsed stand-in's new-chat button while a reply streams", () => {
+    vi.spyOn(
+      assistantHistoryState,
+      "initialAssistantHistoryOpen"
+    ).mockReturnValue(false)
+    onQuery((ref) => {
+      if (ref === "assistant.chat.getActiveThread") {
+        return { _id: "thread-1", lastMessageAt: 0 }
+      }
+      if (ref === "assistant.chat.listMessages") {
+        return [
+          { _id: "m1", role: "assistant", status: "streaming", parts: [] },
+        ]
+      }
+      if (ref === "assistant.chat.listThreads") return []
+      return undefined
+    })
+    renderPage()
+    // The compact plus carries the same orphan-hazard gate as the panel's
+    // own button; the expand button beside it stays clickable.
+    const newButton = screen.getByRole("button", {
+      name: t.newConversation,
+    }) as HTMLButtonElement
+    expect(newButton.closest("div.absolute")).not.toBeNull()
+    expect(newButton.disabled).toBe(true)
+    const expandButton = screen.getByRole("button", {
+      name: t.history,
+    }) as HTMLButtonElement
+    expect(expandButton.disabled).toBe(false)
+  })
+
   it("lays out the header as three regions, with no buttons and only the centered animated title", () => {
     // A thread with a title, so the centered AssistantTitle actually mounts
     // a region between the two spacer regions (AnimatePresence renders no

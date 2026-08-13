@@ -1,6 +1,9 @@
 import { cleanup, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
-import { AssistantMarkdown } from "@/components/assistant/assistant-markdown"
+import {
+  AssistantMarkdown,
+  isInternalHref,
+} from "@/components/assistant/assistant-markdown"
 
 afterEach(cleanup)
 
@@ -34,6 +37,21 @@ describe("AssistantMarkdown", () => {
     expect(link.getAttribute("href")).toBe("/roles")
     expect(link.getAttribute("target")).toBeNull()
     expect(link.getAttribute("rel")).toBeNull()
+  })
+
+  // The internal/external split must hold on the predicate's own strength,
+  // never on Streamdown's harden pass happening to rewrite these shapes
+  // first: a dependency bump or a rehypePlugins prop on the Streamdown call
+  // would silently remove that upstream net.
+  it("never treats a protocol-relative or backslash href as internal", () => {
+    expect(isInternalHref("/")).toBe(true)
+    expect(isInternalHref("/roles")).toBe(true)
+    expect(isInternalHref("/pay-mappings")).toBe(true)
+    expect(isInternalHref("//evil.example")).toBe(false)
+    expect(isInternalHref("/\\evil.example")).toBe(false)
+    expect(isInternalHref("https://evil.example")).toBe(false)
+    expect(isInternalHref("mailto:x@evil.example")).toBe(false)
+    expect(isInternalHref("")).toBe(false)
   })
 
   it("does not mark any content as animating by default", () => {
