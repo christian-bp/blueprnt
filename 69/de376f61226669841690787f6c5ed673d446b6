@@ -1,0 +1,137 @@
+docs/superpowers/plans/2026-08-13-in-app-docs/05-backend-assistant.md
+  s_0383b617034fa3::t_a83b29cfdc0b20 1-537,539-567,569-726
+  s_0383b617034fa3::t_21f374993c7f53 568
+  s_0383b617034fa3::t_f693d7bd3878ae 538
+CONTEXT-MAP.md
+  s_0383b617034fa3::t_6db671efaa3c5c 21
+  s_0383b617034fa3::t_acfacf25b14aba 20,22
+docs/adr/0020-vektorsokning-for-dokumentationen.md
+  s_0383b617034fa3::t_af9900d9a29c8b 85-152
+  s_0383b617034fa3::t_27ab468423f2be 1-84
+docs/adr/0019-dokumentation-i-appen.md
+  s_0383b617034fa3::t_e8c81276dd1eb0 1-2,4-16,26-51,55-58
+  s_0383b617034fa3::t_694caeec398f0b 3
+  s_0383b617034fa3::t_8ec918bd9e13d9 52-54
+  s_0383b617034fa3::t_aa53535bf87f5b 59-68
+  s_0383b617034fa3::t_3557401a06e58d 17-25
+docs/superpowers/plans/2026-08-13-in-app-docs/03-english-corpus.md
+  s_0383b617034fa3::t_ebc593d3c32ea9 1-14,16-152,154-284
+  s_0383b617034fa3::t_27c597fa422d40 153
+  s_0383b617034fa3::t_905df95ba7faff 15
+docs/superpowers/analysis/2026-08-13-product-dossier/assistant.md
+  s_0383b617034fa3::t_149246b92b6cd7 1-104,109
+  s_0383b617034fa3::t_8c4f08b2546efe 105-108
+docs/superpowers/analysis/2026-08-13-product-dossier/pay-mapping.md
+  s_0383b617034fa3::t_a39211b16d800d 1-153,156-230,249-436,466-480,545-567,574-585
+  s_0383b617034fa3::t_c11a210fa1a507 437-465
+  s_0383b617034fa3::t_3ebf7a5c997f65 231-248
+  s_0383b617034fa3::t_91bf6aa1e50a79 481-544
+  s_0383b617034fa3::t_c10136999e19a6 154-155
+  s_0383b617034fa3::t_c8a3df02714ba9 568-573
+docs/go-live-checklist.md
+  s_0383b617034fa3::t_a4d91fe9951c78 118-121
+  s_0383b617034fa3::t_ef7f0d68270dae 260,269,271
+  s_0383b617034fa3::t_5c9a80e84458f9 38-48
+  s_0383b617034fa3::t_148ef1b535a259 261-268,270,272-280
+  s_0383b617034fa3::t_c009f5e3cea44d 281
+docs/superpowers/analysis/2026-08-13-product-dossier/SOURCES.md
+  s_0383b617034fa3::t_6a41c2a705b2f6 1-10,16-197,199-231,238-239,242
+  s_0383b617034fa3::t_8345849600acdf 232-237,240-241
+  s_0383b617034fa3::t_d1e54aec01f0fc 11-15
+  s_0383b617034fa3::t_38cf00def4ba6e 198
+docs/superpowers/specs/2026-08-13-in-app-docs-design.md
+  s_0383b617034fa3::t_72f04375ec5a1d 115-120
+  s_0383b617034fa3::t_138f58ebd734a3 1-40,42-74,80-114,121-123,125-245,247-266
+  s_0383b617034fa3::t_c9dbb623b643da 41
+  s_0383b617034fa3::t_61c193f587a82f 246
+  s_0383b617034fa3::t_0f80a79dfc60ca 75-79
+  s_0383b617034fa3::t_89dd065e0932db 124
+CLAUDE.md
+  s_0383b617034fa3::t_c2501f088b1c47 51
+  s_0383b617034fa3::t_0fe710108fa82d 46-50,52
+docs/superpowers/plans/2026-08-13-in-app-docs/00-overview.md
+  s_0383b617034fa3::t_c04b22cf79f720 1-49
+  s_0383b617034fa3::t_505ca2a57e9739 50
+docs/superpowers/analysis/2026-08-13-product-dossier/roles.md
+  s_0383b617034fa3::t_a2e2bbb5590724 66
+  s_0383b617034fa3::t_c032b15da23c07 92,95,103,107-123,126-128
+  s_0383b617034fa3::t_9729263ae58d41 21
+  s_0383b617034fa3::t_6e9577c26c04f6 1-14,16-20,22-65,67-91,93-94,96-102,104-106,124-125,129-133
+  s_0383b617034fa3::t_3e65142d86cbc7 15
+docs/superpowers/analysis/2026-08-13-product-dossier/getting-started.md
+  s_0383b617034fa3::t_0084d0921b32f2 1-317,328-407,450-489
+  s_0383b617034fa3::t_10533e385b8fd6 408-449
+  s_0383b617034fa3::t_df84556359f46b 318-327
+docs/superpowers/analysis/2026-08-13-product-dossier/people.md
+  s_0383b617034fa3::t_0348ef898071da 1-108,124-380,418-453
+  s_0383b617034fa3::t_321aee5d6c376e 381-417
+  s_0383b617034fa3::t_56bc388fac6cdb 109-123
+docs/superpowers/plans/2026-08-13-in-app-docs/02-skeleton.md
+  s_0383b617034fa3::t_3181cc0912fbbf 1-19,21,24-181,186,188-238,240-257,259-282,284-285,287-289,292,294,310-316,318-326,328-407,409-817,819-821,823-833,835-922
+  s_0383b617034fa3::t_09dd15f5c7eff3 258
+  s_0383b617034fa3::t_056ac724215d3c 239
+  s_0383b617034fa3::t_0a8abc06544457 182-185,187
+  s_0383b617034fa3::t_de8c1ff8faa965 818
+  s_0383b617034fa3::t_164fe720a973c3 408
+  s_0383b617034fa3::t_5019578df120fe 822
+  s_0383b617034fa3::t_537f38838585db 327
+  s_0383b617034fa3::t_191bbd5b480c15 834
+  s_0383b617034fa3::t_bbb9af42de4713 20,22-23
+  s_0383b617034fa3::t_881c04cff4b15d 283,286,290-291,293,295-309,317
+docs/superpowers/plans/2026-08-13-in-app-docs/01-knowledge-dossier.md
+  s_0383b617034fa3::t_395f7d41a0640a 1-68
+docs/superpowers/analysis/2026-08-13-product-dossier/evaluation.md
+  s_0383b617034fa3::t_86d2ae8df3ab08 17
+  s_0383b617034fa3::t_74cfb944002909 103-104
+  s_0383b617034fa3::t_f5b2533fb16f7e 1-16,18-102,105-116
+docs/superpowers/analysis/2026-08-13-product-dossier/troubleshooting.md
+  s_0383b617034fa3::t_20a556c4425dbd 1-15,17-484
+  s_0383b617034fa3::t_494d05f85986ad 485-508
+  s_0383b617034fa3::t_322e14bddc8f4c 16
+docs/superpowers/analysis/2026-08-13-product-dossier/account.md
+  s_0383b617034fa3::t_97f9eb101a1264 401-411
+  s_0383b617034fa3::t_dbb9589be03a2b 233
+  s_0383b617034fa3::t_56de686055615c 474-485,487-488,490-493,495-496,498-501,503-505,507-510
+  s_0383b617034fa3::t_58397f8d930347 3-8,12-27,30-68,71-79,81-107,109-214,218-232,234-246,250-273,285-292,295-297,335-348,352-400,412-430,434-469,486,489,506,512-521,523-536
+  s_0383b617034fa3::t_609ee6251cf852 1-2,9-11,28-29,69-70,80,108,215-217,247-249,349-351,431-433,470-473,494,497,502,511,522
+  s_0383b617034fa3::t_6fa3da80cec233 274-284
+  s_0383b617034fa3::t_c3c3011c34bc84 293-294,298-334
+  s_0383b617034fa3::t_b17ce289fb61f8 537-540
+docs/superpowers/analysis/2026-08-13-product-dossier/security-privacy.md
+  s_0383b617034fa3::t_b27c2000ddae14 30
+  s_0383b617034fa3::t_6d1ce096412dc7 1-29,31-96,102-103
+  s_0383b617034fa3::t_c47e137844f509 97-101
+docs/superpowers/analysis/2026-08-13-product-dossier/glossary.md
+  s_0383b617034fa3::t_b94ef3b79bf031 1-395,404-491,493,496-506
+  s_0383b617034fa3::t_9eaed9c24a76a1 396-403
+  s_0383b617034fa3::t_c819a80bbe041a 492,494-495
+docs/superpowers/plans/2026-08-13-in-app-docs/06-wrapup.md
+  s_0383b617034fa3::t_db8ecc01aaf99e 1-47
+docs/superpowers/analysis/2026-08-13-product-dossier/organization.md
+  s_0383b617034fa3::t_b81368c15e82ad 1-24,27-64,66-93,102-127
+  s_0383b617034fa3::t_8eca431426fdc7 94-101
+  s_0383b617034fa3::t_16985e3407bc92 65
+  s_0383b617034fa3::t_7dd99212b85d0f 25-26
+docs/superpowers/plans/2026-08-13-in-app-docs/04-translations.md
+  s_0383b617034fa3::t_a7125e9b64b97f 17
+  s_0383b617034fa3::t_9b18d8dd71f460 1-16,18-58
+docs/superpowers/analysis/2026-08-13-product-dossier/model.md
+  s_0383b617034fa3::t_6ef25dd9fd1b10 495-524
+  s_0383b617034fa3::t_9eecc652af692f 1-494,525-541
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "69de376f61226669841690787f6c5ed673d446b6",
+  "prompts": {},
+  "sessions": {
+    "s_0383b617034fa3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "70c0a727-22c9-42cb-ae97-66bc3b799a58",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
