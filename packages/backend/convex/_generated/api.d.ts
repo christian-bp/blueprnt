@@ -18,6 +18,7 @@ import type * as accounts_tables from "../accounts/tables.js";
 import type * as accounts_twoFactor from "../accounts/twoFactor.js";
 import type * as ai_config from "../ai/config.js";
 import type * as ai_draft from "../ai/draft.js";
+import type * as ai_embedRetry from "../ai/embedRetry.js";
 import type * as ai_generate from "../ai/generate.js";
 import type * as ai_persist from "../ai/persist.js";
 import type * as ai_prefill from "../ai/prefill.js";
@@ -54,6 +55,8 @@ import type * as assistant_tools from "../assistant/tools.js";
 import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
 import type * as devReset from "../devReset.js";
+import type * as docs_hits from "../docs/hits.js";
+import type * as docs_rag from "../docs/rag.js";
 import type * as email_cleanup from "../email/cleanup.js";
 import type * as email_client from "../email/client.js";
 import type * as email_erasure from "../email/erasure.js";
@@ -122,6 +125,7 @@ declare const fullApi: ApiFromModules<{
   "accounts/twoFactor": typeof accounts_twoFactor;
   "ai/config": typeof ai_config;
   "ai/draft": typeof ai_draft;
+  "ai/embedRetry": typeof ai_embedRetry;
   "ai/generate": typeof ai_generate;
   "ai/persist": typeof ai_persist;
   "ai/prefill": typeof ai_prefill;
@@ -158,6 +162,8 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   crons: typeof crons;
   devReset: typeof devReset;
+  "docs/hits": typeof docs_hits;
+  "docs/rag": typeof docs_rag;
   "email/cleanup": typeof email_cleanup;
   "email/client": typeof email_client;
   "email/erasure": typeof email_erasure;
@@ -239,6 +245,7 @@ export declare const internal: FilterApi<
 export declare const components: {
   betterAuth: import("../betterAuth/_generated/component.js").ComponentApi<"betterAuth">;
   sweego: import("@christian-ek/sweego/_generated/component.js").ComponentApi<"sweego">;
+  rag: import("@convex-dev/rag/_generated/component.js").ComponentApi<"rag">;
   auditAggregateByOrg: import("@convex-dev/aggregate/_generated/component.js").ComponentApi<"auditAggregateByOrg">;
   auditAggregateByCategory: import("@convex-dev/aggregate/_generated/component.js").ComponentApi<"auditAggregateByCategory">;
 };

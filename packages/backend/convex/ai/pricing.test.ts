@@ -30,4 +30,16 @@ describe("estimateCostNanos", () => {
       outNanosPerToken: 300,
     })
   })
+
+  // Every model the app can call needs an entry, or writeUsage logs an error
+  // on every call and stores the row with no cost. The docs search embeds one
+  // query per assistant message, so a missing entry here is a per-message
+  // error in the logs and a silent hole in the cost rollup.
+  it("pins the mistral-embed snapshot price (documentation search)", () => {
+    expect(MODEL_PRICING["mistral-embed"]).toEqual({
+      inNanosPerToken: 100,
+      outNanosPerToken: 0,
+    })
+    expect(estimateCostNanos("mistral-embed", 1_000_000, 0)).toBe(100_000_000)
+  })
 })

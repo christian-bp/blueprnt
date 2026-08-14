@@ -31,6 +31,26 @@ export const MAX_PROMPT_DESCRIPTION = 2000
 export const AI_ASSISTANT_MODEL_ID =
   process.env.MISTRAL_ASSISTANT_MODEL ?? "mistral-medium-latest"
 
+// The documentation search embedding model (ADR-0020), Mistral La Plateforme
+// EU like every other call here. The dimension is the model's own output
+// width and is NOT a free parameter: the RAG component stores it per
+// namespace, so changing either the model or this number invalidates every
+// embedding already written and requires a full re-index.
+export const AI_EMBEDDING_MODEL_ID =
+  process.env.MISTRAL_EMBED_MODEL ?? "mistral-embed"
+export const AI_EMBEDDING_DIMENSION = 1024
+
+// The cosine floor a documentation hit must clear. Calibrated with
+// `bun run docs:eval`, not chosen: at 0.65 recall is unchanged in both
+// languages (en 13/13, sv 12/13, identical to no floor) while the weakest
+// English off-topic matches drop out. It is deliberately NOT set higher.
+// The two populations overlap in Swedish, where off-topic queries score
+// above 0.70 and the first threshold that silences them (0.75) also cuts
+// recall from 12/13 to 8/13. A floor is therefore a cheap trim here, never
+// the thing that decides relevance: that judgement belongs to the model,
+// which the system prompt tells explicitly that weak matches still come back.
+export const AI_DOCS_SCORE_THRESHOLD = 0.65
+
 // Assistant guardrails. The message cap is clamped, not rejected (same
 // rationale as MAX_PROMPT_DESCRIPTION); the hourly cap and the single
 // in-flight generation ARE rejected, with their own error codes.
@@ -50,7 +70,30 @@ export const ASSISTANT_HOURLY_MESSAGE_CAP = 30
 // Cost: ~25 snapshot writes/s per streaming reply instead of ~7; tracked
 // in docs/go-live-checklist.md beside the other assistant scaling items.
 export const ASSISTANT_FLUSH_INTERVAL_MS = 40
-export const ASSISTANT_MAX_TOOL_STEPS = 3
+// Tool-call steps per reply, INCLUDING the step that writes the prose:
+// generate.ts's prepareStep (assistantPrepareStepToolChoice) forces
+// toolChoice: "none" on the last of these steps, so the budget's real meaning
+// is "this many tool steps, plus one forced answer step" rather than "N steps
+// to spend however the model likes". Before that fix, a budget spent entirely
+// on tools left no step to answer in, which streamOutcome.ts classifies as a
+// failed blank reply. That became reachable when search_docs joined the four
+// org-data tools: a question about whether something exists at all makes the
+// model search several phrasings before it can answer, and at 3 it starved
+// itself (reproduced in the browser: "Kan jag exportera var lonekartlaggning
+// till Excel?" failed every time). Raising the budget to 6 fixed that
+// question but not a broad "explain the whole process chapter by chapter"
+// question, which makes the model search once per chapter and never reach a
+// prose step no matter how high the budget goes; only forcing the last step
+// to answer removes that failure class, so the budget no longer needs to
+// chase it. 6 still leaves room for a multi-search turn plus the forced
+// answer. What this constant costs: each step is its own full-priced
+// provider call, so raising it scales the reply's total spend, not only its
+// latency, and input cost grows further still since every step replays all
+// prior tool results. ASSISTANT_MAX_OUTPUT_TOKENS bounds only each
+// individual step's own output, never the reply's total spend across steps;
+// ASSISTANT_GENERATION_TIMEOUT_MS bounds only wall-clock latency, not
+// dollars, since tokens already generated before an abort are still billed.
+export const ASSISTANT_MAX_TOOL_STEPS = 6
 // Generation hard-stop: a reply that has not finished within this window is
 // aborted server-side, so a stuck stream never holds a message in
 // "streaming" forever.

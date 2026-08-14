@@ -18,7 +18,10 @@ import type { AssistantChartKind } from "./tables"
 // the live roles register, because that count changes as roles are added or
 // evaluated between pay mappings. get_pay_stats reads the live register as
 // of now. The bases can disagree and the model must never conflate them.
-export function buildAssistantTools(ctx: ActionCtx, args: { orgId: string }) {
+export function buildAssistantTools(
+  ctx: ActionCtx,
+  args: { orgId: string; locale: string; userId: string }
+) {
   return {
     get_org_stats: tool({
       description:
@@ -65,6 +68,25 @@ export function buildAssistantTools(ctx: ActionCtx, args: { orgId: string }) {
           metric: "gap",
         }),
     }),
+    search_docs: tool({
+      description:
+        "Search the product documentation in the user's language. Use for questions about how to use the product, what a concept means, where something is done, or what an error message means. Returns documentation excerpts with the page path to link.",
+      inputSchema: z.object({
+        query: z.string().describe("Search terms for the documentation."),
+      }),
+      // An empty or whitespace-only query is short-circuited here rather
+      // than embedded: the search is a model call now (ADR-0020), so a
+      // guaranteed-empty result would still cost tokens.
+      execute: async (input) =>
+        input.query.trim() === ""
+          ? []
+          : await ctx.runAction(internal.docs.rag.searchDocs, {
+              orgId: args.orgId,
+              actorId: args.userId,
+              locale: args.locale,
+              query: input.query,
+            }),
+    }),
   }
 }
 
@@ -74,7 +96,9 @@ type AssistantToolName = keyof ReturnType<typeof buildAssistantTools>
 // buildAssistantTools's own return type) via `satisfies`, so a typo in
 // either this map's key or a tool's name above is a compile error (an
 // excess/unknown property), never a silently-dropped chart. get_org_stats
-// and get_pay_stats are numbers-only and are intentionally absent.
+// and get_pay_stats are numbers-only and are intentionally absent;
+// search_docs is absent too, for the same reason: it returns documentation
+// excerpts for the model to answer from, and renders no chart part.
 //
 // Kept module-private (not exported) and referenced from exactly one
 // exported declaration below: TS's declaration-emit checker (this project

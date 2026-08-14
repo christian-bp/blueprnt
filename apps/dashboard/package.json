@@ -10,7 +10,9 @@
     "lint": "biome lint .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "docs:sync": "bun run scripts/sync-docs.ts",
+    "docs:eval": "bun run scripts/eval-docs.ts"
   },
   "dependencies": {
     "@convex-dev/better-auth": "0.12.5",
@@ -28,12 +30,15 @@
     "@workspace/ui": "workspace:*",
     "better-auth": "1.6.25",
     "convex": "^1.43.0",
+    "js-yaml": "^4.3.1",
     "motion": "^12.43.0",
     "next": "16.3.0",
     "next-intl": "^4.13.5",
+    "next-mdx-remote": "^6.0.0",
     "qrcode": "^1.5.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "remark-gfm": "^4.0.1",
     "streamdown": "^2.5.0",
     "use-stick-to-bottom": "^1.1.6",
     "zod": "^4.4.3"
@@ -41,6 +46,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@testing-library/react": "^16.3.2",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^26",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19",

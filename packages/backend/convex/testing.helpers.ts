@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 import aggregateTest from "@convex-dev/aggregate/test"
+import ragTest from "@convex-dev/rag/test"
 import { convexTest } from "convex-test"
 import authSchema from "./betterAuth/schema"
 import schema from "./schema"
@@ -29,6 +30,9 @@ export function initConvexTest() {
   // test that runs a state-changing mutation needs them registered.
   aggregateTest.register(t, "auditAggregateByOrg")
   aggregateTest.register(t, "auditAggregateByCategory")
+  // The documentation RAG component (docs/rag.ts). Its register also mounts the
+  // component's own workpool, which the async delete paths run on.
+  ragTest.register(t, "rag")
   liveTests.push(t)
   return t
 }
