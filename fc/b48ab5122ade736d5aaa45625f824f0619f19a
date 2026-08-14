@@ -1,0 +1,25 @@
+apps/dashboard/app/(app)/not-found.tsx
+  s_0383b617034fa3::t_12134ed6bad7d6 1-17
+apps/dashboard/app/not-found.tsx
+  s_0383b617034fa3::t_6169bb7122bdb7 2,4-9
+  s_0383b617034fa3::t_734aefde12a27e 1,3,10-19
+apps/dashboard/app/(app)/[...unmatched]/page.tsx
+  s_0383b617034fa3::t_5bf4c546d7b4a3 8-12
+  s_0383b617034fa3::t_2aceda55847301 1-7,13-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "fcb48ab5122ade736d5aaa45625f824f0619f19a",
+  "prompts": {},
+  "sessions": {
+    "s_0383b617034fa3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "70c0a727-22c9-42cb-ae97-66bc3b799a58",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
