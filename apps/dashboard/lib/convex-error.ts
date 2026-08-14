@@ -19,14 +19,23 @@ export const ASSISTANT_ERROR_KEYS = [
 export type AssistantErrorKey = (typeof ASSISTANT_ERROR_KEYS)[number]
 
 // The full wire code (with the "errors." namespace prefix) for the
-// personal-data screen, the one assistant code a UI surface outside this
-// module compares against directly (assistant-message.tsx, for a failed
-// reply's stored errorCode).
+// personal-data screen.
 export const ASSISTANT_PERSONAL_DATA_ERROR_CODE =
   `errors.${ASSISTANT_PERSONAL_DATA_KEY}` as const
 
 function isAssistantErrorKey(value: string): value is AssistantErrorKey {
   return (ASSISTANT_ERROR_KEYS as readonly string[]).includes(value)
+}
+
+// A failed reply stores the same wire code a thrown ConvexError carries, so
+// the stored-code path and the thrown-error path resolve it here rather than
+// each comparing against its own literal. Returns null for a code outside
+// the assistant's set, which the caller renders as its generic failure text.
+export function assistantErrorKeyFromCode(
+  code: string | undefined
+): AssistantErrorKey | null {
+  const leaf = code?.startsWith("errors.") ? code.slice("errors.".length) : null
+  return leaf !== null && isAssistantErrorKey(leaf) ? leaf : null
 }
 
 // aiGenerationFailed is the generic fallback: the same message
@@ -49,8 +58,6 @@ export function translateErrorCode(
     error instanceof ConvexError
       ? (error.data as { code?: string } | null)?.code
       : undefined
-  const leaf = code?.startsWith("errors.") ? code.slice("errors.".length) : null
-  return leaf !== null && isAssistantErrorKey(leaf)
-    ? t(leaf)
-    : t("aiGenerationFailed")
+  const key = assistantErrorKeyFromCode(code)
+  return key === null ? t("aiGenerationFailed") : t(key)
 }

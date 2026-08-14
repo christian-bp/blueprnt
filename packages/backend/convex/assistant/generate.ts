@@ -33,6 +33,46 @@ export function assistantStreamSmoothingOptions() {
   return { delayInMs: ASSISTANT_STREAM_SMOOTHING_MS, chunking: "word" as const }
 }
 
+// Forces the LAST allowed step to answer in prose instead of spending it on
+// another tool call. Without this, a stream that runs its whole tool-step
+// budget with a tool call on every step ends with no prose step left to
+// answer in: classifyStreamOutcome (streamOutcome.ts) then treats the empty
+// result as a failed blank reply, which surfaced twice in the browser once
+// search_docs joined the tool set. At ASSISTANT_MAX_TOOL_STEPS = 3, "Kan jag
+// exportera var lonekartlaggning till Excel?" failed every time. Raising the
+// budget to 6 fixed that question but not "Forklara utforligt hur hela
+// lonekartlaggningen fungerar fran borjan till slut, kapitel for kapitel":
+// a broad question makes the model search once per chapter, so it never
+// reaches a prose step no matter how high the budget goes. Disabling tools on
+// the final step removes the failure class itself rather than moving the
+// cliff further out.
+//
+// Extracted as a pure function of stepNumber (mirroring
+// assistantStreamSmoothingOptions above) so the boundary is unit-testable
+// without wiring up a live streamText call; the prepareStep callback passed
+// to streamText below stays an inline arrow (same reason smoothStream's call
+// stays inline: pulling the whole callback out would lose the TOOLS generic
+// streamText infers from its call-site argument object), and just delegates
+// to this for the actual decision.
+//
+// stepNumber is 0-based: verified in ai@7.0.51's dist/index.js, where each
+// step invocation passes `stepNumber: steps.length` (0 on the first step,
+// with `steps` still empty). stopWhen: stepCountIs(ASSISTANT_MAX_TOOL_STEPS)
+// (isStepCount in the same file) stops the loop once `steps.length ===
+// ASSISTANT_MAX_TOOL_STEPS`, checked AFTER a step completes, so the last step
+// that actually runs is the one numbered ASSISTANT_MAX_TOOL_STEPS - 1. That is
+// the boundary below: `>=` rather than `===` so a hypothetical step beyond it
+// (none occurs given stopWhen, but this stays correct if that ever changes)
+// is also forced to answer rather than silently falling through to another
+// tool call.
+export function assistantPrepareStepToolChoice(
+  stepNumber: number
+): { toolChoice: "none" } | undefined {
+  return stepNumber >= ASSISTANT_MAX_TOOL_STEPS - 1
+    ? { toolChoice: "none" }
+    : undefined
+}
+
 export const generateAssistantReply = internalAction({
   args: {
     assistantMessageId: v.id("assistantMessages"),
@@ -152,8 +192,14 @@ export const generateAssistantReply = internalAction({
             : {}),
         }),
         messages: history.map((m) => ({ role: m.role, content: m.text })),
-        tools: buildAssistantTools(ctx, { orgId: args.orgId }),
+        tools: buildAssistantTools(ctx, {
+          orgId: args.orgId,
+          userId: args.userId,
+          locale: args.locale,
+        }),
         stopWhen: stepCountIs(ASSISTANT_MAX_TOOL_STEPS),
+        prepareStep: ({ stepNumber }) =>
+          assistantPrepareStepToolChoice(stepNumber),
       })
 
       // Every generation that consumed tokens gets a usage row, including
@@ -296,7 +342,10 @@ export const generateAssistantReply = internalAction({
           if (outcome.recordUsage) await recordUsage()
           return null
         } else if (part.type === "error") {
-          const outcome = classifyStreamOutcome({ terminal: "errorPart" })
+          const outcome = classifyStreamOutcome({
+            terminal: "errorPart",
+            error: part.error,
+          })
           console.error("assistant stream reported an error part", {
             messageId: args.assistantMessageId,
             error:
@@ -319,7 +368,11 @@ export const generateAssistantReply = internalAction({
       if (outcome.recordUsage) await recordUsage()
       return null
     } catch (error) {
-      const outcome = classifyStreamOutcome({ terminal: "exception", stopped })
+      const outcome = classifyStreamOutcome({
+        terminal: "exception",
+        stopped,
+        error,
+      })
       if (outcome.status === "failed") {
         console.error("assistant generation failed", {
           error: error instanceof Error ? error.message : String(error),

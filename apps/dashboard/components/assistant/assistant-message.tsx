@@ -6,7 +6,7 @@ import { Message, MessageContent } from "@workspace/ui/components/message"
 import { useTranslations } from "next-intl"
 import { AssistantChartPart } from "@/components/assistant/assistant-chart-part"
 import { AssistantMarkdown } from "@/components/assistant/assistant-markdown"
-import { ASSISTANT_PERSONAL_DATA_ERROR_CODE } from "@/lib/convex-error"
+import { assistantErrorKeyFromCode } from "@/lib/convex-error"
 
 // The listMessages element shape every assistant surface renders. A user
 // message carries only text; an assistant reply's parts are append-only
@@ -39,6 +39,7 @@ export function AssistantMessage({
 }) {
   const t = useTranslations("dashboard.assistant")
   const tErrors = useTranslations("errors")
+  const errorKey = assistantErrorKeyFromCode(message.errorCode)
 
   // Parts render EXACTLY as they have arrived, with no animation of any
   // kind: no client-side reveal pacing and no Streamdown fade (see
@@ -102,9 +103,7 @@ export function AssistantMessage({
           </div>
         ) : message.status === "failed" ? (
           <p className="text-destructive text-sm">
-            {message.errorCode === ASSISTANT_PERSONAL_DATA_ERROR_CODE
-              ? tErrors("assistantPersonalData")
-              : t("failed")}
+            {errorKey === null ? t("failed") : tErrors(errorKey)}
           </p>
         ) : (
           <>

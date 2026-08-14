@@ -133,6 +133,32 @@ describe("AssistantMessage", () => {
     ).toBeDefined()
   })
 
+  // The provider's own 429 reaches the reply as this code. It used to render
+  // the generic failure text, which reads as a bug in the product rather than
+  // as "wait a moment and ask again".
+  it("shows the rate-limit explanation instead of the generic failure text", () => {
+    renderMessage({
+      _id: "4c",
+      role: "assistant",
+      status: "failed",
+      parts: [],
+      errorCode: "errors.assistantRateLimited",
+    })
+    expect(screen.getByText(messages.errors.assistantRateLimited)).toBeDefined()
+    expect(screen.queryByText(messages.dashboard.assistant.failed)).toBeNull()
+  })
+
+  it("falls back to the generic failure text for an unknown code", () => {
+    renderMessage({
+      _id: "4d",
+      role: "assistant",
+      status: "failed",
+      parts: [],
+      errorCode: "errors.somethingElse",
+    })
+    expect(screen.getByText(messages.dashboard.assistant.failed)).toBeDefined()
+  })
+
   it("marks a stopped reply", () => {
     renderMessage({
       _id: "5",
