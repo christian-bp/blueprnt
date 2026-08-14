@@ -1,0 +1,91 @@
+name: "📚 Docs: sync search index"
+
+# The documentation corpus lives in git, but the index the assistant searches
+# lives in Convex, and nothing rebuilds it on its own (the RAG component is
+# push-only, ADR-0020). Without this workflow a merged documentation change is
+# live at /docs while the assistant still answers from the previous text, which
+# fails silently: search returns the old content rather than an error.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/dashboard/content/docs/**"
+      # The chunker decides what text is embedded, so a change here rewrites
+      # every chunk even when no page changed. CHUNKER_VERSION is folded into
+      # the content hash to force exactly that.
+      - "apps/dashboard/lib/docs/chunk.ts"
+      - "apps/dashboard/scripts/sync-docs.ts"
+      - "packages/backend/convex/docs/**"
+      - ".github/workflows/sync-docs.yml"
+  # A manual run covers the cases the paths filter cannot see: a fresh
+  # deployment whose index is empty, or an embedding-model change, which
+  # invalidates every stored vector without touching any file above.
+  workflow_dispatch:
+
+# Never index concurrently. Two runs would race on the same entries, and the
+# corpus of a superseded commit is not worth writing. Not cancel-in-progress:
+# a half-finished index is worse than a slightly stale one, and the run is
+# resumable rather than transactional.
+concurrency:
+  group: sync-docs
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Fail on the missing secret rather than letting the CLI fail later with
+      # a confusing "not configured": without a deploy key the sync would have
+      # no target at all, and the script's own announcement would say so only
+      # after it had started.
+      - name: Require a deployment target
+        run: |
+          if [ -z "${{ secrets.CONVEX_DEPLOY_KEY }}" ]; then
+            echo "CONVEX_DEPLOY_KEY is not set, so there is no deployment to index." >&2
+            exit 1
+          fi
+
+      # The deploy key decides the deployment, so no --prod flag is passed; the
+      # script announces the resolved target before its first write.
+      #
+      # Retried because this workflow and the Vercel build start from the same
+      # push, and the build is what runs `convex deploy`. On a change that
+      # touches both the corpus and the backend, the index functions may not be
+      # live yet for a minute or two. Re-running is nearly free: a page whose
+      # content hash still matches costs no embedding call, so a retry only
+      # pays for what genuinely failed.
+      #
+      # Embedding happens inside the Convex action using the deployment's own
+      # MISTRAL_API_KEY, so no model credentials are needed here.
+      - name: Sync the documentation index
+        working-directory: apps/dashboard
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+        run: |
+          for attempt in 1 2 3; do
+            echo "::group::docs:sync attempt $attempt"
+            if bun run docs:sync; then
+              echo "::endgroup::"
+              exit 0
+            fi
+            echo "::endgroup::"
+            if [ "$attempt" -lt 3 ]; then
+              echo "Attempt $attempt failed. The deployment may still be rolling out; retrying in 60s."
+              sleep 60
+            fi
+          done
+          echo "The documentation index was not fully synced after 3 attempts." >&2
+          exit 1
