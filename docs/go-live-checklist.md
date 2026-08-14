@@ -35,6 +35,17 @@ in the same change.
   roles/families must have them cleared (the reset above) or backfilled with a
   one-off mutation before this schema is deployed. A freshly reset deployment
   needs nothing further: new rows get slugs at creation via `lib/slug.ts`.
+- [ ] **Decide whether `/docs` and `/docs/[slug]` need a server-side session
+  check.** The docs surface (ADR-0019) renders inside the `(app)` shell, but
+  the shell's `AuthGate` (`apps/dashboard/components/auth/auth-gate.tsx`) is
+  client-side: it only chooses which subtree the browser displays after
+  hydration. Neither the page components nor `lib/docs/docs.ts` run a
+  server-side session check before reading and returning the MDX, so the
+  rendered documentation reaches an unauthenticated request today. This
+  exposes no tenant or personal data (the corpus is identical for every
+  organization and contains neither), so it is not a leak, but it is an open
+  decision: add a real server-side session check before go-live, or record
+  shipping it ungated as the deliberate choice, and update ADR-0019 to match.
 
 ## Content and localization
 
@@ -104,6 +115,10 @@ in the same change.
   cross-surface wording decision (one neutral term, or split into per-event
   flat-stat keys), then ship the label in all five locales and register `count`
   in `OTHER_AUDIT_FIELDS` (`apps/dashboard/lib/audit-labels.test.ts`).
+- [ ] **Native review of the docs corpora (sv, nb, da, fi).** The sv, nb, da,
+  and fi docs corpora under `apps/dashboard/content/docs/` are machine-drafted
+  from the en source (2026-08-13/14) and must each be reviewed by a native
+  speaker before launch; en is the source of truth on conflict.
 
 ## Security and compliance
 
@@ -241,6 +256,28 @@ in the same change.
   the same requirement. Before go-live, build this logging in the future
   export/report module (guide Modul 8) at the point data leaves the system,
   not as a per-view log on the detail page.
+
+- [ ] **Wire `bun run docs:sync` into the production deploy flow.** The docs
+  search index (the `@convex-dev/rag` component, ADR-0020) is populated by
+  running `bun run docs:sync` (`apps/dashboard/scripts/sync-docs.ts`) against
+  a Convex deployment. Today it is a manual step run against the dev
+  deployment only; it must run after `convex deploy` in the production
+  deploy flow, wired into CI before go-live. A fresh deployment has an
+  empty index, so until this sync runs against it the assistant's
+  `search_docs` tool answers with no documentation at all, not degraded
+  results. A `CHUNKER_VERSION` bump (`apps/dashboard/lib/docs/chunk.ts`)
+  also requires this sync to run before the new chunking takes effect in
+  search, since the sync is the only path that rebuilds the index from the
+  MDX source.
+
+- [ ] **Move the `@convex-dev/rag` dependency off the pinned alpha version.**
+  `packages/backend/package.json` pins `@convex-dev/rag` to the exact
+  version `0.8.0-alpha.0`, not a range (ADR-0020). The stable line (0.7.5)
+  hard-depends on AI SDK 6, while the assistant's streaming loop is written
+  against AI SDK 7; `0.8.0-alpha.0` is the only published build whose peer
+  range accepts AI SDK 7. Move to a stable release before go-live once one
+  supports AI SDK 7, and re-run the search evaluation from ADR-0020 against
+  it before switching.
 
 - [ ] **Assistant: decide the retention policy for archived assistant threads.** ADR-0018 stage-gates this decision: auto-delete after N days vs keep until user erasure. Implement the chosen policy before onboarding real organizations.
 

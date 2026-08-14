@@ -17,7 +17,9 @@ Terminologi (ADR-0014, 2026-08-05): **Nivå** (kod `level`) är rollens beräkna
 - **Personer (people)** — medarbetare (dataminimerade persondata) och koppling medarbetare↔roll (rollplacering med individens senioritet, ADR-0005). Byggd; ordlista under docs/contexts/ saknas ännu.
 - **Lönekartläggning (payMapping)** — lönedata och lika/likvärdigt arbete-analys (lönekartläggning, ADR-0011/0012). Striktare minimering än övriga kontexter; assessment förblir alltid fri från person-/lönedata. Byggd; ordlista under docs/contexts/ saknas ännu.
 
-Tvärgående moduler utan egen ordlista: **platform** (plattformsadmin, ADR-0009), **ai** (AI-förslag, ADR-0003), **email** (utskick via Sweego-komponenten).
+Tvärgående moduler utan egen ordlista: **platform** (plattformsadmin, ADR-0009), **ai** (AI-förslag, ADR-0003), **email** (utskick via Sweego-komponenten), **assistant** (chattassistenten, ADR-0018), **docs** (dokumentationens sökindex, ADR-0019/0020).
+
+**docs**-kontexten äger dokumentationens sökindex: komponenten `@convex-dev/rag`, med en namnrymd per locale och en post per dokumentationssida, som assistentens `search_docs`-verktyg (ADR-0018/0020) läser via vektorsökning. Källan till sanning är MDX-korpusen under `apps/dashboard/content/docs/{en,sv,nb,da,fi}`, inte indexet; indexet innehåller ingen persondata och är fullständigt återuppbyggbart när som helst via `bun run docs:sync`, oavsett indexets skick.
 
 ## Relationer
 
