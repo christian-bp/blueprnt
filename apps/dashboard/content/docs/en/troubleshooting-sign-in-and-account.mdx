@@ -1,0 +1,125 @@
+---
+title: Permission, membership, and account errors
+description: What each permission, membership, and account message means, and what to do about it.
+section: troubleshooting
+---
+
+blueprnt never shows raw error text from the server; every message you see
+here is one of a fixed set of codes translated into plain language. This
+page explains each one that can appear while working across organizations
+or managing your own account. It does not cover the sign-in form itself
+(a wrong password, an invalid two-factor code, or an expired link), since
+those are plain messages from the sign-in screen, not codes from this
+system.
+
+## I don't have permission to do this
+
+### adminRequired
+
+Code: `adminRequired`
+
+"Only organization admins can do this."
+
+Some actions, such as changing the evaluation model or organization
+settings, or managing members, are restricted to the Admin role. This
+appears if you attempt one of them as an Editor. Ask an organization admin
+to make the change, or to promote you to Admin first. See
+[Members and roles](/docs/members-and-roles) for the exact boundary between
+the two roles.
+
+### platformAdminRequired
+
+Code: `platformAdminRequired`
+
+"You do not have platform admin access."
+
+A small set of actions are restricted to blueprnt's own platform
+administrators, a separate flag from any organization's Admin role. This is
+not something an organization admin can grant themselves or another
+member; it is not self-serviceable.
+
+## I'm told I'm not a member of this organization
+
+### notAMember
+
+Code: `notAMember`
+
+"You are not a member of this organization."
+
+This appears if you try to view or act on data for an organization you do
+not currently belong to, for example after following an old link or
+switching accounts. Switch to an organization you belong to, or ask an
+admin of that organization to invite you; see [Invitations](/docs/invitations).
+
+### membershipConflict
+
+Code: `membershipConflict`
+
+"Your membership could not be verified. Contact support."
+
+This is a rare state where blueprnt cannot resolve which organization your
+membership belongs to, or finds more than one conflicting record. Unlike
+the other messages on this page, there is no self-service fix: contact
+support.
+
+## I can't delete my account, or I can't remove or demote the last administrator
+
+### lastAdmin
+
+Code: `lastAdmin`
+
+"You're the last administrator of an organization. Contact support to
+delete your account."
+
+An organization can never be left without an admin, since there would be
+no way back in to fix it from inside the app. This blocks three related
+actions: deleting your own account while you are the sole admin of an
+organization, demoting the last admin to Editor, and removing the last
+admin from the organization. Promote another member to Admin first (see
+[Members and roles](/docs/members-and-roles)), after which the original
+admin can be changed, removed, or their account deleted like anyone
+else's. See [Deleting your account](/docs/deleting-your-account) for the
+rest of what account deletion does.
+
+## General
+
+These codes are not specific to any one screen; they can appear anywhere
+in the app.
+
+### notAuthenticated
+
+Code: `notAuthenticated`
+
+"You need to sign in."
+
+Your session is no longer valid, most often because it expired or you
+signed out in another tab. Sign in again to continue.
+
+### notFound
+
+Code: `notFound`
+
+"Not found."
+
+The item you were viewing or acting on no longer exists from your
+organization's point of view, most often because it was deleted or
+archived (by you or a colleague) since the page loaded. Reload the page;
+if the item is genuinely gone, it will no longer appear.
+
+### invalidInput
+
+Code: `invalidInput`
+
+"Invalid input."
+
+A generic message for a value that failed validation before it reached
+any more specific check, such as a name that is too long, or exceeding a
+bulk-import cap. Check the field you last changed against any hint text
+shown near it, and correct it.
+
+## Related
+
+- [Members and roles](/docs/members-and-roles)
+- [Invitations](/docs/invitations)
+- [Deleting your account](/docs/deleting-your-account)
+- [Two-factor authentication](/docs/two-factor-authentication)

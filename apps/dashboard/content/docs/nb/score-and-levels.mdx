@@ -1,0 +1,78 @@
+---
+title: Vekting og nivåer
+description: Hvordan vektingen 0-100 beregnes fra vurderingene deres, avrundes nedover, og blir et nivå.
+section: evaluation
+---
+
+Når hvert kriterium er vurdert, beregner blueprnt to tall for rollen:
+vektingen dens, en poengsum fra 0 til 100, og nivået dens. Begge utledes
+alltid fra de nåværende vurderingene og den nåværende modellen; ingen
+av dem skrives noensinne inn for hånd. Ikke bland sammen denne
+vektingen, en rolles samlede resultat, med vektingen dere gjør på
+[Modell](/model)-områdets flik Vekting, som setter hvert kriteriums
+egne vektpoeng; de to deler ordet med vilje, men de er forskjellige
+ting. Se [Vekting og poengbudsjettet](/docs/weighting-and-point-budget)
+for det sistnevnte.
+
+## Vektingsformelen
+
+For hvert kriterium multipliserer dere vurderingen dens (0 til 5) med
+det kriteriets vektpoeng, og legger deretter resultatene sammen over
+alle kriterier. Del den summen med summen av alle kriterienes vektpoeng:
+det er det vektede gjennomsnittet av vurderingene. Multipliser
+gjennomsnittet med 20 og avrund nedover til nærmeste heltall. Det
+endelige tallet, alltid mellom 0 og 100 uansett hvor mange kriterier
+modellen har, er vektingen. Nedoverrundingen holder sammenligningen mot
+nivåterskelverdiene eksakt.
+
+En rolles vekting vises bare når hvert nåværende kriterium er vurdert.
+Til da viser blueprnt hvor mange kriterier som er vurdert i stedet for
+et delvis tall.
+
+## Hvor vektingen kommer fra
+
+På rollens side, når vurderingen dens er fullført, lister en
+sammenstilling hvert kriterium etter bidraget dens: et kriteriums
+vurdering multiplisert med vektpoengene dens, vist som en prosentandel
+av totalen over alle kriterier, sortert med den største driveren først.
+Dette er det ene tallet i sammenstillingen som både er spesifikt for
+denne rollen og beveger seg når modellen omvektes; den viser ikke de
+modellomfattende vektpoengene, siden de er identiske for hver rolle,
+eller den rå 0-5-vurderingen, som sammenstillingen allerede uttrykker
+gjennom bidragsandelen.
+
+## Nivåer og terskelverdier
+
+Nivå 1 er det høyeste nivået, med nedtelling fra der. Modellen deres
+definerer en terskelvekting for hvert nivå; blueprnt tildeler en rolle
+det høyeste nivået hvis terskel vektingen dens oppfyller eller
+overstiger. En rolle har ikke noe nivå før den er fullført, av samme
+grunn som den ennå ikke har noen vekting.
+
+## Alltid utledet, aldri lagret
+
+blueprnt lagrer aldri en rolles vekting eller nivå; den beregner begge
+på nytt, live, hver gang dere ser dem, fra hva vurderingene og modellen
+er akkurat da. Det betyr at en endring i selve modellen, som å legge
+til et kriterium, endre et vektpoeng eller omvekte, kan flytte en rolle
+til et annet nivå umiddelbart, uten at noen rører vurderingene dens. Å
+legge til et kriterium kan til og med gjøre en tidligere fullført rolle
+ufullstendig igjen til det nye kriteriet er vurdert. Hvert slikt skifte
+registreres i hendelsesloggen.
+
+## Ingen manuell overstyring
+
+Det finnes ingen måte å sette eller justere en rolles nivå direkte. Hvis
+et nivå ikke ser riktig ut, er den eneste måten å endre det å justere de
+underliggende vurderingene (se [Justere en vurdering](/docs/adjusting-a-rating))
+eller selve modellen, aldri utfallet. En rolles nivå sier heller
+ingenting om senioriteten til den som har den: senioritet hører til
+personen, satt separat under [Klassifiser](/people/classify), og
+påvirker aldri en rolles vurdering, vekting eller nivå.
+
+## Relatert
+
+- [Vurdere en rolle](/docs/evaluating-a-role)
+- [Justere en vurdering](/docs/adjusting-a-rating)
+- [Siden Nivåer](/docs/levels-views)
+- [Vekting og poengbudsjettet](/docs/weighting-and-point-budget)

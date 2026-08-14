@@ -1,0 +1,61 @@
+---
+title: GDPR and erasure
+description: The two ways to permanently erase personal data in blueprnt, and what stays behind in the audit trail.
+section: security-privacy
+---
+
+blueprnt supports the GDPR right to erasure with a true, permanent
+deletion, never a soft "deactivated" flag. There are two separate paths,
+for two different kinds of person.
+
+## Erasing an employee
+
+An employee is a person recorded in your organization's people register,
+not a user of the app. An admin erases one from
+[Erasing a person](/docs/erasing-a-person): it permanently deletes that
+person's record together with their salary records and role assignments.
+
+## Erasing your own account
+
+You are a signed-in user of blueprnt, separate from any employee record.
+Deleting your own account, described in
+[Deleting your account](/docs/deleting-your-account), permanently removes
+your sign-in identity, your sessions, your organization memberships, and
+your assistant conversations. It never touches your organization's
+employee data.
+
+## What stays in the audit trail, and why
+
+Either kind of erasure keeps the audit log itself: the record that a
+change happened, and when, has lasting value for accountability, so it is
+not deleted along with the person. What erasure does is tombstone the
+identifying details inside it. An erased employee's name, gender,
+employee number, birth date, and job title are replaced with an "Erased"
+marker everywhere they appear in earlier log entries; an erased user's
+name on entries they authored becomes a generic "Deleted user" marker.
+
+This is pseudonymization, not the disappearance of every trace. Entries
+about an erased employee still keep structural details that are not
+identity, such as department, country, or employment type, alongside the
+timestamp of each change. In a very small organization, someone with
+inside knowledge could still piece together who a row was likely about
+from those details. Do not describe erasure as leaving no personal data
+behind: the accurate claim is that no direct identifier survives it, and
+what remains is kept on the basis that it documents a change to an
+organizational record, not to identify anyone.
+
+## Data stays minimal by design
+
+blueprnt keeps personal data out of places that do not need it in the
+first place. A role describes a job, never a person: role, evaluation
+model, and AI-related records never carry an individual's name, salary,
+or performance. Employee data lives only in the people register and its
+directly related records, so erasure has a small, well-defined set of
+places to reach.
+
+## Related
+
+- [Erasing a person](/docs/erasing-a-person)
+- [Deleting your account](/docs/deleting-your-account)
+- [Audit log](/docs/audit-log)
+- [How AI is used](/docs/how-ai-is-used)

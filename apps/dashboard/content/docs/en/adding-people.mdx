@@ -1,0 +1,46 @@
+---
+title: Adding people
+description: Add a single employee by hand, and which fields are identity versus classification.
+section: people
+---
+
+Adding a person by hand is the fast path for a single new employee; bringing
+in many at once is covered in [Importing people](/docs/importing-people).
+Start from "Add employee" on the [People](/people) page.
+
+## Identity fields
+
+Name and gender are required; everything else can be added later. The
+optional fields are employee number, department, start date, and FTE
+percent. An employee number is not required, but once you set one it must
+stay unique across your organization, because future payroll imports use it
+to match this same person instead of creating a duplicate.
+
+## Classifying while you add
+
+The dialog also lets you pick a role and seniority for the person right
+away, though neither is required at this point; you can classify them later
+instead, from [Classifying people](/docs/classifying-people). A seniority
+must be valid for the picked role's track, so picking a role on a different
+track resets the seniority choice back to that track's first option.
+
+## No salary here
+
+This form never collects pay. Salary is entered afterward, on the person's
+own page, once they exist; see
+[Person details and salary](/docs/person-details-and-salary). Keeping salary
+off this form keeps identity and pay as separate steps, and role data never
+carries a person's pay either way.
+
+## After adding
+
+Saving takes you straight to the new person's page. If you picked a role and
+seniority but that part of the save fails, the person is still created; you
+can classify them afterward from Classify.
+
+## Related
+
+- [The people register](/docs/people-register)
+- [Importing people](/docs/importing-people)
+- [Classifying people](/docs/classifying-people)
+- [Person details and salary](/docs/person-details-and-salary)

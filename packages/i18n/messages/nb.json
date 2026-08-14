@@ -208,7 +208,8 @@
       "signOut": "Logg ut",
       "people": "Ansatte",
       "payMapping": "Lønnskartlegginger",
-      "assistant": "Assistent"
+      "assistant": "Assistent",
+      "docs": "Dokumentasjon"
     },
     "people": {
       "description": "Ansatte importert fra lønnssystemet.",
@@ -2469,6 +2470,39 @@
       "renameConversationLabel": "Tittel",
       "renameConversationSave": "Lagre",
       "renameConversationCancel": "Avbryt"
+    },
+    "notFound": {
+      "title": "Siden ble ikke funnet",
+      "body": "Lenken kan være utdatert eller feilskrevet.",
+      "backHome": "Tilbake til oversikten"
+    },
+    "docs": {
+      "headingLink": "Lenke til {heading}",
+      "index": {
+        "title": "Dokumentasjon",
+        "intro": "Veiledninger for alt i blueprnt, fra din første onboarding til en fullført lønnskartlegging.",
+        "popular": "Populære veiledninger",
+        "browse": "Alle veiledninger"
+      },
+      "sections": {
+        "gettingStarted": "Kom i gang",
+        "model": "Vurderingsmodell",
+        "roles": "Roller",
+        "evaluation": "Vurdering av roller",
+        "people": "Ansatte",
+        "payMapping": "Lønnskartlegging",
+        "assistant": "Assistent",
+        "organization": "Organisasjon",
+        "account": "Konto",
+        "securityPrivacy": "Sikkerhet og personvern",
+        "glossary": "Ordliste",
+        "troubleshooting": "Feilsøking"
+      },
+      "notFound": {
+        "title": "Dokumentasjonssiden ble ikke funnet",
+        "body": "Lenken kan være utdatert eller feilskrevet.",
+        "backToIndex": "Tilbake til dokumentasjonen"
+      }
     }
   },
   "errors": {

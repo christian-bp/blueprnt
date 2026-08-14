@@ -1,0 +1,86 @@
+---
+title: Palkkakartoituksen virheet
+description: Mitä kukin palkkakartoituksen aloitus-, muokkauslukitus-, dokumentointi- ja viimeistelyviesti tarkoittaa, ja mitä sille pitää tehdä.
+section: troubleshooting
+---
+
+Tämä sivu selittää joka viestin, joka voi näkyä palkkakartoituksen
+(lönekartläggning) aloittamisen, dokumentoinnin tai viimeistelyn
+aikana.
+
+## En voi aloittaa palkkakartoitusta
+
+### payMappingPreconditionsUnmet
+
+Koodi: `payMappingPreconditionsUnmet`
+
+"Henkilöiltä tai rooleilta puuttuu luokittelu tai arviointi, joten
+palkkakartoitusta ei voi vielä aloittaa."
+
+Palkkakartoituksen aloittaminen vaatii, että kaikki aktiiviset
+henkilöt on luokiteltu rooliin ja senioriteettiin, ja kaikki
+aktiiviset, miehitetyt roolit on täysin arvioitu. Aloituslomake
+korvaa jo nimikentän selkeällä listalla siitä, mikä tarkalleen ei
+täyty, jokainen kohde linkkinä paikkaan, jossa työ tehdään, niin
+tämän viestin itsensä pitäisi näkyä harvoin: se lähinnä varmistaa
+kilpailutilanteen, esimerkiksi kaksi ylläpitäjää avaamassa lomakkeen
+ennen kuin kummankaan ennakkoehtodata on päivittynyt. Katso
+[Palkkakartoituksen aloittaminen](/docs/starting-a-pay-mapping),
+[Henkilöiden luokittelu](/docs/classifying-people), ja
+[Roolin arviointi](/docs/evaluating-a-role) itse työstä.
+
+## En voi muokata merkintöjä tai dokumentaatiota valmiissa palkkakartoituksessa
+
+### payMappingRunCompleted
+
+Koodi: `payMappingRunCompleted`
+
+"Palkkakartoitus on valmis ja lukittu. Avaa se uudelleen
+muokataksesi."
+
+Kun palkkakartoitus on viimeistelty, sen analyysivaiheet,
+yhteistoimintakirjaus, ja sen toimenpiteiden ja merkintöjen sisältö
+muuttuvat vain luku -tilaan. Valitkaa "Avaa uudelleen" palkkakartoituksen
+yleiskatsauksesta avataksenne sen muokkausta varten, viimeistelkää
+se sitten uudelleen kun olette valmis. Toimenpiteen omaa tilaa voi
+vielä muuttaa jopa valmiissa kartoituksessa; vain sisältömuutokset on
+lukittu. Katso [Palkkakartoituksen elinkaari](/docs/run-lifecycle).
+
+## En voi merkitä samaa-työtä-ryhmää valmiiksi
+
+### payMappingDocumentationRequired
+
+Koodi: `payMappingDocumentationRequired`
+
+"Lisää asiallinen peruste tai syventävä analyysi ennen kuin merkitset
+ryhmän valmiiksi."
+
+Ryhmällä on tämä velvollisuus vain, kun siinä on ainakin yksi
+nainen ja yksi mies ja naisten keskipalkka jää miesten jälkeen; muut
+ryhmät eivät koskaan tarvitse sitä. Valitkaa ainakin yksi asiallinen
+peruste palkkaerolle, lisätkää vapaatekstinen merkintä, tai
+molemmat, ennen ryhmän merkitsemistä valmiiksi. Katso
+[Samaa työtä](/docs/equal-work).
+
+## En voi viimeistellä palkkakartoitusta
+
+### payMappingGateUnmet
+
+Koodi: `payMappingGateUnmet`
+
+"Tarkastuksessa on vielä vaiheita ennen kuin palkkakartoituksen voi
+viimeistellä."
+
+Palkkakartoituksen voi viimeistellä vain, kun kaikkien neljän
+analyysiluvun jokainen vaadittu vaihe on dokumentoitu. Toiminto, joka
+viimeistelisi sen, näyttää jo, kuinka monta vaihetta on jäljellä,
+niin tämän viestin itsensä pitäisi näkyä harvoin; viimeistelkää sen
+listaamat jäljellä olevat vaiheet. Katso
+[Palkkakartoituksen elinkaari](/docs/run-lifecycle).
+
+## Aiheeseen liittyvää
+
+- [Mikä on palkkakartoitus](/docs/what-is-pay-mapping)
+- [Palkkakartoituksen aloittaminen](/docs/starting-a-pay-mapping)
+- [Palkkakartoituksen elinkaari](/docs/run-lifecycle)
+- [Samaa työtä](/docs/equal-work)

@@ -1,0 +1,75 @@
+---
+title: Henkilöiden tuonti
+description: Tuokaa palkkatiedostonne blueprntiin nelivaiheisen tuontiavustajan avulla.
+section: people
+---
+
+Henkilöiden tuonti tuo organisaationne palkkatiedot blueprntiin,
+jotta voitte luokitella kunkin henkilön rooliin ja alkaa vertailla
+palkkoja. Aloittakaa kohdasta "Tuo palkat" [Henkilöstö](/people)-
+sivulla.
+
+## Vain CSV
+
+Tuontiavustaja hyväksyy vain CSV-tiedostoja. Viekää palkkatietonne
+CSV-muodossa palkkajärjestelmästänne; taulukkolaskentatiedosto kuten
+XLSX tai ODS hylätään viestillä, joka kehottaa viemään sen
+CSV-muodossa sen sijaan, ettei näytetä hämmentävää virhettä
+puuttuvista sarakkeista. Katso
+[Tuetut palkkajärjestelmien viennit](/docs/supported-payroll-exports),
+mitä järjestelmiä vasten tämä on varmistettu ja miten niiden luvut
+ja päivämäärät luetaan.
+
+## Neljä vaihetta
+
+1. **Lataa**: valitkaa tai pudottakaa CSV-tiedostonne. Tiedoston,
+   jossa ei ole otsikkoriviä, voi silti ladata: ensimmäinen rivi
+   säilytetään datana, sarakkeet numeroidaan, ja kentät ehdotetaan
+   niiden sisällön perusteella, missä se on mahdollista.
+2. **Yhdistä sarakkeet**: yhdistäkää tiedostonne kukin sarake
+   blueprntin tunnistamaan kenttään. Työntekijä-ID, Tehtävänimike,
+   Sukupuoli ja Kuukausipalkka ovat pakollisia; loput on ryhmitelty
+   suositelluiksi tai valinnaisiksi, ja voitte yhdistää jopa kuusi
+   muuta palkkakomponenttia (muuttuva palkka, bonus, kiinteä lisä,
+   lisä, osakkeet/optiot, luontaisetu, muu). Valitkaa jokaiselle
+   rahasarakkeelle, ovatko sen arvot kuukausi- vai vuositasolla;
+   blueprnt arvaa järkevän oletuksen sarakkeen otsikosta, mutta
+   voitte muuttaa sen, ja valintanne muistetaan seuraavaa tuontia
+   varten.
+3. **Tarkista**: tarkastelkaa, kuinka paljon jokaisesta
+   kenttätasosta on katettu, ja korjatkaa sitten tietolaatuongelmat.
+   Kahdennettu työntekijä-ID, lukukelvoton tai negatiivinen
+   palkka-arvo, rivi, jossa on väärä määrä sarakkeita, tai
+   määrittämätön sukupuoli ohittaa koko rivin; määrittämättömän
+   sukupuolen voi sen sijaan korjata rivi kerrallaan suoraan
+   näkymässä, lähettämättä mitään muuta henkilötietoa tuontiin. Muut
+   ongelmat, kuten työaikasarake, joka luettiin osuutena ja
+   skaalattiin prosenteiksi, tai päivämäärä, joka luettiin päivä
+   ensin -muodossa koska se voisi tarkoittaa joko päivää tai
+   kuukautta, ovat vain tiedoksi eivätkä pysäytä tuontia. Jos ongelma
+   on itse lähdetiedostossa, korjatkaa se siellä ja valitkaa "Lataa
+   korjattu tiedosto" aloittaaksenne uudelleen Lataa-vaiheesta
+   puhtaalla kopiolla.
+4. **Tarkastele**: katsokaa tarkalleen, mitä tuonti luo, päivittää
+   tai jättää muuttamatta, sekä henkilöille että palkkatietueille,
+   ennen vahvistamista. Rivi, joka käyttää olemassa olevaa
+   työntekijänumeroa eri nimellä, merkitään todennäköiseksi
+   virheeksi ja ohitetaan oletuksena, ellette valitse päivittää sitä
+   työntekijää silti.
+
+Vahvistuksen jälkeen tuonti käynnistyy ja näyttää edistymisen
+reaaliajassa, sitten lopullisen määrän siitä, kuinka monta henkilöä
+luotiin, päivitettiin, oli jo ajan tasalla tai jätettiin väliin.
+
+## Tuonnin jälkeen
+
+Luokitelkaa tuodut henkilöt rooleihin kohdasta
+[Henkilöiden luokittelu](/docs/classifying-people), jotta voitte
+vertailla palkkoja ja jatkaa [palkkakartoitukseen](/pay-mappings).
+
+## Aiheeseen liittyvää
+
+- [Henkilöiden lisääminen](/docs/adding-people)
+- [Tuetut palkkajärjestelmien viennit](/docs/supported-payroll-exports)
+- [Henkilöiden luokittelu](/docs/classifying-people)
+- [Henkilörekisteri](/docs/people-register)

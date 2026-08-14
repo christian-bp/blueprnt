@@ -1,0 +1,62 @@
+---
+title: Viktning och poängbudgeten
+description: Hur viktpoäng, poängbudgeten och det atomära sparandet fungerar på fliken Viktning.
+section: model
+---
+
+Fliken "Viktning" i [Modell](/model)-ytan är där ni bestämmer hur mycket
+varje kriterium ska räknas i förhållande till de andra. Det är skilt
+från kriteriets bedömningsskala (se
+[Kriterier och bedömningsskalan](/docs/criteria-and-scale)); viktning är
+aldrig ett omdöme om ett kriterium är bra, det är hur stort inflytande
+det har på en rolls viktning och, allt annat lika, relativ lön.
+
+## Viktpoäng
+
+Varje kriterium får ett helt antal viktpoäng från 1 till 5. Tre är den
+neutrala viktpoängen, vilket betyder tydligt och balanserat inflytande;
+1 är mycket lågt inflytande och 5 är mycket starkt inflytande. Varje
+nytt kriterium börjar på 3.
+
+## Poängbudgeten
+
+Det totala antalet viktpoäng att fördela är fast utifrån hur många
+kriterier modellen har: tre poäng per kriterium. En modell med nio
+kriterier har en budget på 27 poäng; lägg till ett tionde kriterium och
+budgeten blir 30. Summan av varje kriteriums viktpoäng måste vara exakt
+lika med budgeten, inte mer och inte mindre. Det finns inget alternativ
+för fria procentsatser eller egna tal: viktningen fungerar alltid så,
+även för en helt egen modell.
+
+## Nollsummeombalansering
+
+Att ändra ett kriteriums viktpoäng på fliken Viktning är ett lokalt
+utkast tills ni sparar; ingenting skrivs förrän då. Medan ni arbetar
+följer en statusrad högst upp på fliken budgeten: "Alla viktpoäng är
+fördelade" när summan matchar budgeten exakt, eller ett antal som visar
+hur många poäng som är kvar att fördela, eller hur många som är över
+budgeten, medan den inte gör det. Att höja ett kriteriums vikt innebär
+alltid att andra måste sänkas för att hålla budgeten.
+
+## Härledda andelar
+
+Bredvid varje kriterium ser ni också dess procentandel av den totala
+vikten, märkt "av den totala vikten". Den här andelen räknas alltid fram
+från viktpoängen, och anges aldrig direkt; den ändras automatiskt varje
+gång ett kriteriums viktpoäng ändras.
+
+## Att spara atomärt
+
+"Spara viktning" sparar hela fördelningen på en gång: varje kriteriums
+viktpoäng skrivs tillsammans, eller inget av dem. Knappen aktiveras bara
+när budgeten är exakt balanserad och något faktiskt har ändrats; att
+spara en fördelning som redan matchar det som är sparat gör ingenting
+och syns inte i händelseloggen. En förutsättning värd att känna till: ni
+kan inte spara en partiell eller överbudgeterad fördelning, fliken
+kräver att hela modellen balanserar först.
+
+## Relaterat
+
+- [Kriterier och bedömningsskalan](/docs/criteria-and-scale)
+- [AI-viktgranskningen](/docs/ai-weighting-review)
+- [Modellöversikt](/docs/model-overview)

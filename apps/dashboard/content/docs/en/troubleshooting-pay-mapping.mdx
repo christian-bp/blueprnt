@@ -1,0 +1,78 @@
+---
+title: Pay mapping errors
+description: What each pay mapping start, edit-lock, documentation, and completion message means, and what to do about it.
+section: troubleshooting
+---
+
+This page explains every message that can appear while starting,
+documenting, or completing a pay mapping (lönekartläggning).
+
+## I can't start a pay mapping
+
+### payMappingPreconditionsUnmet
+
+Code: `payMappingPreconditionsUnmet`
+
+"People or roles are missing classification or evaluation, so the pay
+mapping cannot start yet."
+
+Starting a pay mapping needs every active person classified into a role
+and seniority, and every active, staffed role fully evaluated. The start
+dialog already replaces its name field with a plain list of exactly what
+is unmet, each item a link to where the work happens, so you should rarely
+see this message itself: it mainly backstops a race, for example two
+admins opening the dialog before either's precondition data has
+refreshed. See [Starting a pay mapping](/docs/starting-a-pay-mapping),
+[Classifying people](/docs/classifying-people), and
+[Evaluating a role](/docs/evaluating-a-role) for the work itself.
+
+## I can't edit notes or documentation on a completed pay mapping
+
+### payMappingRunCompleted
+
+Code: `payMappingRunCompleted`
+
+"The pay mapping is completed and locked. Reopen it to edit."
+
+Once a pay mapping is completed, its analysis steps, collaboration record,
+and the content of its actions and notes become read-only. Choose
+"Reopen" from the pay mapping's overview to unlock it for editing, then
+complete it again when you are done. An action's own status can still be
+changed even on a completed mapping; only content edits are locked. See
+[Run lifecycle and statuses](/docs/run-lifecycle).
+
+## I can't mark an equal-work group as done
+
+### payMappingDocumentationRequired
+
+Code: `payMappingDocumentationRequired`
+
+"Add an objective reason or a deepened analysis before marking the group
+done."
+
+A group only carries this duty when it has at least one woman and one man
+and the women's average pay trails the men's; other groups never need it.
+Choose at least one objective reason for the pay difference, add a
+free-text note, or both, before marking the group done. See
+[Equal work](/docs/equal-work).
+
+## I can't complete the pay mapping
+
+### payMappingGateUnmet
+
+Code: `payMappingGateUnmet`
+
+"Steps remain in the review before the pay mapping can be completed."
+
+A pay mapping can only be completed once every required step across all
+four analysis chapters is documented. The action that would complete it
+already shows how many steps remain, so you should rarely see this
+message directly; finish the outstanding steps it lists. See
+[Run lifecycle and statuses](/docs/run-lifecycle).
+
+## Related
+
+- [What is a pay mapping](/docs/what-is-pay-mapping)
+- [Starting a pay mapping](/docs/starting-a-pay-mapping)
+- [Run lifecycle and statuses](/docs/run-lifecycle)
+- [Equal work](/docs/equal-work)

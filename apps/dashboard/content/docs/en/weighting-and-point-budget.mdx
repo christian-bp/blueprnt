@@ -1,0 +1,63 @@
+---
+title: Weighting and the point budget
+description: How weight points, the point budget, and the atomic save work on the Weighting tab.
+section: model
+---
+
+The "Weighting" tab of the [Model](/model) area is where you decide how
+much each criterion counts relative to the others. This is separate from
+the criterion's evaluation scale (see
+[Criteria and the evaluation scale](/docs/criteria-and-scale)); weighting
+is never a verdict on whether a criterion is good, it is how much
+influence it has on a role's weighting and, all else equal, relative
+pay.
+
+## Weight points
+
+Each criterion gets a whole number of weight points from 1 to 5. Three
+is the neutral weight point, meaning clear and balanced influence; 1 is
+very low influence and 5 is very strong influence. Every new criterion
+starts at 3.
+
+## The point budget
+
+The total number of weight points to distribute is fixed by how many
+criteria the model has: three points per criterion. A model with nine
+criteria has a budget of 27 points; add a tenth criterion and the budget
+becomes 30. The sum of every criterion's weight points must equal the
+budget exactly, no more and no less. There is no free-percentage or
+custom-number option: weighting always works this way, even for a fully
+custom model.
+
+## Zero-sum rebalancing
+
+Changing one criterion's weight point on the Weighting tab is a local
+draft until you save; nothing is written until then. While you work, a
+status line at the top of the tab tracks the budget: "All weight points
+are distributed" once the total matches the budget exactly, or a count of
+how many points are still left to distribute, or how many are over the
+budget, while it does not. Raising one criterion's weight always means
+lowering others to stay on budget.
+
+## Derived shares
+
+Next to each criterion you also see its percent share of the total
+weight, labelled "of the total weight". This share is always calculated
+from the weight points, never entered directly; it moves automatically
+whenever any criterion's weight point changes.
+
+## Saving atomically
+
+"Save weighting" saves the whole allocation at once: every criterion's
+weight point is written together, or none of them are. The button is
+only enabled once the budget is exactly balanced and something has
+actually changed; saving an allocation that matches what is already
+stored does nothing and does not appear in the audit log. A precondition
+worth knowing: you cannot save a partial or over-budget allocation, the
+tab requires the whole model to balance first.
+
+## Related
+
+- [Criteria and the evaluation scale](/docs/criteria-and-scale)
+- [The AI weighting review](/docs/ai-weighting-review)
+- [Model overview](/docs/model-overview)

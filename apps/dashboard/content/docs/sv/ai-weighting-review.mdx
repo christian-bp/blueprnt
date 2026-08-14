@@ -1,0 +1,53 @@
+---
+title: AI-viktgranskningen
+description: När ni kan be AI granska er viktning, vad den föreslår, och hur ni bekräftar det.
+section: model
+---
+
+På fliken "Viktning" i [Modell](/model)-ytan kan AI granska er nuvarande
+viktning och föreslå justeringar som ni kan acceptera eller avböja. Den
+ändrar aldrig er modell på egen hand.
+
+## När granskningen är tillgänglig
+
+Knappen "Låt AI granska viktningen" visas bara när er viktning redan är
+balanserad (varje viktpoäng fördelad, inga poäng kvar eller för mycket)
+och ni inte har några osparade ändringar på fliken. Om ni just har
+tillämpat en granskning och inte har ändrat viktningen sedan då förblir
+knappen dold tills ni gör en ny ändring, så att en granskning aldrig
+begärs mot en viktning den redan har granskat.
+
+## Vad AI:n föreslår
+
+Att öppna granskningen begär en uppsättning balanserade flyttar, var och
+en skriven som att flytta ett antal viktpoäng från ett kriterium till
+ett annat, tillsammans med en kort motivering till varför. Varje enskild
+flytt är i sig nollsumma (poäng som tas bort från ett kriterium hamnar
+alltid på ett annat), så den totala fördelningen håller sig exakt inom
+budgeten oavsett vilka flyttar ni väljer att gå vidare med. Om AI:n inte
+hittar något värt att justera säger den det ("AI:n hittade inga flyttar
+att föreslå.") och erbjuder bara ett sätt att avfärda granskningen.
+
+## Välja vilka flyttar att acceptera
+
+Varje föreslagen flytt har sin egen kryssruta och börjar ikryssad; ni
+kan bocka ur vilken flytt ni ogillar innan ni tillämpar. En expanderbar
+sektion "Varför den här ändringen?" på varje flytt visar dess motivering
+utan att belamra listan. "Tillämpa valda" tillämpar bara de flyttar ni
+lämnat ikryssade; "Avfärda" kastar hela granskningen utan att ändra
+något.
+
+## Proveniens och bekräftelse
+
+Varje granskning märks som ett AI-genererat förslag som ni granskar och
+bekräftar; ingenting från den tillämpas någonsin automatiskt.
+Händelseloggen registrerar en tillämpad granskning som ett AI-förslag ni
+bekräftat, inte som en vanlig manuell redigering, så att modellens
+historik alltid visar vilka ändringar som kom från en AI-granskning och
+vilka viktpoäng ni accepterade.
+
+## Relaterat
+
+- [Viktning och poängbudgeten](/docs/weighting-and-point-budget)
+- [Kriterier och bedömningsskalan](/docs/criteria-and-scale)
+- [Modellöversikt](/docs/model-overview)

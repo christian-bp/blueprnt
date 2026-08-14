@@ -1,0 +1,87 @@
+---
+title: Key concepts
+description: The handful of terms blueprnt uses precisely, and how they relate to each other.
+section: getting-started
+---
+
+blueprnt uses a small set of terms in a precise way. Getting these five
+pairs straight, and knowing that a pay mapping freezes them into a
+snapshot, makes the rest of the app easier to read.
+
+## Role versus person
+
+A [role](/roles) describes a job, never a person: a title, a purpose, a
+list of responsibilities, and the track it belongs to. A role's evaluation
+never carries a name, a salary, or anyone's performance.
+
+A [person](/people) is an employee: their name, gender, employment details,
+and pay. People are imported and then assigned to a role. Many people can
+be assigned to the same role over time, and a role can exist with nobody
+assigned to it yet. Keeping the two apart is what lets blueprnt evaluate
+the job itself, independent of who currently does it.
+
+## Model versus evaluation
+
+The [evaluation model](/model) is the shared measuring stick for your whole
+organization: the criteria every role is judged against, and the weight
+points allocated to each one. There is one model per organization, and
+changing it affects every role.
+
+[Evaluating](/docs/evaluating-a-role) a role means rating that specific
+role against every criterion in the model. The rating belongs to the role,
+not the model; two roles can be rated very differently against the same
+model.
+
+## Level versus seniority
+
+A role's level is the outcome blueprnt computes from its rating: how the
+role's total weighting compares to the level thresholds in your model.
+Level 1 is the highest level. You never set or override a level directly;
+it always follows from the rating. See the level ladder on the
+[Levels](/work) page.
+
+Seniority is different: it belongs to the person, not the role. When you
+classify someone into a role, you also set their seniority within that
+role's track, for example IC2 or Lead-1. A role itself never carries a
+seniority, only a track; seniority is set per person from
+[Classify](/people/classify).
+
+## Step versus weight point
+
+A step is one of the six positions, 0 to 5, on a single criterion's rating
+scale. Each step has its own description, written when the criterion is
+defined on the [Model](/model) page's Criteria tab, and a role's rating
+against that criterion is always one of its six steps.
+
+A weight point is different: it is how much that whole criterion counts
+toward a role's total weighting, from 1 to 5, set on the
+[Weighting](/model/weighting) tab. Every organization allocates the same
+fixed budget, three points per criterion on average, across all its
+criteria; a criterion's percent share of the total is derived from its
+weight points, never entered directly.
+
+## Role family versus track
+
+A [role family](/docs/role-families) groups roles that share the same kind
+of work, purely to organize your own register. A role belongs to at most
+one family, or none.
+
+A track is different: it is what kind of job a role is, set on the role's
+job profile, and it is one of individual contributor, lead, or manager.
+Neither a family nor a track ever affects a role's evaluation, weighting,
+or level; two roles in the same family can sit on different tracks.
+
+## Pay mapping as a frozen snapshot
+
+A [pay mapping](/pay-mappings) is not a live report: starting one freezes
+a snapshot that every later analysis reads from, so its numbers do not
+shift after the fact. See
+[Starting a pay mapping](/docs/starting-a-pay-mapping) for exactly what
+gets frozen and why.
+
+## Related
+
+- [Introduction](/docs/introduction)
+- [Evaluating a role](/docs/evaluating-a-role)
+- [Navigating the app](/docs/navigating-the-app)
+- [Glossary](/docs/glossary)

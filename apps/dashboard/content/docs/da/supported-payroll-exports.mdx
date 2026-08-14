@@ -1,0 +1,73 @@
+---
+title: Understøttede lønsystemer
+description: De lønsystemer, importen er verificeret mod, og hvad I gør, når en fil ikke kan læses.
+section: people
+---
+
+Importguidens kolonnegenkendelse og fortolkning er bygget og
+verificeret mod virkelige CSV-eksporter fra Visma, Hogia, Fortnox,
+Agda, Personec, SD Worx, SAP SuccessFactors og Workday, på tværs af
+engelsk, svensk, norsk, dansk og finsk. Det betyder ikke, at kun disse
+systemer fungerer: enhver CSV-eksport med de felter, der er nævnt i
+[Importér medarbejdere](/docs/importing-people), kan tilknyttes i
+hånden. Det betyder, at disse specifikke systemers virkelige
+særegenheder er blevet kontrolleret direkte.
+
+## Tal og datoer
+
+Beløb læses, uanset om de bruger komma eller punktum som decimaltegn,
+med eller uden mellemrumsopdelte tusinder, og med en foranstillet
+eller efterstillet valutakode eller symbol som "SEK", "kr" eller "EUR"
+fjernet. Datoer læses i ISO-format, dag-først-formater som
+"15.01.2023" eller "15/01/2023", og en almindelig 8-cifret form, blandt
+andre. Når en dato kunne læses enten dag-først eller måned-først, og
+begge er kalendergyldige, går blueprnt altid ud fra dag-først, da det
+matcher hvert af disse lønsystemers nordiske eksporter, og flager
+rækken, så I kan dobbeltkontrollere den i stedet for at gætte i
+stilhed.
+
+## Køn
+
+Kønsværdier på norsk, dansk og finsk genkendes sammen med svensk og
+engelsk, og en numerisk statistisk kode læses kun som køn under en
+kolonneoverskrift, der selv handler om køn. En værdi, der ikke kan
+afklares til Mand eller Kvinde, gættes aldrig: den flages til et
+manuelt valg per række i stedet, under Kontroller-trinnet.
+
+## Stilling som en brøkdel
+
+Nogle systemer eksporterer beskæftigelsesgrad som en brøkdel, for
+eksempel 0,8, i stedet for en procentdel. Når hver værdi i en kolonne
+er 1,0 eller mindre, skalerer blueprnt hele kolonnen til en procentdel
+og viser en meddelelse, der forklarer, at det gjorde det, så ændringen
+er synlig i stedet for stille.
+
+## Hvad der ikke læses endnu
+
+En håndfuld formater understøttes med vilje ikke lige nu:
+regnearksfiler (XLSX, XLS, ODS) i stedet for CSV, amerikansk
+komma-tusind-format som "52,000", schweizisk apostrofgruppering,
+negative eller parentessatte beløb, og datoer skrevet med et
+månedsnavn eller et to-cifret år. En fil, der bruger et af disse,
+kræver en lille justering i jeres lønsystems eksportindstillinger,
+eller en manuel redigering, før den importerer korrekt.
+
+## Når en fil ikke kan læses
+
+Uploader I en regnearksfil ved en fejl, fortæller guiden jer ligeud, at
+filen ikke er en CSV, og beder jer om at eksportere den som CSV og
+uploade den i stedet. En tom fil får den samme slags direkte besked.
+Uploades filen, men dens kolonner ser forkerte ud, kontroller for en
+manglende kolonneseparator eller ulæselig headertekst, som begge
+Kontroller-trinnet påpeger som en filadvarsel uden at blokere importen;
+en manglende headerrække påpeges også, selv om filen stadig importeres
+med sine kolonner nummereret. I alle tilfælde ligger løsningen i jeres
+lønsystems eksportindstillinger, ikke inde i blueprnt: eksportér igen
+som CSV, med en headerrække, i en standard tekstkodning, og upload
+derefter den korrigerede fil.
+
+## Relateret
+
+- [Importér medarbejdere](/docs/importing-people)
+- [Klassificér medarbejdere](/docs/classifying-people)
+- [Medarbejderregistret](/docs/people-register)

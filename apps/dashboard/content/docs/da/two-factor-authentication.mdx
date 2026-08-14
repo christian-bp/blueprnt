@@ -1,0 +1,70 @@
+---
+title: To-trins-bekræftelse
+description: Den obligatoriske opsætningsguide, valget mellem godkendelsesapp eller e-mail, og adgangskodebeskyttede sikkerhedskoder.
+section: account
+---
+
+Hver konto i blueprnt skal bekræfte en anden faktor, før den når
+dashboardet. Der er ingen måde at slå to-trins-bekræftelse fra.
+
+## At sætte det op
+
+Første gang I logger ind uden en bekræftet anden faktor, holder
+blueprnt jer i en opsætningsguide: "Sikr din konto", "Totrinsbekræftelse
+er påkrævet. Vælg, hvordan du vil bekræfte, at det er dig, når du
+logger ind." I vælger mellem to metoder:
+
+- **Godkendelsesapp** (mærket "Anbefales"): brug en app som Google
+  Authenticator eller 1Password.
+- **E-mailkoder**: blueprnt sender jer en kode på e-mail, hver gang I
+  logger ind.
+
+Derefter indtaster I jeres adgangskode igen ("Bekræft din
+adgangskode", "Indtast din adgangskode igen for at slå
+totrinsbekræftelse til."), før metoden rent faktisk slås til: at
+tilmelde en anden faktor kræver altid, at I beviser jeres adgangskode
+igen, selv om I allerede er logget ind.
+
+For en godkendelsesapp scanner I en QR-kode (eller indtaster en nøgle
+manuelt) og indtaster derefter den 6-cifrede kode, den viser. For
+e-mailkoder sender blueprnt en 6-cifret kode til jeres adresse, og I
+indtaster den i stedet. Uanset hvad tæller metoden kun som sat op, når
+I har bekræftet en kode fra den, ikke blot slået den til.
+
+## Sikkerhedskoder
+
+At vælge godkendelsesappen giver jer også et sæt sikkerhedskoder: "Gem
+disse et sikkert sted. Hver kode virker én gang, hvis du mister adgang
+til din godkendelsesapp og e-mail." I skal afkrydse "Jeg har gemt mine
+sikkerhedskoder", før opsætningen kan afsluttes. E-mailkoder har ingen
+separate sikkerhedskoder, da selve e-mailen altid er tilgængelig som
+en reserveløsning.
+
+## Hver login, hver gang
+
+Jeres anden faktor kræves ved hver login; blueprnt tilbyder aldrig at
+huske en enhed eller springe kontrollen over næste gang.
+
+## At administrere det bagefter
+
+Kortet "To-trins-bekræftelse" på [Kontosikkerhed](/account/security)
+viser jeres nuværende metode og tilbyder to handlinger:
+
+- **Skift metode** genstarter opsætningsguiden fra begyndelsen, så I
+  kan skifte mellem en godkendelsesapp og e-mailkoder. Jeres nuværende
+  metode fortsætter kun med at virke, indtil I færdiggør den nye; at
+  starte dette og ikke færdiggøre det midtvejs efterlader jer med at
+  skulle fuldføre opsætningen ved jeres næste login.
+- **Generer nye sikkerhedskoder** (kun godkendelsesapp) udsteder et
+  frisk sæt koder, som erstatter de gamle. Dette spørger om jeres
+  adgangskode igen, men rører ellers ikke jeres godkendelsesapp: I
+  behøver ikke genscanne noget.
+
+Der er ingen måde at deaktivere to-trins-bekræftelse helt; at skifte
+metode er den eneste måde at skifte på.
+
+## Relateret
+
+- [Profil og sprog](/docs/profile-and-language)
+- [Skift din e-mail](/docs/changing-your-email)
+- [Datas placering](/docs/data-residency)

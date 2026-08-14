@@ -1,0 +1,91 @@
+---
+title: Onboarding-guide
+description: Den firetrins-guide, der gør en ny organisation til et fungerende rolleregister.
+section: getting-started
+---
+
+Første gang en admin logger ind på en ny organisation, guider blueprnt
+dem gennem en kort opsætningsguide, før resten af appen vises. Guiden har
+fire trin: navn, land, branche og rollefamilier. Der er ikke noget
+separat trin til at vælge sprog eller vurderingsmodel; begge dele ordnes
+automatisk, som beskrevet nedenfor.
+
+## Organisationens navn
+
+Den første skærm spørger "Hvad hedder jeres organisation?". Indtast et
+navn, og vælg "Næste" for at oprette organisationen. Går I tilbage til
+dette trin senere, omdøbes organisationen kun, hvis I ændrer navnet.
+
+## Land
+
+Den anden skærm spørger "Hvor er I baseret?" med valgkort for Sverige,
+Norge, Danmark, Finland og Andet. At vælge et land fører jer direkte til
+næste skærm og sætter samtidig organisationens standardvaluta og
+standardsprog, begge udledt af det valgte land. Der er ikke noget
+separat sprogspørgsmål: skift standardsproget senere fra
+[Organisation](/organization), hvis I har brug for det.
+
+## Branche
+
+Den tredje skærm spørger "Hvilken branche er I i?" med ni valgkort:
+Offentlig sektor, Produktion, Konsulentvirksomhed, Detailhandel,
+IT/Telekom, Sundhed og velvære, Finans og forsikring, Ejendom og
+byggeri, og Andet. At vælge en branche fører jer videre med det samme.
+Branchen bestemmer også det udgangspunkt, der bydes i næste trin.
+
+Før rollefamilie-trinnet kan nås, opretter blueprnt jeres
+vurderingsmodel i baggrunden ud fra standardskabelonen. Der er ikke noget
+valg mellem en skabelon og at starte fra bunden; hver organisation
+starter fra den samme standardskabelon med 9 kriterier og justerer den
+bagefter fra [Model](/model).
+
+## Rollefamilier
+
+Det sidste trin spørger, hvilke rollefamilier og roller der findes i
+jeres organisation. Track (individual contributor, lead eller manager)
+er den type job, rollen er; familie er blot den måde, I grupperer roller
+i jeres eget register, og de to er uafhængige af hinanden. Dette trin
+giver to måder at fylde jeres rolleregister på:
+
+- Skriv eller indsæt en liste med rolletitler, én per linje eller
+  adskilt med komma, direkte fra et dokument, et regneark eller et
+  HR-system. blueprnts AI grupperer dem i rollefamilier og foreslår hver
+  rolles track. Indsæt kun titler, aldrig medarbejdernavne.
+- **Brug en brancheskabelon**: vælg "Brug en brancheskabelon" for at
+  starte fra et færdigt sæt familier og roller for jeres valgte branche,
+  uden at det involverer nogen AI-kald.
+
+Begge veje ender på den samme gennemsynstabel, som er fuldt redigerbar:
+omdøb familier, flyt roller mellem dem, ret en rolles foreslåede track,
+eller fjern det, I ikke vil have med. Intet gemmes til jeres
+organisation, før I vælger "Næste" fra denne gennemgang. Et sæt, der
+allerede er gemt (for eksempel hvis I genindlæser midtvejs), kan
+kasseres med "Start forfra", som beder jer bekræfte med "Ja, start
+forfra", før det tømmer sættet.
+
+Når I går videre, opretter blueprnt de familier og roller, I har
+gennemgået, og udarbejder derefter automatisk et formål og et sæt
+ansvarsområder for hver ny rolle ud fra dens titel, vist som "Udarbejder
+rolleprofiler" med en fremdriftsbjælke, mens det arbejder. I kan
+redigere alle disse udkast bagefter fra [Roller](/roles).
+
+## Hvis I genindlæser midtvejs
+
+Guiden har ikke sit eget separate "genoptagelsespunkt". Hvert trins
+fuldførelse kontrolleres mod, hvad der faktisk er gemt for jeres
+organisation, så en genindlæsning af siden altid genoptager ved det
+første trin, der ikke er fuldført endnu, også midt i
+rollefamilie-trinnet. I taber aldrig fremdrift ved at opdatere siden.
+
+## Hvis I ikke er admin
+
+Opsætningen kan kun gennemføres af en admin. Ethvert andet medlem, der
+logger ind på en organisation, som ikke har afsluttet opsætningen, ser
+en venteskærm i stedet for guiden, indtil en admin gennemfører den.
+
+## Relateret
+
+- [Introduktion](/docs/introduction)
+- [Nøglebegreber](/docs/key-concepts)
+- [Naviger i appen](/docs/navigating-the-app)
+- [Rollefamilier](/docs/role-families)

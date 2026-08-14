@@ -1,0 +1,114 @@
+---
+title: Fejl med medarbejdere og import
+description: Hvad hver besked om klassificering, tildeling og CSV-import betyder, og hvad I skal gøre ved den.
+section: troubleshooting
+---
+
+Denne side forklarer hver besked, der kan dukke op, mens I tilføjer,
+klassificerer eller importerer medarbejdere.
+
+## Jeg kan ikke tilføje eller importere en person, fordi medarbejdernummeret allerede er brugt
+
+### personRefExists
+
+Kode: `personRefExists`
+
+"En medarbejder med det medarbejdernummer findes allerede."
+
+Når I har sat et medarbejdernummer på en person, skal det forblive
+unikt i jeres organisation: det er, hvad fremtidige lønimporter bruger
+til at matche den samme person i stedet for at oprette en dublet.
+Dette vises som en indlejret besked på selve medarbejdernummer-feltet,
+både i tilføj-medarbejder-dialogen og rediger-medarbejder-dialogen,
+snarere end som en toast. Brug et andet, unikt medarbejdernummer, eller
+find den eksisterende person med det nummer og rediger dem i stedet.
+Se [Tilføj medarbejdere](/docs/adding-people).
+
+## Jeg kan ikke vælge den senioritet for denne person
+
+### invalidSeniority
+
+Kode: `invalidSeniority`
+
+"Den senioritet er ikke gyldig for rollens track."
+
+Senioritetsværdier kommer fra stigen, der hører til en rolles track
+(individual contributor, lead eller manager), så en værdi gyldig på
+én track er ikke gyldig på en anden. I daglig brug er
+senioritetsvalget allerede begrænset til værdier, der passer til den
+aktuelt valgte rolle, og nulstiller automatisk, hvis I skifter til en
+rolle på en anden track, så denne besked dukker primært op, hvis
+rollen eller dens track ændrede sig et andet sted, mens jeres formular
+stadig var åben. Genindlæs, og vælg en rolle og senioritet igen; se
+[Klassificér medarbejdere](/docs/classifying-people).
+
+## Jeg kan ikke sætte den ikrafttrædelsesdato for en ny tildeling
+
+### invalidEffectiveDate
+
+Kode: `invalidEffectiveDate`
+
+"Ikrafttrædelsesdatoen skal være efter den aktuelle tildelnings
+startdato."
+
+En ny rolle- eller senioritetstildeling skal starte strengt efter
+personens aktuelt åbne tildeling. Intet i appen lader jer vælge denne
+dato i hånden i dag; den sættes automatisk til det øjeblik, I
+bekræfter, så denne besked er en backend-sikkerhed mod at
+reklassificere den samme person to gange på det samme øjeblik, for
+eksempel ved at dobbeltklikke Bekræft, eller handle på den samme person
+fra to åbne faner på én gang. Vent et øjeblik, og prøv igen; se
+[Klassificér medarbejdere](/docs/classifying-people).
+
+## Min CSV-fil blev afvist, før importen overhovedet kunne starte
+
+At uploade en fil på det første trin af siden
+[Importér medarbejdere](/people/import) kontrollerer selve filen, før
+nogen række overhovedet ses på. To beskeder kan dukke op her; ingen af
+dem er en nummereret fejlkode, da de fanges i browseren, før nogen
+anmodning når serveren.
+
+"Den her fil er ikke en CSV. Hvis det er et regneark, åbn den i Excel
+eller dit lønsystem og eksporter som CSV, upload derefter den fil."
+vises for alt, der ikke er ren CSV-tekst: en ældre Excel `.xls`-fil, et
+egentligt `.xlsx`- eller `.ods`-regneark, eller en fil, der ligner HTML
+eller XML snarere end data. Kun CSV accepteres; eksportér filen igen
+som CSV fra hvad end der producerede den, og upload den derefter.
+
+"Filen er tom. Vælg en CSV-fil med mindst én datalinje." vises for en
+CSV uden headerrække, uden datarækker, eller som browseren overhovedet
+ikke kunne læse. Kontroller, at eksporten faktisk indeholder de data,
+I forventer, før I uploader den igen.
+
+## Importværktøjet flagede problemer med mine data
+
+Når en fil er accepteret, gennemgår Kontroller-trinnet hver række for
+datakvalitetsproblemer, før I kan fortsætte. Disse er heller ikke
+fejlkoder; de læses fra `packages/import` og vises som mærkede
+problemer ved siden af de påvirkede rækker.
+
+Problemer, der blokerer importen, indtil de er rettet (i kildefilen,
+eller i tilfælde af et uafklaret køn, tildelt direkte i appen): et
+duplikeret medarbejder-ID, en ulæselig lønværdi, en ikke-numerisk
+statistisk kode (lønsystemer benævner nogle gange kolonnen Occupation
+Code eller SSYK), et køn, der ikke kunne læses, en negativ lønværdi, og
+en række med det forkerte antal kolonner.
+
+Problemer vist under "Godt at vide", der ikke blokerer noget: et
+navnebaseret kønsgæt, der er uenigt med den angivne værdi (hvilket kan
+være et falsk positiv), en FTE-værdi læst som en brøkdel og skaleret
+til en procentdel, og en dato med ingen utvetydig orden, læst som
+dag/måned.
+
+Manglende obligatoriske felter blokerer også importen, indtil hvert af
+dem er tilknyttet en kolonne på det forrige trin; manglende anbefalede
+felter advarer kun. Se [Importér medarbejdere](/docs/importing-people)
+og [Understøttede lønsystemer](/docs/supported-payroll-exports) for de
+nøjagtige felter og formater, der forventes.
+
+## Relateret
+
+- [Tilføj medarbejdere](/docs/adding-people)
+- [Importér medarbejdere](/docs/importing-people)
+- [Klassificér medarbejdere](/docs/classifying-people)
+- [Understøttede lønsystemer](/docs/supported-payroll-exports)

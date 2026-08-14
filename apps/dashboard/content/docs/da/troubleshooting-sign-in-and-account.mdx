@@ -1,0 +1,128 @@
+---
+title: Fejl med tilladelser, medlemskab og konto
+description: Hvad hver besked om tilladelser, medlemskab og konto betyder, og hvad I skal gøre ved den.
+section: troubleshooting
+---
+
+blueprnt viser aldrig rå fejltekst fra serveren; hver besked, I ser
+her, er én af et fast sæt koder oversat til klart sprog. Denne side
+forklarer hver af dem, der kan dukke op, mens I arbejder på tværs af
+organisationer eller administrerer jeres egen konto. Den dækker ikke
+selve login-formularen (en forkert adgangskode, en ugyldig
+tofaktorkode, eller et udløbet link), da de er almindelige beskeder
+fra login-skærmen, ikke koder fra dette system.
+
+## Jeg har ikke tilladelse til dette
+
+### adminRequired
+
+Kode: `adminRequired`
+
+"Kun organisationsadministratorer kan gøre dette."
+
+Nogle handlinger, som at ændre vurderingsmodellen eller
+organisationsindstillinger, eller administrere medlemmer, er
+forbeholdt Admin-rollen. Dette vises, hvis I forsøger én af dem som
+redaktør. Bed en organisationsadmin om at foretage ændringen, eller om
+at forfremme jer til admin først. Se
+[Medlemmer og roller](/docs/members-and-roles) for den nøjagtige grænse
+mellem de to roller.
+
+### platformAdminRequired
+
+Kode: `platformAdminRequired`
+
+"Du har ikke platformadmin-adgang."
+
+Et lille sæt handlinger er forbeholdt blueprnts egne
+platformadministratorer, et separat flag fra enhver organisations
+Admin-rolle. Det er ikke noget en organisationsadmin kan give sig selv
+eller et andet medlem; det er ikke selvbetjent.
+
+## Jeg får besked om, at jeg ikke er medlem af denne organisation
+
+### notAMember
+
+Kode: `notAMember`
+
+"Du er ikke medlem af denne organisation."
+
+Dette vises, hvis I forsøger at se eller handle på data for en
+organisation, I aktuelt ikke hører til, for eksempel efter at have
+fulgt et gammelt link eller skiftet konto. Skift til en organisation, I
+hører til, eller bed en admin af den organisation om at invitere jer;
+se [Invitationer](/docs/invitations).
+
+### membershipConflict
+
+Kode: `membershipConflict`
+
+"Dit medlemskab kunne ikke bekræftes. Kontakt support."
+
+Dette er en sjælden tilstand, hvor blueprnt ikke kan afgøre, hvilken
+organisation jeres medlemskab hører til, eller finder mere end én
+modstridende registrering. I modsætning til de andre beskeder på denne
+side er der ingen selvbetjent løsning: kontakt support.
+
+## Jeg kan ikke slette min konto, eller jeg kan ikke fjerne eller nedgradere den sidste administrator
+
+### lastAdmin
+
+Kode: `lastAdmin`
+
+"Du er den sidste administrator i en organisation. Kontakt support for
+at slette din konto."
+
+En organisation kan aldrig efterlades uden en admin, da der ikke ville
+være nogen vej tilbage ind for at rette det inde fra appen. Dette
+blokerer tre relaterede handlinger: at slette jeres egen konto, mens I
+er den eneste admin af en organisation, at nedgradere den sidste admin
+til redaktør, og at fjerne den sidste admin fra organisationen. Forfrem
+et andet medlem til admin først (se
+[Medlemmer og roller](/docs/members-and-roles)), hvorefter den
+oprindelige admin kan ændres, fjernes, eller have sin konto slettet
+som enhver andens. Se [Slet din konto](/docs/deleting-your-account) for
+resten af, hvad kontosletning gør.
+
+## Generelt
+
+Disse koder er ikke specifikke for én skærm; de kan dukke op hvor som
+helst i appen.
+
+### notAuthenticated
+
+Kode: `notAuthenticated`
+
+"Du skal logge ind."
+
+Jeres session er ikke længere gyldig, oftest fordi den udløb, eller I
+loggede ud i en anden fane. Log ind igen for at fortsætte.
+
+### notFound
+
+Kode: `notFound`
+
+"Ikke fundet."
+
+Det element, I så på eller handlede på, findes ikke længere set fra
+jeres organisations synspunkt, oftest fordi det blev slettet eller
+arkiveret (af jer eller en kollega), siden siden blev indlæst.
+Genindlæs siden; er elementet virkelig væk, vises det ikke længere.
+
+### invalidInput
+
+Kode: `invalidInput`
+
+"Ugyldigt input."
+
+En generisk besked for en værdi, der ikke bestod validering, før den
+nåede en mere specifik kontrol, som et navn der er for langt, eller at
+overskride en massimport-grænse. Tjek det felt, I sidst ændrede, mod
+eventuel hjælpetekst vist tæt på det, og ret det.
+
+## Relateret
+
+- [Medlemmer og roller](/docs/members-and-roles)
+- [Invitationer](/docs/invitations)
+- [Slet din konto](/docs/deleting-your-account)
+- [To-trins-bekræftelse](/docs/two-factor-authentication)

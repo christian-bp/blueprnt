@@ -1,0 +1,82 @@
+---
+title: Fejl med lønkortlægning
+description: Hvad hver besked om start, redigeringslås, dokumentation og afslutning af en lønkortlægning betyder, og hvad I skal gøre ved den.
+section: troubleshooting
+---
+
+Denne side forklarer hver besked, der kan dukke op, mens I starter,
+dokumenterer eller afslutter en lønkortlægning (lönekartläggning).
+
+## Jeg kan ikke starte en lønkortlægning
+
+### payMappingPreconditionsUnmet
+
+Kode: `payMappingPreconditionsUnmet`
+
+"Personer eller roller mangler klassificering eller vurdering, så
+lønkortlægningen kan ikke startes endnu."
+
+At starte en lønkortlægning kræver, at hver aktiv person er
+klassificeret til en rolle og senioritet, og at hver aktiv, bemandet
+rolle er fuldt vurderet. Startdialogen udskifter allerede sit navnefelt
+med en almindelig liste over præcis, hvad der er uopfyldt, hvert punkt
+et link til, hvor arbejdet sker, så I bør sjældent se selve denne
+besked: den er primært en sikkerhed mod et kaprace-scenarie, for
+eksempel to admins, der åbner dialogen, før nogen af deres
+forudsætningsdata er opdateret. Se
+[Start en lønkortlægning](/docs/starting-a-pay-mapping),
+[Klassificér medarbejdere](/docs/classifying-people), og
+[Vurder en rolle](/docs/evaluating-a-role) for selve arbejdet.
+
+## Jeg kan ikke redigere noter eller dokumentation på en afsluttet lønkortlægning
+
+### payMappingRunCompleted
+
+Kode: `payMappingRunCompleted`
+
+"Lønkortlægningen er afsluttet og låst. Genåbn den for at redigere."
+
+Når en lønkortlægning er afsluttet, bliver dens analysetrin,
+samarbejdsregistrering og indholdet af dens tiltag og noter
+skrivebeskyttet. Vælg "Genåbn" fra lønkortlægningens overblik for at
+låse den op til redigering, og afslut den derefter igen, når I er
+færdige. Et tiltags egen status kan stadig ændres, selv på en afsluttet
+kortlægning; kun indholdsredigeringer er låst. Se
+[Livscyklus og statusser](/docs/run-lifecycle).
+
+## Jeg kan ikke markere en lige-arbejde-gruppe som udført
+
+### payMappingDocumentationRequired
+
+Kode: `payMappingDocumentationRequired`
+
+"Tilføj en saglig grund eller en uddybet analyse, før du markerer
+gruppen som udført."
+
+En gruppe bærer kun denne pligt, når den har mindst én kvinde og én
+mand, og kvindernes gennemsnitsløn ligger under mændenes; andre grupper
+har aldrig brug for det. Vælg mindst én saglig grund for lønforskellen,
+tilføj en fritekstnote, eller begge, før I markerer gruppen som udført.
+Se [Lige arbejde](/docs/equal-work).
+
+## Jeg kan ikke afslutte lønkortlægningen
+
+### payMappingGateUnmet
+
+Kode: `payMappingGateUnmet`
+
+"Der er trin tilbage i gennemgangen, før lønkortlægningen kan
+afsluttes."
+
+En lønkortlægning kan først afsluttes, når hvert påkrævet trin på
+tværs af alle fire analysekapitler er dokumenteret. Handlingen, der
+ville afslutte den, viser allerede hvor mange trin der resterer, så I
+bør sjældent se denne besked direkte; færdiggør de resterende trin, den
+lister. Se [Livscyklus og statusser](/docs/run-lifecycle).
+
+## Relateret
+
+- [Hvad er en lønkortlægning](/docs/what-is-pay-mapping)
+- [Start en lønkortlægning](/docs/starting-a-pay-mapping)
+- [Livscyklus og statusser](/docs/run-lifecycle)
+- [Lige arbejde](/docs/equal-work)

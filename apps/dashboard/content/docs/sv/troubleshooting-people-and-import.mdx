@@ -1,0 +1,118 @@
+---
+title: Fel vid medarbetare och import
+description: Vad varje meddelande om klassificering, tilldelning och CSV-import betyder, och vad ni ska göra åt det.
+section: troubleshooting
+---
+
+Den här sidan förklarar varje meddelande som kan visas medan ni lägger
+till, klassificerar, eller importerar medarbetare.
+
+## Jag kan inte lägga till eller importera en person eftersom anställningsnumret redan används
+
+### personRefExists
+
+Kod: `personRefExists`
+
+"En anställd med det anställningsnumret finns redan."
+
+När ni väl sätter ett anställningsnummer på en person måste det vara
+unikt i hela er organisation: det är det framtida löneimporter
+använder för att matcha samma person istället för att skapa en
+dubblett. Det här visas som ett inline-meddelande på själva
+anställningsnummerfältet, både i dialogen för att lägga till en person
+och i dialogen för att redigera en person, snarare än som en
+notifiering. Använd ett annat, unikt anställningsnummer, eller hitta
+den befintliga personen med det numret och redigera den istället. Se
+[Lägga till anställda](/docs/adding-people).
+
+## Jag kan inte välja den senioriteten för den här personen
+
+### invalidSeniority
+
+Kod: `invalidSeniority`
+
+"Den senioriteten är inte giltig för rollens track."
+
+Senioritetsvärden kommer från stegen som hör till en rolls track
+(Individual Contributor, Lead eller Manager), så ett värde giltigt på
+en track är inte giltigt på en annan. I vardaglig användning är
+senioritetsvalet redan begränsat till värden som passar den just nu
+valda rollen, och återställs automatiskt om ni byter till en roll på
+en annan track, så det här meddelandet visas huvudsakligen om rollen
+eller dess track ändrades på annat håll medan ert formulär fortfarande
+var öppet. Ladda om och välj en roll och senioritet igen; se
+[Klassificera anställda](/docs/classifying-people).
+
+## Jag kan inte sätta det giltighetsdatumet för en ny tilldelning
+
+### invalidEffectiveDate
+
+Kod: `invalidEffectiveDate`
+
+"Giltighetsdatumet måste vara efter den aktuella tilldelningens
+startdatum."
+
+En ny roll- eller senioritetstilldelning måste starta strikt efter
+personens just nu öppna tilldelning. Ingenting i appen låter er välja
+det här datumet för hand idag; det sätts automatiskt till ögonblicket
+ni bekräftar, så det här meddelandet är en bakomliggande
+säkerhetsspärr mot att omklassificera samma person två gånger i samma
+ögonblick, till exempel genom att dubbelklicka på Bekräfta, eller agera
+på samma person från två öppna flikar samtidigt. Vänta ett ögonblick
+och försök igen; se
+[Klassificera anställda](/docs/classifying-people).
+
+## Min CSV-fil avvisades innan importen ens kunde starta
+
+Att ladda upp en fil på det första steget på sidan
+[Importera medarbetare](/people/import) kontrollerar själva filen
+innan någon rad granskas. Två meddelanden kan visas här; ingen av dem
+är en numrerad felkod, eftersom de fångas i webbläsaren innan någon
+begäran når servern.
+
+"Den här filen är inte en CSV. Om det är ett kalkylblad, öppna den i
+Excel eller ditt lönesystem och exportera som CSV, ladda sedan upp den
+filen." visas för allt som inte är ren CSV-text: en äldre Excel
+`.xls`-fil, ett riktigt `.xlsx`- eller `.ods`-kalkylblad, eller en fil
+som ser ut som HTML eller XML snarare än data. Bara CSV accepteras;
+exportera om filen som CSV från vad som skapade den, och ladda sedan
+upp den.
+
+"Filen är tom. Välj en CSV-fil med minst en rad med data." visas för en
+CSV utan rubrikrad, utan datarader, eller som webbläsaren inte kunde
+läsa alls. Kontrollera att exporten verkligen innehåller den data ni
+förväntar er innan ni laddar upp den igen.
+
+## Importören flaggade problem med min data
+
+När en fil väl är accepterad granskar steget Kontrollera beredskap
+varje rad för datakvalitetsproblem innan ni kan fortsätta. De här är
+inte felkoder heller; de läses från `packages/import` och visas som
+märkta problem bredvid de berörda raderna.
+
+Problem som blockerar importen tills de åtgärdas (i källfilen, eller,
+för ett olöst kön, tilldelat direkt i appen): ett dubblerat
+anställnings-ID, ett oläsbart lönevärde, en icke-numerisk statistikkod
+(löneexporter märker ibland kolumnen Yrkeskod eller SSYK), ett kön som
+inte kunde läsas, ett negativt lönevärde, och en rad med fel antal
+kolumner.
+
+Problem visade under "Bra att veta" som inte blockerar något: en
+namnbaserad könsgissning som inte stämmer med det angivna värdet (som
+kan vara en falsk positiv), ett sysselsättningsgradsvärde läst som en
+andel och skalat till en procentsats, och ett datum utan entydig
+ordning, läst som dag/månad.
+
+Saknade obligatoriska fält blockerar också importen tills vart och ett
+av dem är mappat till en kolumn på föregående steg; saknade
+rekommenderade fält bara varnar. Se
+[Importera medarbetare](/docs/importing-people) och
+[Stödda löneexporter](/docs/supported-payroll-exports) för de exakta
+fälten och formaten som förväntas.
+
+## Relaterat
+
+- [Lägga till anställda](/docs/adding-people)
+- [Importera medarbetare](/docs/importing-people)
+- [Klassificera anställda](/docs/classifying-people)
+- [Stödda löneexporter](/docs/supported-payroll-exports)

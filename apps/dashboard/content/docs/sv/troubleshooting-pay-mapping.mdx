@@ -1,0 +1,83 @@
+---
+title: Fel i lönekartläggning
+description: Vad varje meddelande om start, redigeringslåsning, dokumentation och slutförande av en lönekartläggning betyder, och vad ni ska göra åt det.
+section: troubleshooting
+---
+
+Den här sidan förklarar varje meddelande som kan visas medan ni
+startar, dokumenterar eller slutför en lönekartläggning.
+
+## Jag kan inte starta en lönekartläggning
+
+### payMappingPreconditionsUnmet
+
+Kod: `payMappingPreconditionsUnmet`
+
+"Personer eller roller saknar klassificering eller utvärdering, så
+lönekartläggningen kan inte startas än."
+
+Att starta en lönekartläggning behöver varje aktiv person klassificerad
+till en roll och senioritet, och varje aktiv, bemannad roll
+fullständigt utvärderad. Startdialogen ersätter redan sitt namnfält
+med en ren lista över exakt vad som är ouppfyllt, varje objekt en länk
+till där arbetet sker, så ni bör sällan se det här meddelandet självt:
+det är huvudsakligen en säkerhetsspärr mot en kapplöpning, till
+exempel två administratörer som öppnar dialogen innan någon av deras
+villkorsdata har uppdaterats. Se
+[Starta en lönekartläggning](/docs/starting-a-pay-mapping),
+[Klassificera anställda](/docs/classifying-people) och
+[Utvärdera en roll](/docs/evaluating-a-role) för själva arbetet.
+
+## Jag kan inte redigera noteringar eller dokumentation på en slutförd lönekartläggning
+
+### payMappingRunCompleted
+
+Kod: `payMappingRunCompleted`
+
+"Lönekartläggningen är slutförd och låst. Öppna den igen för att
+redigera."
+
+När en lönekartläggning väl är slutförd blir dess analyssteg,
+samverkansregistrering, och innehållet i dess åtgärder och noteringar
+skrivskyddat. Välj "Återöppna" från lönekartläggningens översikt för
+att låsa upp den för redigering, och slutför den igen när ni är klara.
+En åtgärds egen status kan fortfarande ändras även på en slutförd
+kartläggning; bara innehållsredigeringar är låsta. Se
+[Livscykel och statusar](/docs/run-lifecycle).
+
+## Jag kan inte klarmarkera en grupp för lika arbete
+
+### payMappingDocumentationRequired
+
+Kod: `payMappingDocumentationRequired`
+
+"Lägg till ett sakligt skäl eller en fördjupad analys innan du
+klarmarkerar gruppen."
+
+En grupp bär bara den här plikten när den har minst en kvinna och en
+man och kvinnornas genomsnittslön ligger efter männens; andra grupper
+behöver den aldrig. Välj minst ett sakligt skäl för löneskillnaden,
+lägg till en fritextnotering, eller båda, innan ni klarmarkerar
+gruppen. Se [Lika arbete](/docs/equal-work).
+
+## Jag kan inte slutföra lönekartläggningen
+
+### payMappingGateUnmet
+
+Kod: `payMappingGateUnmet`
+
+"Det finns steg kvar i granskningen innan lönekartläggningen kan
+slutföras."
+
+En lönekartläggning kan bara slutföras när varje obligatoriskt steg
+över alla fyra analyskapitel är dokumenterat. Åtgärden som skulle
+slutföra den visar redan hur många steg som återstår, så ni bör sällan
+se det här meddelandet direkt; slutför de utstående stegen den listar.
+Se [Livscykel och statusar](/docs/run-lifecycle).
+
+## Relaterat
+
+- [Vad är en lönekartläggning](/docs/what-is-pay-mapping)
+- [Starta en lönekartläggning](/docs/starting-a-pay-mapping)
+- [Livscykel och statusar](/docs/run-lifecycle)
+- [Lika arbete](/docs/equal-work)

@@ -1,0 +1,228 @@
+---
+title: Model and evaluation errors
+description: What each model-building, rating, role-locking, and AI message means, and what to do about it.
+section: troubleshooting
+---
+
+This page explains every message that can appear while building the
+evaluation model, rating a role, or using AI drafting and the Blueprnt AI
+assistant.
+
+## I can't create a new evaluation model
+
+### modelExists
+
+Code: `modelExists`
+
+"This organization already has an evaluation model."
+
+Your organization already has exactly one evaluation model; blueprnt never
+allows a second one. In practice you will not see this from anywhere in the
+finished app, since the model is created for you once during onboarding
+and there is no "create model" action afterward; it can only happen if two
+admins somehow complete onboarding's model step at the exact same moment.
+If your organization already has a model, edit it from
+[Model overview](/docs/model-overview) instead.
+
+## I cannot save my weighting
+
+### weightsUnbalanced
+
+Code: `weightsUnbalanced`
+
+"The weighting must match the point budget."
+
+Every criterion's weight points must add up exactly to the model's point
+budget (three points per criterion) before "Save weighting" will do
+anything. The Weighting tab already shows this as a running count of
+points left to distribute, or points over the budget, so you should rarely
+hit this message itself; adjust weight points until that count reads zero.
+See [Weighting and the point budget](/docs/weighting-and-point-budget).
+
+## I can't remove a criterion, or finish onboarding
+
+### tooFewCriteria
+
+Code: `tooFewCriteria`
+
+"A model needs at least 5 criteria."
+
+A model must always keep at least five criteria. Once your organization
+has finished onboarding, the "Remove" action on the fifth-to-last criterion
+becomes unavailable for exactly this reason. Add criteria back until you
+have at least five. See
+[Criteria and the evaluation scale](/docs/criteria-and-scale).
+
+## I can't edit or rate something because it says it's locked
+
+### roleLocked
+
+Code: `roleLocked`
+
+"This role is approved and locked. Reopen it first."
+
+This fires when a change targets an archived role: rating it, editing its
+job profile, or managing it as an anchor role. In everyday use the app's
+own edit and rate controls are already disabled once a role is archived,
+so seeing this message usually means the role was archived in another tab
+or by a colleague while you had it open for editing; reload the role's
+page. Archiving is permanent: there is no action that reopens a role, and
+it stays read-only from then on. See
+[Archiving a role](/docs/archiving-roles).
+
+### criterionLocked
+
+Code: `criterionLocked`
+
+"This criterion is approved and locked. Reopen it first."
+
+Once a criterion's method documentation is approved, its rationale and
+bias-review text can no longer be edited. Choose "Reopen" on the Model
+page's Method tab to clear the approval and its sign-off, edit the text, then approve it
+again. See [Method documentation](/docs/method-documentation).
+
+## I can't set a role as an anchor role
+
+### ratingsIncomplete
+
+Code: `ratingsIncomplete`
+
+"All criteria must be rated first."
+
+Designating a role as an anchor role, or setting its agreed level, needs a
+complete evaluation: every criterion rated. Finish rating the role first;
+see [Evaluating a role](/docs/evaluating-a-role) and
+[Anchor roles](/docs/anchor-roles).
+
+## I can't rate a role, or generate an AI suggestion
+
+### profileIncomplete
+
+Code: `profileIncomplete`
+
+"Complete the company profile first."
+
+This covers two related preconditions. Rating a role needs its job
+profile's purpose and responsibilities filled in first; the role's
+evaluation area already states this directly ("Fill in purpose and
+responsibilities before rating") in place of the Rate action, so you
+should rarely see the message itself. See
+[Job profiles](/docs/job-profiles). Some AI generation calls also need
+your organization's own company profile (such as industry and country)
+filled in before they can run; finish that from
+[Organization settings](/docs/organization-settings) if an AI draft
+refuses to generate for this reason.
+
+## I'm told that status change isn't allowed
+
+### invalidTransition
+
+Code: `invalidTransition`
+
+"That status change is not allowed."
+
+A generic message for an action that does not apply to the entity's
+current status, for example applying an AI suggestion to a role that has
+moved on to a different state, or acting on a pay mapping that is not
+currently Active (see [Run lifecycle and statuses](/docs/run-lifecycle)).
+Reload the page to see the entity's current status, and use the action
+that matches it.
+
+## I can't create a role or family because the name already exists
+
+### roleFamilyExists
+
+Code: `roleFamilyExists`
+
+"A family with that name already exists."
+
+Every role family's name must be unique in your organization, regardless
+of case. Pick a different name; see [Role families](/docs/role-families).
+
+### roleExists
+
+Code: `roleExists`
+
+"A role with that name already exists in this family."
+
+A role's title must be unique within its family. Pick a different title,
+or place the role in a different family; see
+[The role register](/docs/roles-register).
+
+## AI suggestions aren't working
+
+### aiUnavailable
+
+Code: `aiUnavailable`
+
+"AI is not configured for this environment."
+
+AI drafting (job profiles, method documentation, weighting review) is not
+configured in the environment you are using. This is an environment
+setup issue, not something you can fix from within the app.
+
+### aiGenerationFailed
+
+Code: `aiGenerationFailed`
+
+"The AI suggestion could not be generated."
+
+The AI call ran but did not return a usable result. Try generating the
+draft again; if it keeps failing, fall back to writing the field by hand.
+See [Drafting a job profile with AI](/docs/ai-drafting).
+
+## I'm having trouble with the Blueprnt AI assistant chat
+
+The Blueprnt AI chat assistant (reached from [Assistant](/assistant)) is a
+separate feature from the AI drafting above: it answers questions about
+the app and your organization's own numbers rather than filling in fields.
+
+### assistantBusy
+
+Code: `assistantBusy`
+
+"Blueprnt AI is still answering. Wait for it to finish or stop it."
+
+Only one reply can generate at a time. The send button already turns into
+a stop control while a reply streams, so this message is mainly a
+backstop for sending twice very quickly; wait for the current reply, or
+press stop, then send again. See [Using the assistant](/docs/using-the-assistant).
+
+### assistantRateLimited
+
+Code: `assistantRateLimited`
+
+"You have sent many messages in a short time. Try again in a little
+while."
+
+There is a cap on how many messages one person can send within a rolling
+hour. Wait for the window to clear before sending more.
+
+### assistantInvalidMessage
+
+Code: `assistantInvalidMessage`
+
+"Write a message before sending."
+
+The message was empty after removing leading and trailing whitespace. Type
+something before sending.
+
+### assistantPersonalData
+
+Code: `assistantPersonalData`
+
+"The message seems to include an employee's personal details. Remove them
+and ask again in general terms."
+
+blueprnt checks your message for what looks like an employee's full name
+before it is ever sent to the model, and refuses it if it finds one; no AI
+call happens for a refused message. Rephrase your question in general
+terms, for example by role or group rather than by name. See
+[Assistant privacy](/docs/assistant-privacy).
+
+## Related
+
+- [Model overview](/docs/model-overview)
+- [Evaluating a role](/docs/evaluating-a-role)
+- [Using the assistant](/docs/using-the-assistant)
+- [Archiving a role](/docs/archiving-roles)

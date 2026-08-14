@@ -1,0 +1,55 @@
+---
+title: Händelselogg
+description: Varje ändring i er organisations data, vem som gjorde den, och före-och-efter-detaljerna bakom varje post.
+section: security-privacy
+---
+
+[Händelseloggen](/audit-log) registrerar varje ändring som görs i er
+organisations data: "Varje ändring i din organisation, vem som gjorde
+den och när." Bara organisationsadministratörer kan se den.
+
+## Vad som registreras
+
+Varje åtgärd som ändrar något i er organisation skriver en post: att
+skapa, redigera eller ta bort en roll eller familj, justera modellen
+eller dess viktning, ändra en organisationsinställning, lägga till
+eller ta bort en medlem, importera eller redigera medarbetare, bekräfta
+en AI-viktgranskning, och varje steg i en lönekartläggning. Personliga
+kontoinställningar, som ert eget lösenord, är medvetet inte inkluderade
+här: de beskriver er, inte er organisation. Er tvåfaktorsmetod är
+likaså undantagen; se
+[Tvåstegsverifiering](/docs/two-factor-authentication) för hur den
+hanteras istället.
+
+Varje post hör till en av sju kategorier: Modell, Roll, Organisation,
+Medlem, AI, Personer och Lön. Verktygsfältets "Filtrera efter kategori"
+begränsar listan till en av dem, tillsammans med en fritextsökning
+("Sök i loggen") och "Filtrera på datum" för ett specifikt intervall.
+
+## Detaljvyn
+
+Att välja "Visa detaljer" på en post öppnar dess fullständiga post: vem
+som gjorde ändringen ("Vem"), när ("När"), vilken kategori den hör till
+("Kategori"), och vad som ändrades ("Vad ändrades"). Där ett fält har
+ett tydligt före-och-efter-värde, som en omdöpt roll eller en justerad
+vikt, visas det som en pil från det gamla värdet till det nya. Där en
+post istället representerar en batch av aktivitet, som en import, visas
+antal istället, som hur många rader som skapades jämfört med
+uppdaterades.
+
+## Personer och radering
+
+En anställds identitetsfält (namn, kön, anställningsnummer,
+födelsedatum och befattning) visas i händelseloggen precis som någon
+annan ändring, så att en korrigering av något av dem är spårbar. Om den
+anställda senare raderas ersätts de identitetsvärdena med en
+"Raderad"-markering överallt de förekommit i loggen; att en ändring
+skedde, och när, finns kvar. Se
+[GDPR och radering](/docs/gdpr-and-erasure) för vad detta betyder och
+inte betyder.
+
+## Relaterat
+
+- [GDPR och radering](/docs/gdpr-and-erasure)
+- [Radera en anställd](/docs/erasing-a-person)
+- [Datalagring](/docs/data-residency)

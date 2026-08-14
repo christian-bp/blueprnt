@@ -1,0 +1,50 @@
+---
+title: The AI weighting review
+description: When you can ask AI to review your weighting, what it proposes, and how you confirm it.
+section: model
+---
+
+On the "Weighting" tab of the [Model](/model) area, AI can review your
+current weighting and propose adjustments for you to accept or decline.
+It never changes your model on its own.
+
+## When the review is available
+
+The "Let AI review the weighting" button only appears once your weighting
+is already balanced (every weight point distributed, no points left over or
+missing) and you have no unsaved changes on the tab. If you have just
+applied a review and have not changed the weighting since, the button
+stays hidden until you make a new change, so a review is never requested
+against a weighting it has already reviewed.
+
+## What the AI proposes
+
+Opening the review requests a set of balanced moves, each one written as
+moving a number of weight points from one criterion to another, together
+with a short motivation for why. Every individual move is itself
+zero-sum (points removed from one criterion always land on another), so
+the overall allocation stays exactly on budget no matter which moves you
+end up choosing. If the AI finds nothing worth adjusting, it says so
+("The AI found no moves to suggest.") and offers only a way to dismiss.
+
+## Choosing which moves to accept
+
+Each proposed move has its own checkbox and starts checked; you can
+uncheck any move you disagree with before applying. A "Why this
+change?" disclosure on each move reveals its motivation without
+cluttering the list. "Apply selected" applies only the moves you left
+checked; "Dismiss" discards the whole review without changing anything.
+
+## Provenance and confirmation
+
+Every review is labelled as an AI-generated suggestion that you review
+and confirm; nothing from it is ever applied automatically. The audit
+log records an applied review as an AI suggestion you confirmed, not as
+an ordinary manual edit, so the model's history always shows which
+changes came from an AI review and which weight points you accepted.
+
+## Related
+
+- [Weighting and the point budget](/docs/weighting-and-point-budget)
+- [Criteria and the evaluation scale](/docs/criteria-and-scale)
+- [Model overview](/docs/model-overview)

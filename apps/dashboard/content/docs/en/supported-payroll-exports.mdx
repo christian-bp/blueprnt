@@ -1,0 +1,68 @@
+---
+title: Supported payroll exports
+description: The payroll systems the import has been verified against, and what to do when a file will not parse.
+section: people
+---
+
+The import wizard's column detection and parsing were built and verified
+against real CSV exports from Visma, Hogia, Fortnox, Agda, Personec,
+SD Worx, SAP SuccessFactors, and Workday, across English, Swedish,
+Norwegian, Danish, and Finnish. This does not mean only these systems work:
+any CSV export with the fields listed in [Importing people](/docs/importing-people)
+can be mapped by hand. It means these specific systems' real-world quirks
+were checked directly.
+
+## Numbers and dates
+
+Amounts are read whether they use a comma or a period as the decimal mark,
+with or without space-separated thousands, and with a leading or trailing
+currency code or symbol such as "SEK", "kr", or "EUR" removed. Dates are
+read in ISO format, day-first formats such as "15.01.2023" or "15/01/2023",
+and a plain 8-digit form, among others. When a date could be read either
+day-first or month-first and both are calendar-valid, blueprnt always
+assumes day-first, since that matches every one of these payroll systems'
+Nordic exports, and flags the row so you can double-check it rather than
+guessing silently.
+
+## Gender
+
+Gender values in Norwegian, Danish, and Finnish are recognized alongside
+Swedish and English, and a numeric statistical code is read as gender only
+under a column header that is itself about gender. A value that cannot be
+resolved to Man or Woman is never guessed: it is flagged for a manual
+per-row choice during the Check step instead.
+
+## FTE as a fraction
+
+Some systems export employment degree as a fraction such as 0.8 rather than
+a percentage. When every value in a column is 1.0 or less, blueprnt scales
+the whole column to a percentage and shows a notice explaining that it did
+so, so the change is visible rather than silent.
+
+## What is not read yet
+
+A handful of formats are deliberately not supported for now: spreadsheet
+files (XLSX, XLS, ODS) instead of CSV, US-style comma-thousands amounts
+such as "52,000", Swiss apostrophe grouping, negative or parenthesized
+amounts, and dates written with a month name or a two-digit year. A file
+using one of these needs a small adjustment in your payroll system's export
+settings, or a manual edit, before it will import cleanly.
+
+## When a file will not parse
+
+If you upload a spreadsheet file by mistake, the wizard tells you plainly
+that the file is not a CSV and asks you to export it as CSV and upload that
+instead. An empty file gets the same kind of direct message. If the file
+uploads but its columns look wrong, check for a missing column separator or
+garbled header text, both of which the Check step calls out as a file
+warning without blocking the import; a missing header row is called out
+too, though the file still imports with its columns numbered. In every
+case, the fix is in your payroll system's export settings, not inside
+blueprnt: re-export as CSV, with a header row, in a standard text encoding,
+then upload the corrected file.
+
+## Related
+
+- [Importing people](/docs/importing-people)
+- [Classifying people](/docs/classifying-people)
+- [The people register](/docs/people-register)

@@ -1,0 +1,51 @@
+---
+title: Person details and salary
+description: The employee's own page for identity, classification, salary history, and comparing their pay.
+section: people
+---
+
+Every employee has their own page, opened by selecting their name from the
+[people register](/docs/people-register). It holds everything specific to
+that person: identity, classification, and salary history. A role's own
+page lists who holds it, by name, seniority, department, and FTE, but never
+shows anyone's pay: salary lives only here, on the person's own page.
+
+## Identity and classification
+
+The page shows employee number, start date, department, FTE, and the
+person's current role and seniority. Choose "Edit employee" from the actions
+menu to change any of these, including the role and seniority pair; unlike a
+payroll import, which never erases a field a file simply does not mention,
+clearing a field here on purpose does remove its stored value. If the
+seniority shown is still an unconfirmed suggestion, a hint links to
+[Classifying people](/docs/classifying-people) to confirm it.
+
+## Salary history
+
+A salary rail lists every recorded salary, most recent first, as a plain
+list rather than a table: the year, the role and seniority that were active
+at that point in time, total monthly compensation, and basic monthly pay
+underneath. That role and seniority are derived from the person's
+assignment history at each record's date, not stored on the record itself,
+so reclassifying someone later re-joins their whole salary history
+automatically. "Add salary" records a new year's basic monthly salary plus
+any additional components, such as variable pay, bonus, or equity, each as
+a kind and a monthly amount; a record's own menu can delete it, which
+removes it from the history and cannot be undone.
+
+## Pay compared with the role
+
+Once the person is classified and has at least one recorded salary, the
+page shows a chart comparing their FTE-adjusted total monthly pay against
+others in the same role, by seniority, colored and shaped by gender, with
+the viewed person marked distinctly and a reference line at their own pay.
+It needs at least one other comparable person to draw a chart at all, and a
+colleague paid in a different currency is left out of the comparison, but
+that exclusion is always stated as a count rather than left unmentioned.
+
+## Related
+
+- [Adding people](/docs/adding-people)
+- [Classifying people](/docs/classifying-people)
+- [Erasing a person](/docs/erasing-a-person)
+- [The people register](/docs/people-register)

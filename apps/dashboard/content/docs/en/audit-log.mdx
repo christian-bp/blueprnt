@@ -1,0 +1,52 @@
+---
+title: Audit log
+description: Every change to your organization's data, who made it, and the before-and-after detail behind each entry.
+section: security-privacy
+---
+
+The [Audit log](/audit-log) records every change made to your
+organization's data: "Every change in your organization, who made it and
+when." Only organization admins can view it.
+
+## What gets recorded
+
+Any action that changes something in your organization writes one entry:
+creating, editing, or removing a role or family, adjusting the model or
+its weighting, changing an organization setting, adding or removing a
+member, importing or editing people, confirming an AI weighting review,
+and every step of a pay mapping. Personal account settings, such as your
+own password, are deliberately not included here: those describe you,
+not your organization. Your two-factor method is likewise excluded; see
+[Two-factor authentication](/docs/two-factor-authentication) for how
+that is managed instead.
+
+Each entry belongs to one of seven categories: Model, Role, Organization,
+Member, AI, People, and Pay. The toolbar's "Filter by category" narrows
+the list to one of them, alongside a free-text search ("Search the log")
+and "Filter by date" for a specific range.
+
+## The detail sheet
+
+Choosing "View details" on an entry opens its full record: who made the
+change ("Who"), when ("When"), which category it falls under
+("Category"), and what changed ("What changed"). Where a field has a
+clear before-and-after value, such as a renamed role or an adjusted
+weight, it renders as an arrow from the old value to the new one. Where
+an entry instead represents a batch of activity, such as an import, it
+shows counts instead, like how many rows were created versus updated.
+
+## People and erasure
+
+An employee's identity fields (name, gender, employee number, birth
+date, and job title) appear in the audit log just like any other
+change, so that correcting one of them is traceable. If that employee is
+later erased, those identity values are replaced with an "Erased" marker
+everywhere they appeared in the log; the fact that a change happened, and
+when, remains. See [GDPR and erasure](/docs/gdpr-and-erasure) for what
+this does and does not mean.
+
+## Related
+
+- [GDPR and erasure](/docs/gdpr-and-erasure)
+- [Erasing a person](/docs/erasing-a-person)
+- [Data residency](/docs/data-residency)

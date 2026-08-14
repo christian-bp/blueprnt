@@ -1,0 +1,57 @@
+---
+title: Classifying people
+description: Assign each imported employee to a role and seniority, from an engine suggestion you confirm.
+section: people
+---
+
+Classifying connects each employee to a role and seniority in your job
+architecture, so their pay can be compared against others in the same role.
+Open it from the "Classify" tab next to the [people register](/docs/people-register).
+
+## How suggestions work
+
+blueprnt groups your active people by the exact job title their payroll
+file recorded, then suggests one role per title group by matching that
+title's text against your roles' titles, and a seniority for each person
+within that role's track. This matching is a deterministic engine, not AI:
+nothing is ever classified automatically, and every suggestion waits for
+you to confirm it. A title that does not resemble any existing role closely
+enough shows no suggestion at all, so you can create a role for it instead.
+Revisiting Classify is always safe: it never overwrites a classification
+you already confirmed, and only ever updates groups still waiting on one.
+
+Seniority set here belongs to the person, never the role: it never affects
+that role's rating, weighting, or level. See
+[Weighting and levels](/docs/score-and-levels) for that boundary.
+
+## Reading the table
+
+Each row is one imported job title, showing how many employees share it,
+the suggested (or already assigned) role, and a state: Confirmed once every
+person in the group has a confirmed assignment, Unclassified if none of
+them has any assignment yet, or Pending in between. Expand a row to see its
+people and, for each one, change the suggested role or seniority before
+confirming; a role must be picked before its seniority can be chosen.
+
+## Confirming
+
+Confirm a single group from its expanded row, or select several groups and
+use the bulk action to classify them all at once with their suggested roles
+and seniority; either way you can still change any of them afterward. A
+large selection is split into smaller batches behind the scenes so the
+confirmation always completes cleanly rather than as one oversized save.
+
+## Creating a role for an unmatched title
+
+When a title has no match, "Create new role" lets you create one on the
+spot: fill in its title, function or department, team, and track, and it is
+assigned to everyone with that title immediately. Purpose and
+responsibilities can be filled in, optionally with AI drafting help, from
+the new role's own page afterward; see [Job profiles](/docs/job-profiles).
+
+## Related
+
+- [The people register](/docs/people-register)
+- [Importing people](/docs/importing-people)
+- [Job profiles](/docs/job-profiles)
+- [Weighting and levels](/docs/score-and-levels)

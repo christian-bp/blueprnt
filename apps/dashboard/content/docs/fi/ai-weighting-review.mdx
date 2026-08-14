@@ -1,0 +1,54 @@
+---
+title: Tekoälyn painotustarkistus
+description: Milloin voitte pyytää tekoälyä tarkistamaan painotuksenne, mitä se ehdottaa, ja miten vahvistatte sen.
+section: model
+---
+
+[Malli](/model)-alueen "Painotus"-välilehdellä tekoäly voi tarkistaa
+nykyisen painotuksenne ja ehdottaa muutoksia, jotka voitte hyväksyä tai
+hylätä. Se ei koskaan muuta malliaanne omin päin.
+
+## Milloin tarkistus on saatavilla
+
+"Anna tekoälyn tarkistaa painotus" -painike näkyy vain, kun
+painotuksenne on jo tasapainossa (kaikki painopisteet jaettuina, ei
+ylimääräisiä eikä puuttuvia pisteitä) ja välilehdellä ei ole
+tallentamattomia muutoksia. Jos olette juuri ottaneet käyttöön
+tarkistuksen ja ette ole muuttaneet painotusta sen jälkeen, painike
+pysyy piilossa, kunnes tehdään uusi muutos, jotta tarkistusta ei
+koskaan pyydetä painotukselle, jonka se on jo tarkistanut.
+
+## Mitä tekoäly ehdottaa
+
+Tarkistuksen avaaminen pyytää joukon tasapainoisia siirtoja, jokainen
+kirjoitettuna muodossa, jossa painopisteitä siirretään kriteeriltä
+toiselle, lyhyen perustelun kanssa siitä miksi. Jokainen yksittäinen
+siirto on itsessään nollasummainen (kriteeriltä poistetut pisteet
+päätyvät aina toiselle), joten kokonaisjako pysyy tarkalleen budjetissa
+riippumatta siitä, mitkä siirrot lopulta valitsette. Jos tekoäly ei
+löydä mitään säädettävää, se kertoo sen ("Tekoäly ei löytänyt
+ehdotettavia siirtoja.") ja tarjoaa vain tavan hylätä.
+
+## Hyväksyttävien siirtojen valitseminen
+
+Kullakin ehdotetulla siirrolla on oma valintaruutu, joka on alussa
+valittuna; voitte poistaa valinnan mistä tahansa siirrosta, josta olette
+eri mieltä, ennen käyttöönottoa. Kunkin siirron "Miksi tämä muutos?"
+-laajennus näyttää sen perustelun sotkematta listaa. "Käytä valittuja"
+ottaa käyttöön vain valituksi jättämänne siirrot; "Hylkää" hylkää koko
+tarkistuksen muuttamatta mitään.
+
+## Alkuperä ja vahvistus
+
+Jokainen tarkistus merkitään tekoälyn luomaksi ehdotukseksi, jonka
+tarkistatte ja vahvistatte; mitään siitä ei koskaan oteta käyttöön
+automaattisesti. Auditointiloki kirjaa käyttöönotetun tarkistuksen
+tekoälyehdotuksena, jonka vahvistitte, ei tavallisena manuaalisena
+muokkauksena, jotta mallin historia näyttää aina, mitkä muutokset
+tulivat tekoälyn tarkistuksesta ja mitkä painopisteet hyväksyitte.
+
+## Aiheeseen liittyvää
+
+- [Painotus ja pistebudjetti](/docs/weighting-and-point-budget)
+- [Kriteerit ja arviointiasteikko](/docs/criteria-and-scale)
+- [Arviointimallin yleiskatsaus](/docs/model-overview)

@@ -1,0 +1,63 @@
+---
+title: Painotus ja pistebudjetti
+description: Miten painopisteet, pistebudjetti ja atominen tallennus toimivat Painotus-välilehdellä.
+section: model
+---
+
+[Malli](/model)-alueen "Painotus"-välilehdellä päätätte, kuinka paljon
+kukin kriteeri painaa muihin verrattuna. Tämä on erillään kriteerin
+arviointiasteikosta (katso
+[Kriteerit ja arviointiasteikko](/docs/criteria-and-scale)); painotus
+ei ole koskaan tuomio siitä, onko kriteeri hyvä, vaan se, kuinka paljon
+se vaikuttaa roolin painotukseen ja, muiden tekijöiden ollessa samat,
+suhteelliseen palkkaan.
+
+## Painopisteet
+
+Kukin kriteeri saa kokonaisluvun painopisteitä väliltä 1-5. Kolme on
+neutraali painopiste, eli selkeä ja tasapainoinen vaikutus; 1 on hyvin
+vähäinen vaikutus ja 5 erittäin vahva vaikutus. Uusi kriteeri alkaa aina
+painolla 3.
+
+## Pistebudjetti
+
+Jaettavien painopisteiden kokonaismäärä määräytyy sen mukaan, kuinka
+monta kriteeriä mallissa on: kolme pistettä kriteeriä kohden. Mallissa,
+jossa on yhdeksän kriteeriä, budjetti on 27 pistettä; kymmenennen
+kriteerin lisääminen nostaa budjetin 30:een. Kaikkien kriteerien
+painopisteiden summan on vastattava budjettia tarkalleen, ei enempää
+eikä vähemmän. Vapaata prosenttiosuutta tai mukautettua lukua ei voi
+käyttää: painotus toimii aina näin, myös täysin mukautetussa mallissa.
+
+## Nollasummainen uudelleentasapainotus
+
+Kriteerin painopisteen muuttaminen Painotus-välilehdellä on paikallinen
+luonnos, kunnes tallennat; mitään ei kirjoiteta ennen sitä.
+Työskentelyn aikana välilehden yläreunan tilarivi seuraa budjettia:
+"Kaikki painopisteet on jaettu", kun summa vastaa budjettia tarkalleen,
+tai lukema siitä, kuinka monta pistettä on vielä jaettavana tai kuinka
+monta ylittää budjetin, kun se ei vastaa. Yhden kriteerin painon
+nostaminen tarkoittaa aina muiden laskemista, jotta budjetti pitää.
+
+## Johdetut osuudet
+
+Kunkin kriteerin vierellä näette myös sen prosenttiosuuden
+kokonaispainosta, merkittynä "kokonaispainosta". Tämä osuus lasketaan
+aina painopisteistä, sitä ei koskaan syötetä suoraan; se muuttuu
+automaattisesti aina kun jonkin kriteerin painopiste muuttuu.
+
+## Atominen tallennus
+
+"Tallenna painotus" tallentaa koko jaon kerralla: kaikkien kriteerien
+painopisteet kirjoitetaan yhdessä, tai ei yhtäkään niistä. Painike
+aktivoituu vasta, kun budjetti on tarkalleen tasapainossa ja jotain on
+todella muuttunut; jaon tallentaminen, joka vastaa jo tallennettua, ei
+tee mitään eikä näy auditointilokissa. Yksi ennakkoehto kannattaa
+tietää: vajaata tai budjetin ylittävää jakoa ei voi tallentaa, välilehti
+vaatii koko mallin tasapainoa ensin.
+
+## Aiheeseen liittyvää
+
+- [Kriteerit ja arviointiasteikko](/docs/criteria-and-scale)
+- [Tekoälyn painotustarkistus](/docs/ai-weighting-review)
+- [Arviointimallin yleiskatsaus](/docs/model-overview)

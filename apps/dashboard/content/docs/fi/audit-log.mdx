@@ -1,0 +1,57 @@
+---
+title: Auditointiloki
+description: Joka muutos organisaationne dataan, kuka sen teki, ja ennen-jälkeen-tiedot joka merkinnän takana.
+section: security-privacy
+---
+
+[Tapahtumaloki](/audit-log) kirjaa joka muutoksen, joka tehdään
+organisaationne dataan: "Jokainen muutos organisaatiossasi, kuka sen
+teki ja milloin." Vain organisaation ylläpitäjät voivat nähdä sen.
+
+## Mitä kirjataan
+
+Joka toiminto, joka muuttaa jotain organisaatiossanne, kirjoittaa
+yhden merkinnän: roolin tai perheen luominen, muokkaaminen tai
+poistaminen, mallin tai sen painotuksen säätäminen, organisaation
+asetuksen muuttaminen, jäsenen lisääminen tai poistaminen,
+henkilöiden tuominen tai muokkaaminen, tekoälyn painotustarkistuksen
+vahvistaminen, ja joka palkkakartoituksen vaihe. Henkilökohtaiset
+tiliasetukset, kuten omat salasananne, on tarkoituksella jätetty
+tämän ulkopuolelle: ne kuvaavat teitä, ei organisaatiotanne.
+Kaksivaiheinen menetelmänne on samoin poissuljettu; katso
+[Kaksivaiheinen vahvistus](/docs/two-factor-authentication), miten
+se hallitaan sen sijaan.
+
+Kukin merkintä kuuluu yhteen seitsemästä luokasta: Malli, Rooli,
+Organisaatio, Jäsen, Tekoäly, Henkilöt ja Palkka. Työkalurivin
+"Suodata luokan mukaan" rajaa listan yhteen niistä,
+vapaatekstihaun ("Hae lokista") ja "Suodata päivämäärän mukaan"
+-toiminnon rinnalla tiettyä aikaväliä varten.
+
+## Tietoruutu
+
+Merkinnän "Näytä tiedot" -valinta avaa sen täyden tietueen: kuka
+teki muutoksen ("Kuka"), milloin ("Milloin"), mihin luokkaan se
+kuuluu ("Luokka"), ja mikä muuttui ("Mikä muuttui"). Kun kentällä on
+selkeä ennen-jälkeen-arvo, kuten uudelleen nimetty rooli tai säädetty
+paino, se näkyy nuolena vanhasta arvosta uuteen. Kun merkintä sen
+sijaan edustaa erätoimintoa, kuten tuontia, se näyttää lukumäärät
+sen sijaan, kuten kuinka monta riviä luotiin verrattuna
+päivitettyihin.
+
+## Henkilöt ja poistaminen
+
+Työntekijän identiteettikentät (nimi, sukupuoli, henkilönumero,
+syntymäaika ja tehtävänimike) näkyvät auditointilokissa kuten mikä
+tahansa muu muutos, jotta yhden korjaaminen on jäljitettävää. Jos
+kyseinen työntekijä poistetaan myöhemmin, näiden identiteettiarvojen
+tilalle tulee "Poistettu"-merkki kaikkialla, missä ne esiintyivät
+lokissa; tieto siitä, että muutos tapahtui, ja milloin, säilyy.
+Katso [GDPR ja tietojen poistaminen](/docs/gdpr-and-erasure), mitä
+tämä tarkoittaa ja mitä ei.
+
+## Aiheeseen liittyvää
+
+- [GDPR ja tietojen poistaminen](/docs/gdpr-and-erasure)
+- [Henkilön poistaminen](/docs/erasing-a-person)
+- [Tietojen sijainti](/docs/data-residency)

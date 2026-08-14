@@ -1,0 +1,64 @@
+---
+title: Henkilön poistaminen
+description: Työntekijän pysyvä, kirjoita vahvistukseksi -poisto, ja mikä anonymisoidaan sen säilyttämisen sijaan.
+section: people
+---
+
+Henkilön poistaminen on todellinen, pysyvä poisto, ei arkistointi:
+se on olemassa [GDPR:n oikeutta tulla unohdetuksi](/docs/gdpr-and-erasure)
+varten, niin sitä ei voi kumota tai tuoda henkilöä takaisin
+jälkikäteen.
+
+Henkilön palkkatietueet ja tehtävät poistetaan välittömästi. Jos
+hänen identiteettinsä näkyy siitä huolimatta myöhemmin, esimerkiksi
+auditointihistoriassa tai jo viimeistellyn palkkakartoituksen
+tilannekuvassa, se pseudonymisoidaan sen säilyttämisen sijaan, kun
+taas kokonaisluvut, joihin hän vaikutti, säilyvät ehjinä; katso alta
+"Mikä anonymisoidaan poistamisen sijaan" tarkemmat tiedot.
+
+## Yhden henkilön poistaminen
+
+Valitkaa kyseisen henkilön toimintovalikosta "Poista työntekijä".
+Lomake pyytää kirjoittamaan vahvistussanan ennen kuin poistopainike
+aktivoituu: henkilön oman henkilönumeron, jos hänellä on sellainen,
+muuten sanan "DELETE". Muun kirjoittaminen jättää toiminnon
+yksinkertaisesti pois käytöstä, virheilmoituksen näyttämisen sijaan.
+Vahvistaminen poistaa henkilön yhdessä kaikkien hänen
+palkkatietueidensa ja tehtäviensä kanssa.
+
+## Usean poistaminen kerralla
+
+Valitkaa rivejä [henkilörekisteristä](/docs/people-register), ja
+valitkaa sitten poistotoiminto, joka nimeää kuinka monta työntekijää
+on valittu; tämä pyytää myös kirjoittamaan "DELETE" vahvistukseksi.
+Henkilöt poistetaan yksi kerrallaan reaaliaikaisella
+etenemälaskurilla yhden ainoan tallennuksen sijaan, niin jos jokin
+keskeyttää kesken, jo poistetut pysyvät poistettuina; uudelleen
+vahvistaminen viimeistelee loput.
+
+## Mikä anonymisoidaan poistamisen sijaan
+
+Auditointiloki säilytetään vastuuvelvollisuuden vuoksi sen sijaan,
+että se poistettaisiin henkilön mukana. Henkilön poistaminen
+häivyttää hänen identiteettinsä: nimen, sukupuolen, henkilönumeron,
+syntymäajan ja tehtävänimikkeen, kaikkialla missä ne esiintyvät
+hänen aiemmassa auditointihistoriassaan, niin loki ei enää nimeä
+häntä; merkinnät, jotka kuvaavat itse muutosta, kuten päivämääriä
+tai osastoa, säilyvät. Jos kyseinen henkilö on koskaan sisältynyt
+viimeistellyn palkkakartoituksen tilannekuvaan, hänen identiteettinsä
+pseudonymisoidaan siellä samalla tavalla, kun taas kokonaisluvut,
+joihin hän vaikutti, säilyvät ehjinä.
+
+## Mitä poistaminen ei tee
+
+Henkilön poistaminen ei estä hänen henkilönumeronsa
+uudelleenkäyttöä: myöhempi palkkatuonti, joka käyttää samaa numeroa,
+yksinkertaisesti luo uuden henkilötietueen, koska mikään ei
+tallenna, että numero on koskaan poistettu.
+
+## Aiheeseen liittyvää
+
+- [Henkilörekisteri](/docs/people-register)
+- [Henkilön tiedot ja palkka](/docs/person-details-and-salary)
+- [Henkilöiden lisääminen](/docs/adding-people)
+- [GDPR ja tietojen poistaminen](/docs/gdpr-and-erasure)

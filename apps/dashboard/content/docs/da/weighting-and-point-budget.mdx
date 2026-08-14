@@ -1,0 +1,64 @@
+---
+title: Vægtning og pointbudgettet
+description: Hvordan vægtpoint, pointbudgettet og den atomare gemning fungerer på Vægtning-fanen.
+section: model
+---
+
+"Vægtning"-fanen i [Model](/model)-området er, hvor I bestemmer, hvor
+meget hvert kriterium tæller relativt til de andre. Dette er
+uafhængigt af kriteriets bedømmelsesskala (se
+[Kriterier og bedømmelsesskalaen](/docs/criteria-and-scale)); vægtning
+er aldrig en dom om, hvorvidt et kriterium er godt, det er hvor stor
+indflydelse det har på en rolles vægtning og, alt andet lige, den
+relative løn.
+
+## Vægtpoint
+
+Hvert kriterium får et helt antal vægtpoint fra 1 til 5. Tre er det
+neutrale vægtpoint og betyder tydelig og balanceret indflydelse; 1 er
+meget lav indflydelse, og 5 er meget stærk indflydelse. Hvert nyt
+kriterium starter på 3.
+
+## Pointbudgettet
+
+Det samlede antal vægtpoint, der skal fordeles, er fastlagt af, hvor
+mange kriterier modellen har: tre point per kriterium. En model med ni
+kriterier har et budget på 27 point; tilføj et tiende kriterium, og
+budgettet bliver 30. Summen af hvert kriteriums vægtpoint skal svare
+nøjagtigt til budgettet, ikke mere og ikke mindre. Der er ingen
+fri-procent- eller brugerdefineret-tal-mulighed: vægtning fungerer
+altid på denne måde, også for en fuldt tilpasset model.
+
+## Nulsums-genbalancering
+
+At ændre et kriteriums vægtpoint på Vægtning-fanen er et lokalt udkast,
+indtil I gemmer; intet skrives, før det sker. Mens I arbejder, følger
+en statuslinje øverst på fanen budgettet: "Alle vægtpoint er fordelt",
+når totalen præcis matcher budgettet, eller et antal af, hvor mange
+point der stadig er tilbage at fordele, eller hvor mange der er over
+budgettet, når det ikke gør. At hæve et kriteriums vægt betyder altid,
+at andre skal sænkes for at blive på budgettet.
+
+## Udledte andele
+
+Ved siden af hvert kriterium ser I også dets procentandel af den
+samlede vægt, mærket "af den samlede vægt". Denne andel beregnes altid
+fra vægtpointene og indtastes aldrig direkte; den flytter sig
+automatisk, hver gang et kriteriums vægtpoint ændres.
+
+## Atomar gemning
+
+"Gem vægtning" gemmer hele fordelingen på én gang: hvert kriteriums
+vægtpoint skrives sammen, eller ingen af dem gør. Knappen er kun
+aktiveret, når budgettet er nøjagtigt i balance og noget rent faktisk
+er ændret; at gemme en fordeling, der matcher det, der allerede er
+gemt, gør ingenting og vises ikke i hændelsesloggen. En forudsætning,
+det er værd at kende: I kan ikke gemme en delvis eller
+over-budget-fordeling, fanen kræver, at hele modellen balancerer
+først.
+
+## Relateret
+
+- [Kriterier og bedømmelsesskalaen](/docs/criteria-and-scale)
+- [AI-gennemgangen af vægtningen](/docs/ai-weighting-review)
+- [Modellen: overblik](/docs/model-overview)

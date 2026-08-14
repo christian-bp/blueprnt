@@ -1,0 +1,58 @@
+---
+title: Erasing a person
+description: The permanent, type-to-confirm deletion of an employee, and what is anonymized rather than kept.
+section: people
+---
+
+Erasing an employee is a true, permanent deletion, not an archive: it
+exists for the [GDPR right to erasure](/docs/gdpr-and-erasure), so there
+is no way to undo it or bring the person back afterward.
+
+Their salary records and role assignments are deleted outright. Where
+their identity still appears afterward, in the audit trail or in the
+snapshot of an already finalized pay mapping, it is pseudonymized
+rather than kept, while the aggregate figures it contributed to
+remain; see "What is anonymized rather than deleted" below for the
+detail.
+
+## Erasing one person
+
+From that person's actions menu, choose "Delete employee". The dialog asks
+you to type a confirmation word before the delete button turns on: the
+person's own employee number if they have one, otherwise the word "DELETE".
+Typing anything else simply leaves the action disabled, rather than showing
+an error. Confirming deletes the person together with every salary record
+and role assignment they have.
+
+## Erasing several at once
+
+Select rows on the [people register](/docs/people-register), then choose
+the delete action naming how many employees are selected; this also asks
+you to type "DELETE" to confirm. The
+people are erased one at a time with a live progress count rather than as
+one single save, so if something interrupts partway through, whoever was
+already erased stays erased; confirming again finishes whoever is left.
+
+## What is anonymized rather than deleted
+
+The audit trail is kept for accountability rather than deleted along with
+the person. Erasing someone tombstones their identity: name, gender,
+employee number, birth date, and job title, everywhere it appears in their
+earlier audit history, so the trail no longer names them; entries that
+describe the change itself, such as dates or department, remain. If that
+person was ever included in a finalized pay mapping snapshot, their
+identity there is pseudonymized the same way, while the aggregate figures
+it contributed to are kept intact.
+
+## What erasure does not do
+
+Erasing a person does not block their employee number from being reused: a
+later payroll import using the same number simply creates a new person
+record, since nothing records that the number was ever erased.
+
+## Related
+
+- [The people register](/docs/people-register)
+- [Person details and salary](/docs/person-details-and-salary)
+- [Adding people](/docs/adding-people)
+- [GDPR and erasure](/docs/gdpr-and-erasure)

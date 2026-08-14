@@ -1,0 +1,68 @@
+---
+title: Importera medarbetare
+description: Ta in er löneexport i blueprnt genom importguiden i fyra steg.
+section: people
+---
+
+Att importera medarbetare tar in er organisations lönedata i blueprnt så
+att ni kan klassificera varje person till en roll och börja jämföra lön.
+Starta från "Importera löner" på sidan [Medarbetare](/people).
+
+## Endast CSV
+
+Importguiden tar bara emot CSV-filer. Exportera er lönedata som CSV
+från lönesystemet; en kalkylbladsfil som XLSX eller ODS avvisas med ett
+meddelande som ber er exportera den som CSV istället, snarare än ett
+förvirrande fel om saknade kolumner. Se
+[Stödda löneexporter](/docs/supported-payroll-exports) för vilka
+system detta är verifierat mot och hur deras tal och datum läses.
+
+## De fyra stegen
+
+1. **Ladda upp**: välj eller släpp er CSV-fil. En fil utan rubrikrad kan
+   fortfarande laddas upp: första raden behålls som data, kolumnerna
+   numreras, och fält föreslås utifrån innehållet där det går.
+2. **Mappa kolumner**: matcha varje kolumn i filen mot ett fält
+   blueprnt känner igen. Anställnings-ID, Befattning, Kön och Månadslön
+   är obligatoriska; resten är grupperade som rekommenderade eller
+   valfria, och ni kan mappa upp till sex ytterligare lönekomponenter
+   (rörlig lön, bonus, fast tillägg, tillägg, aktier/optioner, förmåner,
+   övrig ersättning). För varje lönekolumn väljer ni om värdena gäller
+   per månad eller per år; blueprnt gissar ett rimligt standardval
+   utifrån kolumnrubriken, men ni kan ändra det, och ert val kommas
+   ihåg till nästa gång ni importerar.
+3. **Kontrollera**: granska hur mycket av varje fälttier som är täckt,
+   och åtgärda sedan eventuella datakvalitetsproblem. Ett dubblerat
+   anställnings-ID, ett oläsbart eller negativt lönevärde, en rad med
+   fel antal kolumner, eller ett olöst kön hoppar över den raden helt;
+   ett olöst kön kan istället åtgärdas direkt i formuläret, en rad i
+   taget, utan att skicka någon annan personuppgift till importen.
+   Andra problem, som en sysselsättningsgradskolumn läst som en andel
+   och skalad till procent, eller ett datum läst dag-först eftersom det
+   kunde betyda antingen dag eller månad, är bara informativa och
+   stoppar inte importen. Om ett problem finns i själva källfilen,
+   åtgärda det där och välj "Ladda upp en korrigerad fil" för att börja
+   om från Ladda upp med en ren kopia.
+4. **Granska**: se exakt vad importen kommer att skapa, uppdatera eller
+   lämna oförändrat, för både personer och löneposter, innan ni
+   bekräftar. En rad som återanvänder ett befintligt
+   anställningsnummer under ett annat namn flaggas som ett troligt
+   misstag och hoppas över som standard om ni inte väljer att
+   uppdatera den anställda ändå.
+
+När ni har bekräftat körs importen och rapporterar live-förlopp, och
+sedan ett slutligt antal för hur många personer som skapades,
+uppdaterades, redan var uppdaterade eller hoppades över.
+
+## Efter importen
+
+Klassificera era importerade medarbetare till roller från
+[Klassificera anställda](/docs/classifying-people) så att ni kan
+jämföra lön och gå vidare med en [lönekartläggning](/pay-mappings).
+
+## Relaterat
+
+- [Lägga till anställda](/docs/adding-people)
+- [Stödda löneexporter](/docs/supported-payroll-exports)
+- [Klassificera anställda](/docs/classifying-people)
+- [Medarbetarregistret](/docs/people-register)

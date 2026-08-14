@@ -1,0 +1,122 @@
+---
+title: Henkilöiden ja tuonnin virheet
+description: Mitä kukin luokittelu-, tehtävä- ja CSV-tuontiviesti tarkoittaa, ja mitä sille pitää tehdä.
+section: troubleshooting
+---
+
+Tämä sivu selittää joka viestin, joka voi näkyä henkilöitä lisätessä,
+luokitellessa, tai tuodessa.
+
+## En voi lisätä tai tuoda henkilöä, koska henkilönumero on jo käytössä
+
+### personRefExists
+
+Koodi: `personRefExists`
+
+"Työntekijä tällä työntekijänumerolla on jo olemassa."
+
+Kun asetatte henkilönumeron henkilölle, sen on pysyttävä
+yksilöllisenä organisaatiossanne: sitä käytetään tulevissa
+palkkatuonneissa saman henkilön täsmäyttämiseen kaksoiskappaleen
+luomisen sijaan. Tämä näkyy rivikohtaisena viestinä itse
+henkilönumerokentässä, sekä lisää-henkilö- että
+muokkaa-henkilö-lomakkeessa, ei ilmoituksena. Käyttäkää eri,
+yksilöllistä henkilönumeroa, tai etsikää olemassa oleva henkilö,
+jolla on tämä numero, ja muokatkaa häntä sen sijaan. Katso
+[Henkilöiden lisääminen](/docs/adding-people).
+
+## En voi valita tätä senioriteettia tälle henkilölle
+
+### invalidSeniority
+
+Koodi: `invalidSeniority`
+
+"Senioriteetti ei ole kelvollinen tämän roolin trackille."
+
+Senioriteettiarvot tulevat portaikosta, joka kuuluu roolin trackille
+(individual contributor, lead tai manager), niin yhdellä trackilla
+kelvollinen arvo ei ole kelvollinen toisella. Päivittäisessä
+käytössä senioriteettivalinta on jo rajattu arvoihin, jotka sopivat
+nykyisin valittuun rooliin, ja se nollautuu automaattisesti, jos
+vaihdatte eri trackin rooliin, niin tämä viesti näkyy lähinnä, jos
+rooli tai sen track muuttui muualla, kun lomakkeenne oli yhä auki.
+Latatkaa uudelleen ja valitkaa rooli ja senioriteetti uudelleen;
+katso [Henkilöiden luokittelu](/docs/classifying-people).
+
+## En voi asettaa tätä voimaantulopäivää uudelle tehtävälle
+
+### invalidEffectiveDate
+
+Koodi: `invalidEffectiveDate`
+
+"Voimaantulopäivän on oltava nykyisen tehtävän alkamispäivän
+jälkeen."
+
+Uuden rooli- tai senioriteettitehtävän on alettava ehdottomasti
+henkilön nykyisin avoimen tehtävän jälkeen. Mikään sovelluksessa ei
+anna teidän valita tätä päivää käsin tänään; se asetetaan
+automaattisesti vahvistushetkeen, niin tämä viesti on
+taustajärjestelmän varmistus samaa henkilöä luokittelemasta
+uudelleen kahdesti samalla hetkellä, esimerkiksi kaksoisklikkaamalla
+Vahvista, tai toimimalla samalla henkilöllä kahdesta avoimesta
+välilehdestä kerralla. Odottakaa hetki ja yrittäkää uudelleen; katso
+[Henkilöiden luokittelu](/docs/classifying-people).
+
+## CSV-tiedostoni hylättiin ennen kuin tuonti edes ehti alkaa
+
+Tiedoston lataaminen [Tuo henkilöitä](/people/import)-sivun
+ensimmäisessä vaiheessa tarkistaa itse tiedoston ennen kuin
+katsotaan yhtäkään riviä. Kaksi viestiä voi näkyä tässä; kumpikaan ei
+ole numeroitu virhekoodi, koska ne havaitaan selaimessa ennen kuin
+mikään pyyntö saavuttaa palvelimen.
+
+"Tämä tiedosto ei ole CSV. Jos se on laskentataulukko, avaa se
+Excelissä tai palkkajärjestelmässäsi ja vie CSV-muodossa, lataa
+sitten se tiedosto." näkyy kaikelle, joka ei ole pelkkää
+CSV-tekstiä: vanha Excel-`.xls`-tiedosto, todellinen `.xlsx`- tai
+`.ods`-laskentataulukko, tai tiedosto, joka näyttää HTML:ltä tai
+XML:ltä datan sijaan. Vain CSV hyväksytään; viekää tiedosto
+uudelleen CSV-muodossa siitä, mikä sen tuotti, ja lataakaa sitten
+se.
+
+"Tiedosto on tyhjä. Valitse CSV-tiedosto, jossa on vähintään yksi
+datarivi." näkyy CSV:lle, jossa ei ole otsikkoriviä, ei datariveja,
+tai jota selain ei pystynyt lukemaan lainkaan. Tarkistakaa, että
+vienti todella sisältää odottamanne datan, ennen kuin lataatte sen
+uudelleen.
+
+## Tuontiavustaja merkitsi ongelmia datassani
+
+Kun tiedosto on hyväksytty, Tarkista valmius -vaihe tarkastelee joka
+riviä tietolaatuongelmien varalta, ennen kuin voitte jatkaa.
+Nämäkään eivät ole virhekoodeja; ne luetaan paketista
+`packages/import` ja näytetään merkittyinä ongelmina asianomaisten
+rivien vierellä.
+
+Ongelmat, jotka estävät tuonnin, kunnes ne on korjattu
+(lähdetiedostossa, tai määrittämättömän sukupuolen tapauksessa,
+määritettynä suoraan sovelluksessa): kahdennettu työntekijä-ID,
+lukukelvoton palkka-arvo, ei-numeerinen tilastokoodi
+(palkkajärjestelmien viennit merkitsevät sarakkeen joskus nimellä
+Occupation Code tai SSYK), sukupuoli, jota ei voitu lukea,
+negatiivinen palkka-arvo, ja rivi, jossa on väärä määrä sarakkeita.
+
+Ongelmat, jotka näkyvät otsikon "Hyvä tietää" alla eivätkä estä
+mitään: nimeen perustuva sukupuoliarvaus, joka on eri mieltä annetun
+arvon kanssa (voi olla virheellinen), työaika-arvo, joka luettiin
+osuutena ja skaalattiin prosenteiksi, ja päivämäärä, jolla ei ole
+yksiselitteistä järjestystä, luettuna muodossa päivä/kuukausi.
+
+Puuttuvat pakolliset kentät estävät myös tuonnin, kunnes jokainen
+niistä on yhdistetty sarakkeeseen edellisessä vaiheessa; puuttuvat
+suositellut kentät vain varoittavat. Katso
+[Henkilöiden tuonti](/docs/importing-people) ja
+[Tuetut palkkajärjestelmien viennit](/docs/supported-payroll-exports)
+tarkoista odotetuista kentistä ja muodoista.
+
+## Aiheeseen liittyvää
+
+- [Henkilöiden lisääminen](/docs/adding-people)
+- [Henkilöiden tuonti](/docs/importing-people)
+- [Henkilöiden luokittelu](/docs/classifying-people)
+- [Tuetut palkkajärjestelmien viennit](/docs/supported-payroll-exports)

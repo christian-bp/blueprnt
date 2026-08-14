@@ -1,0 +1,47 @@
+---
+title: Assistentens datahåndtering
+description: Medarbejdernavn-kontrollen, undertrykkelse af små grupper, EU-hosting, og hvorfor hvert svar logges.
+section: assistant
+---
+
+blueprnt AI er bygget, så ingen enkelt medarbejders personoplysninger
+nogensinde når modellen bag den, og så hver brug af den er
+registreret.
+
+## Aldrig medtag en medarbejders personoplysninger
+
+Før en besked sendes til modellen, kontrollerer blueprnt, om den
+indeholder et fuldt medarbejdernavn. Gør den det, afvises beskeden med
+det samme, uden nogensinde at kalde modellen: "Beskeden ser ud til at
+indeholde en medarbejders personoplysninger. Fjern dem, og stil
+spørgsmålet mere generelt." Spørg om det samme i generelle vendinger i
+stedet, for eksempel efter rolle eller gruppe snarere end efter navn.
+
+## Små grupper udpeges aldrig
+
+Når I spørger om lønstatistik opdelt efter køn, vises en gruppe, der
+er for lille til at rapportere om uden reelt at afsløre én persons
+egen løn, aldrig som et tal. blueprnt AI siger, at gruppen er for
+lille til at rapportere om, i stedet for at angive eller estimere et
+tal for den. Dette beskytter specifikt enkeltpersoner mod assistenten:
+appens almindelige sider, som Medarbejderregistret, viser stadig
+individuel løn til dem, der er tiltænkt at se den.
+
+## Hvor assistenten kører
+
+Ligesom hver anden AI-funktion i blueprnt kører assistenten på en
+EU-hostet model. Jeres data forlader aldrig EU for at generere et
+svar.
+
+## Hver brug logges
+
+Hvert svar, assistenten genererer, registreres i jeres organisations
+AI-forbrug, sammen med appens andre AI-funktioner. En besked afvist af
+medarbejdernavn-kontrollen registreres ikke, da modellen aldrig blev
+kaldt for den.
+
+## Relateret
+
+- [Sådan bruger I assistenten](/docs/using-the-assistant)
+- [Hvad assistenten kan gøre](/docs/assistant-capabilities)
+- [Nøglebegreber](/docs/key-concepts)

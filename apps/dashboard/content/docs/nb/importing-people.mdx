@@ -1,0 +1,69 @@
+---
+title: Importere ansatte
+description: Ta lønnsfilen deres inn i blueprnt gjennom importveiviseren i fire steg.
+section: people
+---
+
+Å importere ansatte tar organisasjonens lønnsdata inn i blueprnt, slik
+at dere kan klassifisere hver person til en rolle og begynne å
+sammenligne lønn. Start fra "Importer lønninger" på siden
+[Ansatte](/people).
+
+## Bare CSV
+
+Importveiviseren tar bare imot CSV-filer. Eksporter lønnsdataene som
+CSV fra lønnssystemet; en regnearkfil som XLSX eller ODS avvises med en
+melding som ber dere eksportere den som CSV i stedet, i stedet for en
+forvirrende feil om manglende kolonner. Se
+[Støttede lønnseksporter](/docs/supported-payroll-exports) for hvilke
+systemer dette er verifisert mot og hvordan tallene og datoene deres
+leses.
+
+## De fire stegene
+
+1. **Last opp**: velg eller slipp CSV-filen. En fil uten overskriftsrad
+   kan fortsatt lastes opp: den første raden beholdes som data,
+   kolonnene numreres, og felt foreslås fra innholdet der det er mulig.
+2. **Tilordne kolonner**: match hver kolonne i filen mot et felt
+   blueprnt forstår. Ansatt-ID, Stillingstittel, Kjønn og Månedlig
+   grunnlønn er obligatoriske; resten er gruppert som anbefalt eller
+   valgfritt, og dere kan tilordne opp til seks flere lønnskomponenter
+   (variabel lønn, bonus, fast tillegg, tillegg, aksjer/opsjoner,
+   naturalytelse, annet). For hver lønnskolonne velger dere også om
+   verdiene gjelder per måned eller per år; blueprnt gjetter et
+   rimelig standardvalg fra kolonneoverskriften, men dere kan endre
+   det, og valget deres huskes til neste gang dere importerer.
+3. **Kontroller**: se hvor mye av hvert felttier som er dekket, og fiks
+   deretter eventuelle datakvalitetsproblemer. En duplisert ansatt-ID,
+   en ulesbar eller negativ lønnsverdi, en rad med feil antall
+   kolonner, eller et uløst kjønn hopper over den raden helt; et uløst
+   kjønn kan i stedet fikses direkte i formularet, en rad om gangen,
+   uten å sende noen annen persondata inn i importen. Andre problemer,
+   som en stillingsandelkolonne lest som en andel og skalert til en
+   prosentsats, eller en dato lest dag-først fordi den kunne betydd
+   enten dag eller måned, er bare informative og stopper ikke importen.
+   Hvis et problem ligger i selve kildefilen, fiks det der og velg
+   "Last opp en korrigert fil" for å starte på nytt fra Last opp med en
+   ren kopi.
+4. **Gjennomgang**: se nøyaktig hva importen vil opprette, oppdatere
+   eller la stå uendret, for både personer og lønnsposter, før dere
+   bekrefter. En rad som gjenbruker et eksisterende ansattnummer under
+   et annet navn, flagges som en sannsynlig feil og hoppes over som
+   standard, med mindre dere velger å oppdatere den ansatte likevel.
+
+Når dere har bekreftet, kjøres importen og rapporterer fremdrift live,
+og deretter et endelig antall for hvor mange personer som ble
+opprettet, oppdatert, allerede var oppdatert, eller hoppet over.
+
+## Etter importen
+
+Klassifiser de importerte ansatte til roller fra
+[Klassifisere ansatte](/docs/classifying-people), slik at dere kan
+sammenligne lønn og fortsette med en [lønnskartlegging](/pay-mappings).
+
+## Relatert
+
+- [Legge til ansatte](/docs/adding-people)
+- [Støttede lønnseksporter](/docs/supported-payroll-exports)
+- [Klassifisere ansatte](/docs/classifying-people)
+- [Ansatteregisteret](/docs/people-register)

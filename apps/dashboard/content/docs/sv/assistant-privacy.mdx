@@ -1,0 +1,46 @@
+---
+title: Assistentens integritet
+description: Kontrollen av anställdas namn, undertryckning av små grupper, EU-värdskap, och varför varje svar loggas.
+section: assistant
+---
+
+Blueprnt AI är byggd så att ingen enskild anställds personuppgifter
+någonsin når modellen bakom den, och så att varje användning av den kan
+redovisas.
+
+## Ta aldrig med en anställds personuppgifter
+
+Innan något meddelande skickas till modellen kontrollerar blueprnt om
+det innehåller en anställds fullständiga namn. Om det gör det avvisas
+meddelandet omedelbart, utan att modellen någonsin anropas: "Meddelandet
+verkar innehålla en anställds personuppgifter. Ta bort dem och ställ
+frågan mer generellt." Fråga om samma sak mer generellt istället, till
+exempel efter roll eller grupp snarare än efter namn.
+
+## Små grupper pekas aldrig ut
+
+När ni frågar om lönestatistik uppdelad efter kön visas en grupp som är
+för liten för att rapporteras utan att i praktiken avslöja en enskild
+persons egen lön aldrig som en siffra. Blueprnt AI säger att gruppen är
+för liten för att rapportera istället för att ange eller uppskatta en
+siffra för den. Det här skyddar individer specifikt från assistenten:
+appens vanliga sidor, som medarbetarregistret, visar fortfarande
+individuell lön för de personer som är avsedda att se den.
+
+## Var assistenten körs
+
+Precis som varje annan AI-funktion i blueprnt körs assistenten på en
+EU-värdad modell. Era data lämnar aldrig EU för att generera ett svar.
+
+## Varje användning loggas
+
+Varje svar assistenten genererar registreras i er organisations
+AI-användning, tillsammans med appens andra AI-funktioner. Ett
+meddelande som avvisas av kontrollen av anställdas namn registreras
+inte, eftersom modellen aldrig anropades för det.
+
+## Relaterat
+
+- [Använda assistenten](/docs/using-the-assistant)
+- [Vad assistenten kan göra](/docs/assistant-capabilities)
+- [Nyckelbegrepp](/docs/key-concepts)

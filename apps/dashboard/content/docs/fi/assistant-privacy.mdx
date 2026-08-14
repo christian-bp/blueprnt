@@ -1,0 +1,48 @@
+---
+title: Assistentti ja tietosuoja
+description: Työntekijän nimen tarkistus, pienten ryhmien piilottaminen, EU-isännöinti, ja miksi joka vastaus kirjataan.
+section: assistant
+---
+
+blueprnt AI on rakennettu niin, että yksittäisen työntekijän
+henkilötiedot eivät koskaan tavoita sen taustalla olevaa mallia, ja
+niin että joka käyttökerta on tilillä.
+
+## Ei koskaan työntekijän henkilötietoja
+
+Ennen kuin viesti lähetetään mallille, blueprnt tarkistaa,
+sisältääkö se työntekijän koko nimen. Jos sisältää, viesti hylätään
+välittömästi, kutsumatta mallia koskaan: "Viesti näyttää sisältävän
+työntekijän henkilötietoja. Poista ne ja kysy yleisemmällä
+tasolla." Kysykää samasta asiasta yleisemmällä tasolla sen sijaan,
+esimerkiksi roolin tai ryhmän mukaan nimen sijaan.
+
+## Pieniä ryhmiä ei koskaan eroteta
+
+Kun kysytte palkkatilastoja sukupuolen mukaan jaettuna, ryhmää, joka
+on liian pieni raportoitavaksi paljastamatta tosiasiassa yhden
+henkilön omaa palkkaa, ei koskaan näytetä lukuna. blueprnt AI
+kertoo ryhmän olevan liian pieni raportoitavaksi sen sijaan, että se
+kertoisi tai arvioisi luvun sille. Tämä suojaa yksilöitä nimenomaan
+assistentilta: sovelluksen tavalliset sivut, kuten
+Henkilöstörekisteri, näyttävät edelleen yksilön palkan niille, joille
+se on tarkoitettu nähtäväksi.
+
+## Missä assistentti toimii
+
+Kuten kaikki muutkin blueprntin tekoälyominaisuudet, assistentti
+toimii EU:ssa isännöidyllä mallilla. Datanne ei koskaan poistu
+EU:sta vastauksen luomiseksi.
+
+## Joka käyttökerta kirjataan
+
+Joka vastaus, jonka assistentti luo, kirjataan organisaationne
+tekoälyn käyttöön, muiden sovelluksen tekoälyominaisuuksien
+rinnalle. Työntekijän nimen tarkistuksen hylkäämää viestiä ei
+kirjata, koska mallia ei koskaan kutsuttu sen puolesta.
+
+## Aiheeseen liittyvää
+
+- [Assistentin käyttö](/docs/using-the-assistant)
+- [Mitä assistentti osaa tehdä](/docs/assistant-capabilities)
+- [Keskeiset käsitteet](/docs/key-concepts)

@@ -3,6 +3,7 @@
 import {
   AiChat02Icon,
   Audit02Icon,
+  BookOpen01Icon,
   Briefcase01Icon,
   ChartColumnIcon,
   DashboardSquare02Icon,
@@ -52,6 +53,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t("nav.assistant"),
       url: "/assistant",
       icon: <HugeiconsIcon icon={AiChat02Icon} strokeWidth={2} />,
+    },
+    {
+      title: t("nav.docs"),
+      url: "/docs",
+      icon: <HugeiconsIcon icon={BookOpen01Icon} strokeWidth={2} />,
     },
   ]
 

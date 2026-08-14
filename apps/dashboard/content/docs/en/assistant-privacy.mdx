@@ -1,0 +1,44 @@
+---
+title: Assistant privacy
+description: The employee-name check, small-group suppression, EU hosting, and why every reply is logged.
+section: assistant
+---
+
+blueprnt AI is built so that no individual employee's personal details ever
+reach the model behind it, and so every use of it is accounted for.
+
+## Never include an employee's personal details
+
+Before any message is sent to the model, blueprnt checks whether it
+contains a full employee name. If it does, the message is refused
+immediately, without ever calling the model: "The message seems to include
+an employee's personal details. Remove them and ask again in general
+terms." Ask about the same thing in general terms instead, for example by
+role or group rather than by name.
+
+## Small groups are never singled out
+
+When you ask for pay statistics split by gender, a group that is too small
+to report on without effectively exposing one person's own pay is never
+shown as a number. blueprnt AI says the group is too small to report
+instead of stating or estimating a figure for it. This protects individuals
+specifically from the assistant: the app's ordinary pages, like the People
+register, still show individual pay to the people who are meant to see it.
+
+## Where the assistant runs
+
+Like every other AI feature in blueprnt, the assistant runs on an
+EU-hosted model. Your data never leaves the EU to generate a reply.
+
+## Every use is logged
+
+Every reply the assistant generates is recorded in your organization's AI
+usage, alongside the app's other AI features. A message rejected by the
+employee-name check is not recorded, since the model was never called for
+it.
+
+## Related
+
+- [Using the assistant](/docs/using-the-assistant)
+- [What the assistant can do](/docs/assistant-capabilities)
+- [Key concepts](/docs/key-concepts)

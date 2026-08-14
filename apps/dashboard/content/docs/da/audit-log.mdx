@@ -1,0 +1,55 @@
+---
+title: Hændelsesloggen
+description: Hver ændring i jeres organisations data, hvem der foretog den, og før-og-efter-detaljerne bag hver post.
+section: security-privacy
+---
+
+[Hændelsesloggen](/audit-log) registrerer hver ændring foretaget i
+jeres organisations data: "Hver ændring i din organisation, hvem der
+foretog den og hvornår." Kun organisationsadministratorer kan se den.
+
+## Hvad der registreres
+
+Enhver handling, der ændrer noget i jeres organisation, skriver én
+post: at oprette, redigere eller fjerne en rolle eller familie, at
+justere modellen eller dens vægtning, at ændre en organisationsindstilling,
+at tilføje eller fjerne et medlem, at importere eller redigere
+medarbejdere, at bekræfte en AI-vægtningsgennemgang, og hvert trin i en
+lønkortlægning. Personlige kontoindstillinger, som jeres egen
+adgangskode, er med vilje ikke inkluderet her: de beskriver jer, ikke
+jeres organisation. Jeres tofaktormetode er ligeledes udelukket; se
+[To-trins-bekræftelse](/docs/two-factor-authentication) for hvordan
+den administreres i stedet.
+
+Hver post hører til én af syv kategorier: Model, Rolle, Organisation,
+Medlem, AI, Personer og Løn. Værktøjsstribens "Filtrer efter kategori"
+begrænser listen til én af dem, sammen med en fritekstsøgning ("Søg i
+loggen") og "Filtrer på dato" for et bestemt interval.
+
+## Detaljearket
+
+At vælge "Vis detaljer" på en post åbner dens fulde registrering: hvem
+der foretog ændringen ("Hvem"), hvornår ("Hvornår"), hvilken kategori
+den hører under ("Kategori"), og hvad der blev ændret ("Hvad blev
+ændret"). Hvor et felt har en klar før-og-efter-værdi, som en omdøbt
+rolle eller en justeret vægt, vises den som en pil fra den gamle værdi
+til den nye. Hvor en post i stedet repræsenterer en batch af
+aktivitet, som en import, viser den i stedet antal, som hvor mange
+rækker der blev oprettet versus opdateret.
+
+## Personer og sletning
+
+En medarbejders identitetsfelter (navn, køn, medarbejdernummer,
+fødselsdato og jobtitel) vises i hændelsesloggen ligesom enhver anden
+ændring, så det er sporbart at rette én af dem. Slettes den
+medarbejder senere, udskiftes de identitetsværdier med et
+"Slettet"-mærke overalt, hvor de forekom i loggen; det faktum, at en
+ændring skete, og hvornår, forbliver. Se
+[GDPR og retten til at blive slettet](/docs/gdpr-and-erasure) for hvad
+dette betyder, og hvad det ikke betyder.
+
+## Relateret
+
+- [GDPR og retten til at blive slettet](/docs/gdpr-and-erasure)
+- [Slet en person](/docs/erasing-a-person)
+- [Datas placering](/docs/data-residency)

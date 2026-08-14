@@ -1,0 +1,78 @@
+---
+title: Tuetut palkkajärjestelmien viennit
+description: Palkkajärjestelmät, joita vasten tuonti on varmistettu, ja mitä tehdä, kun tiedosto ei jäsenny.
+section: people
+---
+
+Tuontiavustajan sarakkeiden tunnistus ja jäsennys on rakennettu ja
+varmistettu todellisia CSV-vientejä vasten järjestelmistä Visma,
+Hogia, Fortnox, Agda, Personec, SD Worx, SAP SuccessFactors ja
+Workday, englanniksi, ruotsiksi, norjaksi, tanskaksi ja suomeksi.
+Tämä ei tarkoita, että vain nämä järjestelmät toimivat: mikä tahansa
+CSV-vienti, jossa on
+[Henkilöiden tuonti](/docs/importing-people)-sivulla listatut kentät,
+voidaan yhdistää käsin. Se tarkoittaa, että näiden tiettyjen
+järjestelmien todelliset erikoisuudet on tarkistettu suoraan.
+
+## Luvut ja päivämäärät
+
+Summat luetaan käyttivätpä ne pilkkua tai pistettä
+desimaalierottimena, välilyönnein eroteltuine tuhansine tai ei, ja
+etu- tai jälkiliitteinen valuuttakoodi tai -merkki kuten "SEK", "kr"
+tai "EUR" poistettuna. Päivämäärät luetaan ISO-muodossa, päivä ensin
+-muodoissa kuten "15.01.2023" tai "15/01/2023", ja pelkkänä
+8-numeroisena muotona, muun muassa. Kun päivämäärän voisi lukea
+joko päivä ensin- tai kuukausi ensin -muodossa ja molemmat ovat
+kalenterikelpoisia, blueprnt olettaa aina päivä ensin, koska se
+vastaa kaikkien näiden palkkajärjestelmien pohjoismaisia vientejä, ja
+merkitsee rivin, jotta voitte tarkistaa sen sen sijaan, että
+arvattaisiin hiljaa.
+
+## Sukupuoli
+
+Sukupuoliarvot norjaksi, tanskaksi ja suomeksi tunnistetaan ruotsin
+ja englannin lisäksi, ja numeerinen tilastokoodi luetaan
+sukupuoleksi vain sarakeotsikon alla, joka itse koskee sukupuolta.
+Arvoa, jota ei voida ratkaista Mieheksi tai Naiseksi, ei koskaan
+arvata: se merkitään sen sijaan manuaalista, rivikohtaista valintaa
+varten Tarkista-vaiheessa.
+
+## Työaika osuutena
+
+Joissakin järjestelmissä työaika viedään osuutena, kuten 0,8,
+prosentin sijaan. Kun sarakkeen kaikki arvot ovat 1,0 tai vähemmän,
+blueprnt skaalaa koko sarakkeen prosenteiksi ja näyttää huomautuksen,
+joka selittää sen tehneen niin, jotta muutos on näkyvä sen sijaan,
+että se olisi hiljainen.
+
+## Mitä ei lueta vielä
+
+Muutamaa muotoa ei tarkoituksella tueta toistaiseksi:
+laskentataulukkotiedostot (XLSX, XLS, ODS) CSV:n sijaan,
+yhdysvaltalaistyyliset pilkkutuhaset summat kuten "52,000",
+sveitsiläinen heittomerkkiryhmittely, negatiiviset tai
+sulkumerkeissä olevat summat, ja päivämäärät, jotka on kirjoitettu
+kuukauden nimellä tai kaksinumeroisella vuodella. Tiedosto, joka
+käyttää jotain näistä, tarvitsee pienen säädön palkkajärjestelmänne
+vientiasetuksiin, tai manuaalisen muokkauksen, ennen kuin se tuodaan
+siististi.
+
+## Kun tiedosto ei jäsenny
+
+Jos lataatte laskentataulukkotiedoston vahingossa, avustaja kertoo
+selvästi, että tiedosto ei ole CSV, ja pyytää viemään sen
+CSV-muodossa ja lataamaan sen sijaan sen. Tyhjä tiedosto saa
+samanlaisen suoran viestin. Jos tiedosto latautuu, mutta sen
+sarakkeet näyttävät väärältä, tarkistakaa puuttuva sarake-erotin tai
+vioittunut otsikkoteksti, molemmat, jotka Tarkista-vaihe merkitsee
+tiedostovaroituksena estämättä tuontia; puuttuva otsikkorivi
+merkitään myös, vaikka tiedosto tuodaan silti sarakkeet numeroituina.
+Joka tapauksessa korjaus on palkkajärjestelmänne vientiasetuksissa,
+ei blueprntin sisällä: viekää uudelleen CSV-muodossa, otsikkorivillä,
+vakiotekstikoodauksella, ja lataakaa sitten korjattu tiedosto.
+
+## Aiheeseen liittyvää
+
+- [Henkilöiden tuonti](/docs/importing-people)
+- [Henkilöiden luokittelu](/docs/classifying-people)
+- [Henkilörekisteri](/docs/people-register)

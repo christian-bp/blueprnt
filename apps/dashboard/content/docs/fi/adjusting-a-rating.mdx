@@ -1,0 +1,55 @@
+---
+title: Arvion muokkaaminen
+description: Arviointivaiheiden avaaminen uudelleen kriteerin arvion muuttamiseksi, ja mitkä muutokset kirjataan.
+section: evaluation
+---
+
+Roolin arviot eivät ole koskaan lopullisia. Niin kauan kuin roolia ei
+ole arkistoitu, voitte palata mihin tahansa kriteeriin ja muuttaa sen
+arvioinnin, ja blueprnt laskee painotuksen ja vaativuustason
+välittömästi uudelleen uusien arvioiden perusteella.
+
+## Arviointivaiheiden avaaminen uudelleen
+
+Täysin arvioidun roolin toimintovalikosta valitkaa "Muuta arvioita".
+Tämä avaa samat arviointivaiheet, jotka on kuvattu kohdassa
+[Roolin arviointi](/docs/evaluating-a-role), alkaen uudelleen
+ensimmäisestä kriteeristä, mutta esitäytettynä: jokainen kriteeri
+näyttää jo valitsemanne portaan ja kirjoittamanne perustelun, niin
+tarkastatte ja muokkaatte olemassa olevaa arviotanne sen sijaan, että
+aloittaisitte tyhjästä. Painotus ja vaativuustaso pysyvät piilossa
+käydessänne vaiheita läpi, täsmälleen kuten ensimmäisellä kerralla;
+näette tuloksen uudelleen vasta lopussa.
+
+Portaan muuttaminen ja "Seuraava kriteeri" valitseminen tallentaa
+kyseisen kriteerin välittömästi, yksi kerrallaan, kuten ensimmäisellä
+arviointikerralla. Jo tallennetun portaan ja perustelun lähettäminen
+ei muuta mitään: mitään ei kirjoiteta, eikä auditointimerkintää
+luoda.
+
+## Milloin muokkaaminen on estetty
+
+Kun rooli on arkistoitu, sitä ei voi enää arvioida tai muokata
+lainkaan. "Muuta arvioita" ei näy enää sen valikossa, ja arkistointi
+on yksisuuntainen, niin arkistoitua roolia ei voi avata uudelleen
+arvioitavaksi; katso [Roolin arkistointi](/docs/archiving-roles), mikä
+muuttuu vielä vain luku -tilaan. Arviointi vaatii myös edelleen
+täydellisen tehtäväprofiilin, saman ennakkoehdon kuin ensimmäisellä
+kerralla; tämä on tavallisesti jo täyttynyt siihen mennessä, kun
+roolilla on täysi arviointi muokattavaksi.
+
+## Mitä kirjataan
+
+Jokainen tallennettu muutos arvioon kirjataan auditointilokiin
+merkinnällä "Arviointi muutettu", kriteerin arvon ja perustelun
+ennen- ja jälkeen-tilan kanssa. Jos muutos siirtää roolin toiselle
+vaativuustasolle, blueprnt kirjaa myös erillisen "Vaativuustaso
+kalibroitu uudelleen" -merkinnän, joka viittaa takaisin muutoksen
+aiheuttaneeseen arvioon, jotta historia siitä, miksi roolin
+vaativuustaso muuttui, pysyy näkyvissä arvioiden vierellä.
+
+## Aiheeseen liittyvää
+
+- [Roolin arviointi](/docs/evaluating-a-role)
+- [Painotus ja vaativuustasot](/docs/score-and-levels)
+- [Roolin arkistointi](/docs/archiving-roles)

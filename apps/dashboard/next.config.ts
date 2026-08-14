@@ -55,6 +55,19 @@ const nextConfig: NextConfig = {
   // files being reached through `import()` (see i18n/request.ts), and with
   // that fixed the cache makes no difference. Removed so dev keeps Next's
   // default warm start.
+  // Docs MDX is read from the filesystem at request time (locale is a
+  // cookie, so these routes render dynamically); without tracing the files
+  // are absent from the serverless bundle. A single "/docs" key covers BOTH
+  // /docs and /docs/[slug]: outputFileTracingIncludes matches route keys with
+  // picomatch's contains:true after normalizeAppPath strips the route group,
+  // so "/docs" matches any traced path containing it, including
+  // "/docs/[slug]". Confirmed by inspecting both routes' .nft.json after a
+  // production build: each lists exactly the 280 files under content/docs.
+  // Do not add a second "/docs/[slug]" key: picomatch parses "[slug]" as a
+  // character class, so as its own key it would never match anything.
+  outputFileTracingIncludes: {
+    "/docs": ["./content/docs/**/*"],
+  },
   async headers() {
     return [
       {

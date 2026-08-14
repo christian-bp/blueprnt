@@ -208,7 +208,8 @@
       "signOut": "Logga ut",
       "people": "Medarbetare",
       "payMapping": "Lönekartläggningar",
-      "assistant": "Assistent"
+      "assistant": "Assistent",
+      "docs": "Dokumentation"
     },
     "people": {
       "description": "Medarbetare importerade från ert lönesystem.",
@@ -2469,6 +2470,39 @@
       "renameConversationLabel": "Titel",
       "renameConversationSave": "Spara",
       "renameConversationCancel": "Avbryt"
+    },
+    "notFound": {
+      "title": "Sidan hittades inte",
+      "body": "Länken kan vara inaktuell eller felstavad.",
+      "backHome": "Tillbaka till översikten"
+    },
+    "docs": {
+      "headingLink": "Länk till {heading}",
+      "index": {
+        "title": "Dokumentation",
+        "intro": "Guider för allt i blueprnt, från er första onboarding till en slutförd lönekartläggning.",
+        "popular": "Populära guider",
+        "browse": "Alla guider"
+      },
+      "sections": {
+        "gettingStarted": "Kom igång",
+        "model": "Utvärderingsmodell",
+        "roles": "Roller",
+        "evaluation": "Utvärdera roller",
+        "people": "Medarbetare",
+        "payMapping": "Lönekartläggning",
+        "assistant": "Assistent",
+        "organization": "Organisation",
+        "account": "Konto",
+        "securityPrivacy": "Säkerhet och integritet",
+        "glossary": "Ordlista",
+        "troubleshooting": "Felsökning"
+      },
+      "notFound": {
+        "title": "Dokumentationssidan hittades inte",
+        "body": "Länken kan vara inaktuell eller felstavad.",
+        "backToIndex": "Tillbaka till dokumentationen"
+      }
     }
   },
   "errors": {

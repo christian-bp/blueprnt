@@ -1,0 +1,67 @@
+---
+title: Henkilöiden luokittelu
+description: Määrittäkää kukin tuotu työntekijä rooliin ja senioriteettiin, moottorin ehdotuksesta, jonka vahvistatte.
+section: people
+---
+
+Luokittelu yhdistää kunkin työntekijän rooliin ja senioriteettiin
+työroolien arkkitehtuurissanne, jotta hänen palkkaansa voidaan
+verrata muihin samassa roolissa. Avatkaa se "Luokittele"-välilehdeltä
+[henkilörekisterin](/docs/people-register) vierestä.
+
+## Miten ehdotukset toimivat
+
+blueprnt ryhmittää aktiiviset henkilönne palkkatiedostoon kirjatun
+tarkan tehtävänimikkeen mukaan, ja ehdottaa sitten yhtä roolia
+nimikeryhmää kohden täsmäyttämällä nimikkeen tekstin roolienne
+nimikkeisiin, ja senioriteettia kullekin henkilölle kyseisen roolin
+trackin sisällä. Tämä täsmäytys on deterministinen moottori, ei
+tekoäly: mitään ei koskaan luokitella automaattisesti, ja joka
+ehdotus odottaa teidän vahvistustanne. Nimike, joka ei muistuta
+riittävästi mitään olemassa olevaa roolia, ei näytä ehdotusta
+lainkaan, niin voitte luoda sille roolin sen sijaan.
+Luokittele-välilehdelle palaaminen on aina turvallista: se ei koskaan
+korvaa luokittelua, jonka olette jo vahvistaneet, ja päivittää vain
+ryhmiä, jotka odottavat sitä yhä.
+
+Tässä asetettu senioriteetti kuuluu henkilölle, ei koskaan roolille:
+se ei koskaan vaikuta kyseisen roolin arvioon, painotukseen tai
+vaativuustasoon. Katso [Painotus ja vaativuustasot](/docs/score-and-levels)
+tästä rajasta.
+
+## Taulukon lukeminen
+
+Kukin rivi on yksi tuotu tehtävänimike, joka näyttää kuinka monta
+työntekijää jakaa sen, ehdotetun (tai jo osoitetun) roolin, ja
+tilan: Vahvistettu, kun kaikilla ryhmän henkilöillä on vahvistettu
+tehtävä, Luokittelematon, jos kellään heistä ei ole vielä mitään
+tehtävää, tai Odottaa siinä välissä. Laajentakaa rivi nähdäksenne
+sen henkilöt ja muuttaaksenne, kullekin heistä, ehdotettua roolia tai
+senioriteettia ennen vahvistamista; rooli täytyy valita ennen kuin
+sen senioriteetin voi valita.
+
+## Vahvistaminen
+
+Vahvistakaa yksittäinen ryhmä sen laajennetulta riviltä, tai
+valitkaa useita ryhmiä ja käyttäkää joukkotoimintoa luokitellaksenne
+ne kaikki kerralla niiden ehdotetuilla rooleilla ja senioriteetilla;
+kummassakin tapauksessa voitte silti muuttaa mitä tahansa niistä
+jälkikäteen. Suuri valinta jaetaan pienempiin eriin taustalla, jotta
+vahvistus valmistuu aina siististi yhden liian suuren tallennuksen
+sijaan.
+
+## Roolin luominen täsmäämättömälle nimikkeelle
+
+Kun nimikkeellä ei ole täsmäystä, "Luo uusi rooli" antaa luoda
+sellaisen paikan päällä: täyttäkää nimike, toiminto tai osasto,
+tiimi ja track, ja se osoitetaan kaikille tällä nimikkeellä
+välittömästi. Tarkoitus ja vastuualueet voidaan täyttää, halutessaan
+tekoälyn luonnosteluavun kanssa, uuden roolin omalta sivulta
+jälkikäteen; katso [Tehtäväprofiilit](/docs/job-profiles).
+
+## Aiheeseen liittyvää
+
+- [Henkilörekisteri](/docs/people-register)
+- [Henkilöiden tuonti](/docs/importing-people)
+- [Tehtäväprofiilit](/docs/job-profiles)
+- [Painotus ja vaativuustasot](/docs/score-and-levels)

@@ -1,0 +1,43 @@
+---
+title: Datalagring
+description: Varför varje del av blueprnt, databas, applikation och AI, körs inom EU.
+section: security-privacy
+---
+
+blueprnt är byggt för europeisk lönetransparensefterlevnad, så det
+hanterar EU-anställdas personuppgifter. All den datan hålls inom EU.
+
+## Var era data finns
+
+Er organisations data, roller, värderingsmodell, medarbetare,
+löneposter, lönekartläggningar och händelseloggen lagras i Convex
+hanterade databas i EU (regionen eu-west-1, i Irland). Inloggning och
+organisationsmedlemskap finns i samma EU-driftsättning, så er
+identitetsdata lämnar aldrig EU heller.
+
+Själva applikationen, sidorna ni laddar i webbläsaren, serveras också
+från EU (blueprnts webbapplikation körs i Dublin-regionen).
+Notifieringsmejl, som inbjudningar och lösenordsåterställningar, går ut
+genom en e-postleverantör som håller samma EU-värdskrav.
+
+## AI stannar också i EU
+
+Varje AI-funktion i blueprnt, från att skapa ett utkast till en
+jobbprofil till assistentens svar, anropar en modell värd i EU. Er
+organisations data lämnar aldrig EU för att generera ett AI-svar. Se
+[Hur AI används](/docs/how-ai-is-used) för vad de funktionerna skickar
+och inte skickar till modellen.
+
+## Ett regionalt val, inte ett löfte om full suveränitet
+
+Att hålla allt inom EU uppfyller kraven på datalagring, men det körs på
+infrastruktur som drivs av företag med huvudkontor utanför EU. Om er
+organisation behöver en striktare, helt EU-suverän uppsättning,
+kontakta er kontaktperson; det är inte blueprnts standardkonfiguration
+idag.
+
+## Relaterat
+
+- [Hur AI används](/docs/how-ai-is-used)
+- [Händelselogg](/docs/audit-log)
+- [GDPR och radering](/docs/gdpr-and-erasure)

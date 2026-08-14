@@ -1,0 +1,234 @@
+---
+title: Fejl med model og vurdering
+description: Hvad hver besked om modelopbygning, vurdering, rollelåsning og AI betyder, og hvad I skal gøre ved den.
+section: troubleshooting
+---
+
+Denne side forklarer hver besked, der kan dukke op, mens I bygger
+vurderingsmodellen, vurderer en rolle, eller bruger AI-udkast og
+Blueprnt AI-assistenten.
+
+## Jeg kan ikke oprette en ny vurderingsmodel
+
+### modelExists
+
+Kode: `modelExists`
+
+"Organisationen har allerede en vurderingsmodel."
+
+Jeres organisation har allerede præcis én vurderingsmodel; blueprnt
+tillader aldrig en ny. I praksis vil I ikke se dette nogen steder i den
+færdige app, da modellen oprettes for jer én gang under onboarding, og
+der er ingen "opret model"-handling bagefter; det kan kun ske, hvis to
+admins på en eller anden måde afslutter onboardingens modeltrin på
+nøjagtig samme øjeblik. Har jeres organisation allerede en model, rediger
+den fra [Modellen: overblik](/docs/model-overview) i stedet.
+
+## Jeg kan ikke gemme min vægtning
+
+### weightsUnbalanced
+
+Kode: `weightsUnbalanced`
+
+"Vægtningen skal stemme med pointbudgettet."
+
+Hvert kriteriums vægtpoint skal lægge sammen til nøjagtig modellens
+pointbudget (tre point per kriterium), før "Gem vægtning" gør noget.
+Vægtning-fanen viser allerede dette som en løbende optælling af point
+tilbage at fordele, eller point over budgettet, så I bør sjældent ramme
+selve denne besked; juster vægtpoint, indtil den optælling viser nul.
+Se [Vægtning og pointbudgettet](/docs/weighting-and-point-budget).
+
+## Jeg kan ikke fjerne et kriterium, eller afslutte onboardingen
+
+### tooFewCriteria
+
+Kode: `tooFewCriteria`
+
+"En model skal have mindst 5 kriterier."
+
+En model skal altid holde mindst fem kriterier. Når jeres organisation
+har afsluttet onboardingen, bliver "Fjern"-handlingen på det femte
+sidste kriterium utilgængelig af netop denne grund. Tilføj kriterier
+tilbage, indtil I har mindst fem. Se
+[Kriterier og bedømmelsesskalaen](/docs/criteria-and-scale).
+
+## Jeg kan ikke redigere eller vurdere noget, fordi det siger, det er låst
+
+### roleLocked
+
+Kode: `roleLocked`
+
+"Denne rolle er godkendt og låst. Åbn den igen først."
+
+Dette udløses, når en ændring retter sig mod en arkiveret rolle: at
+vurdere den, redigere dens jobprofil, eller administrere den som
+ankerrolle. I daglig brug er appens egne redigerings- og
+vurderingskontroller allerede deaktiveret, når en rolle er arkiveret,
+så at se denne besked betyder normalt, at rollen blev arkiveret i en
+anden fane eller af en kollega, mens I havde den åben til redigering;
+genindlæs rollens side. Arkivering er permanent: der er ingen handling,
+der genåbner en rolle, og den forbliver skrivebeskyttet derefter. Se
+[Arkivér en rolle](/docs/archiving-roles).
+
+### criterionLocked
+
+Kode: `criterionLocked`
+
+"Dette kriterium er godkendt og låst. Åbn det igen først."
+
+Når et kriteriums metodedokumentation er godkendt, kan dets begrundelse
+og bias-gennemgangstekst ikke længere redigeres. Vælg "Åbne igen" på
+Model-sidens Metode-fane for at fjerne godkendelsen og dens bekræftelse, rediger
+teksten, og godkend den derefter igen. Se
+[Metodedokumentation](/docs/method-documentation).
+
+## Jeg kan ikke sætte en rolle som ankerrolle
+
+### ratingsIncomplete
+
+Kode: `ratingsIncomplete`
+
+"Alle kriterier skal vurderes først."
+
+At udpege en rolle som ankerrolle, eller sætte dens aftalte niveau,
+kræver en færdig vurdering: hvert kriterium vurderet. Færdiggør
+vurderingen af rollen først; se
+[Vurder en rolle](/docs/evaluating-a-role) og
+[Ankerroller](/docs/anchor-roles).
+
+## Jeg kan ikke vurdere en rolle, eller generere et AI-forslag
+
+### profileIncomplete
+
+Kode: `profileIncomplete`
+
+"Udfyld virksomhedsprofilen først."
+
+Dette dækker to relaterede forudsætninger. At vurdere en rolle kræver,
+at dens jobprofils formål og ansvarsområder er udfyldt først; rollens
+vurderingsområde angiver allerede denne forudsætning direkte ("Udfyld
+formål og ansvarsområder inden vurdering") i stedet for
+vurderingshandlingen, så I bør sjældent se selve beskeden. Se
+[Jobprofiler](/docs/job-profiles). Nogle AI-genereringskald kræver også,
+at jeres organisations egen virksomhedsprofil (som branche og land) er
+udfyldt, før de kan køre; færdiggør det fra
+[Organisationsindstillinger](/docs/organization-settings), hvis et
+AI-udkast nægter at generere af denne grund.
+
+## Jeg får besked om, at den statusændring ikke er tilladt
+
+### invalidTransition
+
+Kode: `invalidTransition`
+
+"Den statusændring er ikke tilladt."
+
+En generisk besked for en handling, der ikke gælder for enhedens
+nuværende status, for eksempel at anvende et AI-forslag på en rolle,
+der er gået videre til en anden tilstand, eller at handle på en
+lønkortlægning, der ikke aktuelt er Aktiv (se
+[Livscyklus og statusser](/docs/run-lifecycle)). Genindlæs siden for at
+se enhedens nuværende status, og brug den handling, der matcher den.
+
+## Jeg kan ikke oprette en rolle eller familie, fordi navnet allerede findes
+
+### roleFamilyExists
+
+Kode: `roleFamilyExists`
+
+"En familie med det navn findes allerede."
+
+Hvert rollefamilienavn skal være unikt i jeres organisation, uanset
+store og små bogstaver. Vælg et andet navn; se
+[Rollefamilier](/docs/role-families).
+
+### roleExists
+
+Kode: `roleExists`
+
+"En rolle med det navn findes allerede i denne familie."
+
+En rolles titel skal være unik inden for dens familie. Vælg en anden
+titel, eller placer rollen i en anden familie; se
+[Rolleregistret](/docs/roles-register).
+
+## AI-forslag fungerer ikke
+
+### aiUnavailable
+
+Kode: `aiUnavailable`
+
+"AI er ikke konfigureret i dette miljø."
+
+AI-udkast (jobprofiler, metodedokumentation, vægtningsgennemgang) er
+ikke konfigureret i det miljø, I bruger. Dette er et
+miljøopsætningsproblem, ikke noget I kan rette fra inde i appen.
+
+### aiGenerationFailed
+
+Kode: `aiGenerationFailed`
+
+"AI-forslaget kunne ikke genereres."
+
+AI-kaldet kørte, men returnerede ikke et brugbart resultat. Prøv at
+generere udkastet igen; fortsætter det med at fejle, skriv feltet i
+hånden i stedet. Se
+[Udfærdig en jobprofil med AI](/docs/ai-drafting).
+
+## Jeg har problemer med Blueprnt AI-assistentchatten
+
+Blueprnt AI-chatassistenten (nået fra [Assistent](/assistant)) er en
+separat funktion fra AI-udkastet ovenfor: den besvarer spørgsmål om
+appen og jeres organisations egne tal, i stedet for at udfylde felter.
+
+### assistantBusy
+
+Kode: `assistantBusy`
+
+"Blueprnt AI svarer stadig. Vent til den er færdig, eller stop den."
+
+Kun ét svar kan genereres på én gang. Send-knappen bliver allerede til
+en stop-kontrol, mens et svar streamer, så denne besked er primært en
+sikkerhed mod at sende meget hurtigt to gange; vent på det nuværende
+svar, eller tryk stop, og send derefter igen. Se
+[Sådan bruger I assistenten](/docs/using-the-assistant).
+
+### assistantRateLimited
+
+Kode: `assistantRateLimited`
+
+"Du har sendt mange beskeder på kort tid. Prøv igen om lidt."
+
+Der er en grænse for, hvor mange beskeder én person kan sende inden for
+en rullende time. Vent, til vinduet frigøres, før I sender flere.
+
+### assistantInvalidMessage
+
+Kode: `assistantInvalidMessage`
+
+"Skriv en besked, før du sender."
+
+Beskeden var tom, efter foranstillet og efterstillet mellemrum var
+fjernet. Skriv noget, før I sender.
+
+### assistantPersonalData
+
+Kode: `assistantPersonalData`
+
+"Beskeden ser ud til at indeholde en medarbejders personoplysninger.
+Fjern dem, og stil spørgsmålet mere generelt."
+
+blueprnt kontrollerer jeres besked for, hvad der ligner en medarbejders
+fulde navn, før den overhovedet sendes til modellen, og afviser den,
+hvis den finder ét; intet AI-kald sker for en afvist besked. Omformuler
+jeres spørgsmål i generelle vendinger, for eksempel efter rolle eller
+gruppe snarere end efter navn. Se
+[Assistentens datahåndtering](/docs/assistant-privacy).
+
+## Relateret
+
+- [Modellen: overblik](/docs/model-overview)
+- [Vurder en rolle](/docs/evaluating-a-role)
+- [Sådan bruger I assistenten](/docs/using-the-assistant)
+- [Arkivér en rolle](/docs/archiving-roles)

@@ -1,0 +1,83 @@
+---
+title: Feil i lønnskartlegging
+description: Hva hver melding om start, redigeringslåsing, dokumentasjon og fullføring av en lønnskartlegging betyr, og hva dere skal gjøre med det.
+section: troubleshooting
+---
+
+Denne siden forklarer hver melding som kan vises mens dere starter,
+dokumenterer eller fullfører en lønnskartlegging (lönekartläggning).
+
+## Jeg kan ikke starte en lønnskartlegging
+
+### payMappingPreconditionsUnmet
+
+Kode: `payMappingPreconditionsUnmet`
+
+"Personer eller roller mangler klassifisering eller vurdering, så
+lønnskartleggingen kan ikke startes ennå."
+
+Å starte en lønnskartlegging behøver hver aktive person klassifisert
+til en rolle og senioritet, og hver aktive, bemannede rolle fullt
+vurdert. Startdialogen erstatter allerede navnefeltet dens med en ren
+liste over nøyaktig hva som er uoppfylt, hvert element en lenke til
+der arbeidet skjer, så dere bør sjelden se denne meldingen selv: den
+er hovedsakelig en sikring mot en kappløping, for eksempel to
+administratorer som åpner dialogen før noen av deres forutsetningsdata
+har oppdatert seg. Se
+[Starte en lønnskartlegging](/docs/starting-a-pay-mapping),
+[Klassifisere ansatte](/docs/classifying-people) og
+[Vurdere en rolle](/docs/evaluating-a-role) for selve arbeidet.
+
+## Jeg kan ikke redigere notater eller dokumentasjon på en fullført lønnskartlegging
+
+### payMappingRunCompleted
+
+Kode: `payMappingRunCompleted`
+
+"Lønnskartleggingen er fullført og låst. Åpne den igjen for å
+redigere."
+
+Når en lønnskartlegging er fullført, blir analysestegene dens,
+samarbeidsregistreringen, og innholdet i tiltakene og notatene dens
+skrivebeskyttet. Velg "Gjenåpne" fra lønnskartleggingens oversikt for
+å låse den opp for redigering, og fullfør den igjen når dere er klare.
+Et tiltaks egen status kan fortsatt endres selv på en fullført
+kartlegging; bare innholdsredigeringer er låst. Se
+[Livssyklus og statuser](/docs/run-lifecycle).
+
+## Jeg kan ikke markere en likt-arbeid-gruppe som fullført
+
+### payMappingDocumentationRequired
+
+Kode: `payMappingDocumentationRequired`
+
+"Legg til en saklig grunn eller en utdypet analyse før du markerer
+gruppen som fullført."
+
+En gruppe bærer bare denne plikten når den har minst én kvinne og én
+mann og kvinnenes gjennomsnittslønn ligger etter mennenes; andre
+grupper behøver den aldri. Velg minst én saklig grunn for
+lønnsforskjellen, legg til et fritekstnotat, eller begge, før dere
+markerer gruppen som fullført. Se [Likt arbeid](/docs/equal-work).
+
+## Jeg kan ikke fullføre lønnskartleggingen
+
+### payMappingGateUnmet
+
+Kode: `payMappingGateUnmet`
+
+"Det er steg igjen i gjennomgangen før lønnskartleggingen kan
+fullføres."
+
+En lønnskartlegging kan bare fullføres når hvert obligatoriske steg
+over alle fire analysekapitler er dokumentert. Handlingen som ville
+fullført den, viser allerede hvor mange steg som gjenstår, så dere bør
+sjelden se denne meldingen direkte; fullfør de utstående stegene den
+lister. Se [Livssyklus og statuser](/docs/run-lifecycle).
+
+## Relatert
+
+- [Hva er en lønnskartlegging](/docs/what-is-pay-mapping)
+- [Starte en lønnskartlegging](/docs/starting-a-pay-mapping)
+- [Livssyklus og statuser](/docs/run-lifecycle)
+- [Likt arbeid](/docs/equal-work)

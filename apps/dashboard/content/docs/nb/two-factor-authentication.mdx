@@ -1,0 +1,71 @@
+---
+title: To-trinns bekreftelse
+description: Den obligatoriske oppsettsveiviseren, valget mellom autentiseringsapp eller e-post, og passordbeskyttede sikkerhetskoder.
+section: account
+---
+
+Hver konto i blueprnt må bekrefte en andre faktor før den når
+dashbordet. Det finnes ingen måte å slå av to-trinns bekreftelse.
+
+## Sette den opp
+
+Første gang dere logger inn uten en bekreftet andre faktor, holder
+blueprnt dere i en oppsettsveiviser: "Sikre kontoen din",
+"Tostegsbekreftelse er påkrevd. Velg hvordan du vil bekrefte at det er
+deg når du logger inn." Dere velger mellom to metoder:
+
+- **Autentiseringsapp** (merket "Anbefalt"): bruk en app som Google
+  Authenticator eller 1Password.
+- **E-postkoder**: blueprnt sender dere en kode på e-post hver gang
+  dere logger inn.
+
+Deretter skriver dere passordet deres inn på nytt ("Bekreft passordet
+ditt", "Skriv inn passordet ditt på nytt for å slå på
+tostegsbekreftelse.") før metoden faktisk slås på: å registrere en
+andre faktor krever alltid at dere beviser passordet på nytt, selv om
+dere allerede er logget inn.
+
+For en autentiseringsapp skanner dere en QR-kode (eller skriver inn en
+nøkkel manuelt) og skriver deretter inn den 6-sifrede koden den viser.
+For e-postkoder sender blueprnt en 6-sifret kode til adressen deres og
+dere skriver inn den i stedet. Uansett hvilken telles metoden som satt
+opp først når dere har verifisert en kode fra den, ikke bare slått den
+på.
+
+## Sikkerhetskoder
+
+Å velge autentiseringsappen gir dere også et sett sikkerhetskoder:
+"Lagre disse et trygt sted. Hver kode fungerer én gang hvis du mister
+tilgang til autentiseringsappen og e-posten." Dere må krysse av "Jeg
+har lagret sikkerhetskodene mine" før dere fullfører oppsettet.
+E-postkoder har ingen separate sikkerhetskoder, siden e-post selv
+alltid er tilgjengelig som en reserveløsning.
+
+## Hver innlogging, hver gang
+
+Den andre faktoren deres kreves ved hver innlogging; blueprnt tilbyr
+aldri å huske en enhet eller hoppe over kontrollen neste gang.
+
+## Administrere den etterpå
+
+Kortet "To-trinns bekreftelse" på [Kontosikkerhet](/account/security)
+viser den nåværende metoden deres og gir to handlinger:
+
+- **Bytt metode** starter oppsettsveiviseren på nytt fra begynnelsen,
+  så dere kan bytte mellom en autentiseringsapp og e-postkoder. Den
+  nåværende metoden deres fortsetter å fungere bare til dere fullfører
+  den nye; å starte dette og ikke fullføre det midt i, gjør at dere må
+  fullføre oppsettet ved neste innlogging i stedet.
+- **Generer nye sikkerhetskoder** (bare autentiseringsapp) utsteder et
+  ferskt sett koder, som erstatter de gamle. Dette ber om passordet
+  deres igjen, men rører ellers ikke autentiseringsappen deres: dere
+  behøver ikke skanne noe på nytt.
+
+Det finnes ingen måte å deaktivere to-trinns bekreftelse helt; å bytte
+metode er den eneste måten å skifte.
+
+## Relatert
+
+- [Profil og språk](/docs/profile-and-language)
+- [Endre e-posten din](/docs/changing-your-email)
+- [Datalagring](/docs/data-residency)

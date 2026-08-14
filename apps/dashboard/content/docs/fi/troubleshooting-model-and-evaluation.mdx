@@ -1,0 +1,246 @@
+---
+title: Mallin ja arvioinnin virheet
+description: Mitä kukin mallin rakentamisen, arvioinnin, roolin lukituksen ja tekoälyn viesti tarkoittaa, ja mitä sille pitää tehdä.
+section: troubleshooting
+---
+
+Tämä sivu selittää joka viestin, joka voi näkyä arviointimallia
+rakentaessa, roolia arvioidessa, tai tekoälyluonnostelua ja
+Blueprnt AI -assistenttia käyttäessä.
+
+## En voi luoda uutta arviointimallia
+
+### modelExists
+
+Koodi: `modelExists`
+
+"Organisaatiolla on jo arviointimalli."
+
+Organisaatiollanne on jo tarkalleen yksi arviointimalli; blueprnt ei
+koskaan salli toista. Käytännössä ette näe tätä missään valmiin
+sovelluksen kohdassa, koska malli luodaan puolestanne kerran
+käyttöönotossa, ja sen jälkeen "luo malli" -toimintoa ei ole; se voi
+tapahtua vain, jos kaksi ylläpitäjää jotenkin viimeistelee
+käyttöönoton mallivaiheen täsmälleen samalla hetkellä. Jos
+organisaatiollanne on jo malli, muokatkaa sitä
+[Arviointimallin yleiskatsauksesta](/docs/model-overview) sen
+sijaan.
+
+## En voi tallentaa painotustani
+
+### weightsUnbalanced
+
+Koodi: `weightsUnbalanced`
+
+"Painotuksen on vastattava pistebudjettia."
+
+Kaikkien kriteerien painopisteiden on summauduttava tarkalleen
+mallin pistebudjettiin (kolme pistettä kriteeriä kohden), ennen
+kuin "Tallenna painotus" tekee mitään. Painotus-välilehti näyttää
+tämän jo jatkuvana lukemana jäljellä olevista jaettavista pisteistä,
+tai budjetin ylittävistä pisteistä, niin tämän viestin itsensä
+pitäisi näkyä harvoin; säätäkää painopisteitä, kunnes tämä lukema on
+nolla. Katso [Painotus ja pistebudjetti](/docs/weighting-and-point-budget).
+
+## En voi poistaa kriteeriä, tai viimeistellä käyttöönottoa
+
+### tooFewCriteria
+
+Koodi: `tooFewCriteria`
+
+"Malli tarvitsee vähintään 5 kriteeriä."
+
+Mallissa täytyy aina olla vähintään viisi kriteeriä. Kun
+organisaationne käyttöönotto on valmis, "Poista"-toiminto
+viidenneksi viimeisellä kriteerillä lakkaa olemasta käytettävissä
+juuri tästä syystä. Lisätkää kriteereitä takaisin, kunnes niitä on
+ainakin viisi. Katso
+[Kriteerit ja arviointiasteikko](/docs/criteria-and-scale).
+
+## En voi muokata tai arvioida jotain, koska se sanoo olevansa lukittu
+
+### roleLocked
+
+Koodi: `roleLocked`
+
+"Tämä rooli on hyväksytty ja lukittu. Avaa se ensin uudelleen."
+
+Tämä laukeaa, kun muutos kohdistuu arkistoituun rooliin: sen
+arvioimiseen, tehtäväprofiilin muokkaamiseen, tai sen hallintaan
+ankkuriroolina. Päivittäisessä käytössä sovelluksen omat muokkaus-
+ja arviointitoiminnot on jo poistettu käytöstä, kun rooli on
+arkistoitu, niin tämän viestin näkeminen tarkoittaa tavallisesti,
+että rooli arkistoitiin toisessa välilehdessä tai työtoverin
+toimesta, kun teillä oli se auki muokkausta varten; latatkaa roolin
+sivu uudelleen. Arkistointi on pysyvää: mitään toimintoa, joka avaa
+roolin uudelleen, ei ole, ja se pysyy vain luku -tilassa siitä
+eteenpäin. Katso [Roolin arkistointi](/docs/archiving-roles).
+
+### criterionLocked
+
+Koodi: `criterionLocked`
+
+"Tämä kriteeri on hyväksytty ja lukittu. Avaa se ensin uudelleen."
+
+Kun kriteerin menetelmädokumentaatio on hyväksytty, sen perustelu-
+ja vinoumatarkastelutekstiä ei voi enää muokata. Valitkaa "Avaa
+uudelleen" Malli-sivun Menetelmä-välilehdellä poistaaksenne hyväksynnän ja sen
+vahvistuksen, muokatkaa tekstiä, ja hyväksykää se sitten uudelleen.
+Katso [Menetelmän dokumentointi](/docs/method-documentation).
+
+## En voi asettaa roolia ankkurirooliksi
+
+### ratingsIncomplete
+
+Koodi: `ratingsIncomplete`
+
+"Kaikki kriteerit on arvioitava ensin."
+
+Roolin nimeäminen ankkurirooliksi, tai sen sovitun vaativuustason
+asettaminen, vaatii täydellisen arvioinnin: kaikki kriteerit
+arvioituna. Viimeistelkää roolin arviointi ensin; katso
+[Roolin arviointi](/docs/evaluating-a-role) ja
+[Ankkuriroolit](/docs/anchor-roles).
+
+## En voi arvioida roolia, tai luoda tekoälyehdotusta
+
+### profileIncomplete
+
+Koodi: `profileIncomplete`
+
+"Täytä ensin yritysprofiili."
+
+Tämä kattaa kaksi toisiinsa liittyvää ennakkoehtoa. Roolin
+arvioiminen vaatii sen tehtäväprofiilin tarkoituksen ja
+vastuualueiden täyttämistä ensin; roolin arviointialue ilmoittaa
+tämän jo suoraan ("Täytä tarkoitus ja vastuualueet ennen
+arviointia") Arvioi-toiminnon sijaan, niin tämän viestin itsensä
+pitäisi näkyä harvoin. Katso [Tehtäväprofiilit](/docs/job-profiles).
+Jotkin tekoälyn luontikutsut vaativat myös organisaationne omaa
+yritysprofiilia (kuten toimialaa ja maata) täytettynä ennen kuin ne
+voivat toimia; viimeistelkää se
+[Organisaation asetuksista](/docs/organization-settings), jos
+tekoälyluonnos kieltäytyy luomasta tästä syystä.
+
+## Minulle kerrotaan, että tilamuutos ei ole sallittu
+
+### invalidTransition
+
+Koodi: `invalidTransition`
+
+"Kyseinen tilamuutos ei ole sallittu."
+
+Yleinen viesti toiminnolle, joka ei sovi kohteen nykyiseen tilaan,
+esimerkiksi tekoälyehdotuksen soveltaminen rooliin, joka on
+siirtynyt toiseen tilaan, tai toimiminen palkkakartoituksella, joka
+ei ole nykyisin Aktiivinen (katso
+[Palkkakartoituksen elinkaari](/docs/run-lifecycle)). Latatkaa sivu
+nähdäksenne kohteen nykyisen tilan, ja käyttäkää sitä vastaavaa
+toimintoa.
+
+## En voi luoda roolia tai perhettä, koska nimi on jo olemassa
+
+### roleFamilyExists
+
+Koodi: `roleFamilyExists`
+
+"Samanniminen perhe on jo olemassa."
+
+Joka rooliperheen nimen on oltava yksilöllinen organisaatiossanne,
+kirjainkoosta riippumatta. Valitkaa eri nimi; katso
+[Rooliperheet](/docs/role-families).
+
+### roleExists
+
+Koodi: `roleExists`
+
+"Samanniminen rooli on jo tässä perheessä."
+
+Roolin nimikkeen on oltava yksilöllinen sen perheen sisällä.
+Valitkaa eri nimike, tai sijoittakaa rooli eri perheeseen; katso
+[Roolirekisteri](/docs/roles-register).
+
+## Tekoälyehdotukset eivät toimi
+
+### aiUnavailable
+
+Koodi: `aiUnavailable`
+
+"Tekoälyä ei ole määritetty tässä ympäristössä."
+
+Tekoälyluonnostelu (tehtäväprofiilit, menetelmän dokumentointi,
+painotustarkistus) ei ole määritetty käyttämässänne ympäristössä.
+Tämä on ympäristön määritysongelma, ei jotain, jonka voisitte
+korjata sovelluksen sisältä.
+
+### aiGenerationFailed
+
+Koodi: `aiGenerationFailed`
+
+"Tekoälyehdotusta ei voitu luoda."
+
+Tekoälykutsu suoritettiin, mutta se ei palauttanut käyttökelpoista
+tulosta. Yrittäkää luoda luonnos uudelleen; jos se jatkuvasti
+epäonnistuu, kirjoittakaa kenttä käsin sen sijaan. Katso
+[Tehtäväprofiilin luonnostelu tekoälyllä](/docs/ai-drafting).
+
+## Minulla on ongelmia Blueprnt AI -assistentin keskustelun kanssa
+
+Blueprnt AI -keskusteluassistentti (tavoitettuna
+[Assistentti](/assistant)-sivulta) on erillinen ominaisuus yllä
+olevasta tekoälyluonnostelusta: se vastaa kysymyksiin sovelluksesta
+ja organisaationne omista luvuista kenttien täyttämisen sijaan.
+
+### assistantBusy
+
+Koodi: `assistantBusy`
+
+"Blueprnt AI vastaa vielä. Odota, että se on valmis, tai pysäytä
+se."
+
+Vain yksi vastaus voi muodostua kerrallaan. Lähetyspainike muuttuu
+jo pysäytyspainikkeeksi, kun vastaus virtaa, niin tämä viesti on
+lähinnä varmistus lähettämiselle kahdesti hyvin nopeasti; odottakaa
+nykyistä vastausta, tai painakaa pysäytä, ja lähettäkää sitten
+uudelleen. Katso [Assistentin käyttö](/docs/using-the-assistant).
+
+### assistantRateLimited
+
+Koodi: `assistantRateLimited`
+
+"Olet lähettänyt monta viestiä lyhyessä ajassa. Yritä hetken
+kuluttua uudelleen."
+
+Yhden henkilön lähettämien viestien määrälle liukuvan tunnin
+sisällä on yläraja. Odottakaa ikkunan vapautumista, ennen kuin
+lähetätte lisää.
+
+### assistantInvalidMessage
+
+Koodi: `assistantInvalidMessage`
+
+"Kirjoita viesti ennen lähettämistä."
+
+Viesti oli tyhjä alku- ja loppuvälilyöntien poistamisen jälkeen.
+Kirjoittakaa jotain ennen lähettämistä.
+
+### assistantPersonalData
+
+Koodi: `assistantPersonalData`
+
+"Viesti näyttää sisältävän työntekijän henkilötietoja. Poista ne
+ja kysy yleisemmällä tasolla."
+
+blueprnt tarkistaa viestinne siltä, näyttääkö se sisältävän
+työntekijän koko nimen, ennen kuin se koskaan lähetetään mallille,
+ja hylkää sen, jos sellainen löytyy; hylätylle viestille ei tehdä
+tekoälykutsua. Muotoilkaa kysymyksenne uudelleen yleisemmällä
+tasolla, esimerkiksi roolin tai ryhmän mukaan nimen sijaan. Katso
+[Assistentti ja tietosuoja](/docs/assistant-privacy).
+
+## Aiheeseen liittyvää
+
+- [Arviointimallin yleiskatsaus](/docs/model-overview)
+- [Roolin arviointi](/docs/evaluating-a-role)
+- [Assistentin käyttö](/docs/using-the-assistant)
+- [Roolin arkistointi](/docs/archiving-roles)

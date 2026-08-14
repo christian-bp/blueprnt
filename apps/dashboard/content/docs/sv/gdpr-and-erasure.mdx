@@ -1,0 +1,65 @@
+---
+title: GDPR och radering
+description: De två sätten att permanent radera personuppgifter i blueprnt, och vad som finns kvar i revisionsspåret.
+section: security-privacy
+---
+
+blueprnt stödjer GDPR:s rätt till radering med en verklig, permanent
+radering, aldrig en mjuk "inaktiverad"-flagga. Det finns två separata
+vägar, för två olika typer av person.
+
+## Radera en anställd
+
+En anställd är en person registrerad i er organisations
+medarbetarregister, inte en användare av appen. En administratör
+raderar en från [Radera en anställd](/docs/erasing-a-person): det tar
+permanent bort den personens post tillsammans med deras löneposter och
+rolltilldelningar.
+
+## Radera ert eget konto
+
+Ni är en inloggad användare av blueprnt, skild från alla
+anställningsposter. Att ta bort ert eget konto, beskrivet i
+[Ta bort ditt konto](/docs/deleting-your-account), tar permanent bort
+er inloggningsidentitet, era sessioner, era organisationsmedlemskap och
+era assistentkonversationer. Det rör aldrig er organisations
+medarbetardata.
+
+## Vad som finns kvar i revisionsspåret, och varför
+
+Båda typerna av radering behåller själva händelseloggen: registreringen
+av att en ändring skedde, och när, har bestående värde för
+ansvarsspårning, så den raderas inte tillsammans med personen. Vad
+raderingen gör är att göra identifierande detaljer i den till
+gravstenar. En raderad anställds namn, kön, anställningsnummer,
+födelsedatum och befattning ersätts med en "Raderad"-markering
+överallt de förekommer i tidigare loggposter; en raderad användares
+namn på poster de skrev blir en generisk markering, "Borttagen
+användare".
+
+Det här är pseudonymisering, inte att varje spår försvinner. Poster om
+en raderad anställd behåller fortfarande strukturella detaljer som inte
+är identitet, som avdelning, land eller anställningsform, tillsammans
+med tidsstämpeln för varje ändring. I en väldigt liten organisation
+skulle någon med insyn fortfarande kunna pussla ihop vem en rad troligen
+gällde utifrån de detaljerna. Beskriv inte radering som att inga
+personuppgifter finns kvar: den korrekta beskrivningen är att ingen
+direkt identifierare överlever den, och det som finns kvar behålls med
+grunden att det dokumenterar en ändring i en organisatorisk post, inte
+för att identifiera någon.
+
+## Data hålls minimal med avsikt
+
+blueprnt håller personuppgifter borta från platser som inte behöver dem
+från början. En roll beskriver ett jobb, aldrig en person: roll,
+värderingsmodell och AI-relaterade poster bär aldrig en individs namn,
+lön eller prestation. Medarbetardata finns bara i medarbetarregistret
+och dess direkt relaterade poster, så radering har en liten,
+väldefinierad uppsättning platser att nå.
+
+## Relaterat
+
+- [Radera en anställd](/docs/erasing-a-person)
+- [Ta bort ditt konto](/docs/deleting-your-account)
+- [Händelselogg](/docs/audit-log)
+- [Hur AI används](/docs/how-ai-is-used)

@@ -1,0 +1,63 @@
+---
+title: GDPR og sletting
+description: De to måtene å permanent slette personopplysninger i blueprnt, og hva som forblir i revisjonssporet.
+section: security-privacy
+---
+
+blueprnt støtter GDPRs rett til sletting med en ekte, permanent
+sletting, aldri et mykt "deaktivert"-flagg. Det finnes to separate
+veier, for to forskjellige typer person.
+
+## Slette en ansatt
+
+En ansatt er en person registrert i organisasjonens ansatteregister,
+ikke en bruker av appen. En administrator sletter en fra
+[Slette en person](/docs/erasing-a-person): det fjerner permanent den
+personens post sammen med lønnspostene og rolletildelingene deres.
+
+## Slette din egen konto
+
+Du er en innlogget bruker av blueprnt, separat fra enhver
+ansattpost. Å slette din egen konto, beskrevet i
+[Slette kontoen din](/docs/deleting-your-account), fjerner permanent
+innloggingsidentiteten din, sesjonene dine, organisasjonsmedlemskapene
+dine, og assistentsamtalene dine. Det rører aldri organisasjonens
+ansattdata.
+
+## Hva som forblir i revisjonssporet, og hvorfor
+
+Begge typer sletting beholder selve hendelsesloggen: registreringen av
+at en endring skjedde, og når, har varig verdi for ansvarlighet, så den
+slettes ikke sammen med personen. Hva slettingen gjør, er å gjøre
+identifiserende detaljer i den til gravsteiner. En slettet ansatts
+navn, kjønn, ansattnummer, fødselsdato og stillingstittel erstattes med
+en "Slettet"-markering overalt de forekommer i tidligere
+loggoppføringer; en slettet brukers navn på oppføringer de skrev, blir
+en generisk markering, "Slettet bruker".
+
+Dette er pseudonymisering, ikke at hvert spor forsvinner. Oppføringer
+om en slettet ansatt beholder fortsatt strukturelle detaljer som ikke
+er identitet, som avdeling, land eller ansettelsesform, sammen med
+tidsstempelet for hver endring. I en veldig liten organisasjon kunne
+noen med innsideinnsikt fortsatt sette sammen hvem en rad sannsynligvis
+gjaldt fra disse detaljene. Beskriv ikke sletting som at ingen
+personopplysninger forblir: den korrekte påstanden er at ingen direkte
+identifikator overlever den, og det som forblir, beholdes på det
+grunnlaget at det dokumenterer en endring i en organisatorisk post,
+ikke for å identifisere noen.
+
+## Data holdes minimal med vilje
+
+blueprnt holder personopplysninger unna steder som ikke behøver dem i
+det hele tatt. En rolle beskriver en jobb, aldri en person: rolle,
+vurderingsmodell og AI-relaterte poster bærer aldri en enkeltpersons
+navn, lønn eller prestasjon. Ansattdata finnes bare i
+ansatteregisteret og dets direkt relaterte poster, så sletting har et
+lite, veldefinert sett steder å nå.
+
+## Relatert
+
+- [Slette en person](/docs/erasing-a-person)
+- [Slette kontoen din](/docs/deleting-your-account)
+- [Hendelseslogg](/docs/audit-log)
+- [Hvordan AI brukes](/docs/how-ai-is-used)

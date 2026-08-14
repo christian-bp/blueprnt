@@ -1,0 +1,53 @@
+---
+title: AI-gennemgangen af vægtningen
+description: Hvornår I kan bede AI om at gennemgå jeres vægtning, hvad den foreslår, og hvordan I bekræfter det.
+section: model
+---
+
+På "Vægtning"-fanen i [Model](/model)-området kan AI gennemgå jeres
+nuværende vægtning og foreslå justeringer, som I kan acceptere eller
+afvise. Den ændrer aldrig jeres model af sig selv.
+
+## Hvornår gennemgangen er tilgængelig
+
+Knappen "Lad AI gennemgå vægtningen" vises kun, når jeres vægtning
+allerede er i balance (alle vægtpoint fordelt, ingen point til overs
+eller manglende) og I ikke har ugemte ændringer på fanen. Har I lige
+anvendt en gennemgang og ikke ændret vægtningen siden, forbliver
+knappen skjult, indtil I laver en ny ændring, så en gennemgang aldrig
+bliver bedt om mod en vægtning, den allerede har gennemgået.
+
+## Hvad AI foreslår
+
+At åbne gennemgangen anmoder om et sæt balancerede flytninger, hver
+skrevet som at flytte et antal vægtpoint fra ét kriterium til et andet,
+sammen med en kort begrundelse for hvorfor. Hver enkelt flytning er i
+sig selv nulsum (point fjernet fra ét kriterium lander altid på et
+andet), så den samlede fordeling forbliver præcis på budget, uanset
+hvilke flytninger I ender med at vælge. Finder AI'en ikke noget værd at
+justere, siger den det ("AI'en fandt ingen flytninger at foreslå.") og
+tilbyder kun en måde at afvise på.
+
+## At vælge hvilke flytninger der skal accepteres
+
+Hver foreslået flytning har sin egen afkrydsningsboks og starter
+afkrydset; I kan fjerne fluebenet fra enhver flytning, I er uenige i,
+før I anvender. En udfoldning "Hvorfor denne ændring?" på hver
+flytning viser dens begrundelse uden at fylde listen op. "Anvend
+valgte" anvender kun de flytninger, I har ladet stå afkrydset;
+"Afvis" kasserer hele gennemgangen uden at ændre noget.
+
+## Herkomst og bekræftelse
+
+Hver gennemgang er mærket som et AI-genereret forslag, som I gennemgår
+og bekræfter; intet fra den anvendes nogensinde automatisk.
+Hændelsesloggen registrerer en anvendt gennemgang som et AI-forslag, I
+har bekræftet, ikke som en almindelig manuel redigering, så modellens
+historik altid viser, hvilke ændringer der kom fra en AI-gennemgang, og
+hvilke vægtpoint I selv accepterede.
+
+## Relateret
+
+- [Vægtning og pointbudgettet](/docs/weighting-and-point-budget)
+- [Kriterier og bedømmelsesskalaen](/docs/criteria-and-scale)
+- [Modellen: overblik](/docs/model-overview)

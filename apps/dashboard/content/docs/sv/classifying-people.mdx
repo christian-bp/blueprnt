@@ -1,0 +1,62 @@
+---
+title: Klassificera anställda
+description: Tilldela varje importerad anställd en roll och senioritet, utifrån ett motorförslag ni bekräftar.
+section: people
+---
+
+Att klassificera kopplar varje anställd till en roll och senioritet i er
+jobbarkitektur, så att deras lön kan jämföras med andra i samma roll.
+Öppna det från fliken "Klassificera" bredvid
+[medarbetarregistret](/docs/people-register).
+
+## Hur förslag fungerar
+
+blueprnt grupperar era aktiva personer efter den exakta befattning deras
+lönefil registrerade, föreslår sedan en roll per titelgrupp genom att
+matcha den titelns text mot era rollers titlar, och en senioritet för
+varje person inom den rollens track. Den här matchningen är en
+deterministisk motor, inte AI: ingenting klassificeras någonsin
+automatiskt, och varje förslag väntar på att ni bekräftar det. En titel
+som inte liknar någon befintlig roll tillräckligt nära visar inget
+förslag alls, så att ni kan skapa en roll för den istället. Att gå
+tillbaka till Klassificera är alltid säkert: det skriver aldrig över en
+klassificering ni redan bekräftat, och uppdaterar bara grupper som
+fortfarande väntar på en.
+
+Senioritet satt här hör till personen, aldrig rollen: den påverkar
+aldrig den rollens betyg, viktning eller nivå. Se
+[Viktning och nivåer](/docs/score-and-levels) för den gränsen.
+
+## Läsa tabellen
+
+Varje rad är en importerad befattning, som visar hur många anställda
+som delar den, den föreslagna (eller redan tilldelade) rollen, och ett
+tillstånd: Bekräftad när alla i gruppen har en bekräftad tilldelning,
+Oklassificerad om ingen av dem har någon tilldelning än, eller Väntande
+däremellan. Expandera en rad för att se dess personer och, för var och
+en, ändra den föreslagna rollen eller senioriteten innan ni bekräftar;
+en roll måste väljas innan dess senioritet kan väljas.
+
+## Bekräfta
+
+Bekräfta en enskild grupp från dess expanderade rad, eller markera flera
+grupper och använd massåtgärden för att klassificera dem alla på en gång
+med sina föreslagna roller och senioritet; ni kan fortfarande ändra
+vilken som helst av dem efteråt. En stor markering delas upp i mindre
+omgångar bakom kulisserna så att bekräftelsen alltid slutförs rent
+istället för som ett enda för stort sparande.
+
+## Skapa en roll för en omatchad titel
+
+När en titel inte har någon matchning låter "Skapa ny roll" er skapa en
+direkt: fyll i dess titel, funktion eller avdelning, team och track, och
+den tilldelas alla med den titeln omedelbart. Syfte och ansvarsområden
+kan fyllas i, valfritt med hjälp av AI-utkast, från den nya rollens
+egen sida efteråt; se [Jobbprofiler](/docs/job-profiles).
+
+## Relaterat
+
+- [Medarbetarregistret](/docs/people-register)
+- [Importera medarbetare](/docs/importing-people)
+- [Jobbprofiler](/docs/job-profiles)
+- [Viktning och nivåer](/docs/score-and-levels)

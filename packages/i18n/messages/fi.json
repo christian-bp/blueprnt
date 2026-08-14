@@ -208,7 +208,8 @@
       "signOut": "Kirjaudu ulos",
       "people": "Henkilöstö",
       "payMapping": "Palkkakartoitukset",
-      "assistant": "Assistentti"
+      "assistant": "Assistentti",
+      "docs": "Dokumentaatio"
     },
     "people": {
       "description": "Palkanlaskentajärjestelmästä tuodut työntekijät.",
@@ -2469,6 +2470,39 @@
       "renameConversationLabel": "Otsikko",
       "renameConversationSave": "Tallenna",
       "renameConversationCancel": "Peruuta"
+    },
+    "notFound": {
+      "title": "Sivua ei löytynyt",
+      "body": "Linkki voi olla vanhentunut tai kirjoitettu väärin.",
+      "backHome": "Takaisin yleiskatsaukseen"
+    },
+    "docs": {
+      "headingLink": "Linkki kohteeseen {heading}",
+      "index": {
+        "title": "Dokumentaatio",
+        "intro": "Oppaat kaikkeen blueprntissä, ensimmäisestä käyttöönotosta valmiiseen palkkakartoitukseen.",
+        "popular": "Suositut oppaat",
+        "browse": "Kaikki oppaat"
+      },
+      "sections": {
+        "gettingStarted": "Aloittaminen",
+        "model": "Arviointimalli",
+        "roles": "Roolit",
+        "evaluation": "Roolien arviointi",
+        "people": "Henkilöstö",
+        "payMapping": "Palkkakartoitus",
+        "assistant": "Assistentti",
+        "organization": "Organisaatio",
+        "account": "Tili",
+        "securityPrivacy": "Tietoturva ja yksityisyys",
+        "glossary": "Sanasto",
+        "troubleshooting": "Vianetsintä"
+      },
+      "notFound": {
+        "title": "Dokumentaatiosivua ei löytynyt",
+        "body": "Linkki voi olla vanhentunut tai kirjoitettu väärin.",
+        "backToIndex": "Takaisin dokumentaatioon"
+      }
     }
   },
   "errors": {

@@ -1,0 +1,76 @@
+---
+title: Weighting and levels
+description: How the 0-100 weighting is computed from your ratings, floored, and turned into a level.
+section: evaluation
+---
+
+Once every criterion is rated, blueprnt computes two numbers for the
+role: its weighting, a score from 0 to 100, and its level. Both are
+always derived from the current ratings and the current model; neither
+is ever typed in by hand. Do not confuse this weighting, a role's overall
+result, with the weighting you do on the [Model](/model) area's Weighting
+tab, which sets each criterion's own weight points; the two share the
+word deliberately, but they are different things. See
+[Weighting and the point budget](/docs/weighting-and-point-budget) for
+the latter.
+
+## The weighting formula
+
+For every criterion, multiply its rating (0 to 5) by that criterion's
+weight points, then add those results together across every criterion.
+Divide that sum by the total of all the criteria's weight points: this is
+the weighted mean rating. Multiply the weighted mean by 20 and round down
+to the nearest whole number. That final number, always between 0 and 100
+however many criteria the model has, is the weighting. Rounding down
+keeps the comparison against level thresholds exact.
+
+A role's weighting only appears once every current criterion is rated.
+Until then, blueprnt shows how many criteria are rated instead of a
+partial number.
+
+## Where the weighting comes from
+
+On the role's page, once its evaluation is complete, a breakdown lists
+every criterion by its contribution: a criterion's rating multiplied by
+its weight points, shown as a percentage share of the total across all
+criteria, sorted with the biggest driver first. This is the one number
+on that breakdown that is both specific to this role and moved by
+reweighting the model; it does not show the model-wide weight points,
+since those are identical for every role, or the raw 0-5 rating, which
+the breakdown already expresses through the contribution share.
+
+## Levels and thresholds
+
+Level 1 is the highest level, counting down from there. Your model
+defines a threshold weighting score for each level; blueprnt assigns a
+role the highest level whose threshold its weighting meets or exceeds.
+A role has no level until it is complete, for the same reason it has no
+weighting yet.
+
+## Always derived, never stored
+
+blueprnt never stores a role's weighting or level; it recomputes both,
+live, every time you view them, from whatever the ratings and the model
+currently are. This means a change to the model itself, such as adding a
+criterion, changing a weight point, or reweighting, can move a role to a
+different level immediately, without anyone touching its ratings. Adding
+a criterion can even make a previously complete role incomplete again
+until the new criterion is rated. Every shift like this is recorded in
+the audit log.
+
+## No manual override
+
+There is no way to set or adjust a role's level directly. If a level
+does not look right, the only way to change it is to adjust the
+underlying ratings (see [Adjusting a rating](/docs/adjusting-a-rating))
+or the model itself, never the outcome. A role's level also says nothing
+about the seniority of whoever holds it: seniority belongs to the
+person, set separately during [Classify](/people/classify), and never
+affects a role's rating, weighting, or level.
+
+## Related
+
+- [Evaluating a role](/docs/evaluating-a-role)
+- [Adjusting a rating](/docs/adjusting-a-rating)
+- [The Levels page](/docs/levels-views)
+- [Weighting and the point budget](/docs/weighting-and-point-budget)

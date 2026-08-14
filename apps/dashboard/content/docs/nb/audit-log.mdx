@@ -1,0 +1,55 @@
+---
+title: Hendelseslogg
+description: Hver endring i organisasjonens data, hvem som gjorde den, og før-og-etter-detaljene bak hver oppføring.
+section: security-privacy
+---
+
+[Hendelsesloggen](/audit-log) registrerer hver endring gjort i
+organisasjonens data: "Hver endring i organisasjonen din, hvem som
+gjorde den og når." Bare organisasjonsadministratorer kan se den.
+
+## Hva som registreres
+
+Hver handling som endrer noe i organisasjonen deres, skriver én
+oppføring: å opprette, redigere eller fjerne en rolle eller familie, å
+justere modellen eller vektingen dens, å endre en
+organisasjonsinnstilling, å legge til eller fjerne et medlem, å
+importere eller redigere ansatte, å bekrefte en AI-vektgjennomgang, og
+hvert steg i en lønnskartlegging. Personlige kontoinnstillinger, som
+ditt eget passord, er med vilje ikke inkludert her: de beskriver dere,
+ikke organisasjonen deres. Tofaktormetoden deres er likeledes unntatt;
+se [To-trinns bekreftelse](/docs/two-factor-authentication) for hvordan
+den administreres i stedet.
+
+Hver oppføring hører til én av sju kategorier: Modell, Rolle,
+Organisasjon, Medlem, KI, Personer og Lønn. Verktøylinjens "Filtrer
+etter kategori" begrenser listen til én av dem, sammen med et
+fritekstsøk ("Søk i loggen") og "Filtrer på dato" for et spesifikt
+tidsrom.
+
+## Detaljvisningen
+
+Å velge "Vis detaljer" på en oppføring åpner den fullstendige posten
+dens: hvem som gjorde endringen ("Hvem"), når ("Når"), hvilken kategori
+den hører til ("Kategori"), og hva som ble endret ("Hva ble endret").
+Der et felt har en tydelig før-og-etter-verdi, som en rolle som fikk
+nytt navn eller en justert vekt, vises det som en pil fra den gamle
+verdien til den nye. Der en oppføring i stedet representerer en batch
+med aktivitet, som en import, vises antall i stedet, som hvor mange
+rader som ble opprettet mot oppdatert.
+
+## Personer og sletting
+
+En ansatts identitetsfelt (navn, kjønn, ansattnummer, fødselsdato og
+stillingstittel) vises i hendelsesloggen akkurat som noen annen
+endring, så en korrigering av noen av dem er sporbar. Hvis den ansatte
+senere slettes, erstattes de identitetsverdiene med en
+"Slettet"-markering overalt de har forekommet i loggen; at en endring
+skjedde, og når, forblir. Se [GDPR og sletting](/docs/gdpr-and-erasure)
+for hva dette betyr og ikke betyr.
+
+## Relatert
+
+- [GDPR og sletting](/docs/gdpr-and-erasure)
+- [Slette en person](/docs/erasing-a-person)
+- [Datalagring](/docs/data-residency)

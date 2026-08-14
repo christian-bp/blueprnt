@@ -1,0 +1,133 @@
+---
+title: Oikeus-, jäsenyys- ja tilivirheet
+description: Mitä kukin oikeus-, jäsenyys- ja tiliviesti tarkoittaa, ja mitä sille pitää tehdä.
+section: troubleshooting
+---
+
+blueprnt ei koskaan näytä palvelimen raakaa virhetekstiä; joka
+viesti, jonka näette tässä, on yksi kiinteästä joukosta koodeja
+käännettynä selkokielelle. Tämä sivu selittää joka sellaisen, joka
+voi näkyä työskennellessä organisaatioiden välillä tai hallitessa
+omaa tiliänne. Se ei kata itse kirjautumislomaketta (väärä
+salasana, virheellinen kaksivaiheinen koodi, tai vanhentunut
+linkki), koska ne ovat pelkkiä viestejä kirjautumisnäytöltä, ei
+tämän järjestelmän koodeja.
+
+## Minulla ei ole oikeutta tehdä tätä
+
+### adminRequired
+
+Koodi: `adminRequired`
+
+"Vain organisaation ylläpitäjät voivat tehdä tämän."
+
+Jotkin toiminnot, kuten arviointimallin tai organisaation
+asetusten muuttaminen, tai jäsenten hallinta, on rajattu
+Admin-roolille. Tämä näkyy, jos yritätte jotain niistä
+Muokkaajana. Pyytäkää organisaation ylläpitäjää tekemään muutos, tai
+ylentämään teidät ensin Adminiksi. Katso
+[Jäsenet ja roolit](/docs/members-and-roles) tarkasta rajasta
+näiden kahden roolin välillä.
+
+### platformAdminRequired
+
+Koodi: `platformAdminRequired`
+
+"Sinulla ei ole alustan ylläpito-oikeuksia."
+
+Pieni joukko toimintoja on rajattu blueprntin omille alustan
+ylläpitäjille, erilliselle merkinnälle mistä tahansa organisaation
+Admin-roolista. Tätä ei voi organisaation ylläpitäjä myöntää
+itselleen tai toiselle jäsenelle; se ei ole itsepalveluna
+hoidettavissa.
+
+## Minulle kerrotaan, että en ole tämän organisaation jäsen
+
+### notAMember
+
+Koodi: `notAMember`
+
+"Et ole tämän organisaation jäsen."
+
+Tämä näkyy, jos yritätte katsoa tai toimia datalla organisaatiolle,
+johon ette nykyisin kuulu, esimerkiksi vanhan linkin seuraamisen tai
+tilin vaihtamisen jälkeen. Vaihtakaa organisaatioon, johon kuulutte,
+tai pyytäkää kyseisen organisaation ylläpitäjää kutsumaan teidät;
+katso [Kutsut](/docs/invitations).
+
+### membershipConflict
+
+Koodi: `membershipConflict`
+
+"Jäsenyyttäsi ei voitu vahvistaa. Ota yhteyttä tukeen."
+
+Tämä on harvinainen tila, jossa blueprnt ei pysty ratkaisemaan,
+mihin organisaatioon jäsenyytenne kuuluu, tai löytää useamman kuin
+yhden ristiriitaisen tietueen. Toisin kuin muut tämän sivun viestit,
+tähän ei ole itsepalveluratkaisua: ottakaa yhteyttä tukeen.
+
+## En voi poistaa tiliäni, tai en voi poistaa tai alentaa viimeistä ylläpitäjää
+
+### lastAdmin
+
+Koodi: `lastAdmin`
+
+"Olet organisaation viimeinen ylläpitäjä. Ota yhteyttä tukeen
+poistaaksesi tilisi."
+
+Organisaatiota ei voi koskaan jättää ilman adminia, koska
+sovelluksen sisältä ei olisi mitään keinoa korjata sitä. Tämä estää
+kolme toisiinsa liittyvää toimintoa: oman tilinne poistamisen, kun
+olette organisaation ainoa admin, viimeisen adminin alentamisen
+Muokkaajaksi, ja viimeisen adminin poistamisen organisaatiosta.
+Tehkää joku muu jäsen adminiksi ensin (katso
+[Jäsenet ja roolit](/docs/members-and-roles)), minkä jälkeen
+alkuperäisen adminin voi muuttaa, poistaa tai poistaa hänen tilinsä
+kuten kenen tahansa muun. Katso
+[Tilin poistaminen](/docs/deleting-your-account), mitä muuta tilin
+poistaminen tekee.
+
+## Yleiset
+
+Näitä koodeja ei ole rajattu mihinkään yksittäiseen näyttöön; ne
+voivat näkyä missä tahansa sovelluksessa.
+
+### notAuthenticated
+
+Koodi: `notAuthenticated`
+
+"Sinun täytyy kirjautua sisään."
+
+Istuntonne ei ole enää voimassa, useimmiten koska se vanheni tai
+kirjauduitte ulos toisessa välilehdessä. Kirjautukaa sisään
+uudelleen jatkaaksenne.
+
+### notFound
+
+Koodi: `notFound`
+
+"Ei löydy."
+
+Kohde, jota katsoitte tai käsittelitte, ei ole enää olemassa
+organisaationne näkökulmasta, useimmiten koska se poistettiin tai
+arkistoitiin (teidän tai työtoverin toimesta) sen jälkeen, kun sivu
+latautui. Latatkaa sivu uudelleen; jos kohde on todella poissa, se
+ei näy enää.
+
+### invalidInput
+
+Koodi: `invalidInput`
+
+"Virheellinen syöte."
+
+Yleinen viesti arvolle, joka epäonnistui validoinnissa ennen kuin
+se saavutti tarkemman tarkistuksen, kuten liian pitkä nimi, tai
+joukkotuonnin rajan ylittäminen. Tarkistakaa viimeksi muuttamanne
+kenttä sen vierellä näkyvää vihjetekstiä vasten, ja korjatkaa se.
+
+## Aiheeseen liittyvää
+
+- [Jäsenet ja roolit](/docs/members-and-roles)
+- [Kutsut](/docs/invitations)
+- [Tilin poistaminen](/docs/deleting-your-account)
+- [Kaksivaiheinen vahvistus](/docs/two-factor-authentication)

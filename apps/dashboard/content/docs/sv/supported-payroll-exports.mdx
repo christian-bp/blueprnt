@@ -1,0 +1,72 @@
+---
+title: Stödda löneexporter
+description: Lönesystemen importen är verifierad mot, och vad ni ska göra när en fil inte går att läsa.
+section: people
+---
+
+Importguidens kolumnigenkänning och tolkning byggdes och verifierades
+mot riktiga CSV-exporter från Visma, Hogia, Fortnox, Agda, Personec, SD
+Worx, SAP SuccessFactors och Workday, på engelska, svenska, norska,
+danska och finska. Det betyder inte att bara de här systemen fungerar:
+alla CSV-exporter med de fält som listas i
+[Importera medarbetare](/docs/importing-people) kan mappas för hand.
+Det betyder att just de här systemens verkliga särdrag kontrollerades
+direkt.
+
+## Tal och datum
+
+Belopp läses oavsett om de använder komma eller punkt som decimaltecken,
+med eller utan mellanslagsseparerade tusental, och med en inledande
+eller avslutande valutakod eller symbol som "SEK", "kr" eller "EUR"
+borttagen. Datum läses i ISO-format, dag-först-format som "15.01.2023"
+eller "15/01/2023", och en enkel 8-siffrig form, bland annat. När ett
+datum kan läsas antingen dag-först eller månad-först och båda är
+kalendergiltiga, antar blueprnt alltid dag-först, eftersom det matchar
+alla de här lönesystemens nordiska exporter, och flaggar raden så att
+ni kan dubbelkolla den istället för att gissa tyst.
+
+## Kön
+
+Könsvärden på norska, danska och finska känns igen tillsammans med
+svenska och engelska, och en numerisk statistikkod läses som kön bara
+under en kolumnrubrik som själv handlar om kön. Ett värde som inte kan
+lösas till Man eller Kvinna gissas aldrig: det flaggas för ett manuellt
+val per rad under Kontrollera-steget istället.
+
+## Sysselsättningsgrad som en andel
+
+Vissa system exporterar sysselsättningsgrad som en andel, till exempel
+0,8, snarare än en procentsats. När varje värde i en kolumn är 1,0 eller
+mindre skalar blueprnt om hela kolumnen till en procentsats och visar en
+notering som förklarar att det gjorde det, så att ändringen syns
+istället för att ske tyst.
+
+## Vad som inte läses än
+
+Ett antal format stöds medvetet inte just nu: kalkylbladsfiler (XLSX,
+XLS, ODS) istället för CSV, amerikanska belopp med komma som
+tusentalsavgränsare som "52,000", schweizisk apostrofgruppering,
+negativa eller inparentiserade belopp, och datum skrivna med ett
+månadsnamn eller ett tvåsiffrigt år. En fil som använder något av dessa
+behöver en liten justering i ert lönesystems exportinställningar, eller
+en manuell redigering, innan den importeras rent.
+
+## När en fil inte går att läsa
+
+Om ni av misstag laddar upp en kalkylbladsfil säger guiden tydligt att
+filen inte är en CSV och ber er exportera den som CSV och ladda upp den
+istället. En tom fil får samma typ av direkta meddelande. Om filen
+laddas upp men kolumnerna ser fel ut, kontrollera om det saknas en
+kolumnavgränsare eller om rubriktexten är skadad, båda vilket
+Kontrollera-steget lyfter fram som en filvarning utan att blockera
+importen; en saknad rubrikrad lyfts fram också, även om filen
+fortfarande importeras med numrerade kolumner. I alla fall är åtgärden
+i ert lönesystems exportinställningar, inte inne i blueprnt: exportera
+om som CSV, med en rubrikrad, i en vanlig textkodning, och ladda sedan
+upp den korrigerade filen.
+
+## Relaterat
+
+- [Importera medarbetare](/docs/importing-people)
+- [Klassificera anställda](/docs/classifying-people)
+- [Medarbetarregistret](/docs/people-register)

@@ -208,7 +208,8 @@
       "signOut": "Sign out",
       "people": "People",
       "payMapping": "Pay mappings",
-      "assistant": "Assistant"
+      "assistant": "Assistant",
+      "docs": "Documentation"
     },
     "people": {
       "description": "Employees imported from your payroll system.",
@@ -2469,6 +2470,39 @@
       "renameConversationLabel": "Title",
       "renameConversationSave": "Save",
       "renameConversationCancel": "Cancel"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "body": "The link may be outdated or mistyped.",
+      "backHome": "Back to overview"
+    },
+    "docs": {
+      "headingLink": "Link to {heading}",
+      "index": {
+        "title": "Documentation",
+        "intro": "Guides for everything in blueprnt, from your first onboarding to a completed pay mapping.",
+        "popular": "Popular guides",
+        "browse": "All guides"
+      },
+      "sections": {
+        "gettingStarted": "Getting started",
+        "model": "Evaluation model",
+        "roles": "Roles",
+        "evaluation": "Evaluating roles",
+        "people": "People",
+        "payMapping": "Pay mapping",
+        "assistant": "Assistant",
+        "organization": "Organization",
+        "account": "Account",
+        "securityPrivacy": "Security and privacy",
+        "glossary": "Glossary",
+        "troubleshooting": "Troubleshooting"
+      },
+      "notFound": {
+        "title": "Documentation page not found",
+        "body": "The link may be outdated or mistyped.",
+        "backToIndex": "Back to documentation"
+      }
     }
   },
   "errors": {

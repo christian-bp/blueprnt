@@ -1,0 +1,108 @@
+---
+title: People and import errors
+description: What each classification, assignment, and CSV import message means, and what to do about it.
+section: troubleshooting
+---
+
+This page explains every message that can appear while adding, classifying,
+or importing people.
+
+## I can't add or import a person because the employee number is already used
+
+### personRefExists
+
+Code: `personRefExists`
+
+"An employee with that employee number already exists."
+
+Once you set an employee number on a person, it must stay unique across
+your organization: it is what future payroll imports use to match that
+same person instead of creating a duplicate. This appears as an inline
+message on the employee-number field itself, in both the add-person dialog
+and the edit-person dialog, rather than as a toast. Use a different,
+unique employee number, or find the existing person with that number and
+edit them instead. See [Adding people](/docs/adding-people).
+
+## I can't choose that seniority for this person
+
+### invalidSeniority
+
+Code: `invalidSeniority`
+
+"That seniority is not valid for this role's track."
+
+Seniority values come from the ladder that belongs to a role's track
+(individual contributor, lead, or manager), so a value valid on one track
+is not valid on another. In everyday use the seniority choice is already
+limited to values that fit the currently selected role, and resets
+automatically if you switch to a role on a different track, so this
+message mainly appears if the role or its track changed elsewhere while
+your form was still open. Reload and choose a role and seniority again;
+see [Classifying people](/docs/classifying-people).
+
+## I can't set that effective date for a new assignment
+
+### invalidEffectiveDate
+
+Code: `invalidEffectiveDate`
+
+"The effective date must be after the current assignment's start date."
+
+A new role or seniority assignment must start strictly after the person's
+currently open assignment. Nothing in the app lets you pick this date by
+hand today; it is set automatically to the moment you confirm, so this
+message is a backend backstop against reclassifying the same person twice
+in the same instant, for example by double-clicking Confirm, or acting on
+the same person from two open tabs at once. Wait a moment and try again;
+see [Classifying people](/docs/classifying-people).
+
+## My CSV file was rejected before the import could even start
+
+Uploading a file on the [Import people](/people/import) page's first step
+checks the file itself before looking at any row. Two messages can appear
+here; neither is a numbered error code, since they are caught in the
+browser before any request reaches the server.
+
+"This file isn't a CSV. If it's a spreadsheet, open it in Excel or your
+payroll system and export it as CSV, then upload that file." appears for
+anything that is not plain CSV text: a legacy Excel `.xls` file, an actual
+`.xlsx` or `.ods` spreadsheet, or a file that looks like HTML or XML
+rather than data. Only CSV is accepted; re-export the file as CSV from
+whatever produced it, then upload that.
+
+"The file is empty. Please select a CSV file with at least one row of
+data." appears for a CSV with no header row, no data rows, or that the
+browser could not read at all. Check the export actually contains the
+data you expect before uploading it again.
+
+## The importer flagged problems with my data
+
+Once a file is accepted, the Check readiness step reviews every row for
+data-quality problems before you can continue. These are not error codes
+either; they are read from `packages/import` and shown as labeled issues
+next to the affected rows.
+
+Issues that block the import until fixed (in the source file, or in the
+case of an unresolved gender, assigned directly in the app): a duplicate
+employee ID, an unreadable salary value, a non-numeric statistical code
+(payroll exports sometimes label the column Occupation Code or SSYK), a
+gender that could not be read, a negative salary value, and a row with the
+wrong number of columns.
+
+Issues shown under "Good to know" that do not block anything: a
+name-based gender guess that disagrees with the supplied value (which can
+be a false positive), an FTE value read as a fraction and scaled to a
+percentage, and a date with no unambiguous order, read as day/month.
+
+Missing required fields also block the import until every one of them is
+mapped to a column on the previous step; missing recommended fields only
+warn. See [Importing people](/docs/importing-people) and
+[Supported payroll exports](/docs/supported-payroll-exports) for the
+exact fields and formats expected.
+
+## Related
+
+- [Adding people](/docs/adding-people)
+- [Importing people](/docs/importing-people)
+- [Classifying people](/docs/classifying-people)
+- [Supported payroll exports](/docs/supported-payroll-exports)

@@ -1,0 +1,132 @@
+---
+title: Behörighets-, medlemskaps- och kontofel
+description: Vad varje behörighets-, medlemskaps- och kontomeddelande betyder, och vad ni ska göra åt det.
+section: troubleshooting
+---
+
+blueprnt visar aldrig rå feltext från servern; varje meddelande ni ser
+här är en av en fast uppsättning koder översatta till vanligt språk.
+Den här sidan förklarar var och en som kan visas medan ni arbetar över
+organisationer eller hanterar ert eget konto. Den täcker inte själva
+inloggningsformuläret (ett felaktigt lösenord, en ogiltig
+tvåfaktorskod, eller en utgången länk), eftersom de är vanliga
+meddelanden från inloggningsskärmen, inte koder från det här systemet.
+
+## Jag har inte behörighet att göra det här
+
+### adminRequired
+
+Kod: `adminRequired`
+
+"Endast organisationens administratörer kan göra detta."
+
+Vissa åtgärder, som att ändra värderingsmodellen eller
+organisationsinställningar, eller hantera medlemmar, är förbehållna
+rollen Administratör. Det här visas om ni försöker göra en av dem som
+Redigerare. Be en organisationsadministratör göra ändringen, eller att
+göra er till administratör först. Se
+[Medlemmar och roller](/docs/members-and-roles) för den exakta gränsen
+mellan de två rollerna.
+
+### platformAdminRequired
+
+Kod: `platformAdminRequired`
+
+"Du har inte plattformsadminbehörighet."
+
+En liten uppsättning åtgärder är förbehållna blueprnts egna
+plattformsadministratörer, en separat flagga från någon organisations
+administratörsroll. Det är inget en organisationsadministratör kan ge
+sig själv eller en annan medlem; det är inte självbetjänat.
+
+## Jag får veta att jag inte är medlem i den här organisationen
+
+### notAMember
+
+Kod: `notAMember`
+
+"Du är inte medlem i den här organisationen."
+
+Det här visas om ni försöker visa eller agera på data för en
+organisation ni just nu inte hör till, till exempel efter att ha följt
+en gammal länk eller bytt konto. Byt till en organisation ni hör till,
+eller be en administratör i den organisationen bjuda in er; se
+[Inbjudningar](/docs/invitations).
+
+### membershipConflict
+
+Kod: `membershipConflict`
+
+"Ditt medlemskap kunde inte verifieras. Kontakta supporten."
+
+Det här är ett ovanligt tillstånd där blueprnt inte kan avgöra vilken
+organisation ert medlemskap hör till, eller hittar fler än en
+motstridig post. Till skillnad från de andra meddelandena på den här
+sidan finns ingen självbetjäningsåtgärd: kontakta supporten.
+
+## Jag kan inte ta bort mitt konto, eller ta bort eller nedgradera den sista administratören
+
+### lastAdmin
+
+Kod: `lastAdmin`
+
+"Du är den sista administratören i en organisation. Kontakta supporten
+för att radera ditt konto."
+
+En organisation kan aldrig lämnas utan en administratör, eftersom det
+inte skulle finnas något sätt att komma in igen för att åtgärda det
+inifrån appen. Det här blockerar tre relaterade åtgärder: att ta bort
+ert eget konto medan ni är den enda administratören för en
+organisation, att nedgradera den sista administratören till
+Redigerare, och att ta bort den sista administratören från
+organisationen. Utse en annan medlem till Administratör först (se
+[Medlemmar och roller](/docs/members-and-roles)), varefter den
+ursprungliga administratören kan ändras, tas bort, eller få sitt konto
+raderat som vem som helst annars. Se
+[Ta bort ditt konto](/docs/deleting-your-account) för resten av vad
+kontoradering gör.
+
+## Allmänt
+
+De här koderna är inte specifika för någon enskild skärm; de kan visas
+var som helst i appen.
+
+### notAuthenticated
+
+Kod: `notAuthenticated`
+
+"Du behöver logga in."
+
+Er session är inte längre giltig, oftast eftersom den gick ut eller ni
+loggade ut i en annan flik. Logga in igen för att fortsätta.
+
+### notFound
+
+Kod: `notFound`
+
+"Hittades inte."
+
+Objektet ni visade eller agerade på finns inte längre ur er
+organisations perspektiv, oftast eftersom det togs bort eller
+arkiverades (av er eller en kollega) sedan sidan laddades. Ladda om
+sidan; om objektet verkligen är borta kommer det inte längre att
+visas.
+
+### invalidInput
+
+Kod: `invalidInput`
+
+"Ogiltig indata."
+
+Ett generiskt meddelande för ett värde som inte klarade validering
+innan det nådde någon mer specifik kontroll, som ett namn som är för
+långt, eller att överskrida ett gränsvärde för massimport. Kontrollera
+fältet ni senast ändrade mot eventuell ledtext som visas bredvid det,
+och rätta det.
+
+## Relaterat
+
+- [Medlemmar och roller](/docs/members-and-roles)
+- [Inbjudningar](/docs/invitations)
+- [Ta bort ditt konto](/docs/deleting-your-account)
+- [Tvåstegsverifiering](/docs/two-factor-authentication)

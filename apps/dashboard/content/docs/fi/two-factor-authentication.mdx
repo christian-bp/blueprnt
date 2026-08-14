@@ -1,0 +1,76 @@
+---
+title: Kaksivaiheinen vahvistus
+description: Pakollinen määritysavustaja, todennusohjelman tai sähköpostin valitseminen, ja salasanalla suojatut varakoodit.
+section: account
+---
+
+Joka blueprnt-tilin täytyy vahvistaa toinen tekijä ennen
+kojelautaan pääsyä. Kaksivaiheista vahvistusta ei voi kytkeä pois
+päältä millään tavalla.
+
+## Sen määrittäminen
+
+Ensimmäisellä kirjautumiskerralla, jolloin toista tekijää ei ole
+vielä vahvistettu, blueprnt pitää teidät määritysavustajassa: "Suojaa
+tilisi", "Kaksivaiheinen vahvistus vaaditaan. Valitse, miten
+vahvistat henkilöllisyytesi kirjautuessa." Valitsette kahden
+menetelmän väliltä:
+
+- **Todennusohjelma** (merkitty "Suositeltu"): käyttäkää sovellusta
+  kuten Google Authenticator tai 1Password.
+- **Sähköpostikoodit**: blueprnt lähettää teille koodin
+  sähköpostitse joka kirjautumiskerralla.
+
+Seuraavaksi syötätte salasananne uudelleen ("Vahvista salasanasi",
+"Syötä salasanasi uudelleen ottaaksesi kaksivaiheisen vahvistuksen
+käyttöön.") ennen kuin menetelmä todella otetaan käyttöön: toisen
+tekijän käyttöönotto vaatii aina salasananne todistamisen uudelleen,
+vaikka olette jo kirjautuneena.
+
+Todennusohjelmalle skannaatte QR-koodin (tai syötätte avaimen käsin)
+ja syötätte sitten sen näyttämän 6-numeroisen koodin.
+Sähköpostikoodeille blueprnt lähettää 6-numeroisen koodin
+osoitteeseenne, ja syötätte sen sen sijaan. Kummassakin tapauksessa
+menetelmä lasketaan määritetyksi vasta, kun olette vahvistaneet
+koodin siitä, ei vain kun se on otettu käyttöön.
+
+## Varakoodit
+
+Todennusohjelman valitseminen antaa teille myös joukon varakoodeja:
+"Tallenna nämä turvalliseen paikkaan. Jokainen koodi toimii kerran,
+jos menetät pääsyn todennusohjelmaasi ja sähköpostiisi." Teidän
+täytyy merkitä "Olen tallentanut varakoodini", ennen kuin määritys
+päättyy. Sähköpostikoodeilla ei ole erillisiä varakoodeja, koska
+sähköposti itsessään on aina käytettävissä varajärjestelmänä.
+
+## Joka kirjautuminen, joka kerta
+
+Toinen tekijänne vaaditaan joka kirjautumisella; blueprnt ei koskaan
+tarjoa laitteen muistamista tai tarkistuksen ohittamista seuraavalla
+kerralla.
+
+## Sen hallinta jälkikäteen
+
+"Kaksivaiheinen vahvistus" -kortti
+[Tilin turvallisuus](/account/security)-sivulla näyttää nykyisen
+menetelmänne ja tarjoaa kaksi toimintoa:
+
+- **Vaihda menetelmä** käynnistää määritysavustajan uudelleen
+  alusta, niin voitte vaihtaa todennusohjelman ja sähköpostikoodien
+  välillä. Nykyinen menetelmänne toimii vain siihen asti, kunnes
+  viimeistelette uuden; tämän aloittaminen ja kesken jättäminen
+  jättää teidät viimeistelemään määrityksen seuraavalla
+  kirjautumisellanne.
+- **Luo uudet varakoodit** (vain todennusohjelmalle) antaa uuden
+  joukon koodeja, korvaten vanhat. Tämä kysyy salasananne uudelleen,
+  mutta ei muuten koske todennusohjelmaanne: teidän ei tarvitse
+  skannata mitään uudelleen.
+
+Kaksivaiheista vahvistusta ei voi poistaa käytöstä kokonaan millään
+tavalla; menetelmän vaihtaminen on ainoa tapa vaihtaa.
+
+## Aiheeseen liittyvää
+
+- [Profiili ja kieli](/docs/profile-and-language)
+- [Sähköpostiosoitteen vaihtaminen](/docs/changing-your-email)
+- [Tietojen sijainti](/docs/data-residency)

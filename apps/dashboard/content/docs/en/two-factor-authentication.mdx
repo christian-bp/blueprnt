@@ -1,0 +1,67 @@
+---
+title: Two-factor authentication
+description: The mandatory setup wizard, choosing authenticator app or email, and password-gated backup codes.
+section: account
+---
+
+Every account in blueprnt must confirm a second factor before reaching the
+dashboard. There is no way to turn two-factor authentication off.
+
+## Setting it up
+
+The first time you sign in without a confirmed second factor, blueprnt
+holds you in a setup wizard: "Secure your account", "Two-step
+verification is required. Choose how you'll confirm it's you when you
+sign in." You choose between two methods:
+
+- **Authenticator app** (marked "Recommended"): use an app like Google
+  Authenticator or 1Password.
+- **Email codes**: blueprnt emails you a code each time you sign in.
+
+Next, you re-enter your password ("Confirm your password", "Re-enter your
+password to turn on two-step verification.") before the method is
+actually turned on: enrolling a second factor always requires proving
+your password again, even though you are already signed in.
+
+For an authenticator app, you scan a QR code (or enter a key manually)
+and then enter the 6-digit code it shows. For email codes, blueprnt sends
+a 6-digit code to your address and you enter that instead. Either way,
+the method only counts as set up once you have verified a code from it,
+not merely turned on.
+
+## Backup codes
+
+Choosing the authenticator app also gives you a set of backup codes:
+"Save these somewhere safe. Each code works once if you lose access to
+your authenticator and email." You must check "I've saved my backup
+codes" before finishing setup. Email codes have no separate backup codes,
+since email itself is always available as a fallback.
+
+## Every sign-in, every time
+
+Your second factor is required on every sign-in; blueprnt never offers to
+remember a device or skip the check next time.
+
+## Managing it afterward
+
+The "Two-step verification" card on [Account security](/account/security)
+shows your current method and offers two actions:
+
+- **Change method** restarts the setup wizard from the beginning, so you
+  can switch between an authenticator app and email codes. Your current
+  method keeps working only until you finish the new one; starting this
+  and not finishing it partway leaves you needing to complete setup on
+  your next sign-in.
+- **Regenerate backup codes** (authenticator app only) issues a fresh set
+  of codes, replacing the old ones. This asks for your password again,
+  but does not otherwise touch your authenticator: you do not need to
+  re-scan anything.
+
+There is no way to disable two-factor authentication entirely; changing
+method is the only way to switch.
+
+## Related
+
+- [Profile and language](/docs/profile-and-language)
+- [Changing your email](/docs/changing-your-email)
+- [Data residency](/docs/data-residency)

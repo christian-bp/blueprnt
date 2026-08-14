@@ -1,0 +1,68 @@
+---
+title: GDPR ja tietojen poistaminen
+description: Kaksi tapaa poistaa henkilötiedot pysyvästi blueprntissa, ja mikä jää jäljelle auditointijäljessä.
+section: security-privacy
+---
+
+blueprnt tukee GDPR:n oikeutta tulla unohdetuksi todellisella,
+pysyvällä poistolla, ei koskaan pehmeällä "poistettu käytöstä"
+-merkinnällä. Poistoon on kaksi erillistä reittiä, kahdenlaiselle
+henkilölle.
+
+## Työntekijän poistaminen
+
+Työntekijä on henkilö, joka on kirjattu organisaationne
+henkilörekisteriin, ei sovelluksen käyttäjä. Ylläpitäjä poistaa
+yhden kohdasta [Henkilön poistaminen](/docs/erasing-a-person): se
+poistaa pysyvästi kyseisen henkilön tietueen yhdessä hänen
+palkkatietueidensa ja tehtäviensä kanssa.
+
+## Oman tilinne poistaminen
+
+Olette blueprntiin kirjautunut käyttäjä, erillinen mistä tahansa
+työntekijätietueesta. Oman tilinne poistaminen, kuvattuna kohdassa
+[Tilin poistaminen](/docs/deleting-your-account), poistaa pysyvästi
+kirjautumisidentiteettinne, istuntonne, organisaatiojäsenyytenne ja
+assistenttikeskustelunne. Se ei koskaan koske organisaationne
+työntekijädataan.
+
+## Mikä säilyy auditointijäljessä, ja miksi
+
+Kumpikin poistotyyppi säilyttää auditointilokin itsensä: kirjaus
+siitä, että muutos tapahtui, ja milloin, on pysyvästi arvokas
+vastuuvelvollisuudelle, niin sitä ei poisteta henkilön mukana.
+Poistaminen häivyttää sen sisältä tunnistetiedot. Poistetun
+työntekijän nimi, sukupuoli, henkilönumero, syntymäaika ja
+tehtävänimike korvataan "Poistettu"-merkillä kaikkialla, missä ne
+esiintyvät aiemmissa lokimerkinnöissä; poistetun käyttäjän nimi
+hänen kirjoittamissaan merkinnöissä muuttuu yleiseksi "Poistettu
+käyttäjä" -merkiksi.
+
+Tämä on pseudonymisointia, ei kaikkien jälkien katoamista.
+Poistetusta työntekijästä kertovat merkinnät säilyttävät edelleen
+rakenteellisia tietoja, jotka eivät ole identiteettiä, kuten
+osasto, maa tai palvelussuhteen tyyppi, muutoksen aikaleiman
+rinnalla. Hyvin pienessä organisaatiossa joku, jolla on sisäpiirin
+tietoa, voisi silti päätellä näistä tiedoista, ketä rivi
+todennäköisesti koski. Poistamista ei pidä kuvata niin, että se ei
+jätä jälkeensä yhtään henkilötietoa: tarkka väite on, että mikään
+suora tunniste ei säily siitä, ja se, mitä jää jäljelle, säilytetään
+sillä perusteella, että se dokumentoi muutoksen organisaation
+tietueeseen, ei tunnista ketään.
+
+## Data pysyy minimaalisena tarkoituksella
+
+blueprnt pitää henkilötiedot pois paikoista, jotka eivät tarvitse
+niitä lainkaan. Rooli kuvaa työtehtävää, ei koskaan henkilöä:
+rooli-, arviointimalli- ja tekoälyyn liittyvät tietueet eivät
+koskaan kanna yksilön nimeä, palkkaa tai suoriutumista.
+Työntekijädata on olemassa vain henkilörekisterissä ja sen suoraan
+liittyvissä tietueissa, niin poistamisella on pieni, hyvin
+määritelty joukko paikkoja tavoitettavana.
+
+## Aiheeseen liittyvää
+
+- [Henkilön poistaminen](/docs/erasing-a-person)
+- [Tilin poistaminen](/docs/deleting-your-account)
+- [Auditointiloki](/docs/audit-log)
+- [Miten tekoälyä käytetään](/docs/how-ai-is-used)

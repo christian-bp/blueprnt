@@ -5,11 +5,13 @@ import type enMessages from "@workspace/i18n/messages/en.json"
 import { type Locale, TIME_ZONE } from "@workspace/i18n/routing"
 import { useQuery } from "convex/react"
 import { NextIntlClientProvider } from "next-intl"
+import { useRouter } from "next/navigation"
 import {
   type ReactNode,
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react"
 import {
@@ -97,6 +99,8 @@ export function LocaleProvider(props: {
   initialMessages: Messages
   children: ReactNode
 }) {
+  const router = useRouter()
+
   // Transient preview locale set by UI before the server round-trip completes.
   const [previewLocale, setPreviewLocale] = useState<string | null>(null)
 
@@ -138,6 +142,11 @@ export function LocaleProvider(props: {
     cache.set(props.initialLocale, props.initialMessages)
   }
 
+  // The resolvedServer value a refresh has already been requested for (see
+  // the effect below). A ref, not state: it must not itself trigger a
+  // re-render.
+  const lastRefreshedLocaleRef = useRef<Locale | null>(null)
+
   useEffect(() => {
     // Persist only server-confirmed locales. Previews are transient and must
     // never survive a reload, so no cookie is written while one is active.
@@ -148,6 +157,35 @@ export function LocaleProvider(props: {
     // cookie still needs the confirmed value).
     if (previewLocale === null) {
       setLocaleCookie(resolvedServer)
+      // The initial SSR paint reads the cookie (i18n/request.ts), so on a
+      // fresh browser (no cookie yet) it renders routing.defaultLocale while
+      // this effect resolves the real language client-side. Nothing else
+      // triggers a server re-render, so a server component (e.g. /docs, which
+      // reads getLocale() directly) would otherwise keep showing that
+      // fallback locale's content until the next navigation. Refresh once the
+      // cookie carries the real value. This cannot loop: the refreshed server
+      // render derives initialLocale from the same cookie we just wrote, so
+      // resolvedServer will equal props.initialLocale next time and the
+      // condition below is false.
+      //
+      // While getUiLocale is pending, resolvedServer collapses to
+      // browserFallback, a transient value that can differ from the settled
+      // override once the query resolves, so this effect can see two
+      // distinct resolvedServer values in quick succession. router.refresh()
+      // is itself async, so its response can land after resolvedServer has
+      // already moved on, updating props.initialLocale to a value that is
+      // stale relative to the CURRENT resolvedServer and making the
+      // condition above true again for a target we already requested a
+      // refresh for. lastRefreshedLocaleRef guards exactly that: refresh
+      // fires at most once per distinct resolvedServer value, never a
+      // second time for one already requested.
+      if (
+        resolvedServer !== props.initialLocale &&
+        lastRefreshedLocaleRef.current !== resolvedServer
+      ) {
+        lastRefreshedLocaleRef.current = resolvedServer
+        router.refresh()
+      }
     }
     if (target === active.locale) return
     const cached = cache.get(target)
@@ -164,7 +202,14 @@ export function LocaleProvider(props: {
     return () => {
       canceled = true
     }
-  }, [target, active.locale, previewLocale, resolvedServer])
+  }, [
+    target,
+    active.locale,
+    previewLocale,
+    resolvedServer,
+    props.initialLocale,
+    router,
+  ])
 
   return (
     <LocalePreviewContext value={setPreviewLocale}>

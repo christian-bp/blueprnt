@@ -1,0 +1,53 @@
+---
+title: Juster en vurdering
+description: At genåbne vurderingstrinene for at ændre et kriteriums vurdering, og hvilke ændringer der registreres.
+section: evaluation
+---
+
+En rolles vurderinger er aldrig endelige. Så længe rollen ikke er
+arkiveret, kan I genbesøge et kriterium og ændre, hvad I vurderede det
+til, og blueprnt genberegner vægtningen og niveauet med det samme fra
+de nye vurderinger.
+
+## At genåbne vurderingstrinene
+
+Fra en fuldt vurderet rolles handlingsmenu, vælg "Juster vurderinger".
+Dette åbner de samme trin, som er beskrevet i
+[Vurder en rolle](/docs/evaluating-a-role), og starter igen ved det
+første kriterium, men forudfyldt: hvert kriterium viser allerede det
+trin, I valgte, og enhver begrundelse, I skrev, så I gennemgår og
+redigerer jeres eksisterende bedømmelse i stedet for at starte fra
+ingenting. Vægtningen og niveauet forbliver skjult, mens I går igennem
+trinene, præcis som de gør første gang; I ser først resultatet igen,
+når I når til slutningen.
+
+At ændre et trin og vælge "Næste kriterium" gemmer det kriterium med
+det samme, ét ad gangen, ligesom under den første vurdering. At
+indsende det samme trin og begrundelse, som allerede er lagret, ændrer
+ingenting: intet skrives, og der oprettes ingen hændelsespost.
+
+## Hvornår justering er blokeret
+
+Når en rolle er arkiveret, kan den ikke længere vurderes eller
+justeres overhovedet. "Juster vurderinger" vises ikke længere på dens
+menu, og arkivering er envejs, så der er ingen måde at genåbne en
+arkiveret rolle for yderligere vurdering; se
+[Arkivér en rolle](/docs/archiving-roles) for hvad der ellers bliver
+skrivebeskyttet. Vurdering kræver stadig en færdig jobprofil, samme
+forudsætning som første gang; dette er normalt allerede opfyldt, når
+en rolle har en fuld vurdering at justere.
+
+## Hvad der logges
+
+Hver gemt ændring af en vurdering registreres i hændelsesloggen som
+"Vurdering ændret", med kriteriets værdi og begrundelse før og efter.
+Hvis ændringen flytter rollen til et andet niveau, logger blueprnt
+også en separat post, "Niveau rekalibreret", der peger tilbage på den
+vurdering, der forårsagede det, så historikken over hvorfor en rolles
+niveau flyttede sig, forbliver synlig sammen med vurderingerne selv.
+
+## Relateret
+
+- [Vurder en rolle](/docs/evaluating-a-role)
+- [Vægtning og niveauer](/docs/score-and-levels)
+- [Arkivér en rolle](/docs/archiving-roles)

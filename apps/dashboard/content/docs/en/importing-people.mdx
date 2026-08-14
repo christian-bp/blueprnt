@@ -1,0 +1,65 @@
+---
+title: Importing people
+description: Bring your payroll export into blueprnt through the four-step import wizard.
+section: people
+---
+
+Importing people brings your organization's payroll data into blueprnt so
+you can classify each person into a role and start comparing pay. Start
+from "Import salaries" on the [People](/people) page.
+
+## CSV only
+
+The import wizard accepts CSV files only. Export your payroll data as CSV
+from your payroll system; a spreadsheet file such as XLSX or ODS is rejected
+with a message asking you to export it as CSV instead, rather than a
+confusing error about missing columns. See
+[Supported payroll exports](/docs/supported-payroll-exports) for the systems
+this has been verified against and how their numbers and dates are read.
+
+## The four steps
+
+1. **Upload**: select or drop your CSV file. A file with no header row can
+   still be uploaded: the first row is kept as data, columns are numbered,
+   and fields are suggested from their contents where possible.
+2. **Map columns**: match each column in your file to a field blueprnt
+   understands. Employee ID, Job title, Gender, and Monthly salary are
+   required; the rest are grouped as recommended or optional, and you can
+   map up to six further pay components (variable pay, bonus, fixed
+   supplement, allowance, equity, benefit in kind, other). For every money
+   column, choose whether its values are per month or per year; blueprnt
+   guesses a sensible default from the column header, but you can change
+   it, and your choice is remembered for the next time you import.
+3. **Check**: review how much of each field tier is covered, then fix any
+   data quality issues. A duplicate employee ID, an unreadable or negative
+   salary value, a row with the wrong number of columns, or an unresolved
+   gender skips that row entirely; an unresolved gender can instead be
+   fixed inline, one row at a time, without sending any other personal data
+   into the import. Other issues, such as an FTE column read as a fraction
+   and scaled to a percentage, or a date read day-first because it could
+   mean either day or month, are informational only and do not stop the
+   import. If a problem lives in the source file itself, fix it there and
+   choose "Upload a corrected file" to start again from Upload with a clean
+   copy.
+4. **Review**: see exactly what the import will create, update, or leave
+   unchanged, for both people and salary entries, before you confirm. A row
+   that reuses an existing employee number under a different name is
+   flagged as a likely mistake and is skipped by default unless you choose
+   to update that employee anyway.
+
+After you confirm, the import runs and reports live progress, then a final
+count of how many people were created, updated, already up to date, or
+skipped.
+
+## After importing
+
+Classify your imported people into roles from
+[Classifying people](/docs/classifying-people) so you can compare pay and
+continue with a [pay mapping](/pay-mappings).
+
+## Related
+
+- [Adding people](/docs/adding-people)
+- [Supported payroll exports](/docs/supported-payroll-exports)
+- [Classifying people](/docs/classifying-people)
+- [The people register](/docs/people-register)

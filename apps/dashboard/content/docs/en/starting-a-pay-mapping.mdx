@@ -1,0 +1,56 @@
+---
+title: Starting a pay mapping
+description: The start dialog, what it requires before it will let you begin, and what gets frozen the moment you confirm.
+section: pay-mapping
+---
+
+Every pay mapping (lönekartläggning) begins from the same single dialog,
+opened by "Start pay mapping" on the [pay mappings](/pay-mappings) list, its
+page header as well as its empty state.
+
+## The start dialog
+
+The dialog, "Start a pay mapping", asks for one thing: a name, such as "Pay
+mapping 2026". Its description states plainly what happens next: "This
+freezes a snapshot of today's pay, roles and demographics. The reference
+date is today." You never choose the reference date yourself; a help note
+beside the title explains that it is set to today automatically the moment
+you start the mapping.
+
+## Preconditions
+
+Starting requires that people have already been imported into
+[People](/people), that every active person is classified into a role and
+seniority from [Classify](/people/classify), and that every active,
+staffed role in [Roles](/roles) (one with at least one person currently
+assigned to it) has a completed evaluation. A role that nobody is
+currently assigned to never blocks starting, and archived people and
+roles are never counted.
+
+The "Start pay mapping" button always stays visible and clickable; it is
+never simply disabled. If any precondition is unmet, opening the dialog
+shows what remains instead of the name field, as a plain list of unmet
+conditions, each one a link to where the work happens: importing people
+when none have been imported yet, classifying the people still waiting
+(with a count), or completing the evaluations still missing (with a count
+and, below it, up to a handful of the specific roles involved). See
+[Importing people](/docs/importing-people), [Classifying people](/docs/classifying-people),
+and [Evaluating a role](/docs/evaluating-a-role) for that work.
+
+## The frozen snapshot
+
+Confirming captures, as of that instant, your current model configuration
+(the criteria, their weight points, and the level thresholds) together with
+every active person's role, seniority, level, and pay. That frozen copy,
+never your live data, is what every chapter's comparison, chart, and
+finding in this mapping reads from then on. This is why a pay mapping's
+numbers stay put even after you go on to add people, evaluate more roles,
+or change someone's pay: the mapping is evidence of a moment in time, not a
+live report. Confirming takes you straight into the newly started mapping.
+
+## Related
+
+- [What is a pay mapping](/docs/what-is-pay-mapping)
+- [The pay mapping overview](/docs/pay-mapping-overview)
+- [Classifying people](/docs/classifying-people)
+- [Evaluating a role](/docs/evaluating-a-role)

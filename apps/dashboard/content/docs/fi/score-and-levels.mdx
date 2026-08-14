@@ -1,0 +1,80 @@
+---
+title: Painotus ja vaativuustasot
+description: Miten 0-100 painotus lasketaan arvioistanne, pyöristetään alaspäin, ja muutetaan vaativuustasoksi.
+section: evaluation
+---
+
+Kun kaikki kriteerit on arvioitu, blueprnt laskee roolille kaksi
+lukua: sen painotuksen, luvun 0:sta 100:aan, ja sen vaativuustason.
+Molemmat johdetaan aina nykyisistä arvioista ja nykyisestä mallista;
+kumpaakaan ei koskaan kirjoiteta käsin. Älkää sekoittako tätä
+painotusta, roolin kokonaistulosta, painotukseen, jota tehdään
+[Malli](/model)-alueen Painotus-välilehdellä ja joka asettaa kunkin
+kriteerin oman painopisteen; nämä kaksi jakavat sanan tarkoituksella,
+mutta ne ovat eri asioita. Katso
+[Painotus ja pistebudjetti](/docs/weighting-and-point-budget)
+jälkimmäisestä.
+
+## Painotuksen kaava
+
+Kertokaa jokaisen kriteerin arvio (0-5) sen painopisteillä, ja
+laskekaa tulokset yhteen kaikkien kriteerien kesken. Jakakaa tämä
+summa kaikkien kriteerien painopisteiden yhteismäärällä: tämä on
+painotettu keskiarvo. Kertokaa painotettu keskiarvo 20:llä ja
+pyöristäkää alaspäin lähimpään kokonaislukuun. Tämä lopullinen luku,
+aina 0:n ja 100:n välillä riippumatta siitä, kuinka monta kriteeriä
+mallissa on, on painotus. Alaspäin pyöristäminen pitää vertailun
+vaativuustasorajoihin täsmällisenä.
+
+Roolin painotus näkyy vasta, kun kaikki nykyiset kriteerit on
+arvioitu. Siihen asti blueprnt näyttää, kuinka monta kriteeriä on
+arvioitu, osittaisen luvun sijaan.
+
+## Mistä painotus muodostuu
+
+Roolin sivulla, kun sen arviointi on valmis, erittely listaa
+jokaisen kriteerin sen osuuden mukaan: kriteerin arvio kerrottuna
+sen painopisteillä, näytettynä prosenttiosuutena kaikkien kriteerien
+kokonaisuudesta, suurin vaikuttaja ensin. Tämä on erittelyn ainoa
+luku, joka on samaan aikaan tälle roolille ominainen ja joka muuttuu
+mallin uudelleenpainottamisen myötä; se ei näytä mallin laajuisia
+painopisteitä, koska ne ovat samat kaikille rooleille, eikä raakaa
+0-5-arviota, jonka erittely ilmaisee jo osuuden kautta.
+
+## Vaativuustasot ja rajat
+
+Taso 1 on korkein taso, ja siitä lasketaan alaspäin. Mallinne
+määrittää kynnyspainotuksen jokaiselle tasolle; blueprnt antaa
+roolille korkeimman tason, jonka rajan sen painotus saavuttaa tai
+ylittää. Roolilla ei ole vaativuustasoa, ennen kuin se on valmis,
+samasta syystä kuin sillä ei ole vielä painotustakaan.
+
+## Aina johdettu, ei koskaan tallennettu
+
+blueprnt ei koskaan tallenna roolin painotusta tai vaativuustasoa;
+se laskee molemmat uudelleen reaaliaikaisesti aina, kun katsotte
+niitä, sen mukaan mitkä arviot ja malli ovat sillä hetkellä. Tämä
+tarkoittaa, että mallin itsensä muutos, kuten kriteerin lisääminen,
+painopisteen muuttaminen tai uudelleenpainottaminen, voi siirtää
+roolin toiselle vaativuustasolle välittömästi, vaikka kukaan ei
+koskisi sen arvioita. Kriteerin lisääminen voi jopa muuttaa aiemmin
+valmiin roolin keskeneräiseksi uudelleen, kunnes uusi kriteeri on
+arvioitu. Jokainen tällainen muutos kirjataan auditointilokiin.
+
+## Ei manuaalista ohitusta
+
+Roolin vaativuustasoa ei voi asettaa tai muuttaa suoraan millään
+tavalla. Jos taso ei näytä oikealta, ainoa tapa muuttaa sitä on
+säätää sen taustalla olevia arvioita (katso
+[Arvion muokkaaminen](/docs/adjusting-a-rating)) tai itse mallia, ei
+koskaan lopputulosta. Roolin vaativuustaso ei myöskään kerro mitään
+sen haltijan senioriteetista: senioriteetti kuuluu henkilölle,
+asetettuna erikseen [Luokittele](/people/classify)-vaiheessa, eikä se
+koskaan vaikuta roolin arvioon, painotukseen tai vaativuustasoon.
+
+## Aiheeseen liittyvää
+
+- [Roolin arviointi](/docs/evaluating-a-role)
+- [Arvion muokkaaminen](/docs/adjusting-a-rating)
+- [Vaativuustasonäkymät](/docs/levels-views)
+- [Painotus ja pistebudjetti](/docs/weighting-and-point-budget)

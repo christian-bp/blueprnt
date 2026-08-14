@@ -1,0 +1,69 @@
+---
+title: Tvåstegsverifiering
+description: Den obligatoriska startguiden, valet mellan autentiseringsapp eller e-post, och lösenordsskyddade reservkoder.
+section: account
+---
+
+Varje konto i blueprnt måste bekräfta en andra faktor innan det når
+instrumentpanelen. Det finns inget sätt att stänga av
+tvåstegsverifiering.
+
+## Sätta upp den
+
+Första gången ni loggar in utan en bekräftad andra faktor håller
+blueprnt er kvar i en startguide: "Säkra ditt konto",
+"Tvåstegsverifiering krävs. Välj hur du vill bekräfta att det är du när
+du loggar in." Ni väljer mellan två metoder:
+
+- **Autentiseringsapp** (markerad "Rekommenderas"): använd en app som
+  Google Authenticator eller 1Password.
+- **E-postkoder**: blueprnt mejlar er en kod varje gång ni loggar in.
+
+Därefter anger ni ert lösenord igen ("Bekräfta ditt lösenord", "Ange
+ditt lösenord igen för att aktivera tvåstegsverifiering.") innan
+metoden faktiskt aktiveras: att registrera en andra faktor kräver alltid
+att ni bevisar ert lösenord igen, även om ni redan är inloggade.
+
+För en autentiseringsapp skannar ni en QR-kod (eller anger en nyckel
+manuellt) och anger sedan den 6-siffriga koden den visar. För
+e-postkoder skickar blueprnt en 6-siffrig kod till er adress och ni
+anger den istället. Oavsett vilket räknas metoden som klar först när ni
+har verifierat en kod från den, inte bara aktiverat den.
+
+## Reservkoder
+
+Att välja autentiseringsappen ger er också en uppsättning reservkoder:
+"Spara dessa på ett säkert ställe. Varje kod fungerar en gång om du
+förlorar åtkomst till din autentiseringsapp och e-post." Ni måste
+kryssa i "Jag har sparat mina reservkoder" innan ni slutför
+installationen. E-postkoder har inga separata reservkoder, eftersom
+e-post själv alltid finns tillgänglig som en reservlösning.
+
+## Varje inloggning, varje gång
+
+Er andra faktor krävs vid varje inloggning; blueprnt erbjuder aldrig att
+komma ihåg en enhet eller hoppa över kontrollen nästa gång.
+
+## Hantera den efteråt
+
+Kortet "Tvåstegsverifiering" på [Kontosäkerhet](/account/security)
+visar er nuvarande metod och erbjuder två åtgärder:
+
+- **Byt metod** startar om startguiden från början, så att ni kan byta
+  mellan en autentiseringsapp och e-postkoder. Er nuvarande metod
+  fortsätter fungera bara tills ni slutför den nya; om ni börjar det här
+  och inte slutför det måste ni slutföra installationen vid er nästa
+  inloggning i stället.
+- **Skapa nya reservkoder** (bara autentiseringsapp) utfärdar en ny
+  uppsättning koder, som ersätter de gamla. Det här ber om ert lösenord
+  igen, men rör annars inte er autentiseringsapp: ni behöver inte skanna
+  om något.
+
+Det finns inget sätt att stänga av tvåstegsverifiering helt; att byta
+metod är det enda sättet att växla.
+
+## Relaterat
+
+- [Profil och språk](/docs/profile-and-language)
+- [Ändra din e-post](/docs/changing-your-email)
+- [Datalagring](/docs/data-residency)
