@@ -188,6 +188,21 @@
       "conversationRenamed": "Konversation omdöpt"
     },
     "accountMenu": "Kontomeny",
+    "commandPalette": {
+      "trigger": "Sök",
+      "title": "Sök",
+      "description": "Hitta en sida eller en guide.",
+      "placeholder": "Sök bland sidor och guider",
+      "groups": {
+        "pages": "Sidor",
+        "guides": "Guider",
+        "sections": "Avsnitt i guiderna"
+      },
+      "results": "Resultat",
+      "enterKey": "Enter",
+      "goToPage": "Gå till sidan",
+      "empty": "Inget matchar din sökning."
+    },
     "nav": {
       "groups": {
         "status": "Nuläge",
@@ -945,6 +960,7 @@
       "newCta": "Skapa roll",
       "empty": "Inga roller ännu. Skapa din första roll för att börja värdera.",
       "import": {
+        "title": "Importera roller",
         "cta": "Lägg till roller",
         "navLabel": "Importsteg",
         "steps": {

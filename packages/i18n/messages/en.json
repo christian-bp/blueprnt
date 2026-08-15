@@ -188,6 +188,21 @@
       "conversationRenamed": "Conversation renamed"
     },
     "accountMenu": "Account menu",
+    "commandPalette": {
+      "trigger": "Search",
+      "title": "Search",
+      "description": "Find a page or a guide.",
+      "placeholder": "Search pages and guides",
+      "groups": {
+        "pages": "Pages",
+        "guides": "Guides",
+        "sections": "Guide sections"
+      },
+      "results": "Results",
+      "enterKey": "Enter",
+      "goToPage": "Go to page",
+      "empty": "Nothing matches your search."
+    },
     "nav": {
       "groups": {
         "status": "Status",
@@ -945,6 +960,7 @@
       "newCta": "Create role",
       "empty": "No roles yet. Create your first role to start evaluating.",
       "import": {
+        "title": "Import roles",
         "cta": "Add roles",
         "navLabel": "Import steps",
         "steps": {

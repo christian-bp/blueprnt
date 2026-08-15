@@ -188,6 +188,21 @@
       "conversationRenamed": "Keskustelu nimetty uudelleen"
     },
     "accountMenu": "Tilivalikko",
+    "commandPalette": {
+      "trigger": "Haku",
+      "title": "Haku",
+      "description": "Etsi sivu tai opas.",
+      "placeholder": "Hae sivuja ja oppaita",
+      "groups": {
+        "pages": "Sivut",
+        "guides": "Oppaat",
+        "sections": "Oppaiden osiot"
+      },
+      "results": "Tulokset",
+      "enterKey": "Enter",
+      "goToPage": "Siirry sivulle",
+      "empty": "Mikään ei vastaa hakuasi."
+    },
     "nav": {
       "groups": {
         "status": "Tilanne",
@@ -945,6 +960,7 @@
       "newCta": "Luo rooli",
       "empty": "Ei vielä rooleja. Luo ensimmäinen rooli aloittaaksesi arvioinnin.",
       "import": {
+        "title": "Tuo roolit",
         "cta": "Lisää rooleja",
         "navLabel": "Tuontivaiheet",
         "steps": {

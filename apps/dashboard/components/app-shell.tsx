@@ -6,6 +6,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { usePathname } from "next/navigation"
 import { type CSSProperties, type ReactNode, useState } from "react"
 import { AppSidebar } from "@/components/app-sidebar"
+import { CommandPaletteProvider } from "@/components/command-palette-provider"
 import { initialSidebarOpen } from "@/lib/sidebar-state"
 import {
   type OrganizationInfo,
@@ -126,20 +127,28 @@ export function AppShell(props: {
             } as CSSProperties
           }
         >
-          <AppSidebar variant="inset" />
-          <SidebarInset className={layout.sidebarInset}>
-            <SiteHeader />
-            <div className={layout.flexShell}>
-              <div className={layout.containerMain}>
-                <div className={layout.pageContent}>
-                  {/* Role quick-look sheet, openable from any role chip in the
-                      app (e.g. the Overview); renders nothing and runs no
-                      queries until a role is opened. */}
-                  <RoleSheetProvider>{props.children}</RoleSheetProvider>
+          {/* The command palette is mounted here, beside the sidebar rather
+              than inside it: below the 768px breakpoint the sidebar renders
+              in a sheet that unmounts its children while closed, which would
+              take the palette's global shortcut with it. It adds no element
+              of its own to this row (a context provider plus a dialog that
+              portals when open), so the shell's layout is untouched. */}
+          <CommandPaletteProvider>
+            <AppSidebar variant="inset" />
+            <SidebarInset className={layout.sidebarInset}>
+              <SiteHeader />
+              <div className={layout.flexShell}>
+                <div className={layout.containerMain}>
+                  <div className={layout.pageContent}>
+                    {/* Role quick-look sheet, openable from any role chip in
+                        the app (e.g. the Overview); renders nothing and runs
+                        no queries until a role is opened. */}
+                    <RoleSheetProvider>{props.children}</RoleSheetProvider>
+                  </div>
                 </div>
               </div>
-            </div>
-          </SidebarInset>
+            </SidebarInset>
+          </CommandPaletteProvider>
         </SidebarProvider>
       </TooltipProvider>
     </OrganizationProvider>

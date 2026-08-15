@@ -16,6 +16,7 @@ import { AnimatePresence, motion } from "motion/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { SPRING } from "@/lib/motion"
+import { isNavActive } from "@/lib/navigation"
 import { deepestMatch } from "@/lib/section-pages"
 
 // A sub-page link, revealed under its section entry while the section is open.
@@ -44,7 +45,10 @@ export type NavItem = {
 // SidebarMenuButton: it animates width/padding and truncates the label so the
 // rail closes smoothly. Overriding with mx-auto / justify-center / [&_span]:hidden
 // breaks that (the icon jumps to center and the text blanks instantly).
-const RAIL_CLASSES = "group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5"
+// Exported so the footer's own destination row (NavFooter) collapses into the
+// rail identically; a second copy of the string is how the two rows drift.
+export const RAIL_CLASSES =
+  "group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5"
 
 // The active page reads as a tinted brand pill: brand ink (label AND glyph,
 // which inherit currentColor) on a 10% brand wash, rather than a saturated
@@ -56,15 +60,14 @@ const RAIL_CLASSES = "group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5"
 // flashes the vendor's gray on click. Sub-page buttons share the treatment
 // (SidebarMenuSubButton sets the same data-active), so the section entry and
 // the page within it are marked in one language.
-const ACTIVE_CLASSES =
+export const ACTIVE_CLASSES =
   "data-active:bg-brand/10 data-active:text-brand data-active:hover:bg-brand/15 data-active:hover:text-brand data-active:active:bg-brand/15 data-active:active:text-brand"
 
 // Primary navigation: section links under an optional group heading (the
 // caller renders one NavMain per category, so the sidebar reads as labeled
-// areas instead of one undifferentiated list). A section is active on an exact
-// URL match or a sub-path (so /work does not match /workspace); the optional
-// `match` prefixes extend that (Work is active across /work and /roles).
-// A section's sub-pages (mirroring its header tabs) slide out under its entry
+// areas instead of one undifferentiated list). Which section is active follows
+// isNavActive, shared with every other surface built from the navigation
+// registry. A section's sub-pages (mirroring its header tabs) slide out under its entry
 // while the section is open and collapse when the user leaves it, so only the
 // current section ever shows its second level. In the collapsed icon rail the
 // sub-list is hidden by the vendored SidebarMenuSub, leaving the glyph rail
@@ -85,12 +88,8 @@ export function NavMain({
   // tracks the desktop toggle there, so it must be ignored on mobile.
   const { state, isMobile } = useSidebar()
   const railCollapsed = !isMobile && state === "collapsed"
-  const isActive = (url: string) =>
-    url === "/"
-      ? pathname === "/"
-      : pathname === url || pathname.startsWith(`${url}/`)
   const itemActive = (item: NavItem) =>
-    isActive(item.url) || (item.match?.some(isActive) ?? false)
+    isNavActive(pathname, item.url, item.match)
 
   return (
     <SidebarGroup>

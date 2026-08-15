@@ -8,7 +8,7 @@ import nb from "@workspace/i18n/messages/nb.json"
 import sv from "@workspace/i18n/messages/sv.json"
 import { routing } from "@workspace/i18n/routing"
 import { describe, expect, it } from "vitest"
-import { headingAnchor } from "@/lib/docs/anchors"
+import { headingAnchor, headingTexts } from "@/lib/docs/anchors"
 import { SECTION_PAGES } from "@/lib/section-pages"
 import { collectStaticAppRoutes } from "@/test/app-routes"
 import {
@@ -69,9 +69,7 @@ const EXTERNAL_LINK = /^(?:https?:|mailto:)/i
 const normalizeSpace = (text: string) => text.replace(/\s+/g, " ").trim()
 
 const headingTextsOf = (locale: string, slug: string) =>
-  [...bodyOf(locale, slug).content.matchAll(/^#{2,4}\s+(.+)$/gm)].map(
-    (m) => m[1] ?? ""
-  )
+  headingTexts(bodyOf(locale, slug).content)
 
 // Deduplicating: for membership checks only. A collision between two
 // headings is invisible here by construction, so guard 10 works on the

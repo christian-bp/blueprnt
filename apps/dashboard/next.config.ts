@@ -65,8 +65,14 @@ const nextConfig: NextConfig = {
   // production build: each lists exactly the 280 files under content/docs.
   // Do not add a second "/docs/[slug]" key: picomatch parses "[slug]" as a
   // character class, so as its own key it would never match anything.
+  // The command palette's guide index reads the same corpus from its own
+  // route, so it needs its own key. "/docs" happens to be a substring of
+  // "/api/docs-index" and would match it under contains:true, but only by
+  // accident of the name: renaming the route would silently ship it without
+  // its content.
   outputFileTracingIncludes: {
     "/docs": ["./content/docs/**/*"],
+    "/api/docs-index": ["./content/docs/**/*"],
   },
   async headers() {
     return [

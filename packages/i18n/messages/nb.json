@@ -188,6 +188,21 @@
       "conversationRenamed": "Samtale omdøpt"
     },
     "accountMenu": "Kontomeny",
+    "commandPalette": {
+      "trigger": "Søk",
+      "title": "Søk",
+      "description": "Finn en side eller en veiledning.",
+      "placeholder": "Søk i sider og veiledninger",
+      "groups": {
+        "pages": "Sider",
+        "guides": "Veiledninger",
+        "sections": "Avsnitt i veiledningene"
+      },
+      "results": "Resultater",
+      "enterKey": "Enter",
+      "goToPage": "Gå til siden",
+      "empty": "Ingenting samsvarer med søket ditt."
+    },
     "nav": {
       "groups": {
         "status": "Status",
@@ -945,6 +960,7 @@
       "newCta": "Opprett rolle",
       "empty": "Ingen roller ennå. Opprett den første rollen for å begynne å vurdere.",
       "import": {
+        "title": "Importer roller",
         "cta": "Legg til roller",
         "navLabel": "Importtrinn",
         "steps": {
