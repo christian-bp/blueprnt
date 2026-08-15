@@ -1,0 +1,21 @@
+apps/dashboard/lib/docs/chunk.ts
+  s_0383b617034fa3::t_3a5c4d0822753d 5,93-97,99-102
+apps/dashboard/lib/docs/chunk.test.ts
+  s_0383b617034fa3::t_d30d3f77640100 12-15,23,32,35-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b933f81cade9bd3ccb01923c91787489977605dd",
+  "prompts": {},
+  "sessions": {
+    "s_0383b617034fa3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "70c0a727-22c9-42cb-ae97-66bc3b799a58",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
