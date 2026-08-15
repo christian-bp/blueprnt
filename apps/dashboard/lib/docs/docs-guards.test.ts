@@ -1,6 +1,11 @@
 import { readdirSync, readFileSync } from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
+import {
+  ASSISTANT_PAGES,
+  ASSISTANT_PROMPT_LOCALES,
+  assistantSystemPrompt,
+} from "@workspace/backend/convex/assistant/knowledge"
 import da from "@workspace/i18n/messages/da.json"
 import en from "@workspace/i18n/messages/en.json"
 import fi from "@workspace/i18n/messages/fi.json"
@@ -9,6 +14,7 @@ import sv from "@workspace/i18n/messages/sv.json"
 import { routing } from "@workspace/i18n/routing"
 import { describe, expect, it } from "vitest"
 import { headingAnchor, headingTexts } from "@/lib/docs/anchors"
+import { NAV_DOCS, NAV_GROUPS } from "@/lib/navigation"
 import { SECTION_PAGES } from "@/lib/section-pages"
 import { collectStaticAppRoutes } from "@/test/app-routes"
 import {
@@ -196,21 +202,55 @@ describe("guard 4: internal links", () => {
 })
 
 describe("guard 5: assistant prompt routes", () => {
-  const promptSource = () =>
-    readFileSync(
-      path.join(
-        path.dirname(fileURLToPath(import.meta.url)),
-        "../../../../packages/backend/convex/assistant/knowledge.ts"
-      ),
-      "utf8"
+  // The prompt is built in packages/backend, which cannot import this app's
+  // message files or nav registries, so ASSISTANT_PAGES is where a
+  // destination's name is defined for the prompt and this guard is the link
+  // between the two packages. It reads the rendered prompt and the table
+  // itself rather than the source text: what the model receives is what has
+  // to be checked.
+  const promptPages = Object.entries(ASSISTANT_PAGES)
+
+  const listedPathsIn = (prompt: string) =>
+    new Set(
+      [...prompt.matchAll(/^- .+? \((\/[a-z0-9/-]*)\): /gm)].map(
+        (m) => m[1] ?? ""
+      )
     )
 
+  const messageAt = (locale: string, labelKey: string): unknown =>
+    labelKey
+      .split(".")
+      .reduce<unknown>(
+        (node, part) =>
+          node !== null && typeof node === "object"
+            ? (node as Record<string, unknown>)[part]
+            : undefined,
+        (MESSAGES[locale] as { dashboard: unknown }).dashboard
+      )
+
+  // Every label key the app itself uses for a destination: the sidebar and
+  // command palette render NAV_GROUPS/NAV_DOCS, the header tab strips render
+  // SECTION_PAGES, and a path can appear in both (/work is "Job architecture"
+  // in the sidebar and "Levels" as its section's first tab). Pages outside
+  // both registries (the import wizards, the account tabs) have no entry
+  // here, so their declared key is only checked for resolving.
+  const appLabelKeys = (href: string): Set<string> => {
+    const keys = new Set<string>()
+    for (const entry of [...NAV_GROUPS.flatMap((g) => g.entries), NAV_DOCS]) {
+      if (entry.href === href) keys.add(entry.labelKey)
+    }
+    for (const pages of Object.values(SECTION_PAGES)) {
+      for (const page of pages) {
+        if (page.href === href) keys.add(page.labelKey)
+      }
+    }
+    return keys
+  }
+
   it("every path in the prompt's Pages list is a real static route", () => {
-    const source = promptSource()
-    const paths = [...source.matchAll(/^\s*"- .+? \((\/[a-z0-9/-]*)\):/gm)].map(
-      (m) => m[1] ?? ""
-    )
-    expect(paths.length).toBeGreaterThanOrEqual(9)
+    const paths = listedPathsIn(assistantSystemPrompt({ locale: "en" }))
+    expect(paths.size).toBeGreaterThanOrEqual(9)
+    expect(paths.size).toBe(promptPages.length)
     const appRoutes = collectStaticAppRoutes()
     for (const p of paths) {
       expect(
@@ -224,15 +264,9 @@ describe("guard 5: assistant prompt routes", () => {
   // cannot catch the opposite, and the opposite is the defect that has now
   // shipped twice: a real destination missing from the list, which the model
   // answers by substituting the nearest one it was given (it sent users to
-  // /organization for account security, and to /model for weighting). The
-  // prompt lives in packages/backend and cannot import the app's registry,
-  // so this guard is the link between them.
+  // /organization for account security, and to /model for weighting).
   it("every section sub-page in the app's own registry is a destination the prompt knows", () => {
-    const listed = new Set(
-      [...promptSource().matchAll(/^\s*"- .+? \((\/[a-z0-9/-]*)\):/gm)].map(
-        (m) => m[1] ?? ""
-      )
-    )
+    const listed = listedPathsIn(assistantSystemPrompt({ locale: "en" }))
     for (const pages of Object.values(SECTION_PAGES)) {
       for (const page of pages) {
         expect(
@@ -243,13 +277,75 @@ describe("guard 5: assistant prompt routes", () => {
     }
   })
 
+  it("every top-level nav destination is one the prompt knows", () => {
+    const listed = listedPathsIn(assistantSystemPrompt({ locale: "en" }))
+    for (const entry of [...NAV_GROUPS.flatMap((g) => g.entries), NAV_DOCS]) {
+      expect(
+        listed.has(entry.href),
+        `the sidebar has ${entry.href} but the assistant prompt does not list it`
+      ).toBe(true)
+    }
+  })
+
+  it("the prompt's locales are exactly the app's locales", () => {
+    expect([...ASSISTANT_PROMPT_LOCALES].sort()).toEqual(
+      [...routing.locales].sort()
+    )
+  })
+
+  // The defect this exists for: the prompt named every destination in English
+  // ("Work" for /work), so the model translated it into a word the product
+  // never shows ("Arbete" in Swedish) and linked the audit log as "Audit log"
+  // inside Swedish prose. A name is only right if it is the label the app
+  // renders for that path, in that locale, so the check is equality against
+  // the message files rather than "is translated somehow".
+  it("every destination's name is the app's own label for it, in every locale", () => {
+    for (const [href, page] of promptPages) {
+      const known = appLabelKeys(href)
+      if (known.size > 0) {
+        expect(
+          known.has(page.labelKey),
+          `the prompt names ${href} with "${page.labelKey}", but the app labels it with ${[...known].join(" or ")}`
+        ).toBe(true)
+      }
+      for (const locale of routing.locales) {
+        const label = messageAt(locale, page.labelKey)
+        expect(
+          typeof label === "string" && label !== "",
+          `${locale}: dashboard.${page.labelKey} (the prompt's name for ${href}) resolves to nothing`
+        ).toBe(true)
+        expect(
+          page.name[locale],
+          `${locale}: the prompt names ${href} "${page.name[locale]}" but the app shows "${String(label)}"`
+        ).toBe(label)
+      }
+    }
+  })
+
+  // Rendering is checked separately from the table: a name defined correctly
+  // but dropped from the rendered list would still leave the model with no
+  // way to name the page.
+  it("renders every destination with its own locale's name", () => {
+    for (const locale of routing.locales) {
+      const prompt = assistantSystemPrompt({ locale })
+      for (const [href, page] of promptPages) {
+        expect(
+          prompt.includes(`- ${page.name[locale]} (${href}): `),
+          `${locale}: the rendered Pages list is missing ${href}`
+        ).toBe(true)
+      }
+    }
+  })
+
   // The prompt's own example guide links are the model's template for the
   // shape of a docs path, so a stale one teaches it to emit a dead link.
   it("every /docs guide path used as an example in the prompt is a real slug", () => {
     const docSlugs = new Set(allDocSlugs())
-    const examples = [...promptSource().matchAll(/\/docs\/([a-z0-9-]+)/g)].map(
-      (m) => m[1] ?? ""
-    )
+    const examples = [
+      ...assistantSystemPrompt({ locale: "en" }).matchAll(
+        /\/docs\/([a-z0-9-]+)/g
+      ),
+    ].map((m) => m[1] ?? "")
     for (const slug of examples) {
       expect(
         docSlugs.has(slug),
@@ -338,22 +434,27 @@ describe("guard 7: error coverage", () => {
     }
   })
 
-  // Each code is documented under a "### <code>" heading, and the entry
-  // quotes the sentence the app actually shows. Covering the code alone is
-  // not enough: rewording the i18n string leaves all four pages quoting the
-  // old sentence in five locales, and the assistant then quotes back a
-  // message the user never saw, with nothing to catch it. The corpus hard
-  // wraps its prose, so the comparison normalizes whitespace.
+  // Each code is documented by its own "Code: `<code>`" line, and the entry
+  // quotes the sentence the app actually shows immediately below it.
+  // Covering the code alone is not enough: rewording the i18n string leaves
+  // all four pages quoting the old sentence in five locales, and the
+  // assistant then quotes back a message the user never saw, with nothing to
+  // catch it. The code line is what keys an entry rather than a heading,
+  // because a heading is prose written for an HR reader ("The role is
+  // locked") and no longer carries the identifier; the line's label is
+  // translated per locale ("Code", "Kod", "Kode", "Koodi"), so the pattern
+  // matches the line's shape instead of an English word. An entry runs to
+  // the next code line, and the quoted message is the first quotation in it.
+  // The corpus hard wraps its prose, so the comparison normalizes whitespace.
+  const CODE_LINE = /^\p{L}+:[ \t]+`([A-Za-z][A-Za-z0-9]*)`[ \t]*$/gmu
+
   const errorEntriesOf = (locale: string) => {
     const entries = new Map<string, string[]>()
     for (const slug of TROUBLESHOOTING_PAGES) {
-      const parts = bodyOf(locale, slug).content.split(/^###\s+(.+)$/gm)
+      const parts = bodyOf(locale, slug).content.split(CODE_LINE)
       for (let i = 1; i < parts.length; i += 2) {
-        const heading = (parts[i] ?? "").trim()
-        entries.set(heading, [
-          ...(entries.get(heading) ?? []),
-          parts[i + 1] ?? "",
-        ])
+        const code = parts[i] ?? ""
+        entries.set(code, [...(entries.get(code) ?? []), parts[i + 1] ?? ""])
       }
     }
     return entries
@@ -368,7 +469,7 @@ describe("guard 7: error coverage", () => {
       for (const key of Object.keys(en.errors)) {
         expect(
           entries.get(key)?.length ?? 0,
-          `${locale}: expected exactly one "### ${key}" troubleshooting entry`
+          `${locale}: expected exactly one troubleshooting entry keyed by a "Code: \`${key}\`" line`
         ).toBe(1)
         const quoted = QUOTED_MESSAGE.exec(entries.get(key)?.[0] ?? "")
         expect(
@@ -379,6 +480,24 @@ describe("guard 7: error coverage", () => {
           normalizeSpace(quoted?.[1] ?? ""),
           `${locale}/${key}: the quoted message has drifted from the string the app shows`
         ).toBe(normalizeSpace(errors[key] ?? ""))
+      }
+    }
+  })
+
+  // The check above reads the entry a code line opens, so a code line that
+  // documents nothing in errors.* would go unseen: the corpus would carry a
+  // codeblock-shaped line for an identifier the app cannot raise, and the
+  // assistant would offer it as an explanation for a message no user can
+  // receive. Every code line is therefore required to name a live code, in
+  // every locale.
+  it("no troubleshooting page documents a code the app cannot raise", () => {
+    const known = new Set(Object.keys(en.errors))
+    for (const locale of routing.locales) {
+      for (const code of errorEntriesOf(locale).keys()) {
+        expect(
+          known.has(code),
+          `${locale}: a troubleshooting page documents \`${code}\`, which is not a key in the errors namespace`
+        ).toBe(true)
       }
     }
   })

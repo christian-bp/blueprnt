@@ -7,12 +7,292 @@ export interface AssistantPromptContext {
   employeeCount?: number
 }
 
+// The product locales (i18n routing.ts). Declared here because
+// packages/backend cannot import the i18n package; guard 5 in
+// apps/dashboard/lib/docs/docs-guards.test.ts asserts this list is exactly
+// routing.locales, so a new locale fails there instead of shipping a prompt
+// that names every destination in English.
+export const ASSISTANT_PROMPT_LOCALES = ["en", "sv", "nb", "da", "fi"] as const
+export type AssistantPromptLocale = (typeof ASSISTANT_PROMPT_LOCALES)[number]
+
+interface AssistantPageEntry {
+  // The app label this name mirrors, relative to the `dashboard` namespace.
+  readonly labelKey: string
+  readonly name: Readonly<Record<AssistantPromptLocale, string>>
+  readonly description: string
+}
+
+// Every destination the assistant may send a user to, keyed by its fixed path
+// and carrying the name the app's own navigation shows for it. Naming a
+// destination is the assistant's most common action, so the name has to be the
+// product's word in the user's language: a model asked to write Swedish prose
+// around an English "Work" invents "Arbete", a label the product never shows.
+//
+// The names live here rather than in the app's message files because
+// packages/backend cannot import them, and rather than being passed in by the
+// caller because that would put caller-controlled text into the system prompt
+// and split one destination's name across two packages. This table is
+// therefore the single place a destination's name is defined for the prompt,
+// and `labelKey` is the contract that keeps it honest: guard 5 in
+// apps/dashboard/lib/docs/docs-guards.test.ts resolves the key against the
+// real message files in every locale and fails on any drift, so a renamed tab
+// or nav item cannot reach a user as a name the app never shows. Descriptions
+// stay English: only the model reads them.
+export const ASSISTANT_PAGES = {
+  "/": {
+    labelKey: "nav.home",
+    name: {
+      en: "Overview",
+      sv: "Översikt",
+      nb: "Oversikt",
+      da: "Oversigt",
+      fi: "Yleiskatsaus",
+    },
+    description: "the landing dashboard with organization-wide widgets.",
+  },
+  "/assistant": {
+    labelKey: "nav.assistant",
+    name: {
+      en: "Assistant",
+      sv: "Assistent",
+      nb: "Assistent",
+      da: "Assistent",
+      fi: "Assistentti",
+    },
+    description: "this chat.",
+  },
+  "/work": {
+    labelKey: "nav.work",
+    name: {
+      en: "Job architecture",
+      sv: "Jobbarkitektur",
+      nb: "Jobbarkitektur",
+      da: "Jobarkitektur",
+      fi: "Työarkkitehtuuri",
+    },
+    description:
+      "the job architecture overview, levels and evaluation progress across roles.",
+  },
+  "/roles": {
+    labelKey: "nav.roles",
+    name: {
+      en: "Roles",
+      sv: "Roller",
+      nb: "Roller",
+      da: "Roller",
+      fi: "Roolit",
+    },
+    description: "the roles register, including role families.",
+  },
+  "/roles/import": {
+    labelKey: "roles.import.title",
+    name: {
+      en: "Import roles",
+      sv: "Importera roller",
+      nb: "Importer roller",
+      da: "Importér roller",
+      fi: "Tuo roolit",
+    },
+    description: "the role import wizard.",
+  },
+  "/model": {
+    labelKey: "nav.model",
+    name: {
+      en: "Model",
+      sv: "Modell",
+      nb: "Modell",
+      da: "Model",
+      fi: "Malli",
+    },
+    description:
+      "the model section's first tab, holding the criteria and their 0-5 anchor scale.",
+  },
+  "/model/weighting": {
+    labelKey: "model.tabs.weighting",
+    name: {
+      en: "Weighting",
+      sv: "Viktning",
+      nb: "Vekting",
+      da: "Vægtning",
+      fi: "Painotus",
+    },
+    description:
+      "the model section's tab where the criteria's weight points are allocated.",
+  },
+  "/model/method": {
+    labelKey: "model.tabs.method",
+    name: {
+      en: "Method",
+      sv: "Metod",
+      nb: "Metode",
+      da: "Metode",
+      fi: "Menetelmä",
+    },
+    description: "the model section's tab for the method documentation.",
+  },
+  "/people": {
+    labelKey: "nav.people",
+    name: {
+      en: "People",
+      sv: "Medarbetare",
+      nb: "Ansatte",
+      da: "Medarbejdere",
+      fi: "Henkilöstö",
+    },
+    description: "the employee register.",
+  },
+  "/people/classify": {
+    labelKey: "people.tabs.classify",
+    name: {
+      en: "Classify",
+      sv: "Klassificera",
+      nb: "Klassifiser",
+      da: "Klassificér",
+      fi: "Luokittele",
+    },
+    description:
+      "the people section's tab where each imported person is assigned a role and a seniority.",
+  },
+  "/people/import": {
+    labelKey: "people.import.title",
+    name: {
+      en: "Import salaries",
+      sv: "Importera löner",
+      nb: "Importer lønninger",
+      da: "Importér løn",
+      fi: "Tuo palkat",
+    },
+    description: "the payroll-file import wizard.",
+  },
+  "/pay-mappings": {
+    labelKey: "nav.payMapping",
+    name: {
+      en: "Pay mappings",
+      sv: "Lönekartläggningar",
+      nb: "Lønnskartlegginger",
+      da: "Lønkortlægninger",
+      fi: "Palkkakartoitukset",
+    },
+    description: "the lonekartlaggning analysis views and document actions.",
+  },
+  "/organization": {
+    labelKey: "nav.organization",
+    name: {
+      en: "Organization",
+      sv: "Organisation",
+      nb: "Organisasjon",
+      da: "Organisation",
+      fi: "Organisaatio",
+    },
+    description:
+      "the organization section's landing page for its settings and members.",
+  },
+  "/organization/general": {
+    labelKey: "organization.tabs.general",
+    name: {
+      en: "General",
+      sv: "Allmänt",
+      nb: "Generelt",
+      da: "Generelt",
+      fi: "Yleiset",
+    },
+    description:
+      "the organization section's tab for its name, industry, country, size, and default language.",
+  },
+  "/organization/members": {
+    labelKey: "organization.tabs.members",
+    name: {
+      en: "Members",
+      sv: "Medlemmar",
+      nb: "Medlemmer",
+      da: "Medlemmer",
+      fi: "Jäsenet",
+    },
+    description:
+      "the organization section's tab for its members and invitations.",
+  },
+  "/account/profile": {
+    labelKey: "account.tabs.profile",
+    name: {
+      en: "Profile",
+      sv: "Profil",
+      nb: "Profil",
+      da: "Profil",
+      fi: "Profiili",
+    },
+    description:
+      "the account section's tab for the signed-in user's own profile, display name, and display language.",
+  },
+  "/account/security": {
+    labelKey: "account.tabs.security",
+    name: {
+      en: "Security",
+      sv: "Säkerhet",
+      nb: "Sikkerhet",
+      da: "Sikkerhed",
+      fi: "Turvallisuus",
+    },
+    description:
+      "the account section's tab for the signed-in user's password, two-factor authentication, and account deletion.",
+  },
+  "/audit-log": {
+    labelKey: "nav.auditLog",
+    name: {
+      en: "Audit log",
+      sv: "Händelselogg",
+      nb: "Hendelseslogg",
+      da: "Hændelseslog",
+      fi: "Tapahtumaloki",
+    },
+    description: "the browsable trail of every change to domain data.",
+  },
+  "/docs": {
+    labelKey: "nav.docs",
+    name: {
+      en: "Documentation",
+      sv: "Dokumentation",
+      nb: "Dokumentasjon",
+      da: "Dokumentation",
+      fi: "Dokumentaatio",
+    },
+    description:
+      "the in-app user guide. Individual guides live at /docs/<slug>, but the only guide path you may link is one that came back from search_docs.",
+  },
+} as const satisfies Record<string, AssistantPageEntry>
+
+export type AssistantPagePath = keyof typeof ASSISTANT_PAGES
+
+// An unsupported locale resolves to English for the names exactly as it does
+// for the language instruction below, so the two can never disagree; a
+// SUPPORTED locale missing a name is impossible by construction (the satisfies
+// above makes the name record total over ASSISTANT_PROMPT_LOCALES).
+export function clampAssistantPromptLocale(
+  locale: string
+): AssistantPromptLocale {
+  return (ASSISTANT_PROMPT_LOCALES as readonly string[]).includes(locale)
+    ? (locale as AssistantPromptLocale)
+    : "en"
+}
+
+export function assistantPageName(
+  path: AssistantPagePath,
+  locale: AssistantPromptLocale
+): string {
+  return ASSISTANT_PAGES[path].name[locale]
+}
+
+// Written as escapes so the file carrying the rule does not itself contain the
+// characters it forbids.
+const EM_DASH = "\u2014"
+const EN_DASH = "\u2013"
+
 // Everything the assistant may claim about the product is stated here plus
 // what its read-only tools return: V1 has no other data access. Content is
 // distilled from the context glossaries (docs/contexts/) and must be updated
 // when the domain language changes.
 export function assistantSystemPrompt(args: AssistantPromptContext): string {
-  const language = LANGUAGE_NAMES[args.locale] ?? "English"
+  const locale = clampAssistantPromptLocale(args.locale)
+  const language = LANGUAGE_NAMES[locale] ?? "English"
   const companyLine =
     args.industry !== undefined && args.country !== undefined
       ? `The user's company: industry "${args.industry}", country code "${args.country}"${
@@ -26,7 +306,7 @@ export function assistantSystemPrompt(args: AssistantPromptContext): string {
     companyLine,
     "Your job: explain the product's concepts in plain language, point the user to the page where they can act, and answer questions about the organization's own state using your tools.",
     "Core concepts:",
-    "- Evaluation model: the org-wide set of criteria used to evaluate roles. Managed on the Model page in two phases: Define (criteria with a 0-5 anchor scale) and Weight (weight points).",
+    "- Evaluation model: the org-wide set of criteria used to evaluate roles. Managed on the model pages: the criteria and their 0-5 anchor scale at /model, the weight points at /model/weighting, the method documentation at /model/method.",
     "- Criterion: one dimension a role is evaluated on. Each criterion has 6 anchor texts describing what the steps 0-5 mean.",
     "- Step: one of a criterion's 0-5 anchor positions, chosen when evaluating a role.",
     "- Weight points: each criterion carries 1-5 weight points under a fixed budget (criteria count times 3, exact sum). Percent shares are derived, never entered.",
@@ -34,31 +314,20 @@ export function assistantSystemPrompt(args: AssistantPromptContext): string {
     "- Level: the computed weight grouping of a role. Level 1 is the highest. Never confuse level with seniority.",
     "- Seniority: an individual's seniority within a track, set on the person. It never affects a role's evaluation, weighting or level.",
     "- Track: the kind of job (for example individual contributor or lead), set on the role.",
-    "- Role family: a grouping of related roles, managed on the Roles page.",
-    "- Role vs person: roles describe jobs; people are employees imported on the People page. Evaluation is always about roles, never persons.",
+    "- Role family: a grouping of related roles, managed at /roles.",
+    "- Role vs person: roles describe jobs; people are employees imported at /people. Evaluation is always about roles, never persons.",
     "- Job profile: the role's description (purpose, responsibilities), editable on the role page, with AI drafting available there.",
-    "- Pay mapping (lonekartlaggning): the statutory analysis of pay differences. Flow: import people and pay on the People page, classify people into roles, then work through the analysis views and document actions on the Pay mapping pages.",
-    "- Audit log: every change to domain data is recorded and browsable on the Audit log page.",
-    "Pages: the only destinations that exist in the app, each with its fixed path.",
-    "- Overview (/): the landing dashboard with organization-wide widgets.",
-    "- Assistant (/assistant): this chat.",
-    "- Work (/work): the job architecture overview, levels and evaluation progress across roles.",
-    "- Roles (/roles): the roles register, including role families.",
-    "- Model (/model): the evaluation model's criteria and their 0-5 scale (the Define phase).",
-    "- Weighting (/model/weighting): where the criteria's weight points are allocated.",
-    "- Method (/model/method): the model's method documentation.",
-    "- People (/people): the employee register.",
-    "- Classify (/people/classify): where each imported person is assigned a role and a seniority.",
-    "- Import people (/people/import): the payroll-file import wizard.",
-    "- Import roles (/roles/import): the role import wizard.",
-    "- Pay mapping (/pay-mappings): the lonekartlaggning analysis views and document actions.",
-    "- Organization (/organization): org settings and members.",
-    "- Organization settings (/organization/general): the organization's name, industry, country, size, and default language.",
-    "- Members (/organization/members): the organization's members and invitations.",
-    "- Account settings (/account/profile): the signed-in user's own profile, display name, and display language.",
-    "- Account security (/account/security): the signed-in user's password, two-factor authentication, and account deletion.",
-    "- Audit log (/audit-log): the browsable trail of every change to domain data.",
-    "- Documentation (/docs): the in-app user guide. Individual guides live at /docs/<slug>, but the only guide path you may link is one that came back from search_docs.",
+    // The Swedish name is given as a synonym rather than in parentheses after
+    // the English one. Written as a gloss, the model read it as a house style
+    // and mirrored it back into its answers ("lonekartlaggning (pay
+    // mapping)"), naming the product in two languages at once to a reader who
+    // asked in one.
+    "- Pay mapping: the statutory analysis of pay differences. Swedish speakers call this a lonekartlaggning, and the two are the same thing. Flow: import people and pay at /people, classify people into roles at /people/classify, then work through the analysis views and document actions at /pay-mappings.",
+    "- Audit log: every change to domain data is recorded and browsable at /audit-log.",
+    "Pages: the only destinations that exist in the app, each with the name the app itself shows for it and its fixed path. The names below are already in the user's language: write one exactly as given, never translated, shortened, or reworded. Where a destination is a tab inside a section, its description names the section, and the section has its own entry in this list.",
+    ...Object.entries(ASSISTANT_PAGES).map(
+      ([path, page]) => `- ${page.name[locale]} (${path}): ${page.description}`
+    ),
     "Tools:",
     "- get_org_stats: current org-level numbers (workforce size, roles, evaluation progress, latest pay gap).",
     "- get_pay_stats: pay statistics (average and median monthly pay), org-wide or split by gender. Use it for questions like the average pay of women or men.",
@@ -70,8 +339,10 @@ export function assistantSystemPrompt(args: AssistantPromptContext): string {
     "Rules:",
     `- Write all responses in ${language}.`,
     "- Keep answers short and concrete. Prefer naming the page where the user can act.",
-    "- When pointing the user to a page, write its name as a markdown link to the page's path from the Pages list above (example: [Roller](/roles)). Only the paths listed there exist; never write a bare URL and never link to anything outside this list.",
+    `- When pointing the user to a page, write its name as a markdown link to the page's path from the Pages list above, spelling the name exactly as that list gives it (example: [${assistantPageName("/roles", locale)}](/roles)). Only the paths listed there exist; never write a bare URL and never link to anything outside this list.`,
     "- Documentation paths are the same in every language and are never translated. Only link a documentation path that appeared verbatim in a search_docs result, copying it whole including its #anchor; never translate, shorten, or invent any part of it. Without such a result, link the documentation index (/docs) instead.",
+    `- Never use an em dash or an en dash as punctuation (${EM_DASH} or ${EN_DASH}). Use a period, a comma, a colon, or parentheses instead.`,
+    "- Name every concept in the user's own language and nothing else. Never follow a term with its name in another language in brackets: a reader who asked in one language is not helped by being answered in two.",
     "- Never ask for, repeat, or process personal data (names, salaries of individuals, birth dates, contact details). If the user includes any, ask them to remove it and continue without it.",
     "- On erasure, retention, and other legal or compliance claims, state what the documentation states and no less: those answers are read as compliance guidance, so a simplification that drops a qualifier is wrong even when the shorter sentence sounds right. When in doubt, quote the page's own wording and link it rather than summarizing it.",
     "- Never include images or image links in your answers. When you display a chart with a tool, the app renders it automatically; do not add any image markup for it.",

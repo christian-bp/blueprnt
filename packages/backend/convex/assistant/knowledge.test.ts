@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest"
-import { assistantSystemPrompt } from "./knowledge"
+import { LANGUAGE_NAMES } from "../ai/config"
+import {
+  ASSISTANT_PAGES,
+  ASSISTANT_PROMPT_LOCALES,
+  assistantSystemPrompt,
+} from "./knowledge"
 
 describe("assistantSystemPrompt", () => {
   it("instructs the model to answer in the requested language", () => {
@@ -63,6 +68,53 @@ describe("assistantSystemPrompt", () => {
     expect(assistantSystemPrompt({ locale: "en" })).toContain(
       "Level 1 is the highest"
     )
+  })
+
+  // Asserted as the operative sentence, like the rules above: the house style
+  // forbids the dash in everything we write, and the assistant's answers are
+  // product text. Reproduced live in Swedish, where the model wrote
+  // "Arkivering ar en enkelriktad atgard <dash> nar en roll ar arkiverad";
+  // that was an en dash, so a rule naming only the em dash would have left the
+  // observed defect in place.
+  // Reported from a live answer: asked in Swedish, the assistant wrote
+  // "lonekartlaggning (pay mapping)". The prompt had taught the habit by
+  // example, glossing its own concept as "Pay mapping (lonekartlaggning)",
+  // so the rule and the concept line have to stay in step.
+  it("names a concept in one language and never glosses it in another", () => {
+    const prompt = assistantSystemPrompt({ locale: "sv" })
+    expect(prompt).toContain(
+      "Name every concept in the user's own language and nothing else"
+    )
+    expect(prompt).toContain(
+      "Never follow a term with its name in another language in brackets"
+    )
+    // The concept line keeps the synonym (a Swedish question has to reach the
+    // English concept) but must not model the gloss it forbids.
+    expect(prompt).not.toContain("Pay mapping (lonekartlaggning)")
+    expect(prompt).toContain("Swedish speakers call this a lonekartlaggning")
+  })
+
+  it("forbids the dash as punctuation and names the replacement", () => {
+    const prompt = assistantSystemPrompt({ locale: "en" })
+    expect(prompt).toContain(
+      "Never use an em dash or an en dash as punctuation"
+    )
+    expect(prompt).toContain(
+      "Use a period, a comma, a colon, or parentheses instead"
+    )
+  })
+
+  // The characters are written as escapes so this file cannot break the rule
+  // it enforces.
+  it("uses neither dash anywhere except in the rule that forbids them", () => {
+    const offenders = assistantSystemPrompt({ locale: "sv" })
+      .split("\n")
+      .filter(
+        (line) =>
+          !line.includes("Never use an em dash") &&
+          (line.includes("\u2014") || line.includes("\u2013"))
+      )
+    expect(offenders).toEqual([])
   })
 
   it("instructs the model to link pages instead of only naming them", () => {
@@ -177,5 +229,59 @@ describe("assistantSystemPrompt", () => {
     expect(neverInventIndex).toBeGreaterThan(-1)
     expect(fallbackIndex).toBeGreaterThan(-1)
     expect(neverInventIndex).toBeLessThan(fallbackIndex)
+  })
+})
+
+describe("the assistant's Pages list", () => {
+  // Reproduced live: the model wrote Swedish prose and linked /audit-log as
+  // "Audit log", and rendered the English "Work" as "Arbete", a word the
+  // product never shows. Naming a destination is the assistant's most common
+  // action, so an English-only list was wrong on most answers in four of the
+  // five locales. These two are the reported cases, pinned by value; the
+  // sweep below covers the rest from the table itself.
+  it("names a destination the way the app names it, in the caller's language", () => {
+    const sv = assistantSystemPrompt({ locale: "sv" })
+    expect(sv).toContain("- Jobbarkitektur (/work):")
+    expect(sv).toContain("- Händelselogg (/audit-log):")
+    expect(assistantSystemPrompt({ locale: "en" })).toContain(
+      "- Job architecture (/work):"
+    )
+  })
+
+  it("lists every destination, in every product locale", () => {
+    for (const locale of ASSISTANT_PROMPT_LOCALES) {
+      const prompt = assistantSystemPrompt({ locale })
+      for (const [path, page] of Object.entries(ASSISTANT_PAGES)) {
+        const name = page.name[locale]
+        expect(name, `${locale} name for ${path}`).not.toBe("")
+        expect(
+          prompt,
+          `${locale}: the Pages list is missing ${path}`
+        ).toContain(`- ${name} (${path}): `)
+      }
+    }
+  })
+
+  // The language instruction and the destination names must resolve the same
+  // locale, or an unsupported locale gets an English answer carrying Swedish
+  // page names. Both fall back to English, from the one clamp.
+  it("falls back to the English names for an unsupported locale", () => {
+    const prompt = assistantSystemPrompt({ locale: "de" })
+    expect(prompt).toContain("Write all responses in English")
+    expect(prompt).toContain("- Job architecture (/work):")
+  })
+
+  it("has a language name for every locale it carries page names for", () => {
+    for (const locale of ASSISTANT_PROMPT_LOCALES) {
+      expect(LANGUAGE_NAMES[locale], locale).toBeTruthy()
+    }
+  })
+
+  // The rule's example is built from the same table as the list, so it can
+  // never demonstrate a name the list does not contain.
+  it("shows the linking example with the caller's own language's name", () => {
+    expect(assistantSystemPrompt({ locale: "fi" })).toContain(
+      "(example: [Roolit](/roles))"
+    )
   })
 })
