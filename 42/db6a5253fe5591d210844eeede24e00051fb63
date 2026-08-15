@@ -1,0 +1,24 @@
+packages/ui/scripts/update-shadcn.ts
+  s_0383b617034fa3::t_fed6a1f8573af0 41-42
+packages/ui/src/components/command.tsx
+  s_0383b617034fa3::t_53eaf4a14cde7d 66-69
+  s_0383b617034fa3::t_ad8b038533cd37 60-65
+packages/ui/patches/command.patch
+  s_0383b617034fa3::t_ddb843566901ce 1-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "42db6a5253fe5591d210844eeede24e00051fb63",
+  "prompts": {},
+  "sessions": {
+    "s_0383b617034fa3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "70c0a727-22c9-42cb-ae97-66bc3b799a58",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
