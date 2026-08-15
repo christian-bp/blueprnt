@@ -9,7 +9,10 @@ const frontmatter = {
 }
 
 describe("chunkDocPage", () => {
-  it("emits an intro chunk and one chunk per H2, anchors matching the renderer", () => {
+  // An h3 is its own chunk, not folded into its parent: it answers its own
+  // question and needs its own anchor, or a deep link to it lands on the
+  // section above it.
+  it("emits an intro chunk and one chunk per heading, anchors matching the renderer", () => {
     const body = [
       "Intro paragraph.",
       "",
@@ -17,7 +20,7 @@ describe("chunkDocPage", () => {
       "The budget is criteria count x 3.",
       "",
       "### Sub detail",
-      "Folded into the parent chunk.",
+      "Its own chunk, with its own anchor.",
       "",
       "## Saving",
       "Save posts atomically.",
@@ -26,11 +29,14 @@ describe("chunkDocPage", () => {
     expect(chunks.map((c) => c.heading)).toEqual([
       null,
       "Point budget",
+      "Sub detail",
       "Saving",
     ])
+    expect(chunks[2]?.anchor).toBe(headingAnchor("Sub detail"))
+    // The parent keeps only its own prose, so the two do not compete.
+    expect(chunks[1]?.text).not.toContain("its own anchor")
     expect(chunks[1]?.anchor).toBe(headingAnchor("Point budget"))
     expect(chunks[1]?.text).toContain("criteria count x 3")
-    expect(chunks[1]?.text).toContain("Folded into the parent chunk.")
     for (const c of chunks) {
       expect(c.pageTitle).toBe("Weighting")
     }

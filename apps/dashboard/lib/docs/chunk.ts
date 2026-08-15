@@ -2,7 +2,7 @@ import { headingAnchor } from "./anchors"
 import type { DocFrontmatter } from "./frontmatter"
 
 // Bumped whenever stripMarkdown or split rules change, forcing full resync.
-export const CHUNKER_VERSION = "5"
+export const CHUNKER_VERSION = "6"
 
 export interface DocChunk {
   pageTitle: string
@@ -90,10 +90,16 @@ export function chunkDocPage(args: {
   const sections: { heading: string | null; lines: string[] }[] = [
     { heading: null, lines: [] },
   ]
+  // Split on h2 AND h3. An h3 is its own answer to its own question: the
+  // troubleshooting pages put four distinct error messages under one h2, and
+  // folding them into a single chunk both diluted each one against the other
+  // three and gave them all the h2's anchor, so a deep link landed on the
+  // section rather than on the message the reader asked about.
   for (const line of args.body.split("\n")) {
-    const h2 = /^##\s+(.+)$/.exec(line)
-    if (h2?.[1] !== undefined) sections.push({ heading: h2[1], lines: [] })
-    else sections.at(-1)?.lines.push(line)
+    const heading = /^#{2,3}\s+(.+)$/.exec(line)
+    if (heading?.[1] !== undefined) {
+      sections.push({ heading: heading[1], lines: [] })
+    } else sections.at(-1)?.lines.push(line)
   }
   const chunks: DocChunk[] = []
   for (const section of sections) {
