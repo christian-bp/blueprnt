@@ -23,8 +23,9 @@ summa kaikkien kriteerien painopisteiden yhteismäärällä: tämä on
 painotettu keskiarvo. Kertokaa painotettu keskiarvo 20:llä ja
 pyöristäkää alaspäin lähimpään kokonaislukuun. Tämä lopullinen luku,
 aina 0:n ja 100:n välillä riippumatta siitä, kuinka monta kriteeriä
-mallissa on, on painotus. Alaspäin pyöristäminen pitää vertailun
-vaativuustasorajoihin täsmällisenä.
+mallissa on, on painotus. Alaspäin pyöristäminen tarkoittaa, että rooli
+saavuttaa tason vasta, kun sen painotus todella yltää rajaan, ei
+koskaan pyöristymällä siihen ylöspäin.
 
 Roolin painotus näkyy vasta, kun kaikki nykyiset kriteerit on
 arvioitu. Siihen asti blueprnt näyttää, kuinka monta kriteeriä on
@@ -49,17 +50,17 @@ roolille korkeimman tason, jonka rajan sen painotus saavuttaa tai
 ylittää. Roolilla ei ole vaativuustasoa, ennen kuin se on valmis,
 samasta syystä kuin sillä ei ole vielä painotustakaan.
 
-## Aina johdettu, ei koskaan tallennettu
+## Tulos seuraa mallia
 
-blueprnt ei koskaan tallenna roolin painotusta tai vaativuustasoa;
-se laskee molemmat uudelleen reaaliaikaisesti aina, kun katsotte
-niitä, sen mukaan mitkä arviot ja malli ovat sillä hetkellä. Tämä
+Roolin painotus ja vaativuustaso heijastavat aina arvioita ja mallia
+sellaisina kuin ne ovat juuri nyt, eivät sellaisina kuin ne olivat
+arviointihetkellä. Tämä
 tarkoittaa, että mallin itsensä muutos, kuten kriteerin lisääminen,
 painopisteen muuttaminen tai uudelleenpainottaminen, voi siirtää
 roolin toiselle vaativuustasolle välittömästi, vaikka kukaan ei
 koskisi sen arvioita. Kriteerin lisääminen voi jopa muuttaa aiemmin
 valmiin roolin keskeneräiseksi uudelleen, kunnes uusi kriteeri on
-arvioitu. Jokainen tällainen muutos kirjataan auditointilokiin.
+arvioitu. Jokainen tällainen muutos kirjataan tapahtumalokiin.
 
 ## Ei manuaalista ohitusta
 

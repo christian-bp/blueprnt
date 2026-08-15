@@ -14,7 +14,7 @@ system.
 
 ## I don't have permission to do this
 
-### adminRequired
+### Organization admins only
 
 Code: `adminRequired`
 
@@ -27,7 +27,7 @@ to make the change, or to promote you to Admin first. See
 [Members and roles](/docs/members-and-roles) for the exact boundary between
 the two roles.
 
-### platformAdminRequired
+### Platform administrators only
 
 Code: `platformAdminRequired`
 
@@ -40,7 +40,7 @@ member; it is not self-serviceable.
 
 ## I'm told I'm not a member of this organization
 
-### notAMember
+### You do not belong to that organization
 
 Code: `notAMember`
 
@@ -51,7 +51,7 @@ not currently belong to, for example after following an old link or
 switching accounts. Switch to an organization you belong to, or ask an
 admin of that organization to invite you; see [Invitations](/docs/invitations).
 
-### membershipConflict
+### Your membership could not be verified
 
 Code: `membershipConflict`
 
@@ -63,8 +63,6 @@ the other messages on this page, there is no self-service fix: contact
 support.
 
 ## I can't delete my account, or I can't remove or demote the last administrator
-
-### lastAdmin
 
 Code: `lastAdmin`
 
@@ -81,12 +79,11 @@ admin can be changed, removed, or their account deleted like anyone
 else's. See [Deleting your account](/docs/deleting-your-account) for the
 rest of what account deletion does.
 
-## General
+## Messages that can appear anywhere in the app
 
-These codes are not specific to any one screen; they can appear anywhere
-in the app.
+These codes are not specific to any one screen.
 
-### notAuthenticated
+### You have been signed out
 
 Code: `notAuthenticated`
 
@@ -95,7 +92,7 @@ Code: `notAuthenticated`
 Your session is no longer valid, most often because it expired or you
 signed out in another tab. Sign in again to continue.
 
-### notFound
+### The item no longer exists
 
 Code: `notFound`
 
@@ -106,7 +103,7 @@ organization's point of view, most often because it was deleted or
 archived (by you or a colleague) since the page loaded. Reload the page;
 if the item is genuinely gone, it will no longer appear.
 
-### invalidInput
+### A value was not accepted
 
 Code: `invalidInput`
 

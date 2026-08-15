@@ -22,8 +22,9 @@ alle kriterier. Del den summen med summen av alle kriterienes vektpoeng:
 det er det vektede gjennomsnittet av vurderingene. Multipliser
 gjennomsnittet med 20 og avrund nedover til nærmeste heltall. Det
 endelige tallet, alltid mellom 0 og 100 uansett hvor mange kriterier
-modellen har, er vektingen. Nedoverrundingen holder sammenligningen mot
-nivåterskelverdiene eksakt.
+modellen har, er vektingen. Nedoverrunding betyr at en rolle når et nivå
+først når vektingen dens virkelig har nådd terskelen, aldri ved å bli
+rundet opp til den.
 
 En rolles vekting vises bare når hvert nåværende kriterium er vurdert.
 Til da viser blueprnt hvor mange kriterier som er vurdert i stedet for
@@ -49,11 +50,11 @@ det høyeste nivået hvis terskel vektingen dens oppfyller eller
 overstiger. En rolle har ikke noe nivå før den er fullført, av samme
 grunn som den ennå ikke har noen vekting.
 
-## Alltid utledet, aldri lagret
+## Resultatet følger modellen
 
-blueprnt lagrer aldri en rolles vekting eller nivå; den beregner begge
-på nytt, live, hver gang dere ser dem, fra hva vurderingene og modellen
-er akkurat da. Det betyr at en endring i selve modellen, som å legge
+En rolles vekting og nivå gjenspeiler alltid vurderingene og modellen
+slik de er akkurat nå, ikke slik de var da dere vurderte rollen. Det
+betyr at en endring i selve modellen, som å legge
 til et kriterium, endre et vektpoeng eller omvekte, kan flytte en rolle
 til et annet nivå umiddelbart, uten at noen rører vurderingene dens. Å
 legge til et kriterium kan til og med gjøre en tidligere fullført rolle

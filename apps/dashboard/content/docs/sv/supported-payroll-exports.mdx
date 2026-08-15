@@ -4,14 +4,13 @@ description: Lönesystemen importen är verifierad mot, och vad ni ska göra nä
 section: people
 ---
 
-Importguidens kolumnigenkänning och tolkning byggdes och verifierades
-mot riktiga CSV-exporter från Visma, Hogia, Fortnox, Agda, Personec, SD
-Worx, SAP SuccessFactors och Workday, på engelska, svenska, norska,
-danska och finska. Det betyder inte att bara de här systemen fungerar:
-alla CSV-exporter med de fält som listas i
-[Importera medarbetare](/docs/importing-people) kan mappas för hand.
-Det betyder att just de här systemens verkliga särdrag kontrollerades
-direkt.
+Importguidens kolumnigenkänning och tolkning är verifierad mot riktiga
+CSV-exporter från Visma, Hogia, Fortnox, Agda, Personec, SD Worx, SAP
+SuccessFactors och Workday, på engelska, svenska, norska, danska och
+finska. Det betyder inte att bara de här systemen fungerar: alla
+CSV-exporter med de fält som listas i
+[Importera medarbetare](/docs/importing-people) kan mappas för hand. Det
+betyder att just de här systemens verkliga särdrag kontrollerades direkt.
 
 ## Tal och datum
 
@@ -41,15 +40,14 @@ mindre skalar blueprnt om hela kolumnen till en procentsats och visar en
 notering som förklarar att det gjorde det, så att ändringen syns
 istället för att ske tyst.
 
-## Vad som inte läses än
+## Format ni behöver justera före importen
 
-Ett antal format stöds medvetet inte just nu: kalkylbladsfiler (XLSX,
-XLS, ODS) istället för CSV, amerikanska belopp med komma som
-tusentalsavgränsare som "52,000", schweizisk apostrofgruppering,
-negativa eller inparentiserade belopp, och datum skrivna med ett
-månadsnamn eller ett tvåsiffrigt år. En fil som använder något av dessa
-behöver en liten justering i ert lönesystems exportinställningar, eller
-en manuell redigering, innan den importeras rent.
+Ett antal format läses inte: kalkylbladsfiler (XLSX, XLS, ODS) istället för
+CSV, amerikanska belopp med komma som tusentalsavgränsare som "52,000",
+schweizisk apostrofgruppering, negativa eller inparentiserade belopp, och
+datum skrivna med ett månadsnamn eller ett tvåsiffrigt år. En fil som
+använder något av dessa behöver en liten justering i ert lönesystems
+exportinställningar, eller en manuell redigering, innan den importeras rent.
 
 ## När en fil inte går att läsa
 

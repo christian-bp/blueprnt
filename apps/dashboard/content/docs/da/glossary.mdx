@@ -10,7 +10,7 @@ naboord er let at forveksle det med, grænsen mellem de to.
 
 ## Tiltag
 
-Et tiltag (Action) er en arbejdslag-registrering i en lønkortlægning:
+Et tiltag (Action) er en opfølgningspost i en lønkortlægning:
 et problem, et planlagt tiltag, en valgfri saglig grund, en ansvarlig
 person, en planlagt dato, og en status af Ikke påbegyndt, I gang eller
 Afsluttet.
@@ -75,7 +75,8 @@ Se [Metodedokumentation](/docs/method-documentation).
 
 Klassificering (Classification) er at tildele en importeret
 medarbejder en rolle og en senioritet inden for den rolles track, fra
-et motorforslag I bekræfter.
+et forslag, blueprnt regner ud fra de data, I allerede har, og som I
+bekræfter.
 
 Intet klassificeres nogensinde automatisk, og senioriteten, det sætter,
 hører til personen, aldrig rollen. Se
@@ -130,13 +131,14 @@ det supplerer snarere end erstatter.
 
 ## Frosne data
 
-Frosne data (Frozen data) er det uforanderlige lag i en
-lønkortlægnings øjebliksbillede: lønninger, rolleniveau og track,
-demografi, niveautærskler og vurderinger, alt fanget på referencedatoen.
+Frosne data (Frozen data) er den del af en lønkortlægning, der aldrig
+kan ændre sig, når kortlægningen først er startet: lønninger,
+rolleniveau og track, demografi, niveautærskler og vurderinger, alt
+fanget på referencedatoen.
 
-Kun det foranderlige arbejdslag, sammenligningsgrupper, noter og
-tiltag, forbliver redigerbart efter det; de frosne data selv ændrer sig
-aldrig, selv når jeres levende organisation gør. Se
+Jeres arbejdsmateriale forbliver redigerbart, sammenligningsgrupper,
+noter og tiltag, men de frosne tal står præcis, som de var, selv når
+jeres levende organisation går videre. Se
 [Lønkortlægningen: overblik](/docs/pay-mapping-overview).
 
 ## Jobprofil
@@ -288,11 +290,13 @@ det kriterium tæller. Se
 
 ## Skabelon
 
-En skabelon (Template) er en genanvendelig, forudkonfigureret model,
-kriterier, ankre, vægtpoint og niveautærskler skræddersyet til en
-branche, som en ny organisation kan starte fra under onboarding.
+En skabelon (Template) er den færdige model, en ny organisation starter
+fra under onboarding: kriterier, ankertekster, vægtpoint og
+niveautærskler, allerede udfyldt.
 
-Se [Modellen: overblik](/docs/model-overview).
+Hver ny organisation starter fra den samme standardskabelon og tilpasser
+den bagefter; der er intet valg at træffe under onboarding. Se
+[Modellen: overblik](/docs/model-overview).
 
 ## Track
 
@@ -315,11 +319,11 @@ en rolle er på det. Se
 
 ## Vægtning
 
-Vægtning (Weighting) er UI-mærket for en rolles vægtede total: en score
-fra 0 til 100, rundet ned, beregnet fra dens vurderinger og hvert
+Vægtning (Weighting) er en rolles vægtede total: en score fra 0 til 100,
+rundet ned til et helt tal, beregnet fra dens vurderinger og hvert
 kriteriums vægtpoint.
 
-Dette er et bevidst navnevalg, ikke en fejl: det deler sit navn med den
-separate vægtningsproces, der fordeler vægtpoint til kriterier på
-Model-sidens Vægtning-fane, men de to er forskellige ting. Se
+Det samme ord bruges også om at fordele vægtpoint til kriterier på
+Model-sidens Vægtning-fane. De to er forskellige ting: dette er et
+resultat, det andet er en opgave. Se
 [Vægtning og niveauer](/docs/score-and-levels).

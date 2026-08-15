@@ -5,14 +5,14 @@ section: assistant
 ---
 
 Blueprnt AI är byggd så att ingen enskild anställds personuppgifter
-någonsin når modellen bakom den, och så att varje användning av den kan
+någonsin når AI:n bakom den, och så att varje användning av den kan
 redovisas.
 
 ## Ta aldrig med en anställds personuppgifter
 
-Innan något meddelande skickas till modellen kontrollerar blueprnt om
+Innan något meddelande skickas till AI:n kontrollerar blueprnt om
 det innehåller en anställds fullständiga namn. Om det gör det avvisas
-meddelandet omedelbart, utan att modellen någonsin anropas: "Meddelandet
+meddelandet omedelbart och AI:n får aldrig se det: "Meddelandet
 verkar innehålla en anställds personuppgifter. Ta bort dem och ställ
 frågan mer generellt." Fråga om samma sak mer generellt istället, till
 exempel efter roll eller grupp snarare än efter namn.
@@ -34,10 +34,11 @@ EU-värdad modell. Era data lämnar aldrig EU för att generera ett svar.
 
 ## Varje användning loggas
 
-Varje svar assistenten genererar registreras i er organisations
-AI-användning, tillsammans med appens andra AI-funktioner. Ett
-meddelande som avvisas av kontrollen av anställdas namn registreras
-inte, eftersom modellen aldrig anropades för det.
+Varje svar assistenten genererar räknas som AI-användning för er
+organisation, tillsammans med appens andra AI-funktioner, så
+användningen av assistenten är alltid redovisad. Ett meddelande som
+stoppas av kontrollen av anställdas namn räknas inte, eftersom det
+aldrig skickades till AI:n.
 
 ## Relaterat
 

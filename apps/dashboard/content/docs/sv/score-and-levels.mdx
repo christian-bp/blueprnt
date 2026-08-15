@@ -22,7 +22,9 @@ kriterier. Dela den summan med summan av alla kriteriers viktpoäng: det
 är det viktade medelbetyget. Multiplicera medelbetyget med 20 och
 avrunda nedåt till närmaste heltal. Det slutliga talet, alltid mellan 0
 och 100 oavsett hur många kriterier modellen har, är viktningen.
-Nedåtavrundningen håller jämförelsen mot nivåtrösklarna exakt.
+Nedåtavrundningen betyder att en roll når en nivå först när dess
+viktning verkligen har nått tröskeln, aldrig genom att avrundas upp
+till den.
 
 En rolls viktning visas bara när alla nuvarande kriterier har fått ett
 betyg. Fram tills då visar blueprnt hur många kriterier som är
@@ -47,11 +49,11 @@ en tröskelviktning för varje nivå; blueprnt tilldelar en roll den högsta
 nivå vars tröskel dess viktning når eller överstiger. En roll saknar
 nivå tills den är komplett, av samma skäl som den ännu saknar viktning.
 
-## Alltid härledd, aldrig sparad
+## Resultatet följer modellen
 
-blueprnt sparar aldrig en rolls viktning eller nivå; den räknar om båda,
-live, varje gång ni ser dem, utifrån vad betygen och modellen är just
-då. Det betyder att en ändring i själva modellen, som att lägga till ett
+En rolls viktning och nivå speglar alltid betygen och modellen som de är
+just nu, inte som de var när ni betygsatte rollen. Det betyder att en
+ändring i själva modellen, som att lägga till ett
 kriterium, ändra en viktpoäng eller vikta om, omedelbart kan flytta en
 roll till en annan nivå, utan att någon rör dess betyg. Att lägga till
 ett kriterium kan till och med göra en tidigare komplett roll inkomplett

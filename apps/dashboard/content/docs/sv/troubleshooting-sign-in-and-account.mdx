@@ -14,7 +14,7 @@ meddelanden från inloggningsskärmen, inte koder från det här systemet.
 
 ## Jag har inte behörighet att göra det här
 
-### adminRequired
+### Endast organisationens administratörer
 
 Kod: `adminRequired`
 
@@ -28,7 +28,7 @@ göra er till administratör först. Se
 [Medlemmar och roller](/docs/members-and-roles) för den exakta gränsen
 mellan de två rollerna.
 
-### platformAdminRequired
+### Endast plattformsadministratörer
 
 Kod: `platformAdminRequired`
 
@@ -41,7 +41,7 @@ sig själv eller en annan medlem; det är inte självbetjänat.
 
 ## Jag får veta att jag inte är medlem i den här organisationen
 
-### notAMember
+### Ni tillhör inte den organisationen
 
 Kod: `notAMember`
 
@@ -53,7 +53,7 @@ en gammal länk eller bytt konto. Byt till en organisation ni hör till,
 eller be en administratör i den organisationen bjuda in er; se
 [Inbjudningar](/docs/invitations).
 
-### membershipConflict
+### Medlemskapet kunde inte verifieras
 
 Kod: `membershipConflict`
 
@@ -65,8 +65,6 @@ motstridig post. Till skillnad från de andra meddelandena på den här
 sidan finns ingen självbetjäningsåtgärd: kontakta supporten.
 
 ## Jag kan inte ta bort mitt konto, eller ta bort eller nedgradera den sista administratören
-
-### lastAdmin
 
 Kod: `lastAdmin`
 
@@ -86,12 +84,11 @@ raderat som vem som helst annars. Se
 [Ta bort ditt konto](/docs/deleting-your-account) för resten av vad
 kontoradering gör.
 
-## Allmänt
+## Meddelanden som kan visas var som helst i appen
 
-De här koderna är inte specifika för någon enskild skärm; de kan visas
-var som helst i appen.
+De här koderna är inte specifika för någon enskild skärm.
 
-### notAuthenticated
+### Ni har blivit utloggade
 
 Kod: `notAuthenticated`
 
@@ -100,7 +97,7 @@ Kod: `notAuthenticated`
 Er session är inte längre giltig, oftast eftersom den gick ut eller ni
 loggade ut i en annan flik. Logga in igen för att fortsätta.
 
-### notFound
+### Objektet finns inte längre
 
 Kod: `notFound`
 
@@ -112,7 +109,7 @@ arkiverades (av er eller en kollega) sedan sidan laddades. Ladda om
 sidan; om objektet verkligen är borta kommer det inte längre att
 visas.
 
-### invalidInput
+### Ett värde godtogs inte
 
 Kod: `invalidInput`
 

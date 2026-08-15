@@ -14,7 +14,7 @@ fra innloggingsskjermbildet, ikke koder fra dette systemet.
 
 ## Jeg har ikke tillatelse til å gjøre dette
 
-### adminRequired
+### Bare organisasjonsadministratorer
 
 Kode: `adminRequired`
 
@@ -28,7 +28,7 @@ eller om å gjøre dere til administrator først. Se
 [Medlemmer og roller](/docs/members-and-roles) for den eksakte grensen
 mellom de to rollene.
 
-### platformAdminRequired
+### Bare plattformadministratorer
 
 Kode: `platformAdminRequired`
 
@@ -41,7 +41,7 @@ gi seg selv eller et annet medlem; det er ikke selvbetjent.
 
 ## Jeg får vite at jeg ikke er medlem av denne organisasjonen
 
-### notAMember
+### Dere hører ikke til den organisasjonen
 
 Kode: `notAMember`
 
@@ -53,7 +53,7 @@ ha fulgt en gammel lenke eller byttet konto. Bytt til en organisasjon
 dere hører til, eller be en administrator i den organisasjonen invitere
 dere; se [Invitasjoner](/docs/invitations).
 
-### membershipConflict
+### Medlemskapet kunne ikke bekreftes
 
 Kode: `membershipConflict`
 
@@ -65,8 +65,6 @@ motstridende post. I motsetning til de andre meldingene på denne
 siden, finnes ingen selvbetjeningsløsning: kontakt støtte.
 
 ## Jeg kan ikke slette kontoen min, eller fjerne eller nedgradere den siste administratoren
-
-### lastAdmin
 
 Kode: `lastAdmin`
 
@@ -85,12 +83,11 @@ få kontoen sin slettet som hvem som helst annen. Se
 [Slette kontoen din](/docs/deleting-your-account) for resten av hva
 kontosletting gjør.
 
-## Generelt
+## Meldinger som kan vises hvor som helst i appen
 
-Disse kodene er ikke spesifikke for noe enkelt skjermbilde; de kan
-vises hvor som helst i appen.
+Disse kodene er ikke spesifikke for noe enkelt skjermbilde.
 
-### notAuthenticated
+### Dere har blitt logget ut
 
 Kode: `notAuthenticated`
 
@@ -99,7 +96,7 @@ Kode: `notAuthenticated`
 Sesjonen deres er ikke lenger gyldig, oftest fordi den utløp eller
 dere logget ut i en annen fane. Logg inn igjen for å fortsette.
 
-### notFound
+### Elementet finnes ikke lenger
 
 Kode: `notFound`
 
@@ -110,7 +107,7 @@ organisasjonens synspunkt, oftest fordi det ble slettet eller arkivert
 (av dere eller en kollega) siden siden ble lastet. Last siden på nytt;
 hvis elementet virkelig er borte, vil det ikke lenger vises.
 
-### invalidInput
+### En verdi ble ikke godtatt
 
 Kode: `invalidInput`
 

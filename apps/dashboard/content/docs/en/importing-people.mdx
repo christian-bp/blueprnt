@@ -28,24 +28,24 @@ this has been verified against and how their numbers and dates are read.
    map up to six further pay components (variable pay, bonus, fixed
    supplement, allowance, equity, benefit in kind, other). For every money
    column, choose whether its values are per month or per year; blueprnt
-   guesses a sensible default from the column header, but you can change
-   it, and your choice is remembered for the next time you import.
-3. **Check**: review how much of each field tier is covered, then fix any
-   data quality issues. A duplicate employee ID, an unreadable or negative
-   salary value, a row with the wrong number of columns, or an unresolved
-   gender skips that row entirely; an unresolved gender can instead be
-   fixed inline, one row at a time, without sending any other personal data
-   into the import. Other issues, such as an FTE column read as a fraction
-   and scaled to a percentage, or a date read day-first because it could
-   mean either day or month, are informational only and do not stop the
-   import. If a problem lives in the source file itself, fix it there and
-   choose "Upload a corrected file" to start again from Upload with a clean
-   copy.
+   guesses a sensible default from the column header, but you can change it,
+   and your choice is remembered for the next time you import.
+3. **Check**: see how completely the required, recommended, and optional
+   fields are covered, then fix any data quality issues. A duplicate
+   employee ID, an unreadable or negative salary value, a row with the wrong
+   number of columns, or an unresolved gender skips that row entirely; an
+   unresolved gender can instead be set here, one row at a time, without
+   changing anything else in the file. Other issues, such as an FTE column
+   read as a fraction and scaled to a percentage, or a date read day-first
+   because it could mean either day or month, are informational only and do
+   not stop the import. If a problem lives in the source file itself, fix it
+   there and choose "Upload a corrected file" to start again from Upload
+   with a clean copy.
 4. **Review**: see exactly what the import will create, update, or leave
    unchanged, for both people and salary entries, before you confirm. A row
-   that reuses an existing employee number under a different name is
-   flagged as a likely mistake and is skipped by default unless you choose
-   to update that employee anyway.
+   that reuses an existing employee number under a different name is flagged
+   as a likely mistake and is skipped by default unless you choose to update
+   that employee anyway.
 
 After you confirm, the import runs and reports live progress, then a final
 count of how many people were created, updated, already up to date, or

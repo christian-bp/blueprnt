@@ -10,8 +10,6 @@ Blueprnt AI -assistenttia käyttäessä.
 
 ## En voi luoda uutta arviointimallia
 
-### modelExists
-
 Koodi: `modelExists`
 
 "Organisaatiolla on jo arviointimalli."
@@ -28,8 +26,6 @@ sijaan.
 
 ## En voi tallentaa painotustani
 
-### weightsUnbalanced
-
 Koodi: `weightsUnbalanced`
 
 "Painotuksen on vastattava pistebudjettia."
@@ -44,8 +40,6 @@ nolla. Katso [Painotus ja pistebudjetti](/docs/weighting-and-point-budget).
 
 ## En voi poistaa kriteeriä, tai viimeistellä käyttöönottoa
 
-### tooFewCriteria
-
 Koodi: `tooFewCriteria`
 
 "Malli tarvitsee vähintään 5 kriteeriä."
@@ -59,24 +53,24 @@ ainakin viisi. Katso
 
 ## En voi muokata tai arvioida jotain, koska se sanoo olevansa lukittu
 
-### roleLocked
+### Rooli on lukittu
 
 Koodi: `roleLocked`
 
-"Tämä rooli on hyväksytty ja lukittu. Avaa se ensin uudelleen."
+"Tämä rooli on arkistoitu ja vain luku -tilassa. Arkistointia ei voi
+perua, joten luo uusi rooli, jos työ pitää yhä arvioida."
 
-Tämä laukeaa, kun muutos kohdistuu arkistoituun rooliin: sen
-arvioimiseen, tehtäväprofiilin muokkaamiseen, tai sen hallintaan
-ankkuriroolina. Päivittäisessä käytössä sovelluksen omat muokkaus-
-ja arviointitoiminnot on jo poistettu käytöstä, kun rooli on
-arkistoitu, niin tämän viestin näkeminen tarkoittaa tavallisesti,
-että rooli arkistoitiin toisessa välilehdessä tai työtoverin
-toimesta, kun teillä oli se auki muokkausta varten; latatkaa roolin
-sivu uudelleen. Arkistointi on pysyvää: mitään toimintoa, joka avaa
-roolin uudelleen, ei ole, ja se pysyy vain luku -tilassa siitä
-eteenpäin. Katso [Roolin arkistointi](/docs/archiving-roles).
+Arkistoitu rooli on suljettu kaikilta muutoksilta: sen arvioimiselta,
+tehtäväprofiilin muokkaamiselta, ja sen hallinnalta ankkuriroolina.
+Sovelluksen omat muokkaus- ja arviointitoiminnot on jo poistettu
+käytöstä, kun rooli on arkistoitu, joten tämän viestin näkeminen
+tarkoittaa tavallisesti, että rooli arkistoitiin toisessa välilehdessä
+tai työtoverin toimesta, kun teillä oli se auki muokkausta varten;
+latatkaa roolin sivu uudelleen. Sen tehtäväprofiili, historia ja aiempi
+tulos säilyvät näkyvissä, ja jos työ pitää yhä arvioida, luokaa sille
+uusi rooli. Katso [Roolin arkistointi](/docs/archiving-roles).
 
-### criterionLocked
+### Kriteeri on lukittu
 
 Koodi: `criterionLocked`
 
@@ -90,8 +84,6 @@ Katso [Menetelmän dokumentointi](/docs/method-documentation).
 
 ## En voi asettaa roolia ankkurirooliksi
 
-### ratingsIncomplete
-
 Koodi: `ratingsIncomplete`
 
 "Kaikki kriteerit on arvioitava ensin."
@@ -103,8 +95,6 @@ arvioituna. Viimeistelkää roolin arviointi ensin; katso
 [Ankkuriroolit](/docs/anchor-roles).
 
 ## En voi arvioida roolia, tai luoda tekoälyehdotusta
-
-### profileIncomplete
 
 Koodi: `profileIncomplete`
 
@@ -124,8 +114,6 @@ tekoälyluonnos kieltäytyy luomasta tästä syystä.
 
 ## Minulle kerrotaan, että tilamuutos ei ole sallittu
 
-### invalidTransition
-
 Koodi: `invalidTransition`
 
 "Kyseinen tilamuutos ei ole sallittu."
@@ -140,7 +128,7 @@ toimintoa.
 
 ## En voi luoda roolia tai perhettä, koska nimi on jo olemassa
 
-### roleFamilyExists
+### Perheen nimi on jo käytössä
 
 Koodi: `roleFamilyExists`
 
@@ -150,7 +138,7 @@ Joka rooliperheen nimen on oltava yksilöllinen organisaatiossanne,
 kirjainkoosta riippumatta. Valitkaa eri nimi; katso
 [Rooliperheet](/docs/role-families).
 
-### roleExists
+### Roolin nimike on jo käytössä
 
 Koodi: `roleExists`
 
@@ -162,18 +150,20 @@ Valitkaa eri nimike, tai sijoittakaa rooli eri perheeseen; katso
 
 ## Tekoälyehdotukset eivät toimi
 
-### aiUnavailable
+### Tekoälyä ei ole määritetty
 
 Koodi: `aiUnavailable`
 
-"Tekoälyä ei ole määritetty tässä ympäristössä."
+"Tekoäly ei ole käytössä organisaatiossasi. Ota yhteyttä tukeen, jotta
+se otetaan käyttöön."
 
 Tekoälyluonnostelu (tehtäväprofiilit, menetelmän dokumentointi,
-painotustarkistus) ei ole määritetty käyttämässänne ympäristössä.
-Tämä on ympäristön määritysongelma, ei jotain, jonka voisitte
-korjata sovelluksen sisältä.
+painotustarkistus) ja Blueprnt AI -assistentti eivät ole
+organisaationne käytössä, ettekä voi ottaa niitä itse käyttöön. Ottakaa
+yhteyttä tukeen, jotta ne otetaan käyttöön. Sillä välin jokaisen kentän,
+jonka tekoälyluonnos täyttäisi, voi kirjoittaa käsin.
 
-### aiGenerationFailed
+### Ehdotusta ei voitu luoda
 
 Koodi: `aiGenerationFailed`
 
@@ -191,7 +181,7 @@ Blueprnt AI -keskusteluassistentti (tavoitettuna
 olevasta tekoälyluonnostelusta: se vastaa kysymyksiin sovelluksesta
 ja organisaationne omista luvuista kenttien täyttämisen sijaan.
 
-### assistantBusy
+### Vastaus on vielä kesken
 
 Koodi: `assistantBusy`
 
@@ -204,7 +194,7 @@ lähinnä varmistus lähettämiselle kahdesti hyvin nopeasti; odottakaa
 nykyistä vastausta, tai painakaa pysäytä, ja lähettäkää sitten
 uudelleen. Katso [Assistentin käyttö](/docs/using-the-assistant).
 
-### assistantRateLimited
+### Liian monta viestiä lyhyessä ajassa
 
 Koodi: `assistantRateLimited`
 
@@ -215,7 +205,7 @@ Yhden henkilön lähettämien viestien määrälle liukuvan tunnin
 sisällä on yläraja. Odottakaa ikkunan vapautumista, ennen kuin
 lähetätte lisää.
 
-### assistantInvalidMessage
+### Viesti on tyhjä
 
 Koodi: `assistantInvalidMessage`
 
@@ -224,7 +214,7 @@ Koodi: `assistantInvalidMessage`
 Viesti oli tyhjä alku- ja loppuvälilyöntien poistamisen jälkeen.
 Kirjoittakaa jotain ennen lähettämistä.
 
-### assistantPersonalData
+### Viesti sisältää henkilötietoja
 
 Koodi: `assistantPersonalData`
 

@@ -1,6 +1,6 @@
 ---
 title: Vægtning og pointbudgettet
-description: Hvordan vægtpoint, pointbudgettet og den atomare gemning fungerer på Vægtning-fanen.
+description: Hvordan vægtpoint, pointbudgettet og det at gemme en balanceret fordeling fungerer på Vægtning-fanen.
 section: model
 ---
 
@@ -31,8 +31,9 @@ altid på denne måde, også for en fuldt tilpasset model.
 
 ## Nulsums-genbalancering
 
-At ændre et kriteriums vægtpoint på Vægtning-fanen er et lokalt udkast,
-indtil I gemmer; intet skrives, før det sker. Mens I arbejder, følger
+At ændre et kriteriums vægtpoint på Vægtning-fanen forbliver et ugemt
+udkast, indtil I gemmer; intet ændrer sig for andre, før det sker. Mens
+I arbejder, følger
 en statuslinje øverst på fanen budgettet: "Alle vægtpoint er fordelt",
 når totalen præcis matcher budgettet, eller et antal af, hvor mange
 point der stadig er tilbage at fordele, eller hvor mange der er over
@@ -46,10 +47,11 @@ samlede vægt, mærket "af den samlede vægt". Denne andel beregnes altid
 fra vægtpointene og indtastes aldrig direkte; den flytter sig
 automatisk, hver gang et kriteriums vægtpoint ændres.
 
-## Atomar gemning
+## At gemme hele fordelingen på én gang
 
-"Gem vægtning" gemmer hele fordelingen på én gang: hvert kriteriums
-vægtpoint skrives sammen, eller ingen af dem gør. Knappen er kun
+"Gem vægtning" gemmer hvert kriteriums vægtpoint i én omgang. Den
+fordeling, I ser, er den, I får: den gemmes aldrig halvfærdig, så
+modellen ender aldrig uden for budgettet. Knappen er kun
 aktiveret, når budgettet er nøjagtigt i balance og noget rent faktisk
 er ændret; at gemme en fordeling, der matcher det, der allerede er
 gemt, gør ingenting og vises ikke i hændelsesloggen. En forudsætning,

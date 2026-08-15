@@ -37,9 +37,10 @@ the single most common source of confusion when building a model.
 ## One live model, always current
 
 An organization has exactly one evaluation model at a time; there is no
-history of past versions. A role's weighting and level are never stored,
-they are always derived on the spot from its ratings and the model as it
-stands today. This means a model change can move a role to a different
+history of past versions. A role's weighting and level are always
+recalculated from its current ratings and the model as it stands today,
+rather than fixed when the role was last evaluated. This means a model
+change can move a role to a different
 level without anyone touching that role directly. The audit log records
 who changed the model, when, and which roles shifted level as a result,
 so that change stays traceable even though the model itself keeps only
@@ -52,10 +53,12 @@ standard template (a full set of criteria with scales, weights, and
 rationale already filled in, translated to your organization's language);
 there is no choice between a template and starting from scratch at that
 stage. See the [onboarding guide](/docs/onboarding-guide) for exactly how
-that happens. Once onboarding is complete, the model is yours to adapt:
-editing a template-seeded criterion's text turns it into your own
-organization's wording, and it stops following template updates, so you
-can build it out as far from the original template as you want.
+that happens. Once onboarding is complete, the model is yours to adapt. A
+criterion still carrying the ready-made text is shown translated into
+whichever language you are reading the app in. The moment you edit its
+wording it becomes your organization's own text, shown exactly as you
+wrote it to every reader, and you can take it as far from the original as
+you want.
 
 ## Related
 

@@ -1,6 +1,6 @@
 ---
 title: Weighting and the point budget
-description: How weight points, the point budget, and the atomic save work on the Weighting tab.
+description: How weight points, the point budget, and saving a balanced allocation work on the Weighting tab.
 section: model
 ---
 
@@ -31,8 +31,9 @@ custom model.
 
 ## Zero-sum rebalancing
 
-Changing one criterion's weight point on the Weighting tab is a local
-draft until you save; nothing is written until then. While you work, a
+Changing one criterion's weight point on the Weighting tab stays an
+unsaved draft until you save; nothing changes for anyone else until
+then. While you work, a
 status line at the top of the tab tracks the budget: "All weight points
 are distributed" once the total matches the budget exactly, or a count of
 how many points are still left to distribute, or how many are over the
@@ -46,10 +47,11 @@ weight, labelled "of the total weight". This share is always calculated
 from the weight points, never entered directly; it moves automatically
 whenever any criterion's weight point changes.
 
-## Saving atomically
+## Saving the whole allocation at once
 
-"Save weighting" saves the whole allocation at once: every criterion's
-weight point is written together, or none of them are. The button is
+"Save weighting" saves every criterion's weight point in one go. The
+allocation you see is what you get: it is never saved half-finished, so
+the model is never left off budget. The button is
 only enabled once the budget is exactly balanced and something has
 actually changed; saving an allocation that matches what is already
 stored does nothing and does not appear in the audit log. A precondition

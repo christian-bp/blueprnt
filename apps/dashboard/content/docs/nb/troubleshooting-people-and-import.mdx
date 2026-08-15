@@ -9,8 +9,6 @@ klassifiserer, eller importerer ansatte.
 
 ## Jeg kan ikke legge til eller importere en person fordi ansattnummeret allerede er brukt
 
-### personRefExists
-
 Kode: `personRefExists`
 
 "En ansatt med det ansattnummeret finnes allerede."
@@ -25,8 +23,6 @@ eksisterende personen med det nummeret og rediger dem i stedet. Se
 [Legge til ansatte](/docs/adding-people).
 
 ## Jeg kan ikke velge den senioriteten for denne personen
-
-### invalidSeniority
 
 Kode: `invalidSeniority`
 
@@ -44,29 +40,26 @@ var åpent. Last siden på nytt og velg en rolle og senioritet igjen; se
 
 ## Jeg kan ikke sette den ikrafttredelsesdatoen for en ny tildeling
 
-### invalidEffectiveDate
-
 Kode: `invalidEffectiveDate`
 
 "Ikrafttredelsesdatoen må være etter den gjeldende tildelingens
 startdato."
 
-En ny rolle- eller senioritetstildeling må starte strengt etter
-personens for øyeblikket åpne tildeling. Ingenting i appen lar dere
-velge denne datoen for hånd i dag; den settes automatisk til
-øyeblikket dere bekrefter, så denne meldingen er en
-bakenforliggende sikring mot å omklassifisere samme person to ganger i
-samme øyeblikk, for eksempel ved å dobbeltklikke Bekreft, eller handle
-på samme person fra to åpne faner samtidig. Vent et øyeblikk og prøv
-igjen; se [Klassifisere ansatte](/docs/classifying-people).
+En ny rolle- eller senioritetstildeling må starte strengt etter personens
+for øyeblikket åpne tildeling. Datoen settes automatisk når dere
+bekrefter, så dere kan ikke angi den selv. Denne meldingen betyr at samme
+person ble omklassifisert to ganger nesten samtidig, som regel et
+dobbeltklikk på Bekreft eller to faner åpne på samme person. Vent et
+øyeblikk og bekreft én gang; se
+[Klassifisere ansatte](/docs/classifying-people).
 
 ## CSV-filen min ble avvist før importen engang kunne starte
 
 Å laste opp en fil på det første steget på siden
-[Importer ansatte](/people/import) kontrollerer selve filen før noen
-rad blir sett på. To meldinger kan vises her; ingen av dem er en
-nummerert feilkode, siden de fanges i nettleseren før noen forespørsel
-når serveren.
+[Importer ansatte](/people/import) kontrollerer selve filen før noen rad
+blir sett på. To meldinger kan vises her. Ingen av dem har en feilkode:
+filen kontrolleres så snart dere velger den, før noen av radene dens
+leses.
 
 "Denne filen er ikke en CSV. Hvis det er et regneark, åpne den i Excel
 eller lønnssystemet ditt og eksporter som CSV, last deretter opp den
@@ -83,10 +76,10 @@ dere forventer, før dere laster den opp igjen.
 
 ## Importøren flagget problemer med dataen min
 
-Når en fil er godtatt, gjennomgår Kontroller-beredskap-steget hver rad
-for datakvalitetsproblemer før dere kan fortsette. Disse er heller
-ikke feilkoder; de leses fra `packages/import` og vises som merkede
-problemer ved siden av de påvirkede radene.
+Når en fil er godtatt, gjennomgår Kontroller-beredskap-steget hver rad for
+datakvalitetsproblemer før dere kan fortsette. Disse er heller ikke
+feilkoder. Importen merker hvert problem ved siden av raden det gjelder,
+så dere kan rette det i kildefilen og laste opp på nytt.
 
 Problemer som blokkerer importen til de fikses (i kildefilen, eller,
 for et uløst kjønn, tildelt direkte i appen): en duplisert ansatt-ID,

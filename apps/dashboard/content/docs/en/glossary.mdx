@@ -10,7 +10,7 @@ neighbouring term is easy to confuse it with, the line between the two.
 
 ## Action
 
-An action is a work-layer record in a pay mapping: an issue, a planned
+An action is a follow-up record in a pay mapping: an issue, a planned
 action, an optional objective reason, a responsible person, a planned date,
 and a status of Not started, In progress, or Done.
 
@@ -20,8 +20,9 @@ instead when nothing does. See [Actions and notes](/docs/actions-and-notes).
 ## AI suggestion
 
 An AI suggestion is an AI-proposed value, such as a job profile draft or a
-weighting review, always carrying provenance and a status of proposed,
-confirmed, or rejected.
+weighting review, always labelled as AI-generated, showing where it came
+from and who confirmed it, and carrying a status of proposed, confirmed, or
+rejected.
 
 HR always reviews and confirms a suggestion before it takes effect; AI never
 decides on its own and never touches a role's weighting or level directly.
@@ -42,7 +43,7 @@ An anchor role is a reference role your organization has evaluated and
 agreed on, used to sanity check other roles' results after they are rated.
 
 It is decision support, never a replacement for rating a role against the
-criteria, and its name collides with an anchor by coincidence only. See
+criteria, and the shared word is a coincidence. See
 [Anchor roles](/docs/anchor-roles).
 
 ## Assessment
@@ -70,7 +71,8 @@ See [Method documentation](/docs/method-documentation).
 ## Classification
 
 Classification is assigning an imported employee to a role and a seniority
-within that role's track, from an engine suggestion you confirm.
+within that role's track, from a suggestion blueprnt works out from your
+existing data and you confirm.
 
 Nothing is ever classified automatically, and the seniority it sets belongs
 to the person, never the role. See [Classifying people](/docs/classifying-people).
@@ -120,13 +122,14 @@ complements rather than replaces.
 
 ## Frozen data
 
-Frozen data is the immutable layer of a pay mapping's snapshot: salaries,
-role level and track, demographics, level thresholds, and ratings, all
-captured at the reference date.
+Frozen data is the part of a pay mapping that can never change once the
+mapping is started: salaries, role level and track, demographics, level
+thresholds, and ratings, all captured at the reference date.
 
-Only the mutable work layer, comparison groups, notes, and actions, stays
-editable after that; the frozen data itself never changes even as your live
-organization does. See [The pay mapping overview](/docs/pay-mapping-overview).
+Your working material stays editable, comparison groups, notes and actions,
+but the frozen figures stay exactly as they were even as your live
+organization moves on. See
+[The pay mapping overview](/docs/pay-mapping-overview).
 
 ## Job profile
 
@@ -269,11 +272,13 @@ See [Criteria and the evaluation scale](/docs/criteria-and-scale).
 
 ## Template
 
-A template is a reusable, preconfigured model, criteria, anchors, weight
-points, and level thresholds tailored to an industry, that a new
-organization can start from during onboarding.
+A template is the ready-made model a new organization starts from during
+onboarding: criteria, anchor texts, weight points, and level thresholds,
+already filled in.
 
-See [Model overview](/docs/model-overview).
+Every new organization starts from the same standard template and adapts
+it afterwards; there is no choice to make during onboarding. See
+[Model overview](/docs/model-overview).
 
 ## Track
 
@@ -296,10 +301,11 @@ role is on it. See
 
 ## Weighting
 
-Weighting is the UI label for a role's weighted total: a score from 0 to
-100, floored, computed from its ratings and each criterion's weight points.
+Weighting is a role's weighted total: a score from 0 to 100, rounded down
+to a whole number, computed from its ratings and each criterion's weight
+points.
 
-This is a deliberate naming choice, not a mix-up: it shares its name with
-the separate weighting process of allocating weight points to criteria on
-the Model page's Weighting tab, but the two are different things. See
+The same word also names the process of allocating weight points to
+criteria on the Model page's Weighting tab. The two are different things:
+this one is a result, that one is a task. See
 [Weighting and levels](/docs/score-and-levels).

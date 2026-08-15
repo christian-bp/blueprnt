@@ -5,13 +5,13 @@ section: assistant
 ---
 
 blueprnt AI is built so that no individual employee's personal details ever
-reach the model behind it, and so every use of it is accounted for.
+reach the AI behind it, and so every use of it is accounted for.
 
 ## Never include an employee's personal details
 
-Before any message is sent to the model, blueprnt checks whether it
+Before any message is sent to the AI, blueprnt checks whether it
 contains a full employee name. If it does, the message is refused
-immediately, without ever calling the model: "The message seems to include
+immediately and the AI never sees it: "The message seems to include
 an employee's personal details. Remove them and ask again in general
 terms." Ask about the same thing in general terms instead, for example by
 role or group rather than by name.
@@ -32,10 +32,10 @@ EU-hosted model. Your data never leaves the EU to generate a reply.
 
 ## Every use is logged
 
-Every reply the assistant generates is recorded in your organization's AI
-usage, alongside the app's other AI features. A message rejected by the
-employee-name check is not recorded, since the model was never called for
-it.
+Every reply the assistant generates is counted as AI use by your
+organization, alongside the app's other AI features, so use of the
+assistant is always accounted for. A message stopped by the employee-name
+check is not counted, because it was never sent to the AI.
 
 ## Related
 

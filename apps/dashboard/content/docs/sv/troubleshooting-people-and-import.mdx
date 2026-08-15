@@ -9,8 +9,6 @@ till, klassificerar, eller importerar medarbetare.
 
 ## Jag kan inte lägga till eller importera en person eftersom anställningsnumret redan används
 
-### personRefExists
-
 Kod: `personRefExists`
 
 "En anställd med det anställningsnumret finns redan."
@@ -26,8 +24,6 @@ den befintliga personen med det numret och redigera den istället. Se
 [Lägga till anställda](/docs/adding-people).
 
 ## Jag kan inte välja den senioriteten för den här personen
-
-### invalidSeniority
 
 Kod: `invalidSeniority`
 
@@ -45,30 +41,26 @@ var öppet. Ladda om och välj en roll och senioritet igen; se
 
 ## Jag kan inte sätta det giltighetsdatumet för en ny tilldelning
 
-### invalidEffectiveDate
-
 Kod: `invalidEffectiveDate`
 
 "Giltighetsdatumet måste vara efter den aktuella tilldelningens
 startdatum."
 
 En ny roll- eller senioritetstilldelning måste starta strikt efter
-personens just nu öppna tilldelning. Ingenting i appen låter er välja
-det här datumet för hand idag; det sätts automatiskt till ögonblicket
-ni bekräftar, så det här meddelandet är en bakomliggande
-säkerhetsspärr mot att omklassificera samma person två gånger i samma
-ögonblick, till exempel genom att dubbelklicka på Bekräfta, eller agera
-på samma person från två öppna flikar samtidigt. Vänta ett ögonblick
-och försök igen; se
+personens just nu öppna tilldelning. Datumet sätts automatiskt när ni
+bekräftar, så ni kan inte ange det själva. Det här meddelandet betyder att
+samma person omklassificerades två gånger nästan samtidigt, oftast en
+dubbelklickning på Bekräfta eller två flikar öppna på samma person. Vänta
+ett ögonblick och bekräfta en gång; se
 [Klassificera anställda](/docs/classifying-people).
 
 ## Min CSV-fil avvisades innan importen ens kunde starta
 
 Att ladda upp en fil på det första steget på sidan
-[Importera medarbetare](/people/import) kontrollerar själva filen
-innan någon rad granskas. Två meddelanden kan visas här; ingen av dem
-är en numrerad felkod, eftersom de fångas i webbläsaren innan någon
-begäran når servern.
+[Importera medarbetare](/people/import) kontrollerar själva filen innan
+någon rad granskas. Två meddelanden kan visas här. Inget av dem har en
+felkod: filen kontrolleras så snart ni väljer den, innan någon av dess
+rader läses.
 
 "Den här filen är inte en CSV. Om det är ett kalkylblad, öppna den i
 Excel eller ditt lönesystem och exportera som CSV, ladda sedan upp den
@@ -85,10 +77,10 @@ förväntar er innan ni laddar upp den igen.
 
 ## Importören flaggade problem med min data
 
-När en fil väl är accepterad granskar steget Kontrollera beredskap
-varje rad för datakvalitetsproblem innan ni kan fortsätta. De här är
-inte felkoder heller; de läses från `packages/import` och visas som
-märkta problem bredvid de berörda raderna.
+När en fil väl är accepterad granskar steget Kontrollera beredskap varje
+rad för datakvalitetsproblem innan ni kan fortsätta. De här är inte
+felkoder heller. Importen märker varje problem bredvid den rad det gäller,
+så att ni kan rätta det i källfilen och ladda upp på nytt.
 
 Problem som blockerar importen tills de åtgärdas (i källfilen, eller,
 för ett olöst kön, tilldelat direkt i appen): ett dubblerat

@@ -11,7 +11,7 @@ rajan näiden kahden välillä.
 
 ## Toimenpide
 
-Toimenpide on palkkakartoituksen työkerroksen tietue: ongelma,
+Toimenpide on palkkakartoituksen seurantatietue: ongelma,
 suunniteltu toimenpide, valinnainen asiallinen peruste,
 vastuuhenkilö, suunniteltu päivä, ja tila Aloittamatta, Käynnissä tai
 Valmis.
@@ -23,7 +23,8 @@ käyttäkää merkintää sen sijaan, kun ei tarvitse. Katso
 ## Tekoälyehdotus
 
 Tekoälyehdotus on tekoälyn ehdottama arvo, kuten tehtäväprofiilin
-luonnos tai painotustarkistus, joka kantaa aina alkuperätiedon ja
+luonnos tai painotustarkistus, joka on aina merkitty tekoälyn
+tuottamaksi ja kertoo, mistä se on peräisin ja kuka sen vahvisti, sekä
 tilan ehdotettu, vahvistettu tai hylätty.
 
 HR tarkistaa ja vahvistaa ehdotuksen aina, ennen kuin se astuu
@@ -57,12 +58,12 @@ sen lasketut painotus ja vaativuustaso, ja mahdolliset perustelut.
 
 Katso [Roolin arviointi](/docs/evaluating-a-role).
 
-## Auditointiloki
+## Tapahtumaloki
 
-Auditointiloki on jäljitettävä tietue muutoksista organisaationne
+Tapahtumaloki on jäljitettävä tietue muutoksista organisaationne
 dataan: kuka teki muutoksen, milloin, ja mikä muuttui.
 
-Katso [Auditointiloki](/docs/audit-log).
+Katso [Tapahtumaloki](/docs/audit-log).
 
 ## Vinoumatarkastelu
 
@@ -75,8 +76,9 @@ Katso [Menetelmän dokumentointi](/docs/method-documentation).
 ## Luokittelu
 
 Luokittelu on tuodun työntekijän määrittämistä rooliin ja
-senioriteettiin kyseisen roolin trackin sisällä, moottorin
-ehdotuksesta, jonka vahvistatte.
+senioriteettiin kyseisen roolin trackin sisällä ehdotuksesta, jonka
+blueprnt päättelee jo olemassa olevista tiedoistanne ja jonka te
+vahvistatte.
 
 Mitään ei koskaan luokitella automaattisesti, ja senioriteetti,
 jonka se asettaa, kuuluu henkilölle, ei koskaan roolille. Katso
@@ -132,13 +134,14 @@ se täydentää sen korvaamisen sijaan.
 
 ## Jäädytetty data
 
-Jäädytetty data on palkkakartoituksen tilannekuvan muuttumaton
-kerros: palkat, roolin vaativuustaso ja track, demografia,
-vaativuustasorajat, ja arviot, kaikki talletettuna viitepäivänä.
+Jäädytetty data on se osa palkkakartoitusta, joka ei voi enää muuttua
+sen jälkeen kun kartoitus on aloitettu: palkat, roolin vaativuustaso ja
+track, demografia, vaativuustasorajat, ja arviot, kaikki talletettuna
+viitepäivänä.
 
-Vain muokattava työkerros, vertailuryhmät, merkinnät ja
-toimenpiteet, pysyy muokattavana sen jälkeen; jäädytetty data
-itsessään ei koskaan muutu, vaikka elävä organisaationne muuttuu.
+Työaineistonne pysyy muokattavana, vertailuryhmät, merkinnät ja
+toimenpiteet, mutta jäädytetyt luvut pysyvät täsmälleen ennallaan,
+vaikka elävä organisaationne menee eteenpäin.
 Katso [Palkkakartoituksen yleiskatsaus](/docs/pay-mapping-overview).
 
 ## Tehtäväprofiili
@@ -294,11 +297,13 @@ kriteeri painaa. Katso [Kriteerit ja arviointiasteikko](/docs/criteria-and-scale
 
 ## Mallipohja
 
-Mallipohja on uudelleenkäytettävä, ennalta määritetty malli,
-kriteerit, ankkurit, painopisteet ja vaativuustasorajat räätälöitynä
-toimialalle, josta uusi organisaatio voi aloittaa käyttöönotossa.
+Mallipohja on valmis malli, josta uusi organisaatio aloittaa
+käyttöönotossa: kriteerit, ankkuritekstit, painopisteet ja
+vaativuustasorajat, jo valmiiksi täytettyinä.
 
-Katso [Arviointimallin yleiskatsaus](/docs/model-overview).
+Jokainen uusi organisaatio aloittaa samasta vakiomallipohjasta ja
+muokkaa sitä jälkeenpäin; käyttöönotossa ei tehdä valintaa. Katso
+[Arviointimallin yleiskatsaus](/docs/model-overview).
 
 ## Track
 
@@ -321,11 +326,11 @@ kuvaa, kuinka vaativa rooli on siinä. Katso
 
 ## Painotus
 
-Painotus on käyttöliittymän termi roolin painotetulle
-kokonaismäärälle: pisteet 0:sta 100:aan, pyöristettynä alaspäin,
-laskettuna sen arvioista ja kunkin kriteerin painopisteistä.
+Painotus on roolin painotettu kokonaismäärä: pisteet 0:sta 100:aan,
+pyöristettynä alaspäin kokonaisluvuksi, laskettuna sen arvioista ja
+kunkin kriteerin painopisteistä.
 
-Tämä on tarkoituksellinen nimeämisvalinta, ei sekaannus: se jakaa
-nimensä erillisen painotusprosessin kanssa, jossa painopisteitä
-jaetaan kriteereille Malli-sivun Painotus-välilehdellä, mutta ne kaksi ovat eri
-asioita. Katso [Painotus ja vaativuustasot](/docs/score-and-levels).
+Sama sana tarkoittaa myös painopisteiden jakamista kriteereille
+Malli-sivun Painotus-välilehdellä. Nämä kaksi ovat eri asioita: tämä on
+tulos, tuo on tehtävä. Katso
+[Painotus ja vaativuustasot](/docs/score-and-levels).

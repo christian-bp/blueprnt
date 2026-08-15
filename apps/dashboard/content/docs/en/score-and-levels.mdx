@@ -1,6 +1,6 @@
 ---
 title: Weighting and levels
-description: How the 0-100 weighting is computed from your ratings, floored, and turned into a level.
+description: How the 0-100 weighting is computed from your ratings, rounded down, and turned into a level.
 section: evaluation
 ---
 
@@ -21,8 +21,9 @@ weight points, then add those results together across every criterion.
 Divide that sum by the total of all the criteria's weight points: this is
 the weighted mean rating. Multiply the weighted mean by 20 and round down
 to the nearest whole number. That final number, always between 0 and 100
-however many criteria the model has, is the weighting. Rounding down
-keeps the comparison against level thresholds exact.
+however many criteria the model has, is the weighting. Rounding down means
+a role reaches a level only once its weighting has genuinely met the
+threshold, never by rounding up to it.
 
 A role's weighting only appears once every current criterion is rated.
 Until then, blueprnt shows how many criteria are rated instead of a
@@ -47,12 +48,12 @@ role the highest level whose threshold its weighting meets or exceeds.
 A role has no level until it is complete, for the same reason it has no
 weighting yet.
 
-## Always derived, never stored
+## The result follows the model
 
-blueprnt never stores a role's weighting or level; it recomputes both,
-live, every time you view them, from whatever the ratings and the model
-currently are. This means a change to the model itself, such as adding a
-criterion, changing a weight point, or reweighting, can move a role to a
+A role's weighting and level always reflect the ratings and the model as
+they are right now, not as they were when you rated it. This means a
+change to the model itself, such as adding a criterion, changing a
+weight point, or reweighting, can move a role to a
 different level immediately, without anyone touching its ratings. Adding
 a criterion can even make a previously complete role incomplete again
 until the new criterion is rated. Every shift like this is recorded in

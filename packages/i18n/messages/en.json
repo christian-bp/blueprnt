@@ -1569,7 +1569,7 @@
         "contributionShare": "{share}%",
         "breakdownLabel": "Contribution"
       },
-      "lockedExplanation": "The rating is locked because the role is approved or archived. Reopen the role from the role page to rate it again."
+      "lockedExplanation": "The rating is locked because the role is archived. Archiving cannot be undone, so create a new role if this work needs to be rated again."
     },
     "levels": {
       "description": "The levels and the roles in each, derived live from the current model and ratings.",
@@ -2531,9 +2531,9 @@
     "invalidInput": "Invalid input.",
     "modelExists": "This organization already has an evaluation model.",
     "profileIncomplete": "Complete the company profile first.",
-    "aiUnavailable": "AI is not configured for this environment.",
+    "aiUnavailable": "AI is not switched on for your organization. Contact support to turn it on.",
     "aiGenerationFailed": "The AI suggestion could not be generated.",
-    "roleLocked": "This role is approved and locked. Reopen it first.",
+    "roleLocked": "This role is archived and read-only. Archiving cannot be undone, so create a new role if this work still needs evaluating.",
     "criterionLocked": "This criterion is approved and locked. Reopen it first.",
     "ratingsIncomplete": "All criteria must be rated first.",
     "invalidTransition": "That status change is not allowed.",

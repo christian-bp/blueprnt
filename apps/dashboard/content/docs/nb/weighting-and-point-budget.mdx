@@ -1,6 +1,6 @@
 ---
 title: Vekting og poengbudsjettet
-description: Hvordan vektpoeng, poengbudsjettet og den atomære lagringen fungerer på fliken Vekting.
+description: Hvordan vektpoeng, poengbudsjettet og det å lagre en balansert fordeling fungerer på fliken Vekting.
 section: model
 ---
 
@@ -30,8 +30,9 @@ alltid slik, også for en helt egen modell.
 
 ## Nullsum-rebalansering
 
-Å endre ett kriteriums vektpoeng på fliken Vekting er et lokalt utkast
-til dere lagrer; ingenting skrives før da. Mens dere arbeider følger en
+Å endre ett kriteriums vektpoeng på fliken Vekting forblir et ulagret
+utkast til dere lagrer; ingenting endres for andre før da. Mens dere
+arbeider følger en
 statuslinje øverst på fliken budsjettet: "Alle vektpoeng er fordelt" når
 summen matcher budsjettet nøyaktig, eller et antall som viser hvor mange
 poeng som er igjen å fordele, eller hvor mange som er over budsjettet,
@@ -45,10 +46,11 @@ totale vekten, merket "av den totale vekten". Denne andelen beregnes
 alltid fra vektpoengene, og angis aldri direkte; den endrer seg
 automatisk hver gang et kriteriums vektpoeng endres.
 
-## Lagre atomært
+## Lagre hele fordelingen på én gang
 
-"Lagre vekting" lagrer hele fordelingen på én gang: hvert kriteriums
-vektpoeng skrives sammen, eller ingen av dem. Knappen aktiveres bare når
+"Lagre vekting" lagrer hvert kriteriums vektpoeng i én operasjon.
+Fordelingen dere ser, er den dere får: den lagres aldri halvferdig, så
+modellen havner aldri utenfor budsjettet. Knappen aktiveres bare når
 budsjettet er nøyaktig balansert og noe faktisk har endret seg; å lagre
 en fordeling som allerede matcher det som er lagret gjør ingenting og
 vises ikke i hendelsesloggen. En forutsetning verdt å vite: dere kan

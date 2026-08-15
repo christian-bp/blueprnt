@@ -10,8 +10,6 @@ Blueprnt AI-assistenten.
 
 ## Jag kan inte skapa en ny värderingsmodell
 
-### modelExists
-
 Kod: `modelExists`
 
 "Organisationen har redan en värderingsmodell."
@@ -27,8 +25,6 @@ redan har en modell, redigera den istället från
 
 ## Jag kan inte spara min viktning
 
-### weightsUnbalanced
-
 Kod: `weightsUnbalanced`
 
 "Viktningen måste stämma med poängbudgeten."
@@ -43,8 +39,6 @@ noll. Se
 
 ## Jag kan inte ta bort ett kriterium, eller slutföra onboardingen
 
-### tooFewCriteria
-
 Kod: `tooFewCriteria`
 
 "En modell behöver minst 5 kriterier."
@@ -57,23 +51,24 @@ igen tills ni har minst fem. Se
 
 ## Jag kan inte redigera eller betygsätta något eftersom det står att det är låst
 
-### roleLocked
+### Rollen är låst
 
 Kod: `roleLocked`
 
-"Rollen är godkänd och låst. Öppna den igen först."
+"Rollen är arkiverad och skrivskyddad. Arkivering kan inte ångras, så
+skapa en ny roll om arbetet fortfarande behöver utvärderas."
 
-Det här utlöses när en ändring riktas mot en arkiverad roll: att
-betygsätta den, redigera dess jobbprofil, eller hantera den som en
-ankarroll. I vardaglig användning är appens egna redigerings- och
-betygsättningskontroller redan inaktiverade när en roll är arkiverad,
-så att se det här meddelandet betyder vanligtvis att rollen arkiverades
-i en annan flik eller av en kollega medan ni hade den öppen för
-redigering; ladda om rollens sida. Arkivering är permanent: det finns
-ingen åtgärd som återöppnar en roll, och den förblir skrivskyddad
-därefter. Se [Arkivera en roll](/docs/archiving-roles).
+En arkiverad roll är stängd för alla ändringar: att betygsätta den,
+redigera dess jobbprofil, eller hantera den som en ankarroll. Appens egna
+redigerings- och betygsättningskontroller är redan inaktiverade när en
+roll är arkiverad, så att se det här meddelandet betyder vanligtvis att
+rollen arkiverades i en annan flik eller av en kollega medan ni hade den
+öppen för redigering; ladda om rollens sida. Dess jobbprofil, historik
+och tidigare resultat finns kvar, och behöver arbetet fortfarande
+utvärderas skapar ni en ny roll för det. Se
+[Arkivera en roll](/docs/archiving-roles).
 
-### criterionLocked
+### Kriteriet är låst
 
 Kod: `criterionLocked`
 
@@ -87,8 +82,6 @@ texten, och godkänn den igen. Se
 
 ## Jag kan inte ange en roll som ankarroll
 
-### ratingsIncomplete
-
 Kod: `ratingsIncomplete`
 
 "Alla kriterier måste betygsättas först."
@@ -100,8 +93,6 @@ betygsättningen av rollen först; se
 [Ankarroller](/docs/anchor-roles).
 
 ## Jag kan inte betygsätta en roll, eller generera ett AI-förslag
-
-### profileIncomplete
 
 Kod: `profileIncomplete`
 
@@ -120,8 +111,6 @@ AI-utkast vägrar generera av den anledningen.
 
 ## Jag får veta att den statusändringen inte är tillåten
 
-### invalidTransition
-
 Kod: `invalidTransition`
 
 "Den statusändringen är inte tillåten."
@@ -135,7 +124,7 @@ se objektets nuvarande status, och använd åtgärden som matchar den.
 
 ## Jag kan inte skapa en roll eller familj eftersom namnet redan finns
 
-### roleFamilyExists
+### Familjenamnet är upptaget
 
 Kod: `roleFamilyExists`
 
@@ -145,7 +134,7 @@ Varje rollfamiljs namn måste vara unikt i er organisation, oavsett
 skiftläge. Välj ett annat namn; se
 [Rollfamiljer](/docs/role-families).
 
-### roleExists
+### Rolltiteln är upptagen
 
 Kod: `roleExists`
 
@@ -157,18 +146,20 @@ eller placera rollen i en annan familj; se
 
 ## AI-förslag fungerar inte
 
-### aiUnavailable
+### AI är inte konfigurerat
 
 Kod: `aiUnavailable`
 
-"AI är inte konfigurerat i den här miljön."
+"AI är inte aktiverat för din organisation. Kontakta supporten för att
+få det påslaget."
 
-AI-utkast (jobbprofiler, metoddokumentation, viktgranskning) är inte
-konfigurerat i miljön ni använder. Det här är ett
-konfigurationsproblem i miljön, inte något ni kan åtgärda inifrån
-appen.
+AI-utkast (jobbprofiler, metoddokumentation, viktgranskning) och
+Blueprnt AI-assistenten är inte tillgängliga för er organisation, och ni
+kan inte slå på dem själva. Kontakta supporten för att få dem påslagna.
+Under tiden går varje fält som ett AI-utkast skulle fylla i att skriva
+för hand.
 
-### aiGenerationFailed
+### Förslaget kunde inte genereras
 
 Kod: `aiGenerationFailed`
 
@@ -185,7 +176,7 @@ Blueprnt AI-chattassistenten (nådd från [Assistent](/assistant)) är en
 separat funktion från AI-utkasten ovan: den svarar på frågor om appen
 och er organisations egna siffror istället för att fylla i fält.
 
-### assistantBusy
+### Ett svar genereras fortfarande
 
 Kod: `assistantBusy`
 
@@ -198,7 +189,7 @@ huvudsakligen en säkerhetsspärr för att skicka två gånger väldigt
 snabbt; vänta på det aktuella svaret, eller tryck stopp, och skicka
 sedan igen. Se [Använda assistenten](/docs/using-the-assistant).
 
-### assistantRateLimited
+### För många meddelanden på kort tid
 
 Kod: `assistantRateLimited`
 
@@ -209,7 +200,7 @@ Det finns ett gränsvärde för hur många meddelanden en person kan
 skicka inom en rullande timme. Vänta tills fönstret rensas innan ni
 skickar fler.
 
-### assistantInvalidMessage
+### Meddelandet är tomt
 
 Kod: `assistantInvalidMessage`
 
@@ -218,7 +209,7 @@ Kod: `assistantInvalidMessage`
 Meddelandet var tomt efter att inledande och avslutande blanksteg
 tagits bort. Skriv något innan ni skickar.
 
-### assistantPersonalData
+### Meddelandet innehåller personuppgifter
 
 Kod: `assistantPersonalData`
 

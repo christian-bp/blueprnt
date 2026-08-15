@@ -9,8 +9,6 @@ klassificerer eller importerer medarbejdere.
 
 ## Jeg kan ikke tilføje eller importere en person, fordi medarbejdernummeret allerede er brugt
 
-### personRefExists
-
 Kode: `personRefExists`
 
 "En medarbejder med det medarbejdernummer findes allerede."
@@ -25,8 +23,6 @@ find den eksisterende person med det nummer og rediger dem i stedet.
 Se [Tilføj medarbejdere](/docs/adding-people).
 
 ## Jeg kan ikke vælge den senioritet for denne person
-
-### invalidSeniority
 
 Kode: `invalidSeniority`
 
@@ -44,29 +40,26 @@ stadig var åben. Genindlæs, og vælg en rolle og senioritet igen; se
 
 ## Jeg kan ikke sætte den ikrafttrædelsesdato for en ny tildeling
 
-### invalidEffectiveDate
-
 Kode: `invalidEffectiveDate`
 
 "Ikrafttrædelsesdatoen skal være efter den aktuelle tildelnings
 startdato."
 
 En ny rolle- eller senioritetstildeling skal starte strengt efter
-personens aktuelt åbne tildeling. Intet i appen lader jer vælge denne
-dato i hånden i dag; den sættes automatisk til det øjeblik, I
-bekræfter, så denne besked er en backend-sikkerhed mod at
-reklassificere den samme person to gange på det samme øjeblik, for
-eksempel ved at dobbeltklikke Bekræft, eller handle på den samme person
-fra to åbne faner på én gang. Vent et øjeblik, og prøv igen; se
+personens aktuelt åbne tildeling. Datoen sættes automatisk, når I
+bekræfter, så I kan ikke selv indtaste den. Beskeden betyder, at den samme
+person blev reklassificeret to gange næsten samtidig, som regel et
+dobbeltklik på Bekræft eller to faner åbne på den samme person. Vent et
+øjeblik, og bekræft én gang; se
 [Klassificér medarbejdere](/docs/classifying-people).
 
 ## Min CSV-fil blev afvist, før importen overhovedet kunne starte
 
 At uploade en fil på det første trin af siden
 [Importér medarbejdere](/people/import) kontrollerer selve filen, før
-nogen række overhovedet ses på. To beskeder kan dukke op her; ingen af
-dem er en nummereret fejlkode, da de fanges i browseren, før nogen
-anmodning når serveren.
+nogen række overhovedet ses på. To beskeder kan dukke op her. Ingen af dem
+har en fejlkode: filen kontrolleres, så snart I vælger den, før nogen af
+dens rækker læses.
 
 "Den her fil er ikke en CSV. Hvis det er et regneark, åbn den i Excel
 eller dit lønsystem og eksporter som CSV, upload derefter den fil."
@@ -84,8 +77,8 @@ I forventer, før I uploader den igen.
 
 Når en fil er accepteret, gennemgår Kontroller-trinnet hver række for
 datakvalitetsproblemer, før I kan fortsætte. Disse er heller ikke
-fejlkoder; de læses fra `packages/import` og vises som mærkede
-problemer ved siden af de påvirkede rækker.
+fejlkoder. Importen mærker hvert problem ved siden af den række, det
+gælder, så I kan rette det i kildefilen og uploade igen.
 
 Problemer, der blokerer importen, indtil de er rettet (i kildefilen,
 eller i tilfælde af et uafklaret køn, tildelt direkte i appen): et

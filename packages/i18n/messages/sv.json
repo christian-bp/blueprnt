@@ -1569,7 +1569,7 @@
         "contributionShare": "{share}%",
         "breakdownLabel": "Bidrag"
       },
-      "lockedExplanation": "Betygsättningen är låst eftersom rollen är godkänd eller arkiverad. Återöppna rollen från rollsidan för att betygsätta igen."
+      "lockedExplanation": "Betygsättningen är låst eftersom rollen är arkiverad. Arkivering kan inte ångras, så skapa en ny roll om arbetet behöver betygsättas igen."
     },
     "levels": {
       "description": "Nivåerna och rollerna i varje nivå, härledda live från aktuell modell och bedömningar.",
@@ -2531,9 +2531,9 @@
     "invalidInput": "Ogiltig indata.",
     "modelExists": "Organisationen har redan en värderingsmodell.",
     "profileIncomplete": "Fyll i företagsprofilen först.",
-    "aiUnavailable": "AI är inte konfigurerat i den här miljön.",
+    "aiUnavailable": "AI är inte aktiverat för din organisation. Kontakta supporten för att få det påslaget.",
     "aiGenerationFailed": "AI-förslaget kunde inte genereras.",
-    "roleLocked": "Rollen är godkänd och låst. Öppna den igen först.",
+    "roleLocked": "Rollen är arkiverad och skrivskyddad. Arkivering kan inte ångras, så skapa en ny roll om arbetet fortfarande behöver utvärderas.",
     "criterionLocked": "Kriteriet är godkänt och låst. Öppna det igen först.",
     "ratingsIncomplete": "Alla kriterier måste betygsättas först.",
     "invalidTransition": "Den statusändringen är inte tillåten.",

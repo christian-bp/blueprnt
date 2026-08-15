@@ -1,6 +1,6 @@
 ---
 title: Viktning och poängbudgeten
-description: Hur viktpoäng, poängbudgeten och det atomära sparandet fungerar på fliken Viktning.
+description: Hur viktpoäng, poängbudgeten och att spara en balanserad fördelning fungerar på fliken Viktning.
 section: model
 ---
 
@@ -30,8 +30,9 @@ för fria procentsatser eller egna tal: viktningen fungerar alltid så,
 
 ## Nollsummeombalansering
 
-Att ändra ett kriteriums viktpoäng på fliken Viktning är ett lokalt
-utkast tills ni sparar; ingenting skrivs förrän då. Medan ni arbetar
+Att ändra ett kriteriums viktpoäng på fliken Viktning förblir ett
+osparat utkast tills ni sparar; ingenting ändras för någon annan förrän
+då. Medan ni arbetar
 följer en statusrad högst upp på fliken budgeten: "Alla viktpoäng är
 fördelade" när summan matchar budgeten exakt, eller ett antal som visar
 hur många poäng som är kvar att fördela, eller hur många som är över
@@ -45,10 +46,11 @@ vikten, märkt "av den totala vikten". Den här andelen räknas alltid fram
 från viktpoängen, och anges aldrig direkt; den ändras automatiskt varje
 gång ett kriteriums viktpoäng ändras.
 
-## Att spara atomärt
+## Att spara hela fördelningen på en gång
 
-"Spara viktning" sparar hela fördelningen på en gång: varje kriteriums
-viktpoäng skrivs tillsammans, eller inget av dem. Knappen aktiveras bara
+"Spara viktning" sparar varje kriteriums viktpoäng i ett svep.
+Fördelningen ni ser är den ni får: den sparas aldrig halvfärdig, så
+modellen hamnar aldrig utanför budgeten. Knappen aktiveras bara
 när budgeten är exakt balanserad och något faktiskt har ändrats; att
 spara en fördelning som redan matchar det som är sparat gör ingenting
 och syns inte i händelseloggen. En förutsättning värd att känna till: ni

@@ -14,7 +14,7 @@ fra login-skærmen, ikke koder fra dette system.
 
 ## Jeg har ikke tilladelse til dette
 
-### adminRequired
+### Kun organisationsadministratorer
 
 Kode: `adminRequired`
 
@@ -28,7 +28,7 @@ at forfremme jer til admin først. Se
 [Medlemmer og roller](/docs/members-and-roles) for den nøjagtige grænse
 mellem de to roller.
 
-### platformAdminRequired
+### Kun platformadministratorer
 
 Kode: `platformAdminRequired`
 
@@ -41,7 +41,7 @@ eller et andet medlem; det er ikke selvbetjent.
 
 ## Jeg får besked om, at jeg ikke er medlem af denne organisation
 
-### notAMember
+### I hører ikke til den organisation
 
 Kode: `notAMember`
 
@@ -53,7 +53,7 @@ fulgt et gammelt link eller skiftet konto. Skift til en organisation, I
 hører til, eller bed en admin af den organisation om at invitere jer;
 se [Invitationer](/docs/invitations).
 
-### membershipConflict
+### Medlemskabet kunne ikke bekræftes
 
 Kode: `membershipConflict`
 
@@ -65,8 +65,6 @@ modstridende registrering. I modsætning til de andre beskeder på denne
 side er der ingen selvbetjent løsning: kontakt support.
 
 ## Jeg kan ikke slette min konto, eller jeg kan ikke fjerne eller nedgradere den sidste administrator
-
-### lastAdmin
 
 Kode: `lastAdmin`
 
@@ -84,12 +82,11 @@ oprindelige admin kan ændres, fjernes, eller have sin konto slettet
 som enhver andens. Se [Slet din konto](/docs/deleting-your-account) for
 resten af, hvad kontosletning gør.
 
-## Generelt
+## Beskeder, der kan dukke op hvor som helst i appen
 
-Disse koder er ikke specifikke for én skærm; de kan dukke op hvor som
-helst i appen.
+Disse koder er ikke specifikke for én skærm.
 
-### notAuthenticated
+### I er blevet logget ud
 
 Kode: `notAuthenticated`
 
@@ -98,7 +95,7 @@ Kode: `notAuthenticated`
 Jeres session er ikke længere gyldig, oftest fordi den udløb, eller I
 loggede ud i en anden fane. Log ind igen for at fortsætte.
 
-### notFound
+### Elementet findes ikke længere
 
 Kode: `notFound`
 
@@ -109,7 +106,7 @@ jeres organisations synspunkt, oftest fordi det blev slettet eller
 arkiveret (af jer eller en kollega), siden siden blev indlæst.
 Genindlæs siden; er elementet virkelig væk, vises det ikke længere.
 
-### invalidInput
+### En værdi blev ikke accepteret
 
 Kode: `invalidInput`
 

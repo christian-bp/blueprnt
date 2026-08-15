@@ -9,8 +9,6 @@ luokitellessa, tai tuodessa.
 
 ## En voi lisätä tai tuoda henkilöä, koska henkilönumero on jo käytössä
 
-### personRefExists
-
 Koodi: `personRefExists`
 
 "Työntekijä tällä työntekijänumerolla on jo olemassa."
@@ -26,8 +24,6 @@ jolla on tämä numero, ja muokatkaa häntä sen sijaan. Katso
 [Henkilöiden lisääminen](/docs/adding-people).
 
 ## En voi valita tätä senioriteettia tälle henkilölle
-
-### invalidSeniority
 
 Koodi: `invalidSeniority`
 
@@ -45,30 +41,26 @@ katso [Henkilöiden luokittelu](/docs/classifying-people).
 
 ## En voi asettaa tätä voimaantulopäivää uudelle tehtävälle
 
-### invalidEffectiveDate
-
 Koodi: `invalidEffectiveDate`
 
 "Voimaantulopäivän on oltava nykyisen tehtävän alkamispäivän
 jälkeen."
 
-Uuden rooli- tai senioriteettitehtävän on alettava ehdottomasti
-henkilön nykyisin avoimen tehtävän jälkeen. Mikään sovelluksessa ei
-anna teidän valita tätä päivää käsin tänään; se asetetaan
-automaattisesti vahvistushetkeen, niin tämä viesti on
-taustajärjestelmän varmistus samaa henkilöä luokittelemasta
-uudelleen kahdesti samalla hetkellä, esimerkiksi kaksoisklikkaamalla
-Vahvista, tai toimimalla samalla henkilöllä kahdesta avoimesta
-välilehdestä kerralla. Odottakaa hetki ja yrittäkää uudelleen; katso
+Uuden rooli- tai senioriteettitehtävän on alettava ehdottomasti henkilön
+nykyisin avoimen tehtävän jälkeen. Päivä asetetaan automaattisesti, kun
+vahvistatte, joten sitä ei voi syöttää itse. Viesti tarkoittaa, että sama
+henkilö luokiteltiin uudelleen kahdesti lähes samalla hetkellä, yleensä
+kaksoisklikkauksena Vahvista-painikkeella tai kahdesta samalle henkilölle
+avatusta välilehdestä. Odottakaa hetki ja vahvistakaa kerran; katso
 [Henkilöiden luokittelu](/docs/classifying-people).
 
 ## CSV-tiedostoni hylättiin ennen kuin tuonti edes ehti alkaa
 
-Tiedoston lataaminen [Tuo henkilöitä](/people/import)-sivun
-ensimmäisessä vaiheessa tarkistaa itse tiedoston ennen kuin
-katsotaan yhtäkään riviä. Kaksi viestiä voi näkyä tässä; kumpikaan ei
-ole numeroitu virhekoodi, koska ne havaitaan selaimessa ennen kuin
-mikään pyyntö saavuttaa palvelimen.
+Tiedoston lataaminen [Tuo henkilöitä](/people/import)-sivun ensimmäisessä
+vaiheessa tarkistaa itse tiedoston ennen kuin katsotaan yhtäkään riviä.
+Kaksi viestiä voi näkyä tässä. Kummallakaan ei ole virhekoodia: tiedosto
+tarkistetaan heti kun valitsette sen, ennen kuin yhtäkään sen riviä
+luetaan.
 
 "Tämä tiedosto ei ole CSV. Jos se on laskentataulukko, avaa se
 Excelissä tai palkkajärjestelmässäsi ja vie CSV-muodossa, lataa
@@ -87,11 +79,10 @@ uudelleen.
 
 ## Tuontiavustaja merkitsi ongelmia datassani
 
-Kun tiedosto on hyväksytty, Tarkista valmius -vaihe tarkastelee joka
-riviä tietolaatuongelmien varalta, ennen kuin voitte jatkaa.
-Nämäkään eivät ole virhekoodeja; ne luetaan paketista
-`packages/import` ja näytetään merkittyinä ongelmina asianomaisten
-rivien vierellä.
+Kun tiedosto on hyväksytty, Tarkista valmius -vaihe tarkastelee joka riviä
+tietolaatuongelmien varalta, ennen kuin voitte jatkaa. Nämäkään eivät ole
+virhekoodeja. Tuonti merkitsee jokaisen ongelman sen rivin viereen, jota
+se koskee, jotta voitte korjata sen lähdetiedostossa ja ladata uudelleen.
 
 Ongelmat, jotka estävät tuonnin, kunnes ne on korjattu
 (lähdetiedostossa, tai määrittämättömän sukupuolen tapauksessa,

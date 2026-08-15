@@ -590,7 +590,7 @@
         "role": "Rolle",
         "organization": "Organisasjon",
         "member": "Medlem",
-        "ai": "KI",
+        "ai": "AI",
         "people": "Personer",
         "pay": "Lønn"
       },
@@ -638,12 +638,12 @@
           "batch": "Batch",
           "cause": "Utløst av",
           "sourceValues": {
-            "ai": "KI",
+            "ai": "AI",
             "template": "Mal",
             "scratch": "Fra bunnen",
             "starter": "Startsett",
-            "aiImport": "KI-import",
-            "aiSuggestion": "KI-forslag",
+            "aiImport": "AI-import",
+            "aiSuggestion": "AI-forslag",
             "onboardingPrefill": "Forhåndsutfylt ved onboarding",
             "roleImportPrefill": "Forhåndsutfylt ved rolleimport"
           }
@@ -1569,7 +1569,7 @@
         "contributionShare": "{share}%",
         "breakdownLabel": "Bidrag"
       },
-      "lockedExplanation": "Vurderingen er låst fordi rollen er godkjent eller arkivert. Gjenåpne rollen fra rollesiden for å vurdere igjen."
+      "lockedExplanation": "Vurderingen er låst fordi rollen er arkivert. Arkivering kan ikke angres, så opprett en ny rolle hvis arbeidet skal vurderes på nytt."
     },
     "levels": {
       "description": "Nivåene og rollene i hvert nivå, utledet live fra gjeldende modell og vurderinger.",
@@ -2531,9 +2531,9 @@
     "invalidInput": "Ugyldig inndata.",
     "modelExists": "Organisasjonen har allerede en vurderingsmodell.",
     "profileIncomplete": "Fyll ut bedriftsprofilen først.",
-    "aiUnavailable": "AI er ikke konfigurert i dette miljøet.",
+    "aiUnavailable": "AI er ikke slått på for organisasjonen din. Kontakt støtte for å få det aktivert.",
     "aiGenerationFailed": "AI-forslaget kunne ikke genereres.",
-    "roleLocked": "Denne rollen er godkjent og låst. Åpne den igjen først.",
+    "roleLocked": "Denne rollen er arkivert og skrivebeskyttet. Arkivering kan ikke angres, så opprett en ny rolle hvis arbeidet fortsatt må vurderes.",
     "criterionLocked": "Dette kriteriet er godkjent og låst. Åpne det igjen først.",
     "ratingsIncomplete": "Alle kriterier må vurderes først.",
     "invalidTransition": "Den statusendringen er ikke tillatt.",

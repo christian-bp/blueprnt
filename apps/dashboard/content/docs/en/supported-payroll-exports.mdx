@@ -4,13 +4,13 @@ description: The payroll systems the import has been verified against, and what 
 section: people
 ---
 
-The import wizard's column detection and parsing were built and verified
-against real CSV exports from Visma, Hogia, Fortnox, Agda, Personec,
-SD Worx, SAP SuccessFactors, and Workday, across English, Swedish,
-Norwegian, Danish, and Finnish. This does not mean only these systems work:
-any CSV export with the fields listed in [Importing people](/docs/importing-people)
-can be mapped by hand. It means these specific systems' real-world quirks
-were checked directly.
+The import wizard's column detection and parsing have been verified
+against real CSV exports from Visma, Hogia, Fortnox, Agda, Personec, SD
+Worx, SAP SuccessFactors, and Workday, across English, Swedish, Norwegian,
+Danish, and Finnish. This does not mean only these systems work: any CSV
+export with the fields listed in
+[Importing people](/docs/importing-people) can be mapped by hand. It means
+these specific systems' real-world quirks were checked directly.
 
 ## Numbers and dates
 
@@ -39,14 +39,14 @@ a percentage. When every value in a column is 1.0 or less, blueprnt scales
 the whole column to a percentage and shows a notice explaining that it did
 so, so the change is visible rather than silent.
 
-## What is not read yet
+## Formats you need to adjust before importing
 
-A handful of formats are deliberately not supported for now: spreadsheet
-files (XLSX, XLS, ODS) instead of CSV, US-style comma-thousands amounts
-such as "52,000", Swiss apostrophe grouping, negative or parenthesized
-amounts, and dates written with a month name or a two-digit year. A file
-using one of these needs a small adjustment in your payroll system's export
-settings, or a manual edit, before it will import cleanly.
+A handful of formats are not read: spreadsheet files (XLSX, XLS, ODS)
+instead of CSV, US-style comma-thousands amounts such as "52,000", Swiss
+apostrophe grouping, negative or parenthesized amounts, and dates written
+with a month name or a two-digit year. A file using one of these needs a
+small adjustment in your payroll system's export settings, or a manual edit,
+before it will import cleanly.
 
 ## When a file will not parse
 

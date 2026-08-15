@@ -22,8 +22,9 @@ af alle kriterier. Divider den sum med summen af alle kriteriernes
 vægtpoint: dette er den vægtede gennemsnitsvurdering. Multiplicer det
 vægtede gennemsnit med 20, og rund ned til nærmeste hele tal. Det
 endelige tal, altid mellem 0 og 100 uanset hvor mange kriterier
-modellen har, er vægtningen. At runde ned holder sammenligningen mod
-niveautærsklerne eksakt.
+modellen har, er vægtningen. At runde ned betyder, at en rolle først
+når et niveau, når dens vægtning reelt har nået tærsklen, aldrig ved at
+blive rundet op til den.
 
 En rolles vægtning vises først, når hvert nuværende kriterium er
 vurderet. Indtil da viser blueprnt, hvor mange kriterier der er
@@ -48,11 +49,11 @@ tildeler en rolle det højeste niveau, hvis tærskel dens vægtning når
 eller overstiger. En rolle har intet niveau, før den er fuldført, af
 samme grund som den ikke har nogen vægtning endnu.
 
-## Altid udledt, aldrig lagret
+## Resultatet følger modellen
 
-blueprnt lagrer aldrig en rolles vægtning eller niveau; det genberegner
-begge, live, hver gang I ser dem, fra hvad vurderingerne og modellen er
-i øjeblikket. Det betyder, at en ændring i selve modellen, som at
+En rolles vægtning og niveau afspejler altid vurderingerne og modellen,
+som de er lige nu, ikke som de var, da I vurderede rollen. Det betyder,
+at en ændring i selve modellen, som at
 tilføje et kriterium, ændre et vægtpoint eller omveje, kan flytte en
 rolle til et andet niveau med det samme, uden at nogen har rørt dens
 vurderinger. At tilføje et kriterium kan endda gøre en tidligere

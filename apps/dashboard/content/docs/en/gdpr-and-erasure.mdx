@@ -28,8 +28,8 @@ employee data.
 
 Either kind of erasure keeps the audit log itself: the record that a
 change happened, and when, has lasting value for accountability, so it is
-not deleted along with the person. What erasure does is tombstone the
-identifying details inside it. An erased employee's name, gender,
+not deleted along with the person. What erasure does instead is blank out
+the identifying details inside it. An erased employee's name, gender,
 employee number, birth date, and job title are replaced with an "Erased"
 marker everywhere they appear in earlier log entries; an erased user's
 name on entries they authored becomes a generic "Deleted user" marker.
@@ -39,9 +39,10 @@ about an erased employee still keep structural details that are not
 identity, such as department, country, or employment type, alongside the
 timestamp of each change. In a very small organization, someone with
 inside knowledge could still piece together who a row was likely about
-from those details. Do not describe erasure as leaving no personal data
-behind: the accurate claim is that no direct identifier survives it, and
-what remains is kept on the basis that it documents a change to an
+from those details. When you describe this to employees or a works
+council, avoid saying that erasure leaves no personal data behind. The
+accurate claim is that no direct identifier survives it, and what
+remains is kept on the basis that it documents a change to an
 organizational record, not to identify anyone.
 
 ## Data stays minimal by design

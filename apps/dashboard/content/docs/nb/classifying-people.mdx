@@ -1,6 +1,6 @@
 ---
 title: Klassifisere ansatte
-description: Tildel hver importerte ansatte en rolle og senioritet, fra et motorforslag dere bekrefter.
+description: Tildel hver importerte ansatte en rolle og senioritet, fra et forslag dere bekrefter.
 section: people
 ---
 
@@ -11,12 +11,12 @@ samme rolle. Åpne det fra fliken "Klassifiser" ved siden av
 
 ## Hvordan forslag fungerer
 
-blueprnt grupperer de aktive personene deres etter den eksakte
+blueprnt grupperer personene i registeret deres etter den eksakte
 stillingstittelen lønnsfilen deres registrerte, foreslår deretter én
 rolle per titelgruppe ved å matche titlens tekst mot rollenes titler
 deres, og en senioritet for hver person innenfor den rollens track.
-Denne matchingen er en deterministisk motor, ikke AI: ingenting
-klassifiseres noensinne automatisk, og hvert forslag venter på at dere
+Denne matchingen følger faste regler, ikke AI: ingenting klassifiseres
+noensinne automatisk, og hvert forslag venter på at dere
 bekrefter det. En tittel som ikke ligner tilstrekkelig på noen
 eksisterende rolle, viser ikke noe forslag i det hele tatt, så dere kan
 opprette en rolle for den i stedet. Å gå tilbake til Klassifiser er
@@ -42,9 +42,10 @@ rolle må velges før senioriteten dens kan velges.
 Bekreft én enkelt gruppe fra den utvidede raden dens, eller merk flere
 grupper og bruk massehandlingen for å klassifisere dem alle på én gang
 med de foreslåtte rollene og senioritetene deres; dere kan fortsatt
-endre hvilken som helst av dem etterpå. Et stort utvalg deles opp i
-mindre omganger i bakgrunnen, så bekreftelsen alltid fullføres rent i
-stedet for som ett altfor stort lagringssteg.
+endre hvilken som helst av dem etterpå. Et stort utvalg bekreftes i
+etapper, med en løpende teller over hvor mange som er klassifisert. Blir
+den avbrutt, forblir alle som allerede er bekreftet bekreftet, og en ny
+bekreftelse fullfører resten.
 
 ## Opprette en rolle for en uten treff
 

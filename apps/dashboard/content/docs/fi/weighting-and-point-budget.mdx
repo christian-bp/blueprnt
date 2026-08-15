@@ -1,6 +1,6 @@
 ---
 title: Painotus ja pistebudjetti
-description: Miten painopisteet, pistebudjetti ja atominen tallennus toimivat Painotus-välilehdellä.
+description: Miten painopisteet, pistebudjetti ja tasapainoisen jaon tallentaminen toimivat Painotus-välilehdellä.
 section: model
 ---
 
@@ -31,8 +31,9 @@ käyttää: painotus toimii aina näin, myös täysin mukautetussa mallissa.
 
 ## Nollasummainen uudelleentasapainotus
 
-Kriteerin painopisteen muuttaminen Painotus-välilehdellä on paikallinen
-luonnos, kunnes tallennat; mitään ei kirjoiteta ennen sitä.
+Kriteerin painopisteen muuttaminen Painotus-välilehdellä pysyy
+tallentamattomana luonnoksena, kunnes tallennatte; kenellekään muulle ei
+muutu mitään ennen sitä.
 Työskentelyn aikana välilehden yläreunan tilarivi seuraa budjettia:
 "Kaikki painopisteet on jaettu", kun summa vastaa budjettia tarkalleen,
 tai lukema siitä, kuinka monta pistettä on vielä jaettavana tai kuinka
@@ -46,13 +47,14 @@ kokonaispainosta, merkittynä "kokonaispainosta". Tämä osuus lasketaan
 aina painopisteistä, sitä ei koskaan syötetä suoraan; se muuttuu
 automaattisesti aina kun jonkin kriteerin painopiste muuttuu.
 
-## Atominen tallennus
+## Koko jaon tallentaminen kerralla
 
-"Tallenna painotus" tallentaa koko jaon kerralla: kaikkien kriteerien
-painopisteet kirjoitetaan yhdessä, tai ei yhtäkään niistä. Painike
+"Tallenna painotus" tallentaa kaikkien kriteerien painopisteet yhdellä
+kertaa. Näkemänne jako on se, jonka saatte: sitä ei koskaan tallenneta
+puolivalmiina, joten malli ei jää budjetin ulkopuolelle. Painike
 aktivoituu vasta, kun budjetti on tarkalleen tasapainossa ja jotain on
 todella muuttunut; jaon tallentaminen, joka vastaa jo tallennettua, ei
-tee mitään eikä näy auditointilokissa. Yksi ennakkoehto kannattaa
+tee mitään eikä näy tapahtumalokissa. Yksi ennakkoehto kannattaa
 tietää: vajaata tai budjetin ylittävää jakoa ei voi tallentaa, välilehti
 vaatii koko mallin tasapainoa ensin.
 

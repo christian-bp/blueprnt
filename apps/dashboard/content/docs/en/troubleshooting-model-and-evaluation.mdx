@@ -10,8 +10,6 @@ assistant.
 
 ## I can't create a new evaluation model
 
-### modelExists
-
 Code: `modelExists`
 
 "This organization already has an evaluation model."
@@ -26,8 +24,6 @@ If your organization already has a model, edit it from
 
 ## I cannot save my weighting
 
-### weightsUnbalanced
-
 Code: `weightsUnbalanced`
 
 "The weighting must match the point budget."
@@ -41,8 +37,6 @@ See [Weighting and the point budget](/docs/weighting-and-point-budget).
 
 ## I can't remove a criterion, or finish onboarding
 
-### tooFewCriteria
-
 Code: `tooFewCriteria`
 
 "A model needs at least 5 criteria."
@@ -55,22 +49,23 @@ have at least five. See
 
 ## I can't edit or rate something because it says it's locked
 
-### roleLocked
+### The role is locked
 
 Code: `roleLocked`
 
-"This role is approved and locked. Reopen it first."
+"This role is archived and read-only. Archiving cannot be undone, so
+create a new role if this work still needs evaluating."
 
-This fires when a change targets an archived role: rating it, editing its
-job profile, or managing it as an anchor role. In everyday use the app's
-own edit and rate controls are already disabled once a role is archived,
-so seeing this message usually means the role was archived in another tab
-or by a colleague while you had it open for editing; reload the role's
-page. Archiving is permanent: there is no action that reopens a role, and
-it stays read-only from then on. See
+An archived role is closed to every change: rating it, editing its job
+profile, or managing it as an anchor role. The app's own edit and rate
+controls are already disabled once a role is archived, so seeing this
+message usually means the role was archived in another tab or by a
+colleague while you had it open for editing; reload the role's page. Its
+job profile, history and past result stay visible, and if the work itself
+still needs evaluating, create a new role for it. See
 [Archiving a role](/docs/archiving-roles).
 
-### criterionLocked
+### The criterion is locked
 
 Code: `criterionLocked`
 
@@ -83,8 +78,6 @@ again. See [Method documentation](/docs/method-documentation).
 
 ## I can't set a role as an anchor role
 
-### ratingsIncomplete
-
 Code: `ratingsIncomplete`
 
 "All criteria must be rated first."
@@ -95,8 +88,6 @@ see [Evaluating a role](/docs/evaluating-a-role) and
 [Anchor roles](/docs/anchor-roles).
 
 ## I can't rate a role, or generate an AI suggestion
-
-### profileIncomplete
 
 Code: `profileIncomplete`
 
@@ -115,8 +106,6 @@ refuses to generate for this reason.
 
 ## I'm told that status change isn't allowed
 
-### invalidTransition
-
 Code: `invalidTransition`
 
 "That status change is not allowed."
@@ -124,13 +113,13 @@ Code: `invalidTransition`
 A generic message for an action that does not apply to the entity's
 current status, for example applying an AI suggestion to a role that has
 moved on to a different state, or acting on a pay mapping that is not
-currently Active (see [Run lifecycle and statuses](/docs/run-lifecycle)).
+currently Active (see [Pay mapping lifecycle and statuses](/docs/run-lifecycle)).
 Reload the page to see the entity's current status, and use the action
 that matches it.
 
 ## I can't create a role or family because the name already exists
 
-### roleFamilyExists
+### The family name is taken
 
 Code: `roleFamilyExists`
 
@@ -139,7 +128,7 @@ Code: `roleFamilyExists`
 Every role family's name must be unique in your organization, regardless
 of case. Pick a different name; see [Role families](/docs/role-families).
 
-### roleExists
+### The role title is taken
 
 Code: `roleExists`
 
@@ -151,17 +140,19 @@ or place the role in a different family; see
 
 ## AI suggestions aren't working
 
-### aiUnavailable
+### AI is not configured
 
 Code: `aiUnavailable`
 
-"AI is not configured for this environment."
+"AI is not switched on for your organization. Contact support to turn it
+on."
 
-AI drafting (job profiles, method documentation, weighting review) is not
-configured in the environment you are using. This is an environment
-setup issue, not something you can fix from within the app.
+AI drafting (job profiles, method documentation, weighting review) and the
+Blueprnt AI assistant are not available to your organization, and you
+cannot switch them on yourself. Contact support to have them turned on. In
+the meantime every field an AI draft would fill can be written by hand.
 
-### aiGenerationFailed
+### The suggestion could not be generated
 
 Code: `aiGenerationFailed`
 
@@ -177,7 +168,7 @@ The Blueprnt AI chat assistant (reached from [Assistant](/assistant)) is a
 separate feature from the AI drafting above: it answers questions about
 the app and your organization's own numbers rather than filling in fields.
 
-### assistantBusy
+### A reply is still generating
 
 Code: `assistantBusy`
 
@@ -188,7 +179,7 @@ a stop control while a reply streams, so this message is mainly a
 backstop for sending twice very quickly; wait for the current reply, or
 press stop, then send again. See [Using the assistant](/docs/using-the-assistant).
 
-### assistantRateLimited
+### Too many messages in a short time
 
 Code: `assistantRateLimited`
 
@@ -198,7 +189,7 @@ while."
 There is a cap on how many messages one person can send within a rolling
 hour. Wait for the window to clear before sending more.
 
-### assistantInvalidMessage
+### The message is empty
 
 Code: `assistantInvalidMessage`
 
@@ -207,7 +198,7 @@ Code: `assistantInvalidMessage`
 The message was empty after removing leading and trailing whitespace. Type
 something before sending.
 
-### assistantPersonalData
+### The message contains personal details
 
 Code: `assistantPersonalData`
 

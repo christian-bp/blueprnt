@@ -1,6 +1,6 @@
 ---
 title: Klassificera anställda
-description: Tilldela varje importerad anställd en roll och senioritet, utifrån ett motorförslag ni bekräftar.
+description: Tilldela varje importerad anställd en roll och senioritet, utifrån ett förslag ni bekräftar.
 section: people
 ---
 
@@ -11,17 +11,16 @@ jobbarkitektur, så att deras lön kan jämföras med andra i samma roll.
 
 ## Hur förslag fungerar
 
-blueprnt grupperar era aktiva personer efter den exakta befattning deras
-lönefil registrerade, föreslår sedan en roll per titelgrupp genom att
-matcha den titelns text mot era rollers titlar, och en senioritet för
-varje person inom den rollens track. Den här matchningen är en
-deterministisk motor, inte AI: ingenting klassificeras någonsin
-automatiskt, och varje förslag väntar på att ni bekräftar det. En titel
-som inte liknar någon befintlig roll tillräckligt nära visar inget
-förslag alls, så att ni kan skapa en roll för den istället. Att gå
-tillbaka till Klassificera är alltid säkert: det skriver aldrig över en
-klassificering ni redan bekräftat, och uppdaterar bara grupper som
-fortfarande väntar på en.
+blueprnt grupperar personerna i ert register efter den exakta befattning
+deras lönefil registrerade, föreslår sedan en roll per titelgrupp genom
+att matcha den titelns text mot era rollers titlar, och en senioritet för
+varje person inom den rollens track. Den här matchningen följer fasta
+regler, inte AI: ingenting klassificeras någonsin automatiskt, och varje
+förslag väntar på att ni bekräftar det. En titel som inte liknar någon
+befintlig roll tillräckligt nära visar inget förslag alls, så att ni kan
+skapa en roll för den istället. Att gå tillbaka till Klassificera är
+alltid säkert: det skriver aldrig över en klassificering ni redan
+bekräftat, och uppdaterar bara grupper som fortfarande väntar på en.
 
 Senioritet satt här hör till personen, aldrig rollen: den påverkar
 aldrig den rollens betyg, viktning eller nivå. Se
@@ -42,9 +41,10 @@ en roll måste väljas innan dess senioritet kan väljas.
 Bekräfta en enskild grupp från dess expanderade rad, eller markera flera
 grupper och använd massåtgärden för att klassificera dem alla på en gång
 med sina föreslagna roller och senioritet; ni kan fortfarande ändra
-vilken som helst av dem efteråt. En stor markering delas upp i mindre
-omgångar bakom kulisserna så att bekräftelsen alltid slutförs rent
-istället för som ett enda för stort sparande.
+vilken som helst av dem efteråt. En stor markering bekräftas i etapper,
+med en löpande räknare över hur många personer som klassificerats. Om den
+avbryts förblir alla som redan bekräftats bekräftade, och en ny
+bekräftelse gör klart resten.
 
 ## Skapa en roll för en omatchad titel
 

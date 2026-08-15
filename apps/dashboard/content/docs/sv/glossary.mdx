@@ -11,7 +11,7 @@ två.
 
 ## Åtgärd
 
-En åtgärd är en post i lönekartläggningens arbetslager: ett problem, en
+En åtgärd är en uppföljningspost i en lönekartläggning: ett problem, en
 planerad åtgärd, ett valfritt sakligt skäl, en ansvarig person, ett
 planerat datum, och en status Ej påbörjad, Pågående eller Klar.
 
@@ -22,8 +22,9 @@ notering istället när ingenting behöver göras. Se
 ## AI-förslag
 
 Ett AI-förslag är ett AI-föreslaget värde, som ett rollprofilsutkast
-eller en viktgranskning, alltid med proveniens och en status förslag,
-bekräftad eller avvisad.
+eller en viktgranskning, alltid märkt som AI-genererat med var det kom
+ifrån och vem som bekräftade det, och en status förslag, bekräftad eller
+avvisad.
 
 HR granskar och bekräftar alltid ett förslag innan det träder i kraft;
 AI bestämmer aldrig på egen hand och rör aldrig en rolls viktning eller
@@ -75,8 +76,8 @@ Se [Metoddokumentation](/docs/method-documentation).
 ## Klassificering
 
 Klassificering är att tilldela en importerad anställd en roll och en
-senioritet inom den rollens track, utifrån ett motorförslag ni
-bekräftar.
+senioritet inom den rollens track, utifrån ett förslag som blueprnt
+räknar fram ur era befintliga uppgifter och som ni bekräftar.
 
 Ingenting klassificeras någonsin automatiskt, och senioriteten det
 sätter hör till personen, aldrig rollen. Se
@@ -128,13 +129,13 @@ kompletterar snarare än ersätter.
 
 ## Frysta data
 
-Frysta data är det oföränderliga lagret i en lönekartläggnings
-ögonblicksbild: löner, rollnivå och track, demografi, nivåtrösklar och
-betyg, alla fångade vid referensdatumet.
+Frysta data är den del av en lönekartläggning som aldrig kan ändras när
+kartläggningen väl har startats: löner, rollnivå och track, demografi,
+nivåtrösklar och betyg, alla fångade vid referensdatumet.
 
-Bara det föränderliga arbetslagret, jämförelsegrupper, noteringar och
-åtgärder, förblir redigerbart efter det; de frysta data själva ändras
-aldrig även när er levande organisation gör det. Se
+Ert arbetsmaterial förblir redigerbart, jämförelsegrupper, noteringar och
+åtgärder, men de frysta siffrorna står kvar precis som de var även när er
+levande organisation går vidare. Se
 [Lönekartläggningens översikt](/docs/pay-mapping-overview).
 
 ## Jobbprofil
@@ -284,11 +285,13 @@ kriteriet räknas. Se
 
 ## Mall
 
-En mall är en återanvändbar, förkonfigurerad modell, kriterier, ankare,
-viktpoäng och nivåtrösklar anpassade för en bransch, som en ny
-organisation kan starta från under onboardingen.
+En mall är den färdiga modell en ny organisation startar från under
+onboardingen: kriterier, ankartexter, viktpoäng och nivåtrösklar, redan
+ifyllda.
 
-Se [Modellöversikt](/docs/model-overview).
+Varje ny organisation startar från samma standardmall och anpassar den
+efteråt; det finns inget val att göra under onboardingen. Se
+[Modellöversikt](/docs/model-overview).
 
 ## Track
 
@@ -311,11 +314,11 @@ roll är på det. Se
 
 ## Viktning
 
-Viktning är UI-etiketten för en rolls viktade totalsumma: en poäng
-från 0 till 100, avrundad nedåt, beräknad från dess betyg och varje
+Viktning är en rolls viktade totalsumma: en poäng från 0 till 100,
+avrundad nedåt till ett helt tal, beräknad från dess betyg och varje
 kriteriums viktpoäng.
 
-Det här är ett medvetet namnval, inte en sammanblandning: det delar
-namn med den separata viktningsprocessen att fördela viktpoäng till
-kriterier på sidan Modells flik Viktning, men de två är olika saker. Se
+Samma ord används också om att fördela viktpoäng till kriterier på sidan
+Modells flik Viktning. De två är olika saker: det här är ett resultat,
+det andra är en uppgift. Se
 [Viktning och nivåer](/docs/score-and-levels).

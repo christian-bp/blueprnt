@@ -155,8 +155,8 @@
       "avatarUpdated": "Profilbillede opdateret",
       "avatarRemoved": "Profilbillede fjernet",
       "languageUpdated": "Sprog opdateret",
-      "twoFactorEnabled": "To-faktor-godkendelse aktiveret",
-      "twoFactorReset": "To-faktor-indstillinger opdateret",
+      "twoFactorEnabled": "Totrinsbekræftelse aktiveret",
+      "twoFactorReset": "Indstillinger for totrinsbekræftelse opdateret",
       "userCreated": "Bruger oprettet",
       "userDeleted": "Bruger slettet",
       "organizationCreated": "Organisation oprettet",
@@ -1569,7 +1569,7 @@
         "contributionShare": "{share}%",
         "breakdownLabel": "Bidrag"
       },
-      "lockedExplanation": "Vurderingen er låst, fordi rollen er godkendt eller arkiveret. Genåbn rollen fra rollesiden for at vurdere igen."
+      "lockedExplanation": "Vurderingen er låst, fordi rollen er arkiveret. Arkivering kan ikke fortrydes, så opret en ny rolle, hvis arbejdet skal vurderes igen."
     },
     "levels": {
       "description": "Niveauerne og rollerne i hvert niveau, udledt live fra den aktuelle model og vurderinger.",
@@ -1683,7 +1683,7 @@
       "changeMethod": "Vælg en anden metode",
       "complete": {
         "heading": "Så er du klar",
-        "description": "Tofaktorgodkendelse er slået til. Din konto er beskyttet.",
+        "description": "Totrinsbekræftelse er slået til. Din konto er beskyttet.",
         "cta": "Fortsæt"
       },
       "backup": {
@@ -2185,7 +2185,7 @@
           "invitation": "Invitation",
           "resetPassword": "Nulstilling af adgangskode",
           "welcome": "Velkommen",
-          "twoFactorCode": "Tofaktorkode",
+          "twoFactorCode": "Totrinskode",
           "changeEmailConfirm": "Ændring af e-mail",
           "verifyEmail": "E-mailbekræftelse",
           "all": "Alle typer"
@@ -2345,15 +2345,15 @@
           "wrongPassword": "Nuværende adgangskode er forkert."
         },
         "twoFactor": {
-          "title": "To-trins-bekræftelse",
-          "description": "Administrer din to-trins-bekræftelsesmetode og sikkerhedskoder.",
+          "title": "Totrinsbekræftelse",
+          "description": "Administrer din metode til totrinsbekræftelse og sikkerhedskoder.",
           "currentMethod": "Aktuel metode",
           "methodTotp": "Autentificeringsapp",
           "methodEmail": "E-mailkoder",
           "methodNone": "Ingen",
           "changeMethod": "Skift metode",
-          "changeMethodConfirmTitle": "Skift to-trins-metode?",
-          "changeMethodConfirmBody": "Dette genstarter opsætningen af to-trins-bekræftelse. Din nuværende metode virker, indtil du er færdig.",
+          "changeMethodConfirmTitle": "Skift metode til totrinsbekræftelse?",
+          "changeMethodConfirmBody": "Dette genstarter opsætningen af totrinsbekræftelse. Din nuværende metode virker, indtil du er færdig.",
           "changeMethodConfirmCta": "Fortsæt",
           "regenerate": "Generer nye sikkerhedskoder",
           "regeneratePasswordLabel": "Bekræft din adgangskode",
@@ -2531,9 +2531,9 @@
     "invalidInput": "Ugyldigt input.",
     "modelExists": "Organisationen har allerede en vurderingsmodel.",
     "profileIncomplete": "Udfyld virksomhedsprofilen først.",
-    "aiUnavailable": "AI er ikke konfigureret i dette miljø.",
+    "aiUnavailable": "AI er ikke slået til for din organisation. Kontakt support for at få det aktiveret.",
     "aiGenerationFailed": "AI-forslaget kunne ikke genereres.",
-    "roleLocked": "Denne rolle er godkendt og låst. Åbn den igen først.",
+    "roleLocked": "Denne rolle er arkiveret og skrivebeskyttet. Arkivering kan ikke fortrydes, så opret en ny rolle, hvis arbejdet stadig skal vurderes.",
     "criterionLocked": "Dette kriterium er godkendt og låst. Åbn det igen først.",
     "ratingsIncomplete": "Alle kriterier skal vurderes først.",
     "invalidTransition": "Den statusændring er ikke tilladt.",
