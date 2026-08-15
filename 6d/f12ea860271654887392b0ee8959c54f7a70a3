@@ -1,0 +1,606 @@
+apps/dashboard/content/docs/fi/actions-and-notes.mdx
+  s_0383b617034fa3::t_096123ddacc2e8 33-37
+apps/dashboard/content/docs/fi/supported-payroll-exports.mdx
+  s_0383b617034fa3::t_5ac210962c9911 7,47
+  s_0383b617034fa3::t_029349c6535ca2 49-55
+  s_0383b617034fa3::t_864a60ab2331d3 8-10
+  s_0383b617034fa3::t_7189af6a84bd46 11,13-14
+apps/dashboard/content/docs/nb/adding-people.mdx
+  s_0383b617034fa3::t_727b32d70ecd46 40-42
+apps/dashboard/content/docs/da/onboarding-guide.mdx
+  s_0383b617034fa3::t_48f1df74958523 37-40
+  s_0383b617034fa3::t_a10c9c011527c7 36
+  s_0383b617034fa3::t_ceaeef6771d926 56
+  s_0383b617034fa3::t_8f2d6708fab893 74-76
+apps/dashboard/content/docs/da/collaboration.mdx
+  s_0383b617034fa3::t_00c2321c5bd7e5 34-36
+apps/dashboard/content/docs/da/levels-views.mdx
+  s_0383b617034fa3::t_ed57de3fffa8df 21-22
+apps/dashboard/content/docs/sv/run-lifecycle.mdx
+  s_0383b617034fa3::t_29ba9779bf6250 7-8
+packages/i18n/messages/nb.json
+  s_0383b617034fa3::t_493902e16a677e 1572
+  s_0383b617034fa3::t_344fa2ad9ac02f 2534,2536
+  s_0383b617034fa3::t_e903355141ed96 641,645-646
+  s_0383b617034fa3::t_14a3de5e145306 593
+apps/dashboard/content/docs/da/importing-roles.mdx
+  s_0383b617034fa3::t_26b1d3fae67827 40-41
+apps/dashboard/content/docs/nb/person-details-and-salary.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 28-31,33-36
+  s_0383b617034fa3::t_727b32d70ecd46 32
+apps/dashboard/content/docs/da/how-ai-is-used.mdx
+  s_0383b617034fa3::t_80659f2ccdd14b 31
+apps/dashboard/content/docs/fi/assistant-privacy.mdx
+  s_0383b617034fa3::t_84db9ee5b31fe5 39-43
+apps/dashboard/content/docs/sv/score-and-levels.mdx
+  s_0383b617034fa3::t_5ea881e7f1da32 25-27
+  s_0383b617034fa3::t_ac23aed5948b22 52,54-56
+apps/dashboard/content/docs/da/supported-payroll-exports.mdx
+  s_0383b617034fa3::t_029349c6535ca2 47-52
+  s_0383b617034fa3::t_7189af6a84bd46 11-14
+  s_0383b617034fa3::t_864a60ab2331d3 8-10
+  s_0383b617034fa3::t_5ac210962c9911 7,45
+apps/dashboard/content/docs/sv/job-profiles.mdx
+  s_0383b617034fa3::t_da1a188974d20c 18-19
+apps/dashboard/content/docs/sv/troubleshooting-people-and-import.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 50-53,80-83
+  s_0383b617034fa3::t_8565b3e8e251f3 54,60-63
+apps/dashboard/content/docs/nb/what-is-pay-mapping.mdx
+  s_0383b617034fa3::t_bb00ffd7691dc4 23
+apps/dashboard/content/docs/fi/adding-people.mdx
+  s_0383b617034fa3::t_727b32d70ecd46 43-45
+apps/dashboard/content/docs/en/rules-and-practice.mdx
+  s_0383b617034fa3::t_851b9897d65977 9
+  s_0383b617034fa3::t_4eae1debba8531 33-38
+apps/dashboard/content/docs/fi/assistant-capabilities.mdx
+  s_0383b617034fa3::t_486d04992a13ac 46-48
+apps/dashboard/content/docs/da/anchor-roles.mdx
+  s_0383b617034fa3::t_41ce7e3253aced 41-42
+  s_0383b617034fa3::t_6a8b1d8defbc21 40
+apps/dashboard/content/docs/da/job-profiles.mdx
+  s_0383b617034fa3::t_da1a188974d20c 19-20
+apps/dashboard/content/docs/sv/model-overview.mdx
+  s_0383b617034fa3::t_cf97c582025303 40-43
+  s_0383b617034fa3::t_ede9c12eca2f9c 56-60
+apps/dashboard/content/docs/da/members-and-roles.mdx
+  s_0383b617034fa3::t_15b7513766b2db 12-14
+apps/dashboard/content/docs/en/troubleshooting-people-and-import.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 56-57,75-76
+  s_0383b617034fa3::t_2c7a5fe4f9d6c6 46-49
+apps/dashboard/content/docs/nb/supported-payroll-exports.mdx
+  s_0383b617034fa3::t_5ac210962c9911 43
+  s_0383b617034fa3::t_864a60ab2331d3 7-13
+  s_0383b617034fa3::t_029349c6535ca2 45-50
+apps/dashboard/content/docs/en/run-lifecycle.mdx
+  s_0383b617034fa3::t_5d0a6861b698eb 2
+  s_0383b617034fa3::t_1de244e0fabb81 36
+  s_0383b617034fa3::t_66bdf78042251f 7-8,10
+apps/dashboard/content/docs/fi/erasing-a-person.mdx
+  s_0383b617034fa3::t_8a52017f4f0fa0 40
+  s_0383b617034fa3::t_727b32d70ecd46 34-36
+apps/dashboard/content/docs/sv/invitations.mdx
+  s_0383b617034fa3::t_3c516eda5bf2dc 38-41
+apps/dashboard/content/docs/en/glossary.mdx
+  s_0383b617034fa3::t_38ecdfd3ad3182 275-277,279-281
+  s_0383b617034fa3::t_6f05ccb1522b0d 74-75
+  s_0383b617034fa3::t_4f6fbc4667a298 304-306,308-310
+  s_0383b617034fa3::t_5e7875893633dd 23-25
+  s_0383b617034fa3::t_50afe33cec8a3e 46
+  s_0383b617034fa3::t_caca789fa00b85 125-127,129-132
+  s_0383b617034fa3::t_483673f84f522d 13
+apps/dashboard/content/docs/nb/rules-and-practice.mdx
+  s_0383b617034fa3::t_e47279ee5dcc49 35-39
+apps/dashboard/content/docs/en/importing-people.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 48
+  s_0383b617034fa3::t_fb6a3bc792f21b 31-33,35-43,46-47
+  s_0383b617034fa3::t_8c86e5cd469753 34
+apps/dashboard/content/docs/fi/person-details-and-salary.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 31-39
+apps/dashboard/content/docs/sv/deleting-your-account.mdx
+  s_0383b617034fa3::t_c6d88a9c38c758 34-35,38-39
+apps/dashboard/content/docs/fi/gdpr-and-erasure.mdx
+  s_0383b617034fa3::t_db90327eeadc80 47-49
+  s_0383b617034fa3::t_8a52017f4f0fa0 31,68
+apps/dashboard/content/docs/da/troubleshooting-people-and-import.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 49-52,80-81
+  s_0383b617034fa3::t_8565b3e8e251f3 53,60-62
+apps/dashboard/content/docs/nb/levels-views.mdx
+  s_0383b617034fa3::t_05817eeead57ef 20-22
+apps/dashboard/content/docs/da/weighting-and-point-budget.mdx
+  s_0383b617034fa3::t_0f55b285ad1d22 50,52-54
+  s_0383b617034fa3::t_30a6b59dd69409 3
+  s_0383b617034fa3::t_4c3c6bca2e9d94 34-36
+apps/dashboard/content/docs/nb/assistant-privacy.mdx
+  s_0383b617034fa3::t_84db9ee5b31fe5 38-42
+apps/dashboard/content/docs/da/starting-a-pay-mapping.mdx
+  s_0383b617034fa3::t_4296e5e2f90c99 45
+  s_0383b617034fa3::t_f902c199b977ee 23,27-31
+  s_0383b617034fa3::t_38587a14b31b71 32-33
+apps/dashboard/content/docs/fi/troubleshooting-model-and-evaluation.mdx
+  s_0383b617034fa3::t_2c4006191e80f8 60-61,63-71
+  s_0383b617034fa3::t_39b8d557c640d0 157-158,161-164
+  s_0383b617034fa3::t_7a8f2a09282d2b 56,73,131,141,153,166,184,197,208,217
+apps/dashboard/content/docs/nb/pay-mapping-overview.mdx
+  s_0383b617034fa3::t_4231503fad6722 3
+  s_0383b617034fa3::t_87cac87dc5d136 29
+  s_0383b617034fa3::t_cd0e107b43d9f7 11
+apps/dashboard/content/docs/nb/assistant-capabilities.mdx
+  s_0383b617034fa3::t_a90244ac62a60c 43-46
+apps/dashboard/content/docs/nb/data-residency.mdx
+  s_0383b617034fa3::t_7105e0a5b48d05 14-16,20-22
+apps/dashboard/content/docs/sv/erasing-a-person.mdx
+  s_0383b617034fa3::t_727b32d70ecd46 33-35
+apps/dashboard/content/docs/da/what-is-pay-mapping.mdx
+  s_0383b617034fa3::t_6f4e855f3e7f4a 19
+apps/dashboard/content/docs/fi/navigating-the-app.mdx
+  s_0383b617034fa3::t_d774f5b1e479d6 53-57
+apps/dashboard/content/docs/fi/method-appendix-pdf.mdx
+  s_0383b617034fa3::t_8a52017f4f0fa0 21,42
+  s_0383b617034fa3::t_07ea86fe57a6e1 41,43
+packages/i18n/messages/en.json
+  s_0383b617034fa3::t_344fa2ad9ac02f 2534,2536
+  s_0383b617034fa3::t_e612766686c193 1572
+apps/dashboard/content/docs/fi/invitations.mdx
+  s_0383b617034fa3::t_5cfaa19b8b1159 39-42
+apps/dashboard/content/docs/en/levels-views.mdx
+  s_0383b617034fa3::t_d24fa163eadc12 20-21
+  s_0383b617034fa3::t_7b36a0cb7f3ebf 36
+apps/dashboard/content/docs/nb/invitations.mdx
+  s_0383b617034fa3::t_9437d752f89747 38-41
+apps/dashboard/content/docs/da/adjusting-a-rating.mdx
+  s_0383b617034fa3::t_5fda2347e372ca 26-27
+apps/dashboard/content/docs/fi/ai-weighting-review.mdx
+  s_0383b617034fa3::t_8a52017f4f0fa0 45
+apps/dashboard/content/docs/nb/run-lifecycle.mdx
+  s_0383b617034fa3::t_b644fa4a2ce737 7-8
+apps/dashboard/content/docs/sv/what-is-pay-mapping.mdx
+  s_0383b617034fa3::t_7efab5a4218a71 18
+apps/dashboard/content/docs/en/equivalent-work.mdx
+  s_0383b617034fa3::t_5bbec9cb75a9b6 50-51
+  s_0383b617034fa3::t_808a98d7568d0f 9
+apps/dashboard/content/docs/nb/method-appendix-pdf.mdx
+  s_0383b617034fa3::t_222108c2399992 40-42
+apps/dashboard/content/docs/sv/adjusting-a-rating.mdx
+  s_0383b617034fa3::t_ba6e9b87355405 26-27
+apps/dashboard/content/docs/sv/troubleshooting-model-and-evaluation.mdx
+  s_0383b617034fa3::t_d56ebba7fe1fdd 58-59,61-69
+  s_0383b617034fa3::t_be17e5914e8825 153-154,156-160
+  s_0383b617034fa3::t_7a8f2a09282d2b 54,71,127,137,149,162,179,192,203,212
+apps/dashboard/content/docs/da/assistant-privacy.mdx
+  s_0383b617034fa3::t_84db9ee5b31fe5 38-42
+apps/dashboard/content/docs/nb/onboarding-guide.mdx
+  s_0383b617034fa3::t_cabd84a9a75ce9 75-77
+  s_0383b617034fa3::t_b66f94ab9f9300 37
+  s_0383b617034fa3::t_1497dc1f4e0e43 38-41
+  s_0383b617034fa3::t_bbf3c497ce9ac9 56-57
+apps/dashboard/content/docs/fi/equal-work.mdx
+  s_0383b617034fa3::t_25bafefe0bcbe6 75-76
+  s_0383b617034fa3::t_96f20a67db07bf 18-21
+  s_0383b617034fa3::t_36f7a7d624f937 70-73
+  s_0383b617034fa3::t_c691b6c3ae6f5b 74
+  s_0383b617034fa3::t_0415cc83503cda 22-23
+apps/dashboard/content/docs/fi/pay-mapping-overview.mdx
+  s_0383b617034fa3::t_b04d447e7ea4d1 30
+  s_0383b617034fa3::t_6cab4c773a604a 12,14-15
+  s_0383b617034fa3::t_07e0bf9472a1da 3
+apps/dashboard/content/docs/sv/rules-and-practice.mdx
+  s_0383b617034fa3::t_0fc3494829fea3 34-38
+apps/dashboard/content/docs/nb/troubleshooting-sign-in-and-account.mdx
+  s_0383b617034fa3::t_fb2134d12bf0a2 88
+  s_0383b617034fa3::t_7a8f2a09282d2b 17,31,44,56,86,90,99,110
+apps/dashboard/content/docs/da/actions-and-notes.mdx
+  s_0383b617034fa3::t_064bb111500e17 32-36
+apps/dashboard/content/docs/nb/model-overview.mdx
+  s_0383b617034fa3::t_2d528d52c913cb 55-59
+  s_0383b617034fa3::t_7c1dc2d9bfdf73 40-42
+apps/dashboard/content/docs/nb/collaboration.mdx
+  s_0383b617034fa3::t_34c4f79aea3d08 33-35
+apps/dashboard/content/docs/sv/classifying-people.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 14-23
+  s_0383b617034fa3::t_45f6228e129df5 3,44-47
+apps/dashboard/content/docs/sv/members-and-roles.mdx
+  s_0383b617034fa3::t_11f8e08a695122 12-14
+apps/dashboard/content/docs/en/troubleshooting-pay-mapping.mdx
+  s_0383b617034fa3::t_efcf545b4c3c98 38,63,69
+apps/dashboard/content/docs/sv/importing-roles.mdx
+  s_0383b617034fa3::t_26b1d3fae67827 42-44
+apps/dashboard/content/docs/en/person-details-and-salary.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 26-33
+apps/dashboard/content/docs/fi/weighting-and-point-budget.mdx
+  s_0383b617034fa3::t_71f7b9becede9c 3
+  s_0383b617034fa3::t_5c2ac9bb4c1513 50,52-54
+  s_0383b617034fa3::t_8a52017f4f0fa0 57
+  s_0383b617034fa3::t_3826048577cb55 34-36
+apps/dashboard/content/docs/fi/levels-views.mdx
+  s_0383b617034fa3::t_32230201386efd 21-22
+apps/dashboard/content/docs/da/people-register.mdx
+  s_0383b617034fa3::t_da1a188974d20c 19-20
+apps/dashboard/content/docs/da/equal-work.mdx
+  s_0383b617034fa3::t_666bf3feae9643 17-21
+  s_0383b617034fa3::t_24a56d5a6e3a0b 67-69
+  s_0383b617034fa3::t_6d352e0097d91d 70-71
+apps/dashboard/content/docs/fi/onboarding-guide.mdx
+  s_0383b617034fa3::t_65e8da248f105a 81-84
+  s_0383b617034fa3::t_9b37fbdb5892ae 39-40
+apps/dashboard/content/docs/en/data-residency.mdx
+  s_0383b617034fa3::t_9e1d3a9e84a4e9 13-16,19-21
+apps/dashboard/content/docs/nb/importing-roles.mdx
+  s_0383b617034fa3::t_26b1d3fae67827 41-42
+apps/dashboard/content/docs/en/invitations.mdx
+  s_0383b617034fa3::t_c49466f111e048 35-38
+apps/dashboard/content/docs/sv/collaboration.mdx
+  s_0383b617034fa3::t_276f0c867b220b 33-35
+apps/dashboard/content/docs/fi/troubleshooting-people-and-import.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 49-54,59-63,82-85
+apps/dashboard/content/docs/fi/deleting-your-account.mdx
+  s_0383b617034fa3::t_8a52017f4f0fa0 35
+  s_0383b617034fa3::t_6691304661f5b6 38-39,43-44
+apps/dashboard/content/docs/fi/equivalent-work.mdx
+  s_0383b617034fa3::t_b8fc44c19426bd 56-58
+apps/dashboard/content/docs/fi/run-lifecycle.mdx
+  s_0383b617034fa3::t_bb05eb7489fb0e 7-9
+apps/dashboard/content/docs/en/score-and-levels.mdx
+  s_0383b617034fa3::t_2734c0fa86a108 24-26
+  s_0383b617034fa3::t_2ffd048a0dddf5 55-56
+  s_0383b617034fa3::t_1cc6303521e534 51,53-54
+  s_0383b617034fa3::t_576a992eea64e8 3
+apps/dashboard/content/docs/nb/adjusting-a-rating.mdx
+  s_0383b617034fa3::t_24f839ca24c4a0 26-27
+apps/dashboard/content/docs/fi/score-and-levels.mdx
+  s_0383b617034fa3::t_8a52017f4f0fa0 63
+  s_0383b617034fa3::t_97750be60856bc 26-28
+  s_0383b617034fa3::t_3524a5b1223019 53,55-57
+apps/dashboard/content/docs/da/troubleshooting-model-and-evaluation.mdx
+  s_0383b617034fa3::t_7a8f2a09282d2b 52,68,124,134,146,158,175,187,196,205
+  s_0383b617034fa3::t_38312b1b5b10f3 56-57,59-66
+  s_0383b617034fa3::t_2a85e275f8c1c4 150-151,153-156
+apps/dashboard/content/docs/nb/roles-register.mdx
+  s_0383b617034fa3::t_da1a188974d20c 24-26
+packages/i18n/messages/sv.json
+  s_0383b617034fa3::t_344fa2ad9ac02f 2534,2536
+  s_0383b617034fa3::t_09bdb24bdb3883 1572
+apps/dashboard/content/docs/sv/weighting-and-point-budget.mdx
+  s_0383b617034fa3::t_c630bd2471c51e 49,51-53
+  s_0383b617034fa3::t_1837a8b462ed5c 3
+  s_0383b617034fa3::t_8fc727dd5ed1fd 33-35
+apps/dashboard/content/docs/sv/equivalent-work.mdx
+  s_0383b617034fa3::t_b4581e03106ad5 52-54
+apps/dashboard/content/docs/fi/troubleshooting-sign-in-and-account.mdx
+  s_0383b617034fa3::t_7a8f2a09282d2b 18,32,46,58,88,92,102,114
+  s_0383b617034fa3::t_fbbcaeb644c5b4 90
+apps/dashboard/content/docs/nb/how-ai-is-used.mdx
+  s_0383b617034fa3::t_b442d914779eaf 31
+apps/dashboard/content/docs/en/collaboration.mdx
+  s_0383b617034fa3::t_5bc380f84240dd 9
+  s_0383b617034fa3::t_2b1a71a7dec9c1 41
+  s_0383b617034fa3::t_f54ca926c29ee7 33-35
+apps/dashboard/content/docs/nb/glossary.mdx
+  s_0383b617034fa3::t_c3fced47068be5 131-132,135-137
+  s_0383b617034fa3::t_845524b0586cb0 315-316,319-321
+  s_0383b617034fa3::t_89e51a86cd7fd1 13
+  s_0383b617034fa3::t_1d44dd8c1f40d0 286-288,290-292
+  s_0383b617034fa3::t_bc80e3501d9a20 77-78
+apps/dashboard/content/docs/sv/supported-payroll-exports.mdx
+  s_0383b617034fa3::t_864a60ab2331d3 7-10
+  s_0383b617034fa3::t_5ac210962c9911 43
+  s_0383b617034fa3::t_7189af6a84bd46 11-13
+  s_0383b617034fa3::t_029349c6535ca2 45-50
+apps/dashboard/content/docs/sv/person-details-and-salary.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 30-38
+apps/dashboard/content/docs/sv/glossary.mdx
+  s_0383b617034fa3::t_172bbfcd66d8ff 317-318,321-323
+  s_0383b617034fa3::t_240a698eb39ba7 288-290,292-294
+  s_0383b617034fa3::t_e92ecfa8b64efe 25-27
+  s_0383b617034fa3::t_9cb80f4a85dd96 79-80
+  s_0383b617034fa3::t_d88d77db9f291c 132-134,136-138
+  s_0383b617034fa3::t_e538ce548aa348 14
+apps/dashboard/content/docs/sv/assistant-capabilities.mdx
+  s_0383b617034fa3::t_3690297d948f78 43-45
+apps/dashboard/content/docs/sv/assistant-privacy.mdx
+  s_0383b617034fa3::t_cb5ba460e93485 8,13,15
+  s_0383b617034fa3::t_84db9ee5b31fe5 37-41
+apps/dashboard/content/docs/fi/collaboration.mdx
+  s_0383b617034fa3::t_43b4a4dcbb9bf7 37-38
+  s_0383b617034fa3::t_30d024fe99e43c 36
+apps/dashboard/content/docs/fi/roles-register.mdx
+  s_0383b617034fa3::t_da1a188974d20c 24-25
+apps/dashboard/content/docs/sv/gdpr-and-erasure.mdx
+  s_0383b617034fa3::t_fad9b326372d66 33-34
+  s_0383b617034fa3::t_09a9009fc36277 45-47
+apps/dashboard/content/docs/en/importing-roles.mdx
+  s_0383b617034fa3::t_acd67c01f57570 30-31,37-39,44-46
+  s_0383b617034fa3::t_84e30737750e37 24,27,35,41,43
+apps/dashboard/content/docs/en/gdpr-and-erasure.mdx
+  s_0383b617034fa3::t_7b5fb85a6d3612 44-45
+  s_0383b617034fa3::t_7c878b8cd33eb2 42-43
+  s_0383b617034fa3::t_a999808b82893e 31-32
+apps/dashboard/content/docs/da/assistant-capabilities.mdx
+  s_0383b617034fa3::t_24a481abcdf986 43-45
+apps/dashboard/content/docs/fi/classifying-people.mdx
+  s_0383b617034fa3::t_45f6228e129df5 3,14,18-19,49-51
+apps/dashboard/content/docs/en/assistant-privacy.mdx
+  s_0383b617034fa3::t_89d66f682c5ab6 35-38
+  s_0383b617034fa3::t_3b5b53bfae16c2 8,12,14
+apps/dashboard/content/docs/da/roles-register.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 24-25
+apps/dashboard/content/docs/nb/gdpr-and-erasure.mdx
+  s_0383b617034fa3::t_8cbd4f7daca893 31-32
+  s_0383b617034fa3::t_f90e6a12894c24 43-45
+apps/dashboard/content/docs/en/method-appendix-pdf.mdx
+  s_0383b617034fa3::t_8c13656ad4d7d8 38-40
+apps/dashboard/content/docs/en/adding-people.mdx
+  s_0383b617034fa3::t_727b32d70ecd46 37-39
+apps/dashboard/content/docs/nb/importing-people.mdx
+  s_0383b617034fa3::t_8c86e5cd469753 36-41
+apps/dashboard/content/docs/da/rules-and-practice.mdx
+  s_0383b617034fa3::t_305a92f0b36afa 35-40
+apps/dashboard/content/docs/nb/troubleshooting-model-and-evaluation.mdx
+  s_0383b617034fa3::t_7a7f34c4aec5a3 57-58,60-68
+  s_0383b617034fa3::t_140baa731967f8 151-152,154-157
+  s_0383b617034fa3::t_7a8f2a09282d2b 53,70,125,135,147,159,176,188,198,207
+apps/dashboard/content/docs/en/assistant-capabilities.mdx
+  s_0383b617034fa3::t_47a1e894cd83b1 41-43
+apps/dashboard/content/docs/en/supported-payroll-exports.mdx
+  s_0383b617034fa3::t_2482789f548b03 11-13
+  s_0383b617034fa3::t_5ac210962c9911 7,42
+  s_0383b617034fa3::t_029349c6535ca2 44-49
+  s_0383b617034fa3::t_864a60ab2331d3 8-10
+apps/dashboard/content/docs/sv/data-residency.mdx
+  s_0383b617034fa3::t_3fa3697e00bf38 13-16,19-21
+apps/dashboard/content/docs/fi/job-profiles.mdx
+  s_0383b617034fa3::t_da1a188974d20c 19-20
+apps/dashboard/content/docs/sv/method-appendix-pdf.mdx
+  s_0383b617034fa3::t_b2781ab55743ae 40-41
+apps/dashboard/content/docs/sv/troubleshooting-sign-in-and-account.mdx
+  s_0383b617034fa3::t_0d58abec23a104 89
+  s_0383b617034fa3::t_7a8f2a09282d2b 17,31,44,56,87,91,100,112
+apps/dashboard/content/docs/fi/how-ai-is-used.mdx
+  s_0383b617034fa3::t_8a52017f4f0fa0 74
+  s_0383b617034fa3::t_b119b6c72c9664 34
+apps/dashboard/content/docs/da/importing-people.mdx
+  s_0383b617034fa3::t_8c86e5cd469753 36-42
+apps/dashboard/content/docs/nb/anchor-roles.mdx
+  s_0383b617034fa3::t_41ce7e3253aced 40-41
+apps/dashboard/content/docs/nb/troubleshooting-people-and-import.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 48-52,79-82
+  s_0383b617034fa3::t_8565b3e8e251f3 59-62
+  s_0383b617034fa3::t_810dc9f88407e0 53-54
+apps/dashboard/content/docs/da/model-overview.mdx
+  s_0383b617034fa3::t_0be027b5448edd 58-62
+  s_0383b617034fa3::t_09bf7e67930244 41-43
+apps/dashboard/content/docs/en/pay-mapping-overview.mdx
+  s_0383b617034fa3::t_999141e7ec0c16 53
+  s_0383b617034fa3::t_f52065f5ee6362 27
+  s_0383b617034fa3::t_0e4a89b8293049 11,13
+  s_0383b617034fa3::t_200c6b75286500 3
+  s_0383b617034fa3::t_3dce82c9c3e1be 14-15
+  s_0383b617034fa3::t_3102c720a206aa 16-17
+apps/dashboard/content/docs/en/onboarding-guide.mdx
+  s_0383b617034fa3::t_7c5a4fdb4a3d79 37-40
+  s_0383b617034fa3::t_a8ba293523d6d3 36
+  s_0383b617034fa3::t_c80d30185e63db 56
+  s_0383b617034fa3::t_611b6a2260be3e 73-75
+apps/dashboard/content/docs/nb/starting-a-pay-mapping.mdx
+  s_0383b617034fa3::t_fcca0fe120988f 45
+  s_0383b617034fa3::t_06af95819191ff 23,27,29-32
+apps/dashboard/content/docs/en/deleting-your-account.mdx
+  s_0383b617034fa3::t_ff8e0fb562bbe7 33-34,37-38
+apps/dashboard/content/docs/sv/adding-people.mdx
+  s_0383b617034fa3::t_727b32d70ecd46 41-43
+apps/dashboard/content/docs/nb/job-profiles.mdx
+  s_0383b617034fa3::t_da1a188974d20c 19-20
+apps/dashboard/content/docs/da/invitations.mdx
+  s_0383b617034fa3::t_d83cb5fb8776db 40-43
+apps/dashboard/content/docs/da/troubleshooting-sign-in-and-account.mdx
+  s_0383b617034fa3::t_cdccd1a9f33099 87
+  s_0383b617034fa3::t_7a8f2a09282d2b 17,31,44,56,85,89,98,109
+apps/dashboard/content/docs/sv/actions-and-notes.mdx
+  s_0383b617034fa3::t_3069b70a4353c4 31-35
+apps/dashboard/content/docs/fi/adjusting-a-rating.mdx
+  s_0383b617034fa3::t_8a52017f4f0fa0 27,42
+apps/dashboard/content/docs/en/roles-register.mdx
+  s_0383b617034fa3::t_da1a188974d20c 22-23
+apps/dashboard/content/docs/en/weighting-and-point-budget.mdx
+  s_0383b617034fa3::t_5d0da355d6d99f 50,52-54
+  s_0383b617034fa3::t_a444d2e5768dbd 3
+  s_0383b617034fa3::t_8ac302ed81740e 34-36
+apps/dashboard/content/docs/nb/members-and-roles.mdx
+  s_0383b617034fa3::t_40340a1d96d333 12-14
+apps/dashboard/content/docs/sv/equal-work.mdx
+  s_0383b617034fa3::t_cfe4942ec27432 17-21
+  s_0383b617034fa3::t_27ad7551a13f29 66-69
+apps/dashboard/content/docs/nb/equal-work.mdx
+  s_0383b617034fa3::t_ff8aaad10ba1be 68-71
+  s_0383b617034fa3::t_113f03a9b42a72 72
+  s_0383b617034fa3::t_1ae2b95f1b3629 73-74
+  s_0383b617034fa3::t_87141c6f21b5f4 17-21
+apps/dashboard/content/docs/nb/navigating-the-app.mdx
+  s_0383b617034fa3::t_7047bf953109ec 49-52
+apps/dashboard/content/docs/sv/levels-views.mdx
+  s_0383b617034fa3::t_cfa27a34618742 38
+  s_0383b617034fa3::t_3303f01c367b64 39
+  s_0383b617034fa3::t_a2fb90c826ea36 40
+  s_0383b617034fa3::t_4b1a9ec5911b5a 20-22
+apps/dashboard/content/docs/sv/pay-mapping-overview.mdx
+  s_0383b617034fa3::t_73d20d03cdcdf5 3
+  s_0383b617034fa3::t_4413b34b9e350e 11
+  s_0383b617034fa3::t_f892b1ff116888 29
+apps/dashboard/content/docs/da/pay-mapping-overview.mdx
+  s_0383b617034fa3::t_c3b7fd6691c8e5 3
+  s_0383b617034fa3::t_c5c89dafe4ae76 11,13-14
+  s_0383b617034fa3::t_17b15e1f2aad91 29
+apps/dashboard/content/docs/nb/weighting-and-point-budget.mdx
+  s_0383b617034fa3::t_7d744f9c0b7d49 49,51-53
+  s_0383b617034fa3::t_a3f3162df44d3b 3
+  s_0383b617034fa3::t_76f265ed6db705 33-35
+apps/dashboard/content/docs/da/gdpr-and-erasure.mdx
+  s_0383b617034fa3::t_8e6c90e419e059 31-32
+  s_0383b617034fa3::t_74e49f9000e15a 43-45
+apps/dashboard/content/docs/fi/glossary.mdx
+  s_0383b617034fa3::t_b2b908fda7a02f 26-27
+  s_0383b617034fa3::t_f88b6973208d99 329-331,333-336
+  s_0383b617034fa3::t_eb041388af74be 137-140,142-144
+  s_0383b617034fa3::t_885c16c156a042 14
+  s_0383b617034fa3::t_8a52017f4f0fa0 61,63,66
+  s_0383b617034fa3::t_76b24d0d16f4fb 300-302,304-306
+  s_0383b617034fa3::t_6cf52de9252048 79-81
+apps/dashboard/content/docs/en/equal-work.mdx
+  s_0383b617034fa3::t_41daf2990a73cf 68-70
+  s_0383b617034fa3::t_703adbbce24558 9
+  s_0383b617034fa3::t_daae4d22f249ee 21
+  s_0383b617034fa3::t_de550ee48f9dd0 16-20
+  s_0383b617034fa3::t_60818eba8effbe 64-66
+  s_0383b617034fa3::t_a5a501b95bd791 67
+  s_0383b617034fa3::t_b0f5d840b8269c 22-24
+apps/dashboard/content/docs/fi/audit-log.mdx
+  s_0383b617034fa3::t_8a52017f4f0fa0 2,45
+apps/dashboard/content/docs/en/actions-and-notes.mdx
+  s_0383b617034fa3::t_16627994c439d6 30-34
+  s_0383b617034fa3::t_a501c0c33e60ef 61
+apps/dashboard/content/docs/nb/classifying-people.mdx
+  s_0383b617034fa3::t_45f6228e129df5 3,14,18-19,45-48
+apps/dashboard/content/docs/fi/starting-a-pay-mapping.mdx
+  s_0383b617034fa3::t_a60a91d2ac7537 48
+  s_0383b617034fa3::t_5c6c8d833023b8 25,31,33-34
+apps/dashboard/content/docs/da/person-details-and-salary.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 28-36
+apps/dashboard/content/docs/nb/score-and-levels.mdx
+  s_0383b617034fa3::t_6e182c82dbcc44 25-27
+  s_0383b617034fa3::t_a52e04dfc3d816 53,55-57
+packages/i18n/messages/da.json
+  s_0383b617034fa3::t_344fa2ad9ac02f 2534,2536
+  s_0383b617034fa3::t_8103a82a17e02f 2355-2356
+  s_0383b617034fa3::t_5d9f6b118b65f9 2348-2349
+  s_0383b617034fa3::t_27886707319bb6 2188
+  s_0383b617034fa3::t_d9b1a0eaab6342 158-159
+  s_0383b617034fa3::t_afd2479a6a3d18 1572
+  s_0383b617034fa3::t_65d7d4d1c4510b 1686
+apps/dashboard/content/docs/en/classifying-people.mdx
+  s_0383b617034fa3::t_45f6228e129df5 3,13-14,16,41-43
+apps/dashboard/content/docs/en/people-register.mdx
+  s_0383b617034fa3::t_da1a188974d20c 17-19
+apps/dashboard/content/docs/en/anchor-roles.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 37-40
+  s_0383b617034fa3::t_6a8b1d8defbc21 36
+apps/dashboard/content/docs/sv/roles-register.mdx
+  s_0383b617034fa3::t_64e1600f457f6d 24-26
+apps/dashboard/content/docs/sv/navigating-the-app.mdx
+  s_0383b617034fa3::t_50808ec462141d 48-51
+apps/dashboard/content/docs/nb/actions-and-notes.mdx
+  s_0383b617034fa3::t_9de8bec311ee06 31-36
+apps/dashboard/content/docs/en/erasing-a-person.mdx
+  s_0383b617034fa3::t_727b32d70ecd46 32-34
+apps/dashboard/content/docs/sv/onboarding-guide.mdx
+  s_0383b617034fa3::t_cbdf82d4d55d76 36-37
+  s_0383b617034fa3::t_68b4d99ba417f2 73-75
+  s_0383b617034fa3::t_60cd70fa43d662 55
+apps/dashboard/content/docs/sv/importing-people.mdx
+  s_0383b617034fa3::t_8c86e5cd469753 34-39
+apps/dashboard/content/docs/nb/equivalent-work.mdx
+  s_0383b617034fa3::t_78f1ae6e3114c3 53-55
+packages/i18n/messages/fi.json
+  s_0383b617034fa3::t_a834de0274d0c9 70
+  s_0383b617034fa3::t_c29ad54ab93b52 68
+  s_0383b617034fa3::t_85acf0e5fdfdfa 1572
+  s_0383b617034fa3::t_aaf501b541aecf 1884
+  s_0383b617034fa3::t_6c40f789f4921d 1887
+  s_0383b617034fa3::t_344fa2ad9ac02f 2534,2536
+apps/dashboard/content/docs/en/model-overview.mdx
+  s_0383b617034fa3::t_648e5f097963fe 56-61
+  s_0383b617034fa3::t_30d1d9f8e2db68 40-43
+apps/dashboard/content/docs/fi/data-residency.mdx
+  s_0383b617034fa3::t_8a52017f4f0fa0 14,43
+  s_0383b617034fa3::t_ac8cbc6ff3e284 15-17,20-22
+apps/dashboard/content/docs/en/what-is-pay-mapping.mdx
+  s_0383b617034fa3::t_206fd604b6a2bc 51
+  s_0383b617034fa3::t_c5c4dfd8528b6c 17
+apps/dashboard/content/docs/en/navigating-the-app.mdx
+  s_0383b617034fa3::t_d585a53b8e60ea 47-51
+apps/dashboard/content/docs/fi/rules-and-practice.mdx
+  s_0383b617034fa3::t_b399b3be2df7c0 36-42
+apps/dashboard/content/docs/en/adjusting-a-rating.mdx
+  s_0383b617034fa3::t_5bcfa787e74247 24-25
+apps/dashboard/content/docs/da/run-lifecycle.mdx
+  s_0383b617034fa3::t_6326d8c6b6b6c3 7-9
+apps/dashboard/content/docs/da/navigating-the-app.mdx
+  s_0383b617034fa3::t_52488e0de3f386 50-53
+apps/dashboard/content/docs/en/starting-a-pay-mapping.mdx
+  s_0383b617034fa3::t_09beb794b946ae 32-33
+  s_0383b617034fa3::t_76d901a73e29fe 23,27-31
+  s_0383b617034fa3::t_fa3b3b6cf58515 43
+apps/dashboard/content/docs/sv/how-ai-is-used.mdx
+  s_0383b617034fa3::t_220e78aa3e0df7 31
+apps/dashboard/content/docs/da/equivalent-work.mdx
+  s_0383b617034fa3::t_ad5d3447f2024a 53-55
+apps/dashboard/content/docs/fi/importing-roles.mdx
+  s_0383b617034fa3::t_26b1d3fae67827 44-46
+apps/dashboard/content/docs/da/deleting-your-account.mdx
+  s_0383b617034fa3::t_936e1e1de4130e 35-36,39-40
+apps/dashboard/content/docs/da/method-appendix-pdf.mdx
+  s_0383b617034fa3::t_fcffd3f04749c4 40-41
+apps/dashboard/content/docs/en/troubleshooting-sign-in-and-account.mdx
+  s_0383b617034fa3::t_37ec4173c93ee1 84
+  s_0383b617034fa3::t_7a8f2a09282d2b 17,30,43,54,82,86,95,106
+apps/dashboard/content/docs/fi/importing-people.mdx
+  s_0383b617034fa3::t_8c86e5cd469753 39-42,44-45
+apps/dashboard/content/docs/nb/deleting-your-account.mdx
+  s_0383b617034fa3::t_03d12933a70cb2 34-35,38-39
+apps/dashboard/content/docs/da/erasing-a-person.mdx
+  s_0383b617034fa3::t_727b32d70ecd46 33-35
+apps/dashboard/content/docs/da/adding-people.mdx
+  s_0383b617034fa3::t_727b32d70ecd46 41-43
+apps/dashboard/content/docs/en/how-ai-is-used.mdx
+  s_0383b617034fa3::t_b1ab34d1a1b89c 30
+apps/dashboard/content/docs/da/glossary.mdx
+  s_0383b617034fa3::t_4c5bd74d6e5a18 134-137,139-141
+  s_0383b617034fa3::t_f5c6f4aa6fefe5 13
+  s_0383b617034fa3::t_506b645a5a0e90 293-295,297-299
+  s_0383b617034fa3::t_18b3b178e8d572 78-79
+  s_0383b617034fa3::t_4d515d507b5aff 322-323,326-328
+apps/dashboard/content/docs/en/job-profiles.mdx
+  s_0383b617034fa3::t_da1a188974d20c 17-19
+apps/dashboard/content/docs/nb/erasing-a-person.mdx
+  s_0383b617034fa3::t_727b32d70ecd46 31-33
+apps/dashboard/content/docs/da/score-and-levels.mdx
+  s_0383b617034fa3::t_f1149f14f5d289 52,54-56
+  s_0383b617034fa3::t_d60924005f44a3 25-27
+apps/dashboard/content/docs/fi/what-is-pay-mapping.mdx
+  s_0383b617034fa3::t_7274316f2e1f8f 20
+apps/dashboard/content/docs/sv/starting-a-pay-mapping.mdx
+  s_0383b617034fa3::t_46298c4142e544 47
+  s_0383b617034fa3::t_2740de65f42391 24,28-29,31-32
+  s_0383b617034fa3::t_68c4455ac29245 33-34
+apps/dashboard/content/docs/da/classifying-people.mdx
+  s_0383b617034fa3::t_45f6228e129df5 3,14,17-19,46-49
+apps/dashboard/content/docs/en/members-and-roles.mdx
+  s_0383b617034fa3::t_ad66d80bb7007c 11-13
+apps/dashboard/content/docs/fi/members-and-roles.mdx
+  s_0383b617034fa3::t_910f028c5936ad 12-14
+apps/dashboard/content/docs/en/troubleshooting-model-and-evaluation.mdx
+  s_0383b617034fa3::t_88458e64683a78 147-148,150-153
+  s_0383b617034fa3::t_c00d20bc494315 56-57,59-65
+  s_0383b617034fa3::t_efcf545b4c3c98 116
+  s_0383b617034fa3::t_7a8f2a09282d2b 52,68,122,131,143,155,171,182,192,201
+apps/dashboard/content/docs/fi/model-overview.mdx
+  s_0383b617034fa3::t_13f525882d473b 43-46
+  s_0383b617034fa3::t_a25ffcc17dcd7f 60-64
+  s_0383b617034fa3::t_8a52017f4f0fa0 48
+apps/dashboard/content/docs/da/data-residency.mdx
+  s_0383b617034fa3::t_cc500daf08c8a3 14-17,20-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6df12ea860271654887392b0ee8959c54f7a70a3",
+  "prompts": {},
+  "sessions": {
+    "s_0383b617034fa3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "70c0a727-22c9-42cb-ae97-66bc3b799a58",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
