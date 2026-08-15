@@ -50,10 +50,6 @@ function CommandDialog({
 }) {
   return (
     <Dialog {...props}>
-      <DialogHeader className="sr-only">
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>{description}</DialogDescription>
-      </DialogHeader>
       <DialogContent
         className={cn(
           "top-1/3 translate-y-0 overflow-hidden rounded-xl! p-0",
@@ -61,6 +57,16 @@ function CommandDialog({
         )}
         showCloseButton={showCloseButton}
       >
+        {/* Local fix: the header sits INSIDE the popup. Dialog.Root renders its
+            children whether the dialog is open or not, so a header placed
+            beside DialogContent leaves an sr-only heading and description in
+            the page at all times, wherever the palette is mounted. Inside the
+            popup they mount and unmount with it, and still name it: sr-only is
+            out of flow, so the popup's grid is unchanged. */}
+        <DialogHeader className="sr-only">
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
         {children}
       </DialogContent>
     </Dialog>

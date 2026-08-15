@@ -38,6 +38,8 @@ const DEVIATIONS: Record<string, string> = {
   badge: "A success variant; the email log maps delivered and sent onto it.",
   checkbox:
     "Base UI omits data-checked while indeterminate, so the mixed state needs its own fill and a minus glyph.",
+  command:
+    "Dialog.Root renders its children open or not, so the accessible header must sit inside DialogContent; beside it, it leaves an sr-only heading in the page on every render.",
   "dropdown-menu":
     "Popup sized to its content; upstream pins it to the trigger width and clips labels.",
   empty: "Brand-tinted icon media instead of neutral.",
