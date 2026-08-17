@@ -1,0 +1,37 @@
+packages/i18n/messages/nb.json
+  s_30828b25439bc4::t_13e7600e62d8b4 2517-2521
+apps/dashboard/components/docs/docs-nav.tsx
+  s_30828b25439bc4::t_dd01e15d9fae56 1-60,63-67,69-72,74-142,146-187
+  s_30828b25439bc4::t_5947a6db1d6f3b 61-62,143-145
+  s_30828b25439bc4::t_89ed0ea17b7452 68,73
+packages/i18n/messages/fi.json
+  s_30828b25439bc4::t_14381a3170471d 2517-2521
+apps/dashboard/components/docs/docs-nav.test.tsx
+  s_30828b25439bc4::t_5947a6db1d6f3b 50-52,59-61,73-75,103-105,114-116
+  s_30828b25439bc4::t_29c20672f56f7f 81
+  s_30828b25439bc4::t_a3b45761ffe527 91
+  s_30828b25439bc4::t_877bcfd2fd83e3 2-49,53-58,62-72,76-80,82-90,92-102,106-113,117-120
+  s_30828b25439bc4::t_d3e8f5c034f36a 1
+packages/i18n/messages/da.json
+  s_30828b25439bc4::t_1af7fe8fa1a364 2517-2521
+packages/i18n/messages/en.json
+  s_30828b25439bc4::t_79e30ab1fb3e0c 2517-2521
+packages/i18n/messages/sv.json
+  s_30828b25439bc4::t_cd886d250e5e83 2517-2521
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "897514cd381fd1dcd2568998949e6b095801783b",
+  "prompts": {},
+  "sessions": {
+    "s_30828b25439bc4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "37882f04-cffb-4a1e-a7ea-7470ab746a66",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
