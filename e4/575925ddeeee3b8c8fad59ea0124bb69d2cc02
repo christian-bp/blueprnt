@@ -1,0 +1,25 @@
+apps/dashboard/components/pay-mapping/equal-work-detail.tsx
+  s_0e9ce98be5faff::t_a5de891f44967a 16
+  s_0e9ce98be5faff::t_2e05166473f0e1 230-238,244-248
+  s_0e9ce98be5faff::t_cb2852ae926e43 114,119-122
+  s_0e9ce98be5faff::t_bf3eb178275134 135
+  s_0e9ce98be5faff::t_7493303228853c 5-6
+apps/dashboard/components/pay-mapping/pay-gap-flag-badge.tsx
+  s_0e9ce98be5faff::t_8970238f25ee4a 30-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e4575925ddeeee3b8c8fad59ea0124bb69d2cc02",
+  "prompts": {},
+  "sessions": {
+    "s_0e9ce98be5faff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fd1853b5-5652-46e9-9c32-c76e47f67a68",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
