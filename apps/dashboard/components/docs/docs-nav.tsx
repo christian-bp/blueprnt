@@ -22,35 +22,34 @@ export interface DocsNavSection {
   pages: DocsNavPage[]
 }
 
-const DOCS_PREFIX = "/docs/"
-
-// The guide navigation's section tree. Replaces the native
-// <details>/<summary> this surface used to use: that shipped the browser's own
-// disclosure triangle, which no amount of styling makes match the app, and it
-// could not animate. A chevron rotating 90 degrees is the app's one disclosure
-// idiom (see accordion-section.tsx), so both surfaces read the same.
+// The guide navigation's section tree. A chevron rotating 90 degrees is the
+// app's one disclosure idiom (see accordion-section.tsx), so both surfaces
+// read the same.
 //
 // Muted rather than brand: brand is for links, CTAs, judgement values and data
 // viz, and twelve rose chevrons stacked in a nav column shout over the page.
 export function DocsNav({ sections }: { sections: DocsNavSection[] }) {
   const pathname = usePathname()
-  const currentSlug = pathname.startsWith(DOCS_PREFIX)
-    ? pathname.slice(DOCS_PREFIX.length)
+  const currentSlug = pathname.startsWith("/docs/")
+    ? pathname.slice("/docs/".length)
     : ""
   const currentSection = sections.find((section) =>
     section.pages.some((page) => page.slug === currentSlug)
   )?.section
-  // Sections the reader opened or closed by hand, overriding the
-  // current-section default. This state is why the nav lives in a layout: it
-  // has to outlive a navigation between guides, and a per-page render would
-  // reset it on every click.
+  // Sections the reader opens or closes by hand. This state is why the nav
+  // lives in a layout: it has to outlive a navigation between guides, and a
+  // per-page render would reset it on every click. A manual toggle governs
+  // every other section; the section containing the current page is always
+  // open, so entering it by a route the nav did not drive (back/forward, the
+  // guide index, a footer link) never hides the page being read.
   const [overrides, setOverrides] = useState<Record<string, boolean>>({})
 
   return (
     <ul className="space-y-0.5">
       {sections.map((section) => {
         const open =
-          overrides[section.section] ?? section.section === currentSection
+          section.section === currentSection ||
+          (overrides[section.section] ?? false)
         return (
           <li key={section.section}>
             <button

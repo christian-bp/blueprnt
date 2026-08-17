@@ -270,7 +270,7 @@ The parity test in `packages/i18n` catches any locale missing a key.
 |---|---|
 | `components/inner-sidebar.test.tsx` (new) | Header and content render; collapsing removes the content region from the tree rather than merely clipping it; the expand button appears with its accessible label; `border-r` is on the inner box and the outer animated element carries no box classes, the rule-2 invariant a future edit is most likely to break; omitting `onCollapse` renders no collapse control, and omitting both it and `actions` renders no header row |
 | `components/docs/docs-nav.test.tsx` (new) | The current page's section is open on first render; a section the reader opened stays open across a pathname change; the active page is marked; every section label resolves |
-| `components/app-shell.test.tsx` (extend) | `shellLayoutClasses("/docs/...")` is uncapped and unpadded but not height-locked; `/assistant` keeps its lock. The function is already pure, so this stays a plain unit test |
+| `components/app-shell.test.tsx` (extend) | `shellLayoutClasses("/docs/...")` is uncapped, with padding retained, but not height-locked; `/assistant` keeps its lock. The function is already pure, so this stays a plain unit test |
 | `app/(app)/assistant/page.test.tsx` (update) | The existing assertions, retargeted at the new frame |
 | `packages/i18n` parity test | Automatic, no new test needed |
 

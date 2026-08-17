@@ -86,9 +86,8 @@ describe("DocsNav", () => {
     expect(screen.getByRole("link", { name: "Introduction" })).toBeTruthy()
   })
 
-  // The whole reason the nav lives in a layout: today's <details
-  // open={isCurrent}> recomputes on every page load, so a section the reader
-  // opened themselves snaps shut on their next click. The component does not
+  // The whole reason the nav lives in a layout: a section the reader opened
+  // themselves must not snap shut on their next click. The component does not
   // remount between guides, so its override must outlive a path change.
   it("keeps a reader-opened section open across a navigation", () => {
     const { rerender } = renderNav()
@@ -103,6 +102,42 @@ describe("DocsNav", () => {
     )
 
     expect(screen.getByRole("link", { name: "Introduction" })).toBeTruthy()
+    expect(
+      screen
+        .getByRole("link", { name: "Role families" })
+        .getAttribute("aria-current")
+    ).toBe("page")
+  })
+
+  // A stale collapse override must never outrank the current-section default:
+  // a reader who collapses the section holding the current page, then reaches
+  // another page in that SAME section by a route the nav did not drive
+  // (back/forward, the guide index, a footer link), must still see it open,
+  // with the page they are reading marked current.
+  it("keeps the current section open across a navigation even after the reader collapsed it", () => {
+    const { rerender } = renderNav()
+    // Collapsing has no visible effect yet: the section still holds the
+    // current page, so the current-section default keeps it open regardless
+    // of the override this records.
+    fireEvent.click(screen.getByRole("button", { name: "Roles" }))
+    expect(
+      screen
+        .getByRole("button", { name: "Roles" })
+        .getAttribute("aria-expanded")
+    ).toBe("true")
+
+    pathState.current = "/docs/role-families"
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <DocsNav sections={SECTIONS} />
+      </NextIntlClientProvider>
+    )
+
+    expect(
+      screen
+        .getByRole("button", { name: "Roles" })
+        .getAttribute("aria-expanded")
+    ).toBe("true")
     expect(
       screen
         .getByRole("link", { name: "Role families" })

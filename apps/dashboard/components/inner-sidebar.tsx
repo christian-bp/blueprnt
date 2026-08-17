@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons"
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
@@ -14,7 +14,7 @@ import { SPRING } from "@/lib/motion"
 // (docs/ui-animation.md #3), so a `gap-*` on the row would still reserve dead
 // space once the width reached 0. Animating both together means collapsed
 // truly means zero footprint, no gap artifact left behind.
-export const INNER_SIDEBAR_WIDTH = 280
+const INNER_SIDEBAR_WIDTH = 280
 const INNER_SIDEBAR_GAP = 16
 
 // The content's own exit-fade duration. The CLOSE-direction width collapse
@@ -115,7 +115,10 @@ export function InnerSidebar({
         className
       )}
     >
-      <AnimatePresence>
+      {/* initial={false}: a first paint is not a transition. Without it the
+          content fades in on every mount, even when a page renders the
+          sidebar already open. */}
+      <AnimatePresence initial={false}>
         {open && (
           <motion.nav
             key="inner-sidebar-content"
@@ -161,40 +164,29 @@ export function InnerSidebar({
 }
 
 // The collapsed sidebar's stand-in slot, pinned to the top-left of the content
-// column (which must therefore be `relative`). Lives here rather than in each
-// page so both surfaces place their stand-in identically.
+// column (which must therefore be `relative`).
 export function InnerSidebarPinnedActions({
-  className,
   children,
 }: {
-  // Responsive visibility only, matched to the sidebar's own: a stand-in for
-  // a sidebar that is not rendered at this breakpoint is a dead control.
-  className?: string
   children: ReactNode
 }) {
   return (
-    <div
-      className={cn(
-        "absolute top-2 left-2 z-10 flex flex-col gap-1",
-        className
-      )}
-    >
+    <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
       {children}
     </div>
   )
 }
 
-// The control that brings a collapsed sidebar back. The default glyph is the
-// chevron mirroring the collapse control; a surface passes its own icon when
-// the icon can NAME what comes back better than a direction can (the assistant
-// passes HistoryIcon for its conversations).
+// The control that brings a collapsed sidebar back. A surface passes its own
+// icon, one that can NAME what comes back better than a direction can (the
+// assistant passes HistoryIcon for its conversations).
 export function InnerSidebarExpandButton({
   label,
-  icon = ArrowRight01Icon,
+  icon,
   onExpand,
 }: {
   label: string
-  icon?: IconSvgElement
+  icon: IconSvgElement
   onExpand: () => void
 }) {
   return (

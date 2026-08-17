@@ -1,3 +1,4 @@
+import { HistoryIcon } from "@hugeicons/core-free-icons"
 import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import {
@@ -152,6 +153,7 @@ describe("InnerSidebarExpandButton", () => {
     render(
       <InnerSidebarExpandButton
         label="Show guide navigation"
+        icon={HistoryIcon}
         onExpand={onExpand}
       />
     )
@@ -162,15 +164,14 @@ describe("InnerSidebarExpandButton", () => {
 })
 
 describe("InnerSidebarPinnedActions", () => {
-  it("renders its children in the pinned slot and merges a caller class", () => {
+  it("renders its children in the pinned slot", () => {
     const { container } = render(
-      <InnerSidebarPinnedActions className="hidden lg:flex">
+      <InnerSidebarPinnedActions>
         <button type="button">stand-in</button>
       </InnerSidebarPinnedActions>
     )
     const slot = container.firstElementChild as HTMLElement
     expect(slot.className).toContain("absolute")
-    expect(slot.className).toContain("hidden lg:flex")
     expect(screen.getByRole("button", { name: "stand-in" })).toBeTruthy()
   })
 })
