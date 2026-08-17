@@ -86,4 +86,41 @@ describe("shellLayoutClasses", () => {
     expect(content).not.toContain(PAGE_MAX_W)
     expect(content).not.toContain("min-h-0")
   })
+
+  // The docs nav is an inner sidebar like the assistant's conversations
+  // panel, so /docs drops the centred cap that would otherwise hold it away
+  // from the boundary with the app sidebar. Unlike /assistant it is NOT
+  // height-locked: the page keeps scrolling, and the nav pins itself. A lock
+  // here would silently break DocsHashScroll, which reads window.scrollY.
+  it("uncaps the docs routes without locking their height", () => {
+    for (const path of [
+      "/docs",
+      "/docs/introduction",
+      "/docs/what-is-pay-mapping",
+    ]) {
+      const layout = shellLayoutClasses(path)
+      const content = classList(layout.pageContent)
+      expect(content).not.toContain(PAGE_MAX_W)
+      expect(content).not.toContain(PAGE_WIDE_MAX_W)
+      // Padding is NOT dropped: pageContent applies px-4 lg:px-6 on every
+      // route, /work and /assistant included. Uncapped, not unpadded.
+      expect(content).toContain("px-4")
+      expect(content).toContain("lg:px-6")
+      // No lock, and nothing below it may gain min-h-0: position:sticky
+      // fails silently under an ancestor that clips.
+      expect(layout.sidebarInset).toBe("")
+      expect(content).not.toContain("min-h-0")
+      expect(content).not.toContain("flex-1")
+      expect(classList(layout.flexShell)).not.toContain("min-h-0")
+      expect(classList(layout.containerMain)).not.toContain("min-h-0")
+    }
+  })
+
+  // A bare startsWith("/docs") would swallow any future sibling route
+  // beginning with those characters and silently uncap it.
+  it("matches /docs as a segment, not as a prefix", () => {
+    expect(
+      classList(shellLayoutClasses("/docsomething").pageContent)
+    ).toContain(PAGE_MAX_W)
+  })
 })

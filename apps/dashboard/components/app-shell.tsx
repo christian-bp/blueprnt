@@ -62,6 +62,20 @@ export function shellLayoutClasses(pathname: string) {
   // must stay constant regardless of thread length on mobile too.
   const assistantBounded = pathname === "/assistant"
   const heightLocked = fullBleed || assistantBounded
+  // The routes that carry an INNER SIDEBAR: a secondary nav column between
+  // the app sidebar and the page content (the assistant's conversations
+  // panel, the docs nav). They drop the centred cap so the column is not held
+  // away from the boundary with the app sidebar by a width narrower than the
+  // viewport; each page centers its own reading column in what remains.
+  // Matched as an exact segment, never a bare startsWith, so a future sibling
+  // route beginning with the same characters is not swallowed.
+  //
+  // Independent of the height lock: /assistant locks (a long thread must not
+  // grow the page past the viewport), /docs does not (its nav pins itself and
+  // the page keeps scrolling, which is what DocsHashScroll's window.scrollY
+  // read depends on).
+  const hasInnerSidebar =
+    assistantBounded || pathname === "/docs" || pathname.startsWith("/docs/")
   // Screen-centering is per-page opt-in, not the default: today only the
   // overview centers its capped column (the assistant centers its own
   // reading column inside an uncapped row, so it needs nothing here);
@@ -92,10 +106,12 @@ export function shellLayoutClasses(pathname: string) {
       "flex w-full flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6",
       centered && "mx-auto",
       heightLocked && "min-h-0 flex-1",
-      // /assistant is uncapped like /work: its conversations panel must sit
-      // against the sidebar border, which no centered cap allows; the page
-      // centers its own reading column in the space beside the panel.
-      !heightLocked && (wide ? PAGE_WIDE_MAX_W : PAGE_MAX_W)
+      // /assistant and /docs are uncapped like /work: their inner sidebar
+      // (the conversations panel, the docs nav) must sit against the app
+      // sidebar's border, which no centered cap allows; each page centers
+      // its own reading column in the space beside the panel.
+      !(heightLocked || hasInnerSidebar) &&
+        (wide ? PAGE_WIDE_MAX_W : PAGE_MAX_W)
     ),
   }
 }
