@@ -4,6 +4,9 @@ import { NextIntlClientProvider } from "next-intl"
 import type { ReactNode } from "react"
 import { afterEach, describe, expect, it } from "vitest"
 import { usePageTitle } from "@/hooks/use-page-title"
+// Read from the constant, never spelled out: the separator is a single source
+// (lib/page-title.ts), and a copy here would only ever report that it changed.
+import { TITLE_SEPARATOR } from "@/lib/page-title"
 
 // dashboard.title is the brand ("blueprnt") and is the same in every locale.
 function wrapper({ children }: { children: ReactNode }) {
@@ -17,9 +20,9 @@ function wrapper({ children }: { children: ReactNode }) {
 describe("usePageTitle", () => {
   afterEach(() => cleanup())
 
-  it("sets the document title to '<page> · blueprnt'", () => {
+  it("sets the document title to '<page> | blueprnt'", () => {
     renderHook(() => usePageTitle("Roles"), { wrapper })
-    expect(document.title).toBe("Roles · blueprnt")
+    expect(document.title).toBe(`Roles${TITLE_SEPARATOR}blueprnt`)
   })
 
   it("joins segments and drops a still-loading one", () => {
@@ -29,10 +32,12 @@ describe("usePageTitle", () => {
         title: ["Admin", "Users"] as Array<string | undefined>,
       },
     })
-    expect(document.title).toBe("Admin · Users · blueprnt")
+    expect(document.title).toBe(
+      `Admin${TITLE_SEPARATOR}Users${TITLE_SEPARATOR}blueprnt`
+    )
 
     rerender({ title: [undefined, "Users"] })
-    expect(document.title).toBe("Users · blueprnt")
+    expect(document.title).toBe(`Users${TITLE_SEPARATOR}blueprnt`)
   })
 
   it("falls back to the brand alone while a dynamic title loads", () => {
@@ -45,9 +50,9 @@ describe("usePageTitle", () => {
       wrapper,
       initialProps: { title: "Roles" as string | undefined },
     })
-    expect(document.title).toBe("Roles · blueprnt")
+    expect(document.title).toBe(`Roles${TITLE_SEPARATOR}blueprnt`)
 
     rerender({ title: "Roller" })
-    expect(document.title).toBe("Roller · blueprnt")
+    expect(document.title).toBe(`Roller${TITLE_SEPARATOR}blueprnt`)
   })
 })

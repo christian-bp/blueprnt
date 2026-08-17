@@ -1,7 +1,7 @@
 // The separator between a page title and the brand in the document <title>.
 // Single source so the server metadata template (root layout) and the client
-// usePageTitle hook produce an identical tab format: "Roles · blueprnt".
-export const TITLE_SEPARATOR = " · "
+// usePageTitle hook produce an identical tab format: "Roles | blueprnt".
+export const TITLE_SEPARATOR = " | "
 
 // Join the page-title segments (dropping empty/loading ones) with the brand.
 // `page` is undefined while a dynamic title (a role or family name) is still
