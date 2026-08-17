@@ -2468,6 +2468,8 @@
       "emptyTitle": "Spørg Blueprnt AI",
       "emptyDescription": "Få hjælp til begreber, organisationens tal og til, hvor du gør ting i blueprnt. Medtag aldrig persondata som navne eller lønninger.",
       "suggestionCriterion": "Hvad er et kriterium?",
+      "suggestionLevelSeniority": "Niveau eller senioritet, hvad er forskellen?",
+      "suggestionPayByGender": "Hvad tjener kvinder og mænd i gennemsnit?",
       "suggestionGapTrend": "Hvordan har vores løngab udviklet sig?",
       "suggestionPayMapping": "Hvordan laver jeg en lønkortlægning?",
       "failed": "Blueprnt AI kunne ikke svare. Prøv igen.",
@@ -2496,6 +2498,7 @@
       "headingLink": "Link til {heading}",
       "index": {
         "title": "Dokumentation",
+        "heading": "Hvad kan vi hjælpe dig med?",
         "intro": "Guider til alt i blueprnt, fra jeres første onboarding til en færdig lønkortlægning.",
         "popular": "Populære guider",
         "browse": "Alle guider"

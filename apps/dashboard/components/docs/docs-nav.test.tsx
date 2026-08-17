@@ -179,14 +179,18 @@ describe("DocsNavPanel", () => {
     expect(screen.getByText("article")).toBeTruthy()
   })
 
-  it("marks the index link as current on the index route", () => {
+  // The index page is itself the navigation (a hero, the popular guides, every
+  // section listed), so the column beside it would repeat those links and push
+  // the page's centred hero off centre. The page still renders; only the nav
+  // is gone, and with it every link the nav holds (a collapsed InnerSidebar
+  // unmounts its content rather than clipping it, so nothing stays in the tab
+  // order).
+  it("renders no nav column on the index route, only the page", () => {
     pathState.current = "/docs"
     renderPanel()
-    expect(
-      screen
-        .getByRole("link", { name: INDEX_TITLE })
-        .getAttribute("aria-current")
-    ).toBe("page")
+    expect(screen.queryByRole("navigation")).toBeNull()
+    expect(screen.queryByRole("link", { name: INDEX_TITLE })).toBeNull()
+    expect(screen.getByText("article")).toBeTruthy()
   })
 
   // The nav is the only navigation this surface has, so there is deliberately

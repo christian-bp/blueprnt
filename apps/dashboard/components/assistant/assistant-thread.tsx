@@ -10,7 +10,7 @@ import {
 } from "@workspace/ui/components/empty"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useTranslations } from "next-intl"
-import { SUGGESTION_KEYS } from "@/components/assistant/assistant-composer"
+import { ASSISTANT_SUGGESTION_KEYS } from "@/components/assistant/assistant-composer"
 import {
   AssistantConversation,
   AssistantConversationContent,
@@ -57,7 +57,7 @@ export function AssistantThread(props: {
         </EmptyHeader>
         <EmptyContent>
           <div className="flex flex-wrap justify-center gap-2">
-            {SUGGESTION_KEYS.map((key) => (
+            {ASSISTANT_SUGGESTION_KEYS.map((key) => (
               <Button
                 key={key}
                 variant="outline"

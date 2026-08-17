@@ -9,6 +9,7 @@ import messages from "@workspace/i18n/messages/en.json"
 import { ConvexError } from "convex/values"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { ASSISTANT_SUGGESTION_KEYS } from "@/components/assistant/assistant-composer"
 
 vi.mock(
   "convex/react",
@@ -30,6 +31,10 @@ import { mockMutation } from "@/test/convex-mocks"
 
 const sendMessageMock = mockMutation("assistant.chat.sendMessage")
 const tAssistant = messages.dashboard.assistant
+// Taken from the exported set, never spelled out here: which questions the
+// chips ask is a product decision that changes, and a copy of the list in the
+// test would fail on every such change without ever catching a real break.
+const FIRST_SUGGESTION = tAssistant[ASSISTANT_SUGGESTION_KEYS[0]]
 
 function renderPrompt() {
   return render(
@@ -131,13 +136,11 @@ describe("AssistantPrompt", () => {
   it("sends a suggestion chip's localized text and navigates", async () => {
     sendMessageMock.mockResolvedValue(undefined)
     renderPrompt()
-    fireEvent.click(
-      screen.getByRole("button", { name: tAssistant.suggestionCriterion })
-    )
+    fireEvent.click(screen.getByRole("button", { name: FIRST_SUGGESTION }))
     await waitFor(() => {
       expect(sendMessageMock).toHaveBeenCalledExactlyOnceWith({
         orgId: "org-1",
-        text: tAssistant.suggestionCriterion,
+        text: FIRST_SUGGESTION,
         locale: "en",
         fresh: true,
       })

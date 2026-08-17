@@ -2468,6 +2468,8 @@
       "emptyTitle": "Ask Blueprnt AI",
       "emptyDescription": "Get help with concepts, your organization's numbers, and where to do things in blueprnt. Never include personal data such as names or salaries.",
       "suggestionCriterion": "What is a criterion?",
+      "suggestionLevelSeniority": "Level or seniority, what is the difference?",
+      "suggestionPayByGender": "What do women and men earn on average?",
       "suggestionGapTrend": "How has our pay gap developed?",
       "suggestionPayMapping": "How do I run a pay mapping?",
       "failed": "Blueprnt AI could not answer. Try again.",
@@ -2496,6 +2498,7 @@
       "headingLink": "Link to {heading}",
       "index": {
         "title": "Documentation",
+        "heading": "How can we help?",
         "intro": "Guides for everything in blueprnt, from your first onboarding to a completed pay mapping.",
         "popular": "Popular guides",
         "browse": "All guides"

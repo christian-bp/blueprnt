@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
+import { ASSISTANT_SUGGESTION_KEYS } from "@/components/assistant/assistant-composer"
 import type { AssistantChatMessage } from "@/components/assistant/assistant-message"
 
 vi.mock("@/components/assistant/assistant-message", () => ({
@@ -104,11 +105,12 @@ describe("AssistantThread", () => {
       screen.getByText(messages.dashboard.assistant.emptyTitle)
     ).toBeDefined()
 
-    const suggestionTexts = [
-      messages.dashboard.assistant.suggestionCriterion,
-      messages.dashboard.assistant.suggestionGapTrend,
-      messages.dashboard.assistant.suggestionPayMapping,
-    ]
+    // Read from the exported set rather than a second copy of it: the chips
+    // are a product decision that will change again, and a hardcoded list
+    // here only ever reports that it changed, never that it broke.
+    const suggestionTexts = ASSISTANT_SUGGESTION_KEYS.map(
+      (key) => messages.dashboard.assistant[key]
+    )
     const buttons = screen.getAllByRole("button")
     expect(buttons.length).toBe(3)
 

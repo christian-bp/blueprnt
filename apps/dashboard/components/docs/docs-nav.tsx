@@ -8,6 +8,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useState } from "react"
+import { PAGE_PADDING } from "@/components/app-shell"
 import { InnerSidebar } from "@/components/inner-sidebar"
 import { SPRING } from "@/lib/motion"
 
@@ -119,12 +120,19 @@ export function DocsNav({ sections }: { sections: DocsNavSection[] }) {
   )
 }
 
-// The docs surface's frame: the nav column beside the guide. Unlike the
-// assistant's conversations panel this one does NOT collapse. The guide nav is
-// the only navigation a reading surface has, so hiding it buys a reader
-// nothing: the article beside it is capped at max-w-3xl and would not use the
-// reclaimed width. That is also why there is no open state, no persistence and
-// no expand affordance here.
+// The docs surface's frame: the nav column beside the guide. Its open state is
+// derived from the ROUTE, never from the reader: closed on the guide's index,
+// open inside a guide.
+//
+// Closed on the index because that page IS the navigation (a hero that answers
+// questions directly, the popular guides, then every section listed); the
+// column beside it would be the same links a second time, and it would push
+// the page's centred hero off the pane's centre. Inside a guide the column is
+// the only navigation on screen, so it opens and stays open: unlike the
+// assistant's conversations panel this one carries no collapse control, since
+// hiding it would buy a reader nothing (the article is capped at max-w-3xl and
+// would not use the reclaimed width). Hence no persistence and no expand
+// affordance either, only the route.
 //
 // `children` is the server-rendered page, passed straight through as a slot.
 export function DocsNavPanel({
@@ -141,7 +149,7 @@ export function DocsNavPanel({
   return (
     <div className="flex w-full flex-1">
       <InnerSidebar
-        open
+        open={!atIndex}
         label={t("nav.label")}
         // The docs route is NOT height-locked: the page scrolls, so the column
         // pins itself instead of filling a locked parent.
@@ -156,13 +164,12 @@ export function DocsNavPanel({
         // the index's own title rather than introducing a key, since that
         // string already names this destination in every locale.
         actions={
+          // No current-page treatment: this link's own destination is the one
+          // route where the column does not render at all, so it can never be
+          // the current page while it is on screen.
           <Link
             href="/docs"
-            aria-current={atIndex ? "page" : undefined}
-            className={cn(
-              "flex min-w-0 flex-1 items-center rounded-md px-2 py-1.5 font-medium text-foreground text-sm hover:bg-accent hover:text-accent-foreground",
-              atIndex && "bg-accent"
-            )}
+            className="flex min-w-0 flex-1 items-center rounded-md px-2 py-1.5 font-medium text-foreground text-sm hover:bg-accent hover:text-accent-foreground"
           >
             <span className="truncate">{t("index.title")}</span>
           </Link>
@@ -170,7 +177,9 @@ export function DocsNavPanel({
       >
         <DocsNav sections={sections} />
       </InnerSidebar>
-      <div className="min-w-0 flex-1">{children}</div>
+      {/* The page padding the shell does not apply on this route (app-shell.tsx:
+          hasInnerSidebar), so the nav column beside this one stays flush. */}
+      <div className={cn("min-w-0 flex-1", PAGE_PADDING)}>{children}</div>
     </div>
   )
 }

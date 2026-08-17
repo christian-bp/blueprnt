@@ -2468,6 +2468,8 @@
       "emptyTitle": "Kysy Blueprnt AI:lta",
       "emptyDescription": "Saat apua käsitteisiin, organisaation lukuihin ja siihen, missä asiat tehdään blueprntissä. Älä koskaan sisällytä henkilötietoja, kuten nimiä tai palkkoja.",
       "suggestionCriterion": "Mikä on kriteeri?",
+      "suggestionLevelSeniority": "Taso vai senioriteetti, mikä on ero?",
+      "suggestionPayByGender": "Paljonko naiset ja miehet ansaitsevat keskimäärin?",
       "suggestionGapTrend": "Miten palkkaeromme on kehittynyt?",
       "suggestionPayMapping": "Miten teen palkkakartoituksen?",
       "failed": "Blueprnt AI ei voinut vastata. Yritä uudelleen.",
@@ -2496,6 +2498,7 @@
       "headingLink": "Linkki kohteeseen {heading}",
       "index": {
         "title": "Dokumentaatio",
+        "heading": "Miten voimme auttaa?",
         "intro": "Oppaat kaikkeen blueprntissä, ensimmäisestä käyttöönotosta valmiiseen palkkakartoitukseen.",
         "popular": "Suositut oppaat",
         "browse": "Kaikki oppaat"

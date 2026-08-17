@@ -10,6 +10,7 @@ import {
   InputGroupButton,
   InputGroupTextarea,
 } from "@workspace/ui/components/input-group"
+import { cn } from "@workspace/ui/lib/utils"
 import { useMutation } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
@@ -18,8 +19,10 @@ import {
   ASSISTANT_INPUT_GROUP_CLASS,
   ASSISTANT_SEND_BUTTON_CLASS,
   ASSISTANT_SEND_ROW_CLASS,
+  ASSISTANT_SUGGESTION_KEYS,
   ASSISTANT_TEXTAREA_CLASS,
-  SUGGESTION_KEYS,
+  ASSISTANT_TEXTAREA_COMPACT_CLASS,
+  type SuggestionKey,
 } from "@/components/assistant/assistant-composer"
 import { useOrganization } from "@/components/org-context"
 import { translateErrorCode } from "@/lib/convex-error"
@@ -28,7 +31,26 @@ import { translateErrorCode } from "@/lib/convex-error"
 // the landing page, the conversation lives on /assistant). Because messages
 // persist in Convex, submit-then-navigate needs no state handoff: the reply
 // is already streaming into the thread when the page mounts.
-export function AssistantPrompt() {
+export function AssistantPrompt({
+  align = "start",
+  size = "default",
+  suggestions = ASSISTANT_SUGGESTION_KEYS,
+}: {
+  // Where the rows UNDER the full-width input sit (the suggestion chips, the
+  // error line). The overview keeps them at the start of its left-aligned
+  // column; the docs index centers its whole hero, where a left-aligned chip
+  // row under a centered input reads as a mistake rather than a choice.
+  align?: "start" | "center"
+  // The pill's density. "sm" is the one-row pill (see
+  // ASSISTANT_TEXTAREA_COMPACT_CLASS). Kept as its own axis rather than folded
+  // into `align`, because centring a layout and shrinking a control are two
+  // different decisions that only happen to coincide on today's one caller.
+  size?: "default" | "sm"
+  // Which starter chips to offer. The default is the app set; a surface whose
+  // reader came for something else passes its own (the guide passes
+  // DOCS_SUGGESTION_KEYS).
+  suggestions?: readonly SuggestionKey[]
+} = {}) {
   const t = useTranslations("dashboard.assistant")
   const tErrors = useTranslations("errors")
   const locale = useLocale()
@@ -70,7 +92,11 @@ export function AssistantPrompt() {
           rules). */}
       <InputGroup className={ASSISTANT_INPUT_GROUP_CLASS}>
         <InputGroupTextarea
-          className={ASSISTANT_TEXTAREA_CLASS}
+          className={
+            size === "sm"
+              ? ASSISTANT_TEXTAREA_COMPACT_CLASS
+              : ASSISTANT_TEXTAREA_CLASS
+          }
           value={text}
           placeholder={t("inputPlaceholder")}
           rows={1}
@@ -86,7 +112,13 @@ export function AssistantPrompt() {
             }
           }}
         />
-        <InputGroupAddon align="block-end" className={ASSISTANT_SEND_ROW_CLASS}>
+        {/* The compact pill puts the control BESIDE the field (inline-end);
+            the default one gives it its own row underneath (block-end), which
+            is what makes the tall pill read as two rows. */}
+        <InputGroupAddon
+          align={size === "sm" ? "inline-end" : "block-end"}
+          className={ASSISTANT_SEND_ROW_CLASS}
+        >
           <InputGroupButton
             size="icon-sm"
             variant={text.trim() === "" ? "secondary" : "default"}
@@ -99,8 +131,13 @@ export function AssistantPrompt() {
           </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>
-      <div className="flex flex-wrap items-center gap-2">
-        {SUGGESTION_KEYS.map((key) => (
+      <div
+        className={cn(
+          "flex flex-wrap items-center gap-2",
+          align === "center" && "justify-center"
+        )}
+      >
+        {suggestions.map((key) => (
           <Button
             key={key}
             variant="outline"
@@ -115,7 +152,12 @@ export function AssistantPrompt() {
       {/* Reserved-minimum slot, not a fixed height: an appearing error never
           reflows the page, but wrapped text can still grow the slot
           downward instead of overlapping the row below. */}
-      <p className="min-h-4 text-destructive text-xs">
+      <p
+        className={cn(
+          "min-h-4 text-destructive text-xs",
+          align === "center" && "text-center"
+        )}
+      >
         {error !== undefined ? <span role="alert">{error}</span> : ""}
       </p>
     </div>

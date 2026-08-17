@@ -28,7 +28,12 @@ export default async function DocArticlePage({ params }: Props) {
     next ? getDoc(locale, next) : null,
   ])
   return (
-    <article className="mx-auto min-w-0 max-w-3xl pb-16">
+    // pt-4: more air above the title than the shell's own page inset gives.
+    // Every other page's title is PageHeading's 18px, where 24px of space
+    // reads right; this one opens at text-2xl and needs the room a document
+    // title does. On its own element, never merged into the column's py-*,
+    // so the two padding utilities can never fight over source order.
+    <article className="mx-auto min-w-0 max-w-3xl pt-4 pb-16">
       {/* Deliberate deviation from PageHeading: a docs article is a reading
           surface, so its title is the document's own h1 at the editorial
           scale that opens the MDX heading hierarchy, not the app's h2 page
