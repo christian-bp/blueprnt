@@ -2518,7 +2518,9 @@
         "troubleshooting": "Troubleshooting"
       },
       "nav": {
-        "label": "Guide navigation"
+        "label": "Guide navigation",
+        "searchPlaceholder": "Search guides",
+        "noMatches": "No guides match the search."
       },
       "notFound": {
         "title": "Documentation page not found",

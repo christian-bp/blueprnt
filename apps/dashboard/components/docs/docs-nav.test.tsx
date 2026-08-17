@@ -13,6 +13,7 @@ import {
   DocsNav,
   DocsNavPanel,
   type DocsNavSection,
+  filterSections,
 } from "@/components/docs/docs-nav"
 
 const SECTIONS: DocsNavSection[] = [
@@ -45,6 +46,94 @@ function renderNav() {
 afterEach(() => {
   pathState.current = "/docs/roles-register"
   cleanup()
+})
+
+const NAV = messages.dashboard.docs.nav
+
+describe("filterSections", () => {
+  it("keeps everything for an empty or whitespace query", () => {
+    expect(filterSections(SECTIONS, "")).toEqual(SECTIONS)
+    expect(filterSections(SECTIONS, "   ")).toEqual(SECTIONS)
+  })
+
+  it("keeps only the pages whose title matches, and drops the emptied sections", () => {
+    const result = filterSections(SECTIONS, "introduction")
+    expect(result.map((section) => section.section)).toEqual([
+      "getting-started",
+    ])
+    expect(result[0]?.pages.map((page) => page.slug)).toEqual(["introduction"])
+  })
+
+  it("keeps a whole section when the section's own label matches", () => {
+    // A reader typing the name of a part of the guide wants that part, not
+    // the subset of its pages that happen to repeat the word in their title.
+    const result = filterSections(SECTIONS, "roles")
+    const roles = result.find((section) => section.section === "roles")
+    expect(roles?.pages).toEqual(SECTIONS[1]?.pages)
+  })
+
+  it("matches across the folding the whole docs surface uses", () => {
+    // Via matchScore: case, word order and the Nordic letters all fold, so a
+    // reader never has to reproduce the exact spelling to find a page.
+    const nordic: DocsNavSection[] = [
+      {
+        section: "pay",
+        label: "Lönekartläggning",
+        pages: [{ slug: "what-is", title: "Vad är en lönekartläggning" }],
+      },
+    ]
+    expect(filterSections(nordic, "lonekart")).toHaveLength(1)
+    expect(filterSections(SECTIONS, "register roles")).toHaveLength(1)
+    expect(filterSections(SECTIONS, "ROLES")).toHaveLength(1)
+  })
+
+  it("returns nothing when the query matches no page or section", () => {
+    expect(filterSections(SECTIONS, "zzzz")).toEqual([])
+  })
+})
+
+describe("DocsNav search", () => {
+  it("filters the tree to the matching pages and opens them without a click", () => {
+    // "Key concepts" sits in a section that is NOT the current one, so it is
+    // closed until the query opens it: a filter that hides its own results
+    // behind a disclosure would be useless.
+    renderNav()
+    expect(screen.queryByRole("link", { name: "Key concepts" })).toBeNull()
+
+    fireEvent.change(
+      screen.getByRole("textbox", { name: NAV.searchPlaceholder }),
+      {
+        target: { value: "key concepts" },
+      }
+    )
+    expect(screen.getByRole("link", { name: "Key concepts" })).toBeDefined()
+    expect(screen.queryByRole("link", { name: "Role families" })).toBeNull()
+    expect(screen.queryByText("Roles")).toBeNull()
+  })
+
+  // The field sits at the very top of a scroll container that has no padding
+  // of its own there, and a scroll container clips at its padding box: flush
+  // against that edge, the input's 3px focus ring is cut along its whole top
+  // edge. The room has to live on the sticky element, because sticky pins to
+  // the scrollport and padding on the scroller would scroll away with it.
+  it("keeps room above the field for its focus ring", () => {
+    const { container } = renderNav()
+    const sticky = container.querySelector("div.sticky")
+    expect(sticky?.className).toMatch(/(^|\s)(py|pt)-/)
+  })
+
+  it("says so when nothing matches, and restores the tree when the query is cleared", () => {
+    renderNav()
+    const field = screen.getByRole("textbox", { name: NAV.searchPlaceholder })
+
+    fireEvent.change(field, { target: { value: "zzzz" } })
+    expect(screen.getByText(NAV.noMatches)).toBeDefined()
+
+    fireEvent.change(field, { target: { value: "" } })
+    expect(screen.queryByText(NAV.noMatches)).toBeNull()
+    expect(screen.getByText("Getting started")).toBeDefined()
+    expect(screen.getByText("Roles")).toBeDefined()
+  })
 })
 
 describe("DocsNav", () => {

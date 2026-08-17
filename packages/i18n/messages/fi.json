@@ -2518,7 +2518,9 @@
         "troubleshooting": "Vianetsintä"
       },
       "nav": {
-        "label": "Oppaiden navigointi"
+        "label": "Oppaiden navigointi",
+        "searchPlaceholder": "Hae oppaista",
+        "noMatches": "Yksikään opas ei vastaa hakua."
       },
       "notFound": {
         "title": "Dokumentaatiosivua ei löytynyt",

@@ -2518,7 +2518,9 @@
         "troubleshooting": "Fejlfinding"
       },
       "nav": {
-        "label": "Guidenavigation"
+        "label": "Guidenavigation",
+        "searchPlaceholder": "Søg i guider",
+        "noMatches": "Ingen guider matcher søgningen."
       },
       "notFound": {
         "title": "Dokumentationssiden blev ikke fundet",
