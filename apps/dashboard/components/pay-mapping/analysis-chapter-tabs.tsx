@@ -54,8 +54,13 @@ export function AnalysisChapterTabs() {
         // four names for the same glance, and the name is what the reader is
         // choosing between. Muted in every state, so an active or hovered tab
         // reads the same way as the rest of the row.
+        // me-1 carries the gap, NOT the space in the message: this tab is a
+        // flex container, so the message's " " between the number and the name
+        // is a whitespace-only text node, which flex layout drops entirely.
+        // The message keeps the space for locales that read it as text, and
+        // the margin is what actually separates the two on screen.
         num: (chunks) => (
-          <span className="text-muted-foreground">{chunks}</span>
+          <span className="me-1 text-muted-foreground">{chunks}</span>
         ),
       }),
       href: chapterHref(pathname, chapter),
