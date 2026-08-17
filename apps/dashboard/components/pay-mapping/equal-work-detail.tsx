@@ -2,7 +2,8 @@
 
 import { Coins01Icon, UserMultiple02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { flagWomenBehind } from "@workspace/core"
+import { flagWomenBehind, type PayGapFlag } from "@workspace/core"
+import { cn } from "@workspace/ui/lib/utils"
 import { useFormatter, useTranslations } from "next-intl"
 import { GenderDotIcon, type GenderSeries } from "@/components/gender-mark"
 import { HelpMorphButton } from "@/components/help-morph-button"
@@ -12,6 +13,7 @@ import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import type { ReactNode } from "react"
 import { EvidenceDisclosure } from "./evidence-disclosure"
 import { GroupMemberTable } from "./group-member-table"
+import { FLAG_TEXT_CLASSNAME } from "./pay-gap-flag-badge"
 import {
   type GapGroup,
   type GapMetric,
@@ -109,10 +111,15 @@ function GapCard({
   metric,
   currency,
   prefix,
+  flag,
 }: {
   metric: GapMetric
   currency: string
   prefix?: string
+  // The severity this gap already carries elsewhere on the page, never a
+  // threshold of this card's own: the percent is the figure a reader scans
+  // for "how bad is this", and it has to agree with the group's chip.
+  flag: PayGapFlag
 }) {
   const t = useTranslations("dashboard.payMapping.detail.summary")
   const format = useFormatter()
@@ -125,7 +132,7 @@ function GapCard({
       <span className="text-foreground tabular-nums">
         {money(-metric.gapKr, currency, { signed: true })}
       </span>
-      <span className="tabular-nums">
+      <span className={cn("tabular-nums", FLAG_TEXT_CLASSNAME[flag])}>
         ({percentText(metric.gapPct, format)})
       </span>
     </FigureCard>
@@ -220,12 +227,25 @@ export function EqualWorkDetail({
             mean={primary.menMean}
             currency={currency}
           />
-          <GapCard metric={primary} currency={currency} />
+          <GapCard
+            metric={primary}
+            currency={currency}
+            flag={flagWomenBehind(
+              group.womenCount,
+              group.menCount,
+              primary.gapPct
+            )}
+          />
           {secondaryMatters && (
             <GapCard
               metric={secondary}
               currency={currency}
               prefix={secondaryPrefix}
+              flag={flagWomenBehind(
+                group.womenCount,
+                group.menCount,
+                secondary.gapPct
+              )}
             />
           )}
         </div>

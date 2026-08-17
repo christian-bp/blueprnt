@@ -27,6 +27,19 @@ const FLAG_CLASSNAME: Record<PayGapFlag, string> = {
   insufficient: "",
 }
 
+// The same severity as TEXT ink alone, for a figure that IS the judgement
+// (the gap percent beside the amount). It lives here, beside the chip map, so
+// a value and a chip can never end up disagreeing about what a flag looks
+// like. `ok` and `insufficient` stay in the inherited ink deliberately: the
+// colour is there to say how bad a gap is, and a gap that is fine is not a
+// thing to colour, least of all in a third hue next to the two gender inks.
+export const FLAG_TEXT_CLASSNAME: Record<PayGapFlag, string> = {
+  critical: "text-flag-critical",
+  elevated: "text-flag-elevated",
+  ok: "",
+  insufficient: "",
+}
+
 export function PayGapFlagBadge({ flag }: { flag: PayGapFlag }) {
   const t = useTranslations("dashboard.payMapping.gap")
   const label = t(`flag.${flag}`)
