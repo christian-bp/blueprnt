@@ -10,7 +10,7 @@ import {
 } from "@workspace/ui/components/empty"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useTranslations } from "next-intl"
-import { ASSISTANT_SUGGESTION_KEYS } from "@/components/assistant/assistant-composer"
+import { useState } from "react"
 import {
   AssistantConversation,
   AssistantConversationContent,
@@ -20,6 +20,10 @@ import {
   AssistantMessage,
   type AssistantChatMessage,
 } from "@/components/assistant/assistant-message"
+import {
+  ASSISTANT_SUGGESTION_POOL,
+  sampleSuggestions,
+} from "@/lib/assistant-suggestions"
 
 // The thread's three states: a content-shaped loading skeleton, an empty
 // state with starter suggestions, or the scrollable message list. The
@@ -31,6 +35,11 @@ export function AssistantThread(props: {
   onSuggestion: (text: string) => void
 }) {
   const t = useTranslations("dashboard.assistant")
+  // Drawn once per mount, above the early returns so the hook order is stable
+  // across the thread's three states: the chips must not change while the
+  // reader is looking at them, and an empty thread that gains its first
+  // message and loses it again is one mount, not two.
+  const [chips] = useState(() => sampleSuggestions(ASSISTANT_SUGGESTION_POOL))
 
   if (props.loading) {
     // Content-shaped skeleton: two message-height bars in the same layout so
@@ -57,7 +66,7 @@ export function AssistantThread(props: {
         </EmptyHeader>
         <EmptyContent>
           <div className="flex flex-wrap justify-center gap-2">
-            {ASSISTANT_SUGGESTION_KEYS.map((key) => (
+            {chips.map((key) => (
               <Button
                 key={key}
                 variant="outline"

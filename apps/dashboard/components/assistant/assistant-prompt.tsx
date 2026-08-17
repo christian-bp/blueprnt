@@ -19,11 +19,14 @@ import {
   ASSISTANT_INPUT_GROUP_CLASS,
   ASSISTANT_SEND_BUTTON_CLASS,
   ASSISTANT_SEND_ROW_CLASS,
-  ASSISTANT_SUGGESTION_KEYS,
   ASSISTANT_TEXTAREA_CLASS,
   ASSISTANT_TEXTAREA_COMPACT_CLASS,
-  type SuggestionKey,
 } from "@/components/assistant/assistant-composer"
+import {
+  ASSISTANT_SUGGESTION_POOL,
+  sampleSuggestions,
+  type SuggestionPool,
+} from "@/lib/assistant-suggestions"
 import { useOrganization } from "@/components/org-context"
 import { translateErrorCode } from "@/lib/convex-error"
 
@@ -34,7 +37,7 @@ import { translateErrorCode } from "@/lib/convex-error"
 export function AssistantPrompt({
   align = "start",
   size = "default",
-  suggestions = ASSISTANT_SUGGESTION_KEYS,
+  suggestions = ASSISTANT_SUGGESTION_POOL,
 }: {
   // Where the rows UNDER the full-width input sit (the suggestion chips, the
   // error line). The overview keeps them at the start of its left-aligned
@@ -46,10 +49,10 @@ export function AssistantPrompt({
   // into `align`, because centring a layout and shrinking a control are two
   // different decisions that only happen to coincide on today's one caller.
   size?: "default" | "sm"
-  // Which starter chips to offer. The default is the app set; a surface whose
-  // reader came for something else passes its own (the guide passes
-  // DOCS_SUGGESTION_KEYS).
-  suggestions?: readonly SuggestionKey[]
+  // Which pool the starter chips are drawn from. The default is the app pool;
+  // a surface whose reader came for something else passes its own (the guide
+  // passes DOCS_SUGGESTION_POOL).
+  suggestions?: SuggestionPool
 } = {}) {
   const t = useTranslations("dashboard.assistant")
   const tErrors = useTranslations("errors")
@@ -60,6 +63,10 @@ export function AssistantPrompt({
   const [text, setText] = useState("")
   const [error, setError] = useState<string | undefined>(undefined)
   const [sending, setSending] = useState(false)
+  // Drawn ONCE per mount, never per render: a fresh draw on every render would
+  // change the chips under the reader's cursor. Held in state rather than
+  // computed, so a re-render (typing, an error, a send) leaves them alone.
+  const [chips] = useState(() => sampleSuggestions(suggestions))
 
   const send = async (message: string) => {
     const trimmed = message.trim()
@@ -137,7 +144,7 @@ export function AssistantPrompt({
           align === "center" && "justify-center"
         )}
       >
-        {suggestions.map((key) => (
+        {chips.map((key) => (
           <Button
             key={key}
             variant="outline"

@@ -37,43 +37,6 @@ export const ASSISTANT_SEND_ROW_CLASS = "justify-end"
 // button docked to its edge.
 export const ASSISTANT_SEND_BUTTON_CLASS = "rounded-full"
 
-// The starter chips are the assistant's shop window, so they carry one
-// question per CAPABILITY FAMILY rather than three of a kind. The families are
-// the tool set (backend assistant/tools.ts): the organization's current
-// numbers (get_org_stats, get_pay_stats), how those numbers have MOVED (the
-// two trend charts), and how the product and the domain work (search_docs).
-//
-// The app set deliberately does not LEAD with a trend: a trend plots one point
-// per COMPLETED pay mapping, so it is empty until an org has finished one, and
-// a first chip that answers "no data yet" teaches the reader that the
-// assistant has nothing. The pay split reads the live register instead and
-// works from the first import.
-export const ASSISTANT_SUGGESTION_KEYS = [
-  "suggestionPayByGender",
-  "suggestionGapTrend",
-  "suggestionPayMapping",
-] as const
-
-// The guide's own set: a reader who opened the documentation came to
-// understand something, not to look up their own figures, so all three are
-// questions the corpus answers. Level vs seniority earns its place because it
-// is the domain's single most confused boundary (key-concepts.mdx gives it its
-// own section, and the surfaces that use either term carry help text guarding
-// it). The pay-mapping how-to is in both sets on purpose: it is the job the
-// whole product exists to finish.
-export const DOCS_SUGGESTION_KEYS = [
-  "suggestionCriterion",
-  "suggestionLevelSeniority",
-  "suggestionPayMapping",
-] as const
-
-// Every chip's key resolves under `dashboard.assistant`, so a set may only
-// hold keys that exist there: a typo is a compile error at the call site
-// rather than a raw key rendered into a button.
-export type SuggestionKey =
-  | (typeof ASSISTANT_SUGGESTION_KEYS)[number]
-  | (typeof DOCS_SUGGESTION_KEYS)[number]
-
 // The compact pill: one row, with the send control beside the field instead of
 // under it. For a surface where the prompt is an entry point rather than the
 // page's main event (the guide's hero), where the two-row pill reads as a

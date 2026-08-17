@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { getLocale, getTranslations } from "next-intl/server"
-import { DOCS_SUGGESTION_KEYS } from "@/components/assistant/assistant-composer"
 import { AssistantPrompt } from "@/components/assistant/assistant-prompt"
+import { DOCS_SUGGESTION_POOL } from "@/lib/assistant-suggestions"
 import { getDoc } from "@/lib/docs/docs"
 import { DOCS_NAV, POPULAR_DOCS, SECTION_LABEL_KEYS } from "@/lib/docs/docs-nav"
 
@@ -61,7 +61,7 @@ export default async function DocsIndexPage() {
             <AssistantPrompt
               align="center"
               size="sm"
-              suggestions={DOCS_SUGGESTION_KEYS}
+              suggestions={DOCS_SUGGESTION_POOL}
             />
           </div>
         </div>

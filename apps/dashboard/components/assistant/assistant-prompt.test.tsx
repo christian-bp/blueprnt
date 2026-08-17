@@ -7,9 +7,9 @@ import {
 } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { ConvexError } from "convex/values"
+import { ASSISTANT_SUGGESTION_POOL } from "@/lib/assistant-suggestions"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { ASSISTANT_SUGGESTION_KEYS } from "@/components/assistant/assistant-composer"
 
 vi.mock(
   "convex/react",
@@ -31,10 +31,15 @@ import { mockMutation } from "@/test/convex-mocks"
 
 const sendMessageMock = mockMutation("assistant.chat.sendMessage")
 const tAssistant = messages.dashboard.assistant
-// Taken from the exported set, never spelled out here: which questions the
-// chips ask is a product decision that changes, and a copy of the list in the
-// test would fail on every such change without ever catching a real break.
-const FIRST_SUGGESTION = tAssistant[ASSISTANT_SUGGESTION_KEYS[0]]
+
+// The chips are DRAWN from a pool at mount, so no fixed question can be looked
+// for here. Every chip is a plain button; the send control is the only one in
+// the prompt carrying an aria-label, which is what separates them.
+function suggestionChips() {
+  return screen
+    .getAllByRole("button")
+    .filter((button) => button.getAttribute("aria-label") === null)
+}
 
 function renderPrompt() {
   return render(
@@ -133,14 +138,21 @@ describe("AssistantPrompt", () => {
     )
   })
 
-  it("sends a suggestion chip's localized text and navigates", async () => {
+  it("offers one chip per group and sends the chip's own localized text", async () => {
     sendMessageMock.mockResolvedValue(undefined)
     renderPrompt()
-    fireEvent.click(screen.getByRole("button", { name: FIRST_SUGGESTION }))
+    const chips = suggestionChips()
+    // One per capability family, whatever this mount happened to draw.
+    expect(chips).toHaveLength(ASSISTANT_SUGGESTION_POOL.length)
+    const label = chips[0]?.textContent ?? ""
+    // Drawn from the pool, and translated: a raw key would fail both checks.
+    expect(Object.values(tAssistant)).toContain(label)
+
+    fireEvent.click(chips[0] as HTMLElement)
     await waitFor(() => {
       expect(sendMessageMock).toHaveBeenCalledExactlyOnceWith({
         orgId: "org-1",
-        text: FIRST_SUGGESTION,
+        text: label,
         locale: "en",
         fresh: true,
       })

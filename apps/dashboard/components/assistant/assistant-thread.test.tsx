@@ -2,8 +2,8 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { ASSISTANT_SUGGESTION_KEYS } from "@/components/assistant/assistant-composer"
 import type { AssistantChatMessage } from "@/components/assistant/assistant-message"
+import { ASSISTANT_SUGGESTION_POOL } from "@/lib/assistant-suggestions"
 
 vi.mock("@/components/assistant/assistant-message", () => ({
   AssistantMessage: ({ message }: { message: AssistantChatMessage }) => (
@@ -105,14 +105,15 @@ describe("AssistantThread", () => {
       screen.getByText(messages.dashboard.assistant.emptyTitle)
     ).toBeDefined()
 
-    // Read from the exported set rather than a second copy of it: the chips
-    // are a product decision that will change again, and a hardcoded list
-    // here only ever reports that it changed, never that it broke.
-    const suggestionTexts = ASSISTANT_SUGGESTION_KEYS.map(
-      (key) => messages.dashboard.assistant[key]
-    )
+    // The chips are DRAWN from a pool at mount, so the test reads what this
+    // mount rendered rather than naming questions: one chip per capability
+    // family, each carrying a translated label from the pool.
     const buttons = screen.getAllByRole("button")
-    expect(buttons.length).toBe(3)
+    expect(buttons.length).toBe(ASSISTANT_SUGGESTION_POOL.length)
+    const suggestionTexts = buttons.map((button) => button.textContent ?? "")
+    for (const text of suggestionTexts) {
+      expect(Object.values(messages.dashboard.assistant)).toContain(text)
+    }
 
     for (const text of suggestionTexts) {
       fireEvent.click(screen.getByRole("button", { name: text }))
