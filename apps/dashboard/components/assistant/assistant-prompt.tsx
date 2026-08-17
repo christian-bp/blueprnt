@@ -3,7 +3,6 @@
 import { ArrowUp02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Button } from "@workspace/ui/components/button"
 import {
   InputGroup,
   InputGroupAddon,
@@ -21,6 +20,7 @@ import {
   ASSISTANT_SEND_ROW_CLASS,
   ASSISTANT_TEXTAREA_CLASS,
   ASSISTANT_TEXTAREA_COMPACT_CLASS,
+  AssistantSuggestionChip,
 } from "@/components/assistant/assistant-composer"
 import {
   ASSISTANT_SUGGESTION_POOL,
@@ -40,9 +40,10 @@ export function AssistantPrompt({
   suggestions = ASSISTANT_SUGGESTION_POOL,
 }: {
   // Where the rows UNDER the full-width input sit (the suggestion chips, the
-  // error line). The overview keeps them at the start of its left-aligned
-  // column; the docs index centers its whole hero, where a left-aligned chip
-  // row under a centered input reads as a mistake rather than a choice.
+  // error line). They follow the SURFACE, not the input: the overview's own
+  // column is left-aligned, so centring the chips there left them floating
+  // away from everything around them; the guide's hero centres its whole
+  // block, where a left-aligned row under a centred field reads as a mistake.
   align?: "start" | "center"
   // The pill's density. "sm" is the one-row pill (see
   // ASSISTANT_TEXTAREA_COMPACT_CLASS). Kept as its own axis rather than folded
@@ -145,15 +146,12 @@ export function AssistantPrompt({
         )}
       >
         {chips.map((key) => (
-          <Button
+          <AssistantSuggestionChip
             key={key}
-            variant="outline"
-            size="sm"
+            label={t(key)}
             disabled={sending}
-            onClick={() => void send(t(key))}
-          >
-            {t(key)}
-          </Button>
+            onSelect={() => void send(t(key))}
+          />
         ))}
       </div>
       {/* Reserved-minimum slot, not a fixed height: an appearing error never

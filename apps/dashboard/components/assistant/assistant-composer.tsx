@@ -2,6 +2,7 @@
 
 import { ArrowUp02Icon, StopIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { Button } from "@workspace/ui/components/button"
 import {
   InputGroup,
   InputGroupAddon,
@@ -44,6 +45,41 @@ export const ASSISTANT_SEND_BUTTON_CLASS = "rounded-full"
 // vendored textarea auto-grows on field-sizing-content, so dropping its
 // min-h-16 floor costs nothing: a pasted paragraph still expands the pill.
 export const ASSISTANT_TEXTAREA_COMPACT_CLASS = "min-h-0 p-3"
+
+// A starter suggestion under the input, shared by the overview prompt and the
+// thread's empty state so the two can never drift apart.
+//
+// A real button, because the chip DOES something in place (it sends the
+// question) rather than going somewhere: that is what makes it keyboard
+// operable and announced correctly, and a clickable div would be strictly
+// worse. But it is deliberately not dressed as one. A suggestion is an offer
+// subordinate to the field above it, so it takes the filled secondary tint
+// with muted text instead of the outline variant, whose border and weight
+// read as a genuine secondary action and competed with the page's real
+// buttons. rounded-full is the same call-site chat idiom the send control
+// already follows.
+export function AssistantSuggestionChip({
+  label,
+  disabled,
+  onSelect,
+}: {
+  label: string
+  disabled?: boolean
+  onSelect: () => void
+}) {
+  return (
+    <Button
+      type="button"
+      variant="secondary"
+      size="sm"
+      disabled={disabled}
+      onClick={onSelect}
+      className="rounded-full font-normal text-muted-foreground hover:text-foreground"
+    >
+      {label}
+    </Button>
+  )
+}
 
 // The assistant page's presentational input: send/stop live in the same
 // slot (only one control is ever mounted, matching busy), and Enter submits

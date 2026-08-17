@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@workspace/ui/components/button"
 import {
   Empty,
   EmptyContent,
@@ -11,6 +10,7 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { AssistantSuggestionChip } from "@/components/assistant/assistant-composer"
 import {
   AssistantConversation,
   AssistantConversationContent,
@@ -67,14 +67,11 @@ export function AssistantThread(props: {
         <EmptyContent>
           <div className="flex flex-wrap justify-center gap-2">
             {chips.map((key) => (
-              <Button
+              <AssistantSuggestionChip
                 key={key}
-                variant="outline"
-                size="sm"
-                onClick={() => props.onSuggestion(t(key))}
-              >
-                {t(key)}
-              </Button>
+                label={t(key)}
+                onSelect={() => props.onSuggestion(t(key))}
+              />
             ))}
           </div>
         </EmptyContent>
