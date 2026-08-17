@@ -2514,6 +2514,11 @@
         "glossary": "Glossary",
         "troubleshooting": "Troubleshooting"
       },
+      "nav": {
+        "label": "Guide navigation",
+        "collapse": "Hide guide navigation",
+        "expand": "Show guide navigation"
+      },
       "notFound": {
         "title": "Documentation page not found",
         "body": "The link may be outdated or mistyped.",

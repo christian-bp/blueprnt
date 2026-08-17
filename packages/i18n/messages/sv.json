@@ -2514,6 +2514,11 @@
         "glossary": "Ordlista",
         "troubleshooting": "Felsökning"
       },
+      "nav": {
+        "label": "Guidenavigering",
+        "collapse": "Dölj guidenavigering",
+        "expand": "Visa guidenavigering"
+      },
       "notFound": {
         "title": "Dokumentationssidan hittades inte",
         "body": "Länken kan vara inaktuell eller felstavad.",

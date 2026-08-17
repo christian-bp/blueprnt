@@ -2514,6 +2514,11 @@
         "glossary": "Sanasto",
         "troubleshooting": "Vianetsintä"
       },
+      "nav": {
+        "label": "Oppaiden navigointi",
+        "collapse": "Piilota oppaiden navigointi",
+        "expand": "Näytä oppaiden navigointi"
+      },
       "notFound": {
         "title": "Dokumentaatiosivua ei löytynyt",
         "body": "Linkki voi olla vanhentunut tai kirjoitettu väärin.",

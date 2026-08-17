@@ -2514,6 +2514,11 @@
         "glossary": "Ordliste",
         "troubleshooting": "Fejlfinding"
       },
+      "nav": {
+        "label": "Guidenavigation",
+        "collapse": "Skjul guidenavigation",
+        "expand": "Vis guidenavigation"
+      },
       "notFound": {
         "title": "Dokumentationssiden blev ikke fundet",
         "body": "Linket kan være forældet eller fejlskrevet.",
