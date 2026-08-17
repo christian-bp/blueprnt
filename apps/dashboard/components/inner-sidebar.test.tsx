@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import {
   InnerSidebar,
   InnerSidebarExpandButton,
+  InnerSidebarPinnedActions,
 } from "@/components/inner-sidebar"
 
 afterEach(cleanup)
@@ -69,8 +70,11 @@ describe("InnerSidebar", () => {
     const outer = container.firstElementChild as HTMLElement
     const inner = screen.getByRole("navigation", { name: "Guide navigation" })
 
-    expect(outer.className).not.toContain("border")
-    expect(outer.className).not.toContain("p-")
+    // Anchored at a class boundary so `px-2`/`py-2`/`pt-2` are caught too: a
+    // plain substring check for "p-" misses every directional padding class,
+    // which is the form a future edit is most likely to add.
+    expect(outer.className).not.toMatch(/(^|\s)border/)
+    expect(outer.className).not.toMatch(/(^|\s)p[xytrbl]?-/)
     expect(inner.className).toContain("border-r")
   })
 
@@ -130,5 +134,19 @@ describe("InnerSidebarExpandButton", () => {
     const button = screen.getByRole("button", { name: "Show guide navigation" })
     fireEvent.click(button)
     expect(onExpand).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe("InnerSidebarPinnedActions", () => {
+  it("renders its children in the pinned slot and merges a caller class", () => {
+    const { container } = render(
+      <InnerSidebarPinnedActions className="hidden lg:flex">
+        <button type="button">stand-in</button>
+      </InnerSidebarPinnedActions>
+    )
+    const slot = container.firstElementChild as HTMLElement
+    expect(slot.className).toContain("absolute")
+    expect(slot.className).toContain("hidden lg:flex")
+    expect(screen.getByRole("button", { name: "stand-in" })).toBeTruthy()
   })
 })
