@@ -1,0 +1,21 @@
+apps/dashboard/app/(app)/docs/[slug]/page.tsx
+  s_30828b25439bc4::t_8cf6c572ee6537 31-58
+apps/dashboard/app/(app)/docs/layout.tsx
+  s_30828b25439bc4::t_c1c2d3862a551e 1-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "282b55bc01c45ec86016007041876496cc40d127",
+  "prompts": {},
+  "sessions": {
+    "s_30828b25439bc4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "37882f04-cffb-4a1e-a7ea-7470ab746a66",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
