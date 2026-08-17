@@ -2515,9 +2515,7 @@
         "troubleshooting": "Feilsøking"
       },
       "nav": {
-        "label": "Guidenavigasjon",
-        "collapse": "Skjul guidenavigasjon",
-        "expand": "Vis guidenavigasjon"
+        "label": "Guidenavigasjon"
       },
       "notFound": {
         "title": "Dokumentasjonssiden ble ikke funnet",

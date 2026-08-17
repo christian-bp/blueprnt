@@ -53,6 +53,46 @@ client component costs a trivial payload and buys real disclosure behaviour.
 | Disclosure animation | Motion (`AnimatePresence` + height) | Vendor `Accordion` (ships `not-last:border-b`, `py-4`, `hover:underline`, all wrong for a nav row); vendored `Collapsible` (unused in this repo, no animation CSS wired, would need the same Motion work anyway) |
 | Nav placement | `app/(app)/docs/layout.tsx` | Per-page. A layout does not remount between guides, so section open state survives navigation |
 | Chevron colour | Muted | Brand. Twelve rose chevrons in a nav column is loud, and brand is reserved for links, CTAs, judgement values, and data viz |
+| Docs nav collapsing | Not collapsible (revised 2026-08-17, mid-implementation) | Collapsible like the assistant's panel. See below |
+
+### Revision: the docs nav does not collapse
+
+The guide nav is the primary way to move around a reading surface, so a collapsed state
+is one a reader gains nothing from: it hides the only navigation the page has in order
+to widen a column that is already capped at `max-w-3xl` and would not use the space.
+The assistant's panel is genuinely different, because there the conversation IS the
+surface and the thread list is a switcher you consult occasionally.
+
+Removing it also deletes the whole floating-expand-affordance problem on this surface,
+and it makes the responsive story simpler rather than more complex: below `lg` there is
+no nav, at `lg` and up there is always a nav, and no third state exists.
+
+Consequences, all in the same change:
+
+- `InnerSidebar` takes `onCollapse` as OPTIONAL. Without it the sidebar renders no
+  collapse control, and when it also has no `actions` it renders no header row at all,
+  so the nav starts at the top of the column instead of below an empty 40px strip.
+  `collapseLabel` becomes optional for the same reason.
+- `DocsNavPanel` loses its open state, its cookie persistence, its pinned expand button
+  and its `InnerSidebarPinnedActions` wrapper. It passes `open` permanently true.
+- `DOCS_NAV_COOKIE` is deleted (dead constant, no consumer). `inner-sidebar-state.ts`
+  stays keyed by name: the assistant still uses it, and the parameter stays exercised.
+- `dashboard.docs.nav.collapse` and `.expand` are deleted from all five locale files.
+  `label` stays, naming the nav landmark. Unused i18n keys are legacy, and this repo
+  deletes legacy in the change that creates it.
+
+### Revision: the docs nav carries a link to the guide index
+
+The nav's header row holds a link to `/docs`, the documentation index, so a reader deep
+in a guide can always get back to the top level. It occupies the `actions` slot the
+primitive already reserves, which is why that row exists at all for this surface (the
+"no header row" case above applies only to a sidebar with neither actions nor a collapse
+control, which no surface is today).
+
+It reuses the existing `dashboard.docs.index.title` ("Documentation") rather than
+introducing a key, since that string already names this exact destination in all five
+locales. It carries `aria-current="page"` while the reader is on `/docs` itself, the same
+marking the tree's page links use.
 
 ## Architecture
 
@@ -65,7 +105,9 @@ in the sense the conventions define, like the morph family.
 so the nav and the content beside it read as two regions of a single surface rather than
 an object floating inside the inset card. A fixed header row (`h-10`) holding the
 surface's own actions plus the collapse trigger, then a content region that scrolls on
-its own (`min-h-0 flex-1 overflow-y-auto`).
+its own (`min-h-0 flex-1 overflow-y-auto`). The header row appears only when the surface
+has something to put in it: a sidebar with neither `actions` nor `onCollapse` (the docs
+nav) renders none, so its tree starts at the top of the column.
 
 **Height modes.** Two, because docs keeps page-level scrolling:
 
@@ -90,20 +132,24 @@ One change on top of that: `border-r` goes on the **inner** box. On the outer el
 would survive the collapse as a stranded hairline at width 0.
 
 **Expand affordance.** The primitive also exports the pinned ghost icon button that the
-content column renders while the sidebar is collapsed, so both surfaces place it
-identically instead of each page hand-rolling its own floating stack. The default glyph
+content column renders while a COLLAPSIBLE sidebar is collapsed, so any such surface
+places it identically instead of hand-rolling its own floating stack. The default glyph
 is a chevron; the assistant passes `HistoryIcon`, which names what comes back, and keeps
-its second pinned action (New conversation) as today.
+its second pinned action (New conversation) as today. Only the assistant uses this: the
+docs nav does not collapse, so it has no expand affordance and needs none.
 
 **State.** `open` plus `onOpenChange`, owned by the page. This is deliberate and carried
 over: it is what keeps the panel, its own collapse button, and the expand button in the
-content column from ever disagreeing.
+content column from ever disagreeing. A non-collapsible surface passes `open` permanently
+true and omits `onCollapse`.
 
 **Persistence.** `lib/inner-sidebar-state.ts` (new) generalizes
 `lib/assistant-history-state.ts` to take a cookie key, keeping the same idiom: read once
-at mount, rewrite on every toggle, no cookie means open. `assistant_history_state` and a
-new `docs_nav_state` are its two keys. `lib/assistant-history-state.ts` is deleted in
-the same change, per "no legacy before launch".
+at mount, rewrite on every toggle, no cookie means open. `lib/assistant-history-state.ts`
+is deleted in the same change, per "no legacy before launch". Only
+`assistant_history_state` remains a key: the docs nav has no state to persist. The module
+stays keyed by name rather than reverting to an assistant-specific one, because the
+assistant still exercises the parameter and the generic name matches the primitive.
 
 ### 2. `components/docs/docs-nav.tsx` (new, client)
 
@@ -137,13 +183,14 @@ One consequence that is an improvement rather than scope creep: the nav now appe
 the `/docs` index too, which it does not today.
 
 **Responsive behaviour is deliberately unchanged.** The nav keeps today's `hidden
-lg:block` treatment, so below `lg` it is absent and its expand affordance is absent with
-it. An always-present 280px column on a 375px viewport is worse than no column, and the
-obvious alternative (default the sidebar collapsed below `lg`) needs a mount-time
-viewport read inside a subtree that `layout.tsx` causes to be server-rendered, which is a
-hydration mismatch rather than a one-line default. Readers on small screens keep reaching
-guides through the `/docs` index's own "All guides" grid. Revisit with a proper mobile
-treatment (a sheet, as the app sidebar itself uses) rather than by widening this change.
+lg:block` treatment: below `lg` there is no nav, at `lg` and up there is always a nav,
+and with collapsing removed no third state exists. An always-present 280px column on a
+375px viewport is worse than no column, and the obvious alternative (defaulting the
+sidebar collapsed below `lg`) needed a mount-time viewport read inside a subtree that
+`layout.tsx` causes to be server-rendered, which is a hydration mismatch rather than a
+one-line default. Readers on small screens keep reaching guides through the `/docs`
+index's own "All guides" grid. Revisit with a proper mobile treatment (a sheet, as the
+app sidebar itself uses) rather than by widening this change.
 
 `components/docs/docs-sidebar.tsx` is deleted. `app/(app)/docs/[slug]/page.tsx` drops
 its `<DocsSidebar>` and its `flex gap-10` wrapper and keeps only the article.
@@ -203,10 +250,14 @@ with an always-present nav. Leave it; revisit separately.
 
 ## Internationalization
 
-New keys under `dashboard.docs.nav`: `label` (the `<nav aria-label>`, currently borrowing
-`index.title`), `collapse`, `expand`. Added to `packages/i18n/messages/en.json` first,
-then mirrored to sv, nb, da and fi. The non-English strings are machine-drafted and get
-flagged for native review.
+One key under `dashboard.docs.nav`: `label`, naming the `<nav>` landmark (it currently
+borrows `index.title`). Added to `packages/i18n/messages/en.json` first, then mirrored to
+sv, nb, da and fi. The non-English strings are machine-drafted and get flagged for native
+review.
+
+`collapse` and `expand` were added alongside it and then deleted when the docs nav
+stopped collapsing. They are named here only so a reader of the git history knows their
+removal was deliberate, not an oversight.
 
 The assistant keeps `dashboard.assistant.history` and
 `dashboard.assistant.newConversation` for its own header and pinned buttons.
@@ -217,7 +268,7 @@ The parity test in `packages/i18n` catches any locale missing a key.
 
 | File | Covers |
 |---|---|
-| `components/inner-sidebar.test.tsx` (new) | Header and content render; collapsing removes the content region from the tree rather than merely clipping it; the expand button appears with its accessible label; `border-r` is on the inner box and the outer animated element carries no box classes, the rule-2 invariant a future edit is most likely to break |
+| `components/inner-sidebar.test.tsx` (new) | Header and content render; collapsing removes the content region from the tree rather than merely clipping it; the expand button appears with its accessible label; `border-r` is on the inner box and the outer animated element carries no box classes, the rule-2 invariant a future edit is most likely to break; omitting `onCollapse` renders no collapse control, and omitting both it and `actions` renders no header row |
 | `components/docs/docs-nav.test.tsx` (new) | The current page's section is open on first render; a section the reader opened stays open across a pathname change; the active page is marked; every section label resolves |
 | `components/app-shell.test.tsx` (extend) | `shellLayoutClasses("/docs/...")` is uncapped and unpadded but not height-locked; `/assistant` keeps its lock. The function is already pure, so this stays a plain unit test |
 | `app/(app)/assistant/page.test.tsx` (update) | The existing assertions, retargeted at the new frame |

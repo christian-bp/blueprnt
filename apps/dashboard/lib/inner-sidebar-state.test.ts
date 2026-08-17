@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
   ASSISTANT_HISTORY_COOKIE,
-  DOCS_NAV_COOKIE,
   innerSidebarOpenFromCookie,
 } from "./inner-sidebar-state"
 
@@ -49,21 +48,23 @@ describe("innerSidebarOpenFromCookie", () => {
     ).toBe(true)
   })
 
-  // The whole point of the generalization: two sidebars, two independent
-  // choices, read out of one cookie jar without either seeing the other's.
-  it("keeps the two sidebars' choices independent", () => {
-    const jar = "assistant_history_state=false; docs_nav_state=true"
+  // Why the module is keyed by name at all: one cookie jar, one reader's
+  // choice per panel, neither seeing the other's. Only the assistant persists
+  // a choice today (the docs nav does not collapse), so the second name here
+  // stands in for the next panel that needs one.
+  it("keeps two panels' choices independent", () => {
+    const jar = "assistant_history_state=false; other_panel_state=true"
     expect(innerSidebarOpenFromCookie(jar, ASSISTANT_HISTORY_COOKIE)).toBe(
       false
     )
-    expect(innerSidebarOpenFromCookie(jar, DOCS_NAV_COOKIE)).toBe(true)
+    expect(innerSidebarOpenFromCookie(jar, "other_panel_state")).toBe(true)
   })
 
   it("is not confused by the app sidebar's own cookie", () => {
     expect(
       innerSidebarOpenFromCookie(
-        "sidebar_state=false; docs_nav_state=false",
-        DOCS_NAV_COOKIE
+        "sidebar_state=false; assistant_history_state=false",
+        ASSISTANT_HISTORY_COOKIE
       )
     ).toBe(false)
   })

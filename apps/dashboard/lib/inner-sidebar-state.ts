@@ -7,7 +7,6 @@
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 
 export const ASSISTANT_HISTORY_COOKIE = "assistant_history_state"
-export const DOCS_NAV_COOKIE = "docs_nav_state"
 
 // Parses one sidebar's persisted open state out of a document.cookie string.
 // No cookie (first visit) defaults to OPEN: the nav is the surface's default

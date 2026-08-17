@@ -24,6 +24,14 @@ const INNER_SIDEBAR_GAP = 16
 // immediately and the content fades in after.
 const CONTENT_FADE_OUT = 0.1
 
+// A collapse control's two halves travel together: a surface either takes both
+// the handler and the label for the control's accessible name, or neither and
+// renders no control. As two independent optional props, a handler without a
+// label would compile and ship a button no screen reader can name.
+type InnerSidebarCollapse =
+  | { onCollapse: () => void; collapseLabel: string }
+  | { onCollapse?: never; collapseLabel?: never }
+
 // Variants (not a single inline `animate` object) so the CLOSE direction can
 // carry its own delayed transition without affecting the OPEN direction.
 const panelVariants: Variants = {
@@ -66,30 +74,33 @@ const panelVariants: Variants = {
 //   fill   - the parent is height-locked and this fills it (the assistant).
 //   sticky - the page scrolls and this pins to the viewport, so its border
 //            spans top to bottom at every scroll position (the docs).
+//
+// Collapsing is opt-in: the assistant's panel collapses, the docs nav does not,
+// because a guide nav is the only navigation its surface has. A sidebar with
+// neither a collapse control nor actions renders no header row at all, so its
+// content starts at the top of the column instead of below an empty strip.
 export function InnerSidebar({
   open,
   label,
-  collapseLabel,
   height = "fill",
   actions,
   className,
   onCollapse,
+  collapseLabel,
   children,
 }: {
   open: boolean
   // Names the landmark for assistive technology.
   label: string
-  collapseLabel: string
   height?: "fill" | "sticky"
-  // The surface's own header actions, left of the collapse control.
+  // The surface's own header content, left of the collapse control.
   actions?: ReactNode
   // Responsive visibility only (e.g. `hidden lg:flex`). Never box styles: the
   // outer element is the animated one, and a border or padding here would
-  // survive the collapse (see the class invariant below).
+  // survive the collapse (see the class invariant in the tests).
   className?: string
-  onCollapse: () => void
   children: ReactNode
-}) {
+} & InnerSidebarCollapse) {
   return (
     <motion.div
       initial={false}
@@ -115,27 +126,30 @@ export function InnerSidebar({
             className="flex h-full min-h-0 flex-col border-border border-r"
             style={{ width: INNER_SIDEBAR_WIDTH }}
           >
-            <div className="flex h-10 shrink-0 items-center justify-between gap-1 px-2">
-              {/* An empty span keeps the collapse control right-aligned on a
-                  surface with no actions of its own, without the row's
-                  justify-between changing per surface. */}
-              {actions ?? <span />}
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label={collapseLabel}
-                onClick={onCollapse}
-              >
-                {/* The app's standard chevron, pointing the way the sidebar
-                    folds. */}
-                <HugeiconsIcon
-                  icon={ArrowLeft01Icon}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-              </Button>
-            </div>
+            {(actions !== undefined || onCollapse !== undefined) && (
+              <div className="flex h-10 shrink-0 items-center justify-between gap-1 px-2">
+                {/* An empty span keeps a lone collapse control right-aligned
+                    without the row's justify-between changing per surface. */}
+                {actions ?? <span />}
+                {onCollapse !== undefined && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label={collapseLabel}
+                    onClick={onCollapse}
+                  >
+                    {/* The app's standard chevron, pointing the way the
+                        sidebar folds. */}
+                    <HugeiconsIcon
+                      icon={ArrowLeft01Icon}
+                      strokeWidth={2}
+                      aria-hidden="true"
+                    />
+                  </Button>
+                )}
+              </div>
+            )}
             <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
               {children}
             </div>

@@ -8,16 +8,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useState } from "react"
-import {
-  InnerSidebar,
-  InnerSidebarExpandButton,
-  InnerSidebarPinnedActions,
-} from "@/components/inner-sidebar"
-import {
-  DOCS_NAV_COOKIE,
-  initialInnerSidebarOpen,
-  persistInnerSidebarOpen,
-} from "@/lib/inner-sidebar-state"
+import { InnerSidebar } from "@/components/inner-sidebar"
 import { SPRING } from "@/lib/motion"
 
 export interface DocsNavPage {
@@ -129,8 +120,13 @@ export function DocsNav({ sections }: { sections: DocsNavSection[] }) {
   )
 }
 
-// The docs surface's frame: owns the sidebar's open state (the layout above it
-// is a server component and cannot) and lays the nav out beside the guide.
+// The docs surface's frame: the nav column beside the guide. Unlike the
+// assistant's conversations panel this one does NOT collapse. The guide nav is
+// the only navigation a reading surface has, so hiding it buys a reader
+// nothing: the article beside it is capped at max-w-3xl and would not use the
+// reclaimed width. That is also why there is no open state, no persistence and
+// no expand affordance here.
+//
 // `children` is the server-rendered page, passed straight through as a slot.
 export function DocsNavPanel({
   sections,
@@ -139,22 +135,15 @@ export function DocsNavPanel({
   sections: DocsNavSection[]
   children: ReactNode
 }) {
-  const t = useTranslations("dashboard.docs.nav")
-  const [open, setOpen] = useState(() =>
-    initialInnerSidebarOpen(DOCS_NAV_COOKIE)
-  )
-
-  function toggle(next: boolean) {
-    setOpen(next)
-    persistInnerSidebarOpen(DOCS_NAV_COOKIE, next)
-  }
+  const t = useTranslations("dashboard.docs")
+  const pathname = usePathname()
+  const atIndex = pathname === "/docs"
 
   return (
     <div className="flex w-full flex-1">
       <InnerSidebar
-        open={open}
-        label={t("label")}
-        collapseLabel={t("collapse")}
+        open
+        label={t("nav.label")}
         // The docs route is NOT height-locked: the page scrolls, so the column
         // pins itself instead of filling a locked parent.
         height="sticky"
@@ -164,24 +153,25 @@ export function DocsNavPanel({
         // own "All guides" grid. A real mobile treatment is a sheet (what the
         // app sidebar itself does), not a narrower default here.
         className="hidden lg:flex"
-        onCollapse={() => toggle(false)}
+        // The way back to the top level from anywhere in the guide. It reuses
+        // the index's own title rather than introducing a key, since that
+        // string already names this destination in every locale.
+        actions={
+          <Link
+            href="/docs"
+            aria-current={atIndex ? "page" : undefined}
+            className={cn(
+              "flex min-w-0 flex-1 items-center rounded-md px-2 py-1.5 font-medium text-foreground text-sm hover:bg-accent hover:text-accent-foreground",
+              atIndex && "bg-accent"
+            )}
+          >
+            <span className="truncate">{t("index.title")}</span>
+          </Link>
+        }
       >
         <DocsNav sections={sections} />
       </InnerSidebar>
-      {/* relative: anchors the expand button while the nav is collapsed. */}
-      <div className="relative min-w-0 flex-1">
-        {!open && (
-          // Matched to the sidebar's own breakpoint: below lg there is no
-          // sidebar to bring back, so the control would be dead.
-          <InnerSidebarPinnedActions className="hidden lg:flex">
-            <InnerSidebarExpandButton
-              label={t("expand")}
-              onExpand={() => toggle(true)}
-            />
-          </InnerSidebarPinnedActions>
-        )}
-        {children}
-      </div>
+      <div className="min-w-0 flex-1">{children}</div>
     </div>
   )
 }

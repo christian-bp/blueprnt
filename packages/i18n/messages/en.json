@@ -2515,9 +2515,7 @@
         "troubleshooting": "Troubleshooting"
       },
       "nav": {
-        "label": "Guide navigation",
-        "collapse": "Hide guide navigation",
-        "expand": "Show guide navigation"
+        "label": "Guide navigation"
       },
       "notFound": {
         "title": "Documentation page not found",

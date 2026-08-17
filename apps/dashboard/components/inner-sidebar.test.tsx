@@ -120,6 +120,30 @@ describe("InnerSidebar", () => {
       "hidden lg:flex"
     )
   })
+
+  it("renders no collapse control when the surface does not collapse", () => {
+    render(
+      <InnerSidebar open label="Guide navigation" actions={<span>top</span>}>
+        <p>tree</p>
+      </InnerSidebar>
+    )
+    expect(screen.getByText("top")).toBeTruthy()
+    expect(screen.getByText("tree")).toBeTruthy()
+    expect(screen.queryByRole("button")).toBeNull()
+  })
+
+  // A surface with neither actions nor a collapse control would otherwise
+  // render an empty 40px strip above its content.
+  it("renders no header row when there is nothing to put in it", () => {
+    render(
+      <InnerSidebar open label="Guide navigation">
+        <p>tree</p>
+      </InnerSidebar>
+    )
+    const nav = screen.getByRole("navigation", { name: "Guide navigation" })
+    expect(nav.querySelector(".h-10")).toBeNull()
+    expect(screen.getByText("tree")).toBeTruthy()
+  })
 })
 
 describe("InnerSidebarExpandButton", () => {

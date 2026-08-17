@@ -9,7 +9,11 @@ vi.mock("next/navigation", () => ({
   usePathname: () => pathState.current,
 }))
 
-import { DocsNav, type DocsNavSection } from "@/components/docs/docs-nav"
+import {
+  DocsNav,
+  DocsNavPanel,
+  type DocsNavSection,
+} from "@/components/docs/docs-nav"
 
 const SECTIONS: DocsNavSection[] = [
   {
@@ -115,6 +119,48 @@ describe("DocsNav", () => {
           .getByRole("button", { name: label })
           .getAttribute("aria-expanded")
       ).toBe("false")
+    }
+  })
+})
+
+describe("DocsNavPanel", () => {
+  const INDEX_TITLE = messages.dashboard.docs.index.title
+
+  function renderPanel() {
+    return render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <DocsNavPanel sections={SECTIONS}>
+          <p>article</p>
+        </DocsNavPanel>
+      </NextIntlClientProvider>
+    )
+  }
+
+  it("links back to the guide index and renders the page beside the nav", () => {
+    renderPanel()
+    const home = screen.getByRole("link", { name: INDEX_TITLE })
+    expect(home.getAttribute("href")).toBe("/docs")
+    expect(home.getAttribute("aria-current")).toBeNull()
+    expect(screen.getByText("article")).toBeTruthy()
+  })
+
+  it("marks the index link as current on the index route", () => {
+    pathState.current = "/docs"
+    renderPanel()
+    expect(
+      screen
+        .getByRole("link", { name: INDEX_TITLE })
+        .getAttribute("aria-current")
+    ).toBe("page")
+  })
+
+  // The nav is the only navigation this surface has, so there is deliberately
+  // no way to hide it. The section triggers are the only buttons here.
+  it("offers no way to collapse the nav", () => {
+    renderPanel()
+    const sectionLabels = SECTIONS.map((section) => section.label)
+    for (const button of screen.getAllByRole("button")) {
+      expect(sectionLabels).toContain(button.textContent)
     }
   })
 })

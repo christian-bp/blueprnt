@@ -1379,7 +1379,290 @@ git commit -m "feat(docs): mount the guide navigation from a layout"
 
 ---
 
-### Task 7: Browser verification
+### Task 7: The docs nav stops collapsing and gains an index link
+
+Added mid-implementation at Christian's direction, after Tasks 1-6 landed. Two changes to the same surface, so they ship together. The spec's two "Revision" sections are the authority.
+
+**Files:**
+- Modify: `apps/dashboard/components/inner-sidebar.tsx`
+- Modify: `apps/dashboard/components/inner-sidebar.test.tsx`
+- Modify: `apps/dashboard/components/docs/docs-nav.tsx`
+- Modify: `apps/dashboard/components/docs/docs-nav.test.tsx`
+- Modify: `apps/dashboard/lib/inner-sidebar-state.ts`
+- Modify: `apps/dashboard/lib/inner-sidebar-state.test.ts`
+- Modify: `packages/i18n/messages/{en,sv,nb,da,fi}.json`
+
+**Interfaces:**
+- Consumes: everything Tasks 1-6 built.
+- Produces: `InnerSidebar` with an optional, type-paired collapse contract; `DocsNavPanel` with no open state.
+
+- [ ] **Step 1: Make the collapse control optional, and type-pair it**
+
+In `apps/dashboard/components/inner-sidebar.tsx`, replace the `InnerSidebar` signature. A discriminated union rather than two independent optional props, so "a collapse control with no accessible name" is a compile error instead of a runtime gap:
+
+```tsx
+// Collapsing is opt-in, and its two halves travel together: a surface either
+// takes both the handler and the label for the control's accessible name, or
+// neither and renders no control at all. As two independent optional props a
+// handler without a label would compile and ship an unnamed button.
+type InnerSidebarCollapse =
+  | { onCollapse: () => void; collapseLabel: string }
+  | { onCollapse?: never; collapseLabel?: never }
+
+export function InnerSidebar({
+  open,
+  label,
+  height = "fill",
+  actions,
+  className,
+  onCollapse,
+  collapseLabel,
+  children,
+}: {
+  open: boolean
+  // Names the landmark for assistive technology.
+  label: string
+  height?: "fill" | "sticky"
+  // The surface's own header content, left of the collapse control.
+  actions?: ReactNode
+  // Responsive visibility only (e.g. `hidden lg:flex`). Never box styles: the
+  // outer element is the animated one, and a border or padding here would
+  // survive the collapse (see the class invariant in the tests).
+  className?: string
+  children: ReactNode
+} & InnerSidebarCollapse) {
+```
+
+Then make the header row conditional. A sidebar with nothing to put in that row renders no row, so its content starts at the top of the column rather than below an empty 40px strip:
+
+```tsx
+            {(actions !== undefined || onCollapse !== undefined) && (
+              <div className="flex h-10 shrink-0 items-center justify-between gap-1 px-2">
+                {/* An empty span keeps a lone collapse control right-aligned
+                    without the row's justify-between changing per surface. */}
+                {actions ?? <span />}
+                {onCollapse !== undefined && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label={collapseLabel}
+                    onClick={onCollapse}
+                  >
+                    {/* The app's standard chevron, pointing the way the
+                        sidebar folds. */}
+                    <HugeiconsIcon
+                      icon={ArrowLeft01Icon}
+                      strokeWidth={2}
+                      aria-hidden="true"
+                    />
+                  </Button>
+                )}
+              </div>
+            )}
+```
+
+Leave `InnerSidebarPinnedActions` and `InnerSidebarExpandButton` exactly as they are: the assistant still uses both.
+
+- [ ] **Step 2: Cover the new modes**
+
+Append to the `describe("InnerSidebar", ...)` block in `apps/dashboard/components/inner-sidebar.test.tsx`:
+
+```tsx
+  it("renders no collapse control when the surface does not collapse", () => {
+    render(
+      <InnerSidebar open label="Guide navigation" actions={<span>top</span>}>
+        <p>tree</p>
+      </InnerSidebar>
+    )
+    expect(screen.getByText("top")).toBeTruthy()
+    expect(screen.getByText("tree")).toBeTruthy()
+    expect(screen.queryByRole("button")).toBeNull()
+  })
+
+  // A surface with neither actions nor a collapse control would otherwise
+  // render an empty 40px strip above its content.
+  it("renders no header row when there is nothing to put in it", () => {
+    render(
+      <InnerSidebar open label="Guide navigation">
+        <p>tree</p>
+      </InnerSidebar>
+    )
+    const nav = screen.getByRole("navigation", { name: "Guide navigation" })
+    expect(nav.querySelector(".h-10")).toBeNull()
+    expect(screen.getByText("tree")).toBeTruthy()
+  })
+```
+
+- [ ] **Step 3: Run the two new tests and confirm they fail first**
+
+Run: `cd apps/dashboard && bun run test -- inner-sidebar.test`
+Expected before Step 1: FAIL (a required prop is missing / a collapse button still renders). After Step 1: PASS, 10 tests.
+
+- [ ] **Step 4: Simplify `DocsNavPanel` and give it the index link**
+
+In `apps/dashboard/components/docs/docs-nav.tsx`, replace `DocsNavPanel` entirely:
+
+```tsx
+// The docs surface's frame: the nav column beside the guide. Unlike the
+// assistant's conversations panel this one does NOT collapse. The guide nav is
+// the only navigation a reading surface has, so hiding it buys a reader
+// nothing: the article beside it is capped at max-w-3xl and would not use the
+// reclaimed width. That also means no open state, no persistence and no
+// expand affordance exist here.
+//
+// `children` is the server-rendered page, passed straight through as a slot.
+export function DocsNavPanel({
+  sections,
+  children,
+}: {
+  sections: DocsNavSection[]
+  children: ReactNode
+}) {
+  const t = useTranslations("dashboard.docs")
+  const pathname = usePathname()
+  const atIndex = pathname === "/docs"
+
+  return (
+    <div className="flex w-full flex-1">
+      <InnerSidebar
+        open
+        label={t("nav.label")}
+        // The docs route is NOT height-locked: the page scrolls, so the column
+        // pins itself instead of filling a locked parent.
+        height="sticky"
+        // Today's `hidden lg:block` treatment, preserved deliberately: a
+        // permanent 280px column on a 375px viewport is worse than no column,
+        // and small screens still reach every guide through the /docs index's
+        // own "All guides" grid. A real mobile treatment is a sheet (what the
+        // app sidebar itself does), not a narrower default here.
+        className="hidden lg:flex"
+        // The way back to the top level from anywhere in the guide. It reuses
+        // the index's own title rather than introducing a key, since that
+        // string already names this destination in every locale.
+        actions={
+          <Link
+            href="/docs"
+            aria-current={atIndex ? "page" : undefined}
+            className={cn(
+              "flex min-w-0 flex-1 items-center rounded-md px-2 py-1.5 font-medium text-foreground text-sm hover:bg-accent hover:text-accent-foreground",
+              atIndex && "bg-accent"
+            )}
+          >
+            <span className="truncate">{t("index.title")}</span>
+          </Link>
+        }
+      >
+        <DocsNav sections={sections} />
+      </InnerSidebar>
+      <div className="min-w-0 flex-1">{children}</div>
+    </div>
+  )
+}
+```
+
+Note what leaves with it: `useState`, the `relative` on the content column (nothing is pinned there any more), and the imports of `InnerSidebarPinnedActions`, `InnerSidebarExpandButton`, `DOCS_NAV_COOKIE`, `initialInnerSidebarOpen` and `persistInnerSidebarOpen`. `DocsNav` itself is untouched. Keep `cn`, `Link`, `usePathname` and `useTranslations`.
+
+- [ ] **Step 5: Cover the index link**
+
+Append to `apps/dashboard/components/docs/docs-nav.test.tsx`, adding `DocsNavPanel` to the existing import:
+
+```tsx
+describe("DocsNavPanel", () => {
+  function renderPanel() {
+    return render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <DocsNavPanel sections={SECTIONS}>
+          <p>article</p>
+        </DocsNavPanel>
+      </NextIntlClientProvider>
+    )
+  }
+
+  it("links back to the guide index and renders the page beside the nav", () => {
+    renderPanel()
+    const home = screen.getByRole("link", {
+      name: messages.dashboard.docs.index.title,
+    })
+    expect(home.getAttribute("href")).toBe("/docs")
+    expect(home.getAttribute("aria-current")).toBeNull()
+    expect(screen.getByText("article")).toBeTruthy()
+  })
+
+  it("marks the index link as current on the index route", () => {
+    pathState.current = "/docs"
+    renderPanel()
+    expect(
+      screen
+        .getByRole("link", { name: messages.dashboard.docs.index.title })
+        .getAttribute("aria-current")
+    ).toBe("page")
+  })
+
+  // The nav is the only navigation this surface has, so there is deliberately
+  // no way to hide it.
+  it("offers no way to collapse the nav", () => {
+    renderPanel()
+    expect(screen.queryByRole("button", { name: /hide|collapse/i })).toBeNull()
+  })
+})
+```
+
+- [ ] **Step 6: Delete the now-dead cookie constant**
+
+In `apps/dashboard/lib/inner-sidebar-state.ts`, remove the `DOCS_NAV_COOKIE` export. The docs nav has no state to persist, so it is a dead constant, and this repo deletes dead constants in the change that orphans them. Keep the module keyed by name: the assistant still exercises the parameter.
+
+In `apps/dashboard/lib/inner-sidebar-state.test.ts`, drop the `DOCS_NAV_COOKIE` import and retarget the two tests that used it. The name-keying is still exactly what they prove, so use a second literal rather than deleting them:
+
+```ts
+  // The reason the module is keyed by name at all: one cookie jar, one
+  // reader's choice per panel, neither seeing the other's.
+  it("keeps two panels' choices independent", () => {
+    const jar = "assistant_history_state=false; other_panel_state=true"
+    expect(innerSidebarOpenFromCookie(jar, ASSISTANT_HISTORY_COOKIE)).toBe(false)
+    expect(innerSidebarOpenFromCookie(jar, "other_panel_state")).toBe(true)
+  })
+
+  it("is not confused by the app sidebar's own cookie", () => {
+    expect(
+      innerSidebarOpenFromCookie(
+        "sidebar_state=false; assistant_history_state=false",
+        ASSISTANT_HISTORY_COOKIE
+      )
+    ).toBe(false)
+  })
+```
+
+- [ ] **Step 7: Delete the orphaned i18n keys**
+
+Remove `collapse` and `expand` from `dashboard.docs.nav` in all five files (`en`, `sv`, `nb`, `da`, `fi`), keeping `label`. Use the Write/Edit tools, never a shell rewrite: shell rewriting double-encodes the non-ASCII strings elsewhere in those files into mojibake.
+
+Then verify:
+
+Run: `cd packages/i18n && bun run test`
+Expected: PASS, parity holds with the reduced key set.
+
+Run: `grep -rn "docs.nav.collapse\|docs.nav.expand\|nav\.expand\|nav\.collapse" apps packages --include="*.ts" --include="*.tsx" --include="*.json"`
+Expected: no output.
+
+Run: `grep -n "Ã\|â€" packages/i18n/messages/sv.json packages/i18n/messages/fi.json packages/i18n/messages/da.json packages/i18n/messages/nb.json`
+Expected: no output. Any hit means a shell tool double-encoded a file; revert and redo with the Write tool.
+
+- [ ] **Step 8: Full gate**
+
+Run: `bun run test && bunx biome check --error-on-warnings . && bun run typecheck`
+Expected: PASS. The assistant's own tests must still pass untouched: it keeps its collapse control, its cookie and its pinned expand button.
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add -A
+git commit -m "feat(docs): keep the guide nav always open with a link to the index"
+```
+
+---
+
+### Task 8: Browser verification
 
 The sticky column's geometry is a measurement, not something to reason about. The spec flags it as the one thing that must be checked in a real browser.
 
@@ -1397,23 +1680,29 @@ Open `/docs/what-is-pay-mapping` (one of the longest pages) and confirm:
 - At scroll 0 the nav begins below the header; its overhang past the viewport bottom is not visible as a stray border or a second scrollbar.
 - The inset card's rounded bottom corner is not crossed by the nav's border.
 
-Check at a wide viewport and at an `md`-to-`lg` one (where `SidebarInset` has gained its `md:m-2` margin and `rounded-xl` corners but the nav is still hidden). Below `lg` the nav is deliberately absent along with its expand button, and the article should fill the column with no stray gutter left where the sidebar would be. Below `md` the inset card has no margin at all; confirm the article still has its padding there.
+Check at a wide viewport and at an `md`-to-`lg` one (where `SidebarInset` has gained its `md:m-2` margin and `rounded-xl` corners but the nav is still hidden). Below `lg` the nav is deliberately absent, and the article should fill the column with no stray gutter left where the sidebar would be. Below `md` the inset card has no margin at all; confirm the article still has its padding there.
 
 If the column does not stick at all, the cause is almost always an ancestor with `overflow: hidden`: confirm `shellLayoutClasses("/docs/...")` returned no `overflow-hidden` and no `min-h-0` (Task 5's test asserts exactly this).
 
-- [ ] **Step 3: Check the collapse on both surfaces**
+- [ ] **Step 3: Check the docs nav's header and the assistant's collapse**
 
-On `/docs/what-is-pay-mapping` and on `/assistant`:
-- Collapse the sidebar. The content column widens smoothly, and no hairline border or gap remains where the sidebar was.
-- The pinned expand button appears at the content column's top-left and brings it back.
-- Reload. The collapsed choice survives, and the two surfaces remember independently (collapse the docs nav, leave the assistant panel open, reload both).
+On `/docs/what-is-pay-mapping`:
+- The nav's header row holds the "Documentation" link and nothing else. There is deliberately no collapse control anywhere on this surface.
+- The link returns to `/docs`, and on that page it reads as the current location.
+- The header row is not an empty strip: the link fills it and the section tree starts directly below.
+
+On `/assistant` (which keeps its collapsible panel, and must be unaffected by Task 7):
+- Collapse the panel. The content column widens smoothly, and no hairline border or gap remains where the panel was.
+- The pinned expand button and the new-conversation button appear at the content column's top-left, and the expand button brings the panel back.
+- Reload. The collapsed choice survives.
 
 - [ ] **Step 4: Check the disclosure and deep links**
 
 - Section chevrons rotate rather than showing a native triangle; open and close animate.
 - Open a section other than the current one, click a guide in it, and confirm it stays open.
+- Navigate into a section you have explicitly collapsed (use the index's "All guides" grid, or browser back/forward). It stays collapsed, hiding its own current-page link. Judge in the real UI whether that reads as broken or as the reader's choice being respected; it is the known trade-off of letting a manual toggle outrank the current-page default, and Task 4's review flagged it for exactly this check.
 - Cold-load a deep link with an anchor, e.g. `/docs/glossary#level`, and confirm it lands on the heading (this is `DocsHashScroll`, which the sticky choice was made to preserve).
-- Toggle reduced motion in the OS and confirm the collapse and disclosure settle without animating.
+- Toggle reduced motion in the OS and confirm the disclosure and the assistant's collapse settle without animating.
 
 - [ ] **Step 5: Check a non-English locale**
 
