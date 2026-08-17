@@ -1,0 +1,37 @@
+apps/dashboard/components/pay-mapping/review-praxis-step.test.tsx
+  s_0e9ce98be5faff::t_53588fd97e19c2 95-105
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.test.tsx
+  s_0e9ce98be5faff::t_7f009d2d0eb978 384,386-390
+  s_0e9ce98be5faff::t_9a12bef1696919 396
+apps/dashboard/components/pay-mapping/review-step-actions.tsx
+  s_0e9ce98be5faff::t_309c9bb221185e 6-17
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.tsx
+  s_0e9ce98be5faff::t_b717e458c90520 491-497,501
+  s_0e9ce98be5faff::t_ec7ad21cde1f91 498-500
+  s_0e9ce98be5faff::t_bf3c1819fb0bbf 886-891
+apps/dashboard/components/pay-mapping/review-praxis-step.tsx
+  s_0e9ce98be5faff::t_ebdbfd87266ff8 18-21
+  s_0e9ce98be5faff::t_0349d34d430fa2 316
+apps/dashboard/components/pay-mapping/review-start-step.tsx
+  s_0e9ce98be5faff::t_ebdbfd87266ff8 15-18
+  s_0e9ce98be5faff::t_0349d34d430fa2 215,234
+apps/dashboard/components/pay-mapping/pay-mapping-group-analysis-form.tsx
+  s_0e9ce98be5faff::t_0349d34d430fa2 371
+  s_0e9ce98be5faff::t_116f25e417f1c5 29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f318f20c0e7d1695be22d384991cd3b94dd640ef",
+  "prompts": {},
+  "sessions": {
+    "s_0e9ce98be5faff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fd1853b5-5652-46e9-9c32-c76e47f67a68",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
