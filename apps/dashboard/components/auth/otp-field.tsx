@@ -9,10 +9,15 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { type Ref, type RefCallback, useEffect, useRef } from "react"
 
 // The 6-digit code field shared by 2FA setup and the sign-in challenge. The
-// slots are larger than the shadcn default (size-9), in the spirit of polyform's
-// OTP, since entering the code is the primary action on these screens. size-12
-// (not polyform's 60px) so six slots still fit the content column on phones
-// without horizontal scroll. One place owns the sizing for both screens.
+// slots are far larger than the shadcn default (size-9), because entering the
+// code is the primary action on these screens.
+//
+// The size is responsive for a hard reason, not for taste: polyform's 60px
+// slot is the target look, and six of them plus their borders are ~363px,
+// which does not fit a 375px phone once the screen's own padding is taken
+// off, so the field would scroll sideways. size-12 up to sm keeps it whole
+// there; sm and up takes the full 60px (size-15) and the larger radius that
+// comes with it. One place owns the sizing for both screens.
 export function OtpField(props: {
   value: string
   onChange: (value: string) => void
@@ -51,7 +56,10 @@ export function OtpField(props: {
   }
 
   return (
-    <div className="relative h-12">
+    // Tracks the slot height at both breakpoints: this box is what the
+    // verifying overlay is positioned against (inset-0), so a fixed height
+    // would leave the card floating over part of a taller field.
+    <div className="relative h-12 sm:h-15">
       <InputOTP
         ref={setRefs}
         maxLength={6}
@@ -72,8 +80,12 @@ export function OtpField(props: {
       >
         <InputOTPGroup>
           {Array.from({ length: 6 }).map((_, i) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: slots are positional
-            <InputOTPSlot key={i} index={i} className="size-12 text-xl" />
+            <InputOTPSlot
+              // biome-ignore lint/suspicious/noArrayIndexKey: slots are positional
+              key={i}
+              index={i}
+              className="size-12 text-lg sm:size-15 sm:text-xl"
+            />
           ))}
         </InputOTPGroup>
       </InputOTP>
