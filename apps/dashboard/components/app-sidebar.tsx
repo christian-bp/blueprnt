@@ -50,8 +50,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     // collapsible="icon" (the sidebar-07 pattern): collapsing shrinks the
-    // sidebar to an icon rail instead of removing it. The inset variant set
-    // by AppShell keeps the rounded content panel in both states.
+    // sidebar to an icon rail instead of removing it. AppShell leaves the
+    // variant at the default `sidebar`, so the rail keeps its right border
+    // against the content in both states.
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <NavOrganization />

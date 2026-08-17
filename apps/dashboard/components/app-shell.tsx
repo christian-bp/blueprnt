@@ -40,6 +40,12 @@ export const PAGE_WIDE_MAX_W = "max-w-[85rem]"
 export const PAGE_CONTENT_MAX_W =
   "max-w-[calc(72rem-2rem)] lg:max-w-[calc(72rem-3rem)]"
 
+// The inset a page's content keeps from the edges of the content pane.
+// Exported because the inner-sidebar routes take it off the shell (their nav
+// column must sit flush) and apply it to their own content column instead: one
+// constant so the two can never drift into two different page insets.
+export const PAGE_PADDING = "px-4 py-4 md:py-6 lg:px-6"
+
 // The per-route class strings for the four shell layers between SidebarInset
 // and the page's own content, keyed off the pathname alone. Pure so a
 // regression here (the wrong route matched, a class dropped) is a plain unit
@@ -47,26 +53,29 @@ export const PAGE_CONTENT_MAX_W =
 // context, auth-backed user menu) just to read a class off a div.
 export function shellLayoutClasses(pathname: string) {
   // The level-architecture views (/work: ladder, matrix, families) are wide
-  // grid surfaces that earn the whole viewport, width AND height: the inset
-  // card locks to the viewport (its rounded bottom never pushed off-screen)
-  // and the view scrolls inside. Every other page keeps the capped reading
-  // width and normal page flow.
+  // grid surfaces that earn the whole viewport, width AND height: the content
+  // pane locks to the viewport height and the view scrolls inside it. Every
+  // other page keeps the capped reading width and normal page flow.
   const fullBleed = pathname === "/work"
   // /assistant needs the same viewport-locked SidebarInset as /work's
   // fullBleed: a long message thread must never grow the page past the
   // viewport, or the conversation's own scroll container (its one intended
   // scroller) never gets a bounded height to scroll within, pushing the
   // composer out of reach with no scroller that leads to it. Unlike
-  // fullBleed it keeps the normal reading width (PAGE_MAX_W below), and the
-  // lock holds at every breakpoint, not just md+: the assistant's height
-  // must stay constant regardless of thread length on mobile too.
+  // fullBleed it keeps the normal reading width (PAGE_MAX_W below), and its
+  // lock is not md:-gated: the assistant's height must stay constant
+  // regardless of thread length on mobile too.
   const assistantBounded = pathname === "/assistant"
   const heightLocked = fullBleed || assistantBounded
   // The routes that carry an INNER SIDEBAR: a secondary nav column between
   // the app sidebar and the page content (the assistant's conversations
-  // panel, the docs nav). They drop the centred cap so the column is not held
-  // away from the boundary with the app sidebar by a width narrower than the
-  // viewport; each page centers its own reading column in what remains.
+  // panel, the docs nav). They drop the centred cap AND the shell's own
+  // padding, because that column is a continuation of the app sidebar rather
+  // than an object on the page: its right border is the seam between nav and
+  // content, so it has to reach the app sidebar's border and run the pane's
+  // full height, which neither a narrower cap nor a gutter above or beside it
+  // allows. Each page then owns the padding for its own content column and
+  // centers its reading column in what remains.
   // Matched as an exact segment, never a bare startsWith, so a future sibling
   // route beginning with the same characters is not swallowed.
   //
@@ -89,13 +98,12 @@ export function shellLayoutClasses(pathname: string) {
   const wide = /^\/pay-mappings\/[^/]+(\/|$)/.test(pathname)
   return {
     sidebarInset: cn(
-      // 1rem = the inset variant's own m-2 top+bottom margins.
-      fullBleed && "md:h-[calc(100svh_-_1rem)] md:overflow-hidden",
-      // No md: gate on this rule: unlike the inset card's own margin (md:
-      // only), the assistant lock must hold on mobile too, where
-      // SidebarInset has no side margin at all (hence the plain h-svh,
-      // gaining the inset's -1rem only once md: adds the margin back).
-      assistantBounded && "h-svh overflow-hidden md:h-[calc(100svh_-_1rem)]"
+      // The content pane sits flush against the sidebar with no margin of its
+      // own, so the viewport height IS its height: no chrome to subtract.
+      fullBleed && "md:h-svh md:overflow-hidden",
+      // /work's lock starts at md (below it the matrix stacks and scrolls with
+      // the page); the assistant's holds at every breakpoint.
+      assistantBounded && "h-svh overflow-hidden"
     ),
     flexShell: cn("flex flex-1 flex-col", heightLocked && "min-h-0"),
     containerMain: cn(
@@ -103,7 +111,10 @@ export function shellLayoutClasses(pathname: string) {
       heightLocked && "min-h-0"
     ),
     pageContent: cn(
-      "flex w-full flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6",
+      "flex w-full flex-col",
+      // The shell's padding and band gap, which the inner-sidebar routes hand
+      // to their own content column instead (see hasInnerSidebar above).
+      !hasInnerSidebar && cn("gap-4 md:gap-6", PAGE_PADDING),
       centered && "mx-auto",
       heightLocked && "min-h-0 flex-1",
       // /assistant and /docs are uncapped like /work: their inner sidebar
@@ -150,7 +161,11 @@ export function AppShell(props: {
               of its own to this row (a context provider plus a dialog that
               portals when open), so the shell's layout is untouched. */}
           <CommandPaletteProvider>
-            <AppSidebar variant="inset" />
+            {/* The default `sidebar` variant, deliberately not `inset`: the
+                content pane is a flush region of one surface, separated from
+                the nav by the sidebar's own right border, instead of a rounded
+                card floating in a sidebar-coloured gutter. */}
+            <AppSidebar />
             <SidebarInset className={layout.sidebarInset}>
               <SiteHeader />
               <div className={layout.flexShell}>

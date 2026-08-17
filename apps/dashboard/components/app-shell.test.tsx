@@ -24,7 +24,9 @@ describe("shellLayoutClasses", () => {
     const inset = classList(layout.sidebarInset)
     expect(inset).toContain("h-svh")
     expect(inset).toContain("overflow-hidden")
-    expect(inset).toContain("md:h-[calc(100svh_-_1rem)]")
+    // The lock is a plain viewport height at every breakpoint: the content
+    // pane carries no margin of its own to subtract.
+    expect(inset.some((c) => c.includes("calc("))).toBe(false)
     // Never a min-h-* floor: a floor is exactly the bug (the flex column
     // grows past the viewport once content outgrows it).
     expect(inset.some((c) => c.startsWith("min-h-"))).toBe(false)
@@ -39,12 +41,17 @@ describe("shellLayoutClasses", () => {
     // centers its own reading column beside the panel instead.
     expect(content).not.toContain(PAGE_MAX_W)
     expect(content).not.toContain(PAGE_WIDE_MAX_W)
+    // Unpadded for the same reason, in the other axis: the panel fills the
+    // locked height flush, top to bottom, and the chat column beside it
+    // carries PAGE_PADDING itself (assistant/page.tsx).
+    expect(content).not.toContain("px-4")
+    expect(content).not.toContain("md:py-6")
   })
 
   it("keeps /work full-bleed and height-locked only from md up", () => {
     const layout = shellLayoutClasses("/work")
     const inset = classList(layout.sidebarInset)
-    expect(inset).toContain("md:h-[calc(100svh_-_1rem)]")
+    expect(inset).toContain("md:h-svh")
     expect(inset).toContain("md:overflow-hidden")
     // /work's own lock is md:-gated; it must not gain the assistant's
     // always-on h-svh (that would change its established mobile behavior).
@@ -67,6 +74,12 @@ describe("shellLayoutClasses", () => {
     expect(content).not.toContain("min-h-0")
     expect(content).not.toContain("flex-1")
     expect(content).toContain(PAGE_MAX_W)
+    // The shell still owns the page inset everywhere except the two
+    // inner-sidebar routes; dropping it for everyone would unpad the app.
+    expect(content).toContain("px-4")
+    expect(content).toContain("py-4")
+    expect(content).toContain("lg:px-6")
+    expect(content).toContain("md:py-6")
     // Screen-centering is per-page opt-in: an ordinary route keeps the
     // left-aligned column until it deliberately opts in.
     expect(content).not.toContain("mx-auto")
@@ -102,10 +115,14 @@ describe("shellLayoutClasses", () => {
       const content = classList(layout.pageContent)
       expect(content).not.toContain(PAGE_MAX_W)
       expect(content).not.toContain(PAGE_WIDE_MAX_W)
-      // Padding is NOT dropped: pageContent applies px-4 lg:px-6 on every
-      // route, /work and /assistant included. Uncapped, not unpadded.
-      expect(content).toContain("px-4")
-      expect(content).toContain("lg:px-6")
+      // Unpadded as well as uncapped, unlike every other route: the nav
+      // column has to reach the app sidebar's border and run the pane's full
+      // height, so the shell adds no gutter above or beside it. The article
+      // column carries PAGE_PADDING itself (docs-nav.tsx).
+      expect(content).not.toContain("px-4")
+      expect(content).not.toContain("py-4")
+      expect(content).not.toContain("lg:px-6")
+      expect(content).not.toContain("md:py-6")
       // No lock, and nothing below it may gain min-h-0: position:sticky
       // fails silently under an ancestor that clips.
       expect(layout.sidebarInset).toBe("")

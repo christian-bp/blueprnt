@@ -4,9 +4,11 @@ import { HistoryIcon, PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { PAGE_PADDING } from "@/components/app-shell"
 import { AssistantHistoryPanel } from "@/components/assistant/assistant-history"
 import { AssistantPanel } from "@/components/assistant/assistant-panel"
 import { AssistantTitle } from "@/components/assistant/assistant-title"
@@ -81,8 +83,16 @@ export default function AssistantPage() {
         onNewConversation={() => void handleNewConversation()}
       />
       {/* relative: anchors the expand button that appears at this column's
-          top-left while the panel is collapsed. */}
-      <div className="relative flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
+          top-left while the panel is collapsed. PAGE_PADDING is the shell's
+          own page inset, which this route does not receive (app-shell.tsx:
+          hasInnerSidebar) so the panel beside this column stays flush; the
+          chat side keeps it. */}
+      <div
+        className={cn(
+          "relative flex min-h-0 flex-1 flex-col gap-4 overflow-hidden",
+          PAGE_PADDING
+        )}
+      >
         {/* The collapsed panel's compact stand-in: the two actions its header
             carried, as small stacked icon buttons. */}
         {!panelOpen && (

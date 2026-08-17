@@ -15,14 +15,14 @@ import { usePayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
 import { useTodo } from "@/hooks/use-todo"
 
 // The first viewport minus the shell chrome above the page content: the
-// header (3rem) plus the content padding (2rem, md: 3rem) plus the inset
-// card's margin at md (1rem). The page column reserves exactly this and the
+// header (3rem) plus the content padding (2rem, md: 3rem). The page column
+// reserves exactly this and the
 // hero absorbs whatever of it the bands below do not need, so the gap
 // between the chat prompt and the To do band is leftover space: generous on
 // a tall screen, collapsing toward the ordinary band gap on a short one,
 // never forcing a scroll to reach the bands. svh, not vh, so a mobile
 // browser's own chrome does not lie about the available height.
-const PAGE_MIN_H = "min-h-[calc(100svh-5rem)] md:min-h-[calc(100svh-7rem)]"
+const PAGE_MIN_H = "min-h-[calc(100svh-5rem)] md:min-h-[calc(100svh-6rem)]"
 
 // Front page, read top to bottom as what-to-do / where-we-stand: a centered
 // hero (greeting, one status line, the chat prompt) that fills most of the

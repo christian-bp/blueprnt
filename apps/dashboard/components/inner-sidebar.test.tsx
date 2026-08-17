@@ -77,6 +77,10 @@ describe("InnerSidebar", () => {
     expect(outer.className).not.toMatch(/(^|\s)border/)
     expect(outer.className).not.toMatch(/(^|\s)p[xytrbl]?-/)
     expect(inner.className).toContain("border-r")
+    // The column starts flush at the site header's bottom border, so the top
+    // inset is the only thing keeping the first control off that border. It
+    // belongs on the inner box for the same reason the border does.
+    expect(inner.className).toContain("pt-2")
   })
 
   it("takes its height from the parent by default and pins itself when sticky", () => {

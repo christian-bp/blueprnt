@@ -51,8 +51,8 @@ const panelVariants: Variants = {
 // the app sidebar and a page's content (the docs nav, the assistant's
 // conversations panel). A flush column with a single border on its right, no
 // radius and no fill of its own, so the nav and the content beside it read as
-// two regions of ONE surface rather than an object floating inside the inset
-// card the page already is.
+// two regions of ONE surface, continuing the app sidebar's own border rather
+// than nesting a second object inside the page.
 //
 // `open` is owned by the CALLER, never by this component: the page renders
 // both this sidebar's own collapse button and the expand button that stands in
@@ -126,7 +126,13 @@ export function InnerSidebar({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { delay: 0.08 } }}
             exit={{ opacity: 0, transition: { duration: CONTENT_FADE_OUT } }}
-            className="flex h-full min-h-0 flex-col border-border border-r"
+            // pt-2 matches the px-2/pb-2 the rows below already carry, so the
+            // column is inset by the same 8px on all four edges (the same
+            // rhythm SidebarHeader gives the app sidebar's first row). Without
+            // it the first control (the docs index link, the assistant's New
+            // conversation button) sits against the site header's bottom
+            // border, since the column now starts flush at the header.
+            className="flex h-full min-h-0 flex-col border-border border-r pt-2"
             style={{ width: INNER_SIDEBAR_WIDTH }}
           >
             {(actions !== undefined || onCollapse !== undefined) && (
