@@ -18,7 +18,11 @@ import { aiModel } from "../ai/provider"
 import { ERROR_CODES } from "../lib/errors"
 import { assistantSystemPrompt } from "./knowledge"
 import { classifyStreamOutcome } from "./streamOutcome"
-import type { AssistantActivityKind, AssistantMessagePart } from "./tables"
+import type {
+  AssistantActivityKind,
+  AssistantChartKind,
+  AssistantMessagePart,
+} from "./tables"
 import { generateThreadTitle } from "./title"
 import { buildAssistantTools, chartForTool } from "./tools"
 
@@ -71,6 +75,22 @@ export function assistantPrepareStepToolChoice(
   return stepNumber >= ASSISTANT_MAX_TOOL_STEPS - 1
     ? { toolChoice: "none" }
     : undefined
+}
+
+// Whether this answer has already shown a given chart. A chart tool both
+// DISPLAYS the chart and returns its numbers, so a model that calls the same
+// one twice (to "show" it again after reading the numbers, which Mistral does)
+// would otherwise append a second identical card and the reader would see the
+// same plot twice in one reply. The prompt and the tool descriptions ask for
+// one call; this is what makes the answer correct when they are ignored.
+//
+// Keyed on the chart KIND, not the tool name: two tools that ever rendered the
+// same chart would still be one card.
+export function assistantChartAlreadyShown(
+  parts: AssistantMessagePart[],
+  chart: AssistantChartKind
+): boolean {
+  return parts.some((part) => part.type === "chart" && part.chart === chart)
 }
 
 export const generateAssistantReply = internalAction({
@@ -305,7 +325,7 @@ export const generateAssistantReply = internalAction({
           if (await flush("checkingData")) break
         } else if (part.type === "tool-result") {
           const chart = chartForTool(part.toolName)
-          if (chart !== null) {
+          if (chart !== null && !assistantChartAlreadyShown(done, chart)) {
             if (currentText !== "") {
               done.push({ type: "text", text: currentText })
               currentText = ""

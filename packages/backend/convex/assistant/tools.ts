@@ -50,7 +50,7 @@ export function buildAssistantTools(
     }),
     show_headcount_trend: tool({
       description:
-        "Display the headcount trend chart to the user (one point per completed pay mapping) and get its aggregate numbers. Use when the user asks how headcount has developed.",
+        "Display the headcount trend chart to the user (one point per completed pay mapping) and get its aggregate numbers. Use when the user asks how headcount has developed. Calling this ALREADY places the chart in your answer: call it at most once, and never describe, embed, or link the chart yourself.",
       inputSchema: z.object({}),
       execute: async () =>
         await ctx.runQuery(internal.assistant.insights.payMappingTrend, {
@@ -60,7 +60,7 @@ export function buildAssistantTools(
     }),
     show_pay_gap_trend: tool({
       description:
-        "Display the pay gap trend chart to the user (one point per completed pay mapping) and get its aggregate numbers. Use when the user asks how the pay gap has developed.",
+        "Display the pay gap trend chart to the user (one point per completed pay mapping) and get its aggregate numbers. Use when the user asks how the pay gap has developed. Calling this ALREADY places the chart in your answer: call it at most once, and never describe, embed, or link the chart yourself.",
       inputSchema: z.object({}),
       execute: async () =>
         await ctx.runQuery(internal.assistant.insights.payMappingTrend, {
