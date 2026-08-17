@@ -1,0 +1,77 @@
+apps/dashboard/components/assistant/assistant-thread.test.tsx
+  s_0e9ce98be5faff::t_2d170285ae90f2 108-113
+  s_0e9ce98be5faff::t_a756235bd340b2 5
+apps/dashboard/components/assistant/assistant-thread.tsx
+  s_0e9ce98be5faff::t_0d3ceb72246407 13,60
+packages/i18n/messages/nb.json
+  s_0e9ce98be5faff::t_be97cb7b90b84c 2501
+  s_0e9ce98be5faff::t_3fc40965db8083 2471-2472
+packages/i18n/messages/sv.json
+  s_0e9ce98be5faff::t_4a17964f5e6f87 2471-2472
+  s_0e9ce98be5faff::t_da84a68976c001 2501
+apps/dashboard/components/assistant/assistant-composer.tsx
+  s_0e9ce98be5faff::t_6c02d25d76833e 40-52,57-83
+  s_0e9ce98be5faff::t_b8b2ca237b51d9 84
+apps/dashboard/app/(app)/docs/[slug]/page.tsx
+  s_0e9ce98be5faff::t_1f1128c9c439dc 31-36
+apps/dashboard/components/assistant/assistant-prompt.test.tsx
+  s_0e9ce98be5faff::t_6571d4e7460af4 143
+  s_0e9ce98be5faff::t_55624d66f6aa4e 34-37
+  s_0e9ce98be5faff::t_167f4797cd3e14 139
+  s_0e9ce98be5faff::t_6266c511ac76a5 12
+apps/dashboard/components/docs/docs-nav.tsx
+  s_0e9ce98be5faff::t_0ca25e0c87ca62 152
+  s_0e9ce98be5faff::t_4c008386146f49 167-169,172
+  s_0e9ce98be5faff::t_a3acd8d21d88c6 180-182
+  s_0e9ce98be5faff::t_de62fe920d24ca 11
+  s_0e9ce98be5faff::t_c2a5e6a8a34bde 123-135
+packages/i18n/messages/en.json
+  s_0e9ce98be5faff::t_9f641400452892 2501
+  s_0e9ce98be5faff::t_7dff2e2190b344 2471-2472
+apps/dashboard/app/(app)/docs/page.tsx
+  s_0e9ce98be5faff::t_82f42e2effa54e 8-13,28-35,67,69,76-81,89,91,93,95-100,102-105,107-115,117-121,123-141
+  s_0e9ce98be5faff::t_d90e71e36c951f 3
+  s_0e9ce98be5faff::t_a22838cf52a387 106
+  s_0e9ce98be5faff::t_f8a2270c5da8b1 70-75
+  s_0e9ce98be5faff::t_867671193984e7 122
+  s_0e9ce98be5faff::t_1434f9db8433f0 82-88
+  s_0e9ce98be5faff::t_92266dfdf0f968 44-46
+  s_0e9ce98be5faff::t_3b249eb662b217 59-65
+  s_0e9ce98be5faff::t_2c204169142ad3 14-27
+  s_0e9ce98be5faff::t_99b2241fe1698f 116
+  s_0e9ce98be5faff::t_74f3944ab730ce 47-58,66
+apps/dashboard/components/assistant/assistant-prompt.tsx
+  s_0e9ce98be5faff::t_0e61a48120a7e4 34-35,38-43,53
+  s_0e9ce98be5faff::t_d38f60cd8ccc5a 13
+  s_0e9ce98be5faff::t_49a572860ff938 115-121
+  s_0e9ce98be5faff::t_4b2175da09b7e9 140
+  s_0e9ce98be5faff::t_8dc3eca308cd6b 155-160
+  s_0e9ce98be5faff::t_626039746596a9 36-37,44-52
+  s_0e9ce98be5faff::t_293a9e29ebd984 134-139
+  s_0e9ce98be5faff::t_9bd59cf99f9b15 95-99
+  s_0e9ce98be5faff::t_7c51918a5dff5b 22,24-25
+packages/i18n/messages/fi.json
+  s_0e9ce98be5faff::t_5e4baa36941b28 2501
+  s_0e9ce98be5faff::t_a52bef045efc3b 2471-2472
+apps/dashboard/components/docs/docs-nav.test.tsx
+  s_0e9ce98be5faff::t_eb6655a911eb9e 182-188,191-193
+packages/i18n/messages/da.json
+  s_0e9ce98be5faff::t_119ec8315aacce 2471-2472
+  s_0e9ce98be5faff::t_75a81a1cecdc83 2501
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "519f7273ca39884bbedd95c6b91bbae11d879f26",
+  "prompts": {},
+  "sessions": {
+    "s_0e9ce98be5faff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fd1853b5-5652-46e9-9c32-c76e47f67a68",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
