@@ -291,17 +291,12 @@ describe("AssistantPage", () => {
     expect(mainColumnClasses.some((c) => c.startsWith("overflow-auto"))).toBe(
       false
     )
-    // Exactly one EFFECTIVE vertical scroller exists anywhere in the
-    // rendered tree: InnerSidebar's own content region (bounded by the
-    // panel's fixed height, so it is the element that actually scrolls) and,
-    // nested directly inside it, AssistantHistoryThreadList's own wrapper
-    // (kept `overflow-y-auto` for skeleton/data measurement parity, but with
-    // no bounded height of its own in a non-flex parent it never overflows
-    // itself). Two elements carry the class, never a third stray scroller.
+    // Exactly one vertical scroller exists anywhere in the rendered tree
+    // (the panel's own list), never two.
     const verticalScrollers = container.querySelectorAll(
       '[class*="overflow-y-auto"]'
     )
-    expect(verticalScrollers).toHaveLength(2)
+    expect(verticalScrollers).toHaveLength(1)
   })
 
   it("widens the chat column to max-w-5xl", () => {

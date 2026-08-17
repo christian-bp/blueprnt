@@ -97,33 +97,29 @@ function AssistantHistoryThreadList({ busy }: { busy: boolean }) {
 
   if (loading) {
     return (
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="flex flex-col gap-1">
-          {HISTORY_SKELETON_ROW_KEYS.map((key) => (
-            <div
-              key={key}
-              className="flex w-full flex-col items-start gap-0.5 px-2 py-2"
-            >
-              <Skeleton className="h-4 w-3/5" />
-              <Skeleton className="h-3 w-2/5" />
-            </div>
-          ))}
-        </div>
+      <div className="flex flex-col gap-1">
+        {HISTORY_SKELETON_ROW_KEYS.map((key) => (
+          <div
+            key={key}
+            className="flex w-full flex-col items-start gap-0.5 px-2 py-2"
+          >
+            <Skeleton className="h-4 w-3/5" />
+            <Skeleton className="h-3 w-2/5" />
+          </div>
+        ))}
       </div>
     )
   }
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto">
-      <div className="flex flex-col gap-1">
-        {threads.map((thread) => (
-          <AssistantHistoryThreadRow
-            key={thread._id}
-            thread={thread}
-            busy={busy}
-          />
-        ))}
-      </div>
+    <div className="flex flex-col gap-1">
+      {threads.map((thread) => (
+        <AssistantHistoryThreadRow
+          key={thread._id}
+          thread={thread}
+          busy={busy}
+        />
+      ))}
     </div>
   )
 }
