@@ -62,6 +62,9 @@ export function AssistantHistoryPanel({
       collapseLabel={t("history")}
       // The route is height-locked by AppShell, so the sidebar fills it.
       height="fill"
+      // The collapse control the frame renders is deliberately NOT busy-gated,
+      // unlike the rows and New conversation: collapsing touches no thread, so
+      // it carries none of the orphan hazard that gates them.
       onCollapse={onCollapse}
       actions={
         <Button

@@ -104,9 +104,11 @@ export default function AssistantPage() {
                 aria-hidden="true"
               />
             </Button>
-            {/* HistoryIcon rather than the primitive's default chevron: the
-                header's app-sidebar trigger already wears a sidebar glyph, and
-                here the icon can name what comes back. */}
+            {/* Never busy-gated, unlike the new-chat button above: expanding
+                touches no thread. HistoryIcon rather than the primitive's
+                default chevron, because here the icon can name what comes back,
+                and the header's app-sidebar trigger already wears a sidebar
+                glyph. */}
             <InnerSidebarExpandButton
               label={t("history")}
               icon={HistoryIcon}
