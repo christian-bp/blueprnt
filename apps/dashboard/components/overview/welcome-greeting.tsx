@@ -39,6 +39,13 @@ export function WelcomeGreeting() {
   if (hour === null || session === undefined) {
     return (
       <h1 className={cn(HEADING_CLASS, "text-center")}>
+        {/* h-10 is not a guess: it is text-4xl's own line box (2.5rem), so the
+            heading measures the same whether it holds this bar or the
+            greeting. Deliberately a BLOCK child, the Skeleton's default: as an
+            inline-block it would sit on the text baseline and the line box
+            would grow by the font's descender (measured: 43px against the
+            text's 40px), which is the exact class of skeleton-to-data shift
+            this is here to avoid. */}
         <Skeleton className="h-10 w-80" />
       </h1>
     )

@@ -11,15 +11,31 @@ import type { Todo } from "@/lib/todo"
 // text-center`), always exactly one of two states because this app has one
 // count to report, not a rotating set. Reads the page's already-fetched
 // `useTodo` result; fires no query of its own.
+// One constant for both states, so the placeholder can never end up measuring
+// a different line than the text that replaces it.
+const STATUS_LINE_CLASS =
+  "mt-3 max-w-lg text-center text-muted-foreground text-sm leading-relaxed"
+
 export function OverviewStatusLine({ todo }: { todo: Todo | undefined }) {
   const t = useTranslations("dashboard.overview.hero")
 
   if (todo === undefined) {
-    return <Skeleton className="mt-3 h-5 w-64" />
+    // The bar sits inside the REAL paragraph, carrying the real typography,
+    // so the placeholder measures the loaded line exactly (23px here: text-sm
+    // over leading-relaxed). A bare h-5 bar measured 20px, and those 3px
+    // moved every band below it, and the centred hero above it, the moment
+    // the count arrived. Inline-block so the line box is what sets the
+    // height; the bar stays shorter than it, because a placeholder should
+    // read as a stand-in rather than as a filled line.
+    return (
+      <p className={STATUS_LINE_CLASS}>
+        <Skeleton className="inline-block h-4 w-64 align-middle" />
+      </p>
+    )
   }
 
   return (
-    <p className="mt-3 max-w-lg text-center text-muted-foreground text-sm leading-relaxed">
+    <p className={STATUS_LINE_CLASS}>
       {todo.total > 0
         ? t.rich("todoSummary", {
             count: todo.total,
