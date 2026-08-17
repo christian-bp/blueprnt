@@ -1,0 +1,21 @@
+apps/dashboard/components/inner-sidebar.test.tsx
+  s_30828b25439bc4::t_da6cd696083980 73-77
+  s_30828b25439bc4::t_2f70c69aa48f5d 139-152
+  s_30828b25439bc4::t_2f11ba596f348f 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0313061aa965b3e93078735227d9397238beccfe",
+  "prompts": {},
+  "sessions": {
+    "s_30828b25439bc4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "37882f04-cffb-4a1e-a7ea-7470ab746a66",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
