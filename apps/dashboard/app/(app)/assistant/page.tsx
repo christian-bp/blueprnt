@@ -10,6 +10,10 @@ import { useState } from "react"
 import { AssistantHistoryPanel } from "@/components/assistant/assistant-history"
 import { AssistantPanel } from "@/components/assistant/assistant-panel"
 import { AssistantTitle } from "@/components/assistant/assistant-title"
+import {
+  InnerSidebarExpandButton,
+  InnerSidebarPinnedActions,
+} from "@/components/inner-sidebar"
 import { useOrganization } from "@/components/org-context"
 import { useAssistantChat } from "@/hooks/use-assistant-chat"
 import { usePageTitle } from "@/hooks/use-page-title"
@@ -79,10 +83,10 @@ export default function AssistantPage() {
       {/* relative: anchors the expand button that appears at this column's
           top-left while the panel is collapsed. */}
       <div className="relative flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
-        {/* The collapsed panel's compact stand-in: the two actions its
-            header carried, as small stacked icon buttons. */}
+        {/* The collapsed panel's compact stand-in: the two actions its header
+            carried, as small stacked icon buttons. */}
         {!panelOpen && (
-          <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+          <InnerSidebarPinnedActions>
             {/* Busy-gated exactly like the panel's own New conversation
                 button: archiving the active thread mid-stream would silently
                 orphan it. */}
@@ -100,24 +104,15 @@ export default function AssistantPage() {
                 aria-hidden="true"
               />
             </Button>
-            {/* Never busy-gated: expanding the panel touches no thread.
-                HistoryIcon, not SidebarLeftIcon: the header's app-sidebar
-                trigger already wears the sidebar glyph, and two identical
-                icons for two different panels read as one control. */}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label={t("history")}
-              onClick={() => togglePanel(true)}
-            >
-              <HugeiconsIcon
-                icon={HistoryIcon}
-                strokeWidth={2}
-                aria-hidden="true"
-              />
-            </Button>
-          </div>
+            {/* HistoryIcon rather than the primitive's default chevron: the
+                header's app-sidebar trigger already wears a sidebar glyph, and
+                here the icon can name what comes back. */}
+            <InnerSidebarExpandButton
+              label={t("history")}
+              icon={HistoryIcon}
+              onExpand={() => togglePanel(true)}
+            />
+          </InnerSidebarPinnedActions>
         )}
         {/* Only the animated title lives in the header. The two flex-1
             spacers stay so the title animates its own width from 0 to auto

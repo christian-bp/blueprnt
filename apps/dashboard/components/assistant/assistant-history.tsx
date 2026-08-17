@@ -1,7 +1,6 @@
 "use client"
 
 import {
-  ArrowLeft01Icon,
   MoreVerticalIcon,
   PlusSignIcon,
   Tick02Icon,
@@ -18,26 +17,15 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useMutation } from "convex/react"
-import { AnimatePresence, motion } from "motion/react"
-import type { Variants } from "motion/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { useState } from "react"
+import { InnerSidebar } from "@/components/inner-sidebar"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { useOrganization } from "@/components/org-context"
 import { RenameConversationDialog } from "@/components/assistant/rename-conversation-dialog"
 import { useAssistantThreads } from "@/hooks/use-assistant-threads"
-import { SPRING } from "@/lib/motion"
 import { relativeDayBucket } from "@/lib/relative-day"
 import { toast } from "@/lib/toast"
-
-// The panel's open width and the gap it carries to the main column, both
-// carried by the panel's OWN animated geometry rather than a flex `gap` on
-// the row: a container gap does not collapse with a shrinking flex item
-// (docs/ui-animation.md #3), so a `gap-*` on the row would still reserve
-// dead space once the panel's width reached 0. Animating both together means
-// closed truly means zero footprint, no gap artifact left behind.
-const PANEL_WIDTH = 280
-const PANEL_GAP = 16
 
 // Row count for the loading skeleton, not the list's own page size: the list
 // is unpaginated and never grows past ASSISTANT_THREAD_LIST_LIMIT, so this
@@ -45,58 +33,15 @@ const PANEL_GAP = 16
 // the panel before real data arrives.
 const HISTORY_SKELETON_ROW_KEYS = ["s1", "s2", "s3"] as const
 
-// The content's own exit-fade duration. The panel's CLOSE-direction
-// width/marginRight collapse delays by roughly this long (rule 4,
-// criterion-item.tsx's staged-exit pattern: fade first, then collapse the
-// now-invisible box) so the panel does not visibly retract text mid-fade.
-// Opening carries no such delay on the box itself: it widens immediately and
-// the content fades in after (see the inner motion.div's own enter delay).
-const CONTENT_FADE_OUT = 0.1
-
-// Variants (not a single inline `animate` object) so the CLOSE direction can
-// carry its own delayed transition without affecting the OPEN direction,
-// same reasoning as criterion-item.tsx's rowVariants.
-const panelVariants: Variants = {
-  open: {
-    width: PANEL_WIDTH,
-    marginRight: PANEL_GAP,
-    transition: SPRING,
-  },
-  closed: {
-    width: 0,
-    marginRight: 0,
-    transition: { ...SPRING, delay: CONTENT_FADE_OUT },
-  },
-}
-
 // The assistant's persistent conversations panel: open by default, listing
-// every conversation with a "New conversation" button and a collapse control
-// at its own top, at the boundary between the page content and the app
-// sidebar. `open`/`busy` are owned by the page (app/(app)/assistant/page.tsx)
-// so this panel, its own collapse button, and the expand button the page
-// renders in the main column while collapsed can never disagree on state.
-// Width 0 <-> PANEL_WIDTH, same slide animation as the rail this replaced.
+// every conversation with a "New conversation" button. `open`/`busy` are owned
+// by the page (app/(app)/assistant/page.tsx) so this panel, its collapse
+// control, and the expand button the page renders while collapsed can never
+// disagree on state.
 //
-// Split per docs/ui-animation.md #2 (height/width vs the CSS box model): the
-// OUTER motion.div carries ONLY animated geometry (width, marginRight) and no
-// visual box styles, so `width: 0` truly means zero; the INNER div carries the
-// fixed width (so text never rewraps mid-slide, same reasoning as
-// MorphPopover's fixed content width), the padding, and the
-// flex-col + min-h-0 + overflow-y-auto chain that lets the thread list scroll
-// on its own without the bounded row ever growing taller than intended
-// (docs/ui-animation.md's box-model warning applies to a flex item's default
-// min-height:auto too: without min-h-0 here, a long list could force this
-// panel, and the row it sits in, to grow past the page's locked height).
-//
-// The list itself mounts only while open (AnimatePresence, a fast fade per
-// rule 4's staged-exit guidance) so a closed panel carries no thread rows in
-// the tree at all, not merely a clipped one.
-//
-// Selecting a thread keeps the panel open (the caller is browsing); only the
-// header's collapse button closes it. Each row disables while `busy`
-// (switching mid-stream would silently orphan the in-flight reply, the same
-// orphan guard New conversation and the collapse toggle use), and the active
-// thread (status "active", at most one) is marked rather than clickable.
+// The frame, its collapse animation and its border come from InnerSidebar; the
+// only thing this file adds is the surface's own header action and its thread
+// list.
 export function AssistantHistoryPanel({
   open,
   busy,
@@ -111,69 +56,39 @@ export function AssistantHistoryPanel({
   const t = useTranslations("dashboard.assistant")
 
   return (
-    <motion.div
-      initial={false}
-      variants={panelVariants}
-      animate={open ? "open" : "closed"}
-      className="min-h-0 shrink-0 overflow-hidden"
+    <InnerSidebar
+      open={open}
+      label={t("history")}
+      collapseLabel={t("history")}
+      // The route is height-locked by AppShell, so the sidebar fills it.
+      height="fill"
+      onCollapse={onCollapse}
+      actions={
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={busy}
+          onClick={onNewConversation}
+        >
+          <HugeiconsIcon
+            icon={PlusSignIcon}
+            size={16}
+            strokeWidth={2}
+            aria-hidden="true"
+          />
+          {t("newConversation")}
+        </Button>
+      }
     >
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            key="panel-content"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { delay: 0.08 } }}
-            exit={{ opacity: 0, transition: { duration: CONTENT_FADE_OUT } }}
-            className="flex h-full min-h-0 flex-col"
-            style={{ width: PANEL_WIDTH }}
-          >
-            <div className="flex h-10 shrink-0 items-center justify-between gap-1 px-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={busy}
-                onClick={onNewConversation}
-              >
-                <HugeiconsIcon
-                  icon={PlusSignIcon}
-                  size={16}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-                {t("newConversation")}
-              </Button>
-              {/* Never busy-gated, unlike the rows and New conversation
-                  above: collapsing the panel touches no thread, so it carries
-                  none of the orphan hazard that gates them. */}
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label={t("history")}
-                onClick={onCollapse}
-              >
-                {/* The app's standard chevron glyph, pointing the way the
-                    panel folds; the history glyph belongs to the collapsed
-                    state's expand button, where it names what comes back. */}
-                <HugeiconsIcon
-                  icon={ArrowLeft01Icon}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-              </Button>
-            </div>
-            <AssistantHistoryThreadList busy={busy} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+      <AssistantHistoryThreadList busy={busy} />
+    </InnerSidebar>
   )
 }
 
 // Split out from AssistantHistoryPanel so useAssistantThreads' subscription
 // lives on THIS node's own mount lifetime: it mounts only while the
-// AnimatePresence child above is present (open, or mid-close-fade), never
+// primitive's own content region is present (open, or mid-close-fade), never
 // for the outer panel's own lifetime, which the page mounts unconditionally
 // on every /assistant visit.
 function AssistantHistoryThreadList({ busy }: { busy: boolean }) {
@@ -182,7 +97,7 @@ function AssistantHistoryThreadList({ busy }: { busy: boolean }) {
 
   if (loading) {
     return (
-      <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="flex flex-col gap-1">
           {HISTORY_SKELETON_ROW_KEYS.map((key) => (
             <div
@@ -199,7 +114,7 @@ function AssistantHistoryThreadList({ busy }: { busy: boolean }) {
   }
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
+    <div className="min-h-0 flex-1 overflow-y-auto">
       <div className="flex flex-col gap-1">
         {threads.map((thread) => (
           <AssistantHistoryThreadRow
