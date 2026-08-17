@@ -1,0 +1,30 @@
+packages/backend/convex/assistant/generate.test.ts
+  s_0e9ce98be5faff::t_6c9c9beaa5ffa4 7,11
+  s_0e9ce98be5faff::t_6604ab25f2b1b2 36-63
+packages/backend/convex/assistant/knowledge.ts
+  s_0e9ce98be5faff::t_5dcc2a3d82b4d7 348
+packages/backend/convex/assistant/generate.ts
+  s_0e9ce98be5faff::t_f561e514292818 328
+  s_0e9ce98be5faff::t_9f167be5b0465b 21-25
+  s_0e9ce98be5faff::t_422be2e084fd22 80-90,92-95
+  s_0e9ce98be5faff::t_89c51cb23458b2 91
+packages/backend/convex/assistant/tools.ts
+  s_0e9ce98be5faff::t_a9582141d01097 53
+  s_0e9ce98be5faff::t_fa023453bec0e3 63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "91cfb8082ce344cd08dafd0c6f243e815cd45f46",
+  "prompts": {},
+  "sessions": {
+    "s_0e9ce98be5faff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fd1853b5-5652-46e9-9c32-c76e47f67a68",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
