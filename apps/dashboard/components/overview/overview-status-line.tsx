@@ -20,17 +20,23 @@ export function OverviewStatusLine({ todo }: { todo: Todo | undefined }) {
   const t = useTranslations("dashboard.overview.hero")
 
   if (todo === undefined) {
-    // The bar sits inside the REAL paragraph, carrying the real typography,
-    // so the placeholder measures the loaded line exactly (23px here: text-sm
-    // over leading-relaxed). A bare h-5 bar measured 20px, and those 3px
-    // moved every band below it, and the centred hero above it, the moment
-    // the count arrived. Inline-block so the line box is what sets the
-    // height; the bar stays shorter than it, because a placeholder should
-    // read as a stand-in rather than as a filled line.
+    // The bar carries the REAL line's typography (the shared class), so the
+    // placeholder measures the loaded line exactly: 23px here, text-sm over
+    // leading-relaxed. A bare h-5 bar measured 20px, and those 3px moved
+    // every band below it, and the centred hero above it, the moment the
+    // count arrived. Inline-block is what makes the line box set the height
+    // rather than the bar; the bar stays shorter than it, so it reads as a
+    // stand-in rather than as a filled line.
+    //
+    // A div, not the <p> the loaded state uses: Skeleton renders a div, and a
+    // div inside a p is invalid HTML that the parser reopens, which React
+    // reports as a hydration mismatch. The tag makes no difference to the
+    // measurement (preflight zeroes a p's margin, and the line box comes from
+    // the shared class), and a placeholder is not a paragraph of text anyway.
     return (
-      <p className={STATUS_LINE_CLASS}>
+      <div className={STATUS_LINE_CLASS}>
         <Skeleton className="inline-block h-4 w-64 align-middle" />
-      </p>
+      </div>
     )
   }
 

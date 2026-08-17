@@ -26,6 +26,18 @@ describe("OverviewStatusLine", () => {
     expect(screen.queryByRole("link")).toBeNull()
   })
 
+  // Skeleton renders a div, and a div inside a p is invalid HTML: the parser
+  // closes the p before it, so the server's tree and the client's disagree
+  // and React reports a hydration mismatch. The placeholder therefore does
+  // not reuse the loaded line's <p>, while keeping its typography (which is
+  // what makes the two measure the same).
+  it("keeps the skeleton out of a paragraph, and carries the line's own type", () => {
+    const { container } = renderLine(undefined)
+    const bar = container.querySelector("[data-slot='skeleton']")
+    expect(bar?.closest("p")).toBeNull()
+    expect(bar?.parentElement?.className).toContain("leading-relaxed")
+  })
+
   it("renders the all-caught-up line when nothing is outstanding", () => {
     renderLine(todoWithTotal(0))
     expect(
