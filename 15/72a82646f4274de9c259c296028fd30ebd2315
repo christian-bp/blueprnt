@@ -1,0 +1,57 @@
+apps/dashboard/components/inner-sidebar.test.tsx
+  s_30828b25439bc4::t_8a27c213b3d870 123-146
+apps/dashboard/components/docs/docs-nav.tsx
+  s_30828b25439bc4::t_9a3c7910afb267 123-129
+  s_30828b25439bc4::t_22d14a6151b15e 138-140,145-146,156-170,174
+  s_30828b25439bc4::t_42b912423a5f4e 11
+docs/superpowers/plans/2026-08-17-inner-sidebar.md
+  s_30828b25439bc4::t_e926dd034b1fa1 1382-1665
+  s_30828b25439bc4::t_3697989af2b0de 1683,1687-1692,1694-1697,1703,1705
+packages/i18n/messages/nb.json
+  s_30828b25439bc4::t_207b118f5db1fe 2518
+packages/i18n/messages/en.json
+  s_30828b25439bc4::t_25db0ada266655 2518
+packages/i18n/messages/da.json
+  s_30828b25439bc4::t_1589e85ff6e461 2518
+apps/dashboard/components/inner-sidebar.tsx
+  s_30828b25439bc4::t_30e8f9ccf68241 77-81
+  s_30828b25439bc4::t_2940334a28e1a1 27-34
+  s_30828b25439bc4::t_b280d674e1b598 89,96,100,103
+  s_30828b25439bc4::t_a22b9ea6b9025b 129-152
+packages/i18n/messages/fi.json
+  s_30828b25439bc4::t_864495dd414d96 2518
+apps/dashboard/lib/inner-sidebar-state.test.ts
+  s_30828b25439bc4::t_6a03b369efa375 51-54
+  s_30828b25439bc4::t_73c5127bc664ea 55-56,60,66-67
+docs/superpowers/specs/2026-08-17-inner-sidebar-design.md
+  s_30828b25439bc4::t_f4fb97b3048568 135-136,138-139,143-144,148-152
+  s_30828b25439bc4::t_5e76f826617d72 253-260
+  s_30828b25439bc4::t_b886106cae289f 56-82
+  s_30828b25439bc4::t_fcf585fc0c3b62 108-110
+  s_30828b25439bc4::t_f0e26804bd8c3d 186-193
+  s_30828b25439bc4::t_a798a83dbd8f20 271
+  s_30828b25439bc4::t_4abbaf988bf6a3 84-95
+  s_30828b25439bc4::t_cbc2b975a6f4a7 83
+apps/dashboard/components/docs/docs-nav.test.tsx
+  s_30828b25439bc4::t_774dfc6ce130a9 125-150,154-166
+  s_30828b25439bc4::t_f4cdd3bb2917e9 12-16
+  s_30828b25439bc4::t_66a5d7eff1d844 151-153
+packages/i18n/messages/sv.json
+  s_30828b25439bc4::t_e15d9752f97581 2518
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1572a82646f4274de9c259c296028fd30ebd2315",
+  "prompts": {},
+  "sessions": {
+    "s_30828b25439bc4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "37882f04-cffb-4a1e-a7ea-7470ab746a66",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
