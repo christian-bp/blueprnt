@@ -12,7 +12,10 @@ import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import { ScreenShell } from "@/components/screen-shell"
 import { isRunCompletedError } from "@/lib/pay-mapping-errors"
-import { ReviewStepActions } from "./review-step-actions"
+import {
+  REVIEW_NOTE_FIELD_CLASS,
+  ReviewStepActions,
+} from "./review-step-actions"
 
 const SAVE_DEBOUNCE_MS = 800
 
@@ -209,6 +212,7 @@ export function ReviewStartStep({
             <Textarea
               id={participantsId}
               ref={participantsRef}
+              className={REVIEW_NOTE_FIELD_CLASS}
               value={participants}
               disabled={locked}
               onChange={(event) => {
@@ -227,6 +231,7 @@ export function ReviewStartStep({
             <Textarea
               id={descriptionId}
               ref={descriptionRef}
+              className={REVIEW_NOTE_FIELD_CLASS}
               value={description}
               disabled={locked}
               onChange={(event) => {

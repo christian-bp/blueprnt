@@ -488,7 +488,17 @@ export function PayMappingAnalysis({
   const explicitCardOpen = openStep !== null && selected !== undefined
   // A one-step chapter has nothing to choose between, so it renders the
   // step full width with no list beside it.
-  const showChapterList = chapterRows.length > 1
+  // Any chapter that HAS rows keeps the list, including a one-row chapter
+  // (samverkan). Hiding it there saved a list nobody needed and cost the
+  // whole section its geometry: without the 320px column the step pane grows
+  // by that column plus the gap, so every field and every button in the step
+  // jumped sideways on the way into and out of that chapter. A one-row list
+  // still says where the reader is; a moving form does not.
+  //
+  // Zero rows still means no list: a chapter can legitimately have none (an
+  // equal-work chapter on a run with no comparison groups), and an empty
+  // column beside an empty chapter says nothing.
+  const showChapterList = chapterRows.length > 0
   // "Mark done and continue" advances the pane to the next REMAINING row
   // after the current one, in the checklist's own flat order above. Never
   // wraps back to an earlier row: this is a wizard-like convenience for
@@ -873,12 +883,12 @@ export function PayMappingAnalysis({
 
   return (
     <div className="space-y-4">
-      {/* Läget lists no steps of its own (the chapter tab row above is
-          where chapters are chosen since Iteration 4), so it renders the
-          pane full width. A chapter page keeps the two-column
-          master-detail: the left column carries THAT chapter's rows and is
-          hidden below lg only while a card is open (the phone's own "swap
-          the whole view" behavior). lg:sticky keeps the list beside the
+      {/* A chapter page is a two-column master-detail: the left column
+          carries THAT chapter's rows and is hidden below lg only while a card
+          is open (the phone's own "swap the whole view" behavior). The column
+          is present on every chapter that has rows, one-row chapters
+          included, so the step pane keeps one width across the whole
+          section. lg:sticky keeps the list beside the
           pane without reflowing on selection; the scroll region lives
           INSIDE the Card (max-h on the Card, overflow on its content),
           never on this wrapper, because the Card's elevation is a ring

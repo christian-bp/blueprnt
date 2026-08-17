@@ -15,7 +15,10 @@ import { OptionCard } from "@/components/option-card"
 import { ScreenShell } from "@/components/screen-shell"
 import { isRunCompletedError } from "@/lib/pay-mapping-errors"
 import type { GroupAnalysis } from "./pay-mapping-gap-types"
-import { ReviewStepActions } from "./review-step-actions"
+import {
+  REVIEW_NOTE_FIELD_CLASS,
+  ReviewStepActions,
+} from "./review-step-actions"
 
 const NOTE_SAVE_DEBOUNCE_MS = 800
 
@@ -310,6 +313,7 @@ export function ReviewPraxisStep({
             <Textarea
               id={noteId}
               ref={noteRef}
+              className={REVIEW_NOTE_FIELD_CLASS}
               value={note}
               disabled={locked}
               onChange={handleNoteChange}

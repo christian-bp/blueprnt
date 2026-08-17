@@ -3,6 +3,18 @@
 import { Button } from "@workspace/ui/components/button"
 import { useTranslations } from "next-intl"
 
+// A review step's free-text field, sized once for every step that has one
+// (samverkan's two fields, a praxis finding, a group's motivation).
+//
+// The vendored Textarea auto-sizes on field-sizing-content, which is right
+// for a composer but wrong here: this field sits ABOVE the step's action row,
+// so the box grows as the reader types and shrinks again when a step with a
+// saved note is followed by an empty one, and the primary button moves under
+// the cursor either way. A fixed height keeps the whole card still and lets
+// the field scroll instead, which is what a form in a stepper needs. h-24 is
+// three lines of the field's own text, up from the vendored two-line floor.
+export const REVIEW_NOTE_FIELD_CLASS = "field-sizing-fixed h-24"
+
 // The review journey's shared action row: every step card (start, praxis,
 // group, chapter intro, finish) ends with this same anatomy, so the wizard
 // reads consistently across chapters. Previous/Skip are optional and hidden

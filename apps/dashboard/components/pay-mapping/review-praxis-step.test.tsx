@@ -92,6 +92,17 @@ describe("ReviewPraxisStep", () => {
     expect(screen.getByRole("button", { name: t.findingFound })).toBeDefined()
   })
 
+  // The note sits ABOVE the step's action row, and the vendored Textarea
+  // auto-sizes on field-sizing-content, so without a fixed height the box
+  // grows as the reader types and shrinks again on a step whose note is
+  // empty, moving the primary button under the cursor either way.
+  it("gives the note a fixed height so typing never moves the actions", () => {
+    renderStep()
+    const note = screen.getByLabelText(t.praxisNoteLabel)
+    expect(note.className).toContain("field-sizing-fixed")
+    expect(note.className).toMatch(/(^|\s)h-\d/)
+  })
+
   it("gates the primary action until a choice is made", async () => {
     renderStep()
     const primary = screen.getByRole("button", {

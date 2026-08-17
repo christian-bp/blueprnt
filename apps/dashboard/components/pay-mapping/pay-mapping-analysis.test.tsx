@@ -381,16 +381,19 @@ describe("PayMappingAnalysis", () => {
     ).toBeNull()
   })
 
-  it("opens the one-step start chapter directly, with no list beside it", async () => {
+  it("opens the one-step start chapter directly, keeping the list beside it", async () => {
     // Documented already, so this is the case that used to hide its own
-    // content behind a "this chapter is done" panel. A one-step chapter has
-    // nothing to choose between, so the step takes the full width.
+    // content behind a "this chapter is done" panel. The step opens directly,
+    // and the list stays: a one-step chapter has nothing to choose between,
+    // but dropping the column here made the step pane grow by its width, so
+    // every field and button in the analysis jumped sideways on the way into
+    // and out of this chapter.
     renderSummary({
       chapter: "start",
       run: { ...RUN, collaboration: COLLABORATION_FILLED },
     })
     expect(await screen.findByText(t.introTitle)).toBeDefined()
-    expect(screen.queryByRole("textbox", { name: t.searchSteps })).toBeNull()
+    expect(screen.getByRole("textbox", { name: t.searchSteps })).toBeDefined()
   })
 
   it("selects a praxis row: opens it and marks it aria-current", async () => {

@@ -26,6 +26,7 @@ import { OptionCard } from "@/components/option-card"
 import { useOrganization } from "@/components/org-context"
 import { isRunCompletedError } from "@/lib/pay-mapping-errors"
 import type { GroupAnalysis } from "./pay-mapping-gap-types"
+import { REVIEW_NOTE_FIELD_CLASS } from "./review-step-actions"
 
 const NOTE_SAVE_DEBOUNCE_MS = 800
 
@@ -367,6 +368,7 @@ export function PayMappingGroupAnalysisForm({
         <Textarea
           id={noteId}
           ref={noteRef}
+          className={REVIEW_NOTE_FIELD_CLASS}
           value={note}
           disabled={locked}
           onChange={handleNoteChange}
