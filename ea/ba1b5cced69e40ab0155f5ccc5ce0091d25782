@@ -1,0 +1,29 @@
+apps/dashboard/lib/inner-sidebar-state.ts
+  s_30828b25439bc4::t_ef2c8d366dd62b 1-41
+apps/dashboard/lib/inner-sidebar-state.test.ts
+  s_30828b25439bc4::t_13534e93b04dc5 1-11,16-20,25-26,31-55,59-70
+  s_30828b25439bc4::t_ad576fe3215290 12-15,21-24,27-30,56-58
+apps/dashboard/app/(app)/assistant/page.tsx
+  s_30828b25439bc4::t_e3d448bd73c04b 39-43
+  s_30828b25439bc4::t_fc7b8de89f88c9 55
+  s_30828b25439bc4::t_97cc455f9f725e 17-20
+apps/dashboard/app/(app)/assistant/page.test.tsx
+  s_30828b25439bc4::t_ad576fe3215290 92-94,164-166
+  s_30828b25439bc4::t_1170c6d7798ddd 31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "eaba1b5cced69e40ab0155f5ccc5ce0091d25782",
+  "prompts": {},
+  "sessions": {
+    "s_30828b25439bc4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "37882f04-cffb-4a1e-a7ea-7470ab746a66",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
