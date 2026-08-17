@@ -14,9 +14,10 @@ import { useOrganization } from "@/components/org-context"
 import { useAssistantChat } from "@/hooks/use-assistant-chat"
 import { usePageTitle } from "@/hooks/use-page-title"
 import {
-  initialAssistantHistoryOpen,
-  persistAssistantHistoryOpen,
-} from "@/lib/assistant-history-state"
+  ASSISTANT_HISTORY_COOKIE,
+  initialInnerSidebarOpen,
+  persistInnerSidebarOpen,
+} from "@/lib/inner-sidebar-state"
 import { toast } from "@/lib/toast"
 
 export default function AssistantPage() {
@@ -35,9 +36,11 @@ export default function AssistantPage() {
   // this hook (read by every chat render) never pays for the full history.
   const { busy, title } = useAssistantChat(orgId)
   // Persisted across visits the same way the app sidebar's own open state is
-  // (lib/assistant-history-state.ts, one shared cookie idiom); no stored
-  // choice defaults to open, since the panel is the default view.
-  const [panelOpen, setPanelOpen] = useState(initialAssistantHistoryOpen)
+  // (lib/inner-sidebar-state.ts, one shared cookie idiom); no stored choice
+  // defaults to open, since the panel is the default view.
+  const [panelOpen, setPanelOpen] = useState(() =>
+    initialInnerSidebarOpen(ASSISTANT_HISTORY_COOKIE)
+  )
 
   const handleNewConversation = async () => {
     try {
@@ -49,7 +52,7 @@ export default function AssistantPage() {
 
   function togglePanel(next: boolean) {
     setPanelOpen(next)
-    persistAssistantHistoryOpen(next)
+    persistInnerSidebarOpen(ASSISTANT_HISTORY_COOKIE, next)
   }
 
   return (

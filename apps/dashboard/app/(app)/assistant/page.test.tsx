@@ -28,7 +28,7 @@ vi.mock("@/components/assistant/assistant-panel", () => ({
 }))
 
 import AssistantPage from "@/app/(app)/assistant/page"
-import * as assistantHistoryState from "@/lib/assistant-history-state"
+import * as innerSidebarState from "@/lib/inner-sidebar-state"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 
 const t = messages.dashboard.assistant
@@ -89,10 +89,9 @@ describe("AssistantPage", () => {
   })
 
   it("starts collapsed when the persisted choice is closed (mocking the storage read)", () => {
-    vi.spyOn(
-      assistantHistoryState,
-      "initialAssistantHistoryOpen"
-    ).mockReturnValue(false)
+    vi.spyOn(innerSidebarState, "initialInnerSidebarOpen").mockReturnValue(
+      false
+    )
     renderPage()
     // Collapsed: the compact stand-in carries BOTH of the header's actions
     // as stacked icon buttons (new chat + expand), absolutely positioned at
@@ -162,10 +161,9 @@ describe("AssistantPage", () => {
   })
 
   it("disables the collapsed stand-in's new-chat button while a reply streams", () => {
-    vi.spyOn(
-      assistantHistoryState,
-      "initialAssistantHistoryOpen"
-    ).mockReturnValue(false)
+    vi.spyOn(innerSidebarState, "initialInnerSidebarOpen").mockReturnValue(
+      false
+    )
     onQuery((ref) => {
       if (ref === "assistant.chat.getActiveThread") {
         return { _id: "thread-1", lastMessageAt: 0 }
