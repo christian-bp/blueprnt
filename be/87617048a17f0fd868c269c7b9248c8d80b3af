@@ -1,0 +1,28 @@
+apps/dashboard/components/assistant/assistant-prompt.tsx
+  s_0e9ce98be5faff::t_a1cfd7445e148a 43-46
+  s_0e9ce98be5faff::t_8d6dd26f35abc7 149,151,153-154
+  s_0e9ce98be5faff::t_64234a0b034b64 23
+apps/dashboard/components/assistant/assistant-composer.tsx
+  s_0e9ce98be5faff::t_22673f68c190fc 49-82
+  s_0e9ce98be5faff::t_08966413d065bb 5
+  s_0e9ce98be5faff::t_3575c101a21098 83
+apps/dashboard/components/assistant/assistant-thread.tsx
+  s_0e9ce98be5faff::t_64234a0b034b64 13
+  s_0e9ce98be5faff::t_0b164b9ecef4c1 70,72-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "be87617048a17f0fd868c269c7b9248c8d80b3af",
+  "prompts": {},
+  "sessions": {
+    "s_0e9ce98be5faff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fd1853b5-5652-46e9-9c32-c76e47f67a68",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
