@@ -1,0 +1,21 @@
+apps/dashboard/app/(app)/assistant/page.tsx
+  s_30828b25439bc4::t_ac4b0751eb3361 107-111
+apps/dashboard/components/assistant/assistant-history.tsx
+  s_30828b25439bc4::t_6349bfd5016bba 65-67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1a310962acdb3c7b5e66d27066b82f3753b847e3",
+  "prompts": {},
+  "sessions": {
+    "s_30828b25439bc4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "37882f04-cffb-4a1e-a7ea-7470ab746a66",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
