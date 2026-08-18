@@ -1,0 +1,25 @@
+packages/backend/convex/evaluationModel/criteriaLibrary.test.ts
+  s_58dd112dc09435::t_ea2d50593ce1d5 53,56-58,61-67,71-77
+  s_58dd112dc09435::t_7bae5a5b157487 2-8
+  s_58dd112dc09435::t_b8b9d77905edf5 78
+packages/backend/convex/evaluationModel/criteriaLibrary.ts
+  s_58dd112dc09435::t_54fd7c96dac475 98
+  s_58dd112dc09435::t_1997d56ccd36a7 165
+  s_58dd112dc09435::t_1e7ce289b0170e 187-192,194-196
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8ee38adc2bcd28b247b96fbe3b19a17d787f8a8a",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
