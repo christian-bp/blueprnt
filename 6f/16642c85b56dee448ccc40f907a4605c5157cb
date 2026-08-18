@@ -1,0 +1,21 @@
+packages/core/src/method-checks.test.ts
+  s_58dd112dc09435::t_36dfebd08d2abc 107-120
+packages/core/src/method-checks.ts
+  s_58dd112dc09435::t_79880c322e9805 77-78,80-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6f16642c85b56dee448ccc40f907a4605c5157cb",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
