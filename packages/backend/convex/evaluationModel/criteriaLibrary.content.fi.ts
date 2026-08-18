@@ -139,7 +139,7 @@ export const criteriaLibraryContentFi: CriteriaLibraryContent = {
       assessmentQuestion:
         "Millaista muodollista pätevyyttä, lupaa tai sertifiointia rooli normaalisti ja pysyvästi edellyttää?",
       anchor1:
-        "Rooli edellyttää perustason, selkeästi määriteltyä lupaa tai sertifiointia, jonka uusimis- tai laajuusvaatimus on rajallinen.",
+        "Rooli ei edellytä muodollista pätevyyttä, lupaa tai sertifiointia, tai se edellyttää vain perustason, selkeästi määriteltyä lupaa tai sertifiointia, jonka uusimis- tai laajuusvaatimus on rajallinen.",
       anchor3:
         "Rooli edellyttää vakiintunutta ammatillista laillistusta tai sertifiointia, joka on toistuva, itsenäinen ehto roolin harjoittamiselle.",
       anchor5:

@@ -173,7 +173,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       assessmentQuestion:
         "What level of formal qualification, licensing or certification does this role normally and lastingly require?",
       anchor1:
-        "The role requires a basic, clearly defined authorization or certification with a limited renewal or scope requirement.",
+        "The role has no formal qualification, licensing or certification requirement, or only a basic, clearly defined one with a limited renewal or scope requirement.",
       anchor3:
         "The role requires an established professional license or certification that is a recurring, independent condition for practicing the role.",
       anchor5:

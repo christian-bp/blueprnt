@@ -142,7 +142,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       assessmentQuestion:
         "Vilken nivå av formell kvalifikation, legitimation eller certifiering kräver rollen normalt och varaktigt?",
       anchor1:
-        "Rollen kräver en grundläggande, tydligt definierad behörighet eller certifiering med begränsat krav på förnyelse eller omfattning.",
+        "Rollen har inget krav på legitimation, behörighet eller certifiering, eller endast ett grundläggande, tydligt definierat sådant krav med begränsat krav på förnyelse eller omfattning.",
       anchor3:
         "Rollen kräver en etablerad yrkeslegitimation eller certifiering som är ett återkommande, självständigt villkor för att utöva rollen.",
       anchor5:

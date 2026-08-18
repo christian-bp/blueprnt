@@ -138,7 +138,7 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       assessmentQuestion:
         "Hvilket niveau af formel kvalifikation, autorisation eller certificering kræver rollen normalt og varigt?",
       anchor1:
-        "Rollen kræver en grundlæggende, tydeligt defineret godkendelse eller certificering med begrænset krav om fornyelse eller omfang.",
+        "Rollen har intet krav om autorisation, godkendelse eller certificering, eller kun et grundlæggende, tydeligt defineret sådant krav med begrænset krav om fornyelse eller omfang.",
       anchor3:
         "Rollen kræver en etableret erhvervsautorisation eller certificering, der er et tilbagevendende, selvstændigt vilkår for at udøve rollen.",
       anchor5:

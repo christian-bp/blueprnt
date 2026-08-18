@@ -138,7 +138,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       assessmentQuestion:
         "Hvilket nivå av formell kvalifikasjon, autorisasjon eller sertifisering krever rollen normalt og varig?",
       anchor1:
-        "Rollen krever en grunnleggende, tydelig definert godkjenning eller sertifisering med begrenset krav til fornyelse eller omfang.",
+        "Rollen har ikke noe krav til autorisasjon, godkjenning eller sertifisering, eller bare et grunnleggende, tydelig definert slikt krav med begrenset krav til fornyelse eller omfang.",
       anchor3:
         "Rollen krever en etablert yrkesautorisasjon eller sertifisering som er et tilbakevendende, selvstendig vilkår for å utøve rollen.",
       anchor5:
