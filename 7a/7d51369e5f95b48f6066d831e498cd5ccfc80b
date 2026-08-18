@@ -1,0 +1,43 @@
+packages/core/src/dimensions.ts
+  s_58dd112dc09435::t_4f633446ae59f4 60-66
+packages/core/src/method-checks.test.ts
+  s_58dd112dc09435::t_a4ecce07ac21ec 2,6,10-11,22,27-30,37,42,44,46-58,63-64
+  s_58dd112dc09435::t_cbbb5f5e6f9a59 160-162,164-168
+  s_58dd112dc09435::t_fc098703dea064 379,390
+  s_58dd112dc09435::t_543d7fee93ede3 69,71,76-95,98-103,106
+  s_58dd112dc09435::t_75d84cc14992c7 96-97,104-105
+  s_58dd112dc09435::t_a7efa6911ede0e 107,243,245-247,261-263,265-269,279,285-286,292,311-378,380-389,391-392
+  s_58dd112dc09435::t_751963e142d6bb 108
+packages/core/src/method-checks.ts
+  s_58dd112dc09435::t_c8d58dbdfc043f 7,11-19,33-35,48-50,61-62,75-110,113-122,158-164,166-169,174-175,180,184,192-200,205-208,248-263,278-279,285
+  s_58dd112dc09435::t_fc098703dea064 165
+packages/core/src/zones.test.ts
+  s_58dd112dc09435::t_bd2203e3bad0fe 2,10
+  s_58dd112dc09435::t_21b0019a14d2e9 60-88,90-104
+  s_58dd112dc09435::t_590a0de465bb39 264-301
+packages/core/src/dimensions.test.ts
+  s_58dd112dc09435::t_3fcf59ce69dca9 87-98
+  s_58dd112dc09435::t_0d697906af005b 6
+packages/core/src/zones.ts
+  s_58dd112dc09435::t_4a1495a46b769f 2,4
+  s_58dd112dc09435::t_0f3cc78a69334b 109
+  s_58dd112dc09435::t_4fe41c4f4b756c 35-36
+  s_58dd112dc09435::t_e23d223d951e0f 37
+  s_58dd112dc09435::t_709de1a614eff9 70-75,77-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "7a7d51369e5f95b48f6066d831e498cd5ccfc80b",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
