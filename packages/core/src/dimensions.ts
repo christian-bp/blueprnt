@@ -1,3 +1,5 @@
+import type { WeightPoints } from "./weighting"
+
 // The four mandatory evaluation dimensions (the model's constitution, EU
 // 2023/970): fixed method law, ordered A-D. Companies choose criteria WITHIN
 // dimensions; the dimensions themselves are never configurable.
@@ -47,7 +49,7 @@ export function assertValidRatingValue(
 export interface DimensionCriterionInput {
   criterionId: string
   dimensionKey: DimensionKey
-  weightPoints: number
+  weightPoints: WeightPoints
 }
 
 // Share of the model's total weight per dimension; all zeros when the model
