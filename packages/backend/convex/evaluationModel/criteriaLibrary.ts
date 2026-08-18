@@ -95,6 +95,7 @@ export const LIBRARY_INDUSTRY_HINTS: Record<
 > = {
   itTelecom: [
     "knowledge-depth",
+    "knowledge-breadth",
     "complexity-ambiguity",
     "scope-impact",
     "autonomy-mandate",
@@ -161,6 +162,7 @@ export const LIBRARY_INDUSTRY_HINTS: Record<
   other: [
     "knowledge-depth",
     "complexity-ambiguity",
+    "communication-effort",
     "scope-impact",
     "autonomy-mandate",
     "risk-consequence",
@@ -182,9 +184,14 @@ const CONTENT_BY_LOCALE: Record<CriteriaLibraryLocale, CriteriaLibraryContent> =
 // otherwise make a missing locale look complete.
 export const REGISTERED_LIBRARY_LOCALES = Object.keys(CONTENT_BY_LOCALE)
 
+function isRegisteredLibraryLocale(
+  locale: string
+): locale is CriteriaLibraryLocale {
+  return REGISTERED_LIBRARY_LOCALES.includes(locale)
+}
+
 export function criteriaLibraryContent(locale: string): CriteriaLibraryContent {
-  return (
-    CONTENT_BY_LOCALE[locale as CriteriaLibraryLocale] ??
-    criteriaLibraryContentEn
-  )
+  return isRegisteredLibraryLocale(locale)
+    ? CONTENT_BY_LOCALE[locale]
+    : criteriaLibraryContentEn
 }

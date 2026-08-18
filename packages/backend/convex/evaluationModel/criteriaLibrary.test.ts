@@ -1,5 +1,11 @@
 import { INDUSTRY_KEYS } from "@workspace/constants"
-import { DIMENSION_KEYS } from "@workspace/core"
+import {
+  DIMENSION_KEYS,
+  DIMENSION_MAX_ACTIVE,
+  MODEL_MAX_CRITERIA,
+  MODEL_MIN_CRITERIA,
+  PEOPLE_LEADERSHIP_LIBRARY_KEY,
+} from "@workspace/core"
 import { describe, expect, it } from "vitest"
 import {
   CRITERIA_LIBRARY_KEYS,
@@ -44,14 +50,31 @@ describe("library structure", () => {
     }
   })
 
-  it("covers every industry with resolvable hints", () => {
+  it("covers every industry with resolvable hints inside the model bounds and dimension caps", () => {
     for (const industry of INDUSTRY_KEYS) {
       const hints = LIBRARY_INDUSTRY_HINTS[industry]
-      expect(hints.length).toBeGreaterThanOrEqual(5)
+      expect(hints.length).toBeGreaterThanOrEqual(MODEL_MIN_CRITERIA)
+      expect(hints.length).toBeLessThanOrEqual(MODEL_MAX_CRITERIA)
+      const counts: Record<string, number> = {}
       for (const key of hints) {
         expect(CRITERIA_LIBRARY_KEYS).toContain(key)
+        const dimension = LIBRARY_DIMENSION[key]
+        counts[dimension] = (counts[dimension] ?? 0) + 1
+      }
+      for (const dimension of DIMENSION_KEYS) {
+        expect(counts[dimension] ?? 0).toBeLessThanOrEqual(
+          DIMENSION_MAX_ACTIVE[dimension]
+        )
       }
     }
+  })
+
+  it("pins the engine's people-leadership coupling to responsibility", () => {
+    // A rename of the library key fails compilation here before it can ever
+    // desync from the engine's own PEOPLE_LEADERSHIP_LIBRARY_KEY constant.
+    expect(LIBRARY_DIMENSION[PEOPLE_LEADERSHIP_LIBRARY_KEY]).toBe(
+      "responsibility"
+    )
   })
 })
 
