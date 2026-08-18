@@ -5,6 +5,9 @@ import {
   type CriteriaLibraryContent,
 } from "./criteriaLibrary.content.en"
 import { criteriaLibraryContentSv } from "./criteriaLibrary.content.sv"
+import { criteriaLibraryContentNb } from "./criteriaLibrary.content.nb"
+import { criteriaLibraryContentDa } from "./criteriaLibrary.content.da"
+import { criteriaLibraryContentFi } from "./criteriaLibrary.content.fi"
 
 // The controlled criteria library (the masterdokument's sections 7-10): a
 // menu of 21 defined criteria the method builder selects from. Structure
@@ -166,12 +169,14 @@ export const LIBRARY_INDUSTRY_HINTS: Record<
 
 export type CriteriaLibraryLocale = "sv" | "en" | "nb" | "da" | "fi"
 
-const CONTENT_BY_LOCALE: Partial<
-  Record<CriteriaLibraryLocale, CriteriaLibraryContent>
-> = {
-  en: criteriaLibraryContentEn,
-  sv: criteriaLibraryContentSv,
-}
+const CONTENT_BY_LOCALE: Record<CriteriaLibraryLocale, CriteriaLibraryContent> =
+  {
+    en: criteriaLibraryContentEn,
+    sv: criteriaLibraryContentSv,
+    nb: criteriaLibraryContentNb,
+    da: criteriaLibraryContentDa,
+    fi: criteriaLibraryContentFi,
+  }
 
 // The parity guard asserts against this: the en fallback below would
 // otherwise make a missing locale look complete.

@@ -10,9 +10,7 @@ import {
   REGISTERED_LIBRARY_LOCALES,
 } from "./criteriaLibrary"
 
-const LOCALES = ["en", "sv", "nb", "da", "fi"] as const
-// nb/da/fi land in Task 6; extend this list there.
-const PRESENT_LOCALES = ["en", "sv"] as const
+const PRESENT_LOCALES = ["en", "sv", "nb", "da", "fi"] as const
 
 describe("library structure", () => {
   it("has 21 criteria distributed 5/5/7/4 across the dimensions", () => {
@@ -105,10 +103,5 @@ describe("library content", () => {
 
   it("falls back to en for unknown locales", () => {
     expect(criteriaLibraryContent("xx")).toEqual(criteriaLibraryContent("en"))
-  })
-
-  it("will cover every configured locale", () => {
-    // Reminder guard: flip PRESENT_LOCALES to LOCALES as Tasks 5-6 land.
-    expect(LOCALES).toHaveLength(5)
   })
 })
