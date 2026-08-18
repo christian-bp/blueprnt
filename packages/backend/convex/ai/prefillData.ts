@@ -4,7 +4,7 @@ import { internalMutation, internalQuery } from "../_generated/server"
 import { familyNames } from "../assessment/names"
 import { PROFILE_TEXT_FIELDS, isProfileComplete } from "../assessment/roles"
 import { clampLocale, promptLocale } from "../evaluationModel/localize"
-import { templateContent } from "../evaluationModel/standardTemplate"
+import { trackName } from "../evaluationModel/trackSchema"
 import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 
@@ -117,7 +117,7 @@ export const collectPrefillTargets = internalQuery({
     // the language the user is actually looking at.
     const generationLocale = promptLocale(locale, settings.language)
 
-    const trackNames = templateContent(clampLocale(generationLocale)).trackNames
+    const trackLocale = clampLocale(generationLocale)
 
     // Family names resolved ONCE for the org (one indexed read), then looked up
     // per role below. A role's familyId always points to a same-org family, so
@@ -153,7 +153,7 @@ export const collectPrefillTargets = internalQuery({
         return {
           roleId: role._id,
           title: role.title,
-          trackName: trackNames[role.trackKey],
+          trackName: trackName(trackLocale, role.trackKey),
           roleFunction: role.function,
           team: role.team,
           ...(familyName !== undefined ? { family: familyName } : {}),

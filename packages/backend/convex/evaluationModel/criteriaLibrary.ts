@@ -8,6 +8,7 @@ import { criteriaLibraryContentSv } from "./criteriaLibrary.content.sv"
 import { criteriaLibraryContentNb } from "./criteriaLibrary.content.nb"
 import { criteriaLibraryContentDa } from "./criteriaLibrary.content.da"
 import { criteriaLibraryContentFi } from "./criteriaLibrary.content.fi"
+import { clampLocale, type ProductContentLocale } from "./localize"
 
 // The controlled criteria library (the masterdokument's sections 7-10): a
 // menu of 21 defined criteria the method builder selects from. Structure
@@ -169,7 +170,7 @@ export const LIBRARY_INDUSTRY_HINTS: Record<
   ],
 }
 
-export type CriteriaLibraryLocale = "sv" | "en" | "nb" | "da" | "fi"
+export type CriteriaLibraryLocale = ProductContentLocale
 
 const CONTENT_BY_LOCALE: Record<CriteriaLibraryLocale, CriteriaLibraryContent> =
   {
@@ -184,14 +185,6 @@ const CONTENT_BY_LOCALE: Record<CriteriaLibraryLocale, CriteriaLibraryContent> =
 // otherwise make a missing locale look complete.
 export const REGISTERED_LIBRARY_LOCALES = Object.keys(CONTENT_BY_LOCALE)
 
-function isRegisteredLibraryLocale(
-  locale: string
-): locale is CriteriaLibraryLocale {
-  return REGISTERED_LIBRARY_LOCALES.includes(locale)
-}
-
 export function criteriaLibraryContent(locale: string): CriteriaLibraryContent {
-  return isRegisteredLibraryLocale(locale)
-    ? CONTENT_BY_LOCALE[locale]
-    : criteriaLibraryContentEn
+  return CONTENT_BY_LOCALE[clampLocale(locale)]
 }

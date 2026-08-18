@@ -8,7 +8,7 @@ import { v } from "convex/values"
 import type { Id } from "../_generated/dataModel"
 import type { MutationCtx } from "../_generated/server"
 import { isTrackKey } from "../evaluationModel/localize"
-import type { TrackKey } from "../evaluationModel/standardTemplate"
+import type { TrackKey } from "../evaluationModel/trackSchema"
 import { trackKeyValidator } from "../evaluationModel/tables"
 import {
   AUDIT_EVENTS,

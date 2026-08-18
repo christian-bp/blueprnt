@@ -1,9 +1,6 @@
 import type { QueryCtx } from "../_generated/server"
 import { clampLocale } from "../evaluationModel/localize"
-import {
-  TRACK_KEYS,
-  templateContent,
-} from "../evaluationModel/standardTemplate"
+import { TRACK_KEYS, trackName } from "../evaluationModel/trackSchema"
 
 export type TrackNames = Map<
   string,
@@ -15,11 +12,11 @@ export type TrackNames = Map<
 // database read. Shared by the role register and the results queries so the
 // localization rule cannot drift between readers.
 export function trackNames(locale: string | undefined): TrackNames {
-  const content = templateContent(clampLocale(locale))
+  const resolvedLocale = clampLocale(locale)
   return new Map(
     TRACK_KEYS.map((key, index) => [
       key as string,
-      { key, name: content.trackNames[key], order: index + 1 },
+      { key, name: trackName(resolvedLocale, key), order: index + 1 },
     ])
   )
 }

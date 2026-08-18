@@ -16,11 +16,14 @@ import {
   DEFAULT_LEVEL_THRESHOLDS,
   DEFAULT_WEIGHT_POINTS,
   STANDARD_TEMPLATE_KEY,
-  TRACK_KEYS,
-  type TemplateLocale,
   templateContent,
 } from "./standardTemplate"
-import { clampLocale, isCriterionKey } from "./localize"
+import {
+  clampLocale,
+  isCriterionKey,
+  type ProductContentLocale,
+} from "./localize"
+import { TRACK_KEYS, trackName } from "./trackSchema"
 import { trackKeyValidator } from "./tables"
 
 async function assertNoModel(ctx: MutationCtx, orgId: string) {
@@ -37,7 +40,7 @@ async function assertNoModel(ctx: MutationCtx, orgId: string) {
 async function contentLocale(
   ctx: MutationCtx,
   orgId: string
-): Promise<TemplateLocale> {
+): Promise<ProductContentLocale> {
   const settings = await ctx.db
     .query("organizations")
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
@@ -420,7 +423,8 @@ export const getModel = orgQuery({
       .unique()
     if (model === null) return null
 
-    const content = templateContent(clampLocale(locale))
+    const resolvedLocale = clampLocale(locale)
+    const content = templateContent(resolvedLocale)
     const isTemplateModel = model.templateKey !== undefined
 
     const criteriaRows = await ctx.db
@@ -464,7 +468,7 @@ export const getModel = orgQuery({
     // localized names; nothing is stored or queried.
     const tracks = TRACK_KEYS.map((key, index) => ({
       key,
-      name: content.trackNames[key],
+      name: trackName(resolvedLocale, key),
       order: index + 1,
     }))
 

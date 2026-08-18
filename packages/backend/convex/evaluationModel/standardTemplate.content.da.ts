@@ -327,9 +327,4 @@ export const standardTemplateContentDa: StandardTemplateContent = {
       },
     },
   },
-  trackNames: {
-    IC: "Individual Contributor",
-    Lead: "Lead",
-    M: "Manager",
-  },
 }

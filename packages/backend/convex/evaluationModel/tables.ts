@@ -62,8 +62,8 @@ export const criteria = defineTable({
   .index("by_org", ["orgId"])
 
 // The fixed V1 track schema as a validator (ADR-0006): tracks are constants,
-// not rows. MUST stay in sync with TRACK_KEYS in standardTemplate.ts
-// (standardTemplate.test.ts asserts the bijection). Used by roles.trackKey
+// not rows. MUST stay in sync with TRACK_KEYS in trackSchema.ts
+// (trackSchema.test.ts asserts the bijection). Used by roles.trackKey
 // and by getModel's wire shape.
 export const trackKeyValidator = v.union(
   v.literal("IC"),

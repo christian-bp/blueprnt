@@ -69,6 +69,7 @@ import type * as evaluationModel_method from "../evaluationModel/method.js";
 import type * as evaluationModel_model from "../evaluationModel/model.js";
 import type * as evaluationModel_standardTemplate from "../evaluationModel/standardTemplate.js";
 import type * as evaluationModel_tables from "../evaluationModel/tables.js";
+import type * as evaluationModel_trackSchema from "../evaluationModel/trackSchema.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as lib_audit from "../lib/audit.js";
@@ -177,6 +178,7 @@ declare const fullApi: ApiFromModules<{
   "evaluationModel/model": typeof evaluationModel_model;
   "evaluationModel/standardTemplate": typeof evaluationModel_standardTemplate;
   "evaluationModel/tables": typeof evaluationModel_tables;
+  "evaluationModel/trackSchema": typeof evaluationModel_trackSchema;
   files: typeof files;
   http: typeof http;
   "lib/audit": typeof lib_audit;

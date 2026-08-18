@@ -22,11 +22,9 @@ import {
   isCriterionKey,
   promptLocale,
 } from "../evaluationModel/localize"
-import {
-  TRACK_KEYS,
-  templateContent,
-} from "../evaluationModel/standardTemplate"
+import { templateContent } from "../evaluationModel/standardTemplate"
 import { trackKeyValidator } from "../evaluationModel/tables"
+import { TRACK_KEYS, trackName } from "../evaluationModel/trackSchema"
 import { AUDIT_EVENTS, buildCreateChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
@@ -503,7 +501,7 @@ export const requestStarterImport = orgMutation({
     const resolvedLocale = promptLocale(locale, settings.locale)
     // Tracks are fixed constants (ADR-0006): the prompt's track names are a
     // content lookup in the generation locale, no rows to fetch.
-    const trackNames = templateContent(clampLocale(resolvedLocale)).trackNames
+    const trackLocale = clampLocale(resolvedLocale)
     const suggestionId = await ctx.db.insert("suggestions", {
       orgId: ctx.orgId,
       target: { kind: SUGGESTION_KINDS.starterImport },
@@ -525,7 +523,10 @@ export const requestStarterImport = orgMutation({
           ? { employeeCount: settings.employeeCount }
           : {}),
         rawText: text,
-        tracks: TRACK_KEYS.map((key) => ({ key, name: trackNames[key] })),
+        tracks: TRACK_KEYS.map((key) => ({
+          key,
+          name: trackName(trackLocale, key),
+        })),
       }
     )
     return suggestionId
@@ -547,7 +548,7 @@ export const requestRoleImport = orgMutation({
       throw appError(ERROR_CODES.invalidInput)
     }
     const resolvedLocale = promptLocale(locale, settings.locale)
-    const trackNames = templateContent(clampLocale(resolvedLocale)).trackNames
+    const trackLocale = clampLocale(resolvedLocale)
     // The org's existing families go into the prompt so the model reuses an
     // exact name where a pasted role fits one, instead of inventing
     // "Engineering Team" beside the existing "Engineering". Family names are
@@ -583,7 +584,10 @@ export const requestRoleImport = orgMutation({
           ? { employeeCount: settings.employeeCount }
           : {}),
         rawText: text,
-        tracks: TRACK_KEYS.map((key) => ({ key, name: trackNames[key] })),
+        tracks: TRACK_KEYS.map((key) => ({
+          key,
+          name: trackName(trackLocale, key),
+        })),
         existingFamilies,
       }
     )
@@ -853,9 +857,10 @@ async function buildRoleDraftInput(
   }
 
   const generationLocale = promptLocale(args.locale, settings.language)
-  const trackName = templateContent(clampLocale(generationLocale)).trackNames[
+  const trackDisplayName = trackName(
+    clampLocale(generationLocale),
     args.role.trackKey
-  ]
+  )
 
   // Identity fields are clamped HERE rather than at each caller so both paths
   // are bounded: neither a caller-supplied value nor a stored one (function
@@ -870,7 +875,7 @@ async function buildRoleDraftInput(
       ? { employeeCount: settings.employeeCount }
       : {}),
     title: clamp(args.role.title),
-    trackName,
+    trackName: trackDisplayName,
     roleFunction: clamp(args.role.roleFunction),
     team: clamp(args.role.team),
     ...(args.role.family !== undefined

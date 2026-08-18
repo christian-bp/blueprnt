@@ -1,18 +1,22 @@
-import {
-  type CriterionKey,
-  CRITERION_KEYS,
-  TRACK_KEYS,
-  type TemplateLocale,
-  type TrackKey,
-} from "./standardTemplate"
+import { type CriterionKey, CRITERION_KEYS } from "./standardTemplate"
+import { TRACK_KEYS, type TrackKey } from "./trackSchema"
 
 // Read-time localization helpers shared by getModel and the assessment
-// queries. Template content exists in all five product locales; anything
-// else falls back to en.
-const TEMPLATE_LOCALES = new Set<TemplateLocale>(["sv", "en", "nb", "da", "fi"])
-export function clampLocale(locale: string | undefined): TemplateLocale {
-  return locale !== undefined && TEMPLATE_LOCALES.has(locale as TemplateLocale)
-    ? (locale as TemplateLocale)
+// queries. Product content exists in all five product locales; anything else
+// falls back to en.
+export type ProductContentLocale = "sv" | "en" | "nb" | "da" | "fi"
+
+const PRODUCT_CONTENT_LOCALES = new Set<ProductContentLocale>([
+  "sv",
+  "en",
+  "nb",
+  "da",
+  "fi",
+])
+export function clampLocale(locale: string | undefined): ProductContentLocale {
+  return locale !== undefined &&
+    PRODUCT_CONTENT_LOCALES.has(locale as ProductContentLocale)
+    ? (locale as ProductContentLocale)
     : "en"
 }
 

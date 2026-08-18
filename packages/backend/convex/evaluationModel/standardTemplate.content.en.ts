@@ -1,4 +1,4 @@
-import type { CriterionKey, TrackKey } from "./standardTemplate"
+import type { CriterionKey } from "./standardTemplate"
 
 export interface CriterionContent {
   name: string
@@ -28,7 +28,6 @@ export interface CriterionContent {
 export interface StandardTemplateContent {
   modelName: string
   criteria: Record<CriterionKey, CriterionContent>
-  trackNames: Record<TrackKey, string>
 }
 
 // English content for the standard template. This is a translation draft of the
@@ -355,10 +354,5 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "The steps explicitly recognize equivalent experience alongside formal education, and the criterion is kept at a low weight so formal credentials do not by themselves drive the evaluation.",
       },
     },
-  },
-  trackNames: {
-    IC: "Individual Contributor",
-    Lead: "Lead",
-    M: "Manager",
   },
 }

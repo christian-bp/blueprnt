@@ -1,4 +1,5 @@
 import type { WeightPoints } from "@workspace/core"
+import type { ProductContentLocale } from "./localize"
 import {
   standardTemplateContentEn,
   type StandardTemplateContent,
@@ -46,15 +47,9 @@ export const DEFAULT_WEIGHT_POINTS: Record<CriterionKey, WeightPoints> = {
   formal: 1,
 }
 
-// The fixed V1 track schema (PLAN-V1 §9.6): tracks are constants, not rows
-// (ADR-0006). Roles reference tracks by these stable keys (roles.trackKey);
-// display names localize from the content modules. The per-track seniority
-// ladders (IC1-IC5, Lead-1..3, M1-M3) live as the TRACK_SENIORITIES constant
-// in @workspace/constants and drive live per-individual assignment validation
-// and seniority suggestion (ADR-0005); standardmall.md is their prose
-// reference.
-export const TRACK_KEYS = ["IC", "Lead", "M"] as const
-export type TrackKey = (typeof TRACK_KEYS)[number]
+// The fixed V1 track schema now lives in trackSchema.ts; re-exported here
+// temporarily so this module's remaining importers keep compiling.
+export { TRACK_KEYS, type TrackKey } from "./trackSchema"
 
 // 7 levels, Level 1 = highest; minScore is the lowest inclusive score as an
 // integer on the normalized 0-100 scale (ADR-0004). The values translate the
@@ -71,18 +66,17 @@ export const DEFAULT_LEVEL_THRESHOLDS = [
   { level: 7, minScore: 0 },
 ] as const
 
-export type TemplateLocale = "sv" | "en" | "nb" | "da" | "fi"
-
-const CONTENT_BY_LOCALE: Record<TemplateLocale, StandardTemplateContent> = {
-  sv: standardTemplateContentSv,
-  en: standardTemplateContentEn,
-  nb: standardTemplateContentNb,
-  da: standardTemplateContentDa,
-  fi: standardTemplateContentFi,
-}
+const CONTENT_BY_LOCALE: Record<ProductContentLocale, StandardTemplateContent> =
+  {
+    sv: standardTemplateContentSv,
+    en: standardTemplateContentEn,
+    nb: standardTemplateContentNb,
+    da: standardTemplateContentDa,
+    fi: standardTemplateContentFi,
+  }
 
 export function templateContent(
-  locale: TemplateLocale
+  locale: ProductContentLocale
 ): StandardTemplateContent {
   return CONTENT_BY_LOCALE[locale]
 }

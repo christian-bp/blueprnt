@@ -7,7 +7,6 @@ import {
   TRACK_KEYS,
   templateContent,
 } from "./standardTemplate"
-import { trackKeyValidator } from "./tables"
 
 describe("standard template structure", () => {
   it("has 9 criteria, 3 tracks, 7 descending thresholds", () => {
@@ -26,14 +25,6 @@ describe("standard template structure", () => {
     }
     // 9 criteria, point budget 27: the template ships balanced (ADR-0004).
     expect(isBalanced(points)).toBe(true)
-  })
-
-  it("keeps the roles.trackKey validator in sync with TRACK_KEYS (ADR-0006)", () => {
-    // The validator lives in tables.ts without importing this module; this
-    // bijection assertion is what keeps the two literal lists honest.
-    expect(trackKeyValidator.members.map((member) => member.value)).toEqual([
-      ...TRACK_KEYS,
-    ])
   })
 
   it("ships complete content in every product locale", () => {
@@ -61,9 +52,6 @@ describe("standard template structure", () => {
         expect(compliance.whyRelevant.trim().length).toBeGreaterThan(0)
         expect(compliance.biasComment.trim().length).toBeGreaterThan(0)
         expect(["low", "medium", "high"]).toContain(compliance.biasRisk)
-      }
-      for (const key of TRACK_KEYS) {
-        expect(content.trackNames[key].length).toBeGreaterThan(0)
       }
     }
   })
