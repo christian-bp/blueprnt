@@ -287,7 +287,10 @@ export function payloadStats(
   payload: unknown,
   // Localizes a coded string stat value (e.g. platform.membershipGranted's
   // role) via resolveCodedValue; the raw value is the explicit fallback.
-  valueLabel?: (field: string, value: string) => string | undefined
+  valueLabel?: (field: string, value: string) => string | undefined,
+  // Fields an event renders elsewhere (its subject line, say), so the same
+  // value is never stated twice in one row.
+  exclude: readonly string[] = []
 ): Array<{ field: string; value: string }> {
   const p = (payload ?? {}) as Record<string, unknown>
   const stats = Object.entries(p)
@@ -296,6 +299,7 @@ export function payloadStats(
         key !== "changes" &&
         !key.endsWith("Id") &&
         key !== "source" &&
+        !exclude.includes(key) &&
         (typeof value === "string" || typeof value === "number")
     )
     .map(([field, value]) => ({
@@ -313,9 +317,10 @@ export function payloadStats(
 export function formatStats(
   payload: unknown,
   fieldLabel: (field: string) => string,
-  valueLabel?: (field: string, value: string) => string | undefined
+  valueLabel?: (field: string, value: string) => string | undefined,
+  exclude: readonly string[] = []
 ): string {
-  return payloadStats(payload, valueLabel)
+  return payloadStats(payload, valueLabel, exclude)
     .map(({ field, value }) => `${fieldLabel(field)}: ${value}`)
     .join(" · ")
 }
@@ -480,6 +485,10 @@ export const FIELD_DISPLAY_ORDER = [
   // Pay-mapping group-analysis context fields (payMapping.groupAnalysisUpdated):
   // not diffed, but ordered so they lead a no-changes stats fallback.
   "groupLabel",
+  // The comparison an equivalent-work row explains, and how many comparisons
+  // one bulk fill answered.
+  "comparisonLabel",
+  "filledComparisons",
   "scope",
   // Pay-mapping action/note context fields (payMapping.action*/note*).
   "targetLabel",
@@ -598,6 +607,47 @@ export type AuditContextLabels = {
 // captured-name fallback, model, member). Invitation rows deliberately get
 // no subject line: the invitee is PII and unresolvable, and the role/status/
 // expiry the writers capture render as the details diff, not as a subject.
+// The subject of a group-analysis row: the group, the comparison it explains
+// when it explains one, and the view it was documented under.
+//
+// Derived ONCE because two surfaces render it (the log's row cell and the
+// detail sheet's context line) and they drifted: the cell kept naming only
+// the group after equivalent-work reasons moved per comparison, so the same
+// event read differently depending on where you looked at it.
+//
+// Both halves are coded values: scope is always a wire code, and groupLabel is
+// a raw PRAXIS_AREA_KEYS slug on a praxis row (a real "roleTitle · seniority"
+// display string otherwise), so both resolve through the caller's label
+// lookup and fall back to the raw value when it has none.
+// The payload fields groupAnalysisSubject already renders. A stats fallback
+// on the same row skips them rather than repeating the group and the view.
+export const GROUP_ANALYSIS_SUBJECT_FIELDS = [
+  "groupLabel",
+  "comparisonLabel",
+  "scope",
+] as const
+
+export function groupAnalysisSubject(
+  payload: Record<string, unknown>,
+  resolveValue: (field: string, value: string) => string | undefined,
+  scopeFieldLabel: string
+): string {
+  const rawGroupLabel =
+    typeof payload.groupLabel === "string" ? payload.groupLabel : ""
+  if (!rawGroupLabel) return ""
+  const groupLabel = resolveValue("groupLabel", rawGroupLabel) ?? rawGroupLabel
+  const rawComparison =
+    typeof payload.comparisonLabel === "string" ? payload.comparisonLabel : ""
+  // An equivalent-work row explains ONE comparison, so the subject names the
+  // pair: the group alone would leave a reader guessing which of its
+  // comparators the row was about.
+  const pair = rawComparison ? `${groupLabel} / ${rawComparison}` : groupLabel
+  const rawScope = typeof payload.scope === "string" ? payload.scope : ""
+  if (!rawScope) return pair
+  const scope = resolveValue("scope", rawScope) ?? rawScope
+  return `${pair} (${scopeFieldLabel}: ${scope})`
+}
+
 export function auditContextParts(
   type: string,
   payload: unknown,
@@ -617,16 +667,12 @@ export function auditContextParts(
         ? p.label
         : labels.deletedRun
       : undefined)
-  const rawGroupLabel = typeof p.groupLabel === "string" ? p.groupLabel : ""
-  let groupPart: string | undefined
-  if (rawGroupLabel) {
-    const groupLabel = valueLabel("groupLabel", rawGroupLabel) ?? rawGroupLabel
-    const rawScope = typeof p.scope === "string" ? p.scope : ""
-    const scope = valueLabel("scope", rawScope) ?? rawScope
-    groupPart = rawScope
-      ? `${groupLabel} (${labels.scopeFieldLabel}: ${scope})`
-      : groupLabel
-  }
+  const subjectText = groupAnalysisSubject(
+    p,
+    valueLabel,
+    labels.scopeFieldLabel
+  )
+  const groupPart = subjectText === "" ? undefined : subjectText
   if (runPart !== undefined && groupPart !== undefined) {
     parts.push(`${runPart}: ${groupPart}`)
   } else if (runPart !== undefined) {
@@ -851,15 +897,24 @@ export function formatAuditDetail(
     // row (already a real "roleTitle · seniority" display string otherwise), so
     // both go through valueLabel, falling back to the raw value when unset.
     case "payMapping.groupAnalysisUpdated": {
-      const rawGroupLabel = typeof p.groupLabel === "string" ? p.groupLabel : ""
-      const rawScope = typeof p.scope === "string" ? p.scope : ""
-      const groupLabel =
-        valueLabel?.("groupLabel", rawGroupLabel) ?? rawGroupLabel
-      const scope = valueLabel?.("scope", rawScope) ?? rawScope
-      const base = rawScope
-        ? `${groupLabel} (${fieldLabel("scope")}: ${scope})`
-        : groupLabel
-      if (changes === null) return base
+      const base = groupAnalysisSubject(
+        p,
+        (field, value) => valueLabel?.(field, value),
+        fieldLabel("scope")
+      )
+      if (changes === null) {
+        // The bulk fill writes no diff at all: what it did is a COUNT, and
+        // without this the row reads exactly like an ordinary group edit.
+        // The subject's own fields are excluded so the cell never says the
+        // group twice.
+        const stats = formatStats(
+          p,
+          fieldLabel,
+          (field, value) => valueLabel?.(field, value),
+          GROUP_ANALYSIS_SUBJECT_FIELDS
+        )
+        return stats === "" ? base : `${base} · ${stats}`
+      }
       return (
         <>
           {base}:{" "}

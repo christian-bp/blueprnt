@@ -92,6 +92,24 @@ describe("ComparatorTable columns", () => {
     expect(cellsPerRow(container)).toEqual([headings, headings])
   })
 
+  // The disclosure column appears only when rows can open, so it is a third
+  // shape the header/cell parity has to hold for. An expanded row is exempt:
+  // it is one cell spanning the table on purpose.
+  it("gives every heading a cell in every row when rows can be expanded", () => {
+    const { container } = renderTable({
+      documentation: {
+        runId: "run1" as never,
+        groupKey: "Product Manager|5",
+        actions: [],
+        notes: [],
+        locked: false,
+      },
+      renderExpanded: () => <p>panel</p>,
+    })
+    const headings = container.querySelectorAll("thead th").length
+    expect(cellsPerRow(container)).toEqual([headings, headings])
+  })
+
   it("gives every heading a cell in every row when documentation is shown", () => {
     const { container } = renderTable({
       documentation: {
@@ -104,6 +122,28 @@ describe("ComparatorTable columns", () => {
     })
     const headings = container.querySelectorAll("thead th").length
     expect(cellsPerRow(container)).toEqual([headings, headings])
+  })
+
+  // The expanded row is the one row exempt from the parity check above, so
+  // its span is what has to hold instead: one short and the panel leaves a
+  // stray empty cell at the end of the table, one long and it widens the row
+  // past every heading.
+  it("spans the expanded panel across exactly every column", () => {
+    const { container } = renderTable({
+      documentation: {
+        runId: "run1" as never,
+        groupKey: "Product Manager|5",
+        actions: [],
+        notes: [],
+        locked: false,
+      },
+      selectedKey: "IT Manager|5",
+      onSelect: vi.fn(),
+      renderExpanded: () => <p>panel</p>,
+    })
+    const headings = container.querySelectorAll("thead th").length
+    const panel = screen.getByText("panel").closest("td")
+    expect(panel?.getAttribute("colspan")).toBe(String(headings))
   })
 
   it("puts the row menu in its own column, not under a value heading", () => {
@@ -130,6 +170,23 @@ describe("ComparatorTable columns", () => {
       messages.dashboard.payMapping.detail.comparators.actions
     )
     expect(headings[menuIndex]?.querySelector(".sr-only")).not.toBeNull()
+  })
+
+  // The reference row has to LOOK like the reference. Its weight lives on the
+  // row; per-cell font classes beat it and rendered it at the comparison
+  // rows' own weight, with nothing on screen saying which row was which.
+  it("carries its heavier weight on the reference row, not against it", () => {
+    const { container } = renderTable()
+    const rows = [...container.querySelectorAll("tbody tr")]
+    const baseline = rows[0] as HTMLElement
+    expect(baseline.getAttribute("class") ?? "").toContain("font-semibold")
+    // No cell may set a weight of its own: a class on the cell wins over the
+    // row's, whatever the order.
+    for (const cell of baseline.querySelectorAll("td")) {
+      expect(cell.getAttribute("class") ?? "").not.toMatch(
+        /\bfont-(medium|normal|semibold|bold)\b/
+      )
+    }
   })
 
   it("leaves the reason column empty until something is documented", () => {
@@ -240,5 +297,59 @@ describe("ComparatorTable selection", () => {
     // has to hold is that these cells are filled at all.
     expect(differences(picked)[0]).toContain("7.1%")
     expect(differences(picked)[1]).toContain("4,843")
+  })
+})
+
+// The collapsed table has to say what was concluded for each row, or the
+// reader must expand every one of them to find out. Several reasons plus a
+// note do not fit 144px, so the cell states the first reason and counts the
+// rest, and the whole answer lives in the card behind it.
+const COMPARISON_KEY = "IT Manager|5"
+
+// The reason/answer column only exists inside the documentation layer, so the
+// table needs one to render it at all.
+const DOCUMENTATION = {
+  runId: "run-1" as Parameters<
+    typeof ComparatorTable
+  >[0]["documentation"] extends { runId: infer R } | undefined
+    ? R
+    : never,
+  groupKey: "Nurse|3",
+  actions: [],
+  notes: [],
+  locked: false,
+}
+
+describe("ComparatorTable: the answer column", () => {
+  it("counts the reasons it cannot show, and keeps the cell from overflowing", () => {
+    renderTable({
+      documentation: DOCUMENTATION,
+      reasonsByComparison: new Map([
+        [COMPARISON_KEY, ["experience", "historicalPay", "competence"]],
+      ]),
+    })
+    const trigger = screen.getByRole("button", { name: /\+2/ })
+    expect(trigger.textContent).toContain(
+      messages.dashboard.payMapping.reasons.experience
+    )
+  })
+
+  // A note with no reason is a complete answer in its own right (the gate
+  // accepts a written assessment), so the cell has to show it.
+  it("shows a note with no reasons yet", () => {
+    renderTable({
+      documentation: DOCUMENTATION,
+      notesByComparison: new Map([[COMPARISON_KEY, "Marknadsläget i Malmö"]]),
+    })
+    expect(
+      screen.getByRole("button", { name: /Marknadsläget i Malmö/ })
+    ).toBeDefined()
+  })
+
+  it("renders nothing when the comparison has neither", () => {
+    const { container } = renderTable({ documentation: DOCUMENTATION })
+    expect(
+      container.querySelector("[data-slot='hover-card-trigger']")
+    ).toBeNull()
   })
 })

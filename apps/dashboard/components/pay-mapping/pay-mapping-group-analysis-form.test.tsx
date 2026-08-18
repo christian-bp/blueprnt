@@ -166,6 +166,7 @@ describe("PayMappingGroupAnalysisForm", () => {
       analysis: {
         scope: "equalWork",
         groupKey: "Engineer|1|Senior",
+        comparisonKey: null,
         reasons: ["experience"],
         note: null,
         done: true,
@@ -195,6 +196,7 @@ describe("PayMappingGroupAnalysisForm", () => {
       return {
         scope: "equalWork" as const,
         groupKey: "Engineer|1|Senior",
+        comparisonKey: null,
         reasons: overrides.reasons ?? ["experience"],
         note: overrides.note ?? null,
         done: true,
@@ -247,6 +249,7 @@ describe("PayMappingGroupAnalysisForm", () => {
         analysis: {
           scope: "equalWork",
           groupKey: "Engineer|1|Senior",
+          comparisonKey: null,
           reasons: ["experience"],
           note: null,
           done: false,
@@ -383,6 +386,7 @@ describe("PayMappingGroupAnalysisForm", () => {
       analysis: {
         scope: "equalWork",
         groupKey: "Engineer|1|Senior",
+        comparisonKey: null,
         reasons: ["experience"],
         note: "Documented.",
         done: true,
@@ -446,6 +450,7 @@ describe("PayMappingGroupAnalysisForm", () => {
     const baseAnalysis: GroupAnalysis = {
       scope: "equalWork",
       groupKey: "Engineer|1|Senior",
+      comparisonKey: null,
       reasons: [],
       note: "",
       done: false,

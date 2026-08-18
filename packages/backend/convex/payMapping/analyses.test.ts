@@ -190,6 +190,9 @@ describe("upsertGroupAnalysis", () => {
     expect(list[0]).toEqual({
       scope: "equalWork",
       groupKey: OK_GROUP_KEY,
+      // Equal work compares within one group, so its rows never carry a
+      // comparator key.
+      comparisonKey: null,
       reasons: ["experience"],
       note: null,
       done: false,
@@ -443,6 +446,10 @@ describe("upsertGroupAnalysis", () => {
     expect(list[0]).toEqual({
       scope: "equivalentWork",
       groupKey: WOMEN_DOMINATED_GROUP_KEY,
+      // The group's OWN row: no comparator key, so it is the row carrying the
+      // klarmarkering and the summary note rather than one comparison's
+      // explanation.
+      comparisonKey: null,
       reasons: ["experience"],
       note: null,
       done: false,
@@ -580,6 +587,7 @@ describe("upsertGroupAnalysis: praxis scope", () => {
     expect(list).toHaveLength(1)
     expect(list[0]).toEqual({
       scope: "praxis",
+      comparisonKey: null,
       groupKey: "payPolicy",
       reasons: [],
       note: null,
@@ -821,5 +829,284 @@ describe("upsertGroupAnalysis: praxis scope", () => {
     })
     expect(list[0]?.done).toBe(true)
     expect(list[0]?.finding).toBe("none")
+  })
+})
+
+// DL 3 kap. 8 § p3 compares a women-dominated group against EACH equally or
+// lower valued group that out-earns it, and 3 kap. 9 § asks what explains
+// each of those differences. The unit of assessment is therefore the pair,
+// not the group: one explanation covering four comparators of different sizes
+// cannot be an assessment of any of them.
+describe("upsertGroupAnalysis: per-comparison reasons", () => {
+  async function seedWithComparator() {
+    const t = initConvexTest()
+    const seeded = await seedRun(t, womenDominatedRows)
+    const gap = await seeded.asHr.query(api.payMapping.gap.getPayMappingGap, {
+      orgId: seeded.orgId,
+      runId: seeded.runId,
+    })
+    const group = gap?.womenDominated.find(
+      (candidate) => candidate.key === WOMEN_DOMINATED_GROUP_KEY
+    )
+    const comparisonKey = group?.comparisons[0]?.key
+    expect(comparisonKey).toBeDefined()
+    return { ...seeded, comparisonKey: comparisonKey ?? "" }
+  }
+
+  it("keeps a comparison's reasons on their own row, beside the group's", async () => {
+    const { orgId, runId, asHr, comparisonKey } = await seedWithComparator()
+
+    await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+      orgId,
+      runId,
+      scope: "equivalentWork",
+      groupKey: WOMEN_DOMINATED_GROUP_KEY,
+      reasons: [],
+      note: "Sammanfattning",
+      done: false,
+    })
+    await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+      orgId,
+      runId,
+      scope: "equivalentWork",
+      groupKey: WOMEN_DOMINATED_GROUP_KEY,
+      comparisonKey,
+      reasons: ["alternativeLabourMarket"],
+      note: undefined,
+      done: false,
+    })
+
+    const list = await asHr.query(api.payMapping.analyses.listGroupAnalyses, {
+      orgId,
+      runId,
+    })
+    expect(list).toHaveLength(2)
+    // Documenting a comparison must never overwrite the group's own row: the
+    // klarmarkering and the summary note live there.
+    expect(list.find((row) => row.comparisonKey === null)?.note).toBe(
+      "Sammanfattning"
+    )
+    expect(
+      list.find((row) => row.comparisonKey === comparisonKey)?.reasons
+    ).toEqual(["alternativeLabourMarket"])
+  })
+
+  it("rejects a comparison key on an equal-work row", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, okRows)
+    // Equal work compares within ONE group, so there is no comparator to key
+    // a row against; storing one would create a row nothing ever reads.
+    await expect(
+      asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+        orgId,
+        runId,
+        scope: "equalWork",
+        groupKey: OK_GROUP_KEY,
+        comparisonKey: "Tech|3",
+        reasons: ["alternativeLabourMarket"],
+        note: undefined,
+        done: false,
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+  })
+
+  it("rejects a comparison key that is not a comparator of that group", async () => {
+    const { orgId, runId, asHr } = await seedWithComparator()
+    await expect(
+      asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+        orgId,
+        runId,
+        scope: "equivalentWork",
+        groupKey: WOMEN_DOMINATED_GROUP_KEY,
+        comparisonKey: "NotAComparator|9",
+        reasons: ["alternativeLabourMarket"],
+        note: undefined,
+        done: false,
+      })
+    ).rejects.toThrow(/errors.notFound/)
+  })
+
+  it("refuses klarmarkering while a comparison has no explanation", async () => {
+    const { orgId, runId, asHr } = await seedWithComparator()
+    // Enforced server-side from the frozen snapshot: the client's view of
+    // what is documented is never trusted.
+    await expect(
+      asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+        orgId,
+        runId,
+        scope: "equivalentWork",
+        groupKey: WOMEN_DOMINATED_GROUP_KEY,
+        reasons: [],
+        note: "Sammanfattning",
+        done: true,
+      })
+    ).rejects.toThrow(/errors.payMappingDocumentationRequired/)
+  })
+
+  it("allows klarmarkering once every comparison carries a reason", async () => {
+    const { orgId, runId, asHr, comparisonKey } = await seedWithComparator()
+    await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+      orgId,
+      runId,
+      scope: "equivalentWork",
+      groupKey: WOMEN_DOMINATED_GROUP_KEY,
+      comparisonKey,
+      reasons: ["alternativeLabourMarket"],
+      note: undefined,
+      done: false,
+    })
+    await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+      orgId,
+      runId,
+      scope: "equivalentWork",
+      groupKey: WOMEN_DOMINATED_GROUP_KEY,
+      reasons: [],
+      note: undefined,
+      done: true,
+    })
+    const list = await asHr.query(api.payMapping.analyses.listGroupAnalyses, {
+      orgId,
+      runId,
+    })
+    expect(list.find((row) => row.comparisonKey === null)?.done).toBe(true)
+  })
+
+  // The same pair equal work accepts. The law asks for a bedömning of each
+  // difference, not for our chip taxonomy, and refusing the written one here
+  // left a reader who had written one per row unable to close the group.
+  it("accepts a written assessment as a comparison's explanation", async () => {
+    const { orgId, runId, asHr, comparisonKey } = await seedWithComparator()
+    await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+      orgId,
+      runId,
+      scope: "equivalentWork",
+      groupKey: WOMEN_DOMINATED_GROUP_KEY,
+      comparisonKey,
+      reasons: [],
+      note: "Marknadsläget för rollen, styrkt med två rekryteringar.",
+      done: false,
+    })
+    await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+      orgId,
+      runId,
+      scope: "equivalentWork",
+      groupKey: WOMEN_DOMINATED_GROUP_KEY,
+      reasons: [],
+      note: undefined,
+      done: true,
+    })
+    const list = await asHr.query(api.payMapping.analyses.listGroupAnalyses, {
+      orgId,
+      runId,
+    })
+    expect(list.find((row) => row.comparisonKey === null)?.done).toBe(true)
+  })
+
+  // Whitespace is not an assessment.
+  it("does not take a blank note for an explanation", async () => {
+    const { orgId, runId, asHr, comparisonKey } = await seedWithComparator()
+    await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+      orgId,
+      runId,
+      scope: "equivalentWork",
+      groupKey: WOMEN_DOMINATED_GROUP_KEY,
+      comparisonKey,
+      reasons: [],
+      note: "   ",
+      done: false,
+    })
+    await expect(
+      asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+        orgId,
+        runId,
+        scope: "equivalentWork",
+        groupKey: WOMEN_DOMINATED_GROUP_KEY,
+        reasons: [],
+        note: undefined,
+        done: true,
+      })
+    ).rejects.toThrow(/errors.payMappingDocumentationRequired/)
+  })
+})
+
+// One explanation often covers several comparators, and typing it once per
+// row is what made a per-row rule look unworkable. This is that shortcut, and
+// it is a mutation rather than a client loop so the whole fill lands as one
+// atomic write.
+describe("applyReasonsToRemainingComparisons", () => {
+  it("fills the unexplained comparisons and leaves an answered one alone", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, womenDominatedRows)
+    const gap = await asHr.query(api.payMapping.gap.getPayMappingGap, {
+      orgId,
+      runId,
+    })
+    const comparisons =
+      gap?.womenDominated.find(
+        (group) => group.key === WOMEN_DOMINATED_GROUP_KEY
+      )?.comparisons ?? []
+    expect(comparisons.length).toBeGreaterThan(0)
+    const first = comparisons[0]?.key ?? ""
+
+    await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+      orgId,
+      runId,
+      scope: "equivalentWork",
+      groupKey: WOMEN_DOMINATED_GROUP_KEY,
+      comparisonKey: first,
+      reasons: ["experience"],
+      note: undefined,
+      done: false,
+    })
+    await asHr.mutation(
+      api.payMapping.analyses.applyReasonsToRemainingComparisons,
+      {
+        orgId,
+        runId,
+        groupKey: WOMEN_DOMINATED_GROUP_KEY,
+        reasons: ["alternativeLabourMarket"],
+      }
+    )
+
+    const list = await asHr.query(api.payMapping.analyses.listGroupAnalyses, {
+      orgId,
+      runId,
+    })
+    // A judgement the user already made is never overwritten by a bulk fill.
+    expect(list.find((row) => row.comparisonKey === first)?.reasons).toEqual([
+      "experience",
+    ])
+    for (const comparison of comparisons.slice(1)) {
+      expect(
+        list.find((row) => row.comparisonKey === comparison.key)?.reasons
+      ).toEqual(["alternativeLabourMarket"])
+    }
+  })
+
+  it("rejects an empty reason set", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, womenDominatedRows)
+    await expect(
+      asHr.mutation(
+        api.payMapping.analyses.applyReasonsToRemainingComparisons,
+        { orgId, runId, groupKey: WOMEN_DOMINATED_GROUP_KEY, reasons: [] }
+      )
+    ).rejects.toThrow(/errors.invalidInput/)
+  })
+
+  it("rejects a group that is not women-dominated in this run", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, womenDominatedRows)
+    await expect(
+      asHr.mutation(
+        api.payMapping.analyses.applyReasonsToRemainingComparisons,
+        {
+          orgId,
+          runId,
+          groupKey: "DoesNotExist|1",
+          reasons: ["experience"],
+        }
+      )
+    ).rejects.toThrow(/errors.notFound/)
   })
 })

@@ -37,6 +37,7 @@ import {
   DocumentationMenu,
 } from "./documentation-controls"
 import { ComparatorTable } from "./comparator-table"
+import { ComparisonReasonsPanel } from "./comparison-reasons-panel"
 import { EqualWorkDetail } from "./equal-work-detail"
 import { WomenDominatedScatter } from "./women-dominated-underlying-data"
 import { ReviewStepActions } from "./review-step-actions"
@@ -139,6 +140,10 @@ type ReviewGroupStepProps =
       // level-context sentence). The shell holds the run's whole gap result
       // and passes gap.equivalentWork through unchanged.
       equivalentWork: GapGroup[]
+      // Every documentation row for THIS group that explains one comparison
+      // (the rows carrying a comparisonKey). The group's own row arrives as
+      // `analysis`, as for equal work.
+      comparisonAnalyses: GroupAnalysis[]
     } & ReviewGroupStepCommonProps)
 
 // The wizard's documentation step for one equalWork (equal-work) or
@@ -303,7 +308,38 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
   // undo button hides in the SAME render as the edit (no need to wait on the
   // subscription round-trip the form's reopen save triggers), and the
   // primary "mark done" action is gated on the identical condition.
-  const blocked = requiresDocumentation && !doc.documented
+  // Equivalent work is documented per COMPARISON: every comparator in the
+  // table out-earns this group, so each is a difference DL 3 kap. 9 § asks
+  // about, and the group cannot be closed while any of them is unexplained.
+  // Equal work keeps the group-level rule, where the group IS the comparison.
+  const comparisonRows =
+    props.scope === "equivalentWork" ? props.comparisonAnalyses : []
+  // Narrowed once: the union's equal-work half has no comparators at all, and
+  // every reader below wants the same empty list there.
+  const comparisons =
+    props.scope === "equivalentWork" ? props.group.comparisons : []
+  // A reason from the taxonomy or a written assessment, the same pair equal
+  // work accepts: the law asks for a bedömning, not for our chip taxonomy.
+  const explainedComparisons = new Set(
+    comparisonRows
+      .filter((row) => row.reasons.length > 0 || (row.note ?? "").trim() !== "")
+      .map((row) => row.comparisonKey)
+  )
+  const unexplainedComparisons = comparisons.filter(
+    (comparison) => !explainedComparisons.has(comparison.key)
+  ).length
+  const blocked =
+    props.scope === "equivalentWork"
+      ? requiresDocumentation && unexplainedComparisons > 0
+      : requiresDocumentation && !doc.documented
+  // One comparison's display name, from the same helper the table and the
+  // answer card use.
+  const comparisonLabelFor = (comparisonKey: string) => {
+    const comparison = comparisons.find(
+      (candidate) => candidate.key === comparisonKey
+    )
+    return comparison === undefined ? comparisonKey : groupLabel(comparison)
+  }
 
   // Which comparator row the reader is pointing at, shared by the table
   // and the plot beneath it.
@@ -407,6 +443,56 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
                 currency={currency}
                 selectedKey={selectedComparison}
                 onSelect={setSelectedComparison}
+                // The answer opens INSIDE the selected row: the finding and
+                // the answer are then the same object, instead of the reader
+                // having to carry "which row was I answering for" past a
+                // chart to a panel at the bottom of the page.
+                renderExpanded={(comparisonKey) => (
+                  <ComparisonReasonsPanel
+                    runId={runId}
+                    groupKey={props.group.key}
+                    comparisonKey={comparisonKey}
+                    // The same label the table and the answer card show for
+                    // this comparison, from the same helper: three names for
+                    // one row is three things to reconcile.
+                    comparisonLabel={comparisonLabelFor(comparisonKey)}
+                    groupLabel={label}
+                    analysis={comparisonRows.find(
+                      (row) => row.comparisonKey === comparisonKey
+                    )}
+                    locked={locked}
+                    // The OTHER comparisons still owing an answer, never this
+                    // one: the bulk control's label counts what it is about to
+                    // fill, and this row is the one being answered.
+                    remainingCount={
+                      comparisons.filter(
+                        (comparison) =>
+                          comparison.key !== comparisonKey &&
+                          !explainedComparisons.has(comparison.key)
+                      ).length
+                    }
+                    groupDone={done}
+                    onGroupReopened={() => setDone(false)}
+                  />
+                )}
+                notesByComparison={
+                  new Map(
+                    comparisonRows.flatMap((row) =>
+                      row.comparisonKey === null || row.note === null
+                        ? []
+                        : [[row.comparisonKey, row.note] as const]
+                    )
+                  )
+                }
+                reasonsByComparison={
+                  new Map(
+                    comparisonRows.flatMap((row) =>
+                      row.comparisonKey === null
+                        ? []
+                        : [[row.comparisonKey, row.reasons] as const]
+                    )
+                  )
+                }
                 {...(props.runId === undefined
                   ? {}
                   : {
@@ -448,20 +534,45 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
           />
         )}
 
-        <PayMappingGroupAnalysisForm
-          ref={formRef}
-          runId={runId}
-          scope={props.scope}
-          groupKey={props.group.key}
-          requiresDocumentation={requiresDocumentation}
-          locked={locked}
-          analysis={analysis}
-          onDocumentationChange={setDoc}
-        />
+        {props.scope === "equivalentWork" &&
+          props.group.comparisons.length > 0 &&
+          selectedComparison === null && (
+            // The table alone does not say that answering is the task, so the
+            // step says it once. The answer itself opens inside the row.
+            <p className="text-muted-foreground text-sm">
+              {t("selectComparison")}
+            </p>
+          )}
+
+        {/* Equal work only. Equivalent work documents each comparison in its
+            own row (reasons and the deepened analysis both), so this form
+            would render an empty box there. */}
+        {props.scope === "equalWork" && (
+          <PayMappingGroupAnalysisForm
+            ref={formRef}
+            runId={runId}
+            scope={props.scope}
+            groupKey={props.group.key}
+            requiresDocumentation={requiresDocumentation}
+            locked={locked}
+            analysis={analysis}
+            onDocumentationChange={setDoc}
+          />
+        )}
       </div>
       <ReviewStepActions
         onPrevious={onPrevious}
         onSkip={onSkip}
+        // Stated in words rather than only disabling the button: the app's
+        // rule is that a flow names its precondition.
+        {...(props.scope === "equivalentWork" && unexplainedComparisons > 0
+          ? {
+              hint: t("comparisonsMissing", {
+                missing: unexplainedComparisons,
+                total: props.group.comparisons.length,
+              }),
+            }
+          : {})}
         primaryLabel={t("markDoneNext")}
         onPrimary={handleMarkDone}
         primaryDisabled={locked || blocked}

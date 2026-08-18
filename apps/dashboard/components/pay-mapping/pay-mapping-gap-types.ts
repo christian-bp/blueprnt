@@ -134,6 +134,11 @@ export interface PayMappingGapResult {
 export interface GroupAnalysis {
   scope: "equalWork" | "equivalentWork" | "praxis"
   groupKey: string
+  // The comparator this row explains, on an equivalentWork row that documents
+  // ONE comparison (DL 3 kap. 9 § asks about each difference separately).
+  // Null on the group's own row, which carries the klarmarkering and the
+  // summary note, and on every equalWork/praxis row.
+  comparisonKey: string | null
   reasons: PayGapReason[]
   note: string | null
   done: boolean

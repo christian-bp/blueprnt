@@ -228,6 +228,7 @@ describe("ReviewPraxisStep", () => {
       analysis: {
         scope: "praxis",
         groupKey: AREA,
+        comparisonKey: null,
         reasons: [],
         note: "Documented already.",
         done: true,
@@ -260,6 +261,7 @@ describe("ReviewPraxisStep", () => {
       analysis: {
         scope: "praxis",
         groupKey: AREA,
+        comparisonKey: null,
         reasons: [],
         note: "Documented already.",
         done: true,
@@ -292,6 +294,7 @@ describe("ReviewPraxisStep", () => {
       analysis: {
         scope: "praxis",
         groupKey: AREA,
+        comparisonKey: null,
         reasons: [],
         note: "Documented already.",
         done: true,
@@ -323,6 +326,7 @@ describe("ReviewPraxisStep", () => {
       analysis: {
         scope: "praxis",
         groupKey: AREA,
+        comparisonKey: null,
         reasons: [],
         note: "Documented already.",
         done: true,
@@ -378,6 +382,7 @@ describe("ReviewPraxisStep", () => {
       analysis: {
         scope: "praxis",
         groupKey: AREA,
+        comparisonKey: null,
         reasons: [],
         note: "Documented already.",
         done: true,

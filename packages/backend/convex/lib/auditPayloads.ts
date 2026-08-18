@@ -330,6 +330,15 @@ export interface AuditPayloads {
     // PRAXIS_AREA_KEYS area-key slug (never split, it carries no "|").
     // Role-level content either way, never person identity.
     groupLabel: string
+    // Set when the row documents ONE equivalent-work comparison: the
+    // comparator's role title, so the trail says which difference was
+    // explained rather than only which group. Role-level, never person
+    // identity, and absent on the group's own row.
+    comparisonLabel?: string
+    // Set by the bulk fill only: how many comparisons that one click
+    // explained. A row per comparison would bury the trail under an action
+    // the user experienced as a single decision.
+    filledComparisons?: number
     changes: Changes
   }
   "payMapping.runCompleted": {

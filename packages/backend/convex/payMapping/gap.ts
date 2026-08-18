@@ -409,11 +409,40 @@ export function buildGapAggregates(rows: SnapshotRow[]): {
 // documentation row). Only SHOWN equal-work groups are valid documentation
 // targets: what the entry conditions excluded carries no documentation duty
 // and accepts none (ADR-0015).
+// The composite key identifying ONE documented comparison: a women-dominated
+// group against one higher-paid comparator. Both halves are group keys in the
+// "roleTitle|level" format, so both can contain that separator; a plain join
+// would let two different pairs produce the same string and the gate would
+// treat one comparison as documenting another. JSON is unambiguous and needs
+// no escaping rules of our own. Storage keeps the two halves in their own
+// columns: this shape exists only for the gate's Set lookups.
+export function comparisonDocumentationKey(
+  groupKey: string,
+  comparisonKey: string
+): string {
+  return JSON.stringify([groupKey, comparisonKey])
+}
+
+// The comparator keys belonging to ONE women-dominated group, read back out
+// of the composite set above. Both writers need this list (documenting a
+// single comparison checks whether any remain unexplained; the bulk fill
+// walks them), and neither should re-derive the composite's shape by hand.
+export function comparisonKeysForGroup(
+  comparisonKeys: ReadonlySet<string>,
+  groupKey: string
+): string[] {
+  return [...comparisonKeys]
+    .map((key) => JSON.parse(key) as [string, string])
+    .filter(([group]) => group === groupKey)
+    .map(([, comparison]) => comparison)
+}
+
 export function requiredDocumentationKeys(rows: SnapshotRow[]): {
   equalWorkAll: Set<string>
   equalWorkRequired: Set<string>
   womenDominatedAll: Set<string>
   womenDominatedRequired: Set<string>
+  womenDominatedComparisonsAll: Set<string>
 } {
   const { equalWork, womenDominated } = buildGapAggregates(rows)
   const equalWorkAll = new Set(equalWork.map((group) => group.key))
@@ -430,11 +459,27 @@ export function requiredDocumentationKeys(rows: SnapshotRow[]): {
       )
       .map((group) => group.key)
   )
+  // Every comparator in a women-dominated group's table out-earns that group,
+  // so every row is itself a difference DL 3 kap. 9 § asks to be assessed:
+  // unlike the equal-work pair above there is nothing to narrow, which is why
+  // this is one set rather than an all/required pair. Deliberately no
+  // materiality threshold either: a floor below which a difference needs no
+  // explanation would be our rule rather than the law's, and the metodbilaga
+  // would have to defend it.
+  const womenDominatedComparisonsAll = new Set<string>()
+  for (const group of womenDominated) {
+    for (const comparison of group.comparisons) {
+      womenDominatedComparisonsAll.add(
+        comparisonDocumentationKey(group.key, comparison.key)
+      )
+    }
+  }
   return {
     equalWorkAll,
     equalWorkRequired,
     womenDominatedAll,
     womenDominatedRequired,
+    womenDominatedComparisonsAll,
   }
 }
 

@@ -185,7 +185,8 @@
       "payMappingNoteUpdated": "Merkintä päivitettiin",
       "payMappingNoteDeleted": "Merkintä poistettiin",
       "conversationDeleted": "Keskustelu poistettu",
-      "conversationRenamed": "Keskustelu nimetty uudelleen"
+      "conversationRenamed": "Keskustelu nimetty uudelleen",
+      "payMappingReasonsApplied": "Perusteet otettu käyttöön"
     },
     "accountMenu": "Tilivalikko",
     "commandPalette": {
@@ -758,6 +759,8 @@
         "done": "Merkitty valmiiksi",
         "finding": "Arviointi",
         "groupLabel": "Ryhmä",
+        "comparisonLabel": "Vertailu",
+        "filledComparisons": "Täytetyt vertailut",
         "scope": "Näkymä",
         "equalWorkDone": "Samaa työtä koskevat ryhmät merkitty valmiiksi",
         "equivalentWorkDone": "Samanarvoista työtä koskevat ryhmät merkitty valmiiksi",
@@ -1265,7 +1268,8 @@
           "selectRow": "Näytä {label} kaaviossa",
           "actions": "Toimet",
           "diffPct": "Ero %",
-          "diffSek": "Ero"
+          "diffSek": "Ero",
+          "expand": "Avaa vertailu"
         },
         "searchPlaceholder": "Hae nimellä",
         "resultCount": "{shown} / {total} henkilöä",
@@ -1306,26 +1310,6 @@
         "filterAll": "Kaikki",
         "filterRemaining": "Jäljellä",
         "filterLabel": "Näytä",
-        "worklist": {
-          "showAll": "Näytä kaikki {count} listana",
-          "columns": {
-            "group": "Ryhmä",
-            "gap": "Ero",
-            "flag": "Arvio",
-            "status": "Tila",
-            "headcount": "Henkilöä",
-            "womenShare": "Naisia",
-            "comparisons": "Vertailut"
-          },
-          "status": {
-            "needsDocumenting": "Dokumentoitava",
-            "documented": "Dokumentoitu",
-            "noDuty": "Ei velvoitetta"
-          },
-          "setAside": "{formed} ryhmää muodostettiin. {compared} vertaillaan tässä. {singletons} tehtävänimikkeessä on vain yksi henkilö, {reverse} ryhmässä naiset eivät jää jälkeen ja {genderPure} ryhmässä on vain yksi sukupuoli.",
-          "setAsideLink": "Lue lisää",
-          "noMatches": "Yksikään ryhmä ei vastaa hakua."
-        },
         "chapterOf": "Luku {position}/{total} · {chapter}",
         "chapterTab": "<num>{position}.</num> {chapter}",
         "duty": {
@@ -1404,6 +1388,9 @@
         "titleEquivalentWork": "Vertailun henkilöt",
         "xAge": "Ikä",
         "xTenure": "Palvelusaika (vuotta)",
+        "colorGender": "Sukupuoli",
+        "colorRole": "Rooli",
+        "colorRoleOther": "Muut roolit",
         "basic": "Peruspalkka",
         "variable": "Muuttuva",
         "total": "Yhteensä (kokoaikaistettuna)",
@@ -1515,7 +1502,13 @@
           "praxis": "Käytäntö",
           "equalWork": "Samaa työtä",
           "equivalentWork": "Samanarvoista työtä"
-        }
+        },
+        "comparisonReasonsHeading": "Miksi {group} saa vähemmän palkkaa kuin {comparator}",
+        "selectComparison": "Valitse vertailu yllä olevasta taulukosta selittääksesi sen eron.",
+        "applyToRemaining": "Käytä jäljellä oleviin {count}",
+        "comparisonsMissing": "{missing}/{total} vertailua kaipaa vielä selityksen.",
+        "comparisonNoteLabel": "Syventävä analyysi",
+        "comparisonNoteHelper": "Mitä olette tarkastelleet ja miksi ero ei liity sukupuoleen."
       },
       "actionsOverview": {
         "totalLabel": "Toimenpiteet",

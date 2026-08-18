@@ -291,6 +291,13 @@ export const payMappingGroupAnalyses = defineTable({
     v.literal("praxis")
   ),
   groupKey: v.string(),
+  // Set only on an equivalentWork row documenting ONE comparison: the
+  // comparator group's own key. Absent on the group's own row, which carries
+  // the klarmarkering and the summary note, and on every equalWork row, where
+  // the group IS the unit of comparison (DL 3 kap. 8 § p2) and one set of
+  // reasons for the group is the correct shape. Likvärdigt arbete compares
+  // BETWEEN groups (p3), so there each difference carries its own reason.
+  comparisonKey: v.optional(v.string()),
   reasons: v.array(payGapReasonValidator),
   note: v.optional(v.string()),
   done: v.boolean(),

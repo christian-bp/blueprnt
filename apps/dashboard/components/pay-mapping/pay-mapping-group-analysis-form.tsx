@@ -3,10 +3,6 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import type { PayGapReason } from "@workspace/constants"
-import {
-  PAY_GAP_REASON_GROUP_KEYS,
-  PAY_GAP_REASON_GROUPS,
-} from "@workspace/constants"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation } from "convex/react"
@@ -21,11 +17,10 @@ import {
   useState,
 } from "react"
 import { toast } from "@/lib/toast"
-import { HelpMorphButton } from "@/components/help-morph-button"
-import { OptionCard } from "@/components/option-card"
 import { useOrganization } from "@/components/org-context"
 import { isRunCompletedError } from "@/lib/pay-mapping-errors"
 import type { GroupAnalysis } from "./pay-mapping-gap-types"
+import { PayGapReasonChips } from "./pay-gap-reason-chips"
 import { REVIEW_NOTE_FIELD_CLASS } from "./review-step-actions"
 
 const NOTE_SAVE_DEBOUNCE_MS = 800
@@ -104,8 +99,6 @@ export function PayMappingGroupAnalysisForm({
   ref?: Ref<PayMappingGroupAnalysisFormHandle>
 }) {
   const t = useTranslations("dashboard.payMapping.analysisForm")
-  const tReasons = useTranslations("dashboard.payMapping.reasons")
-  const tHelp = useTranslations("dashboard.help")
   const tToast = useTranslations("dashboard.toast")
   const tErrors = useTranslations("errors")
   const { orgId } = useOrganization()
@@ -335,33 +328,12 @@ export function PayMappingGroupAnalysisForm({
         <p className="text-muted-foreground text-sm">{t("lockedHint")}</p>
       )}
 
-      <div className="space-y-3">
-        <div className="flex items-center gap-1.5">
-          <p className="font-medium text-sm">{t("reasonsTitle")}</p>
-          <HelpMorphButton label={tHelp("payGapReasonsLabel")}>
-            {tHelp("payGapReasonsBody")}
-          </HelpMorphButton>
-        </div>
-        {PAY_GAP_REASON_GROUP_KEYS.map((group) => (
-          <div key={group} className="space-y-1.5">
-            <p className="text-muted-foreground text-xs">
-              {tReasons(`groups.${group}`)}
-            </p>
-            <div className="flex flex-wrap gap-3">
-              {PAY_GAP_REASON_GROUPS[group].map((reason) => (
-                <OptionCard
-                  key={reason}
-                  size="sm"
-                  title={tReasons(reason)}
-                  selected={reasons.includes(reason)}
-                  disabled={locked}
-                  onSelect={() => handleReasonToggle(reason)}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      <PayGapReasonChips
+        reasons={reasons}
+        disabled={locked}
+        onToggle={handleReasonToggle}
+        title={<p className="font-medium text-sm">{t("reasonsTitle")}</p>}
+      />
 
       <div className="space-y-2">
         <Label htmlFor={noteId}>{t("noteTitle")}</Label>

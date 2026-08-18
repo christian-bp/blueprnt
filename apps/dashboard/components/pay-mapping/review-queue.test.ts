@@ -137,6 +137,7 @@ function praxisRow(area: string): GroupAnalysis {
   return {
     scope: "praxis",
     groupKey: area,
+    comparisonKey: null,
     reasons: [],
     note: null,
     done: true,
@@ -151,6 +152,7 @@ function groupRow(
   return {
     scope,
     groupKey,
+    comparisonKey: null,
     reasons: ["experience"],
     note: null,
     done: true,

@@ -756,6 +756,31 @@ async function markRequiredGroupsDone(
     note: undefined,
     done: true,
   })
+  // Equivalent work is documented per COMPARISON (DL 3 kap. 9 § asks about
+  // each difference), so the group cannot be closed until every comparator
+  // that out-earns it carries a reason. Read the comparators from the gap
+  // itself rather than hardcoding them: the seed's comparator set is the
+  // engine's business, not this helper's.
+  const gap = await asHr.query(api.payMapping.gap.getPayMappingGap, {
+    orgId,
+    runId,
+  })
+  const comparisons =
+    gap?.womenDominated.find(
+      (group) => group.key === REQUIRED_WOMEN_DOMINATED_KEY
+    )?.comparisons ?? []
+  for (const comparison of comparisons) {
+    await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+      orgId,
+      runId,
+      scope: "equivalentWork",
+      groupKey: REQUIRED_WOMEN_DOMINATED_KEY,
+      comparisonKey: comparison.key,
+      reasons: ["experience"],
+      note: undefined,
+      done: false,
+    })
+  }
   await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
     orgId,
     runId,

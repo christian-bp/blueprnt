@@ -185,7 +185,8 @@
       "payMappingNoteUpdated": "Note updated",
       "payMappingNoteDeleted": "Note deleted",
       "conversationDeleted": "Conversation deleted",
-      "conversationRenamed": "Conversation renamed"
+      "conversationRenamed": "Conversation renamed",
+      "payMappingReasonsApplied": "Reasons applied"
     },
     "accountMenu": "Account menu",
     "commandPalette": {
@@ -758,6 +759,8 @@
         "done": "Marked done",
         "finding": "Assessment",
         "groupLabel": "Group",
+        "comparisonLabel": "Comparison",
+        "filledComparisons": "Comparisons filled",
         "scope": "View",
         "equalWorkDone": "Equal work groups marked done",
         "equivalentWorkDone": "Equivalent work groups marked done",
@@ -1265,7 +1268,8 @@
           "selectRow": "Show {label} in the plot",
           "actions": "Actions",
           "diffPct": "Diff %",
-          "diffSek": "Diff"
+          "diffSek": "Diff",
+          "expand": "Open the comparison"
         },
         "searchPlaceholder": "Search by name",
         "resultCount": "{shown} of {total} people",
@@ -1306,26 +1310,6 @@
         "filterAll": "All",
         "filterRemaining": "Remaining",
         "filterLabel": "Show",
-        "worklist": {
-          "showAll": "Show all {count} as a list",
-          "columns": {
-            "group": "Group",
-            "gap": "Gap",
-            "flag": "Assessment",
-            "status": "Status",
-            "headcount": "People",
-            "womenShare": "Women",
-            "comparisons": "Comparisons"
-          },
-          "status": {
-            "needsDocumenting": "Needs documenting",
-            "documented": "Documented",
-            "noDuty": "No duty"
-          },
-          "setAside": "{formed} groups were formed. {compared} are compared here. {singletons} job titles have only one person, {reverse} groups have the women not behind and {genderPure} have a single gender.",
-          "setAsideLink": "Read more",
-          "noMatches": "No group matches the search."
-        },
         "chapterOf": "Chapter {position} of {total} · {chapter}",
         "chapterTab": "<num>{position}.</num> {chapter}",
         "duty": {
@@ -1404,6 +1388,9 @@
         "titleEquivalentWork": "People in the comparison",
         "xAge": "Age",
         "xTenure": "Tenure (years)",
+        "colorGender": "Gender",
+        "colorRole": "Role",
+        "colorRoleOther": "Other roles",
         "basic": "Basic pay",
         "variable": "Variable pay",
         "total": "Total (FTE-adjusted)",
@@ -1515,7 +1502,13 @@
           "praxis": "Practice",
           "equalWork": "Equal work",
           "equivalentWork": "Equivalent work"
-        }
+        },
+        "comparisonReasonsHeading": "Why {group} is paid less than {comparator}",
+        "selectComparison": "Pick a comparison in the table above to explain its difference.",
+        "applyToRemaining": "Use for the remaining {count}",
+        "comparisonsMissing": "{missing} of {total} comparisons still need an explanation.",
+        "comparisonNoteLabel": "Deepened analysis",
+        "comparisonNoteHelper": "What you looked at, and why this difference is not connected to sex."
       },
       "actionsOverview": {
         "totalLabel": "Actions",

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { initConvexTest } from "../testing.helpers"
+import { comparisonDocumentationKey } from "./gap"
 
 // Directly seed a run + snapshot rows (freeze logic is covered by runs.test.ts);
 // this gives exact control over gender/level/seniority/pay per row.
@@ -814,5 +815,23 @@ describe("getPayMappingGap", () => {
     expect(assistant?.womenSharePct).toBe(100)
     expect(assistant?.comparisons[0]?.roleTitle).toBe("Tech")
     expect(assistant?.comparisons[0]?.diffSek).toBe(12000)
+  })
+})
+
+// The composite identifying ONE documented comparison. Both halves are group
+// keys in the "roleTitle|level" format, so both can contain the separator
+// that format already uses: a plain join would let two different pairs
+// produce the same string, and the gate would then treat one comparison as
+// documenting another.
+describe("comparisonDocumentationKey", () => {
+  it("cannot collide with the separator inside a group key", () => {
+    expect(comparisonDocumentationKey("Nurse|3", "Controller|6")).not.toBe(
+      comparisonDocumentationKey("Nurse|3|Controller", "6")
+    )
+  })
+
+  it("round-trips both halves", () => {
+    const key = comparisonDocumentationKey("Nurse|3", "Controller|6")
+    expect(JSON.parse(key)).toEqual(["Nurse|3", "Controller|6"])
   })
 })

@@ -185,7 +185,8 @@
       "payMappingNoteUpdated": "Noteringen uppdaterades",
       "payMappingNoteDeleted": "Noteringen togs bort",
       "conversationDeleted": "Konversation borttagen",
-      "conversationRenamed": "Konversation omdöpt"
+      "conversationRenamed": "Konversation omdöpt",
+      "payMappingReasonsApplied": "Skäl tillämpade"
     },
     "accountMenu": "Kontomeny",
     "commandPalette": {
@@ -758,6 +759,8 @@
         "done": "Klarmarkerad",
         "finding": "Bedömning",
         "groupLabel": "Grupp",
+        "comparisonLabel": "Jämförelse",
+        "filledComparisons": "Ifyllda jämförelser",
         "scope": "Vy",
         "equalWorkDone": "Grupper för lika arbete klarmarkerade",
         "equivalentWorkDone": "Grupper för likvärdigt arbete klarmarkerade",
@@ -1265,7 +1268,8 @@
           "selectRow": "Visa {label} i diagrammet",
           "actions": "Åtgärder",
           "diffPct": "Skillnad %",
-          "diffSek": "Skillnad"
+          "diffSek": "Skillnad",
+          "expand": "Öppna jämförelsen"
         },
         "searchPlaceholder": "Sök på namn",
         "resultCount": "{shown} av {total} personer",
@@ -1306,26 +1310,6 @@
         "filterAll": "Alla",
         "filterRemaining": "Kvarvarande",
         "filterLabel": "Visa",
-        "worklist": {
-          "showAll": "Visa alla {count} som lista",
-          "columns": {
-            "group": "Grupp",
-            "gap": "Gap",
-            "flag": "Bedömning",
-            "status": "Status",
-            "headcount": "Personer",
-            "womenShare": "Kvinnor",
-            "comparisons": "Jämförelser"
-          },
-          "status": {
-            "needsDocumenting": "Behöver dokumenteras",
-            "documented": "Dokumenterad",
-            "noDuty": "Ingen plikt"
-          },
-          "setAside": "{formed} grupper bildades. {compared} jämförs här. {singletons} befattningar har bara en person, {reverse} grupper har kvinnorna inte efter och {genderPure} har bara ett kön.",
-          "setAsideLink": "Läs mer",
-          "noMatches": "Ingen grupp matchar sökningen."
-        },
         "chapterOf": "Kapitel {position} av {total} · {chapter}",
         "chapterTab": "<num>{position}.</num> {chapter}",
         "duty": {
@@ -1404,6 +1388,9 @@
         "titleEquivalentWork": "Personer i jämförelsen",
         "xAge": "Ålder",
         "xTenure": "Anställningstid (år)",
+        "colorGender": "Kön",
+        "colorRole": "Roll",
+        "colorRoleOther": "Övriga roller",
         "basic": "Grundlön",
         "variable": "Rörligt",
         "total": "Totalt (heltidsjusterat)",
@@ -1515,7 +1502,13 @@
           "praxis": "Praxis",
           "equalWork": "Lika arbete",
           "equivalentWork": "Likvärdigt arbete"
-        }
+        },
+        "comparisonReasonsHeading": "Varför {group} har lägre lön än {comparator}",
+        "selectComparison": "Välj en jämförelse i tabellen ovan för att förklara dess skillnad.",
+        "applyToRemaining": "Använd för återstående {count}",
+        "comparisonsMissing": "{missing} av {total} jämförelser saknar förklaring.",
+        "comparisonNoteLabel": "Fördjupad analys",
+        "comparisonNoteHelper": "Vad ni tittat på, och varför skillnaden inte har samband med kön."
       },
       "actionsOverview": {
         "totalLabel": "Åtgärder",

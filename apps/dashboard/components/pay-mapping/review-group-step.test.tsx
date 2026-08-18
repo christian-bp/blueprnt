@@ -163,6 +163,8 @@ const WD_GROUP_TWO: WomenDominatedGroupWire = {
 
 type StepOverrides = Partial<{
   analysis: GroupAnalysis | undefined
+  // The equivalent-work step's per-comparison documentation rows.
+  comparisonAnalyses: GroupAnalysis[]
   locked: boolean
   requiresDocumentation: boolean
   animated: boolean
@@ -209,6 +211,7 @@ function renderWdStep(
         group={group}
         equivalentWork={[]}
         analysis={overrides.analysis}
+        comparisonAnalyses={overrides.comparisonAnalyses ?? []}
         runId={RUN_ID}
         locked={overrides.locked ?? false}
         rows={ROWS}
@@ -558,28 +561,114 @@ describe("ReviewGroupStep", () => {
       vi.useRealTimers()
     })
 
-    it("carries scope equivalentWork and the group's own key, still with no finding field", async () => {
-      const { onNext } = renderWdStep(WD_GROUP_ONE)
-      fireEvent.click(screen.getByRole("button", { name: tReasons.experience }))
-      await waitFor(() => {
-        expect(upsertMock).toHaveBeenCalledTimes(1)
+    // Equivalent work documents each COMPARISON, so the chips answer for the
+    // selected comparator row and the group's own upsert carries only the
+    // klarmarkering. A group whose comparisons are all explained is what the
+    // gate now lets through.
+    it("marks the group done once its comparisons are explained, with no finding field", async () => {
+      const explained = WD_GROUP_ONE.comparisons.map((comparison) => ({
+        scope: "equivalentWork" as const,
+        groupKey: WD_GROUP_ONE.key,
+        comparisonKey: comparison.key,
+        reasons: ["experience" as const],
+        note: null,
+        done: false,
+        finding: null,
+      }))
+      const { onNext } = renderWdStep(WD_GROUP_ONE, {
+        comparisonAnalyses: explained,
       })
 
       fireEvent.click(screen.getByRole("button", { name: t.markDoneNext }))
       await waitFor(() => {
-        expect(upsertMock).toHaveBeenCalledTimes(2)
+        expect(upsertMock).toHaveBeenCalledTimes(1)
       })
       expect(upsertMock).toHaveBeenLastCalledWith({
         orgId: "org-1",
         runId: RUN_ID,
         scope: "equivalentWork",
         groupKey: WD_GROUP_ONE.key,
-        reasons: ["experience"],
+        reasons: [],
         done: true,
       })
       await waitFor(() => {
         expect(onNext).toHaveBeenCalledTimes(1)
       })
+    })
+
+    // The answer belongs where the finding is: with the panel at the page's
+    // bottom the reader had to carry "which row was I answering for" past a
+    // chart. Selecting a row opens it in place; selecting another moves it.
+    it("opens the answer inside the selected row, and only there", async () => {
+      renderWdStep(WD_GROUP_ONE, { comparisonAnalyses: [] })
+      const t0 = messages.dashboard.payMapping.review
+      expect(screen.queryByText(t0.comparisonNoteLabel)).toBeNull()
+
+      const first = WD_GROUP_ONE.comparisons[0]
+      expect(first).toBeDefined()
+      if (first === undefined) return
+      // The row's own select control, named for what selecting does. Several
+      // buttons carry the job title (the plot's legend among them), so match
+      // the control rather than the text.
+      const selectRow = screen
+        .getAllByRole("button")
+        .find((button) =>
+          (button.getAttribute("aria-label") ?? "").includes(
+            first.roleTitle ?? ""
+          )
+        )
+      expect(selectRow).toBeDefined()
+      if (selectRow === undefined) return
+      fireEvent.click(selectRow)
+      // The note field is the panel's own, so its presence is the panel's.
+      expect(screen.getAllByText(t0.comparisonNoteLabel)).toHaveLength(1)
+    })
+
+    // Equivalent work answers per comparison, so the group-level form would be
+    // an empty box there. Equal work still owns its group form.
+    it("renders no group documentation form for equivalent work", () => {
+      renderWdStep(WD_GROUP_ONE, { comparisonAnalyses: [] })
+      expect(
+        screen.queryByText(messages.dashboard.payMapping.analysisForm.noteTitle)
+      ).toBeNull()
+    })
+
+    // The gate is stated in words, not only by a disabled button.
+    // A written assessment counts, exactly as it does for equal work: the
+    // law asks for a bedömning of each difference, not for a chip from our
+    // taxonomy. Without this the reader who wrote one per row saw every row
+    // answered in the table and still could not close the group.
+    it("counts a written assessment as an explanation", () => {
+      renderWdStep(WD_GROUP_ONE, {
+        comparisonAnalyses: WD_GROUP_ONE.comparisons.map((comparison) => ({
+          scope: "equivalentWork" as const,
+          groupKey: WD_GROUP_ONE.key,
+          comparisonKey: comparison.key,
+          reasons: [],
+          note: "Marknadsläget, styrkt med två rekryteringar.",
+          done: false,
+          finding: null,
+        })),
+      })
+      const primary = screen.getByRole("button", {
+        name: t.markDoneNext,
+      }) as HTMLButtonElement
+      expect(primary.disabled).toBe(false)
+    })
+
+    it("blocks klarmarkering while a comparison has no explanation, and says how many", () => {
+      renderWdStep(WD_GROUP_ONE, { comparisonAnalyses: [] })
+      const primary = screen.getByRole("button", {
+        name: t.markDoneNext,
+      }) as HTMLButtonElement
+      expect(primary.disabled).toBe(true)
+      expect(
+        screen.getByText(
+          t.comparisonsMissing
+            .replace("{missing}", String(WD_GROUP_ONE.comparisons.length))
+            .replace("{total}", String(WD_GROUP_ONE.comparisons.length))
+        )
+      ).toBeDefined()
     })
   })
 
@@ -589,6 +678,7 @@ describe("ReviewGroupStep", () => {
         analysis: {
           scope: "equalWork",
           groupKey: GROUP_LESS.key,
+          comparisonKey: null,
           reasons: ["experience"],
           note: "Documented already.",
           done: true,
@@ -625,6 +715,7 @@ describe("ReviewGroupStep", () => {
         analysis: {
           scope: "equalWork",
           groupKey: GROUP_LESS.key,
+          comparisonKey: null,
           reasons: ["experience"],
           note: "",
           done: true,
@@ -654,6 +745,7 @@ describe("ReviewGroupStep", () => {
         analysis: {
           scope: "equalWork",
           groupKey: GROUP_LESS.key,
+          comparisonKey: null,
           reasons: ["experience"],
           note: "",
           done: false,
@@ -681,6 +773,7 @@ describe("ReviewGroupStep", () => {
         analysis: {
           scope: "equalWork",
           groupKey: GROUP_LESS.key,
+          comparisonKey: null,
           reasons: [],
           note: "Some analysis.",
           done: true,
@@ -714,6 +807,7 @@ describe("ReviewGroupStep", () => {
         analysis: {
           scope: "equalWork",
           groupKey: GROUP_LESS.key,
+          comparisonKey: null,
           reasons: ["experience"],
           note: "Documented already.",
           done: true,

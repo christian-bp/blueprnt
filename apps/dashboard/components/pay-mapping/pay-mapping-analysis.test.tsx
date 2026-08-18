@@ -6,7 +6,6 @@ import {
   render,
   screen,
   waitFor,
-  within,
 } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
@@ -192,6 +191,7 @@ function praxisDone(area: string): GroupAnalysis {
   return {
     scope: "praxis",
     groupKey: area,
+    comparisonKey: null,
     reasons: [],
     note: null,
     done: true,
@@ -206,6 +206,7 @@ function groupDone(
   return {
     scope,
     groupKey: key,
+    comparisonKey: null,
     reasons: ["experience"],
     note: null,
     done: true,
@@ -484,6 +485,7 @@ describe("PayMappingAnalysis", () => {
         {
           scope: "equalWork",
           groupKey: "sales",
+          comparisonKey: null,
           reasons: ["experience"],
           note: null,
           done: false,
@@ -702,9 +704,10 @@ describe("PayMappingAnalysis", () => {
     }
   })
 
-  it("opens a chapter's whole worklist past the inline cap, with every group in it", async () => {
-    // Nine women-dominated groups: past the eight-row cap, so the column
-    // offers the table instead of becoming a scroll.
+  it("lists every group in the column, however many there are", async () => {
+    // Nine women-dominated groups. The column used to stop at eight and offer
+    // "show all as a list" instead, which answered "what is left in this
+    // chapter" wrongly for exactly the chapters that need it most.
     const many = Array.from({ length: 9 }, (_, index) =>
       womenDominatedGroup({
         key: `wd-${index}`,
@@ -717,32 +720,11 @@ describe("PayMappingAnalysis", () => {
       chapter: "equivalentWork",
       gap: { ...GAP, womenDominated: many },
     })
-    const showAll = screen.getByRole("button", {
-      name: tAnalysis.worklist.showAll.replace("{count}", "9"),
-    })
-    fireEvent.click(showAll)
-    // The pane swaps through AnimatePresence, so the worklist replaces the
-    // opened step's own comparator table a tick later; wait for the row
-    // count rather than for "a table".
-    await waitFor(() => {
-      const found = screen.getAllByRole("table")
-      expect(
-        found.some((node) => within(node).getAllByRole("row").length === 10)
-      ).toBe(true)
-    })
-    const table = screen
-      .getAllByRole("table")
-      .find(
-        (node) => within(node).getAllByRole("row").length === 10
-      ) as HTMLElement
-    // Every group is a row, including the eight that carry no duty.
-    expect(within(table).getAllByRole("row")).toHaveLength(1 + 9)
-    expect(
-      within(table).getAllByText(tAnalysis.worklist.status.noDuty)
-    ).toHaveLength(8)
-    expect(
-      within(table).getAllByText(tAnalysis.worklist.status.needsDocumenting)
-    ).toHaveLength(1)
+    // getAllByText, not getByText: the opened step names its own group too,
+    // so the first row's title legitimately appears twice.
+    for (let index = 0; index < 9; index += 1) {
+      expect(screen.getAllByText(`Group ${index}`).length).toBeGreaterThan(0)
+    }
   })
 
   it("filters the checklist to remaining rows on demand, all by default", () => {
