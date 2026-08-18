@@ -6,6 +6,7 @@ import {
   ASSISTANT_PROMPT_LOCALES,
   assistantSystemPrompt,
 } from "@workspace/backend/convex/assistant/knowledge"
+import { REGISTERED_LIBRARY_LOCALES } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import da from "@workspace/i18n/messages/da.json"
 import en from "@workspace/i18n/messages/en.json"
 import fi from "@workspace/i18n/messages/fi.json"
@@ -289,6 +290,12 @@ describe("guard 5: assistant prompt routes", () => {
 
   it("the prompt's locales are exactly the app's locales", () => {
     expect([...ASSISTANT_PROMPT_LOCALES].sort()).toEqual(
+      [...routing.locales].sort()
+    )
+  })
+
+  it("the criteria library's locale set is exactly the app's locales", () => {
+    expect([...REGISTERED_LIBRARY_LOCALES].sort()).toEqual(
       [...routing.locales].sort()
     )
   })
