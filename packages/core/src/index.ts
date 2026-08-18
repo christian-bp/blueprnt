@@ -1,6 +1,7 @@
 export * from "./scoring"
 export * from "./types"
 export * from "./weighting"
+export * from "./dimensions"
 export * from "./classification/normalize"
 export * from "./classification/titleMatcher"
 export * from "./classification/senioritySuggester"
