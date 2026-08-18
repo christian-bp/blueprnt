@@ -74,11 +74,11 @@ export function validateMethod(input: MethodCheckInput): MethodCheck[] {
   const workingConditionsOk =
     workingConditions === null
       ? false
-      : workingConditions.hasMotivation &&
-        ((workingConditions.status === "testedNotMaterial" &&
+      : (workingConditions.status === "testedNotMaterial" &&
+          workingConditions.hasMotivation &&
           count("workingConditions") === 0) ||
-          (workingConditions.status === "active" &&
-            count("workingConditions") === 1))
+        (workingConditions.status === "active" &&
+          count("workingConditions") === 1)
 
   const total = input.criteria.length
 

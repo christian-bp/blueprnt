@@ -104,6 +104,20 @@ describe("validateMethod", () => {
     expect(checks.find((c) => c.key === "dimensionCoverage")?.ok).toBe(true)
   })
 
+  it("does not require motivation on the active branch", () => {
+    const input = healthyInput()
+    input.criteria = [
+      ...input.criteria.slice(0, 5),
+      criterion({ criterionId: "wc", dimensionKey: "workingConditions" }),
+    ]
+    input.workingConditions = { status: "active", hasMotivation: false }
+    const checks = validateMethod(input)
+    expect(checks.find((c) => c.key === "workingConditionsTested")?.ok).toBe(
+      true
+    )
+    expect(methodBlockersPass(checks)).toBe(true)
+  })
+
   it("rejects tested-not-material without motivation", () => {
     const input = healthyInput()
     input.workingConditions = {
