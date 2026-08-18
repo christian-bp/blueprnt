@@ -1,0 +1,20 @@
+apps/dashboard/lib/docs/docs-guards.test.ts
+  s_58dd112dc09435::t_fc1cff8a5d9f44 9
+  s_58dd112dc09435::t_8e8a2b3dfc6330 297-302
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5491377ed8c30b42452d959b4bd1059ffb157ac0",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
