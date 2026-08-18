@@ -89,7 +89,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       whenNotSuitable:
         "Välj normalt detta eller det bredare samlade kompetenskriteriet, inte båda.",
       controlQuestion:
-        "Har djupet i den specialistkunskap rollen kräver betydelse i sig, skilt från dess bredd, formella kvalifikationer, domänkontext och rådgivningsförmåga?",
+        "Har djupet i den specialistkunskap rollen kräver betydelse i sig, skilt från dess bredd, formella kvalifikationer, domänkontext och rådgivningsomdöme?",
       assessmentQuestion:
         "Vilken nivå av specialistkunskapsdjup kräver rollen normalt och varaktigt?",
       anchor1:
