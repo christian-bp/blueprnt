@@ -1,0 +1,30 @@
+packages/backend/convex/evaluationModel/tables.ts
+  s_58dd112dc09435::t_bdeec4a649ebf7 50,54-56,65,69
+  s_58dd112dc09435::t_a74fc22999cd8e 4-7
+  s_58dd112dc09435::t_d7fdc331166c68 2
+  s_58dd112dc09435::t_85de8eb9e6a5df 19-21,26-35
+  s_58dd112dc09435::t_9cb74e8ee075fa 126-127,129
+  s_58dd112dc09435::t_191f468053fc20 36
+packages/backend/convex/assessment/tables.ts
+  s_58dd112dc09435::t_7c34400c9dbc14 58-60
+packages/backend/convex/payMapping/tables.ts
+  s_58dd112dc09435::t_b4b9233a7e7e07 67-69,77-78,82-83,92-93,97-98
+packages/backend/convex/schema.test.ts
+  s_58dd112dc09435::t_ec2a68468bfbc1 5-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a5976d965c58521f5d5ce9b89c2aba0929f5a2c0",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
