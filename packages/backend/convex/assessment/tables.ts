@@ -55,7 +55,9 @@ export const roles = defineTable({
       reviewedAt: v.number(),
     })
   ),
-  // Assessment state (method cutover phase 2): evaluation status and calibration.
+  // Assessment state: presence indicates the role's ratings are locked against
+  // modification (locked), optionally calibrated against anchors. Absence means
+  // the role is in draft and ratings can change (ADR-0023).
   assessment: v.optional(
     v.object({
       lockedBy: v.string(),

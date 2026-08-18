@@ -1,6 +1,10 @@
 import { defineTable } from "convex/server"
+import type { Infer } from "convex/values"
 import { v } from "convex/values"
-import { CRITERIA_LIBRARY_KEYS } from "./criteriaLibrary"
+import {
+  CRITERIA_LIBRARY_KEYS,
+  type CriteriaLibraryKey,
+} from "./criteriaLibrary"
 
 // The fixed V1 track schema as a validator (ADR-0006): tracks are constants,
 // not rows. MUST stay in sync with TRACK_KEYS in trackSchema.ts
@@ -12,13 +16,23 @@ export const trackKeyValidator = v.union(
   v.literal("M")
 )
 
-// The 21 criteria library keys as a validator (methodcutover phase 2).
-// MUST stay in sync with CRITERIA_LIBRARY_KEYS in criteriaLibrary.ts
-// (schema.test.ts asserts the bijection). Built from the key list so drift
-// is impossible.
+// The 21 criteria library keys as a validator. MUST stay in sync with
+// CRITERIA_LIBRARY_KEYS in criteriaLibrary.ts (compile-time guard below asserts
+// the bijection). Built from the key list so drift is impossible.
 export const libraryKeyValidator = v.union(
   ...CRITERIA_LIBRARY_KEYS.map((k) => v.literal(k))
 )
+
+// Compile-time drift guard: the validator's members must exactly match
+// CriteriaLibraryKey, so the two cannot silently diverge.
+type LibraryKeyFromValidator = Infer<typeof libraryKeyValidator>
+type _LibraryKeysExact = LibraryKeyFromValidator extends CriteriaLibraryKey
+  ? CriteriaLibraryKey extends LibraryKeyFromValidator
+    ? true
+    : never
+  : never
+const _assertLibraryKeysMatch: _LibraryKeysExact = true
+void _assertLibraryKeysMatch
 
 // One living model per organization (V1: no versioning, ADR-0002). Score and
 // level are NEVER stored; they are derived by packages/core.
@@ -33,12 +47,13 @@ export const models = defineTable({
   levelThresholds: v.array(
     v.object({ level: v.number(), minScore: v.number() })
   ),
-  // Model approval (method cutover phase 2): who approved this model and when.
+  // Model approval: denormalized approval grant from the model author (ADR-0023).
   approval: v.optional(
     v.object({ approvedBy: v.string(), approvedAt: v.number() })
   ),
-  // Working conditions rules (method cutover phase 2): configuration for the
-  // workingConditions dimension.
+  // Working conditions rules: status and rationale for whether workingConditions
+  // is material in this model (ADR-0022); only one workingConditions criterion
+  // can be active per model (section 6.1).
   workingConditions: v.optional(
     v.object({
       status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
@@ -47,11 +62,11 @@ export const models = defineTable({
       decidedAt: v.number(),
     })
   ),
-  // Level rules (method cutover phase 2): threshold mapping between levels.
+  // Level rules: mapping from seniority level to minimum composite score (ADR-0021).
   levelRules: v.optional(
     v.array(v.object({ level: v.number(), minScore: v.number() }))
   ),
-  // Zone profile rules (method cutover phase 2): zone-based profile requirements.
+  // Zone profile rules: each role's profile-eligibility thresholds per zone anchor (ADR-0022).
   zoneProfileRules: v.optional(
     v.array(
       v.object({
@@ -108,9 +123,10 @@ export const criteria = defineTable({
   approved: v.optional(v.boolean()),
   decidedBy: v.optional(v.string()),
   decidedAt: v.optional(v.number()),
-  // Library key (method cutover phase 2): which of the 21 criteria this row came from.
+  // Library key: which of the 21 masterdokument criteria (competence, effort,
+  // responsibility, workingConditions) this row instantiates; null for custom criteria.
   libraryKey: v.optional(libraryKeyValidator),
-  // Weight motivation (method cutover phase 2): rationale for the weight assignment.
+  // Weight motivation: rationale for why this criterion holds its weight points.
   weightMotivation: v.optional(v.string()),
 })
   .index("by_model", ["modelId"])

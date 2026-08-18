@@ -64,7 +64,9 @@ export const payMappingRuns = defineTable({
         name: v.string(),
         weightPoints: v.number(),
         anchorCount: v.number(),
-        // Library key (method cutover phase 2): which of the 21 criteria this came from.
+        // Frozen snapshot of the library mapping: dimensionKey (e.g. "competence")
+        // and libraryKey (one of the 21 masterdokument criteria) denormalized from
+        // the live model at freeze time; used for audit and export context only.
         dimensionKey: v.optional(v.string()),
         libraryKey: v.optional(v.string()),
       })
@@ -72,11 +74,13 @@ export const payMappingRuns = defineTable({
     levelThresholds: v.array(
       v.object({ level: v.number(), minScore: v.number() })
     ),
-    // Model approval (method cutover phase 2): who approved the frozen model.
+    // Frozen snapshot of model approval: denormalized from the live model at
+    // freeze time (ADR-0023, ADR-0011).
     approval: v.optional(
       v.object({ approvedBy: v.string(), approvedAt: v.number() })
     ),
-    // Working conditions rules (method cutover phase 2).
+    // Frozen snapshot of working conditions rules: status and rationale
+    // denormalized from the live model at freeze time (ADR-0022, ADR-0011).
     workingConditions: v.optional(
       v.object({
         status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
@@ -85,11 +89,13 @@ export const payMappingRuns = defineTable({
         decidedAt: v.number(),
       })
     ),
-    // Level rules (method cutover phase 2).
+    // Frozen snapshot of level rules: seniority-to-score mapping denormalized
+    // from the live model at freeze time (ADR-0021, ADR-0011).
     levelRules: v.optional(
       v.array(v.object({ level: v.number(), minScore: v.number() }))
     ),
-    // Zone profile rules (method cutover phase 2).
+    // Frozen snapshot of zone profile rules: profile-eligibility thresholds
+    // denormalized from the live model at freeze time (ADR-0022, ADR-0011).
     zoneProfileRules: v.optional(
       v.array(
         v.object({
