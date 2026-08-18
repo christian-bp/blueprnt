@@ -2,7 +2,11 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
-import { StatBar, WidgetCard } from "@/components/widget-card"
+import {
+  StatBar,
+  useWidgetExpanded,
+  WidgetCard,
+} from "@/components/widget-card"
 import { UserGroupIcon } from "@hugeicons/core-free-icons"
 
 function renderCard(ui: React.ReactElement) {
@@ -199,18 +203,85 @@ describe("WidgetCard", () => {
 
   it("opens the expanded view from the header control", () => {
     renderCard(
+      <WidgetCard title="Gender split" expandable>
+        <div data-testid="body" />
+      </WidgetCard>
+    )
+    expect(screen.getAllByTestId("body")).toHaveLength(1)
+    fireEvent.click(
+      screen.getByRole("button", { name: messages.dashboard.widgetCard.expand })
+    )
+    // The same children, now rendered in the dialog as well as in the card.
+    expect(screen.getAllByTestId("body").length).toBeGreaterThan(1)
+  })
+
+  // Expanding is a request for a BIGGER canvas. A chart whose height is a
+  // fixed class renders at exactly the same size in the dialog, which is what
+  // made expanding feel broken on a large screen: it gained width and not one
+  // pixel of height. The flag travels by context so a card never has to
+  // render its children twice, once with a size prop set.
+  it("tells the expanded rendering that it is expanded, and the card that it is not", () => {
+    function Probe() {
+      return <span data-testid="probe">{String(useWidgetExpanded())}</span>
+    }
+    renderCard(
+      <WidgetCard title="Gender split" expandable>
+        <Probe />
+      </WidgetCard>
+    )
+    expect(
+      screen.getAllByTestId("probe").map((node) => node.textContent)
+    ).toEqual(["false"])
+    fireEvent.click(
+      screen.getByRole("button", { name: messages.dashboard.widgetCard.expand })
+    )
+    expect(
+      screen.getAllByTestId("probe").map((node) => node.textContent)
+    ).toEqual(["false", "true"])
+  })
+
+  // Expanding must not cost the reader the chart's own controls: the dialog
+  // is where they actually work with it.
+  it("carries the header controls into the expanded dialog", () => {
+    renderCard(
       <WidgetCard
         title="Gender split"
         expandable
-        expandedChildren={<div data-testid="expanded" />}
+        headerExtra={<button type="button">Roll</button>}
       >
         <div />
       </WidgetCard>
     )
-    expect(screen.queryByTestId("expanded")).toBeNull()
+    expect(screen.getByRole("button", { name: "Roll" })).toBeDefined()
     fireEvent.click(
       screen.getByRole("button", { name: messages.dashboard.widgetCard.expand })
     )
-    expect(screen.getByTestId("expanded")).toBeDefined()
+    // The dialog takes the page out of the accessibility tree, so the control
+    // the reader can still reach has to be the dialog's own copy.
+    expect(
+      screen
+        .getByRole("button", { name: "Roll" })
+        .closest('[data-slot="dialog-content"]')
+    ).not.toBeNull()
+  })
+
+  // The cap used to be a fixed 5xl (1024px), which is narrower than the page
+  // behind it on any large monitor: expanding a chart there made it smaller.
+  it("sizes the expanded dialog to the screen rather than to a fixed step", () => {
+    renderCard(
+      <WidgetCard title="Gender split" expandable>
+        <div />
+      </WidgetCard>
+    )
+    fireEvent.click(
+      screen.getByRole("button", { name: messages.dashboard.widgetCard.expand })
+    )
+    const dialog = document.querySelector('[data-slot="dialog-content"]')
+    const classes = dialog?.getAttribute("class") ?? ""
+    expect(classes).toContain("100vw")
+    // And it stays inside the viewport, so a tall chart cannot push the
+    // dialog's own header off screen.
+    expect(classes).toContain("max-h-")
+    expect(classes).toContain("overflow-y-auto")
   })
 })

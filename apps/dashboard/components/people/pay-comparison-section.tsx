@@ -3,11 +3,7 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Badge } from "@workspace/ui/components/badge"
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-} from "@workspace/ui/components/chart"
+import { type ChartConfig, ChartTooltip } from "@workspace/ui/components/chart"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
@@ -28,6 +24,7 @@ import {
   GenderMenIcon,
 } from "@/components/gender-mark"
 import { useOrganization } from "@/components/org-context"
+import { ChartCanvas, ChartCanvasSkeleton } from "@/components/chart-canvas"
 import { WidgetCard } from "@/components/widget-card"
 import { useMoney } from "@/hooks/use-money"
 import {
@@ -35,6 +32,10 @@ import {
   CHART_TOOLTIP_TEXT,
   TOOLTIP_APPEAR,
 } from "@/lib/chart-style"
+
+// The plot's height inside its card: shorter than the pay-mapping scatter, in
+// a section that sits among a person's other panels.
+const COLLAPSED_HEIGHT = "h-48"
 import {
   buildPayComparisonRows,
   type PayComparisonPoint,
@@ -97,14 +98,14 @@ export function PayComparisonSection({
     personId,
   })
 
-  // One content renderer for both the card and the expanded dialog, so the
-  // two can never diverge; only the chart grows in the dialog. The card is
-  // ALWAYS expandable so its header chrome stays static across the loading,
-  // precondition, and chart states (expanding a text state just shows the
-  // same message larger, a harmless no-op).
-  const content = (expanded: boolean) =>
+  // One rendering, used by the card and by its expanded dialog alike: the
+  // pieces that grow read the dialog's own context rather than taking a flag
+  // from here. The card is ALWAYS expandable so its header chrome stays
+  // static across the loading, precondition, and chart states (expanding a
+  // text state just shows the same message larger, a harmless no-op).
+  const content = () =>
     comparison === undefined ? (
-      <Skeleton className={expanded ? "h-96 w-full" : "h-48 w-full"} />
+      <PayComparisonSkeleton />
     ) : comparison.status !== "ready" ? (
       // Preconditions in words, one shared line for both missing pieces
       // (classification and a recorded salary).
@@ -126,7 +127,6 @@ export function PayComparisonSection({
         excludedCount={comparison.excludedCount}
         points={comparison.points}
         trackKey={trackKey}
-        expanded={expanded}
       />
     )
 
@@ -139,11 +139,16 @@ export function PayComparisonSection({
       }}
       headerExtra={<ScopeChip />}
       expandable
-      expandedChildren={content(true)}
     >
-      {content(false)}
+      {content()}
     </WidgetCard>
   )
+}
+
+// The waiting state, sized to whichever canvas the chart will land on, so the
+// section does not resize the moment its data arrives.
+function PayComparisonSkeleton() {
+  return <ChartCanvasSkeleton collapsed={COLLAPSED_HEIGHT} />
 }
 
 // The tooltip for one dot. Exported and driven purely by props so it is
@@ -281,13 +286,11 @@ function PayComparisonChart({
   excludedCount,
   points,
   trackKey,
-  expanded = false,
 }: {
   currency: string
   excludedCount: number
   points: PayComparisonPoint[]
   trackKey: string | undefined
-  expanded?: boolean
 }) {
   const t = useTranslations("dashboard.people.payComparison")
   const tGender = useTranslations("dashboard.people.gender")
@@ -313,15 +316,7 @@ function PayComparisonChart({
 
   return (
     <div className="space-y-1">
-      {/* aspect-auto overrides the container's default aspect-video so the
-          section gets a fixed height matching the loading skeleton; the
-          expanded (dialog) variant gets the taller canvas. */}
-      <ChartContainer
-        config={config}
-        className={
-          expanded ? "aspect-auto h-96 w-full" : "aspect-auto h-48 w-full"
-        }
-      >
+      <ChartCanvas config={config} collapsed={COLLAPSED_HEIGHT}>
         <ScatterChart
           accessibilityLayer
           margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
@@ -382,7 +377,7 @@ function PayComparisonChart({
           <Scatter name="man" data={men} shape={GenderDot} />
           <Scatter name="woman" data={women} shape={GenderDot} />
         </ScatterChart>
-      </ChartContainer>
+      </ChartCanvas>
       {/* Both series are named here, so gender is never mark-alone. */}
       <GenderLegend
         mark="point"

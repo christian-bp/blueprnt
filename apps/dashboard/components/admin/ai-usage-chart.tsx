@@ -28,7 +28,7 @@ import {
   CHART_TOOLTIP_MOTION,
   CHART_TOOLTIP_TEXT,
   chartSeriesInk,
-  MONEY_AXIS_WIDTH,
+  moneyAxisWidth,
   TOOLTIP_APPEAR,
 } from "@/lib/chart-style"
 
@@ -234,6 +234,20 @@ export function AiUsageChart({
     return point
   })
 
+  // The areas are stacked, so the axis reaches the DAILY TOTAL rather than
+  // any one series' value; sizing it to a single org's numbers would clip the
+  // label the moment two orgs share a day.
+  const usdAxisWidth = moneyAxisWidth(
+    points.map((point) =>
+      Object.entries(point).reduce(
+        (sum, [key, value]) =>
+          key === "day" || typeof value !== "number" ? sum : sum + value,
+        0
+      )
+    ),
+    (value) => formatUsd(value, locale)
+  )
+
   const config: ChartConfig = Object.fromEntries(
     legendItems.map((item) => [item.key, { label: item.label }])
   )
@@ -293,7 +307,7 @@ export function AiUsageChart({
               tickLine={false}
               axisLine={false}
               fontSize={CHART_AXIS_FONT_SIZE}
-              width={MONEY_AXIS_WIDTH}
+              width={usdAxisWidth}
               tickFormatter={(value: number) => formatUsd(value, locale)}
             />
             <ChartTooltip

@@ -21,7 +21,7 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
-import { type ReactNode, useState } from "react"
+import { createContext, type ReactNode, useContext, useState } from "react"
 import { CardOverlayLink } from "@/components/card-overlay-link"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { Medallion } from "@/components/medallion"
@@ -104,6 +104,25 @@ export function StatBar({ className }: { className: string }) {
   )
 }
 
+// Whether the subtree is being rendered inside an expanded widget dialog
+// rather than in the card itself.
+//
+// A chart cannot size itself without this. Expanding is a request for a
+// LARGER canvas, and a chart whose height is a fixed class renders at exactly
+// the same size in the dialog: it gains the dialog's extra width and not one
+// pixel of height, which is the whole reason expanding felt broken on a big
+// screen. Charts read this and pick their plot height from it.
+//
+// A context rather than a prop, because the alternative was making every call
+// site pass the same component twice, once with a size flag set. Three call
+// sites did exactly that, which is three chances for the two renderings to
+// drift into different charts.
+const WidgetExpandedContext = createContext(false)
+
+export function useWidgetExpanded(): boolean {
+  return useContext(WidgetExpandedContext)
+}
+
 // A card either NAVIGATES or holds its own controls, never both. The link is
 // an anchor stretched over the whole card, so anything interactive underneath
 // it stops answering the mouse while still being reachable by keyboard: a
@@ -119,13 +138,11 @@ type WidgetCardProps = WidgetCardBase &
         href: string
         help?: never
         expandable?: never
-        expandedChildren?: never
       }
     | {
         href?: never
         help?: { label: string; body: string }
         expandable?: boolean
-        expandedChildren?: ReactNode
       }
   )
 
@@ -140,7 +157,6 @@ export function WidgetCard({
   headerExtra,
   href,
   expandable = false,
-  expandedChildren,
   className,
   children,
 }: WidgetCardProps) {
@@ -255,13 +271,33 @@ export function WidgetCard({
       )}
       {expandable && (
         <Dialog open={open} onOpenChange={setOpen}>
-          {/* Deliberately wider than the sm:max-w-md default: the whole point
-              of expanding is a larger canvas for the chart. */}
-          <DialogContent className="sm:max-w-5xl">
-            <DialogHeader>
-              <DialogTitle>{title}</DialogTitle>
+          {/* Sized to the SCREEN, not to a fixed step. The dialog used to cap
+              at 5xl (1024px), which is narrower than the page behind it on any
+              large monitor: expanding a chart there made it smaller. It keeps
+              a cap all the same, because a plot stretched across 2500px
+              spreads its points into a thin band that reads worse than the
+              card did, and it keeps a margin so the dialog still reads as a
+              layer above the page rather than as a new page.
+
+              The height cap plus a scrolling body is what lets the chart
+              inside ask for a tall canvas without the dialog growing past the
+              viewport and taking its own header off screen. */}
+          <DialogContent className="max-h-[calc(100dvh-4rem)] overflow-y-auto sm:max-w-[min(96rem,calc(100vw-4rem))]">
+            {/* The same heading the card carries, help and controls
+                included. The dialog is where the reader actually works with
+                the chart, and a mode toggle that only exists in the small
+                version means expanding costs you the controls. */}
+            <DialogHeader className="flex-row items-center justify-between gap-4 space-y-0 pr-8">
+              <DialogTitle className="flex items-center gap-2">
+                {label}
+              </DialogTitle>
+              {headerExtra !== undefined && (
+                <div className="flex items-center gap-2">{headerExtra}</div>
+              )}
             </DialogHeader>
-            {expandedChildren ?? children}
+            <WidgetExpandedContext.Provider value={true}>
+              {children}
+            </WidgetExpandedContext.Provider>
           </DialogContent>
         </Dialog>
       )}

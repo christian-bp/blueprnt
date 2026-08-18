@@ -8,11 +8,7 @@ import {
   JusticeScale01Icon,
 } from "@hugeicons/core-free-icons"
 import type { IconSvgElement } from "@hugeicons/react"
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-} from "@workspace/ui/components/chart"
+import { type ChartConfig, ChartTooltip } from "@workspace/ui/components/chart"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useFormatter, useTranslations } from "next-intl"
 import type { ReactNode } from "react"
@@ -25,8 +21,13 @@ import {
   GenderTooltipContent,
   useGenderMarks,
 } from "@/components/gender-mark"
+import { ChartCanvas } from "@/components/chart-canvas"
 import { PanelCard } from "@/components/panel-card"
-import { StatBar, WidgetCard } from "@/components/widget-card"
+import {
+  StatBar,
+  useWidgetExpanded,
+  WidgetCard,
+} from "@/components/widget-card"
 import {
   EqualityClock,
   equalityClockDirection,
@@ -41,11 +42,7 @@ import type {
   OrgAggregate,
   PayMappingGapResult,
 } from "./pay-mapping-gap-types"
-import {
-  BAR_RADIUS,
-  CHART_AXIS_FONT_SIZE,
-  CHART_TOOLTIP_MOTION,
-} from "@/lib/chart-style"
+import { BAR_RADIUS, CHART_TOOLTIP_MOTION } from "@/lib/chart-style"
 import { percentText } from "@/lib/percent"
 
 // The unadjusted org-level gap as a KPI figure: the unsigned percent, and
@@ -217,14 +214,15 @@ function ClockStat({ org }: { org: OrgAggregate | undefined }) {
 function WholeSurveyStat({
   population,
   countLabel,
-  expanded = false,
 }: {
   population: GenderTally | undefined
   countLabel: string
-  expanded?: boolean
 }) {
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
   const marks = useGenderMarks()
+  // Set by the widget's own dialog, so the chart grows there without the card
+  // having to render it twice.
+  const expanded = useWidgetExpanded()
   if (population === undefined) {
     return <Skeleton className="h-40 w-full" />
   }
@@ -259,9 +257,10 @@ function WholeSurveyStat({
     total > 0 ? `${value} (${Math.round((value / total) * 100)}%)` : `${value}`
   return (
     <div className="flex items-center gap-6">
-      <ChartContainer
+      <ChartCanvas
         config={config}
-        className={expanded ? "aspect-square h-80" : "aspect-square h-40"}
+        collapsed="h-40"
+        className="aspect-square w-auto"
       >
         <PieChart>
           <defs>
@@ -291,7 +290,7 @@ function WholeSurveyStat({
             ))}
           </Pie>
         </PieChart>
-      </ChartContainer>
+      </ChartCanvas>
       <div className="min-w-0 flex-1 space-y-3">
         <div>
           <p className="text-muted-foreground text-sm">{countLabel}</p>
@@ -313,13 +312,8 @@ function WholeSurveyStat({
 // the standard shadcn horizontal stacked bar chart, the upper quartile on
 // top. Headcounts only, so no masking applies; exact counts on hover, the
 // concept lives in the widget's help.
-function QuartileStat({
-  quartiles,
-  expanded = false,
-}: {
-  quartiles: GenderTally[] | undefined
-  expanded?: boolean
-}) {
+function QuartileStat({ quartiles }: { quartiles: GenderTally[] | undefined }) {
+  const expanded = useWidgetExpanded()
   const t = useTranslations("dashboard.payMapping.overview.quartiles")
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
   const marks = useGenderMarks()
@@ -359,12 +353,7 @@ function QuartileStat({
     .reverse()
   return (
     <div className="space-y-2">
-      <ChartContainer
-        config={config}
-        className={
-          expanded ? "aspect-auto h-96 w-full" : "aspect-auto h-40 w-full"
-        }
-      >
+      <ChartCanvas config={config} collapsed="h-40">
         <BarChart accessibilityLayer layout="vertical" data={data}>
           <XAxis type="number" hide />
           <YAxis
@@ -373,7 +362,6 @@ function QuartileStat({
             tickLine={false}
             axisLine={false}
             width={expanded ? 148 : 100}
-            fontSize={CHART_AXIS_FONT_SIZE}
           />
           <defs>
             <GenderHatch id={marks.hatchId} />
@@ -404,7 +392,7 @@ function QuartileStat({
             radius={[0, BAR_RADIUS, BAR_RADIUS, 0]}
           />
         </BarChart>
-      </ChartContainer>
+      </ChartCanvas>
       <GenderLegend
         items={[
           { series: "women", label: tGap("women") },
@@ -512,17 +500,7 @@ export function PayMappingOverview({
       {/* Distribution charts, each expandable to a large dialog: the donut
           keeps a single column, the quartile chart takes the remaining two. */}
       <div className="grid gap-4 md:grid-cols-3">
-        <WidgetCard
-          title={tOverview("wholeSurveyTitle")}
-          expandable
-          expandedChildren={
-            <WholeSurveyStat
-              population={gap?.population}
-              countLabel={t("detail.population")}
-              expanded
-            />
-          }
-        >
+        <WidgetCard title={tOverview("wholeSurveyTitle")} expandable>
           <WholeSurveyStat
             population={gap?.population}
             countLabel={t("detail.population")}
@@ -536,9 +514,6 @@ export function PayMappingOverview({
             body: tHelp("payQuartilesBody"),
           }}
           expandable
-          expandedChildren={
-            <QuartileStat quartiles={gap?.quartiles} expanded />
-          }
         >
           <QuartileStat quartiles={gap?.quartiles} />
         </WidgetCard>
