@@ -64,10 +64,44 @@ export const payMappingRuns = defineTable({
         name: v.string(),
         weightPoints: v.number(),
         anchorCount: v.number(),
+        // Library key (method cutover phase 2): which of the 21 criteria this came from.
+        dimensionKey: v.optional(v.string()),
+        libraryKey: v.optional(v.string()),
       })
     ),
     levelThresholds: v.array(
       v.object({ level: v.number(), minScore: v.number() })
+    ),
+    // Model approval (method cutover phase 2): who approved the frozen model.
+    approval: v.optional(
+      v.object({ approvedBy: v.string(), approvedAt: v.number() })
+    ),
+    // Working conditions rules (method cutover phase 2).
+    workingConditions: v.optional(
+      v.object({
+        status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
+        motivation: v.string(),
+        decidedBy: v.string(),
+        decidedAt: v.number(),
+      })
+    ),
+    // Level rules (method cutover phase 2).
+    levelRules: v.optional(
+      v.array(v.object({ level: v.number(), minScore: v.number() }))
+    ),
+    // Zone profile rules (method cutover phase 2).
+    zoneProfileRules: v.optional(
+      v.array(
+        v.object({
+          zone: v.union(
+            v.literal("A"),
+            v.literal("B"),
+            v.literal("C"),
+            v.literal("D")
+          ),
+          minStep: v.number(),
+        })
+      )
     ),
   }),
   // The samverkansredogörelse (DL 3 kap. 11-14 §§): who the employer

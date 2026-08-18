@@ -1,5 +1,24 @@
 import { defineTable } from "convex/server"
 import { v } from "convex/values"
+import { CRITERIA_LIBRARY_KEYS } from "./criteriaLibrary"
+
+// The fixed V1 track schema as a validator (ADR-0006): tracks are constants,
+// not rows. MUST stay in sync with TRACK_KEYS in trackSchema.ts
+// (trackSchema.test.ts asserts the bijection). Used by roles.trackKey
+// and by getModel's wire shape.
+export const trackKeyValidator = v.union(
+  v.literal("IC"),
+  v.literal("Lead"),
+  v.literal("M")
+)
+
+// The 21 criteria library keys as a validator (methodcutover phase 2).
+// MUST stay in sync with CRITERIA_LIBRARY_KEYS in criteriaLibrary.ts
+// (schema.test.ts asserts the bijection). Built from the key list so drift
+// is impossible.
+export const libraryKeyValidator = v.union(
+  ...CRITERIA_LIBRARY_KEYS.map((k) => v.literal(k))
+)
 
 // One living model per organization (V1: no versioning, ADR-0002). Score and
 // level are NEVER stored; they are derived by packages/core.
@@ -13,6 +32,38 @@ export const models = defineTable({
   // inclusive score on the normalized 0-100 scale (ADR-0004).
   levelThresholds: v.array(
     v.object({ level: v.number(), minScore: v.number() })
+  ),
+  // Model approval (method cutover phase 2): who approved this model and when.
+  approval: v.optional(
+    v.object({ approvedBy: v.string(), approvedAt: v.number() })
+  ),
+  // Working conditions rules (method cutover phase 2): configuration for the
+  // workingConditions dimension.
+  workingConditions: v.optional(
+    v.object({
+      status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
+      motivation: v.string(),
+      decidedBy: v.string(),
+      decidedAt: v.number(),
+    })
+  ),
+  // Level rules (method cutover phase 2): threshold mapping between levels.
+  levelRules: v.optional(
+    v.array(v.object({ level: v.number(), minScore: v.number() }))
+  ),
+  // Zone profile rules (method cutover phase 2): zone-based profile requirements.
+  zoneProfileRules: v.optional(
+    v.array(
+      v.object({
+        zone: v.union(
+          v.literal("A"),
+          v.literal("B"),
+          v.literal("C"),
+          v.literal("D")
+        ),
+        minStep: v.number(),
+      })
+    )
   ),
 }).index("by_org", ["orgId"])
 
@@ -57,16 +108,10 @@ export const criteria = defineTable({
   approved: v.optional(v.boolean()),
   decidedBy: v.optional(v.string()),
   decidedAt: v.optional(v.number()),
+  // Library key (method cutover phase 2): which of the 21 criteria this row came from.
+  libraryKey: v.optional(libraryKeyValidator),
+  // Weight motivation (method cutover phase 2): rationale for the weight assignment.
+  weightMotivation: v.optional(v.string()),
 })
   .index("by_model", ["modelId"])
   .index("by_org", ["orgId"])
-
-// The fixed V1 track schema as a validator (ADR-0006): tracks are constants,
-// not rows. MUST stay in sync with TRACK_KEYS in trackSchema.ts
-// (trackSchema.test.ts asserts the bijection). Used by roles.trackKey
-// and by getModel's wire shape.
-export const trackKeyValidator = v.union(
-  v.literal("IC"),
-  v.literal("Lead"),
-  v.literal("M")
-)

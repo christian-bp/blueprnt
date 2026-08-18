@@ -55,6 +55,16 @@ export const roles = defineTable({
       reviewedAt: v.number(),
     })
   ),
+  // Assessment state (method cutover phase 2): evaluation status and calibration.
+  assessment: v.optional(
+    v.object({
+      lockedBy: v.string(),
+      lockedAt: v.number(),
+      calibratedBy: v.optional(v.string()),
+      calibratedAt: v.optional(v.number()),
+      calibrationNote: v.optional(v.string()),
+    })
+  ),
 })
   .index("by_org", ["orgId"])
   .index("by_org_slug", ["orgId", "slug"])

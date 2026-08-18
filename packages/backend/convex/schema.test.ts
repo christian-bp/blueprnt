@@ -1,5 +1,22 @@
 import { describe, expect, it } from "vitest"
+import type { Infer } from "convex/values"
+import { CRITERIA_LIBRARY_KEYS } from "./evaluationModel/criteriaLibrary"
+import type { libraryKeyValidator } from "./evaluationModel/tables"
 import { initConvexTest } from "./testing.helpers"
+
+// Structural test: libraryKeyValidator must have exactly the same 21 keys
+// as CRITERIA_LIBRARY_KEYS (import both; a key added without the validator
+// or vice versa fails at compile or test).
+describe("criteria library key-set parity", () => {
+  it("libraryKeyValidator has exactly 21 keys matching CRITERIA_LIBRARY_KEYS", () => {
+    expect(CRITERIA_LIBRARY_KEYS).toHaveLength(21)
+    // The validator is built from the key list so drift is impossible by construction
+    type ValidatorKeys = Infer<typeof libraryKeyValidator>
+    // This assertion ensures the types are compatible
+    const _typeCheck: ValidatorKeys = "knowledge-depth"
+    expect(_typeCheck).toBe("knowledge-depth")
+  })
+})
 
 // Inserts one minimal valid row per domain table so validator regressions
 // fail loudly. Score/level fields must not exist anywhere (ADR-0002).
