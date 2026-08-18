@@ -86,7 +86,7 @@ export const criteriaLibraryContentFi: CriteriaLibraryContent = {
       whenNotSuitable:
         "Valitse yleensä joko tämä tai laajempi yhdistetty osaamiskriteeri, ei molempia.",
       controlQuestion:
-        "Onko roolin edellyttämän asiantuntemuksen syvyydellä merkitystä itsessään, erillään sen laajuudesta, muodollisesta pätevyydestä, toimialakontekstista ja neuvontaharkinnasta?",
+        "Onko roolin edellyttämän asiantuntemuksen syvyydellä merkitystä itsessään, erillään sen laajuudesta, muodollisesta pätevyydestä, toimialakontekstista ja neuvonantoharkinnasta?",
       assessmentQuestion:
         "Millaista asiantuntemuksen syvyyttä rooli normaalisti ja pysyvästi edellyttää?",
       anchor1:
