@@ -1,0 +1,27 @@
+packages/backend/convex/evaluationModel/criteriaLibrary.content.nb.ts
+  s_58dd112dc09435::t_1eafc78a05a583 141
+packages/backend/convex/evaluationModel/criteriaLibrary.content.fi.ts
+  s_58dd112dc09435::t_808759199fc758 142
+packages/backend/convex/evaluationModel/criteriaLibrary.content.en.ts
+  s_58dd112dc09435::t_5e8532c04881f4 176
+packages/backend/convex/evaluationModel/criteriaLibrary.content.sv.ts
+  s_58dd112dc09435::t_db4ec08935515b 145
+packages/backend/convex/evaluationModel/criteriaLibrary.content.da.ts
+  s_58dd112dc09435::t_259df68e5d2d09 141
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f2f2d47611045228bdbf3a643e1ea134dc8df4e3",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
