@@ -1,0 +1,30 @@
+packages/backend/convex/evaluationModel/criteriaLibrary.content.en.ts
+  s_58dd112dc09435::t_3024a52900343c 118,416,591-592
+  s_58dd112dc09435::t_c3bdec8cbaaaad 266
+  s_58dd112dc09435::t_caae866a6ce768 294
+  s_58dd112dc09435::t_f04a98fc9fae82 1-117,119-265,267-293,295-415,417-590,593-633
+packages/backend/convex/evaluationModel/criteriaLibrary.ts
+  s_58dd112dc09435::t_3024a52900343c 178
+  s_58dd112dc09435::t_30eb964ddbe79b 1-177,179-183
+packages/backend/convex/evaluationModel/criteriaLibrary.test.ts
+  s_58dd112dc09435::t_3024a52900343c 20-25,73-75,98-101
+  s_58dd112dc09435::t_11d932ce868b3d 1-19,26-72,76-97,102-114
+docs/rollvardering-masterdokument.md
+  s_58dd112dc09435::t_56a32bfc8659dd 1-1074
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c5b6ee458dc8070d405cb93890d9431a2f6e84cf",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
