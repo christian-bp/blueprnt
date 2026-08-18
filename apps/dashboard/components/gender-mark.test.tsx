@@ -3,7 +3,6 @@ import { join } from "node:path"
 import { cleanup, render } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
 import {
-  GENDER_POINT_SIZE,
   genderMarkBorder,
   GenderPointHitArea,
   GenderPointMark,
@@ -14,6 +13,7 @@ import {
   genderKeyStyle,
   useGenderMarks,
 } from "@/components/gender-mark"
+import { POINT_MARK_SIZE } from "@/components/point-mark"
 
 afterEach(cleanup)
 
@@ -86,16 +86,20 @@ describe("gender marks", () => {
         <GenderPointMark cx={60} cy={20} series="men" />
       </svg>
     )
-    // The triangle is a path, the circle a circle. Each mark's own shape, and
+    // The triangle is a path, the square a rect. Each mark's own shape, and
     // never the other's.
     const triangle = container.querySelector("path")
-    const circle = container.querySelector("circle")
+    const square = container.querySelector("rect")
     expect(triangle).not.toBeNull()
-    expect(circle).not.toBeNull()
+    expect(square).not.toBeNull()
+    // Neither is a CIRCLE: that shape is the app's ungendered point, drawn by
+    // a plot encoding something else on the same marks (the role mode). A
+    // gender owning it would keep reading as that gender there.
+    expect(container.querySelector("circle")).toBeNull()
     // Both solid, each in its own ink. Outlining one series made it read as
     // the secondary case and was the harder hover target.
     expect(triangle?.getAttribute("fill")).toBe("var(--gender-woman)")
-    expect(circle?.getAttribute("fill")).toBe("var(--gender-man)")
+    expect(square?.getAttribute("fill")).toBe("var(--gender-man)")
   })
 
   it("edges every point mark in the card's colour, never its own ink", () => {
@@ -158,8 +162,8 @@ describe("gender marks", () => {
         <GenderPointMark cx={20} cy={20} series="men" />
       </svg>
     )
-    const radius = Number(container.querySelector("circle")?.getAttribute("r"))
-    expect(Math.PI * radius * radius).toBeCloseTo(GENDER_POINT_SIZE, 1)
+    const side = Number(container.querySelector("rect")?.getAttribute("width"))
+    expect(side * side).toBeCloseTo(POINT_MARK_SIZE, 1)
   })
 
   it("draws both point shapes at equal area", () => {
@@ -175,9 +179,8 @@ describe("gender marks", () => {
         </svg>
       </>
     )
-    const circle = container.querySelector("circle")
-    const radius = Number(circle?.getAttribute("r"))
-    expect(Math.PI * radius * radius).toBeCloseTo(100, 1)
+    const side = Number(container.querySelector("rect")?.getAttribute("width"))
+    expect(side * side).toBeCloseTo(100, 1)
     // The triangle is drawn as a path; its three points bound the same area.
     expect(container.querySelector("path")?.getAttribute("d")).toContain("M 20")
   })

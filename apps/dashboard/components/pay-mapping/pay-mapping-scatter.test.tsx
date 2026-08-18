@@ -163,6 +163,7 @@ function renderScatter(
     groupLabelFor: (row: PayMappingSnapshotRow) => string
     title: string
     means: { women: number | null; men: number | null }
+    roleOrder: readonly string[]
   }> = {}
 ) {
   return render(
@@ -174,6 +175,7 @@ function renderScatter(
         groupLabelFor={props.groupLabelFor}
         title={props.title ?? m.titleEqualWork}
         {...("means" in props ? { means: props.means } : {})}
+        {...("roleOrder" in props ? { roleOrder: props.roleOrder } : {})}
       />
     </NextIntlClientProvider>
   )
@@ -319,16 +321,315 @@ describe("PayMappingScatter", () => {
     expect(screen.getByText(m.emptyTenure)).toBeDefined()
   })
 
+  // The key is a filter on this chart too: reading one gender's spread means
+  // being able to put the other away.
+  it("hides a gender's points from its key, and takes that gender's average with them", () => {
+    renderScatter({ means: { women: 38_903, men: 39_608 } })
+    const chart = () => document.querySelector("[data-chart]")
+    const genderFills = () =>
+      [...(chart()?.querySelectorAll("path[fill], rect[fill]") ?? [])]
+        .map((el) => el.getAttribute("fill") ?? "")
+        .filter((fill) => fill.startsWith("var(--gender"))
+    expect(genderFills()).toEqual(
+      expect.arrayContaining(["var(--gender-woman)", "var(--gender-man)"])
+    )
+    fireEvent.click(screen.getByRole("button", { name: mGender.Man }))
+    expect(genderFills()).toEqual(["var(--gender-woman)"])
+    // The average line belongs to the series: a dashed line for people who
+    // are not on the plot is a number with nothing to read it against.
+    expect(screen.queryByText(m.menMean)).toBeNull()
+    expect(screen.getByText(m.womenMean)).toBeDefined()
+  })
+
+  it("refuses to switch off the last gender showing", () => {
+    renderScatter()
+    fireEvent.click(screen.getByRole("button", { name: mGender.Man }))
+    expect(
+      screen
+        .getByRole("button", { name: mGender.Kvinna })
+        .hasAttribute("disabled")
+    ).toBe(true)
+  })
+
+  // Expanding is a request for a BIGGER plot. This chart renders its own
+  // WidgetCard, so the naive way to read the expanded flag is a hook call in
+  // the same component, which sits ABOVE the dialog's provider and quietly
+  // answers "not expanded": the dialog then showed the identical 256px chart,
+  // wider and not one pixel taller. The height is decided by ChartCanvas
+  // instead, which renders inside the dialog.
+  it("gives the expanded dialog a taller plot than the card", () => {
+    renderScatter()
+    const heightOf = (node: Element | null | undefined) =>
+      (node?.getAttribute("class") ?? "")
+        .split(/\s+/)
+        .find((cls) => cls.startsWith("h-"))
+    const inCard = document.querySelector("[data-chart]")
+    expect(heightOf(inCard)).toBe("h-64")
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: messages.dashboard.widgetCard.expand,
+      })
+    )
+    const charts = [...document.querySelectorAll("[data-chart]")]
+    expect(charts).toHaveLength(2)
+    const inDialog = charts.find(
+      (chart) => chart.closest('[data-slot="dialog-content"]') !== null
+    )
+    expect(inDialog).toBeDefined()
+    expect(heightOf(inDialog)).not.toBe("h-64")
+  })
+
   it("hides the omitted note entirely once nothing is omitted", () => {
     renderScatter()
     expect(screen.queryByText(/is not shown/)).toBeNull()
   })
 })
 
-function renderTooltip(point: ScatterPoint, xMode: ScatterXMode = "age") {
+// Hue can answer "which job is this point" instead of repeating the gender
+// the shape already carries. The rules that must hold: the shape never stops
+// meaning gender, a job's hue comes from the chart's fixed order rather than
+// from anything the reader can re-rank, and no hue is ever shown without a
+// legend row naming the job it stands for.
+describe("PayMappingScatter: showing the roles", () => {
+  beforeEach(() => {
+    vi.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      right: 640,
+      bottom: 256,
+      width: 640,
+      height: 256,
+      toJSON: () => ({}),
+    } as DOMRect)
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+    cleanup()
+  })
+
+  // Two people in two different jobs, so a per-point mark is observable.
+  const TWO_JOBS: PayMappingSnapshotRow[] = [
+    row({ displayName: "Alex Doe", gender: "Kvinna", roleTitle: "Nurse" }),
+    row({ displayName: "Bo Berg", gender: "Man", roleTitle: "IT Manager" }),
+  ]
+  const byRoleTitle = (r: PayMappingSnapshotRow) => r.roleTitle
+
+  function renderByRole(roleOrder: readonly string[]) {
+    const result = renderScatter({
+      rows: TWO_JOBS,
+      groupLabelFor: byRoleTitle,
+      roleOrder,
+    })
+    fireEvent.click(screen.getByRole("tab", { name: m.colorRole }))
+    return result
+  }
+
+  // Every mark the plot draws, as its element and its fill. The marks sit
+  // alongside invisible hit areas, which are filled "transparent".
+  function marks(prefix: string): { shape: string; fill: string }[] {
+    const chart = document.querySelector("[data-chart]")
+    if (chart === null) return []
+    return [...chart.querySelectorAll("path[fill], circle[fill], rect[fill]")]
+      .map((el) => ({
+        shape: el.tagName.toLowerCase(),
+        fill: el.getAttribute("fill") ?? "",
+      }))
+      .filter((mark) => mark.fill.startsWith(prefix))
+  }
+
+  it("offers the toggle only where there are jobs to show", () => {
+    renderScatter()
+    expect(screen.queryByRole("tab", { name: m.colorRole })).toBeNull()
+    cleanup()
+    renderScatter({ roleOrder: ["Nurse"] })
+    expect(screen.getByRole("tab", { name: m.colorRole })).toBeDefined()
+  })
+
+  // Hue alone here, and every point stays a circle: a silhouette a few
+  // pixels across cannot carry six categories, and what keeps identity off
+  // colour alone is the legend, the hover, and being able to click every
+  // other job away. Shape is left to the gender mode.
+  it("gives each job its own hue, and draws every point as the same circle", () => {
+    renderByRole(["Nurse", "IT Manager"])
+    expect(marks("var(--role")).toEqual(
+      expect.arrayContaining([
+        { shape: "circle", fill: "var(--role-1)" },
+        { shape: "circle", fill: "var(--role-2)" },
+      ])
+    )
+  })
+
+  it("takes the hue from the chart's own order, not from the plotted order", () => {
+    // The man's job leads the order, so his point takes slot one even though
+    // the woman's point is plotted first. Nothing about the hue may depend on
+    // who is standing in it.
+    renderByRole(["IT Manager", "Nurse"])
+    const fills = marks("var(--role").map((mark) => mark.fill)
+    expect(fills).toEqual(
+      expect.arrayContaining(["var(--role-1)", "var(--role-2)"])
+    )
+  })
+
+  it("goes back to the gender marks when the reader toggles back", () => {
+    renderByRole(["Nurse", "IT Manager"])
+    fireEvent.click(screen.getByRole("tab", { name: m.colorGender }))
+    expect(marks("var(--role")).toEqual([])
+    expect(marks("var(--gender")).toEqual(
+      expect.arrayContaining([
+        { shape: "path", fill: "var(--gender-woman)" },
+        { shape: "rect", fill: "var(--gender-man)" },
+      ])
+    )
+  })
+
+  it("names every job that has a mark, and folds the rest into one neutral", () => {
+    const jobs = Array.from({ length: 8 }, (_, i) => `Job ${i + 1}`)
+    renderByRole(jobs)
+    // The six with a mark of their own are named.
+    for (const job of jobs.slice(0, 6)) {
+      expect(screen.getByText(job)).toBeDefined()
+    }
+    // The seventh and eighth share the neutral, so they get ONE chip between
+    // them: a chip each would promise a mark that cannot tell them apart.
+    expect(screen.queryByText("Job 7")).toBeNull()
+    expect(screen.queryByText("Job 8")).toBeNull()
+    expect(screen.getAllByText(m.colorRoleOther)).toHaveLength(1)
+  })
+
+  // The key has to show the object the plot draws: the same filled circle in
+  // the same hue, never a square swatch standing in for it.
+  it("shows each job's own mark in the key", () => {
+    renderByRole(["Nurse", "IT Manager", "Analyst"])
+    const chips = [...document.querySelectorAll("li")].filter((li) =>
+      ["Nurse", "IT Manager", "Analyst"].includes(li.textContent ?? "")
+    )
+    expect(
+      chips.map((li) => {
+        const mark = li.querySelector("path, circle, rect")
+        return `${mark?.tagName.toLowerCase()}|${mark?.getAttribute("fill")}`
+      })
+    ).toEqual([
+      "circle|var(--role-1)",
+      "circle|var(--role-2)",
+      "circle|var(--role-3)",
+    ])
+  })
+
+  // A key as long as the comparison is has to be a filter too: with seven
+  // jobs on one plot, reading one of them means being able to put the others
+  // away.
+  it("hides a job's points when its key is clicked, and brings them back", () => {
+    renderByRole(["Nurse", "IT Manager"])
+    expect(marks("var(--role")).toHaveLength(2)
+    const key = screen.getByRole("button", { name: "Nurse" })
+    expect(key.getAttribute("aria-pressed")).toBe("true")
+    fireEvent.click(key)
+    expect(marks("var(--role")).toEqual([
+      { shape: "circle", fill: "var(--role-2)" },
+    ])
+    expect(
+      screen.getByRole("button", { name: "Nurse" }).getAttribute("aria-pressed")
+    ).toBe("false")
+    fireEvent.click(screen.getByRole("button", { name: "Nurse" }))
+    expect(marks("var(--role")).toHaveLength(2)
+  })
+
+  // The chip stays in the legend when its series is off, or the only way
+  // back would be remembering what used to be there.
+  it("keeps a hidden job in the legend", () => {
+    renderByRole(["Nurse", "IT Manager"])
+    fireEvent.click(screen.getByRole("button", { name: "Nurse" }))
+    expect(screen.getByRole("button", { name: "Nurse" })).toBeDefined()
+  })
+
+  it("refuses to switch off the last job showing", () => {
+    renderByRole(["Nurse", "IT Manager"])
+    fireEvent.click(screen.getByRole("button", { name: "Nurse" }))
+    const last = screen.getByRole("button", { name: "IT Manager" })
+    expect(last.hasAttribute("disabled")).toBe(true)
+    fireEvent.click(last)
+    expect(marks("var(--role")).toHaveLength(1)
+  })
+
+  // A key can name a job the plot could not place (nobody in it has a birth
+  // date). It must not count as the one series holding the chart up, or the
+  // last job with points would be locked on for no visible reason.
+  it("lets the last drawn job be the one that stays, not a key with no points", () => {
+    renderScatter({
+      rows: [
+        row({ displayName: "Alex Doe", gender: "Kvinna", roleTitle: "Nurse" }),
+        row({
+          displayName: "Bo Berg",
+          gender: "Man",
+          roleTitle: "IT Manager",
+          birthDate: undefined,
+        }),
+      ],
+      groupLabelFor: byRoleTitle,
+      roleOrder: ["Nurse", "IT Manager"],
+    })
+    fireEvent.click(screen.getByRole("tab", { name: m.colorRole }))
+    // Nothing of IT Manager's is on the plot, so its key is free to toggle
+    // and Nurse's is the one that cannot go.
+    expect(
+      screen
+        .getByRole("button", { name: "IT Manager" })
+        .hasAttribute("disabled")
+    ).toBe(false)
+    expect(
+      screen.getByRole("button", { name: "Nurse" }).hasAttribute("disabled")
+    ).toBe(true)
+  })
+
+  // One chip stands for every job past the sixth, so switching it off has to
+  // take the whole bucket with it.
+  it("hides the whole neutral bucket from its one chip", () => {
+    const jobs = Array.from({ length: 8 }, (_, i) => `Job ${i + 1}`)
+    renderScatter({
+      rows: [
+        row({ displayName: "Alex Doe", gender: "Kvinna", roleTitle: "Job 1" }),
+        row({ displayName: "Bo Berg", gender: "Man", roleTitle: "Job 7" }),
+      ],
+      groupLabelFor: byRoleTitle,
+      roleOrder: jobs,
+    })
+    fireEvent.click(screen.getByRole("tab", { name: m.colorRole }))
+    expect(marks("var(--role")).toHaveLength(2)
+    fireEvent.click(screen.getByRole("button", { name: m.colorRoleOther }))
+    expect(marks("var(--role")).toEqual([
+      { shape: "circle", fill: "var(--role-1)" },
+    ])
+  })
+
+  // Nothing on the chart encodes gender in this mode, so naming the two
+  // series would offer a distinction the reader cannot make on the plot.
+  it("takes the gender key off the legend entirely", () => {
+    renderByRole(["Nurse", "IT Manager"])
+    expect(screen.queryByText(mGender.Kvinna)).toBeNull()
+    expect(screen.queryByText(mGender.Man)).toBeNull()
+    fireEvent.click(screen.getByRole("tab", { name: m.colorGender }))
+    expect(screen.getByText(mGender.Kvinna)).toBeDefined()
+    expect(screen.getByText(mGender.Man)).toBeDefined()
+  })
+})
+
+function renderTooltip(
+  point: ScatterPoint,
+  xMode: ScatterXMode = "age",
+  roleColor?: string
+) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <ScatterTooltipContent point={point} currency="SEK" xMode={xMode} />
+      <ScatterTooltipContent
+        point={point}
+        currency="SEK"
+        xMode={xMode}
+        {...(roleColor === undefined ? {} : { roleColor })}
+      />
     </NextIntlClientProvider>
   )
 }
@@ -434,6 +735,43 @@ describe("ScatterTooltipContent", () => {
     renderTooltip(point)
     expect(screen.getByText(m.group)).toBeDefined()
     expect(screen.getByText("Technician · Mid")).toBeDefined()
+  })
+
+  // The hover has to show the mark the reader is pointing at, on the line
+  // that mark actually names. In role mode nothing encodes gender, so the
+  // gender line loses its own mark rather than showing one that means the
+  // job.
+  it("moves its mark onto the job line when the plot is showing jobs", () => {
+    const { container } = renderTooltip(
+      {
+        x: 36,
+        y: 40000,
+        woman: true,
+        row: row({ gender: "Kvinna" }),
+        groupLabel: "Nurse|3",
+      },
+      "age",
+      "var(--role-3)"
+    )
+    const marks = [...container.querySelectorAll("svg :is(path, circle, rect)")]
+    expect(marks.map((mark) => mark.getAttribute("fill"))).toEqual([
+      "var(--role-3)",
+    ])
+    expect(marks[0]?.tagName.toLowerCase()).toBe("circle")
+  })
+
+  it("keeps the gender mark on the gender line when the plot shows gender", () => {
+    const { container } = renderTooltip({
+      x: 36,
+      y: 40000,
+      woman: true,
+      row: row({ gender: "Kvinna" }),
+      groupLabel: "Nurse|3",
+    })
+    const marks = [...container.querySelectorAll("svg :is(path, circle, rect)")]
+    expect(marks.map((mark) => mark.getAttribute("fill"))).toEqual([
+      "var(--gender-woman)",
+    ])
   })
 
   it("omits the group row when not provided (equalWork)", () => {

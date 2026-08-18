@@ -3,7 +3,9 @@
 import { ChartTooltipContent } from "@workspace/ui/components/chart"
 import { cn } from "@workspace/ui/lib/utils"
 import { CHART_TOOLTIP_TEXT, TOOLTIP_APPEAR } from "@/lib/chart-style"
-import type { ComponentProps, CSSProperties } from "react"
+import { ChartKeyRow, ChartLegend } from "./chart-legend"
+import { PointMark, PointShapeIcon } from "./point-mark"
+import type { ComponentProps, CSSProperties, ReactNode } from "react"
 import { useId } from "react"
 
 // The two series every gender chart draws.
@@ -12,7 +14,7 @@ export type GenderSeries = "women" | "men"
 // The one place the women/men encoding is defined. Every chart that splits
 // people by gender separates the two series REDUNDANTLY: by hue (amber and
 // blue, --gender-woman and --gender-man) and by mark (women solid, men a
-// diagonal hatch; women a triangle, men a circle).
+// diagonal hatch; women a triangle, men a square).
 //
 // Both channels, not one. Hue is read faster, which is why it is here at all.
 // The mark is what survives the channels hue does not: greyscale, print, and
@@ -89,7 +91,13 @@ export function genderMarkBorder(series: GenderSeries) {
 }
 
 // A point mark encodes gender by SHAPE as well as hue: a triangle is women,
-// a circle is men, everywhere in the app.
+// a square is men, everywhere in the app.
+//
+// Neither of them is a CIRCLE, and that is deliberate. The circle is the
+// app's ungendered point: a plot that encodes something else on the same
+// marks (the equivalent-work scatter's role mode) draws circles, and if one
+// gender owned that shape, its points would keep reading as that gender on a
+// chart where gender is not encoded at all.
 //
 // The shape is not decoration on top of the colour. Two overlapping marks
 // that differ only in fill cannot be counted, and a dot plot's whole job is
@@ -105,19 +113,11 @@ export function genderMarkBorder(series: GenderSeries) {
 //
 // The two shapes carry equal visual weight: recharts draws symbols through
 // d3-shape, where `size` is AREA in square pixels, so a triangle and a
-// circle at the same size cover the same amount of ink.
+// square at the same size cover the same amount of ink.
 //
-// A point mark's AREA, in square pixels, matching d3-shape's own convention
-// so a triangle and a circle at one size carry the same weight of ink. Every
-// scatter in the app draws at this one size; two of them had already drifted
-// to 64 and 78, which is a difference you cannot see side by side but which
-// makes the same person a different size on two surfaces.
-//
-// Sized for a plot that overlaps: bigger marks read more easily on their own
-// and hide their neighbours in a cluster, and these charts exist to show
-// where INDIVIDUALS sit. Pointing at one is solved by the hit area below
-// rather than by ink.
-export const GENDER_POINT_SIZE = 90
+// Every scatter in the app draws at ONE size (POINT_MARK_SIZE); two of them
+// had already drifted to 64 and 78, which is a difference you cannot see side
+// by side but which makes the same person a different size on two surfaces.
 
 // Radius of each mark's invisible pointer target: 24px across, the minimum
 // WCAG 2.2 asks of a pointer target, against the ~11px the visible mark
@@ -145,47 +145,34 @@ export function GenderPointHitArea({ cx, cy }: { cx: number; cy: number }) {
   )
 }
 
-// One point mark, drawn at (cx, cy) in SVG. Every scatter draws through this,
-// whether recharts places the symbol or the chart places its own (to add a
-// selection ring, say), so no two of them can drift into different shapes,
-// sizes or hit areas for the same series.
+// One point mark, drawn at (cx, cy) in SVG. Every gender scatter draws
+// through this, whether recharts places the symbol or the chart places its
+// own (to add a selection ring, say), so no two of them can drift into
+// different shapes or sizes for the same series.
 export function GenderPointMark({
   cx,
   cy,
   series,
-  size = GENDER_POINT_SIZE,
+  size,
 }: {
   cx: number
   cy: number
   series: GenderSeries
+  // Left unset, PointMark takes the size its canvas calls for.
   size?: number
 }) {
-  const stroke = { stroke: "var(--card)", strokeWidth: 1 }
-  if (series === "men") {
-    return (
-      <circle
-        cx={cx}
-        cy={cy}
-        r={Math.sqrt(size / Math.PI)}
-        fill="var(--gender-man)"
-        {...stroke}
-      />
-    )
-  }
-  // Equilateral triangle of the same area: side = sqrt(4 * area / sqrt(3)),
-  // centred on its centroid so it sits on the same baseline as the circle.
-  const side = Math.sqrt((4 * size) / Math.sqrt(3))
-  const height = (side * Math.sqrt(3)) / 2
   return (
-    <path
-      d={`M ${cx} ${cy - (height * 2) / 3} L ${cx + side / 2} ${cy + height / 3} L ${cx - side / 2} ${cy + height / 3} Z`}
-      fill="var(--gender-woman)"
-      {...stroke}
+    <PointMark
+      cx={cx}
+      cy={cy}
+      shape={series === "men" ? "square" : "triangle"}
+      fill={series === "men" ? "var(--gender-man)" : "var(--gender-woman)"}
+      {...(size === undefined ? {} : { size })}
     />
   )
 }
 
-// A POINT mark's key: the same triangle/circle the scatter draws, so the
+// A POINT mark's key: the same triangle/square the scatter draws, so the
 // legend and the hover show the object the chart shows. An area chart's key
 // stays the hatched square (genderKeyStyle); using that one beside a scatter
 // was the bug this replaces, where the legend showed a hatched square for a
@@ -195,15 +182,10 @@ export function GenderPointMark({
 // and neither series reads as the smaller one.
 export function GenderDotIcon({ series }: { series: GenderSeries }) {
   return (
-    <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-      {series === "women" ? (
-        // An equilateral triangle inscribed so its area matches the circle
-        // below it, mirroring how d3-shape normalises symbol size to area.
-        <path d="M6 1.2 L11.2 10.4 L0.8 10.4 Z" fill="var(--gender-woman)" />
-      ) : (
-        <circle cx="6" cy="6" r="4.6" fill="var(--gender-man)" />
-      )}
-    </svg>
+    <PointShapeIcon
+      shape={series === "women" ? "triangle" : "square"}
+      fill={series === "women" ? "var(--gender-woman)" : "var(--gender-man)"}
+    />
   )
 }
 
@@ -317,14 +299,12 @@ export function GenderTooltipContent({
 // The key for every gender chart: one row per series, a swatch matching the
 // mark the chart draws, a muted label, and an optional right-aligned value.
 //
-// This replaces recharts' own ChartLegend on these charts rather than styling
-// it. recharts renders a small horizontal strip inside the plot area, which
-// reads as chart furniture; this list is the same anatomy as the whole-survey
-// donut's stat rows, so every gender chart carries one legend, at one size, in
-// one place. Women first throughout, matching the gap table's column order.
+// The row itself comes from ChartKeyRow, which every chart key in the app
+// shares, so a gender key and a role key can never drift into different
+// pitches. What lives here is only which MARK a gender series wears.
 //
-// The swatch is square, not round: an 8px circle cannot hold a legible stripe.
-// Both series share the shape so neither reads as the odd one out.
+// The area swatch is square, not round: an 8px circle cannot hold a legible
+// stripe. Both series share the shape so neither reads as the odd one out.
 export function GenderKeyRow({
   series,
   label,
@@ -336,29 +316,34 @@ export function GenderKeyRow({
   value?: string
   // Which family of mark this legend belongs to. "area" is the hatched
   // square (bars, bands, arcs); "point" is the scatter's own triangle or
-  // circle. A legend must show the object its chart shows.
+  // square. A legend must show the object its chart shows.
   mark?: "area" | "point"
 }) {
   return (
-    <div className="flex w-full items-center gap-2">
-      {mark === "point" ? (
-        <span className="size-2.5 shrink-0">
-          <GenderDotIcon series={series} />
-        </span>
-      ) : (
-        <span
-          aria-hidden
-          className="size-2.5 shrink-0 rounded-[2px]"
-          style={genderKeyStyle(series)}
-        />
-      )}
-      <span className="text-muted-foreground">{label}</span>
-      {value !== undefined && (
-        <span className="ml-auto font-medium text-foreground tabular-nums">
-          {value}
-        </span>
-      )}
-    </div>
+    <ChartKeyRow
+      layout="column"
+      item={{
+        id: series,
+        label,
+        ...(value === undefined ? {} : { value }),
+        mark: genderKeyMark(series, mark),
+      }}
+    />
+  )
+}
+
+// The swatch a gender series wears, by mark family.
+function genderKeyMark(
+  series: GenderSeries,
+  mark: "area" | "point"
+): ReactNode {
+  if (mark === "point") return <GenderDotIcon series={series} />
+  return (
+    <span
+      aria-hidden
+      className="block size-2.5 rounded-[2px]"
+      style={genderKeyStyle(series)}
+    />
   )
 }
 
@@ -366,25 +351,37 @@ export function GenderLegend({
   items,
   className,
   mark = "area",
+  layout = "column",
 }: {
-  items: { series: GenderSeries; label: string; value?: string }[]
+  items: {
+    series: GenderSeries
+    label: string
+    value?: string
+    hidden?: boolean
+    onToggle?: () => void
+    toggleDisabled?: boolean
+  }[]
   className?: string
   mark?: "area" | "point"
+  // "row" centres the key under its plot; see ChartLegend.
+  layout?: "column" | "row"
 }) {
-  // gap-1.5 and text-sm mirror ChartTooltipContent's own list, so the row pitch
-  // matches the hover's.
   return (
-    <div className={cn("grid gap-1.5 text-sm", className)}>
-      {items.map((item) => (
-        <GenderKeyRow
-          key={item.series}
-          series={item.series}
-          label={item.label}
-          value={item.value}
-          mark={mark}
-        />
-      ))}
-    </div>
+    <ChartLegend
+      layout={layout}
+      {...(className === undefined ? {} : { className })}
+      items={items.map((item) => ({
+        id: item.series,
+        label: item.label,
+        ...(item.value === undefined ? {} : { value: item.value }),
+        ...(item.hidden === undefined ? {} : { hidden: item.hidden }),
+        ...(item.onToggle === undefined ? {} : { onToggle: item.onToggle }),
+        ...(item.toggleDisabled === undefined
+          ? {}
+          : { toggleDisabled: item.toggleDisabled }),
+        mark: genderKeyMark(item.series, mark),
+      }))}
+    />
   )
 }
 

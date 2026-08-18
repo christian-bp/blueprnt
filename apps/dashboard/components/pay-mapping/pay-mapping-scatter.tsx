@@ -1,12 +1,7 @@
 "use client"
 
 import { ageAt } from "@workspace/core"
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-} from "@workspace/ui/components/chart"
-import { Skeleton } from "@workspace/ui/components/skeleton"
+import { type ChartConfig, ChartTooltip } from "@workspace/ui/components/chart"
 import { cn } from "@workspace/ui/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 import { useTranslations } from "next-intl"
@@ -20,6 +15,15 @@ import {
   YAxis,
 } from "recharts"
 import {
+  OTHER_ROLE_ID,
+  ROLE_COLOR_SLOTS,
+  ROLE_OTHER_COLOR,
+  roleColorAt,
+  roleColorsFor,
+} from "@/lib/role-palette"
+import { PointMark, PointShapeIcon } from "@/components/point-mark"
+import { RoleLegend } from "@/components/role-mark"
+import {
   GenderDotIcon,
   GenderLegend,
   GenderMenIcon,
@@ -28,12 +32,12 @@ import {
   type GenderSeries,
 } from "@/components/gender-mark"
 import { WidgetCard } from "@/components/widget-card"
+import { ChartCanvas, ChartCanvasSkeleton } from "@/components/chart-canvas"
 import { useMoney } from "@/hooks/use-money"
 import {
-  CHART_AXIS_FONT_SIZE,
   CHART_TOOLTIP_MOTION,
   CHART_TOOLTIP_TEXT,
-  MONEY_AXIS_WIDTH,
+  moneyAxisWidth,
   TOOLTIP_APPEAR,
 } from "@/lib/chart-style"
 import {
@@ -41,6 +45,10 @@ import {
   fteTotalMonthly,
   type PayMappingSnapshotRow,
 } from "./pay-mapping-gap-types"
+
+// The plot's height inside its card. Taller than the strip tiles: this chart
+// is the surface where individual positions are read, not a glance.
+const COLLAPSED_HEIGHT = "h-64"
 
 // Each gender's average pay, drawn as a line across the plot. Null where that
 // gender is absent or the group is masked, exactly as the engine reports it.
@@ -102,6 +110,10 @@ type YBound = "auto" | ((value: number) => number)
 // The scatter's X axis: age (from birthDate) or tenure (from
 // employmentStartDate), both whole years at the run's frozen referenceDate.
 export type ScatterXMode = "age" | "tenure"
+
+// What the hue carries. Shape carries gender in both, so switching frees the
+// hue channel rather than taking an encoding away.
+export type ScatterColorMode = "gender" | "role"
 
 // Which pay measure the Y axis draws. Total compensation by default; a caller
 // whose surrounding figures are stated in base salary passes "base", so the
@@ -171,10 +183,16 @@ export function ScatterTooltipContent({
   point,
   currency,
   xMode,
+  roleColor,
 }: {
   point: ScatterPoint
   currency: string
   xMode: ScatterXMode
+  // The hue the hovered point is drawn in when the plot encodes jobs rather
+  // than gender. Given, the hover shows that mark beside the job it names,
+  // and the gender line drops its own: a mark that means the job cannot sit
+  // next to the word "gender".
+  roleColor?: string
 }) {
   const t = useTranslations("dashboard.payMapping.scatter")
   const tDetail = useTranslations("dashboard.payMapping.detail")
@@ -208,11 +226,15 @@ export function ScatterTooltipContent({
         </p>
       )}
       <p className="flex items-center gap-1.5 text-muted-foreground">
-        {/* The hover shows the same mark the plot draws: a point chart's
-            key is its triangle or circle, never the area charts' square. */}
-        <span aria-hidden="true" className="size-2.5 shrink-0">
-          <GenderDotIcon series={genderSeries} />
-        </span>
+        {/* The hover shows the same mark the plot draws: a point chart's key
+            is its triangle or circle, never the area charts' square. In role
+            mode the plot draws no gender mark at all, so this line is left as
+            plain text rather than showing one the chart is not using. */}
+        {roleColor === undefined && (
+          <span aria-hidden="true" className="size-2.5 shrink-0">
+            <GenderDotIcon series={genderSeries} />
+          </span>
+        )}
         {tGender(row.gender)}
       </p>
 
@@ -242,7 +264,16 @@ export function ScatterTooltipContent({
         {point.groupLabel !== undefined && (
           <div className="flex items-center justify-between gap-6">
             <dt className="text-muted-foreground">{t("group")}</dt>
-            <dd className="truncate">{point.groupLabel}</dd>
+            <dd className="flex min-w-0 items-center gap-1.5">
+              {/* The mark belongs on the line it names: in role mode this row
+                  IS what the shape and the hue encode. */}
+              {roleColor !== undefined && (
+                <span aria-hidden="true" className="size-2.5 shrink-0">
+                  <PointShapeIcon shape="circle" fill={roleColor} />
+                </span>
+              )}
+              <span className="truncate">{point.groupLabel}</span>
+            </dd>
           </div>
         )}
       </dl>
@@ -266,6 +297,7 @@ export function PayMappingScatter({
   title,
   yMetric = "total",
   means,
+  roleOrder,
 }: {
   rows: PayMappingSnapshotRow[] | undefined
   currency: string
@@ -284,12 +316,81 @@ export function PayMappingScatter({
   // group and its comparators at once, so one pair of lines would average
   // across jobs that are deliberately being kept apart.
   means?: ScatterMeans
+  // The jobs on the plot, in the order the surface already shows them (the
+  // comparator table's own order: the group first, then its comparators).
+  // Its presence is what offers the role mode at all, and the order is what
+  // fixes each job's hue: filtering the table must never repaint the jobs
+  // that remain. Only the first six get a hue; the rest share the neutral.
+  roleOrder?: readonly string[]
 }) {
   const t = useTranslations("dashboard.payMapping.scatter")
   const tHelp = useTranslations("dashboard.help")
   const tGender = useTranslations("dashboard.people.gender")
   const money = useMoney()
   const [xMode, setXMode] = useState<ScatterXMode>("age")
+  // Which encoding the hue carries. Shape carries gender in BOTH modes, so
+  // switching never takes gender off the chart, it only frees the hue channel
+  // to answer "which job is this point" instead of repeating what the shape
+  // already says.
+  const [colorMode, setColorMode] = useState<ScatterColorMode>("gender")
+  // The keys the reader has clicked off. One set per mode, because the two
+  // modes key on different things and a filter should still be there when
+  // you come back to the mode you set it in.
+  const [hiddenGenders, setHiddenGenders] = useState<ReadonlySet<GenderSeries>>(
+    new Set()
+  )
+  const [hiddenRoles, setHiddenRoles] = useState<ReadonlySet<string>>(new Set())
+  const toggleIn = <T,>(
+    set: ReadonlySet<T>,
+    value: T,
+    apply: (next: ReadonlySet<T>) => void
+  ) => {
+    const next = new Set(set)
+    if (!next.delete(value)) next.add(value)
+    apply(next)
+  }
+  const roleColors = roleColorsFor(roleOrder ?? [])
+  // Which key a job belongs to: its own past the first six, the shared
+  // neutral after that. Hiding "other roles" hides the whole bucket, which is
+  // what the one chip standing for them promises.
+  const roleKeyIds = new Map(
+    (roleOrder ?? []).map((label, index) => [
+      label,
+      index < ROLE_COLOR_SLOTS ? label : OTHER_ROLE_ID,
+    ])
+  )
+  const roleMode = colorMode === "role" && (roleOrder?.length ?? 0) > 0
+  // The legend's chips: the named jobs, plus ONE for the neutral when the
+  // slots run out. Listing every leftover job under the same mark would
+  // promise a hue that cannot tell them apart.
+  const roleKeys = [
+    ...(roleOrder ?? []).slice(0, ROLE_COLOR_SLOTS).map((label, index) => ({
+      id: label,
+      label,
+      color: roleColorAt(index),
+    })),
+    ...((roleOrder?.length ?? 0) > ROLE_COLOR_SLOTS
+      ? [
+          {
+            id: OTHER_ROLE_ID,
+            label: t("colorRoleOther"),
+            color: ROLE_OTHER_COLOR,
+          },
+        ]
+      : []),
+  ]
+  // Which key a point belongs to in each mode.
+  const roleKeyOf = (point: ScatterPoint) =>
+    roleKeyIds.get(point.groupLabel ?? "") ?? OTHER_ROLE_ID
+  // Whether a point is currently filtered out by the key.
+  const pointHidden = (point: ScatterPoint) =>
+    roleMode
+      ? hiddenRoles.has(roleKeyOf(point))
+      : hiddenGenders.has(point.woman ? "women" : "men")
+  // The hue a point wears in role mode: its job's, or the neutral for a job
+  // past the last slot.
+  const roleColorFor = (groupLabel: string | undefined): string =>
+    roleColors.get(groupLabel ?? "") ?? ROLE_OTHER_COLOR
 
   // One point's pointer target. Same guard as the mark below: recharts calls
   // a custom shape before it has a position for it.
@@ -318,9 +419,25 @@ export function PayMappingScatter({
         highlightGroupLabel !== undefined &&
         highlightGroupLabel !== null &&
         point.groupLabel !== highlightGroupLabel
+      // In role mode every point is the same circle and the hue answers
+      // "which job". Gender is not encoded there at all, and its key comes
+      // off the legend with it. Shape is left to the gender mode, where two
+      // categories have to survive greyscale and print; six jobs is more than
+      // a silhouette a few pixels across can carry, and what keeps identity
+      // off colour alone here is the legend, the hover, and being able to
+      // click every other job away.
       return (
         <g opacity={dimmed ? 0.25 : 1}>
-          <GenderPointMark cx={props.cx} cy={props.cy} series={series} />
+          {roleMode ? (
+            <PointMark
+              cx={props.cx}
+              cy={props.cy}
+              shape="circle"
+              fill={roleColorFor(point.groupLabel)}
+            />
+          ) : (
+            <GenderPointMark cx={props.cx} cy={props.cy} series={series} />
+          )}
         </g>
       )
     }
@@ -337,21 +454,37 @@ export function PayMappingScatter({
         : `${tHelp("payGapScatterBody")} ${tHelp("payGapScatterMeansBody")}`,
   }
   const toggle = (
-    <Tabs
-      value={xMode}
-      onValueChange={(value) => setXMode(value as ScatterXMode)}
-    >
-      <TabsList>
-        <TabsTrigger value="age">{t("xAge")}</TabsTrigger>
-        <TabsTrigger value="tenure">{t("xTenure")}</TabsTrigger>
-      </TabsList>
-    </Tabs>
+    <div className="flex flex-wrap items-center gap-2">
+      {/* Offered only where a role order exists to colour by (the
+          equivalent-work comparison). Elsewhere the plot is one job, and a
+          control that could only ever say "one colour" is noise. */}
+      {roleOrder !== undefined && roleOrder.length > 0 && (
+        <Tabs
+          value={colorMode}
+          onValueChange={(value) => setColorMode(value as ScatterColorMode)}
+        >
+          <TabsList>
+            <TabsTrigger value="gender">{t("colorGender")}</TabsTrigger>
+            <TabsTrigger value="role">{t("colorRole")}</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      )}
+      <Tabs
+        value={xMode}
+        onValueChange={(value) => setXMode(value as ScatterXMode)}
+      >
+        <TabsList>
+          <TabsTrigger value="age">{t("xAge")}</TabsTrigger>
+          <TabsTrigger value="tenure">{t("xTenure")}</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    </div>
   )
 
   if (rows === undefined) {
     return (
       <WidgetCard title={title} help={help} headerExtra={toggle} expandable>
-        <Skeleton className="h-64 w-full" />
+        <ChartCanvasSkeleton collapsed={COLLAPSED_HEIGHT} />
       </WidgetCard>
     )
   }
@@ -374,8 +507,35 @@ export function PayMappingScatter({
     )
   }
 
-  const women = points.filter((point) => point.woman)
-  const men = points.filter((point) => !point.woman)
+  // Sized to the money labels this plot will actually draw, from every value
+  // the axis can reach: the points it plots plus the averages it draws lines
+  // for, which the domain widens to include.
+  const axisWidth = moneyAxisWidth(
+    [
+      ...points.map((point) => point.y),
+      ...(means === undefined ? [] : [means.women, means.men]),
+    ].filter((value): value is number => value !== null),
+    (value) => money(value, currency)
+  )
+
+  const shown = points.filter((point) => !pointHidden(point))
+  const women = shown.filter((point) => point.woman)
+  const men = shown.filter((point) => !point.woman)
+
+  // The last key with anything ON the plot cannot be switched off: an empty
+  // plot has nothing left on it to click back. Counted over the keys that
+  // actually draw something, so a key standing for people the plot could not
+  // place (no birth date) never counts as the one holding the chart up.
+  const drawnRoleKeys = new Set(points.map(roleKeyOf))
+  const visibleRoleKeys = roleKeys.filter(
+    (key) => drawnRoleKeys.has(key.id) && !hiddenRoles.has(key.id)
+  ).length
+  const drawnGenders = new Set(
+    points.map((point) => (point.woman ? "women" : "men"))
+  )
+  const visibleGenders = (["women", "men"] as const).filter(
+    (series) => drawnGenders.has(series) && !hiddenGenders.has(series)
+  ).length
 
   // A hatch cannot survive on a scatter dot, so the men series is the same
   // ink drawn as an outline instead; the legend icon keeps the
@@ -392,7 +552,7 @@ export function PayMappingScatter({
   return (
     <WidgetCard title={title} help={help} headerExtra={toggle} expandable>
       <div className="space-y-1">
-        <ChartContainer config={config} className="aspect-auto h-64 w-full">
+        <ChartCanvas config={config} collapsed={COLLAPSED_HEIGHT}>
           <ScatterChart
             accessibilityLayer
             margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
@@ -414,7 +574,7 @@ export function PayMappingScatter({
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              width={MONEY_AXIS_WIDTH}
+              width={axisWidth}
               tickFormatter={(value: number) => money(value, currency)}
             />
             <ChartTooltip
@@ -429,6 +589,9 @@ export function PayMappingScatter({
                     point={point}
                     currency={currency}
                     xMode={xMode}
+                    {...(roleMode
+                      ? { roleColor: roleColorFor(point.groupLabel) }
+                      : {})}
                   />
                 )
               }}
@@ -449,7 +612,10 @@ export function PayMappingScatter({
                 percentage on screen twice. */}
             {means !== undefined && (
               <>
-                {means.women !== null && (
+                {/* A hidden series takes its average with it: a dashed line
+                    for people who are not on the plot is a number with
+                    nothing to read it against. */}
+                {means.women !== null && !hiddenGenders.has("women") && (
                   <ReferenceLine
                     y={means.women}
                     stroke="var(--gender-woman)"
@@ -457,12 +623,11 @@ export function PayMappingScatter({
                     label={{
                       value: t("womenMean"),
                       position: MEAN_LABEL_POSITION.women,
-                      fontSize: CHART_AXIS_FONT_SIZE,
                       fill: "var(--muted-foreground)",
                     }}
                   />
                 )}
-                {means.men !== null && (
+                {means.men !== null && !hiddenGenders.has("men") && (
                   <ReferenceLine
                     y={means.men}
                     stroke="var(--gender-man)"
@@ -470,7 +635,6 @@ export function PayMappingScatter({
                     label={{
                       value: t("menMean"),
                       position: MEAN_LABEL_POSITION.men,
-                      fontSize: CHART_AXIS_FONT_SIZE,
                       fill: "var(--muted-foreground)",
                     }}
                   />
@@ -494,15 +658,39 @@ export function PayMappingScatter({
             <Scatter name="man" data={men} shape={markFor("men")} />
             <Scatter name="woman" data={women} shape={markFor("women")} />
           </ScatterChart>
-        </ChartContainer>
-        {/* Both series are named here, so gender is never mark-alone. */}
-        <GenderLegend
-          mark="point"
-          items={[
-            { series: "women", label: tGender("Kvinna") },
-            { series: "men", label: tGender("Man") },
-          ]}
-        />
+        </ChartCanvas>
+        {/* One key per mode, naming exactly what the plot is drawing. The two
+            never appear together: in role mode nothing on the chart encodes
+            gender, so a gender key there would name a distinction the reader
+            cannot make. The roles keep the order the table lists them in. */}
+        {roleMode ? (
+          <RoleLegend
+            items={roleKeys.map((key) => ({
+              ...key,
+              hidden: hiddenRoles.has(key.id),
+              onToggle: () => toggleIn(hiddenRoles, key.id, setHiddenRoles),
+              toggleDisabled:
+                drawnRoleKeys.has(key.id) &&
+                !hiddenRoles.has(key.id) &&
+                visibleRoleKeys === 1,
+            }))}
+          />
+        ) : (
+          <GenderLegend
+            mark="point"
+            layout="row"
+            items={(["women", "men"] as const).map((series) => ({
+              series,
+              label: tGender(series === "women" ? "Kvinna" : "Man"),
+              hidden: hiddenGenders.has(series),
+              onToggle: () => toggleIn(hiddenGenders, series, setHiddenGenders),
+              toggleDisabled:
+                drawnGenders.has(series) &&
+                !hiddenGenders.has(series) &&
+                visibleGenders === 1,
+            }))}
+          />
+        )}
         {omitted > 0 && (
           <p className="text-muted-foreground text-xs">
             {xMode === "age"

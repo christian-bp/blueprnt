@@ -78,6 +78,13 @@ export function WomenDominatedScatter({
       currency={currency}
       referenceDateMs={referenceDateMs}
       groupLabelFor={womenDominatedGroupLabelFor(group)}
+      // The same order the comparator table lists: the dominated group
+      // first, then its comparators as ranked there. Passing the table's
+      // order rather than sorting here is what keeps a hue tied to a job
+      // across both surfaces.
+      roleOrder={[group, ...group.comparisons].map((entry) =>
+        groupLabel(entry)
+      )}
       title={tScatter("titleEquivalentWork")}
     />
   )

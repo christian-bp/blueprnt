@@ -138,12 +138,15 @@ describe("GroupMemberTable", () => {
     const cells = [...container.querySelectorAll("tbody tr")].map(
       (row) => row.querySelectorAll("td")[1]
     )
-    // Women are triangles (a path), men circles: both point marks, neither a
-    // square swatch.
+    // Women are triangles (a path), men squares (a rect): both point marks,
+    // and neither is a circle, which is the app's ungendered point.
     expect(cells[0]?.querySelector("svg path")).not.toBeNull()
-    expect(cells[0]?.querySelector("svg circle")).toBeNull()
+    expect(cells[0]?.querySelector("svg rect")).toBeNull()
     const men = cells[cells.length - 1]
-    expect(men?.querySelector("svg circle")).not.toBeNull()
+    expect(men?.querySelector("svg rect")).not.toBeNull()
+    for (const cell of cells) {
+      expect(cell?.querySelector("svg circle")).toBeNull()
+    }
     // A CSS-painted swatch is what the area-chart key uses; nothing here may
     // carry one.
     for (const cell of cells) {

@@ -100,6 +100,43 @@
        an almost-white wash, and the same jump against a saturated fill reads
        as a heavy frame rather than a contour. */
     --gender-woman-edge: oklch(0.48 0.14 46);
+    /* The role palette: hue carries WHICH JOB a point belongs to, on the
+       surfaces where that is the question (the equivalent-work scatter's role
+       mode). Hue alone, every point the same circle: shape is left to the
+       gender mode, where two categories have to survive greyscale and print,
+       and gender is not encoded here at all, so a key naming it would name a
+       distinction the plot no longer draws.
+
+       These are Okabe-Ito (Wong 2011), the colour-universal-design set the
+       sciences standardised on, minus its black and its yellow: the yellow
+       measures 1.32:1 against white, which no point mark survives. What is
+       left is the canonical six, unaltered. Re-stepping them was tried and
+       made things worse: darkening the sky blue to reach 3:1 walks it toward
+       the reddish purple and takes all-pairs separation from 7.6 down to 6.8.
+
+       Measured against white with --pairs all, because a scatter shows all
+       six at once: CVD ΔE 7.6 (deutan, reddish purple against bluish green),
+       normal vision 15.6, every step inside the lightness band and over the
+       chroma floor. Two of the six sit under 3:1 (#56B4E9 at 2.31, #E69F00 at
+       2.25), which the method treats as a conditional relax requiring visible
+       labels or a table view. This surface has both, and stronger: the legend
+       names every job under the plot AND filters it, so any two jobs can be
+       isolated with one click, and the comparator table above IS the table
+       view of the same rows. That same relief is what carries the CVD figure,
+       which sits in the 6-8 floor band rather than over the 8 target.
+
+       Order is fixed and never cycled: slot 1 is the women-dominated group
+       itself, then its comparators as the table ranks them. A seventh job
+       folds into --role-other rather than repeating a hue, because a repeated
+       hue says "same job" and would be a lie. Changing any of this means
+       re-running the dataviz validator with --pairs all. */
+    --role-1: #0072b2;
+    --role-2: #56b4e9;
+    --role-3: #d55e00;
+    --role-4: #009e73;
+    --role-5: #e69f00;
+    --role-6: #cc79a7;
+    --role-other: oklch(0.55 0.02 260);
     --radius: 0.625rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
@@ -154,6 +191,10 @@
     --gender-woman: oklch(0.76 0.125 52);
     --gender-man: oklch(0.70 0.12 250);
     --gender-woman-edge: oklch(0.58 0.13 46);
+    /* The six role steps passed the validator against the dark surface too,
+       so they are not re-stepped here. Only the neutral has to lift off the
+       darker card. */
+    --role-other: oklch(0.68 0.02 260);
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
     --sidebar-primary: var(--brand);
@@ -198,6 +239,13 @@
     --color-gender-man: var(--gender-man);
     --color-gender-woman: var(--gender-woman);
     --color-gender-woman-edge: var(--gender-woman-edge);
+    --color-role-1: var(--role-1);
+    --color-role-2: var(--role-2);
+    --color-role-3: var(--role-3);
+    --color-role-4: var(--role-4);
+    --color-role-5: var(--role-5);
+    --color-role-6: var(--role-6);
+    --color-role-other: var(--role-other);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
