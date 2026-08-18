@@ -1,0 +1,20 @@
+packages/backend/convex/evaluationModel/criteriaLibrary.content.en.ts
+  s_58dd112dc09435::t_4f6b5d7b19cb95 479
+  s_58dd112dc09435::t_c99edff1363548 602
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c037cdfa099d0b42d69ebcab119e876baec6ccba",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
