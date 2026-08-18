@@ -4,6 +4,7 @@ import {
   criteriaLibraryContentEn,
   type CriteriaLibraryContent,
 } from "./criteriaLibrary.content.en"
+import { criteriaLibraryContentSv } from "./criteriaLibrary.content.sv"
 
 // The controlled criteria library (the masterdokument's sections 7-10): a
 // menu of 21 defined criteria the method builder selects from. Structure
@@ -169,6 +170,7 @@ const CONTENT_BY_LOCALE: Partial<
   Record<CriteriaLibraryLocale, CriteriaLibraryContent>
 > = {
   en: criteriaLibraryContentEn,
+  sv: criteriaLibraryContentSv,
 }
 
 // The parity guard asserts against this: the en fallback below would
