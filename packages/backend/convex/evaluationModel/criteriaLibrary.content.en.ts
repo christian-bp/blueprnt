@@ -476,7 +476,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       assessmentQuestion:
         "What level of resource and capacity responsibility does this role normally and lastingly carry?",
       anchor1:
-        "The role follows up on or requests resources within a clearly bounded, pre-set budget or capacity limit.",
+        "The role independently prioritizes the use of a small, clearly bounded set of resources or capacity within its own area, where its choices have limited and easily corrected effect.",
       anchor3:
         "The role independently prioritizes and allocates established resources or capacity so its own area keeps functioning.",
       anchor5:
@@ -599,7 +599,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       assessmentQuestion:
         "What level of irregularity, mobility or location-boundedness does this role normally and lastingly carry?",
       anchor1:
-        "The role occasionally works irregular hours or travels within a clearly bounded, infrequent pattern.",
+        "The role carries a recurring but limited requirement for irregular hours, travel or location-bound work, such as a regular though infrequent scheduled pattern that is a lasting part of the role.",
       anchor3:
         "The role carries an established, recurring pattern of irregular hours, travel or location-bound work as a normal and stable part of the role.",
       anchor5:
