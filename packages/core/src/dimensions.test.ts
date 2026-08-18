@@ -3,6 +3,7 @@ import {
   assertValidRatingValue,
   DIMENSION_KEYS,
   DIMENSION_MAX_ACTIVE,
+  type DimensionKey,
   dimensionWeightShares,
   isDimensionKey,
   MODEL_MAX_CRITERIA,
@@ -82,5 +83,17 @@ describe("dimensionWeightShares", () => {
       responsibility: 0,
       workingConditions: 0,
     })
+  })
+
+  it("throws on an invalid dimension key smuggled via a cast", () => {
+    expect(() =>
+      dimensionWeightShares([
+        {
+          criterionId: "x",
+          dimensionKey: "bogus" as DimensionKey,
+          weightPoints: 3,
+        },
+      ])
+    ).toThrow()
   })
 })

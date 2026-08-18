@@ -1,13 +1,22 @@
-import type { WeightPoints } from "./weighting"
 import {
   DIMENSION_KEYS,
   DIMENSION_MAX_ACTIVE,
   DIMENSION_WEIGHT_WARNING_SHARE,
   type DimensionKey,
   dimensionWeightShares,
+  isDimensionKey,
   MODEL_MAX_CRITERIA,
   MODEL_MIN_CRITERIA,
 } from "./dimensions"
+import { assertUniqueCriteria } from "./scoring"
+import { budgetDelta, isWeightPoints, type WeightPoints } from "./weighting"
+import {
+  LEVEL_COUNT,
+  type LevelRule,
+  PROFILE_WEIGHT_FLOOR,
+  ZONE_KEYS,
+  type ZoneProfileRule,
+} from "./zones"
 
 // The pre-approval checklist and the weighting warnings as one pure rule
 // set. Both the approval mutation (blockers refuse) and the builder UI (live
@@ -21,6 +30,9 @@ export type MethodCheckKey =
   | "dimensionCaps"
   | "anchorsComplete"
   | "documentationComplete"
+  | "weightBudget"
+  | "levelRulesValid"
+  | "zoneProfileMonotonic"
   | "dimensionWeightBalance"
   | "peopleLeadershipWeight"
   | "overlapPairs"
@@ -33,6 +45,9 @@ export interface MethodCheckCriterion {
   // Kriterieurvalsprotokoll documented and approved.
   documented: boolean
   hasWeightMotivation: boolean
+  // The org's overlapNotes protokoll field, projected to a boolean: has this
+  // criterion's overlap against its library pairs been reviewed and noted.
+  hasOverlapNotes: boolean
   libraryKey?: string
 }
 
@@ -43,6 +58,8 @@ export interface MethodCheckInput {
     hasMotivation: boolean
   } | null
   overlapPairs: readonly (readonly [string, string])[]
+  levelRules: LevelRule[]
+  zoneProfileRules: ZoneProfileRule[]
 }
 
 export interface MethodCheck {
@@ -55,10 +72,54 @@ export interface MethodCheck {
   count?: number
 }
 
-const PEOPLE_LEADERSHIP_KEY = "people-leadership"
-const HIGH_WEIGHT_FLOOR = 4
+export const PEOPLE_LEADERSHIP_LIBRARY_KEY = "people-leadership"
+
+// Twelve entries, levels exactly 1-12 with no duplicates, minScore strictly
+// decreasing as level ascends (level 1 highest), level 12 flooring at 0, and
+// the top entry at or below 100.
+function levelRulesAreValid(levelRules: readonly LevelRule[]): boolean {
+  if (levelRules.length !== LEVEL_COUNT) return false
+  const sorted = [...levelRules].sort((a, b) => a.level - b.level)
+  let previousMinScore: number | undefined
+  for (const [index, rule] of sorted.entries()) {
+    if (rule.level !== index + 1) return false
+    if (previousMinScore !== undefined && rule.minScore >= previousMinScore) {
+      return false
+    }
+    previousMinScore = rule.minScore
+  }
+  const first = sorted[0]
+  const last = sorted[sorted.length - 1]
+  if (first === undefined || last === undefined) return false
+  return last.minScore === 0 && first.minScore <= 100
+}
+
+// Walking configured zones A -> D, a zone's minStep must never exceed an
+// earlier (higher) zone's: a higher zone is never gated more leniently than
+// a lower one. Zones without a rule are skipped; an empty list is ok.
+function zoneProfileIsMonotonic(rules: readonly ZoneProfileRule[]): boolean {
+  const minStepByZone = new Map(rules.map((rule) => [rule.zone, rule.minStep]))
+  let previous: number | undefined
+  for (const zone of ZONE_KEYS) {
+    const minStep = minStepByZone.get(zone)
+    if (minStep === undefined) continue
+    if (previous !== undefined && minStep > previous) return false
+    previous = minStep
+  }
+  return true
+}
 
 export function validateMethod(input: MethodCheckInput): MethodCheck[] {
+  // Boundary guards: a cast at the storage edge must never reach the
+  // computations below as a live invariant violation instead of a thrown
+  // error.
+  for (const criterion of input.criteria) {
+    if (!isDimensionKey(criterion.dimensionKey)) {
+      throw new Error(`invalid dimension key: ${criterion.dimensionKey}`)
+    }
+  }
+  assertUniqueCriteria(input.criteria)
+
   const byDimension = new Map<DimensionKey, MethodCheckCriterion[]>()
   for (const key of DIMENSION_KEYS) byDimension.set(key, [])
   for (const criterion of input.criteria) {
@@ -94,21 +155,33 @@ export function validateMethod(input: MethodCheckInput): MethodCheck[] {
     .filter((criterion) => !criterion.documented)
     .map((criterion) => criterion.criterionId)
 
+  // Guards non-UI write paths: every weight an integer 1-5, and the sum
+  // exactly the criteria-count x 3 budget (ADR-0004).
+  const weightsValid = input.criteria.every((criterion) =>
+    isWeightPoints(criterion.weightPoints)
+  )
+  const budgetExact =
+    weightsValid &&
+    budgetDelta(input.criteria.map((criterion) => criterion.weightPoints)) === 0
+
+  const levelRulesOk = levelRulesAreValid(input.levelRules)
+  const zoneProfileOk = zoneProfileIsMonotonic(input.zoneProfileRules)
+
   const shares = dimensionWeightShares(input.criteria)
   const unbalanced = DIMENSION_KEYS.filter(
     (key) =>
       shares[key] > DIMENSION_WEIGHT_WARNING_SHARE &&
-      (byDimension.get(key) ?? []).some(
-        (criterion) => !criterion.hasWeightMotivation
+      !(byDimension.get(key) ?? []).some(
+        (criterion) => criterion.hasWeightMotivation
       )
   )
 
   const peopleLeadership = input.criteria.find(
-    (criterion) => criterion.libraryKey === PEOPLE_LEADERSHIP_KEY
+    (criterion) => criterion.libraryKey === PEOPLE_LEADERSHIP_LIBRARY_KEY
   )
   const peopleLeadershipOk =
     peopleLeadership === undefined ||
-    peopleLeadership.weightPoints < HIGH_WEIGHT_FLOOR ||
+    peopleLeadership.weightPoints < PROFILE_WEIGHT_FLOOR ||
     peopleLeadership.hasWeightMotivation
 
   const selectedLibraryKeys = new Set(
@@ -116,10 +189,22 @@ export function validateMethod(input: MethodCheckInput): MethodCheck[] {
       .map((criterion) => criterion.libraryKey)
       .filter((key): key is string => key !== undefined)
   )
-  const matchedPairs = input.overlapPairs
+  // A matched pair reads acknowledged once EITHER member carries the org's
+  // overlapNotes: §17.2 item 7 requires the check to have been performed,
+  // not that the overlap was resolved away.
+  const hasOverlapNotesFor = (libraryKey: string): boolean =>
+    input.criteria.some(
+      (criterion) =>
+        criterion.libraryKey === libraryKey && criterion.hasOverlapNotes
+    )
+  const unacknowledgedPairs = input.overlapPairs
     .filter(
       ([left, right]) =>
         selectedLibraryKeys.has(left) && selectedLibraryKeys.has(right)
+    )
+    .filter(
+      ([left, right]) =>
+        !(hasOverlapNotesFor(left) || hasOverlapNotesFor(right))
     )
     .map(([left, right]): [string, string] => [left, right])
 
@@ -161,6 +246,22 @@ export function validateMethod(input: MethodCheckInput): MethodCheck[] {
       criterionIds: undocumented.length > 0 ? undocumented : undefined,
     },
     {
+      key: "weightBudget",
+      level: "blocker",
+      ok: budgetExact,
+      count: total,
+    },
+    {
+      key: "levelRulesValid",
+      level: "blocker",
+      ok: levelRulesOk,
+    },
+    {
+      key: "zoneProfileMonotonic",
+      level: "blocker",
+      ok: zoneProfileOk,
+    },
+    {
       key: "dimensionWeightBalance",
       level: "warning",
       ok: unbalanced.length === 0,
@@ -174,22 +275,14 @@ export function validateMethod(input: MethodCheckInput): MethodCheck[] {
     {
       key: "overlapPairs",
       level: "warning",
-      ok: matchedPairs.length === 0,
-      pairs: matchedPairs.length > 0 ? matchedPairs : undefined,
+      ok: unacknowledgedPairs.length === 0,
+      pairs: unacknowledgedPairs.length > 0 ? unacknowledgedPairs : undefined,
     },
   ]
 }
 
-const WARNING_KEYS: readonly MethodCheckKey[] = [
-  "dimensionWeightBalance",
-  "peopleLeadershipWeight",
-  "overlapPairs",
-]
-
 export function weightWarnings(input: MethodCheckInput): MethodCheck[] {
-  return validateMethod(input).filter((check) =>
-    WARNING_KEYS.includes(check.key)
-  )
+  return validateMethod(input).filter((check) => check.level === "warning")
 }
 
 export function methodBlockersPass(checks: MethodCheck[]): boolean {

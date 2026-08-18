@@ -57,6 +57,13 @@ export interface DimensionCriterionInput {
 export function dimensionWeightShares(
   criteria: DimensionCriterionInput[]
 ): Record<DimensionKey, number> {
+  // Guard before accumulating: a boundary cast (stored data read back as
+  // DimensionKey) must never silently siphon weight out of the totals below.
+  for (const criterion of criteria) {
+    if (!isDimensionKey(criterion.dimensionKey)) {
+      throw new Error(`invalid dimension key: ${criterion.dimensionKey}`)
+    }
+  }
   const totals: Record<DimensionKey, number> = {
     competence: 0,
     effort: 0,

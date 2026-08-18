@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import type { DimensionKey } from "./dimensions"
 import type { LevelRule, PlacementCriterion } from "./zones"
 import {
   DEFAULT_LEVEL_RULES,
@@ -6,6 +7,7 @@ import {
   LEVEL_COUNT,
   placeRole,
   profileCriteria,
+  ZONE_KEYS,
   ZONE_LEVEL_RANGES,
   zoneForLevel,
 } from "./zones"
@@ -55,13 +57,51 @@ describe("zone structure", () => {
   })
 })
 
+describe("zone level ranges", () => {
+  it("partitions 1..12 across the four zones with no gap or overlap", () => {
+    const covered = new Set<number>()
+    for (const zone of ZONE_KEYS) {
+      const { from, to } = ZONE_LEVEL_RANGES[zone]
+      for (let level = from; level <= to; level++) {
+        expect(covered.has(level)).toBe(false)
+        covered.add(level)
+      }
+    }
+    expect([...covered].sort((a, b) => a - b)).toEqual(
+      Array.from({ length: LEVEL_COUNT }, (_, i) => i + 1)
+    )
+  })
+
+  it("ends zone D at the last level", () => {
+    expect(ZONE_LEVEL_RANGES.D.to).toBe(LEVEL_COUNT)
+  })
+
+  it("agrees with zoneForLevel for every level 1-12", () => {
+    for (const zone of ZONE_KEYS) {
+      const { from, to } = ZONE_LEVEL_RANGES[zone]
+      for (let level = from; level <= to; level++) {
+        expect(zoneForLevel(level)).toBe(zone)
+      }
+    }
+  })
+})
+
 describe("profileCriteria", () => {
-  it("selects criteria with weight 4 or 5", () => {
-    const criteria = [
-      { criterionId: "a", weightPoints: 5 },
-      { criterionId: "b", weightPoints: 4 },
-      { criterionId: "c", weightPoints: 3 },
-      { criterionId: "d", weightPoints: 1 },
+  it("selects criteria with weight 4 or 5, excluding working conditions", () => {
+    const criteria: Array<{
+      criterionId: string
+      dimensionKey: DimensionKey
+      weightPoints: number
+    }> = [
+      { criterionId: "a", dimensionKey: "responsibility", weightPoints: 5 },
+      { criterionId: "b", dimensionKey: "effort", weightPoints: 4 },
+      { criterionId: "c", dimensionKey: "competence", weightPoints: 3 },
+      { criterionId: "d", dimensionKey: "competence", weightPoints: 1 },
+      {
+        criterionId: "e",
+        dimensionKey: "workingConditions",
+        weightPoints: 5,
+      },
     ]
     expect(profileCriteria(criteria).map((c) => c.criterionId)).toEqual([
       "a",
@@ -220,5 +260,43 @@ describe("placeRole", () => {
       profileLimited: false,
       profileFailures: [],
     })
+  })
+
+  it("never lets a working-conditions criterion gate a zone even at weight 5", () => {
+    const wcCriteria: PlacementCriterion[] = [
+      { criterionId: "wc", dimensionKey: "workingConditions", weightPoints: 5 },
+      { criterionId: "knowledge", dimensionKey: "competence", weightPoints: 3 },
+    ]
+    const placement = placeRole({
+      score: 85,
+      ratings: [
+        { criterionId: "wc", value: 0 },
+        { criterionId: "knowledge", value: 3 },
+      ],
+      criteria: wcCriteria,
+      levelRules: levelRules(),
+      zoneProfileRules: [
+        { zone: "A", minStep: 4 },
+        { zone: "B", minStep: 3 },
+      ],
+    })
+    expect(placement.zone).toBe("A")
+    expect(placement.profileLimited).toBe(false)
+  })
+
+  it("throws on a duplicated criterion id", () => {
+    const dup: PlacementCriterion[] = [
+      ...criteria(),
+      { criterionId: "scope", dimensionKey: "responsibility", weightPoints: 2 },
+    ]
+    expect(() =>
+      placeRole({
+        score: 85,
+        ratings: [],
+        criteria: dup,
+        levelRules: levelRules(),
+        zoneProfileRules: [{ zone: "A", minStep: 4 }],
+      })
+    ).toThrow()
   })
 })

@@ -1,7 +1,7 @@
 import type { DimensionKey } from "./dimensions"
-import { assignLevel } from "./scoring"
+import { assertUniqueCriteria, assignLevel } from "./scoring"
 import type { WeightPoints } from "./weighting"
-import type { RatingInput } from "./types"
+import type { LevelThreshold, RatingInput } from "./types"
 
 // The four-zone, twelve-level architecture. Zone membership is structural
 // law, never configuration: A is the highest zone and level 1 the highest
@@ -32,10 +32,9 @@ export function zoneForLevel(level: number): ZoneKey {
   throw new Error(`level out of range: ${level}`)
 }
 
-export interface LevelRule {
-  level: number
-  minScore: number
-}
+// Alias, not a duplicate interface: one shape for the level/minScore pair,
+// shared with the scoring engine's LevelThreshold.
+export type LevelRule = LevelThreshold
 
 export interface ZoneProfileRule {
   zone: ZoneKey
@@ -68,11 +67,16 @@ export const DEFAULT_ZONE_PROFILE_RULES: readonly ZoneProfileRule[] = [
 // criterion part of the model's profile.
 export const PROFILE_WEIGHT_FLOOR = 4
 
-export function profileCriteria<T extends { weightPoints: number }>(
-  criteria: readonly T[]
-): T[] {
+export function profileCriteria<
+  T extends { weightPoints: number; dimensionKey: DimensionKey },
+>(criteria: readonly T[]): T[] {
+  // A working-conditions criterion is never a profile criterion, regardless
+  // of weight: its 0 means "not covered" (a structural zero, not a low
+  // requirement), so gating a zone on it would cap every non-exposed role.
   return criteria.filter(
-    (criterion) => criterion.weightPoints >= PROFILE_WEIGHT_FLOOR
+    (criterion) =>
+      criterion.weightPoints >= PROFILE_WEIGHT_FLOOR &&
+      criterion.dimensionKey !== "workingConditions"
   )
 }
 
@@ -102,6 +106,7 @@ export function placeRole(input: {
   levelRules: LevelRule[]
   zoneProfileRules: ZoneProfileRule[]
 }): Placement {
+  assertUniqueCriteria(input.criteria)
   const scoreLevel = assignLevel(input.score, input.levelRules)
   const candidateZone = zoneForLevel(scoreLevel)
 
