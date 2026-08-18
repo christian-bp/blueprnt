@@ -1,0 +1,65 @@
+packages/backend/convex/evaluationModel/localize.ts
+  s_58dd112dc09435::t_72fa6f13c992b2 1-2,5-15,17-19
+  s_58dd112dc09435::t_00928e9409f6c5 16
+packages/backend/convex/ai/prefillData.ts
+  s_58dd112dc09435::t_8ba91367f9b3d8 156
+  s_58dd112dc09435::t_fceda67b47125a 7
+  s_58dd112dc09435::t_309feb8842cafc 120
+packages/backend/convex/assessment/names.ts
+  s_58dd112dc09435::t_65838e278bdd88 3,15,19
+packages/backend/convex/evaluationModel/standardTemplate.ts
+  s_58dd112dc09435::t_44d764c2ee19e1 50-52
+  s_58dd112dc09435::t_811685d13dd35b 2
+  s_58dd112dc09435::t_00928e9409f6c5 69-76
+  s_58dd112dc09435::t_fb72d596584da1 79
+packages/backend/convex/evaluationModel/trackSchema.test.ts
+  s_58dd112dc09435::t_0fe68bc24c3b46 1-23
+packages/backend/convex/evaluationModel/model.ts
+  s_58dd112dc09435::t_36811568b78b70 471
+  s_58dd112dc09435::t_127fcead5d24ff 21-26
+  s_58dd112dc09435::t_4d2928a201ab95 426-427
+  s_58dd112dc09435::t_7379613644c09d 43
+packages/backend/convex/evaluationModel/trackSchema.ts
+  s_58dd112dc09435::t_cdcbf4f06b37a6 1-25
+packages/backend/convex/ai/suggest.ts
+  s_58dd112dc09435::t_3cc5e4f340c61b 25,27
+  s_58dd112dc09435::t_e15c73ce4edeaf 504,526-529
+  s_58dd112dc09435::t_f547e1fc9ae461 551
+  s_58dd112dc09435::t_f7e93be5f84808 587-590
+  s_58dd112dc09435::t_a2529ab8d30f3c 860-861,863,878
+packages/backend/convex/assessment/starters.ts
+  s_58dd112dc09435::t_ccd34f2fdbc1ec 11
+packages/backend/convex/evaluationModel/criteriaLibrary.ts
+  s_58dd112dc09435::t_1125ac8ef9cf70 11
+  s_58dd112dc09435::t_fb6f0d52cfb3e5 173,189
+packages/backend/convex/evaluationModel/tables.ts
+  s_58dd112dc09435::t_0beefc60eb0842 65-66
+packages/backend/convex/evaluationModel/standardTemplate.content.en.ts
+  s_58dd112dc09435::t_7110fffdb97503 1
+packages/backend/convex/_generated/api.d.ts
+  s_76f0f679cca760::t_e16eb5b762c35d 72,181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4e21e39fd142a61aacdc235750c20fccd1435916",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_76f0f679cca760": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a59a6ee54ee33af7c",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
