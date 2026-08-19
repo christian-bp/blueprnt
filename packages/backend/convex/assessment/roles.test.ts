@@ -5,7 +5,7 @@ import {
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
-import { initConvexTest } from "../testing.helpers"
+import { grantModelApproval, initConvexTest } from "../testing.helpers"
 import { roleTitleKey } from "./roles"
 
 // Opaque ids: roleTitleKey only ever stringifies them.
@@ -171,6 +171,8 @@ describe("listRoles and getRole", () => {
       ratedCount: 1,
       totalCriteria: 8,
       profileComplete: true,
+      // Not locked (only 1/8 rated, and the model was never approved).
+      locked: false,
     })
 
     const role = await asAdmin.query(api.assessment.roles.getRole, {
@@ -187,6 +189,53 @@ describe("listRoles and getRole", () => {
       },
     ])
     expect(role?.profileComplete).toBe(true)
+  })
+
+  it("reports locked true only once the assessment is actually locked (spec 2.4/6)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Developer",
+      function: "Engineering",
+      team: "Core",
+      trackKey: track.key,
+      purpose: "Builds the product",
+      responsibilities: "Implementation",
+    })
+    await grantModelApproval(t, orgId)
+    for (const criterion of model.criteria) {
+      await asAdmin.mutation(api.assessment.ratings.setRating, {
+        orgId,
+        roleId,
+        criterionId: criterion.criterionId as never,
+        value: 3,
+      })
+    }
+
+    // Fully rated but not yet locked: still reads false.
+    const beforeLock = await asAdmin.query(api.assessment.roles.listRoles, {
+      orgId,
+      locale: "sv",
+    })
+    expect(beforeLock.find((r) => r.roleId === roleId)).toMatchObject({
+      ratedCount: 8,
+      totalCriteria: 8,
+      locked: false,
+    })
+
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
+    })
+
+    const afterLock = await asAdmin.query(api.assessment.roles.listRoles, {
+      orgId,
+      locale: "sv",
+    })
+    expect(afterLock.find((r) => r.roleId === roleId)).toMatchObject({
+      locked: true,
+    })
   })
 
   it("counts the active people holding each role", async () => {

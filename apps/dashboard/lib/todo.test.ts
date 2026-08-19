@@ -10,6 +10,9 @@ const role = (
   ratedCount: 0,
   totalCriteria: 9,
   profileComplete: true,
+  // Draft by default (spec 2.4/6: locking is the reveal); tests representing
+  // a genuinely finished role override this explicitly.
+  locked: false,
   familyName: "Engineering",
   ...over,
 })
@@ -84,15 +87,42 @@ describe("buildTodo", () => {
     expect(item.totalCriteria).toBe(9)
   })
 
-  it("excludes a profiled, fully-rated role from every group", () => {
+  it("excludes a profiled, fully-rated, LOCKED role from every group", () => {
     const todo = buildTodo({
-      roles: [role({ profileComplete: true, ratedCount: 9, totalCriteria: 9 })],
+      roles: [
+        role({
+          profileComplete: true,
+          ratedCount: 9,
+          totalCriteria: 9,
+          locked: true,
+        }),
+      ],
       method: null,
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
     })
     expect(todo.total).toBe(0)
     expect(todo.groups).toEqual([])
+  })
+
+  it("keeps a fully-rated but NOT YET LOCKED role in evaluateRoles (spec 2.4/6: it still needs action)", () => {
+    const todo = buildTodo({
+      roles: [
+        role({
+          profileComplete: true,
+          ratedCount: 9,
+          totalCriteria: 9,
+          locked: false,
+        }),
+      ],
+      method: null,
+      peopleByTitle: PEOPLE_NEUTRAL,
+      payMappingRuns: OPEN_RUN,
+    })
+    const g = todo.groups.find((g) => g.key === "evaluateRoles")
+    expect(g?.key).toBe("evaluateRoles")
+    expect(g?.items[0]?.href).toBe("/roles/backend-engineer/rate")
+    expect(todo.total).toBe(1)
   })
 
   it("splits criteria into document (notStarted/inProgress) and approve (documented); approved is done", () => {
@@ -294,6 +324,50 @@ describe("buildTodo startPayMapping group", () => {
       ],
     })
     expect(todo.groups.map((g) => g.key)).not.toContain("startPayMapping")
+  })
+
+  it("does not add it while a staffed role is fully rated but NOT YET LOCKED (spec 2.4/6, mirrors computePayMappingPreconditions)", () => {
+    const todo = buildTodo({
+      roles: [
+        role({ roleId: "r1", ratedCount: 9, totalCriteria: 9, locked: false }),
+      ],
+      method: null,
+      payMappingRuns: [],
+      peopleByTitle: [
+        {
+          title: "Backend Engineer",
+          people: [
+            {
+              currentAssignment: { roleId: "r1", senioritySource: "confirmed" },
+            },
+          ],
+        },
+      ],
+    })
+    expect(todo.groups.map((g) => g.key)).not.toContain("startPayMapping")
+    // Still surfaced as needing action, not silently dropped.
+    expect(todo.groups.map((g) => g.key)).toContain("evaluateRoles")
+  })
+
+  it("adds it once that same staffed role is locked", () => {
+    const todo = buildTodo({
+      roles: [
+        role({ roleId: "r1", ratedCount: 9, totalCriteria: 9, locked: true }),
+      ],
+      method: null,
+      payMappingRuns: [],
+      peopleByTitle: [
+        {
+          title: "Backend Engineer",
+          people: [
+            {
+              currentAssignment: { roleId: "r1", senioritySource: "confirmed" },
+            },
+          ],
+        },
+      ],
+    })
+    expect(todo.groups.map((g) => g.key)).toEqual(["startPayMapping"])
   })
 
   it("does not block on an unstaffed role that is not fully evaluated", () => {

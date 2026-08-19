@@ -114,6 +114,62 @@ describe("lockAssessment", () => {
     })
   })
 
+  it("locks a mixed vector: the working-conditions criterion at 0 (omfattas inte) alongside siblings spread across 1-5", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
+    await grantModelApproval(t, orgId)
+    const wc = model.criteria.find(
+      (c) => c.dimensionKey === "workingConditions"
+    )
+    const others = model.criteria.filter(
+      (c) => c.dimensionKey !== "workingConditions"
+    )
+    if (wc === undefined || others.length !== 7) throw new Error("seed")
+
+    // 0 needs no motivation on the working-conditions criterion (the only
+    // criterion 0 is ever legal on).
+    await asAdmin.mutation(api.assessment.ratings.setRating, {
+      orgId,
+      roleId,
+      criterionId: wc.criterionId as never,
+      value: 0,
+    })
+    // The seven siblings spread across the whole 1-5 scale, motivation given
+    // at 1/4/5 (required) and omitted at 2/3 (not required).
+    const values = [1, 2, 3, 4, 5, 2, 4]
+    for (const [index, criterion] of others.entries()) {
+      const value = values[index]
+      if (value === undefined) throw new Error("seed")
+      await asAdmin.mutation(api.assessment.ratings.setRating, {
+        orgId,
+        roleId,
+        criterionId: criterion.criterionId as never,
+        value,
+        ...(value === 1 || value === 4 || value === 5
+          ? { motivation: "Because." }
+          : {}),
+      })
+    }
+
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
+    })
+
+    await t.run(async (ctx) => {
+      const role = await ctx.db.get(roleId)
+      expect(role?.assessment?.lockedAt).toBeGreaterThan(0)
+      const rating = await ctx.db
+        .query("ratings")
+        .withIndex("by_role_criterion", (q) =>
+          q.eq("roleId", roleId).eq("criterionId", wc.criterionId as never)
+        )
+        .unique()
+      expect(rating?.value).toBe(0)
+      expect(rating?.motivation).toBeUndefined()
+    })
+  })
+
   it("refuses a coverage gap (a criterion with no rating) with ratingsIncomplete", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)

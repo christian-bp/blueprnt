@@ -63,6 +63,10 @@ type TodoRole = {
   ratedCount: number
   totalCriteria: number
   profileComplete: boolean
+  // Locking is the reveal (spec 2.4/6): a fully-rated role is still a draft,
+  // and the pay-mapping gate (computePayMappingPreconditions) refuses it,
+  // until this is true. Sourced from listRoles' own locked field.
+  locked: boolean
   familyName: string | null
 }
 type TodoMethod = {
@@ -129,6 +133,15 @@ function computeCounts({
   const evaluate: EvaluateItem[] = []
   for (const r of roles) {
     const family = r.familyName ?? undefined
+    // A fully-rated role that is not yet locked still needs action (spec
+    // 2.4/6: locking is the reveal, and the pay-mapping gate below refuses
+    // it until locked), so it stays in the evaluate group rather than
+    // silently disappearing from the to-do once its ratings are done. Gated
+    // on totalCriteria > 0 so a role under a not-yet-built model (no
+    // criteria at all, "locked" trivially false) is not wrongly flagged.
+    const needsRating = r.ratedCount < r.totalCriteria
+    const needsLocking =
+      r.totalCriteria > 0 && r.ratedCount === r.totalCriteria && !r.locked
     if (!r.profileComplete) {
       describe.push({
         id: r.roleId,
@@ -136,7 +149,7 @@ function computeCounts({
         href: `/roles/${r.slug}`,
         family,
       })
-    } else if (r.ratedCount < r.totalCriteria) {
+    } else if (needsRating || needsLocking) {
       evaluate.push({
         id: r.roleId,
         title: r.title,
@@ -177,11 +190,14 @@ function computeCounts({
   )
 
   // The pay-mapping gate's own readiness, mirroring the backend's shared
-  // precondition helper exactly: every person classified (a confirmed open
-  // assignment) and every STAFFED role (holding at least one open
-  // assignment, any confirmation state) resolves a level (fully rated). An
-  // unstaffed role's evaluation state never blocks this, unlike
-  // describe/evaluate above, which track every role regardless of staffing.
+  // precondition helper exactly (computePayMappingPreconditions): every
+  // person classified (a confirmed open assignment) and every STAFFED role
+  // (holding at least one open assignment, any confirmation state) is both
+  // fully rated AND locked (spec 2.4/6: a complete-but-unlocked draft is not
+  // a revealed evaluation, so it blocks the gate exactly like an unrated
+  // role). An unstaffed role's evaluation/lock state never blocks this,
+  // unlike describe/evaluate above, which track every role regardless of
+  // staffing.
   const totalUnclassified = classify.reduce(
     (sum, item) => sum + item.peopleCount,
     0
@@ -194,10 +210,10 @@ function computeCounts({
       }
     }
   }
-  const isRoleEvaluated = (r: TodoRole) =>
-    r.totalCriteria > 0 && r.ratedCount === r.totalCriteria
+  const isRoleReady = (r: TodoRole) =>
+    r.totalCriteria > 0 && r.ratedCount === r.totalCriteria && r.locked
   const unevaluatedStaffedRoles = roles.filter(
-    (r) => staffedRoleIds.has(r.roleId) && !isRoleEvaluated(r)
+    (r) => staffedRoleIds.has(r.roleId) && !isRoleReady(r)
   )
   const payMappingReady =
     totalPeople > 0 &&

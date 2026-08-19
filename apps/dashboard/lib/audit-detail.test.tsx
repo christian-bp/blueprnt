@@ -765,6 +765,42 @@ describe("formatAuditDetail", () => {
     ).toBe("Analyst")
   })
 
+  it("renders role.assessmentLocked as the role name", () => {
+    expect(
+      formatAuditDetail(
+        "role.assessmentLocked",
+        { roleId: "r1", ratedCount: 8 },
+        { r1: "Analyst" },
+        labels,
+        fieldLabel
+      )
+    ).toBe("Analyst")
+  })
+
+  it("renders role.assessmentUnlocked as the role name, never blank (payloadStats alone would drop the id-only payload entirely)", () => {
+    expect(
+      formatAuditDetail(
+        "role.assessmentUnlocked",
+        { roleId: "r1" },
+        { r1: "Analyst" },
+        labels,
+        fieldLabel
+      )
+    ).toBe("Analyst")
+  })
+
+  it("renders role.assessmentCalibrated as the role name, never blank (payloadStats alone would drop the boolean noteProvided too)", () => {
+    expect(
+      formatAuditDetail(
+        "role.assessmentCalibrated",
+        { roleId: "r1", noteProvided: true },
+        { r1: "Analyst" },
+        labels,
+        fieldLabel
+      )
+    ).toBe("Analyst")
+  })
+
   it("renders payMapping.groupAnalysisUpdated with group label, scope, and changes, resolving scope and reasons via valueLabel", () => {
     expect(
       formatAuditDetail(

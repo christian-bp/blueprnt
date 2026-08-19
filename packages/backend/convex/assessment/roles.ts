@@ -208,6 +208,10 @@ export const listRoles = orgQuery({
       ratedCount: v.number(),
       totalCriteria: v.number(),
       profileComplete: v.boolean(),
+      // Locking is the reveal (spec 2.4/6): a complete rating set is not yet
+      // an evaluated role until it is locked (see the home to-do's
+      // payMappingReady mirror in lib/todo.ts, which reads this).
+      locked: v.boolean(),
       familyId: v.union(v.id("roleFamilies"), v.null()),
       familyName: v.union(v.string(), v.null()),
       familySlug: v.union(v.string(), v.null()),
@@ -246,6 +250,7 @@ export const listRoles = orgQuery({
         ratedCount: result?.ratedCount ?? 0,
         totalCriteria: derived.totalCriteria,
         profileComplete: isProfileComplete(role),
+        locked: role.assessment !== undefined,
         familyId: role.familyId ?? null,
         familyName:
           role.familyId !== undefined
