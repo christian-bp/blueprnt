@@ -18,11 +18,15 @@ import { familyNames, trackNames } from "./names"
 // level, zone, and the profile outcome all read null here regardless of what
 // the engine actually derived. `complete`/`ratedCount`/`totalCriteria` stay
 // exposed always (completeness counters, never the outcome itself), so the
-// "ready to lock" state has something to show. Method drift
-// (lockedAt < approvedAt) is derived here at read time and never stored,
-// mirroring score/level/zone; it is always false for an unlocked or
-// unapproved-model role, since drift only describes a REVEALED result rated
-// under a since-superseded method.
+// "ready to lock" state has something to show. Method drift is derived here
+// at read time and never stored, mirroring score/level/zone: it is always
+// false for an unlocked role (nothing has been revealed yet to drift), but a
+// LOCKED role whose model carries no CURRENT approval is itself drift, not
+// the absence of it. A method-affecting edit reopens approval
+// (reopenApprovalIfSet) without touching any role already locked under the
+// prior approval, so a locked role next to an unapproved model means the
+// method moved since that role's lock, exactly the case this marking exists
+// to surface (ADR-0023 accepts this as visible-never-prevented).
 function deriveMethodDrift(
   assessment: Doc<"roles">["assessment"],
   model: Doc<"models"> | null
@@ -30,7 +34,7 @@ function deriveMethodDrift(
   if (assessment === undefined || model === undefined || model === null) {
     return false
   }
-  if (model.approval === undefined) return false
+  if (model.approval === undefined) return true
   return assessment.lockedAt < model.approval.approvedAt
 }
 

@@ -119,11 +119,14 @@ export const payMappingRuns = defineTable({
         decidedAt: v.number(),
       })
     ),
-    // Model approval grant, copied from the live model at freeze time. A run
-    // can only start once every staffed role is locked, which itself
-    // requires an approved model, so this should always be set; stays
-    // optional so a defect in that upstream gate freezes an honest absence
-    // instead of crashing the run.
+    // Model approval grant, copied from the live model at freeze time.
+    // Legitimately absent, not just a defensive fallback: a method-affecting
+    // edit reopens approval (reopenApprovalIfSet) without unlocking any role
+    // already locked under the prior approval, so a run can start with
+    // staffed, locked roles while the model itself carries no current
+    // approval. ADR-0023 accepts this as visible-never-prevented (the
+    // affected roles' methodDrift marking is the visibility); there is no
+    // behavioral gate on run start for it.
     approval: v.optional(
       v.object({ approvedBy: v.string(), approvedAt: v.number() })
     ),

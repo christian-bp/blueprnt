@@ -10,6 +10,7 @@ import { describe, expect, it } from "vitest"
 import {
   CRITERIA_LIBRARY_KEYS,
   criteriaLibraryContent,
+  type CriteriaLibraryKey,
   LIBRARY_DIMENSION,
   LIBRARY_INDUSTRY_HINTS,
   LIBRARY_OVERLAP_PAIRS,
@@ -17,6 +18,17 @@ import {
 } from "./criteriaLibrary"
 
 const PRESENT_LOCALES = ["en", "sv", "nb", "da", "fi"] as const
+
+// The three section-13.5 criteria are the only ones the masterdokument gives
+// an extra pair of midpoint anchors (steps 2 and 4); every other entry only
+// ever carries 1/3/5. payMapping/runs.ts's freeze derives anchorCount
+// straight from anchor2/anchor4 presence, so this set is asserted against
+// every locale below.
+const SECTION_13_5_KEYS: readonly CriteriaLibraryKey[] = [
+  "complexity-ambiguity",
+  "scope-impact",
+  "risk-consequence",
+]
 
 describe("library structure", () => {
   it("has 21 criteria distributed 5/5/7/4 across the dimensions", () => {
@@ -128,4 +140,21 @@ describe("library content", () => {
   it("falls back to en for unknown locales", () => {
     expect(criteriaLibraryContent("xx")).toEqual(criteriaLibraryContent("en"))
   })
+
+  it.each(PRESENT_LOCALES)(
+    "locale %s carries anchor2/anchor4 on exactly the three section-13.5 keys",
+    (locale) => {
+      const content = criteriaLibraryContent(locale)
+      for (const key of CRITERIA_LIBRARY_KEYS) {
+        const entry = content.criteria[key]
+        const expectFiveAnchor = SECTION_13_5_KEYS.includes(key)
+        expect(entry.anchor2 !== undefined, `${locale}.${key}.anchor2`).toBe(
+          expectFiveAnchor
+        )
+        expect(entry.anchor4 !== undefined, `${locale}.${key}.anchor4`).toBe(
+          expectFiveAnchor
+        )
+      }
+    }
+  )
 })

@@ -543,7 +543,7 @@ describe("method drift derivation", () => {
     expect(result?.methodDrift).toBe(false)
   })
 
-  it("is false for an unapproved model (defensive: locking already requires approval)", async () => {
+  it("is true once a real method edit reopens approval after locking (the edit never touches the already-locked role), and clears on re-approve + re-lock", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
     await grantModelApproval(t, orgId)
@@ -552,19 +552,46 @@ describe("method drift derivation", () => {
       orgId,
       roleId,
     })
-    await t.run(async (ctx) => {
-      const modelDoc = await ctx.db
-        .query("models")
-        .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .unique()
-      if (modelDoc === null) throw new Error("seed")
-      await ctx.db.patch(modelDoc._id, { approval: undefined })
-    })
-    const result = await asAdmin.query(api.assessment.results.getRoleResult, {
+
+    let result = await asAdmin.query(api.assessment.results.getRoleResult, {
       orgId,
       roleId: roleId as string,
     })
     expect(result?.locked).toBe(true)
+    expect(result?.methodDrift).toBe(false)
+
+    // A real method-affecting mutation (not a direct db patch): reopens
+    // approval via reopenApprovalIfSet, same as any of
+    // activateCriterion/deactivateCriterion/rebalanceWeights/
+    // updateLevelRules/updateZoneProfileRules would. It never unlocks or
+    // otherwise touches the role, which is exactly the gap the drift
+    // marking exists to surface: the role stays locked, but the model it
+    // was locked under no longer has a current approval.
+    await asAdmin.mutation(
+      api.evaluationModel.approval.setWorkingConditionsDecision,
+      { orgId, status: "active", motivation: "Ny motivering efter omprövning." }
+    )
+    result = await asAdmin.query(api.assessment.results.getRoleResult, {
+      orgId,
+      roleId: roleId as string,
+    })
+    expect(result?.locked).toBe(true)
+    expect(result?.methodDrift).toBe(true)
+
+    // Re-approving and re-locking clears the drift again.
+    await grantModelApproval(t, orgId, "second-approver")
+    await asAdmin.mutation(api.assessment.locking.unlockAssessment, {
+      orgId,
+      roleId,
+    })
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
+    })
+    result = await asAdmin.query(api.assessment.results.getRoleResult, {
+      orgId,
+      roleId: roleId as string,
+    })
     expect(result?.methodDrift).toBe(false)
   })
 })

@@ -269,6 +269,16 @@ describe("startPayMappingRun", () => {
     // section-13.5 entry (5: steps 1-5) and an ordinary entry (3: steps 1/3/5).
     expect(byKey.get("complexity-ambiguity")?.anchorCount).toBe(5)
     expect(byKey.get("knowledge-depth")?.anchorCount).toBe(3)
+    // Hardcoded literals, independent of criteriaLibraryContent: the loop
+    // above compares the freeze against the same content module it reads
+    // from, which would not catch the freeze and the module agreeing on the
+    // wrong locale or the wrong key. These two guard the actual sv prose.
+    expect(byKey.get("complexity-ambiguity")?.name).toBe(
+      "Komplexitet och otydlighet"
+    )
+    expect(byKey.get("knowledge-depth")?.name).toBe(
+      "Kunskapsdjup och specialistnivå"
+    )
 
     // levelRules/zoneProfileRules: copied verbatim off the model, which
     // never left the calibrate-before-launch defaults in this fixture.

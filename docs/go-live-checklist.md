@@ -296,12 +296,14 @@ bias-review UI, the metodbilaga export, the verbatim anchor texts, the
 `PLAN-V1.md` four-factor prose) are closed. These remain, and none of them block
 starting V2:
 
-- [ ] **Level-threshold editing (E2 configurability).** The schema supports
-  per-org `levelThresholds`, but no mutation patches them after model creation
-  (all creation paths call `defaultLevelThresholds()`) and there is no editing
-  UI. The docs promise per-org configurability; add the set-mutation + UI.
-- [ ] **Calibrate `DEFAULT_LEVEL_RULES` and `DEFAULT_ZONE_PROFILE_RULES` against
-  real data.** Both (`packages/core/src/zones.ts`) are starting points
+- [ ] **Level-rule editing UI (E2 configurability).** `updateLevelRules` and
+  `updateZoneProfileRules` (`evaluationModel/approval.ts`) already let an org
+  patch `levelRules`/`zoneProfileRules` after model creation; the remaining
+  gap is UI only, no dashboard surface calls either mutation yet. The docs
+  promise per-org configurability; add the editing UI.
+- [ ] **Calibrate `DEFAULT_LEVEL_RULES` and `DEFAULT_ZONE_PROFILE_RULES`
+  against real data.** Both (`packages/core/src/zones.ts`) are the starting
+  points every model's `levelRules`/`zoneProfileRules` seed from at creation,
   translated from the Excel prototype at a different weight spread
   (`docs/contexts/evaluation-model/standardmall.md`); uncalibrated level and
   zone-profile rules yield unreliable comparable-work groupings and zone

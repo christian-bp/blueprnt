@@ -209,11 +209,16 @@ export const startPayMappingRun = orgMutation({
       levelRules: model?.levelRules ?? [],
       zoneProfileRules: model?.zoneProfileRules ?? [],
       workingConditions: model?.workingConditions,
-      // Preconditions require every staffed role to be locked, which itself
-      // requires an approved model, so approval should always be set here.
-      // Freeze it as an honest absence rather than throw if that upstream
-      // invariant is ever violated: a defect in the approval gate must not
-      // also take down the freeze.
+      // Approval can be legitimately absent here, not just as a defensive
+      // fallback: a method-affecting edit reopens approval
+      // (reopenApprovalIfSet) without touching any role already locked under
+      // the prior approval, so a staffed role can stay locked while the
+      // model's current approval is unset. Preconditions require every
+      // staffed role to be locked, never that the model is currently
+      // approved, so a run can start in exactly this state. ADR-0023 accepts
+      // this as visible-never-prevented: the frozen `undefined` here, next
+      // to the affected roles' methodDrift marking, IS the visibility; there
+      // is no behavioral gate on run start for it.
       approval: model?.approval,
     }
 
