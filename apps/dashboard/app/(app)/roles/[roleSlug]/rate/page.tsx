@@ -5,6 +5,7 @@ import { Button, buttonVariants } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 import { Kbd } from "@workspace/ui/components/kbd"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
@@ -13,8 +14,10 @@ import { use, useState } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageHeading } from "@/components/page-heading"
 import { usePageTitle } from "@/hooks/use-page-title"
+import { LockAssessmentPanel } from "@/components/rating/lock-assessment-panel"
 import { RatingResult } from "@/components/rating/rating-result"
 import { RatingStepper } from "@/components/rating/rating-stepper"
+import { UnlockAssessmentDialog } from "@/components/rating/unlock-assessment-dialog"
 
 // Steps 1-5 are always per-criterion; the library leaves 2/4 undefined when
 // it has nothing more specific to say than "a considered midpoint", and the
@@ -47,7 +50,14 @@ export default function RatePage(props: {
     locale,
   })
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
+  // Lock state (spec 2.4/6): fetched as soon as the role resolves, so it is
+  // ready before either the reveal or the already-locked notice needs it.
+  const result = useQuery(
+    api.assessment.results.getRoleResult,
+    role != null ? { orgId, roleId: role.roleId, locale } : "skip"
+  )
   const [finished, setFinished] = useState(false)
+  const [unlockOpen, setUnlockOpen] = useState(false)
   usePageTitle([role?.title, t("title")])
 
   if (role === undefined || model === undefined) {
@@ -153,18 +163,64 @@ export default function RatePage(props: {
     )
   }
 
-  // RatingResult is a pure reveal; this host owns the back-to-role nav below
-  // it (the onboarding host owns its own back-to-your-roles button instead).
-  if (finished) {
+  // Lock state is not yet known: wait rather than flash the stepper (or the
+  // stale ready-to-lock panel) for a role that turns out to already be
+  // locked a moment later. `result` is only ever null for a garbage/missing
+  // role id, which cannot happen here (getRoleBySlug above already resolved
+  // this exact role), so null is treated the same as still-loading.
+  if (result == null) {
+    return (
+      <div className="flex items-center justify-center p-6">
+        <Spinner aria-label={t("result.computing")} />
+      </div>
+    )
+  }
+
+  // Already locked, whether from before this visit or from just clicking
+  // Lock below: the rate entry states it in words and shows the reveal as
+  // confirmation (spec 2.4/6, lock-as-reveal), with Unlock as the explicit,
+  // audited way back into editing. RatingResult is a pure reveal; this host
+  // owns the surrounding nav (the onboarding host owns its own
+  // back-to-your-roles button instead).
+  if (result.locked) {
     return (
       <div className="w-full max-w-2xl space-y-4">
+        <p className="text-muted-foreground text-sm">
+          {t("alreadyLockedExplanation")}
+        </p>
         <RatingResult orgId={orgId} roleId={role.roleId} />
-        <Link
-          href={`/roles/${role.slug}`}
-          className={cn(buttonVariants({ variant: "outline" }))}
-        >
-          {t("result.backToRole")}
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setUnlockOpen(true)}
+          >
+            {t("unlockCta")}
+          </Button>
+          <Link
+            href={`/roles/${role.slug}`}
+            className={cn(buttonVariants({ variant: "outline" }))}
+          >
+            {t("result.backToRole")}
+          </Link>
+        </div>
+        <UnlockAssessmentDialog
+          open={unlockOpen}
+          onOpenChange={setUnlockOpen}
+          orgId={orgId}
+          roleId={role.roleId}
+        />
+      </div>
+    )
+  }
+
+  // Every criterion answered but not yet locked: the completion state offers
+  // the lock action itself; the branch above takes over as the reveal once
+  // it succeeds (result.locked flips reactively).
+  if (finished) {
+    return (
+      <div className="w-full max-w-2xl">
+        <LockAssessmentPanel orgId={orgId} roleId={role.roleId} />
       </div>
     )
   }

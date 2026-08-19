@@ -43,6 +43,8 @@ type Result = {
   roleId: string
   title: string
   complete: boolean
+  locked: boolean
+  methodDrift?: boolean
   ratedCount: number
   totalCriteria: number
   score: number | null
@@ -103,6 +105,7 @@ describe("RoleSheet", () => {
       roleId: "role_1",
       title: "Engineer",
       complete: true,
+      locked: true,
       ratedCount: 3,
       totalCriteria: 3,
       score: 71,
@@ -128,7 +131,7 @@ describe("RoleSheet", () => {
   })
   afterEach(() => cleanup())
 
-  it("shows the level and a compact breakdown (no raw score) for a complete role", () => {
+  it("shows the level and a compact breakdown (no raw score) for a locked role", () => {
     renderSheet()
     open()
     expect(screen.getByText("Engineer")).toBeTruthy()
@@ -139,12 +142,39 @@ describe("RoleSheet", () => {
     expect(screen.getByText("Complexity")).toBeTruthy()
     expect(screen.getByText("57%")).toBeTruthy()
     expect(screen.queryByText("rated 5 / 5")).toBeNull()
+    expect(screen.getByText("Locked")).toBeTruthy()
+  })
+
+  it("flags method drift on a locked role with a stale-method chip", () => {
+    result = { ...(result as Result), methodDrift: true }
+    install()
+    renderSheet()
+    open()
+    expect(screen.getByText("Assessed under a previous method")).toBeTruthy()
+  })
+
+  it("shows ready-to-lock wording for a complete role that is not yet locked", () => {
+    result = {
+      ...(result as Result),
+      locked: false,
+      score: null,
+      level: null,
+    }
+    install()
+    renderSheet()
+    open()
+    expect(screen.getByText("Ready to lock")).toBeTruthy()
+    // Not revealed: no level badge, no breakdown, no incomplete-progress line.
+    expect(screen.queryByText("Level 3")).toBeNull()
+    expect(screen.queryByText("Complexity")).toBeNull()
+    expect(screen.queryByText("3 / 3 criteria assessed")).toBeNull()
   })
 
   it("shows progress and no per-criterion values for an incomplete role", () => {
     result = {
       ...(result as Result),
       complete: false,
+      locked: false,
       score: null,
       level: null,
     }

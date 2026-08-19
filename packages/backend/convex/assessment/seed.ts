@@ -195,6 +195,22 @@ export const seedRatedRoles = internalMutation({
           actorId,
         }
       )
+
+      // The demo org has also DONE its assessment work, not just its method
+      // work (spec 2.4/6, lock-as-reveal): every role above was fully and
+      // validly rated (RATINGS_BY_TITLE carries a motivation at 1/4/5), so
+      // lock all of them, attributed to the seed actor, exactly like every
+      // other seed write here bypasses its interactive counterpart's gate
+      // (lockAssessment) rather than calling it. Locking AFTER the approval
+      // call above (not before) guarantees lockedAt >= approvedAt for every
+      // role, so methodDrift (lockedAt < approvedAt) reads false on a
+      // freshly seeded org; without this ordering a demo reset could show a
+      // stale-method chip on a model nobody has touched.
+      for (const role of roles) {
+        await ctx.db.patch(role._id, {
+          assessment: { lockedBy: actorId, lockedAt: Date.now() },
+        })
+      }
     }
 
     return { roleCount: roles.length, ratingCount }

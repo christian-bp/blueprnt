@@ -48,9 +48,11 @@ export type PayMappingPreconditions = {
 // not archived; the same definition listPeopleByTitle's currentAssignment,
 // countClassified, the people-tab badge, and the to-do's classify group all
 // use), and every ACTIVE role holding at least one open assignment
-// ("staffed") resolves a level (complete evaluation, the same deriveResults
-// resolution the frozen snapshot reads). An unstaffed role's evaluation
-// state never blocks. Shared by startPayMappingRun's server-side gate and
+// ("staffed") is both evaluated (resolves a level, the same deriveResults
+// resolution the frozen snapshot reads) AND locked (spec 2.4/6: a run may
+// only include roles whose result has actually been revealed, not merely a
+// complete-but-unlocked draft). An unstaffed role's evaluation/lock state
+// never blocks. Shared by startPayMappingRun's server-side gate and
 // getPayMappingPreconditions so the two can never fork. Archived roles are
 // excluded from BOTH checks: from the staffed-evaluation check because
 // deriveResults never resolves a level for them (so they can never block),
@@ -106,9 +108,13 @@ export async function computePayMappingPreconditions(
   const unevaluatedRoles: PreconditionRole[] = [...staffedRoleIds]
     .map((roleId) => activeRoleById.get(roleId))
     .filter((role): role is Doc<"roles"> => role !== undefined)
-    .filter(
-      (role) => (levelByRole.get(role._id as string)?.level ?? null) === null
-    )
+    .filter((role) => {
+      const level = levelByRole.get(role._id as string)?.level ?? null
+      // Evaluated AND locked (spec 2.4/6): a staffed role that is complete
+      // but still a draft (not yet locked) blocks the gate exactly like an
+      // unrated one, since its result has not been revealed yet.
+      return level === null || role.assessment === undefined
+    })
     .map((role) => ({ roleId: role._id, title: role.title, slug: role.slug }))
     .sort((a, b) => a.title.localeCompare(b.title))
 

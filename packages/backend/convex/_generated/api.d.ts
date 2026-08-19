@@ -36,6 +36,7 @@ import type * as assessment_compute from "../assessment/compute.js";
 import type * as assessment_devCompany from "../assessment/devCompany.js";
 import type * as assessment_families from "../assessment/families.js";
 import type * as assessment_industryStarters from "../assessment/industryStarters.js";
+import type * as assessment_locking from "../assessment/locking.js";
 import type * as assessment_names from "../assessment/names.js";
 import type * as assessment_ratings from "../assessment/ratings.js";
 import type * as assessment_results from "../assessment/results.js";
@@ -145,6 +146,7 @@ declare const fullApi: ApiFromModules<{
   "assessment/devCompany": typeof assessment_devCompany;
   "assessment/families": typeof assessment_families;
   "assessment/industryStarters": typeof assessment_industryStarters;
+  "assessment/locking": typeof assessment_locking;
   "assessment/names": typeof assessment_names;
   "assessment/ratings": typeof assessment_ratings;
   "assessment/results": typeof assessment_results;

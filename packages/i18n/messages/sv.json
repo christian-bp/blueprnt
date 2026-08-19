@@ -187,7 +187,9 @@
       "payMappingReasonsApplied": "Skäl tillämpade",
       "criterionActivated": "Kriterium tillagt",
       "modelApproved": "Modell godkänd",
-      "workingConditionsDecided": "Beslut om arbetsförhållanden sparat"
+      "workingConditionsDecided": "Beslut om arbetsförhållanden sparat",
+      "assessmentLocked": "Bedömningen låst",
+      "assessmentUnlocked": "Bedömningen upplåst"
     },
     "accountMenu": "Kontomeny",
     "commandPalette": {
@@ -771,7 +773,8 @@
         "competenceShare": "Kompetens %",
         "effortShare": "Ansträngning %",
         "responsibilityShare": "Ansvar %",
-        "workingConditionsShare": "Arbetsförhållanden %"
+        "workingConditionsShare": "Arbetsförhållanden %",
+        "noteProvided": "Anteckning angiven"
       },
       "values": {
         "yes": "Ja",
@@ -859,7 +862,10 @@
         "modelWorkingConditionsDecided": "Beslut om arbetsförhållanden sparat",
         "modelLevelRulesUpdated": "Nivågränser uppdaterade",
         "modelZoneProfileRulesUpdated": "Zonprofilregler uppdaterade",
-        "modelApprovalReopened": "Modellgodkännande återöppnat"
+        "modelApprovalReopened": "Modellgodkännande återöppnat",
+        "roleAssessmentLocked": "Bedömning låst",
+        "roleAssessmentUnlocked": "Bedömning upplåst",
+        "roleAssessmentCalibrated": "Bedömning kalibrerad"
       },
       "ai": {
         "weightReview": "Viktgenomgång: {count} tillämpade",
@@ -1093,7 +1099,9 @@
           "heading": "Medarbetare i rollen",
           "empty": "Inga medarbetare är klassificerade i den här rollen ännu.",
           "archivedEmpty": "Rollen är arkiverad, så ingen är klassificerad i den. Historiken finns kvar."
-        }
+        },
+        "lockedBadge": "Låst",
+        "methodDriftBadge": "Bedömd enligt tidigare metod"
       },
       "archive": {
         "cta": "Arkivera roll",
@@ -1194,7 +1202,7 @@
         "title": "Inte redo än",
         "importLine": "Inga anställda är importerade ännu",
         "classifyLine": "{count, plural, one {# person är inte klassificerad än} other {# personer är inte klassificerade än}}",
-        "evaluateLine": "{count, plural, one {# roll med anställda saknar färdig utvärdering} other {# roller med anställda saknar färdig utvärdering}}"
+        "evaluateLine": "{count, plural, one {# roll med anställda behöver fortfarande låsa sin bedömning} other {# roller med anställda behöver fortfarande låsa sina bedömningar}}"
       },
       "actions": {
         "status": {
@@ -1561,7 +1569,7 @@
       "motivationRequiredError": "Lägg till en motivering innan du fortsätter.",
       "backCta": "Tillbaka",
       "nextCta": "Nästa kriterium",
-      "finishCta": "Visa resultat",
+      "finishCta": "Avsluta bedömningen",
       "saveError": "Betyget kunde inte sparas. Försök igen.",
       "result": {
         "heading": "Resultat",
@@ -1578,7 +1586,16 @@
       },
       "lockedExplanation": "Betygsättningen är låst eftersom rollen är arkiverad. Arkivering kan inte ångras, så skapa en ny roll om arbetet behöver betygsättas igen.",
       "modelUnapprovedExplanation": "Utvärderingsmodellen måste godkännas innan roller kan bedömas.",
-      "modelUnapprovedCta": "Gå till sidan Metod"
+      "modelUnapprovedCta": "Gå till sidan Metod",
+      "lockCta": "Lås bedömningen",
+      "readyToLockExplanation": "Alla kriterier har en bedömning. Lås bedömningen för att visa viktning och nivå.",
+      "lockError": "Bedömningen kunde inte låsas. Försök igen.",
+      "alreadyLockedExplanation": "Den här bedömningen är låst. Lås upp den för att ändra några bedömningar.",
+      "unlockCta": "Lås upp bedömningen",
+      "unlockDialogTitle": "Lås upp den här bedömningen?",
+      "unlockDialogDescription": "Att låsa upp döljer viktning och nivå igen tills bedömningen låses på nytt. Bedömningarna kan då ändras.",
+      "unlockConfirm": "Ja, lås upp",
+      "unlockCancel": "Avbryt"
     },
     "levels": {
       "description": "Nivåerna och rollerna i varje nivå, härledda live från aktuell modell och bedömningar.",
@@ -1598,7 +1615,8 @@
       "deviation": "≠ Nivå {level}",
       "deviationLabel": "Beräknad nivå avviker från den överenskomna nivån {level}",
       "empty": "Inga roller att visa ännu. Skapa en roll och utvärdera den för att se nivåerna.",
-      "emptyCta": "Skapa en roll"
+      "emptyCta": "Skapa en roll",
+      "readyToLock": "Klar att låsa"
     },
     "auth": {
       "loading": "Kontrollerar din session",
@@ -2612,6 +2630,8 @@
     "tooManyCriteria": "En modell kan ha högst 8 kriterier.",
     "criterionAlreadySelected": "Kriteriet ingår redan i modellen.",
     "methodBlocked": "Metodens checklista har olösta punkter. Åtgärda varje blockerare innan du godkänner.",
-    "modelNotApproved": "Utvärderingsmodellen måste godkännas innan roller kan bedömas."
+    "modelNotApproved": "Utvärderingsmodellen måste godkännas innan roller kan bedömas.",
+    "assessmentLocked": "Bedömningen är låst. Lås upp den för att ändra bedömningar.",
+    "assessmentNotLocked": "Bedömningen måste låsas först."
   }
 }

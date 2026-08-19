@@ -309,6 +309,16 @@ export interface AuditPayloads {
   // reserved by PROVENANCE_KEYS for level.shift's nested { event, ... } shape,
   // and this field is a flat string.
   "model.approvalReopened": { modelId: string; causeEvent: string }
+  // Locking lifecycle (ADR-0023, spec 2.4/6): lock-as-reveal never wraps in a
+  // level.shift (locking/unlocking changes what getResults exposes, not the
+  // underlying derivation), so these three carry only their own marker/stat
+  // shape. ratedCount is a flat stat (how many criteria were covered at lock
+  // time); unlock carries no extra field (the role subject is enough); the
+  // calibration note itself never enters the trail (free-text audit
+  // practice), only whether one was given.
+  "role.assessmentLocked": { roleId: string; ratedCount: number }
+  "role.assessmentUnlocked": { roleId: string }
+  "role.assessmentCalibrated": { roleId: string; noteProvided: boolean }
   // These three diff the employee's identity values too (ADR-0013), which
   // erasure tombstones via anonymizePersonAuditRows. Keep the shape flat:
   // the scrub walks only the top-level `changes` map, and a nested `items[]`

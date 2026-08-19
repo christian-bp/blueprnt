@@ -1,18 +1,57 @@
 import { v } from "convex/values"
+import type { Doc } from "../_generated/dataModel"
 import {
   criteriaLibraryContent,
   LIBRARY_DIMENSION,
 } from "../evaluationModel/criteriaLibrary"
 import { clampLocale } from "../evaluationModel/localize"
-import { dimensionKeyValidator } from "../evaluationModel/tables"
+import {
+  dimensionKeyValidator,
+  zoneKeyValidator,
+} from "../evaluationModel/tables"
 import { orgQuery } from "../lib/functions"
 import { deriveResults } from "./compute"
 import { familyNames, trackNames } from "./names"
 
+// Locking is the reveal (ADR-0023, spec 2.4/6): while a role's assessment is
+// a draft (roles.assessment absent), no result exists anywhere -- score,
+// level, zone, and the profile outcome all read null here regardless of what
+// the engine actually derived. `complete`/`ratedCount`/`totalCriteria` stay
+// exposed always (completeness counters, never the outcome itself), so the
+// "ready to lock" state has something to show. Method drift
+// (lockedAt < approvedAt) is derived here at read time and never stored,
+// mirroring score/level/zone; it is always false for an unlocked or
+// unapproved-model role, since drift only describes a REVEALED result rated
+// under a since-superseded method.
+function deriveMethodDrift(
+  assessment: Doc<"roles">["assessment"],
+  model: Doc<"models"> | null
+): boolean {
+  if (assessment === undefined || model === undefined || model === null) {
+    return false
+  }
+  if (model.approval === undefined) return false
+  return assessment.lockedAt < model.approval.approvedAt
+}
+
+const zoneWireValidator = v.union(zoneKeyValidator, v.null())
+const profileFailuresWireValidator = v.union(
+  v.array(
+    v.object({
+      criterionId: v.string(),
+      required: v.number(),
+      actual: v.number(),
+    })
+  ),
+  v.null()
+)
+
 // The results view: live-derived rows for every non-archived role plus the
 // model's level list. Score/level are computed at read time and never stored
 // (ADR-0002). Sorted level-first (Level 1 on top), score desc within a level,
-// incomplete roles last by title.
+// incomplete/unlocked roles last by title -- which is also what makes "only
+// locked roles place" fall out of the existing sort for free on the levels
+// surfaces (their level is null until locked).
 export const getResults = orgQuery({
   args: { locale: v.optional(v.string()) },
   returns: v.object({
@@ -26,20 +65,15 @@ export const getResults = orgQuery({
         complete: v.boolean(),
         ratedCount: v.number(),
         totalCriteria: v.number(),
+        locked: v.boolean(),
+        calibrated: v.boolean(),
+        readyToLock: v.boolean(),
+        methodDrift: v.boolean(),
         score: v.union(v.number(), v.null()),
         level: v.union(v.number(), v.null()),
-        zone: v.union(v.string(), v.null()),
+        zone: zoneWireValidator,
         profileLimited: v.union(v.boolean(), v.null()),
-        profileFailures: v.union(
-          v.array(
-            v.object({
-              criterionId: v.string(),
-              required: v.number(),
-              actual: v.number(),
-            })
-          ),
-          v.null()
-        ),
+        profileFailures: profileFailuresWireValidator,
         familyId: v.union(v.id("roleFamilies"), v.null()),
         familyName: v.union(v.string(), v.null()),
         anchor: v.union(
@@ -93,20 +127,26 @@ export const getResults = orgQuery({
               expectedLevel: anchorRole.expectedLevel,
               status: anchorRole.status,
             }
+      const locked = role.assessment !== undefined
+      const complete = result?.complete ?? false
       rows.push({
         roleId: role._id,
         title: role.title,
         slug: role.slug,
         trackKey: role.trackKey,
         trackName: track?.name ?? role.trackKey,
-        complete: result?.complete ?? false,
+        complete,
         ratedCount: result?.ratedCount ?? 0,
         totalCriteria: derived.totalCriteria,
-        score: result?.score ?? null,
-        level: result?.level ?? null,
-        zone: result?.zone ?? null,
-        profileLimited: result?.profileLimited ?? null,
-        profileFailures: result?.profileFailures ?? null,
+        locked,
+        calibrated: role.assessment?.calibratedAt !== undefined,
+        readyToLock: complete && !locked,
+        methodDrift: deriveMethodDrift(role.assessment, model),
+        score: locked ? (result?.score ?? null) : null,
+        level: locked ? (result?.level ?? null) : null,
+        zone: locked ? (result?.zone ?? null) : null,
+        profileLimited: locked ? (result?.profileLimited ?? null) : null,
+        profileFailures: locked ? (result?.profileFailures ?? null) : null,
         familyId: role.familyId ?? null,
         familyName:
           role.familyId !== undefined
@@ -138,6 +178,15 @@ export const getResults = orgQuery({
 // share from value * weightPoints client-side (packages/core criterionShares,
 // which validates each rating against its own dimension), so dimensionKey
 // travels alongside weightPoints and value.
+//
+// NOTE on `criteria`: the per-criterion value/motivation are NOT gated on
+// `locked` at this wire (unlike score/level/zone below) -- they are the same
+// per-criterion rows the blind rating flow already writes and re-reads while
+// rating. Blindness for the AGGREGATE outcome (the reveal this whole task is
+// about) is enforced by the two dashboard consumers of this query, which
+// only ever render the breakdown once `locked` is true (rating-result.tsx,
+// role-evaluation-card.tsx, role-sheet.tsx); a future third consumer must
+// keep that same rule.
 export const getRoleResult = orgQuery({
   args: { roleId: v.string(), locale: v.optional(v.string()) },
   returns: v.union(
@@ -148,20 +197,15 @@ export const getRoleResult = orgQuery({
       complete: v.boolean(),
       ratedCount: v.number(),
       totalCriteria: v.number(),
+      locked: v.boolean(),
+      calibrated: v.boolean(),
+      readyToLock: v.boolean(),
+      methodDrift: v.boolean(),
       score: v.union(v.number(), v.null()),
       level: v.union(v.number(), v.null()),
-      zone: v.union(v.string(), v.null()),
+      zone: zoneWireValidator,
       profileLimited: v.union(v.boolean(), v.null()),
-      profileFailures: v.union(
-        v.array(
-          v.object({
-            criterionId: v.string(),
-            required: v.number(),
-            actual: v.number(),
-          })
-        ),
-        v.null()
-      ),
+      profileFailures: profileFailuresWireValidator,
       criteria: v.array(
         v.object({
           criterionId: v.id("criteria"),
@@ -205,17 +249,23 @@ export const getRoleResult = orgQuery({
       ratingRows.map((rating) => [rating.criterionId as string, rating])
     )
 
+    const locked = role.assessment !== undefined
+    const complete = result?.complete ?? false
     return {
       roleId: role._id,
       title: role.title,
-      complete: result?.complete ?? false,
+      complete,
       ratedCount: result?.ratedCount ?? 0,
       totalCriteria: derived.totalCriteria,
-      score: result?.score ?? null,
-      level: result?.level ?? null,
-      zone: result?.zone ?? null,
-      profileLimited: result?.profileLimited ?? null,
-      profileFailures: result?.profileFailures ?? null,
+      locked,
+      calibrated: role.assessment?.calibratedAt !== undefined,
+      readyToLock: complete && !locked,
+      methodDrift: deriveMethodDrift(role.assessment, model),
+      score: locked ? (result?.score ?? null) : null,
+      level: locked ? (result?.level ?? null) : null,
+      zone: locked ? (result?.zone ?? null) : null,
+      profileLimited: locked ? (result?.profileLimited ?? null) : null,
+      profileFailures: locked ? (result?.profileFailures ?? null) : null,
       criteria: criteriaRows.map((row) => {
         // Every criterion is a library selection (decision 8): its display
         // name always localizes from criteriaLibraryContent by libraryKey,

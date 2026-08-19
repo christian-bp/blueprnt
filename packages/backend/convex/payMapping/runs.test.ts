@@ -15,11 +15,13 @@ const OPERATOR_NAME = "HR Person"
 const PAST = 1_700_000_000_000
 
 // Seeds an org with: a default model (criteria + level rules), one fully
-// evaluated role (every criterion rated so the engine returns a non-null
-// level/score), and two classified active people (confirmed open assignment
-// to that role) one of whom has a pay record and one who does not. Satisfies
-// the preconditions gate outright, so startPayMappingRun succeeds. Returns
-// the caller's org id and an HR (admin) identity wrapper for the freeze
+// evaluated AND LOCKED role (every criterion rated so the engine returns a
+// non-null level/score, then the assessment is locked so the preconditions
+// gate's "evaluated AND locked" requirement, spec 2.4/6, is actually met),
+// and two classified active people (confirmed open assignment to that role)
+// one of whom has a pay record and one who does not. Satisfies the
+// preconditions gate outright, so startPayMappingRun succeeds. Returns the
+// caller's org id and an HR (admin) identity wrapper for the freeze
 // mutation.
 async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
   const email = "hr@acme.se"
@@ -93,6 +95,13 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
         value: 5,
       })
     }
+    // Lock directly (bypassing lockAssessment's per-mutation re-validation
+    // and motivation-required law, like the ratings above bypass setRating):
+    // this fixture is about freeze/pay-mapping mechanics, not the locking
+    // lifecycle, which has its own dedicated suite (assessment/locking.test).
+    await ctx.db.patch(roleDocId, {
+      assessment: { lockedBy: userId, lockedAt: Date.now() },
+    })
   })
 
   // Two classified people (open assignment to the evaluated role). The paid
@@ -493,6 +502,101 @@ describe("getPayMappingPreconditions", () => {
       },
     ])
     expect(result.ready).toBe(false)
+  })
+
+  it("blocks on a staffed role that is fully rated but not yet locked (evaluated AND locked)", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr } = await seedForFreeze(t)
+
+    const model = await asHr.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    if (model === null) throw new Error("seed: model")
+    const track = model.tracks[0]
+    if (track === undefined) throw new Error("seed: track")
+    const seniority =
+      TRACK_SENIORITIES[track.key as keyof typeof TRACK_SENIORITIES][0]
+    if (seniority === undefined) throw new Error("seed: seniority")
+
+    // A second role, staffed and FULLY RATED, but never locked: complete
+    // draft results are not a revealed evaluation, so this must block the
+    // gate exactly like an unrated role does (spec 2.4/6).
+    const { roleId: draftRoleId, slug: draftRoleSlug } = await asHr.mutation(
+      api.assessment.roles.createRole,
+      {
+        orgId,
+        title: "Draft Evaluated Designer",
+        function: "Design",
+        team: "Product",
+        trackKey: track.key,
+      }
+    )
+    await t.run(async (ctx) => {
+      const roleDocId = ctx.db.normalizeId("roles", draftRoleId as string)
+      if (roleDocId === null) throw new Error("seed: role id")
+      for (const criterion of model.criteria) {
+        const criterionDocId = ctx.db.normalizeId(
+          "criteria",
+          criterion.criterionId
+        )
+        if (criterionDocId === null) throw new Error("seed: criterion id")
+        await ctx.db.insert("ratings", {
+          orgId,
+          roleId: roleDocId,
+          criterionId: criterionDocId,
+          value: 5,
+        })
+      }
+    })
+    const { personId: draftPersonId } = await asHr.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Erik Falk", gender: "Man" }
+    )
+    await asHr.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: draftPersonId,
+      roleId: draftRoleId,
+      seniority,
+      senioritySource: "confirmed",
+    })
+
+    const result = await asHr.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    expect(result.unevaluatedRoles).toEqual([
+      {
+        roleId: draftRoleId,
+        title: "Draft Evaluated Designer",
+        slug: draftRoleSlug,
+      },
+    ])
+    expect(result.ready).toBe(false)
+
+    await expect(
+      asHr.mutation(api.payMapping.runs.startPayMappingRun, {
+        orgId,
+        label: "Test",
+      })
+    ).rejects.toThrow(/errors.payMappingPreconditionsUnmet/)
+
+    // Locking the draft role clears the block. Patched directly (like the
+    // ratings above): this test is about the PRECONDITIONS predicate, not
+    // the locking mutation's own gates (model approval, motivation-required
+    // law), which have their own dedicated suite (assessment/locking.test).
+    await t.run(async (ctx) => {
+      const roleDocId = ctx.db.normalizeId("roles", draftRoleId as string)
+      if (roleDocId === null) throw new Error("seed: role id")
+      await ctx.db.patch(roleDocId, {
+        assessment: { lockedBy: "test-locker", lockedAt: Date.now() },
+      })
+    })
+    const afterLock = await asHr.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    expect(afterLock.unevaluatedRoles).toEqual([])
+    expect(afterLock.ready).toBe(true)
   })
 
   it("never reports ready for an org with no people, so the empty org must import first", async () => {

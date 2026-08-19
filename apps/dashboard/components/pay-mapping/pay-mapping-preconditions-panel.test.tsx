@@ -47,7 +47,7 @@ describe("PayMappingPreconditionsPanel", () => {
       ],
     })
     const line = screen.getByText(
-      "2 roles with employees still need a completed evaluation"
+      "2 roles with employees still need their evaluation locked"
     )
     expect(line.closest("a")?.getAttribute("href")).toBe("/roles")
     const designerLink = screen.getByText("Designer").closest("a")
@@ -65,7 +65,7 @@ describe("PayMappingPreconditionsPanel", () => {
     renderPanel({ peopleCount: 8, unclassifiedCount: 0, unevaluatedRoles })
     expect(
       screen.getByText(
-        "6 roles with employees still need a completed evaluation"
+        "6 roles with employees still need their evaluation locked"
       )
     ).toBeDefined()
     expect(screen.getAllByText(/^Role \d$/)).toHaveLength(4)
@@ -80,7 +80,7 @@ describe("PayMappingPreconditionsPanel", () => {
     expect(screen.getByText("2 people are not classified yet")).toBeDefined()
     expect(
       screen.getByText(
-        "1 role with employees still needs a completed evaluation"
+        "1 role with employees still needs its evaluation locked"
       )
     ).toBeDefined()
   })

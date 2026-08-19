@@ -24,6 +24,10 @@ import {
   useContext,
   useState,
 } from "react"
+import {
+  LockedBadge,
+  MethodDriftBadge,
+} from "@/components/assessment-lock-badges"
 import { DeviationBadge } from "@/components/deviation-badge"
 import { useOrganization } from "@/components/org-context"
 import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
@@ -134,10 +138,15 @@ function RoleSheetContent({
                 name={role.trackName}
                 short
               />
-              {/* Level sits with the title once the role is fully evaluated,
-                  matching the role page result badge. */}
-              {result?.complete && result.level !== null && (
-                <LevelBadge level={result.level} />
+              {/* Level sits with the title once the assessment is locked
+                  (lock-as-reveal, spec 2.4/6), matching the role page result
+                  badge; the locked/drift badges ride alongside it. */}
+              {result?.locked && result.level !== null && (
+                <>
+                  <LevelBadge level={result.level} />
+                  <LockedBadge />
+                  {result.methodDrift && <MethodDriftBadge />}
+                </>
               )}
             </div>
             {subtitle.length > 0 ? (
@@ -201,27 +210,32 @@ function RoleSheetContent({
               </div>
             </section>
 
-            {/* Result: weighting + level + breakdown when complete, else progress. */}
+            {/* Result: weighting + level + breakdown once LOCKED (lock-as-
+                reveal, spec 2.4/6), else progress or "ready to lock". */}
             <section className="space-y-3">
               {result === undefined ? (
                 <div className="flex justify-center py-4">
                   <Spinner aria-label={t("loading")} />
                 </div>
-              ) : result?.complete ? (
+              ) : result?.locked ? (
                 // Level now lives in the header; the body carries only the
                 // per-criterion contribution breakdown.
                 <RoleCriterionBreakdown criteria={result.criteria} />
               ) : (
                 <div className="space-y-1">
                   <p className="text-muted-foreground text-sm">
-                    {tRoles("notEvaluated")}
+                    {result?.complete
+                      ? tLevels("readyToLock")
+                      : tRoles("notEvaluated")}
                   </p>
-                  <p className="text-muted-foreground text-sm tabular-nums">
-                    {t("progress", {
-                      rated: role.ratedCount,
-                      total: role.totalCriteria,
-                    })}
-                  </p>
+                  {!result?.complete && (
+                    <p className="text-muted-foreground text-sm tabular-nums">
+                      {t("progress", {
+                        rated: role.ratedCount,
+                        total: role.totalCriteria,
+                      })}
+                    </p>
+                  )}
                 </div>
               )}
             </section>

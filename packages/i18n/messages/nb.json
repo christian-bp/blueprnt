@@ -187,7 +187,9 @@
       "payMappingReasonsApplied": "Årsaker brukt",
       "criterionActivated": "Kriterium lagt til",
       "modelApproved": "Modell godkjent",
-      "workingConditionsDecided": "Beslutning om arbeidsforhold lagret"
+      "workingConditionsDecided": "Beslutning om arbeidsforhold lagret",
+      "assessmentLocked": "Vurderingen låst",
+      "assessmentUnlocked": "Vurderingen låst opp"
     },
     "accountMenu": "Kontomeny",
     "commandPalette": {
@@ -771,7 +773,8 @@
         "competenceShare": "Kompetanse %",
         "effortShare": "Innsats %",
         "responsibilityShare": "Ansvar %",
-        "workingConditionsShare": "Arbeidsforhold %"
+        "workingConditionsShare": "Arbeidsforhold %",
+        "noteProvided": "Notat oppgitt"
       },
       "values": {
         "yes": "Ja",
@@ -859,7 +862,10 @@
         "modelWorkingConditionsDecided": "Beslutning om arbeidsforhold lagret",
         "modelLevelRulesUpdated": "Nivågrenser oppdatert",
         "modelZoneProfileRulesUpdated": "Soneprofilregler oppdatert",
-        "modelApprovalReopened": "Modellgodkjenning gjenåpnet"
+        "modelApprovalReopened": "Modellgodkjenning gjenåpnet",
+        "roleAssessmentLocked": "Vurdering låst",
+        "roleAssessmentUnlocked": "Vurdering låst opp",
+        "roleAssessmentCalibrated": "Vurdering kalibrert"
       },
       "ai": {
         "weightReview": "Vektgjennomgang: {count} brukt",
@@ -1093,7 +1099,9 @@
           "heading": "Ansatte i rollen",
           "empty": "Ingen ansatte er klassifisert i denne rollen ennå.",
           "archivedEmpty": "Rollen er arkivert, så ingen er klassifisert i den. Historikken beholdes."
-        }
+        },
+        "lockedBadge": "Låst",
+        "methodDriftBadge": "Vurdert etter tidligere metode"
       },
       "archive": {
         "cta": "Arkiver rolle",
@@ -1194,7 +1202,7 @@
         "title": "Ikke klart ennå",
         "importLine": "Ingen ansatte er importert ennå",
         "classifyLine": "{count, plural, one {# person er ikke klassifisert ennå} other {# personer er ikke klassifisert ennå}}",
-        "evaluateLine": "{count, plural, one {# rolle med ansatte mangler fullført vurdering} other {# roller med ansatte mangler fullført vurdering}}"
+        "evaluateLine": "{count, plural, one {# rolle med ansatte må fortsatt få vurderingen låst} other {# roller med ansatte må fortsatt få vurderingen låst}}"
       },
       "actions": {
         "status": {
@@ -1561,7 +1569,7 @@
       "motivationRequiredError": "Legg til en begrunnelse før du fortsetter.",
       "backCta": "Tilbake",
       "nextCta": "Neste kriterium",
-      "finishCta": "Vis resultat",
+      "finishCta": "Fullfør vurderingen",
       "saveError": "Vurderingen kunne ikke lagres. Prøv igjen.",
       "result": {
         "heading": "Resultat",
@@ -1578,7 +1586,16 @@
       },
       "lockedExplanation": "Vurderingen er låst fordi rollen er arkivert. Arkivering kan ikke angres, så opprett en ny rolle hvis arbeidet skal vurderes på nytt.",
       "modelUnapprovedExplanation": "Evalueringsmodellen må godkjennes før roller kan vurderes.",
-      "modelUnapprovedCta": "Gå til Metode-siden"
+      "modelUnapprovedCta": "Gå til Metode-siden",
+      "lockCta": "Lås vurderingen",
+      "readyToLockExplanation": "Alle kriterier har en vurdering. Lås vurderingen for å vise vekting og nivå.",
+      "lockError": "Vurderingen kunne ikke låses. Prøv igjen.",
+      "alreadyLockedExplanation": "Denne vurderingen er låst. Lås den opp for å endre noen vurderinger.",
+      "unlockCta": "Lås opp vurderingen",
+      "unlockDialogTitle": "Lås opp denne vurderingen?",
+      "unlockDialogDescription": "Å låse opp skjuler vekting og nivå igjen til vurderingen låses på nytt. Vurderinger kan da endres.",
+      "unlockConfirm": "Ja, lås opp",
+      "unlockCancel": "Avbryt"
     },
     "levels": {
       "description": "Nivåene og rollene i hvert nivå, utledet live fra gjeldende modell og vurderinger.",
@@ -1598,7 +1615,8 @@
       "deviation": "≠ Nivå {level}",
       "deviationLabel": "Beregnet nivå avviker fra det avtalte nivået {level}",
       "empty": "Ingen roller å vise ennå. Opprett en rolle og vurder den for å se nivåene.",
-      "emptyCta": "Opprett en rolle"
+      "emptyCta": "Opprett en rolle",
+      "readyToLock": "Klar til å låses"
     },
     "auth": {
       "loading": "Sjekker økten din",
@@ -2612,6 +2630,8 @@
     "tooManyCriteria": "En modell kan ha maks 8 kriterier.",
     "criterionAlreadySelected": "Kriteriet er allerede en del av modellen.",
     "methodBlocked": "Metodens sjekkliste har uløste punkter. Løs alle blokkere før du godkjenner.",
-    "modelNotApproved": "Evalueringsmodellen må godkjennes før roller kan vurderes."
+    "modelNotApproved": "Evalueringsmodellen må godkjennes før roller kan vurderes.",
+    "assessmentLocked": "Vurderingen er låst. Lås den opp for å endre vurderinger.",
+    "assessmentNotLocked": "Vurderingen må låses først."
   }
 }

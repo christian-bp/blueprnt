@@ -108,6 +108,29 @@ sidan Modells flik Metod för att rensa godkännandet och dess signering, redige
 texten, och godkänn den igen. Se
 [Metoddokumentation](/docs/method-documentation).
 
+### Bedömningen är låst
+
+Kod: `assessmentLocked`
+
+"Bedömningen är låst. Lås upp den för att ändra bedömningar."
+
+En rolls bedömningar kan inte längre ändras när dess bedömning är låst:
+att låsa en fullständig bedömning är det som visar dess viktning och
+nivå. Lås upp den från rollsidans åtgärdsmeny för att göra fler
+ändringar, vilket döljer viktningen och nivån igen tills den låses på
+nytt. Se [Utvärdera en roll](/docs/evaluating-a-role).
+
+### Bedömningen måste låsas först
+
+Kod: `assessmentNotLocked`
+
+"Bedömningen måste låsas först."
+
+Att låsa upp, eller bekräfta en kalibrerad placering, gäller bara en
+bedömning som redan är låst. Lås bedömningen först, från rollsidan när
+varje kriterium har en bedömning. Se
+[Utvärdera en roll](/docs/evaluating-a-role).
+
 ## Jag kan inte ange en roll som ankarroll
 
 Kod: `ratingsIncomplete`

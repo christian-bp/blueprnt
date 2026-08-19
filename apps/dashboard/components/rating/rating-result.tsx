@@ -47,7 +47,11 @@ export function RatingResult({
     result === undefined ||
     anchors === undefined ||
     result === null ||
-    !result.complete
+    // Locking is the reveal (spec 2.4/6): this component only ever renders
+    // AFTER a successful lock (rate/page.tsx) or for a role that arrives
+    // already locked, so it waits on `locked`, not merely `complete` (a
+    // complete-but-unlocked role's score/level/zone read null on the wire).
+    !result.locked
   ) {
     return (
       <main className="flex items-center justify-center p-6">

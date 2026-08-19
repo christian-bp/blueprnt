@@ -16,6 +16,7 @@ function role(overrides: Partial<LevelRoleRow>): LevelRoleRow {
     level: null,
     ratedCount: 3,
     totalCriteria: 9,
+    readyToLock: false,
     familyId: null,
     familyName: null,
     anchor: null,
@@ -44,6 +45,20 @@ describe("PendingRoles", () => {
     expect(
       screen.getByRole("link", { name: /Data Analyst/ }).getAttribute("href")
     ).toBe("/roles/r1")
+  })
+
+  it("badges a complete-but-unlocked role as ready to lock", () => {
+    renderPending([
+      role({ roleId: "r3", title: "Ready Role", readyToLock: true }),
+    ])
+    expect(
+      screen.getByText(messages.dashboard.levels.readyToLock)
+    ).toBeDefined()
+  })
+
+  it("does not badge a role that is merely still being rated", () => {
+    renderPending([role({})])
+    expect(screen.queryByText(messages.dashboard.levels.readyToLock)).toBeNull()
   })
 
   it("ignores roles that already have a level", () => {

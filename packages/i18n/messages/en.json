@@ -187,7 +187,9 @@
       "payMappingReasonsApplied": "Reasons applied",
       "criterionActivated": "Criterion added",
       "modelApproved": "Model approved",
-      "workingConditionsDecided": "Working conditions decision saved"
+      "workingConditionsDecided": "Working conditions decision saved",
+      "assessmentLocked": "Assessment locked",
+      "assessmentUnlocked": "Assessment unlocked"
     },
     "accountMenu": "Account menu",
     "commandPalette": {
@@ -771,7 +773,8 @@
         "competenceShare": "Competence %",
         "effortShare": "Effort %",
         "responsibilityShare": "Responsibility %",
-        "workingConditionsShare": "Working conditions %"
+        "workingConditionsShare": "Working conditions %",
+        "noteProvided": "Note provided"
       },
       "values": {
         "yes": "Yes",
@@ -859,7 +862,10 @@
         "modelWorkingConditionsDecided": "Working conditions decision saved",
         "modelLevelRulesUpdated": "Level thresholds updated",
         "modelZoneProfileRulesUpdated": "Zone profile rules updated",
-        "modelApprovalReopened": "Model approval reopened"
+        "modelApprovalReopened": "Model approval reopened",
+        "roleAssessmentLocked": "Assessment locked",
+        "roleAssessmentUnlocked": "Assessment unlocked",
+        "roleAssessmentCalibrated": "Assessment calibrated"
       },
       "ai": {
         "weightReview": "Weight review: {count} applied",
@@ -1088,6 +1094,8 @@
         "emptyField": "Not filled in yet",
         "archivedBadge": "Archived",
         "archivedHint": "This role is archived and read-only. Its history is kept.",
+        "lockedBadge": "Locked",
+        "methodDriftBadge": "Assessed under a previous method",
         "aiProvenance": "Review and edit the draft, then Save.",
         "people": {
           "heading": "Employees in this role",
@@ -1194,7 +1202,7 @@
         "title": "Not ready yet",
         "importLine": "No employees have been imported yet",
         "classifyLine": "{count, plural, one {# person is not classified yet} other {# people are not classified yet}}",
-        "evaluateLine": "{count, plural, one {# role with employees still needs a completed evaluation} other {# roles with employees still need a completed evaluation}}"
+        "evaluateLine": "{count, plural, one {# role with employees still needs its evaluation locked} other {# roles with employees still need their evaluation locked}}"
       },
       "actions": {
         "status": {
@@ -1561,8 +1569,17 @@
       "motivationRequiredError": "Add a motivation before continuing.",
       "backCta": "Back",
       "nextCta": "Next criterion",
-      "finishCta": "Show result",
+      "finishCta": "Finish rating",
       "saveError": "The rating could not be saved. Try again.",
+      "lockCta": "Lock assessment",
+      "readyToLockExplanation": "Every criterion has a rating. Lock the assessment to reveal the weighting and level.",
+      "lockError": "The assessment could not be locked. Try again.",
+      "alreadyLockedExplanation": "This assessment is locked. Unlock it to change any ratings.",
+      "unlockCta": "Unlock assessment",
+      "unlockDialogTitle": "Unlock this assessment?",
+      "unlockDialogDescription": "Unlocking hides the weighting and level again until the assessment is locked once more. Ratings can then be changed.",
+      "unlockConfirm": "Yes, unlock",
+      "unlockCancel": "Cancel",
       "result": {
         "heading": "Result",
         "scoreLabel": "Weighting",
@@ -1594,6 +1611,7 @@
       "levelEmpty": "No roles in this level",
       "pendingHeading": "Not yet evaluated",
       "pendingDescription": "These roles have no level until their assessment is complete.",
+      "readyToLock": "Ready to lock",
       "anchorLabel": "Anchor role",
       "deviation": "≠ Level {level}",
       "deviationLabel": "Computed level deviates from the agreed level {level}",
@@ -2612,6 +2630,8 @@
     "tooManyCriteria": "A model can have at most 8 criteria.",
     "criterionAlreadySelected": "This criterion is already part of the model.",
     "methodBlocked": "The method checklist has unresolved items. Resolve every blocker before approving.",
-    "modelNotApproved": "The evaluation model needs to be approved before roles can be rated."
+    "modelNotApproved": "The evaluation model needs to be approved before roles can be rated.",
+    "assessmentLocked": "The assessment is locked. Unlock it to change ratings.",
+    "assessmentNotLocked": "The assessment needs to be locked first."
   }
 }

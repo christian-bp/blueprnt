@@ -1,6 +1,6 @@
 import { validateMethod } from "@workspace/core"
 import { describe, expect, it } from "vitest"
-import { internal } from "../_generated/api"
+import { api, components, internal } from "../_generated/api"
 import { buildMethodCheckInput } from "../evaluationModel/approval"
 import { LIBRARY_DIMENSION } from "../evaluationModel/criteriaLibrary"
 import type { CriteriaLibraryKey } from "../evaluationModel/criteriaLibrary"
@@ -212,6 +212,23 @@ describe("assessment/seed.seedRatedRoles", () => {
       expect(
         familyCreated.every((row) => row.actorId === FOUNDER_AUTH_ID)
       ).toBe(true)
+
+      // The demo org has DONE its assessment work too (spec 2.4/6,
+      // lock-as-reveal): every role is locked, attributed to the founder,
+      // and lockedAt lands at or after approvedAt so a freshly reset demo
+      // never shows a stale-method drift chip nobody earned.
+      expect(
+        roles.every((role) => role.assessment?.lockedBy === FOUNDER_AUTH_ID)
+      ).toBe(true)
+      const approvedAt = model?.approval?.approvedAt ?? 0
+      expect(
+        roles.every((role) => (role.assessment?.lockedAt ?? 0) >= approvedAt)
+      ).toBe(true)
+      // Locked, not additionally calibrated: calibration is a separate,
+      // explicit confirmation step the seed does not perform.
+      expect(
+        roles.every((role) => role.assessment?.calibratedAt === undefined)
+      ).toBe(true)
     })
 
     // Idempotent: any existing role short-circuits the whole seed.
@@ -306,6 +323,36 @@ describe("assessment/seed.seedRatedRoles", () => {
       expect(payload.criteriaCount).toBe(8)
       expect(payload.checksPassed).toBe(checks.length)
     })
+  })
+
+  it("locks every role so getResults exposes a level for all of them", async () => {
+    // A real membership (not the bare users-mirror row the other tests use)
+    // so the org-scoped getResults query actually authorizes; the founder
+    // account itself is threaded through as actorId, matching how the
+    // production seed call attributes the work.
+    const t = initConvexTest()
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "founder@blueprnt.se", name: FOUNDER_NAME, role: "admin" }
+    )
+    const asFounder = t.withIdentity({ subject: userId })
+    await t.mutation(internal.evaluationModel.model.seedDefaultModel, {
+      orgId,
+      locale: "sv",
+      actorId: userId,
+    })
+    await t.mutation(internal.assessment.seed.seedRatedRoles, {
+      orgId,
+      actorId: userId,
+    })
+
+    const results = await asFounder.query(api.assessment.results.getResults, {
+      orgId,
+    })
+    expect(results.rows).toHaveLength(EXPECTED_ROLES)
+    expect(results.rows.every((row) => row.locked)).toBe(true)
+    expect(results.rows.every((row) => row.level !== null)).toBe(true)
+    expect(results.rows.every((row) => row.methodDrift === false)).toBe(true)
   })
 
   it("inserts the roles but no ratings when the org has no model yet", async () => {

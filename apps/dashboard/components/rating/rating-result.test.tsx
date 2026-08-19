@@ -23,6 +23,7 @@ const COMPLETE_RESULT = {
   roleId: "role-1",
   title: "Senior Engineer",
   complete: true,
+  locked: true,
   ratedCount: 2,
   totalCriteria: 2,
   score: 74,
@@ -82,7 +83,13 @@ describe("RatingResult", () => {
   })
 
   it("shows a spinner when the result exists but is not yet complete", () => {
-    resultFixture = { ...COMPLETE_RESULT, complete: false }
+    resultFixture = { ...COMPLETE_RESULT, complete: false, locked: false }
+    renderResult()
+    expect(screen.getByLabelText(labels.computing)).toBeDefined()
+  })
+
+  it("shows a spinner when the result is complete but not yet locked (lock-as-reveal)", () => {
+    resultFixture = { ...COMPLETE_RESULT, locked: false }
     renderResult()
     expect(screen.getByLabelText(labels.computing)).toBeDefined()
   })

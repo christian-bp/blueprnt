@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -25,6 +25,8 @@ type Result = {
   roleId: string
   title: string
   complete: boolean
+  locked: boolean
+  methodDrift?: boolean
   ratedCount: number
   totalCriteria: number
   score: number | null
@@ -42,6 +44,7 @@ const completeResult: Result = {
   roleId: "role_1",
   title: "Engineer",
   complete: true,
+  locked: true,
   ratedCount: 3,
   totalCriteria: 3,
   score: 71,
@@ -71,6 +74,10 @@ const completeResult: Result = {
   ],
 }
 
+// Complete but not yet locked: the "ready to lock" state (spec 2.4/6),
+// distinct from the locked-results state `completeResult` represents.
+const readyToLockResult: Result = { ...completeResult, locked: false }
+
 const designated: AnchorRoleInfo = {
   expectedLevel: 2,
   motivation: "Reference role for the platform track",
@@ -80,7 +87,7 @@ const designated: AnchorRoleInfo = {
 
 // getRoleResult drives the view; getModel/listAnchorRoles back the dialog when
 // an admin opens it.
-function setResult(next: Result | null) {
+function setResult(next: Result | null | undefined) {
   onQuery((ref) => {
     if (ref === "assessment.results.getRoleResult") return next
     if (ref === "evaluationModel.model.getModel")
@@ -145,16 +152,36 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("shows the weighting, level, and breakdown once complete", () => {
+  it("shows the weighting, level, and breakdown once locked", () => {
     setResult(completeResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(screen.getByText("Weighting 71")).toBeDefined()
     expect(screen.getByText("Level 3")).toBeDefined()
     expect(screen.getByText("Complexity")).toBeDefined()
+    expect(screen.getByText(detail.lockedBadge)).toBeDefined()
   })
 
-  it("puts Adjust ratings in the actions menu, not as a body button", async () => {
-    setResult(completeResult)
+  it("shows the ready-to-lock panel (not the result) for a complete but unlocked role", () => {
+    setResult(readyToLockResult)
+    renderCard({ ratedCount: 3, totalCriteria: 3 })
+    expect(
+      screen.getByText(messages.dashboard.rating.readyToLockExplanation)
+    ).toBeDefined()
+    expect(
+      screen.getByRole("button", { name: messages.dashboard.rating.lockCta })
+    ).toBeDefined()
+    expect(screen.queryByText("Weighting 71")).toBeNull()
+    expect(screen.queryByText(detail.lockedBadge)).toBeNull()
+  })
+
+  it("flags method drift on a locked role with a stale-method chip", () => {
+    setResult({ ...completeResult, methodDrift: true })
+    renderCard({ ratedCount: 3, totalCriteria: 3 })
+    expect(screen.getByText(detail.methodDriftBadge)).toBeDefined()
+  })
+
+  it("puts Adjust ratings in the actions menu for a ready-to-lock role, not as a body button", async () => {
+    setResult(readyToLockResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     // No standalone Adjust link in the card body.
     expect(
@@ -163,6 +190,23 @@ describe("RoleEvaluationCard", () => {
     await openManageMenu()
     const adjust = screen.getByRole("menuitem", { name: detail.adjustRateCta })
     expect(adjust.getAttribute("href")).toBe("/roles/r1/rate")
+  })
+
+  it("puts Unlock assessment in the actions menu for a locked role, behind a confirm dialog", async () => {
+    setResult(completeResult)
+    renderCard({ ratedCount: 3, totalCriteria: 3 })
+    expect(
+      screen.queryByRole("menuitem", { name: detail.adjustRateCta })
+    ).toBeNull()
+    await openManageMenu()
+    const unlock = screen.getByRole("menuitem", {
+      name: messages.dashboard.rating.unlockCta,
+    })
+    expect(unlock).toBeDefined()
+    fireEvent.click(unlock)
+    expect(
+      screen.getByText(messages.dashboard.rating.unlockDialogTitle)
+    ).toBeDefined()
   })
 
   it("offers Designate in the menu for an admin with no anchor, and shows no status row", async () => {
@@ -212,16 +256,18 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("gives a non-admin only Adjust in the menu for an anchor role", async () => {
-    setResult(completeResult)
+  it("gives a non-admin only Adjust in the menu for a ready-to-lock anchor role", async () => {
+    setResult(readyToLockResult)
     renderCard({
       ratedCount: 3,
       totalCriteria: 3,
       isAdmin: false,
       anchorRole: designated,
     })
-    // The computed level is shown; the role is still marked as an anchor.
-    expect(screen.getByText("Level 3")).toBeDefined()
+    // Not yet locked: the level is not revealed (lock-as-reveal), but the
+    // ready-to-lock panel confirms the role is still marked as an anchor
+    // candidate via the menu below.
+    expect(screen.queryByText("Level 3")).toBeNull()
     await openManageMenu()
     expect(
       screen.getByRole("menuitem", { name: detail.adjustRateCta })
@@ -239,6 +285,7 @@ describe("RoleEvaluationCard", () => {
   })
 
   it("shows the computing placeholder while a fully-rated result is still loading", () => {
+    setResult(undefined)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(
       screen.getByText(messages.dashboard.rating.result.computing)
