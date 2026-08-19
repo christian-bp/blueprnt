@@ -1,0 +1,59 @@
+packages/core/src/scoring.test.ts
+  s_58dd112dc09435::t_be796b879d8ca6 251-252
+  s_58dd112dc09435::t_dde65e89721e6f 75-77,80-82
+  s_58dd112dc09435::t_0f8ac4abe1e57f 42-44
+  s_58dd112dc09435::t_bf7b645f93c6fe 224-226
+  s_58dd112dc09435::t_c0c80124c06e7c 2,8
+  s_58dd112dc09435::t_c58fcb28c023ba 192-193
+  s_58dd112dc09435::t_588162f5d3f6f5 108-109
+  s_58dd112dc09435::t_c836a4ab3b58e8 208-209
+packages/core/src/results.ts
+  s_58dd112dc09435::t_d7bbadcc9afec7 2-38,46-51,56-65
+  s_58dd112dc09435::t_0271bf1dc17da2 1,39-45,52-55
+packages/backend/convex/assessment/results.test.ts
+  s_58dd112dc09435::t_0c53f35d273f39 246-253
+  s_58dd112dc09435::t_0994df74013cce 283-285
+  s_58dd112dc09435::t_4bb522383867d1 138-168
+packages/core/src/index.ts
+  s_58dd112dc09435::t_674883bedf2d24 2
+packages/core/src/scoring.fixtures.ts
+  s_58dd112dc09435::t_091c3634511c5c 10-12,14-22
+packages/core/src/types.ts
+  s_58dd112dc09435::t_f20c3fcbb94f52 1,3,13
+  s_58dd112dc09435::t_ea23c79528cbf9 48-49,57-59,65
+packages/backend/convex/assessment/compute.test.ts
+  s_58dd112dc09435::t_54037bab723149 263-265,276-278
+  s_58dd112dc09435::t_5c02db174787cc 150-152,161-163,172-174,185-187,196-198,207-209
+packages/core/src/results.test.ts
+  s_58dd112dc09435::t_15e238f6233b1e 1-228
+packages/core/src/scoring.ts
+  s_58dd112dc09435::t_c93025798d0b02 12-19
+  s_58dd112dc09435::t_7e2a80bef41856 87
+packages/backend/convex/assessment/compute.ts
+  s_58dd112dc09435::t_e2695fd68c26e4 92
+  s_58dd112dc09435::t_323a837fe09ce3 8,14
+  s_58dd112dc09435::t_9c3b3645c35c06 43,55-62
+packages/backend/convex/assessment/devCompany.test.ts
+  s_58dd112dc09435::t_694e60eabb762f 31
+packages/backend/convex/assessment/results.ts
+  s_58dd112dc09435::t_e30624889fefc9 103-105
+  s_58dd112dc09435::t_fa15061b787e1f 210-212
+  s_58dd112dc09435::t_69e4f720b02290 148-159
+  s_58dd112dc09435::t_d87003f8dbae99 27-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0f8c14805f10f0cbee5aa264d3e116d5ceccc590",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
