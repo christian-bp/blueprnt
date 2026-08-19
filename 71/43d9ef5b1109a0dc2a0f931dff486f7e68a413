@@ -1,0 +1,40 @@
+packages/backend/convex/assistant/knowledge.ts
+  s_58dd112dc09435::t_373a200e77c031 108
+  s_58dd112dc09435::t_dd1be65fb40a6b 309-311
+apps/dashboard/components/model/criterion-item.tsx
+  s_58dd112dc09435::t_2f13b8b3cf0b6c 84
+  s_58dd112dc09435::t_fcf0ba2ef8cb50 108-109,113
+apps/dashboard/app/(app)/model/weighting/page.tsx
+  s_58dd112dc09435::t_ccbed3ab216671 11-13
+apps/dashboard/components/model/model-tabs.tsx
+  s_58dd112dc09435::t_1a2e8dc6ac6142 14-19
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_58dd112dc09435::t_2580429c2e4524 373
+  s_58dd112dc09435::t_40b0ea880c5974 121-122
+packages/backend/convex/assessment/compute.ts
+  s_58dd112dc09435::t_499ad546c8b61b 78-79
+packages/backend/convex/ai/generate.ts
+  s_58dd112dc09435::t_8f3c0581730245 354
+apps/dashboard/components/model/model-builder.tsx
+  s_58dd112dc09435::t_8f2bbe570b3300 40-44
+packages/core/src/types.ts
+  s_58dd112dc09435::t_8d8722b2af37f5 5-6
+apps/dashboard/app/(app)/model/page.tsx
+  s_58dd112dc09435::t_21fef39f1d705c 14-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "7143d9ef5b1109a0dc2a0f931dff486f7e68a413",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
