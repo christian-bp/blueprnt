@@ -58,44 +58,44 @@ export const payMappingRuns = defineTable({
   // keeps the point and breaks its curve there.
   orgGapPct: v.union(v.number(), v.null()),
   orgGapFlag: payGapFlag,
+  // Full method evidence, frozen once at run creation (ADR-0023, ADR-0011):
+  // this is the ONLY place the product versions its method. Every field
+  // below (levelRules/zoneProfileRules/workingConditions/approval, and each
+  // criterion's dimensionKey/libraryKey) is populated unconditionally by
+  // startPayMappingRun going forward, but stays optional here: a pre-cutover
+  // frozen run carries the old sparse shape (criteria with only name/
+  // weightPoints/anchorCount, the legacy levelThresholds array, no
+  // levelRules/zoneProfileRules/workingConditions/approval), and frozen
+  // evidence is never migrated, so the validator must keep tolerating it.
   frozenModel: v.object({
     criteria: v.array(
       v.object({
-        name: v.string(),
-        weightPoints: v.number(),
-        anchorCount: v.number(),
-        // Frozen snapshot of the library mapping: dimensionKey (e.g. "competence")
-        // and libraryKey (one of the 21 masterdokument criteria) denormalized from
-        // the live model at freeze time; used for audit and export context only.
-        dimensionKey: v.optional(v.string()),
+        // Which of the 21 library criteria this row is.
         libraryKey: v.optional(v.string()),
+        // The criterion's library display name, localized in the org's
+        // content locale at freeze time; never re-resolved later, so a
+        // subsequent locale change or content edit cannot alter an
+        // already-frozen run.
+        name: v.string(),
+        dimensionKey: v.optional(v.string()),
+        weightPoints: v.number(),
+        // The number of anchor texts the library carries for this criterion
+        // at freeze time: 5 for a section-13.5 entry, 3 otherwise.
+        anchorCount: v.number(),
       })
     ),
-    levelThresholds: v.array(
-      v.object({ level: v.number(), minScore: v.number() })
+    // Superseded by levelRules below; no longer populated by
+    // startPayMappingRun. Kept only so a pre-cutover frozen run's stored
+    // array still validates.
+    levelThresholds: v.optional(
+      v.array(v.object({ level: v.number(), minScore: v.number() }))
     ),
-    // Frozen snapshot of model approval: denormalized from the live model at
-    // freeze time (ADR-0023, ADR-0011).
-    approval: v.optional(
-      v.object({ approvedBy: v.string(), approvedAt: v.number() })
-    ),
-    // Frozen snapshot of working conditions rules: status and rationale
-    // denormalized from the live model at freeze time (ADR-0022, ADR-0011).
-    workingConditions: v.optional(
-      v.object({
-        status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
-        motivation: v.string(),
-        decidedBy: v.string(),
-        decidedAt: v.number(),
-      })
-    ),
-    // Frozen snapshot of level rules: seniority-to-score mapping denormalized
-    // from the live model at freeze time (ADR-0021, ADR-0011).
+    // Seniority-to-score mapping, copied from the live model at freeze time.
     levelRules: v.optional(
       v.array(v.object({ level: v.number(), minScore: v.number() }))
     ),
-    // Frozen snapshot of zone profile rules: profile-eligibility thresholds
-    // denormalized from the live model at freeze time (ADR-0022, ADR-0011).
+    // Per-zone profile-eligibility thresholds, copied from the live model at
+    // freeze time.
     zoneProfileRules: v.optional(
       v.array(
         v.object({
@@ -108,6 +108,24 @@ export const payMappingRuns = defineTable({
           minStep: v.number(),
         })
       )
+    ),
+    // The working-conditions materiality decision, copied from the live
+    // model at freeze time.
+    workingConditions: v.optional(
+      v.object({
+        status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
+        motivation: v.string(),
+        decidedBy: v.string(),
+        decidedAt: v.number(),
+      })
+    ),
+    // Model approval grant, copied from the live model at freeze time. A run
+    // can only start once every staffed role is locked, which itself
+    // requires an approved model, so this should always be set; stays
+    // optional so a defect in that upstream gate freezes an honest absence
+    // instead of crashing the run.
+    approval: v.optional(
+      v.object({ approvedBy: v.string(), approvedAt: v.number() })
     ),
   }),
   // The samverkansredogörelse (DL 3 kap. 11-14 §§): who the employer

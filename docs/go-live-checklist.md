@@ -300,11 +300,12 @@ starting V2:
   per-org `levelThresholds`, but no mutation patches them after model creation
   (all creation paths call `defaultLevelThresholds()`) and there is no editing
   UI. The docs promise per-org configurability; add the set-mutation + UI.
-- [ ] **Calibrate the default level thresholds against real data.** The defaults
-  were translated from the Excel prototype at a different weight spread
-  (`docs/contexts/evaluation-model/standardmall.md`); uncalibrated thresholds
-  yield unreliable comparable-work groupings. Best done with the real salary
-  data the V2 import brings.
+- [ ] **Calibrate `DEFAULT_LEVEL_RULES` and `DEFAULT_ZONE_PROFILE_RULES` against
+  real data.** Both (`packages/core/src/zones.ts`) are starting points
+  translated from the Excel prototype at a different weight spread
+  (`docs/contexts/evaluation-model/standardmall.md`); uncalibrated level and
+  zone-profile rules yield unreliable comparable-work groupings and zone
+  placements. Best done with the real salary data the V2 import brings.
 - [ ] **Rename the compliance fields to spec** (`overlapNotes`→`overlapWithOthers`,
   `decidedBy`→`decisionMaker`, `decidedAt`→`date`). The Method UI now uses the
   current names, so the rename touches `evaluationModel/tables.ts`, `method.ts`,

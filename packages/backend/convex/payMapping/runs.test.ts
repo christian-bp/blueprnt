@@ -1,8 +1,17 @@
 import { BASE_PRAXIS_AREA_KEYS, TRACK_SENIORITIES } from "@workspace/constants"
+import {
+  DEFAULT_LEVEL_RULES,
+  DEFAULT_ZONE_PROFILE_RULES,
+  NEUTRAL_WEIGHT_POINTS,
+} from "@workspace/core"
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { onUserCreate } from "../accounts/mirrors"
+import {
+  criteriaLibraryContent,
+  LIBRARY_DIMENSION,
+} from "../evaluationModel/criteriaLibrary"
 import { initConvexTest } from "../testing.helpers"
 
 // The seeded operator's display name, mirrored into the users table (see
@@ -13,6 +22,27 @@ const OPERATOR_NAME = "HR Person"
 // A fixed past timestamp for the seeded pay record, so its effectiveAt is
 // always <= the freeze reference date (Date.now() inside the mutation).
 const PAST = 1_700_000_000_000
+
+// The library keys seedForFreeze activates: 2 competence, 2 effort
+// (complexity-ambiguity a section-13.5 five-anchor entry), 3 responsibility
+// (scope-impact and risk-consequence also section-13.5), 1 workingConditions
+// -- within every DIMENSION_MAX_ACTIVE cap (@workspace/core). Named so the
+// activation loop and the frozen-evidence assertions read the same list.
+const SEEDED_LIBRARY_KEYS = [
+  "knowledge-depth",
+  "knowledge-breadth",
+  "complexity-ambiguity",
+  "communication-effort",
+  "scope-impact",
+  "autonomy-mandate",
+  "risk-consequence",
+  "safety-exposure",
+] as const
+
+// The working-conditions motivation seedForFreeze decides with, asserted
+// verbatim by the frozen-evidence test below.
+const WORKING_CONDITIONS_MOTIVATION =
+  "Rollen är regelbundet exponerad för säkerhetsrisker i det dagliga arbetet."
 
 // Seeds an org with: a default model (criteria + level rules), one fully
 // evaluated AND LOCKED role (every criterion rated so the engine returns a
@@ -48,16 +78,7 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
   await asHr.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
-  for (const libraryKey of [
-    "knowledge-depth",
-    "knowledge-breadth",
-    "complexity-ambiguity",
-    "communication-effort",
-    "scope-impact",
-    "autonomy-mandate",
-    "risk-consequence",
-    "safety-exposure",
-  ] as const) {
+  for (const libraryKey of SEEDED_LIBRARY_KEYS) {
     await asHr.mutation(api.evaluationModel.criteria.activateCriterion, {
       orgId,
       libraryKey,
@@ -65,6 +86,26 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
   }
   const model = await asHr.query(api.evaluationModel.model.getModel, { orgId })
   if (model === null) throw new Error("seed: model")
+
+  // Decide working conditions and approve the model directly (bypassing
+  // setWorkingConditionsDecision/approveModel's checklist re-validation),
+  // mirroring how locking is bypassed below: this fixture is about freeze
+  // mechanics, not the approval lifecycle, which has its own dedicated suite
+  // (evaluationModel/approval.test).
+  await t.run(async (ctx) => {
+    const modelDocId = ctx.db.normalizeId("models", model.modelId)
+    if (modelDocId === null) throw new Error("seed: model id")
+    await ctx.db.patch(modelDocId, {
+      workingConditions: {
+        status: "active",
+        motivation: WORKING_CONDITIONS_MOTIVATION,
+        decidedBy: userId,
+        decidedAt: Date.now(),
+      },
+      approval: { approvedBy: userId, approvedAt: Date.now() },
+    })
+  })
+
   const track = model.tracks[0]
   if (track === undefined) throw new Error("seed: track")
   const seniority =
@@ -152,7 +193,7 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
     })
   })
 
-  return { orgId, asHr }
+  return { orgId, asHr, userId }
 }
 
 describe("startPayMappingRun", () => {
@@ -186,6 +227,77 @@ describe("startPayMappingRun", () => {
     const paid = rows.filter((r) => r.basicMonthly !== null)
     expect(paid).toHaveLength(1)
     expect(paid[0]?.basicMonthly).toBe(50000)
+  })
+
+  // The ADR-0023/spec-2.6 freeze: frozenModel is the product's only method
+  // versioning, so it must be complete evidence, not a partial snapshot.
+  it("freezes the full method evidence: criteria, level/zone rules, working conditions, and approval", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr, userId } = await seedForFreeze(t)
+
+    const { runId } = await asHr.mutation(
+      api.payMapping.runs.startPayMappingRun,
+      { orgId, label: "Test" }
+    )
+    const run = await t.run((ctx) => ctx.db.get(runId))
+    const frozen = run?.frozenModel
+    if (frozen === undefined) throw new Error("run: frozenModel")
+
+    // Criteria: name localized in the org's own content locale (sv, per
+    // seedForFreeze's organizations row) at freeze time, dimension derived
+    // from the library, weight at the activation default, and the anchor
+    // count read off the same library content the freeze itself reads.
+    const svContent = criteriaLibraryContent("sv")
+    expect(frozen.criteria).toHaveLength(SEEDED_LIBRARY_KEYS.length)
+    const byKey = new Map(frozen.criteria.map((c) => [c.libraryKey, c]))
+    for (const libraryKey of SEEDED_LIBRARY_KEYS) {
+      const criterion = byKey.get(libraryKey)
+      if (criterion === undefined) {
+        throw new Error(`run: missing frozen criterion ${libraryKey}`)
+      }
+      const entry = svContent.criteria[libraryKey]
+      const expectedAnchorCount =
+        3 +
+        (entry.anchor2 !== undefined ? 1 : 0) +
+        (entry.anchor4 !== undefined ? 1 : 0)
+      expect(criterion.name).toBe(entry.name)
+      expect(criterion.dimensionKey).toBe(LIBRARY_DIMENSION[libraryKey])
+      expect(criterion.weightPoints).toBe(NEUTRAL_WEIGHT_POINTS)
+      expect(criterion.anchorCount).toBe(expectedAnchorCount)
+    }
+    // Explicit examples for the two anchor shapes the library carries: a
+    // section-13.5 entry (5: steps 1-5) and an ordinary entry (3: steps 1/3/5).
+    expect(byKey.get("complexity-ambiguity")?.anchorCount).toBe(5)
+    expect(byKey.get("knowledge-depth")?.anchorCount).toBe(3)
+
+    // levelRules/zoneProfileRules: copied verbatim off the model, which
+    // never left the calibrate-before-launch defaults in this fixture.
+    expect(frozen.levelRules).toHaveLength(12)
+    expect(frozen.levelRules).toEqual(
+      DEFAULT_LEVEL_RULES.map((r) => ({ level: r.level, minScore: r.minScore }))
+    )
+    expect(frozen.zoneProfileRules).toEqual(
+      DEFAULT_ZONE_PROFILE_RULES.map((r) => ({
+        zone: r.zone,
+        minStep: r.minStep,
+      }))
+    )
+
+    // workingConditions/approval: copied verbatim off the model
+    // seedForFreeze decided and approved directly.
+    expect(frozen.workingConditions).toEqual({
+      status: "active",
+      motivation: WORKING_CONDITIONS_MOTIVATION,
+      decidedBy: userId,
+      decidedAt: expect.any(Number),
+    })
+    expect(frozen.approval).toEqual({
+      approvedBy: userId,
+      approvedAt: expect.any(Number),
+    })
+
+    // The legacy field name is no longer populated going forward.
+    expect(frozen).not.toHaveProperty("levelThresholds")
   })
 
   // The figure the front page's trend plots. Stored at freeze rather than

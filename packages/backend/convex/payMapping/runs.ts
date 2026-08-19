@@ -184,9 +184,11 @@ export const startPayMappingRun = orgMutation({
     // Every criterion is a library selection (decision 8): its display name
     // and anchor count are frozen from the library content in the org's own
     // content locale at freeze time, never from a stored text (criteria rows
-    // carry no name/anchors of their own). levelThresholds keeps its frozen
-    // field name (the full frozen-model shape migration is a later task); the
-    // values come from the model's renamed levelRules.
+    // carry no name/anchors of their own) and never re-resolved later, so a
+    // subsequent locale change or content edit cannot alter an already-frozen
+    // run. The rest of the model's method evidence is copied from the live
+    // model row as-is: this is the ADR-0023 freeze, the only place the
+    // product versions its method (spec 2.6).
     const freezeLocale = await resolveContentLocale(ctx, ctx.orgId)
     const freezeContent = criteriaLibraryContent(freezeLocale)
     const frozenModel = {
@@ -197,14 +199,22 @@ export const startPayMappingRun = orgMutation({
           (entry.anchor2 !== undefined ? 1 : 0) +
           (entry.anchor4 !== undefined ? 1 : 0)
         return {
+          libraryKey: c.libraryKey,
           name: entry.name,
+          dimensionKey: LIBRARY_DIMENSION[c.libraryKey],
           weightPoints: c.weightPoints,
           anchorCount,
-          dimensionKey: LIBRARY_DIMENSION[c.libraryKey],
-          libraryKey: c.libraryKey,
         }
       }),
-      levelThresholds: model?.levelRules ?? [],
+      levelRules: model?.levelRules ?? [],
+      zoneProfileRules: model?.zoneProfileRules ?? [],
+      workingConditions: model?.workingConditions,
+      // Preconditions require every staffed role to be locked, which itself
+      // requires an approved model, so approval should always be set here.
+      // Freeze it as an honest absence rather than throw if that upstream
+      // invariant is ever violated: a defect in the approval gate must not
+      // also take down the freeze.
+      approval: model?.approval,
     }
 
     // Derive level/score for every role once, index by roleId.
