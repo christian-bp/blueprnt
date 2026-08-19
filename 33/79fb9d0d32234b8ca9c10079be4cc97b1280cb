@@ -1,0 +1,108 @@
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_e68c2fae41f8f0 909,916
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_6446030e3608ee 909,916
+docs/PLAN-V1.md
+  s_58dd112dc09435::t_ee87517369f57e 43
+  s_58dd112dc09435::t_6cfa8d7c67f2bd 45
+apps/dashboard/components/rating/rating-result.test.tsx
+  s_58dd112dc09435::t_5f5f3b7e9dec65 97-114
+packages/backend/convex/assessment/results.test.ts
+  s_58dd112dc09435::t_6e00ce23c61354 259-261
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_0cdbb3db28d571 909,916
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_58dd112dc09435::t_6a85ccd36d6cd9 168-171
+  s_58dd112dc09435::t_a8e219716f6dc7 172
+packages/backend/convex/assessment/results.ts
+  s_58dd112dc09435::t_339c8067be355e 190,192-193
+packages/backend/convex/assessment/anchorRoles.test.ts
+  s_58dd112dc09435::t_829b97b2e3f24f 298-301
+  s_58dd112dc09435::t_39e7c8d1074934 266-269
+  s_58dd112dc09435::t_f18337366ec2e4 174,176-187,199-219
+  s_58dd112dc09435::t_b1c922dfccdbae 437-440
+  s_58dd112dc09435::t_fd38a41752555a 102-106
+  s_58dd112dc09435::t_9c59468c8a5ebc 232-235
+  s_58dd112dc09435::t_7dd930afb70baf 512-515
+  s_58dd112dc09435::t_abfde4798aa8c3 372-375
+  s_58dd112dc09435::t_d46dc127bd7173 220,593-638
+  s_58dd112dc09435::t_41ebaeb46f7653 221
+packages/backend/convex/assessment/ratings.test.ts
+  s_58dd112dc09435::t_a670c9e46134f1 443-484
+packages/backend/convex/assessment/starters.test.ts
+  s_58dd112dc09435::t_309556ecd5a3fe 1353-1355,1359-1364
+  s_58dd112dc09435::t_d22250c0021862 4
+  s_58dd112dc09435::t_f9838e4e08dd33 1365
+packages/backend/convex/evaluationModel/method.ts
+  s_58dd112dc09435::t_375498715d60ab 317
+  s_58dd112dc09435::t_63b69e950c6b4c 214-218
+packages/backend/convex/evaluationModel/method.test.ts
+  s_58dd112dc09435::t_d0fd4218fc5509 3
+  s_58dd112dc09435::t_51b8fa0a942b0e 368-389
+docs/go-live-checklist.md
+  s_58dd112dc09435::t_cb1bde5b788302 150-162,164-166
+  s_58dd112dc09435::t_082aaf43996a83 117-131,135-137
+  s_58dd112dc09435::t_ca1357f3ec9432 108-116
+  s_58dd112dc09435::t_9b9f60d5abf760 523-533
+  s_58dd112dc09435::t_a8cf59c584d981 163
+  s_58dd112dc09435::t_8680879ca7a715 326-334
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_0309ae4bed393b 909,916
+apps/dashboard/components/rating/lock-assessment-panel.test.tsx
+  s_58dd112dc09435::t_a52baba87c02e7 9
+  s_58dd112dc09435::t_23ee075542ee2c 31
+  s_58dd112dc09435::t_a8622699d6a4c3 67,78-97
+  s_58dd112dc09435::t_d6e6299a856c28 68-70
+apps/dashboard/components/overview/todo-actions.tsx
+  s_58dd112dc09435::t_b2e7a48d879711 30,41,290-291
+  s_58dd112dc09435::t_494f96a4567031 47
+  s_58dd112dc09435::t_ccb5480e34e3af 46,48
+apps/dashboard/lib/todo.test.ts
+  s_58dd112dc09435::t_ab648955c351c6 269-325
+  s_58dd112dc09435::t_d69580aa661f68 20-22,28-30
+packages/backend/convex/assessment/anchorRoles.ts
+  s_58dd112dc09435::t_f08c541f1b2a40 124-131,149-150
+  s_58dd112dc09435::t_6584388a9af76c 61-64,81-82
+  s_58dd112dc09435::t_c07fd98af218ce 200-207
+  s_58dd112dc09435::t_b4092ed8fa4519 235,241-244
+  s_58dd112dc09435::t_5372f62a7d53f2 83,151
+apps/dashboard/components/rating/rating-result.tsx
+  s_58dd112dc09435::t_525dc45501b643 54-61
+apps/dashboard/components/rating/lock-assessment-panel.tsx
+  s_58dd112dc09435::t_a2bacfe1add3ee 6,12-36
+  s_58dd112dc09435::t_64c7dfbfe7c9cf 53,56,60,64-65,76,78
+  s_58dd112dc09435::t_103f0259a6b2d7 37
+apps/dashboard/lib/evaluation-summary.ts
+  s_58dd112dc09435::t_d56990ad6df451 2-5
+packages/backend/convex/assessment/roles.test.ts
+  s_58dd112dc09435::t_b63fac1dec6801 746-761
+  s_58dd112dc09435::t_6444b2d04e4568 762-765
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_033608b8ff4f84 909,916
+apps/dashboard/lib/todo.ts
+  s_58dd112dc09435::t_93bf210b7e0662 195,249,299,324
+  s_58dd112dc09435::t_d2bd54de2a32f1 83-86
+  s_58dd112dc09435::t_4111afd6583807 300,303-304
+  s_58dd112dc09435::t_20c1015c0086c6 14,301-302
+  s_58dd112dc09435::t_54db2835f26d44 46-47
+  s_58dd112dc09435::t_ee7063e96f6e9f 48,57
+  s_58dd112dc09435::t_b4915dbf2000dd 192-194
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_58dd112dc09435::t_f3d6fb5875ce02 259-274
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3379fb9d0d32234b8ca9c10079be4cc97b1280cb",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
