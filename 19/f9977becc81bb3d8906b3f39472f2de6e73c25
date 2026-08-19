@@ -1,0 +1,34 @@
+packages/backend/convex/payMapping/runs.test.ts
+  s_58dd112dc09435::t_49eae2ce5ca3cb 272-281
+packages/backend/convex/payMapping/runs.ts
+  s_58dd112dc09435::t_9646218ed76938 212-221
+packages/backend/convex/evaluationModel/criteriaLibrary.test.ts
+  s_58dd112dc09435::t_fc6ffa675dd74c 13,22-31
+  s_58dd112dc09435::t_f1a26ce98db593 143-159
+  s_58dd112dc09435::t_77ef291a0a705b 32
+packages/backend/convex/assessment/locking.test.ts
+  s_58dd112dc09435::t_6c3680c854c64b 546,555-558,560-571,573-574,579-594
+  s_58dd112dc09435::t_a6e215841ac0c3 572
+docs/go-live-checklist.md
+  s_58dd112dc09435::t_6118bd5d6a517b 299-306
+packages/backend/convex/payMapping/tables.ts
+  s_58dd112dc09435::t_22b0d11b254983 122-129
+packages/backend/convex/assessment/results.ts
+  s_58dd112dc09435::t_10ec329c2eb069 21-29,37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "19f9977becc81bb3d8906b3f39472f2de6e73c25",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
