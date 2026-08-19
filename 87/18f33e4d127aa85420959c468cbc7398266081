@@ -1,0 +1,29 @@
+packages/backend/convex/payMapping/runs.test.ts
+  s_58dd112dc09435::t_a08377ced88f6a 232-302
+  s_58dd112dc09435::t_ee493a346473ea 2-6,11-14,26-45
+  s_58dd112dc09435::t_0a3e27d54e4623 81,89-108
+  s_58dd112dc09435::t_62d90ff67b1991 196
+  s_58dd112dc09435::t_ac0b00192aaa0d 46
+packages/backend/convex/payMapping/runs.ts
+  s_58dd112dc09435::t_561eafd8958a37 187-191,202,204,209-217
+docs/go-live-checklist.md
+  s_58dd112dc09435::t_6c09cbef6838ab 303-308
+packages/backend/convex/payMapping/tables.ts
+  s_58dd112dc09435::t_367bbd11927232 61-69,73-78,80,82-83,87-91,93,97-98,112-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8718f33e4d127aa85420959c468cbc7398266081",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
