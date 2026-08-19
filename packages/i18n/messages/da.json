@@ -643,11 +643,9 @@
           "cause": "Udløst af",
           "sourceValues": {
             "ai": "AI",
-            "template": "Skabelon",
-            "scratch": "Fra bunden",
+            "default": "Standard",
             "starter": "Startsæt",
             "aiImport": "AI-import",
-            "aiSuggestion": "AI-forslag",
             "onboardingPrefill": "Forudfyldt ved onboarding",
             "roleImportPrefill": "Forudfyldt ved rolleimport"
           }
@@ -1857,7 +1855,6 @@
           "approved": "Godkendt"
         },
         "openCta": "Dokumenter",
-        "rowMenu": "Kriteriehandlinger",
         "dialogTitle": "Begrundelse og bias-gennemgang",
         "dialogDescription": "Registrer, hvorfor dette kriterium hør hjemme i modellen, og dets bias-gennemgang. Dette er dokumentation, ikke en garanti.",
         "purpose": "Formål",
@@ -2613,7 +2610,6 @@
     "roleFamilyExists": "En familie med det navn findes allerede.",
     "roleExists": "En rolle med det navn findes allerede i denne familie.",
     "weightsUnbalanced": "Vægtningen skal stemme med pointbudgettet.",
-    "tooFewCriteria": "En model skal have mindst 5 kriterier.",
     "lastAdmin": "Du er den sidste administrator i en organisation. Kontakt support for at slette din konto.",
     "invalidSeniority": "Den senioritet er ikke gyldig for rollens track.",
     "invalidEffectiveDate": "Ikrafttrædelsesdatoen skal være efter den aktuelle tildelnings startdato.",

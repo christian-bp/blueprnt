@@ -12,7 +12,6 @@ export const ERROR_CODES = {
   notFound: "errors.notFound",
   invalidInput: "errors.invalidInput",
   weightsUnbalanced: "errors.weightsUnbalanced",
-  tooFewCriteria: "errors.tooFewCriteria",
   tooManyCriteria: "errors.tooManyCriteria",
   dimensionCapExceeded: "errors.dimensionCapExceeded",
   criterionAlreadySelected: "errors.criterionAlreadySelected",

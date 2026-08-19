@@ -265,36 +265,43 @@ describe("organization settings", () => {
     })
   })
 
-  it("completeOnboarding rejects a model below the composition floor", async () => {
+  it("completeOnboarding succeeds with a model that has zero criteria (model building is a post-onboarding journey)", async () => {
     const { t, orgId, userId } = await setup("admin")
     const asAdmin = t.withIdentity({ subject: userId })
-    // Three criteria is below MIN_CRITERIA (5): the wizard's Next gates
-    // prevent this in the UI; the server backstop must hold regardless.
     await t.run(async (ctx) => {
-      const modelId = await ctx.db.insert("models", {
+      await ctx.db.insert("models", {
         orgId,
-        name: "Scratch",
+        name: "Standard",
         levelRules: [],
         zoneProfileRules: [],
       })
-      const libraryKeys = [
-        "knowledge-depth",
-        "knowledge-breadth",
-        "complexity-ambiguity",
-      ] as const
-      for (const [index, libraryKey] of libraryKeys.entries()) {
-        await ctx.db.insert("criteria", {
-          orgId,
-          modelId,
-          libraryKey,
-          weightPoints: 3,
-          order: index + 1,
-        })
-      }
     })
-    await expect(
-      asAdmin.mutation(api.accounts.organization.completeOnboarding, { orgId })
-    ).rejects.toThrow(/errors.tooFewCriteria/)
+    await asAdmin.mutation(api.accounts.organization.completeOnboarding, {
+      orgId,
+    })
+    const profile = await t.run(async (ctx) => {
+      return await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+    })
+    expect(typeof profile?.onboardingCompletedAt).toBe("number")
+    const audit = await t.run(async (ctx) => {
+      return await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "organization.onboardingCompleted")
+        )
+        .collect()
+    })
+    const payload = audit[0].payload as {
+      hadModel: boolean
+      criteriaCount: number | null
+    }
+    // hadModel true with criteriaCount 0: a model exists but carries no
+    // criteria yet, and completion still succeeds (no composition gate).
+    expect(payload.hadModel).toBe(true)
+    expect(payload.criteriaCount).toBe(0)
   })
 
   it("completeOnboarding is idempotent: keeps the first timestamp, no second audit row", async () => {
@@ -334,7 +341,8 @@ describe("organization settings", () => {
     const { t, orgId, userId } = await setup("admin")
     const asUser = t.withIdentity({ subject: userId })
 
-    // A model with MIN_CRITERIA criteria so the composition floor passes.
+    // An ordinary model with a few criteria; completeOnboarding no longer
+    // inspects the count.
     await t.run(async (ctx) => {
       const modelId = await ctx.db.insert("models", {
         orgId,

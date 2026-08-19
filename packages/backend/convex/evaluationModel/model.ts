@@ -75,9 +75,8 @@ function defaultZoneProfileRules() {
 
 // Seeds an empty draft model shell: a name from the library content's
 // modelName (org-locale), the default level/zone rules, and NO criteria (the
-// library picker is the only way in, ADR-0021 addendum). Replaces
-// createModelFromTemplate/createEmptyModel now that there is no
-// template-vs-scratch choice to make.
+// library picker is the only way in, ADR-0021 addendum). There is no
+// template-vs-scratch choice to make; every model starts from this one path.
 export const createDefaultModel = adminMutation({
   args: {},
   returns: v.id("models"),

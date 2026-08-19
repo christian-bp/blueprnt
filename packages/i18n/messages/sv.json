@@ -643,11 +643,9 @@
           "cause": "Utlöst av",
           "sourceValues": {
             "ai": "AI",
-            "template": "Mall",
-            "scratch": "Från grunden",
+            "default": "Standard",
             "starter": "Startuppsättning",
             "aiImport": "AI-import",
-            "aiSuggestion": "AI-förslag",
             "onboardingPrefill": "Förifylld vid onboarding",
             "roleImportPrefill": "Förifylld vid rollimport"
           }
@@ -1857,7 +1855,6 @@
           "approved": "Godkänd"
         },
         "openCta": "Dokumentera",
-        "rowMenu": "Kriterieåtgärder",
         "dialogTitle": "Motivering och biasgranskning",
         "dialogDescription": "Dokumentera varför detta kriterium hör hemma i modellen och dess bias-granskning. Detta är bevis, inte en garanti.",
         "purpose": "Syfte",
@@ -2613,7 +2610,6 @@
     "roleFamilyExists": "En familj med det namnet finns redan.",
     "roleExists": "En roll med det namnet finns redan i den här familjen.",
     "weightsUnbalanced": "Viktningen måste stämma med poängbudgeten.",
-    "tooFewCriteria": "En modell behöver minst 5 kriterier.",
     "lastAdmin": "Du är den sista administratören i en organisation. Kontakta supporten för att radera ditt konto.",
     "invalidSeniority": "Den senioriteten är inte giltig för rollens track.",
     "invalidEffectiveDate": "Giltighetsdatumet måste vara efter den aktuella tilldelningens startdatum.",

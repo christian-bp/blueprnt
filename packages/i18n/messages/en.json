@@ -643,11 +643,9 @@
           "cause": "Triggered by",
           "sourceValues": {
             "ai": "AI",
-            "template": "Template",
-            "scratch": "From scratch",
+            "default": "Default",
             "starter": "Starter set",
             "aiImport": "AI import",
-            "aiSuggestion": "AI suggestion",
             "onboardingPrefill": "Onboarding prefill",
             "roleImportPrefill": "Role import prefill"
           }
@@ -1857,7 +1855,6 @@
           "approved": "Approved"
         },
         "openCta": "Document",
-        "rowMenu": "Criterion actions",
         "dialogTitle": "Rationale and bias review",
         "dialogDescription": "Record why this criterion belongs in the model and its bias review. This is evidence, not a guarantee.",
         "purpose": "Purpose",
@@ -2613,7 +2610,6 @@
     "roleFamilyExists": "A family with that name already exists.",
     "roleExists": "A role with that name already exists in this family.",
     "weightsUnbalanced": "The weighting must match the point budget.",
-    "tooFewCriteria": "A model needs at least 5 criteria.",
     "lastAdmin": "You're the last administrator of an organization. Contact support to delete your account.",
     "invalidSeniority": "That seniority is not valid for this role's track.",
     "invalidEffectiveDate": "The effective date must be after the current assignment's start date.",

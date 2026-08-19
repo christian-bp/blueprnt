@@ -12,12 +12,6 @@ export type WeightPoints = (typeof WEIGHT_POINT_VALUES)[number]
 // time, so the balance is preserved).
 export const NEUTRAL_WEIGHT_POINTS: WeightPoints = 3
 
-// Model composition floor: a finished model needs at least this many
-// criteria. Enforced at the onboarding gates (Next/finish) and on criterion
-// removal once onboarding is complete; while a model is still being built
-// the count may dip below freely.
-export const MIN_CRITERIA = 5
-
 export function isWeightPoints(value: number): value is WeightPoints {
   return Number.isInteger(value) && value >= 1 && value <= 5
 }

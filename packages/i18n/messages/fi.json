@@ -643,11 +643,9 @@
           "cause": "Laukaisi",
           "sourceValues": {
             "ai": "Tekoäly",
-            "template": "Malli",
-            "scratch": "Alusta",
+            "default": "Oletus",
             "starter": "Aloituspaketti",
             "aiImport": "Tekoälytuonti",
-            "aiSuggestion": "Tekoälyehdotus",
             "onboardingPrefill": "Esitäytetty käyttöönotossa",
             "roleImportPrefill": "Esitäytetty roolituonnissa"
           }
@@ -1857,7 +1855,6 @@
           "approved": "Hyväksytty"
         },
         "openCta": "Dokumentoi",
-        "rowMenu": "Kriteerin toiminnot",
         "dialogTitle": "Perustelu ja vinoumien arviointi",
         "dialogDescription": "Kirjaa, miksi tämä kriteeri kuuluu malliin, ja sen vinoumien arviointi. Tämä on todiste, ei takuu.",
         "purpose": "Tarkoitus",
@@ -2613,7 +2610,6 @@
     "roleFamilyExists": "Samanniminen perhe on jo olemassa.",
     "roleExists": "Samanniminen rooli on jo tässä perheessä.",
     "weightsUnbalanced": "Painotuksen on vastattava pistebudjettia.",
-    "tooFewCriteria": "Malli tarvitsee vähintään 5 kriteeriä.",
     "lastAdmin": "Olet organisaation viimeinen ylläpitäjä. Ota yhteyttä tukeen poistaaksesi tilisi.",
     "invalidSeniority": "Senioriteetti ei ole kelvollinen tämän roolin trackille.",
     "invalidEffectiveDate": "Voimaantulopäivän on oltava nykyisen tehtävän alkamispäivän jälkeen.",

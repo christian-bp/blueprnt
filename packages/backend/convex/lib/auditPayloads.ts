@@ -75,8 +75,7 @@ export type ModelUpdatedPayload =
 
 // ai.suggestionConfirmed is heterogeneous, keyed on `kind`: the three
 // suggestion kinds with a confirm path (role-profile AI applies log
-// role.updated instead, so there is no role-kind variant here; the model.draft
-// custom-criterion drafting kind retired with the criteria library cutover).
+// role.updated instead, so there is no role-kind variant here).
 // Discriminated so each kind's distinct fields stay required. The model kind
 // carries modelId so the row stays attributable to its entity forever (a row
 // written without the id can never be backfilled); rendering drops any "*Id"
