@@ -1,51 +1,66 @@
 ---
 title: Arvion muokkaaminen
-description: Arviointivaiheiden avaaminen uudelleen kriteerin arvion muuttamiseksi, ja mitkä muutokset kirjataan.
+description: Lukitun arvioinnin lukituksen avaaminen arvon muuttamiseksi, ja mitä siitä kirjataan.
 section: evaluation
 ---
 
-Roolin arviot eivät ole koskaan lopullisia. Niin kauan kuin roolia ei
-ole arkistoitu, voitte palata mihin tahansa kriteeriin ja muuttaa sen
-arvioinnin, ja blueprnt laskee painotuksen ja vaativuustason
-välittömästi uudelleen uusien arvioiden perusteella.
+Roolin arvioita voi muuttaa vain kun arviointi on avattu. Lukittu
+arviointi suojaa paljastettua tulosta vahingossa tehdyiltä muutoksilta:
+avaatte sen lukituksen ensin, tarkoituksella, ennen kuin mitään voi
+arvioida toisin.
 
-## Arviointivaiheiden avaaminen uudelleen
+## Lukitun roolin lukituksen avaaminen
 
-Täysin arvioidun roolin toimintovalikosta valitkaa "Muuta arvioita".
-Tämä avaa samat arviointivaiheet, jotka on kuvattu kohdassa
-[Roolin arviointi](/docs/evaluating-a-role), alkaen uudelleen
+Lukitun roolin toimintovalikosta valitkaa "Avaa arvioinnin lukitus".
+Vahvistusikkuna selittää, mitä tapahtuu: lukituksen avaaminen piilottaa
+painotuksen ja tason jälleen, kunnes arviointi lukitaan uudelleen, ja
+arvoja voi silloin muuttaa. Vahvistaminen valinnalla "Kyllä, avaa
+lukitus" tekee juuri niin; painotus, taso ja mahdollinen vertailu
+ankkuriroolien kanssa katoavat välittömästi roolin sivulta.
+
+## Arvon muuttaminen
+
+Kun lukitus on avattu, valitkaa "Muuta arvioita" samasta valikosta. Se
+avaa saman kulun kuin kuvataan sivulla
+[Roolin arviointi](/docs/evaluating-a-role), ja alkaa uudelleen
 ensimmäisestä kriteeristä, mutta esitäytettynä: jokainen kriteeri
-näyttää jo valitsemanne portaan ja kirjoittamanne perustelun, niin
-tarkastatte ja muokkaatte olemassa olevaa arviotanne sen sijaan, että
-aloittaisitte tyhjästä. Painotus ja vaativuustaso pysyvät piilossa
-käydessänne vaiheita läpi, täsmälleen kuten ensimmäisellä kerralla;
-näette tuloksen uudelleen vasta lopussa.
+näyttää jo valitsemanne portaan ja mahdollisen kirjoittamanne
+perustelun, joten tarkistatte ja muokkaatte olemassa olevaa arviotanne
+sen sijaan että aloittaisitte tyhjästä. Painotus ja taso pysyvät
+piilossa käydessänne kriteerit läpi, aivan kuten ensimmäisellä
+kerralla. Portaan muuttaminen ja "Seuraava kriteeri" -valinta
+tallentaa kyseisen kriteerin heti, yksi kerrallaan; saman portaan ja
+perustelun lähettäminen, joka on jo olemassa, ei muuta mitään, eikä
+tapahtumalokiin luoda merkintää.
 
-Portaan muuttaminen ja "Seuraava kriteeri" valitseminen tallentaa
-kyseisen kriteerin välittömästi, yksi kerrallaan, kuten ensimmäisellä
-arviointikerralla. Jo tallennetun portaan ja perustelun lähettäminen
-ei muuta mitään, eikä tapahtumalokiin synny merkintää.
+Näette tuloksen uudelleen vasta, kun lukitsette arvioinnin uudelleen,
+samalla "Lukitse arviointi" -toiminnolla kuin ensimmäisellä kerralla,
+saatavilla kun jokaisella kriteerillä on arvo.
 
 ## Milloin muokkaaminen on estetty
 
-Kun rooli on arkistoitu, sitä ei voi enää arvioida tai muokata
-lainkaan. "Muuta arvioita" ei näy enää sen valikossa, ja arkistointi
-on yksisuuntainen, niin arkistoitua roolia ei voi avata uudelleen
-arvioitavaksi; katso [Roolin arkistointi](/docs/archiving-roles), mikä
-muuttuu vielä vain luku -tilaan. Arviointi vaatii myös edelleen
-täydellisen tehtäväprofiilin, saman ennakkoehdon kuin ensimmäisellä
-kerralla; tämä on tavallisesti jo täyttynyt siihen mennessä, kun
-roolilla on täysi arviointi muokattavaksi.
+Lukituksen avaaminen vaatii aina, että roolin arviointi on jo lukittu;
+muuten ei ole mitään avattavaa. Kun rooli on arkistoitu, sitä ei voi
+enää arvioida, avata lukituksesta eikä muokata lainkaan: "Avaa
+arvioinnin lukitus" ei enää näy sen valikossa, ja arkistointi on
+yksisuuntaista, joten arkistoitua roolia ei voi avata uudelleen
+arviointia varten; katso [Roolin arkistointi](/docs/archiving-roles),
+mikä muu muuttuu vain luettavaksi. Arviointi vaatii yhä, että
+organisaationne malli on hyväksytty, sama ehto kuin ensimmäisellä
+kerralla; tämä on normaalisti yhä voimassa, kun roolilla on jo lukittu
+arviointi muokattavaksi, ellei menetelmämuutos ole avannut hyväksyntää
+uudelleen sillä välin.
 
 ## Mitä kirjataan
 
-Jokainen tallennettu muutos arvioon kirjataan tapahtumalokiin
-merkinnällä "Arviointi muutettu", kriteerin arvon ja perustelun
-ennen- ja jälkeen-tilan kanssa. Jos muutos siirtää roolin toiselle
-vaativuustasolle, blueprnt kirjaa myös erillisen "Vaativuustaso
-kalibroitu uudelleen" -merkinnän, joka viittaa takaisin muutoksen
-aiheuttaneeseen arvioon, jotta historia siitä, miksi roolin
-vaativuustaso muuttui, pysyy näkyvissä arvioiden vierellä.
+Jokainen tallennettu muutos arvoon kirjataan tapahtumalokiin merkintänä
+"Arvo muutettu", kriteerin arvolla ja perustelulla ennen ja jälkeen.
+Jos muutos siirtää roolin toiselle vaativuustasolle, blueprnt kirjaa
+myös erillisen merkinnän "Vaativuustaso kalibroitu uudelleen", joka
+osoittaa takaisin muutoksen aiheuttaneeseen arvoon, jotta historia
+siitä, miksi roolin vaativuustaso muuttui, pysyy näkyvissä yhdessä
+arvioiden kanssa. Lukituksen avaaminen ja uudelleen lukitseminen ovat
+myös kumpikin oma kirjattu toimenpiteensä.
 
 ## Aiheeseen liittyvää
 

@@ -5,9 +5,9 @@ section: evaluation
 ---
 
 När alla kriterier har fått ett betyg och bedömningen är låst räknar
-blueprnt fram en viktning, en nivå och en zon för rollen. Alla tre
-härleds alltid från de låsta betygen och den aktuella modellen; ingen av
-dem skrivs någonsin in för hand. Blanda inte ihop den här viktningen,
+blueprnt fram en viktning och en nivå för rollen. Båda härleds alltid
+från de låsta betygen och den aktuella modellen; ingen av dem skrivs
+någonsin in för hand. Blanda inte ihop den här viktningen,
 en rolls samlade resultat, med viktningen ni gör på
 [Modell](/model)-ytans flik Viktning, som sätter varje kriteriums egna
 viktpoäng; de två delar ordet medvetet, men de är olika saker. Se
@@ -43,24 +43,25 @@ organisationsövergripande viktpoängen, eftersom de är identiska för
 varje roll, eller det råa betyget, som sammanställningen redan
 uttrycker genom bidragsandelen.
 
-## Tolv nivåer i fyra zoner
+## Tolv nivåer, placerade med en profilkontroll
 
 Nivå 1 är den högsta av tolv nivåer, med nedräkning därifrån. Er modell
-definierar en lägsta viktning för varje nivå. Nivåerna grupperas i fyra
-zoner, från A (nivå 1 till 3) ner till D (nivå 10 till 12); en zon är
-ett bredare band med en gemensam karaktär, användbart för att tala om var
-en roll ligger utan att nämna dess exakta nivå.
+definierar en lägsta viktning för varje nivå. Internt grupperar
+placeringsregeln också de tolv nivåerna i fyra zoner, från A (nivå 1
+till 3) ner till D (nivå 10 till 12), för att göra ytterligare en
+kontroll innan den avgör en rolls nivå; inget i appen visar den här
+grupperingen eller namnger en rolls zon, bara dess effekt på det
+nivåtal ni ser.
 
-Er organisations högst viktade kriterier, de med vikt 4 eller 5 och inte
-ett arbetsförhållandekriterium, fungerar dessutom som ett profilkrav för
-de översta zonerna: en roll kan inte nå zon A eller B enbart på en hög
-totalviktning om dess betyg på just de kriterierna inte räcker till. När
-det händer placeras rollen istället högst upp i den lägre zonen och
-flaggas för kalibrering, en påminnelse om att en person bekräftar
-placeringen snarare än en automatisk överskrivning. En helt platt modell
-med alla kriterier på vikt 3 har inget profilkrav alls: inga deklarerade
-prioriteringar betyder ingen grind. En roll saknar nivå, zon och
-viktning tills dess bedömning är låst.
+Er organisations högst viktade kriterier, de med vikt 4 eller 5 och
+inte ett arbetsförhållandekriterium, är det den kontrollen tittar på:
+en roll vars totala viktning ensam skulle nå de översta zonernas nivåer
+behöver ändå att dess betyg på just de kriterierna håller måttet,
+annars placerar regeln den på den lägre zonens högsta nivå istället.
+En helt platt modell med alla kriterier på vikt 3 har inget för
+kontrollen att titta på: inga deklarerade prioriteringar betyder att
+ingenting spärrar placeringen. En roll saknar nivå eller viktning tills
+dess bedömning är låst.
 
 ## Jämföra med era ankarroller
 
@@ -72,16 +73,20 @@ ankare flaggas som värt en manuell kontroll innan ni litar på det. Se
 
 ## Resultatet följer modellen
 
-En rolls viktning, nivå och zon speglar alltid dess låsta betyg och
-modellen som den ser ut just nu, inte som den såg ut när ni låste den.
-Det betyder att en ändring i själva modellen, som att välja ett
-kriterium, ändra en viktpoäng eller vikta om, omedelbart kan flytta en
-roll till en annan nivå, utan att någon rör dess betyg. Att välja ett
-nytt kriterium kan till och med göra en tidigare komplett roll
-inkomplett igen tills det också är betygsatt. Varje sådant skifte
-registreras i händelseloggen. En roll som låstes innan er modells
-senaste godkännande markeras som bedömd enligt tidigare metod tills den
-låses om.
+En rolls viktning och nivå speglar alltid dess låsta betyg och modellen
+som den ser ut just nu, inte som den såg ut när ni låste den. Det
+betyder att en ändring i själva modellen, som att välja ett kriterium,
+ändra en viktpoäng eller vikta om, omedelbart kan flytta en roll till
+en annan nivå, utan att någon rör dess betyg. Att välja ett nytt
+kriterium kan till och med göra en tidigare komplett roll inkomplett
+igen tills det också är betygsatt. Varje sådant skifte registreras i
+händelseloggen. En låst roll visar "Bedömd enligt tidigare metod"
+närhelst den låstes innan modellens aktuella godkännande, eller
+närhelst modellens godkännande för tillfället är öppnat igen, vilket är
+det vanliga läget direkt efter en metodpåverkande ändring, eftersom
+återöppningen gäller varje låst roll på en gång, inte bara de som
+förblev låsta över en godkännandeändring. Att låsa om under den
+aktuella metoden rensar den.
 
 ## Ingen manuell överskrivning
 

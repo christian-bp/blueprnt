@@ -5,9 +5,9 @@ section: evaluation
 ---
 
 Når hvert kriterium er vurdert og vurderingen er låst, beregner blueprnt
-en vekting, et nivå og en sone for rollen. Alle tre utledes alltid fra
-de låste vurderingene og den nåværende modellen; ingen av dem skrives
-noensinne inn for hånd. Ikke bland sammen denne vektingen, en rolles
+en vekting og et nivå for rollen. Begge utledes alltid fra de låste
+vurderingene og den nåværende modellen; ingen av dem skrives noensinne
+inn for hånd. Ikke bland sammen denne vektingen, en rolles
 samlede resultat, med vektingen dere gjør på
 [Modell](/model)-områdets flik Vekting, som setter hvert kriteriums
 egne vektpoeng; de to deler ordet med vilje, men de er forskjellige
@@ -43,24 +43,24 @@ vektpoengene, siden de er identiske for hver rolle, eller den rå
 vurderingen, som sammenstillingen allerede uttrykker gjennom
 bidragsandelen.
 
-## Tolv nivåer i fire soner
+## Tolv nivåer, plassert med en profilkontroll
 
 Nivå 1 er det høyeste av tolv nivåer, med nedtelling fra der. Modellen
-deres definerer en minste vekting for hvert nivå. Nivåene grupperes i
-fire soner, fra A (nivå 1 til 3) ned til D (nivå 10 til 12); en sone er
-et bredere bånd med en felles karakter, nyttig for å snakke om hvor en
-rolle ligger uten å nevne dens eksakte nivå.
+deres definerer en minste vekting for hvert nivå. Internt grupperer
+plasseringsregelen også de tolv nivåene i fire soner, fra A (nivå 1
+til 3) ned til D (nivå 10 til 12), for å gjøre enda en kontroll før den
+fastsetter en rolles nivå; ingenting i appen viser denne grupperingen
+eller navngir en rolles sone, bare effekten på nivåtallet dere ser.
 
 Organisasjonens høyest vektede kriterier, de med vekt 4 eller 5 og ikke
-et arbeidsforholdskriterium, fungerer i tillegg som et profilkrav for de
-øverste sonene: en rolle kan ikke nå sone A eller B bare på en høy
-totalvekting hvis vurderingene dens på nettopp de kriteriene ikke
-strekker til. Når det skjer, plasseres rollen i stedet øverst i den
-lavere sonen og flagges for kalibrering, en påminnelse om at en person
-bekrefter plasseringen fremfor en automatisk overstyring. En helt flat
-modell med alle kriterier på vekt 3 har ikke noe profilkrav i det hele
-tatt: ingen erklærte prioriteringer betyr ingen sperre. En rolle har
-ikke noe nivå, sone eller vekting før vurderingen dens er låst.
+et arbeidsforholdskriterium, er det den kontrollen ser på: en rolle
+hvis totale vekting alene ville nådd de øverste sonenes nivåer,
+trenger likevel at vurderingene dens på nettopp de kriteriene holder
+mål, ellers plasserer regelen den på den lavere sonens øverste nivå i
+stedet. En helt flat modell med alle kriterier på vekt 3 har ingenting
+for kontrollen å se på: ingen erklærte prioriteringer betyr at
+ingenting sperrer plasseringen. En rolle har ikke noe nivå eller
+vekting før vurderingen dens er låst.
 
 ## Sammenligne med ankerrollene deres
 
@@ -73,15 +73,20 @@ dem.
 
 ## Resultatet følger modellen
 
-En rolles vekting, nivå og sone gjenspeiler alltid de låste vurderingene
-dens og modellen slik den er akkurat nå, ikke slik den var da dere låste
+En rolles vekting og nivå gjenspeiler alltid de låste vurderingene dens
+og modellen slik den er akkurat nå, ikke slik den var da dere låste
 den. Det betyr at en endring i selve modellen, som å velge et kriterium,
 endre et vektpoeng eller omvekte, kan flytte en rolle til et annet nivå
 umiddelbart, uten at noen rører vurderingene dens. Å velge et nytt
 kriterium kan til og med gjøre en tidligere fullført rolle ufullstendig
 igjen til det også er vurdert. Hvert slikt skifte registreres i
-hendelsesloggen. En rolle som ble låst før modellens siste godkjenning,
-merkes som vurdert etter en tidligere metode til den låses på nytt.
+hendelsesloggen. En låst rolle viser "Vurdert etter tidligere metode"
+når som helst den ble låst før modellens gjeldende godkjenning, eller
+når som helst modellens godkjenning for øyeblikket er åpnet igjen,
+som er det vanlige like etter en metodepåvirkende endring, siden
+gjenåpningen gjelder alle låste roller på én gang, ikke bare dem som
+forble låst gjennom en godkjenningsendring. Å låse på nytt under
+gjeldende metode fjerner den.
 
 ## Ingen manuell overstyring
 

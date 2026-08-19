@@ -5,9 +5,9 @@ section: evaluation
 ---
 
 Når hvert kriterium er vurderet, og vurderingen er låst, beregner
-blueprnt en vægtning, et niveau og en zone for rollen. Alle tre er
-altid udledt af de låste vurderinger og den nuværende model; ingen af
-dem indtastes nogensinde i hånden. Forveksl ikke denne vægtning, en
+blueprnt en vægtning og et niveau for rollen. Begge er altid udledt af
+de låste vurderinger og den nuværende model; ingen af dem indtastes
+nogensinde i hånden. Forveksl ikke denne vægtning, en
 rolles samlede resultat, med den vægtning, I foretager på
 [Model](/model)-områdets Vægtning-fane, som sætter hvert kriteriums
 egne vægtpoint; de to deler ordet med vilje, men de er to forskellige
@@ -42,26 +42,25 @@ sig ved at omveje modellen; den viser ikke de modelbrede vægtpoint, da
 de er identiske for hver rolle, eller den rå vurdering, som opdelingen
 allerede udtrykker gennem bidragsandelen.
 
-## Tolv niveauer i fire zoner
+## Tolv niveauer, placeret med et profiltjek
 
 Niveau 1 er det højeste af tolv niveauer, med nedadgående tælling
 derfra. Jeres model definerer en mindste vægtning for hvert niveau.
-Niveauerne grupperes i fire zoner, fra A (niveau 1 til 3) ned til D
-(niveau 10 til 12); en zone er et bredere bånd med en fælles karakter,
-nyttigt til at tale om, hvor en rolle ligger, uden at nævne dens
-nøjagtige niveau.
+Internt grupperer placeringsreglen også de tolv niveauer i fire zoner,
+fra A (niveau 1 til 3) ned til D (niveau 10 til 12), for at lave endnu
+et tjek, før den fastsætter en rolles niveau; intet i appen viser
+denne gruppering eller navngiver en rolles zone, kun dens effekt på
+det niveautal, I ser.
 
-Jeres organisations højest vægtede kriterier, dem med vægt 4 eller 5 og
-ikke et arbejdsforholdskriterium, fungerer desuden som et profilkrav
-for de øverste zoner: en rolle kan ikke nå zone A eller B alene på en
-høj samlet vægtning, hvis dens vurderinger på netop de kriterier ikke
-slår til. Når det sker, placeres rollen i stedet øverst i den lavere
-zone og flages til kalibrering, en opfordring til at en person
-bekræfter placeringen frem for en automatisk tilsidesættelse. En helt
-flad model, hvor alle kriterier står på vægt 3, har intet profilkrav
-overhovedet: ingen erklærede prioriteter betyder ingen spærring. En
-rolle har intet niveau, zone eller vægtning, før dens vurdering er
-låst.
+Jeres organisations højest vægtede kriterier, dem med vægt 4 eller 5
+og ikke et arbejdsforholdskriterium, er det, det tjek kigger på: en
+rolle, hvis samlede vægtning alene ville nå de øverste zoners niveauer,
+skal stadig have, at dens vurderinger på netop de kriterier holder
+stik, ellers placerer reglen den på den lavere zones øverste niveau i
+stedet. En helt flad model, hvor alle kriterier står på vægt 3, har
+intet for tjekket at kigge på: ingen erklærede prioriteter betyder, at
+intet spærrer placeringen. En rolle har intet niveau eller vægtning,
+før dens vurdering er låst.
 
 ## At sammenligne med jeres ankerroller
 
@@ -73,16 +72,21 @@ hvert anker, flages som værd et manuelt tjek, før I stoler på det. Se
 
 ## Resultatet følger modellen
 
-En rolles vægtning, niveau og zone afspejler altid dens låste
-vurderinger og modellen, som den er lige nu, ikke som den var, da I
-låste den. Det betyder, at en ændring i selve modellen, som at vælge
-et kriterium, ændre et vægtpoint eller omveje, kan flytte en rolle til
-et andet niveau med det samme, uden at nogen har rørt dens vurderinger.
-At vælge et nyt kriterium kan endda gøre en tidligere færdig rolle
+En rolles vægtning og niveau afspejler altid dens låste vurderinger og
+modellen, som den er lige nu, ikke som den var, da I låste den. Det
+betyder, at en ændring i selve modellen, som at vælge et kriterium,
+ændre et vægtpoint eller omveje, kan flytte en rolle til et andet
+niveau med det samme, uden at nogen har rørt dens vurderinger. At
+vælge et nyt kriterium kan endda gøre en tidligere færdig rolle
 ufuldstændig igen, indtil det også er vurderet. Hver sådan forskydning
-registreres i hændelsesloggen. En rolle, der blev låst før jeres
-models seneste godkendelse, mærkes som vurderet efter en tidligere
-metode, indtil den låses op igen.
+registreres i hændelsesloggen. En låst rolle viser "Vurderet efter
+tidligere metode", når som helst den blev låst før modellens aktuelle
+godkendelse, eller når som helst modellens godkendelse for øjeblikket
+er genåbnet, hvilket er det almindelige lige efter enhver
+metodepåvirkende ændring, da genåbningen gælder alle låste roller på
+én gang, ikke kun dem, der forblev låst hen over en
+godkendelsesændring. At låse igen under den aktuelle metode fjerner
+den.
 
 ## Ingen manuel tilsidesættelse
 

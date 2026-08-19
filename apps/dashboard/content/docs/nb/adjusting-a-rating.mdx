@@ -1,51 +1,63 @@
 ---
 title: Justere en vurdering
-description: Å gå tilbake inn i vurderingsstegviseren for å endre et kriteriums vurdering, og hva som registreres.
+description: Å låse opp en låst vurdering for å endre en vurdering, og hva som registreres.
 section: evaluation
 ---
 
-En rolles vurderinger er aldri endelige. Så lenge rollen ikke er
-arkivert, kan dere gå tilbake til hvilket som helst kriterium og endre
-hva dere vurderte det til, og blueprnt beregner umiddelbart vektingen og
-nivået på nytt fra de nye vurderingene.
+En rolles vurderinger kan bare endres mens vurderingen er låst opp. En
+låst vurdering beskytter et avslørt resultat mot tilfeldige endringer:
+dere låser den opp først, med vilje, før noe kan vurderes annerledes.
 
-## Gjenåpne stegviseren
+## Låse opp en låst rolle
 
-Fra en fullt vurdert rolles handlingsmeny velger dere "Juster
-vurderinger". Dette åpner den samme stegviseren som beskrevet i
-[Vurdere en rolle](/docs/evaluating-a-role), og starter på nytt fra det
+Fra en låst rolles handlingsmeny velger dere "Lås opp vurderingen". En
+bekreftelsesdialog forklarer hva som skjer: å låse opp skjuler vekting
+og nivå igjen til vurderingen låses på nytt, og vurderingene kan da
+endres. Å bekrefte med "Ja, lås opp" gjør nettopp det; vektingen,
+nivået og en eventuell sammenligning med ankerroller forsvinner
+umiddelbart fra rollens side.
+
+## Endre en vurdering
+
+Når rollen er låst opp, velger dere "Juster vurderinger" i samme meny.
+Det åpner samme flyt som beskrevet i
+[Vurdere en rolle](/docs/evaluating-a-role), og begynner om fra det
 første kriteriet, men forhåndsutfylt: hvert kriterium viser allerede
-trinnet dere valgte og eventuell begrunnelse dere skrev, så dere
-gjennomgår og redigerer den eksisterende vurderingen deres i stedet for
-å starte fra ingenting. Vektingen og nivået forblir skjult mens dere
-går gjennom kriteriene, akkurat som første gang; dere ser resultatet
-igjen bare når dere når slutten.
+trinnet dere valgte og eventuell begrunnelse dere skrev, slik at dere
+gjennomgår og redigerer den eksisterende vurderingen i stedet for å
+begynne fra ingenting. Vektingen og nivået forblir skjult mens dere går
+gjennom kriteriene, akkurat som første gang. Å endre et trinn og velge
+"Neste kriterium" lagrer det kriteriet umiddelbart, ett om gangen; å
+sende inn det samme trinnet og den samme begrunnelsen som allerede
+finnes, endrer ingenting, og ingen post opprettes i hendelsesloggen.
 
-Å endre et trinn og velge "Neste kriterium" lagrer det kriteriet
-umiddelbart, ett om gangen, akkurat som ved den første vurderingen. Å
-sende inn samme trinn og begrunnelse som allerede er der, endrer
-ingenting, og ingen post opprettes i hendelsesloggen.
+Dere ser resultatet igjen først når dere låser vurderingen på nytt, den
+samme handlingen "Lås vurderingen" som første gang, tilgjengelig når
+alle kriterier har en vurdering.
 
 ## Når justering er blokkert
 
-Når en rolle er arkivert, kan den ikke lenger vurderes eller justeres i
-det hele tatt. "Juster vurderinger" vises ikke lenger i menyen dens, og
-arkivering går bare én vei, så det finnes ingen måte å gjenåpne en
-arkivert rolle for videre vurdering; se
-[Arkivere en rolle](/docs/archiving-roles) for hva som ellers blir
-skrivebeskyttet. Vurdering krever også fortsatt en fullstendig
-jobbprofil, samme forutsetning som første gang; dette er normalt
-allerede oppfylt på det tidspunktet en rolle har en full vurdering å
-justere.
+Å låse opp krever alltid at rollens vurdering allerede er låst; ellers
+finnes det ingenting å låse opp. Når en rolle er arkivert, kan den ikke
+lenger vurderes, låses opp eller justeres i det hele tatt: "Lås opp
+vurderingen" vises ikke lenger i menyen, og arkivering går bare én vei,
+så det finnes ingen måte å gjenåpne en arkivert rolle for videre
+vurdering; se [Arkivere en rolle](/docs/archiving-roles) for hva som
+ellers blir skrivebeskyttet. Vurdering krever fortsatt at
+organisasjonens modell er godkjent, samme forutsetning som første gang;
+dette er normalt fortsatt oppfylt når en rolle allerede har en låst
+vurdering å justere, med mindre en metodendring har åpnet godkjenningen
+igjen i mellomtiden.
 
 ## Hva som logges
 
-Hver lagrede endring av en vurdering registreres i hendelsesloggen som
+Hver lagret endring av en vurdering registreres i hendelsesloggen som
 "Vurdering endret", med kriteriets verdi og begrunnelse før og etter.
 Hvis endringen flytter rollen til et annet nivå, logger blueprnt også
-en separat post, "Nivå rekalibrert", som peker tilbake på vurderingen
-som forårsaket det, så historikken over hvorfor en rolles nivå flyttet
-seg forblir synlig sammen med vurderingene selv.
+en egen post, "Nivå omkalibrert", som peker tilbake på vurderingen som
+forårsaket det, slik at historikken over hvorfor en rolles nivå flyttet
+seg, forblir synlig sammen med vurderingene selv. Å låse opp og låse på
+nytt er også hver sin egen loggførte handling.
 
 ## Relatert
 

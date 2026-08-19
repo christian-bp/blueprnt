@@ -141,8 +141,11 @@ complements rather than replaces.
 ## Frozen data
 
 Frozen data is the part of a pay mapping that can never change once the
-mapping is started: salaries, role level and track, demographics, level
-thresholds, and ratings, all captured at the reference date.
+mapping is started: salaries, role level and track, demographics, and
+ratings, together with the complete method evidence that produced them
+(criteria with their dimensions and weights, level and zone rules, the
+materiality decision, and approval metadata), all captured at the
+reference date.
 
 Your working material stays editable, comparison groups, notes and actions,
 but the frozen figures stay exactly as they were even as your live
@@ -223,11 +226,12 @@ See [The pay mapping overview](/docs/pay-mapping-overview).
 
 ## Pay mapping
 
-A pay mapping (lönekartläggning) is the annual review Swedish law requires:
-finding, addressing, and preventing unjustified pay differences between
-women and men, built on a frozen snapshot.
+A pay mapping (lönekartläggning) freezes a snapshot of pay, roles, and
+demographics, then analyzes that snapshot for unjustified pay
+differences between women and men.
 
-See [What is a pay mapping](/docs/what-is-pay-mapping).
+See [What is a pay mapping](/docs/what-is-pay-mapping) for the
+underlying Swedish duty and its four chapters.
 
 ## Point budget
 
@@ -349,9 +353,12 @@ this one is a result, that one is a task. See
 
 ## Zone
 
-A zone is one of four groups of neighbouring levels, from A (levels 1 to
-3, the most senior) to D (levels 10 to 12). Your organization's
-highest-weighted criteria act as a profile requirement for the top zones,
-so a role cannot enter one on a high total weighting alone.
+A zone is one of four internal groupings of neighbouring levels that
+blueprnt's placement rule uses, from A (levels 1 to 3, the
+highest-valued work) to D (levels 10 to 12). Your organization's
+highest-weighted criteria act as a profile requirement inside that
+rule, so a role cannot reach a top zone's levels on a high total
+weighting alone. You see the effect on the level itself; there is no
+separate zone label anywhere in the app.
 
 See [Weighting and levels](/docs/score-and-levels).

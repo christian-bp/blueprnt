@@ -23,24 +23,27 @@ Starting requires that people have already been imported into
 [People](/people), that every person is classified into a role and
 seniority from [Classify](/people/classify), and that every active,
 staffed role in [Roles](/roles) (one with at least one person currently
-assigned to it) has a completed evaluation. A role that nobody is
-currently assigned to never blocks starting, and archived roles are never
-counted.
+assigned to it) has a locked evaluation: fully rated is not enough on
+its own, since a role's level does not exist until it is locked. A role
+that nobody is currently assigned to never blocks starting, and archived
+roles are never counted.
 
 You can open "Start pay mapping" at any time. If a precondition is unmet,
 the dialog shows what remains instead of the name field, as a plain list
 of unmet conditions, each one a link to where the work happens: importing
 people when none have been imported yet, classifying the people still waiting
-(with a count), or completing the evaluations still missing (with a count
+(with a count), or locking the evaluations still missing (with a count
 and, below it, up to a handful of the specific roles involved). See
 [Importing people](/docs/importing-people), [Classifying people](/docs/classifying-people),
 and [Evaluating a role](/docs/evaluating-a-role) for that work.
 
 ## The frozen snapshot
 
-Confirming captures, as of that instant, your current model configuration
-(the criteria, their weight points, and the level thresholds) together with
-every person's role, seniority, level, and pay. That frozen copy,
+Confirming captures, as of that instant, your current model's full
+method evidence (the criteria with their dimensions and weight points,
+the level and zone rules, the working-conditions materiality decision,
+and who approved the model and when) together with every person's role,
+seniority, level, and pay. That frozen copy,
 never your live data, is what every chapter's comparison, chart, and
 finding in this mapping reads from then on. This is why a pay mapping's
 numbers stay put even after you go on to add people, evaluate more roles,

@@ -1,41 +1,53 @@
 ---
 title: Justera ett betyg
-description: Att gå tillbaka in i betygsättningsflödet för att ändra ett kriteriums betyg, och vad som registreras.
+description: Att låsa upp en låst bedömning för att ändra ett betyg, och vad som registreras.
 section: evaluation
 ---
 
-En rolls betyg är aldrig slutgiltiga. Så länge rollen inte är arkiverad
-kan ni gå tillbaka till valfritt kriterium och ändra vad ni betygsatte
-det till, och blueprnt räknar omedelbart om viktningen och nivån
-utifrån de nya betygen.
+En rolls betyg kan bara ändras medan bedömningen är upplåst. En låst
+bedömning skyddar ett avslöjat resultat från oavsiktliga ändringar: ni
+låser upp den först, medvetet, innan något kan betygsättas annorlunda.
 
-## Öppna betygsättningen igen
+## Låsa upp en låst roll
 
-Från en fullständigt utvärderad rolls åtgärdsmeny väljer ni "Justera
-betyg". Det öppnar samma flöde som beskrivs i
+Från en låst rolls åtgärdsmeny väljer ni "Lås upp bedömningen". En
+bekräftelsedialog förklarar vad som händer: att låsa upp döljer
+viktning och nivå igen tills bedömningen låses på nytt, och betygen kan
+då ändras. Att bekräfta med "Ja, lås upp" gör precis det; viktningen,
+nivån och eventuell jämförelse med ankarroller försvinner omedelbart
+från rollens sida.
+
+## Ändra ett betyg
+
+När rollen är upplåst väljer ni "Justera betyg" i samma meny. Det
+öppnar samma flöde som beskrivs i
 [Utvärdera en roll](/docs/evaluating-a-role), och börjar om från det
 första kriteriet, men förifyllt: varje kriterium visar redan det steg
 ni valde och eventuell motivering ni skrev, så att ni granskar och
 redigerar er befintliga bedömning istället för att börja om från noll.
 Viktningen och nivån förblir dolda medan ni går igenom kriterierna,
-precis som första gången; ni ser resultatet igen bara när ni når
-slutet.
+precis som första gången. Att ändra ett steg och välja "Nästa
+kriterium" sparar det kriteriet omedelbart, ett i taget; att skicka in
+samma steg och motivering som redan finns ändrar ingenting, och ingen
+post skapas i händelseloggen.
 
-Att ändra ett steg och välja "Nästa kriterium" sparar det kriteriet
-omedelbart, ett i taget, precis som vid den första betygsättningen. Att
-skicka in samma steg och motivering som redan finns ändrar ingenting,
-och ingen post skapas i händelseloggen.
+Ni ser resultatet igen först när ni låser bedömningen på nytt, samma
+åtgärd "Lås bedömningen" som första gången, tillgänglig när alla
+kriterier har ett betyg.
 
 ## När justering är blockerad
 
-När en roll är arkiverad kan den inte längre betygsättas eller justeras
-alls. "Justera betyg" visas inte längre i dess meny, och arkivering går
-bara en väg, så det finns inget sätt att återöppna en arkiverad roll
-för vidare betygsättning; se [Arkivera en roll](/docs/archiving-roles)
-för vad som annars blir skrivskyddat. Betygsättning kräver också
-fortfarande en komplett jobbprofil, samma villkor som första gången;
-det här är normalt redan uppfyllt vid den tidpunkt en roll har en full
-utvärdering att justera.
+Att låsa upp kräver alltid att rollens bedömning redan är låst; annars
+finns inget att låsa upp. När en roll är arkiverad kan den inte längre
+betygsättas, låsas upp eller justeras alls: "Lås upp bedömningen" visas
+inte längre i dess meny, och arkivering går bara en väg, så det finns
+inget sätt att återöppna en arkiverad roll för vidare betygsättning; se
+[Arkivera en roll](/docs/archiving-roles) för vad som annars blir
+skrivskyddat. Betygsättning kräver fortfarande att er organisations
+modell är godkänd, samma villkor som första gången; det här är normalt
+fortsatt uppfyllt när en roll redan har en låst utvärdering att
+justera, om inte en metodändring har öppnat godkännandet igen under
+tiden.
 
 ## Vad som loggas
 
@@ -44,7 +56,8 @@ Varje sparad ändring av ett betyg registreras i händelseloggen som
 Om ändringen flyttar rollen till en annan nivå loggar blueprnt också en
 separat post, "Nivå omkalibrerad", som pekar tillbaka på betyget som
 orsakade det, så att historiken över varför en rolls nivå flyttades
-förblir synlig tillsammans med betygen själva.
+förblir synlig tillsammans med betygen själva. Att låsa upp och låsa
+igen är också var och en sin egen loggförda åtgärd.
 
 ## Relaterat
 
