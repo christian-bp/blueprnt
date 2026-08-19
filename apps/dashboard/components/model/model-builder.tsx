@@ -11,12 +11,6 @@ import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { pointBudget } from "@workspace/core"
 import { Alert, AlertTitle } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
-import { ButtonGroup } from "@workspace/ui/components/button-group"
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@workspace/ui/components/hover-card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation, useQuery } from "convex/react"
@@ -33,8 +27,9 @@ import {
   DefineCriterionListSkeleton,
 } from "@/components/model/criterion-list-skeleton"
 import { LibraryPickerDialog } from "@/components/model/library-picker-dialog"
+import { WeightPointRow } from "@/components/model/weight-point-row"
 import { WeightReviewPanel } from "@/components/model/weight-review-panel"
-import { formatShare, WEIGHT_POINT_OPTIONS } from "@/lib/weighting"
+import { formatShare } from "@/lib/weighting"
 
 // The two activities of building a model, kept on separate phases so the
 // role-facing 1-5 evaluation scale (0 only for a working-conditions criterion)
@@ -57,8 +52,6 @@ function errorKeyFor(error: unknown): EditorErrorKey {
   }
   return "generic"
 }
-
-type WeightMeaningKey = `weightMeaning${1 | 2 | 3 | 4 | 5}`
 
 // The shared model builder for a single phase, hosted by the /model routes
 // (the Criteria and Weighting pages, navigated by the header ModelTabs) and the
@@ -266,75 +259,17 @@ export function ModelBuilder({
                     extendedDescription={criterion.fullDefinition || undefined}
                     editable={false}
                     importanceNode={
-                      // Each weight button is its own hover trigger, so hovering
-                      // (or focusing) a single weight point reveals ONLY that
-                      // point's meaning. Root/Trigger(render) add no DOM and
-                      // Content portals out, so the joined ButtonGroup styling
-                      // (which targets direct children) is unaffected.
-                      <ButtonGroup
-                        aria-label={tEditor("setWeightPoints", {
-                          name: criterion.name,
-                        })}
-                        className="w-full"
-                      >
-                        {WEIGHT_POINT_OPTIONS.map((option) => {
-                          // Weight meanings are always the generic §12.2
-                          // semantics (getModel carries no per-criterion
-                          // weighting text; decision 8).
-                          const meaning = tBuilder(
-                            `weightMeaning${option}` as WeightMeaningKey
-                          )
-                          return (
-                            <HoverCard
-                              key={option}
-                              // Keep the card open when you click to pick this
-                              // weight point: the button is its own trigger, so
-                              // without this the press dismisses the card and
-                              // hover reopens it (a flicker). It still closes
-                              // on pointer-leave.
-                              onOpenChange={(nextOpen, eventDetails) => {
-                                if (
-                                  !nextOpen &&
-                                  (eventDetails.reason === "trigger-press" ||
-                                    eventDetails.reason === "outside-press")
-                                ) {
-                                  eventDetails.cancel()
-                                }
-                              }}
-                            >
-                              <HoverCardTrigger
-                                delay={150}
-                                closeDelay={100}
-                                render={
-                                  <Button
-                                    type="button"
-                                    size="sm"
-                                    variant={
-                                      points === option ? "default" : "outline"
-                                    }
-                                    disabled={saving}
-                                    aria-pressed={points === option}
-                                    className="flex-1 px-0 tabular-nums"
-                                    onClick={() =>
-                                      setDraft((current) => ({
-                                        ...current,
-                                        [criterion.criterionId]: option,
-                                      }))
-                                    }
-                                  />
-                                }
-                              >
-                                {option}
-                              </HoverCardTrigger>
-                              <HoverCardContent align="center" className="w-72">
-                                <p className="text-muted-foreground text-sm">
-                                  {meaning}
-                                </p>
-                              </HoverCardContent>
-                            </HoverCard>
-                          )
-                        })}
-                      </ButtonGroup>
+                      <WeightPointRow
+                        name={criterion.name}
+                        value={points}
+                        disabled={saving}
+                        onChange={(option) =>
+                          setDraft((current) => ({
+                            ...current,
+                            [criterion.criterionId]: option,
+                          }))
+                        }
+                      />
                     }
                     note={
                       <span>

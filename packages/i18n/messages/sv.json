@@ -1843,6 +1843,15 @@
         "weightMeaning4": "Stark påverkan i modellen",
         "weightMeaning5": "Mycket stark påverkan i modellen"
       },
+      "build": {
+        "zoneCount": "{count} av max {max}",
+        "zoneEmpty": "Inga kriterier inom denna dimension ännu",
+        "recommendedChip": "Rekommenderas för er bransch",
+        "overlapChip": "Överlappar {names}",
+        "addCta": "Lägg till",
+        "addLabel": "Lägg till {name} i modellen",
+        "dragLabel": "Flytta {name} till sin dimension"
+      },
       "change": {
         "cancel": "Avbryt"
       },

@@ -1,4 +1,7 @@
-// The diagonal-hatch fill for empty levels (ladder) and empty cells (matrix).
+// The app's one "empty slot" language: a diagonal-hatch fill for a container
+// that exists and is waiting to be filled. Worn by an empty level row (ladder),
+// an empty cell (matrix), and an empty dimension drop zone (the model builder),
+// so the three read as the same statement rather than three inventions.
 //
 // The `background-size` is the load-bearing part. It pins the gradient to one
 // spatial period of the -60deg, 6px-period pattern: 6px / sin(60deg) = 4*sqrt(3)

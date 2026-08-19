@@ -1843,6 +1843,15 @@
         "weightMeaning4": "Strong influence in the model",
         "weightMeaning5": "Very strong influence in the model"
       },
+      "build": {
+        "zoneCount": "{count} of max {max}",
+        "zoneEmpty": "No criteria in this dimension yet",
+        "recommendedChip": "Recommended for your industry",
+        "overlapChip": "Overlaps {names}",
+        "addCta": "Add",
+        "addLabel": "Add {name} to the model",
+        "dragLabel": "Move {name} into its dimension"
+      },
       "change": {
         "cancel": "Cancel"
       },

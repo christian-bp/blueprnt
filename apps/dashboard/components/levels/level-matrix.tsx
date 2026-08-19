@@ -2,8 +2,8 @@
 
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
+import { HATCH_CLASS } from "@/components/hatch"
 import { RoleChip } from "@/components/levels/role-chip"
-import { HATCH_CLASS } from "@/components/levels/hatch"
 import {
   MATRIX_COL_HEADER_CLASS,
   MATRIX_WRAPPER_CLASS,

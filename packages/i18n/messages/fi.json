@@ -1843,6 +1843,15 @@
         "weightMeaning4": "Vahva vaikutus mallissa",
         "weightMeaning5": "Erittäin vahva vaikutus mallissa"
       },
+      "build": {
+        "zoneCount": "{count} / enintään {max}",
+        "zoneEmpty": "Tähän ulottuvuuteen ei ole vielä valittu kriteerejä",
+        "recommendedChip": "Suositeltu toimialallenne",
+        "overlapChip": "Päällekkäinen: {names}",
+        "addCta": "Lisää",
+        "addLabel": "Lisää {name} malliin",
+        "dragLabel": "Siirrä {name} omaan ulottuvuuteensa"
+      },
       "change": {
         "cancel": "Peruuta"
       },
