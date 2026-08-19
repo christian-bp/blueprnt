@@ -1,0 +1,77 @@
+packages/backend/convex/assessment/seed.ts
+  s_58dd112dc09435::t_bdfdf1ec144673 80-86,89,91
+apps/dashboard/components/model/criterion-list-skeleton.tsx
+  s_58dd112dc09435::t_10a7535456d94c 5-6,10-13,24-63,76,79-80,99,112-114,119-189
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_71f790eb121e40 1882-1883
+packages/backend/convex/assessment/devCompany.test.ts
+  s_58dd112dc09435::t_a36ac5cad9390c 185-190,192-195
+  s_58dd112dc09435::t_548283504c6a81 4-7,13
+  s_58dd112dc09435::t_1685f0a1ba01d9 66
+  s_58dd112dc09435::t_936be034744249 72-96
+  s_58dd112dc09435::t_7d5ef86dd9826b 149-150,154-155
+packages/backend/convex/assessment/seed.test.ts
+  s_58dd112dc09435::t_fa8716964dc166 121-123,128-131
+  s_58dd112dc09435::t_591855f9a672f2 99,105-106
+apps/dashboard/components/model/model-builder.test.tsx
+  s_58dd112dc09435::t_73f39223687acf 202-233,235-236
+  s_58dd112dc09435::t_3885c462f48fa0 234
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_71f790eb121e40 1882-1883
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_71f790eb121e40 1882-1883
+packages/backend/convex/evaluationModel/criteriaLibrary.ts
+  s_58dd112dc09435::t_173f650d1c6c61 191-203
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_58dd112dc09435::t_dbe13044b30d83 402-407
+  s_58dd112dc09435::t_a423c5045b3041 2
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_71f790eb121e40 1882-1883
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_58dd112dc09435::t_68bf82331cc3d0 152-154
+  s_58dd112dc09435::t_8716ed62ae35df 4
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_71f790eb121e40 1882-1883
+apps/dashboard/components/model/model-builder.tsx
+  s_58dd112dc09435::t_d8d516b50bf3c4 131-135
+  s_58dd112dc09435::t_4e00cee4f5b7ce 31-34
+packages/backend/convex/assessment/devCompany.ts
+  s_58dd112dc09435::t_5a84b78ff93513 511
+  s_58dd112dc09435::t_8a3a5a8a2e1e5c 390-412,415-417,433
+  s_58dd112dc09435::t_f0a0f4d8b1bc31 446,450-454,456,458,466-469,472,477,479-480,485-488,493,495
+apps/dashboard/components/model/library-picker-dialog.test.tsx
+  s_58dd112dc09435::t_e3aad3225d8cb5 7
+  s_58dd112dc09435::t_473a37a0300d7e 116,119-123
+  s_58dd112dc09435::t_647c97b52e7138 124-129
+  s_58dd112dc09435::t_2dde1f84bea366 114-115,117-118,130-133
+packages/backend/convex/evaluationModel/method.ts
+  s_58dd112dc09435::t_d2b3e883c3728b 7-11
+  s_58dd112dc09435::t_9073c544f76351 279
+packages/backend/convex/ai/suggest.ts
+  s_58dd112dc09435::t_c54bca5da5f0e7 20-23
+  s_58dd112dc09435::t_aa022e7a8a39a9 864
+apps/dashboard/components/model/criterion-list-skeleton.test.tsx
+  s_58dd112dc09435::t_2452220472479a 1,3,5-18,23,36-43,48,68-83,87-101
+  s_58dd112dc09435::t_3885c462f48fa0 27,84-86
+  s_58dd112dc09435::t_b03cf0b702000d 102
+apps/dashboard/components/model/library-picker-dialog.tsx
+  s_58dd112dc09435::t_25627abdb4f60e 137,143-145
+  s_58dd112dc09435::t_3885c462f48fa0 138-142
+  s_58dd112dc09435::t_a37e2202de2ec2 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f6d0bbbdbbc18ea976ebfa7a6fa8809603c5f7da",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
