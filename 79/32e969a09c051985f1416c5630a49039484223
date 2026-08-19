@@ -1,0 +1,184 @@
+apps/dashboard/content/docs/en/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_eaca7fa45a9fc4 21-22
+  s_58dd112dc09435::t_ed063ea42e67c2 118-122
+apps/dashboard/content/docs/da/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_2920b26b532f64 115-119
+  s_58dd112dc09435::t_2c606838f87625 21-23
+apps/dashboard/content/docs/fi/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_b5cd0c4efaab86 22-23
+  s_58dd112dc09435::t_fa92a01991fa8f 119-123
+apps/dashboard/content/docs/da/navigating-the-app.mdx
+  s_58dd112dc09435::t_de7d679dd91c08 38-39
+apps/dashboard/content/docs/fi/adjusting-a-rating.mdx
+  s_58dd112dc09435::t_2e1a8b195a456a 3,7-10,12,14-25,27-34,36-38,42-52,56-63
+apps/dashboard/content/docs/sv/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_1b5cf6b8f58c12 22-23
+  s_58dd112dc09435::t_8b65101a064955 118-122
+apps/dashboard/content/docs/nb/glossary.mdx
+  s_58dd112dc09435::t_90b1d58052ec5e 150-154
+  s_58dd112dc09435::t_cca4eca3933e9c 238-240,242-243
+  s_58dd112dc09435::t_459ca95887551a 367-373
+apps/dashboard/content/docs/en/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_d0ef3d5d35e413 42-46
+  s_58dd112dc09435::t_fed08ad33d8f88 26-29,35
+apps/dashboard/content/docs/da/criteria-and-scale.mdx
+  s_58dd112dc09435::t_c9f492a9a38f55 54-62
+apps/dashboard/content/docs/da/score-and-levels.mdx
+  s_58dd112dc09435::t_e84308cef883bc 8-10
+  s_58dd112dc09435::t_ab50bb7d4b975b 45,49-63
+  s_58dd112dc09435::t_c03294f6796869 75-80,82-89
+apps/dashboard/content/docs/en/levels-views.mdx
+  s_58dd112dc09435::t_a87e98832c8605 37-43
+apps/dashboard/content/docs/nb/score-and-levels.mdx
+  s_58dd112dc09435::t_b00687e2b93819 46,49-53,56-63
+  s_58dd112dc09435::t_1a7e7ded64dd8b 76-77,83-89
+  s_58dd112dc09435::t_34da6d4888554a 8-10
+apps/dashboard/content/docs/nb/roles-register.mdx
+  s_58dd112dc09435::t_78499fc559d99c 19-20
+apps/dashboard/content/docs/en/score-and-levels.mdx
+  s_58dd112dc09435::t_d29c5fa91970ad 8-10
+  s_58dd112dc09435::t_c99a4de57dcd8b 44,47-61
+  s_58dd112dc09435::t_463c7184e5c1e8 73-75,80-85
+apps/dashboard/content/docs/sv/evaluating-a-role.mdx
+  s_58dd112dc09435::t_bb4acc3849ea1a 63-67
+  s_58dd112dc09435::t_80ae19041389ee 42
+  s_58dd112dc09435::t_9b7150e7bb42b3 53
+apps/dashboard/content/docs/fi/roles-register.mdx
+  s_58dd112dc09435::t_f680632dcf71a2 19-21
+apps/dashboard/content/docs/nb/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_a4b406d91ad81d 45-49
+  s_58dd112dc09435::t_a14f751cecf57d 26-29,36
+apps/dashboard/content/docs/da/method-documentation.mdx
+  s_58dd112dc09435::t_4dea69d1e84b47 51-77
+apps/dashboard/content/docs/nb/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_3990bdae8b93ad 24-26,29
+apps/dashboard/content/docs/en/onboarding-guide.mdx
+  s_58dd112dc09435::t_6177f5a75fcaca 74-80
+apps/dashboard/content/docs/nb/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_3ab92347fdd78e 22-23
+  s_58dd112dc09435::t_c97eccd1f38a33 117-121
+apps/dashboard/content/docs/da/onboarding-guide.mdx
+  s_58dd112dc09435::t_1b7a5b2808e18f 75-82
+apps/dashboard/content/docs/da/levels-views.mdx
+  s_58dd112dc09435::t_caf7391bccc084 39-46
+apps/dashboard/content/docs/nb/method-documentation.mdx
+  s_58dd112dc09435::t_532880e24ac1b3 49-75
+apps/dashboard/content/docs/fi/criteria-and-scale.mdx
+  s_58dd112dc09435::t_f24bb52c9d7e7b 58-63
+apps/dashboard/content/docs/fi/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_22c365a8afa9d9 26-27,30
+apps/dashboard/content/docs/nb/navigating-the-app.mdx
+  s_58dd112dc09435::t_8e74346b6092f4 37-38
+apps/dashboard/content/docs/fi/evaluating-a-role.mdx
+  s_58dd112dc09435::t_b295ad6104086c 69-75
+apps/dashboard/content/docs/da/adjusting-a-rating.mdx
+  s_58dd112dc09435::t_0e3d0f99e9f5ec 3,7-9,11,13-24,26-50,56-60
+apps/dashboard/content/docs/nb/adjusting-a-rating.mdx
+  s_58dd112dc09435::t_3f6115758ac0ce 3,7-9,11,13-24,26-32,34-36,40-50,54,57-60
+apps/dashboard/content/docs/en/adjusting-a-rating.mdx
+  s_58dd112dc09435::t_7d6d1641ca6537 3,7-9,11,13-18,20-36,40-49,58-59
+apps/dashboard/content/docs/sv/adjusting-a-rating.mdx
+  s_58dd112dc09435::t_8ef904c3a27b9e 3,7-9,11,13-23,29-32,34-36,40-50,59-60
+apps/dashboard/content/docs/en/glossary.mdx
+  s_58dd112dc09435::t_a7929b5f18fa1d 144-148
+  s_58dd112dc09435::t_a19717a6ac27c2 229-231,233-234
+  s_58dd112dc09435::t_3aa2cda0eb400f 356-362
+apps/dashboard/content/docs/sv/glossary.mdx
+  s_58dd112dc09435::t_5d324641a33ba1 148-152
+  s_58dd112dc09435::t_6c91463782b8b6 237-239,241-242
+  s_58dd112dc09435::t_d9da0faac3aba3 366-372
+apps/dashboard/content/docs/sv/model-overview.mdx
+  s_58dd112dc09435::t_e2a8d9fc65f19e 39
+  s_58dd112dc09435::t_517d0063b85d9d 30
+apps/dashboard/content/docs/fi/levels-views.mdx
+  s_58dd112dc09435::t_22af299e5b5692 39-43,45-47
+apps/dashboard/content/docs/sv/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_d4a880061ca749 27-30,37
+  s_58dd112dc09435::t_88d526ce7820fa 46-50
+apps/dashboard/content/docs/da/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_fb83e8d905b189 25-27,30
+apps/dashboard/content/docs/sv/navigating-the-app.mdx
+  s_58dd112dc09435::t_e73bffcea7c2e8 36
+apps/dashboard/content/docs/nb/onboarding-guide.mdx
+  s_58dd112dc09435::t_6977c173973797 76-83
+apps/dashboard/content/docs/sv/criteria-and-scale.mdx
+  s_58dd112dc09435::t_bc0b7ca22d0852 53-60
+apps/dashboard/content/docs/fi/onboarding-guide.mdx
+  s_58dd112dc09435::t_d321340bbc3c69 83-91
+apps/dashboard/content/docs/fi/method-documentation.mdx
+  s_58dd112dc09435::t_387ec179b450a2 52-80
+apps/dashboard/content/docs/nb/evaluating-a-role.mdx
+  s_58dd112dc09435::t_524b1beb7d1599 64-69
+apps/dashboard/content/docs/da/glossary.mdx
+  s_58dd112dc09435::t_1f8a8cdcb4df26 245-247,249-250
+  s_58dd112dc09435::t_24a15cde2a49a1 377-383
+  s_58dd112dc09435::t_85d4f0fb6e821d 154-157
+apps/dashboard/content/docs/en/criteria-and-scale.mdx
+  s_58dd112dc09435::t_1186f913823e5c 54-62
+apps/dashboard/content/docs/en/method-documentation.mdx
+  s_58dd112dc09435::t_e72868d5d0deae 48-73
+apps/dashboard/content/docs/sv/roles-register.mdx
+  s_58dd112dc09435::t_4b7e9578bf7cb6 18-20
+apps/dashboard/content/docs/en/navigating-the-app.mdx
+  s_58dd112dc09435::t_a9b6f7b9d0b018 36-37
+apps/dashboard/content/docs/en/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_f49ed851131284 25-29
+apps/dashboard/content/docs/fi/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_c993bf6e379e29 47-51
+  s_58dd112dc09435::t_437d9df3e445e8 29-32,40
+apps/dashboard/content/docs/nb/levels-views.mdx
+  s_58dd112dc09435::t_cd9ef1f78cb4ca 39-46
+apps/dashboard/content/docs/da/roles-register.mdx
+  s_58dd112dc09435::t_6da3550f39fce5 19-21
+apps/dashboard/content/docs/fi/navigating-the-app.mdx
+  s_58dd112dc09435::t_ee1b0f6d9da52a 40-41
+apps/dashboard/content/docs/sv/onboarding-guide.mdx
+  s_58dd112dc09435::t_d8dbcf3ba028e6 75-82
+apps/dashboard/content/docs/en/roles-register.mdx
+  s_58dd112dc09435::t_7432109bbb91c5 17-18
+apps/dashboard/content/docs/da/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_cd3fbdd091b316 26-29,36
+  s_58dd112dc09435::t_6a61319fefae74 44-48
+apps/dashboard/content/docs/sv/method-documentation.mdx
+  s_58dd112dc09435::t_6e2f6fbd929a94 50-77
+apps/dashboard/content/docs/sv/score-and-levels.mdx
+  s_58dd112dc09435::t_97073ee2cbccbb 8-10
+  s_58dd112dc09435::t_7538da00a63328 76-89
+  s_58dd112dc09435::t_6191772d3f5944 46,49-64
+apps/dashboard/content/docs/sv/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_0fcc01f5bd7c12 24-26,28
+apps/dashboard/content/docs/fi/glossary.mdx
+  s_58dd112dc09435::t_987068cbc426f6 383-389
+  s_58dd112dc09435::t_9a91f541f3904c 158-161
+  s_58dd112dc09435::t_e8e39c909b046c 250-252,254-255
+apps/dashboard/content/docs/sv/levels-views.mdx
+  s_58dd112dc09435::t_1b1caf3487463a 39-46
+apps/dashboard/content/docs/en/evaluating-a-role.mdx
+  s_58dd112dc09435::t_3c84b85a9159c6 62-66
+apps/dashboard/content/docs/nb/criteria-and-scale.mdx
+  s_58dd112dc09435::t_55a32e0eed1023 55-62
+apps/dashboard/content/docs/da/evaluating-a-role.mdx
+  s_58dd112dc09435::t_5e3ad566f67372 64-67,70
+  s_58dd112dc09435::t_c459f6e16d57b3 68-69
+  s_58dd112dc09435::t_a56b1387e310d3 41
+apps/dashboard/content/docs/fi/score-and-levels.mdx
+  s_58dd112dc09435::t_ee19f98606094e 8-10
+  s_58dd112dc09435::t_0914677201783c 79-94
+  s_58dd112dc09435::t_9d1d5039dccddd 46,49-54,57-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "7932e969a09c051985f1416c5630a49039484223",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
