@@ -1,0 +1,81 @@
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_ceea084a2e78ba 1846-1854
+apps/dashboard/components/model/weight-point-row.test.tsx
+  s_58dd112dc09435::t_c4dd2fdaa747a9 8-48,52-68
+  s_58dd112dc09435::t_9b8d2ef1717171 1-7,49-51
+apps/dashboard/components/model/build-dnd-keyboard.test.tsx
+  s_58dd112dc09435::t_a666e25c190621 1-11,21-155,165-172,174-310
+  s_58dd112dc09435::t_f426149d944355 173
+  s_58dd112dc09435::t_9b8d2ef1717171 12-20,156-164
+apps/dashboard/lib/builder-dnd.test.ts
+  s_58dd112dc09435::t_68f78e8fa56461 1-100,104-117,122-126,130-136,140-164
+  s_58dd112dc09435::t_9b8d2ef1717171 101-103,118-121,127-129,137-139
+apps/dashboard/components/model/weight-point-row.tsx
+  s_58dd112dc09435::t_abf6e4a0c48d4b 1-92
+apps/dashboard/components/model/library-criterion-card.test.tsx
+  s_58dd112dc09435::t_8557e7891c662d 1-114
+apps/dashboard/components/model/model-builder.tsx
+  s_58dd112dc09435::t_3426b0736c36f9 262-272
+  s_58dd112dc09435::t_a2d446c70dfc46 30,32
+apps/dashboard/components/levels/level-ladder.tsx
+  s_58dd112dc09435::t_ed1cb48e65a55d 5
+apps/dashboard/components/model/dimension-drop-zone.test.tsx
+  s_58dd112dc09435::t_f426149d944355 36
+  s_58dd112dc09435::t_0f1a71e2f13b46 1-35,37-85,89,97-98
+  s_58dd112dc09435::t_7b8059877521a8 86-88,90-96
+apps/dashboard/components/model/placed-criterion-card.test.tsx
+  s_58dd112dc09435::t_8840e788d939d8 26
+  s_58dd112dc09435::t_9b8d2ef1717171 66-68
+  s_58dd112dc09435::t_7be677b75c3769 40
+  s_58dd112dc09435::t_9442715b83d86c 1-25,27-39,41-65,69-118
+apps/dashboard/components/model/placed-criterion-card.tsx
+  s_58dd112dc09435::t_79a859f6e21e8a 1-120
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_ceea084a2e78ba 1846-1854
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_ceea084a2e78ba 1846-1854
+apps/dashboard/components/model/dimension-drop-zone.tsx
+  s_58dd112dc09435::t_654223a6eb2b6f 146-149
+  s_58dd112dc09435::t_5c4b7784601f27 156
+  s_58dd112dc09435::t_790cb06c82fe10 18-20
+  s_58dd112dc09435::t_44b522fef5a21f 96-102,115-118
+  s_58dd112dc09435::t_f709474794086d 1-17,21-95,103-106,111-114,119-145,150-155,157-158
+  s_58dd112dc09435::t_5eb0dcfd335320 107-110
+apps/dashboard/components/model/library-criterion-card.tsx
+  s_58dd112dc09435::t_3f352b23786718 86-106,108-109,111-156
+  s_58dd112dc09435::t_47db24e9653192 1-70,107,110,157-159
+  s_58dd112dc09435::t_4d2257b2179d85 71-85
+apps/dashboard/components/levels/family-level-matrix.tsx
+  s_58dd112dc09435::t_ed1cb48e65a55d 6
+apps/dashboard/components/levels/level-matrix.tsx
+  s_58dd112dc09435::t_ed1cb48e65a55d 5
+apps/dashboard/components/hatch.ts
+  s_58dd112dc09435::t_6301d1bbd599f4 1-4
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_ceea084a2e78ba 1846-1854
+apps/dashboard/lib/builder-dnd.ts
+  s_58dd112dc09435::t_efb336d4cc8db1 84-97
+  s_58dd112dc09435::t_ea2c71c2bbf195 53
+  s_58dd112dc09435::t_cdcfb99485ce33 3,7
+  s_58dd112dc09435::t_924544ccd6a0fb 9-12
+  s_58dd112dc09435::t_9e70fee8ffdf96 1-2,4-6,13-52,54-83,98-190
+  s_58dd112dc09435::t_b45b86422beac1 8
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_ceea084a2e78ba 1846-1854
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5c69ca747189962ab736231f9b2eb2acecf96e54",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
