@@ -906,12 +906,14 @@
         "classifyPeopleCount": "{count, plural, one {# ansatt} other {# ansatte}}",
         "startPayMappingItem": "Start lønnskartleggingen",
         "importPeopleItem": "Importer dine ansatte",
+        "approveModelItem": "Godkjenn modellen",
         "groups": {
           "classifyPeople": "Klassifiser ansatte til roller",
           "describeRoles": "Beskriv disse rollene",
           "evaluateRoles": "Vurder disse rollene",
           "documentCriteria": "Dokumenter kriterier",
           "approveCriteria": "Godkjenn kriterier",
+          "approveModel": "Klar til å godkjenne modellen",
           "startPayMapping": "Klar for lønnskartleggingen",
           "importPeople": "Kom i gang med dine ansatte"
         }

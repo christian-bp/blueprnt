@@ -165,7 +165,11 @@ export function RoleEvaluationCard({
                   {t("adjustRateCta")}
                 </DropdownMenuItem>
               )}
-              {isAdmin && (
+              {/* An anchor role must be a locked reference (lock-as-reveal):
+                  the backend refuses designate/update on an unlocked role,
+                  so the affordance stays hidden for a complete-but-unlocked
+                  role rather than opening a dialog whose submit always fails. */}
+              {isAdmin && locked && (
                 <DropdownMenuItem onClick={() => setAnchorOpen(true)}>
                   {anchorRole === null
                     ? tAnchor("designateCta")

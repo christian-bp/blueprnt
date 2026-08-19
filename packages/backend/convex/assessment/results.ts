@@ -187,10 +187,10 @@ export const getResults = orgQuery({
 // `locked` at this wire (unlike score/level/zone below) -- they are the same
 // per-criterion rows the blind rating flow already writes and re-reads while
 // rating. Blindness for the AGGREGATE outcome (the reveal this whole task is
-// about) is enforced by the two dashboard consumers of this query, which
+// about) is enforced by the four dashboard consumers of this query, which
 // only ever render the breakdown once `locked` is true (rating-result.tsx,
-// role-evaluation-card.tsx, role-sheet.tsx); a future third consumer must
-// keep that same rule.
+// role-evaluation-card.tsx, role-sheet.tsx, rate/page.tsx); a future fifth
+// consumer must keep that same rule.
 export const getRoleResult = orgQuery({
   args: { roleId: v.string(), locale: v.optional(v.string()) },
   returns: v.union(

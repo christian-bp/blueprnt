@@ -27,6 +27,7 @@ const GROUP_HREF: Record<TodoGroupKey, string> = {
   evaluateRoles: "/roles",
   documentCriteria: "/model/method",
   approveCriteria: "/model/method",
+  approveModel: "/model/method",
   startPayMapping: "/pay-mappings",
 }
 
@@ -37,12 +38,14 @@ const GROUP_ICONS: Record<TodoGroupKey, IconSvgElement> = {
   evaluateRoles: Briefcase01Icon,
   documentCriteria: Layers01Icon,
   approveCriteria: Tick02Icon,
+  approveModel: Tick02Icon,
   startPayMapping: ChartColumnIcon,
 }
 
 // The row holds one line of cards. buildTodo already emits its groups in
-// priority order (import, classify, describe, evaluate, document, approve,
-// start the mapping), so the first three ARE the three most pressing things.
+// priority order (import, classify, describe, evaluate, document criteria,
+// approve criteria, approve the model, start the mapping), so the first
+// three ARE the three most pressing things.
 const MAX_CARDS = 3
 
 // Which companies have already had their burst this session. Module-level, so
@@ -284,6 +287,8 @@ function groupDetail(
       return t("todo.importPeopleItem")
     case "startPayMapping":
       return t("todo.startPayMappingItem")
+    case "approveModel":
+      return t("todo.approveModelItem")
     case "classifyPeople":
       return t("todo.classifyPeopleCount", { count: group.count })
     default:

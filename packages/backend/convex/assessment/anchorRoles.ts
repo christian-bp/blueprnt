@@ -58,9 +58,10 @@ function validateMotivation(motivation: string): string {
 
 // Designates a role as an anchor role. Preconditions follow the guide's
 // designation process: the role must exist, not be archived, not already be
-// an anchor, and must have a COMPLETE assessment (a real rating on every
-// criterion, so the anchor has a criteria profile and a computed level to
-// calibrate against).
+// an anchor, and must be a LOCKED reference (lock-as-reveal: an unlocked
+// role's level is not revealed anywhere, so it cannot anchor anything) with a
+// COMPLETE assessment (a real rating on every criterion, so the anchor has a
+// criteria profile and a computed level to calibrate against).
 export const designateAnchorRole = adminMutation({
   args: {
     roleId: v.id("roles"),
@@ -76,6 +77,9 @@ export const designateAnchorRole = adminMutation({
     if (role.archivedAt !== undefined) throw appError(ERROR_CODES.roleLocked)
     if (role.anchorRole !== undefined) {
       throw appError(ERROR_CODES.invalidTransition)
+    }
+    if (role.assessment === undefined) {
+      throw appError(ERROR_CODES.assessmentNotLocked)
     }
     validateExpectedLevel(expectedLevel, await levelCount(ctx, ctx.orgId))
     const trimmedMotivation = validateMotivation(motivation)
@@ -117,10 +121,14 @@ export const designateAnchorRole = adminMutation({
 
 // Updates an existing designation: agreed level, motivation, or lifecycle
 // status (underReview during a review round, replaced when retired). Every
-// update counts as a review, so reviewedAt is always bumped. Reactivating a
-// non-active anchor re-passes the designation preconditions: the role may
-// have been archived or its assessment may have become incomplete (e.g. a
-// criterion was added) since it was designated.
+// update counts as a review, so reviewedAt is always bumped, and every update
+// re-reads the live computed level for the audit row -- which means every
+// call, not only reactivation, requires the role still be a LOCKED reference
+// (same rule as designation), so that write never leaks a derived level for
+// an unlocked role. Reactivating a non-active anchor additionally re-passes
+// the completeness precondition: the assessment may have become incomplete
+// (e.g. a criterion was added) since it was designated, even while it stays
+// locked.
 export const updateAnchorRole = adminMutation({
   args: {
     roleId: v.id("roles"),
@@ -137,6 +145,9 @@ export const updateAnchorRole = adminMutation({
       role.anchorRole === undefined
     ) {
       throw appError(ERROR_CODES.notFound)
+    }
+    if (role.assessment === undefined) {
+      throw appError(ERROR_CODES.assessmentNotLocked)
     }
     if (expectedLevel !== undefined) {
       validateExpectedLevel(expectedLevel, await levelCount(ctx, ctx.orgId))
@@ -186,10 +197,14 @@ export const updateAnchorRole = adminMutation({
 
 // The org's anchor roles with their live computed level next to the agreed
 // level, for the calibration surfaces (results page, rating reveal). Computed
-// at read time like every result (ADR-0002). Replaced anchors are included
-// (the consumer filters by status); the list is small by design (2-5).
-// Archived roles are excluded here, and archiveRole marks their designation
-// "replaced" so the role page and the audit log agree with that exclusion.
+// at read time like every result (ADR-0002). computedLevel is null for an
+// unlocked role, mirroring results.ts's own locked gate: an anchor's
+// designation survives its role being unlocked (only archiving retires it),
+// but lock-as-reveal means the level itself is not revealed anywhere while
+// unlocked, calibration surfaces included. Replaced anchors are included (the
+// consumer filters by status); the list is small by design (2-5). Archived
+// roles are excluded here, and archiveRole marks their designation "replaced"
+// so the role page and the audit log agree with that exclusion.
 export const listAnchorRoles = orgQuery({
   args: {},
   returns: v.array(
@@ -217,13 +232,16 @@ export const listAnchorRoles = orgQuery({
     return anchors.map((role) => {
       const anchorRole = role.anchorRole
       if (anchorRole === undefined) throw appError(ERROR_CODES.notFound)
+      const locked = role.assessment !== undefined
       return {
         roleId: role._id,
         title: role.title,
         trackKey: role.trackKey,
         expectedLevel: anchorRole.expectedLevel,
-        computedLevel:
-          derived.results.find((row) => row.roleId === role._id)?.level ?? null,
+        computedLevel: locked
+          ? (derived.results.find((row) => row.roleId === role._id)?.level ??
+            null)
+          : null,
         motivation: anchorRole.motivation,
         status: anchorRole.status,
         reviewedAt: anchorRole.reviewedAt,

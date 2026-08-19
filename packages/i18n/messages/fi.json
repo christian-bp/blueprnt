@@ -906,12 +906,14 @@
         "classifyPeopleCount": "{count, plural, one {# työntekijä} other {# työntekijää}}",
         "startPayMappingItem": "Aloita palkkakartoitus",
         "importPeopleItem": "Tuo työntekijäsi",
+        "approveModelItem": "Hyväksy malli",
         "groups": {
           "classifyPeople": "Luokittele työntekijät rooleihin",
           "describeRoles": "Kuvaa nämä roolit",
           "evaluateRoles": "Arvioi nämä roolit",
           "documentCriteria": "Dokumentoi kriteerit",
           "approveCriteria": "Hyväksy kriteerit",
+          "approveModel": "Valmis hyväksymään mallin",
           "startPayMapping": "Valmis palkkakartoitukseen",
           "importPeople": "Aloita työntekijöistä"
         }

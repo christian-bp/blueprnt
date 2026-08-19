@@ -11,6 +11,7 @@ export type TodoGroupKey =
   | "evaluateRoles"
   | "documentCriteria"
   | "approveCriteria"
+  | "approveModel"
   | "startPayMapping"
 
 export type RoleItem = {
@@ -42,6 +43,9 @@ export type ClassifyItem = {
 export type StartPayMappingItem = { id: string; href: string }
 // The single "import your employees" row while the org holds no people.
 export type ImportPeopleItem = { id: string; href: string }
+// The single "go approve it" row once the model itself still lacks a
+// current approval (ADR-0023), distinct from per-criterion approveCriteria.
+export type ApproveModelItem = { id: string; href: string }
 
 export type TodoGroup =
   | { key: "importPeople"; items: ImportPeopleItem[]; count: number }
@@ -50,6 +54,7 @@ export type TodoGroup =
   | { key: "evaluateRoles"; items: EvaluateItem[]; count: number }
   | { key: "documentCriteria"; items: CriterionItem[]; count: number }
   | { key: "approveCriteria"; items: CriterionItem[]; count: number }
+  | { key: "approveModel"; items: ApproveModelItem[]; count: number }
   | { key: "startPayMapping"; items: StartPayMappingItem[]; count: number }
 
 export type Todo = { groups: TodoGroup[]; total: number }
@@ -75,6 +80,10 @@ type TodoMethod = {
     name: string
     status: "notStarted" | "inProgress" | "documented" | "approved"
   }[]
+  // The model's own approval (ADR-0023), distinct from a criterion's own
+  // `status === "approved"` above: a model can have every criterion
+  // individually approved and still lack this, or vice versa.
+  modelApproved: boolean
 } | null
 type TodoTitleGroup = {
   title: string | null
@@ -180,6 +189,10 @@ function computeCounts({
       })
     }
   }
+  // The final method-level step (spec 2.7): a model already exists but
+  // carries no current approval yet. Sits with documentItems/approveItems
+  // above as the third and last of the method groups.
+  const modelNeedsApproval = method !== null && !method.modelApproved
 
   // With no people at all, every other check below is vacuously clear, so
   // the whole journey starts with the import. One row, first in priority,
@@ -233,6 +246,7 @@ function computeCounts({
     evaluate,
     documentItems,
     approveItems,
+    modelNeedsApproval,
     totalPeople,
     totalUnclassified,
     unevaluatedStaffedRoles,
@@ -282,6 +296,12 @@ export function buildTodo(input: BuildTodoInput): Todo {
       items: c.approveItems.slice(0, MAX_ITEMS),
       count: c.approveItems.length,
     })
+  if (c.modelNeedsApproval)
+    groups.push({
+      key: "approveModel",
+      items: [{ id: "approveModel", href: "/model/method" }],
+      count: 1,
+    })
 
   // Rendered as its own final group only once the gate is clear AND no
   // non-completed run is already in flight (nothing left to start).
@@ -301,6 +321,7 @@ export function buildTodo(input: BuildTodoInput): Todo {
     c.evaluate.length +
     c.documentItems.length +
     c.approveItems.length +
+    (c.modelNeedsApproval ? 1 : 0) +
     (startPayMapping ? 1 : 0)
   return { groups, total }
 }

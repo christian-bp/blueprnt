@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import { insertStarterSet } from "./starters"
-import { initConvexTest } from "../testing.helpers"
+import { grantModelApproval, initConvexTest } from "../testing.helpers"
 
 // A from/to change entry as stored in audit payloads.
 type Change = { from: unknown; to: unknown }
@@ -1350,8 +1350,18 @@ describe("reconcileStarterSet audit before/after", () => {
           roleId: roleDocId,
           criterionId: criterion._id,
           value: 5,
+          // Value 5 requires a motivation before lockAssessment (below) will
+          // accept it.
+          motivation: "Top of scale.",
         })
       }
+    })
+    // An anchor role must be a locked reference (lock-as-reveal); locking
+    // requires an approved model.
+    await grantModelApproval(t, orgId)
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId: anchor.roleId,
     })
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,

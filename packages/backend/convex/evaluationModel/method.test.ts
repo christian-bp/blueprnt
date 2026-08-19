@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
-import { initConvexTest } from "../testing.helpers"
+import { grantModelApproval, initConvexTest } from "../testing.helpers"
 
 // A spread of 8 library keys across every dimension at (or under) its own
 // DIMENSION_MAX_ACTIVE cap (competence 2, effort 2, responsibility 3,
@@ -364,5 +364,27 @@ describe("getMethodModel", () => {
     const edited = en?.criteria.find((c) => c.criterionId === criterionId)
     expect(edited?.purpose).toBe("HR authored purpose")
     expect(edited?.biasRisk).toBe("high")
+  })
+
+  it("carries the model's own approval separately from per-criterion progress.approved", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    const before = await asAdmin.query(
+      api.evaluationModel.method.getMethodModel,
+      { orgId, locale: "sv" }
+    )
+    // Fresh model: no criterion individually approved, and the model itself
+    // carries no approval either.
+    expect(before?.modelApproved).toBe(false)
+
+    await grantModelApproval(t, orgId)
+    const after = await asAdmin.query(
+      api.evaluationModel.method.getMethodModel,
+      { orgId, locale: "sv" }
+    )
+    expect(after?.modelApproved).toBe(true)
+    // Approving the model does not retroactively approve any criterion's own
+    // compliance write-up: the two are independent completions.
+    expect(after?.progress.approved).toBe(0)
   })
 })

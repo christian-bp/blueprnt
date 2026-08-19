@@ -51,7 +51,14 @@ export function RatingResult({
     // AFTER a successful lock (rate/page.tsx) or for a role that arrives
     // already locked, so it waits on `locked`, not merely `complete` (a
     // complete-but-unlocked role's score/level/zone read null on the wire).
-    !result.locked
+    // `locked` alone is not enough either: a criterion added after the lock
+    // can leave a locked role incomplete again, which reads back as
+    // complete=false, score=null, level=null even though locked stays true
+    // (results.ts) -- without the complete/level check below, `score ?? 0`
+    // prints a dishonest "0 / 100" for a result that was never computed.
+    !result.locked ||
+    !result.complete ||
+    result.level === null
   ) {
     return (
       <main className="flex items-center justify-center p-6">

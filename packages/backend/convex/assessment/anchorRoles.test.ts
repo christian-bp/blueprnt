@@ -99,6 +99,11 @@ describe("designateAnchorRole", () => {
       title: "Software Developer",
       value: 5,
     })
+    // An anchor role must be a locked reference (lock-as-reveal).
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
+    })
 
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
@@ -166,9 +171,20 @@ describe("designateAnchorRole", () => {
       orgId,
       asAdmin,
       model,
-      title: "Half Rated",
+      title: "Locked Then Incomplete",
       value: 3,
-      rateCount: 4,
+    })
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
+    })
+    // A criterion activated after locking leaves the role locked but no
+    // longer complete against the live model (the same seam item B fixes on
+    // the rating-result reveal), isolating the completeness gate here from
+    // the lock gate covered by the sibling test below.
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey: "safety-exposure",
     })
     await expect(
       asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
@@ -180,6 +196,29 @@ describe("designateAnchorRole", () => {
     ).rejects.toThrow(/errors.ratingsIncomplete/)
   })
 
+  it("refuses designation on a complete-but-unlocked role", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
+    const roleId = await createRatedRole({
+      orgId,
+      asAdmin,
+      model,
+      title: "Ready To Lock",
+      value: 3,
+    })
+    // Every criterion rated, but never locked: lock-as-reveal means no level
+    // is revealed anywhere yet, so the role cannot become a calibration
+    // reference until it is locked.
+    await expect(
+      asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
+        orgId,
+        roleId,
+        expectedLevel: 3,
+        motivation: "m",
+      })
+    ).rejects.toThrow(/errors.assessmentNotLocked/)
+  })
+
   it("rejects an out-of-range level and a blank motivation", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
@@ -189,6 +228,10 @@ describe("designateAnchorRole", () => {
       model,
       title: "Ref",
       value: 3,
+    })
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
     })
     for (const expectedLevel of [0, 13, 2.5]) {
       await expect(
@@ -220,6 +263,10 @@ describe("designateAnchorRole", () => {
       title: "Ref",
       value: 3,
     })
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
+    })
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId,
@@ -247,6 +294,10 @@ describe("updateAnchorRole", () => {
       model,
       title: "Ref",
       value: 3,
+    })
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
     })
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
@@ -318,6 +369,10 @@ describe("updateAnchorRole", () => {
       title: "Ref",
       value: 3,
     })
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
+    })
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId,
@@ -378,6 +433,10 @@ describe("updateAnchorRole", () => {
       model,
       title: "Ref",
       value: 3,
+    })
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
     })
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
@@ -449,6 +508,10 @@ describe("updateAnchorRole", () => {
       model,
       title: "Ref",
       value: 3,
+    })
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
     })
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
@@ -525,5 +588,51 @@ describe("updateAnchorRole", () => {
         status: "replaced",
       })
     ).rejects.toThrow(/errors.notFound/)
+  })
+})
+
+describe("listAnchorRoles", () => {
+  it("keeps the designation but nulls the computed level once the role is unlocked", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
+    const roleId = await createRatedRole({
+      orgId,
+      asAdmin,
+      model,
+      title: "Ref",
+      value: 3,
+    })
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
+    })
+    await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
+      orgId,
+      roleId,
+      expectedLevel: 3,
+      motivation: "m",
+    })
+
+    const lockedAnchors = await asAdmin.query(
+      api.assessment.anchorRoles.listAnchorRoles,
+      { orgId }
+    )
+    expect(lockedAnchors[0]?.computedLevel).not.toBeNull()
+
+    // Unlocking withdraws the revealed level (lock-as-reveal) but leaves the
+    // designation itself in place: only archiving retires an anchor.
+    await asAdmin.mutation(api.assessment.locking.unlockAssessment, {
+      orgId,
+      roleId,
+    })
+
+    const unlockedAnchors = await asAdmin.query(
+      api.assessment.anchorRoles.listAnchorRoles,
+      { orgId }
+    )
+    expect(unlockedAnchors).toHaveLength(1)
+    expect(unlockedAnchors[0]?.status).toBe("active")
+    expect(unlockedAnchors[0]?.expectedLevel).toBe(3)
+    expect(unlockedAnchors[0]?.computedLevel).toBeNull()
   })
 })

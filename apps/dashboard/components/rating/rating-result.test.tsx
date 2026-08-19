@@ -94,6 +94,24 @@ describe("RatingResult", () => {
     expect(screen.getByLabelText(labels.computing)).toBeDefined()
   })
 
+  it("shows the not-ready state, never a stale score, when a later criterion made a locked role incomplete", () => {
+    // Locked stays true once set (locking.ts), but a criterion added after
+    // the lock can leave the role incomplete again: the wire then reads
+    // complete=false, score=null, level=null even though locked=true
+    // (results.ts). The reveal must not print "0 / 100" for that.
+    resultFixture = {
+      ...COMPLETE_RESULT,
+      complete: false,
+      score: null,
+      level: null,
+    }
+    renderResult()
+    expect(screen.getByLabelText(labels.computing)).toBeDefined()
+    expect(
+      screen.queryByText(labels.scoreOutOf.replace("{score}", "0"))
+    ).toBeNull()
+  })
+
   it("shows the score and level badge when complete", () => {
     renderResult()
 

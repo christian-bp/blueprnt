@@ -440,6 +440,48 @@ describe("setRating", () => {
     })
   })
 
+  it("refuses clearing the motivation on an unchanged 1/4/5 rating", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
+    const criterion = model.criteria[0]
+    if (criterion === undefined) throw new Error("seed")
+
+    await asAdmin.mutation(api.assessment.ratings.setRating, {
+      orgId,
+      roleId,
+      criterionId: criterion.criterionId,
+      value: 4,
+      motivation: "Broad, cross-team reach.",
+    })
+
+    // Same value (4): only the motivation is touched, and it is cleared to
+    // empty. The field the write would leave behind is what counts (per the
+    // handler's own effectiveMotivation rule), so this is refused exactly
+    // like a fresh 1/4/5 rating with no motivation at all, not silently
+    // accepted just because the value itself did not change.
+    await expect(
+      asAdmin.mutation(api.assessment.ratings.setRating, {
+        orgId,
+        roleId,
+        criterionId: criterion.criterionId,
+        value: 4,
+        motivation: "",
+      })
+    ).rejects.toThrow(/errors.motivationRequired/)
+
+    // Refused, not silently dropped: the original rating is untouched.
+    await t.run(async (ctx) => {
+      const rating = await ctx.db
+        .query("ratings")
+        .withIndex("by_role_criterion", (q) =>
+          q.eq("roleId", roleId).eq("criterionId", criterion.criterionId)
+        )
+        .unique()
+      expect(rating?.value).toBe(4)
+      expect(rating?.motivation).toBe("Broad, cross-team reach.")
+    })
+  })
+
   it("keeps the no-op short-circuit and untouched-motivation edit paths legal under the motivation-required law", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)

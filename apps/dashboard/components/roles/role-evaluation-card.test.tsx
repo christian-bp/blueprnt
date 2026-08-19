@@ -256,6 +256,22 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
+  it("hides Designate from the menu for an admin on a complete-but-unlocked role", async () => {
+    setResult(readyToLockResult)
+    renderCard({
+      ratedCount: 3,
+      totalCriteria: 3,
+      isAdmin: true,
+      anchorRole: null,
+    })
+    // Lock-as-reveal: the backend refuses designation until the role is
+    // locked, so the affordance stays off the menu until then too.
+    await openManageMenu()
+    expect(
+      screen.queryByRole("menuitem", { name: anchor.designateCta })
+    ).toBeNull()
+  })
+
   it("gives a non-admin only Adjust in the menu for a ready-to-lock anchor role", async () => {
     setResult(readyToLockResult)
     renderCard({

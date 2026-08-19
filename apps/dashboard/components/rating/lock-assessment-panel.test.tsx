@@ -6,6 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
+import { ConvexError } from "convex/values"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
@@ -27,6 +28,7 @@ import { toast } from "@/lib/toast"
 
 const t = messages.dashboard.rating
 const tToast = messages.dashboard.toast
+const errors = messages.errors
 
 const lockAssessmentMock = mockMutation("assessment.locking.lockAssessment")
 
@@ -62,8 +64,10 @@ describe("LockAssessmentPanel", () => {
     })
   })
 
-  it("shows an inline error and does not toast when locking fails", async () => {
-    lockAssessmentMock.mockRejectedValue(new Error("errors.ratingsIncomplete"))
+  it("falls back to the generic lock error for an unmapped code", async () => {
+    lockAssessmentMock.mockRejectedValue(
+      new ConvexError({ code: "errors.notFound" })
+    )
     renderPanel()
     fireEvent.click(screen.getByRole("button", { name: t.lockCta }))
     await waitFor(() => {
@@ -71,4 +75,24 @@ describe("LockAssessmentPanel", () => {
     })
     expect(toast.success).not.toHaveBeenCalled()
   })
+
+  it.each([
+    ["ratingsIncomplete", errors.ratingsIncomplete],
+    ["motivationRequired", errors.motivationRequired],
+    ["modelNotApproved", errors.modelNotApproved],
+    ["assessmentLocked", errors.assessmentLocked],
+  ] as const)(
+    "maps the %s failure to its own inline message",
+    async (code, expected) => {
+      lockAssessmentMock.mockRejectedValue(
+        new ConvexError({ code: `errors.${code}` })
+      )
+      renderPanel()
+      fireEvent.click(screen.getByRole("button", { name: t.lockCta }))
+      await waitFor(() => {
+        expect(screen.getByText(expected)).toBeDefined()
+      })
+      expect(toast.success).not.toHaveBeenCalled()
+    }
+  )
 })

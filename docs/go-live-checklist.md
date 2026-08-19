@@ -105,20 +105,36 @@ in the same change.
 - [ ] **Label the audit payload field `count`.** Every other payload field now
   resolves to a `dashboard.auditLog.fields.*` label; `count` deliberately does
   not, so the `ai.suggestionConfirmed` flat-stat line is the one place the audit
-  detail still prints a raw payload key. It was left unlabelled on purpose: three
-  unrelated events write it with three different meanings.
-  `ai.suggestionConfirmed` (`model.draft`: criteria added; `model.weightReview`:
-  weight moves applied), `roleFamily.removed` (roles moved out of the removed
-  family), and `model.discarded` (criteria discarded). The latter two carry a
-  `changes` map, so they render as diffs and hide `count` today, but the label
-  namespace is shared, so one string would have to fit all three. Make the
-  cross-surface wording decision (one neutral term, or split into per-event
-  flat-stat keys), then ship the label in all five locales and register `count`
-  in `OTHER_AUDIT_FIELDS` (`apps/dashboard/lib/audit-labels.test.ts`).
+  detail still prints a raw payload key. It was left unlabelled on purpose: two
+  unrelated events write it with two different meanings, `ai.suggestionConfirmed`
+  (`model.weightReview`: weight moves applied) and `roleFamily.removed` (roles
+  moved out of the removed family). The latter carries a `changes` map, so it
+  renders as a diff and hides `count` today, but the label namespace is shared,
+  so one string would have to fit both. Make the cross-surface wording decision
+  (one neutral term, or split into per-event flat-stat keys), then ship the
+  label in all five locales and register `count` in `OTHER_AUDIT_FIELDS`
+  (`apps/dashboard/lib/audit-labels.test.ts`).
+- [ ] **Docs corpus alignment to the masterdokument world.** At least 8 MDX
+  pages x 5 locales (`criteria-and-scale`, `evaluating-a-role`,
+  `score-and-levels`, `key-concepts`, `glossary`, `model-overview`,
+  `anchor-roles`, `method-appendix-pdf`, under
+  `apps/dashboard/content/docs/`) still teach the pre-cutover model: a
+  uniform 0-5 evaluation scale on every criterion (now 1-5, with 0 reserved
+  for the working-conditions dimension's "not applicable" case, ADR-0021),
+  and `criteria-and-scale.mdx`'s "Add criterion" walkthrough still describes
+  a free-text form for hand-writing a name, description, and all six scale
+  steps (criteria are now library-only selections from a fixed 6-8 range,
+  decision 8/ADR-0021, replacing the old nine-criterion standard template).
+  Owner: a dedicated pre-phase-3 task, not folded into this wave. Rewrite the
+  corpus (en source first, then sv/nb/da/fi) against the current model, and
+  end with `bun run docs:sync` and `bun run docs:eval` compared against the
+  recall numbers ADR-0020 recorded, per the corpus conventions in CLAUDE.md.
 - [ ] **Native review of the docs corpora (sv, nb, da, fi).** The sv, nb, da,
   and fi docs corpora under `apps/dashboard/content/docs/` are machine-drafted
   from the en source (2026-08-13/14) and must each be reviewed by a native
-  speaker before launch; en is the source of truth on conflict.
+  speaker before launch; en is the source of truth on conflict. Sequence
+  after the alignment rewrite above, not before it: reviewing a translation
+  of content that is about to be rewritten wastes the review.
 
 ## Security and compliance
 
@@ -131,17 +147,23 @@ in the same change.
   addresses (and bodies) through Sweego. Confirm the hosting region is EU,
   execute a data-processing agreement, and add Sweego to the subprocessor / DPA
   register before go-live.
-- [ ] **Build or retire the two backend-complete AI flows with no UI.**
-  `SUGGESTION_KINDS.modelDraft` (`model.draft`) and `criterionCompliance` are
-  fully wired server-side (request, confirm, audit labels, tests) but have zero
-  consumers under `apps/`. They are NOT dead code: ADR-0003 names modellutkast
-  as a suggestion-layer flow, and `getWeightReviewLock` reads confirmed
-  `model.draft` rows as part of live lock logic, so deleting them would break
-  working behaviour and contradict a live ADR. Recorded here so they read as
-  scheduled work rather than orphans, since "no legacy before launch" otherwise
-  invites each new reviewer to re-litigate deleting them. Before go-live either
-  ship their panels or remove the kinds together with the lock logic that reads
-  them.
+- [ ] **Build or retire the backend-complete AI flow with no UI: criterion
+  compliance drafting.** `draftCriterionCompliance`
+  (`SUGGESTION_KINDS.criterionCompliance`, `ai/draft.ts`) generates the six
+  rationale + bias-review fields and returns them to the client (no
+  suggestion row, no auto-apply) and is fully wired server-side (action,
+  usage telemetry, audit labels, tests), but has zero consumers under
+  `apps/`. It is NOT dead code: spec section 7 names compliance drafting as
+  feeding from the library boundaries. Recorded here so it reads as scheduled
+  work rather than an orphan, since "no legacy before launch" otherwise
+  invites each new reviewer to re-litigate deleting it. Before go-live either
+  ship its panel or remove the action and its suggestion kind.
+  (`SUGGESTION_KINDS.modelDraft` and `model.draft`, the sibling flow this item
+  used to also cover, are fully retired; `getWeightReviewLock` no longer reads
+  suggestion rows for its lock at all. It now compares the latest confirmed
+  `weightReview` suggestion against the latest `model.updated` /
+  `criterion.activated` / `criterion.deactivated` audit row, so that
+  cross-reference is gone too.)
 
 - [ ] **Rate-limit the AI request surfaces per org.** Every `request*` mutation
   in `ai/suggest.ts` (`requestModelDraft`, `requestWeightReview`,
@@ -301,6 +323,15 @@ starting V2:
   patch `levelRules`/`zoneProfileRules` after model creation; the remaining
   gap is UI only, no dashboard surface calls either mutation yet. The docs
   promise per-org configurability; add the editing UI.
+- [ ] **Calibration queue UI (spec section 6).** `calibrateAssessment`
+  (`assessment/locking.ts`) already lets an admin confirm a locked role's
+  placement (stamps `calibratedBy`/`calibratedAt` and an optional note,
+  audited), but no dashboard surface calls it, and nothing reads
+  `calibrated`/`calibrationNote` either: the derived queue itself
+  (`profileLimited` roles not yet calibrated, anchor roles whose computed
+  level deviates from `expectedLevel`, and stale locks after a method
+  change) has no panel anywhere in `apps/`. The spec promises a calibration
+  queue on the levels surface; add it.
 - [ ] **Calibrate `DEFAULT_LEVEL_RULES` and `DEFAULT_ZONE_PROFILE_RULES`
   against real data.** Both (`packages/core/src/zones.ts`) are the starting
   points every model's `levelRules`/`zoneProfileRules` seed from at creation,
@@ -489,6 +520,17 @@ suite covers them before go-live:
   bounding (e.g. a cached/derived per-org name set for the screen, and an
   indexed or pre-aggregated read for the pay stats) before large-org
   onboarding.
+  Same class, on the model-editing surface: `updateLevelRules` and
+  `updateZoneProfileRules` (`evaluationModel/approval.ts`) each wrap
+  `ctx.audit.levelShifts` (a before/after full-org `deriveResults`) in the
+  same transaction as the rules patch, logging one `level.shift` row per role
+  whose level moved; a level-rule or zone-profile-rule edit can move every
+  role in the org at once, so the write scales with org size, not with the
+  size of the edit. `deactivateCriterion` (`evaluationModel/criteria.ts`) is
+  the same shape from the other direction: before it even reaches its own
+  level-shift diff, it deletes one `ratings` row per role that had rated the
+  deactivated criterion, all inside the same mutation that deletes the
+  criterion. Bound all three before large-org onboarding.
 
 - [ ] **Re-introducing an erased employee: decide suppression vs controller
   process.** Nothing records that an `externalRef` has been erased, so a later

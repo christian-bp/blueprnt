@@ -211,6 +211,11 @@ export const getMethodModel = adminQuery({
         approved: v.number(),
         total: v.number(),
       }),
+      // Whether the MODEL AS A WHOLE carries a current approval (ADR-0023),
+      // distinct from `progress.approved` (a per-criterion compliance count
+      // above): the dashboard todo needs this to prompt the final "approve
+      // the method" step once every per-criterion item is done.
+      modelApproved: v.boolean(),
     })
   ),
   handler: async (ctx, { locale }) => {
@@ -309,6 +314,7 @@ export const getMethodModel = adminQuery({
       criteria,
       levelRules,
       progress: { documented, approved, total: rows.length },
+      modelApproved: model.approval !== undefined,
     }
   },
 })

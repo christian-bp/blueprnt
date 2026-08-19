@@ -40,9 +40,9 @@ packages/ui       shadcn/ui (finns)
 
 **evaluation-model** (en levande modell per organisation):
 - `model` — orgId, namn, härkomst (vilken mall den startade från).
-- `criterion` — orgId, namn, beskrivning, **hjälptext** (vägledning till bedömaren, skild från beskrivning/ankare — briefens 4.2), **weightPoints (1–5**, neutral 3; summan över modellens kriterier är alltid exakt poängbudgeten = antal kriterier × 3, ADR-0004**)**, ordning, isCustom, samt protokoll/bias-fält (syfte, varförRelevant, **överlapp mot andra kriterier**, biasRisk, **biasKommentar**, biasÅtgärd, godkänd, beslutsfattare, datum).
+- `criterion` — orgId, namn, beskrivning, **hjälptext** (vägledning till bedömaren, skild från beskrivning/ankare — briefens 4.2), **weightPoints (1–5**, neutral 3; summan över modellens kriterier är alltid exakt poängbudgeten = antal kriterier × 3, ADR-0004**)**, ordning, samt protokoll/bias-fält (syfte, varförRelevant, **överlapp mot andra kriterier**, biasRisk, **biasKommentar**, biasÅtgärd, godkänd, beslutsfattare, datum).
 - `criterionAnchor` — criterionId, step (0–5), text. (Ankartexter; stegen hette level före ADR-0014.)
-- `track` / `seniority` — track-schema (IC/Lead/M; senioriteter IC1–5, Lead 1–3, M1–3). Track och senioritetsladdrar är konstanter i kod (`TRACK_KEYS` i `evaluationModel/standardTemplate.ts` respektive `TRACK_SENIORITIES` i `@workspace/constants`), inte seedade rader; standardmall.md är prosareferens. Senioriteterna är individens senioritet vid rollplaceringen, roller bär ingen senioritet (ADR-0005, tillägg 2026-07-10). Track-guardrails utgick med ADR-0005; intervallen är referensdata i standardmall.md.
+- `track` / `seniority` — track-schema (IC/Lead/M; senioriteter IC1–5, Lead 1–3, M1–3). Track och senioritetsladdrar är konstanter i kod (`TRACK_KEYS` i `evaluationModel/trackSchema.ts` respektive `TRACK_SENIORITIES` i `@workspace/constants`), inte seedade rader; standardmall.md är prosareferens. Senioriteterna är individens senioritet vid rollplaceringen, roller bär ingen senioritet (ADR-0005, tillägg 2026-07-10). Track-guardrails utgick med ADR-0005; intervallen är referensdata i standardmall.md.
 - `levelThreshold` — orgId, nivå (1..N), minScore, etikett.
 - *Viktpoängskalan (1–5) och poängbudgeten (antal kriterier × 3) är **fasta** → konstanter i `packages/core`, ingen tabell (ADR-0004).*
 

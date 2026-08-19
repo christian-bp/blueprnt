@@ -256,11 +256,9 @@ describe("getResults", () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     // Fully rated => complete => level 1 (value 5 on every criterion).
-    // Anchor designation reads the engine-derived level directly (unaffected
-    // by locking, spec: anchors are a calibration reference independent of
-    // the results wire's reveal gate), so it needs no lock; the WIRE
-    // assertions below (top?.level) do need the role locked to read
-    // non-null.
+    // An anchor role must itself be a locked reference (lock-as-reveal), and
+    // the WIRE assertions below (top?.level) also need the role locked to
+    // read non-null, so one lockRole call below covers both.
     const topId = await createRatedRole({
       orgId,
       asAdmin,

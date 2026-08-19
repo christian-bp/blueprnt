@@ -906,12 +906,14 @@
         "classifyPeopleCount": "{count, plural, one {# person} other {# people}}",
         "startPayMappingItem": "Start the pay mapping",
         "importPeopleItem": "Import your employees",
+        "approveModelItem": "Approve the model",
         "groups": {
           "classifyPeople": "Classify people into roles",
           "describeRoles": "Describe these roles",
           "evaluateRoles": "Evaluate these roles",
           "documentCriteria": "Document criteria",
           "approveCriteria": "Approve criteria",
+          "approveModel": "Ready to approve the model",
           "startPayMapping": "Ready for the pay mapping",
           "importPeople": "Get started with your employees"
         }

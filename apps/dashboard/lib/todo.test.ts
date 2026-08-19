@@ -17,13 +17,17 @@ const role = (
   ...over,
 })
 
+// modelApproved defaults true so the many fixtures below that are not about
+// the approveModel group never sprout it unasked and desync their
+// total/groups assertions (mirrors role()'s locked default).
 const method = (
   criteria: {
     criterionId: string
     name: string
     status: "notStarted" | "inProgress" | "documented" | "approved"
-  }[]
-) => ({ criteria })
+  }[],
+  modelApproved = true
+) => ({ criteria, modelApproved })
 
 // An open (non-completed) run: the neutral default for tests that are not
 // about the startPayMapping group itself, so a vacuously "ready" empty-input
@@ -259,6 +263,63 @@ describe("buildTodo", () => {
     expect(g?.items).toHaveLength(MAX_ITEMS)
     expect(g?.count).toBe(6)
     expect(todo.total).toBe(6)
+  })
+})
+
+describe("buildTodo approveModel group", () => {
+  it("shows it once a model exists but carries no current approval", () => {
+    const todo = buildTodo({
+      roles: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
+      payMappingRuns: OPEN_RUN,
+      method: method(
+        [{ criterionId: "c1", name: "Scope", status: "approved" }],
+        false
+      ),
+    })
+    const g = todo.groups.find((g) => g.key === "approveModel")
+    expect(g?.items).toEqual([{ id: "approveModel", href: "/model/method" }])
+    expect(g?.count).toBe(1)
+  })
+
+  it("hides it once the model is approved", () => {
+    const todo = buildTodo({
+      roles: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
+      payMappingRuns: OPEN_RUN,
+      method: method(
+        [{ criterionId: "c1", name: "Scope", status: "approved" }],
+        true
+      ),
+    })
+    expect(todo.groups.map((g) => g.key)).not.toContain("approveModel")
+  })
+
+  it("stays hidden while there is no model at all", () => {
+    const todo = buildTodo({
+      roles: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
+      payMappingRuns: OPEN_RUN,
+      method: null,
+    })
+    expect(todo.groups.map((g) => g.key)).not.toContain("approveModel")
+  })
+
+  it("sits after approveCriteria and before startPayMapping in priority order", () => {
+    const todo = buildTodo({
+      roles: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
+      payMappingRuns: [],
+      method: method(
+        [{ criterionId: "c1", name: "Scope", status: "documented" }],
+        false
+      ),
+    })
+    expect(todo.groups.map((g) => g.key)).toEqual([
+      "approveCriteria",
+      "approveModel",
+      "startPayMapping",
+    ])
   })
 })
 

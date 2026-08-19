@@ -743,6 +743,26 @@ describe("archiveRole", () => {
     })
     // All ratings 5, so the computed level is the top level (1).
     await rateAll(t, orgId, roleId as string, model.criteria, 5)
+    // Value 5 requires a motivation before lockAssessment (below) accepts
+    // it; rateAll's direct inserts skip that, so patch it in afterward.
+    await t.run(async (ctx) => {
+      const docId = ctx.db.normalizeId("roles", roleId as string)
+      if (docId === null) throw new Error("bad role id")
+      const ratings = await ctx.db
+        .query("ratings")
+        .withIndex("by_role_criterion", (q) => q.eq("roleId", docId))
+        .collect()
+      for (const rating of ratings) {
+        await ctx.db.patch(rating._id, { motivation: "Top of scale." })
+      }
+    })
+    // An anchor role must be a locked reference (lock-as-reveal); locking
+    // requires an approved model.
+    await grantModelApproval(t, orgId)
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
+    })
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId,
