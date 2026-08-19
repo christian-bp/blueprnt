@@ -1,0 +1,132 @@
+apps/dashboard/content/docs/nb/key-concepts.mdx
+  s_58dd112dc09435::t_1038b56c9433dc 54-58
+  s_58dd112dc09435::t_dda54fd28a3a0c 34-36
+apps/dashboard/content/docs/da/criteria-and-scale.mdx
+  s_58dd112dc09435::t_a482067a5bebf1 3,8-12,14,16-22,24,26-36,38,40-46,48,50-61
+apps/dashboard/content/docs/fi/key-concepts.mdx
+  s_58dd112dc09435::t_4342b4cbbf42b0 36-39
+  s_58dd112dc09435::t_ab6db59c35f573 57-62
+apps/dashboard/content/docs/en/evaluating-a-role.mdx
+  s_58dd112dc09435::t_bace40c8c518f5 16-18
+  s_58dd112dc09435::t_a05d7a0c33762c 3,9-10,14-15,19-21,27-34,36-42,49,51-56,60-66
+apps/dashboard/content/docs/en/glossary.mdx
+  s_58dd112dc09435::t_4326057ed30c94 33-35,37-39,44-46,55-58,97-100,114-122,161-163,172,176-184,192-200,203-204,302-305,313-316,318,334,349-357
+apps/dashboard/content/docs/nb/evaluating-a-role.mdx
+  s_58dd112dc09435::t_a636beca2941dd 3,9-10,14-21,27-35,37-42,51,53-58,62-68
+apps/dashboard/content/docs/fi/method-appendix-pdf.mdx
+  s_58dd112dc09435::t_64d5795970d0f3 17-26
+apps/dashboard/content/docs/nb/criteria-and-scale.mdx
+  s_58dd112dc09435::t_074fe2f02e9dd4 3,8-12,14,16-22,24,26-36,38,40-46,49,51-62
+apps/dashboard/content/docs/en/method-appendix-pdf.mdx
+  s_58dd112dc09435::t_882c5aff3bdd26 16-24
+apps/dashboard/content/docs/en/onboarding-guide.mdx
+  s_58dd112dc09435::t_c8e4145e486bca 36-41
+  s_58dd112dc09435::t_73a153411f75dd 72-81
+apps/dashboard/content/docs/sv/key-concepts.mdx
+  s_58dd112dc09435::t_d1bd4b23be3075 34-36
+  s_58dd112dc09435::t_15f68097d0390f 54-58
+apps/dashboard/content/docs/sv/criteria-and-scale.mdx
+  s_58dd112dc09435::t_909acab2ac1769 3,8-11,13,15-21,23,25-35,37,39-44,47,49-60
+apps/dashboard/content/docs/da/method-appendix-pdf.mdx
+  s_58dd112dc09435::t_a6e8acf2b4e550 17-25
+apps/dashboard/content/docs/sv/onboarding-guide.mdx
+  s_58dd112dc09435::t_144c06d96d3624 36-41
+  s_58dd112dc09435::t_1cd4532c80d97a 76
+  s_58dd112dc09435::t_bb21b9f9ce9dc7 73-75,77-82
+apps/dashboard/content/docs/fi/evaluating-a-role.mdx
+  s_58dd112dc09435::t_f5a034936a9e6c 3,10-11,15-24,30-37,39-46,55,57-63,67-75
+apps/dashboard/content/docs/da/anchor-roles.mdx
+  s_58dd112dc09435::t_f2b70d53ff9fb1 14,16-17,23-28
+apps/dashboard/content/docs/sv/glossary.mdx
+  s_58dd112dc09435::t_81f47726350ffb 35
+  s_58dd112dc09435::t_d87a5ebcf1d7ad 36-37,39-41,45-47,56-59,100-103,118-126,166-167,177,181-189,198-206,209-210,311-314,323-326,328,344,359-368
+apps/dashboard/content/docs/fi/model-overview.mdx
+  s_58dd112dc09435::t_d0f8ed9ed6b020 3,11-14,22-25,30-32,35-36,38-39,53,55-63
+apps/dashboard/content/docs/fi/onboarding-guide.mdx
+  s_58dd112dc09435::t_7e89d404d96e20 39-45
+  s_58dd112dc09435::t_433d576946c349 81-90
+apps/dashboard/content/docs/nb/onboarding-guide.mdx
+  s_58dd112dc09435::t_5169552190b929 74-83
+  s_58dd112dc09435::t_b9038cb9c3169a 37-42
+apps/dashboard/content/docs/da/evaluating-a-role.mdx
+  s_58dd112dc09435::t_9c4db627b7f062 3,9-10,14-21,27-34,36-41,50,52-57,62-69
+apps/dashboard/content/docs/en/model-overview.mdx
+  s_58dd112dc09435::t_ddd19d83bbe8f4 3,10-12,19-20,25-27,31-35,43-46,48,50-57
+apps/dashboard/content/docs/en/key-concepts.mdx
+  s_58dd112dc09435::t_bec85c4a063739 33-35
+  s_58dd112dc09435::t_fd7ec91c5ae292 53-57
+apps/dashboard/content/docs/en/score-and-levels.mdx
+  s_58dd112dc09435::t_a9124173e977df 3,7-10,19-27,29-31,35-42,44,46-69,73-81,85-92
+apps/dashboard/content/docs/en/anchor-roles.mdx
+  s_58dd112dc09435::t_35e86a0f2cfe27 12,15,20-26
+apps/dashboard/content/docs/sv/score-and-levels.mdx
+  s_58dd112dc09435::t_ed7890032db9a6 3,7-10,19-20,30-32,36,43,46,48-71,75-77,79-84,89-95
+apps/dashboard/content/docs/nb/model-overview.mdx
+  s_58dd112dc09435::t_f39a52fff0af72 3,10-12,19-20,25-28,31,33-35,49,51-59
+apps/dashboard/content/docs/nb/anchor-roles.mdx
+  s_58dd112dc09435::t_d25d580e122972 14-16,23-29
+apps/dashboard/content/docs/fi/anchor-roles.mdx
+  s_58dd112dc09435::t_40f243e814f40a 13,16-17,24-30
+apps/dashboard/content/docs/fi/score-and-levels.mdx
+  s_58dd112dc09435::t_353d4543896df7 3,7-10,20-29,31-33,37-42,44,46,48-76,80-90,95-96
+apps/dashboard/content/docs/sv/evaluating-a-role.mdx
+  s_58dd112dc09435::t_9a30ff40124c25 3,9-10,14-21,27-43,50,52-57,61-67
+apps/dashboard/content/docs/sv/navigating-the-app.mdx
+  s_58dd112dc09435::t_08654b9ffe88f2 34-37
+apps/dashboard/content/docs/nb/score-and-levels.mdx
+  s_58dd112dc09435::t_f7e1a4b3ffa222 3,7-11,19-23,30-32,36-44,46,48-72,76-84,89-95
+apps/dashboard/content/docs/sv/anchor-roles.mdx
+  s_58dd112dc09435::t_ff5924a903639e 14-15,23-28
+  s_58dd112dc09435::t_7273a88467de15 16
+apps/dashboard/content/docs/sv/method-appendix-pdf.mdx
+  s_58dd112dc09435::t_94efe433291187 16-24
+apps/dashboard/content/docs/nb/method-appendix-pdf.mdx
+  s_58dd112dc09435::t_1df034679b1416 16-24
+apps/dashboard/content/docs/da/onboarding-guide.mdx
+  s_58dd112dc09435::t_c095c563e27103 36-41
+  s_58dd112dc09435::t_66a08dc6c9a0b2 73-82
+apps/dashboard/content/docs/da/glossary.mdx
+  s_58dd112dc09435::t_c6b84823a02fc4 33-35,37-39,45,55-59,102-105,120-129,174-175,185,189-197,206-215,218-220,322-325,334-338,340,356,371-380
+apps/dashboard/content/docs/en/navigating-the-app.mdx
+  s_58dd112dc09435::t_04beb9627d4d79 34-37
+apps/dashboard/content/docs/da/navigating-the-app.mdx
+  s_58dd112dc09435::t_5b88e4daf167fe 36-39
+apps/dashboard/content/docs/fi/navigating-the-app.mdx
+  s_58dd112dc09435::t_897d4750a0b3d9 37-38,40-41
+apps/dashboard/content/docs/da/model-overview.mdx
+  s_58dd112dc09435::t_7740517d242402 3,10-13,20-22,27-29,32-33,35-36,51,53-60
+apps/dashboard/content/docs/nb/glossary.mdx
+  s_58dd112dc09435::t_dd1ee4166f1f80 33-35,37-39,44-45,55-59,100-103,118-127,167-169,178,182-190,199-207,210-212,313-316,325-328,330,346,361-369
+apps/dashboard/content/docs/da/score-and-levels.mdx
+  s_58dd112dc09435::t_4091c2b0e399cd 3,7-9,19-20,30-32,36-43,45,47-72,76-85,90-91
+apps/dashboard/content/docs/fi/criteria-and-scale.mdx
+  s_58dd112dc09435::t_d6e063d609c969 3,9-12,14,16-23,25,27-38,40,42-48,51,53-64
+apps/dashboard/content/docs/da/key-concepts.mdx
+  s_58dd112dc09435::t_5ea5f359fede7e 35-38
+  s_58dd112dc09435::t_8c3f52a1054564 56-60
+apps/dashboard/content/docs/fi/glossary.mdx
+  s_58dd112dc09435::t_85fc5f22b03651 37-39,41-44,48-50,58-63,106-109,124-133,178-179,190,194-202,211-220,223-224,330-333,341-345,347,363,378-387
+apps/dashboard/content/docs/nb/navigating-the-app.mdx
+  s_58dd112dc09435::t_566d63ba3535c2 35-38
+apps/dashboard/content/docs/en/criteria-and-scale.mdx
+  s_58dd112dc09435::t_ad171a3e6e110d 3,8-12,14,16-22,24,26-36,38,40-46,48,50-61
+apps/dashboard/content/docs/sv/model-overview.mdx
+  s_58dd112dc09435::t_21d9b2c9f30b64 57-58
+  s_58dd112dc09435::t_078e27f61cf0fa 3,10-12,19-20,26-28,31-35,49,51-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c8bcb37af4462c43ee3dc468d4dfbc8e77a64c1f",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
