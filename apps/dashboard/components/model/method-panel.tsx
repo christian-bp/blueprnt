@@ -27,13 +27,12 @@ const MethodAppendixDownload = dynamic(
 )
 
 // The Method tab panel. Queries the method model and renders a list of
-// criteria using the shared CriterionItem (parity with the Weighting page),
-// with their compliance status badge and a Document action button in the
-// importance slot. MethodAppendixDownload renders the PDF export button above
-// the list.
+// criteria using the shared CriterionItem, with their compliance status badge
+// and a Document action button in the importance slot. MethodAppendixDownload
+// renders the PDF export button above the list.
 export function MethodPanel({ orgId }: { orgId: string }) {
   const t = useTranslations("dashboard.model.method")
-  const tBuilder = useTranslations("dashboard.model.builder")
+  const tBuild = useTranslations("dashboard.model.build")
   const locale = useLocale()
   const data = useQuery(api.evaluationModel.method.getMethodModel, {
     orgId,
@@ -62,7 +61,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
               and disables itself until ready. */}
           <MethodAppendixDownload orgId={orgId} />
         </div>
-        <CriterionListSkeleton variant="method" />
+        <CriterionListSkeleton />
       </div>
     )
   }
@@ -73,7 +72,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
       ? null
       : (data.criteria.find((c) => c.criterionId === targetId) ?? null)
 
-  // Mirrors the Weight page's budget status: a check + neutral tint when the
+  // Mirrors the build view's budget status: a check + neutral tint when the
   // model is fully approved, an amber heads-up while documentation is still
   // outstanding. Alert has no warning variant, so the amber tint is a
   // call-site override (same pattern as model-builder.tsx).
@@ -124,7 +123,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
                   <span className="font-medium text-foreground tabular-nums">
                     {c.share}%
                   </span>{" "}
-                  {tBuilder("shareOfTotal")}
+                  {tBuild("shareOfTotal")}
                 </span>
               }
               importanceNode={

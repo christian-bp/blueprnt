@@ -35,22 +35,18 @@ export function WeightPointRow({
   disabled?: boolean
   onChange: (points: number) => void
 }) {
-  const tEditor = useTranslations("dashboard.model.editor")
-  const tBuilder = useTranslations("dashboard.model.builder")
+  const t = useTranslations("dashboard.model.build")
 
   return (
     // Each weight button is its own hover trigger, so hovering (or focusing) a
     // single weight point reveals ONLY that point's meaning. Root/Trigger
     // (render) add no DOM and Content portals out, so the joined ButtonGroup
     // styling (which targets direct children) is unaffected.
-    <ButtonGroup
-      aria-label={tEditor("setWeightPoints", { name })}
-      className="w-full"
-    >
+    <ButtonGroup aria-label={t("setWeightPoints", { name })} className="w-full">
       {WEIGHT_POINT_VALUES.map((option) => {
         // Weight meanings are always the generic section 12.2 semantics
         // (getModel carries no per-criterion weighting text; decision 8).
-        const meaning = tBuilder(`weightMeaning${option}` as WeightMeaningKey)
+        const meaning = t(`weightMeaning${option}` as WeightMeaningKey)
         return (
           <HoverCard
             key={option}

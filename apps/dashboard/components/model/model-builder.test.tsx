@@ -1,4 +1,5 @@
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -6,57 +7,80 @@ import {
   waitFor,
   within,
 } from "@testing-library/react"
-import { NextIntlClientProvider } from "next-intl"
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
+import { NextIntlClientProvider } from "next-intl"
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest"
 
-const useQueryMock = vi.fn()
-const rebalanceWeightsMock = vi.fn()
-const deactivateCriterionMock = vi.fn()
-const activateCriterionMock = vi.fn()
-const noopMutation = vi.fn()
-
-vi.mock("convex/react", () => ({
-  useQuery: (...args: unknown[]) => useQueryMock(...args),
-  useMutation: (ref: unknown) => {
-    if (ref === "evaluationModel.criteria.rebalanceWeights")
-      return rebalanceWeightsMock
-    if (ref === "evaluationModel.criteria.deactivateCriterion")
-      return deactivateCriterionMock
-    if (ref === "evaluationModel.criteria.activateCriterion")
-      return activateCriterionMock
-    return noopMutation
-  },
-}))
-
-vi.mock("@workspace/backend/convex/_generated/api", () => ({
-  api: {
-    evaluationModel: {
-      model: { getModel: "evaluationModel.model.getModel" },
-      criteria: {
-        rebalanceWeights: "evaluationModel.criteria.rebalanceWeights",
-        deactivateCriterion: "evaluationModel.criteria.deactivateCriterion",
-        activateCriterion: "evaluationModel.criteria.activateCriterion",
-      },
-    },
-    ai: {
-      suggest: {
-        getOpenSuggestions: "ai.suggest.getOpenSuggestions",
-        getWeightReviewLock: "ai.suggest.getWeightReviewLock",
-        requestWeightReview: "ai.suggest.requestWeightReview",
-        confirmWeightReview: "ai.suggest.confirmWeightReview",
-        rejectSuggestion: "ai.suggest.rejectSuggestion",
-      },
-    },
-  },
+vi.mock(
+  "convex/react",
+  async () => (await import("@/test/convex-mocks")).convexReactModule
+)
+vi.mock(
+  "@workspace/backend/convex/_generated/api",
+  async () => (await import("@/test/convex-mocks")).apiModule
+)
+// NumberFlow renders a custom element happy-dom never upgrades, so its
+// getSnapshotBeforeUpdate throws the moment the value CHANGES in place, which
+// is exactly what a weight click does to the budget readout. The digit
+// animation is the library's business; these tests are about the figures.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
 }))
 
 import { ModelBuilder } from "@/components/model/model-builder"
+import { mockMutation, onQuery } from "@/test/convex-mocks"
 import { openMenu } from "@/test/menu"
 
+const build = messages.dashboard.model.build
 const editor = messages.dashboard.model.editor
-const builder = messages.dashboard.model.builder
-const picker = messages.dashboard.model.picker
+
+const activateCriterion = mockMutation(
+  "evaluationModel.criteria.activateCriterion"
+)
+const deactivateCriterion = mockMutation(
+  "evaluationModel.criteria.deactivateCriterion"
+)
+const rebalanceWeights = mockMutation(
+  "evaluationModel.criteria.rebalanceWeights"
+)
+
+// The four dimensions exactly as getModel serves them (localized library
+// content, ADR-0021: fixed method law).
+const DIMENSIONS = [
+  { key: "competence", name: "Competence", question: "q1", why: "w1" },
+  { key: "effort", name: "Effort and complexity", question: "q2", why: "w2" },
+  {
+    key: "responsibility",
+    name: "Responsibility and impact",
+    question: "q3",
+    why: "w3",
+  },
+  {
+    key: "workingConditions",
+    name: "Working conditions",
+    question: "q4",
+    why: "w4",
+  },
+]
+
+// The library's own names for the keys the tests reach for, so an assertion
+// reads the same string the surface renders from the library module.
+const KNOWLEDGE_DEPTH = "Knowledge depth and specialist level"
+const KNOWLEDGE_BREADTH =
+  "Knowledge breadth and cross-disciplinary understanding"
+const ANALYTICAL = "Analytical and problem-solving effort"
+const COMPLEXITY = "Complexity and ambiguity"
+const ANCHOR_LOW = "Follows an established method"
+const ANCHOR_HIGH = "Defines how the field works"
 
 function criterion(overrides: Record<string, unknown>) {
   return {
@@ -77,245 +101,355 @@ function criterion(overrides: Record<string, unknown>) {
   }
 }
 
-// Five balanced criteria (sum 15 = 5 x 3); c1 carries 4 points. Spread across
-// three of the four dimensions so grouping is exercised; the fourth
-// (workingConditions) stays empty to exercise the empty-section copy.
-const model = {
-  modelId: "model-1",
-  name: "Standard",
-  approval: null,
-  workingConditions: null,
-  criteria: [
-    criterion({
-      criterionId: "c1",
-      libraryKey: "complexity-ambiguity",
-      dimensionKey: "effort",
-      name: "Problem solving",
-      shortUiText: "How the role breaks down and resolves hard problems.",
-      fullDefinition:
-        "The extended description of how the role frames problems.",
-      weightPoints: 4,
-      order: 1,
-      anchors: [
-        { step: 0, text: "none" },
-        { step: 1, text: "a" },
-        { step: 2, text: "b" },
-        { step: 3, text: "c" },
-        { step: 4, text: "d" },
-        { step: 5, text: "max" },
-      ],
-    }),
-    criterion({
-      criterionId: "c2",
-      libraryKey: "autonomy-mandate",
-      dimensionKey: "responsibility",
-      name: "Autonomy",
-      shortUiText: "Independence.",
-      weightPoints: 2,
-      order: 2,
-    }),
-    criterion({
-      criterionId: "c3",
-      libraryKey: "communication-effort",
-      dimensionKey: "effort",
-      name: "Collaboration",
-      shortUiText: "Across teams.",
-      weightPoints: 3,
-      order: 3,
-    }),
-    criterion({
-      criterionId: "c4",
-      libraryKey: "knowledge-depth",
-      dimensionKey: "competence",
-      name: "Knowledge depth",
-      shortUiText: "Expertise.",
-      weightPoints: 3,
-      order: 4,
-    }),
-    criterion({
-      criterionId: "c5",
-      libraryKey: "risk-consequence",
-      dimensionKey: "responsibility",
-      name: "Risk awareness",
-      shortUiText: "Risk.",
-      weightPoints: 3,
-      order: 5,
-    }),
-  ],
-  sharedScale: [],
-  midpoints: { step2: "", step4: "" },
-  dimensions: [
-    {
-      key: "competence",
-      name: "Competence",
-      question: "q",
-      why: "Why competence.",
-    },
-    { key: "effort", name: "Effort", question: "q", why: "Why effort." },
-    {
-      key: "responsibility",
-      name: "Responsibility",
-      question: "q",
-      why: "Why responsibility.",
-    },
-    {
-      key: "workingConditions",
-      name: "Working conditions",
-      question: "q",
-      why: "Why working conditions.",
-    },
-  ],
-  tracks: [],
-  levelRules: [{ level: 1, minScore: 100 }],
-  zoneProfileRules: [],
+function makeModel(criteria: ReturnType<typeof criterion>[]) {
+  return {
+    modelId: "model-1",
+    name: "Standard",
+    approval: null,
+    workingConditions: null,
+    criteria,
+    sharedScale: [],
+    midpoints: { step2: "", step4: "" },
+    dimensions: DIMENSIONS,
+    tracks: [],
+    levelRules: [{ level: 1, minScore: 100 }],
+    zoneProfileRules: [],
+  }
 }
 
-let reviewLocked = false
-function renderBuilder(
-  phase: "define" | "weight",
-  props: Record<string, unknown> = {}
-) {
+// Five criteria summing to the budget (5 x 3 = 15), spread so competence and
+// effort still have room: a dimension at its cap closes its library cards,
+// which is its own test below.
+const BALANCED = makeModel([
+  criterion({
+    criterionId: "c1",
+    libraryKey: "complexity-ambiguity",
+    dimensionKey: "effort",
+    name: COMPLEXITY,
+    weightPoints: 4,
+    order: 1,
+    // The wire carries every selected criterion's anchor texts; this surface
+    // renders none of them, which the scale test below reads these back for.
+    anchors: [
+      { step: 1, text: ANCHOR_LOW },
+      { step: 5, text: ANCHOR_HIGH },
+    ],
+  }),
+  criterion({
+    criterionId: "c2",
+    libraryKey: "autonomy-mandate",
+    dimensionKey: "responsibility",
+    name: "Autonomy and decision mandate",
+    weightPoints: 2,
+    order: 2,
+  }),
+  criterion({
+    criterionId: "c3",
+    libraryKey: "scope-impact",
+    dimensionKey: "responsibility",
+    name: "Scope and impact",
+    weightPoints: 3,
+    order: 3,
+  }),
+  criterion({
+    criterionId: "c4",
+    libraryKey: "knowledge-depth",
+    dimensionKey: "competence",
+    name: KNOWLEDGE_DEPTH,
+    weightPoints: 3,
+    order: 4,
+  }),
+  criterion({
+    criterionId: "c5",
+    libraryKey: "risk-consequence",
+    dimensionKey: "responsibility",
+    name: "Risk and consequence",
+    weightPoints: 3,
+    order: 5,
+  }),
+])
+
+// Competence at its cap of two, so its remaining library cards are closed.
+const COMPETENCE_FULL = makeModel([
+  criterion({
+    criterionId: "c1",
+    libraryKey: "knowledge-depth",
+    dimensionKey: "competence",
+    name: KNOWLEDGE_DEPTH,
+    order: 1,
+  }),
+  criterion({
+    criterionId: "c2",
+    libraryKey: "knowledge-breadth",
+    dimensionKey: "competence",
+    name: KNOWLEDGE_BREADTH,
+    order: 2,
+  }),
+])
+
+let modelResult: unknown = BALANCED
+
+function renderBuilder() {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <ModelBuilder orgId="org-1" phase={phase} {...props} />
+      <ModelBuilder orgId="org-1" />
     </NextIntlClientProvider>
   )
 }
 
-describe("ModelBuilder", () => {
-  beforeEach(() => {
-    useQueryMock.mockReset()
-    rebalanceWeightsMock.mockReset()
-    deactivateCriterionMock.mockReset()
-    activateCriterionMock.mockReset()
-    reviewLocked = false
-    useQueryMock.mockImplementation((ref: unknown) =>
-      ref === "ai.suggest.getOpenSuggestions"
-        ? []
-        : ref === "ai.suggest.getWeightReviewLock"
-          ? reviewLocked
-          : model
+// happy-dom has no layout (every rect is zero), so the four columns are
+// declared here and handed to getBoundingClientRect: a drag IS geometry, and
+// without it every zone would sit on top of every other.
+const COLUMN_WIDTH = 300
+const COLUMN_GAP = 20
+const ZERO = makeRect({ left: 0, top: 0, width: 0, height: 0 })
+const rects = new WeakMap<Element, DOMRect>()
+const originalGetRect = Element.prototype.getBoundingClientRect
+
+function makeRect(box: {
+  left: number
+  top: number
+  width: number
+  height: number
+}): DOMRect {
+  return {
+    ...box,
+    x: box.left,
+    y: box.top,
+    right: box.left + box.width,
+    bottom: box.top + box.height,
+    toJSON: () => box,
+  }
+}
+
+function columnLeft(index: number) {
+  return index * (COLUMN_WIDTH + COLUMN_GAP)
+}
+
+const zone = (name: string) => screen.getByRole("region", { name })
+// The draggable body carries no label of its own, so it is found the way a
+// screen reader names it: by the content inside it.
+const cardBody = (name: string) =>
+  screen.getByRole("button", { name: (label) => label.startsWith(name) })
+const addButton = (name: string) =>
+  screen.getByRole("button", { name: build.addLabel.replace("{name}", name) })
+
+// Lays the grid out as the view lays it out: the four zones in a row, each
+// dragged card in its own dimension's column directly below its zone.
+function measure(cards: { name: string; column: number }[]) {
+  for (const [index, dimension] of DIMENSIONS.entries()) {
+    rects.set(
+      zone(dimension.name),
+      makeRect({
+        left: columnLeft(index),
+        top: 0,
+        width: COLUMN_WIDTH,
+        height: 160,
+      })
     )
+  }
+  for (const { name, column } of cards) {
+    rects.set(
+      cardBody(name),
+      makeRect({
+        left: columnLeft(column),
+        top: 220,
+        width: 280,
+        height: 70,
+      })
+    )
+  }
+}
+
+// The keyboard sensor arms its document listener on a macrotask, so a press
+// fired in the same tick as the pick-up would land on nothing.
+async function settle() {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0))
+  })
+}
+
+async function press(target: Element | Document, code: string) {
+  await act(async () => {
+    fireEvent.keyDown(target, { code, key: code === "Space" ? " " : code })
+  })
+}
+
+async function pickUp(name: string) {
+  await press(cardBody(name), "Space")
+  await settle()
+}
+
+const move = (code: string) => press(document, code)
+const drop = () => press(document, "Space")
+
+beforeAll(() => {
+  Element.prototype.getBoundingClientRect = function measured(this: Element) {
+    const declared = rects.get(this)
+    if (declared !== undefined) return declared
+    // dnd-kit's drag overlay is what collision detection measures once a card
+    // is in flight, not the card left behind in the list, and the overlay
+    // positions itself with inline styles instead of through layout. happy-dom
+    // has no layout, so its box is read back from the styles it just set. The
+    // parent is checked too because dnd-kit measures the overlay's single
+    // CHILD (getMeasurableNode), which inherits the box its wrapper declares.
+    for (const node of [this as HTMLElement, this.parentElement]) {
+      const style = node?.style
+      if (style?.position === "fixed" && style.width !== "") {
+        return makeRect({
+          left: Number.parseFloat(style.left),
+          top: Number.parseFloat(style.top),
+          width: Number.parseFloat(style.width),
+          height: Number.parseFloat(style.height),
+        })
+      }
+    }
+    return ZERO
+  }
+})
+afterAll(() => {
+  Element.prototype.getBoundingClientRect = originalGetRect
+})
+
+describe("the model build view", () => {
+  beforeEach(() => {
+    activateCriterion.mockReset()
+    deactivateCriterion.mockReset()
+    rebalanceWeights.mockReset()
+    activateCriterion.mockResolvedValue("c9")
+    deactivateCriterion.mockResolvedValue(null)
+    rebalanceWeights.mockResolvedValue(null)
+    modelResult = BALANCED
+    onQuery((ref) => {
+      if (ref === "evaluationModel.model.getModel") return modelResult
+      if (ref === "accounts.organization.getOrganizationSettings") {
+        return { orgId: "org-1", industry: "itTelecom" }
+      }
+      if (ref === "ai.suggest.getWeightReviewLock") return false
+      if (ref === "ai.suggest.getOpenSuggestions") return []
+      return undefined
+    })
   })
   afterEach(() => cleanup())
 
-  it("Define phase loading: mirrors the loaded shape with four real dimension sections, not a flat list", () => {
-    useQueryMock.mockImplementation((ref: unknown) =>
-      ref === "evaluationModel.model.getModel"
-        ? undefined
-        : ref === "ai.suggest.getOpenSuggestions"
-          ? []
-          : reviewLocked
-    )
-    renderBuilder("define")
-    expect(
-      screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)
-    ).toEqual([
-      "Competence",
-      "Effort and complexity",
-      "Responsibility and impact",
-      "Working conditions",
-    ])
-    expect(screen.getAllByRole("button", { name: picker.addCta })).toHaveLength(
-      4
-    )
+  it("shows every dimension as a zone with its own library beneath it", () => {
+    renderBuilder()
+    for (const dimension of DIMENSIONS) {
+      expect(zone(dimension.name)).toBeDefined()
+    }
+    // The chosen criteria sit in their dimension's zone.
+    expect(within(zone("Competence")).getByText(KNOWLEDGE_DEPTH)).toBeDefined()
+    // The rest of that dimension's library is offered directly below it.
+    expect(cardBody(KNOWLEDGE_BREADTH)).toBeDefined()
   })
 
-  it("Weight phase loading: the flat list skeleton, not the dimension-grouped one", () => {
-    useQueryMock.mockImplementation((ref: unknown) =>
-      ref === "evaluationModel.model.getModel"
-        ? undefined
-        : ref === "ai.suggest.getOpenSuggestions"
-          ? []
-          : reviewLocked
-    )
-    renderBuilder("weight")
-    expect(screen.queryAllByRole("heading", { level: 3 })).toHaveLength(0)
-    expect(screen.queryByRole("button", { name: picker.addCta })).toBeNull()
+  // The whole reason criteria and weights could be brought onto one page: the
+  // role-facing 1-5 scale is not here to be confused with the 1-5 weighting.
+  it("never renders the evaluation scale", () => {
+    renderBuilder()
+    expect(screen.getByText(COMPLEXITY)).toBeDefined()
+    expect(screen.queryByText(ANCHOR_LOW)).toBeNull()
+    expect(screen.queryByText(ANCHOR_HIGH)).toBeNull()
   })
 
-  it("Define phase: dimension sections group criteria, no weighting", () => {
-    renderBuilder("define")
-    // Every dimension heading renders, including the empty one.
-    expect(screen.getByText("Competence")).toBeDefined()
-    expect(screen.getByText("Effort")).toBeDefined()
-    expect(screen.getByText("Responsibility")).toBeDefined()
-    expect(screen.getByText("Working conditions")).toBeDefined()
-    expect(screen.getByText(editor.emptyDimension)).toBeDefined()
+  it("adds a criterion when its card is dropped in its own dimension", async () => {
+    renderBuilder()
+    measure([{ name: ANALYTICAL, column: 1 }])
 
-    expect(screen.getByText("Problem solving")).toBeDefined()
-    expect(
-      screen.getByText("How the role breaks down and resolves hard problems.")
-    ).toBeDefined()
-    // The extended description sits behind a morph help icon next to the name,
-    // titled by the criterion name (c1 has fullDefinition); a criterion
-    // without one (c2) has no help icon.
-    expect(
-      screen.getByRole("button", { name: "Problem solving" })
-    ).toBeDefined()
-    expect(screen.queryByRole("button", { name: "Autonomy" })).toBeNull()
-    // A library picker trigger per dimension section (4 sections).
-    expect(screen.getAllByRole("button", { name: picker.addCta })).toHaveLength(
-      4
-    )
-    // No weighting on Define: no share, no Save, no budget meter.
-    expect(screen.queryByText(/26\.7%/)).toBeNull()
-    expect(screen.queryByRole("button", { name: editor.saveCta })).toBeNull()
-    expect(screen.queryByText(editor.balanced)).toBeNull()
-  })
+    await pickUp(ANALYTICAL)
+    await move("ArrowUp")
+    await drop()
 
-  it("Weight phase: budget alert, 1-5 scale, share, Save; no picker", () => {
-    renderBuilder("weight", { withAiReview: true })
-    // Budget status alert (balanced) and the atomic save; no picker trigger.
-    expect(screen.getByText(editor.balanced)).toBeDefined()
-    expect(screen.getByRole("button", { name: editor.saveCta })).toBeDefined()
-    expect(screen.queryByRole("button", { name: picker.addCta })).toBeNull()
-    // c1 (4 of 15) shows its share with the labelled suffix.
-    expect(screen.getByText(/26\.7%/)).toBeDefined()
-    expect(screen.getAllByText(builder.shareOfTotal).length).toBeGreaterThan(0)
-    // The morph help icon is on the weight page too (c1 has fullDefinition).
-    expect(
-      screen.getByRole("button", { name: "Problem solving" })
-    ).toBeDefined()
-    // The 1-5 control (options 1..5) with the current allocation (4) pressed.
-    const group = screen.getByRole("group", {
-      name: editor.setWeightPoints.replace("{name}", "Problem solving"),
+    await waitFor(() => {
+      expect(activateCriterion).toHaveBeenCalledWith({
+        orgId: "org-1",
+        libraryKey: "analytical-effort",
+      })
     })
-    const options = within(group).getAllByRole("button")
-    expect(options).toHaveLength(5)
-    expect(options.map((o) => o.getAttribute("aria-pressed"))).toEqual([
-      "false",
-      "false",
-      "false",
-      "true",
-      "false",
-    ])
-    // AI review trigger is offered on a saved (not dirty) allocation.
-    expect(
-      screen.getByRole("button", { name: messages.dashboard.ai.openReviewCta })
-    ).toBeDefined()
   })
 
-  it("Weight phase: editing saves the full balanced allocation", async () => {
-    rebalanceWeightsMock.mockResolvedValue(null)
-    renderBuilder("weight")
+  // The zone stays a live droppable so it can say no while the card is still
+  // in the air. What it must never do is let the drop through.
+  it("refuses a card dropped on another dimension's zone", async () => {
+    renderBuilder()
+    measure([{ name: ANALYTICAL, column: 1 }])
+
+    await pickUp(ANALYTICAL)
+    await move("ArrowUp")
+    await move("ArrowLeft")
+    expect(zone("Competence").dataset.state).toBe("blocked")
+    await drop()
+
+    expect(activateCriterion).not.toHaveBeenCalled()
+  })
+
+  // Two equal routes in: the button is not a fallback for people who cannot
+  // drag, it is the faster route for everyone, and it lands on exactly the
+  // same call.
+  it("adds the same criterion from its Add button", async () => {
+    renderBuilder()
+    fireEvent.click(addButton(ANALYTICAL))
+    await waitFor(() => {
+      expect(activateCriterion).toHaveBeenCalledWith({
+        orgId: "org-1",
+        libraryKey: "analytical-effort",
+      })
+    })
+  })
+
+  // A flow states its preconditions in words rather than silently refusing.
+  it("dims a full dimension's remaining cards and says why", () => {
+    modelResult = COMPETENCE_FULL
+    renderBuilder()
+
+    expect(zone("Competence").dataset.full).toBe("true")
+    const reason = build.capDimension.replace("{max}", "2")
+    // One sentence per closed card, on the card itself, where the reader is
+    // reaching.
+    expect(screen.getAllByText(reason).length).toBe(3)
+    expect(
+      (
+        addButton(
+          "Formal qualification, licensing and certification requirements"
+        ) as HTMLButtonElement
+      ).disabled
+    ).toBe(true)
+    // A dimension with room says nothing of the kind.
+    expect(zone("Effort and complexity").dataset.full).toBe("false")
+    expect((addButton(ANALYTICAL) as HTMLButtonElement).disabled).toBe(false)
+  })
+
+  it("saves the whole allocation at once, and only when it balances", async () => {
+    renderBuilder()
     const groupFor = (name: string) =>
       screen.getByRole("group", {
-        name: editor.setWeightPoints.replace("{name}", name),
+        name: build.setWeightPoints.replace("{name}", name),
       })
-    // c1 4 -> 3 alone is under budget: Save disabled, nothing posted.
+    const save = () => screen.getByRole("button", { name: build.saveCta })
+
+    // Nothing edited yet: balanced but clean, so there is nothing to post.
+    expect(screen.getByText(build.balanced)).toBeDefined()
+    expect((save() as HTMLButtonElement).disabled).toBe(true)
+
+    // c1 4 -> 3 alone leaves the budget short: the save stays shut and the bar
+    // stops claiming the points are distributed.
     fireEvent.click(
-      within(groupFor("Problem solving")).getByRole("button", { name: "3" })
+      within(groupFor(COMPLEXITY)).getByRole("button", { name: "3" })
     )
-    const save = screen.getByRole("button", { name: editor.saveCta })
-    expect((save as HTMLButtonElement).disabled).toBe(true)
-    // Compensate c2 2 -> 3: balanced, Save posts the whole allocation.
+    expect((save() as HTMLButtonElement).disabled).toBe(true)
+    expect(screen.queryByText(build.balanced)).toBeNull()
+    expect(screen.getByText("1 weight point left to distribute")).toBeDefined()
+
+    // Compensating elsewhere balances it, and the save posts every criterion.
     fireEvent.click(
-      within(groupFor("Autonomy")).getByRole("button", { name: "3" })
+      within(groupFor("Autonomy and decision mandate")).getByRole("button", {
+        name: "3",
+      })
     )
-    fireEvent.click(screen.getByRole("button", { name: editor.saveCta }))
+    expect((save() as HTMLButtonElement).disabled).toBe(false)
+    fireEvent.click(save())
     await waitFor(() => {
-      expect(rebalanceWeightsMock).toHaveBeenCalledWith({
+      expect(rebalanceWeights).toHaveBeenCalledWith({
         orgId: "org-1",
         allocations: [
           { criterionId: "c1", weightPoints: 3 },
@@ -328,36 +462,37 @@ describe("ModelBuilder", () => {
     })
   })
 
-  it("Define phase: Remove confirms then calls deactivateCriterion", async () => {
-    deactivateCriterionMock.mockResolvedValue(undefined)
-    renderBuilder("define")
+  // Removing a criterion deletes its ratings on every role, so it confirms.
+  it("confirms before removing a criterion", async () => {
+    renderBuilder()
     await openMenu(
       screen.getByRole("button", {
-        name: editor.rowMenuLabel.replace("{name}", "Problem solving"),
+        name: editor.rowMenuLabel.replace("{name}", KNOWLEDGE_DEPTH),
       })
     )
     fireEvent.click(screen.getByRole("menuitem", { name: editor.removeCta }))
+    expect(deactivateCriterion).not.toHaveBeenCalled()
     fireEvent.click(
       within(screen.getByRole("alertdialog")).getByRole("button", {
         name: editor.removeConfirm,
       })
     )
     await waitFor(() => {
-      expect(deactivateCriterionMock).toHaveBeenCalledWith({
+      expect(deactivateCriterion).toHaveBeenCalledWith({
         orgId: "org-1",
-        criterionId: "c1",
+        criterionId: "c4",
       })
     })
   })
 
-  it("Weight phase: hides the AI review trigger while the lock holds", () => {
-    reviewLocked = true
-    renderBuilder("weight", { withAiReview: true })
+  it("shows the build grid's own skeleton while the model loads", () => {
+    modelResult = undefined
+    renderBuilder()
+    // The four dimensions are already on screen, in the same grid; what is
+    // missing is the data, so there is no save action yet.
     expect(
-      screen.queryByRole("button", {
-        name: messages.dashboard.ai.openReviewCta,
-      })
-    ).toBeNull()
-    expect(screen.getByRole("button", { name: editor.saveCta })).toBeDefined()
+      screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)
+    ).toEqual(DIMENSIONS.map((dimension) => dimension.name))
+    expect(screen.queryByRole("button", { name: build.saveCta })).toBeNull()
   })
 })

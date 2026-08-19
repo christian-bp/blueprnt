@@ -49,7 +49,7 @@ describe("pageItems", () => {
       "/work",
       "/roles",
     ])
-    expect(hrefs).toContain("/model/weighting")
+    expect(hrefs).toContain("/model/method")
     expect(hrefs).toContain("/people/classify")
     expect(hrefs).toContain("/docs")
   })

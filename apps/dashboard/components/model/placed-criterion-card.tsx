@@ -51,8 +51,8 @@ export function PlacedCriterionCard({
   onWeightChange: (points: number) => void
   onRemove: () => Promise<void> | void
 }) {
+  const t = useTranslations("dashboard.model.build")
   const tEditor = useTranslations("dashboard.model.editor")
-  const tBuilder = useTranslations("dashboard.model.builder")
   const tChange = useTranslations("dashboard.model.change")
   const [confirmRemove, setConfirmRemove] = useState(false)
   // A layout-animated box FLIPs its size with a scale transform, and plain
@@ -122,7 +122,7 @@ export function PlacedCriterionCard({
         <span className="font-medium text-foreground tabular-nums">
           {share}
         </span>{" "}
-        {tBuilder("shareOfTotal")}
+        {t("shareOfTotal")}
       </motion.p>
 
       {/* Removal deletes the criterion's ratings on every role and

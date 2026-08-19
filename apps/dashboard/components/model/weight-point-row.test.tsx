@@ -10,7 +10,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { WeightPointRow } from "@/components/model/weight-point-row"
 
-const editor = messages.dashboard.model.editor
+const build = messages.dashboard.model.build
 
 function renderRow(value: number, onChange = vi.fn(), disabled = false) {
   render(
@@ -26,7 +26,7 @@ function renderRow(value: number, onChange = vi.fn(), disabled = false) {
   return {
     onChange,
     group: screen.getByRole("group", {
-      name: editor.setWeightPoints.replace("{name}", "Problem solving"),
+      name: build.setWeightPoints.replace("{name}", "Problem solving"),
     }),
   }
 }

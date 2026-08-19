@@ -97,7 +97,18 @@
       "dropped": "{title} ble plassert i {family}.",
       "instructions": "Trykk mellomrom eller enter for å plukke opp en rolle, bruk piltastene for å flytte den, og trykk mellomrom eller enter igjen for å slippe den. Trykk escape for å avbryte.",
       "over": "{title} er over {family}.",
-      "pickedUp": "Plukket opp {title}."
+      "pickedUp": "Plukket opp {title}.",
+      "criterion": {
+        "cancelled": "Flyttingen av {name} ble avbrutt.",
+        "dropped": "{name} ble lagt til i {dimension}.",
+        "full": "{dimension} er full.",
+        "instructions": "Trykk mellomrom eller enter for å plukke opp et kriterium, bruk piltastene for å flytte det mellom dimensjoner, og trykk mellomrom eller enter igjen for å slippe det. Trykk escape for å avbryte.",
+        "notAddedFull": "{name} ble ikke lagt til: {dimension} er full.",
+        "notAddedWrongDimension": "{name} ble ikke lagt til: det hører ikke til {dimension}.",
+        "over": "{name} er over {dimension}.",
+        "pickedUp": "Plukket opp {name}.",
+        "wrongDimension": "{name} hører ikke til {dimension}."
+      }
     },
     "familyTable": {
       "addFamily": "Legg til familie",
@@ -1806,7 +1817,7 @@
       "error": "Noe gikk galt. Prøv igjen.",
       "retry": "Prøv igjen",
       "tabs": {
-        "criteria": "Kriterier",
+        "build": "Bygg modellen",
         "weighting": "Vekting",
         "method": "Metode"
       },
@@ -1815,41 +1826,45 @@
         "cta": "Åpne dashbordet"
       },
       "editor": {
-        "heading": "Kriterier",
-        "empty": "Ingen kriterier å vekte ennå. Legg til kriterier fra biblioteket på siden Kriterier først.",
-        "setWeightPoints": "Vektpoeng for {name}",
-        "anchors": "Vurderingsskala (1 til 5)",
-        "anchorsCaption": "Slik vurderes en rolle på kriteriet. Du angir det når du vurderer en rolle.",
-        "addCta": "Legg til kriterium",
         "removeCta": "Fjern",
         "removeConfirm": "Ja, fjern kriteriet",
-        "saveCta": "Lagre vekting",
-        "cancelCta": "Avbryt",
-        "pointsLeft": "{count} vektpoeng igjen å fordele",
-        "pointsOver": "{count} vektpoeng over budsjettet",
-        "balanced": "Alle vektpoeng er fordelt",
         "rowMenuLabel": "Handlinger for {name}",
         "removeDialogTitle": "Fjerne {name}?",
-        "removeDialogDescription": "Kriteriets vurderinger fjernes fra alle roller og vektpoengene omfordeles til de gjenværende kriteriene. Dette kan ikke angres.",
-        "emptyDimension": "Ingen kriterier valgt innen denne dimensjonen ennå."
+        "removeDialogDescription": "Kriteriets vurderinger fjernes fra alle roller og vektpoengene omfordeles til de gjenværende kriteriene. Dette kan ikke angres."
       },
-      "builder": {
-        "defineDescription": "Velg kriteriene roller vurderes mot, og se hva hver vurdering 1 til 5 betyr.",
-        "weightDescription": "Bestem hvor mye hvert kriterium skal telle. Vekting er ikke en dom om kriteriet er bra: det er hvor stor påvirkning det har på rollevurderingen og, alt annet likt, på relativ lønn.",
+      "build": {
+        "description": "Sett sammen selskapets blueprnt-modell: dra kriterier fra hver dimensjons bibliotek opp i sonen over, og bestem så hvor mye hvert av dem skal telle.",
+        "framing": {
+          "whyLabel": "Hvorfor er vi her?",
+          "whyBody": "De fire dimensjonene er brede. Kriteriene er det som gjør dem konkrete nok til å sammenligne virkelig arbeid.",
+          "decideLabel": "Hva skal dere ta stilling til?",
+          "decideBody": "Hvilke forskjeller mellom roller modellen skal fange, og hvor mye hver av dem skal telle.",
+          "nextLabel": "Hva skjer så?",
+          "nextBody": "Metode kontrollerer dekning, overlapp og vektbudsjett før modellen godkjennes."
+        },
+        "zoneCount": "{count} av maks {max}",
+        "zoneEmpty": "Ingen kriterier i denne dimensjonen ennå",
+        "libraryLabel": "Kriterier som er tilgjengelige for {dimension}",
+        "libraryEmpty": "Alle kriterier i denne dimensjonen er valgt.",
+        "recommendedChip": "Anbefalt for deres bransje",
+        "overlapChip": "Overlapper {names}",
+        "addCta": "Legg til",
+        "addLabel": "Legg til {name} i modellen",
+        "capDimension": "Denne dimensjonen rommer høyst {max}. Fjern ett av kriteriene for å legge til et annet.",
+        "capModel": "Modellen rommer høyst {max} kriterier. Fjern ett for å legge til et annet.",
+        "budgetAllocated": "<allocated></allocated> av <budget></budget> vektpoeng fordelt",
+        "budgetEmpty": "Legg til kriterier for å begynne å fordele vektpoeng.",
+        "balanced": "Alle vektpoeng er fordelt",
+        "pointsLeft": "{count} vektpoeng igjen å fordele",
+        "pointsOver": "{count} vektpoeng over budsjettet",
+        "saveCta": "Lagre vekting",
+        "setWeightPoints": "Vektpoeng for {name}",
         "shareOfTotal": "av den totale vekten",
         "weightMeaning1": "Svært lav påvirkning i modellen",
         "weightMeaning2": "Lav til moderat påvirkning i modellen",
         "weightMeaning3": "Tydelig og balansert påvirkning i modellen",
         "weightMeaning4": "Sterk påvirkning i modellen",
         "weightMeaning5": "Svært sterk påvirkning i modellen"
-      },
-      "build": {
-        "zoneCount": "{count} av maks {max}",
-        "zoneEmpty": "Ingen kriterier i denne dimensjonen ennå",
-        "recommendedChip": "Anbefalt for deres bransje",
-        "overlapChip": "Overlapper {names}",
-        "addCta": "Legg til",
-        "addLabel": "Legg til {name} i modellen"
       },
       "change": {
         "cancel": "Avbryt"
@@ -1954,14 +1969,6 @@
         "notApproved": "Ikke godkjent ennå",
         "notDocumented": "Ikke dokumentert",
         "pointBudget": "Poengbudsjett: {points}"
-      },
-      "picker": {
-        "addCta": "Legg til kriterier",
-        "dialogTitle": "Legg til et kriterium innen {dimension}",
-        "dialogDescription": "Velg et kriterium fra biblioteket å legge til i denne dimensjonen.",
-        "empty": "Alle kriteriene innen denne dimensjonen er allerede valgt.",
-        "addRowCta": "Legg til",
-        "closeCta": "Lukk"
       }
     },
     "ai": {

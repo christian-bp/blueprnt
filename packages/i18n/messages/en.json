@@ -97,7 +97,18 @@
       "dropped": "{title} was placed in {family}.",
       "instructions": "Press space or enter to pick up a role, use the arrow keys to move it, and press space or enter again to drop it. Press escape to cancel.",
       "over": "{title} is over {family}.",
-      "pickedUp": "Picked up {title}."
+      "pickedUp": "Picked up {title}.",
+      "criterion": {
+        "cancelled": "Moving {name} was cancelled.",
+        "dropped": "{name} was added to {dimension}.",
+        "full": "{dimension} is full.",
+        "instructions": "Press space or enter to pick up a criterion, use the arrow keys to move it between dimensions, and press space or enter again to drop it. Press escape to cancel.",
+        "notAddedFull": "{name} was not added: {dimension} is full.",
+        "notAddedWrongDimension": "{name} was not added: it does not belong to {dimension}.",
+        "over": "{name} is over {dimension}.",
+        "pickedUp": "Picked up {name}.",
+        "wrongDimension": "{name} does not belong to {dimension}."
+      }
     },
     "familyTable": {
       "addFamily": "Add family",
@@ -1806,7 +1817,7 @@
       "error": "Something went wrong. Try again.",
       "retry": "Try again",
       "tabs": {
-        "criteria": "Criteria",
+        "build": "Build the model",
         "weighting": "Weighting",
         "method": "Method"
       },
@@ -1815,41 +1826,45 @@
         "cta": "Open the dashboard"
       },
       "editor": {
-        "heading": "Criteria",
-        "empty": "No criteria to weight yet. Add criteria from the library on the Criteria page first.",
-        "setWeightPoints": "Weight points for {name}",
-        "anchors": "Evaluation scale (1 to 5)",
-        "anchorsCaption": "How a role is rated on this criterion. You set it when you evaluate a role.",
-        "addCta": "Add criterion",
         "removeCta": "Remove",
         "removeConfirm": "Yes, remove the criterion",
-        "saveCta": "Save weighting",
-        "cancelCta": "Cancel",
-        "pointsLeft": "{count, plural, one {# weight point} other {# weight points}} left to distribute",
-        "pointsOver": "{count, plural, one {# weight point} other {# weight points}} over the budget",
-        "balanced": "All weight points are distributed",
         "rowMenuLabel": "Actions for {name}",
         "removeDialogTitle": "Remove {name}?",
-        "removeDialogDescription": "The criterion's ratings are removed from every role and its weight points are redistributed across the remaining criteria. This cannot be undone.",
-        "emptyDimension": "No criteria selected in this dimension yet."
+        "removeDialogDescription": "The criterion's ratings are removed from every role and its weight points are redistributed across the remaining criteria. This cannot be undone."
       },
-      "builder": {
-        "defineDescription": "Select the criteria roles are evaluated against, and see what each rating 1 to 5 means.",
-        "weightDescription": "Decide how much each criterion counts. Weighting is not a verdict on whether a criterion is good: it is how much influence it has on role valuation and, all else equal, relative pay.",
+      "build": {
+        "description": "Assemble your company's blueprnt model: drag criteria from each dimension's library into the zone above it, then decide how much each one counts.",
+        "framing": {
+          "whyLabel": "Why are we here?",
+          "whyBody": "The four dimensions are broad. Criteria are what make them concrete enough to compare real jobs.",
+          "decideLabel": "What do you decide here?",
+          "decideBody": "Which differences between roles your model captures, and how much each of them counts.",
+          "nextLabel": "What happens next?",
+          "nextBody": "Method checks coverage, overlap and the weight budget before the model is approved."
+        },
+        "zoneCount": "{count} of max {max}",
+        "zoneEmpty": "No criteria in this dimension yet",
+        "libraryLabel": "Criteria available for {dimension}",
+        "libraryEmpty": "Every criterion in this dimension is selected.",
+        "recommendedChip": "Recommended for your industry",
+        "overlapChip": "Overlaps {names}",
+        "addCta": "Add",
+        "addLabel": "Add {name} to the model",
+        "capDimension": "This dimension holds its maximum of {max}. Remove one of its criteria to add another.",
+        "capModel": "The model holds its maximum of {max} criteria. Remove one to add another.",
+        "budgetAllocated": "<allocated></allocated> of <budget></budget> weight points allocated",
+        "budgetEmpty": "Add criteria to start allocating weight points.",
+        "balanced": "All weight points are distributed",
+        "pointsLeft": "{count, plural, one {# weight point} other {# weight points}} left to distribute",
+        "pointsOver": "{count, plural, one {# weight point} other {# weight points}} over the budget",
+        "saveCta": "Save weighting",
+        "setWeightPoints": "Weight points for {name}",
         "shareOfTotal": "of the total weight",
         "weightMeaning1": "Very low influence in the model",
         "weightMeaning2": "Low to moderate influence in the model",
         "weightMeaning3": "Clear and balanced influence in the model",
         "weightMeaning4": "Strong influence in the model",
         "weightMeaning5": "Very strong influence in the model"
-      },
-      "build": {
-        "zoneCount": "{count} of max {max}",
-        "zoneEmpty": "No criteria in this dimension yet",
-        "recommendedChip": "Recommended for your industry",
-        "overlapChip": "Overlaps {names}",
-        "addCta": "Add",
-        "addLabel": "Add {name} to the model"
       },
       "change": {
         "cancel": "Cancel"
@@ -1954,14 +1969,6 @@
         "notApproved": "Not yet approved",
         "notDocumented": "Not documented",
         "pointBudget": "Point budget: {points}"
-      },
-      "picker": {
-        "addCta": "Add criteria",
-        "dialogTitle": "Add a {dimension} criterion",
-        "dialogDescription": "Select a criterion from the library to add to this dimension.",
-        "empty": "Every criterion in this dimension is already selected.",
-        "addRowCta": "Add",
-        "closeCta": "Close"
       }
     },
     "ai": {

@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowDown01Icon, MoreVerticalIcon } from "@hugeicons/core-free-icons"
+import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,11 +19,10 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { cn } from "@workspace/ui/lib/utils"
-import { AnimatePresence, motion } from "motion/react"
+import { motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useTranslations } from "next-intl"
-import { type ReactNode, useId, useState } from "react"
+import { type ReactNode, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SPRING } from "@/lib/motion"
 
@@ -36,12 +35,11 @@ import { SPRING } from "@/lib/motion"
 // nothing resizes its neighbors.
 //
 //   - The weight slot is a fixed-size right-aligned container that renders the
-//     weight control filling the slot. It is omitted entirely on the Define
-//     phase (importanceNode undefined), where weighting is not shown at all.
-//   - The note slot is a reserved-height block below the main row, used by the
-//     Weight phase for the selected level's meaning and share. Its height is
-//     reserved so changing the weight (and its meaning text) never reflows
-//     neighboring rows.
+//     weight control filling the slot. It is omitted entirely where the
+//     surface carries no weighting (importanceNode undefined).
+//   - The note slot is a reserved-height block below the main row, carrying a
+//     criterion's share of the model. Its height is reserved so a changed
+//     figure never reflows neighboring rows.
 //   - The remove affordance is the shared RemoveConfirm (ghost trashcan that
 //     morphs to an inline confirm pill, same as the onboarding family rows),
 //     sitting in an ALWAYS-reserved fixed slot right of the importance slot,
@@ -76,12 +74,10 @@ const rowVariants: Variants = {
 // Props:
 //   name             - criterion display name
 //   description      - optional muted subtitle
-//   importanceNode   - the weight control (Weight phase); omit to hide the
-//                      weight slot entirely (Define phase)
-//   note             - optional reserved-height block below the row (Weight
-//                      phase: the selected level's meaning and share)
-//   anchorsCaption   - optional caption shown inside the expanded scale, tying
-//                      the 1-5 scale to the act of evaluating a role
+//   importanceNode   - the weight control; omit to hide the weight slot
+//                      entirely
+//   note             - optional reserved-height block below the row (the
+//                      criterion's share of the model)
 //   editable         - when false: no row menu (Remove)
 //   onRemove         - called with no args after the user confirms inline
 //   removing         - disables the button while the delete mutation is in flight
@@ -91,8 +87,6 @@ export function CriterionItem({
   extendedDescription,
   importanceNode,
   note,
-  anchors,
-  anchorsCaption,
   editable,
   onRemove,
   removing,
@@ -104,17 +98,10 @@ export function CriterionItem({
   // the name reveals it (the panel is titled by the criterion name). The short
   // `description` stays inline as the subtitle.
   extendedDescription?: string
-  // The weight control for the Weight phase; undefined on the Define phase, so
-  // the 1-5 evaluation scale (0 only for a working-conditions criterion) and
-  // the 1-5 weight control are never co-rendered.
+  // The row's weight control, where the surface has one.
   importanceNode?: ReactNode
-  // Reserved-height content below the main row (Weight phase meaning + share).
+  // Reserved-height content below the main row (the criterion's share).
   note?: ReactNode
-  // The criterion's 1-5 anchor scale; when given, the row gets a collapsible
-  // section revealing the texts (shared by onboarding and the model page).
-  anchors?: { step: number; text: string }[]
-  // Optional caption rendered inside the expanded scale.
-  anchorsCaption?: string
   editable: boolean
   // The row action, rendered as a one-item dropdown menu while editable:
   // onRemove (behind an AlertDialog confirmation) deletes the criterion.
@@ -124,12 +111,9 @@ export function CriterionItem({
 }) {
   const tEditor = useTranslations("dashboard.model.editor")
   const tChange = useTranslations("dashboard.model.change")
-  const [anchorsOpen, setAnchorsOpen] = useState(false)
-  const anchorsId = useId()
 
   const showMenu = editable && onRemove !== undefined
   const [confirmRemove, setConfirmRemove] = useState(false)
-  const hasAnchors = anchors !== undefined && anchors.length > 0
 
   return (
     // Outer motion.li carries ONLY animated geometry: layout spring for
@@ -182,10 +166,9 @@ export function CriterionItem({
             )}
           </span>
 
-          {/* Fixed-size weight slot (w-52): holds the Weight phase's 1-5
-              control. Omitted on the Define phase (importanceNode undefined) so
-              the row is identity plus the evaluation-scale disclosure, with no
-              weighting in sight. */}
+          {/* Fixed-size weight slot (w-52): holds a 1-5 weight control when the
+              surface has one. Omitted where the row carries no weighting at
+              all, so the slot never sits empty. */}
           {importanceNode !== undefined && (
             <span className="flex h-9 w-52 shrink-0 items-center justify-end">
               {importanceNode}
@@ -269,65 +252,6 @@ export function CriterionItem({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-
-        {/* Collapsible anchor scale: the trigger is always present (no
-            layout shift from hover/state), and expanding animates new
-            content below the row, a legitimate enter. The animated element
-            carries ONLY geometry (height/opacity, docs/ui-animation.md rule
-            2); the list inside owns the padding. */}
-        {hasAnchors && (
-          <>
-            <button
-              type="button"
-              aria-expanded={anchorsOpen}
-              aria-controls={anchorsId}
-              className="mt-1 flex items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
-              onClick={() => setAnchorsOpen((open) => !open)}
-            >
-              {tEditor("anchors")}
-              <HugeiconsIcon
-                icon={ArrowDown01Icon}
-                strokeWidth={2}
-                aria-hidden="true"
-                className={cn(
-                  "size-3.5 transition-transform motion-reduce:transition-none",
-                  anchorsOpen && "rotate-180"
-                )}
-              />
-            </button>
-            <AnimatePresence initial={false}>
-              {anchorsOpen && (
-                <motion.div
-                  id={anchorsId}
-                  key="anchors"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={SPRING}
-                  className="overflow-hidden"
-                >
-                  {anchorsCaption !== undefined && (
-                    <p className="pt-2 text-muted-foreground text-xs">
-                      {anchorsCaption}
-                    </p>
-                  )}
-                  <ol className="space-y-1.5 pt-2">
-                    {anchors.map((anchor) => (
-                      <li key={anchor.step} className="flex gap-2 text-sm">
-                        <span className="w-4 shrink-0 text-right font-medium tabular-nums">
-                          {anchor.step}
-                        </span>
-                        <span className="min-w-0 text-muted-foreground">
-                          {anchor.text}
-                        </span>
-                      </li>
-                    ))}
-                  </ol>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </>
-        )}
       </div>
     </motion.li>
   )

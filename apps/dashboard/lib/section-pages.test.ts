@@ -10,8 +10,15 @@ describe("deepestMatch", () => {
   })
 
   it("hands the index over to a deeper matching sibling", () => {
-    expect(deepestMatch(MODEL, "/model/weighting")).toBe("/model/weighting")
     expect(deepestMatch(MODEL, "/model/method")).toBe("/model/method")
+    expect(deepestMatch(PEOPLE, "/people/classify")).toBe("/people/classify")
+  })
+
+  // /model/weighting retired into the build view and redirects there. Its tab
+  // is gone, so the index keeps the section current while the redirect runs
+  // rather than leaving the strip with nothing marked.
+  it("keeps the index current on a retired nested route", () => {
+    expect(deepestMatch(MODEL, "/model/weighting")).toBe("/model")
   })
 
   it("keeps a register current on its detail pages", () => {

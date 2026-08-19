@@ -2,36 +2,36 @@
 
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { BuildFraming } from "@/components/model/build-framing"
 import { ModelBuilder } from "@/components/model/model-builder"
 import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
 import { usePageTitle } from "@/hooks/use-page-title"
 
-// The model's Criteria page (the Define phase): the library selection grouped
-// into its four dimension sections, each with its own picker (ADR-0021
-// addendum, decision 8: there is no free-text criterion editor left, only a
-// library to select from). Weighting lives on its own page (/model/weighting),
-// reached via the header ModelTabs, so the role-facing 1-5 scale (0 only for a
-// working-conditions criterion) and the model-facing 1-5 weighting are never
-// shown together.
-export default function ModelCriteriaPage() {
+// The model's build page: the company's own model assembled in one place,
+// criteria and their weights together (ADR-0021 addendum, decision 8: there is
+// no free-text criterion editor, only a library to choose from). Weighting no
+// longer has a page of its own; what stays apart is the role-facing 1-5
+// evaluation scale, which belongs to rating a role and renders there.
+export default function ModelBuildPage() {
   const { orgId } = useOrganization()
-  const t = useTranslations("dashboard.model.tabs")
+  const t = useTranslations("dashboard.model.build")
+  const tTabs = useTranslations("dashboard.model.tabs")
   const tHelp = useTranslations("dashboard.help")
-  const tBuilder = useTranslations("dashboard.model.builder")
-  usePageTitle(t("criteria"))
+  usePageTitle(tTabs("build"))
   return (
     <div className="space-y-4">
       <PageHeader
-        title={t("criteria")}
+        title={tTabs("build")}
         titleAdornment={
           <HelpMorphButton label={tHelp("criterionLabel")}>
             {tHelp("criterionBody")}
           </HelpMorphButton>
         }
-        description={tBuilder("defineDescription")}
+        description={t("description")}
       />
-      <ModelBuilder orgId={orgId} phase="define" />
+      <BuildFraming />
+      <ModelBuilder orgId={orgId} />
     </div>
   )
 }

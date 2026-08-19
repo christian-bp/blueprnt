@@ -13,11 +13,7 @@ import { openMenu } from "@/test/menu"
 
 const editor = messages.dashboard.model.editor
 
-function renderItem(props: {
-  anchors?: { step: number; text: string }[]
-  editable?: boolean
-  onRemove?: () => void
-}) {
+function renderItem(props: { editable?: boolean; onRemove?: () => void }) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <ul>
@@ -32,44 +28,6 @@ function renderItem(props: {
     </NextIntlClientProvider>
   )
 }
-
-describe("CriterionItem anchor scale section", () => {
-  afterEach(() => {
-    cleanup()
-  })
-
-  const ANCHORS = [
-    { step: 0, text: "Not present" },
-    { step: 1, text: "Follows instructions" },
-    { step: 2, text: "Works independently" },
-    { step: 3, text: "Guides others" },
-    { step: 4, text: "Shapes the area" },
-    { step: 5, text: "Defines the field" },
-  ]
-
-  it("renders no trigger without anchors", () => {
-    renderItem({})
-    expect(
-      screen.queryByRole("button", {
-        name: messages.dashboard.model.editor.anchors,
-      })
-    ).toBeNull()
-  })
-
-  it("expands to show the anchor texts", async () => {
-    renderItem({ anchors: ANCHORS })
-    const trigger = screen.getByRole("button", {
-      name: messages.dashboard.model.editor.anchors,
-    })
-    expect(trigger.getAttribute("aria-expanded")).toBe("false")
-    expect(screen.queryByText("Follows instructions")).toBeNull()
-
-    fireEvent.click(trigger)
-    expect(trigger.getAttribute("aria-expanded")).toBe("true")
-    expect(await screen.findByText("Follows instructions")).toBeDefined()
-    expect(screen.getByText("Defines the field")).toBeDefined()
-  })
-})
 
 describe("CriterionItem row menu", async () => {
   afterEach(() => {

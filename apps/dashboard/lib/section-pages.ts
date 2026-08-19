@@ -11,8 +11,7 @@ export const SECTION_PAGES = {
     { labelKey: "nav.roles", href: "/roles" },
   ],
   model: [
-    { labelKey: "model.tabs.criteria", href: "/model" },
-    { labelKey: "model.tabs.weighting", href: "/model/weighting" },
+    { labelKey: "model.tabs.build", href: "/model" },
     { labelKey: "model.tabs.method", href: "/model/method" },
   ],
   people: [

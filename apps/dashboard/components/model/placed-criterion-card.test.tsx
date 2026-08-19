@@ -13,7 +13,7 @@ import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
 import { openMenu } from "@/test/menu"
 
 const editor = messages.dashboard.model.editor
-const builder = messages.dashboard.model.builder
+const build = messages.dashboard.model.build
 const change = messages.dashboard.model.change
 
 const CRITERION = { criterionId: "c1", name: "Analytical effort" }
@@ -52,7 +52,7 @@ describe("PlacedCriterionCard", () => {
     renderCard()
     expect(screen.getByText(CRITERION.name)).toBeDefined()
     expect(screen.getByText("17.6%")).toBeDefined()
-    expect(screen.getByText(builder.shareOfTotal)).toBeDefined()
+    expect(screen.getByText(build.shareOfTotal)).toBeDefined()
   })
 
   // The weight lives ON the card rather than on a separate weighting page:
@@ -60,7 +60,7 @@ describe("PlacedCriterionCard", () => {
   it("weights the criterion in place", () => {
     const { onWeightChange } = renderCard()
     const group = screen.getByRole("group", {
-      name: editor.setWeightPoints.replace("{name}", CRITERION.name),
+      name: build.setWeightPoints.replace("{name}", CRITERION.name),
     })
     const options = within(group).getAllByRole("button")
     expect(
@@ -74,8 +74,11 @@ describe("PlacedCriterionCard", () => {
   // together: that pairing is the confusion the phase split existed to kill,
   // and the scale leaves the model surface entirely in this phase.
   it("shows no evaluation scale beside the weighting", () => {
-    renderCard()
-    expect(screen.queryByText(editor.anchors)).toBeNull()
+    const { container } = renderCard()
+    // Everything the card offers: the five weight points and the row menu.
+    // Any scale disclosure would be a seventh control, so counting them is
+    // what says the scale is not one press away either.
+    expect(container.querySelectorAll("button")).toHaveLength(6)
   })
 
   // Removing deletes the criterion's ratings on every role, so it confirms
