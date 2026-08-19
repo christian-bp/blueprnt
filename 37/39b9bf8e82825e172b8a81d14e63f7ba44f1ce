@@ -1,0 +1,172 @@
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_9cd9d92b666b1e 188-190
+  s_58dd112dc09435::t_e958078df58471 1575-1577
+  s_58dd112dc09435::t_ef66e0f3a56f10 2605-2607
+  s_58dd112dc09435::t_e388e4a9f16677 853-858
+  s_58dd112dc09435::t_d1e30966437564 766-770
+  s_58dd112dc09435::t_d4e7e260460e9c 1865-1898
+packages/backend/convex/lib/audit.test.ts
+  s_58dd112dc09435::t_3bb9a49b4b52a8 304-315
+  s_58dd112dc09435::t_457c567f22b4b4 498-502
+packages/backend/convex/evaluationModel/approval.ts
+  s_58dd112dc09435::t_5201d7bf864f0c 1-14,21-160,169-179,192-201,210-332,338-382,387-444
+  s_58dd112dc09435::t_5717a5a400d64c 15-20
+  s_58dd112dc09435::t_e1634f0752bec5 161-168,180-183,186-187,189-191,202-209
+  s_58dd112dc09435::t_dd68d1d44e9f9c 184-185,188
+  s_58dd112dc09435::t_f7689f17eecd10 333-337,383-386
+apps/dashboard/lib/audit-constants.ts
+  s_58dd112dc09435::t_88c8594e3e2bdb 360
+  s_58dd112dc09435::t_d3f91c711dad31 299-335
+  s_58dd112dc09435::t_ba8e250b0f24f9 150,155-162,178,194-197
+packages/backend/convex/lib/auditPayloads.ts
+  s_58dd112dc09435::t_1381885a2c6185 278-305
+packages/backend/convex/assessment/results.test.ts
+  s_58dd112dc09435::t_5acfb82654a503 47-49
+  s_58dd112dc09435::t_98e881c74f7ca1 3
+apps/dashboard/content/docs/da/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_88dd2463144f24 137-171
+packages/backend/convex/assessment/devCompany.ts
+  s_58dd112dc09435::t_a918860c870a5b 506-527
+apps/dashboard/components/model/approval-card.tsx
+  s_58dd112dc09435::t_7180797eb5880e 38
+  s_58dd112dc09435::t_a2ea216e1aa9fa 1-37,39-323
+apps/dashboard/components/model/approval-card.test.tsx
+  s_58dd112dc09435::t_0fc17773cd2fcf 1-70,72-110,112-143
+  s_58dd112dc09435::t_f7689f17eecd10 71,111
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_baa783576e5d15 188-190
+  s_58dd112dc09435::t_3e872ebabff08d 853-858
+  s_58dd112dc09435::t_2f6eec73cbe8a4 1865-1898
+  s_58dd112dc09435::t_93723e273c70f0 766-770
+  s_58dd112dc09435::t_0156d9f8f6a7f0 1575-1577
+  s_58dd112dc09435::t_05de8d03410b26 2605-2607
+packages/backend/convex/evaluationModel/tables.ts
+  s_58dd112dc09435::t_8d15aa7062bbf2 72-78,82,84-86
+  s_58dd112dc09435::t_f7689f17eecd10 79-81,83
+  s_58dd112dc09435::t_ed019379aaf6ed 1-7
+packages/backend/convex/assessment/anchorRoles.test.ts
+  s_58dd112dc09435::t_72dce8f6ab1ef6 3
+  s_58dd112dc09435::t_8880f0c56c8421 46-50
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_58dd112dc09435::t_1fec12cc23e830 630-631
+  s_58dd112dc09435::t_4e05082deb1cd2 498-501
+  s_58dd112dc09435::t_052b1cb864b462 598-629,632-634
+  s_58dd112dc09435::t_151adb64a3db5f 5
+  s_58dd112dc09435::t_3381aa2d27fcb1 335-336
+  s_58dd112dc09435::t_225bf649ab9102 302-334,337-339
+  s_58dd112dc09435::t_a2ee19e2788ecb 151,174-182
+packages/backend/convex/ai/suggest.test.ts
+  s_58dd112dc09435::t_10d72c67f4d2dc 48-50
+  s_58dd112dc09435::t_f402b0d8fc185c 4
+packages/backend/convex/assessment/seed.test.ts
+  s_58dd112dc09435::t_fed553a070514b 232-289
+  s_58dd112dc09435::t_e53b18fe572f25 1,4
+apps/dashboard/lib/working-conditions-schema.ts
+  s_58dd112dc09435::t_49f439452574dc 1-24
+packages/backend/convex/testing.helpers.ts
+  s_58dd112dc09435::t_fbbb401dacf2a6 40-45,47-61
+  s_58dd112dc09435::t_59839d9be8d1c2 46
+apps/dashboard/lib/audit-labels.test.ts
+  s_58dd112dc09435::t_9d8891fd2efb2a 382-384
+  s_58dd112dc09435::t_dcbc6af15be6ba 39
+  s_58dd112dc09435::t_211366bf005d04 283-293
+  s_58dd112dc09435::t_8bb1641945da7f 405
+  s_58dd112dc09435::t_3b50bfd6e9e1b3 159-168
+apps/dashboard/content/docs/sv/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_1a3bcf4daba628 140-174
+packages/backend/convex/evaluationModel/criteria.ts
+  s_58dd112dc09435::t_322b171185f2d5 82-83
+  s_58dd112dc09435::t_3bef3af4d97cdd 15
+  s_58dd112dc09435::t_97e6f3ac3393e9 267-269
+  s_58dd112dc09435::t_4149ded29b5fdb 163-164
+packages/backend/convex/evaluationModel/approval.test.ts
+  s_58dd112dc09435::t_33cbb5bf99df6f 262,266,269
+  s_58dd112dc09435::t_3e43db389fa070 328
+  s_58dd112dc09435::t_328ded3a1c44e4 222,224-228
+  s_58dd112dc09435::t_7774c8250337d4 325-327
+  s_58dd112dc09435::t_1415ccf260ab80 303-306
+  s_58dd112dc09435::t_eeb53a956555c1 557-559,562
+  s_58dd112dc09435::t_1c1776ea021589 1-69,80-221,223,229-261,263-265,267-268,270-302,307-324,329-385,389-399,402,404-414,416-426,428-484,494-516,518-529,531-552,554-556,560-561,563-591
+  s_58dd112dc09435::t_800c43e2b8be08 386-388
+  s_58dd112dc09435::t_f7689f17eecd10 70-79,415,485-493,517,530,553
+  s_58dd112dc09435::t_ac9b8602327c4b 427
+  s_58dd112dc09435::t_07430194a6a88f 400-401,403
+packages/core/src/method-checks.ts
+  s_58dd112dc09435::t_94dc1a67cc112f 26-44
+packages/backend/convex/assessment/ratings.ts
+  s_58dd112dc09435::t_ab3ac504a390da 23-33
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_58dd112dc09435::t_1b8e1813fdd8bc 118-135
+packages/backend/convex/lib/errors.ts
+  s_58dd112dc09435::t_bd434880ea4f60 42-43
+packages/backend/convex/evaluationModel/method.ts
+  s_58dd112dc09435::t_06a7242764286c 37-39
+apps/dashboard/content/docs/nb/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_18df274bb2be9f 138-172
+packages/backend/convex/lib/functions.ts
+  s_58dd112dc09435::t_8116ad8aca5ed6 32
+packages/backend/convex/lib/audit.ts
+  s_58dd112dc09435::t_53d1ff1245fcb3 193-200
+  s_58dd112dc09435::t_efe626969366a0 42-46
+packages/backend/convex/assessment/seed.ts
+  s_58dd112dc09435::t_45336e6612b1e0 2,7-8,10
+  s_58dd112dc09435::t_17c2b41ccfcc22 172-176,184-185
+  s_58dd112dc09435::t_189072a23f0ed7 82-101
+  s_58dd112dc09435::t_f7689f17eecd10 177-183
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_e5ba5e3da06720 2605-2607
+  s_58dd112dc09435::t_1b98158d99fee6 188-190
+  s_58dd112dc09435::t_abe0e4f926a527 1575-1577
+  s_58dd112dc09435::t_a990094a6db39d 766-770
+  s_58dd112dc09435::t_e35e8c3596fd06 853-858
+  s_58dd112dc09435::t_51b001c83c0fe3 1865-1898
+apps/dashboard/content/docs/en/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_f590e01c1a54b8 140-172
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_c9512c915da5f1 1575-1577
+  s_58dd112dc09435::t_b4690952be2676 766-770
+  s_58dd112dc09435::t_f062bd75d03db4 853-858
+  s_58dd112dc09435::t_ff382c54b6a635 1865-1898
+  s_58dd112dc09435::t_3c6c6c52be3bed 188-190
+  s_58dd112dc09435::t_96825628683c28 2605-2607
+apps/dashboard/content/docs/fi/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_7a8d5e0bf84261 143-178
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_59b3687f8baeb2 1575-1577
+  s_58dd112dc09435::t_55711219c82c7a 1865-1898
+  s_58dd112dc09435::t_6dd9853f11c7a3 2605-2607
+  s_58dd112dc09435::t_f2dacdb1889b8b 766-770
+  s_58dd112dc09435::t_e77872a24fb146 188-190
+  s_58dd112dc09435::t_5819ad5ae674fe 853-858
+apps/dashboard/app/(app)/model/method/page.tsx
+  s_58dd112dc09435::t_6726977eec5b4c 5,12-14,32
+packages/backend/convex/assessment/ratings.test.ts
+  s_58dd112dc09435::t_32aba79b3c1556 59-61
+  s_58dd112dc09435::t_7d49a7de9de7c2 3
+packages/backend/convex/_generated/api.d.ts
+  s_340ce3e7c98efd::t_ec4138e71815d1 65,174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3739b9bf8e82825e172b8a81d14e63f7ba44f1ce",
+  "prompts": {},
+  "sessions": {
+    "s_340ce3e7c98efd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a0dcbd874b24c4c87",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
