@@ -1,4 +1,5 @@
 export * from "./scoring"
+export * from "./results"
 export * from "./types"
 export * from "./weighting"
 export * from "./dimensions"

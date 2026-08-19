@@ -5,11 +5,13 @@ import {
   type RoleRatings,
   type RoleResult,
   type WeightPoints,
+  type ZoneProfileRule,
   computeResults,
 } from "@workspace/core"
 import type { GenericMutationCtx } from "convex/server"
 import type { DataModel } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
+import { LIBRARY_DIMENSION } from "../evaluationModel/criteriaLibrary"
 import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
 import type { LevelCause } from "../lib/auditPayloads"
 
@@ -38,6 +40,7 @@ export async function deriveResults(
     .collect()
   const criteria: CriterionWeight[] = criteriaRows.map((row) => ({
     criterionId: row._id as string,
+    dimensionKey: LIBRARY_DIMENSION[row.libraryKey],
     weightPoints: row.weightPoints as WeightPoints,
   }))
 
@@ -49,6 +52,14 @@ export async function deriveResults(
     level: row.level,
     minScore: row.minScore,
   }))
+  // Zone profile rules live on the model document too (ADR-0022); decoupled
+  // from the stored document shape the same way thresholds is above.
+  const zoneProfileRules: ZoneProfileRule[] = model.zoneProfileRules.map(
+    (rule) => ({
+      zone: rule.zone,
+      minStep: rule.minStep,
+    })
+  )
 
   const roleRows = await ctx.db
     .query("roles")
@@ -78,7 +89,7 @@ export async function deriveResults(
   }))
 
   return {
-    results: computeResults({ criteria, thresholds, roles }),
+    results: computeResults({ criteria, thresholds, zoneProfileRules, roles }),
     totalCriteria: criteria.length,
   }
 }

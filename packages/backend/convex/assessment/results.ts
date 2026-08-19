@@ -24,6 +24,18 @@ export const getResults = orgQuery({
         totalCriteria: v.number(),
         score: v.union(v.number(), v.null()),
         level: v.union(v.number(), v.null()),
+        zone: v.union(v.string(), v.null()),
+        profileLimited: v.union(v.boolean(), v.null()),
+        profileFailures: v.union(
+          v.array(
+            v.object({
+              criterionId: v.string(),
+              required: v.number(),
+              actual: v.number(),
+            })
+          ),
+          v.null()
+        ),
         familyId: v.union(v.id("roleFamilies"), v.null()),
         familyName: v.union(v.string(), v.null()),
         anchor: v.union(
@@ -88,6 +100,9 @@ export const getResults = orgQuery({
         totalCriteria: derived.totalCriteria,
         score: result?.score ?? null,
         level: result?.level ?? null,
+        zone: result?.zone ?? null,
+        profileLimited: result?.profileLimited ?? null,
+        profileFailures: result?.profileFailures ?? null,
         familyId: role.familyId ?? null,
         familyName:
           role.familyId !== undefined
@@ -130,6 +145,18 @@ export const getRoleResult = orgQuery({
       totalCriteria: v.number(),
       score: v.union(v.number(), v.null()),
       level: v.union(v.number(), v.null()),
+      zone: v.union(v.string(), v.null()),
+      profileLimited: v.union(v.boolean(), v.null()),
+      profileFailures: v.union(
+        v.array(
+          v.object({
+            criterionId: v.string(),
+            required: v.number(),
+            actual: v.number(),
+          })
+        ),
+        v.null()
+      ),
       criteria: v.array(
         v.object({
           criterionId: v.id("criteria"),
@@ -180,6 +207,9 @@ export const getRoleResult = orgQuery({
       totalCriteria: derived.totalCriteria,
       score: result?.score ?? null,
       level: result?.level ?? null,
+      zone: result?.zone ?? null,
+      profileLimited: result?.profileLimited ?? null,
+      profileFailures: result?.profileFailures ?? null,
       criteria: criteriaRows.map((row) => {
         // Every criterion is a library selection (decision 8): its display
         // name always localizes from criteriaLibraryContent by libraryKey,

@@ -1,17 +1,22 @@
 import { isWeightPoints } from "./weighting"
 import type {
-  ComputeInput,
   CriterionShare,
   CriterionWeight,
   LevelThreshold,
   RatingInput,
-  RoleResult,
 } from "./types"
 
 // Pure scoring engine (ADR-0002): score and level are always derived, never
 // stored. No Convex imports, no side effects, fully deterministic.
 
-export function assertUniqueCriteria(criteria: CriterionWeight[]): void {
+// The minimal shape a duplicate-id check needs: a caller with only ids on
+// hand (no weight, no dimension) can still be checked, and callers with the
+// full model shape satisfy this structurally for free.
+interface CriterionIdentity {
+  criterionId: string
+}
+
+export function assertUniqueCriteria(criteria: CriterionIdentity[]): void {
   const seen = new Set<string>()
   for (const criterion of criteria) {
     if (seen.has(criterion.criterionId)) {
@@ -79,7 +84,7 @@ export function scoreRole(
 // last value wins for a duplicated rating (display leniency, unlike scoreRole).
 export function criterionShares(
   ratings: RatingInput[],
-  criteria: CriterionWeight[]
+  criteria: Pick<CriterionWeight, "criterionId" | "weightPoints">[]
 ): CriterionShare[] {
   assertUniqueCriteria(criteria)
   const valueById = new Map<string, number>()
@@ -124,40 +129,4 @@ export function assignLevel(
     if (score >= threshold.minScore) return threshold.level
   }
   throw new Error(`no level threshold matches score ${score}`)
-}
-
-// Derives the full result set. A role has a score and level only when EVERY
-// model criterion is rated; partial ratings yield null score/level plus the
-// rated/total counters. Output order follows input order.
-export function computeResults(input: ComputeInput): RoleResult[] {
-  assertUniqueCriteria(input.criteria)
-  const criterionIds = new Set(
-    input.criteria.map((criterion) => criterion.criterionId)
-  )
-  const totalCriteria = input.criteria.length
-  return input.roles.map((role) => {
-    const relevant = role.ratings.filter((rating) =>
-      criterionIds.has(rating.criterionId)
-    )
-    // Completeness is distinct coverage: a duplicate must never let a role
-    // pass the gate (or block it) by inflating the raw length.
-    const ratedCount = countUnique(relevant)
-    const complete = totalCriteria > 0 && ratedCount === totalCriteria
-    const score = complete ? scoreRole(relevant, input.criteria) : null
-    return {
-      roleId: role.roleId,
-      ratedCount,
-      totalCriteria,
-      complete,
-      score,
-      level: score === null ? null : assignLevel(score, input.thresholds),
-    }
-  })
-}
-
-// Counts distinct criterion ids in a partial rating set. scoreRole already
-// throws on duplicates for complete sets; partial sets must not over-count a
-// duplicate either.
-function countUnique(ratings: RatingInput[]): number {
-  return new Set(ratings.map((rating) => rating.criterionId)).size
 }

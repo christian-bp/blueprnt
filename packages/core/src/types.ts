@@ -1,4 +1,6 @@
+import type { DimensionKey } from "./dimensions"
 import type { WeightPoints } from "./weighting"
+import type { ProfileFailure, ZoneKey, ZoneProfileRule } from "./zones"
 
 // A rating is the raw 0-5 an assessor gives a role on a criterion.
 export type RatingValue = 0 | 1 | 2 | 3 | 4 | 5
@@ -8,6 +10,7 @@ export type Level = number
 
 export interface CriterionWeight {
   criterionId: string
+  dimensionKey: DimensionKey
   weightPoints: WeightPoints
 }
 
@@ -42,6 +45,8 @@ export interface RoleRatings {
 
 // Derived result for one role. score/level are non-null only when EVERY model
 // criterion has a rating (complete). score is the normalized 0-100 integer.
+// zone/profileLimited/profileFailures are placeRole's outcome (zones.ts):
+// null together with level whenever the role is incomplete.
 export interface RoleResult {
   roleId: string
   ratedCount: number
@@ -49,10 +54,14 @@ export interface RoleResult {
   complete: boolean
   score: number | null
   level: number | null
+  zone: ZoneKey | null
+  profileLimited: boolean | null
+  profileFailures: ProfileFailure[] | null
 }
 
 export interface ComputeInput {
   criteria: CriterionWeight[]
   thresholds: LevelThreshold[]
+  zoneProfileRules: ZoneProfileRule[]
   roles: RoleRatings[]
 }

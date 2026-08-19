@@ -28,6 +28,7 @@ const THRESHOLDS = DEFAULT_LEVEL_RULES.map((t) => ({
 function evaluate(ratings: readonly number[], weights: Record<string, number>) {
   const criteria = DEMO_SELECTED_KEYS.map((key) => ({
     criterionId: key as string,
+    dimensionKey: LIBRARY_DIMENSION[key],
     weightPoints: (weights[key] ?? 0) as WeightPoints,
   }))
   const ratingInputs = DEMO_SELECTED_KEYS.map((key, i) => ({

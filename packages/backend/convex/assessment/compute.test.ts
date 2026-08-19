@@ -147,6 +147,9 @@ describe("logLevelShifts", () => {
             complete: true,
             score: 100,
             level: 1,
+            zone: null,
+            profileLimited: null,
+            profileFailures: null,
           },
           {
             roleId: "b",
@@ -155,6 +158,9 @@ describe("logLevelShifts", () => {
             complete: true,
             score: 55,
             level: 5,
+            zone: null,
+            profileLimited: null,
+            profileFailures: null,
           },
           {
             roleId: "gone",
@@ -163,6 +169,9 @@ describe("logLevelShifts", () => {
             complete: true,
             score: 0,
             level: 7,
+            zone: null,
+            profileLimited: null,
+            profileFailures: null,
           },
         ],
         after: [
@@ -173,6 +182,9 @@ describe("logLevelShifts", () => {
             complete: true,
             score: 90,
             level: 2,
+            zone: null,
+            profileLimited: null,
+            profileFailures: null,
           },
           {
             roleId: "b",
@@ -181,6 +193,9 @@ describe("logLevelShifts", () => {
             complete: true,
             score: 55,
             level: 5,
+            zone: null,
+            profileLimited: null,
+            profileFailures: null,
           },
           {
             roleId: "new",
@@ -189,6 +204,9 @@ describe("logLevelShifts", () => {
             complete: false,
             score: null,
             level: null,
+            zone: null,
+            profileLimited: null,
+            profileFailures: null,
           },
         ],
       })
@@ -242,6 +260,9 @@ describe("logLevelShifts", () => {
             complete: true,
             score: 100,
             level: 1,
+            zone: null,
+            profileLimited: null,
+            profileFailures: null,
           },
         ],
         after: [
@@ -252,6 +273,9 @@ describe("logLevelShifts", () => {
             complete: true,
             score: 80,
             level: 3,
+            zone: null,
+            profileLimited: null,
+            profileFailures: null,
           },
         ],
         cause: {

@@ -1,16 +1,11 @@
 import { describe, expect, it } from "vitest"
-import {
-  assignLevel,
-  computeResults,
-  criterionShares,
-  scoreRole,
-} from "./scoring"
+import { assignLevel, criterionShares, scoreRole } from "./scoring"
 import {
   STANDARD_CRITERIA,
   STANDARD_THRESHOLDS,
   allRated,
 } from "./scoring.fixtures"
-import type { CriterionWeight, RatingInput, RoleRatings } from "./types"
+import type { CriterionWeight, RatingInput } from "./types"
 import type { WeightPoints } from "./weighting"
 
 describe("scoreRole", () => {
@@ -44,9 +39,9 @@ describe("scoreRole", () => {
     // raw 33 -> 73.33 -> 73. The floor keeps integer-threshold comparison
     // exact on both sides of 74.
     const criteria: CriterionWeight[] = [
-      { criterionId: "a", weightPoints: 4 },
-      { criterionId: "b", weightPoints: 3 },
-      { criterionId: "c", weightPoints: 2 },
+      { criterionId: "a", dimensionKey: "responsibility", weightPoints: 4 },
+      { criterionId: "b", dimensionKey: "effort", weightPoints: 3 },
+      { criterionId: "c", dimensionKey: "competence", weightPoints: 2 },
     ]
     expect(
       scoreRole(
@@ -77,14 +72,14 @@ describe("scoreRole", () => {
       { criterionId: "c", value: 1 },
     ]
     const allThrees: CriterionWeight[] = [
-      { criterionId: "a", weightPoints: 3 },
-      { criterionId: "b", weightPoints: 3 },
-      { criterionId: "c", weightPoints: 3 },
+      { criterionId: "a", dimensionKey: "competence", weightPoints: 3 },
+      { criterionId: "b", dimensionKey: "effort", weightPoints: 3 },
+      { criterionId: "c", dimensionKey: "responsibility", weightPoints: 3 },
     ]
     const allFives: CriterionWeight[] = [
-      { criterionId: "a", weightPoints: 5 },
-      { criterionId: "b", weightPoints: 5 },
-      { criterionId: "c", weightPoints: 5 },
+      { criterionId: "a", dimensionKey: "competence", weightPoints: 5 },
+      { criterionId: "b", dimensionKey: "effort", weightPoints: 5 },
+      { criterionId: "c", dimensionKey: "responsibility", weightPoints: 5 },
     ]
     expect(scoreRole(ratings, allThrees)).toBe(scoreRole(ratings, allFives))
   })
@@ -110,8 +105,8 @@ describe("scoreRole", () => {
 
   it("throws on a duplicate criterion in the model", () => {
     const criteria: CriterionWeight[] = [
-      { criterionId: "scope", weightPoints: 5 },
-      { criterionId: "scope", weightPoints: 1 },
+      { criterionId: "scope", dimensionKey: "responsibility", weightPoints: 5 },
+      { criterionId: "scope", dimensionKey: "responsibility", weightPoints: 1 },
     ]
     expect(() => scoreRole([], criteria)).toThrow(/duplicate/)
   })
@@ -174,97 +169,6 @@ describe("assignLevel", () => {
   })
 })
 
-describe("computeResults", () => {
-  it("derives score and level only for fully rated roles", () => {
-    const roles: RoleRatings[] = [
-      { roleId: "r-full", ratings: allRated(5) },
-      { roleId: "r-partial", ratings: allRated(5).slice(0, 4) },
-      { roleId: "r-none", ratings: [] },
-    ]
-    const results = computeResults({
-      criteria: STANDARD_CRITERIA,
-      thresholds: STANDARD_THRESHOLDS,
-      roles,
-    })
-    expect(results).toEqual([
-      {
-        roleId: "r-full",
-        ratedCount: 9,
-        totalCriteria: 9,
-        complete: true,
-        score: 100,
-        level: 1,
-      },
-      {
-        roleId: "r-partial",
-        ratedCount: 4,
-        totalCriteria: 9,
-        complete: false,
-        score: null,
-        level: null,
-      },
-      {
-        roleId: "r-none",
-        ratedCount: 0,
-        totalCriteria: 9,
-        complete: false,
-        score: null,
-        level: null,
-      },
-    ])
-  })
-
-  it("never treats a zero-criteria model as complete", () => {
-    const results = computeResults({
-      criteria: [],
-      thresholds: STANDARD_THRESHOLDS,
-      roles: [{ roleId: "r1", ratings: [] }],
-    })
-    expect(results[0]).toEqual({
-      roleId: "r1",
-      ratedCount: 0,
-      totalCriteria: 0,
-      complete: false,
-      score: null,
-      level: null,
-    })
-  })
-
-  it("does not count orphan ratings toward completeness", () => {
-    const ratings = [
-      ...allRated(5).slice(0, 8),
-      { criterionId: "ghost", value: 5 as const },
-    ]
-    const results = computeResults({
-      criteria: STANDARD_CRITERIA,
-      thresholds: STANDARD_THRESHOLDS,
-      roles: [{ roleId: "r1", ratings }],
-    })
-    expect(results[0]?.ratedCount).toBe(8)
-    expect(results[0]?.complete).toBe(false)
-  })
-
-  it("does not let a duplicate rating inflate completeness", () => {
-    // 8 distinct criteria plus a duplicate of one of them: raw length is 9
-    // (equal to totalCriteria) but distinct coverage is only 8.
-    const ratings = [
-      ...allRated(3).slice(0, 8),
-      { criterionId: "scope", value: 3 as const },
-    ]
-    const results = computeResults({
-      criteria: STANDARD_CRITERIA,
-      thresholds: STANDARD_THRESHOLDS,
-      roles: [{ roleId: "r1", ratings }],
-    })
-    expect(results[0]).toMatchObject({
-      ratedCount: 8,
-      complete: false,
-      score: null,
-      level: null,
-    })
-  })
-})
-
 describe("criterionShares", () => {
   it("splits an all-equal rating purely by weight points", () => {
     // every value 3 => contribution_i = 3 * w_i => share_i = w_i / sum(w).
@@ -285,8 +189,8 @@ describe("criterionShares", () => {
 
   it("gives a higher share to a higher value * weight", () => {
     const criteria: CriterionWeight[] = [
-      { criterionId: "a", weightPoints: 2 },
-      { criterionId: "b", weightPoints: 4 },
+      { criterionId: "a", dimensionKey: "competence", weightPoints: 2 },
+      { criterionId: "b", dimensionKey: "effort", weightPoints: 4 },
     ]
     const ratings: RatingInput[] = [
       { criterionId: "a", value: 5 }, // contribution 10
@@ -301,8 +205,8 @@ describe("criterionShares", () => {
 
   it("gives equal shares to equal contributions", () => {
     const criteria: CriterionWeight[] = [
-      { criterionId: "a", weightPoints: 3 },
-      { criterionId: "b", weightPoints: 3 },
+      { criterionId: "a", dimensionKey: "competence", weightPoints: 3 },
+      { criterionId: "b", dimensionKey: "effort", weightPoints: 3 },
     ]
     const shares = criterionShares(
       [
@@ -317,9 +221,9 @@ describe("criterionShares", () => {
 
   it("zeroes a zero rating's share and leaves the rest summing to 1", () => {
     const criteria: CriterionWeight[] = [
-      { criterionId: "a", weightPoints: 3 },
-      { criterionId: "b", weightPoints: 3 },
-      { criterionId: "c", weightPoints: 3 },
+      { criterionId: "a", dimensionKey: "competence", weightPoints: 3 },
+      { criterionId: "b", dimensionKey: "effort", weightPoints: 3 },
+      { criterionId: "c", dimensionKey: "responsibility", weightPoints: 3 },
     ]
     const byId = new Map(
       criterionShares(
@@ -344,8 +248,8 @@ describe("criterionShares", () => {
 
   it("treats a criterion with no rating as a zero contribution", () => {
     const criteria: CriterionWeight[] = [
-      { criterionId: "a", weightPoints: 3 },
-      { criterionId: "b", weightPoints: 3 },
+      { criterionId: "a", dimensionKey: "competence", weightPoints: 3 },
+      { criterionId: "b", dimensionKey: "effort", weightPoints: 3 },
     ]
     const byId = new Map(
       criterionShares([{ criterionId: "a", value: 4 }], criteria).map((s) => [

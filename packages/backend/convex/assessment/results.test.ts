@@ -135,6 +135,37 @@ describe("getResults", () => {
       level: null,
       ratedCount: 4,
       totalCriteria: 8,
+      zone: null,
+      profileLimited: null,
+      profileFailures: null,
+    })
+  })
+
+  it("derives a zone for a complete role", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
+    const topId = await createRatedRole({
+      orgId,
+      asAdmin,
+      model,
+      title: "Top",
+      value: 5,
+    })
+
+    const results = await asAdmin.query(api.assessment.results.getResults, {
+      orgId,
+      locale: "sv",
+    })
+    const top = results.rows.find((row) => row.roleId === topId)
+    // Every seeded criterion enters at the neutral weight 3 (ADR-0004), so
+    // none clears the weight-4 profile floor: the placement is exactly the
+    // score-implied top zone, uncapped.
+    expect(top).toMatchObject({
+      score: 100,
+      level: 1,
+      zone: "A",
+      profileLimited: false,
+      profileFailures: [],
     })
   })
 
@@ -212,7 +243,14 @@ describe("getRoleResult", () => {
       locale: "sv",
     })
     expect(result).not.toBeNull()
-    expect(result).toMatchObject({ complete: true, score: 100, level: 1 })
+    expect(result).toMatchObject({
+      complete: true,
+      score: 100,
+      level: 1,
+      zone: "A",
+      profileLimited: false,
+      profileFailures: [],
+    })
     expect(result?.criteria).toHaveLength(8)
     const firstRow = result?.criteria[0]
     expect(firstRow?.value).toBe(5)
@@ -242,6 +280,9 @@ describe("getRoleResult", () => {
       totalCriteria: 8,
       score: null,
       level: null,
+      zone: null,
+      profileLimited: null,
+      profileFailures: null,
     })
   })
 

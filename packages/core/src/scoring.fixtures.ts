@@ -7,16 +7,19 @@ import type {
 
 // The standard template allocation (standardmall.md): 9 criteria, point
 // budget 27, exactly balanced. Order matches the template's display order.
+// dimensionKey is a plausible constitutional-dimension tag for each generic
+// criterion name; scoreRole/criterionShares never read it, only placeRole's
+// profile gating does (results.test.ts exercises that path separately).
 export const STANDARD_CRITERIA: CriterionWeight[] = [
-  { criterionId: "scope", weightPoints: 5 },
-  { criterionId: "complexity", weightPoints: 4 },
-  { criterionId: "autonomy", weightPoints: 4 },
-  { criterionId: "risk", weightPoints: 3 },
-  { criterionId: "knowledge", weightPoints: 3 },
-  { criterionId: "stakeholders", weightPoints: 3 },
-  { criterionId: "financial", weightPoints: 2 },
-  { criterionId: "people", weightPoints: 2 },
-  { criterionId: "formal", weightPoints: 1 },
+  { criterionId: "scope", dimensionKey: "responsibility", weightPoints: 5 },
+  { criterionId: "complexity", dimensionKey: "effort", weightPoints: 4 },
+  { criterionId: "autonomy", dimensionKey: "responsibility", weightPoints: 4 },
+  { criterionId: "risk", dimensionKey: "responsibility", weightPoints: 3 },
+  { criterionId: "knowledge", dimensionKey: "competence", weightPoints: 3 },
+  { criterionId: "stakeholders", dimensionKey: "effort", weightPoints: 3 },
+  { criterionId: "financial", dimensionKey: "responsibility", weightPoints: 2 },
+  { criterionId: "people", dimensionKey: "responsibility", weightPoints: 2 },
+  { criterionId: "formal", dimensionKey: "competence", weightPoints: 1 },
 ]
 
 // Default thresholds on the normalized 0-100 scale (standardmall.md).
