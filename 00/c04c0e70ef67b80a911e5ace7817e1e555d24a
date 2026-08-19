@@ -1,0 +1,150 @@
+apps/dashboard/content/docs/da/criteria-and-scale.mdx
+  s_58dd112dc09435::t_1560b699060396 10
+  s_58dd112dc09435::t_3ea08cabff24c7 27-44
+  s_58dd112dc09435::t_7c513319a3bb71 62-68
+apps/dashboard/content/docs/da/model-overview.mdx
+  s_58dd112dc09435::t_741e334de90c99 57-59
+  s_58dd112dc09435::t_550a2f948b5705 3
+  s_58dd112dc09435::t_9caa6f110d4599 15,17-18,20-24,33-38
+apps/dashboard/lib/section-pages.test.ts
+  s_58dd112dc09435::t_e00dbc52581585 14-21
+apps/dashboard/components/model/criterion-item.tsx
+  s_58dd112dc09435::t_240841f5011fef 38-42
+  s_58dd112dc09435::t_69156c44635ca6 101,103
+  s_58dd112dc09435::t_8ea960615b9efc 169-171
+  s_58dd112dc09435::t_6bf709b5ae1b16 3,22,25
+  s_58dd112dc09435::t_041ce1d6e5e5ae 77-80
+apps/dashboard/content/docs/nb/model-overview.mdx
+  s_58dd112dc09435::t_8a6bc4c0ffb085 55-57
+  s_58dd112dc09435::t_0893b4dd262d1d 3
+  s_58dd112dc09435::t_bc5c1ea8eafdfa 14,16-17,19-23,32-37
+apps/dashboard/components/model/model-builder.test.tsx
+  s_58dd112dc09435::t_d85bd608374719 131-136
+  s_58dd112dc09435::t_7095c62961103f 293-305
+  s_58dd112dc09435::t_1bc9e8ca94fdbd 82-83
+  s_58dd112dc09435::t_30b0cc71566647 238-239,251,253,255
+  s_58dd112dc09435::t_2c173db8487a9c 434-435,437,440-441
+  s_58dd112dc09435::t_0d35e2ec107544 288-292,306-307
+  s_58dd112dc09435::t_9e3bc7dfb362aa 2,11-21,23-30,40,43,45-51,55-77,80-81,104-117,123-130,137-147,151-192,195,200-237,240-248,250,252,254,256-287,308-331,335-343,346-349,355-356,359-368,371-374,376-396,398-409,411,415-419,422-423,426,428-433,439,442-443,445-447,449-450,452,465-467,470,474,481,483,488-492,494-496
+  s_58dd112dc09435::t_06c81564998897 52-54,78-79,412-414
+  s_58dd112dc09435::t_5268be3ed63337 120-122,148-150
+  s_58dd112dc09435::t_f8a01c4c6447fe 357,375
+  s_58dd112dc09435::t_5981b555bd65f3 350-352
+  s_58dd112dc09435::t_5f3b9073463a45 31-36
+apps/dashboard/lib/section-pages.ts
+  s_58dd112dc09435::t_3c1028b7cdf668 14
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_676b788d62c6c0 100-111
+  s_58dd112dc09435::t_11777bbd30f5f9 1820,1833,1836-1844,1847-1848,1852-1867
+apps/dashboard/components/model/weight-point-row.test.tsx
+  s_58dd112dc09435::t_589174da984d35 13,29
+apps/dashboard/components/model/model-tabs.test.tsx
+  s_58dd112dc09435::t_2e343a3fdd3600 2,14-15,31-33,35-39,45,49,52,56-57,60,63,66-75
+  s_58dd112dc09435::t_06c81564998897 41-42
+  s_58dd112dc09435::t_e2be5c7f930e81 76
+apps/dashboard/components/model/weight-point-row.tsx
+  s_58dd112dc09435::t_b60035a6a4e7c7 49
+  s_58dd112dc09435::t_97c6d6f5b76ff2 38
+  s_58dd112dc09435::t_d3af68f34542d7 45
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_25f43fecae7479 100-111
+  s_58dd112dc09435::t_fb9bc0ebe36ca4 1820,1833,1836-1844,1847-1848,1852-1867
+apps/dashboard/components/model/placed-criterion-card.test.tsx
+  s_58dd112dc09435::t_36c32afa3f2e67 16,55,63
+  s_58dd112dc09435::t_1d7158a219e26e 77-78,81
+  s_58dd112dc09435::t_82e3015560f439 79-80
+apps/dashboard/content/docs/en/criteria-and-scale.mdx
+  s_58dd112dc09435::t_bb0ef0d4c9a74b 64-68
+  s_58dd112dc09435::t_970aebbeefedd7 9-10
+  s_58dd112dc09435::t_079f3f62408177 27-44
+  s_58dd112dc09435::t_c274c0aa142f28 62-63
+apps/dashboard/content/docs/en/model-overview.mdx
+  s_58dd112dc09435::t_cf573138bbea4a 14,16-17,19-23,32-37
+  s_58dd112dc09435::t_f6d13bdd72d745 54-55
+  s_58dd112dc09435::t_bdffbe88746a73 3
+apps/dashboard/components/model/placed-criterion-card.tsx
+  s_58dd112dc09435::t_a9aa949087dbf6 54
+  s_58dd112dc09435::t_84b621b00c6470 125
+apps/dashboard/components/model/method-panel.tsx
+  s_58dd112dc09435::t_c80374f2e89aff 35
+  s_58dd112dc09435::t_fa3315dbd39c03 30-32
+  s_58dd112dc09435::t_873a883e935b1d 75
+  s_58dd112dc09435::t_019150baab401e 64,126
+apps/dashboard/content/docs/fi/model-overview.mdx
+  s_58dd112dc09435::t_56a592b456624d 58-60
+  s_58dd112dc09435::t_2559af8449828d 3
+  s_58dd112dc09435::t_1e2bfdca36663e 16,18-19,22-26,35-40
+apps/dashboard/components/model/build-framing.tsx
+  s_58dd112dc09435::t_f542a49b6960ef 1-13,21-38
+  s_58dd112dc09435::t_06c81564998897 14-20
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_b9bae48deb614e 100-111
+  s_58dd112dc09435::t_91f3274130b697 1820,1833,1836-1844,1847-1848,1852-1867
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_4cc22cd4041152 100-111
+  s_58dd112dc09435::t_d9eb4d7126b8b7 1820,1833,1836-1844,1847-1848,1852-1867
+apps/dashboard/lib/command-palette.test.ts
+  s_58dd112dc09435::t_fbd1540e5dd3b3 52
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_d15f57ed8825a6 100-111
+  s_58dd112dc09435::t_96200f44233c1c 1820,1833,1836-1844,1847-1848,1852-1867
+apps/dashboard/content/docs/nb/criteria-and-scale.mdx
+  s_58dd112dc09435::t_5c507076da32e7 63-69
+  s_58dd112dc09435::t_cc8ff6776a50e5 27-44
+  s_58dd112dc09435::t_e2c6eaa275cbce 10
+apps/dashboard/hooks/use-build-dnd.ts
+  s_58dd112dc09435::t_15f4a6c0c2dd90 1-19,21-68,70-91,98-124,127-170
+  s_58dd112dc09435::t_77d4a056aa99e3 20
+  s_58dd112dc09435::t_4e68afdba31431 92-97
+  s_58dd112dc09435::t_06c81564998897 69,125-126
+apps/dashboard/components/model/model-tabs.tsx
+  s_58dd112dc09435::t_7405bd7366bf43 13-20
+apps/dashboard/components/model/criterion-item.test.tsx
+  s_58dd112dc09435::t_679ec7a7372848 16
+apps/dashboard/content/docs/fi/criteria-and-scale.mdx
+  s_58dd112dc09435::t_ddc120774df97f 66-72
+  s_58dd112dc09435::t_a38d9cb7c38a45 11-12
+  s_58dd112dc09435::t_bb3284082eacbc 28-46
+apps/dashboard/components/model/criterion-list-skeleton.test.tsx
+  s_58dd112dc09435::t_6bb4e34d5cd5f9 87-90,92-98
+  s_58dd112dc09435::t_80813dcd0d11ec 3-4,6,13,15,18,23,26,35,39-40,48,51-55,64-69,72-76,79-86,91
+apps/dashboard/content/docs/sv/model-overview.mdx
+  s_58dd112dc09435::t_e24b33310d9675 55-56
+  s_58dd112dc09435::t_ebce12eb013b6d 3
+  s_58dd112dc09435::t_9b70de9bec8bfd 14,16-17,19-23,32-37
+apps/dashboard/components/model/model-builder.tsx
+  s_58dd112dc09435::t_06c81564998897 127-129,153
+  s_58dd112dc09435::t_76cf443ab6913a 286
+  s_58dd112dc09435::t_7db8918e72b863 3,10,13-27,32,40-42,44-46,49-59,61-66,69-85,88,90,92-94,99,101-103,108-115,118,121-126,130-152,155-169,176,180-182,185-231,234,239,247,253-273,275-277,280-285,287-392,396,412-435,437-444,446-456
+  s_58dd112dc09435::t_ad533af7eaf665 37-38
+  s_58dd112dc09435::t_3c147633777c14 95-97
+apps/dashboard/app/(app)/model/page.tsx
+  s_58dd112dc09435::t_633d515c091c29 5,11-16,18-19,21,25,31,33-34
+apps/dashboard/components/model/criterion-list-skeleton.tsx
+  s_58dd112dc09435::t_525542e03159f5 191,197
+  s_58dd112dc09435::t_b44b60d274f834 3-12
+  s_58dd112dc09435::t_5f29db1683b620 89-93,97-102
+  s_58dd112dc09435::t_b8519f56b67e67 17,25-28,30-32,53-55,60-61,70-81,94-96,103-111,113-115,117-187,192-196,198-199
+apps/dashboard/content/docs/sv/criteria-and-scale.mdx
+  s_58dd112dc09435::t_725fad94d28cf7 26-42
+  s_58dd112dc09435::t_66a7e5c4d7df64 10
+  s_58dd112dc09435::t_5879deabf2bc80 61-66
+apps/dashboard/app/(app)/model/weighting/page.tsx
+  s_58dd112dc09435::t_528bbf9ae4e784 1,3-5,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "00c04c0e70ef67b80a911e5ace7817e1e555d24a",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
