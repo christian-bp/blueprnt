@@ -1,0 +1,46 @@
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_1bd536701103cc 646
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_1f393b4abb6183 646
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_6a7642e5f720aa 646
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_c24e179e293f47 646
+apps/dashboard/content/docs/da/criteria-and-scale.mdx
+  s_58dd112dc09435::t_cbd212a2ebd09f 50-54
+packages/backend/convex/evaluationModel/model.ts
+  s_58dd112dc09435::t_530cfa81429ffd 78-79
+apps/dashboard/content/docs/fi/criteria-and-scale.mdx
+  s_58dd112dc09435::t_25bff40d3cfc51 51-55
+apps/dashboard/content/docs/sv/criteria-and-scale.mdx
+  s_58dd112dc09435::t_6be24f6c23a5f8 49-53
+packages/backend/convex/accounts/organization.test.ts
+  s_58dd112dc09435::t_36e5e44ea26f99 344-345
+  s_58dd112dc09435::t_2144565f90815f 268,272,274,279-304
+apps/dashboard/content/docs/en/criteria-and-scale.mdx
+  s_58dd112dc09435::t_bb9925db9058c9 49-52
+apps/dashboard/content/docs/nb/criteria-and-scale.mdx
+  s_58dd112dc09435::t_f3ecaa16e60f04 49-53
+packages/backend/convex/accounts/organization.ts
+  s_58dd112dc09435::t_9ab9b79056a65b 102-104
+packages/backend/convex/lib/auditPayloads.ts
+  s_58dd112dc09435::t_30f5417945fd7f 78
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_a26b7b7e09dda9 646
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "7076510071bc7c36afe10c6071b2dfda809017d8",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
