@@ -1,5 +1,7 @@
+import { validateMethod } from "@workspace/core"
 import { describe, expect, it } from "vitest"
 import { internal } from "../_generated/api"
+import { buildMethodCheckInput } from "../evaluationModel/approval"
 import { LIBRARY_DIMENSION } from "../evaluationModel/criteriaLibrary"
 import type { CriteriaLibraryKey } from "../evaluationModel/criteriaLibrary"
 import { initConvexTest } from "../testing.helpers"
@@ -224,6 +226,64 @@ describe("assessment/seed.seedRatedRoles", () => {
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
       expect(ratings).toHaveLength(EXPECTED_RATINGS)
+    })
+  })
+
+  it("completes compliance and approves the seeded model with an all-green checklist", async () => {
+    const t = initConvexTest()
+    const orgId = "org_rated_approval"
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: FOUNDER_AUTH_ID,
+        email: "founder@blueprnt.se",
+        name: FOUNDER_NAME,
+      })
+    })
+    await t.mutation(internal.evaluationModel.model.seedDefaultModel, {
+      orgId,
+      locale: "sv",
+      actorId: FOUNDER_AUTH_ID,
+    })
+    await t.mutation(internal.assessment.seed.seedRatedRoles, {
+      orgId,
+      actorId: FOUNDER_AUTH_ID,
+    })
+
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (model === null) throw new Error("seed")
+      // The seed approves via its own internal path (approveSeededModel),
+      // attributed to the founder account, not a "system" sentinel.
+      expect(model.approval?.approvedBy).toBe(FOUNDER_AUTH_ID)
+      expect(model.approval?.approvedAt).toBeGreaterThan(0)
+
+      // Every one of the twelve checks (blockers AND warnings) comes back
+      // ok, using the SAME engine input builder approveModel/getMethodChecks
+      // consume: the seed satisfies its own method law, not a bypass that
+      // would leave the Method tab's checklist showing red/amber rows on a
+      // freshly reset demo org.
+      const input = await buildMethodCheckInput(ctx, model)
+      const checks = validateMethod(input)
+      const failing = checks.filter((check) => !check.ok)
+      expect(failing).toEqual([])
+
+      const approvedRows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.approved")
+        )
+        .collect()
+      expect(approvedRows).toHaveLength(1)
+      expect(approvedRows[0]?.actorId).toBe(FOUNDER_AUTH_ID)
+      const payload = approvedRows[0]?.payload as {
+        criteriaCount: number
+        checksPassed: number
+      }
+      expect(payload.criteriaCount).toBe(8)
+      expect(payload.checksPassed).toBe(checks.length)
     })
   })
 

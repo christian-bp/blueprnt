@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
-import { initConvexTest } from "../testing.helpers"
+import { grantModelApproval, initConvexTest } from "../testing.helpers"
 
 // 7 of the 8 usual demo keys, deliberately leaving the workingConditions
 // dimension's one slot open (safety-exposure unactivated) so a test can
@@ -43,6 +43,11 @@ async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
     orgId,
   })
   if (model === null) throw new Error("model not seeded")
+  // setRating's FIRST gate (ADR-0023) requires an approved model; this file
+  // tests anchor-role behavior, not the approval checklist, so grant it
+  // directly. The one test that activates an 8th criterion afterward
+  // (reopening approval) never rates again, so a single grant here suffices.
+  await grantModelApproval(t, orgId)
   return { orgId, asAdmin, model }
 }
 

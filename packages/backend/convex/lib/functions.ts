@@ -29,7 +29,7 @@ interface OrgContext {
 // org/admin call sites stop repeating `orgId: ctx.orgId, actorId: ctx.authUserId`
 // on every audit row. The contents are identical to the free `logAudit`/
 // `logLevelShifts`; this is sugar over the same writers.
-interface AuditWriter {
+export interface AuditWriter {
   log: <E extends keyof AuditPayloads>(entry: {
     type: E
     payload: AuditPayloads[E]

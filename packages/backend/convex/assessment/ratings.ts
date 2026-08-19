@@ -20,6 +20,17 @@ export const setRating = orgMutation({
   },
   returns: v.null(),
   handler: async (ctx, { roleId, criterionId, value, motivation }) => {
+    // FIRST gate (ADR-0023): rating requires an approved model. Checked before
+    // even the value range, so an unapproved org always sees the same,
+    // actionable code rather than a value-shaped error that has nothing to do
+    // with why the save actually failed.
+    const model = await ctx.db
+      .query("models")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+      .unique()
+    if (model === null || model.approval === undefined) {
+      throw appError(ERROR_CODES.modelNotApproved)
+    }
     if (!Number.isInteger(value) || value < 0 || value > 5) {
       throw appError(ERROR_CODES.invalidInput)
     }

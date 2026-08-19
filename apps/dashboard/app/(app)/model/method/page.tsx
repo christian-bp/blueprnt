@@ -2,13 +2,16 @@
 
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { ApprovalCard } from "@/components/model/approval-card"
 import { MethodPanel } from "@/components/model/method-panel"
 import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // The Method page (/model/method): documents each criterion's rationale and
-// bias review, and will host the method appendix export (Task 6).
+// bias review, hosts the method appendix export, and (Task 6) the model
+// approval lifecycle: the twelve-check checklist, the approval state and
+// action, and the working-conditions materiality decision.
 export default function ModelMethodPage() {
   const { orgId } = useOrganization()
   const t = useTranslations("dashboard.model.method")
@@ -26,6 +29,7 @@ export default function ModelMethodPage() {
         }
         description={t("description")}
       />
+      <ApprovalCard orgId={orgId} />
       <MethodPanel orgId={orgId} />
     </div>
   )

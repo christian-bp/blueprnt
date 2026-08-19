@@ -36,6 +36,7 @@ import {
   AI_KIND_VALUE_KEYS,
   AUDIT_FILTER_CATEGORIES,
   BIAS_RISK_VALUE_KEYS,
+  CAUSE_EVENT_VALUE_KEYS,
   COUNTRY_VALUE_KEYS,
   EMPLOYMENT_TYPE_VALUE_KEYS,
   ERASED_AUDIT_VALUE,
@@ -155,6 +156,16 @@ const OTHER_AUDIT_FIELDS = [
   // model.created create-changes (MODEL_AUDIT_FIELDS also has "name", already
   // covered by the person/role "name" field above).
   "levelRules",
+  // model.zoneProfileRulesUpdated diff field (evaluationModel/approval.ts).
+  "zoneProfileRules",
+  // model.approved flat-stat fields (evaluationModel/approval.ts).
+  "criteriaCount",
+  "checksPassed",
+  // model.approvalReopened flat-stat field (evaluationModel/approval.ts):
+  // a coded AuditEvent value (resolved via resolveCodedValue's
+  // CAUSE_EVENT_VALUE_KEYS domain, not a dashboard.auditLog.values.* Record),
+  // but it still needs a FIELD label like every other payload key.
+  "causeEvent",
   // level.shift diffs (assessment/compute.ts FIELDS) + rating.change
   "level",
   "score",
@@ -269,6 +280,17 @@ const AUDIT_STATUSES = [
   "notStarted",
   "inProgress",
   "done",
+  "testedNotMaterial",
+] as const
+// model.approvalReopened `causeEvent` (evaluationModel/approval.ts's
+// reopenApprovalIfSet), mirrored by hand from its six wiring call sites.
+const APPROVAL_REOPEN_CAUSES = [
+  "criterion.activated",
+  "criterion.deactivated",
+  "model.updated",
+  "model.workingConditionsDecided",
+  "model.levelRulesUpdated",
+  "model.zoneProfileRulesUpdated",
 ] as const
 // payMapping.action*/note* domains (payMapping/tables.ts validators).
 // ACTION_TARGET_KINDS is imported from there rather than restated: a local
@@ -357,6 +379,9 @@ describe("audit log value labels", () => {
     expect(Object.keys(AI_KIND_VALUE_KEYS).sort()).toEqual(
       Object.values(SUGGESTION_KINDS).sort()
     )
+    expect(Object.keys(CAUSE_EVENT_VALUE_KEYS).sort()).toEqual(
+      [...APPROVAL_REOPEN_CAUSES].sort()
+    )
   })
 
   it("every coded value's i18n key resolves to a real string in en", () => {
@@ -377,6 +402,7 @@ describe("audit log value labels", () => {
       ...Object.values(SALARY_SOURCE_VALUE_KEYS),
       ...Object.values(TRACK_VALUE_KEYS),
       ...Object.values(AI_KIND_VALUE_KEYS),
+      ...Object.values(CAUSE_EVENT_VALUE_KEYS),
     ]
     const missing = allKeys.filter(
       (key) => typeof resolveDashboardKey(key) !== "string"

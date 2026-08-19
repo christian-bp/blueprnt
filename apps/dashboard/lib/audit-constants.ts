@@ -147,13 +147,19 @@ export const MEMBER_ROLE_VALUE_KEYS: Record<MemberRole, string> = {
   editor: "organization.members.roleEditor",
 }
 
-// The `status` field is shared by three writers, so this domain is their
+// The `status` field is shared by four writers, so this domain is their
 // union: invitation lifecycle (Better Auth: pending/accepted/rejected/
 // canceled, accounts/mirrors.ts), suggestion lifecycle (shared/tables.ts:
 // generating/suggested/confirmed/rejected/failed; also the dropped-
 // suggestions list), anchor designation (assessment/tables.ts:
-// active/underReview/replaced), and the action lifecycle
-// (payMapping/tables.ts: notStarted/inProgress/done).
+// active/underReview/replaced), the action lifecycle (payMapping/tables.ts:
+// notStarted/inProgress/done), and the model's working-conditions
+// materiality decision (evaluationModel/approval.ts's
+// setWorkingConditionsDecision: active/testedNotMaterial). "active" is
+// already shared across two of those (anchor designation and now the
+// working-conditions decision): both are genuinely "Active" in every locale,
+// so the two reuse ONE label rather than reading differently depending on
+// which surface wrote the row.
 type AuditStatus =
   | "pending"
   | "accepted"
@@ -169,6 +175,7 @@ type AuditStatus =
   | "notStarted"
   | "inProgress"
   | "done"
+  | "testedNotMaterial"
 export const STATUS_VALUE_KEYS: Record<AuditStatus, string> = {
   pending: "organization.members.pending",
   accepted: "auditLog.values.status.accepted",
@@ -184,6 +191,10 @@ export const STATUS_VALUE_KEYS: Record<AuditStatus, string> = {
   notStarted: "payMapping.actions.status.notStarted",
   inProgress: "payMapping.actions.status.inProgress",
   done: "payMapping.actions.status.done",
+  // Reuses the working-conditions decision control's own option label
+  // (model/method page) rather than inventing new auditLog.values.* wording
+  // for a concept that already has a real, dedicated surface.
+  testedNotMaterial: "model.method.workingConditions.testedNotMaterialOption",
 }
 
 // organization/person `country`: the onboarding country select's labels.
@@ -285,6 +296,43 @@ export const AI_KIND_VALUE_KEYS: Record<SuggestionKind, string> =
     ])
   ) as Record<SuggestionKind, string>
 
+// model.approvalReopened `causeEvent`: the AuditEvent that triggered the
+// reopen (evaluationModel/approval.ts's reopenApprovalIfSet), mirrored by
+// hand from its six wiring call sites (activateCriterion, deactivateCriterion,
+// rebalanceWeights via model.updated, setWorkingConditionsDecision,
+// updateLevelRules, updateZoneProfileRules) - the same hand-synced convention
+// as the other domains above, drift-guarded in audit-labels.test.ts. Reuses
+// each cause's own dashboard.auditLog.events.* label (dots->camelCase, the
+// same key derivation org-audit-log-section.tsx's eventKey uses) rather than
+// inventing parallel "this happened" wording for a concept the log already
+// names.
+const APPROVAL_REOPEN_CAUSES = [
+  "criterion.activated",
+  "criterion.deactivated",
+  "model.updated",
+  "model.workingConditionsDecided",
+  "model.levelRulesUpdated",
+  "model.zoneProfileRulesUpdated",
+] as const
+type ApprovalReopenCause = (typeof APPROVAL_REOPEN_CAUSES)[number]
+
+function eventDotsToCamel(type: string): string {
+  return type
+    .split(".")
+    .map((part, index) =>
+      index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)
+    )
+    .join("")
+}
+
+export const CAUSE_EVENT_VALUE_KEYS: Record<ApprovalReopenCause, string> =
+  Object.fromEntries(
+    APPROVAL_REOPEN_CAUSES.map((type) => [
+      type,
+      `auditLog.events.${eventDotsToCamel(type)}`,
+    ])
+  ) as Record<ApprovalReopenCause, string>
+
 // Field name -> its coded domain's value-key Record. One lookup table so
 // resolveCodedValue stays a two-liner as domains accrue; `reasons` is
 // special-cased inside resolveCodedValue (its value is a ", "-joined token
@@ -309,6 +357,7 @@ const CODED_FIELD_DOMAINS: Record<string, Record<string, string>> = {
   noteType: NOTE_TYPE_VALUE_KEYS,
   targetKind: TARGET_KIND_VALUE_KEYS,
   reason: PAY_GAP_REASON_VALUE_KEYS,
+  causeEvent: CAUSE_EVENT_VALUE_KEYS,
 }
 
 // The tombstone the backend writes over an erased person's identity values in

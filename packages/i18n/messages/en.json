@@ -185,7 +185,9 @@
       "conversationDeleted": "Conversation deleted",
       "conversationRenamed": "Conversation renamed",
       "payMappingReasonsApplied": "Reasons applied",
-      "criterionActivated": "Criterion added"
+      "criterionActivated": "Criterion added",
+      "modelApproved": "Model approved",
+      "workingConditionsDecided": "Working conditions decision saved"
     },
     "accountMenu": "Account menu",
     "commandPalette": {
@@ -761,7 +763,11 @@
         "dimensionKey": "Dimension",
         "deletedRatingCount": "Ratings removed",
         "budget": "Point budget",
-        "levelRules": "Level thresholds"
+        "levelRules": "Level thresholds",
+        "zoneProfileRules": "Zone profile rules",
+        "criteriaCount": "Criteria",
+        "checksPassed": "Checks passed",
+        "causeEvent": "Reopened by"
       },
       "values": {
         "yes": "Yes",
@@ -844,7 +850,12 @@
         "payMappingNoteUpdated": "Note updated",
         "payMappingNoteDeleted": "Note deleted",
         "criterionActivated": "Criterion activated",
-        "criterionDeactivated": "Criterion deactivated"
+        "criterionDeactivated": "Criterion deactivated",
+        "modelApproved": "Model approved",
+        "modelWorkingConditionsDecided": "Working conditions decision saved",
+        "modelLevelRulesUpdated": "Level thresholds updated",
+        "modelZoneProfileRulesUpdated": "Zone profile rules updated",
+        "modelApprovalReopened": "Model approval reopened"
       },
       "ai": {
         "weightReview": "Weight review: {count} applied",
@@ -1561,7 +1572,9 @@
         "contributionShare": "{share}%",
         "breakdownLabel": "Contribution"
       },
-      "lockedExplanation": "The rating is locked because the role is archived. Archiving cannot be undone, so create a new role if this work needs to be rated again."
+      "lockedExplanation": "The rating is locked because the role is archived. Archiving cannot be undone, so create a new role if this work needs to be rated again.",
+      "modelUnapprovedExplanation": "The evaluation model needs to be approved before roles can be rated.",
+      "modelUnapprovedCta": "Go to the Method page"
     },
     "levels": {
       "description": "The levels and the roles in each, derived live from the current model and ratings.",
@@ -1849,7 +1862,40 @@
         "optionalSuffix": " (optional)",
         "draftError": "The draft could not be generated. Try again.",
         "aiAckLabel": "This content was AI-generated. I confirm I have read and reviewed it.",
-        "approveAckLabel": "I have reviewed this documentation and confirm it is accurate."
+        "approveAckLabel": "I have reviewed this documentation and confirm it is accurate.",
+        "approvalHeading": "Approval",
+        "approvalDescription": "The model must pass every required check below before roles can be rated.",
+        "draftState": "Not yet approved",
+        "approveModelCta": "Approve model",
+        "checkLevel": {
+          "blocker": "Required",
+          "warning": "Recommended"
+        },
+        "checks": {
+          "dimensionCoverage": "Competence, effort, and responsibility are each covered",
+          "workingConditionsTested": "Working conditions tested",
+          "criterionCount": "6 to 8 criteria selected",
+          "dimensionCaps": "No dimension over its criteria limit",
+          "anchorsComplete": "Every criterion has a complete anchor scale",
+          "documentationComplete": "Every criterion documented and approved",
+          "weightBudget": "Weight points balanced to the budget",
+          "levelRulesValid": "Level thresholds are valid",
+          "zoneProfileMonotonic": "Zone profile rules are consistent",
+          "dimensionWeightBalance": "No dimension dominates the weighting unexplained",
+          "peopleLeadershipWeight": "People leadership's weight is motivated",
+          "overlapPairs": "Overlapping criteria are reviewed"
+        },
+        "workingConditions": {
+          "heading": "Working conditions",
+          "description": "Decide whether special working conditions are a recurring, material part of any role, or whether you have tested this and found it not material.",
+          "statusLabel": "Status",
+          "activeOption": "Active",
+          "testedNotMaterialOption": "Tested, not material",
+          "activeBlockedHint": "A working-conditions criterion is selected in the model. Deactivate it first to mark this tested, not material.",
+          "motivationLabel": "Motivation",
+          "saveCta": "Save decision",
+          "currentLabel": "Current decision"
+        }
       },
       "methodAppendix": {
         "docTitle": "Method appendix",
@@ -2556,6 +2602,8 @@
     "assistantPersonalData": "The message seems to include an employee's personal details. Remove them and ask again in general terms.",
     "dimensionCapExceeded": "This dimension already has its maximum number of criteria.",
     "tooManyCriteria": "A model can have at most 8 criteria.",
-    "criterionAlreadySelected": "This criterion is already part of the model."
+    "criterionAlreadySelected": "This criterion is already part of the model.",
+    "methodBlocked": "The method checklist has unresolved items. Resolve every blocker before approving.",
+    "modelNotApproved": "The evaluation model needs to be approved before roles can be rated."
   }
 }

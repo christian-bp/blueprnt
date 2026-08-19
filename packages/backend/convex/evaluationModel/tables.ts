@@ -1,4 +1,10 @@
-import { DIMENSION_KEYS, type DimensionKey, ZONE_KEYS } from "@workspace/core"
+import {
+  DIMENSION_KEYS,
+  type DimensionKey,
+  METHOD_CHECK_KEYS,
+  type MethodCheckKey,
+  ZONE_KEYS,
+} from "@workspace/core"
 import type { ZoneKey } from "@workspace/core"
 import { defineTable } from "convex/server"
 import type { Infer } from "convex/values"
@@ -62,6 +68,21 @@ type _ZoneKeysExact = ZoneKeyFromValidator extends ZoneKey
   : never
 const _assertZoneKeysMatch: _ZoneKeysExact = true
 void _assertZoneKeysMatch
+
+// The twelve method-check keys (packages/core method-checks.ts) as a
+// validator, for getMethodChecks' wire shape. MUST stay in sync with
+// METHOD_CHECK_KEYS (compile-time guard below).
+export const methodCheckKeyValidator = v.union(
+  ...METHOD_CHECK_KEYS.map((k) => v.literal(k))
+)
+type MethodCheckKeyFromValidator = Infer<typeof methodCheckKeyValidator>
+type _MethodCheckKeysExact = MethodCheckKeyFromValidator extends MethodCheckKey
+  ? MethodCheckKey extends MethodCheckKeyFromValidator
+    ? true
+    : never
+  : never
+const _assertMethodCheckKeysMatch: _MethodCheckKeysExact = true
+void _assertMethodCheckKeysMatch
 
 // One living model per organization (V1: no versioning, ADR-0002). Score and
 // level are NEVER stored; they are derived by packages/core.

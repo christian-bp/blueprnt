@@ -503,6 +503,28 @@ export const RATINGS_BY_TITLE: Record<string, RatingVector> = {
 export const DEMO_RATING_MOTIVATION =
   "Motiverad utifrån rollens normala och varaktiga krav vid metodkalibreringen."
 
+// The demo org's compliance sign-off (spec §17.2 items 5-6/documentation):
+// seedRatedRoles stamps every one of the 8 selected criteria "approved" with
+// this bias comment, so the demo model's checklist is genuinely all-green
+// (assessment/seed.test.ts guards this), not a bypass that would leave the
+// Method tab showing an approved criterion with no bias review recorded.
+export const DEMO_BIAS_COMMENT =
+  "Kriteriet bedöms könsneutralt: det mäter rollens krav, inte innehavarens egenskaper."
+
+// Clears the checklist's overlapPairs warning for the demo's one applicable
+// pair (knowledge-depth + knowledge-breadth, both selected): overlapNotes on
+// either member counts as the pair reviewed (method-checks.ts), so this lands
+// on knowledge-breadth only.
+export const DEMO_KNOWLEDGE_BREADTH_OVERLAP_NOTES =
+  "Avgränsat mot kunskapsdjup: bredden mäter integration över flera områden, inte specialistdjupet."
+
+// Clears the checklist's dimensionWeightBalance warning: under DEMO_WEIGHT_POINTS
+// responsibility carries 11/24 = ~45.8 % of the total weight, over the 40 %
+// threshold, so ONE responsibility criterion needs a documented motivation.
+// scope-impact carries the dimension's single heaviest weight (5).
+export const DEMO_SCOPE_IMPACT_WEIGHT_MOTIVATION =
+  "Ansvarsdimensionen bär medvetet störst vikt: räckvidd, mandat och konsekvens är bolagets främsta värdedrivare."
+
 // The demo org's calibrated weight points (ADR-0021 library keys), summing to
 // the exact 24-point budget (8 criteria x 3; guarded in devCompany.test.ts).
 // seedRatedRoles inserts the demo's 8 criteria directly at these weights, so

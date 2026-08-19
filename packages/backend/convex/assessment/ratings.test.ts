@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
-import { initConvexTest } from "../testing.helpers"
+import { grantModelApproval, initConvexTest } from "../testing.helpers"
 
 // A spread of 8 library keys across every dimension at (or under) its own
 // DIMENSION_MAX_ACTIVE cap (competence 2, effort 2, responsibility 3,
@@ -56,6 +56,9 @@ async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
     purpose: "p",
     responsibilities: "r",
   })
+  // setRating's FIRST gate (ADR-0023) requires an approved model; this file
+  // tests rating behavior, not the approval checklist, so grant it directly.
+  await grantModelApproval(t, orgId)
   return { orgId, userId, asAdmin, model, roleId }
 }
 

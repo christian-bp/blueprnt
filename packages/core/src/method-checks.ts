@@ -23,19 +23,25 @@ import {
 // checklist) consume the same results, so the two can never disagree. The
 // engine returns structured findings only; the frontend translates.
 
-export type MethodCheckKey =
-  | "dimensionCoverage"
-  | "workingConditionsTested"
-  | "criterionCount"
-  | "dimensionCaps"
-  | "anchorsComplete"
-  | "documentationComplete"
-  | "weightBudget"
-  | "levelRulesValid"
-  | "zoneProfileMonotonic"
-  | "dimensionWeightBalance"
-  | "peopleLeadershipWeight"
-  | "overlapPairs"
+// The twelve checks, in the order validateMethod returns them. Exported as a
+// const array (not just the union type) so a Convex wire validator can be
+// built from it with a compile-time drift guard, the same pattern DIMENSION_KEYS
+// and ZONE_KEYS already use.
+export const METHOD_CHECK_KEYS = [
+  "dimensionCoverage",
+  "workingConditionsTested",
+  "criterionCount",
+  "dimensionCaps",
+  "anchorsComplete",
+  "documentationComplete",
+  "weightBudget",
+  "levelRulesValid",
+  "zoneProfileMonotonic",
+  "dimensionWeightBalance",
+  "peopleLeadershipWeight",
+  "overlapPairs",
+] as const
+export type MethodCheckKey = (typeof METHOD_CHECK_KEYS)[number]
 
 export interface MethodCheckCriterion {
   criterionId: string

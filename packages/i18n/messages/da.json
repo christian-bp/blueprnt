@@ -185,7 +185,9 @@
       "conversationDeleted": "Samtale slettet",
       "conversationRenamed": "Samtale omdøbt",
       "payMappingReasonsApplied": "Årsager anvendt",
-      "criterionActivated": "Kriterium tilføjet"
+      "criterionActivated": "Kriterium tilføjet",
+      "modelApproved": "Model godkendt",
+      "workingConditionsDecided": "Beslutning om arbejdsforhold gemt"
     },
     "accountMenu": "Kontomenu",
     "commandPalette": {
@@ -761,7 +763,11 @@
         "dimensionKey": "Dimension",
         "deletedRatingCount": "Fjernede vurderinger",
         "budget": "Pointbudget",
-        "levelRules": "Niveaugrænser"
+        "levelRules": "Niveaugrænser",
+        "zoneProfileRules": "Zoneprofilregler",
+        "criteriaCount": "Kriterier",
+        "checksPassed": "Godkendte tjek",
+        "causeEvent": "Genåbnet af"
       },
       "values": {
         "yes": "Ja",
@@ -844,7 +850,12 @@
         "payMappingNoteUpdated": "Notat opdateret",
         "payMappingNoteDeleted": "Notat slettet",
         "criterionActivated": "Kriterium aktiveret",
-        "criterionDeactivated": "Kriterium deaktiveret"
+        "criterionDeactivated": "Kriterium deaktiveret",
+        "modelApproved": "Model godkendt",
+        "modelWorkingConditionsDecided": "Beslutning om arbejdsforhold gemt",
+        "modelLevelRulesUpdated": "Niveaugrænser opdateret",
+        "modelZoneProfileRulesUpdated": "Zoneprofilregler opdateret",
+        "modelApprovalReopened": "Modelgodkendelse genåbnet"
       },
       "ai": {
         "weightReview": "Vægtgennemgang: {count} anvendt",
@@ -1561,7 +1572,9 @@
         "contributionShare": "{share}%",
         "breakdownLabel": "Bidrag"
       },
-      "lockedExplanation": "Vurderingen er låst, fordi rollen er arkiveret. Arkivering kan ikke fortrydes, så opret en ny rolle, hvis arbejdet skal vurderes igen."
+      "lockedExplanation": "Vurderingen er låst, fordi rollen er arkiveret. Arkivering kan ikke fortrydes, så opret en ny rolle, hvis arbejdet skal vurderes igen.",
+      "modelUnapprovedExplanation": "Evalueringsmodellen skal godkendes, før roller kan vurderes.",
+      "modelUnapprovedCta": "Gå til siden Metode"
     },
     "levels": {
       "description": "Niveauerne og rollerne i hvert niveau, udledt live fra den aktuelle model og vurderinger.",
@@ -1849,7 +1862,40 @@
         "optionalSuffix": " (valgfrit)",
         "draftError": "Udkastet kunne ikke genereres. Prøv igen.",
         "aiAckLabel": "Dette indhold er AI-genereret. Jeg bekræfter, at jeg har læst det igennem og vurderet det.",
-        "approveAckLabel": "Jeg har gennemgået denne dokumentation og bekræfter, at den er korrekt."
+        "approveAckLabel": "Jeg har gennemgået denne dokumentation og bekræfter, at den er korrekt.",
+        "approvalHeading": "Godkendelse",
+        "approvalDescription": "Modellen skal bestå hvert obligatorisk tjek nedenfor, før roller kan vurderes.",
+        "draftState": "Endnu ikke godkendt",
+        "approveModelCta": "Godkend model",
+        "checkLevel": {
+          "blocker": "Obligatorisk",
+          "warning": "Anbefalet"
+        },
+        "checks": {
+          "dimensionCoverage": "Kompetence, indsats og ansvar er alle dækket",
+          "workingConditionsTested": "Arbejdsforhold testet",
+          "criterionCount": "6 til 8 kriterier valgt",
+          "dimensionCaps": "Ingen dimension over sin kriteriegrænse",
+          "anchorsComplete": "Hvert kriterium har en komplet ankerskala",
+          "documentationComplete": "Hvert kriterium dokumenteret og godkendt",
+          "weightBudget": "Vægtpoint balanceret mod budgettet",
+          "levelRulesValid": "Niveaugrænserne er gyldige",
+          "zoneProfileMonotonic": "Zoneprofilreglerne er konsekvente",
+          "dimensionWeightBalance": "Ingen dimension dominerer vægtningen uden begrundelse",
+          "peopleLeadershipWeight": "Personaleledelsens vægt er begrundet",
+          "overlapPairs": "Overlappende kriterier er gennemgået"
+        },
+        "workingConditions": {
+          "heading": "Arbejdsforhold",
+          "description": "Afgør, om særlige arbejdsforhold er en tilbagevendende, væsentlig del af en rolle, eller om I har testet dette og fundet det ikke væsentligt.",
+          "statusLabel": "Status",
+          "activeOption": "Aktiv",
+          "testedNotMaterialOption": "Testet, ikke væsentligt",
+          "activeBlockedHint": "Et kriterium for arbejdsforhold er valgt i modellen. Deaktiver det først for at markere dette som testet, ikke væsentligt.",
+          "motivationLabel": "Begrundelse",
+          "saveCta": "Gem beslutning",
+          "currentLabel": "Nuværende beslutning"
+        }
       },
       "methodAppendix": {
         "docTitle": "Metodebilag",
@@ -2556,6 +2602,8 @@
     "assistantPersonalData": "Beskeden ser ud til at indeholde en medarbejders personoplysninger. Fjern dem, og stil spørgsmålet mere generelt.",
     "dimensionCapExceeded": "Denne dimension har allerede sit maksimale antal kriterier.",
     "tooManyCriteria": "En model kan have højst 8 kriterier.",
-    "criterionAlreadySelected": "Kriteriet indgår allerede i modellen."
+    "criterionAlreadySelected": "Kriteriet indgår allerede i modellen.",
+    "methodBlocked": "Metodens tjekliste har uløste punkter. Løs alle blokeringer, før du godkender.",
+    "modelNotApproved": "Evalueringsmodellen skal godkendes, før roller kan vurderes."
   }
 }

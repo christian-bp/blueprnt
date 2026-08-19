@@ -12,6 +12,7 @@ import { deriveResults } from "../assessment/compute"
 import { AUDIT_EVENTS } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation } from "../lib/functions"
+import { reopenApprovalIfSet } from "./approval"
 import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
 import { resolveContentLocale } from "./model"
 import { libraryKeyValidator } from "./tables"
@@ -78,12 +79,8 @@ export const activateCriterion = adminMutation({
       purpose: entry.fullDefinition,
       whyRelevant: entry.whenSuitable,
     })
-    // A method-affecting change re-opens approval (ADR-0023); the reopen
-    // audit event (model.approvalReopened) does not exist yet (T6 owns it),
-    // so the field is cleared silently here.
-    if (model.approval !== undefined) {
-      await ctx.db.patch(model._id, { approval: undefined })
-    }
+    // A method-affecting change re-opens approval (ADR-0023).
+    await reopenApprovalIfSet(ctx, model, AUDIT_EVENTS.criterionActivated)
     const after = await deriveResults(ctx, ctx.orgId)
     await ctx.audit.levelShifts({
       before: before.results,
@@ -163,6 +160,8 @@ export const rebalanceWeights = adminMutation({
       if (weightPoints === undefined) continue
       await ctx.db.patch(criterion._id, { weightPoints })
     }
+    // A method-affecting change re-opens approval (ADR-0023).
+    await reopenApprovalIfSet(ctx, model, AUDIT_EVENTS.modelUpdated)
     const after = await deriveResults(ctx, ctx.orgId)
     await ctx.audit.levelShifts({
       before: before.results,
@@ -265,10 +264,9 @@ export const deactivateCriterion = adminMutation({
         changes: { weightPoints: { from: row.weightPoints, to: weightPoints } },
       })
     }
-    // A method-affecting change re-opens approval (ADR-0023); the reopen
-    // audit event does not exist yet (T6 owns it), cleared silently here.
-    if (model !== null && model.approval !== undefined) {
-      await ctx.db.patch(model._id, { approval: undefined })
+    // A method-affecting change re-opens approval (ADR-0023).
+    if (model !== null) {
+      await reopenApprovalIfSet(ctx, model, AUDIT_EVENTS.criterionDeactivated)
     }
     const after = await deriveResults(ctx, ctx.orgId)
     await ctx.audit.levelShifts({

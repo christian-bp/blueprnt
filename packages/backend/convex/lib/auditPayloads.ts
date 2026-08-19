@@ -275,6 +275,34 @@ export interface AuditPayloads {
     count: number
     items: AuditItem[]
   }
+  // Flat stats only (ADR-0023): the twelve checks themselves are re-derivable
+  // live from current state (validateMethod), so the approval row need not
+  // carry a changes diff, only how many criteria and checks it covered.
+  "model.approved": {
+    modelId: string
+    criteriaCount: number
+    checksPassed: number
+  }
+  // `status` is the coded value context field (resolveCodedValue), alongside
+  // the changes diff of status/motivation itself (mirrors
+  // payMapping.groupAnalysisUpdated's `scope` context field).
+  "model.workingConditionsDecided": {
+    modelId: string
+    status: "active" | "testedNotMaterial"
+    changes: Changes
+  }
+  // levelRules/zoneProfileRules diff as a compact summary STRING per side
+  // (e.g. "12 rules, top 97"), never the raw rule arrays: an array-valued
+  // changes entry renders as an opaque complexValue placeholder, which would
+  // make every rules edit read identically in the log.
+  "model.levelRulesUpdated": { modelId: string; changes: Changes }
+  "model.zoneProfileRulesUpdated": { modelId: string; changes: Changes }
+  // causeEvent is the coded AuditEvent that triggered the reopen (resolved via
+  // resolveCodedValue, reusing the dashboard.auditLog.events.* labels rather
+  // than inventing new wording). Deliberately NOT named "cause": that key is
+  // reserved by PROVENANCE_KEYS for level.shift's nested { event, ... } shape,
+  // and this field is a flat string.
+  "model.approvalReopened": { modelId: string; causeEvent: string }
   // These three diff the employee's identity values too (ADR-0013), which
   // erasure tombstones via anonymizePersonAuditRows. Keep the shape flat:
   // the scrub walks only the top-level `changes` map, and a nested `items[]`

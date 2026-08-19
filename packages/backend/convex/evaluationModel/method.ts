@@ -34,7 +34,9 @@ const biasRiskValidator = v.union(
 
 const MAX_COMPLIANCE_TEXT = 2000
 
-const filled = (s: string | undefined) => (s?.trim().length ?? 0) > 0
+// Shared with approval.ts's buildMethodCheckInput (the engine-input builder
+// needs the same "is this text field meaningfully filled" test).
+export const filled = (s: string | undefined) => (s?.trim().length ?? 0) > 0
 
 // A criterion is "documented" when the required subset is present: purpose,
 // whyRelevant, biasRisk, biasComment. overlapNotes and biasAction are optional.

@@ -37,6 +37,28 @@ export function initConvexTest() {
   return t
 }
 
+// Grants model approval directly (bypassing the real twelve-check gate,
+// approveModel), so rating/scoring-focused test fixtures satisfy setRating's
+// FIRST gate (model.approval set, ADR-0023) without having to fully document
+// every criterion. Mirrors the direct-DB-write pattern tests already use to
+// force approval state (see evaluationModel/criteria.test.ts).
+export async function grantModelApproval(
+  t: ReturnType<typeof initConvexTest>,
+  orgId: string,
+  actorId = "test-approver"
+): Promise<void> {
+  await t.run(async (ctx) => {
+    const model = await ctx.db
+      .query("models")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .unique()
+    if (model === null) throw new Error("grantModelApproval: no model for org")
+    await ctx.db.patch(model._id, {
+      approval: { approvedBy: actorId, approvedAt: Date.now() },
+    })
+  })
+}
+
 // Settle any background scheduled functions started during the test so their
 // success/failure logs complete now instead of racing worker teardown. Their
 // failure is expected (Sweego is not registered in tests) and is not a test

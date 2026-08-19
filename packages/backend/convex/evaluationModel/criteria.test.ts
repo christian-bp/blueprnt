@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import { DEMO_SELECTED_KEYS } from "../assessment/devCompany"
 import { api, components } from "../_generated/api"
 import type { Doc } from "../_generated/dataModel"
-import { initConvexTest } from "../testing.helpers"
+import { grantModelApproval, initConvexTest } from "../testing.helpers"
 
 async function seedEmptyModel(t: ReturnType<typeof initConvexTest>) {
   const { orgId, userId } = await t.mutation(
@@ -148,7 +148,7 @@ describe("activateCriterion", () => {
     ).rejects.toThrow(/errors\.(dimensionCapExceeded|tooManyCriteria)/)
   })
 
-  it("clears an existing approval (reopens silently)", async () => {
+  it("clears an existing approval and audits model.approvalReopened", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedEmptyModel(t)
     await t.run(async (ctx) => {
@@ -171,6 +171,15 @@ describe("activateCriterion", () => {
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .unique()
       expect(model?.approval).toBeUndefined()
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.approvalReopened")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      const payload = rows[0]?.payload as { causeEvent: string }
+      expect(payload.causeEvent).toBe("criterion.activated")
     })
   })
 
@@ -287,6 +296,44 @@ describe("rebalanceWeights", () => {
         label: expect.any(String),
         changes: { weightPoints: { from: 3, to: 2 } },
       })
+    })
+  })
+
+  it("reopens an existing approval and audits model.approvalReopened", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, a, b } = await seedTwoCriteria(t)
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (model === null) throw new Error("seed")
+      await ctx.db.patch(model._id, {
+        approval: { approvedBy: "someone", approvedAt: Date.now() },
+      })
+    })
+    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+      orgId,
+      allocations: [
+        { criterionId: a, weightPoints: 4 },
+        { criterionId: b, weightPoints: 2 },
+      ],
+    })
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(model?.approval).toBeUndefined()
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.approvalReopened")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      const payload = rows[0]?.payload as { causeEvent: string } | undefined
+      expect(payload?.causeEvent).toBe("model.updated")
     })
   })
 
@@ -448,6 +495,10 @@ async function seedRatedOrganization(
     purpose: "p",
     responsibilities: "r",
   })
+  // setRating's FIRST gate (ADR-0023) requires an approved model; this helper
+  // tests level shifts from model edits, not the approval checklist itself,
+  // so grant it directly before the rating loop below.
+  await grantModelApproval(t, orgId)
   for (const [index, criterion] of model.criteria.entries()) {
     const value = ratingAt(index)
     // 1, 4, and 5 require a motivation.
@@ -541,6 +592,43 @@ describe("model edits shift levels live", () => {
       expect(
         (deactivateShift?.payload as { roleId?: string } | undefined)?.roleId
       ).toBe(roleId)
+    })
+  })
+
+  it("deactivateCriterion reopens an existing approval and audits model.approvalReopened", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedRatedOrganization(t)
+    const target = model.criteria[7]
+    if (target === undefined) throw new Error("seed")
+    await t.run(async (ctx) => {
+      const modelDoc = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (modelDoc === null) throw new Error("seed")
+      await ctx.db.patch(modelDoc._id, {
+        approval: { approvedBy: "someone", approvedAt: Date.now() },
+      })
+    })
+    await asAdmin.mutation(api.evaluationModel.criteria.deactivateCriterion, {
+      orgId,
+      criterionId: target.criterionId,
+    })
+    await t.run(async (ctx) => {
+      const modelDoc = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(modelDoc?.approval).toBeUndefined()
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.approvalReopened")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      const payload = rows[0]?.payload as { causeEvent: string } | undefined
+      expect(payload?.causeEvent).toBe("criterion.deactivated")
     })
   })
 

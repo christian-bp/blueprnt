@@ -185,7 +185,9 @@
       "conversationDeleted": "Keskustelu poistettu",
       "conversationRenamed": "Keskustelu nimetty uudelleen",
       "payMappingReasonsApplied": "Perusteet otettu käyttöön",
-      "criterionActivated": "Kriteeri lisätty"
+      "criterionActivated": "Kriteeri lisätty",
+      "modelApproved": "Malli hyväksytty",
+      "workingConditionsDecided": "Työolosuhteiden päätös tallennettu"
     },
     "accountMenu": "Tilivalikko",
     "commandPalette": {
@@ -761,7 +763,11 @@
         "dimensionKey": "Ulottuvuus",
         "deletedRatingCount": "Poistetut arviot",
         "budget": "Pistebudjetti",
-        "levelRules": "Vaativuustasorajat"
+        "levelRules": "Vaativuustasorajat",
+        "zoneProfileRules": "Vyöhykeprofiilisäännöt",
+        "criteriaCount": "Kriteerit",
+        "checksPassed": "Läpäistyt tarkistukset",
+        "causeEvent": "Avannut uudelleen"
       },
       "values": {
         "yes": "Kyllä",
@@ -844,7 +850,12 @@
         "payMappingNoteUpdated": "Merkintä päivitetty",
         "payMappingNoteDeleted": "Merkintä poistettu",
         "criterionActivated": "Kriteeri aktivoitu",
-        "criterionDeactivated": "Kriteeri poistettu käytöstä"
+        "criterionDeactivated": "Kriteeri poistettu käytöstä",
+        "modelApproved": "Malli hyväksytty",
+        "modelWorkingConditionsDecided": "Työolosuhteiden päätös tallennettu",
+        "modelLevelRulesUpdated": "Tasorajat päivitetty",
+        "modelZoneProfileRulesUpdated": "Vyöhykeprofiilisäännöt päivitetty",
+        "modelApprovalReopened": "Mallin hyväksyntä avattu uudelleen"
       },
       "ai": {
         "weightReview": "Painotusten tarkistus: {count} käytetty",
@@ -1561,7 +1572,9 @@
         "contributionShare": "{share}%",
         "breakdownLabel": "Osuus"
       },
-      "lockedExplanation": "Arviointi on lukittu, koska rooli on arkistoitu. Arkistointia ei voi perua, joten luo uusi rooli, jos työ pitää arvioida uudelleen."
+      "lockedExplanation": "Arviointi on lukittu, koska rooli on arkistoitu. Arkistointia ei voi perua, joten luo uusi rooli, jos työ pitää arvioida uudelleen.",
+      "modelUnapprovedExplanation": "Arviointimalli on hyväksyttävä ennen kuin rooleja voi arvioida.",
+      "modelUnapprovedCta": "Siirry Menetelmä-sivulle"
     },
     "levels": {
       "description": "Vaativuustasot ja kunkin tason roolit, johdettu reaaliaikaisesti nykyisestä mallista ja arvioinneista.",
@@ -1849,7 +1862,40 @@
         "optionalSuffix": " (valinnainen)",
         "draftError": "Luonnosta ei voitu luoda. Yritä uudelleen.",
         "aiAckLabel": "Tämä sisältö on tekoälyn luoma. Vahvistan, että olen lukenut ja tarkistanut sen.",
-        "approveAckLabel": "Olen tarkistanut tämän dokumentaation ja vahvistan, että se on oikein."
+        "approveAckLabel": "Olen tarkistanut tämän dokumentaation ja vahvistan, että se on oikein.",
+        "approvalHeading": "Hyväksyntä",
+        "approvalDescription": "Mallin on läpäistävä jokainen alla oleva pakollinen tarkistus ennen kuin rooleja voi arvioida.",
+        "draftState": "Ei vielä hyväksytty",
+        "approveModelCta": "Hyväksy malli",
+        "checkLevel": {
+          "blocker": "Pakollinen",
+          "warning": "Suositeltu"
+        },
+        "checks": {
+          "dimensionCoverage": "Osaaminen, ponnistus ja vastuu on kaikki katettu",
+          "workingConditionsTested": "Työolosuhteet testattu",
+          "criterionCount": "6-8 kriteeriä valittu",
+          "dimensionCaps": "Yksikään ulottuvuus ei ylitä kriteerirajaansa",
+          "anchorsComplete": "Jokaisella kriteerillä on täydellinen ankkuriasteikko",
+          "documentationComplete": "Jokainen kriteeri on dokumentoitu ja hyväksytty",
+          "weightBudget": "Painopisteet on tasapainotettu budjettiin",
+          "levelRulesValid": "Tasorajat ovat kelvollisia",
+          "zoneProfileMonotonic": "Vyöhykeprofiilisäännöt ovat johdonmukaisia",
+          "dimensionWeightBalance": "Yksikään ulottuvuus ei hallitse painotusta ilman perustelua",
+          "peopleLeadershipWeight": "Henkilöstöjohtamisen paino on perusteltu",
+          "overlapPairs": "Päällekkäiset kriteerit on käyty läpi"
+        },
+        "workingConditions": {
+          "heading": "Työolosuhteet",
+          "description": "Päätä, ovatko erityiset työolosuhteet toistuva ja olennainen osa jotakin roolia, vai oletteko testanneet tämän ja todenneet sen ei-olennaiseksi.",
+          "statusLabel": "Tila",
+          "activeOption": "Aktiivinen",
+          "testedNotMaterialOption": "Testattu, ei olennainen",
+          "activeBlockedHint": "Mallissa on valittuna työolosuhteiden kriteeri. Poista se ensin käytöstä, jotta voit merkitä tämän testatuksi ja ei-olennaiseksi.",
+          "motivationLabel": "Perustelu",
+          "saveCta": "Tallenna päätös",
+          "currentLabel": "Nykyinen päätös"
+        }
       },
       "methodAppendix": {
         "docTitle": "Menetelmäliite",
@@ -2556,6 +2602,8 @@
     "assistantPersonalData": "Viesti näyttää sisältävän työntekijän henkilötietoja. Poista ne ja kysy yleisemmällä tasolla.",
     "dimensionCapExceeded": "Tällä ulottuvuudella on jo enimmäismäärä kriteerejä.",
     "tooManyCriteria": "Mallissa voi olla enintään 8 kriteeriä.",
-    "criterionAlreadySelected": "Kriteeri kuuluu jo malliin."
+    "criterionAlreadySelected": "Kriteeri kuuluu jo malliin.",
+    "methodBlocked": "Menetelmän tarkistuslistalla on ratkaisemattomia kohtia. Korjaa jokainen estävä kohta ennen hyväksymistä.",
+    "modelNotApproved": "Arviointimalli on hyväksyttävä ennen kuin rooleja voi arvioida."
   }
 }

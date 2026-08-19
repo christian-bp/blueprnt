@@ -39,6 +39,11 @@ export const AUDIT_EVENTS = {
   criterionReopened: "criterion.reopened",
   criterionActivated: "criterion.activated",
   criterionDeactivated: "criterion.deactivated",
+  modelApproved: "model.approved",
+  modelWorkingConditionsDecided: "model.workingConditionsDecided",
+  modelLevelRulesUpdated: "model.levelRulesUpdated",
+  modelZoneProfileRulesUpdated: "model.zoneProfileRulesUpdated",
+  modelApprovalReopened: "model.approvalReopened",
   personCreated: "person.created",
   personUpdated: "person.updated",
   personArchived: "person.archived",
@@ -185,6 +190,14 @@ const AUDIT_SUBJECTS: {
   // one exists for a pay-mapping run or a role.
   "criterion.activated": null,
   "criterion.deactivated": null,
+  // Reviewed null: model-level events. There is no model subject kind (the
+  // org has exactly one model), so a model's whole trail is reached by
+  // filtering the org's log to the "model" category, not by a subject index.
+  "model.approved": null,
+  "model.workingConditionsDecided": null,
+  "model.levelRulesUpdated": null,
+  "model.zoneProfileRulesUpdated": null,
+  "model.approvalReopened": null,
   "person.created": (payload) => ({ kind: "person", id: payload.personId }),
   "person.updated": (payload) => ({ kind: "person", id: payload.personId }),
   "person.archived": (payload) => ({ kind: "person", id: payload.personId }),

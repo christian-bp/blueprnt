@@ -137,6 +137,41 @@ ifylld innan de kan köras; slutför det från
 [Organisationsinställningar](/docs/organization-settings) om ett
 AI-utkast vägrar generera av den anledningen.
 
+## Jag kan inte godkänna modellen, eller bedöma en roll eftersom den inte är godkänd
+
+### Checklistan har olösta punkter
+
+Kod: `methodBlocked`
+
+"Metodens checklista har olösta punkter. Åtgärda varje blockerare innan du
+godkänner."
+
+Metod-sidans godkännandekort kör en checklista med tolv punkter innan den
+låter dig godkänna modellen: dimensionstäckning, beslutet om
+arbetsförhållanden, antal kriterier och gränserna per dimension, kompletta
+ankarskalor, varje kriterium dokumenterat och godkänt, en balanserad
+viktning samt giltiga nivå- och zonprofilregler. Alla dessa måste vara
+gröna innan "Godkänn modell" fungerar; checklistan anger själv vilka
+punkter som fortfarande behöver åtgärdas. Några ytterligare punkter (en
+omotiverad dimensionsandel över 40 %, en omotiverad vikt för
+personalledarskap, en ogranskad överlappning mellan två kriterier) är
+rekommenderade snarare än obligatoriska och blockerar inte godkännandet. Se
+[Metoddokumentation](/docs/method-documentation).
+
+### Modellen måste godkännas först
+
+Kod: `modelNotApproved`
+
+"Utvärderingsmodellen måste godkännas innan roller kan bedömas."
+
+Att bedöma en roll kräver att er organisations utvärderingsmodell är
+godkänd först, från Metod-sidans godkännandekort. Det är ett engångssteg
+(tills en metodändring återöppnar det) som bekräftar att metoden har
+granskats mot sin checklista innan den används för att bedöma någons roll.
+Be en organisationsadministratör granska och godkänna modellen, och
+återgå sedan till bedömningen. Se
+[Metoddokumentation](/docs/method-documentation).
+
 ## Jag kan inte spara ett betyg utan motivering
 
 Kod: `motivationRequired`

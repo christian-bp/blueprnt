@@ -1,9 +1,13 @@
 import { v } from "convex/values"
+import { internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { internalMutation } from "../_generated/server"
 import {
   DEMO_ANCHOR_ROLES,
+  DEMO_BIAS_COMMENT,
+  DEMO_KNOWLEDGE_BREADTH_OVERLAP_NOTES,
   DEMO_RATING_MOTIVATION,
+  DEMO_SCOPE_IMPACT_WEIGHT_MOTIVATION,
   DEMO_SELECTED_KEYS,
   DEMO_WEIGHT_POINTS,
   DEV_COMPANY,
@@ -75,6 +79,26 @@ export const seedRatedRoles = internalMutation({
           libraryKey,
           weightPoints: DEMO_WEIGHT_POINTS[libraryKey],
           order: index + 1,
+          // Compliance sign-off (spec §17.2 items 5-6): the demo org has
+          // reviewed and approved every selected criterion, so its checklist
+          // reads all-green like a company that finished its method work,
+          // not a bypass (assessment/seed.test.ts guards this).
+          biasRisk: "low",
+          biasComment: DEMO_BIAS_COMMENT,
+          approved: true,
+          decidedBy: actorId,
+          decidedAt: Date.now(),
+          // Clears the checklist's overlapPairs warning for the demo's one
+          // applicable pair (knowledge-depth/knowledge-breadth).
+          ...(libraryKey === "knowledge-breadth"
+            ? { overlapNotes: DEMO_KNOWLEDGE_BREADTH_OVERLAP_NOTES }
+            : {}),
+          // Clears the checklist's dimensionWeightBalance warning
+          // (responsibility sits over the 40 % threshold under
+          // DEMO_WEIGHT_POINTS).
+          ...(libraryKey === "scope-impact"
+            ? { weightMotivation: DEMO_SCOPE_IMPACT_WEIGHT_MOTIVATION }
+            : {}),
         })
         criterionIdByKey.set(libraryKey, criterionId)
       }
@@ -143,6 +167,20 @@ export const seedRatedRoles = internalMutation({
         })
         ratingCount += 1
       }
+    }
+
+    // The demo org has completed its method work (selection, weighting,
+    // working-conditions decision, and per-criterion compliance sign-off
+    // above): approve the model so seeded rating flows work like a real,
+    // launched org's would (ADR-0023's setRating gate).
+    if (model !== null) {
+      await ctx.runMutation(
+        internal.evaluationModel.approval.approveSeededModel,
+        {
+          orgId,
+          actorId,
+        }
+      )
     }
 
     return { roleCount: roles.length, ratingCount }

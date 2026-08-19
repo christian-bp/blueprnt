@@ -1,7 +1,7 @@
 import { MAX_ROLES } from "@workspace/constants"
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
-import { initConvexTest } from "../testing.helpers"
+import { grantModelApproval, initConvexTest } from "../testing.helpers"
 import { AI_MODEL_ID } from "./config"
 
 async function seedRoleOrganization(t: ReturnType<typeof initConvexTest>) {
@@ -45,6 +45,9 @@ async function seedRoleOrganization(t: ReturnType<typeof initConvexTest>) {
     team: "Core",
     trackKey: track.key,
   })
+  // setRating's FIRST gate (ADR-0023) requires an approved model; this
+  // fixture is a role-profile/AI test, not an approval-checklist test.
+  await grantModelApproval(t, orgId)
   return { orgId, asAdmin, roleId, model }
 }
 

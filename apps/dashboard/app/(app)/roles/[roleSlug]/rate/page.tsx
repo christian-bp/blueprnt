@@ -115,6 +115,24 @@ export default function RatePage(props: {
       </div>
     )
   }
+  // The model must be approved before any role can be rated (ADR-0023): state
+  // the precondition in words and send the admin to where it is resolved,
+  // rather than letting setRating fail silently on the first save attempt.
+  if (model.approval === null) {
+    return (
+      <div className="space-y-2">
+        <p className="text-muted-foreground text-sm">
+          {t("modelUnapprovedExplanation")}
+        </p>
+        <Link
+          href="/model/method"
+          className="text-sm underline underline-offset-4"
+        >
+          {t("modelUnapprovedCta")}
+        </Link>
+      </div>
+    )
+  }
   // Locked or not ready to rate: state the precondition here and send the
   // user back to the role page where the controls live.
   if (role.archived || !role.profileComplete) {

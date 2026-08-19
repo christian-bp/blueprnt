@@ -185,7 +185,9 @@
       "conversationDeleted": "Konversation borttagen",
       "conversationRenamed": "Konversation omdöpt",
       "payMappingReasonsApplied": "Skäl tillämpade",
-      "criterionActivated": "Kriterium tillagt"
+      "criterionActivated": "Kriterium tillagt",
+      "modelApproved": "Modell godkänd",
+      "workingConditionsDecided": "Beslut om arbetsförhållanden sparat"
     },
     "accountMenu": "Kontomeny",
     "commandPalette": {
@@ -761,7 +763,11 @@
         "dimensionKey": "Dimension",
         "deletedRatingCount": "Borttagna bedömningar",
         "budget": "Poängbudget",
-        "levelRules": "Nivågränser"
+        "levelRules": "Nivågränser",
+        "zoneProfileRules": "Zonprofilregler",
+        "criteriaCount": "Kriterier",
+        "checksPassed": "Godkända kontroller",
+        "causeEvent": "Återöppnad av"
       },
       "values": {
         "yes": "Ja",
@@ -844,7 +850,12 @@
         "payMappingNoteUpdated": "Notering uppdaterad",
         "payMappingNoteDeleted": "Notering borttagen",
         "criterionActivated": "Kriterium aktiverat",
-        "criterionDeactivated": "Kriterium inaktiverat"
+        "criterionDeactivated": "Kriterium inaktiverat",
+        "modelApproved": "Modell godkänd",
+        "modelWorkingConditionsDecided": "Beslut om arbetsförhållanden sparat",
+        "modelLevelRulesUpdated": "Nivågränser uppdaterade",
+        "modelZoneProfileRulesUpdated": "Zonprofilregler uppdaterade",
+        "modelApprovalReopened": "Modellgodkännande återöppnat"
       },
       "ai": {
         "weightReview": "Viktgenomgång: {count} tillämpade",
@@ -1561,7 +1572,9 @@
         "contributionShare": "{share}%",
         "breakdownLabel": "Bidrag"
       },
-      "lockedExplanation": "Betygsättningen är låst eftersom rollen är arkiverad. Arkivering kan inte ångras, så skapa en ny roll om arbetet behöver betygsättas igen."
+      "lockedExplanation": "Betygsättningen är låst eftersom rollen är arkiverad. Arkivering kan inte ångras, så skapa en ny roll om arbetet behöver betygsättas igen.",
+      "modelUnapprovedExplanation": "Utvärderingsmodellen måste godkännas innan roller kan bedömas.",
+      "modelUnapprovedCta": "Gå till sidan Metod"
     },
     "levels": {
       "description": "Nivåerna och rollerna i varje nivå, härledda live från aktuell modell och bedömningar.",
@@ -1849,7 +1862,40 @@
         "optionalSuffix": " (valfritt)",
         "draftError": "Utkastet kunde inte genereras. Försök igen.",
         "aiAckLabel": "Det här innehållet är AI-genererat. Jag intygar att jag har läst igenom och granskat det.",
-        "approveAckLabel": "Jag har granskat den här dokumentationen och intygar att den är korrekt."
+        "approveAckLabel": "Jag har granskat den här dokumentationen och intygar att den är korrekt.",
+        "approvalHeading": "Godkännande",
+        "approvalDescription": "Modellen måste klara varje obligatorisk kontroll nedan innan roller kan bedömas.",
+        "draftState": "Ej godkänd än",
+        "approveModelCta": "Godkänn modell",
+        "checkLevel": {
+          "blocker": "Obligatorisk",
+          "warning": "Rekommenderad"
+        },
+        "checks": {
+          "dimensionCoverage": "Kompetens, ansträngning och ansvar är alla täckta",
+          "workingConditionsTested": "Arbetsförhållanden testade",
+          "criterionCount": "6 till 8 kriterier valda",
+          "dimensionCaps": "Ingen dimension över sin kriteriegräns",
+          "anchorsComplete": "Varje kriterium har en komplett ankarskala",
+          "documentationComplete": "Varje kriterium dokumenterat och godkänt",
+          "weightBudget": "Viktpoäng balanserade mot budgeten",
+          "levelRulesValid": "Nivågränserna är giltiga",
+          "zoneProfileMonotonic": "Zonprofilreglerna är konsekventa",
+          "dimensionWeightBalance": "Ingen dimension dominerar viktningen utan motivering",
+          "peopleLeadershipWeight": "Personalledarskapets vikt är motiverad",
+          "overlapPairs": "Överlappande kriterier är granskade"
+        },
+        "workingConditions": {
+          "heading": "Arbetsförhållanden",
+          "description": "Avgör om särskilda arbetsförhållanden är en återkommande, materiell del av någon roll, eller om ni har testat detta och funnit det inte materiellt.",
+          "statusLabel": "Status",
+          "activeOption": "Aktivt",
+          "testedNotMaterialOption": "Testat, inte materiellt",
+          "activeBlockedHint": "Ett kriterium för arbetsförhållanden är valt i modellen. Inaktivera det först för att markera detta som testat, inte materiellt.",
+          "motivationLabel": "Motivering",
+          "saveCta": "Spara beslut",
+          "currentLabel": "Nuvarande beslut"
+        }
       },
       "methodAppendix": {
         "docTitle": "Metodbilaga",
@@ -2556,6 +2602,8 @@
     "assistantPersonalData": "Meddelandet verkar innehålla en anställds personuppgifter. Ta bort dem och ställ frågan mer generellt.",
     "dimensionCapExceeded": "Denna dimension har redan sitt maximala antal kriterier.",
     "tooManyCriteria": "En modell kan ha högst 8 kriterier.",
-    "criterionAlreadySelected": "Kriteriet ingår redan i modellen."
+    "criterionAlreadySelected": "Kriteriet ingår redan i modellen.",
+    "methodBlocked": "Metodens checklista har olösta punkter. Åtgärda varje blockerare innan du godkänner.",
+    "modelNotApproved": "Utvärderingsmodellen måste godkännas innan roller kan bedömas."
   }
 }
