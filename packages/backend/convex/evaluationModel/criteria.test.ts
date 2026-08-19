@@ -449,11 +449,16 @@ async function seedRatedOrganization(
     responsibilities: "r",
   })
   for (const [index, criterion] of model.criteria.entries()) {
+    const value = ratingAt(index)
+    // 1, 4, and 5 require a motivation.
     await asAdmin.mutation(api.assessment.ratings.setRating, {
       orgId,
       roleId,
       criterionId: criterion.criterionId,
-      value: ratingAt(index),
+      value,
+      ...(value === 1 || value === 4 || value === 5
+        ? { motivation: "Test motivation." }
+        : {}),
     })
   }
   return { orgId, asAdmin, model, roleId }

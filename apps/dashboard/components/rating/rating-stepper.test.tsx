@@ -29,9 +29,11 @@ const CRITERIA = [
   {
     criterionId: "c-scope",
     name: "Scope",
-    description: "How wide the role reaches.",
-    helpText: "Judge against the anchors.",
-    anchors: [0, 1, 2, 3, 4, 5].map((step) => ({
+    question: "How wide does this role's impact reach?",
+    measures: "The role's reach across the organization.",
+    notMeasures: "Formal people responsibility.",
+    dimensionKey: "responsibility",
+    anchors: [1, 2, 3, 4, 5].map((step) => ({
       step,
       text: `Scope anchor ${step}`,
     })),
@@ -39,16 +41,34 @@ const CRITERIA = [
   {
     criterionId: "c-risk",
     name: "Risk",
-    description: "Consequence of mistakes.",
-    helpText: "Judge against the anchors.",
-    anchors: [0, 1, 2, 3, 4, 5].map((step) => ({
+    question: "What is the consequence of this role's mistakes?",
+    measures: "Consequences of errors or shortcomings.",
+    notMeasures: "The individual's stress level.",
+    dimensionKey: "responsibility",
+    anchors: [1, 2, 3, 4, 5].map((step) => ({
       step,
       text: `Risk anchor ${step}`,
     })),
   },
 ]
 
+const WC_CRITERIA = [
+  {
+    criterionId: "c-oncall",
+    name: "On-call",
+    question: "How much standby duty does this role carry?",
+    measures: "A recurring requirement to be available outside hours.",
+    notMeasures: "Occasional overtime.",
+    dimensionKey: "workingConditions",
+    anchors: [1, 2, 3, 4, 5].map((step) => ({
+      step,
+      text: `On-call anchor ${step}`,
+    })),
+  },
+]
+
 function renderStepper(overrides?: {
+  criteria?: typeof CRITERIA
   ratings?: { criterionId: string; value: number; motivation: string | null }[]
   onCompleted?: () => void
 }) {
@@ -57,7 +77,7 @@ function renderStepper(overrides?: {
       <RatingStepper
         orgId="org-1"
         roleId={"role-1" as never}
-        criteria={CRITERIA as never}
+        criteria={(overrides?.criteria ?? CRITERIA) as never}
         ratings={overrides?.ratings ?? []}
         onCompleted={overrides?.onCompleted ?? vi.fn()}
       />
@@ -79,6 +99,13 @@ describe("RatingStepper", () => {
       ratings: [{ criterionId: "c-scope", value: 2, motivation: null }],
     })
     expect(screen.getByText("Risk")).toBeDefined()
+  })
+
+  it("renders the criterion's assessment question as the step description", () => {
+    renderStepper()
+    expect(
+      screen.getByText("How wide does this role's impact reach?")
+    ).toBeDefined()
   })
 
   it("requires a selection before advancing and persists on next", async () => {
@@ -177,6 +204,114 @@ describe("RatingStepper", () => {
     fireEvent.keyDown(document.body, { key: "Enter" })
     expect(setRatingMock).not.toHaveBeenCalled()
     expect(screen.getByText("Scope")).toBeDefined()
+  })
+
+  // ---------------------------------------------------------------------------
+  // The motivation-required law (1, 4, 5)
+  // ---------------------------------------------------------------------------
+
+  it("blocks advancing at 1, 4, or 5 without a motivation and shows an inline message", () => {
+    renderStepper()
+    fireEvent.click(screen.getByText("Scope anchor 5"))
+    fireEvent.click(screen.getByRole("button", { name: labels.nextCta }))
+    expect(setRatingMock).not.toHaveBeenCalled()
+    expect(screen.getByText(labels.motivationRequiredError)).toBeTruthy()
+    // Still on the same step: the save never fired.
+    expect(screen.getByText("Scope")).toBeDefined()
+  })
+
+  it("lets 2 or 3 advance without a motivation", async () => {
+    renderStepper()
+    fireEvent.click(screen.getByText("Scope anchor 2"))
+    fireEvent.click(screen.getByRole("button", { name: labels.nextCta }))
+    await waitFor(() => {
+      expect(setRatingMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        roleId: "role-1",
+        criterionId: "c-scope",
+        value: 2,
+      })
+    })
+  })
+
+  it("clears the motivation-required message once a motivation is typed", () => {
+    renderStepper()
+    fireEvent.click(screen.getByText("Scope anchor 4"))
+    fireEvent.click(screen.getByRole("button", { name: labels.nextCta }))
+    expect(screen.getByText(labels.motivationRequiredError)).toBeTruthy()
+    fireEvent.change(screen.getByLabelText(labels.motivationLabel), {
+      target: { value: "Advanced, cross-team reach." },
+    })
+    expect(screen.queryByText(labels.motivationRequiredError)).toBeNull()
+  })
+
+  it("clears the motivation-required message once a non-required value is picked", () => {
+    renderStepper()
+    fireEvent.click(screen.getByText("Scope anchor 1"))
+    fireEvent.click(screen.getByRole("button", { name: labels.nextCta }))
+    expect(screen.getByText(labels.motivationRequiredError)).toBeTruthy()
+    fireEvent.click(screen.getByText("Scope anchor 3"))
+    expect(screen.queryByText(labels.motivationRequiredError)).toBeNull()
+  })
+
+  it("does not carry a shown motivation-required message into the next step", async () => {
+    renderStepper()
+    fireEvent.click(screen.getByText("Scope anchor 5"))
+    fireEvent.click(screen.getByRole("button", { name: labels.nextCta }))
+    expect(screen.getByText(labels.motivationRequiredError)).toBeTruthy()
+    fireEvent.change(screen.getByLabelText(labels.motivationLabel), {
+      target: { value: "Company-wide impact." },
+    })
+    fireEvent.click(screen.getByRole("button", { name: labels.nextCta }))
+    await waitFor(() => {
+      expect(screen.getByText("Risk")).toBeDefined()
+    })
+    expect(screen.queryByText(labels.motivationRequiredError)).toBeNull()
+  })
+
+  // ---------------------------------------------------------------------------
+  // The measures/notMeasures collapsible context
+  // ---------------------------------------------------------------------------
+
+  it("keeps the measures/notMeasures context collapsed until toggled", () => {
+    renderStepper()
+    expect(
+      screen.queryByText("The role's reach across the organization.")
+    ).toBeNull()
+    fireEvent.click(screen.getByText(labels.contextToggleLabel))
+    expect(
+      screen.getByText("The role's reach across the organization.")
+    ).toBeDefined()
+    expect(screen.getByText("Formal people responsibility.")).toBeDefined()
+  })
+
+  // ---------------------------------------------------------------------------
+  // The working-conditions "omfattas inte" (0) option
+  // ---------------------------------------------------------------------------
+
+  it("offers the omfattas-inte (0) option only for a workingConditions criterion", () => {
+    renderStepper({ criteria: WC_CRITERIA })
+    expect(screen.getByText(labels.notCoveredOption)).toBeDefined()
+    expect(screen.getByText(labels.notCoveredExplanation)).toBeDefined()
+  })
+
+  it("never offers the omfattas-inte (0) option for a non-workingConditions criterion", () => {
+    renderStepper()
+    expect(screen.queryByText(labels.notCoveredOption)).toBeNull()
+  })
+
+  it("saves a workingConditions 0 with no motivation required", async () => {
+    renderStepper({ criteria: WC_CRITERIA })
+    fireEvent.click(screen.getByText(labels.notCoveredOption))
+    fireEvent.click(screen.getByRole("button", { name: labels.finishCta }))
+    await waitFor(() => {
+      expect(setRatingMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        roleId: "role-1",
+        criterionId: "c-oncall",
+        value: 0,
+      })
+    })
   })
 
   // ---------------------------------------------------------------------------

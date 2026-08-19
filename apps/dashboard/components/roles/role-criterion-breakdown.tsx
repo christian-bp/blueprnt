@@ -2,6 +2,7 @@
 
 import {
   criterionShares,
+  type DimensionKey,
   type RatingValue,
   type WeightPoints,
 } from "@workspace/core"
@@ -14,6 +15,7 @@ import { SPRING } from "@/lib/motion"
 export interface BreakdownCriterion {
   criterionId: string
   name: string
+  dimensionKey: DimensionKey
   value: number | null
   weightPoints: number
   motivation: string | null
@@ -40,6 +42,7 @@ export function RoleCriterionBreakdown({
     })),
     criteria.map((c) => ({
       criterionId: c.criterionId,
+      dimensionKey: c.dimensionKey,
       weightPoints: c.weightPoints as WeightPoints,
     }))
   )

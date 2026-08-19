@@ -351,6 +351,8 @@ describe("AI suggestion lifecycle", () => {
         roleId,
         criterionId: criterion.criterionId,
         value: index === 0 ? 5 : 1,
+        // 1 and 5 both require a motivation.
+        motivation: "Test motivation.",
       })
     }
     // A confirmed weight review that moves points onto the role's strong

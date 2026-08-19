@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest"
 import { internal } from "../_generated/api"
+import { LIBRARY_DIMENSION } from "../evaluationModel/criteriaLibrary"
+import type { CriteriaLibraryKey } from "../evaluationModel/criteriaLibrary"
 import { initConvexTest } from "../testing.helpers"
 import {
   DEMO_ANCHOR_ROLES,
+  DEMO_RATING_MOTIVATION,
   DEMO_WEIGHT_POINTS,
   DEV_COMPANY,
 } from "./devCompany"
@@ -69,7 +72,6 @@ describe("assessment/seed.seedRatedRoles", () => {
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
       expect(ratings).toHaveLength(EXPECTED_RATINGS)
-      expect(ratings.every((r) => r.value >= 0 && r.value <= 5)).toBe(true)
       for (const role of roles) {
         const roleRatings = ratings.filter((r) => r.roleId === role._id)
         expect(roleRatings).toHaveLength(8)
@@ -88,6 +90,29 @@ describe("assessment/seed.seedRatedRoles", () => {
             libraryKeyById.get(r.criterionId) === libraryKey
         )?.value
       }
+      const motivationFor = (title: string, libraryKey: string) => {
+        const roleId = roleIdByTitle.get(title)
+        return ratings.find(
+          (r) =>
+            r.roleId === roleId &&
+            libraryKeyById.get(r.criterionId) === libraryKey
+        )?.motivation
+      }
+      // Every rating obeys the dimension-aware law: 1-5, or 0 only on the
+      // workingConditions (on-call) column.
+      for (const rating of ratings) {
+        const libraryKey = libraryKeyById.get(rating.criterionId)
+        const min =
+          libraryKey !== undefined &&
+          LIBRARY_DIMENSION[libraryKey as CriteriaLibraryKey] ===
+            "workingConditions"
+            ? 0
+            : 1
+        expect(rating.value, `value for ${libraryKey}`).toBeGreaterThanOrEqual(
+          min
+        )
+        expect(rating.value).toBeLessThanOrEqual(5)
+      }
       // CEO: at the ceiling on every criterion except knowledge-breadth.
       expect(cell("CEO", "scope-impact")).toBe(5)
       expect(cell("CEO", "complexity-ambiguity")).toBe(5)
@@ -104,6 +129,19 @@ describe("assessment/seed.seedRatedRoles", () => {
       expect(cell("Order & Indoor Sales", "scope-impact")).toBe(2)
       // Infrastructure Engineer: the demo's clearest on-call exposure.
       expect(cell("Infrastructure Engineer", "on-call")).toBe(3)
+
+      // 1/4/5 ratings carry the seeded motivation so the demo satisfies its
+      // own motivation-required law, including a 1 on the workingConditions
+      // column; 2/3 (and on-call's legitimate 0) carry none.
+      expect(motivationFor("CEO", "scope-impact")).toBe(DEMO_RATING_MOTIVATION) // 5
+      expect(motivationFor("CEO", "knowledge-breadth")).toBeUndefined() // 3
+      expect(motivationFor("Cloud Architect", "on-call")).toBe(
+        DEMO_RATING_MOTIVATION
+      ) // 1
+      expect(motivationFor("Software Developer", "on-call")).toBeUndefined() // 0
+      expect(
+        motivationFor("Infrastructure Engineer", "on-call")
+      ).toBeUndefined() // 3, no motivation required
 
       // The calibrated demo weighting landed on every seeded criterion.
       for (const criterion of criteria) {

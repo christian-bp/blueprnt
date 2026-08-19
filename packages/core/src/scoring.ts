@@ -1,3 +1,4 @@
+import { assertValidRatingValue } from "./dimensions"
 import { isWeightPoints } from "./weighting"
 import type {
   CriterionShare,
@@ -26,12 +27,6 @@ export function assertUniqueCriteria(criteria: CriterionIdentity[]): void {
   }
 }
 
-function assertValidRating(value: number): void {
-  if (!Number.isInteger(value) || value < 0 || value > 5) {
-    throw new Error(`rating out of range: ${value}`)
-  }
-}
-
 // Normalized weighted score on the fixed 0-100 scale (ADR-0004):
 // floor(20 * sum(rating * weightPoints) / sum(weightPoints)). Normalizing
 // over the model's own point sum keeps the scale independent of the
@@ -42,7 +37,9 @@ function assertValidRating(value: number): void {
 // true quotient is an integer and the floor is safe.
 //
 // Ratings for unknown criterion ids are ignored (orphan safety: the backend
-// cleans up on criterion removal; the engine tolerates strays).
+// cleans up on criterion removal; the engine tolerates strays), including
+// their validation: an orphan's dimension is unknowable, so it is skipped
+// rather than checked, while duplicate detection still runs on every rating.
 export function scoreRole(
   ratings: RatingInput[],
   criteria: CriterionWeight[]
@@ -51,14 +48,14 @@ export function scoreRole(
   if (criteria.length === 0) {
     throw new Error("no criteria to score against")
   }
-  const pointsById = new Map<string, number>()
+  const criterionById = new Map<string, CriterionWeight>()
   let totalPoints = 0
   for (const criterion of criteria) {
     // Runtime guard: the backend casts stored numbers into WeightPoints.
     if (!isWeightPoints(criterion.weightPoints)) {
       throw new Error(`invalid weight points: ${criterion.weightPoints}`)
     }
-    pointsById.set(criterion.criterionId, criterion.weightPoints)
+    criterionById.set(criterion.criterionId, criterion)
     totalPoints += criterion.weightPoints
   }
   const seen = new Set<string>()
@@ -68,10 +65,10 @@ export function scoreRole(
       throw new Error(`duplicate rating: ${rating.criterionId}`)
     }
     seen.add(rating.criterionId)
-    assertValidRating(rating.value)
-    const points = pointsById.get(rating.criterionId)
-    if (points === undefined) continue
-    raw += rating.value * points
+    const criterion = criterionById.get(rating.criterionId)
+    if (criterion === undefined) continue
+    assertValidRatingValue(rating.value, criterion.dimensionKey)
+    raw += rating.value * criterion.weightPoints
   }
   return Math.floor((20 * raw) / totalPoints)
 }
@@ -82,14 +79,22 @@ export function scoreRole(
 // rating is 0) every share is 0, so there is no division by zero. A criterion
 // with no rating contributes 0. Output order follows the criteria order; the
 // last value wins for a duplicated rating (display leniency, unlike scoreRole).
+// Like scoreRole, only ratings tied to a known criterion are validated: an
+// orphan rating's dimension is unknowable and it never reaches a share anyway.
 export function criterionShares(
   ratings: RatingInput[],
-  criteria: Pick<CriterionWeight, "criterionId" | "weightPoints">[]
+  criteria: Pick<
+    CriterionWeight,
+    "criterionId" | "weightPoints" | "dimensionKey"
+  >[]
 ): CriterionShare[] {
   assertUniqueCriteria(criteria)
+  const criterionById = new Map(criteria.map((c) => [c.criterionId, c]))
   const valueById = new Map<string, number>()
   for (const rating of ratings) {
-    assertValidRating(rating.value)
+    const criterion = criterionById.get(rating.criterionId)
+    if (criterion === undefined) continue
+    assertValidRatingValue(rating.value, criterion.dimensionKey)
     valueById.set(rating.criterionId, rating.value)
   }
   const contributions = criteria.map((criterion) => {

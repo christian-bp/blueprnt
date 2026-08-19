@@ -1,13 +1,15 @@
 import { v } from "convex/values"
 import { AUDIT_EVENTS, buildChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
+import { LIBRARY_DIMENSION } from "../evaluationModel/criteriaLibrary"
 import { orgMutation } from "../lib/functions"
 import { deriveResults } from "./compute"
 import { isProfileComplete } from "./roles"
 
 // The only hand-entered value in the whole loop (assessment glossary): a
-// 0-5 integer per (role, criterion), with an optional motivation. Blind by
-// design: this mutation never returns or logs a score or level; the
+// 1-5 integer per (role, criterion), or 0 for a workingConditions criterion
+// ("omfattas inte"), with a motivation that becomes required at 1, 4, or 5.
+// Blind by design: this mutation never returns or logs a score or level; the
 // level.shift wrap records derived consequences in the audit log only.
 export const setRating = orgMutation({
   args: {
@@ -38,6 +40,12 @@ export const setRating = orgMutation({
     if (criterion === null || criterion.orgId !== ctx.orgId) {
       throw appError(ERROR_CODES.notFound)
     }
+    // 0 ("omfattas inte") is only ever meaningful for a workingConditions
+    // criterion; every other dimension floors at 1 (spec 2.5/3.1).
+    const dimensionKey = LIBRARY_DIMENSION[criterion.libraryKey]
+    if (dimensionKey !== "workingConditions" && value < 1) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
 
     const trimmedMotivation = motivation?.trim()
     const existing = await ctx.db
@@ -60,6 +68,20 @@ export const setRating = orgMutation({
         (existing.motivation ?? undefined) === nextMotivation)
     ) {
       return null
+    }
+
+    // Motivation becomes required once the NEW value lands on 1, 4, or 5
+    // (spec 2.5/17.3): the field the write actually leaves behind is what
+    // counts, so an untouched motivation (motivation === undefined) falls
+    // back to whatever is already stored, and only a genuinely empty result
+    // is refused. A working-conditions 0 never reaches this branch.
+    const effectiveMotivation =
+      motivation !== undefined ? nextMotivation : existing?.motivation
+    if (
+      (value === 1 || value === 4 || value === 5) &&
+      (effectiveMotivation === undefined || effectiveMotivation === "")
+    ) {
+      throw appError(ERROR_CODES.motivationRequired)
     }
 
     const before = await deriveResults(ctx, ctx.orgId)

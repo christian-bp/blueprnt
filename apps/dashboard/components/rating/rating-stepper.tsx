@@ -2,6 +2,9 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+import { ArrowDown01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import type { DimensionKey } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -19,14 +22,22 @@ import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useId, useRef, useState } from "react"
 import { SPRING } from "@/lib/motion"
+
+// The "omfattas inte" step: valid only for a workingConditions criterion,
+// never one of the five graded anchor steps.
+const NOT_COVERED_STEP = 0
 
 export interface StepperCriterion {
   criterionId: Id<"criteria">
   name: string
-  description: string
-  helpText: string
+  question: string
+  measures: string
+  notMeasures: string
+  dimensionKey: DimensionKey
+  // Always five entries (steps 1-5); the caller resolves any anchor the
+  // library leaves undefined (2/4) against the model's shared midpoint copy.
   anchors: { step: number; text: string }[]
 }
 
@@ -44,9 +55,10 @@ const stepVariants: Variants = {
 }
 
 // The blind rating flow (assessment glossary): one criterion at a time, the
-// anchor texts are the selectable options, optional motivation per rating.
-// NEVER renders score, level, weights, or other criteria's values; the reveal
-// happens in the result step the parent shows after onCompleted.
+// anchor texts are the selectable options, with a motivation that becomes
+// required at 1, 4, or 5. NEVER renders score, level, weights, or other
+// criteria's values; the reveal happens in the result step the parent shows
+// after onCompleted.
 export function RatingStepper({
   orgId,
   roleId,
@@ -63,6 +75,9 @@ export function RatingStepper({
   const t = useTranslations("dashboard.rating")
   const tHelp = useTranslations("dashboard.help")
   const setRating = useMutation(api.assessment.ratings.setRating)
+  const contextPanelId = useId()
+  const notCoveredExplanationId = useId()
+  const motivationErrorId = useId()
 
   const firstUnrated = criteria.findIndex(
     (criterion) =>
@@ -82,6 +97,15 @@ export function RatingStepper({
   )
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
+  // Which criterion's context panel is expanded / has a shown
+  // motivation-required message, compared against the current criterion at
+  // render time rather than reset with an effect: a fresh step's id can
+  // never match the remembered one, so both start closed automatically on
+  // every step change, including Back.
+  const [contextOpenFor, setContextOpenFor] = useState<string | null>(null)
+  const [motivationErrorFor, setMotivationErrorFor] = useState<string | null>(
+    null
+  )
 
   // The latest keyboard-relevant state and actions, read by the document key
   // handler below so it can bind once and never read stale values.
@@ -94,10 +118,11 @@ export function RatingStepper({
   } | null>(null)
 
   // Keyboard shortcuts for the blind rating flow: press a digit (an anchor
-  // step, 0-5) to choose it, Enter to save and continue. Editable fields (the
-  // motivation textarea) keep their own typing, and Enter on a focused button
-  // (Next/Back/anchor) is left to that button's native activation so we never
-  // advance twice. The Next button carries the matching Enter hint (Kbd).
+  // step, 0-5, 0 only offered on a workingConditions criterion) to choose it,
+  // Enter to save and continue. Editable fields (the motivation textarea)
+  // keep their own typing, and Enter on a focused button (Next/Back/anchor)
+  // is left to that button's native activation so we never advance twice.
+  // The Next button carries the matching Enter hint (Kbd).
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       const keys = keysRef.current
@@ -145,6 +170,21 @@ export function RatingStepper({
   const current = criteria[index]
   if (current === undefined) return null
   const selected = values[current.criterionId]
+  const isWorkingConditions = current.dimensionKey === "workingConditions"
+  // The graded 1-5 ladder, plus "omfattas inte" appended last for a
+  // workingConditions criterion: a qualitatively different answer from the
+  // graded steps, not a sixth degree of them.
+  const displayAnchors = isWorkingConditions
+    ? [
+        ...current.anchors,
+        { step: NOT_COVERED_STEP, text: t("notCoveredOption") },
+      ]
+    : current.anchors
+  const trimmedMotivation = (motivations[current.criterionId] ?? "").trim()
+  const motivationRequired = selected === 1 || selected === 4 || selected === 5
+  const motivationMissing = motivationRequired && trimmedMotivation === ""
+  const contextOpen = contextOpenFor === current.criterionId
+  const showMotivationError = motivationErrorFor === current.criterionId
 
   // Reads the step and motivation ONCE, up front, then awaits. Everything that
   // can change either one is frozen while this runs (the anchors, the digit
@@ -157,16 +197,22 @@ export function RatingStepper({
     // disabled and the Enter shortcut checks pending, so this is the backstop
     // for two activations landing before the re-render publishes pending.
     if (pending) return
+    // Motivation required at 1/4/5 (spec 2.5/17.3): refuse the advance and
+    // surface the inline message instead of calling the mutation (which
+    // would refuse it anyway, but blind round-trip is worse UX).
+    if (motivationMissing) {
+      setMotivationErrorFor(current.criterionId)
+      return
+    }
     setPending(true)
     setFailed(false)
     try {
-      const motivation = (motivations[current.criterionId] ?? "").trim()
       await setRating({
         orgId,
         roleId,
         criterionId: current.criterionId,
         value: selected,
-        ...(motivation !== "" ? { motivation } : {}),
+        ...(trimmedMotivation !== "" ? { motivation: trimmedMotivation } : {}),
       })
       if (index === criteria.length - 1) {
         onCompleted()
@@ -190,7 +236,7 @@ export function RatingStepper({
   // Publish the latest state/actions for the document key handler. Set during
   // render so it always reflects the current criterion and selection.
   keysRef.current = {
-    anchors: current.anchors,
+    anchors: displayAnchors,
     selected,
     pending,
     select: (step) =>
@@ -241,21 +287,76 @@ export function RatingStepper({
           <Card>
             <CardHeader>
               <CardTitle>{current.name}</CardTitle>
-              <CardDescription>{current.description}</CardDescription>
-              {current.helpText !== "" && (
-                <p className="text-muted-foreground text-sm">
-                  {current.helpText}
-                </p>
-              )}
+              <CardDescription>{current.question}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Collapsible measures/notMeasures context: the trigger is
+                  always present (no layout shift from hover/state), and
+                  expanding animates new content below it, a legitimate enter
+                  (docs/ui-animation.md). */}
+              <div>
+                <button
+                  type="button"
+                  aria-expanded={contextOpen}
+                  aria-controls={contextPanelId}
+                  className="flex items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
+                  onClick={() =>
+                    setContextOpenFor((openFor) =>
+                      openFor === current.criterionId
+                        ? null
+                        : current.criterionId
+                    )
+                  }
+                >
+                  {t("contextToggleLabel")}
+                  <HugeiconsIcon
+                    icon={ArrowDown01Icon}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                    className={cn(
+                      "size-3.5 transition-transform motion-reduce:transition-none",
+                      contextOpen && "rotate-180"
+                    )}
+                  />
+                </button>
+                <AnimatePresence initial={false}>
+                  {contextOpen && (
+                    <motion.div
+                      id={contextPanelId}
+                      key="context"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={SPRING}
+                      className="overflow-hidden"
+                    >
+                      <div className="space-y-1.5 pt-2 text-muted-foreground text-xs">
+                        <p>
+                          <span className="font-medium text-foreground">
+                            {`${t("measuresLabel")}: `}
+                          </span>
+                          {current.measures}
+                        </p>
+                        <p>
+                          <span className="font-medium text-foreground">
+                            {`${t("notMeasuresLabel")}: `}
+                          </span>
+                          {current.notMeasures}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <div
                 role="radiogroup"
                 aria-label={t("anchorGroupLabel", { name: current.name })}
                 className="space-y-2"
               >
-                {current.anchors.map((anchor) => {
+                {displayAnchors.map((anchor) => {
                   const isSelected = selected === anchor.step
+                  const isNotCovered = anchor.step === NOT_COVERED_STEP
                   return (
                     // biome-ignore lint/a11y/useSemanticElements: the anchor text is the option label; full-width styled cards with rich text use the radiogroup/radio ARIA pattern, not a native radio input
                     <button
@@ -263,6 +364,9 @@ export function RatingStepper({
                       type="button"
                       role="radio"
                       aria-checked={isSelected}
+                      aria-describedby={
+                        isNotCovered ? notCoveredExplanationId : undefined
+                      }
                       // Frozen while the step is saving, so a click cannot
                       // change the selection out from under the in-flight
                       // write. Deliberately no disabled styling: the save is
@@ -295,6 +399,14 @@ export function RatingStepper({
                     </button>
                   )
                 })}
+                {isWorkingConditions && (
+                  <p
+                    id={notCoveredExplanationId}
+                    className="text-muted-foreground text-xs"
+                  >
+                    {t("notCoveredExplanation")}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -306,6 +418,12 @@ export function RatingStepper({
                   value={motivations[current.criterionId] ?? ""}
                   placeholder={t("motivationPlaceholder")}
                   rows={2}
+                  aria-invalid={showMotivationError && motivationMissing}
+                  aria-describedby={
+                    showMotivationError && motivationMissing
+                      ? motivationErrorId
+                      : undefined
+                  }
                   // readOnly, not disabled: the motivation is read once when
                   // Next fires, so text typed after that would be dropped
                   // silently. readOnly stops the edit without greying the
@@ -318,6 +436,15 @@ export function RatingStepper({
                     }))
                   }
                 />
+                {showMotivationError && motivationMissing && (
+                  <p
+                    id={motivationErrorId}
+                    role="alert"
+                    className="text-destructive text-sm"
+                  >
+                    {t("motivationRequiredError")}
+                  </p>
+                )}
               </div>
 
               {failed && (

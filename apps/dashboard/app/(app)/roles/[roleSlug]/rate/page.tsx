@@ -1,7 +1,6 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import { buildCriterionHelpText } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 import { Kbd } from "@workspace/ui/components/kbd"
@@ -16,6 +15,23 @@ import { PageHeading } from "@/components/page-heading"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { RatingResult } from "@/components/rating/rating-result"
 import { RatingStepper } from "@/components/rating/rating-stepper"
+
+// Steps 1-5 are always per-criterion; the library leaves 2/4 undefined when
+// it has nothing more specific to say than "a considered midpoint", and the
+// model's shared midpoints copy fills exactly those gaps.
+function resolveAnchors(
+  criterion: { anchors: { step: number; text: string }[] },
+  midpoints: { step2: string; step4: string }
+): { step: number; text: string }[] {
+  const byStep = new Map(
+    criterion.anchors.map((anchor) => [anchor.step, anchor.text])
+  )
+  return [1, 2, 3, 4, 5].map((step) => {
+    const text = byStep.get(step)
+    if (text !== undefined) return { step, text }
+    return { step, text: step === 2 ? midpoints.step2 : midpoints.step4 }
+  })
+}
 
 export default function RatePage(props: {
   params: Promise<{ roleSlug: string }>
@@ -36,7 +52,7 @@ export default function RatePage(props: {
 
   if (role === undefined || model === undefined) {
     // Content-shaped loading state mirroring the stepper's layout: heading,
-    // the step-progress line, then the criterion card with its 0-5 anchor
+    // the step-progress line, then the criterion card with its 1-5 anchor
     // options and the nav row, so nothing reflows when the data arrives.
     return (
       <div className="space-y-4">
@@ -60,7 +76,7 @@ export default function RatePage(props: {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                {[0, 1, 2, 3, 4, 5].map((step) => (
+                {[1, 2, 3, 4, 5].map((step) => (
                   <Skeleton key={step} className="h-12 w-full rounded-md" />
                 ))}
               </div>
@@ -146,13 +162,11 @@ export default function RatePage(props: {
         criteria={model.criteria.map((criterion) => ({
           criterionId: criterion.criterionId,
           name: criterion.name,
-          description: criterion.shortUiText,
-          // The library's own guidance split (what the criterion measures vs.
-          // does not) stands in for the retired free-text helpText field,
-          // via the same shared helper getMethodModel and the AI weighting
-          // review prompt use.
-          helpText: buildCriterionHelpText(criterion),
-          anchors: criterion.anchors,
+          question: criterion.assessmentQuestion,
+          measures: criterion.measures,
+          notMeasures: criterion.notMeasures,
+          dimensionKey: criterion.dimensionKey,
+          anchors: resolveAnchors(criterion, model.midpoints),
         }))}
         ratings={role.ratings}
         onCompleted={() => setFinished(true)}

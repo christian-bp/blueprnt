@@ -11,15 +11,17 @@ import type { WeightPoints } from "./weighting"
 describe("scoreRole", () => {
   it("scores uniform ratings at exactly 20 x rating, regardless of allocation", () => {
     // raw = r * sum(points), so the normalization cancels the allocation.
+    // 1 is the floor for STANDARD_CRITERIA (none of it is workingConditions);
+    // the WC-only 0 floor is covered by its own tests below.
     expect(scoreRole(allRated(5), STANDARD_CRITERIA)).toBe(100)
     expect(scoreRole(allRated(4), STANDARD_CRITERIA)).toBe(80)
     expect(scoreRole(allRated(3), STANDARD_CRITERIA)).toBe(60)
-    expect(scoreRole(allRated(0), STANDARD_CRITERIA)).toBe(0)
+    expect(scoreRole(allRated(1), STANDARD_CRITERIA)).toBe(20)
   })
 
   it("scores a mixed standardmall role to the hand-computed golden", () => {
-    // raw = 4*5 + 3*4 + 3*4 + 3*3 + 2*3 + 2*3 + 1*2 + 1*2 + 0*1 = 69
-    // 20 * 69 / 27 = 51.11 -> floored to 51.
+    // raw = 4*5 + 3*4 + 3*4 + 3*3 + 2*3 + 2*3 + 1*2 + 1*2 + 1*1 = 70
+    // 20 * 70 / 27 = 51.85 -> floored to 51.
     const ratings: RatingInput[] = [
       { criterionId: "scope", value: 4 },
       { criterionId: "complexity", value: 3 },
@@ -29,7 +31,7 @@ describe("scoreRole", () => {
       { criterionId: "stakeholders", value: 2 },
       { criterionId: "financial", value: 1 },
       { criterionId: "people", value: 1 },
-      { criterionId: "formal", value: 0 },
+      { criterionId: "formal", value: 1 },
     ]
     expect(scoreRole(ratings, STANDARD_CRITERIA)).toBe(51)
   })
@@ -118,6 +120,36 @@ describe("scoreRole", () => {
       { criterionId: "scope", value: -1 },
     ] as unknown as RatingInput[]
     expect(() => scoreRole(negative, STANDARD_CRITERIA)).toThrow(/out of range/)
+  })
+
+  it("throws on a 0 rating for a non-working-conditions criterion", () => {
+    // "scope" is dimensionKey responsibility in STANDARD_CRITERIA: 0 is only
+    // ever valid for a workingConditions criterion.
+    const ratings: RatingInput[] = [{ criterionId: "scope", value: 0 }]
+    expect(() => scoreRole(ratings, STANDARD_CRITERIA)).toThrow(/out of range/)
+  })
+
+  it("scores a working-conditions 0 as a real zero contribution, not a rejection", () => {
+    const criteria: CriterionWeight[] = [
+      { criterionId: "wc", dimensionKey: "workingConditions", weightPoints: 3 },
+      { criterionId: "knowledge", dimensionKey: "competence", weightPoints: 3 },
+    ]
+    const ratings: RatingInput[] = [
+      { criterionId: "wc", value: 0 },
+      { criterionId: "knowledge", value: 4 },
+    ]
+    // raw = 0*3 + 4*3 = 12; totalPoints 6; score = floor(20*12/6) = 40.
+    expect(scoreRole(ratings, criteria)).toBe(40)
+  })
+
+  it("skips validation for an orphaned rating (unknown criterion id)", () => {
+    // "ghost" carries no criterion, hence no dimension to validate against;
+    // an out-of-range value on it must be ignored, not thrown, matching the
+    // existing orphan-tolerant scoring below it.
+    const ratings: RatingInput[] = [
+      { criterionId: "ghost", value: 0 },
+    ] as unknown as RatingInput[]
+    expect(scoreRole(ratings, STANDARD_CRITERIA)).toBe(0)
   })
 
   it("throws on weight points outside the 1-5 scale", () => {
@@ -220,8 +252,10 @@ describe("criterionShares", () => {
   })
 
   it("zeroes a zero rating's share and leaves the rest summing to 1", () => {
+    // "a" is workingConditions: 0 is a real, legal rating there, not a
+    // rejection.
     const criteria: CriterionWeight[] = [
-      { criterionId: "a", dimensionKey: "competence", weightPoints: 3 },
+      { criterionId: "a", dimensionKey: "workingConditions", weightPoints: 3 },
       { criterionId: "b", dimensionKey: "effort", weightPoints: 3 },
       { criterionId: "c", dimensionKey: "responsibility", weightPoints: 3 },
     ]
@@ -241,9 +275,56 @@ describe("criterionShares", () => {
   })
 
   it("returns all-zero shares (no division by zero) when every rating is 0", () => {
-    const shares = criterionShares(allRated(0), STANDARD_CRITERIA)
+    // Every criterion here is workingConditions purely so an all-0 vector is
+    // legal to construct; criterionShares itself has no opinion on how many
+    // workingConditions criteria a real model may carry (that cap belongs to
+    // method validation, not scoring).
+    const criteria: CriterionWeight[] = STANDARD_CRITERIA.map((criterion) => ({
+      ...criterion,
+      dimensionKey: "workingConditions",
+    }))
+    const shares = criterionShares(allRated(0), criteria)
     expect(shares.every((s) => s.share === 0)).toBe(true)
     expect(shares.every((s) => s.contribution === 0)).toBe(true)
+  })
+
+  it("throws on a 0 rating for a non-working-conditions criterion", () => {
+    const criteria: CriterionWeight[] = [
+      { criterionId: "a", dimensionKey: "competence", weightPoints: 3 },
+    ]
+    expect(() =>
+      criterionShares([{ criterionId: "a", value: 0 }], criteria)
+    ).toThrow(/out of range/)
+  })
+
+  it("gives a working-conditions 0 a real (zero) contribution rather than rejecting it", () => {
+    const criteria: CriterionWeight[] = [
+      { criterionId: "wc", dimensionKey: "workingConditions", weightPoints: 3 },
+      { criterionId: "b", dimensionKey: "effort", weightPoints: 3 },
+    ]
+    const byId = new Map(
+      criterionShares(
+        [
+          { criterionId: "wc", value: 0 },
+          { criterionId: "b", value: 4 },
+        ],
+        criteria
+      ).map((s) => [s.criterionId, s])
+    )
+    expect(byId.get("wc")?.contribution).toBe(0)
+    expect(byId.get("wc")?.share).toBe(0)
+    expect(byId.get("b")?.share).toBe(1)
+  })
+
+  it("skips validation for an orphaned rating (unknown criterion id)", () => {
+    const criteria: CriterionWeight[] = [
+      { criterionId: "a", dimensionKey: "competence", weightPoints: 3 },
+    ]
+    const shares = criterionShares(
+      [{ criterionId: "ghost", value: 0 }] as unknown as RatingInput[],
+      criteria
+    )
+    expect(shares[0]?.share).toBe(0)
   })
 
   it("treats a criterion with no rating as a zero contribution", () => {
@@ -265,7 +346,13 @@ describe("criterionShares", () => {
     expect(() =>
       criterionShares(
         [{ criterionId: "a", value: 3 }],
-        [{ criterionId: "a", weightPoints: 0 as WeightPoints }]
+        [
+          {
+            criterionId: "a",
+            dimensionKey: "competence",
+            weightPoints: 0 as WeightPoints,
+          },
+        ]
       )
     ).toThrow(/invalid weight points/)
   })
@@ -274,7 +361,7 @@ describe("criterionShares", () => {
     const byId = new Map(
       criterionShares(
         [{ criterionId: "a", value: 4 }],
-        [{ criterionId: "a", weightPoints: 3 }]
+        [{ criterionId: "a", dimensionKey: "competence", weightPoints: 3 }]
       ).map((s) => [s.criterionId, s])
     )
     expect(byId.get("a")?.contribution).toBe(12)
@@ -287,7 +374,7 @@ describe("criterionShares", () => {
         { criterionId: "a", value: 1 },
         { criterionId: "a", value: 5 },
       ],
-      [{ criterionId: "a", weightPoints: 3 }]
+      [{ criterionId: "a", dimensionKey: "competence", weightPoints: 3 }]
     )
     expect(shares).toHaveLength(1)
     expect(shares[0]?.contribution).toBe(15)

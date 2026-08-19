@@ -18,6 +18,7 @@ export const ERROR_CODES = {
   criterionAlreadySelected: "errors.criterionAlreadySelected",
   modelExists: "errors.modelExists",
   profileIncomplete: "errors.profileIncomplete",
+  motivationRequired: "errors.motivationRequired",
   aiUnavailable: "errors.aiUnavailable",
   aiGenerationFailed: "errors.aiGenerationFailed",
   roleLocked: "errors.roleLocked",

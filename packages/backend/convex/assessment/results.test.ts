@@ -72,12 +72,17 @@ async function createRatedRole(args: {
     }
   )
   const count = args.rateCount ?? args.model.criteria.length
+  // 1, 4, and 5 require a motivation; a uniform value applies to every
+  // criterion in the slice, so it either needs one everywhere or nowhere.
+  const requiresMotivation =
+    args.value === 1 || args.value === 4 || args.value === 5
   for (const criterion of args.model.criteria.slice(0, count)) {
     await args.asAdmin.mutation(api.assessment.ratings.setRating, {
       orgId: args.orgId,
       roleId,
       criterionId: criterion.criterionId as never,
       value: args.value,
+      ...(requiresMotivation ? { motivation: "Test motivation." } : {}),
     })
   }
   return roleId
@@ -94,12 +99,14 @@ describe("getResults", () => {
       title: "Top",
       value: 5,
     })
+    // 1 is the floor for non-workingConditions criteria (7 of these 8), so
+    // it is the lowest uniform rating achievable here, not 0.
     const lowId = await createRatedRole({
       orgId,
       asAdmin,
       model,
       title: "Low",
-      value: 0,
+      value: 1,
     })
     const partialId = await createRatedRole({
       orgId,
@@ -128,7 +135,8 @@ describe("getResults", () => {
       score: 100,
       level: 1,
     })
-    expect(results.rows[1]).toMatchObject({ score: 0, level: 12 })
+    // raw = 8 * 1 * 3 = 24; totalPoints 24; score = floor(20*24/24) = 20.
+    expect(results.rows[1]).toMatchObject({ score: 20, level: 12 })
     expect(results.rows[2]).toMatchObject({
       complete: false,
       score: null,
@@ -180,7 +188,7 @@ describe("getResults", () => {
       title: "Top",
       value: 5,
     })
-    await createRatedRole({ orgId, asAdmin, model, title: "Plain", value: 0 })
+    await createRatedRole({ orgId, asAdmin, model, title: "Plain", value: 1 })
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId: topId,
@@ -257,6 +265,9 @@ describe("getRoleResult", () => {
     // The breakdown carries the criterion's weight points (every activated
     // criterion enters at the neutral 3; ADR-0004).
     expect(firstRow?.weightPoints).toBe(3)
+    // The breakdown also carries the criterion's dimension, so the client
+    // can validate its own rating range (EIGHT_KEYS[0] is knowledge-depth).
+    expect(firstRow?.dimensionKey).toBe("competence")
   })
 
   it("returns the incomplete shape while ratings are missing", async () => {

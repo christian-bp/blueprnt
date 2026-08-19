@@ -393,9 +393,10 @@ export const DEV_COMPANY: DevFamily[] = [
 // template criterion the masterdokument content maps it to (knowledge-breadth
 // <- formal, communication-effort <- stakeholders, the rest 1:1 by concept),
 // and the old financial vector is dropped entirely (no library key selected
-// for it in this demo). The values themselves are UNCHANGED by this re-key
-// (still the original 0-5 numbers); recalibrating them against the library's
-// own semantics is a later phase (T5), not this one.
+// for it in this demo). Every value is 1-5 except the on-call column, which
+// is workingConditions and legitimately 0 for a title with no standby
+// exposure; seed.ts attaches DEMO_RATING_MOTIVATION to every 1/4/5 value so
+// the demo satisfies its own motivation-required rule.
 //
 // people-leadership was the original 8th key, but it is a responsibility
 // criterion: alongside scope-impact/autonomy-mandate/risk-consequence that
@@ -494,6 +495,13 @@ export const RATINGS_BY_TITLE: Record<string, RatingVector> = {
   "Project Management Officer": [2, 3, 2, 2, 1, 3, 3, 0],
   "Project & Operations Manager": [2, 3, 3, 4, 4, 4, 3, 0],
 }
+
+// A rating value of 1, 4, or 5 requires a motivation (spec 2.5/17.3); the
+// demo data is not exempt from its own law. seed.ts attaches this to every
+// such rating (including a 1 on the on-call/workingConditions column) so the
+// seeded org satisfies the rule it demonstrates.
+export const DEMO_RATING_MOTIVATION =
+  "Motiverad utifrån rollens normala och varaktiga krav vid metodkalibreringen."
 
 // The demo org's calibrated weight points (ADR-0021 library keys), summing to
 // the exact 24-point budget (8 criteria x 3; guarded in devCompany.test.ts).

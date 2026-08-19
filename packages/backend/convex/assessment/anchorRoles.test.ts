@@ -67,12 +67,17 @@ async function createRatedRole(args: {
     }
   )
   const count = args.rateCount ?? args.model.criteria.length
+  // 1, 4, and 5 require a motivation; a uniform value applies to every
+  // criterion in the slice, so it either needs one everywhere or nowhere.
+  const requiresMotivation =
+    args.value === 1 || args.value === 4 || args.value === 5
   for (const criterion of args.model.criteria.slice(0, count)) {
     await args.asAdmin.mutation(api.assessment.ratings.setRating, {
       orgId: args.orgId,
       roleId,
       criterionId: criterion.criterionId as never,
       value: args.value,
+      ...(requiresMotivation ? { motivation: "Test motivation." } : {}),
     })
   }
   return roleId

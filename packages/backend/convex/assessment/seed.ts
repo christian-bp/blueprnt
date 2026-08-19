@@ -3,6 +3,7 @@ import type { Id } from "../_generated/dataModel"
 import { internalMutation } from "../_generated/server"
 import {
   DEMO_ANCHOR_ROLES,
+  DEMO_RATING_MOTIVATION,
   DEMO_SELECTED_KEYS,
   DEMO_WEIGHT_POINTS,
   DEV_COMPANY,
@@ -133,6 +134,12 @@ export const seedRatedRoles = internalMutation({
           roleId: role._id,
           criterionId,
           value,
+          // 1, 4, and 5 require a motivation (spec 2.5/17.3), including a 1
+          // on the on-call/workingConditions column; the demo is not exempt
+          // from its own law.
+          ...(value === 1 || value === 4 || value === 5
+            ? { motivation: DEMO_RATING_MOTIVATION }
+            : {}),
         })
         ratingCount += 1
       }

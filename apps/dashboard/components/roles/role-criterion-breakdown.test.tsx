@@ -12,6 +12,7 @@ const CRITERIA: BreakdownCriterion[] = [
   {
     criterionId: "scope",
     name: "Scope",
+    dimensionKey: "responsibility",
     weightPoints: 5,
     value: 3,
     motivation: null,
@@ -19,6 +20,7 @@ const CRITERIA: BreakdownCriterion[] = [
   {
     criterionId: "complexity",
     name: "Complexity",
+    dimensionKey: "effort",
     weightPoints: 4,
     value: 5,
     motivation: null,
@@ -26,6 +28,7 @@ const CRITERIA: BreakdownCriterion[] = [
   {
     criterionId: "people",
     name: "People",
+    dimensionKey: "responsibility",
     weightPoints: 2,
     value: 1,
     motivation: null,
@@ -64,7 +67,17 @@ describe("RoleCriterionBreakdown", () => {
   })
 
   it("shows 0% for every criterion when all ratings are 0", () => {
-    renderBreakdown(CRITERIA.map((c) => ({ ...c, value: 0 })))
+    // 0 is only ever a legal rating on a workingConditions criterion; the
+    // dimension is overridden here purely so the fixture can express it (a
+    // real model never has three, but criterionShares has no opinion on
+    // that count, only method validation does).
+    renderBreakdown(
+      CRITERIA.map((c) => ({
+        ...c,
+        dimensionKey: "workingConditions",
+        value: 0,
+      }))
+    )
     expect(screen.getAllByText("0%")).toHaveLength(3)
   })
 

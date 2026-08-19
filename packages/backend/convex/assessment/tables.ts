@@ -76,7 +76,7 @@ export const ratings = defineTable({
   orgId: v.string(),
   roleId: v.id("roles"),
   criterionId: v.id("criteria"),
-  value: v.number(), // 0-5; uniqueness per (role, criterion) enforced in mutations
+  value: v.number(), // 1-5, or 0 for a workingConditions criterion; uniqueness per (role, criterion) enforced in mutations
   motivation: v.optional(v.string()),
 })
   .index("by_role_criterion", ["roleId", "criterionId"])

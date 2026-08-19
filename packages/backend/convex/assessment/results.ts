@@ -1,6 +1,10 @@
 import { v } from "convex/values"
-import { criteriaLibraryContent } from "../evaluationModel/criteriaLibrary"
+import {
+  criteriaLibraryContent,
+  LIBRARY_DIMENSION,
+} from "../evaluationModel/criteriaLibrary"
 import { clampLocale } from "../evaluationModel/localize"
+import { dimensionKeyValidator } from "../evaluationModel/tables"
 import { orgQuery } from "../lib/functions"
 import { deriveResults } from "./compute"
 import { familyNames, trackNames } from "./names"
@@ -131,8 +135,9 @@ export const getResults = orgQuery({
 // Per-role result: score (normalized 0-100), level outcome, and the
 // per-criterion breakdown (localized criterion name, weight points, rating
 // value, motivation). The role view derives each criterion's contribution
-// share from value * weightPoints client-side (packages/core criterionShares),
-// so this payload stays unchanged: weightPoints and value are all it needs.
+// share from value * weightPoints client-side (packages/core criterionShares,
+// which validates each rating against its own dimension), so dimensionKey
+// travels alongside weightPoints and value.
 export const getRoleResult = orgQuery({
   args: { roleId: v.string(), locale: v.optional(v.string()) },
   returns: v.union(
@@ -161,6 +166,7 @@ export const getRoleResult = orgQuery({
         v.object({
           criterionId: v.id("criteria"),
           name: v.string(),
+          dimensionKey: dimensionKeyValidator,
           weightPoints: v.number(),
           value: v.union(v.number(), v.null()),
           motivation: v.union(v.string(), v.null()),
@@ -218,6 +224,7 @@ export const getRoleResult = orgQuery({
         return {
           criterionId: row._id,
           name: content.criteria[row.libraryKey].name,
+          dimensionKey: LIBRARY_DIMENSION[row.libraryKey],
           weightPoints: row.weightPoints,
           value: rating?.value ?? null,
           motivation: rating?.motivation ?? null,

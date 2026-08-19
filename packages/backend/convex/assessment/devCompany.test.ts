@@ -1,10 +1,11 @@
 import {
-  assignLevel,
   DEFAULT_LEVEL_RULES,
+  DEFAULT_ZONE_PROFILE_RULES,
   DIMENSION_MAX_ACTIVE,
   type DimensionKey,
   MODEL_MAX_CRITERIA,
   MODEL_MIN_CRITERIA,
+  placeRole,
   type RatingValue,
   scoreRole,
   type WeightPoints,
@@ -22,9 +23,15 @@ const THRESHOLDS = DEFAULT_LEVEL_RULES.map((t) => ({
   level: t.level,
   minScore: t.minScore,
 }))
+const ZONE_PROFILE_RULES = DEFAULT_ZONE_PROFILE_RULES.map((rule) => ({
+  zone: rule.zone,
+  minStep: rule.minStep,
+}))
 
-// Score one role's rating vector under a weight map (libraryKey -> points),
-// using the real engine so this mirrors what getResults derives live.
+// Score and place one role's rating vector under a weight map (libraryKey ->
+// points), routing through the same scoreRole + placeRole pipeline
+// deriveResults uses (zone profile capping included, not just the raw
+// score-implied level), so this mirrors what getResults derives live.
 function evaluate(ratings: readonly number[], weights: Record<string, number>) {
   const criteria = DEMO_SELECTED_KEYS.map((key) => ({
     criterionId: key as string,
@@ -36,7 +43,19 @@ function evaluate(ratings: readonly number[], weights: Record<string, number>) {
     value: (ratings[i] ?? 0) as RatingValue,
   }))
   const score = scoreRole(ratingInputs, criteria)
-  return { score, level: assignLevel(score, THRESHOLDS) }
+  const placement = placeRole({
+    score,
+    ratings: ratingInputs,
+    criteria,
+    levelRules: THRESHOLDS,
+    zoneProfileRules: ZONE_PROFILE_RULES,
+  })
+  return {
+    score,
+    level: placement.level,
+    zone: placement.zone,
+    profileLimited: placement.profileLimited,
+  }
 }
 
 // The neutral baseline: every activated criterion enters at 3 (ADR-0004),
@@ -160,6 +179,22 @@ describe("devCompany ratings", () => {
     expect(levelByTitle.CEO).toBe(2)
     expect(levelByTitle["Content Delivery Manager"]).toBe(7)
     expect(levelByTitle["Software Developer"]).toBe(10)
+  })
+
+  it("never lets the zone profile cap a seeded title under the demo weighting", () => {
+    // complexity-ambiguity and scope-impact are the demo's only profile
+    // criteria (weight >= 4, non-workingConditions) under DEMO_WEIGHT_POINTS.
+    // Every title's own rating on both clears its score-implied zone's
+    // floor, so evaluate()'s route through placeRole never actually caps
+    // anyone here; this pins that fact so a future rating or weight edit
+    // that silently starts capping a title is caught.
+    for (const title of ALL_TITLES) {
+      const { profileLimited } = evaluate(
+        RATINGS_BY_TITLE[title] ?? [],
+        DEMO_WEIGHTS
+      )
+      expect(profileLimited, title).toBe(false)
+    }
   })
 
   it("re-weighting toward technical criteria moves the levels", () => {
