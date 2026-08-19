@@ -767,7 +767,11 @@
         "zoneProfileRules": "Zonprofilregler",
         "criteriaCount": "Kriterier",
         "checksPassed": "Godkända kontroller",
-        "causeEvent": "Återöppnad av"
+        "causeEvent": "Återöppnad av",
+        "competenceShare": "Kompetens %",
+        "effortShare": "Ansträngning %",
+        "responsibilityShare": "Ansvar %",
+        "workingConditionsShare": "Arbetsförhållanden %"
       },
       "values": {
         "yes": "Ja",
@@ -1994,6 +1998,10 @@
       "methodBiasRiskBody": "Risken att kriteriet över- eller undervärderar könskodat arbete, till exempel genom att gynna synligt mandat eller budgetstorlek framför faktisk komplexitet.",
       "methodBiasCommentBody": "Vad du övervägde i biaskontrollen och vad du kom fram till.",
       "methodBiasActionBody": "Den motverkande åtgärd som vidtagits för att minska risken, som omformulerade stegbeskrivningar eller justerad viktning.",
+      "modelApprovalLabel": "Vad innebär det att godkänna modellen?",
+      "modelApprovalBody": "Att godkänna låser inte modellen, det öppnar för att bedöma roller mot den. Varje metodändring (kriterier, viktning, regler) återöppnar godkännandet automatiskt, så en bedömning alltid matchar en godkänd metod.",
+      "workingConditionsDecisionLabel": "Vad betyder 'testat, inte materiellt'?",
+      "workingConditionsDecisionBody": "Testat, inte materiellt betyder att ni granskat arbetsförhållanden och inte funnit något tillräckligt materiellt för att bedömas. Välj Aktivt för att lägga till ett: det gäller då varje roll, där 0 betyder att rollen inte omfattas.",
       "classifySeniorityLabel": "Vad är senioritet?",
       "classifySeniorityBody": "Individens placering inom rollens track, till exempel Senior eller Lead. Den anges per person, inte på rollen, och används för att jämföra personer i likvärdiga positioner.",
       "fteAdjustedLabel": "Vad betyder heltidsjusterad?",

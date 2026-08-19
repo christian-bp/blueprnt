@@ -115,9 +115,20 @@ describe("approveModel", () => {
       const payload = rows[0]?.payload as {
         criteriaCount: number
         checksPassed: number
+        competenceShare: number
+        effortShare: number
+        responsibilityShare: number
+        workingConditionsShare: number
       }
       expect(payload.criteriaCount).toBe(6)
       expect(payload.checksPassed).toBe(12)
+      // HEALTHY_KEYS: 2 criteria per dimension (competence/effort/
+      // responsibility) at the neutral weight 3 each, 0 workingConditions;
+      // 6/18 = 33.33% rounds to 33 for each of the three, 0 for the fourth.
+      expect(payload.competenceShare).toBe(33)
+      expect(payload.effortShare).toBe(33)
+      expect(payload.responsibilityShare).toBe(33)
+      expect(payload.workingConditionsShare).toBe(0)
     })
   })
 

@@ -767,7 +767,11 @@
         "zoneProfileRules": "Soneprofilregler",
         "criteriaCount": "Kriterier",
         "checksPassed": "Godkjente kontroller",
-        "causeEvent": "Gjenåpnet av"
+        "causeEvent": "Gjenåpnet av",
+        "competenceShare": "Kompetanse %",
+        "effortShare": "Innsats %",
+        "responsibilityShare": "Ansvar %",
+        "workingConditionsShare": "Arbeidsforhold %"
       },
       "values": {
         "yes": "Ja",
@@ -1994,6 +1998,10 @@
       "methodBiasRiskBody": "Risikoen for at kriteriet over- eller undervurderer kjønnskodet arbeid, for eksempel ved å favorisere synlig mandat eller budsjettstørrelse framfor faktisk kompleksitet.",
       "methodBiasCommentBody": "Hva du vurderte i biaskontrollen og hva du fant.",
       "methodBiasActionBody": "Mottiltaket som er gjort for å redusere risikoen, som omformulerte stegbeskrivelser eller justert vekting.",
+      "modelApprovalLabel": "Hva innebærer det å godkjenne modellen?",
+      "modelApprovalBody": "Å godkjenne låser ikke modellen, det åpner for å vurdere roller mot den. Enhver metodeendring (kriterier, vekting, regler) gjenåpner godkjenningen automatisk, så en vurdering alltid matcher en godkjent metode.",
+      "workingConditionsDecisionLabel": "Hva betyr 'testet, ikke materielt'?",
+      "workingConditionsDecisionBody": "Testet, ikke materielt betyr at dere har vurdert arbeidsforhold og ikke funnet noe materielt nok til å vurderes. Velg Aktivt for å legge til ett: det gjelder da hver rolle, der 0 betyr at rollen ikke er dekket.",
       "classifySeniorityLabel": "Hva er senioritet?",
       "classifySeniorityBody": "Individets plassering innen rollens track, for eksempel Senior eller Lead. Det angis per person, ikke på rollen, og brukes til å sammenligne personer i tilsvarende stillinger.",
       "fteAdjustedLabel": "Hva betyr heltidsjustert?",

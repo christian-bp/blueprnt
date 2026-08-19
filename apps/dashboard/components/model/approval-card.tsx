@@ -8,7 +8,7 @@ import {
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
-import type { MethodCheckKey } from "@workspace/core"
+import { METHOD_CHECK_KEYS } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -37,30 +37,13 @@ import { ConvexError } from "convex/values"
 import { useFormatter, useTranslations } from "next-intl"
 import { useMemo } from "react"
 import { useForm } from "react-hook-form"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { SubmitButton } from "@/components/submit-button"
 import { toast } from "@/lib/toast"
 import {
   makeWorkingConditionsSchema,
   type WorkingConditionsValues,
 } from "@/lib/working-conditions-schema"
-
-// The twelve checks in the fixed order validateMethod returns them
-// (packages/core method-checks.ts), so the card's row order never depends on
-// however the wire array happens to arrive.
-const CHECK_ORDER: MethodCheckKey[] = [
-  "dimensionCoverage",
-  "workingConditionsTested",
-  "criterionCount",
-  "dimensionCaps",
-  "anchorsComplete",
-  "documentationComplete",
-  "weightBudget",
-  "levelRulesValid",
-  "zoneProfileMonotonic",
-  "dimensionWeightBalance",
-  "peopleLeadershipWeight",
-  "overlapPairs",
-]
 
 const KNOWN_ERROR_KEYS = ["methodBlocked", "invalidTransition"] as const
 
@@ -123,6 +106,7 @@ function WorkingConditionsForm({
   } | null
 }) {
   const t = useTranslations("dashboard.model.method")
+  const tHelp = useTranslations("dashboard.help")
   const tv = useTranslations("dashboard.validation")
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
@@ -139,7 +123,7 @@ function WorkingConditionsForm({
       motivation: current?.motivation ?? "",
     },
   })
-  const { isDirty, isSubmitting } = form.formState
+  const { isDirty, isSubmitting, isValid } = form.formState
 
   async function onValid(values: WorkingConditionsValues) {
     try {
@@ -154,7 +138,12 @@ function WorkingConditionsForm({
   return (
     <div className="space-y-3 border-t pt-4">
       <div>
-        <p className="font-medium text-sm">{t("workingConditions.heading")}</p>
+        <p className="flex items-center gap-1.5 font-medium text-sm">
+          {t("workingConditions.heading")}
+          <HelpMorphButton label={tHelp("workingConditionsDecisionLabel")}>
+            {tHelp("workingConditionsDecisionBody")}
+          </HelpMorphButton>
+        </p>
         <p className="text-muted-foreground text-sm">
           {t("workingConditions.description")}
         </p>
@@ -212,11 +201,14 @@ function WorkingConditionsForm({
               </FormItem>
             )}
           />
-          {isDirty && (
-            <SubmitButton type="submit" isSubmitting={isSubmitting} size="sm">
-              {t("workingConditions.saveCta")}
-            </SubmitButton>
-          )}
+          <SubmitButton
+            type="submit"
+            isSubmitting={isSubmitting}
+            disabled={!isValid || !isDirty}
+            size="sm"
+          >
+            {t("workingConditions.saveCta")}
+          </SubmitButton>
         </form>
       </Form>
     </div>
@@ -225,6 +217,7 @@ function WorkingConditionsForm({
 
 export function ApprovalCard({ orgId }: { orgId: string }) {
   const t = useTranslations("dashboard.model.method")
+  const tHelp = useTranslations("dashboard.help")
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
   const format = useFormatter()
@@ -240,13 +233,18 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t("approvalHeading")}</CardTitle>
+          <CardTitle className="flex items-center gap-1.5">
+            {t("approvalHeading")}
+            <HelpMorphButton label={tHelp("modelApprovalLabel")}>
+              {tHelp("modelApprovalBody")}
+            </HelpMorphButton>
+          </CardTitle>
           <CardDescription>{t("approvalDescription")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Skeleton className="h-4 w-40" />
           <ul className="space-y-2">
-            {CHECK_ORDER.map((key) => (
+            {METHOD_CHECK_KEYS.map((key) => (
               <li key={key} className="flex items-center gap-2">
                 <Skeleton className="size-4 shrink-0 rounded-full" />
                 <Skeleton className="h-4 w-64 max-w-full" />
@@ -276,7 +274,12 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("approvalHeading")}</CardTitle>
+        <CardTitle className="flex items-center gap-1.5">
+          {t("approvalHeading")}
+          <HelpMorphButton label={tHelp("modelApprovalLabel")}>
+            {tHelp("modelApprovalBody")}
+          </HelpMorphButton>
+        </CardTitle>
         <CardDescription>{t("approvalDescription")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -302,7 +305,7 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
           )}
         </div>
         <ul className="space-y-2">
-          {CHECK_ORDER.map((key) => {
+          {METHOD_CHECK_KEYS.map((key) => {
             const check = checksByKey.get(key)
             if (check === undefined) return null
             return (

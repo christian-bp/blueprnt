@@ -767,7 +767,11 @@
         "zoneProfileRules": "Zoneprofilregler",
         "criteriaCount": "Kriterier",
         "checksPassed": "Godkendte tjek",
-        "causeEvent": "Genåbnet af"
+        "causeEvent": "Genåbnet af",
+        "competenceShare": "Kompetence %",
+        "effortShare": "Indsats %",
+        "responsibilityShare": "Ansvar %",
+        "workingConditionsShare": "Arbejdsforhold %"
       },
       "values": {
         "yes": "Ja",
@@ -1994,6 +1998,10 @@
       "methodBiasRiskBody": "Risikoen for at kriteriet over- eller undervurderer kønskodet arbejde, for eksempel ved at favorisere synligt mandat eller budgetstørrelse frem for faktisk kompleksitet.",
       "methodBiasCommentBody": "Hvad du overvejede i biaskontrollen, og hvad du fandt.",
       "methodBiasActionBody": "Den modforanstaltning, der er taget for at reducere risikoen, som omformulerede trinbeskrivelser eller justeret vægtning.",
+      "modelApprovalLabel": "Hvad betyder det at godkende modellen?",
+      "modelApprovalBody": "At godkende låser ikke modellen, det åbner for at vurdere roller mod den. Enhver metodeændring (kriterier, vægtning, regler) genåbner godkendelsen automatisk, så en vurdering altid matcher en godkendt metode.",
+      "workingConditionsDecisionLabel": "Hvad betyder 'testet, ikke væsentligt'?",
+      "workingConditionsDecisionBody": "Testet, ikke væsentligt betyder, at I har gennemgået arbejdsforhold og ikke fundet noget væsentligt nok til at vurdere. Vælg Aktiv for at tilføje ét: det gælder så hver rolle, hvor 0 betyder, at rollen ikke er dækket.",
       "classifySeniorityLabel": "Hvad er senioritet?",
       "classifySeniorityBody": "Individets placering inden for rollens track, for eksempel Senior eller Lead. Det angives per person, ikke på rollen, og bruges til at sammenligne personer i tilsvarende stillinger.",
       "fteAdjustedLabel": "Hvad betyder fuldtidsjusteret?",

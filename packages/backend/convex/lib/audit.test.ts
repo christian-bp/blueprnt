@@ -301,7 +301,15 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
     count: 0,
     items: [],
   },
-  "model.approved": { modelId: "model-1", criteriaCount: 8, checksPassed: 12 },
+  "model.approved": {
+    modelId: "model-1",
+    criteriaCount: 8,
+    checksPassed: 12,
+    competenceShare: 25,
+    effortShare: 29,
+    responsibilityShare: 42,
+    workingConditionsShare: 4,
+  },
   "model.workingConditionsDecided": {
     modelId: "model-1",
     status: "active",

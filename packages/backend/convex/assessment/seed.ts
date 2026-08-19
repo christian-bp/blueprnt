@@ -2,6 +2,8 @@ import { v } from "convex/values"
 import { internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { internalMutation } from "../_generated/server"
+import { criteriaLibraryContent } from "../evaluationModel/criteriaLibrary"
+import { resolveContentLocale } from "../evaluationModel/model"
 import {
   DEMO_ANCHOR_ROLES,
   DEMO_BIAS_COMMENT,
@@ -72,13 +74,25 @@ export const seedRatedRoles = internalMutation({
       .unique()
     const criterionIdByKey = new Map<string, Id<"criteria">>()
     if (model !== null) {
+      // Kriterieurvalsprotokoll prefill, the exact activateCriterion pattern
+      // (evaluationModel/criteria.ts): purpose from the library's own
+      // definition, whyRelevant from its "when suitable" text, in the org's
+      // content locale. Without this the demo's approved criteria would show
+      // blank locked documentation in the Method tab's compliance dialog
+      // under a green checklist (documented only requires approved === true,
+      // but a real reviewer opening the dialog expects real text there).
+      const locale = await resolveContentLocale(ctx, orgId)
+      const content = criteriaLibraryContent(locale)
       for (const [index, libraryKey] of DEMO_SELECTED_KEYS.entries()) {
+        const entry = content.criteria[libraryKey]
         const criterionId = await ctx.db.insert("criteria", {
           orgId,
           modelId: model._id,
           libraryKey,
           weightPoints: DEMO_WEIGHT_POINTS[libraryKey],
           order: index + 1,
+          purpose: entry.fullDefinition,
+          whyRelevant: entry.whenSuitable,
           // Compliance sign-off (spec §17.2 items 5-6): the demo org has
           // reviewed and approved every selected criterion, so its checklist
           // reads all-green like a company that finished its method work,

@@ -767,7 +767,11 @@
         "zoneProfileRules": "Vyöhykeprofiilisäännöt",
         "criteriaCount": "Kriteerit",
         "checksPassed": "Läpäistyt tarkistukset",
-        "causeEvent": "Avannut uudelleen"
+        "causeEvent": "Avannut uudelleen",
+        "competenceShare": "Osaaminen %",
+        "effortShare": "Ponnistus %",
+        "responsibilityShare": "Vastuu %",
+        "workingConditionsShare": "Työolosuhteet %"
       },
       "values": {
         "yes": "Kyllä",
@@ -1994,6 +1998,10 @@
       "methodBiasRiskBody": "Riski, että kriteeri yli- tai aliarvioi sukupuolittunutta työtä, esimerkiksi suosimalla näkyvää valtuutta tai budjetin kokoa todellisen monimutkaisuuden sijaan.",
       "methodBiasCommentBody": "Mitä otit huomioon vinoumatarkistuksessa ja mitä havaitsit.",
       "methodBiasActionBody": "Riskiä vähentämään tehty korjaava toimi, kuten uudelleen muotoillut tasokuvaukset tai säädetty painotus.",
+      "modelApprovalLabel": "Mitä mallin hyväksyminen tarkoittaa?",
+      "modelApprovalBody": "Hyväksyminen ei lukitse mallia, vaan se avaa roolien arvioinnin sitä vasten. Mikä tahansa menetelmämuutos (kriteerit, painotus, säännöt) avaa hyväksynnän uudelleen automaattisesti, joten arviointi vastaa aina hyväksyttyä menetelmää.",
+      "workingConditionsDecisionLabel": "Mitä 'testattu, ei olennainen' tarkoittaa?",
+      "workingConditionsDecisionBody": "Testattu, ei olennainen tarkoittaa, ettei työoloissa löytynyt mitään tarpeeksi olennaista arvioitavaksi. Valitse Aktiivinen lisätäksesi ehdon: se koskee tällöin jokaista roolia, ja 0 tarkoittaa, ettei se koske roolia.",
       "classifySeniorityLabel": "Mikä on senioriteetti?",
       "classifySeniorityBody": "Yksilön asema roolin trackin sisällä, esimerkiksi Senior tai Lead. Se asetetaan henkilölle, ei roolille, ja sitä käytetään vastaavissa tehtävissä olevien vertailuun.",
       "fteAdjustedLabel": "Mitä kokoaikaiseksi muunnettu tarkoittaa?",

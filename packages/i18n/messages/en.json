@@ -767,7 +767,11 @@
         "zoneProfileRules": "Zone profile rules",
         "criteriaCount": "Criteria",
         "checksPassed": "Checks passed",
-        "causeEvent": "Reopened by"
+        "causeEvent": "Reopened by",
+        "competenceShare": "Competence %",
+        "effortShare": "Effort %",
+        "responsibilityShare": "Responsibility %",
+        "workingConditionsShare": "Working conditions %"
       },
       "values": {
         "yes": "Yes",
@@ -1994,6 +1998,10 @@
       "methodBiasRiskBody": "The risk that this criterion over- or under-values gender-coded work, for example favouring visible mandate or budget size over actual complexity.",
       "methodBiasCommentBody": "What you considered in the bias check and what you found.",
       "methodBiasActionBody": "The mitigating action taken to reduce the risk, such as reworded step descriptions or adjusted weighting.",
+      "modelApprovalLabel": "What does approving the model do?",
+      "modelApprovalBody": "Approving doesn't lock the model: it unlocks rating roles. Any method change (criteria, weighting, rules) reopens approval, so a rating always matches an approved method.",
+      "workingConditionsDecisionLabel": "What does 'tested, not material' mean?",
+      "workingConditionsDecisionBody": "Tested, not material means you reviewed working conditions and found none material enough to rate. Choose Active to add one: it then applies to every role, where 0 means the role isn't covered.",
       "classifySeniorityLabel": "What is seniority?",
       "classifySeniorityBody": "The individual's rank within the role's track, such as Senior or Lead. It is set per person, not on the role, and is used to compare people in equivalent positions.",
       "fteAdjustedLabel": "What does FTE-adjusted mean?",

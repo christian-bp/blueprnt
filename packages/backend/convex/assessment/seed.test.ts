@@ -270,6 +270,27 @@ describe("assessment/seed.seedRatedRoles", () => {
       const failing = checks.filter((check) => !check.ok)
       expect(failing).toEqual([])
 
+      // Documentation is real, not just the approved flag: every seeded
+      // criterion carries the activateCriterion prefill (purpose from the
+      // library's fullDefinition, whyRelevant from whenSuitable), so the
+      // Method tab's compliance dialog never shows blank locked text under a
+      // green checklist.
+      const criteria = await ctx.db
+        .query("criteria")
+        .withIndex("by_model", (q) => q.eq("modelId", model._id))
+        .collect()
+      expect(criteria).toHaveLength(8)
+      for (const criterion of criteria) {
+        expect(
+          criterion.purpose?.trim().length ?? 0,
+          `purpose for ${criterion.libraryKey}`
+        ).toBeGreaterThan(0)
+        expect(
+          criterion.whyRelevant?.trim().length ?? 0,
+          `whyRelevant for ${criterion.libraryKey}`
+        ).toBeGreaterThan(0)
+      }
+
       const approvedRows = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>

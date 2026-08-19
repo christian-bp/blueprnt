@@ -277,11 +277,17 @@ export interface AuditPayloads {
   }
   // Flat stats only (ADR-0023): the twelve checks themselves are re-derivable
   // live from current state (validateMethod), so the approval row need not
-  // carry a changes diff, only how many criteria and checks it covered.
+  // carry a changes diff, only how many criteria and checks it covered, plus
+  // a dimension-shares snapshot (each a rounded percentage 0-100, flattened
+  // to scalar fields so the flat-stats renderer picks them up).
   "model.approved": {
     modelId: string
     criteriaCount: number
     checksPassed: number
+    competenceShare: number
+    effortShare: number
+    responsibilityShare: number
+    workingConditionsShare: number
   }
   // `status` is the coded value context field (resolveCodedValue), alongside
   // the changes diff of status/motivation itself (mirrors

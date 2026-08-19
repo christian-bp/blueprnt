@@ -158,9 +158,16 @@ const OTHER_AUDIT_FIELDS = [
   "levelRules",
   // model.zoneProfileRulesUpdated diff field (evaluationModel/approval.ts).
   "zoneProfileRules",
-  // model.approved flat-stat fields (evaluationModel/approval.ts).
+  // model.approved flat-stat fields (evaluationModel/approval.ts): the
+  // dimension shares are rounded percentage integers, flattened to one
+  // field per dimension (never a nested object; payloadStats only picks up
+  // top-level string/number fields).
   "criteriaCount",
   "checksPassed",
+  "competenceShare",
+  "effortShare",
+  "responsibilityShare",
+  "workingConditionsShare",
   // model.approvalReopened flat-stat field (evaluationModel/approval.ts):
   // a coded AuditEvent value (resolved via resolveCodedValue's
   // CAUSE_EVENT_VALUE_KEYS domain, not a dashboard.auditLog.values.* Record),

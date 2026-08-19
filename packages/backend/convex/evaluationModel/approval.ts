@@ -1,4 +1,5 @@
 import {
+  dimensionWeightShares,
   type LevelRule,
   type MethodCheckCriterion,
   type MethodCheckInput,
@@ -102,6 +103,34 @@ function summarizeZoneProfileRules(rules: readonly ZoneProfileRule[]): string {
   if (rules.length === 0) return "0 rules"
   const detail = rules.map((rule) => `${rule.zone}>=${rule.minStep}`).join(", ")
   return `${rules.length} rules: ${detail}`
+}
+
+// The model.approved audit payload, shared by approveModel and
+// approveSeededModel so the two can never drift. Dimension shares come from
+// the engine's own dimensionWeightShares over the SAME criteria input the
+// checklist just validated (fractions of 1), rounded to whole percentage
+// points and flattened onto the payload as four scalar fields (never a
+// nested object: the flat-stats renderer, payloadStats in the dashboard,
+// only picks up top-level string/number fields). Each field's value is the
+// bare integer (e.g. 33), matching the house convention for a percentage
+// audit field (see ftePercent): the field LABEL carries the "%", not the
+// stored value.
+function approvedPayload(
+  model: Doc<"models">,
+  input: MethodCheckInput,
+  checksPassed: number
+) {
+  const shares = dimensionWeightShares(input.criteria)
+  const pct = (fraction: number) => Math.round(fraction * 100)
+  return {
+    modelId: model._id,
+    criteriaCount: input.criteria.length,
+    checksPassed,
+    competenceShare: pct(shares.competence),
+    effortShare: pct(shares.effort),
+    responsibilityShare: pct(shares.responsibility),
+    workingConditionsShare: pct(shares.workingConditions),
+  }
 }
 
 // Reopens approval if the model currently carries one: a method-affecting
@@ -236,11 +265,11 @@ export const approveModel = adminMutation({
     })
     await ctx.audit.log({
       type: AUDIT_EVENTS.modelApproved,
-      payload: {
-        modelId: model._id,
-        criteriaCount: input.criteria.length,
-        checksPassed: checks.filter((check) => check.ok).length,
-      },
+      payload: approvedPayload(
+        model,
+        input,
+        checks.filter((check) => check.ok).length
+      ),
     })
     return null
   },
@@ -273,11 +302,11 @@ export const approveSeededModel = internalMutation({
       orgId,
       type: AUDIT_EVENTS.modelApproved,
       actorId,
-      payload: {
-        modelId: model._id,
-        criteriaCount: input.criteria.length,
-        checksPassed: checks.filter((check) => check.ok).length,
-      },
+      payload: approvedPayload(
+        model,
+        input,
+        checks.filter((check) => check.ok).length
+      ),
     })
     return null
   },
