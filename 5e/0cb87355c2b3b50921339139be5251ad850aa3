@@ -1,0 +1,63 @@
+packages/backend/convex/assessment/seed.ts
+  s_58dd112dc09435::t_24475e4c79c32f 77-85,87,94-95
+  s_58dd112dc09435::t_52a308d29a8518 5-6
+apps/dashboard/components/model/approval-card.tsx
+  s_58dd112dc09435::t_5d2c57bf1c6d5a 141-146
+  s_58dd112dc09435::t_cfa8701d11c910 220
+  s_58dd112dc09435::t_b81a450f3fb94f 126
+  s_58dd112dc09435::t_ef701bfea493f3 236-241
+  s_58dd112dc09435::t_fba845d203ee6c 204-211
+  s_58dd112dc09435::t_aeed061b247c7b 40
+  s_58dd112dc09435::t_140db4ed102312 247
+  s_58dd112dc09435::t_52247eabea12e3 308
+  s_58dd112dc09435::t_2096595f630452 109
+  s_58dd112dc09435::t_0e58017787d9dc 11
+  s_58dd112dc09435::t_a245515a7cfe44 277-282
+packages/backend/convex/lib/audit.test.ts
+  s_58dd112dc09435::t_6d0baf2c32886a 304-312
+packages/backend/convex/assessment/seed.test.ts
+  s_58dd112dc09435::t_cde9561665012e 273-293
+packages/backend/convex/evaluationModel/approval.test.ts
+  s_58dd112dc09435::t_4aadeeff07eec7 118-121,125-131
+packages/backend/convex/evaluationModel/approval.ts
+  s_58dd112dc09435::t_321c3e07f14f47 108-123,125-128,133-135
+  s_58dd112dc09435::t_8c31f70977f646 2
+  s_58dd112dc09435::t_10e6e8e441ef32 124,129-132
+  s_58dd112dc09435::t_6ae42e13dedf95 305-309
+  s_58dd112dc09435::t_b80148788fedbd 268-272
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_069d54e69e9104 2001-2004
+  s_58dd112dc09435::t_84cbfacb015672 770-774
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_815c7e06378a43 2001-2004
+  s_58dd112dc09435::t_6ac5d08845a880 770-774
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_d1727b5ee388f2 2001-2004
+  s_58dd112dc09435::t_6cd3e17c477cfc 770-774
+packages/backend/convex/lib/auditPayloads.ts
+  s_58dd112dc09435::t_222f5b8555b903 280-282,287-290
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_6cdcb62a19b9bc 2001-2004
+  s_58dd112dc09435::t_0603fb9ea0c094 770-774
+apps/dashboard/lib/audit-labels.test.ts
+  s_58dd112dc09435::t_d6db6c0d4f49b1 161-164,167-170
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_854900211691a7 2001-2004
+  s_58dd112dc09435::t_3ce5d05fe9b1eb 770-774
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5e0cb87355c2b3b50921339139be5251ad850aa3",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
