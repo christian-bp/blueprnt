@@ -147,17 +147,13 @@ in the same change.
   addresses (and bodies) through Sweego. Confirm the hosting region is EU,
   execute a data-processing agreement, and add Sweego to the subprocessor / DPA
   register before go-live.
-- [ ] **Build or retire the backend-complete AI flow with no UI: criterion
-  compliance drafting.** `draftCriterionCompliance`
+- [x] **Criterion compliance drafting ships end to end.** `draftCriterionCompliance`
   (`SUGGESTION_KINDS.criterionCompliance`, `ai/draft.ts`) generates the six
-  rationale + bias-review fields and returns them to the client (no
-  suggestion row, no auto-apply) and is fully wired server-side (action,
-  usage telemetry, audit labels, tests), but has zero consumers under
-  `apps/`. It is NOT dead code: spec section 7 names compliance drafting as
-  feeding from the library boundaries. Recorded here so it reads as scheduled
-  work rather than an orphan, since "no legacy before launch" otherwise
-  invites each new reviewer to re-litigate deleting it. Before go-live either
-  ship its panel or remove the action and its suggestion kind.
+  rationale + bias-review fields and is consumed live by the compliance
+  dialog's AI action (`apps/dashboard/components/model/criterion-compliance-dialog.tsx`,
+  rendered from the method panel at `/model/method`), feeding from the
+  library boundaries per spec section 7. No open work; kept as a record that
+  an earlier revision of this entry wrongly claimed zero consumers.
   (`SUGGESTION_KINDS.modelDraft` and `model.draft`, the sibling flow this item
   used to also cover, are fully retired; `getWeightReviewLock` no longer reads
   suggestion rows for its lock at all. It now compares the latest confirmed
