@@ -1,70 +1,67 @@
 ---
 title: Kriteerit ja arviointiasteikko
-description: Mikä kriteeri on, sen kuusiportainen asteikko, ja miten kriteerin lisääminen tai poistaminen toimii.
+description: Kriteerikirjasto ja sen neljä ulottuvuutta, miten valinta toimii, ja asteikko 1-5, jota vasten roolia arvioidaan.
 section: model
 ---
 
 Kriteeri on yksi asia, jota vasten kaikkia organisaationne rooleja
 arvioidaan, kuten laajuutta, monimutkaisuutta tai henkilövastuuta.
-Rakennatte ja muokkaatte kriteereitä [Malli](/model)-alueen
-"Kriteerit"-välilehdellä.
+Jokainen kriteeri tulee blueprntin valvotusta kriteerikirjastosta:
+valitsette, mitä organisaationne käyttää, [Malli](/model)-alueen
+"Kriteerit"-välilehdeltä, mutta ette voi keksiä uutta kriteeriä ettekä
+muokata valitun kriteerin tekstiä.
 
-## Mitä kriteeri sisältää
+## Kriteerikirjasto ja sen neljä ulottuvuutta
 
-Jokaisella kriteerillä on Nimi, Kuvaus ja Laajennettu kuvaus (pidempi
-selitys, joka näytetään kun joku haluaa enemmän kontekstia). Sillä on
-myös arviointiasteikkonsa: kuusi tekstiä, yksi jokaiselle portaalle
-0:sta 5:een, jotka kuvaavat, millainen rooli on tällä portaalla tässä
-kriteerissä. Asteikko on otsikoitu "Arviointiasteikko (0-5)" kaikkialla
-missä se esiintyy.
+Kirjasto sisältää 21 määriteltyä kriteeriä, joilla kullakin on
+kiinteä nimi, määritelmä ja kuvaus siitä, mitä se mittaa ja mitä ei,
+jo valmiiksi kirjoitettuna ja laadunvarmistettuna. Jokainen kriteeri
+kuuluu tarkalleen yhteen neljästä ulottuvuudesta: Osaaminen, Ponnistelu
+ja monimutkaisuus, Vastuu ja vaikutus, sekä Työolosuhteet. Nämä neljä
+ulottuvuutta tulevat EU:n palkka-avoimuusdirektiivistä ja ovat aina
+läsnä; valitsette kriteerit niiden sisältä, ette koskaan itse
+ulottuvuuksia.
 
-## Kuusiportainen arviointiasteikko
+## Organisaationne kriteerien valitseminen
 
-Kunkin kriteerin asteikko kulkee portaasta 0 (matalin, kriteerin heikoin
-tai puuttuva ilmentymä) portaaseen 5 (korkein, vahvin kohtuullinen
-ilmentymä). Kirjoittakaa kukin porras riittävän konkreettisesti, jotta
-kaksi eri henkilöä, jotka arvioivat samaa roolia samaa portaan kuvausta
-vasten, päätyisivät samaan vastaukseen; epämääräinen porras houkuttelee
-epäjohdonmukaisiin arvioihin. Tätä asteikkoa vasten roolia todella
-arvioidaan, kun joku [arvioi roolin](/docs/evaluating-a-role); sillä ei
-ole mitään tekemistä sen kanssa, kuinka paljon kriteeri painaa, mikä
-kuuluu erilliselle Painotus-välilehdelle.
+Organisaationne valitsee yhteensä 6-8 kriteeriä, välttäen kahta, jotka
+mittaavat samaa asiaa. Kukin ulottuvuus asettaa ylärajan sille, kuinka
+monta sen kriteeriä voi olla aktiivisena kerrallaan: enintään 2
+Osaamiselle, enintään 2 Ponnistelulle ja monimutkaisuudelle, enintään 3
+Vastuulle ja vaikutukselle, ja enintään 1 Työolosuhteille. Työolosuhteet
+on se yksi ulottuvuus, johon otatte kantaa sen sijaan että täyttäisitte
+sen: organisaationne dokumentoi, onko työolosuhde ylipäätään olennainen,
+perusteluineen kummassakin tapauksessa, ennen kuin malli voidaan
+hyväksyä. Valitun kriteerin poistaminen käytöstä poistaa kaikkien
+roolien arviot sitä vasten ja jakaa automaattisesti sen painopisteet
+uudelleen jäljelle jääville kriteereille, jotta malli pysyy
+tasapainossa ilman että teidän tarvitsee tasapainottaa mitään käsin.
 
-## Kriteerin lisääminen
+## Kiinteät tekstit, oma dokumentointinne
 
-Kriteerit-välilehdellä "Lisää kriteeri" avaa lomakkeen nimeä, kuvausta,
-laajennettua kuvausta ja kaikkia kuutta asteikon porrasta varten. Uusi
-kriteeri alkaa aina painolla 3 (neutraali painopiste), joten yhden
-lisääminen ei koskaan horjuta mallin muuta osaa; päätätte itse,
-muutatteko sen painoa myöhemmin Painotus-välilehdellä.
-
-## Kriteerin muokkaaminen ja poistaminen
-
-Kunkin kriteerin rivivalikko tarjoaa "Muokkaa" nimen, kuvauksen,
-laajennetun kuvauksen tai asteikon tekstin muuttamiseksi milloin
-tahansa; olemassa olevat arviot tätä kriteeriä vasten eivät muutu.
-Kriteerin poistaminen poistaa sen sekä kaikkien roolien arviot sitä
-vasten, ja jakaa automaattisesti sen painopisteet uudelleen jäljelle
-jääville kriteereille, jotta malli pysyy tasapainossa; teidän ei
-tarvitse tasapainottaa mitään käsin sen jälkeen.
-
-Kriteerin voi aina poistaa: rakenteilla olevalla mallilla ei ole
-kriteerien vähimmäismäärää. Ennen kuin malli voidaan hyväksyä,
-Menetelmä-välilehden tarkistuslista edellyttää yhteensä 6-8 kriteeriä
-neljän ulottuvuuden kesken; katso
+Kriteerin nimi, määritelmä, mitä se mittaa, mitä se ei mittaa, ja sen
+arviointiankkurit ovat kiinteää kirjastosisältöä, näytettynä sillä
+kielellä, jolla luette sovellusta; kriteerissä itsessään ei ole mitään
+kirjoitettavaa tai muokattavaa. Se, minkä sen sijaan dokumentoitte,
+kunkin valitun kriteerin osalta, on miksi se kuuluu malliinne ja miten
+se suhtautuu kriteereihin, joita harkitsitte mutta ette valinneet,
+[Malli](/model)-alueen Menetelmä-välilehdellä; katso
 [Menetelmän dokumentointi](/docs/method-documentation).
 
-## Miksi asteikko ja paino ovat eri asioita
+## Arviointiasteikko 1-5
 
-Kriteerin kaksi lukua näyttävät samankaltaisilta (molemmat liikkuvat
-pienellä välillä) mutta vastaavat eri kysymyksiin. Arviointiasteikko 0-5
-kuvaa, kuinka vaativa rooli on tällä kriteerillä; Painotus-välilehdellä
-asetetut painopisteet 1-5 kertovat, kuinka paljon kriteeri painaa
-muihin mallin kriteereihin verrattuna. Kriteerillä voi olla erittäin
-vaativa ylin porras ja silti matala paino, tai päinvastoin. Tästä syystä
-niitä ei koskaan muokata samalla näytöllä: katso
-[Painotus ja pistebudjetti](/docs/weighting-and-point-budget), miten
-painopisteet toimivat.
+Jokaisella kriteerillä on sama arviointiasteikko, 1-5, täysillä
+ankkuriteksteillä portailla 1, 3 ja 5, jotka kuvaavat, millainen rooli
+on tällä portaalla, ja harkitulla välitasolla portailla 2 ja 4. Ainoa
+poikkeus on aktiivinen työolosuhdekriteeri, joka sallii myös arvon 0,
+mikä tarkoittaa, ettei rooli kuulu kyseisen olosuhteen piiriin lainkaan.
+Ette näe tätä asteikkoa mallia rakentaessanne: se näytetään, kun joku
+[arvioi roolin](/docs/evaluating-a-role) kriteeriä vasten, yksi porras
+kerrallaan. Siksi arviointiasteikkoa ja kriteerin painoa ei koskaan
+näytetä samalla näytöllä: paino on erillisellä Painotus-välilehdellä ja
+kertoo, kuinka paljon kriteeri painaa, kun taas asteikko kuvaa, kuinka
+vaativa rooli on siinä; katso
+[Painotus ja pistebudjetti](/docs/weighting-and-point-budget).
 
 ## Aiheeseen liittyvää
 

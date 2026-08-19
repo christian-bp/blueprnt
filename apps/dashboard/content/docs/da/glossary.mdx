@@ -30,17 +30,19 @@ niveau direkte. Se [Sådan bruges AI](/docs/how-ai-is-used).
 
 ## Anker
 
-Et anker (Anchor) er teksten, der beskriver, hvad et kriteriums
-bedømmelsesskala betyder ved ét af dens seks trin, 0 til 5.
+Et anker (Anchor) er den faste bibliotekstekst, der beskriver, hvad et
+kriteriums bedømmelsesskala betyder ved ét af dens trin: trin 1, 3 og 5
+altid, med et gennemtænkt mellemtrin ved 2 og 4.
 
-Forveksl ikke et anker med en ankerrolle: et anker er ordlyd på et
-kriteriums skala, en ankerrolle er en hel referencerolle. Se
+Forveksl ikke et anker med en ankerrolle: et anker er fast ordlyd på et
+kriteriums skala, en ankerrolle er en hel referencerolle, jeres
+organisation udpeger. Se
 [Kriterier og bedømmelsesskalaen](/docs/criteria-and-scale).
 
 ## Ankerrolle
 
 En ankerrolle (Anchor role) er en referencerolle, jeres organisation
-har vurderet og er blevet enige om, brugt til at efterprøve andre
+har vurderet, låst og er blevet enige om, brugt til at efterprøve andre
 rollers resultater, efter de er vurderet.
 
 Det er beslutningsstøtte, aldrig en erstatning for at vurdere en rolle
@@ -50,8 +52,11 @@ mod kriterierne, og dens navn ligner et anker kun ved et tilfælde. Se
 ## Vurdering
 
 En vurdering (Assessment) er registreringen af at vurdere en rolle mod
-modellen: dens karakterer, dens beregnede vægtning og niveau, og
-eventuelle begrundelser.
+modellen: dens karakterer og eventuelle begrundelser. Mens den er åben,
+findes der intet resultat synligt nogen steder; at låse den er det, der
+afslører rollens beregnede vægtning, niveau og zone. At låse op for at
+ændre en karakter er udtrykkeligt, og skjuler resultatet igen, indtil
+vurderingen låses på ny.
 
 Se [Vurder en rolle](/docs/evaluating-a-role).
 
@@ -94,7 +99,10 @@ Se [Samarbejde](/docs/collaboration).
 
 Et kriterium (Criterion) er noget, hver rolle i jeres organisation
 vurderes mod, som omfang eller kompleksitet, med sin egen
-0-til-5-bedømmelsesskala.
+1-til-5-bedømmelsesskala. Hvert kriterium kommer fra blueprnts
+kontrollerede bibliotek på 21; jeres organisation vælger, hvilke der
+skal bruges, men kan hverken skrive et nyt eller redigere teksten på et
+valgt.
 
 Se [Kriterier og bedømmelsesskalaen](/docs/criteria-and-scale).
 
@@ -108,6 +116,16 @@ og, når det er dokumenteret, hvem der godkendte det.
 Begrundelsen besvarer, hvorfor kriteriet hører hjemme i modellen;
 bias-gennemgangen besvarer, hvad der kunne skævvride det, og hvad I
 gør ved det. Se [Metodedokumentation](/docs/method-documentation).
+
+## Dimension
+
+En dimension (Dimension) er én af de fire faste kategorier, hvert
+kriterium hører til: Kompetence, Indsats og kompleksitet, Ansvar og
+indflydelse, og Arbejdsforhold. Dimensionerne er altid til stede og
+vælges aldrig; jeres organisation vælger kriterier inden for dem, med
+et loft per dimension.
+
+Se [Kriterier og bedømmelsesskalaen](/docs/criteria-and-scale).
 
 ## Lige arbejde
 
@@ -153,7 +171,8 @@ Se [Jobprofiler](/docs/job-profiles).
 
 En rolles niveau (Level) er det resultat, blueprnt beregner fra dens
 vægtning: hvordan den vægtning står i forhold til niveautærsklerne i
-jeres model. Niveau 1 er det højeste niveau.
+jeres model, blandt tolv niveauer grupperet i fire zoner. Niveau 1 er
+det højeste niveau.
 
 Forveksl aldrig niveau med senioritet: niveau er rollens beregnede,
 organisationsbrede resultat, mens senioritet hører til personen og
@@ -163,9 +182,18 @@ aldrig påvirker det. Se [Vægtning og niveauer](/docs/score-and-levels).
 
 En niveautærskel (Level threshold) er den minimumsvægtning, på den
 normaliserede 0-til-100-skala, en rolle skal nå for at lande på et
-givent niveau.
+givent niveau, ét af tolv.
 
 Se [Vægtning og niveauer](/docs/score-and-levels).
+
+## Materialitetsvurdering
+
+Materialitetsvurderingen (materiality decision) er jeres organisations
+dokumenterede svar på, om et arbejdsforholdskriterium er aktivt i jeres
+model, eller, med en begrundelse, afprøvet og fundet ikke materielt
+relevant. Den kræves, før modellen kan godkendes.
+
+Se [Kriterier og bedømmelsesskalaen](/docs/criteria-and-scale).
 
 ## Metodebilag
 
@@ -175,10 +203,21 @@ begrundelse og bias-gennemgang.
 
 Se [Metodebilaget som PDF](/docs/method-appendix-pdf).
 
+## Modelgodkendelse
+
+Modelgodkendelse (model approval) er statussen, der bekræfter, at
+metoden i jeres model har bestået sin tjekliste og er klar til at
+vurdere roller mod. En metodepåvirkende ændring, som at vælge et
+kriterium eller vægte om, åbner godkendelsen igen for en ny
+ét-klik-bekræftelse.
+
+Se [Metodedokumentation](/docs/method-documentation).
+
 ## Begrundelse
 
-En begrundelse (Motivation) er en kort, valgfri fritekstforklaring for
-en vurdering, aldrig påkrævet, skrevet per kriterium.
+En begrundelse (Motivation) er en kort fritekstforklaring for en
+vurdering, påkrævet når I bedømmer et kriterium 1, 4 eller 5, og
+valgfri ellers.
 
 Se [Vurder en rolle](/docs/evaluating-a-role).
 
@@ -280,8 +319,10 @@ automatisk, hver gang et vægtpoint ændres. Se
 
 ## Trin
 
-Et trin (Step) er én af de seks positioner, 0 til 5, på et kriteriums
-bedømmelsesskala, hver med sin egen ankertekst.
+Et trin (Step) er én af de fem positioner, 1 til 5, på et kriteriums
+bedømmelsesskala, hver med sin egen faste ankertekst ved 1, 3 og 5.
+Værdien 0 findes kun for et aktivt arbejdsforholdskriterium og betyder,
+at rollen slet ikke er omfattet af det.
 
 Forveksl ikke et trin med et vægtpoint: et trin beskriver, hvor
 krævende en rolle er på et kriterium, et vægtpoint siger, hvor meget
@@ -290,13 +331,13 @@ det kriterium tæller. Se
 
 ## Skabelon
 
-En skabelon (Template) er den færdige model, en ny organisation starter
-fra under onboarding: kriterier, ankertekster, vægtpoint og
-niveautærskler, allerede udfyldt.
+En skabelon (Template) var den færdige model, en ny organisation
+tidligere startede fra: kriterier, ankertekster og vægtpoint, allerede
+udfyldt. blueprnt har ikke længere én. En ny organisation starter nu
+fra en tom model og bygger den ved at vælge fra kriteriebiblioteket i
+stedet.
 
-Hver ny organisation starter fra den samme standardskabelon og tilpasser
-den bagefter; der er intet valg at træffe under onboarding. Se
-[Modellen: overblik](/docs/model-overview).
+Se [Modellen: overblik](/docs/model-overview).
 
 ## Track
 
@@ -312,7 +353,7 @@ register. Se [Jobprofiler](/docs/job-profiles).
 Vægtpoint (Weight points) er et kriteriums vægt, et helt tal fra 1 til
 5, sat af HR under modellens faste pointbudget.
 
-Forveksl ikke vægtpoint med den 0-til-5-bedømmelsesskala: vægtpoint
+Forveksl ikke vægtpoint med den 1-til-5-bedømmelsesskala: vægtpoint
 siger, hvor meget et kriterium tæller, skalaen beskriver, hvor krævende
 en rolle er på det. Se
 [Vægtning og pointbudgettet](/docs/weighting-and-point-budget).
@@ -327,3 +368,13 @@ Det samme ord bruges også om at fordele vægtpoint til kriterier på
 Model-sidens Vægtning-fane. De to er forskellige ting: dette er et
 resultat, det andet er en opgave. Se
 [Vægtning og niveauer](/docs/score-and-levels).
+
+## Zone
+
+En zone (Zone) er én af fire grupper af nabo-niveauer, fra A (niveau 1
+til 3, de mest seniore) til D (niveau 10 til 12). Jeres organisations
+højest vægtede kriterier fungerer som et profilkrav for de øverste
+zoner, så en rolle ikke kan nå en af dem alene på en høj samlet
+vægtning.
+
+Se [Vægtning og niveauer](/docs/score-and-levels).

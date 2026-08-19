@@ -1,13 +1,13 @@
 ---
 title: Painotus ja vaativuustasot
-description: Miten 0-100 painotus lasketaan arvioistanne, pyöristetään alaspäin, ja muutetaan vaativuustasoksi.
+description: Miten painotus 0-100 lasketaan arvioistanne, ja muuttuu yhdeksi kahdestatoista vaativuustasosta neljässä vyöhykkeessä.
 section: evaluation
 ---
 
-Kun kaikki kriteerit on arvioitu, blueprnt laskee roolille kaksi
-lukua: sen painotuksen, luvun 0:sta 100:aan, ja sen vaativuustason.
-Molemmat johdetaan aina nykyisistä arvioista ja nykyisestä mallista;
-kumpaakaan ei koskaan kirjoiteta käsin. Älkää sekoittako tätä
+Kun kaikki kriteerit on arvioitu ja arviointi on lukittu, blueprnt
+laskee roolille painotuksen, vaativuustason ja vyöhykkeen. Kaikki
+kolme johdetaan aina lukituista arvioista ja nykyisestä mallista;
+mitään niistä ei koskaan kirjoiteta käsin. Älkää sekoittako tätä
 painotusta, roolin kokonaistulosta, painotukseen, jota tehdään
 [Malli](/model)-alueen Painotus-välilehdellä ja joka asettaa kunkin
 kriteerin oman painopisteen; nämä kaksi jakavat sanan tarkoituksella,
@@ -17,56 +17,83 @@ jälkimmäisestä.
 
 ## Painotuksen kaava
 
-Kertokaa jokaisen kriteerin arvio (0-5) sen painopisteillä, ja
-laskekaa tulokset yhteen kaikkien kriteerien kesken. Jakakaa tämä
-summa kaikkien kriteerien painopisteiden yhteismäärällä: tämä on
-painotettu keskiarvo. Kertokaa painotettu keskiarvo 20:llä ja
-pyöristäkää alaspäin lähimpään kokonaislukuun. Tämä lopullinen luku,
-aina 0:n ja 100:n välillä riippumatta siitä, kuinka monta kriteeriä
-mallissa on, on painotus. Alaspäin pyöristäminen tarkoittaa, että rooli
-saavuttaa tason vasta, kun sen painotus todella yltää rajaan, ei
-koskaan pyöristymällä siihen ylöspäin.
+Kertokaa jokaisen kriteerin arvio (1-5, tai 0 työolosuhdekriteerille,
+jonka piiriin rooli ei kuulu) sen painopisteillä, ja laskekaa tulokset
+yhteen kaikkien kriteerien kesken. Jakakaa tämä summa kaikkien
+kriteerien painopisteiden yhteismäärällä: tämä on painotettu
+keskiarvo. Kertokaa painotettu keskiarvo 20:llä ja pyöristäkää
+alaspäin lähimpään kokonaislukuun. Tämä lopullinen luku, aina 0:n ja
+100:n välillä riippumatta siitä, kuinka monta kriteeriä mallissa on,
+on painotus. Alaspäin pyöristäminen tarkoittaa, että rooli saavuttaa
+tason vasta, kun sen painotus todella yltää rajaan, ei koskaan
+pyöristymällä siihen ylöspäin.
 
-Roolin painotus näkyy vasta, kun kaikki nykyiset kriteerit on
-arvioitu. Siihen asti blueprnt näyttää, kuinka monta kriteeriä on
-arvioitu, osittaisen luvun sijaan.
+Roolin painotus näkyy vasta, kun sen arviointi on lukittu. Siihen asti
+blueprnt näyttää, kuinka monta kriteeriä on arvioitu, osittaisen luvun
+sijaan, myös sen jälkeen kun kaikki kriteerit on arvioitu.
 
 ## Mistä painotus muodostuu
 
-Roolin sivulla, kun sen arviointi on valmis, erittely listaa
-jokaisen kriteerin sen osuuden mukaan: kriteerin arvio kerrottuna
-sen painopisteillä, näytettynä prosenttiosuutena kaikkien kriteerien
-kokonaisuudesta, suurin vaikuttaja ensin. Tämä on erittelyn ainoa
-luku, joka on samaan aikaan tälle roolille ominainen ja joka muuttuu
-mallin uudelleenpainottamisen myötä; se ei näytä mallin laajuisia
+Roolin sivulla, kun se on lukittu, erittely listaa jokaisen kriteerin
+sen osuuden mukaan: kriteerin arvio kerrottuna sen painopisteillä,
+näytettynä prosenttiosuutena kaikkien kriteerien kokonaisuudesta,
+suurin vaikuttaja ensin. Tämä on erittelyn ainoa luku, joka on samaan
+aikaan tälle roolille ominainen ja joka muuttuu mallin
+uudelleenpainottamisen myötä; se ei näytä mallin laajuisia
 painopisteitä, koska ne ovat samat kaikille rooleille, eikä raakaa
-0-5-arviota, jonka erittely ilmaisee jo osuuden kautta.
+arviota, jonka erittely ilmaisee jo osuuden kautta.
 
-## Vaativuustasot ja rajat
+## Kaksitoista vaativuustasoa neljässä vyöhykkeessä
 
-Taso 1 on korkein taso, ja siitä lasketaan alaspäin. Mallinne
-määrittää kynnyspainotuksen jokaiselle tasolle; blueprnt antaa
-roolille korkeimman tason, jonka rajan sen painotus saavuttaa tai
-ylittää. Roolilla ei ole vaativuustasoa, ennen kuin se on valmis,
-samasta syystä kuin sillä ei ole vielä painotustakaan.
+Taso 1 on korkein kahdestatoista tasosta, ja siitä lasketaan alaspäin.
+Mallinne määrittää vähimmäispainotuksen jokaiselle tasolle.
+Vaativuustasot ryhmitellään neljään vyöhykkeeseen, A:sta (tasot 1-3)
+D:hen (tasot 10-12); vyöhyke on laajempi kaista, jolla on yhteinen
+luonne, hyödyllinen puhuttaessa siitä, missä rooli sijaitsee mainitsematta
+sen tarkkaa tasoa.
+
+Organisaationne korkeimmin painotetut kriteerit, ne painolla 4 tai 5
+ja jotka eivät ole työolosuhdekriteeri, toimivat lisäksi ylimpien
+vyöhykkeiden profiilivaatimuksena: rooli ei voi päästä vyöhykkeelle A
+tai B pelkästään korkealla kokonaispainotuksella, jos sen arviot juuri
+niillä kriteereillä eivät riitä. Silloin rooli sijoitetaan sen sijaan
+alemman vyöhykkeen ylimmälle tasolle ja merkitään
+kalibroitavaksi, kehotuksena, että henkilö vahvistaa sijoituksen
+automaattisen ohituksen sijaan. Täysin tasaisella mallilla, jossa
+kaikki kriteerit ovat painolla 3, ei ole lainkaan profiilivaatimusta:
+julistettujen prioriteettien puuttuminen tarkoittaa, ettei estettä
+ole. Roolilla ei ole vaativuustasoa, vyöhykettä eikä painotusta ennen
+kuin sen arviointi on lukittu.
+
+## Vertailu ankkuriroolienne kanssa
+
+Jos organisaatiollanne on aktiivisia ankkurirooleja, ne näkyvät juuri
+lukitun tuloksen yhteydessä, jotta voitte verrata roolin
+vaativuustasoa rooleihin, joihin luotatte jo; tulos, joka päätyy
+vähintään kaksi tasoa jokaisesta ankkurista, merkitään manuaalisen
+tarkistuksen arvoiseksi ennen kuin luotatte siihen. Katso
+[Ankkuriroolit](/docs/anchor-roles) niiden nimeämisestä ja
+hallinnasta.
 
 ## Tulos seuraa mallia
 
-Roolin painotus ja vaativuustaso heijastavat aina arvioita ja mallia
-sellaisina kuin ne ovat juuri nyt, eivät sellaisina kuin ne olivat
-arviointihetkellä. Tämä
-tarkoittaa, että mallin itsensä muutos, kuten kriteerin lisääminen,
-painopisteen muuttaminen tai uudelleenpainottaminen, voi siirtää
-roolin toiselle vaativuustasolle välittömästi, vaikka kukaan ei
-koskisi sen arvioita. Kriteerin lisääminen voi jopa muuttaa aiemmin
-valmiin roolin keskeneräiseksi uudelleen, kunnes uusi kriteeri on
-arvioitu. Jokainen tällainen muutos kirjataan tapahtumalokiin.
+Roolin painotus, vaativuustaso ja vyöhyke heijastavat aina sen
+lukittuja arvioita ja mallia sellaisena kuin se on juuri nyt, eivät
+sellaisena kuin se oli, kun lukitsitte sen. Tämä tarkoittaa, että
+mallin itsensä muutos, kuten kriteerin valitseminen, painopisteen
+muuttaminen tai uudelleenpainottaminen, voi siirtää roolin toiselle
+vaativuustasolle välittömästi, vaikka kukaan ei koskisi sen arvioita.
+Uuden kriteerin valitseminen voi jopa muuttaa aiemmin valmiin roolin
+keskeneräiseksi uudelleen, kunnes sekin on arvioitu. Jokainen
+tällainen muutos kirjataan tapahtumalokiin. Rooli, joka lukittiin
+ennen mallinne viimeisintä hyväksyntää, merkitään arvioiduksi
+aiemman menetelmän mukaan, kunnes se lukitaan uudelleen.
 
 ## Ei manuaalista ohitusta
 
 Roolin vaativuustasoa ei voi asettaa tai muuttaa suoraan millään
-tavalla. Jos taso ei näytä oikealta, ainoa tapa muuttaa sitä on
-säätää sen taustalla olevia arvioita (katso
+tavalla. Jos taso ei näytä oikealta, ainoa tapa muuttaa sitä on avata
+arviointi ja säätää sen taustalla olevia arvioita (katso
 [Arvion muokkaaminen](/docs/adjusting-a-rating)) tai itse mallia, ei
 koskaan lopputulosta. Roolin vaativuustaso ei myöskään kerro mitään
 sen haltijan senioriteetista: senioriteetti kuuluu henkilölle,

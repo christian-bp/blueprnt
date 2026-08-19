@@ -1,68 +1,63 @@
 ---
 title: Kriterier och bedömningsskalan
-description: Vad ett kriterium är, dess sexstegsskala, och hur det går till att lägga till eller ta bort ett.
+description: Kriteriebiblioteket och dess fyra dimensioner, hur urvalet går till, och skalan 1 till 5 en roll bedöms mot.
 section: model
 ---
 
 Ett kriterium är en sak varje roll i er organisation bedöms mot, till
-exempel omfattning, komplexitet eller personalansvar. Ni bygger och
-redigerar kriterier från fliken "Kriterier" i [Modell](/model)-ytan.
+exempel omfattning, komplexitet eller personalansvar. Varje kriterium
+kommer från blueprnts kontrollerade kriteriebibliotek: ni väljer vilka er
+organisation använder från fliken "Kriterier" i [Modell](/model)-ytan,
+men ni kan varken hitta på ett nytt eller redigera ett kriteriums text.
 
-## Vad ett kriterium innehåller
+## Kriteriebiblioteket och dess fyra dimensioner
 
-Varje kriterium har ett Namn, en Beskrivning och en Utökad beskrivning
-(en längre förklaring som visas när någon vill ha mer sammanhang). Det
-har också sin bedömningsskala: sex texter, en för varje steg från 0 till
-5, som beskriver hur en roll på det steget ser ut på det här kriteriet.
-Skalan är märkt "Bedömningsskala (0 till 5)" var den än visas.
+Biblioteket rymmer 21 definierade kriterier, var och en med fast namn,
+definition och en beskrivning av vad det mäter och inte mäter, redan
+skriven och kvalitetssäkrad. Varje kriterium hör till exakt en av fyra
+dimensioner: Kompetens, Ansträngning och komplexitet, Ansvar och
+påverkan, samt Arbetsförhållanden. De fyra dimensionerna kommer från
+EU:s lönetransparensdirektiv och finns alltid med; ni väljer kriterier
+inom dem, aldrig dimensionerna själva.
 
-## Sexstegsskalan
+## Att välja er organisations kriterier
 
-Varje kriteriums skala går från steg 0 (lägst, kriteriets svagaste eller
-frånvarande uttryck) till steg 5 (högst, det starkaste rimliga
-uttrycket). Skriv varje steg konkret nog att två olika personer som
-betygsätter samma roll mot samma stegbeskrivning skulle landa på samma
-svar; ett vagt steg bjuder in till inkonsekventa betyg. Den här skalan
-är det en roll faktiskt betygsätts mot när någon
-[utvärderar en roll](/docs/evaluating-a-role); den har inget att göra
-med hur mycket kriteriet räknas, vilket finns på den separata fliken
-Viktning.
+Er organisation väljer 6 till 8 kriterier totalt, och undviker två som
+mäter samma sak. Varje dimension sätter ett tak för hur många av dess
+kriterier ni kan aktivera samtidigt: högst 2 för Kompetens, högst 2 för
+Ansträngning och komplexitet, högst 3 för Ansvar och påverkan, och högst
+1 för Arbetsförhållanden. Arbetsförhållanden är den enda dimensionen ni
+tar ställning till snarare än fyller på: er organisation dokumenterar om
+ett arbetsförhållande är materiellt relevant alls, med en motivering
+oavsett svar, innan modellen kan godkännas. Att avaktivera ett valt
+kriterium tar bort varje rolls betyg mot det och omfördelar automatiskt
+dess viktpoäng över de återstående kriterierna, så att modellen förblir
+balanserad utan att ni behöver balansera om något för hand.
 
-## Lägga till ett kriterium
+## Fasta texter, er egen dokumentation
 
-Från fliken Kriterier öppnar "Lägg till kriterium" ett formulär för
-namnet, beskrivningen, den utökade beskrivningen och alla sex
-stegtexter. Ett nytt kriterium börjar alltid på vikt 3 (den neutrala
-viktpoängen), så att lägga till ett rubbar aldrig resten av modellens
-balans; ni bestämmer om ni vill ändra dess vikt efteråt på fliken
-Viktning.
-
-## Redigera och ta bort ett kriterium
-
-Varje kriteriums radmeny erbjuder "Redigera" för att ändra dess namn,
-beskrivning, utökade beskrivning eller stegtext när som helst; befintliga
-betyg mot det kriteriet påverkas inte. Att ta bort ett kriterium raderar
-det tillsammans med varje rolls betyg mot det, och omfördelar automatiskt
-dess viktpoäng över de återstående kriterierna så att modellen förblir
-balanserad; ni behöver inte balansera om något för hand efteråt.
-
-Att ta bort ett kriterium går alltid att göra: en modell under uppbyggnad
-har ingen nedre gräns för antal kriterier. Innan modellen kan godkännas
-kräver checklistan på fliken Metod totalt 6 till 8 kriterier fördelat
-över de fyra dimensionerna; se
+Ett kriteriums namn, definition, vad det mäter, vad det inte mäter, och
+dess bedömningsankare är fast biblioteksinnehåll, visat på det språk ni
+läser appen på; det finns inget att skriva eller redigera på kriteriet
+självt. Det ni däremot dokumenterar, per valt kriterium, är varför det
+hör hemma i er modell och hur det förhåller sig till kriterier ni
+övervägde men inte valde, på [Modell](/model)-ytans flik Metod; se
 [Metoddokumentation](/docs/method-documentation).
 
-## Varför skalan och vikten är olika saker
+## Bedömningsskalan 1 till 5
 
-De två talen på ett kriterium ser lika ut (båda löper på ett litet
-intervall) men svarar på olika frågor. Bedömningsskalan 0 till 5
-beskriver hur krävande en roll är på det kriteriet; viktpoängen 1 till
-5, satt på fliken Viktning, anger hur mycket det kriteriet väger i
-förhållande till de andra kriterierna i modellen. Ett kriterium kan ha
-ett mycket krävande högsta steg och ändå ha en låg vikt, eller tvärtom.
-Det är därför de två aldrig redigeras på samma skärm: se
-[Viktning och poängbudgeten](/docs/weighting-and-point-budget) för hur
-viktpoäng fungerar.
+Varje kriterium har samma bedömningsskala, 1 till 5, med fulla
+ankartexter vid steg 1, 3 och 5 som beskriver hur en roll på det steget
+ser ut, och ett genomtänkt mellanläge vid steg 2 och 4. Det enda
+undantaget är ett aktivt arbetsförhållandekriterium, som även tillåter
+0, vilket betyder att rollen inte omfattas av det förhållandet alls. Ni
+ser inte den här skalan när ni bygger modellen: den visas när någon
+[utvärderar en roll](/docs/evaluating-a-role) mot kriteriet, ett steg i
+taget. Det är därför bedömningsskalan och ett kriteriums vikt aldrig
+visas på samma skärm: vikten finns på den separata fliken Viktning och
+anger hur mycket kriteriet räknas, medan skalan beskriver hur krävande en
+roll är på det; se
+[Viktning och poängbudgeten](/docs/weighting-and-point-budget).
 
 ## Relaterat
 

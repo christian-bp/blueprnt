@@ -32,18 +32,19 @@ nivå direkt. Se [Hur AI används](/docs/how-ai-is-used).
 
 ## Ankare
 
-Ett ankare är texten som beskriver vad ett kriteriums bedömningsskala
-betyder vid ett av dess sex steg, 0 till 5.
+Ett ankare är den fasta bibliotekstexten som beskriver vad ett
+kriteriums bedömningsskala betyder vid ett av dess steg: steg 1, 3 och 5
+alltid, med ett genomtänkt mellanläge vid 2 och 4.
 
-Blanda inte ihop ett ankare med en ankarroll: ett ankare är text på ett
-kriteriums skala, en ankarroll är en hel referensroll. Se
-[Kriterier och bedömningsskalan](/docs/criteria-and-scale).
+Blanda inte ihop ett ankare med en ankarroll: ett ankare är fast text på
+ett kriteriums skala, en ankarroll är en hel referensroll er organisation
+utser. Se [Kriterier och bedömningsskalan](/docs/criteria-and-scale).
 
 ## Ankarroll
 
-En ankarroll är en referensroll er organisation har utvärderat och
-kommit överens om, använd för att stämma av andra rollers resultat
-efter att de betygsatts.
+En ankarroll är en referensroll er organisation har utvärderat, låst och
+kommit överens om, använd för att stämma av andra rollers resultat efter
+att de betygsatts.
 
 Det är beslutsstöd, aldrig en ersättning för att betygsätta en roll mot
 kriterierna, och namnet sammanfaller med "ankare" bara av en slump. Se
@@ -52,8 +53,10 @@ kriterierna, och namnet sammanfaller med "ankare" bara av en slump. Se
 ## Värdering
 
 En värdering är registreringen av att utvärdera en roll mot modellen:
-dess betyg, dess beräknade viktning och nivå, och eventuella
-motiveringar.
+dess betyg och eventuella motiveringar. Medan den är öppen finns inget
+resultat synligt någonstans; att låsa den är det som avslöjar rollens
+beräknade viktning, nivå och zon. Att låsa upp för att ändra ett betyg är
+uttryckligt, och döljer resultatet igen tills värderingen låses på nytt.
 
 Se [Utvärdera en roll](/docs/evaluating-a-role).
 
@@ -94,7 +97,10 @@ Se [Samverkan](/docs/collaboration).
 ## Kriterium
 
 Ett kriterium är en sak varje roll i er organisation bedöms mot, som
-omfattning eller komplexitet, med sin egen bedömningsskala 0 till 5.
+omfattning eller komplexitet, med sin egen bedömningsskala 1 till 5.
+Varje kriterium kommer från blueprnts kontrollerade bibliotek på 21; er
+organisation väljer vilka som ska användas, men kan varken skriva ett
+nytt eller redigera texten på ett valt.
 
 Se [Kriterier och bedömningsskalan](/docs/criteria-and-scale).
 
@@ -108,6 +114,15 @@ dokumenterat, vem som godkände det.
 Motiveringen svarar på varför kriteriet hör hemma i modellen;
 bias-granskningen svarar på vad som skulle kunna snedvrida det och vad
 ni gör åt det. Se [Metoddokumentation](/docs/method-documentation).
+
+## Dimension
+
+En dimension är en av de fyra fasta kategorier varje kriterium hör till:
+Kompetens, Ansträngning och komplexitet, Ansvar och påverkan, samt
+Arbetsförhållanden. Dimensionerna finns alltid med och väljs aldrig; er
+organisation väljer kriterier inom dem, med ett tak per dimension.
+
+Se [Kriterier och bedömningsskalan](/docs/criteria-and-scale).
 
 ## Lika arbete
 
@@ -148,8 +163,8 @@ Se [Jobbprofiler](/docs/job-profiles).
 ## Nivå
 
 En rolls nivå är utfallet blueprnt räknar fram från dess viktning: hur
-den viktningen står sig mot nivåtrösklarna i er modell. Nivå 1 är den
-högsta nivån.
+den viktningen står sig mot nivåtrösklarna i er modell, bland tolv
+nivåer grupperade i fyra zoner. Nivå 1 är den högsta nivån.
 
 Blanda aldrig ihop nivå med senioritet: nivå är rollens beräknade,
 organisationsövergripande utfall, medan senioritet hör till personen
@@ -159,9 +174,18 @@ och aldrig påverkar den. Se
 ## Nivåtröskel
 
 En nivåtröskel är den lägsta viktningen, på den normaliserade skalan 0
-till 100, en roll måste nå för att hamna på en given nivå.
+till 100, en roll måste nå för att hamna på en given nivå, en av tolv.
 
 Se [Viktning och nivåer](/docs/score-and-levels).
+
+## Materialitetsprövning
+
+Materialitetsprövningen är er organisations dokumenterade svar på om ett
+arbetsförhållandekriterium är aktivt i er modell eller, med en
+motivering, prövat och funnet inte materiellt relevant. Den krävs innan
+modellen kan godkännas.
+
+Se [Kriterier och bedömningsskalan](/docs/criteria-and-scale).
 
 ## Metodbilaga
 
@@ -171,10 +195,19 @@ bias-granskning.
 
 Se [Metodbilagans PDF](/docs/method-appendix-pdf).
 
+## Modellgodkännande
+
+Modellgodkännande är statusen som bekräftar att er modells metod har
+klarat sin checklista och är redo att bedöma roller mot. En
+metodpåverkande ändring, som att välja ett kriterium eller vikta om,
+öppnar godkännandet igen för en ny bekräftelse med ett klick.
+
+Se [Metoddokumentation](/docs/method-documentation).
+
 ## Motivering
 
-En motivering är en kort, valfri fritextförklaring till ett betyg,
-aldrig obligatorisk, skriven per kriterium.
+En motivering är en kort fritextförklaring till ett betyg, obligatorisk
+när ni bedömer ett kriterium 1, 4 eller 5, och valfri annars.
 
 Se [Utvärdera en roll](/docs/evaluating-a-role).
 
@@ -275,8 +308,10 @@ automatiskt varje gång en viktpoäng ändras. Se
 
 ## Steg
 
-Ett steg är en av de sex positionerna, 0 till 5, på ett kriteriums
-bedömningsskala, var och en med sin egen ankartext.
+Ett steg är en av de fem positionerna, 1 till 5, på ett kriteriums
+bedömningsskala, var och en med sin egen fasta ankartext vid 1, 3 och 5.
+Värdet 0 finns bara för ett aktivt arbetsförhållandekriterium och
+betyder att rollen inte omfattas av det alls.
 
 Blanda inte ihop ett steg med en viktpoäng: ett steg beskriver hur
 krävande en roll är på ett kriterium, en viktpoäng anger hur mycket det
@@ -285,13 +320,12 @@ kriteriet räknas. Se
 
 ## Mall
 
-En mall är den färdiga modell en ny organisation startar från under
-onboardingen: kriterier, ankartexter, viktpoäng och nivåtrösklar, redan
-ifyllda.
+En mall var den färdiga modell en ny organisation tidigare startade
+från: kriterier, ankartexter och viktpoäng, redan ifyllda. blueprnt har
+inte längre en sådan. En ny organisation börjar nu från en tom modell
+och bygger den genom att välja ur kriteriebiblioteket istället.
 
-Varje ny organisation startar från samma standardmall och anpassar den
-efteråt; det finns inget val att göra under onboardingen. Se
-[Modellöversikt](/docs/model-overview).
+Se [Modellöversikt](/docs/model-overview).
 
 ## Track
 
@@ -307,7 +341,7 @@ register. Se [Jobbprofiler](/docs/job-profiles).
 Viktpoäng är ett kriteriums vikt, ett helt tal från 1 till 5, satt av
 HR inom modellens fasta poängbudget.
 
-Blanda inte ihop viktpoäng med bedömningsskalan 0 till 5: viktpoäng
+Blanda inte ihop viktpoäng med bedömningsskalan 1 till 5: viktpoäng
 anger hur mycket ett kriterium räknas, skalan beskriver hur krävande en
 roll är på det. Se
 [Viktning och poängbudgeten](/docs/weighting-and-point-budget).
@@ -322,3 +356,13 @@ Samma ord används också om att fördela viktpoäng till kriterier på sidan
 Modells flik Viktning. De två är olika saker: det här är ett resultat,
 det andra är en uppgift. Se
 [Viktning och nivåer](/docs/score-and-levels).
+
+## Zon
+
+En zon är en av fyra grupper av intilliggande nivåer, från A (nivå 1
+till 3, de mest seniora) till D (nivå 10 till 12). Er organisations
+högst viktade kriterier fungerar som ett profilkrav för de översta
+zonerna, så att en roll inte kan nå en av dem enbart på en hög
+totalviktning.
+
+Se [Viktning och nivåer](/docs/score-and-levels).

@@ -34,18 +34,20 @@ roolin painotukseen tai vaativuustasoon suoraan. Katso
 
 ## Ankkuri
 
-Ankkuri on teksti, joka kuvaa, mitä kriteerin arviointiasteikko
-tarkoittaa yhdellä sen kuudesta portaasta, 0:sta 5:een.
+Ankkuri on kiinteä kirjastoteksti, joka kuvaa, mitä kriteerin
+arviointiasteikko tarkoittaa yhdellä sen portaista: portailla 1, 3 ja 5
+aina, harkitulla välitasolla portailla 2 ja 4.
 
-Älkää sekoittako ankkuria ankkurirooliin: ankkuri on sanamuoto
-kriteerin asteikolla, ankkurirooli on kokonainen vertailurooli.
-Katso [Kriteerit ja arviointiasteikko](/docs/criteria-and-scale).
+Älkää sekoittako ankkuria ankkurirooliin: ankkuri on kiinteä sanamuoto
+kriteerin asteikolla, ankkurirooli on kokonainen vertailurooli, jonka
+organisaationne nimeää. Katso
+[Kriteerit ja arviointiasteikko](/docs/criteria-and-scale).
 
 ## Ankkurirooli
 
-Ankkurirooli on vertailurooli, jonka organisaationne on arvioinut ja
-hyväksynyt, ja jota käytetään muiden roolien tulosten tarkistamiseen
-niiden arvioinnin jälkeen.
+Ankkurirooli on vertailurooli, jonka organisaationne on arvioinut,
+lukinnut ja hyväksynyt, ja jota käytetään muiden roolien tulosten
+tarkistamiseen niiden arvioinnin jälkeen.
 
 Se on päätöksenteon tuki, ei koskaan korvike roolin arvioimiselle
 kriteereitä vasten, ja sen nimi osuu yhteen ankkurin kanssa vain
@@ -53,8 +55,12 @@ sattumalta. Katso [Ankkuriroolit](/docs/anchor-roles).
 
 ## Arviointi
 
-Arviointi on tietue roolin arvioimisesta mallia vasten: sen arviot,
-sen lasketut painotus ja vaativuustaso, ja mahdolliset perustelut.
+Arviointi on tietue roolin arvioimisesta mallia vasten: sen arviot ja
+mahdolliset perustelut. Sen ollessa avoinna mitään tulosta ei näy
+missään; sen lukitseminen paljastaa roolin lasketun painotuksen,
+vaativuustason ja vyöhykkeen. Lukituksen avaaminen arvion muuttamiseksi
+on nimenomainen toimenpide, ja se piilottaa tuloksen jälleen, kunnes
+arviointi lukitaan uudelleen.
 
 Katso [Roolin arviointi](/docs/evaluating-a-role).
 
@@ -97,7 +103,10 @@ Katso [Yhteistoiminta](/docs/collaboration).
 
 Kriteeri on yksi asia, jota vasten kaikkia organisaationne rooleja
 arvioidaan, kuten laajuutta tai monimutkaisuutta, omalla
-arviointiasteikollaan 0-5.
+arviointiasteikollaan 1-5. Jokainen kriteeri tulee blueprntin
+valvotusta 21 kriteerin kirjastosta; organisaationne valitsee, mitkä
+otetaan käyttöön, mutta ei voi kirjoittaa uutta eikä muokata valitun
+tekstiä.
 
 Katso [Kriteerit ja arviointiasteikko](/docs/criteria-and-scale).
 
@@ -111,6 +120,16 @@ dokumentoitu, kuka sen hyväksyi.
 Valintaprotokolla vastaa siihen, miksi kriteeri kuuluu malliin;
 vinoumatarkastelu vastaa siihen, mikä voisi vinouttaa sitä ja mitä
 sille tehdään. Katso [Menetelmän dokumentointi](/docs/method-documentation).
+
+## Ulottuvuus
+
+Ulottuvuus on yksi neljästä kiinteästä luokasta, joihin jokainen
+kriteeri kuuluu: Osaaminen, Ponnistelu ja monimutkaisuus, Vastuu ja
+vaikutus, sekä Työolosuhteet. Ulottuvuudet ovat aina läsnä eikä niitä
+koskaan valita; organisaationne valitsee kriteerit niiden sisältä,
+ulottuvuuskohtaisen ylärajan puitteissa.
+
+Katso [Kriteerit ja arviointiasteikko](/docs/criteria-and-scale).
 
 ## Samaa työtä
 
@@ -156,7 +175,8 @@ Katso [Tehtäväprofiilit](/docs/job-profiles).
 
 Roolin vaativuustaso on tulos, jonka blueprnt laskee sen
 painotuksesta: miten tämä painotus vertautuu mallinne
-vaativuustasorajoihin. Taso 1 on korkein taso.
+vaativuustasorajoihin, kahdentoista vaativuustason joukossa, jotka on
+ryhmitelty neljään vyöhykkeeseen. Taso 1 on korkein taso.
 
 Älkää koskaan sekoittako vaativuustasoa senioriteettiin:
 vaativuustaso on roolin laskettu, koko organisaation kattava tulos,
@@ -167,9 +187,18 @@ Katso [Painotus ja vaativuustasot](/docs/score-and-levels).
 
 Vaativuustasoraja on vähimmäispainotus, normalisoidulla
 0-100-asteikolla, jonka roolin täytyy saavuttaa päätyäkseen tietylle
-vaativuustasolle.
+vaativuustasolle, yhdelle kahdestatoista.
 
 Katso [Painotus ja vaativuustasot](/docs/score-and-levels).
+
+## Olennaisuusarviointi
+
+Olennaisuusarviointi on organisaationne dokumentoitu vastaus siihen,
+onko työolosuhdekriteeri aktiivinen mallissanne vai, perusteluineen,
+arvioitu eikä olennainen. Se vaaditaan ennen kuin malli voidaan
+hyväksyä.
+
+Katso [Kriteerit ja arviointiasteikko](/docs/criteria-and-scale).
 
 ## Menetelmäliite
 
@@ -179,10 +208,20 @@ vinoumatarkastelun.
 
 Katso [Menetelmäliite PDF-muodossa](/docs/method-appendix-pdf).
 
+## Mallin hyväksyntä
+
+Mallin hyväksyntä on tila, joka vahvistaa, että mallinne menetelmä on
+läpäissyt tarkistuslistansa ja on valmis rooleja vasten arviointiin.
+Menetelmään vaikuttava muutos, kuten kriteerin valitseminen tai
+uudelleenpainottaminen, avaa hyväksynnän uudelleen yhden klikkauksen
+uutta vahvistusta varten.
+
+Katso [Menetelmän dokumentointi](/docs/method-documentation).
+
 ## Perustelu
 
-Perustelu on lyhyt, valinnainen vapaatekstinen selitys arviolle, ei
-koskaan pakollinen, kirjoitettuna kriteerikohtaisesti.
+Perustelu on lyhyt vapaatekstinen selitys arviolle, pakollinen kun
+arvioitte kriteerin arvolla 1, 4 tai 5, ja muulloin valinnainen.
 
 Katso [Roolin arviointi](/docs/evaluating-a-role).
 
@@ -288,8 +327,10 @@ automaattisesti aina, kun painopiste muuttuu. Katso
 
 ## Porras
 
-Porras on yksi kuudesta asemasta, 0:sta 5:een, kriteerin
-arviointiasteikolla, kullakin omalla ankkuritekstillään.
+Porras on yksi viidestä asemasta, 1-5, kriteerin arviointiasteikolla,
+kullakin omalla kiinteällä ankkuritekstillään portailla 1, 3 ja 5.
+Arvo 0 on olemassa vain aktiiviselle työolosuhdekriteerille, ja
+tarkoittaa, ettei rooli kuulu sen piiriin lainkaan.
 
 Älkää sekoittako porrasta painopisteeseen: porras kuvaa, kuinka
 vaativa rooli on kriteerillä, painopiste kertoo, kuinka paljon
@@ -297,13 +338,13 @@ kriteeri painaa. Katso [Kriteerit ja arviointiasteikko](/docs/criteria-and-scale
 
 ## Mallipohja
 
-Mallipohja on valmis malli, josta uusi organisaatio aloittaa
-käyttöönotossa: kriteerit, ankkuritekstit, painopisteet ja
-vaativuustasorajat, jo valmiiksi täytettyinä.
+Mallipohja oli valmis malli, josta uusi organisaatio aiemmin aloitti:
+kriteerit, ankkuritekstit ja painopisteet, jo valmiiksi täytettyinä.
+blueprntillä ei ole enää sellaista. Uusi organisaatio aloittaa nyt
+tyhjästä mallista ja rakentaa sen valitsemalla kriteerikirjastosta sen
+sijaan.
 
-Jokainen uusi organisaatio aloittaa samasta vakiomallipohjasta ja
-muokkaa sitä jälkeenpäin; käyttöönotossa ei tehdä valintaa. Katso
-[Arviointimallin yleiskatsaus](/docs/model-overview).
+Katso [Arviointimallin yleiskatsaus](/docs/model-overview).
 
 ## Track
 
@@ -319,7 +360,7 @@ rekisteriänne varten. Katso [Tehtäväprofiilit](/docs/job-profiles).
 Painopisteet ovat kriteerin paino, kokonaisluku väliltä 1-5, jonka
 HR asettaa mallin kiinteän pistebudjetin puitteissa.
 
-Älkää sekoittako painopisteitä arviointiasteikkoon 0-5:
+Älkää sekoittako painopisteitä arviointiasteikkoon 1-5:
 painopisteet kertovat, kuinka paljon kriteeri painaa, asteikko
 kuvaa, kuinka vaativa rooli on siinä. Katso
 [Painotus ja pistebudjetti](/docs/weighting-and-point-budget).
@@ -334,3 +375,13 @@ Sama sana tarkoittaa myös painopisteiden jakamista kriteereille
 Malli-sivun Painotus-välilehdellä. Nämä kaksi ovat eri asioita: tämä on
 tulos, tuo on tehtävä. Katso
 [Painotus ja vaativuustasot](/docs/score-and-levels).
+
+## Vyöhyke
+
+Vyöhyke on yksi neljästä naapuritasojen ryhmästä, A:sta (tasot 1-3,
+seniorimmat) D:hen (tasot 10-12). Organisaationne korkeimmin
+painotetut kriteerit toimivat ylimpien vyöhykkeiden profiilivaatimuksena,
+joten rooli ei voi päästä johonkin niistä pelkästään korkealla
+kokonaispainotuksella.
+
+Katso [Painotus ja vaativuustasot](/docs/score-and-levels).

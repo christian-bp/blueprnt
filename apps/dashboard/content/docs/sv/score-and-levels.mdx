@@ -1,13 +1,13 @@
 ---
 title: Viktning och nivåer
-description: Hur viktningen 0-100 räknas fram från era betyg, avrundas nedåt, och blir en nivå.
+description: Hur viktningen 0-100 räknas fram från era betyg, och blir en av tolv nivåer i fyra zoner.
 section: evaluation
 ---
 
-När alla kriterier har fått ett betyg räknar blueprnt fram två tal för
-rollen: dess viktning, ett tal från 0 till 100, och dess nivå. Båda
-härleds alltid från de aktuella betygen och den aktuella modellen; ingen
-av dem skrivs någonsin in för hand. Blanda inte ihop den här viktningen,
+När alla kriterier har fått ett betyg och bedömningen är låst räknar
+blueprnt fram en viktning, en nivå och en zon för rollen. Alla tre
+härleds alltid från de låsta betygen och den aktuella modellen; ingen av
+dem skrivs någonsin in för hand. Blanda inte ihop den här viktningen,
 en rolls samlade resultat, med viktningen ni gör på
 [Modell](/model)-ytans flik Viktning, som sätter varje kriteriums egna
 viktpoäng; de två delar ordet medvetet, men de är olika saker. Se
@@ -16,7 +16,8 @@ senare.
 
 ## Viktningsformeln
 
-För varje kriterium multiplicerar ni dess betyg (0 till 5) med det
+För varje kriterium multiplicerar ni dess betyg (1 till 5, eller 0 för
+ett arbetsförhållandekriterium rollen inte omfattas av) med det
 kriteriets viktpoäng, och lägger sedan ihop resultaten över alla
 kriterier. Dela den summan med summan av alla kriteriers viktpoäng: det
 är det viktade medelbetyget. Multiplicera medelbetyget med 20 och
@@ -26,49 +27,72 @@ Nedåtavrundningen betyder att en roll når en nivå först när dess
 viktning verkligen har nått tröskeln, aldrig genom att avrundas upp
 till den.
 
-En rolls viktning visas bara när alla nuvarande kriterier har fått ett
-betyg. Fram tills då visar blueprnt hur många kriterier som är
-betygsatta istället för ett partiellt tal.
+En rolls viktning visas bara när dess bedömning är låst. Fram tills dess
+visar blueprnt hur många kriterier som är betygsatta istället för ett
+partiellt tal, även när alla har fått ett.
 
 ## Var viktningen kommer ifrån
 
-På rollens sida, när dess utvärdering är klar, listar en sammanställning
+På rollens sida, när den är låst, listar en sammanställning
 varje kriterium efter dess bidrag: ett kriteriums betyg multiplicerat
 med dess viktpoäng, visat som en procentandel av totalen över alla
 kriterier, sorterat med den största drivkraften först. Det här är det
 enda talet i sammanställningen som både är specifikt för den här rollen
 och rör sig när modellen viktas om; den visar inte de
 organisationsövergripande viktpoängen, eftersom de är identiska för
-varje roll, eller det råa betyget 0 till 5, som sammanställningen redan
+varje roll, eller det råa betyget, som sammanställningen redan
 uttrycker genom bidragsandelen.
 
-## Nivåer och trösklar
+## Tolv nivåer i fyra zoner
 
-Nivå 1 är den högsta nivån, med nedräkning därifrån. Er modell definierar
-en tröskelviktning för varje nivå; blueprnt tilldelar en roll den högsta
-nivå vars tröskel dess viktning når eller överstiger. En roll saknar
-nivå tills den är komplett, av samma skäl som den ännu saknar viktning.
+Nivå 1 är den högsta av tolv nivåer, med nedräkning därifrån. Er modell
+definierar en lägsta viktning för varje nivå. Nivåerna grupperas i fyra
+zoner, från A (nivå 1 till 3) ner till D (nivå 10 till 12); en zon är
+ett bredare band med en gemensam karaktär, användbart för att tala om var
+en roll ligger utan att nämna dess exakta nivå.
+
+Er organisations högst viktade kriterier, de med vikt 4 eller 5 och inte
+ett arbetsförhållandekriterium, fungerar dessutom som ett profilkrav för
+de översta zonerna: en roll kan inte nå zon A eller B enbart på en hög
+totalviktning om dess betyg på just de kriterierna inte räcker till. När
+det händer placeras rollen istället högst upp i den lägre zonen och
+flaggas för kalibrering, en påminnelse om att en person bekräftar
+placeringen snarare än en automatisk överskrivning. En helt platt modell
+med alla kriterier på vikt 3 har inget profilkrav alls: inga deklarerade
+prioriteringar betyder ingen grind. En roll saknar nivå, zon och
+viktning tills dess bedömning är låst.
+
+## Jämföra med era ankarroller
+
+Om er organisation har aktiva ankarroller visas de tillsammans med ett
+nyss låst resultat så att ni kan stämma av rollens nivå mot roller ni
+redan litar på; ett resultat som hamnar minst två nivåer från varje
+ankare flaggas som värt en manuell kontroll innan ni litar på det. Se
+[Ankarroller](/docs/anchor-roles) för att utse och hantera dem.
 
 ## Resultatet följer modellen
 
-En rolls viktning och nivå speglar alltid betygen och modellen som de är
-just nu, inte som de var när ni betygsatte rollen. Det betyder att en
-ändring i själva modellen, som att lägga till ett
+En rolls viktning, nivå och zon speglar alltid dess låsta betyg och
+modellen som den ser ut just nu, inte som den såg ut när ni låste den.
+Det betyder att en ändring i själva modellen, som att välja ett
 kriterium, ändra en viktpoäng eller vikta om, omedelbart kan flytta en
-roll till en annan nivå, utan att någon rör dess betyg. Att lägga till
-ett kriterium kan till och med göra en tidigare komplett roll inkomplett
-igen tills det nya kriteriet är betygsatt. Varje sådant skifte
-registreras i händelseloggen.
+roll till en annan nivå, utan att någon rör dess betyg. Att välja ett
+nytt kriterium kan till och med göra en tidigare komplett roll
+inkomplett igen tills det också är betygsatt. Varje sådant skifte
+registreras i händelseloggen. En roll som låstes innan er modells
+senaste godkännande markeras som bedömd enligt tidigare metod tills den
+låses om.
 
 ## Ingen manuell överskrivning
 
 Det finns inget sätt att sätta eller justera en rolls nivå direkt. Om en
-nivå inte ser rätt ut är det enda sättet att ändra den att justera de
-underliggande betygen (se [Justera ett betyg](/docs/adjusting-a-rating))
-eller själva modellen, aldrig utfallet. En rolls nivå säger heller
-ingenting om senioriteten hos den som innehar den: senioritet hör till
-personen, satt separat under [Klassificera](/people/classify), och
-påverkar aldrig en rolls betyg, viktning eller nivå.
+nivå inte ser rätt ut är det enda sättet att ändra den att låsa upp
+bedömningen och justera de underliggande betygen (se
+[Justera ett betyg](/docs/adjusting-a-rating)) eller själva modellen,
+aldrig utfallet. En rolls nivå säger heller ingenting om senioriteten
+hos den som innehar den: senioritet hör till personen, satt separat
+under [Klassificera](/people/classify), och påverkar aldrig en rolls
+betyg, viktning eller nivå.
 
 ## Relaterat
 

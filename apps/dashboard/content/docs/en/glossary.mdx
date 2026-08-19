@@ -30,17 +30,20 @@ See [How AI is used](/docs/how-ai-is-used).
 
 ## Anchor
 
-An anchor is the text describing what a criterion's evaluation scale means
-at one of its six steps, 0 to 5.
+An anchor is the fixed library text describing what a criterion's
+assessment scale means at one of its steps: step 1, 3, and 5 always, with a
+considered midpoint at 2 and 4.
 
-Do not confuse an anchor with an anchor role: an anchor is wording on a
-criterion's scale, an anchor role is a whole reference role. See
+Do not confuse an anchor with an anchor role: an anchor is fixed wording on
+a criterion's scale, an anchor role is a whole reference role your
+organization designates. See
 [Criteria and the evaluation scale](/docs/criteria-and-scale).
 
 ## Anchor role
 
-An anchor role is a reference role your organization has evaluated and
-agreed on, used to sanity check other roles' results after they are rated.
+An anchor role is a reference role your organization has evaluated,
+locked, and agreed on, used to sanity check other roles' results after
+they are rated.
 
 It is decision support, never a replacement for rating a role against the
 criteria, and the shared word is a coincidence. See
@@ -49,7 +52,10 @@ criteria, and the shared word is a coincidence. See
 ## Assessment
 
 An assessment is the record of evaluating a role against the model: its
-ratings, its computed weighting and level, and any motivations.
+ratings, and any motivations. While it is open, no result exists anywhere;
+locking it is what reveals the role's computed weighting, level, and zone.
+Unlocking to change a rating is explicit, and hides the result again until
+the assessment is locked once more.
 
 See [Evaluating a role](/docs/evaluating-a-role).
 
@@ -88,7 +94,10 @@ See [Collaboration](/docs/collaboration).
 ## Criterion
 
 A criterion is one thing every role in your organization is evaluated
-against, such as scope or complexity, with its own 0 to 5 evaluation scale.
+against, such as scope or complexity, with its own 1 to 5 assessment scale.
+Every criterion comes from blueprnt's controlled library of 21; your
+organization selects which ones to use, but cannot write a new one or edit
+a selected one's text.
 
 See [Criteria and the evaluation scale](/docs/criteria-and-scale).
 
@@ -101,6 +110,15 @@ other criteria, and, once documented, who approved it.
 Rationale answers why the criterion belongs in the model; bias review
 answers what could skew it and what you do about that. See
 [Method documentation](/docs/method-documentation).
+
+## Dimension
+
+A dimension is one of the four fixed categories every criterion belongs
+to: Competence, Effort and complexity, Responsibility and impact, and
+Working conditions. Dimensions are always present and never chosen; your
+organization selects criteria within them, capped per dimension.
+
+See [Criteria and the evaluation scale](/docs/criteria-and-scale).
 
 ## Equal work
 
@@ -140,9 +158,9 @@ See [Job profiles](/docs/job-profiles).
 
 ## Level
 
-A role's level is the outcome blueprnt computes from its weighting: how that
-weighting compares to the level thresholds in your model. Level 1 is the
-highest level.
+A role's level is the outcome blueprnt computes from its weighting: how
+that weighting compares to the level thresholds in your model, among
+twelve levels grouped into four zones. Level 1 is the highest level.
 
 Never confuse level with seniority: level is the role's computed, org-wide
 outcome, while seniority belongs to the person and never affects it. See
@@ -151,9 +169,18 @@ outcome, while seniority belongs to the person and never affects it. See
 ## Level threshold
 
 A level threshold is the minimum weighting, on the normalized 0 to 100
-scale, that a role must reach to land in a given level.
+scale, that a role must reach to land in a given level, one of twelve.
 
 See [Weighting and levels](/docs/score-and-levels).
+
+## Materiality decision
+
+The materiality decision is your organization's recorded answer to
+whether a working-conditions criterion is active in your model or, with a
+motivation, tested and found not materially relevant. It is required
+before the model can be approved.
+
+See [Criteria and the evaluation scale](/docs/criteria-and-scale).
 
 ## Method appendix
 
@@ -162,10 +189,19 @@ criteria, weight points and shares, criterion rationale, and bias review.
 
 See [The method appendix PDF](/docs/method-appendix-pdf).
 
+## Model approval
+
+Model approval is the status confirming your model's method has passed
+its checklist and is ready to rate roles against. A method-affecting
+change, such as selecting a criterion or reweighting, reopens approval for
+a fresh one-click confirmation.
+
+See [Method documentation](/docs/method-documentation).
+
 ## Motivation
 
-A motivation is a short, optional free-text explanation for a rating, never
-required, written per criterion.
+A motivation is a short free-text explanation for a rating, required when
+you rate a criterion 1, 4, or 5, and optional otherwise.
 
 See [Evaluating a role](/docs/evaluating-a-role).
 
@@ -263,8 +299,10 @@ automatically whenever a weight point changes. See
 
 ## Step
 
-A step is one of the six positions, 0 to 5, on a criterion's evaluation
-scale, each with its own anchor text.
+A step is one of the five positions, 1 to 5, on a criterion's assessment
+scale, each with its own fixed anchor text at 1, 3, and 5. The value 0
+exists only for an active working-conditions criterion, meaning the role
+is not covered by it at all.
 
 Do not confuse a step with a weight point: a step describes how demanding a
 role is on a criterion, a weight point says how much that criterion counts.
@@ -272,13 +310,12 @@ See [Criteria and the evaluation scale](/docs/criteria-and-scale).
 
 ## Template
 
-A template is the ready-made model a new organization starts from during
-onboarding: criteria, anchor texts, weight points, and level thresholds,
-already filled in.
+A template was the ready-made model a new organization used to start from:
+criteria, anchor texts, and weight points, already filled in. blueprnt no
+longer has one. A new organization now starts from an empty model and
+builds it by selecting from the criteria library instead.
 
-Every new organization starts from the same standard template and adapts
-it afterwards; there is no choice to make during onboarding. See
-[Model overview](/docs/model-overview).
+See [Model overview](/docs/model-overview).
 
 ## Track
 
@@ -294,7 +331,7 @@ role family, which is how you group roles for your own register. See
 Weight points are a criterion's weight, a whole number from 1 to 5, set by
 HR under the model's fixed point budget.
 
-Do not confuse weight points with the 0 to 5 evaluation scale: weight
+Do not confuse weight points with the 1 to 5 assessment scale: weight
 points say how much a criterion counts, the scale describes how demanding a
 role is on it. See
 [Weighting and the point budget](/docs/weighting-and-point-budget).
@@ -309,3 +346,12 @@ The same word also names the process of allocating weight points to
 criteria on the Model page's Weighting tab. The two are different things:
 this one is a result, that one is a task. See
 [Weighting and levels](/docs/score-and-levels).
+
+## Zone
+
+A zone is one of four groups of neighbouring levels, from A (levels 1 to
+3, the most senior) to D (levels 10 to 12). Your organization's
+highest-weighted criteria act as a profile requirement for the top zones,
+so a role cannot enter one on a high total weighting alone.
+
+See [Weighting and levels](/docs/score-and-levels).

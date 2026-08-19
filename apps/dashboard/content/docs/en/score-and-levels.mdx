@@ -1,13 +1,13 @@
 ---
 title: Weighting and levels
-description: How the 0-100 weighting is computed from your ratings, rounded down, and turned into a level.
+description: How the 0-100 weighting is computed from your ratings, and turned into one of twelve levels across four zones.
 section: evaluation
 ---
 
-Once every criterion is rated, blueprnt computes two numbers for the
-role: its weighting, a score from 0 to 100, and its level. Both are
-always derived from the current ratings and the current model; neither
-is ever typed in by hand. Do not confuse this weighting, a role's overall
+Once every criterion is rated and the assessment is locked, blueprnt
+computes a weighting, a level, and a zone for the role. All three are
+always derived from the locked ratings and the current model; none is
+ever typed in by hand. Do not confuse this weighting, a role's overall
 result, with the weighting you do on the [Model](/model) area's Weighting
 tab, which sets each criterion's own weight points; the two share the
 word deliberately, but they are different things. See
@@ -16,58 +16,80 @@ the latter.
 
 ## The weighting formula
 
-For every criterion, multiply its rating (0 to 5) by that criterion's
-weight points, then add those results together across every criterion.
-Divide that sum by the total of all the criteria's weight points: this is
-the weighted mean rating. Multiply the weighted mean by 20 and round down
-to the nearest whole number. That final number, always between 0 and 100
-however many criteria the model has, is the weighting. Rounding down means
-a role reaches a level only once its weighting has genuinely met the
-threshold, never by rounding up to it.
+For every criterion, multiply its rating (1 to 5, or 0 for a
+working-conditions criterion the role is not covered by) by that
+criterion's weight points, then add those results together across every
+criterion. Divide that sum by the total of all the criteria's weight
+points: this is the weighted mean rating. Multiply the weighted mean by
+20 and round down to the nearest whole number. That final number, always
+between 0 and 100 however many criteria the model has, is the weighting.
+Rounding down means a role reaches a level only once its weighting has
+genuinely met the threshold, never by rounding up to it.
 
-A role's weighting only appears once every current criterion is rated.
-Until then, blueprnt shows how many criteria are rated instead of a
-partial number.
+A role's weighting only appears once its assessment is locked. Until
+then, blueprnt shows how many criteria are rated instead of a partial
+number, even after every criterion has one.
 
 ## Where the weighting comes from
 
-On the role's page, once its evaluation is complete, a breakdown lists
-every criterion by its contribution: a criterion's rating multiplied by
-its weight points, shown as a percentage share of the total across all
-criteria, sorted with the biggest driver first. This is the one number
-on that breakdown that is both specific to this role and moved by
-reweighting the model; it does not show the model-wide weight points,
-since those are identical for every role, or the raw 0-5 rating, which
-the breakdown already expresses through the contribution share.
+On the role's page, once it is locked, a breakdown lists every criterion
+by its contribution: a criterion's rating multiplied by its weight
+points, shown as a percentage share of the total across all criteria,
+sorted with the biggest driver first. This is the one number on that
+breakdown that is both specific to this role and moved by reweighting the
+model; it does not show the model-wide weight points, since those are
+identical for every role, or the raw rating, which the breakdown already
+expresses through the contribution share.
 
-## Levels and thresholds
+## Twelve levels in four zones
 
-Level 1 is the highest level, counting down from there. Your model
-defines a threshold weighting score for each level; blueprnt assigns a
-role the highest level whose threshold its weighting meets or exceeds.
-A role has no level until it is complete, for the same reason it has no
-weighting yet.
+Level 1 is the highest of twelve levels, counting down from there. Your
+model defines a minimum weighting for each level. The levels are grouped
+into four zones, from A (levels 1 to 3) down to D (levels 10 to 12); a
+zone is a broader band with a shared character, useful for talking about
+where a role sits without citing its exact level.
+
+Your organization's highest-weighted criteria, those carrying weight 4 or
+5 and not a working-conditions criterion, additionally act as a profile
+requirement for the top zones: a role cannot enter zone A or B on a high
+total weighting alone if its ratings on those specific criteria fall
+short. When that happens, the role is placed at the top of the lower
+zone instead and flagged for calibration, a prompt for a person to
+confirm the placement rather than an automatic override. A flat model
+with every criterion at weight 3 has no profile requirement at all: no
+declared priorities means no gate. A role has no level, zone, or
+weighting until its assessment is locked.
+
+## Comparing against your anchor roles
+
+If your organization has active anchor roles, they appear alongside a
+newly locked result so you can sanity check the role's level against
+roles you already trust; a result that lands two or more levels from
+every anchor is flagged as worth a manual check before you rely on it.
+See [Anchor roles](/docs/anchor-roles) for designating and managing them.
 
 ## The result follows the model
 
-A role's weighting and level always reflect the ratings and the model as
-they are right now, not as they were when you rated it. This means a
-change to the model itself, such as adding a criterion, changing a
-weight point, or reweighting, can move a role to a
-different level immediately, without anyone touching its ratings. Adding
-a criterion can even make a previously complete role incomplete again
-until the new criterion is rated. Every shift like this is recorded in
-the audit log.
+A role's weighting, level, and zone always reflect its locked ratings and
+the model as it stands right now, not as it stood when you locked it.
+This means a change to the model itself, such as selecting a criterion,
+changing a weight point, or reweighting, can move a role to a different
+level immediately, without anyone touching its ratings. Selecting a new
+criterion can even make a previously complete role incomplete again until
+it is rated too. Every shift like this is recorded in the audit log. A
+role locked before your model's most recent approval is marked as
+assessed under a previous method until it is re-locked.
 
 ## No manual override
 
-There is no way to set or adjust a role's level directly. If a level
-does not look right, the only way to change it is to adjust the
-underlying ratings (see [Adjusting a rating](/docs/adjusting-a-rating))
-or the model itself, never the outcome. A role's level also says nothing
-about the seniority of whoever holds it: seniority belongs to the
-person, set separately during [Classify](/people/classify), and never
-affects a role's rating, weighting, or level.
+There is no way to set or adjust a role's level directly. If a level does
+not look right, the only way to change it is to unlock the assessment and
+adjust the underlying ratings (see
+[Adjusting a rating](/docs/adjusting-a-rating)) or the model itself, never
+the outcome. A role's level also says nothing about the seniority of
+whoever holds it: seniority belongs to the person, set separately during
+[Classify](/people/classify), and never affects a role's rating,
+weighting, or level.
 
 ## Related
 
