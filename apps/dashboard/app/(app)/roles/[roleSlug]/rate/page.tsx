@@ -1,6 +1,7 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
+import { buildCriterionHelpText } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 import { Kbd } from "@workspace/ui/components/kbd"
@@ -148,8 +149,9 @@ export default function RatePage(props: {
           description: criterion.shortUiText,
           // The library's own guidance split (what the criterion measures vs.
           // does not) stands in for the retired free-text helpText field,
-          // mirroring getMethodModel's identical derivation.
-          helpText: `${criterion.measures} ${criterion.notMeasures}`.trim(),
+          // via the same shared helper getMethodModel and the AI weighting
+          // review prompt use.
+          helpText: buildCriterionHelpText(criterion),
           anchors: criterion.anchors,
         }))}
         ratings={role.ratings}

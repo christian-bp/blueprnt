@@ -1879,7 +1879,8 @@
         "dialogTitle": "Add a {dimension} criterion",
         "dialogDescription": "Select a criterion from the library to add to this dimension.",
         "empty": "Every criterion in this dimension is already selected.",
-        "addRowCta": "Add"
+        "addRowCta": "Add",
+        "closeCta": "Close"
       }
     },
     "ai": {

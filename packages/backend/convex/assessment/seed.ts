@@ -77,16 +77,18 @@ export const seedRatedRoles = internalMutation({
         })
         criterionIdByKey.set(libraryKey, criterionId)
       }
-      // The demo org has already tested working conditions at method-building
-      // time and found nothing recurring across its role families (ADR-0022
-      // section 6.1): seeded as testedNotMaterial rather than leaving the
-      // decision unmade, so the demo model reads as a company that finished
-      // its method work, like its weighting already does.
+      // The demo org tested working conditions at method-building time (ADR-
+      // 0022 section 6.1) and found jour/beredskap (standby duty) a
+      // recurring, material requirement in its drift/support role families
+      // (on-call is the dimension's selected criterion): seeded as active
+      // rather than leaving the decision unmade, so the demo model reads as
+      // a company that finished its method work, like its weighting already
+      // does.
       await ctx.db.patch(model._id, {
         workingConditions: {
-          status: "testedNotMaterial",
+          status: "active",
           motivation:
-            "Prövad vid metodbyggnaden: inga rollfamiljer har återkommande särskilda arbetsförhållanden som inte fångas av övriga kriterier.",
+            "Jour och beredskap är ett återkommande och materiellt rollkrav i drift- och supportrollerna.",
           decidedBy: actorId,
           decidedAt: Date.now(),
         },

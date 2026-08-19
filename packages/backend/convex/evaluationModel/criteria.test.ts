@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { DEMO_SELECTED_KEYS } from "../assessment/devCompany"
 import { api, components } from "../_generated/api"
 import type { Doc } from "../_generated/dataModel"
 import { initConvexTest } from "../testing.helpers"
@@ -398,19 +399,12 @@ describe("rebalanceWeights", () => {
   })
 })
 
-// A spread of 8 library keys across every dimension at (or under) its own
-// DIMENSION_MAX_ACTIVE cap, mirroring devCompany's demo selection order
-// closely enough for index-based rating assertions below.
-const EIGHT_KEYS = [
-  "knowledge-depth",
-  "knowledge-breadth",
-  "complexity-ambiguity",
-  "communication-effort",
-  "scope-impact",
-  "autonomy-mandate",
-  "risk-consequence",
-  "safety-exposure",
-] as const
+// The real demo selection (2 competence + 2 effort + 3 responsibility + 1
+// workingConditions = 8, each at or under its own DIMENSION_MAX_ACTIVE cap):
+// derived, not a near-copy, so this fixture can never silently drift out of
+// sync with the selection devCompany.test.ts guards against exceeding those
+// same caps.
+const EIGHT_KEYS = DEMO_SELECTED_KEYS
 
 async function seedRatedOrganization(
   t: ReturnType<typeof initConvexTest>,

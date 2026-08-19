@@ -1879,7 +1879,8 @@
         "dialogTitle": "Lägg till ett kriterium inom {dimension}",
         "dialogDescription": "Välj ett kriterium från biblioteket att lägga till i denna dimension.",
         "empty": "Alla kriterier inom denna dimension är redan valda.",
-        "addRowCta": "Lägg till"
+        "addRowCta": "Lägg till",
+        "closeCta": "Stäng"
       }
     },
     "ai": {

@@ -13,6 +13,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -133,6 +134,15 @@ export function LibraryPickerDialog({
             ))}
           </ul>
         )}
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpen(false)}
+          >
+            {t("closeCta")}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

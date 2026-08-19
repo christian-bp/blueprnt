@@ -96,13 +96,14 @@ describe("assessment/seed.seedRatedRoles", () => {
       // responsibility.
       expect(cell("Software Developer", "risk-consequence")).toBe(3)
       expect(cell("Software Developer", "knowledge-depth")).toBe(3)
-      expect(cell("Software Developer", "people-leadership")).toBe(0)
+      expect(cell("Software Developer", "on-call")).toBe(0)
       // Cloud Architect: peaks on the technical criteria.
       expect(cell("Cloud Architect", "complexity-ambiguity")).toBe(4)
       expect(cell("Cloud Architect", "knowledge-depth")).toBe(4)
       // Order & Indoor Sales: junior, low magnitude.
       expect(cell("Order & Indoor Sales", "scope-impact")).toBe(2)
-      expect(cell("Order & Indoor Sales", "people-leadership")).toBe(1)
+      // Infrastructure Engineer: the demo's clearest on-call exposure.
+      expect(cell("Infrastructure Engineer", "on-call")).toBe(3)
 
       // The calibrated demo weighting landed on every seeded criterion.
       for (const criterion of criteria) {
@@ -117,13 +118,17 @@ describe("assessment/seed.seedRatedRoles", () => {
       }
       expect(criteria.reduce((sum, c) => sum + c.weightPoints, 0)).toBe(24)
 
-      // The demo org has already tested and closed out working conditions.
+      // The demo org has already tested and closed out working conditions:
+      // active, since on-call is a real, material requirement in its
+      // drift/support role families.
       const model = await ctx.db
         .query("models")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .unique()
-      expect(model?.workingConditions?.status).toBe("testedNotMaterial")
-      expect(model?.workingConditions?.motivation.length).toBeGreaterThan(0)
+      expect(model?.workingConditions?.status).toBe("active")
+      expect(model?.workingConditions?.motivation).toBe(
+        "Jour och beredskap är ett återkommande och materiellt rollkrav i drift- och supportrollerna."
+      )
 
       // Track calibration from prod: the two Lead-track roles.
       const roleByTitle = new Map(roles.map((r) => [r.title, r]))

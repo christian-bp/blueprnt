@@ -28,7 +28,10 @@ import { toast } from "@/lib/toast"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { MorphPopover } from "@/components/morph-popover"
 import { CriterionItem } from "@/components/model/criterion-item"
-import { CriterionListSkeleton } from "@/components/model/criterion-list-skeleton"
+import {
+  CriterionListSkeleton,
+  DefineCriterionListSkeleton,
+} from "@/components/model/criterion-list-skeleton"
 import { LibraryPickerDialog } from "@/components/model/library-picker-dialog"
 import { WeightReviewPanel } from "@/components/model/weight-review-panel"
 import { formatShare, WEIGHT_POINT_OPTIONS } from "@/lib/weighting"
@@ -125,7 +128,11 @@ export function ModelBuilder({
             </Button>
           </div>
         )}
-        <CriterionListSkeleton variant={loadingWeight ? "weight" : "define"} />
+        {loadingWeight ? (
+          <CriterionListSkeleton variant="weight" />
+        ) : (
+          <DefineCriterionListSkeleton orgId={orgId} />
+        )}
       </div>
     )
   }

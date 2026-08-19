@@ -17,7 +17,10 @@ import {
   insertStarterSet,
   starterFamilyShape,
 } from "../assessment/starters"
-import { criteriaLibraryContent } from "../evaluationModel/criteriaLibrary"
+import {
+  buildCriterionHelpText,
+  criteriaLibraryContent,
+} from "../evaluationModel/criteriaLibrary"
 import { clampLocale, promptLocale } from "../evaluationModel/localize"
 import { resolveContentLocale } from "../evaluationModel/model"
 import { trackKeyValidator } from "../evaluationModel/tables"
@@ -858,7 +861,7 @@ export const collectCriterionComplianceContext = internalQuery({
     const entry = content.criteria[criterion.libraryKey]
     // The library's own guidance split (what the criterion measures vs. does
     // not) stands in for the retired free-text helpText field.
-    const criterionHelpText = `${entry.measures} ${entry.notMeasures}`.trim()
+    const criterionHelpText = buildCriterionHelpText(entry)
     // Library anchors are 1/3/5 (always) plus 2/4 (only the three section
     // 13.5 entries today); missing midpoints fall back to the shared
     // between-steps copy so the AI always sees a full 1-5 ladder.

@@ -1879,7 +1879,8 @@
         "dialogTitle": "Lisää kriteeri ulottuvuuteen {dimension}",
         "dialogDescription": "Valitse kirjastosta kriteeri lisättäväksi tähän ulottuvuuteen.",
         "empty": "Kaikki tämän ulottuvuuden kriteerit on jo valittu.",
-        "addRowCta": "Lisää"
+        "addRowCta": "Lisää",
+        "closeCta": "Sulje"
       }
     },
     "ai": {

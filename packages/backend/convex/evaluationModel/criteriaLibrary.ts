@@ -188,3 +188,16 @@ export const REGISTERED_LIBRARY_LOCALES = Object.keys(CONTENT_BY_LOCALE)
 export function criteriaLibraryContent(locale: string): CriteriaLibraryContent {
   return CONTENT_BY_LOCALE[clampLocale(locale)]
 }
+
+// The library's measures/notMeasures split, joined into the one help-text
+// sentence every consumer actually needs (what the criterion DOES and does
+// NOT cover, in one line): the method-builder wire (method.ts), the rating
+// stepper (apps/dashboard rate/page.tsx), and the AI weighting-review prompt
+// (ai/suggest.ts). Pure and side-effect-free like the rest of this module, so
+// it lives here rather than duplicated per call site.
+export function buildCriterionHelpText(entry: {
+  measures: string
+  notMeasures: string
+}): string {
+  return `${entry.measures} ${entry.notMeasures}`.trim()
+}

@@ -1879,7 +1879,8 @@
         "dialogTitle": "Tilføj et kriterium inden for {dimension}",
         "dialogDescription": "Vælg et kriterium fra biblioteket, der skal tilføjes til denne dimension.",
         "empty": "Alle kriterier inden for denne dimension er allerede valgt.",
-        "addRowCta": "Tilføj"
+        "addRowCta": "Tilføj",
+        "closeCta": "Luk"
       }
     },
     "ai": {

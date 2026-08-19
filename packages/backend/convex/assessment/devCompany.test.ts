@@ -1,11 +1,16 @@
 import {
   assignLevel,
   DEFAULT_LEVEL_RULES,
+  DIMENSION_MAX_ACTIVE,
+  type DimensionKey,
+  MODEL_MAX_CRITERIA,
+  MODEL_MIN_CRITERIA,
   type RatingValue,
   scoreRole,
   type WeightPoints,
 } from "@workspace/core"
 import { describe, expect, it } from "vitest"
+import { LIBRARY_DIMENSION } from "../evaluationModel/criteriaLibrary"
 import {
   DEMO_SELECTED_KEYS,
   DEMO_WEIGHT_POINTS,
@@ -58,12 +63,37 @@ const TECH_WEIGHTS: Record<string, number> = {
   "scope-impact": 1,
   "autonomy-mandate": 1,
   "risk-consequence": 1,
-  "people-leadership": 1,
+  "on-call": 1,
 }
 
 const ALL_TITLES = DEV_COMPANY.flatMap((f) => f.roles.map((r) => r.title))
 
 describe("devCompany ratings", () => {
+  it("keeps the demo selection within every dimension's cap", () => {
+    // The seed writes DEMO_SELECTED_KEYS directly (bypassing
+    // activateCriterion's own runtime checks, like every other seed write),
+    // so nothing enforces DIMENSION_MAX_ACTIVE or the model-wide 6-8 bound on
+    // this fixture except this test. A selection that violates either would
+    // still seed successfully (raw insert, no validation) and only surface
+    // as a silently-uncappable demo model.
+    expect(DEMO_SELECTED_KEYS.length).toBeGreaterThanOrEqual(MODEL_MIN_CRITERIA)
+    expect(DEMO_SELECTED_KEYS.length).toBeLessThanOrEqual(MODEL_MAX_CRITERIA)
+    const countByDimension: Record<DimensionKey, number> = {
+      competence: 0,
+      effort: 0,
+      responsibility: 0,
+      workingConditions: 0,
+    }
+    for (const key of DEMO_SELECTED_KEYS) {
+      countByDimension[LIBRARY_DIMENSION[key]] += 1
+    }
+    for (const [dimension, count] of Object.entries(countByDimension)) {
+      expect(count, dimension).toBeLessThanOrEqual(
+        DIMENSION_MAX_ACTIVE[dimension as DimensionKey]
+      )
+    }
+  })
+
   it("has a 1-5 ratings vector of length 8 for every role", () => {
     // Both directions: every title has a vector, no orphan vectors linger for
     // renamed/removed titles, and duplicate titles would break the equality.
@@ -116,13 +146,13 @@ describe("devCompany ratings", () => {
     // point breaks this.
     expect(dist).toEqual({
       2: 1,
-      3: 1,
-      4: 3,
+      4: 1,
+      5: 3,
       6: 2,
       7: 6,
       8: 6,
-      9: 4,
-      10: 13,
+      9: 6,
+      10: 11,
       11: 3,
       12: 1,
     })
@@ -152,11 +182,17 @@ describe("devCompany ratings", () => {
     )
     // Default: the CEO outranks the complexity/knowledge-peaked architect.
     expect(ceoBase.score).toBeGreaterThan(archBase.score)
-    // Technical weighting moves the two in opposite directions: the CEO dips
-    // (extra weight lands on knowledge-breadth, the CEO's single non-max
-    // criterion) while the architect's technical peak rises.
-    expect(ceoTech.score).toBeLessThan(ceoBase.score)
+    // Technical weighting narrows the gap rather than inverting it: the CEO
+    // is also maxed on two of the three heavily-weighted criteria, so the
+    // CEO's score still edges up, but not enough to cross a level boundary,
+    // while the architect's technical peak rises far more and climbs a
+    // level outright.
+    expect(ceoTech.level).toBe(ceoBase.level)
     expect(archTech.score).toBeGreaterThan(archBase.score)
+    expect(archTech.level).toBeLessThan(archBase.level)
+    expect(archTech.score - archBase.score).toBeGreaterThan(
+      ceoTech.score - ceoBase.score
+    )
     // A developer climbs at least one level under technical weighting.
     expect(devTech.level).toBeLessThan(devBase.level)
   })

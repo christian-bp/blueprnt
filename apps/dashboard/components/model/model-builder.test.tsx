@@ -199,6 +199,41 @@ describe("ModelBuilder", () => {
   })
   afterEach(() => cleanup())
 
+  it("Define phase loading: mirrors the loaded shape with four real dimension sections, not a flat list", () => {
+    useQueryMock.mockImplementation((ref: unknown) =>
+      ref === "evaluationModel.model.getModel"
+        ? undefined
+        : ref === "ai.suggest.getOpenSuggestions"
+          ? []
+          : reviewLocked
+    )
+    renderBuilder("define")
+    expect(
+      screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)
+    ).toEqual([
+      "Competence",
+      "Effort and complexity",
+      "Responsibility and impact",
+      "Working conditions",
+    ])
+    expect(screen.getAllByRole("button", { name: picker.addCta })).toHaveLength(
+      4
+    )
+  })
+
+  it("Weight phase loading: the flat list skeleton, not the dimension-grouped one", () => {
+    useQueryMock.mockImplementation((ref: unknown) =>
+      ref === "evaluationModel.model.getModel"
+        ? undefined
+        : ref === "ai.suggest.getOpenSuggestions"
+          ? []
+          : reviewLocked
+    )
+    renderBuilder("weight")
+    expect(screen.queryAllByRole("heading", { level: 3 })).toHaveLength(0)
+    expect(screen.queryByRole("button", { name: picker.addCta })).toBeNull()
+  })
+
   it("Define phase: dimension sections group criteria, no weighting", () => {
     renderBuilder("define")
     // Every dimension heading renders, including the empty one.

@@ -387,20 +387,34 @@ export const DEV_COMPANY: DevFamily[] = [
 // Per-role 1-5 ratings across the demo's 8 selected library criteria, in
 // DEMO_SELECTED_KEYS order: [knowledge-depth, knowledge-breadth,
 // complexity-ambiguity, communication-effort, scope-impact, autonomy-mandate,
-// risk-consequence, people-leadership]. The vectors are re-keyed from the
-// production demo org's nine-criterion standard-template ratings (see
-// git history for the source vectors): each new position takes its value
-// straight from the template criterion the masterdokument content maps it to
-// (knowledge-breadth <- formal, communication-effort <- stakeholders,
-// people-leadership <- people, the rest 1:1 by concept), and the old
-// financial vector is dropped entirely (no library key selected for it in
-// this demo). The values themselves are UNCHANGED by this re-key (still the
-// original 0-5 numbers); recalibrating them against the library's own
-// semantics is a later phase (T5), not this one.
+// risk-consequence, on-call]. The vectors are re-keyed from the production
+// demo org's nine-criterion standard-template ratings (see git history for
+// the source vectors): each new position takes its value straight from the
+// template criterion the masterdokument content maps it to (knowledge-breadth
+// <- formal, communication-effort <- stakeholders, the rest 1:1 by concept),
+// and the old financial vector is dropped entirely (no library key selected
+// for it in this demo). The values themselves are UNCHANGED by this re-key
+// (still the original 0-5 numbers); recalibrating them against the library's
+// own semantics is a later phase (T5), not this one.
+//
+// people-leadership was the original 8th key, but it is a responsibility
+// criterion: alongside scope-impact/autonomy-mandate/risk-consequence that
+// put 4 criteria in a dimension capped at DIMENSION_MAX_ACTIVE.responsibility
+// = 3, and left workingConditions at zero despite every model needing a
+// decision there (ADR-0022 section 6.1). Both are fixed the same way: swap
+// the 8th key for on-call (workingConditions, cap 1), moving its weight point
+// and its whole rating column with it. The old people-leadership column is
+// gone, not merely renamed: on-call measures a different thing (irregular
+// hours / standby duty, 0 meaning "not covered" for the many titles with no
+// on-call exposure), so every title's 8th value was reconsidered on its own
+// terms rather than carried over. Verified in devCompany.test.ts, including a
+// guard that the selection itself never exceeds any dimension's cap.
+//
 // Profiles VARY across criteria by function, which is what makes the weighting
 // matter: boosting the technical criteria (complexity/knowledge) lifts the
-// engineering profiles and drops the leadership-heavy ones. Verified in
-// devCompany.test.ts (default-weight distribution + reweighting sensitivity).
+// engineering profiles and drops the ones with no on-call exposure. Verified
+// in devCompany.test.ts (default-weight distribution + reweighting
+// sensitivity).
 //
 // Only three shapes are shared between titles; every other role carries its
 // own vector.
@@ -416,7 +430,7 @@ export const DEMO_SELECTED_KEYS = [
   "scope-impact",
   "autonomy-mandate",
   "risk-consequence",
-  "people-leadership",
+  "on-call",
 ] as const satisfies readonly CriteriaLibraryKey[]
 type DemoLibraryKey = (typeof DEMO_SELECTED_KEYS)[number]
 type RatingVector = readonly [
@@ -429,14 +443,19 @@ type RatingVector = readonly [
   RatingValue,
   RatingValue,
 ]
-const EXEC_HEAD: RatingVector = [3, 5, 3, 5, 5, 4, 4, 5] // functional head (HR/Sales/Product)
+const EXEC_HEAD: RatingVector = [3, 5, 3, 5, 5, 4, 4, 0] // functional head (HR/Sales/Product)
 const SPECIALIST_IC: RatingVector = [3, 3, 2, 2, 2, 2, 3, 0] // hands-on specialist, no people responsibility
 const COORDINATOR_IC: RatingVector = [2, 3, 2, 3, 2, 2, 2, 0] // coordinating IC, stakeholder-tilted
 
+// The 8th column is on-call (workingConditions): 0 for every title with no
+// standby/irregular-hours exposure, 1-3 for the operations/support titles
+// that actually carry it (IT-support, Supporttekniker, IT-specialist, Cloud
+// Architect, IT Manager, Infrastructure Engineer), graded by how central
+// reactive incident response is to the role's own responsibilities.
 export const RATINGS_BY_TITLE: Record<string, RatingVector> = {
-  CEO: [5, 3, 5, 5, 5, 5, 5, 5],
+  CEO: [5, 3, 5, 5, 5, 5, 5, 0],
   "Head of HR": EXEC_HEAD,
-  "Head of Finance": [4, 3, 4, 5, 5, 5, 4, 5],
+  "Head of Finance": [4, 3, 4, 5, 5, 5, 4, 0],
   "Head of Sales & Marketing": EXEC_HEAD,
   "Head of Product": EXEC_HEAD,
   "Software Developer": SPECIALIST_IC,
@@ -444,36 +463,36 @@ export const RATINGS_BY_TITLE: Record<string, RatingVector> = {
   "Embedded Developer": SPECIALIST_IC,
   "Hardware Developer": SPECIALIST_IC,
   Konstruktör: [2, 3, 2, 2, 2, 2, 2, 0],
-  "Cloud Architect": [4, 3, 4, 2, 3, 3, 3, 0],
-  "Infrastructure Engineer": [3, 3, 3, 2, 2, 2, 2, 0],
-  "Technical Solutions Architect": [3, 3, 4, 4, 4, 4, 3, 2],
-  "Department Manager Software": [2, 3, 3, 3, 3, 4, 3, 2],
+  "Cloud Architect": [4, 3, 4, 2, 3, 3, 3, 1],
+  "Infrastructure Engineer": [3, 3, 3, 2, 2, 2, 2, 3],
+  "Technical Solutions Architect": [3, 3, 4, 4, 4, 4, 3, 0],
+  "Department Manager Software": [2, 3, 3, 3, 3, 4, 3, 0],
   "Strategy Engineer": [1, 3, 5, 5, 4, 2, 4, 0],
   "Data Developer": [2, 1, 2, 2, 2, 2, 2, 0],
-  "Department Manager Data": [3, 2, 3, 4, 4, 4, 3, 2],
+  "Department Manager Data": [3, 2, 3, 4, 4, 4, 3, 0],
   "Product Manager": [2, 3, 3, 4, 3, 4, 3, 0],
   "Product Coordinator": [2, 3, 3, 3, 2, 3, 3, 0],
   "Product Promotor": [3, 3, 2, 3, 2, 2, 3, 0],
   "UX Lead": [3, 3, 3, 3, 4, 4, 3, 0],
-  "Account Manager": [3, 2, 2, 4, 3, 3, 3, 1],
+  "Account Manager": [3, 2, 2, 4, 3, 3, 3, 0],
   "Key Account Manager": [2, 3, 3, 4, 3, 2, 4, 0],
-  "Sales Manager": [2, 2, 4, 3, 4, 4, 4, 2],
-  "Order & Indoor Sales": [3, 2, 3, 3, 2, 2, 2, 1],
+  "Sales Manager": [2, 2, 4, 3, 4, 4, 4, 0],
+  "Order & Indoor Sales": [3, 2, 3, 3, 2, 2, 2, 0],
   Marknadskoordinator: COORDINATOR_IC,
   "E-Commerce Strategy Lead": [3, 3, 4, 3, 4, 4, 4, 0],
   "Partner & Cooperations Manager": COORDINATOR_IC,
   "Content Delivery Manager": [3, 3, 3, 3, 4, 4, 3, 0],
-  "IT Manager": [2, 3, 2, 2, 3, 4, 3, 2],
-  "IT-specialist": [3, 3, 2, 2, 2, 2, 2, 0],
-  "IT-support": [1, 2, 1, 2, 1, 2, 2, 0],
-  Supporttekniker: [2, 2, 3, 3, 2, 2, 3, 0],
+  "IT Manager": [2, 3, 2, 2, 3, 4, 3, 1],
+  "IT-specialist": [3, 3, 2, 2, 2, 2, 2, 2],
+  "IT-support": [1, 2, 1, 2, 1, 2, 2, 2],
+  Supporttekniker: [2, 2, 3, 3, 2, 2, 3, 2],
   Controller: SPECIALIST_IC,
   Redovisningsekonom: [1, 3, 1, 2, 2, 2, 1, 0],
   "Strategic Purchaser": [3, 3, 3, 4, 3, 3, 3, 0],
   "Admin & Purchasing": [1, 2, 2, 2, 2, 2, 2, 0],
-  "Project Manager": [1, 3, 3, 3, 3, 3, 3, 1],
+  "Project Manager": [1, 3, 3, 3, 3, 3, 3, 0],
   "Project Management Officer": [2, 3, 2, 2, 1, 3, 3, 0],
-  "Project & Operations Manager": [2, 3, 3, 4, 4, 4, 3, 2],
+  "Project & Operations Manager": [2, 3, 3, 4, 4, 4, 3, 0],
 }
 
 // The demo org's calibrated weight points (ADR-0021 library keys), summing to
@@ -489,7 +508,7 @@ export const DEMO_WEIGHT_POINTS: Record<DemoLibraryKey, WeightPoints> = {
   "scope-impact": 5,
   "autonomy-mandate": 3,
   "risk-consequence": 3,
-  "people-leadership": 1,
+  "on-call": 1,
 }
 
 // Anchor-role designations, mirroring the production demo org. Keyed by role

@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react"
 import { ConvexError } from "convex/values"
 import { NextIntlClientProvider } from "next-intl"
@@ -108,6 +109,26 @@ describe("LibraryPickerDialog", () => {
     )
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(errors.dimensionCapExceeded)
+    })
+  })
+
+  it("the footer close button closes the dialog", async () => {
+    renderPicker()
+    fireEvent.click(screen.getByRole("button", { name: picker.addCta }))
+    await screen.findByText("Complexity and ambiguity")
+    // Scoped to the footer (portaled outside the render container, hence
+    // document rather than container): the dialog's own top-right dismiss
+    // icon carries an unrelated (vendor, unlocalized) "Close" accessible
+    // name too.
+    const footer = document.querySelector('[data-slot="dialog-footer"]')
+    if (footer === null) throw new Error("no dialog footer rendered")
+    fireEvent.click(
+      within(footer as HTMLElement).getByRole("button", {
+        name: picker.closeCta,
+      })
+    )
+    await waitFor(() => {
+      expect(screen.queryByText("Complexity and ambiguity")).toBeNull()
     })
   })
 })

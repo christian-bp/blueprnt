@@ -4,7 +4,11 @@ import type { Doc } from "../_generated/dataModel"
 import { AUDIT_EVENTS, buildChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, adminQuery } from "../lib/functions"
-import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
+import {
+  buildCriterionHelpText,
+  criteriaLibraryContent,
+  LIBRARY_DIMENSION,
+} from "./criteriaLibrary"
 import { clampLocale } from "./localize"
 import { dimensionKeyValidator, libraryKeyValidator } from "./tables"
 
@@ -272,7 +276,7 @@ export const getMethodModel = adminQuery({
         dimensionKey: LIBRARY_DIMENSION[row.libraryKey],
         name: entry.name,
         description: entry.fullDefinition,
-        helpText: `${entry.measures} ${entry.notMeasures}`.trim(),
+        helpText: buildCriterionHelpText(entry),
         weightPoints: row.weightPoints,
         share:
           totalPoints > 0
