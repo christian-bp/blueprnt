@@ -270,22 +270,19 @@ describe("betterAuth/seed.removeOrganizationsForUserEmail + accounts/mirrors.rem
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard",
-        levelThresholds: [{ level: 1, minScore: 98 }],
+        levelRules: [{ level: 1, minScore: 98 }],
+        zoneProfileRules: [{ zone: "A", minStep: 4 }],
       })
       await ctx.db.insert("criteria", {
         orgId,
         modelId,
-        name: "Scope",
-        description: "desc",
-        helpText: "help",
-        anchors: [{ step: 3, text: "anchor text" }],
+        libraryKey: "scope-impact",
         weightPoints: 4,
         order: 1,
-        isCustom: false,
       })
       await ctx.db.insert("suggestions", {
         orgId,
-        target: { kind: "model.draft" },
+        target: { kind: "model.weightReview", modelId },
         suggestedValue: {},
         source: "ai",
         status: "suggested",
@@ -393,7 +390,8 @@ describe("devReset.wipeAppTables", () => {
       await ctx.db.insert("models", {
         orgId: "ba_org_seed",
         name: "Standard",
-        levelThresholds: [],
+        levelRules: [],
+        zoneProfileRules: [],
       })
       await ctx.db.insert("roles", {
         orgId: "ba_org_seed",
@@ -652,7 +650,7 @@ describe("accounts/mirrors.seedOrganizationSettings", () => {
       completeOnboarding: true,
       actorId: userId,
     })
-    await t.mutation(internal.evaluationModel.model.seedStandardModel, {
+    await t.mutation(internal.evaluationModel.model.seedDefaultModel, {
       orgId,
       locale: "sv",
       actorId: userId,

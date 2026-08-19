@@ -82,7 +82,7 @@ const rowVariants: Variants = {
 //                      phase: the selected level's meaning and share)
 //   anchorsCaption   - optional caption shown inside the expanded scale, tying
 //                      the 0-5 scale to the act of evaluating a role
-//   editable         - when false: no row menu (Edit/Remove)
+//   editable         - when false: no row menu (Remove)
 //   onRemove         - called with no args after the user confirms inline
 //   removing         - disables the button while the delete mutation is in flight
 export function CriterionItem({
@@ -94,7 +94,6 @@ export function CriterionItem({
   anchors,
   anchorsCaption,
   editable,
-  onEdit,
   onRemove,
   removing,
 }: {
@@ -116,10 +115,9 @@ export function CriterionItem({
   // Optional caption rendered inside the expanded scale.
   anchorsCaption?: string
   editable: boolean
-  // Row actions, rendered as one dropdown menu while editable: onEdit opens
-  // the text editor, onRemove (behind an AlertDialog confirmation) deletes
-  // the criterion.
-  onEdit?: () => void
+  // The row action, rendered as a one-item dropdown menu while editable:
+  // onRemove (behind an AlertDialog confirmation) deletes the criterion.
+  // Library-only selection (decision 8): there is no edit-text action left.
   onRemove?: () => void
   removing?: boolean
 }) {
@@ -128,7 +126,7 @@ export function CriterionItem({
   const [anchorsOpen, setAnchorsOpen] = useState(false)
   const anchorsId = useId()
 
-  const showMenu = editable && (onEdit !== undefined || onRemove !== undefined)
+  const showMenu = editable && onRemove !== undefined
   const [confirmRemove, setConfirmRemove] = useState(false)
   const hasAnchors = anchors !== undefined && anchors.length > 0
 
@@ -218,11 +216,6 @@ export function CriterionItem({
                   <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {onEdit !== undefined && (
-                    <DropdownMenuItem onClick={onEdit}>
-                      {tEditor("editCta")}
-                    </DropdownMenuItem>
-                  )}
                   {onRemove !== undefined && (
                     <DropdownMenuItem
                       variant="destructive"

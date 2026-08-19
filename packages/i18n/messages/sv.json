@@ -139,8 +139,6 @@
       "familyCreated": "Familj skapad",
       "familyRenamed": "Familj omdöpt",
       "familyDeleted": "Familj borttagen",
-      "criterionAdded": "Kriterium tillagt",
-      "criterionUpdated": "Kriterium uppdaterat",
       "criterionRemoved": "Kriterium borttaget",
       "weightsSaved": "Viktning sparad",
       "complianceSaved": "Dokumentation sparad",
@@ -186,7 +184,8 @@
       "payMappingNoteDeleted": "Noteringen togs bort",
       "conversationDeleted": "Konversation borttagen",
       "conversationRenamed": "Konversation omdöpt",
-      "payMappingReasonsApplied": "Skäl tillämpade"
+      "payMappingReasonsApplied": "Skäl tillämpade",
+      "criterionActivated": "Kriterium tillagt"
     },
     "accountMenu": "Kontomeny",
     "commandPalette": {
@@ -696,19 +695,13 @@
         "biasAction": "Biasåtgärd",
         "approved": "Godkänd",
         "responsibilities": "Ansvar",
-        "description": "Beskrivning",
-        "helpText": "Hjälptext",
-        "anchors": "Ankare",
         "weightPoints": "Viktpoäng",
         "order": "Ordning",
-        "isCustom": "Anpassad",
-        "templateKey": "Mall",
         "value": "Bedömning",
         "motivation": "Motivering",
         "expectedLevel": "Förväntad nivå",
         "reviewedAt": "Granskad",
         "archivedAt": "Arkiverad",
-        "levelThresholds": "Nivågränser",
         "level": "Nivå",
         "score": "Viktning",
         "complete": "Klar",
@@ -738,10 +731,6 @@
         "roleId": "Roll",
         "seniority": "Senioritet",
         "senioritySource": "Senioritetskälla",
-        "originalWeightPoints": "Ursprungliga viktpoäng",
-        "anchorCount": "Antal ankare",
-        "acceptedCount": "Accepterade kriterier",
-        "totalProposed": "Föreslagna kriterier",
         "appliedCount": "Tillämpade viktändringar",
         "totalMoves": "Föreslagna viktändringar",
         "populationCount": "Personer inkluderade",
@@ -767,7 +756,12 @@
         "kind": "Typ",
         "familyCount": "Skapade familjer",
         "roleCount": "Tillagda roller",
-        "skippedCount": "Överhoppade"
+        "skippedCount": "Överhoppade",
+        "libraryKey": "Kriterium",
+        "dimensionKey": "Dimension",
+        "deletedRatingCount": "Borttagna bedömningar",
+        "budget": "Poängbudget",
+        "levelRules": "Nivågränser"
       },
       "values": {
         "yes": "Ja",
@@ -811,7 +805,6 @@
         "invitationRevoked": "Inbjudan återkallad",
         "modelCreated": "Modell skapad",
         "modelUpdated": "Modell uppdaterad",
-        "modelDiscarded": "Modell kasserad",
         "aiSuggestionConfirmed": "AI-förslag tillämpat",
         "aiSuggestionRejected": "AI-förslag avfärdat",
         "roleCreated": "Roll skapad",
@@ -849,15 +842,15 @@
         "payMappingActionDeleted": "Åtgärd borttagen",
         "payMappingNoteCreated": "Notering tillagd",
         "payMappingNoteUpdated": "Notering uppdaterad",
-        "payMappingNoteDeleted": "Notering borttagen"
+        "payMappingNoteDeleted": "Notering borttagen",
+        "criterionActivated": "Kriterium aktiverat",
+        "criterionDeactivated": "Kriterium inaktiverat"
       },
       "ai": {
-        "modelDraft": "Modellkriterier: {count} tillagda",
         "weightReview": "Viktgenomgång: {count} tillämpade",
         "starterImport": "Startimport: {families, plural, one {# familj} other {# familjer}}, {roles, plural, one {# roll} other {# roller}}",
         "roleImport": "Rollimport: {families, plural, one {# familj} other {# familjer}}, {roles, plural, one {# roll} other {# roller}}",
         "kind": {
-          "modelDraft": "Modellkriterier",
           "weightReview": "Viktgenomgång",
           "roleProfile": "Rollprofil",
           "starterImport": "Startroller",
@@ -1782,19 +1775,10 @@
       },
       "editor": {
         "heading": "Kriterier",
-        "empty": "Inga kriterier ännu. Lägg till ert första kriterium eller generera AI-utkast.",
-        "name": "Namn",
-        "description": "Beskrivning",
-        "helpText": "Utökad beskrivning",
+        "empty": "Inga kriterier att vikta ännu. Lägg till kriterier från biblioteket på sidan Kriterier först.",
         "setWeightPoints": "Viktpoäng för {name}",
         "anchors": "Bedömningsskala (0 till 5)",
         "anchorsCaption": "Så bedöms en roll på kriteriet. Du anger det när du värderar en roll.",
-        "anchorStep": "Steg {step}",
-        "stepsIntro": "Beskriv hur en roll ser ut på varje steg, från 0 (lägst) till 5 (högst).",
-        "stepEndpointLowest": "lägst",
-        "stepEndpointHighest": "högst",
-        "stepPlaceholderLowest": "t.ex. förekommer inte / krävs inte",
-        "stepPlaceholderHighest": "t.ex. det starkaste rimliga uttrycket",
         "addCta": "Lägg till kriterium",
         "removeCta": "Ta bort",
         "removeConfirm": "Ja, ta bort kriteriet",
@@ -1803,18 +1787,13 @@
         "pointsLeft": "{count} viktpoäng kvar att fördela",
         "pointsOver": "{count} viktpoäng över budgeten",
         "balanced": "Alla viktpoäng är fördelade",
-        "removalFloorHint": "En modell behöver minst {min} kriterier, så kriterier kan inte tas bort just nu.",
-        "addDialogDescription": "Beskriv vad kriteriet mäter och skriv dess bedömningsskala. Nya kriterier börjar på vikt 3.",
-        "editCta": "Redigera",
-        "editDialogTitle": "Redigera kriterium",
-        "editSaveCta": "Spara ändringar",
-        "editDialogDescription": "Anpassa texterna till er organisation. Vikten och befintliga betyg påverkas inte.",
         "rowMenuLabel": "Åtgärder för {name}",
         "removeDialogTitle": "Ta bort {name}?",
-        "removeDialogDescription": "Kriteriets betyg tas bort från alla roller och dess viktpoäng omfördelas till de återstående kriterierna. Detta kan inte ångras."
+        "removeDialogDescription": "Kriteriets betyg tas bort från alla roller och dess viktpoäng omfördelas till de återstående kriterierna. Detta kan inte ångras.",
+        "emptyDimension": "Inga kriterier valda inom denna dimension ännu."
       },
       "builder": {
-        "defineDescription": "Lägg till kriterierna som roller värderas mot, och beskriv vad varje betyg 0 till 5 betyder.",
+        "defineDescription": "Välj kriterierna som roller värderas mot, och se vad varje betyg 0 till 5 betyder.",
         "weightDescription": "Bestäm hur mycket varje kriterium ska väga. Viktning är inte ett omdöme om kriteriet är bra: det är hur stor påverkan det har på rollvärderingen och, allt annat lika, på den relativa lönen.",
         "shareOfTotal": "av den totala vikten",
         "weightMeaning1": "Mycket låg påverkan i modellen",
@@ -1894,6 +1873,13 @@
         "notApproved": "Inte godkänd ännu",
         "notDocumented": "Inte dokumenterad",
         "pointBudget": "Poängbudget: {points}"
+      },
+      "picker": {
+        "addCta": "Lägg till kriterier",
+        "dialogTitle": "Lägg till ett kriterium inom {dimension}",
+        "dialogDescription": "Välj ett kriterium från biblioteket att lägga till i denna dimension.",
+        "empty": "Alla kriterier inom denna dimension är redan valda.",
+        "addRowCta": "Lägg till"
       }
     },
     "ai": {
@@ -2559,6 +2545,9 @@
     "assistantBusy": "Blueprnt AI svarar fortfarande. Vänta tills den är klar eller stoppa den.",
     "assistantRateLimited": "Du har skickat många meddelanden på kort tid. Försök igen om en stund.",
     "assistantInvalidMessage": "Skriv ett meddelande innan du skickar.",
-    "assistantPersonalData": "Meddelandet verkar innehålla en anställds personuppgifter. Ta bort dem och ställ frågan mer generellt."
+    "assistantPersonalData": "Meddelandet verkar innehålla en anställds personuppgifter. Ta bort dem och ställ frågan mer generellt.",
+    "dimensionCapExceeded": "Denna dimension har redan sitt maximala antal kriterier.",
+    "tooManyCriteria": "En modell kan ha högst 8 kriterier.",
+    "criterionAlreadySelected": "Kriteriet ingår redan i modellen."
   }
 }

@@ -41,9 +41,11 @@ export async function deriveResults(
     weightPoints: row.weightPoints as WeightPoints,
   }))
 
-  // Thresholds live on the model document (ADR-0006): no extra read on the
+  // Level rules live on the model document (ADR-0006): no extra read on the
   // hottest path in the app (this runs twice per result-affecting mutation).
-  const thresholds: LevelThreshold[] = model.levelThresholds.map((row) => ({
+  // The engine's own ComputeInput field is still named `thresholds`
+  // (packages/core is untouched by this rename; see @workspace/core#LevelThreshold).
+  const thresholds: LevelThreshold[] = model.levelRules.map((row) => ({
     level: row.level,
     minScore: row.minScore,
   }))

@@ -26,7 +26,7 @@ async function seedTemplateOrganization(
     })
   })
   const asAdmin = t.withIdentity({ subject: userId })
-  await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
   return { orgId, asAdmin, userId }
@@ -554,6 +554,12 @@ describe("reconcileStarterSet", () => {
   it("archives a role removed from the payload and preserves its ratings", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedTemplateOrganization(t)
+    // At least one active criterion so the soon-archived role can be fully
+    // rated and reach a computed level.
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey: "complexity-ambiguity",
+    })
     await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
       orgId,
       families: [
@@ -1297,6 +1303,11 @@ describe("reconcileStarterSet audit before/after", () => {
   it("captures computedLevel on the via-reconcile anchorRole.updated row", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedTemplateOrganization(t)
+    // At least one active criterion so the anchor role can be fully rated.
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey: "complexity-ambiguity",
+    })
     await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
       orgId,
       families: [

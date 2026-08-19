@@ -2,7 +2,6 @@
 // dashboard panels (newestByKind lookups) so a typo cannot silently break a
 // flow. Values are persisted in the suggestions table; never repurpose one.
 export const SUGGESTION_KINDS = {
-  modelDraft: "model.draft",
   weightReview: "model.weightReview",
   roleProfile: "role.profile",
   starterImport: "starter.import",

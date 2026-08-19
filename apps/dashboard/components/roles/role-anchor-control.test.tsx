@@ -23,7 +23,7 @@ vi.mock("convex/react", () => ({
         : vi.fn(),
   useQuery: (ref: unknown) =>
     ref === "evaluationModel.model.getModel"
-      ? { levelThresholds: [80, 60, 40, 20] }
+      ? { levelRules: [80, 60, 40, 20] }
       : ref === "assessment.anchorRoles.listAnchorRoles"
         ? []
         : undefined,

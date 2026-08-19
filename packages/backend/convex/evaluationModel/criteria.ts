@@ -1,168 +1,106 @@
 import {
+  DIMENSION_MAX_ACTIVE,
   isBalanced,
   isWeightPoints,
-  MIN_CRITERIA,
+  MODEL_MAX_CRITERIA,
   NEUTRAL_WEIGHT_POINTS,
 } from "@workspace/core"
 import { v } from "convex/values"
 import type { Id } from "../_generated/dataModel"
 import { repairDraftWeights } from "../ai/weights"
 import { deriveResults } from "../assessment/compute"
-import {
-  anchorDiff,
-  AUDIT_EVENTS,
-  buildChanges,
-  buildCreateChanges,
-  buildDeleteChanges,
-  CRITERION_AUDIT_FIELDS,
-} from "../lib/audit"
+import { AUDIT_EVENTS } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation } from "../lib/functions"
+import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
+import { resolveContentLocale } from "./model"
+import { libraryKeyValidator } from "./tables"
 
-// The criterion editor: add, text update, reweight, remove. E2 extends this
-// surface further (rationale, bias review).
+// The criterion selector: activate (from the library) and deactivate, plus
+// reweighting. Library-only, fixed texts (ADR-0021 addendum, decision 8):
+// there is no create/edit-text path left, only a selection to turn on or off.
 //
 // Weighting invariant (ADR-0004): the persisted allocation is ALWAYS exactly
 // balanced against the point budget (criteria count x 3). The mutations
-// uphold it from different angles: addCriterion enters at the neutral 3 (the
-// budget grows by 3 at the same time), rebalanceWeights swaps the whole
-// allocation atomically and validates the exact sum, removeCriterion
+// uphold it from different angles: activateCriterion enters at the neutral 3
+// (the budget grows by 3 at the same time), rebalanceWeights swaps the whole
+// allocation atomically and validates the exact sum, and deactivateCriterion
 // deterministically redistributes the removed criterion's surplus or deficit
-// across the survivors, and updateCriterion deliberately never touches
-// weightPoints (texts only).
-export const addCriterion = adminMutation({
-  args: {
-    name: v.string(),
-    description: v.string(),
-    helpText: v.string(),
-    anchors: v.array(v.string()),
-  },
+// across the survivors.
+export const activateCriterion = adminMutation({
+  args: { libraryKey: libraryKeyValidator },
   returns: v.id("criteria"),
-  handler: async (ctx, args) => {
-    if (args.name.trim().length === 0 || args.anchors.length !== 6) {
-      throw appError(ERROR_CODES.invalidInput)
-    }
+  handler: async (ctx, { libraryKey }) => {
     const model = await ctx.db
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .unique()
     if (model === null) throw appError(ERROR_CODES.notFound)
-    const before = await deriveResults(ctx, ctx.orgId)
+
     const existing = await ctx.db
       .query("criteria")
       .withIndex("by_model", (q) => q.eq("modelId", model._id))
       .collect()
-    // Gaps after removal are intentional; E2 owns renumber/reorder.
+    if (existing.some((criterion) => criterion.libraryKey === libraryKey)) {
+      throw appError(ERROR_CODES.criterionAlreadySelected)
+    }
+    if (existing.length >= MODEL_MAX_CRITERIA) {
+      throw appError(ERROR_CODES.tooManyCriteria)
+    }
+    const dimensionKey = LIBRARY_DIMENSION[libraryKey]
+    const activeInDimension = existing.filter(
+      (criterion) => LIBRARY_DIMENSION[criterion.libraryKey] === dimensionKey
+    ).length
+    if (activeInDimension >= DIMENSION_MAX_ACTIVE[dimensionKey]) {
+      throw appError(ERROR_CODES.dimensionCapExceeded)
+    }
+
+    // Pre-fills the kriterieurvalsprotokoll's purpose/whyRelevant from the
+    // library's own definition/whenSuitable text, in the org's content locale,
+    // as an editable documentation START (documentation completes before
+    // approval, not at activation time; ADR-0021 addendum).
+    const locale = await resolveContentLocale(ctx, ctx.orgId)
+    const entry = criteriaLibraryContent(locale).criteria[libraryKey]
+
+    // Gaps after deactivation are intentional; max-based ordering avoids
+    // collisions. No manual reorder in this program (selection order only).
     const maxOrder = existing.reduce(
       (max, criterion) => Math.max(max, criterion.order),
       0
     )
+    const before = await deriveResults(ctx, ctx.orgId)
     const criterionId = await ctx.db.insert("criteria", {
       orgId: ctx.orgId,
       modelId: model._id,
-      name: args.name.trim(),
-      description: args.description,
-      helpText: args.helpText,
-      anchors: args.anchors.map((text, step) => ({ step, text })),
+      libraryKey,
       weightPoints: NEUTRAL_WEIGHT_POINTS,
       order: maxOrder + 1,
-      isCustom: true,
+      purpose: entry.fullDefinition,
+      whyRelevant: entry.whenSuitable,
     })
+    // A method-affecting change re-opens approval (ADR-0023); the reopen
+    // audit event (model.approvalReopened) does not exist yet (T6 owns it),
+    // so the field is cleared silently here.
+    if (model.approval !== undefined) {
+      await ctx.db.patch(model._id, { approval: undefined })
+    }
     const after = await deriveResults(ctx, ctx.orgId)
     await ctx.audit.levelShifts({
       before: before.results,
       after: after.results,
-      cause: { event: AUDIT_EVENTS.modelUpdated, criterionId },
+      cause: { event: AUDIT_EVENTS.criterionActivated, criterionId },
     })
     await ctx.audit.log({
-      type: AUDIT_EVENTS.modelUpdated,
+      type: AUDIT_EVENTS.criterionActivated,
       payload: {
-        change: "criterion.added",
         criterionId,
         modelId: model._id,
-        // A freshly created criterion: every field is a from:null -> to:value
-        // create-change, including the anchors array and the neutral weight.
-        changes: buildCreateChanges(
-          {
-            name: args.name.trim(),
-            description: args.description,
-            helpText: args.helpText,
-            anchors: args.anchors.map((text, step) => ({ step, text })),
-            weightPoints: NEUTRAL_WEIGHT_POINTS,
-            order: maxOrder + 1,
-            isCustom: true,
-          },
-          // The full criterion field set; templateKey is absent from `after`
-          // here (a fresh custom criterion has none) so buildCreateChanges skips
-          // it, yielding the same change set as the 7-field inline list did.
-          CRITERION_AUDIT_FIELDS
-        ),
+        libraryKey,
+        dimensionKey,
+        weightPoints: NEUTRAL_WEIGHT_POINTS,
       },
     })
     return criterionId
-  },
-})
-
-// Edits a criterion's texts: name, description, help text, and the six
-// assessment anchors. Weights are NOT edited here (rebalanceWeights owns the
-// zero-sum flow), and a text change can never move a score, so there is no
-// level-shift diff. Editing a template-seeded criterion materializes the
-// texts as organization content: templateKey is cleared, so getModel stops
-// localizing the row and renders it as stored (see localize.ts). This is the
-// "start from the standard model, then adapt" path.
-export const updateCriterion = adminMutation({
-  args: {
-    criterionId: v.id("criteria"),
-    name: v.string(),
-    description: v.string(),
-    helpText: v.string(),
-    anchors: v.array(v.string()),
-  },
-  returns: v.null(),
-  handler: async (ctx, args) => {
-    if (args.name.trim().length === 0 || args.anchors.length !== 6) {
-      throw appError(ERROR_CODES.invalidInput)
-    }
-    const criterion = await ctx.db.get(args.criterionId)
-    if (criterion === null || criterion.orgId !== ctx.orgId) {
-      throw appError(ERROR_CODES.notFound)
-    }
-    const newAnchors = args.anchors.map((text, step) => ({ step, text }))
-    // `criterion` is the pre-patch in-memory doc: Convex patch does not mutate
-    // the already-read object, so it is safe to diff against the new values.
-    await ctx.db.patch(args.criterionId, {
-      name: args.name.trim(),
-      description: args.description,
-      helpText: args.helpText,
-      anchors: newAnchors,
-      templateKey: undefined,
-    })
-    await ctx.audit.log({
-      type: AUDIT_EVENTS.modelUpdated,
-      payload: {
-        change: "criterion.updated",
-        criterionId: args.criterionId,
-        modelId: criterion.modelId,
-        // Only changed text fields are recorded. `templateKey: undefined` in
-        // `after` makes buildChanges emit key -> null when a custom edit
-        // detaches a template-seeded criterion; anchorDiff adds the anchors
-        // entry only when the step-ordered texts actually differ.
-        changes: {
-          ...buildChanges(
-            criterion,
-            {
-              name: args.name.trim(),
-              description: args.description,
-              helpText: args.helpText,
-              templateKey: undefined,
-            },
-            ["name", "description", "helpText", "templateKey"]
-          ),
-          ...anchorDiff(criterion.anchors, newAnchors),
-        },
-      },
-    })
-    return null
   },
 })
 
@@ -170,8 +108,6 @@ export const updateCriterion = adminMutation({
 // exactly once), validates each value against the 1-5 scale and the exact
 // point budget, and applies the changes in one transaction. One level-shift
 // diff and one audit row per save, with from/to per changed criterion.
-// Deliberately does not touch templateKey: template texts stay localized;
-// weighting is organization state by design.
 export const rebalanceWeights = adminMutation({
   args: {
     allocations: v.array(
@@ -218,6 +154,9 @@ export const rebalanceWeights = adminMutation({
     // No-op when nothing moves; avoids spurious audit rows.
     if (changed.length === 0) return null
 
+    const locale = await resolveContentLocale(ctx, ctx.orgId)
+    const content = criteriaLibraryContent(locale)
+
     const before = await deriveResults(ctx, ctx.orgId)
     for (const criterion of changed) {
       const weightPoints = pointsById.get(criterion._id as string)
@@ -240,9 +179,11 @@ export const rebalanceWeights = adminMutation({
         // Bulk shape: one item per criterion whose weight actually moved. The
         // `from` is the in-memory pre-patch weightPoints (the patch loop does
         // not mutate the already-read docs); the `to` is the new allocation.
+        // The label is the criterion's library name in the org's content
+        // locale (criteria rows carry no stored text of their own).
         items: changed.map((criterion) => ({
           criterionId: criterion._id,
-          label: criterion.name,
+          label: content.criteria[criterion.libraryKey].name,
           changes: {
             weightPoints: {
               from: criterion.weightPoints,
@@ -256,23 +197,20 @@ export const rebalanceWeights = adminMutation({
   },
 })
 
-// Removes a criterion (its anchors ride along on the document, ADR-0006)
-// and its ratings. The point budget
-// shrinks by 3 while the sum shrinks by the criterion's points, so unless
-// the criterion stood at the neutral 3 the survivors are off budget by
-// (3 - points). The same deterministic walk that repairs AI drafts absorbs
-// the difference (pull the heaviest down while over budget, push the
-// lightest up while under; ties resolve in display order), and every
-// adjustment is recorded in the removal's audit payload. One click always
-// works; the user never has to pre-stage a removal by reweighting. Wrapped
-// in a level-shift diff: removal can change scores or flip roles to
-// complete/incomplete.
+// Deactivates a criterion (deletes its row and its ratings) and redistributes
+// its weight points deterministically. The point budget shrinks by 3 while
+// the sum shrinks by the criterion's points, so unless the criterion stood at
+// the neutral 3 the survivors are off budget by (3 - points); the same
+// deterministic walk that repairs AI drafts absorbs the difference (pull the
+// heaviest down while over budget, push the lightest up while under; ties
+// resolve in display order), and every adjustment is recorded in the
+// deactivation's audit payload. Wrapped in a level-shift diff: deactivation
+// can change scores or flip roles to complete/incomplete.
 //
-// Composition floor: once onboarding is complete a model never drops below
-// MIN_CRITERIA. While still onboarding, removal is free at any count (a
-// model under construction must be freely editable); the onboarding gates
-// enforce the floor before completion instead.
-export const removeCriterion = adminMutation({
+// No count floor here (unlike the old removeCriterion): a model under
+// construction must be freely editable, and the 6-8 range is a checklist item
+// enforced at approval time, not at every individual deactivation.
+export const deactivateCriterion = adminMutation({
   args: { criterionId: v.id("criteria") },
   returns: v.null(),
   handler: async (ctx, { criterionId }) => {
@@ -280,24 +218,11 @@ export const removeCriterion = adminMutation({
     if (criterion === null || criterion.orgId !== ctx.orgId) {
       throw appError(ERROR_CODES.notFound)
     }
-    const settings = await ctx.db
-      .query("organizations")
-      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
-      .unique()
-    if (typeof settings?.onboardingCompletedAt === "number") {
-      const count = (
-        await ctx.db
-          .query("criteria")
-          .withIndex("by_model", (q) => q.eq("modelId", criterion.modelId))
-          .collect()
-      ).length
-      if (count - 1 < MIN_CRITERIA) {
-        throw appError(ERROR_CODES.tooFewCriteria)
-      }
-    }
+    const model = await ctx.db.get(criterion.modelId)
+
     const before = await deriveResults(ctx, ctx.orgId)
-    // Roles exist now (E3): deleting a criterion also deletes its ratings so
-    // no orphans linger. The engine additionally ignores strays (defense in
+    // Roles exist now (E3): deactivating a criterion also deletes its ratings
+    // so no orphans linger. The engine additionally ignores strays (defense in
     // depth), but the source of truth stays clean.
     const ratings = await ctx.db
       .query("ratings")
@@ -307,9 +232,10 @@ export const removeCriterion = adminMutation({
       await ctx.db.delete(rating._id)
     }
     await ctx.db.delete(criterionId)
+
     // Redistribute the freed or missing points across the survivors so the
     // allocation lands exactly on the shrunken budget. No-op when the
-    // removed criterion stood at 3.
+    // deactivated criterion stood at 3.
     const remaining = await ctx.db
       .query("criteria")
       .withIndex("by_model", (q) => q.eq("modelId", criterion.modelId))
@@ -318,6 +244,8 @@ export const removeCriterion = adminMutation({
     const repaired = repairDraftWeights(
       remaining.map((row) => row.weightPoints)
     )
+    const locale = await resolveContentLocale(ctx, ctx.orgId)
+    const content = criteriaLibraryContent(locale)
     const rebalancedSurvivors: {
       criterionId: Id<"criteria">
       label: string
@@ -333,29 +261,34 @@ export const removeCriterion = adminMutation({
       // repaired criterion's `from`, `weightPoints` the repaired `to`.
       rebalancedSurvivors.push({
         criterionId: row._id,
-        label: row.name,
+        label: content.criteria[row.libraryKey].name,
         changes: { weightPoints: { from: row.weightPoints, to: weightPoints } },
       })
+    }
+    // A method-affecting change re-opens approval (ADR-0023); the reopen
+    // audit event does not exist yet (T6 owns it), cleared silently here.
+    if (model !== null && model.approval !== undefined) {
+      await ctx.db.patch(model._id, { approval: undefined })
     }
     const after = await deriveResults(ctx, ctx.orgId)
     await ctx.audit.levelShifts({
       before: before.results,
       after: after.results,
-      cause: { event: AUDIT_EVENTS.modelUpdated, criterionId },
+      cause: { event: AUDIT_EVENTS.criterionDeactivated, criterionId },
     })
     await ctx.audit.log({
-      type: AUDIT_EVENTS.modelUpdated,
+      type: AUDIT_EVENTS.criterionDeactivated,
       payload: {
-        change: "criterion.removed",
+        criterionId,
         modelId: criterion.modelId,
+        libraryKey: criterion.libraryKey,
+        dimensionKey: LIBRARY_DIMENSION[criterion.libraryKey],
+        weightPoints: criterion.weightPoints,
         // Ratings are COUNT-ONLY: never embed a rating value or notes anywhere
         // in the payload (no person/role-rating data on the model trail).
         deletedRatingCount: ratings.length,
         // The budget shrinks by 3 (one criterion fewer).
         budget: { from: (remaining.length + 1) * 3, to: remaining.length * 3 },
-        // The removed criterion as a full delete-snapshot (all fields to:null),
-        // `criterion` read before the delete.
-        changes: buildDeleteChanges(criterion, CRITERION_AUDIT_FIELDS),
         // Survivors whose weight was repaired onto the shrunken budget.
         count: rebalancedSurvivors.length,
         items: rebalancedSurvivors,

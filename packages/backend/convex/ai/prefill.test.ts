@@ -69,7 +69,7 @@ async function seedOrg(t: ReturnType<typeof initConvexTest>, email: string) {
     })
   })
   const asAdmin = t.withIdentity({ subject: userId })
-  await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
   return { orgId, userId, asAdmin }

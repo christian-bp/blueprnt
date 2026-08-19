@@ -2,6 +2,20 @@ import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 
+// A spread of 8 library keys across every dimension at (or under) its own
+// DIMENSION_MAX_ACTIVE cap (competence 2, effort 2, responsibility 3,
+// workingConditions 1), so activating all of them never trips a cap.
+const EIGHT_KEYS = [
+  "knowledge-depth",
+  "knowledge-breadth",
+  "complexity-ambiguity",
+  "communication-effort",
+  "scope-impact",
+  "autonomy-mandate",
+  "risk-consequence",
+  "safety-exposure",
+] as const
+
 async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
   const { orgId, userId } = await t.mutation(
     components.betterAuth.testing.seedMembership,
@@ -17,9 +31,15 @@ async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
     })
   })
   const asAdmin = t.withIdentity({ subject: userId })
-  await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
+  for (const libraryKey of EIGHT_KEYS) {
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey,
+    })
+  }
   const model = await asAdmin.query(api.evaluationModel.model.getModel, {
     orgId,
   })
@@ -95,7 +115,7 @@ describe("getResults", () => {
       locale: "sv",
     })
     expect(results.levels.map((level) => level.level)).toEqual([
-      1, 2, 3, 4, 5, 6, 7,
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
     ])
     expect(results.rows.map((row) => row.roleId)).toEqual([
       topId,
@@ -108,13 +128,13 @@ describe("getResults", () => {
       score: 100,
       level: 1,
     })
-    expect(results.rows[1]).toMatchObject({ score: 0, level: 7 })
+    expect(results.rows[1]).toMatchObject({ score: 0, level: 12 })
     expect(results.rows[2]).toMatchObject({
       complete: false,
       score: null,
       level: null,
       ratedCount: 4,
-      totalCriteria: 9,
+      totalCriteria: 8,
     })
   })
 
@@ -193,12 +213,12 @@ describe("getRoleResult", () => {
     })
     expect(result).not.toBeNull()
     expect(result).toMatchObject({ complete: true, score: 100, level: 1 })
-    expect(result?.criteria).toHaveLength(9)
-    const scopeRow = result?.criteria[0]
-    expect(scopeRow?.value).toBe(5)
-    // The breakdown carries the criterion's weight points (scope = 5 in the
-    // standard template).
-    expect(scopeRow?.weightPoints).toBe(5)
+    expect(result?.criteria).toHaveLength(8)
+    const firstRow = result?.criteria[0]
+    expect(firstRow?.value).toBe(5)
+    // The breakdown carries the criterion's weight points (every activated
+    // criterion enters at the neutral 3; ADR-0004).
+    expect(firstRow?.weightPoints).toBe(3)
   })
 
   it("returns the incomplete shape while ratings are missing", async () => {
@@ -219,7 +239,7 @@ describe("getRoleResult", () => {
     expect(result).toMatchObject({
       complete: false,
       ratedCount: 2,
-      totalCriteria: 9,
+      totalCriteria: 8,
       score: null,
       level: null,
     })

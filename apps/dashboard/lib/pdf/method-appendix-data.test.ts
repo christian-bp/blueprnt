@@ -5,7 +5,7 @@ import { assembleMethodAppendix } from "@/lib/pdf/method-appendix-data"
 const base = {
   modelName: "Standard model",
   pointBudget: 6,
-  levelThresholds: [
+  levelRules: [
     { level: 1, minScore: 80 },
     { level: 2, minScore: 60 },
   ],

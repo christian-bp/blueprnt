@@ -84,6 +84,7 @@ describe("library content", () => {
     // asserted explicitly: completeness of a fallback is not parity.
     expect(REGISTERED_LIBRARY_LOCALES).toContain(locale)
     const content = criteriaLibraryContent(locale)
+    expect(content.modelName.length).toBeGreaterThan(0)
     for (const dimension of DIMENSION_KEYS) {
       const entry = content.dimensions[dimension]
       expect(entry.name.length).toBeGreaterThan(0)

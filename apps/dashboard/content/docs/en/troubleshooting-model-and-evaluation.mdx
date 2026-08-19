@@ -47,6 +47,39 @@ becomes unavailable for exactly this reason. Add criteria back until you
 have at least five. See
 [Criteria and the evaluation scale](/docs/criteria-and-scale).
 
+## I can't add a criterion from the library
+
+### The dimension is full
+
+Code: `dimensionCapExceeded`
+
+"This dimension already has its maximum number of criteria."
+
+Each of the model's four dimensions caps how many criteria it can hold at
+once (competence and effort up to two, responsibility up to three, working
+conditions up to one). Deactivate a criterion already selected in that
+dimension before adding another, or add the new one to a different
+dimension. See [Criteria and the evaluation scale](/docs/criteria-and-scale).
+
+### The model already has 8 criteria
+
+Code: `tooManyCriteria`
+
+"A model can have at most 8 criteria."
+
+A model holds at most eight criteria in total, across all four dimensions.
+Deactivate an existing criterion before adding a new one. See
+[Criteria and the evaluation scale](/docs/criteria-and-scale).
+
+### The criterion is already selected
+
+Code: `criterionAlreadySelected`
+
+"This criterion is already part of the model."
+
+Each of the library's criteria can only be active once per model. Look for
+it in its dimension's list on the Criteria page instead of adding it again.
+
 ## I can't edit or rate something because it says it's locked
 
 ### The role is locked

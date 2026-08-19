@@ -210,7 +210,7 @@ export function MethodAppendix({
             <Text style={[s.cellName, s.label]}>{labels.colLevel}</Text>
             <Text style={[s.cellNum, s.label]}>{labels.colMinScore}</Text>
           </View>
-          {doc.levelThresholds.map((b) => (
+          {doc.levelRules.map((b) => (
             <View key={b.level} style={s.row}>
               <Text style={s.cellName}>{b.level}</Text>
               <Text style={s.cellNum}>{b.minScore}</Text>

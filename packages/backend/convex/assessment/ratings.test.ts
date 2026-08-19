@@ -2,6 +2,21 @@ import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 
+// A spread of 8 library keys across every dimension at (or under) its own
+// DIMENSION_MAX_ACTIVE cap (competence 2, effort 2, responsibility 3,
+// workingConditions 1), so activating all of them never trips a cap. Every
+// one enters at the neutral 3 weight points (budget 24).
+const EIGHT_KEYS = [
+  "knowledge-depth",
+  "knowledge-breadth",
+  "complexity-ambiguity",
+  "communication-effort",
+  "scope-impact",
+  "autonomy-mandate",
+  "risk-consequence",
+  "safety-exposure",
+] as const
+
 async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
   const { orgId, userId } = await t.mutation(
     components.betterAuth.testing.seedMembership,
@@ -17,9 +32,15 @@ async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
     })
   })
   const asAdmin = t.withIdentity({ subject: userId })
-  await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
+  for (const libraryKey of EIGHT_KEYS) {
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey,
+    })
+  }
   const model = await asAdmin.query(api.evaluationModel.model.getModel, {
     orgId,
   })
@@ -43,8 +64,8 @@ describe("setRating", () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
 
-    // Rate the first 8 criteria at 5: still incomplete, so no level.shift.
-    for (const criterion of model.criteria.slice(0, 8)) {
+    // Rate the first 7 criteria at 5: still incomplete, so no level.shift.
+    for (const criterion of model.criteria.slice(0, 7)) {
       await asAdmin.mutation(api.assessment.ratings.setRating, {
         orgId,
         roleId,
@@ -62,8 +83,8 @@ describe("setRating", () => {
       expect(shifts).toHaveLength(0)
     })
 
-    // The 9th rating completes the role: all-5 means score 100, Level 1.
-    const lastCriterion = model.criteria[8]
+    // The 8th rating completes the role: all-5 means score 100, Level 1.
+    const lastCriterion = model.criteria[7]
     if (lastCriterion === undefined) throw new Error("seed")
     await asAdmin.mutation(api.assessment.ratings.setRating, {
       orgId,
@@ -86,8 +107,9 @@ describe("setRating", () => {
       })
     })
 
-    // Re-rating the scope criterion (5 weight points) from 5 to 0 drops the
-    // normalized score from 100 to floor(20 * 110 / 27) = 81: Level 3.
+    // Re-rating the first criterion (neutral 3 weight points, like every
+    // activated criterion) from 5 to 0 drops the normalized score from 100 to
+    // floor(20 * 105 / 24) = 87: Level 3.
     const scopeCriterion = model.criteria[0]
     if (scopeCriterion === undefined) throw new Error("seed")
     await asAdmin.mutation(api.assessment.ratings.setRating, {
@@ -101,8 +123,8 @@ describe("setRating", () => {
         .query("ratings")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
-      // Upsert: still exactly 9 rating rows.
-      expect(ratings).toHaveLength(9)
+      // Upsert: still exactly 8 rating rows.
+      expect(ratings).toHaveLength(8)
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>

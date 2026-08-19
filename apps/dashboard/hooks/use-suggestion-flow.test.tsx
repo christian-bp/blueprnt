@@ -21,7 +21,7 @@ const schema = z.object({ note: z.string() })
 function row(overrides: Record<string, unknown> = {}) {
   return {
     suggestionId: "sug-1",
-    kind: "model.draft",
+    kind: "role.profile",
     status: "suggested",
     suggestedValue: { note: "hello" },
     errorCode: null,
@@ -35,7 +35,7 @@ function renderFlow(roleId?: string) {
   return renderHook(() =>
     useSuggestionFlow({
       orgId: "org-1",
-      kind: "model.draft",
+      kind: "role.profile",
       schema,
       ...(roleId !== undefined ? { roleId } : {}),
     })

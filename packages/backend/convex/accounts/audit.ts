@@ -1,6 +1,8 @@
 import { AUDIT_LOG_PAGE_SIZE } from "@workspace/constants"
 import { v } from "convex/values"
 import type { QueryCtx } from "../_generated/server"
+import { criteriaLibraryContent } from "../evaluationModel/criteriaLibrary"
+import { resolveContentLocale } from "../evaluationModel/model"
 import { AUDIT_CATEGORIES } from "../lib/audit"
 import { locateAuditPage } from "../lib/auditAggregates"
 import { adminQuery } from "../lib/functions"
@@ -71,12 +73,24 @@ async function enrichRows(
   // Criteria and the org's model(s) are bounded per org, so they are collected
   // wholesale (like roles/families) to resolve top-level payload.criterionId /
   // payload.modelId into the names map for the detail sheet's context line.
+  // Every criterion is a library selection (decision 8): its display name
+  // always localizes from criteriaLibraryContent by libraryKey, never
+  // stored; resolved here in the org's own content locale, the same rule
+  // used for every other backend-built criterion audit label.
   const criteria = await ctx.db
     .query("criteria")
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
     .collect()
-  for (const criterion of criteria)
-    criterionNames.set(criterion._id.toString(), criterion.name)
+  if (criteria.length > 0) {
+    const criteriaLocale = await resolveContentLocale(ctx, orgId)
+    const criteriaContent = criteriaLibraryContent(criteriaLocale)
+    for (const criterion of criteria) {
+      criterionNames.set(
+        criterion._id.toString(),
+        criteriaContent.criteria[criterion.libraryKey].name
+      )
+    }
+  }
   const models = await ctx.db
     .query("models")
     .withIndex("by_org", (q) => q.eq("orgId", orgId))

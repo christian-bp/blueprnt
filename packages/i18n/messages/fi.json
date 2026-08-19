@@ -139,8 +139,6 @@
       "familyCreated": "Perhe luotu",
       "familyRenamed": "Perhe nimetty uudelleen",
       "familyDeleted": "Perhe poistettu",
-      "criterionAdded": "Kriteeri lisätty",
-      "criterionUpdated": "Kriteeri päivitetty",
       "criterionRemoved": "Kriteeri poistettu",
       "weightsSaved": "Painotus tallennettu",
       "complianceSaved": "Dokumentaatio tallennettu",
@@ -186,7 +184,8 @@
       "payMappingNoteDeleted": "Merkintä poistettiin",
       "conversationDeleted": "Keskustelu poistettu",
       "conversationRenamed": "Keskustelu nimetty uudelleen",
-      "payMappingReasonsApplied": "Perusteet otettu käyttöön"
+      "payMappingReasonsApplied": "Perusteet otettu käyttöön",
+      "criterionActivated": "Kriteeri lisätty"
     },
     "accountMenu": "Tilivalikko",
     "commandPalette": {
@@ -696,19 +695,13 @@
         "biasAction": "Vinoumien lieventäminen",
         "approved": "Hyväksytty",
         "responsibilities": "Vastuut",
-        "description": "Kuvaus",
-        "helpText": "Ohjeteksti",
-        "anchors": "Ankkurit",
         "weightPoints": "Painopisteet",
         "order": "Järjestys",
-        "isCustom": "Mukautettu",
-        "templateKey": "Malli",
         "value": "Arviointi",
         "motivation": "Perustelu",
         "expectedLevel": "Odotettu vaativuustaso",
         "reviewedAt": "Tarkistettu",
         "archivedAt": "Arkistoitu",
-        "levelThresholds": "Vaativuustasorajat",
         "level": "Vaativuustaso",
         "score": "Painotus",
         "complete": "Valmis",
@@ -738,10 +731,6 @@
         "roleId": "Rooli",
         "seniority": "Senioriteetti",
         "senioritySource": "Senioriteetin lähde",
-        "originalWeightPoints": "Alkuperäiset painopisteet",
-        "anchorCount": "Ankkurien määrä",
-        "acceptedCount": "Hyväksytyt kriteerit",
-        "totalProposed": "Ehdotetut kriteerit",
         "appliedCount": "Käytetyt painotusmuutokset",
         "totalMoves": "Ehdotetut painotusmuutokset",
         "populationCount": "Mukana olevat henkilöt",
@@ -767,7 +756,12 @@
         "kind": "Tyyppi",
         "familyCount": "Luodut perheet",
         "roleCount": "Lisätyt roolit",
-        "skippedCount": "Ohitetut"
+        "skippedCount": "Ohitetut",
+        "libraryKey": "Kriteeri",
+        "dimensionKey": "Ulottuvuus",
+        "deletedRatingCount": "Poistetut arviot",
+        "budget": "Pistebudjetti",
+        "levelRules": "Vaativuustasorajat"
       },
       "values": {
         "yes": "Kyllä",
@@ -811,7 +805,6 @@
         "invitationRevoked": "Kutsu peruutettu",
         "modelCreated": "Malli luotu",
         "modelUpdated": "Malli päivitetty",
-        "modelDiscarded": "Malli hylätty",
         "aiSuggestionConfirmed": "Tekoälyehdotus otettu käyttöön",
         "aiSuggestionRejected": "Tekoälyehdotus hylätty",
         "roleCreated": "Rooli luotu",
@@ -849,15 +842,15 @@
         "payMappingActionDeleted": "Toimenpide poistettu",
         "payMappingNoteCreated": "Merkintä lisätty",
         "payMappingNoteUpdated": "Merkintä päivitetty",
-        "payMappingNoteDeleted": "Merkintä poistettu"
+        "payMappingNoteDeleted": "Merkintä poistettu",
+        "criterionActivated": "Kriteeri aktivoitu",
+        "criterionDeactivated": "Kriteeri poistettu käytöstä"
       },
       "ai": {
-        "modelDraft": "Mallin kriteerit: {count} lisätty",
         "weightReview": "Painotusten tarkistus: {count} käytetty",
         "starterImport": "Aloitustuonti: {families, plural, one {# perhe} other {# perhettä}}, {roles, plural, one {# rooli} other {# roolia}}",
         "roleImport": "Roolien tuonti: {families, plural, one {# perhe} other {# perhettä}}, {roles, plural, one {# rooli} other {# roolia}}",
         "kind": {
-          "modelDraft": "Mallin kriteerit",
           "weightReview": "Painotusten tarkistus",
           "roleProfile": "Roolikuvaus",
           "starterImport": "Aloitusroolit",
@@ -1782,19 +1775,10 @@
       },
       "editor": {
         "heading": "Kriteerit",
-        "empty": "Ei kriteerejä vielä. Lisää ensimmäinen kriteeri tai luo tekoälyluonnoksia.",
-        "name": "Nimi",
-        "description": "Kuvaus",
-        "helpText": "Laajennettu kuvaus",
+        "empty": "Ei vielä painotettavia kriteerejä. Lisää kriteerejä kirjastosta Kriteerit-sivulla ensin.",
         "setWeightPoints": "Painopisteet: {name}",
         "anchors": "Arviointiasteikko (0-5)",
         "anchorsCaption": "Näin roolia arvioidaan tällä kriteerillä. Asetat sen, kun arvioit roolin.",
-        "anchorStep": "Porras {step}",
-        "stepsIntro": "Kuvaa, miltä rooli näyttää kullakin portaalla, 0:sta (matalin) 5:een (korkein).",
-        "stepEndpointLowest": "matalin",
-        "stepEndpointHighest": "korkein",
-        "stepPlaceholderLowest": "esim. ei esiinny / ei vaadita",
-        "stepPlaceholderHighest": "esim. vahvin kohtuullinen ilmentymä",
         "addCta": "Lisää kriteeri",
         "removeCta": "Poista",
         "removeConfirm": "Kyllä, poista kriteeri",
@@ -1803,18 +1787,13 @@
         "pointsLeft": "{count, plural, one {# painopiste} other {# painopistettä}} jaettavana",
         "pointsOver": "{count, plural, one {# painopiste} other {# painopistettä}} yli budjetin",
         "balanced": "Kaikki painopisteet on jaettu",
-        "removalFloorHint": "Malli tarvitsee vähintään {min} kriteeriä, joten kriteerejä ei voi poistaa juuri nyt.",
-        "addDialogDescription": "Kuvaa mitä kriteeri mittaa ja kirjoita arviointiasteikko. Uudet kriteerit alkavat painolla 3.",
-        "editCta": "Muokkaa",
-        "editDialogTitle": "Muokkaa kriteeriä",
-        "editSaveCta": "Tallenna muutokset",
-        "editDialogDescription": "Mukauta tekstit organisaatiollenne. Paino ja olemassa olevat arviot eivät muutu.",
         "rowMenuLabel": "Toiminnot: {name}",
         "removeDialogTitle": "Poistetaanko {name}?",
-        "removeDialogDescription": "Kriteerin arviot poistetaan kaikilta rooleilta ja sen painopisteet jaetaan uudelleen jäljellä oleville kriteereille. Tätä ei voi kumota."
+        "removeDialogDescription": "Kriteerin arviot poistetaan kaikilta rooleilta ja sen painopisteet jaetaan uudelleen jäljellä oleville kriteereille. Tätä ei voi kumota.",
+        "emptyDimension": "Tähän ulottuvuuteen ei ole vielä valittu kriteerejä."
       },
       "builder": {
-        "defineDescription": "Lisää kriteerit, joita vasten roolit arvioidaan, ja kuvaa mitä kukin arvio 0-5 tarkoittaa.",
+        "defineDescription": "Valitse kriteerit, joita vasten roolit arvioidaan, ja katso mitä kukin arvio 0-5 tarkoittaa.",
         "weightDescription": "Päätä kuinka paljon kukin kriteeri painaa. Painotus ei ole arvio siitä, onko kriteeri hyvä: se on se, kuinka paljon kriteeri vaikuttaa roolin arvoon ja, muiden tekijöiden ollessa samat, suhteelliseen palkkaan.",
         "shareOfTotal": "kokonaispainosta",
         "weightMeaning1": "Hyvin vähäinen vaikutus mallissa",
@@ -1894,6 +1873,13 @@
         "notApproved": "Ei vielä hyväksytty",
         "notDocumented": "Ei dokumentoitu",
         "pointBudget": "Pistebudjetti: {points}"
+      },
+      "picker": {
+        "addCta": "Lisää kriteerejä",
+        "dialogTitle": "Lisää kriteeri ulottuvuuteen {dimension}",
+        "dialogDescription": "Valitse kirjastosta kriteeri lisättäväksi tähän ulottuvuuteen.",
+        "empty": "Kaikki tämän ulottuvuuden kriteerit on jo valittu.",
+        "addRowCta": "Lisää"
       }
     },
     "ai": {
@@ -2559,6 +2545,9 @@
     "assistantBusy": "Blueprnt AI vastaa vielä. Odota, että se on valmis, tai pysäytä se.",
     "assistantRateLimited": "Olet lähettänyt monta viestiä lyhyessä ajassa. Yritä hetken kuluttua uudelleen.",
     "assistantInvalidMessage": "Kirjoita viesti ennen lähettämistä.",
-    "assistantPersonalData": "Viesti näyttää sisältävän työntekijän henkilötietoja. Poista ne ja kysy yleisemmällä tasolla."
+    "assistantPersonalData": "Viesti näyttää sisältävän työntekijän henkilötietoja. Poista ne ja kysy yleisemmällä tasolla.",
+    "dimensionCapExceeded": "Tällä ulottuvuudella on jo enimmäismäärä kriteerejä.",
+    "tooManyCriteria": "Mallissa voi olla enintään 8 kriteeriä.",
+    "criterionAlreadySelected": "Kriteeri kuuluu jo malliin."
   }
 }

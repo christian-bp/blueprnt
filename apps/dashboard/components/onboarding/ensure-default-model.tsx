@@ -7,11 +7,11 @@ import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { type ReactNode, useEffect, useRef, useState } from "react"
 
-// Guarantees the organization has its standard model before rendering children.
+// Guarantees the organization has its default model before rendering children.
 // The onboarding model step was removed, so the default model is seeded here on
 // the way into the families step (which creates roles against it). By this point
-// the country step has set the org language, so createModelFromTemplate picks
-// the right locale. It creates exactly once: a ref guards the in-flight call and
+// the country step has set the org language, so createDefaultModel picks the
+// right locale. It creates exactly once: a ref guards the in-flight call and
 // the null check stops once a model exists (the mutation also throws if one
 // already does). Children render only once a model is present.
 export function EnsureDefaultModel({
@@ -25,8 +25,8 @@ export function EnsureDefaultModel({
   const tOnboarding = useTranslations("dashboard.onboarding")
   const locale = useLocale()
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
-  const createFromTemplate = useMutation(
-    api.evaluationModel.model.createModelFromTemplate
+  const createDefaultModel = useMutation(
+    api.evaluationModel.model.createDefaultModel
   )
   const [failed, setFailed] = useState(false)
   const creatingRef = useRef(false)
@@ -34,9 +34,9 @@ export function EnsureDefaultModel({
   useEffect(() => {
     if (model === null && !creatingRef.current) {
       creatingRef.current = true
-      createFromTemplate({ orgId }).catch(() => setFailed(true))
+      createDefaultModel({ orgId }).catch(() => setFailed(true))
     }
-  }, [model, orgId, createFromTemplate])
+  }, [model, orgId, createDefaultModel])
 
   if (model === undefined || model === null) {
     if (failed) {
@@ -52,7 +52,7 @@ export function EnsureDefaultModel({
               onClick={() => {
                 setFailed(false)
                 creatingRef.current = true
-                createFromTemplate({ orgId }).catch(() => setFailed(true))
+                createDefaultModel({ orgId }).catch(() => setFailed(true))
               }}
             >
               {t("retry")}

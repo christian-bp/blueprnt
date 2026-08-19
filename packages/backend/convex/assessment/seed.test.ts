@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest"
 import { internal } from "../_generated/api"
-import { isCriterionKey } from "../evaluationModel/localize"
 import { initConvexTest } from "../testing.helpers"
 import {
   DEMO_ANCHOR_ROLES,
@@ -10,7 +9,7 @@ import {
 
 const EXPECTED_ROLES = DEV_COMPANY.reduce((sum, f) => sum + f.roles.length, 0)
 const EXPECTED_FAMILIES = DEV_COMPANY.length
-const EXPECTED_RATINGS = EXPECTED_ROLES * 9
+const EXPECTED_RATINGS = EXPECTED_ROLES * 8
 
 // The founder account the seed runs for: its authId is threaded as actorId so
 // seeded audit rows resolve to this account instead of the "system" sentinel.
@@ -31,7 +30,7 @@ describe("assessment/seed.seedRatedRoles", () => {
       })
     })
     // Ratings reference the seeded criteria, so the model must exist first.
-    await t.mutation(internal.evaluationModel.model.seedStandardModel, {
+    await t.mutation(internal.evaluationModel.model.seedDefaultModel, {
       orgId,
       locale: "sv",
       actorId: FOUNDER_AUTH_ID,
@@ -64,6 +63,7 @@ describe("assessment/seed.seedRatedRoles", () => {
         .query("criteria")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
+      expect(criteria).toHaveLength(8)
       const ratings = await ctx.db
         .query("ratings")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
@@ -72,48 +72,58 @@ describe("assessment/seed.seedRatedRoles", () => {
       expect(ratings.every((r) => r.value >= 0 && r.value <= 5)).toBe(true)
       for (const role of roles) {
         const roleRatings = ratings.filter((r) => r.roleId === role._id)
-        expect(roleRatings).toHaveLength(9)
+        expect(roleRatings).toHaveLength(8)
       }
 
-      // Verify the role -> criterion -> rating-row and templateKey -> column
+      // Verify the role -> criterion -> rating-row and libraryKey -> column
       // mapping landed: a mis-map would still total the same count but score
       // wrong.
-      const templateKeyById = new Map(
-        criteria.map((c) => [c._id, c.templateKey])
-      )
+      const libraryKeyById = new Map(criteria.map((c) => [c._id, c.libraryKey]))
       const roleIdByTitle = new Map(roles.map((r) => [r.title, r._id]))
-      const cell = (title: string, templateKey: string) => {
+      const cell = (title: string, libraryKey: string) => {
         const roleId = roleIdByTitle.get(title)
         return ratings.find(
           (r) =>
             r.roleId === roleId &&
-            templateKeyById.get(r.criterionId) === templateKey
+            libraryKeyById.get(r.criterionId) === libraryKey
         )?.value
       }
-      // CEO: at the ceiling on every criterion except formal.
-      expect(cell("CEO", "scope")).toBe(5)
-      expect(cell("CEO", "complexity")).toBe(5)
-      expect(cell("CEO", "formal")).toBe(3)
+      // CEO: at the ceiling on every criterion except knowledge-breadth.
+      expect(cell("CEO", "scope-impact")).toBe(5)
+      expect(cell("CEO", "complexity-ambiguity")).toBe(5)
+      expect(cell("CEO", "knowledge-breadth")).toBe(3)
       // Software Developer (SPECIALIST_IC): hands-on specialist, no people
       // responsibility.
-      expect(cell("Software Developer", "risk")).toBe(3)
-      expect(cell("Software Developer", "knowledge")).toBe(3)
-      expect(cell("Software Developer", "people")).toBe(0)
+      expect(cell("Software Developer", "risk-consequence")).toBe(3)
+      expect(cell("Software Developer", "knowledge-depth")).toBe(3)
+      expect(cell("Software Developer", "people-leadership")).toBe(0)
       // Cloud Architect: peaks on the technical criteria.
-      expect(cell("Cloud Architect", "complexity")).toBe(4)
-      expect(cell("Cloud Architect", "knowledge")).toBe(4)
+      expect(cell("Cloud Architect", "complexity-ambiguity")).toBe(4)
+      expect(cell("Cloud Architect", "knowledge-depth")).toBe(4)
       // Order & Indoor Sales: junior, low magnitude.
-      expect(cell("Order & Indoor Sales", "scope")).toBe(2)
-      expect(cell("Order & Indoor Sales", "people")).toBe(1)
+      expect(cell("Order & Indoor Sales", "scope-impact")).toBe(2)
+      expect(cell("Order & Indoor Sales", "people-leadership")).toBe(1)
 
-      // The calibrated demo weighting replaced the template defaults.
+      // The calibrated demo weighting landed on every seeded criterion.
       for (const criterion of criteria) {
-        const templateKey = criterion.templateKey
-        if (templateKey === undefined || !isCriterionKey(templateKey)) continue
-        expect(criterion.weightPoints, `weight for ${templateKey}`).toBe(
-          DEMO_WEIGHT_POINTS[templateKey]
+        expect(
+          criterion.weightPoints,
+          `weight for ${criterion.libraryKey}`
+        ).toBe(
+          DEMO_WEIGHT_POINTS[
+            criterion.libraryKey as keyof typeof DEMO_WEIGHT_POINTS
+          ]
         )
       }
+      expect(criteria.reduce((sum, c) => sum + c.weightPoints, 0)).toBe(24)
+
+      // The demo org has already tested and closed out working conditions.
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(model?.workingConditions?.status).toBe("testedNotMaterial")
+      expect(model?.workingConditions?.motivation.length).toBeGreaterThan(0)
 
       // Track calibration from prod: the two Lead-track roles.
       const roleByTitle = new Map(roles.map((r) => [r.title, r]))

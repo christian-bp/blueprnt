@@ -92,7 +92,7 @@ export function RoleEvaluationCard({
     api.evaluationModel.model.getModel,
     showResult ? { orgId, locale } : "skip"
   )
-  const levelCount = model?.levelThresholds.length ?? 0
+  const levelCount = model?.levelRules.length ?? 0
   // The level leads with the engine-computed outcome for every role (ADR-0002).
   // An anchor role additionally flags a deviation when its computed level
   // differs from the agreed level: the score is primary, the anchor is a

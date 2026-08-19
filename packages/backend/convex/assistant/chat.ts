@@ -274,7 +274,8 @@ export const sendMessage = orgMutation({
     })
 
     // Company context is optional here: the assistant guides even before
-    // onboarding completes (unlike the model-draft flows, which require it).
+    // onboarding completes (unlike the AI drafting/review flows, which
+    // require it).
     const settings = await orgSettingsRow(ctx, ctx.orgId)
     await ctx.scheduler.runAfter(
       0,

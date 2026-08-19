@@ -23,7 +23,6 @@ export const AUDIT_EVENTS = {
   invitationRevoked: "invitation.revoked",
   modelCreated: "model.created",
   modelUpdated: "model.updated",
-  modelDiscarded: "model.discarded",
   aiSuggestionConfirmed: "ai.suggestionConfirmed",
   aiSuggestionRejected: "ai.suggestionRejected",
   roleCreated: "role.created",
@@ -38,6 +37,8 @@ export const AUDIT_EVENTS = {
   roleFamilyRemoved: "roleFamily.removed",
   criterionApproved: "criterion.approved",
   criterionReopened: "criterion.reopened",
+  criterionActivated: "criterion.activated",
+  criterionDeactivated: "criterion.deactivated",
   personCreated: "person.created",
   personUpdated: "person.updated",
   personArchived: "person.archived",
@@ -158,7 +159,6 @@ const AUDIT_SUBJECTS: {
   "invitation.revoked": null,
   "model.created": null,
   "model.updated": null,
-  "model.discarded": null,
   // Every confirmable suggestion kind targets the model or the starter set,
   // neither a subject kind yet (role-profile AI applies log role.updated,
   // which carries the role subject).
@@ -179,6 +179,12 @@ const AUDIT_SUBJECTS: {
   "roleFamily.removed": null,
   "criterion.approved": null,
   "criterion.reopened": null,
+  // Reviewed null: a criterion's whole trail is reached through the model it
+  // belongs to (one model per org), not through a per-criterion index; no
+  // retrieval question exists yet for "this criterion's own history" the way
+  // one exists for a pay-mapping run or a role.
+  "criterion.activated": null,
+  "criterion.deactivated": null,
   "person.created": (payload) => ({ kind: "person", id: payload.personId }),
   "person.updated": (payload) => ({ kind: "person", id: payload.personId }),
   "person.archived": (payload) => ({ kind: "person", id: payload.personId }),
@@ -265,7 +271,7 @@ export function subjectForEvent<E extends AuditEvent>(
 // its own `changes.*.{from,to}` (bulk children like created/removed criteria);
 // each `suggestions[]` element's scalar values (dropped AI suggestions); and each
 // `moves[]` element's `fromLabel`, `toLabel`, and `motivation` (AI weight-move
-// rationales). Booleans, nulls, object-valued from/to (anchors, levelThresholds),
+// rationales). Booleans, nulls, object-valued from/to (anchors, levelRules),
 // and any deeper nesting are ignored on purpose; pushScalar drops non-scalars.
 function collectPayloadLeaves(payload: Record<string, unknown>): string[] {
   const leaves: string[] = []
@@ -490,21 +496,6 @@ export function anchorDiff(
   return differs ? { anchors: { from: before, to: after } } : {}
 }
 
-// The audit field set captured for a criterion, identical for create and delete
-// so criterion.added and criterion.removed (and model.discarded) stay symmetric.
-// INCLUDES templateKey on purpose (a pristine template criterion records which
-// template row it came from).
-export const CRITERION_AUDIT_FIELDS = [
-  "name",
-  "description",
-  "helpText",
-  "anchors",
-  "weightPoints",
-  "order",
-  "isCustom",
-  "templateKey",
-] as const
-
 // The anchor-role designation fields diffed by anchorRoles.ts (designate/update).
 // roles.ts and starters.ts archive paths diff only the status/reviewedAt subset.
 export const ANCHOR_AUDIT_FIELDS = [
@@ -514,13 +505,9 @@ export const ANCHOR_AUDIT_FIELDS = [
   "reviewedAt",
 ] as const
 
-// The model document fields diffed on create/discard (anchors and level
-// thresholds ride on the model row, ADR-0006).
-export const MODEL_AUDIT_FIELDS = [
-  "name",
-  "templateKey",
-  "levelThresholds",
-] as const
+// The model document fields diffed on create (level rules ride on the model
+// row, ADR-0006).
+export const MODEL_AUDIT_FIELDS = ["name", "levelRules"] as const
 
 // The organization settings fields diffed on settingsUpdated.
 export const SETTINGS_AUDIT_FIELDS = [
@@ -721,60 +708,6 @@ export const ACTION_UPDATE_AUDIT_FIELDS = [
   "targetLabel",
   "detailsChanged",
 ] as const
-
-// One bulk `items` entry for a freshly created criterion (template/scratch/AI).
-// Wraps buildCreateChanges over CRITERION_AUDIT_FIELDS; the human label is the
-// criterion name (ids in items are NOT resolved at read time). The optional
-// fields default to the schema's stored shape so the captured snapshot is
-// complete even when a caller omits them.
-export function criterionCreateItem(args: {
-  criterionId?: string
-  templateKey?: string | null
-  name: string
-  order: number
-  description?: string
-  helpText?: string
-  weightPoints: number
-  isCustom: boolean
-  anchors?: Array<{ step: number; text: string }>
-}): {
-  criterionId?: string
-  label: string
-  changes: Record<string, { from: null; to: unknown }>
-} {
-  const after: Record<string, unknown> = {
-    name: args.name,
-    description: args.description ?? "",
-    helpText: args.helpText ?? "",
-    anchors: args.anchors ?? [],
-    weightPoints: args.weightPoints,
-    order: args.order,
-    isCustom: args.isCustom,
-    templateKey: args.templateKey ?? null,
-  }
-  return {
-    ...(args.criterionId !== undefined
-      ? { criterionId: args.criterionId }
-      : {}),
-    label: args.name,
-    changes: buildCreateChanges(after, CRITERION_AUDIT_FIELDS),
-  }
-}
-
-// One bulk `items` entry for a criterion being hard-deleted. Wraps
-// buildDeleteChanges over the same CRITERION_AUDIT_FIELDS; the human label is
-// the criterion name.
-export function criterionDeleteItem(criterion: Doc<"criteria">): {
-  criterionId: string
-  label: string
-  changes: Record<string, { from: unknown; to: null }>
-} {
-  return {
-    criterionId: criterion._id,
-    label: criterion.name,
-    changes: buildDeleteChanges(criterion, CRITERION_AUDIT_FIELDS),
-  }
-}
 
 // Resolves an actor id to its display name by looking up the users mirror by
 // auth id. Returns "unknown" when no mirror row matches (sentinel actors like

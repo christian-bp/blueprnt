@@ -1,6 +1,6 @@
 import { v } from "convex/values"
-import { clampLocale, isCriterionKey } from "../evaluationModel/localize"
-import { templateContent } from "../evaluationModel/standardTemplate"
+import { criteriaLibraryContent } from "../evaluationModel/criteriaLibrary"
+import { clampLocale } from "../evaluationModel/localize"
 import { orgQuery } from "../lib/functions"
 import { deriveResults } from "./compute"
 import { familyNames, trackNames } from "./names"
@@ -52,7 +52,7 @@ export const getResults = orgQuery({
     const levels =
       model === null
         ? []
-        : [...model.levelThresholds]
+        : [...model.levelRules]
             .sort((a, b) => a.level - b.level)
             .map((threshold) => ({
               level: threshold.level,
@@ -152,7 +152,7 @@ export const getRoleResult = orgQuery({
       (row) => row.roleId === (docId as string)
     )
 
-    const content = templateContent(clampLocale(locale))
+    const content = criteriaLibraryContent(clampLocale(locale))
     const model = await ctx.db
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
@@ -181,15 +181,13 @@ export const getRoleResult = orgQuery({
       score: result?.score ?? null,
       level: result?.level ?? null,
       criteria: criteriaRows.map((row) => {
-        // Pristine template criteria localize by key (same rule as getModel).
-        const localized =
-          row.templateKey !== undefined && isCriterionKey(row.templateKey)
-            ? content.criteria[row.templateKey]
-            : null
+        // Every criterion is a library selection (decision 8): its display
+        // name always localizes from criteriaLibraryContent by libraryKey,
+        // never stored (same rule as getModel).
         const rating = ratingByCriterion.get(row._id as string)
         return {
           criterionId: row._id,
-          name: localized?.name ?? row.name,
+          name: content.criteria[row.libraryKey].name,
           weightPoints: row.weightPoints,
           value: rating?.value ?? null,
           motivation: rating?.motivation ?? null,

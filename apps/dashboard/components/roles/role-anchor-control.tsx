@@ -361,7 +361,7 @@ export function AnchorDialog({
     open ? { orgId } : "skip"
   )
   const levelOptions = Array.from(
-    { length: model?.levelThresholds.length ?? 0 },
+    { length: model?.levelRules.length ?? 0 },
     (_, index) => index + 1
   )
   const close = () => onOpenChange(false)

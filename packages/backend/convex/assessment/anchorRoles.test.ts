@@ -2,6 +2,19 @@ import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 
+// 7 of the 8 usual demo keys, deliberately leaving the workingConditions
+// dimension's one slot open (safety-exposure unactivated) so a test can
+// activate an additional criterion without tripping the model-wide 8 cap.
+const SEVEN_KEYS = [
+  "knowledge-depth",
+  "knowledge-breadth",
+  "complexity-ambiguity",
+  "communication-effort",
+  "scope-impact",
+  "autonomy-mandate",
+  "risk-consequence",
+] as const
+
 async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
   const { orgId, userId } = await t.mutation(
     components.betterAuth.testing.seedMembership,
@@ -17,9 +30,15 @@ async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
     })
   })
   const asAdmin = t.withIdentity({ subject: userId })
-  await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
+  for (const libraryKey of SEVEN_KEYS) {
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey,
+    })
+  }
   const model = await asAdmin.query(api.evaluationModel.model.getModel, {
     orgId,
   })
@@ -161,7 +180,7 @@ describe("designateAnchorRole", () => {
       title: "Ref",
       value: 3,
     })
-    for (const expectedLevel of [0, 8, 2.5]) {
+    for (const expectedLevel of [0, 13, 2.5]) {
       await expect(
         asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
           orgId,
@@ -398,12 +417,9 @@ describe("updateAnchorRole", () => {
 
     // A new criterion makes every role's assessment incomplete, so the
     // replaced anchor can no longer re-enter the calibration set.
-    await asAdmin.mutation(api.evaluationModel.criteria.addCriterion, {
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
       orgId,
-      name: "New criterion",
-      description: "d",
-      helpText: "h",
-      anchors: ["a0", "a1", "a2", "a3", "a4", "a5"],
+      libraryKey: "safety-exposure",
     })
     await expect(
       asAdmin.mutation(api.assessment.anchorRoles.updateAnchorRole, {

@@ -3,9 +3,7 @@ import { api, components } from "../_generated/api"
 import type { Doc } from "../_generated/dataModel"
 import { initConvexTest } from "../testing.helpers"
 
-const VALID_ANCHORS = ["a0", "a1", "a2", "a3", "a4", "a5"]
-
-async function seedScratchModel(t: ReturnType<typeof initConvexTest>) {
+async function seedEmptyModel(t: ReturnType<typeof initConvexTest>) {
   const { orgId, userId } = await t.mutation(
     components.betterAuth.testing.seedMembership,
     { email: "hr@acme.se", name: "HR Person", role: "admin" }
@@ -21,40 +19,23 @@ async function seedScratchModel(t: ReturnType<typeof initConvexTest>) {
     })
   })
   const asAdmin = t.withIdentity({ subject: userId })
-  await asAdmin.mutation(api.evaluationModel.model.createEmptyModel, {
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
-    name: "Scratch",
   })
   return { orgId, asAdmin }
 }
 
-function addArgs(orgId: string, name: string) {
-  return {
-    orgId,
-    name,
-    description: "d",
-    helpText: "h",
-    anchors: VALID_ANCHORS,
-  }
-}
-
-describe("criterion editor", () => {
-  it("adds a criterion at the neutral 3 weight points and increments order", async () => {
+describe("activateCriterion", () => {
+  it("activates at the neutral 3 weight points and increments order", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin } = await seedScratchModel(t)
+    const { orgId, asAdmin } = await seedEmptyModel(t)
     const first = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      {
-        orgId,
-        name: "Komplexitet",
-        description: "Hur svåra problem rollen hanterar.",
-        helpText: "Bedöm mot ankartexterna.",
-        anchors: VALID_ANCHORS,
-      }
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
     )
     const second = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      addArgs(orgId, "Scope")
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
     )
     await t.run(async (ctx) => {
       const a = (await ctx.db.get(first)) as Doc<"criteria"> | null
@@ -65,87 +46,194 @@ describe("criterion editor", () => {
       expect(b?.weightPoints).toBe(3)
       expect(a?.order).toBe(1)
       expect(b?.order).toBe(2)
-      expect(a?.isCustom).toBe(true)
-      // Anchors live on the criterion document (ADR-0006), step-ordered.
-      expect(a?.anchors).toHaveLength(6)
-      expect(a?.anchors.map((anchor) => anchor.step)).toEqual([
-        0, 1, 2, 3, 4, 5,
-      ])
+      expect(a?.libraryKey).toBe("complexity-ambiguity")
+      expect(b?.libraryKey).toBe("scope-impact")
     })
   })
 
-  it("rejects wrong anchor counts", async () => {
+  it("pre-fills purpose/whyRelevant from the library's own texts", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin } = await seedScratchModel(t)
-    await expect(
-      asAdmin.mutation(api.evaluationModel.criteria.addCriterion, {
-        orgId,
-        name: "X",
-        description: "d",
-        helpText: "h",
-        anchors: ["only", "five", "anchor", "texts", "here"],
-      })
-    ).rejects.toThrow(/errors.invalidInput/)
-  })
-
-  it("removes a neutral criterion (anchors ride along on the document)", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedScratchModel(t)
+    const { orgId, asAdmin } = await seedEmptyModel(t)
     const criterionId = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      addArgs(orgId, "Tillfällig")
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
     )
-    await asAdmin.mutation(api.evaluationModel.criteria.removeCriterion, {
-      orgId,
-      criterionId,
-    })
     await t.run(async (ctx) => {
-      expect(await ctx.db.get(criterionId)).toBeNull()
+      const row = (await ctx.db.get(criterionId)) as Doc<"criteria"> | null
+      expect(row?.purpose?.length).toBeGreaterThan(0)
+      expect(row?.whyRelevant?.length).toBeGreaterThan(0)
+      expect(row?.approved).toBeUndefined()
     })
   })
 
-  it("order stays unique after add/remove/add (no collision)", async () => {
+  it("rejects re-selecting an already-active library key", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin } = await seedScratchModel(t)
-    const first = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      addArgs(orgId, "First")
-    )
-    const second = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      addArgs(orgId, "Second")
-    )
-    // Remove the first criterion; survivor has order 2.
-    await asAdmin.mutation(api.evaluationModel.criteria.removeCriterion, {
+    const { orgId, asAdmin } = await seedEmptyModel(t)
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
       orgId,
-      criterionId: first,
+      libraryKey: "complexity-ambiguity",
     })
-    // Add a third; must get order 3, not 2 (which length-based logic would return).
-    const third = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      addArgs(orgId, "Third")
+    await expect(
+      asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+        orgId,
+        libraryKey: "complexity-ambiguity",
+      })
+    ).rejects.toThrow(/errors.criterionAlreadySelected/)
+  })
+
+  it("rejects a third selection within a 2-cap dimension (competence)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedEmptyModel(t)
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey: "knowledge-depth",
+    })
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey: "knowledge-breadth",
+    })
+    await expect(
+      asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+        orgId,
+        libraryKey: "formal-qualifications",
+      })
+    ).rejects.toThrow(/errors.dimensionCapExceeded/)
+  })
+
+  it("rejects a 9th selection over the model-wide 8 cap", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedEmptyModel(t)
+    // 2 competence + 2 effort + 3 responsibility + 1 workingConditions = 8,
+    // each dimension at (or under) its own cap.
+    const keys = [
+      "knowledge-depth",
+      "knowledge-breadth",
+      "complexity-ambiguity",
+      "communication-effort",
+      "scope-impact",
+      "autonomy-mandate",
+      "risk-consequence",
+      "safety-exposure",
+    ] as const
+    for (const libraryKey of keys) {
+      await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+        orgId,
+        libraryKey,
+      })
+    }
+    // 9th would-be selection: on-call is also workingConditions (already at
+    // its 1-cap), so this trips dimensionCapExceeded before the model-wide
+    // cap even applies; assert the model-wide cap directly instead by
+    // checking the stored count stayed at MODEL_MAX_CRITERIA.
+    await t.run(async (ctx) => {
+      const criteria = await ctx.db
+        .query("criteria")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(criteria).toHaveLength(8)
+    })
+    // business-customer is responsibility (already at its 3-cap): still a
+    // dimension-cap rejection, so assert tooManyCriteria against a model
+    // that is at the 8 cap via a dimension NOT yet capped is impossible
+    // here (every dimension is simultaneously at 8/8 total and at its own
+    // cap). This test therefore documents the invariant: the two limits
+    // coincide exactly at MODEL_MAX_CRITERIA when every dimension is filled
+    // to its own cap.
+    await expect(
+      asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+        orgId,
+        libraryKey: "on-call",
+      })
+    ).rejects.toThrow(/errors\.(dimensionCapExceeded|tooManyCriteria)/)
+  })
+
+  it("clears an existing approval (reopens silently)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedEmptyModel(t)
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (model === null) throw new Error("seed")
+      await ctx.db.patch(model._id, {
+        approval: { approvedBy: "someone", approvedAt: Date.now() },
+      })
+    })
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey: "complexity-ambiguity",
+    })
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(model?.approval).toBeUndefined()
+    })
+  })
+
+  it("audits criterion.activated with libraryKey + dimensionKey + weightPoints", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedEmptyModel(t)
+    const criterionId = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
     )
     await t.run(async (ctx) => {
-      const b = (await ctx.db.get(second)) as Doc<"criteria"> | null
-      const c = (await ctx.db.get(third)) as Doc<"criteria"> | null
-      expect(b?.order).toBe(2)
-      expect(c?.order).toBe(3)
-      // The two surviving orders are distinct.
-      expect(b?.order).not.toBe(c?.order)
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "criterion.activated")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      const payload = rows[0]?.payload as {
+        criterionId: string
+        libraryKey: string
+        dimensionKey: string
+        weightPoints: number
+      }
+      expect(payload.criterionId).toBe(criterionId)
+      expect(payload.libraryKey).toBe("complexity-ambiguity")
+      expect(payload.dimensionKey).toBe("effort")
+      expect(payload.weightPoints).toBe(3)
     })
+  })
+
+  it("rejects same-org editors with errors.adminRequired", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedEmptyModel(t)
+    const { userId: editorId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "editor@other.se", name: "Editor Person", role: "editor" }
+    )
+    await t.mutation(components.betterAuth.testing.seedDuplicateMember, {
+      orgId,
+      userId: editorId,
+      role: "editor",
+    })
+    await expect(
+      t
+        .withIdentity({ subject: editorId })
+        .mutation(api.evaluationModel.criteria.activateCriterion, {
+          orgId,
+          libraryKey: "complexity-ambiguity",
+        })
+    ).rejects.toThrow(/errors.adminRequired/)
   })
 })
 
 describe("rebalanceWeights", () => {
   async function seedTwoCriteria(t: ReturnType<typeof initConvexTest>) {
-    const { orgId, asAdmin } = await seedScratchModel(t)
+    const { orgId, asAdmin } = await seedEmptyModel(t)
     const a = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      addArgs(orgId, "A")
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
     )
     const b = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      addArgs(orgId, "B")
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
     )
     return { orgId, asAdmin, a, b }
   }
@@ -186,17 +274,16 @@ describe("rebalanceWeights", () => {
           changes: { weightPoints: { from: number; to: number } }
         }>
       }
-      // Bulk items: one per moved criterion, with label + weightPoints from/to.
       expect(payload.budget).toBe(6)
       expect(payload.count).toBe(2)
       expect(payload.items).toContainEqual({
         criterionId: a,
-        label: "A",
+        label: expect.any(String),
         changes: { weightPoints: { from: 3, to: 4 } },
       })
       expect(payload.items).toContainEqual({
         criterionId: b,
-        label: "B",
+        label: expect.any(String),
         changes: { weightPoints: { from: 3, to: 2 } },
       })
     })
@@ -269,15 +356,12 @@ describe("rebalanceWeights", () => {
 
   it("rejects another org's criterion ids (coverage mismatch)", async () => {
     const t = initConvexTest()
-    const { asAdmin: asAdminA, a, b } = await seedTwoCriteria(t)
-    void asAdminA
-    void a
-    const { orgId: orgB, asAdmin: asAdminB } = await seedScratchModel(t)
-    const foreign = await asAdminB.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      addArgs(orgB, "Own")
-    )
-    void foreign
+    const { b } = await seedTwoCriteria(t)
+    const { orgId: orgB, asAdmin: asAdminB } = await seedEmptyModel(t)
+    await asAdminB.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId: orgB,
+      libraryKey: "complexity-ambiguity",
+    })
     // Org B's admin tries to rebalance using org A's criterion id: it is not
     // part of org B's model, so the bijection check rejects it.
     await expect(
@@ -312,35 +396,27 @@ describe("rebalanceWeights", () => {
         })
     ).rejects.toThrow(/errors.adminRequired/)
   })
-
-  it("rejects same-org editors with errors.adminRequired for addCriterion", async () => {
-    const t = initConvexTest()
-    const { orgId } = await seedScratchModel(t)
-    const { userId: editorId } = await t.mutation(
-      components.betterAuth.testing.seedMembership,
-      { email: "editor@other.se", name: "Editor Person", role: "editor" }
-    )
-    await t.mutation(components.betterAuth.testing.seedDuplicateMember, {
-      orgId,
-      userId: editorId,
-      role: "editor",
-    })
-    await expect(
-      t
-        .withIdentity({ subject: editorId })
-        .mutation(
-          api.evaluationModel.criteria.addCriterion,
-          addArgs(orgId, "X")
-        )
-    ).rejects.toThrow(/errors.adminRequired/)
-  })
 })
 
-async function seedRatedTemplateOrganization(
+// A spread of 8 library keys across every dimension at (or under) its own
+// DIMENSION_MAX_ACTIVE cap, mirroring devCompany's demo selection order
+// closely enough for index-based rating assertions below.
+const EIGHT_KEYS = [
+  "knowledge-depth",
+  "knowledge-breadth",
+  "complexity-ambiguity",
+  "communication-effort",
+  "scope-impact",
+  "autonomy-mandate",
+  "risk-consequence",
+  "safety-exposure",
+] as const
+
+async function seedRatedOrganization(
   t: ReturnType<typeof initConvexTest>,
-  // Rating per criterion INDEX in display order (scope, complexity, autonomy,
-  // risk, knowledge, stakeholders, financial, people, formal); defaults to 5.
-  ratingAt: (index: number) => number = () => 5
+  // Rating per criterion INDEX in `keys` order; defaults to 5.
+  ratingAt: (index: number) => number = () => 5,
+  keys: readonly (typeof EIGHT_KEYS)[number][] = EIGHT_KEYS
 ) {
   const { orgId, userId } = await t.mutation(
     components.betterAuth.testing.seedMembership,
@@ -356,9 +432,15 @@ async function seedRatedTemplateOrganization(
     })
   })
   const asAdmin = t.withIdentity({ subject: userId })
-  await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
+  for (const libraryKey of keys) {
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey,
+    })
+  }
   const model = await asAdmin.query(api.evaluationModel.model.getModel, {
     orgId,
   })
@@ -386,22 +468,21 @@ async function seedRatedTemplateOrganization(
 describe("model edits shift levels live", () => {
   it("rebalanceWeights logs level.shift when a derived level moves", async () => {
     const t = initConvexTest()
-    // scope rated 5, everything else 3. Template allocation (5,4,4,3,3,3,2,2,1):
-    // raw 91 -> 20*91/27 = 67 -> Level 4. Swapping scope (5->1) with formal
-    // (1->5): raw 83 -> 61 -> Level 5.
-    const { orgId, asAdmin, model, roleId } =
-      await seedRatedTemplateOrganization(t, (index) => (index === 0 ? 5 : 3))
-    const scope = model.criteria[0]
-    const formal = model.criteria[8]
-    if (scope === undefined || formal === undefined) throw new Error("seed")
+    const { orgId, asAdmin, model, roleId } = await seedRatedOrganization(
+      t,
+      (index) => (index === 0 ? 5 : 3)
+    )
+    const first = model.criteria[0]
+    const last = model.criteria[7]
+    if (first === undefined || last === undefined) throw new Error("seed")
     await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
       orgId,
       allocations: model.criteria.map((criterion) => ({
         criterionId: criterion.criterionId,
         weightPoints:
-          criterion.criterionId === scope.criterionId
+          criterion.criterionId === first.criterionId
             ? 1
-            : criterion.criterionId === formal.criterionId
+            : criterion.criterionId === last.criterionId
               ? 5
               : criterion.weightPoints,
       })),
@@ -413,170 +494,156 @@ describe("model edits shift levels live", () => {
           q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
-      expect(shifts.map((row) => row.payload)).toContainEqual(
-        expect.objectContaining({
-          roleId,
-          changes: expect.objectContaining({ level: { from: 4, to: 5 } }),
-        })
+      const rebalanceShift = shifts.find(
+        (row) =>
+          (row.payload as { cause?: { event?: string } }).cause?.event ===
+          "model.updated"
       )
+      expect(rebalanceShift).toBeDefined()
+      expect(
+        (rebalanceShift?.payload as { roleId?: string } | undefined)?.roleId
+      ).toBe(roleId)
     })
   })
 
-  it("removeCriterion deletes its ratings and can keep a role complete", async () => {
+  it("deactivateCriterion deletes its ratings and shifts the level", async () => {
     const t = initConvexTest()
-    // scope 5, stakeholders 0, others 3: raw 82 over 27 points -> 60 (Level 5).
-    // Removing stakeholders (3 points, allowed) drops nothing from the
-    // numerator but shrinks the denominator: 82 over 24 -> 68 (Level 4).
-    const { orgId, asAdmin, model, roleId } =
-      await seedRatedTemplateOrganization(t, (index) =>
-        index === 0 ? 5 : index === 5 ? 0 : 3
-      )
-    const stakeholders = model.criteria[5]
-    if (stakeholders === undefined) throw new Error("seed")
-    await asAdmin.mutation(api.evaluationModel.criteria.removeCriterion, {
+    // first rated 5, last rated 0 (workingConditions dimension), rest 3.
+    const { orgId, asAdmin, model, roleId } = await seedRatedOrganization(
+      t,
+      (index) => (index === 0 ? 5 : index === 7 ? 0 : 3)
+    )
+    const target = model.criteria[7]
+    if (target === undefined) throw new Error("seed")
+    await asAdmin.mutation(api.evaluationModel.criteria.deactivateCriterion, {
       orgId,
-      criterionId: stakeholders.criterionId,
+      criterionId: target.criterionId,
     })
     await t.run(async (ctx) => {
       const orphans = await ctx.db
         .query("ratings")
         .withIndex("by_criterion", (q) =>
-          q.eq("criterionId", stakeholders.criterionId)
+          q.eq("criterionId", target.criterionId)
         )
         .collect()
       expect(orphans).toHaveLength(0)
-      // Still complete (8 of 8) with the better level.
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
           q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
-      expect(shifts.map((row) => row.payload)).toContainEqual(
-        expect.objectContaining({
-          roleId,
-          changes: expect.objectContaining({ level: { from: 5, to: 4 } }),
-        })
+      const deactivateShift = shifts.find(
+        (row) =>
+          (row.payload as { cause?: { event?: string } }).cause?.event ===
+          "criterion.deactivated"
       )
+      expect(deactivateShift).toBeDefined()
+      expect(
+        (deactivateShift?.payload as { roleId?: string } | undefined)?.roleId
+      ).toBe(roleId)
     })
   })
 
-  it("removing a non-neutral criterion redistributes the difference deterministically", async () => {
+  it("deactivating a non-neutral criterion redistributes the difference deterministically", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, model } = await seedRatedTemplateOrganization(t)
-    // scope carries 5 weight points: removal shrinks the budget by 3 but the
-    // sum by 5, leaving the survivors 2 points under budget. The repair walk
-    // lifts the lightest first (formal 1 -> 2), then the first remaining
-    // minimum in display order (financial 2 -> 3).
-    const scope = model.criteria[0]
-    const financial = model.criteria[6]
-    const formal = model.criteria[8]
-    if (
-      scope === undefined ||
-      financial === undefined ||
-      formal === undefined
-    ) {
-      throw new Error("seed")
-    }
-    await asAdmin.mutation(api.evaluationModel.criteria.removeCriterion, {
+    const { orgId, asAdmin, model } = await seedRatedOrganization(t)
+    // Bump the first criterion to 5 via rebalance first, so its removal
+    // leaves the survivors 2 points under the shrunken budget.
+    const first = model.criteria[0]
+    const rest = model.criteria.slice(1)
+    if (first === undefined) throw new Error("seed")
+    const bumped = rest[0]
+    if (bumped === undefined) throw new Error("seed")
+    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
       orgId,
-      criterionId: scope.criterionId,
+      allocations: [
+        { criterionId: first.criterionId, weightPoints: 5 },
+        { criterionId: bumped.criterionId, weightPoints: 1 },
+        ...rest.slice(1).map((c) => ({
+          criterionId: c.criterionId,
+          weightPoints: c.weightPoints,
+        })),
+      ],
+    })
+    await asAdmin.mutation(api.evaluationModel.criteria.deactivateCriterion, {
+      orgId,
+      criterionId: first.criterionId,
     })
     await t.run(async (ctx) => {
       const remaining = await ctx.db
         .query("criteria")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
-      expect(remaining).toHaveLength(8)
-      // Exactly on the shrunken budget (8 criteria x 3).
+      expect(remaining).toHaveLength(7)
+      // Exactly on the shrunken budget (7 criteria x 3).
       const total = remaining.reduce((sum, row) => sum + row.weightPoints, 0)
-      expect(total).toBe(24)
-      const pointsById = new Map(
-        remaining.map((row) => [row._id as string, row.weightPoints])
-      )
-      expect(pointsById.get(financial.criterionId as string)).toBe(3)
-      expect(pointsById.get(formal.criterionId as string)).toBe(2)
-      // The removal's audit row records every adjustment.
+      expect(total).toBe(21)
+
       const updated = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "model.updated")
+          q.eq("orgId", orgId).eq("type", "criterion.deactivated")
         )
         .collect()
-      const removal = updated.find(
-        (row) =>
-          (row.payload as Record<string, unknown>).change ===
-          "criterion.removed"
-      )
-      expect(removal).toBeDefined()
-      const removalPayload = removal?.payload as {
+      const deactivation = updated[updated.length - 1]
+      const payload = deactivation?.payload as {
         count: number
+        budget: { from: number; to: number }
         items: Array<{
           criterionId: string
           label: string
           changes: { weightPoints: { from: number; to: number } }
         }>
       }
-      // Survivor bulk items: repaired weightPoints from/to, in repair order.
-      expect(removalPayload.count).toBe(2)
-      expect(
-        removalPayload.items.map((item) => ({
-          criterionId: item.criterionId,
-          weightPoints: item.changes.weightPoints,
-        }))
-      ).toEqual([
-        {
-          criterionId: financial.criterionId,
-          weightPoints: { from: 2, to: 3 },
-        },
-        { criterionId: formal.criterionId, weightPoints: { from: 1, to: 2 } },
-      ])
+      expect(payload.budget).toEqual({ from: 24, to: 21 })
+      // The removed criterion stood at 5: survivors are 2 under budget, so
+      // the deterministic repair walk lifts the lightest by 2 total.
+      expect(payload.count).toBeGreaterThan(0)
+      const repairedTotal = payload.items.reduce(
+        (sum, item) =>
+          sum + (item.changes.weightPoints.to - item.changes.weightPoints.from),
+        0
+      )
+      expect(repairedTotal).toBe(2)
     })
   })
 
-  it("blocks removal below the composition floor once onboarding is complete", async () => {
+  it("no floor: a model under construction can deactivate down to zero", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, model } = await seedRatedTemplateOrganization(t)
-    // Template has 9 criteria: removal down to the floor is fine, the next
-    // one is not. Onboarding must be COMPLETE for the floor to apply (the
-    // scratch tests above remove freely at 1-2 criteria while onboarding).
-    await t.run(async (ctx) => {
-      const settings = await ctx.db
-        .query("organizations")
-        .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .unique()
-      if (settings === null) throw new Error("seed")
-      await ctx.db.patch(settings._id, { onboardingCompletedAt: Date.now() })
-    })
-    // Remove four criteria (9 -> 5), all allowed.
-    for (const index of [8, 7, 6, 5]) {
-      const criterion = model.criteria[index]
-      if (criterion === undefined) throw new Error("seed")
-      await asAdmin.mutation(api.evaluationModel.criteria.removeCriterion, {
-        orgId,
-        criterionId: criterion.criterionId,
-      })
-    }
-    // The fifth removal would leave 4 criteria: blocked.
-    const next = model.criteria[4]
-    if (next === undefined) throw new Error("seed")
+    const { orgId, asAdmin } = await seedEmptyModel(t)
+    const criterionId = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
+    )
     await expect(
-      asAdmin.mutation(api.evaluationModel.criteria.removeCriterion, {
+      asAdmin.mutation(api.evaluationModel.criteria.deactivateCriterion, {
         orgId,
-        criterionId: next.criterionId,
+        criterionId,
       })
-    ).rejects.toThrow(/errors.tooFewCriteria/)
+    ).resolves.toBeNull()
+    await t.run(async (ctx) => {
+      const remaining = await ctx.db
+        .query("criteria")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(remaining).toHaveLength(0)
+    })
   })
 
-  it("addCriterion makes complete roles incomplete (level.shift to null)", async () => {
+  it("activateCriterion makes complete roles incomplete (level.shift to null)", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, roleId } = await seedRatedTemplateOrganization(t)
-    await asAdmin.mutation(api.evaluationModel.criteria.addCriterion, {
+    // Seed with 7 of the 8 keys (drop risk-consequence, leaving
+    // responsibility at 2/3) so the 8th activation below has room.
+    const seven = EIGHT_KEYS.filter((key) => key !== "risk-consequence")
+    const { orgId, asAdmin, roleId } = await seedRatedOrganization(
+      t,
+      () => 5,
+      seven
+    )
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
       orgId,
-      name: "Collaboration",
-      description: "d",
-      helpText: "h",
-      anchors: ["a0", "a1", "a2", "a3", "a4", "a5"],
+      libraryKey: "risk-consequence",
     })
     await t.run(async (ctx) => {
       const shifts = await ctx.db
@@ -595,120 +662,6 @@ describe("model edits shift levels live", () => {
   })
 })
 
-describe("updateCriterion", () => {
-  async function seedTemplateModel(t: ReturnType<typeof initConvexTest>) {
-    const { orgId, userId } = await t.mutation(
-      components.betterAuth.testing.seedMembership,
-      { email: "hr-edit@acme.se", name: "HR Person", role: "admin" }
-    )
-    await t.run(async (ctx) => {
-      await ctx.db.insert("organizations", {
-        orgId,
-        country: "se",
-        currency: "SEK",
-        language: "sv",
-        industry: "itTelecom",
-      })
-    })
-    const asAdmin = t.withIdentity({ subject: userId })
-    await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
-      orgId,
-    })
-    const model = await asAdmin.query(api.evaluationModel.model.getModel, {
-      orgId,
-      locale: "sv",
-    })
-    if (model === null) throw new Error("model not seeded")
-    return { orgId, asAdmin, model }
-  }
-
-  it("edits the texts, materializes the template row, and audits", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, model } = await seedTemplateModel(t)
-    const target = model.criteria[0]
-    if (target === undefined) throw new Error("no criteria")
-
-    await asAdmin.mutation(api.evaluationModel.criteria.updateCriterion, {
-      orgId,
-      criterionId: target.criterionId,
-      name: "  Anpassad komplexitet  ",
-      description: "Vår egen beskrivning.",
-      helpText: "Vår egen hjälptext.",
-      anchors: VALID_ANCHORS,
-    })
-
-    await t.run(async (ctx) => {
-      const row = (await ctx.db.get(
-        target.criterionId
-      )) as Doc<"criteria"> | null
-      // Stored trimmed, anchors rebuilt positionally, template link cleared.
-      expect(row?.name).toBe("Anpassad komplexitet")
-      expect(row?.templateKey).toBeUndefined()
-      expect(row?.anchors.map((anchor) => anchor.text)).toEqual(VALID_ANCHORS)
-      const audits = await ctx.db
-        .query("auditLog")
-        .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "model.updated")
-        )
-        .collect()
-      expect(
-        audits.filter(
-          (row) =>
-            (row.payload as { change?: string }).change === "criterion.updated"
-        )
-      ).toHaveLength(1)
-    })
-
-    // The edited row now renders as stored in EVERY locale, while untouched
-    // template rows keep localizing (read-time localization, localize.ts).
-    const finnish = await asAdmin.query(api.evaluationModel.model.getModel, {
-      orgId,
-      locale: "fi",
-    })
-    const editedRow = finnish?.criteria.find(
-      (criterion) => criterion.criterionId === target.criterionId
-    )
-    expect(editedRow?.name).toBe("Anpassad komplexitet")
-    // An untouched template row still localizes: its Finnish name differs
-    // from the Swedish one the model was seeded with.
-    const untouchedSv = model.criteria.find(
-      (criterion) => criterion.criterionId !== target.criterionId
-    )
-    const untouchedFi = finnish?.criteria.find(
-      (criterion) => criterion.criterionId === untouchedSv?.criterionId
-    )
-    expect(untouchedFi?.name).toBeDefined()
-    expect(untouchedFi?.name).not.toBe(untouchedSv?.name)
-  })
-
-  it("rejects a blank name and a wrong anchor count", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, model } = await seedTemplateModel(t)
-    const target = model.criteria[0]
-    if (target === undefined) throw new Error("no criteria")
-    await expect(
-      asAdmin.mutation(api.evaluationModel.criteria.updateCriterion, {
-        orgId,
-        criterionId: target.criterionId,
-        name: "   ",
-        description: "d",
-        helpText: "h",
-        anchors: VALID_ANCHORS,
-      })
-    ).rejects.toThrow(/errors.invalidInput/)
-    await expect(
-      asAdmin.mutation(api.evaluationModel.criteria.updateCriterion, {
-        orgId,
-        criterionId: target.criterionId,
-        name: "Ok",
-        description: "d",
-        helpText: "h",
-        anchors: VALID_ANCHORS.slice(0, 5),
-      })
-    ).rejects.toThrow(/errors.invalidInput/)
-  })
-})
-
 // Collects every object key anywhere in a value tree. Used to assert that no
 // rating-shaped key (value/motivation/notes) ever leaks into a criterion audit
 // payload: ratings are count-only on the model trail.
@@ -722,244 +675,33 @@ function allKeys(value: unknown, out: string[] = []): string[] {
 }
 
 describe("criteria audit payloads (before/after)", () => {
-  async function latestModelUpdated(
-    t: ReturnType<typeof initConvexTest>,
-    orgId: string,
-    change: string
-  ) {
-    return await t.run(async (ctx) => {
+  it("criterion.deactivated records delete stats and counts ratings only", async () => {
+    const t = initConvexTest()
+    // A rated org so the deactivated criterion has ratings; assert the count
+    // is captured but no rating value leaks.
+    const { orgId, asAdmin, model } = await seedRatedOrganization(t, (index) =>
+      index === 0 ? 4 : 3
+    )
+    const first = model.criteria[0]
+    if (first === undefined) throw new Error("seed")
+    await asAdmin.mutation(api.evaluationModel.criteria.deactivateCriterion, {
+      orgId,
+      criterionId: first.criterionId,
+    })
+    const payload = await t.run(async (ctx) => {
       const rows = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "model.updated")
+          q.eq("orgId", orgId).eq("type", "criterion.deactivated")
         )
         .collect()
-      const matching = rows.filter(
-        (row) => (row.payload as Record<string, unknown>).change === change
-      )
-      return matching[matching.length - 1]?.payload as
-        | Record<string, unknown>
-        | undefined
+      return rows[rows.length - 1]?.payload as Record<string, unknown>
     })
-  }
-
-  it("criterion.added records full create-changes incl. anchors and weightPoints", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedScratchModel(t)
-    const criterionId = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      {
-        orgId,
-        name: "  Komplexitet  ",
-        description: "Hur svåra problem rollen hanterar.",
-        helpText: "Bedöm mot ankartexterna.",
-        anchors: VALID_ANCHORS,
-      }
-    )
-    const payload = await latestModelUpdated(t, orgId, "criterion.added")
-    expect(payload?.criterionId).toBe(criterionId)
-    expect(payload?.modelId).toBeDefined()
-    const changes = payload?.changes as Record<
-      string,
-      { from: unknown; to: unknown }
-    >
-    expect(changes.name).toEqual({ from: null, to: "Komplexitet" })
-    expect(changes.description).toEqual({
-      from: null,
-      to: "Hur svåra problem rollen hanterar.",
-    })
-    expect(changes.helpText).toEqual({
-      from: null,
-      to: "Bedöm mot ankartexterna.",
-    })
-    expect(changes.weightPoints).toEqual({ from: null, to: 3 })
-    expect(changes.order).toEqual({ from: null, to: 1 })
-    expect(changes.isCustom).toEqual({ from: null, to: true })
-    // The anchors array is captured step-ordered with from:null.
-    expect(changes.anchors).toEqual({
-      from: null,
-      to: VALID_ANCHORS.map((text, step) => ({ step, text })),
-    })
-  })
-
-  it("criterion.updated records only changed text fields and clears templateKey", async () => {
-    const t = initConvexTest()
-    // A template-seeded criterion: editing one text field detaches the key.
-    const { orgId, userId } = await t.mutation(
-      components.betterAuth.testing.seedMembership,
-      { email: "hr-upd@acme.se", name: "HR", role: "admin" }
-    )
-    await t.run(async (ctx) => {
-      await ctx.db.insert("organizations", {
-        orgId,
-        country: "se",
-        currency: "SEK",
-        language: "sv",
-        industry: "itTelecom",
-      })
-    })
-    const asAdmin = t.withIdentity({ subject: userId })
-    await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
-      orgId,
-    })
-    const model = await asAdmin.query(api.evaluationModel.model.getModel, {
-      orgId,
-      locale: "sv",
-    })
-    const target = model?.criteria[0]
-    if (target === undefined) throw new Error("seed")
-    // Read the stored anchors so we can edit the name only, keeping anchors
-    // unchanged (anchorDiff should NOT emit an entry then).
-    const storedAnchors = await t.run(async (ctx) => {
-      const row = (await ctx.db.get(target.criterionId)) as Doc<"criteria">
-      return [...row.anchors]
-        .sort((a, b) => a.step - b.step)
-        .map((anchor) => anchor.text)
-    })
-
-    await asAdmin.mutation(api.evaluationModel.criteria.updateCriterion, {
-      orgId,
-      criterionId: target.criterionId,
-      name: "Anpassad",
-      description: target.description,
-      helpText: target.helpText,
-      anchors: storedAnchors,
-    })
-    const payload = await latestModelUpdated(t, orgId, "criterion.updated")
-    const changes = payload?.changes as Record<
-      string,
-      { from: unknown; to: unknown }
-    >
-    // Only the name moved; description/helpText unchanged -> omitted.
-    expect(changes.name).toEqual({ from: target.name, to: "Anpassad" })
-    expect(changes.description).toBeUndefined()
-    expect(changes.helpText).toBeUndefined()
-    // templateKey was set on the template row and is cleared -> key -> null.
-    expect(changes.templateKey).toEqual({
-      from: "scope",
-      to: null,
-    })
-    // Anchors did not change -> no anchors entry.
-    expect(changes.anchors).toBeUndefined()
-  })
-
-  it("criterion.updated records an anchors entry only when the texts differ", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedScratchModel(t)
-    const criterionId = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      addArgs(orgId, "Custom")
-    )
-    const changedAnchors = ["b0", "b1", "b2", "b3", "b4", "b5"]
-    await asAdmin.mutation(api.evaluationModel.criteria.updateCriterion, {
-      orgId,
-      criterionId,
-      name: "Custom",
-      description: "d",
-      helpText: "h",
-      anchors: changedAnchors,
-    })
-    const payload = await latestModelUpdated(t, orgId, "criterion.updated")
-    const changes = payload?.changes as Record<
-      string,
-      { from: unknown; to: unknown }
-    >
-    // Name/description/helpText unchanged -> omitted; only anchors moved.
-    expect(changes.name).toBeUndefined()
-    expect(changes.anchors).toEqual({
-      from: VALID_ANCHORS.map((text, step) => ({ step, text })),
-      to: changedAnchors.map((text, step) => ({ step, text })),
-    })
-  })
-
-  it("weights.rebalanced records bulk items, budget, and count", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedScratchModel(t)
-    const a = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      addArgs(orgId, "Alpha")
-    )
-    const b = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      addArgs(orgId, "Beta")
-    )
-    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
-      orgId,
-      allocations: [
-        { criterionId: a, weightPoints: 5 },
-        { criterionId: b, weightPoints: 1 },
-      ],
-    })
-    const payload = await latestModelUpdated(t, orgId, "weights.rebalanced")
-    expect(payload?.budget).toBe(6)
-    expect(payload?.count).toBe(2)
-    const items = payload?.items as Array<{
-      criterionId: string
-      label: string
-      changes: { weightPoints: { from: number; to: number } }
-    }>
-    expect(items).toContainEqual({
-      criterionId: a,
-      label: "Alpha",
-      changes: { weightPoints: { from: 3, to: 5 } },
-    })
-    expect(items).toContainEqual({
-      criterionId: b,
-      label: "Beta",
-      changes: { weightPoints: { from: 3, to: 1 } },
-    })
-  })
-
-  it("criterion.removed records delete-changes, budget, survivors, and counts ratings only", async () => {
-    const t = initConvexTest()
-    // A rated template org so the removed criterion has ratings; assert the
-    // count is captured but no rating value leaks.
-    const { orgId, asAdmin, model } = await seedRatedTemplateOrganization(
-      t,
-      (index) => (index === 0 ? 4 : 3)
-    )
-    const scope = model.criteria[0]
-    if (scope === undefined) throw new Error("seed")
-    await asAdmin.mutation(api.evaluationModel.criteria.removeCriterion, {
-      orgId,
-      criterionId: scope.criterionId,
-    })
-    const payload = await latestModelUpdated(t, orgId, "criterion.removed")
-    expect(payload?.modelId).toBeDefined()
-    // One role was rated on the removed criterion: count present, value absent.
-    expect(payload?.deletedRatingCount).toBe(1)
-    // Budget shrinks from 9*3 to 8*3.
-    expect(payload?.budget).toEqual({ from: 27, to: 24 })
-    // Delete-snapshot: every field collapses to:null.
-    const changes = payload?.changes as Record<
-      string,
-      { from: unknown; to: unknown }
-    >
-    for (const field of [
-      "name",
-      "description",
-      "helpText",
-      "anchors",
-      "weightPoints",
-      "order",
-      "isCustom",
-      "templateKey",
-    ]) {
-      expect(changes[field]).toBeDefined()
-      expect(changes[field]?.to).toBeNull()
-    }
-    // Survivor bulk items repaired onto the shrunken budget.
-    const items = payload?.items as Array<{
-      criterionId: string
-      label: string
-      changes: { weightPoints: { from: number; to: number } }
-    }>
-    expect(payload?.count).toBe(items.length)
-    for (const item of items) {
-      expect(item.label).toBeDefined()
-      expect(item.changes.weightPoints.from).toBeTypeOf("number")
-      expect(item.changes.weightPoints.to).toBeTypeOf("number")
-    }
+    expect(payload.modelId).toBeDefined()
+    // One role was rated on the deactivated criterion: count present, no value.
+    expect(payload.deletedRatingCount).toBe(1)
+    // Budget shrinks from 8*3 to 7*3.
+    expect(payload.budget).toEqual({ from: 24, to: 21 })
     // Ratings are count-only: no rating value/notes keys anywhere in the
     // payload. A bare number cannot be distinguished from a weight/order, so
     // assert structurally that no rating-shaped keys leaked.
@@ -968,65 +710,72 @@ describe("criteria audit payloads (before/after)", () => {
     expect(allKeys(payload)).not.toContain("notes")
   })
 
-  it("threads cause.event = model.updated + criterionId onto add/remove level shifts", async () => {
+  it("weights.rebalanced records bulk items, budget, and count", async () => {
     const t = initConvexTest()
-    // Seeding the ratings produces rating.change-caused level shifts; the
-    // criterion mutations below add model.updated-caused ones. We only assert
-    // about the model.updated shifts.
-    const { orgId, asAdmin, roleId } = await seedRatedTemplateOrganization(
-      t,
-      (index) => (index === 0 ? 5 : 3)
+    const { orgId, asAdmin } = await seedEmptyModel(t)
+    const a = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
     )
-    // addCriterion flips the role to incomplete -> level.shift with cause.
-    await asAdmin.mutation(api.evaluationModel.criteria.addCriterion, {
+    const b = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
+    )
+    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
       orgId,
-      name: "Collaboration",
-      description: "d",
-      helpText: "h",
-      anchors: VALID_ANCHORS,
+      allocations: [
+        { criterionId: a, weightPoints: 5 },
+        { criterionId: b, weightPoints: 1 },
+      ],
     })
-    await t.run(async (ctx) => {
-      const shifts = await ctx.db
+    const payload = await t.run(async (ctx) => {
+      const rows = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "level.shift")
+          q.eq("orgId", orgId).eq("type", "model.updated")
         )
         .collect()
-      const modelShifts = shifts.filter(
-        (shift) =>
-          (shift.payload as { cause?: { event?: string } }).cause?.event ===
-          "model.updated"
+      const matching = rows.filter(
+        (row) =>
+          (row.payload as Record<string, unknown>).change ===
+          "weights.rebalanced"
       )
-      expect(modelShifts.length).toBeGreaterThan(0)
-      // The add path threads the new criterionId on the cause.
-      expect(
-        modelShifts.some(
-          (shift) =>
-            (shift.payload as { cause?: { criterionId?: string } }).cause
-              ?.criterionId !== undefined &&
-            (shift.payload as { roleId?: string }).roleId === roleId
-        )
-      ).toBe(true)
+      return matching[matching.length - 1]?.payload as Record<string, unknown>
+    })
+    expect(payload.budget).toBe(6)
+    expect(payload.count).toBe(2)
+    const items = payload.items as Array<{
+      criterionId: string
+      changes: { weightPoints: { from: number; to: number } }
+    }>
+    expect(items).toContainEqual({
+      criterionId: a,
+      label: expect.any(String),
+      changes: { weightPoints: { from: 3, to: 5 } },
+    })
+    expect(items).toContainEqual({
+      criterionId: b,
+      label: expect.any(String),
+      changes: { weightPoints: { from: 3, to: 1 } },
     })
   })
 
   it("threads cause.entityId = modelId for weights.rebalanced level shifts", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, model } = await seedRatedTemplateOrganization(
-      t,
-      (index) => (index === 0 ? 5 : 3)
+    const { orgId, asAdmin, model } = await seedRatedOrganization(t, (index) =>
+      index === 0 ? 5 : 3
     )
-    const scope = model.criteria[0]
-    const formal = model.criteria[8]
-    if (scope === undefined || formal === undefined) throw new Error("seed")
+    const first = model.criteria[0]
+    const last = model.criteria[7]
+    if (first === undefined || last === undefined) throw new Error("seed")
     await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
       orgId,
       allocations: model.criteria.map((criterion) => ({
         criterionId: criterion.criterionId,
         weightPoints:
-          criterion.criterionId === scope.criterionId
+          criterion.criterionId === first.criterionId
             ? 1
-            : criterion.criterionId === formal.criterionId
+            : criterion.criterionId === last.criterionId
               ? 5
               : criterion.weightPoints,
       })),

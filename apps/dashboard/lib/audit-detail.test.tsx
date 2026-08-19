@@ -463,8 +463,8 @@ describe("formatAuditDetail", () => {
       {
         roleId: "r1",
         changes: {
-          anchors: { from: null, to: [{ step: 0, text: "x" }] },
-          levelThresholds: { from: [{ level: 1 }], to: [{ level: 2 }] },
+          tags: { from: null, to: [{ step: 0, text: "x" }] },
+          milestones: { from: [{ level: 1 }], to: [{ level: 2 }] },
         },
       },
       names,
@@ -855,15 +855,15 @@ describe("changeEntries", () => {
     const boolLabel = (value: boolean) => (value ? "Yes" : "No")
     expect(
       changeEntries(
-        { isCustom: { from: true, to: false } },
+        { approved: { from: true, to: false } },
         fieldLabel,
         undefined,
         boolLabel
       )
     ).toEqual([
       {
-        field: "isCustom",
-        label: "IsCustom",
+        field: "approved",
+        label: "Approved",
         from: "Yes",
         to: "No",
         isSet: false,
@@ -1186,14 +1186,14 @@ describe("payloadSuggestions", () => {
   it("narrows the suggestions array into id/kind/status entries", () => {
     const out = payloadSuggestions({
       suggestions: [
-        { suggestionId: "s1", kind: "model.draft", status: "open" },
+        { suggestionId: "s1", kind: "model.weightReview", status: "open" },
         { suggestionId: "s2", kind: "role.profile", status: "dismissed" },
       ],
     })
     expect(out?.count).toBe(2)
     expect(out?.items[0]).toEqual({
       key: "s1",
-      kind: "model.draft",
+      kind: "model.weightReview",
       status: "open",
     })
   })
@@ -1240,16 +1240,6 @@ describe("aiAuditDetail", () => {
   // exact i18n key and the params it would be called with, without the catalog.
   const t = (key: string, params?: Record<string, string | number>) =>
     `${key} ${JSON.stringify(params ?? {})}`
-
-  it("renders a confirmed model.draft with its accepted count", () => {
-    expect(
-      aiAuditDetail(
-        "ai.suggestionConfirmed",
-        { suggestionId: "s1", kind: "model.draft", acceptedCount: 4 },
-        t
-      )
-    ).toBe('ai.modelDraft {"count":4}')
-  })
 
   it("renders a confirmed model.weightReview with its applied count", () => {
     expect(
@@ -1305,10 +1295,10 @@ describe("aiAuditDetail", () => {
     expect(
       aiAuditDetail(
         "ai.suggestionConfirmed",
-        { suggestionId: "s1", kind: "model.draft" },
+        { suggestionId: "s1", kind: "model.weightReview" },
         t
       )
-    ).toBe('ai.modelDraft {"count":0}')
+    ).toBe('ai.weightReview {"count":0}')
   })
 
   it("returns empty for an unknown kind", () => {

@@ -1,10 +1,12 @@
+import type { DimensionKey } from "@workspace/core"
 import { v } from "convex/values"
 import type { Doc } from "../_generated/dataModel"
 import { AUDIT_EVENTS, buildChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, adminQuery } from "../lib/functions"
-import { clampLocale, isCriterionKey } from "./localize"
-import { templateContent } from "./standardTemplate"
+import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
+import { clampLocale } from "./localize"
+import { dimensionKeyValidator, libraryKeyValidator } from "./tables"
 
 // The compliance content fields logged in the audit diff. decidedBy/decidedAt
 // are intentionally excluded: they are redundant with the audit row's own actor
@@ -107,8 +109,6 @@ export const saveCriterionCompliance = adminMutation({
       biasRisk: args.biasRisk,
       biasComment: norm(args.biasComment),
       biasAction: norm(args.biasAction),
-      // HR now owns the compliance text; getMethodModel stops re-localizing it.
-      complianceEdited: true,
     }
     await ctx.db.patch(args.criterionId, patch)
     await ctx.audit.log({
@@ -168,6 +168,8 @@ export const getMethodModel = adminQuery({
       criteria: v.array(
         v.object({
           criterionId: v.id("criteria"),
+          libraryKey: libraryKeyValidator,
+          dimensionKey: dimensionKeyValidator,
           name: v.string(),
           description: v.string(),
           helpText: v.string(),
@@ -195,7 +197,7 @@ export const getMethodModel = adminQuery({
           decidedAt: v.union(v.number(), v.null()),
         })
       ),
-      levelThresholds: v.array(
+      levelRules: v.array(
         v.object({ level: v.number(), minScore: v.number() })
       ),
       progress: v.object({
@@ -212,8 +214,7 @@ export const getMethodModel = adminQuery({
       .unique()
     if (model === null) return null
 
-    const content = templateContent(clampLocale(locale))
-    const isTemplateModel = model.templateKey !== undefined
+    const content = criteriaLibraryContent(clampLocale(locale))
 
     const rows = await ctx.db
       .query("criteria")
@@ -239,6 +240,8 @@ export const getMethodModel = adminQuery({
 
     type CriterionRow = {
       criterionId: (typeof rows)[number]["_id"]
+      libraryKey: (typeof rows)[number]["libraryKey"]
+      dimensionKey: DimensionKey
       name: string
       description: string
       helpText: string
@@ -259,39 +262,32 @@ export const getMethodModel = adminQuery({
     let documented = 0
     let approved = 0
     for (const row of rows) {
-      const localized =
-        row.templateKey !== undefined && isCriterionKey(row.templateKey)
-          ? content.criteria[row.templateKey]
-          : null
-      // Seeded template compliance re-localizes to the requested locale like the
-      // name/description, until HR edits it (complianceEdited). status is still
-      // read from the stored row (the seed filled it), so it stays "documented".
-      const comp =
-        localized !== null && row.complianceEdited !== true
-          ? localized.compliance
-          : null
+      const entry = content.criteria[row.libraryKey]
       const status = complianceStatus(row)
       if (status === "documented" || status === "approved") documented++
       if (status === "approved") approved++
       criteria.push({
         criterionId: row._id,
-        name: localized?.name ?? row.name,
-        description: localized?.description ?? row.description,
-        helpText: localized?.helpText ?? row.helpText ?? "",
+        libraryKey: row.libraryKey,
+        dimensionKey: LIBRARY_DIMENSION[row.libraryKey],
+        name: entry.name,
+        description: entry.fullDefinition,
+        helpText: `${entry.measures} ${entry.notMeasures}`.trim(),
         weightPoints: row.weightPoints,
         share:
           totalPoints > 0
             ? Math.round((row.weightPoints / totalPoints) * 100)
             : 0,
         order: row.order,
-        purpose: comp ? comp.purpose : (row.purpose ?? null),
-        whyRelevant: comp ? comp.whyRelevant : (row.whyRelevant ?? null),
-        overlapNotes: comp
-          ? comp.overlapNotes || null
-          : (row.overlapNotes ?? null),
-        biasRisk: comp ? comp.biasRisk : (row.biasRisk ?? null),
-        biasComment: comp ? comp.biasComment : (row.biasComment ?? null),
-        biasAction: comp ? comp.biasAction || null : (row.biasAction ?? null),
+        // Compliance texts are the org's own documentation, pre-filled once at
+        // activation (evaluationModel/criteria.ts) and edited from then on:
+        // they always read from the stored row, never re-localized.
+        purpose: row.purpose ?? null,
+        whyRelevant: row.whyRelevant ?? null,
+        overlapNotes: row.overlapNotes ?? null,
+        biasRisk: row.biasRisk ?? null,
+        biasComment: row.biasComment ?? null,
+        biasAction: row.biasAction ?? null,
         status,
         decidedByName:
           row.decidedBy !== undefined ? await resolveName(row.decidedBy) : null,
@@ -299,15 +295,13 @@ export const getMethodModel = adminQuery({
       })
     }
 
-    const thresholds = [...model.levelThresholds].sort(
-      (a, b) => a.level - b.level
-    )
+    const levelRules = [...model.levelRules].sort((a, b) => a.level - b.level)
 
     return {
-      modelName: isTemplateModel ? content.modelName : model.name,
+      modelName: model.name,
       pointBudget: rows.length * 3,
       criteria,
-      levelThresholds: thresholds,
+      levelRules,
       progress: { documented, approved, total: rows.length },
     }
   },

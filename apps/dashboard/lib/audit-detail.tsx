@@ -425,13 +425,14 @@ export const FIELD_DISPLAY_ORDER = [
   "biasAction",
   "approved",
   "responsibilities",
-  "description",
-  "helpText",
-  "anchors",
+  // criterion.activated/criterion.deactivated flat-stats fields (criteria.ts):
+  // libraryKey/dimensionKey lead as identity, like name/title above.
+  "libraryKey",
+  "dimensionKey",
   "weightPoints",
   "order",
-  "isCustom",
-  "templateKey",
+  "deletedRatingCount",
+  "budget",
   "value",
   "motivation",
   "expectedLevel",
@@ -451,7 +452,7 @@ export const FIELD_DISPLAY_ORDER = [
   "expiresAt",
   "archivedAt",
   "orgId",
-  "levelThresholds",
+  "levelRules",
   // Person diff fields (person.* events); country/archivedAt are already above.
   "department",
   "employmentType",
@@ -569,8 +570,6 @@ export function aiAuditDetail(
   }
   const num = (v: unknown) => (typeof v === "number" ? v : 0)
   switch (kind) {
-    case "model.draft":
-      return t("ai.modelDraft", { count: num(p.acceptedCount) })
     case "model.weightReview":
       return t("ai.weightReview", { count: num(p.appliedCount) })
     case "starter.import":

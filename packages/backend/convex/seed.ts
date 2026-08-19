@@ -105,7 +105,7 @@ async function seedDemoCompaniesForUser(
       actorId,
     })
 
-    // Onboarded org: fill settings + mark complete, create the standard model,
+    // Onboarded org: fill settings + mark complete, create the default model,
     // then seed rated roles so it lands on a populated dashboard. A bare org
     // (onboarded: false) gets none of this, so switching to it opens the wizard.
     if (org.onboarded) {
@@ -121,7 +121,7 @@ async function seedDemoCompaniesForUser(
           actorId,
         }
       )
-      await ctx.runMutation(internal.evaluationModel.model.seedStandardModel, {
+      await ctx.runMutation(internal.evaluationModel.model.seedDefaultModel, {
         orgId: result.orgId,
         locale: org.language,
         actorId,

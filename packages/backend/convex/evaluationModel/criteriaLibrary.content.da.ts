@@ -8,6 +8,7 @@ import type { CriteriaLibraryContent } from "./criteriaLibrary.content.en"
 // risk-consequence) carry anchor2/anchor4. Machine draft, flagged for
 // native review.
 export const criteriaLibraryContentDa: CriteriaLibraryContent = {
+  modelName: "Rollevurderingsmodel",
   dimensions: {
     competence: {
       name: "Kompetence",

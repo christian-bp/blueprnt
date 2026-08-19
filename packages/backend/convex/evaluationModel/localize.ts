@@ -1,4 +1,3 @@
-import { type CriterionKey, CRITERION_KEYS } from "./standardTemplate"
 import { TRACK_KEYS, type TrackKey } from "./trackSchema"
 
 // Read-time localization helpers shared by getModel and the assessment
@@ -18,11 +17,6 @@ export function clampLocale(locale: string | undefined): ProductContentLocale {
     PRODUCT_CONTENT_LOCALES.has(locale as ProductContentLocale)
     ? (locale as ProductContentLocale)
     : "en"
-}
-
-const CRITERION_KEY_SET = new Set<string>(CRITERION_KEYS)
-export function isCriterionKey(key: string): key is CriterionKey {
-  return CRITERION_KEY_SET.has(key)
 }
 
 // The AI responds in the requester's CURRENT UI language when the client

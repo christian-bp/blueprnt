@@ -27,10 +27,25 @@ async function seedPersonAndFreeze(t: ReturnType<typeof initConvexTest>) {
   })
   const asAdmin = t.withIdentity({ subject: userId })
 
-  // Model with criteria + level thresholds.
-  await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+  // Model with criteria + level rules.
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
+  for (const libraryKey of [
+    "knowledge-depth",
+    "knowledge-breadth",
+    "complexity-ambiguity",
+    "communication-effort",
+    "scope-impact",
+    "autonomy-mandate",
+    "risk-consequence",
+    "safety-exposure",
+  ] as const) {
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey,
+    })
+  }
   const model = await asAdmin.query(api.evaluationModel.model.getModel, {
     orgId,
   })

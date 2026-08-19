@@ -18,8 +18,8 @@ export type Changes = Record<string, { from: unknown; to: unknown }>
 
 // One bulk `items[]` entry. `label` is optional (weight-review labels resolve
 // by id and can be undefined). The index signature carries per-variant extras
-// (e.g. model-draft items add originalWeightPoints/anchorCount inside changes,
-// and removal items carry only roleId/changes).
+// beyond the common id/label/changes shape (e.g. removal items carry only
+// roleId/changes).
 export type AuditItem = {
   criterionId?: string
   roleId?: string
@@ -43,14 +43,6 @@ export type AuditMove = {
   motivation?: string | null
 }
 
-// One dropped-suggestion summary on model.discarded (id + kind + status only,
-// never suggestedValue).
-export type AuditSuggestionItem = {
-  suggestionId: string
-  kind: string
-  status: string
-}
-
 // What triggered a level.shift: the domain event plus the role/criterion/entity
 // it touched, so a shift can be traced back to what moved it.
 export type LevelCause = {
@@ -60,35 +52,17 @@ export type LevelCause = {
   entityId?: string
 }
 
-// model.updated is heterogeneous, keyed on `change` (criterion add/update,
-// whole-allocation rebalance, removal). Discriminated so per-variant fields
-// (budget/items/deletedRatingCount) stay required on their own variant.
+// model.updated is heterogeneous, keyed on `change` (whole-allocation
+// rebalance, compliance edit). Criterion activation/deactivation carry their
+// own top-level events (criterion.activated/criterion.deactivated) instead of
+// a `change` variant here, now that they are library selections rather than
+// text edits. Discriminated so per-variant fields (budget/items) stay
+// required on their own variant.
 export type ModelUpdatedPayload =
-  | {
-      change: "criterion.added"
-      criterionId: string
-      modelId: string
-      changes: Changes
-    }
-  | {
-      change: "criterion.updated"
-      criterionId: string
-      modelId: string
-      changes: Changes
-    }
   | {
       change: "weights.rebalanced"
       modelId: string
       budget: number
-      count: number
-      items: AuditItem[]
-    }
-  | {
-      change: "criterion.removed"
-      modelId: string
-      deletedRatingCount: number
-      budget: { from: number; to: number }
-      changes: Changes
       count: number
       items: AuditItem[]
     }
@@ -99,23 +73,15 @@ export type ModelUpdatedPayload =
       changes: Changes
     }
 
-// ai.suggestionConfirmed is heterogeneous, keyed on `kind`: the four
+// ai.suggestionConfirmed is heterogeneous, keyed on `kind`: the three
 // suggestion kinds with a confirm path (role-profile AI applies log
-// role.updated instead, so there is no role-kind variant here). Discriminated
-// so each kind's distinct fields stay required. The model kinds carry modelId
-// so the row stays attributable to its entity forever (a row written without
-// the id can never be backfilled); rendering drops any "*Id" key, so no label
-// is needed.
+// role.updated instead, so there is no role-kind variant here; the model.draft
+// custom-criterion drafting kind retired with the criteria library cutover).
+// Discriminated so each kind's distinct fields stay required. The model kind
+// carries modelId so the row stays attributable to its entity forever (a row
+// written without the id can never be backfilled); rendering drops any "*Id"
+// key, so no label is needed.
 export type AiConfirmedPayload =
-  | {
-      suggestionId: string
-      kind: "model.draft"
-      modelId: string
-      acceptedCount: number
-      totalProposed: number
-      count: number
-      items: AuditItem[]
-    }
   | {
       suggestionId: string
       kind: "model.weightReview"
@@ -187,8 +153,11 @@ export interface AuditPayloads {
   }
   "model.created": {
     modelId: string
+    // Every model now seeds from the library's default (interactive or dev
+    // seed); "default" is the only value produced, kept as a string (not
+    // narrowed to a literal) so a future creation path is a type-compatible
+    // addition, not a breaking one.
     source: string
-    templateKey?: string | null
     locale?: string
     seeded?: boolean
     name: string
@@ -197,15 +166,6 @@ export interface AuditPayloads {
     items: AuditItem[]
   }
   "model.updated": ModelUpdatedPayload
-  "model.discarded": {
-    modelId: string
-    name: string
-    changes: Changes
-    count: number
-    items: AuditItem[]
-    suggestionCount: number
-    suggestions: AuditSuggestionItem[]
-  }
   "ai.suggestionConfirmed": AiConfirmedPayload
   "ai.suggestionRejected": {
     suggestionId: string
@@ -292,6 +252,29 @@ export interface AuditPayloads {
   }
   "criterion.approved": { criterionId: string; modelId: string }
   "criterion.reopened": { criterionId: string; modelId: string }
+  // libraryKey and dimensionKey are coded values: rendered through
+  // resolveCodedValue (apps/dashboard/lib/audit-detail.tsx), never as the raw
+  // key. weightPoints is always the neutral entry value (3; ADR-0004).
+  "criterion.activated": {
+    criterionId: string
+    modelId: string
+    libraryKey: string
+    dimensionKey: string
+    weightPoints: number
+  }
+  "criterion.deactivated": {
+    criterionId: string
+    modelId: string
+    libraryKey: string
+    dimensionKey: string
+    weightPoints: number
+    // Ratings are COUNT-ONLY (never a value or note; Role != Person).
+    deletedRatingCount: number
+    budget: { from: number; to: number }
+    // Survivors whose weight was repaired onto the shrunken budget.
+    count: number
+    items: AuditItem[]
+  }
   // These three diff the employee's identity values too (ADR-0013), which
   // erasure tombstones via anonymizePersonAuditRows. Keep the shape flat:
   // the scrub walks only the top-level `changes` map, and a nested `items[]`

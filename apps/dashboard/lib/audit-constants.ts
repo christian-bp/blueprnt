@@ -1,3 +1,4 @@
+import { criteriaLibraryContent } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import type { ActionTargetKind } from "@workspace/backend/convex/payMapping/tables"
 import type {
   CountryKey,
@@ -259,12 +260,11 @@ export const TRACK_VALUE_KEYS: Record<keyof typeof TRACK_SENIORITIES, string> =
     M: "auditLog.values.tracks.M",
   }
 
-// Maps "model.draft" -> "modelDraft", etc., for i18n keys
+// Maps "model.weightReview" -> "weightReview", etc., for i18n keys
 // (auditLog.ai.kind.<key>). Typed by SuggestionKind and total, so a kind added
 // to SUGGESTION_KINDS without a label here is a compile error rather than a
 // blank audit detail.
 export const AI_KIND_KEY: Record<SuggestionKind, string> = {
-  "model.draft": "modelDraft",
   "model.weightReview": "weightReview",
   "role.profile": "roleProfile",
   "starter.import": "starterImport",
@@ -369,6 +369,31 @@ export function resolveCodedValue(
     CODED_FIELD_DOMAINS[field] as Record<string, string> | undefined
   )?.[lookup]
   return key ? translate(key) : undefined
+}
+
+// criterion.activated/criterion.deactivated `libraryKey`/`dimensionKey`:
+// unlike every other coded domain above, these resolve from the criteria
+// library's own per-locale content (never duplicated into the
+// auditLog.values.* i18n keys, since the library content already IS the
+// canonical localized name), in the CALLER's locale (the viewer's own
+// display language, next-intl's useLocale, not the org's stored default).
+// Kept as its own function rather than folded into resolveCodedValue: every
+// other domain is a fixed i18n-key Record checked through the caller's
+// `t.has`-guarded translator, while this one calls criteriaLibraryContent
+// directly and needs a locale, not a translator. Callers try this first and
+// fall back to resolveCodedValue (whose CODED_FIELD_DOMAINS has no
+// libraryKey/dimensionKey entry, so it always returns undefined for them).
+export function resolveCriteriaLibraryValue(
+  field: string,
+  value: string,
+  locale: string
+): string | undefined {
+  if (field !== "libraryKey" && field !== "dimensionKey") return undefined
+  const content = criteriaLibraryContent(locale)
+  if (field === "libraryKey") {
+    return (content.criteria as Record<string, { name: string }>)[value]?.name
+  }
+  return (content.dimensions as Record<string, { name: string }>)[value]?.name
 }
 
 // Epoch-ms payload fields (person archivedAt, anchor reviewedAt, invitation

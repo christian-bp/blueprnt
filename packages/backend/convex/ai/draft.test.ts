@@ -37,9 +37,19 @@ async function seedOrg(t: ReturnType<typeof initConvexTest>, email: string) {
     })
   })
   const asUser = t.withIdentity({ subject: userId })
-  await asUser.mutation(api.evaluationModel.model.createModelFromTemplate, {
+  await asUser.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
+  for (const libraryKey of [
+    "knowledge-depth",
+    "complexity-ambiguity",
+    "scope-impact",
+  ] as const) {
+    await asUser.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey,
+    })
+  }
   return { orgId, userId, asUser }
 }
 
@@ -411,7 +421,7 @@ describe("draftCriterionCompliance", () => {
     vi.stubEnv("MISTRAL_API_KEY", "test-key")
   })
 
-  // Helper: get any criterion seeded by createModelFromTemplate for this org.
+  // Helper: get any criterion activated via activateCriterion for this org.
   async function getAnyCriterionId(
     t: ReturnType<typeof initConvexTest>,
     orgId: string

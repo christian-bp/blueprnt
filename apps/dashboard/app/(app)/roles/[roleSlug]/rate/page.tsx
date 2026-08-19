@@ -142,7 +142,16 @@ export default function RatePage(props: {
       <RatingStepper
         orgId={orgId}
         roleId={role.roleId}
-        criteria={model.criteria}
+        criteria={model.criteria.map((criterion) => ({
+          criterionId: criterion.criterionId,
+          name: criterion.name,
+          description: criterion.shortUiText,
+          // The library's own guidance split (what the criterion measures vs.
+          // does not) stands in for the retired free-text helpText field,
+          // mirroring getMethodModel's identical derivation.
+          helpText: `${criterion.measures} ${criterion.notMeasures}`.trim(),
+          anchors: criterion.anchors,
+        }))}
         ratings={role.ratings}
         onCompleted={() => setFinished(true)}
       />

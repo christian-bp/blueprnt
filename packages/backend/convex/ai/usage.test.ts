@@ -17,7 +17,7 @@ async function seedSuggestion(
   return t.run(async (ctx) =>
     ctx.db.insert("suggestions", {
       orgId: "org-acme",
-      target: { kind: "model.draft" },
+      target: { kind: "model.weightReview" },
       suggestedValue: null,
       source: "ai",
       status: "suggested",
@@ -105,7 +105,7 @@ describe("recordAiUsage", () => {
         .collect()
       expect(events).toHaveLength(1)
       expect(events[0]?.model).toBe("mistral-large-latest")
-      expect(events[0]?.kind).toBe("model.draft")
+      expect(events[0]?.kind).toBe("model.weightReview")
       expect(events[0]?.actorId).toBe("user-admin")
       expect(events[0]?.estimatedCostNanos).toBe(1000 * 500 + 200 * 1500)
       expect(events[0]?.cachedInputTokens).toBe(7)
@@ -116,7 +116,7 @@ describe("recordAiUsage", () => {
       expect(monthly).toHaveLength(1)
       expect(monthly[0]?.callCount).toBe(1)
       expect(monthly[0]?.costNanos).toBe(1000 * 500 + 200 * 1500)
-      expect(monthly[0]?.byKind["model.draft"]).toBe(1)
+      expect(monthly[0]?.byKind["model.weightReview"]).toBe(1)
     })
   })
 
@@ -140,7 +140,7 @@ describe("recordAiUsage", () => {
       expect(monthly).toHaveLength(1)
       expect(monthly[0]?.callCount).toBe(2)
       expect(monthly[0]?.inputTokens).toBe(200)
-      expect(monthly[0]?.byKind["model.draft"]).toBe(2)
+      expect(monthly[0]?.byKind["model.weightReview"]).toBe(2)
       const events = await ctx.db
         .query("aiUsageEvents")
         .withIndex("by_org", (q) => q.eq("orgId", "org-acme"))
@@ -206,7 +206,7 @@ describe("usage read queries", () => {
     const a = await t.run(async (ctx) =>
       ctx.db.insert("suggestions", {
         orgId: "org-a",
-        target: { kind: "model.draft" },
+        target: { kind: "model.weightReview" },
         suggestedValue: null,
         source: "ai",
         status: "suggested",
@@ -216,7 +216,7 @@ describe("usage read queries", () => {
     const b = await t.run(async (ctx) =>
       ctx.db.insert("suggestions", {
         orgId: "org-b",
-        target: { kind: "model.draft" },
+        target: { kind: "model.weightReview" },
         suggestedValue: null,
         source: "ai",
         status: "suggested",
@@ -263,7 +263,7 @@ describe("usage read queries", () => {
         outputTokens: 10,
         totalTokens: 20,
         costNanos: 5_000,
-        byKind: { "model.draft": 2 },
+        byKind: { "model.weightReview": 2 },
       })
       await ctx.db.insert("aiUsageMonthly", {
         orgId: "org-feb",
@@ -273,7 +273,7 @@ describe("usage read queries", () => {
         outputTokens: 5,
         totalTokens: 10,
         costNanos: 9_000,
-        byKind: { "model.draft": 1 },
+        byKind: { "model.weightReview": 1 },
       })
     })
     const jan = await t.query(internal.ai.usage.getTopOrgsByCost, {

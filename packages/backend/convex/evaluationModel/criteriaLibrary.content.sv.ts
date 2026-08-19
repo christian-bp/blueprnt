@@ -12,6 +12,7 @@ import type { CriteriaLibraryContent } from "./criteriaLibrary.content.en"
 // 18 criteria) is a faithful Swedish counterpart of criteriaLibraryContentEn,
 // since the masterdokument does not define those per criterion.
 export const criteriaLibraryContentSv: CriteriaLibraryContent = {
+  modelName: "Rollvärderingsmodell",
   dimensions: {
     competence: {
       name: "Kompetens",

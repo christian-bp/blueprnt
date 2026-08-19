@@ -7,6 +7,7 @@ import {
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { pointBudget } from "@workspace/core"
 import { Alert, AlertTitle } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
@@ -24,13 +25,11 @@ import { AnimatePresence } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { toast } from "@/lib/toast"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { MorphPopover } from "@/components/morph-popover"
 import { CriterionItem } from "@/components/model/criterion-item"
 import { CriterionListSkeleton } from "@/components/model/criterion-list-skeleton"
-import {
-  EditCriterionDialog,
-  type EditCriterionTarget,
-} from "@/components/model/edit-criterion-dialog"
+import { LibraryPickerDialog } from "@/components/model/library-picker-dialog"
 import { WeightReviewPanel } from "@/components/model/weight-review-panel"
 import { formatShare, WEIGHT_POINT_OPTIONS } from "@/lib/weighting"
 
@@ -43,7 +42,7 @@ export type ModelPhase = "define" | "weight"
 
 // Error codes with their own translated message; everything else falls back
 // to the generic one.
-const KNOWN_ERROR_KEYS = ["weightsUnbalanced", "tooFewCriteria"] as const
+const KNOWN_ERROR_KEYS = ["weightsUnbalanced"] as const
 type EditorErrorKey = (typeof KNOWN_ERROR_KEYS)[number] | "generic"
 
 function errorKeyFor(error: unknown): EditorErrorKey {
@@ -60,24 +59,19 @@ type WeightMeaningKey = `weightMeaning${1 | 2 | 3 | 4 | 5}`
 // The shared model builder for a single phase, hosted by the /model routes
 // (the Criteria and Weighting pages, navigated by the header ModelTabs) and the
 // onboarding model step (the wizard footer advances Define -> Weight). Phase
-// navigation is owned by the host; this component renders the active phase: the
-// criteria + evaluation scale + add dialog on Define, and the 1-5 allocation,
-// budget meter, atomic save, and AI review on Weight.
+// navigation is owned by the host; this component renders the active phase:
+// the library-selected criteria grouped by the four dimensions on Define, and
+// the 1-5 allocation, budget meter, atomic save, and AI review on Weight.
 export function ModelBuilder({
   orgId,
   phase,
   withAiReview,
-  removalFloor,
 }: {
   orgId: string
   phase: ModelPhase
   // Weight phase: offer the AI weighting review (a balanced suggestion HR
   // confirms).
   withAiReview?: boolean
-  // Hide the per-row remove affordance when the criteria count is at or below
-  // this floor (the /model page passes MIN_CRITERIA). Omitted during
-  // onboarding, where a model under construction removes freely.
-  removalFloor?: number
 }) {
   const tError = useTranslations("dashboard.model")
   const tErrors = useTranslations("errors")
@@ -93,8 +87,8 @@ export function ModelBuilder({
   const rebalanceWeights = useMutation(
     api.evaluationModel.criteria.rebalanceWeights
   )
-  const removeCriterion = useMutation(
-    api.evaluationModel.criteria.removeCriterion
+  const deactivateCriterion = useMutation(
+    api.evaluationModel.criteria.deactivateCriterion
   )
   // Local draft allocation for the Weight phase (criterionId -> points);
   // overrides the stored points until Save posts the whole allocation
@@ -103,7 +97,6 @@ export function ModelBuilder({
   const [draft, setDraft] = useState<Record<string, number>>({})
   const [saving, setSaving] = useState(false)
   const [removing, setRemoving] = useState<string | null>(null)
-  const [editTarget, setEditTarget] = useState<EditCriterionTarget | null>(null)
   const [errorKey, setErrorKey] = useState<EditorErrorKey | null>(null)
 
   if (model === undefined) {
@@ -150,8 +143,7 @@ export function ModelBuilder({
   const dirty = model.criteria.some(
     (criterion) => pointsFor(criterion) !== criterion.weightPoints
   )
-  const removalAllowed =
-    removalFloor === undefined || model.criteria.length > removalFloor
+  const selectedKeys = model.criteria.map((criterion) => criterion.libraryKey)
 
   async function onSave() {
     if (model === undefined || model === null || !dirty) return
@@ -171,6 +163,19 @@ export function ModelBuilder({
       setErrorKey(errorKeyFor(error))
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function onRemove(criterionId: Id<"criteria">) {
+    setRemoving(criterionId)
+    setErrorKey(null)
+    try {
+      await deactivateCriterion({ orgId, criterionId })
+      toast.success(tToast("criterionRemoved"))
+    } catch (error) {
+      setErrorKey(errorKeyFor(error))
+    } finally {
+      setRemoving(null)
     }
   }
 
@@ -237,31 +242,27 @@ export function ModelBuilder({
         )}
       </div>
 
-      {model.criteria.length === 0 ? (
-        <p className="text-muted-foreground text-sm">{tEditor("empty")}</p>
-      ) : (
-        <ul>
-          <AnimatePresence initial={false}>
-            {model.criteria.map((criterion) => {
-              if (onWeight) {
+      {onWeight ? (
+        model.criteria.length === 0 ? (
+          <p className="text-muted-foreground text-sm">{tEditor("empty")}</p>
+        ) : (
+          <ul>
+            <AnimatePresence initial={false}>
+              {model.criteria.map((criterion) => {
                 const points = pointsFor(criterion)
                 return (
                   <CriterionItem
                     key={criterion.criterionId}
                     name={criterion.name}
-                    description={criterion.description || undefined}
-                    extendedDescription={criterion.helpText || undefined}
+                    description={criterion.shortUiText || undefined}
+                    extendedDescription={criterion.fullDefinition || undefined}
                     editable={false}
                     importanceNode={
                       // Each weight button is its own hover trigger, so hovering
                       // (or focusing) a single weight point reveals ONLY that
-                      // point's meaning. Because the per-criterion weighting
-                      // texts are full sentences (not the short generic
-                      // phrases), one popover per weight point reads far better
-                      // than a single card listing all five. Root/Trigger(render)
-                      // add no DOM and Content portals out, so the joined
-                      // ButtonGroup styling (which targets direct children) is
-                      // unaffected.
+                      // point's meaning. Root/Trigger(render) add no DOM and
+                      // Content portals out, so the joined ButtonGroup styling
+                      // (which targets direct children) is unaffected.
                       <ButtonGroup
                         aria-label={tEditor("setWeightPoints", {
                           name: criterion.name,
@@ -269,16 +270,12 @@ export function ModelBuilder({
                         className="w-full"
                       >
                         {WEIGHT_POINT_OPTIONS.map((option) => {
-                          // The criterion's own weighting text for this weight
-                          // point when it is a pristine template criterion
-                          // (getModel localizes weightMeanings[1..5]); the
-                          // generic weight meaning for custom or edited
-                          // criteria (null).
-                          const meaning =
-                            criterion.weightMeanings?.[option - 1] ??
-                            tBuilder(
-                              `weightMeaning${option}` as WeightMeaningKey
-                            )
+                          // Weight meanings are always the generic §12.2
+                          // semantics (getModel carries no per-criterion
+                          // weighting text; decision 8).
+                          const meaning = tBuilder(
+                            `weightMeaning${option}` as WeightMeaningKey
+                          )
                           return (
                             <HoverCard
                               key={option}
@@ -341,67 +338,65 @@ export function ModelBuilder({
                     }
                   />
                 )
-              }
-              const isRemoving = removing === criterion.criterionId
-              return (
-                <CriterionItem
-                  key={criterion.criterionId}
-                  name={criterion.name}
-                  description={criterion.description || undefined}
-                  extendedDescription={criterion.helpText || undefined}
-                  anchors={criterion.anchors}
-                  anchorsCaption={tEditor("anchorsCaption")}
-                  editable
-                  onEdit={() =>
-                    setEditTarget({
-                      criterionId: criterion.criterionId,
-                      name: criterion.name,
-                      description: criterion.description,
-                      helpText: criterion.helpText,
-                      anchors: criterion.anchors.map((anchor) => anchor.text),
-                    })
-                  }
-                  onRemove={
-                    removalAllowed
-                      ? async () => {
-                          setRemoving(criterion.criterionId)
-                          setErrorKey(null)
-                          try {
-                            await removeCriterion({
-                              orgId,
-                              criterionId: criterion.criterionId,
-                            })
-                            toast.success(tToast("criterionRemoved"))
-                          } catch (error) {
-                            setErrorKey(errorKeyFor(error))
-                          } finally {
-                            setRemoving(null)
+              })}
+            </AnimatePresence>
+          </ul>
+        )
+      ) : (
+        // Define phase: four fixed dimension sections (ADR-0021), headers and
+        // help text from the wire's localized `dimensions` block. Each section
+        // lists only ITS OWN criteria (grouped by dimensionKey) and offers a
+        // library picker scoped to that dimension.
+        <div className="space-y-6">
+          {model.dimensions.map((dimension) => {
+            const dimensionCriteria = model.criteria.filter(
+              (criterion) => criterion.dimensionKey === dimension.key
+            )
+            return (
+              <section key={dimension.key} className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="flex items-center gap-1 font-medium text-sm">
+                    {dimension.name}
+                    <HelpMorphButton label={dimension.name}>
+                      {dimension.why}
+                    </HelpMorphButton>
+                  </h3>
+                  <LibraryPickerDialog
+                    orgId={orgId}
+                    dimensionKey={dimension.key}
+                    dimensionName={dimension.name}
+                    selectedKeys={selectedKeys}
+                  />
+                </div>
+                {dimensionCriteria.length === 0 ? (
+                  <p className="text-muted-foreground text-sm">
+                    {tEditor("emptyDimension")}
+                  </p>
+                ) : (
+                  <ul>
+                    <AnimatePresence initial={false}>
+                      {dimensionCriteria.map((criterion) => (
+                        <CriterionItem
+                          key={criterion.criterionId}
+                          name={criterion.name}
+                          description={criterion.shortUiText || undefined}
+                          extendedDescription={
+                            criterion.fullDefinition || undefined
                           }
-                        }
-                      : undefined
-                  }
-                  removing={isRemoving}
-                />
-              )
-            })}
-          </AnimatePresence>
-        </ul>
-      )}
-
-      {!onWeight && removalFloor !== undefined && (
-        // The floor hint toggles with opacity (not conditional mounting) so it
-        // never shifts the list when removalAllowed flips mid-edit (removing
-        // down to the floor). The Add action lives in the page header, the same
-        // placement as "Add role" on the roles page.
-        <p
-          aria-hidden={removalAllowed}
-          className={cn(
-            "text-muted-foreground text-xs",
-            removalAllowed && "opacity-0"
-          )}
-        >
-          {tEditor("removalFloorHint", { min: removalFloor })}
-        </p>
+                          anchors={criterion.anchors}
+                          anchorsCaption={tEditor("anchorsCaption")}
+                          editable
+                          onRemove={() => onRemove(criterion.criterionId)}
+                          removing={removing === criterion.criterionId}
+                        />
+                      ))}
+                    </AnimatePresence>
+                  </ul>
+                )}
+              </section>
+            )
+          })}
+        </div>
       )}
 
       {errorKey !== null && (
@@ -409,11 +404,6 @@ export function ModelBuilder({
           {errorKey === "generic" ? tError("error") : tErrors(errorKey)}
         </p>
       )}
-      <EditCriterionDialog
-        orgId={orgId}
-        target={editTarget}
-        onClose={() => setEditTarget(null)}
-      />
     </div>
   )
 }

@@ -139,8 +139,6 @@
       "familyCreated": "Family created",
       "familyRenamed": "Family renamed",
       "familyDeleted": "Family deleted",
-      "criterionAdded": "Criterion added",
-      "criterionUpdated": "Criterion updated",
       "criterionRemoved": "Criterion removed",
       "weightsSaved": "Weighting saved",
       "complianceSaved": "Documentation saved",
@@ -186,7 +184,8 @@
       "payMappingNoteDeleted": "Note deleted",
       "conversationDeleted": "Conversation deleted",
       "conversationRenamed": "Conversation renamed",
-      "payMappingReasonsApplied": "Reasons applied"
+      "payMappingReasonsApplied": "Reasons applied",
+      "criterionActivated": "Criterion added"
     },
     "accountMenu": "Account menu",
     "commandPalette": {
@@ -696,19 +695,13 @@
         "biasAction": "Bias mitigation",
         "approved": "Approved",
         "responsibilities": "Responsibilities",
-        "description": "Description",
-        "helpText": "Help text",
-        "anchors": "Anchors",
         "weightPoints": "Weight points",
         "order": "Order",
-        "isCustom": "Custom",
-        "templateKey": "Template",
         "value": "Rating",
         "motivation": "Motivation",
         "expectedLevel": "Expected level",
         "reviewedAt": "Reviewed",
         "archivedAt": "Archived",
-        "levelThresholds": "Level thresholds",
         "level": "Level",
         "score": "Weighting",
         "complete": "Complete",
@@ -738,10 +731,6 @@
         "roleId": "Role",
         "seniority": "Seniority",
         "senioritySource": "Seniority source",
-        "originalWeightPoints": "Original weight points",
-        "anchorCount": "Anchor count",
-        "acceptedCount": "Accepted criteria",
-        "totalProposed": "Proposed criteria",
         "appliedCount": "Applied weight moves",
         "totalMoves": "Proposed weight moves",
         "populationCount": "People included",
@@ -767,7 +756,12 @@
         "kind": "Type",
         "familyCount": "Families created",
         "roleCount": "Roles added",
-        "skippedCount": "Skipped"
+        "skippedCount": "Skipped",
+        "libraryKey": "Criterion",
+        "dimensionKey": "Dimension",
+        "deletedRatingCount": "Ratings removed",
+        "budget": "Point budget",
+        "levelRules": "Level thresholds"
       },
       "values": {
         "yes": "Yes",
@@ -811,7 +805,6 @@
         "invitationRevoked": "Invitation revoked",
         "modelCreated": "Model created",
         "modelUpdated": "Model updated",
-        "modelDiscarded": "Model discarded",
         "aiSuggestionConfirmed": "AI suggestion applied",
         "aiSuggestionRejected": "AI suggestion dismissed",
         "roleCreated": "Role created",
@@ -849,15 +842,15 @@
         "payMappingActionDeleted": "Action deleted",
         "payMappingNoteCreated": "Note added",
         "payMappingNoteUpdated": "Note updated",
-        "payMappingNoteDeleted": "Note deleted"
+        "payMappingNoteDeleted": "Note deleted",
+        "criterionActivated": "Criterion activated",
+        "criterionDeactivated": "Criterion deactivated"
       },
       "ai": {
-        "modelDraft": "Model criteria: {count} added",
         "weightReview": "Weight review: {count} applied",
         "starterImport": "Starter import: {families, plural, one {# family} other {# families}}, {roles, plural, one {# role} other {# roles}}",
         "roleImport": "Role import: {families, plural, one {# family} other {# families}}, {roles, plural, one {# role} other {# roles}}",
         "kind": {
-          "modelDraft": "Model criteria",
           "weightReview": "Weight review",
           "roleProfile": "Role profile",
           "starterImport": "Starter roles",
@@ -1782,19 +1775,10 @@
       },
       "editor": {
         "heading": "Criteria",
-        "empty": "No criteria yet. Add your first criterion or generate AI drafts.",
-        "name": "Name",
-        "description": "Description",
-        "helpText": "Extended description",
+        "empty": "No criteria to weight yet. Add criteria from the library on the Criteria page first.",
         "setWeightPoints": "Weight points for {name}",
         "anchors": "Evaluation scale (0 to 5)",
         "anchorsCaption": "How a role is rated on this criterion. You set it when you evaluate a role.",
-        "anchorStep": "Step {step}",
-        "stepsIntro": "Describe what a role looks like at each step, from 0 (lowest) to 5 (highest).",
-        "stepEndpointLowest": "lowest",
-        "stepEndpointHighest": "highest",
-        "stepPlaceholderLowest": "e.g. not present / not required",
-        "stepPlaceholderHighest": "e.g. the strongest reasonable expression",
         "addCta": "Add criterion",
         "removeCta": "Remove",
         "removeConfirm": "Yes, remove the criterion",
@@ -1803,18 +1787,13 @@
         "pointsLeft": "{count, plural, one {# weight point} other {# weight points}} left to distribute",
         "pointsOver": "{count, plural, one {# weight point} other {# weight points}} over the budget",
         "balanced": "All weight points are distributed",
-        "removalFloorHint": "A model needs at least {min} criteria, so criteria cannot be removed right now.",
-        "addDialogDescription": "Describe what the criterion measures and write its evaluation scale. New criteria start at weight 3.",
-        "editCta": "Edit",
-        "editDialogTitle": "Edit criterion",
-        "editSaveCta": "Save changes",
-        "editDialogDescription": "Adjust the texts to your organization. The weight and existing ratings are not affected.",
         "rowMenuLabel": "Actions for {name}",
         "removeDialogTitle": "Remove {name}?",
-        "removeDialogDescription": "The criterion's ratings are removed from every role and its weight points are redistributed across the remaining criteria. This cannot be undone."
+        "removeDialogDescription": "The criterion's ratings are removed from every role and its weight points are redistributed across the remaining criteria. This cannot be undone.",
+        "emptyDimension": "No criteria selected in this dimension yet."
       },
       "builder": {
-        "defineDescription": "Add the criteria roles are evaluated against, and describe what each rating 0 to 5 means.",
+        "defineDescription": "Select the criteria roles are evaluated against, and see what each rating 0 to 5 means.",
         "weightDescription": "Decide how much each criterion counts. Weighting is not a verdict on whether a criterion is good: it is how much influence it has on role valuation and, all else equal, relative pay.",
         "shareOfTotal": "of the total weight",
         "weightMeaning1": "Very low influence in the model",
@@ -1894,6 +1873,13 @@
         "notApproved": "Not yet approved",
         "notDocumented": "Not documented",
         "pointBudget": "Point budget: {points}"
+      },
+      "picker": {
+        "addCta": "Add criteria",
+        "dialogTitle": "Add a {dimension} criterion",
+        "dialogDescription": "Select a criterion from the library to add to this dimension.",
+        "empty": "Every criterion in this dimension is already selected.",
+        "addRowCta": "Add"
       }
     },
     "ai": {
@@ -2559,6 +2545,9 @@
     "assistantBusy": "Blueprnt AI is still answering. Wait for it to finish or stop it.",
     "assistantRateLimited": "You have sent many messages in a short time. Try again in a little while.",
     "assistantInvalidMessage": "Write a message before sending.",
-    "assistantPersonalData": "The message seems to include an employee's personal details. Remove them and ask again in general terms."
+    "assistantPersonalData": "The message seems to include an employee's personal details. Remove them and ask again in general terms.",
+    "dimensionCapExceeded": "This dimension already has its maximum number of criteria.",
+    "tooManyCriteria": "A model can have at most 8 criteria.",
+    "criterionAlreadySelected": "This criterion is already part of the model."
   }
 }

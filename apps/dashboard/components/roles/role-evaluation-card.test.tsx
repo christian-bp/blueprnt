@@ -84,7 +84,7 @@ function setResult(next: Result | null) {
   onQuery((ref) => {
     if (ref === "assessment.results.getRoleResult") return next
     if (ref === "evaluationModel.model.getModel")
-      return { levelThresholds: [80, 60, 40, 20] }
+      return { levelRules: [80, 60, 40, 20] }
     if (ref === "assessment.anchorRoles.listAnchorRoles") return []
     return undefined
   })

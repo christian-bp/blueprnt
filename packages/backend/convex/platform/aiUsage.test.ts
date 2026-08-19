@@ -76,7 +76,7 @@ async function seedEvent(
   await t.run((ctx) =>
     ctx.db.insert("aiUsageEvents", {
       orgId,
-      kind: "model.draft",
+      kind: "model.weightReview",
       provider: "mistral",
       model: "mistral-large-latest",
       inputTokens: 0,
@@ -133,7 +133,7 @@ describe("usageByOrg", () => {
       callCount: 3,
       costNanos: 12_345,
       totalTokens: 999,
-      byKind: { "model.draft": 2, "role.profile": 1 },
+      byKind: { "model.weightReview": 2, "role.profile": 1 },
     })
 
     const rows = await asAdmin.query(api.platform.aiUsage.usageByOrg, {
@@ -146,7 +146,7 @@ describe("usageByOrg", () => {
       costNanos: 12_345,
       callCount: 3,
       totalTokens: 999,
-      byKind: { "model.draft": 2, "role.profile": 1 },
+      byKind: { "model.weightReview": 2, "role.profile": 1 },
       prevCostNanos: 0,
     })
   })

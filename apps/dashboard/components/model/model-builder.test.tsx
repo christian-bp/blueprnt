@@ -12,8 +12,8 @@ import messages from "@workspace/i18n/messages/en.json"
 
 const useQueryMock = vi.fn()
 const rebalanceWeightsMock = vi.fn()
-const removeCriterionMock = vi.fn()
-const addCriterionMock = vi.fn()
+const deactivateCriterionMock = vi.fn()
+const activateCriterionMock = vi.fn()
 const noopMutation = vi.fn()
 
 vi.mock("convex/react", () => ({
@@ -21,9 +21,10 @@ vi.mock("convex/react", () => ({
   useMutation: (ref: unknown) => {
     if (ref === "evaluationModel.criteria.rebalanceWeights")
       return rebalanceWeightsMock
-    if (ref === "evaluationModel.criteria.removeCriterion")
-      return removeCriterionMock
-    if (ref === "evaluationModel.criteria.addCriterion") return addCriterionMock
+    if (ref === "evaluationModel.criteria.deactivateCriterion")
+      return deactivateCriterionMock
+    if (ref === "evaluationModel.criteria.activateCriterion")
+      return activateCriterionMock
     return noopMutation
   },
 }))
@@ -34,8 +35,8 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
       model: { getModel: "evaluationModel.model.getModel" },
       criteria: {
         rebalanceWeights: "evaluationModel.criteria.rebalanceWeights",
-        removeCriterion: "evaluationModel.criteria.removeCriterion",
-        addCriterion: "evaluationModel.criteria.addCriterion",
+        deactivateCriterion: "evaluationModel.criteria.deactivateCriterion",
+        activateCriterion: "evaluationModel.criteria.activateCriterion",
       },
     },
     ai: {
@@ -55,21 +56,46 @@ import { openMenu } from "@/test/menu"
 
 const editor = messages.dashboard.model.editor
 const builder = messages.dashboard.model.builder
+const picker = messages.dashboard.model.picker
 
-// Five balanced criteria (sum 15 = 5 x 3); c1 carries 4 points.
+function criterion(overrides: Record<string, unknown>) {
+  return {
+    criterionId: "c",
+    libraryKey: "complexity-ambiguity",
+    dimensionKey: "effort",
+    name: "Criterion",
+    shortUiText: "",
+    fullDefinition: "",
+    measures: "",
+    notMeasures: "",
+    assessmentQuestion: "",
+    anchors: [] as { step: number; text: string }[],
+    weightPoints: 3,
+    order: 1,
+    weightMotivation: null,
+    ...overrides,
+  }
+}
+
+// Five balanced criteria (sum 15 = 5 x 3); c1 carries 4 points. Spread across
+// three of the four dimensions so grouping is exercised; the fourth
+// (workingConditions) stays empty to exercise the empty-section copy.
 const model = {
   modelId: "model-1",
   name: "Standard",
-  templateKey: "standard",
+  approval: null,
+  workingConditions: null,
   criteria: [
-    {
+    criterion({
       criterionId: "c1",
+      libraryKey: "complexity-ambiguity",
+      dimensionKey: "effort",
       name: "Problem solving",
-      description: "How the role breaks down and resolves hard problems.",
-      helpText: "The extended description of how the role frames problems.",
+      shortUiText: "How the role breaks down and resolves hard problems.",
+      fullDefinition:
+        "The extended description of how the role frames problems.",
       weightPoints: 4,
       order: 1,
-      isCustom: false,
       anchors: [
         { step: 0, text: "none" },
         { step: 1, text: "a" },
@@ -78,50 +104,70 @@ const model = {
         { step: 4, text: "d" },
         { step: 5, text: "max" },
       ],
-    },
-    {
+    }),
+    criterion({
       criterionId: "c2",
+      libraryKey: "autonomy-mandate",
+      dimensionKey: "responsibility",
       name: "Autonomy",
-      description: "Independence.",
-      helpText: "",
+      shortUiText: "Independence.",
       weightPoints: 2,
       order: 2,
-      isCustom: false,
-      anchors: [],
-    },
-    {
+    }),
+    criterion({
       criterionId: "c3",
+      libraryKey: "communication-effort",
+      dimensionKey: "effort",
       name: "Collaboration",
-      description: "Across teams.",
-      helpText: "",
+      shortUiText: "Across teams.",
       weightPoints: 3,
       order: 3,
-      isCustom: false,
-      anchors: [],
-    },
-    {
+    }),
+    criterion({
       criterionId: "c4",
+      libraryKey: "knowledge-depth",
+      dimensionKey: "competence",
       name: "Knowledge depth",
-      description: "Expertise.",
-      helpText: "",
+      shortUiText: "Expertise.",
       weightPoints: 3,
       order: 4,
-      isCustom: false,
-      anchors: [],
-    },
-    {
+    }),
+    criterion({
       criterionId: "c5",
+      libraryKey: "risk-consequence",
+      dimensionKey: "responsibility",
       name: "Risk awareness",
-      description: "Risk.",
-      helpText: "",
+      shortUiText: "Risk.",
       weightPoints: 3,
       order: 5,
-      isCustom: false,
-      anchors: [],
+    }),
+  ],
+  sharedScale: [],
+  midpoints: { step2: "", step4: "" },
+  dimensions: [
+    {
+      key: "competence",
+      name: "Competence",
+      question: "q",
+      why: "Why competence.",
+    },
+    { key: "effort", name: "Effort", question: "q", why: "Why effort." },
+    {
+      key: "responsibility",
+      name: "Responsibility",
+      question: "q",
+      why: "Why responsibility.",
+    },
+    {
+      key: "workingConditions",
+      name: "Working conditions",
+      question: "q",
+      why: "Why working conditions.",
     },
   ],
   tracks: [],
-  levelThresholds: [{ level: 1, minScore: 100 }],
+  levelRules: [{ level: 1, minScore: 100 }],
+  zoneProfileRules: [],
 }
 
 let reviewLocked = false
@@ -140,8 +186,8 @@ describe("ModelBuilder", () => {
   beforeEach(() => {
     useQueryMock.mockReset()
     rebalanceWeightsMock.mockReset()
-    removeCriterionMock.mockReset()
-    addCriterionMock.mockReset()
+    deactivateCriterionMock.mockReset()
+    activateCriterionMock.mockReset()
     reviewLocked = false
     useQueryMock.mockImplementation((ref: unknown) =>
       ref === "ai.suggest.getOpenSuggestions"
@@ -153,38 +199,46 @@ describe("ModelBuilder", () => {
   })
   afterEach(() => cleanup())
 
-  it("Define phase: criteria + descriptions, no weighting", () => {
-    renderBuilder("define", { removalFloor: 5 })
+  it("Define phase: dimension sections group criteria, no weighting", () => {
+    renderBuilder("define")
+    // Every dimension heading renders, including the empty one.
+    expect(screen.getByText("Competence")).toBeDefined()
+    expect(screen.getByText("Effort")).toBeDefined()
+    expect(screen.getByText("Responsibility")).toBeDefined()
+    expect(screen.getByText("Working conditions")).toBeDefined()
+    expect(screen.getByText(editor.emptyDimension)).toBeDefined()
+
     expect(screen.getByText("Problem solving")).toBeDefined()
     expect(
       screen.getByText("How the role breaks down and resolves hard problems.")
     ).toBeDefined()
     // The extended description sits behind a morph help icon next to the name,
-    // titled by the criterion name (c1 has helpText); a criterion without
-    // helpText (c2) has no help icon.
+    // titled by the criterion name (c1 has fullDefinition); a criterion
+    // without one (c2) has no help icon.
     expect(
       screen.getByRole("button", { name: "Problem solving" })
     ).toBeDefined()
     expect(screen.queryByRole("button", { name: "Autonomy" })).toBeNull()
-    // The Add action lives in the page header (like "Add role"), not the
-    // builder itself.
-    expect(screen.queryByRole("button", { name: editor.addCta })).toBeNull()
+    // A library picker trigger per dimension section (4 sections).
+    expect(screen.getAllByRole("button", { name: picker.addCta })).toHaveLength(
+      4
+    )
     // No weighting on Define: no share, no Save, no budget meter.
     expect(screen.queryByText(/26\.7%/)).toBeNull()
     expect(screen.queryByRole("button", { name: editor.saveCta })).toBeNull()
     expect(screen.queryByText(editor.balanced)).toBeNull()
   })
 
-  it("Weight phase: budget alert, 1-5 scale, share, Save; no Add", () => {
+  it("Weight phase: budget alert, 1-5 scale, share, Save; no picker", () => {
     renderBuilder("weight", { withAiReview: true })
-    // Budget status alert (balanced) and the atomic save; no Add control.
+    // Budget status alert (balanced) and the atomic save; no picker trigger.
     expect(screen.getByText(editor.balanced)).toBeDefined()
     expect(screen.getByRole("button", { name: editor.saveCta })).toBeDefined()
-    expect(screen.queryByRole("button", { name: editor.addCta })).toBeNull()
+    expect(screen.queryByRole("button", { name: picker.addCta })).toBeNull()
     // c1 (4 of 15) shows its share with the labelled suffix.
     expect(screen.getByText(/26\.7%/)).toBeDefined()
     expect(screen.getAllByText(builder.shareOfTotal).length).toBeGreaterThan(0)
-    // The morph help icon is on the weight page too (c1 has helpText).
+    // The morph help icon is on the weight page too (c1 has fullDefinition).
     expect(
       screen.getByRole("button", { name: "Problem solving" })
     ).toBeDefined()
@@ -239,8 +293,8 @@ describe("ModelBuilder", () => {
     })
   })
 
-  it("Define phase: Remove confirms then calls removeCriterion", async () => {
-    removeCriterionMock.mockResolvedValue(undefined)
+  it("Define phase: Remove confirms then calls deactivateCriterion", async () => {
+    deactivateCriterionMock.mockResolvedValue(undefined)
     renderBuilder("define")
     await openMenu(
       screen.getByRole("button", {
@@ -254,7 +308,7 @@ describe("ModelBuilder", () => {
       })
     )
     await waitFor(() => {
-      expect(removeCriterionMock).toHaveBeenCalledWith({
+      expect(deactivateCriterionMock).toHaveBeenCalledWith({
         orgId: "org-1",
         criterionId: "c1",
       })

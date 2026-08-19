@@ -116,13 +116,12 @@ function modelFixture() {
   return {
     modelId: "model-1",
     name: "Standard",
-    templateKey: "standard",
     criteria: [],
     tracks: [
       { key: "IC", name: "Individual Contributor", order: 1 },
       { key: "Lead", name: "Lead", order: 2 },
     ],
-    levelThresholds: [],
+    levelRules: [],
   }
 }
 

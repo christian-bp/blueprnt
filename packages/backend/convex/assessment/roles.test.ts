@@ -12,6 +12,20 @@ import { roleTitleKey } from "./roles"
 const FAMILY_A = "fam_a" as Id<"roleFamilies">
 const FAMILY_B = "fam_b" as Id<"roleFamilies">
 
+// A spread of 8 library keys across every dimension at (or under) its own
+// DIMENSION_MAX_ACTIVE cap (competence 2, effort 2, responsibility 3,
+// workingConditions 1), so activating all of them never trips a cap.
+const EIGHT_KEYS = [
+  "knowledge-depth",
+  "knowledge-breadth",
+  "complexity-ambiguity",
+  "communication-effort",
+  "scope-impact",
+  "autonomy-mandate",
+  "risk-consequence",
+  "safety-exposure",
+] as const
+
 async function seedTemplateOrganization(
   t: ReturnType<typeof initConvexTest>,
   email = "hr@acme.se"
@@ -30,9 +44,15 @@ async function seedTemplateOrganization(
     })
   })
   const asAdmin = t.withIdentity({ subject: userId })
-  await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
+  for (const libraryKey of EIGHT_KEYS) {
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey,
+    })
+  }
   const model = await asAdmin.query(api.evaluationModel.model.getModel, {
     orgId,
   })
@@ -149,7 +169,7 @@ describe("listRoles and getRole", () => {
       roleId,
       title: "Developer",
       ratedCount: 1,
-      totalCriteria: 9,
+      totalCriteria: 8,
       profileComplete: true,
     })
 

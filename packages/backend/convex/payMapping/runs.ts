@@ -11,6 +11,11 @@ import type {
   QueryCtx,
 } from "../_generated/server"
 import { deriveResults } from "../assessment/compute"
+import {
+  criteriaLibraryContent,
+  LIBRARY_DIMENSION,
+} from "../evaluationModel/criteriaLibrary"
+import { resolveContentLocale } from "../evaluationModel/model"
 import { AUDIT_EVENTS, resolveActorName } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
@@ -170,13 +175,30 @@ export const startPayMappingRun = orgMutation({
           .withIndex("by_model", (q) => q.eq("modelId", model._id))
           .collect()
       : []
+    // Every criterion is a library selection (decision 8): its display name
+    // and anchor count are frozen from the library content in the org's own
+    // content locale at freeze time, never from a stored text (criteria rows
+    // carry no name/anchors of their own). levelThresholds keeps its frozen
+    // field name (the full frozen-model shape migration is a later task); the
+    // values come from the model's renamed levelRules.
+    const freezeLocale = await resolveContentLocale(ctx, ctx.orgId)
+    const freezeContent = criteriaLibraryContent(freezeLocale)
     const frozenModel = {
-      criteria: criteriaRows.map((c) => ({
-        name: c.name,
-        weightPoints: c.weightPoints,
-        anchorCount: c.anchors.length,
-      })),
-      levelThresholds: model?.levelThresholds ?? [],
+      criteria: criteriaRows.map((c) => {
+        const entry = freezeContent.criteria[c.libraryKey]
+        const anchorCount =
+          3 +
+          (entry.anchor2 !== undefined ? 1 : 0) +
+          (entry.anchor4 !== undefined ? 1 : 0)
+        return {
+          name: entry.name,
+          weightPoints: c.weightPoints,
+          anchorCount,
+          dimensionKey: LIBRARY_DIMENSION[c.libraryKey],
+          libraryKey: c.libraryKey,
+        }
+      }),
+      levelThresholds: model?.levelRules ?? [],
     }
 
     // Derive level/score for every role once, index by roleId.

@@ -53,7 +53,7 @@ const DOC: MethodAppendixDoc = {
       decidedAt: null,
     },
   ],
-  levelThresholds: [
+  levelRules: [
     { level: 1, minScore: 80 },
     { level: 2, minScore: 60 },
   ],

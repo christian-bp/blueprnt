@@ -6,8 +6,8 @@ import { orgNameMap } from "../lib/organizations"
 
 // Per-org AI usage for one billing period, plus the previous period's cost for
 // a month-over-month delta. Org-level aggregates only (byKind is a call-count
-// record keyed by feature kind, e.g. "model.draft"): no person, no prompt
-// content, no PII of any kind.
+// record keyed by feature kind, e.g. "model.weightReview"): no person, no
+// prompt content, no PII of any kind.
 const vUsageRow = v.object({
   orgId: v.string(),
   orgName: v.string(),

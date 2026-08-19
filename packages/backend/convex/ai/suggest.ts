@@ -17,21 +17,17 @@ import {
   insertStarterSet,
   starterFamilyShape,
 } from "../assessment/starters"
-import {
-  clampLocale,
-  isCriterionKey,
-  promptLocale,
-} from "../evaluationModel/localize"
-import { templateContent } from "../evaluationModel/standardTemplate"
+import { criteriaLibraryContent } from "../evaluationModel/criteriaLibrary"
+import { clampLocale, promptLocale } from "../evaluationModel/localize"
+import { resolveContentLocale } from "../evaluationModel/model"
 import { trackKeyValidator } from "../evaluationModel/tables"
 import { TRACK_KEYS, trackName } from "../evaluationModel/trackSchema"
-import { AUDIT_EVENTS, buildCreateChanges } from "../lib/audit"
+import { AUDIT_EVENTS } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
 import { orgSettingsRow } from "../lib/orgSettings"
 import { AI_MODEL_ID, AI_PROVIDER, MAX_PROMPT_IDENTITY_FIELD } from "./config"
 import { isSuggestionClosed } from "./persist"
-import { repairDraftWeights } from "./weights"
 
 interface SettingsContext {
   locale: string
@@ -68,41 +64,6 @@ async function requireCompleteSettings(
   }
 }
 
-export const requestModelDraft = adminMutation({
-  args: { description: v.optional(v.string()), locale: v.optional(v.string()) },
-  returns: v.id("suggestions"),
-  handler: async (ctx, { description, locale }) => {
-    const settings = await requireCompleteSettings(ctx, ctx.orgId)
-    const model = await ctx.db
-      .query("models")
-      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
-      .unique()
-    if (model === null) throw appError(ERROR_CODES.notFound)
-    const suggestionId = await ctx.db.insert("suggestions", {
-      orgId: ctx.orgId,
-      target: { kind: SUGGESTION_KINDS.modelDraft, modelId: model._id },
-      suggestedValue: null,
-      source: "ai",
-      status: "generating",
-      model: { provider: AI_PROVIDER, model: AI_MODEL_ID },
-      requestedBy: ctx.authUserId,
-    })
-    // Spread optional fields only when defined: explicit undefined values are
-    // not valid Convex values and would fail scheduler arg serialization.
-    await ctx.scheduler.runAfter(0, internal.ai.generate.generateModelDraft, {
-      suggestionId,
-      locale: promptLocale(locale, settings.locale),
-      industry: settings.industry,
-      country: settings.country,
-      ...(settings.employeeCount !== undefined
-        ? { employeeCount: settings.employeeCount }
-        : {}),
-      ...(description !== undefined ? { description } : {}),
-    })
-    return suggestionId
-  },
-})
-
 export const requestWeightReview = adminMutation({
   args: { locale: v.optional(v.string()) },
   returns: v.id("suggestions"),
@@ -129,9 +90,9 @@ export const requestWeightReview = adminMutation({
     })
     const resolvedLocale = promptLocale(locale, settings.locale)
     // The AI quotes criterion names in its motivations: send the names the
-    // requester actually SEES. Pristine template rows localize by key (the
-    // same rule as getModel); custom and edited rows use their stored names.
-    const content = templateContent(clampLocale(resolvedLocale))
+    // requester actually SEES. Every criterion is a library selection
+    // (decision 8), so its display name always localizes by libraryKey.
+    const content = criteriaLibraryContent(clampLocale(resolvedLocale))
     await ctx.scheduler.runAfter(0, internal.ai.generate.reviewWeights, {
       suggestionId,
       locale: resolvedLocale,
@@ -142,175 +103,11 @@ export const requestWeightReview = adminMutation({
         : {}),
       criteria: criteria.map((criterion) => ({
         criterionId: criterion._id as string,
-        name:
-          criterion.templateKey !== undefined &&
-          isCriterionKey(criterion.templateKey)
-            ? content.criteria[criterion.templateKey].name
-            : criterion.name,
+        name: content.criteria[criterion.libraryKey].name,
         weightPoints: criterion.weightPoints,
       })),
     })
     return suggestionId
-  },
-})
-
-interface DraftCriterion {
-  name: string
-  description: string
-  helpText: string
-  weightPoints: number
-  anchors: string[]
-}
-
-export const confirmModelDraft = adminMutation({
-  args: {
-    suggestionId: v.id("suggestions"),
-    acceptedIndexes: v.array(v.number()),
-  },
-  returns: v.null(),
-  handler: async (ctx, { suggestionId, acceptedIndexes }) => {
-    const suggestion = await ctx.db.get(suggestionId)
-    if (
-      suggestion === null ||
-      suggestion.orgId !== ctx.orgId ||
-      suggestion.target.kind !== SUGGESTION_KINDS.modelDraft ||
-      suggestion.status !== "suggested"
-    ) {
-      throw appError(ERROR_CODES.notFound)
-    }
-    const model = await ctx.db
-      .query("models")
-      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
-      .unique()
-    if (model === null) throw appError(ERROR_CODES.notFound)
-    const draft = suggestion.suggestedValue as { criteria: DraftCriterion[] }
-    const existing = await ctx.db
-      .query("criteria")
-      .withIndex("by_model", (q) => q.eq("modelId", model._id))
-      .collect()
-    // Gaps after removal are intentional; max-based ordering avoids collisions.
-    let order = existing.reduce(
-      (max, criterion) => Math.max(max, criterion.order),
-      0
-    )
-    const accepted = [...new Set(acceptedIndexes)].filter(
-      (index) =>
-        Number.isInteger(index) && index >= 0 && index < draft.criteria.length
-    )
-    // Two passes: validate and collect first, then repair the accepted
-    // subset's weight points to its own budget before inserting. The stored
-    // draft is balanced as a WHOLE; a partial accept is generally not, and
-    // the persisted allocation must stay exactly balanced (ADR-0004). The
-    // pre-insert model is balanced, so repairing the inserted subset to
-    // 3 x (inserted count) keeps the whole model balanced; accepting the
-    // full draft passes through unchanged.
-    const toInsert: { name: string; criterion: DraftCriterion }[] = []
-    for (const index of accepted) {
-      const criterion = draft.criteria[index]
-      if (criterion === undefined) continue
-      // LLM output crosses a trust boundary here: enforce the editor's input
-      // contract plus length bounds before anything is persisted.
-      const name = criterion.name?.trim() ?? ""
-      if (
-        name.length === 0 ||
-        name.length > 200 ||
-        criterion.description.length > 2000 ||
-        criterion.helpText.length > 2000 ||
-        criterion.anchors.length !== 6 ||
-        criterion.anchors.some(
-          (text) => text.trim().length === 0 || text.length > 1000
-        ) ||
-        !isWeightPoints(criterion.weightPoints)
-      ) {
-        continue
-      }
-      toInsert.push({ name, criterion })
-    }
-    const repairedPoints = repairDraftWeights(
-      toInsert.map((entry) => entry.criterion.weightPoints)
-    )
-    const before = await deriveResults(ctx, ctx.orgId)
-    // The created criteria, as bulk audit `items`: each retains its inserted id
-    // and a create-snapshot diff. originalWeightPoints is the AI's proposed
-    // value; weightPoints is the repaired/applied value (see the subset repair
-    // above), so the trail shows both what the AI suggested and what landed.
-    const created: Array<{
-      criterionId: string
-      label: string
-      changes: Record<string, { from: null; to: unknown }>
-    }> = []
-    for (const [position, entry] of toInsert.entries()) {
-      order += 1
-      const weightPoints =
-        repairedPoints[position] ?? entry.criterion.weightPoints
-      const originalWeightPoints = entry.criterion.weightPoints
-      const criterionId = await ctx.db.insert("criteria", {
-        orgId: ctx.orgId,
-        modelId: model._id,
-        name: entry.name,
-        description: entry.criterion.description,
-        helpText: entry.criterion.helpText,
-        anchors: entry.criterion.anchors.map((text, step) => ({
-          step,
-          text,
-        })),
-        weightPoints,
-        order,
-        isCustom: true,
-      })
-      created.push({
-        criterionId,
-        label: entry.name,
-        changes: buildCreateChanges(
-          {
-            name: entry.name,
-            order,
-            weightPoints,
-            originalWeightPoints,
-            anchorCount: entry.criterion.anchors.length,
-            isCustom: true,
-          },
-          [
-            "name",
-            "order",
-            "weightPoints",
-            "originalWeightPoints",
-            "anchorCount",
-            "isCustom",
-          ]
-        ),
-      })
-    }
-    const insertedCount = toInsert.length
-    if (insertedCount > 0) {
-      // New criteria flip fully rated roles to incomplete: log the shifts.
-      const after = await deriveResults(ctx, ctx.orgId)
-      await ctx.audit.levelShifts({
-        before: before.results,
-        after: after.results,
-        cause: {
-          event: AUDIT_EVENTS.aiSuggestionConfirmed,
-          entityId: suggestionId,
-        },
-      })
-    }
-    await ctx.db.patch(suggestionId, {
-      status: insertedCount > 0 ? "confirmed" : "rejected",
-      confirmedBy: ctx.authUserId,
-    })
-    await ctx.audit.log({
-      type: AUDIT_EVENTS.aiSuggestionConfirmed,
-      payload: {
-        suggestionId,
-        kind: SUGGESTION_KINDS.modelDraft,
-        modelId: model._id,
-        acceptedCount: insertedCount,
-        totalProposed: draft.criteria.length,
-        count: created.length,
-        items: created,
-      },
-    })
-    return null
   },
 })
 
@@ -350,15 +147,21 @@ export const confirmWeightReview = adminMutation({
       }[]
     }
     // Resolve criterion id -> name up front for the audit labels. The confirm
-    // path has no locale, so this uses the stored names (custom/edited rows are
-    // exact; pristine template rows read their stored localized name). The model
-    // is one per org, so the org-scoped criteria collect covers every move's id.
+    // path has no caller-supplied locale, so this localizes the library name
+    // to the org's own content locale (every criterion is a library selection,
+    // decision 8). The model is one per org, so the org-scoped criteria
+    // collect covers every move's id.
     const orgCriteria = await ctx.db
       .query("criteria")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .collect()
+    const labelLocale = await resolveContentLocale(ctx, ctx.orgId)
+    const labelContent = criteriaLibraryContent(labelLocale)
     const nameById = new Map<string, string>(
-      orgCriteria.map((criterion) => [criterion._id as string, criterion.name])
+      orgCriteria.map((criterion) => [
+        criterion._id as string,
+        labelContent.criteria[criterion.libraryKey].name,
+      ])
     )
     const accepted = [...new Set(acceptedMoveIndexes)]
       .filter(
@@ -728,9 +531,9 @@ export const confirmRoleImport = orgMutation({
 // dismiss their own role-profile drafts. Two guards keep this from becoming a
 // backdoor around the confirm paths' scoping (model.* confirms are
 // adminMutation, role.profile is orgMutation):
-//   1. model.draft / model.weightReview are admin-configuration surfaces, so
-//      dismissing them requires admin, mirroring their confirm paths. Editors
-//      keep dismiss rights over role.profile only.
+//   1. model.weightReview is an admin-configuration surface, so dismissing it
+//      requires admin, mirroring its confirm path. Editors keep dismiss
+//      rights over role.profile only.
 //   2. Only the open states (generating, suggested, failed) are dismissible.
 //      confirmed and rejected are terminal, so a confirmed suggestion's
 //      human-confirmation provenance can never be flipped to rejected and
@@ -750,7 +553,6 @@ export const rejectSuggestion = orgMutation({
       throw appError(ERROR_CODES.notFound)
     }
     const isModelTarget =
-      suggestion.target.kind === SUGGESTION_KINDS.modelDraft ||
       suggestion.target.kind === SUGGESTION_KINDS.weightReview
     if (isModelTarget && ctx.role !== "admin") {
       throw appError(ERROR_CODES.adminRequired)
@@ -1049,16 +851,24 @@ export const collectCriterionComplianceContext = internalQuery({
     }
 
     const generationLocale = promptLocale(locale, settings.language)
-    const content = templateContent(clampLocale(generationLocale))
+    const content = criteriaLibraryContent(clampLocale(generationLocale))
 
-    // Localize the criterion's text to the generation locale for template rows
-    // (same rule as getModel); custom/edited rows use their stored text.
-    const localized =
-      criterion.templateKey !== undefined &&
-      isCriterionKey(criterion.templateKey)
-        ? content.criteria[criterion.templateKey]
-        : null
-    const anchorsSorted = [...criterion.anchors].sort((a, b) => a.step - b.step)
+    // Every criterion is a library selection (decision 8): its text always
+    // localizes to the generation locale by libraryKey, never stored.
+    const entry = content.criteria[criterion.libraryKey]
+    // The library's own guidance split (what the criterion measures vs. does
+    // not) stands in for the retired free-text helpText field.
+    const criterionHelpText = `${entry.measures} ${entry.notMeasures}`.trim()
+    // Library anchors are 1/3/5 (always) plus 2/4 (only the three section
+    // 13.5 entries today); missing midpoints fall back to the shared
+    // between-steps copy so the AI always sees a full 1-5 ladder.
+    const anchors = [
+      entry.anchor1,
+      entry.anchor2 ?? content.midpoints.step2,
+      entry.anchor3,
+      entry.anchor4 ?? content.midpoints.step4,
+      entry.anchor5,
+    ]
 
     // Sibling criteria names (localized the same way), excluding this one.
     const siblings = await ctx.db
@@ -1067,13 +877,7 @@ export const collectCriterionComplianceContext = internalQuery({
       .collect()
     const otherCriteriaNames = siblings
       .filter((c) => c._id !== criterion._id)
-      .map((c) => {
-        const cl =
-          c.templateKey !== undefined && isCriterionKey(c.templateKey)
-            ? content.criteria[c.templateKey]
-            : null
-        return cl?.name ?? c.name
-      })
+      .map((c) => content.criteria[c.libraryKey].name)
 
     return {
       actorId: userId,
@@ -1084,10 +888,10 @@ export const collectCriterionComplianceContext = internalQuery({
         ...(settings.employeeCount !== undefined
           ? { employeeCount: settings.employeeCount }
           : {}),
-        criterionName: localized?.name ?? criterion.name,
-        criterionDescription: localized?.description ?? criterion.description,
-        criterionHelpText: localized?.helpText ?? criterion.helpText,
-        anchors: anchorsSorted.map((a, i) => localized?.anchors[i] ?? a.text),
+        criterionName: entry.name,
+        criterionDescription: entry.fullDefinition,
+        criterionHelpText,
+        anchors,
         otherCriteriaNames,
       },
     }
@@ -1097,8 +901,8 @@ export const collectCriterionComplianceContext = internalQuery({
 // After a confirmed weight review the allocation IS what the AI just
 // reviewed: re-running it immediately would mostly repeat itself and invites
 // spamming the button. The lock holds until the weighting actually changes
-// again: any model.updated audit row (weights rebalanced, criterion added or
-// removed) or a confirmed model draft NEWER than the confirm releases it.
+// again: any model.updated audit row (weights rebalanced) or a criterion
+// activated/deactivated (the library selection changing) releases it.
 // Dismissed reviews never lock. Alpha-scale data: the full-org collect is
 // deliberate and fine.
 export const getWeightReviewLock = orgQuery({
@@ -1112,24 +916,27 @@ export const getWeightReviewLock = orgQuery({
       )
       .collect()
     let lastReviewAt = 0
-    let lastDraftAt = 0
     for (const row of confirmed) {
       if (row.target.kind === SUGGESTION_KINDS.weightReview) {
         lastReviewAt = Math.max(lastReviewAt, row._creationTime)
       }
-      if (row.target.kind === SUGGESTION_KINDS.modelDraft) {
-        lastDraftAt = Math.max(lastDraftAt, row._creationTime)
-      }
     }
     if (lastReviewAt === 0) return false
-    const lastUpdate = await ctx.db
-      .query("auditLog")
-      .withIndex("by_org_type", (q) =>
-        q.eq("orgId", ctx.orgId).eq("type", AUDIT_EVENTS.modelUpdated)
-      )
-      .order("desc")
-      .first()
-    const lastChangeAt = Math.max(lastUpdate?._creationTime ?? 0, lastDraftAt)
+    const latestOf = async (type: string) =>
+      (
+        await ctx.db
+          .query("auditLog")
+          .withIndex("by_org_type", (q) =>
+            q.eq("orgId", ctx.orgId).eq("type", type)
+          )
+          .order("desc")
+          .first()
+      )?._creationTime ?? 0
+    const lastChangeAt = Math.max(
+      await latestOf(AUDIT_EVENTS.modelUpdated),
+      await latestOf(AUDIT_EVENTS.criterionActivated),
+      await latestOf(AUDIT_EVENTS.criterionDeactivated)
+    )
     return lastReviewAt > lastChangeAt
   },
 })

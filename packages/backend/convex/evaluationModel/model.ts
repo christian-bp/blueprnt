@@ -1,30 +1,31 @@
+import {
+  DEFAULT_LEVEL_RULES,
+  DEFAULT_ZONE_PROFILE_RULES,
+  DIMENSION_KEYS,
+} from "@workspace/core"
 import { v } from "convex/values"
-import { internalMutation, type MutationCtx } from "../_generated/server"
+import {
+  internalMutation,
+  type MutationCtx,
+  type QueryCtx,
+} from "../_generated/server"
 import {
   AUDIT_EVENTS,
   buildCreateChanges,
-  buildDeleteChanges,
-  criterionCreateItem,
-  criterionDeleteItem,
   logAudit,
   MODEL_AUDIT_FIELDS,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
+import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
+import { clampLocale, type ProductContentLocale } from "./localize"
 import {
-  CRITERION_KEYS,
-  DEFAULT_LEVEL_THRESHOLDS,
-  DEFAULT_WEIGHT_POINTS,
-  STANDARD_TEMPLATE_KEY,
-  templateContent,
-} from "./standardTemplate"
-import {
-  clampLocale,
-  isCriterionKey,
-  type ProductContentLocale,
-} from "./localize"
+  dimensionKeyValidator,
+  libraryKeyValidator,
+  trackKeyValidator,
+  zoneKeyValidator,
+} from "./tables"
 import { TRACK_KEYS, trackName } from "./trackSchema"
-import { trackKeyValidator } from "./tables"
 
 async function assertNoModel(ctx: MutationCtx, orgId: string) {
   // Read-then-insert is safe here: a concurrent create invalidates this
@@ -37,138 +38,91 @@ async function assertNoModel(ctx: MutationCtx, orgId: string) {
   if (existing !== null) throw appError(ERROR_CODES.modelExists)
 }
 
-async function contentLocale(
-  ctx: MutationCtx,
+// Resolves the org's product content locale (organizations.language, clamped
+// to the five supported product locales). Shared by every mutation/query that
+// localizes library content from an org-scoped ctx rather than a caller-passed
+// locale, so a fresh model/criterion seeds and re-localizes in the org's own
+// language, not a binary sv/en split. Read-only, so it accepts either a query
+// or a mutation ctx.
+export async function resolveContentLocale(
+  ctx: QueryCtx | MutationCtx,
   orgId: string
 ): Promise<ProductContentLocale> {
   const settings = await ctx.db
     .query("organizations")
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
     .unique()
-  // Seed criteria in the org's own product locale (all five), not a binary
-  // sv/en split, so an nb/da/fi org's stored rows are not frozen to English the
-  // first time an E2 edit clears a criterion's templateKey.
   return clampLocale(settings?.language)
 }
 
-// Used by BOTH template and scratch models (thresholds are editable in E2).
-// Tracks are fixed V1 constants (TRACK_KEYS, ADR-0006) and are not seeded.
-function defaultLevelThresholds() {
-  return DEFAULT_LEVEL_THRESHOLDS.map((threshold) => ({
-    level: threshold.level,
-    minScore: threshold.minScore,
+// The calibrate-before-launch defaults (packages/core), copied into plain
+// mutable arrays for storage. Used by BOTH createDefaultModel and
+// seedDefaultModel so a fresh model (interactive or seeded) always starts
+// from the same starting point; levelRules/zoneProfileRules are editable
+// later in the builder (phase 3).
+function defaultLevelRules() {
+  return DEFAULT_LEVEL_RULES.map((rule) => ({
+    level: rule.level,
+    minScore: rule.minScore,
+  }))
+}
+function defaultZoneProfileRules() {
+  return DEFAULT_ZONE_PROFILE_RULES.map((rule) => ({
+    zone: rule.zone,
+    minStep: rule.minStep,
   }))
 }
 
-// Seed-time compliance fields from the localized template, so a fresh standard
-// model lands at "documented" (complianceStatus reads these stored fields).
-// Empty optional text becomes undefined so the optional stays clean (matches
-// saveCriterionCompliance's norm). complianceEdited is left unset = template
-// content, so getMethodModel re-localizes it to the viewer's locale.
-function seededCompliance(compliance: {
-  purpose: string
-  whyRelevant: string
-  overlapNotes: string
-  biasRisk: "low" | "medium" | "high"
-  biasComment: string
-  biasAction: string
-}) {
-  const norm = (s: string) => (s.trim().length === 0 ? undefined : s.trim())
-  return {
-    purpose: norm(compliance.purpose),
-    whyRelevant: norm(compliance.whyRelevant),
-    overlapNotes: norm(compliance.overlapNotes),
-    biasRisk: compliance.biasRisk,
-    biasComment: norm(compliance.biasComment),
-    biasAction: norm(compliance.biasAction),
-  }
-}
-
-export const createModelFromTemplate = adminMutation({
+// Seeds an empty draft model shell: a name from the library content's
+// modelName (org-locale), the default level/zone rules, and NO criteria (the
+// library picker is the only way in, ADR-0021 addendum). Replaces
+// createModelFromTemplate/createEmptyModel now that there is no
+// template-vs-scratch choice to make.
+export const createDefaultModel = adminMutation({
   args: {},
   returns: v.id("models"),
   handler: async (ctx) => {
     await assertNoModel(ctx, ctx.orgId)
-    const locale = await contentLocale(ctx, ctx.orgId)
-    const content = templateContent(locale)
-
+    const locale = await resolveContentLocale(ctx, ctx.orgId)
+    const content = criteriaLibraryContent(locale)
     const modelId = await ctx.db.insert("models", {
       orgId: ctx.orgId,
       name: content.modelName,
-      templateKey: STANDARD_TEMPLATE_KEY,
-      levelThresholds: defaultLevelThresholds(),
+      levelRules: defaultLevelRules(),
+      zoneProfileRules: defaultZoneProfileRules(),
     })
-
-    // Capture each inserted criterion as a bulk create-snapshot item; the
-    // criterionId and field values come from the same insert loop, so the
-    // audit `items` mirror exactly what was written.
-    const criteriaSnapshots = []
-    for (const [index, key] of CRITERION_KEYS.entries()) {
-      const criterion = content.criteria[key]
-      const anchors = criterion.anchors.map((text, step) => ({ step, text }))
-      const criterionId = await ctx.db.insert("criteria", {
-        orgId: ctx.orgId,
-        modelId,
-        name: criterion.name,
-        description: criterion.description,
-        helpText: criterion.helpText,
-        anchors,
-        // The standard template key keeps this row pristine-localizable in getModel.
-        // E2 editing MUST clear it when any text field changes.
-        templateKey: key,
-        weightPoints: DEFAULT_WEIGHT_POINTS[key],
-        order: index + 1,
-        isCustom: false,
-        ...seededCompliance(criterion.compliance),
-      })
-      criteriaSnapshots.push(
-        criterionCreateItem({
-          criterionId,
-          name: criterion.name,
-          description: criterion.description,
-          helpText: criterion.helpText,
-          anchors,
-          weightPoints: DEFAULT_WEIGHT_POINTS[key],
-          order: index + 1,
-          isCustom: false,
-          templateKey: key,
-        })
-      )
-    }
-
     await ctx.audit.log({
       type: AUDIT_EVENTS.modelCreated,
       payload: {
         modelId,
-        source: "template",
-        templateKey: STANDARD_TEMPLATE_KEY,
+        source: "default",
         locale,
         name: content.modelName,
         changes: buildCreateChanges(
           {
             name: content.modelName,
-            templateKey: STANDARD_TEMPLATE_KEY,
-            levelThresholds: defaultLevelThresholds(),
+            levelRules: defaultLevelRules(),
           },
           MODEL_AUDIT_FIELDS
         ),
-        count: CRITERION_KEYS.length,
-        items: criteriaSnapshots,
+        count: 0,
+        items: [],
       },
     })
     return modelId
   },
 })
 
-// Dev/seed-only twin of createModelFromTemplate that takes an explicit orgId,
+// Dev/seed-only twin of createDefaultModel that takes an explicit orgId,
 // locale, and actorId instead of an auth context. The dev seed runs in a "use
-// node" action with no identity, so it cannot call the adminMutation above; the
-// founder authId is passed in as actorId so the model.created audit row is
-// attributed to the seeded account rather than the "system" sentinel. The insert
-// loop and template constants are shared; the only behavioural difference is that
-// this is idempotent (it skips when the org already has a model) rather than
-// throwing modelExists.
-export const seedStandardModel = internalMutation({
+// node" action with no identity, so it cannot call the adminMutation above;
+// the founder authId is passed in as actorId so the model.created audit row
+// is attributed to the seeded account rather than the "system" sentinel.
+// Idempotent (skips when the org already has a model) rather than throwing
+// modelExists. Selects nothing: assessment/seed.ts seeds the demo org's own
+// criteria directly, mirroring how it has always written ratings/weights
+// directly rather than through the interactive mutations.
+export const seedDefaultModel = internalMutation({
   args: {
     orgId: v.string(),
     locale: v.optional(v.string()),
@@ -183,46 +137,13 @@ export const seedStandardModel = internalMutation({
     if (existing !== null) return null
 
     const seedLocale = clampLocale(locale)
-    const content = templateContent(seedLocale)
+    const content = criteriaLibraryContent(seedLocale)
     const modelId = await ctx.db.insert("models", {
       orgId,
       name: content.modelName,
-      templateKey: STANDARD_TEMPLATE_KEY,
-      levelThresholds: defaultLevelThresholds(),
+      levelRules: defaultLevelRules(),
+      zoneProfileRules: defaultZoneProfileRules(),
     })
-
-    // Same per-criterion create-snapshot building as createModelFromTemplate.
-    const criteriaSnapshots = []
-    for (const [index, key] of CRITERION_KEYS.entries()) {
-      const criterion = content.criteria[key]
-      const anchors = criterion.anchors.map((text, step) => ({ step, text }))
-      const criterionId = await ctx.db.insert("criteria", {
-        orgId,
-        modelId,
-        name: criterion.name,
-        description: criterion.description,
-        helpText: criterion.helpText,
-        anchors,
-        templateKey: key,
-        weightPoints: DEFAULT_WEIGHT_POINTS[key],
-        order: index + 1,
-        isCustom: false,
-        ...seededCompliance(criterion.compliance),
-      })
-      criteriaSnapshots.push(
-        criterionCreateItem({
-          criterionId,
-          name: criterion.name,
-          description: criterion.description,
-          helpText: criterion.helpText,
-          anchors,
-          weightPoints: DEFAULT_WEIGHT_POINTS[key],
-          order: index + 1,
-          isCustom: false,
-          templateKey: key,
-        })
-      )
-    }
 
     await logAudit(ctx, {
       orgId,
@@ -230,50 +151,15 @@ export const seedStandardModel = internalMutation({
       actorId,
       payload: {
         modelId,
-        source: "template",
+        source: "default",
         seeded: true,
-        templateKey: STANDARD_TEMPLATE_KEY,
         locale: seedLocale,
         name: content.modelName,
         changes: buildCreateChanges(
           {
             name: content.modelName,
-            templateKey: STANDARD_TEMPLATE_KEY,
-            levelThresholds: defaultLevelThresholds(),
+            levelRules: defaultLevelRules(),
           },
-          MODEL_AUDIT_FIELDS
-        ),
-        count: CRITERION_KEYS.length,
-        items: criteriaSnapshots,
-      },
-    })
-    return modelId
-  },
-})
-
-export const createEmptyModel = adminMutation({
-  args: { name: v.string() },
-  returns: v.id("models"),
-  handler: async (ctx, { name }) => {
-    if (name.trim().length === 0) throw appError(ERROR_CODES.invalidInput)
-    await assertNoModel(ctx, ctx.orgId)
-    const modelId = await ctx.db.insert("models", {
-      orgId: ctx.orgId,
-      name: name.trim(),
-      levelThresholds: defaultLevelThresholds(),
-    })
-    await ctx.audit.log({
-      type: AUDIT_EVENTS.modelCreated,
-      payload: {
-        modelId,
-        source: "scratch",
-        templateKey: null,
-        name: name.trim(),
-        changes: buildCreateChanges(
-          { name: name.trim(), levelThresholds: defaultLevelThresholds() },
-          // Shared field list (templateKey is absent from `after` and skipped,
-          // matching addCriterion) so a new auditable model field is captured
-          // by every create path, not just the template one.
           MODEL_AUDIT_FIELDS
         ),
         count: 0,
@@ -284,102 +170,13 @@ export const createEmptyModel = adminMutation({
   },
 })
 
-// Onboarding escape hatch: lets an admin undo the template-vs-scratch choice
-// while onboarding is still in progress. Deletes the model and every row that
-// hangs off it (child-first, mirroring removeSeededOrganization for one org) plus
-// the stale model.* AI suggestions, so a fresh choice starts clean. Blocked
-// once onboarding has completed or any role exists (discarding the model
-// under existing roles would orphan their ratings and reset the org's
-// evaluation basis). Idempotent on an empty org.
-export const discardModel = adminMutation({
-  args: {},
-  returns: v.null(),
-  handler: async (ctx) => {
-    const settings = await ctx.db
-      .query("organizations")
-      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
-      .unique()
-    if (typeof settings?.onboardingCompletedAt === "number") {
-      throw appError(ERROR_CODES.invalidInput)
-    }
-
-    const role = await ctx.db
-      .query("roles")
-      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
-      .first()
-    if (role !== null) throw appError(ERROR_CODES.invalidInput)
-
-    const model = await ctx.db
-      .query("models")
-      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
-      .unique()
-    if (model === null) return null
-
-    // Child-first deletion, same order as mirrors.removeSeededOrganization:
-    // criteria, then the model row. Anchors and level thresholds ride along
-    // on their parent documents (ADR-0006); tracks are constants.
-    const criteria = await ctx.db
-      .query("criteria")
-      .withIndex("by_model", (q) => q.eq("modelId", model._id))
-      .collect()
-
-    // Drop the org's model-scoped AI suggestions so a stale draft cannot be
-    // confirmed against a new model. Suggestion counts are tiny, so a by_org
-    // collect with an in-code filter is fine. Capture the dropped set BEFORE
-    // the delete loop so the audit reads in-memory docs.
-    const suggestions = await ctx.db
-      .query("suggestions")
-      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
-      .collect()
-    const droppedSuggestions = suggestions.filter(
-      (suggestion) =>
-        suggestion.target.kind === "model.draft" ||
-        suggestion.target.kind === "model.weightReview"
-    )
-
-    for (const criterion of criteria) {
-      await ctx.db.delete(criterion._id)
-    }
-
-    await ctx.db.delete(model._id)
-
-    for (const suggestion of droppedSuggestions) {
-      await ctx.db.delete(suggestion._id)
-    }
-
-    await ctx.audit.log({
-      type: AUDIT_EVENTS.modelDiscarded,
-      payload: {
-        modelId: model._id,
-        name: model.name,
-        // The discarded model as a full delete-snapshot (all fields to:null).
-        changes: buildDeleteChanges(model, MODEL_AUDIT_FIELDS),
-        // Every removed criterion as a delete-snapshot item (incl. templateKey).
-        count: criteria.length,
-        items: criteria.map(criterionDeleteItem),
-        // Dropped suggestions: id + kind + status only (never suggestedValue).
-        suggestionCount: droppedSuggestions.length,
-        suggestions: droppedSuggestions.map((suggestion) => ({
-          suggestionId: suggestion._id,
-          kind: suggestion.target.kind,
-          status: suggestion.status,
-        })),
-      },
-    })
-    return null
-  },
-})
-
 const anchorShape = v.object({ step: v.number(), text: v.string() })
 
-// Localizes pristine standard-template content at read time. Template-seeded
-// criteria carry their standard template key (criteria.templateKey); tracks and
-// levels carry stable keys. For those rows we serve name/description/helpText/
-// anchors and track/level names/definitions from the per-locale content modules
-// in the requested locale instead of the stored copies. Custom and AI-authored
-// rows (no templateKey, unknown keys) render as stored. This is read-time only:
-// stored data is never mutated here. E2 editing will clear a criterion's
-// templateKey on any text edit, after which the row renders as stored.
+// The org's selection + method-law wire, localized from library content by
+// libraryKey (decision 8: there is no stored text left to fall back to). The
+// dimension is always derived (LIBRARY_DIMENSION), never stored. This is the
+// Oversikt/picker read; getMethodModel (method.ts) separately serves the
+// kriterieurvalsprotokoll + bias-review compliance surface.
 export const getModel = orgQuery({
   args: { locale: v.optional(v.string()) },
   returns: v.union(
@@ -387,21 +184,52 @@ export const getModel = orgQuery({
     v.object({
       modelId: v.id("models"),
       name: v.string(),
-      templateKey: v.union(v.string(), v.null()),
+      approval: v.union(
+        v.object({ approvedBy: v.string(), approvedAt: v.number() }),
+        v.null()
+      ),
+      workingConditions: v.union(
+        v.object({
+          status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
+          motivation: v.string(),
+          decidedBy: v.string(),
+          decidedAt: v.number(),
+        }),
+        v.null()
+      ),
       criteria: v.array(
         v.object({
           criterionId: v.id("criteria"),
+          libraryKey: libraryKeyValidator,
+          dimensionKey: dimensionKeyValidator,
           name: v.string(),
-          description: v.string(),
-          helpText: v.string(),
+          shortUiText: v.string(),
+          fullDefinition: v.string(),
+          measures: v.string(),
+          notMeasures: v.string(),
+          assessmentQuestion: v.string(),
+          // 1/3/5 always present; 2/4 only when the library entry has them
+          // (the three section 13.5 criteria today).
+          anchors: v.array(anchorShape),
           weightPoints: v.number(),
           order: v.number(),
-          isCustom: v.boolean(),
-          anchors: v.array(anchorShape),
-          // Per-criterion weighting explanations (for weight points 1..5),
-          // localized, for pristine template criteria; null for custom or
-          // edited rows, where the UI falls back to the generic weight meanings.
-          weightMeanings: v.union(v.array(v.string()), v.null()),
+          weightMotivation: v.union(v.string(), v.null()),
+        })
+      ),
+      // An array, not an object keyed "1".."5": Convex object-validator keys
+      // must be identifiers (cannot start with a digit), so the library
+      // content's Record<"1"|...|"5", ...> shape cannot be mirrored directly
+      // in a returns validator.
+      sharedScale: v.array(
+        v.object({ step: v.number(), name: v.string(), meaning: v.string() })
+      ),
+      midpoints: v.object({ step2: v.string(), step4: v.string() }),
+      dimensions: v.array(
+        v.object({
+          key: dimensionKeyValidator,
+          name: v.string(),
+          question: v.string(),
+          why: v.string(),
         })
       ),
       tracks: v.array(
@@ -411,8 +239,11 @@ export const getModel = orgQuery({
           order: v.number(),
         })
       ),
-      levelThresholds: v.array(
+      levelRules: v.array(
         v.object({ level: v.number(), minScore: v.number() })
+      ),
+      zoneProfileRules: v.array(
+        v.object({ zone: zoneKeyValidator, minStep: v.number() })
       ),
     })
   ),
@@ -424,45 +255,42 @@ export const getModel = orgQuery({
     if (model === null) return null
 
     const resolvedLocale = clampLocale(locale)
-    const content = templateContent(resolvedLocale)
-    const isTemplateModel = model.templateKey !== undefined
+    const content = criteriaLibraryContent(resolvedLocale)
 
     const criteriaRows = await ctx.db
       .query("criteria")
       .withIndex("by_model", (q) => q.eq("modelId", model._id))
       .collect()
     criteriaRows.sort((a, b) => a.order - b.order)
-    const criteria = []
-    for (const row of criteriaRows) {
-      const anchors = [...row.anchors].sort((a, b) => a.step - b.step)
-      // Pristine template criteria localize from the content module by their
-      // standard template key. Custom/AI rows (no key, or an unknown key) and rows
-      // whose key was cleared by an E2 edit render as stored.
-      const localized =
-        row.templateKey !== undefined && isCriterionKey(row.templateKey)
-          ? content.criteria[row.templateKey]
-          : null
-      criteria.push({
+    const criteria = criteriaRows.map((row) => {
+      const entry = content.criteria[row.libraryKey]
+      const anchors = [
+        { step: 1, text: entry.anchor1 },
+        ...(entry.anchor2 !== undefined
+          ? [{ step: 2, text: entry.anchor2 }]
+          : []),
+        { step: 3, text: entry.anchor3 },
+        ...(entry.anchor4 !== undefined
+          ? [{ step: 4, text: entry.anchor4 }]
+          : []),
+        { step: 5, text: entry.anchor5 },
+      ]
+      return {
         criterionId: row._id,
-        name: localized?.name ?? row.name,
-        description: localized?.description ?? row.description,
-        helpText: localized?.helpText ?? row.helpText,
+        libraryKey: row.libraryKey,
+        dimensionKey: LIBRARY_DIMENSION[row.libraryKey],
+        name: entry.name,
+        shortUiText: entry.shortUiText,
+        fullDefinition: entry.fullDefinition,
+        measures: entry.measures,
+        notMeasures: entry.notMeasures,
+        assessmentQuestion: entry.assessmentQuestion,
+        anchors,
         weightPoints: row.weightPoints,
         order: row.order,
-        isCustom: row.isCustom,
-        anchors:
-          localized !== null
-            ? anchors.map((a) => ({
-                step: a.step,
-                text: localized.anchors[a.step] ?? a.text,
-              }))
-            : anchors.map((a) => ({ step: a.step, text: a.text })),
-        // Pristine template criteria serve their localized per-criterion
-        // weighting explanations; custom/edited rows return null so the UI
-        // falls back to the generic weight meanings.
-        weightMeanings: localized?.weightMeanings ?? null,
-      })
-    }
+        weightMotivation: row.weightMotivation ?? null,
+      }
+    })
 
     // Tracks are fixed V1 constants (ADR-0006), derived per request with
     // localized names; nothing is stored or queried.
@@ -472,21 +300,38 @@ export const getModel = orgQuery({
       order: index + 1,
     }))
 
-    const thresholds = [...model.levelThresholds].sort(
-      (a, b) => a.level - b.level
-    )
+    const dimensions = DIMENSION_KEYS.map((key) => ({
+      key,
+      ...content.dimensions[key],
+    }))
+
+    // Steps 1-5, in order; see the sharedScale validator comment above for
+    // why this cannot be the content module's own "1".."5"-keyed object.
+    const sharedScale = (["1", "2", "3", "4", "5"] as const).map((step) => ({
+      step: Number(step),
+      ...content.sharedScale[step],
+    }))
+
+    const levelRules = [...model.levelRules].sort((a, b) => a.level - b.level)
+    const zoneProfileRules = [...model.zoneProfileRules]
 
     return {
       modelId: model._id,
-      // The template model name localizes; a scratch model keeps its stored,
-      // user-chosen name.
-      name: isTemplateModel ? content.modelName : model.name,
-      templateKey: model.templateKey ?? null,
+      name: model.name,
+      approval: model.approval ?? null,
+      workingConditions: model.workingConditions ?? null,
       criteria,
+      sharedScale,
+      midpoints: content.midpoints,
+      dimensions,
       tracks,
-      levelThresholds: thresholds.map((threshold) => ({
-        level: threshold.level,
-        minScore: threshold.minScore,
+      levelRules: levelRules.map((rule) => ({
+        level: rule.level,
+        minScore: rule.minScore,
+      })),
+      zoneProfileRules: zoneProfileRules.map((rule) => ({
+        zone: rule.zone,
+        minStep: rule.minStep,
       })),
     }
   },

@@ -39,7 +39,7 @@ import {
 } from "@workspace/ui/components/table"
 import { AUDIT_LOG_PAGE_SIZE } from "@workspace/constants"
 import { useQuery } from "convex/react"
-import { useFormatter, useTranslations } from "next-intl"
+import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { type ReactNode, useEffect, useRef, useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { TablePagination } from "@/components/table-pagination"
@@ -59,6 +59,7 @@ import {
   AI_KIND_KEY,
   AUDIT_FILTER_CATEGORIES,
   resolveCodedValue,
+  resolveCriteriaLibraryValue,
 } from "@/lib/audit-constants"
 import {
   auditPageView,
@@ -126,6 +127,7 @@ export function OrgAuditLogSection() {
   // a concept that already has a real label elsewhere.
   const tDashboard = useTranslations("dashboard")
   const format = useFormatter()
+  const locale = useLocale()
   const { orgId, role } = useOrganization()
 
   // Toolbar state. The visible input is immediate; the debounced value drives
@@ -265,10 +267,13 @@ export function OrgAuditLogSection() {
   // short-circuit that chain for every non-coded field, including id fields
   // resolveName exists to handle (e.g. familyId).
   function valueLabel(field: string, value: string): string | undefined {
-    return resolveCodedValue(field, value, (key) =>
-      tDashboard.has(key as Parameters<typeof tDashboard.has>[0])
-        ? tDashboard(key as Parameters<typeof tDashboard>[0])
-        : undefined
+    return (
+      resolveCriteriaLibraryValue(field, value, locale) ??
+      resolveCodedValue(field, value, (key) =>
+        tDashboard.has(key as Parameters<typeof tDashboard.has>[0])
+          ? tDashboard(key as Parameters<typeof tDashboard>[0])
+          : undefined
+      )
     )
   }
 

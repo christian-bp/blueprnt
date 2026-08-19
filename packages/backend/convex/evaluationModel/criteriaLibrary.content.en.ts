@@ -25,6 +25,9 @@ export interface CriteriaLibraryDimensionContent {
 }
 
 export interface CriteriaLibraryContent {
+  // The default model's display name (createDefaultModel/seedDefaultModel),
+  // localized like every other library string.
+  modelName: string
   dimensions: Record<DimensionKey, CriteriaLibraryDimensionContent>
   workingConditionsTest: { question: string; notMaterialLabel: string }
   sharedScale: Record<
@@ -42,6 +45,7 @@ export interface CriteriaLibraryContent {
 // membership, overlap pairs, industry hints) live in criteriaLibrary.ts;
 // this module carries only prose. Source: docs/rollvardering-masterdokument.md.
 export const criteriaLibraryContentEn: CriteriaLibraryContent = {
+  modelName: "Role evaluation model",
   dimensions: {
     competence: {
       name: "Competence",

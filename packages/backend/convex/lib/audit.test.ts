@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { Doc } from "../_generated/dataModel"
+import { COMPLIANCE_AUDIT_FIELDS } from "../evaluationModel/method"
 import {
   AUDIT_EVENTS,
   type AuditEvent,
@@ -10,13 +10,10 @@ import {
   buildDeleteChanges,
   buildSearchText,
   categoryForEvent,
-  criterionCreateItem,
-  criterionDeleteItem,
   ACTION_AUDIT_FIELDS,
   ACTION_UPDATE_AUDIT_FIELDS,
   ANCHOR_AUDIT_FIELDS,
   ASSIGNMENT_AUDIT_FIELDS,
-  CRITERION_AUDIT_FIELDS,
   ERASED_FIELD_VALUE,
   GROUP_ANALYSIS_AUDIT_FIELDS,
   isPersonIdentityField,
@@ -128,12 +125,12 @@ describe("buildCreateChanges", () => {
 
   it("collapses nullish values to to null", () => {
     expect(
-      buildCreateChanges({ templateKey: undefined, order: null }, [
-        "templateKey",
+      buildCreateChanges({ decidedBy: undefined, order: null }, [
+        "decidedBy",
         "order",
       ])
     ).toEqual({
-      templateKey: { from: null, to: null },
+      decidedBy: { from: null, to: null },
       order: { from: null, to: null },
     })
   })
@@ -168,12 +165,12 @@ describe("buildDeleteChanges", () => {
 
   it("collapses nullish values to from null", () => {
     expect(
-      buildDeleteChanges({ templateKey: undefined, order: null }, [
-        "templateKey",
+      buildDeleteChanges({ decidedBy: undefined, order: null }, [
+        "decidedBy",
         "order",
       ])
     ).toEqual({
-      templateKey: { from: null, to: null },
+      decidedBy: { from: null, to: null },
       order: { from: null, to: null },
     })
   })
@@ -217,94 +214,6 @@ describe("anchorDiff", () => {
     expect(anchorDiff(before, after)).toEqual({
       anchors: { from: before, to: after },
     })
-  })
-})
-
-describe("criterionCreateItem", () => {
-  it("uses the name as label and records every field as from null", () => {
-    const item = criterionCreateItem({
-      criterionId: "crit-1",
-      templateKey: "scope",
-      name: "Scope",
-      order: 0,
-      description: "desc",
-      helpText: "help",
-      weightPoints: 3,
-      isCustom: false,
-      anchors: [{ step: 0, text: "low" }],
-    })
-    expect(item.criterionId).toBe("crit-1")
-    expect(item.label).toBe("Scope")
-    expect(Object.keys(item.changes).sort()).toEqual([
-      "anchors",
-      "description",
-      "helpText",
-      "isCustom",
-      "name",
-      "order",
-      "templateKey",
-      "weightPoints",
-    ])
-    for (const change of Object.values(item.changes)) {
-      expect(change.from).toBeNull()
-    }
-    expect(item.changes.name?.to).toBe("Scope")
-    expect(item.changes.templateKey?.to).toBe("scope")
-    expect(item.changes.anchors?.to).toEqual([{ step: 0, text: "low" }])
-  })
-
-  it("defaults optional fields and a missing templateKey to null", () => {
-    const item = criterionCreateItem({
-      name: "Custom",
-      order: 2,
-      weightPoints: 3,
-      isCustom: true,
-    })
-    expect(item.criterionId).toBeUndefined()
-    expect(item.label).toBe("Custom")
-    expect(item.changes.templateKey).toEqual({ from: null, to: null })
-    expect(item.changes.description).toEqual({ from: null, to: "" })
-    expect(item.changes.helpText).toEqual({ from: null, to: "" })
-    expect(item.changes.anchors).toEqual({ from: null, to: [] })
-    expect(item.changes.isCustom).toEqual({ from: null, to: true })
-  })
-})
-
-describe("criterionDeleteItem", () => {
-  it("uses the name as label and records every field as to null", () => {
-    const criterion = {
-      _id: "crit-9",
-      _creationTime: 0,
-      orgId: "org-1",
-      modelId: "model-1",
-      name: "Scope",
-      description: "desc",
-      helpText: "help",
-      anchors: [{ step: 0, text: "low" }],
-      templateKey: "scope",
-      weightPoints: 4,
-      order: 1,
-      isCustom: false,
-    } as unknown as Doc<"criteria">
-    const item = criterionDeleteItem(criterion)
-    expect(item.criterionId).toBe("crit-9")
-    expect(item.label).toBe("Scope")
-    expect(Object.keys(item.changes).sort()).toEqual([
-      "anchors",
-      "description",
-      "helpText",
-      "isCustom",
-      "name",
-      "order",
-      "templateKey",
-      "weightPoints",
-    ])
-    for (const change of Object.values(item.changes)) {
-      expect(change.to).toBeNull()
-    }
-    expect(item.changes.name?.from).toBe("Scope")
-    expect(item.changes.templateKey?.from).toBe("scope")
-    expect(item.changes.weightPoints?.from).toBe(4)
   })
 })
 
@@ -362,35 +271,47 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
   },
   "model.created": {
     modelId: "model-1",
-    source: "template",
+    source: "default",
     name: "Standard",
     changes: {},
     count: 0,
     items: [],
   },
   "model.updated": {
-    change: "criterion.updated",
+    change: "criterion.complianceUpdated",
     criterionId: "crit-1",
     modelId: "model-1",
     changes: {},
   },
-  "model.discarded": {
+  "criterion.activated": {
+    criterionId: "crit-1",
     modelId: "model-1",
-    name: "Standard",
-    changes: {},
+    libraryKey: "scope-impact",
+    dimensionKey: "responsibility",
+    weightPoints: 3,
+  },
+  "criterion.deactivated": {
+    criterionId: "crit-1",
+    modelId: "model-1",
+    libraryKey: "scope-impact",
+    dimensionKey: "responsibility",
+    weightPoints: 3,
+    deletedRatingCount: 0,
+    budget: { from: 24, to: 21 },
     count: 0,
     items: [],
-    suggestionCount: 0,
-    suggestions: [],
   },
   "ai.suggestionConfirmed": {
     suggestionId: "sug-1",
-    kind: "model.draft",
+    kind: "model.weightReview",
     modelId: "model-1",
-    acceptedCount: 2,
-    totalProposed: 3,
+    appliedCount: 2,
+    totalMoves: 3,
+    skippedCount: 1,
+    appliedMoveIndexes: [0, 1],
     count: 2,
     items: [],
+    moves: [],
   },
   "ai.suggestionRejected": {
     suggestionId: "sug-1",
@@ -546,7 +467,6 @@ const EXPECTED_SUBJECTS: { [E in AuditEvent]: AuditSubject | undefined } = {
   "invitation.revoked": undefined,
   "model.created": undefined,
   "model.updated": undefined,
-  "model.discarded": undefined,
   "ai.suggestionConfirmed": undefined,
   "ai.suggestionRejected": { kind: "role", id: "role-1" },
   "role.created": { kind: "role", id: "role-1" },
@@ -561,6 +481,8 @@ const EXPECTED_SUBJECTS: { [E in AuditEvent]: AuditSubject | undefined } = {
   "roleFamily.removed": undefined,
   "criterion.approved": undefined,
   "criterion.reopened": undefined,
+  "criterion.activated": undefined,
+  "criterion.deactivated": undefined,
   "person.created": { kind: "person", id: "person-1" },
   "person.updated": { kind: "person", id: "person-1" },
   "person.archived": { kind: "person", id: "person-1" },
@@ -600,7 +522,7 @@ describe("subjectForEvent", () => {
     expect(
       subjectForEvent("ai.suggestionRejected", {
         suggestionId: "sug-1",
-        kind: "model.draft",
+        kind: "model.weightReview",
         changes: {},
         modelId: "model-1",
       })
@@ -756,7 +678,7 @@ describe("person audit field lists", () => {
   // unbackfillable. This is the guard that makes that a test failure.
   it("keeps identity fields out of every other event's diff", () => {
     const otherFieldSets = {
-      CRITERION_AUDIT_FIELDS,
+      COMPLIANCE_AUDIT_FIELDS,
       ANCHOR_AUDIT_FIELDS,
       MODEL_AUDIT_FIELDS,
       SETTINGS_AUDIT_FIELDS,

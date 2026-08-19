@@ -35,7 +35,7 @@ async function levelCount(
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
     .unique()
   if (model === null) throw appError(ERROR_CODES.notFound)
-  return model.levelThresholds.length
+  return model.levelRules.length
 }
 
 function validateExpectedLevel(expectedLevel: number, levels: number) {

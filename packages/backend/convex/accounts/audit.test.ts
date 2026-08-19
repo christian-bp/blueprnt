@@ -312,25 +312,22 @@ describe("accounts.audit.getAuditLogPage (browse)", () => {
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard model",
-        levelThresholds: [],
+        levelRules: [],
+        zoneProfileRules: [],
       })
       const criterionId = await ctx.db.insert("criteria", {
         orgId,
         modelId,
-        name: "Scope of responsibility",
-        description: "",
-        helpText: "",
-        anchors: [],
+        libraryKey: "scope-impact",
         weightPoints: 3,
         order: 0,
-        isCustom: false,
       })
       await logAudit(ctx, {
         orgId,
         type: AUDIT_EVENTS.modelUpdated,
         actorId: adminId,
         payload: {
-          change: "criterion.updated",
+          change: "criterion.complianceUpdated",
           modelId,
           criterionId,
           changes: {},
@@ -347,7 +344,10 @@ describe("accounts.audit.getAuditLogPage (browse)", () => {
       })
     const row = result.rows.find((r) => r.type === "model.updated")
     expect(row?.names[modelId.toString()]).toBe("Standard model")
-    expect(row?.names[criterionId.toString()]).toBe("Scope of responsibility")
+    // The criterion carries no stored name (decision 8): it resolves from the
+    // criteria library by libraryKey, in the org's own content locale (no
+    // language set here, so it clamps to en).
+    expect(row?.names[criterionId.toString()]).toBe("Scope and impact")
   })
 
   it("derives a role subject on role.created and scopes by_org_subject to one role", async () => {

@@ -8,7 +8,9 @@ import { v } from "convex/values"
 // raw token counts are the source of truth.
 export const aiUsageEvents = defineTable({
   orgId: v.string(),
-  // The suggestion target.kind: "model.draft" | "model.weightReview" | "role.profile".
+  // The suggestion target.kind (SUGGESTION_KINDS in @workspace/constants):
+  // "model.weightReview" | "role.profile" | "starter.import" |
+  // "criterion.compliance" | "role.import".
   kind: v.string(),
   provider: v.string(),
   model: v.string(),

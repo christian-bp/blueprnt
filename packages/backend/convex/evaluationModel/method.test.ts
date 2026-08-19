@@ -2,6 +2,21 @@ import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 
+// A spread of 8 library keys across every dimension at (or under) its own
+// DIMENSION_MAX_ACTIVE cap (competence 2, effort 2, responsibility 3,
+// workingConditions 1), so activating all of them via activateCriterion
+// never trips a cap.
+const EIGHT_KEYS = [
+  "knowledge-depth",
+  "knowledge-breadth",
+  "complexity-ambiguity",
+  "communication-effort",
+  "scope-impact",
+  "autonomy-mandate",
+  "risk-consequence",
+  "safety-exposure",
+] as const
+
 async function seedReadyOrganization(t: ReturnType<typeof initConvexTest>) {
   const email = `hr-method-${Math.random()}@acme.se`
   const name = "HR Person"
@@ -29,10 +44,17 @@ async function seedReadyOrganization(t: ReturnType<typeof initConvexTest>) {
       industry: "itTelecom",
     })
   })
-  await t
-    .withIdentity({ subject: userId })
-    .mutation(api.evaluationModel.model.createModelFromTemplate, { orgId })
-  return { orgId, asAdmin: t.withIdentity({ subject: userId }) }
+  const asAdmin = t.withIdentity({ subject: userId })
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
+    orgId,
+  })
+  for (const libraryKey of EIGHT_KEYS) {
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey,
+    })
+  }
+  return { orgId, asAdmin }
 }
 
 describe("criterion compliance write path", () => {
@@ -244,19 +266,20 @@ describe("getMethodModel", () => {
         locale: "sv",
       }
     )
-    expect(base?.criteria.length).toBeGreaterThanOrEqual(5)
-    expect(base?.criteria[0]?.name).toBe("Scope & Påverkan") // localized sv
+    expect(base?.criteria.length).toBe(8)
+    expect(base?.criteria[0]?.name).toBe("Kunskapsdjup och specialistnivå") // localized sv
     const totalShare = (base?.criteria ?? []).reduce((s, c) => s + c.share, 0)
     expect(Math.abs(totalShare - 100)).toBeLessThanOrEqual(
       base?.criteria.length ?? 0
     ) // rounding
-    // A seeded standard model ships pre-documented (compliance evidence on
-    // every criterion), so all 9 start "documented", none approved.
-    expect(base?.criteria.every((c) => c.status === "documented")).toBe(true)
+    // activateCriterion pre-fills purpose/whyRelevant only, so a freshly
+    // activated criterion is "inProgress" (has some fields) never
+    // "documented" (needs purpose+whyRelevant+biasRisk+biasComment).
+    expect(base?.criteria.every((c) => c.status === "inProgress")).toBe(true)
     expect(base?.progress).toEqual({
-      documented: 9,
+      documented: 0,
       approved: 0,
-      total: 9, // standard template has 9 criteria (CRITERION_KEYS in standardTemplate.ts)
+      total: 8,
     })
 
     const criterionId = base?.criteria[0]?.criterionId
@@ -286,12 +309,13 @@ describe("getMethodModel", () => {
     const target = after?.criteria.find((c) => c.criterionId === criterionId)
     expect(target?.status).toBe("approved")
     expect(target?.decidedByName).not.toBeNull()
-    // All 9 seeded criteria are documented; one is now also approved.
-    expect(after?.progress.documented).toBe(9)
+    // The one documented+approved criterion counts toward both; the other 7
+    // stay inProgress.
+    expect(after?.progress.documented).toBe(1)
     expect(after?.progress.approved).toBe(1)
   })
 
-  it("re-localizes seeded compliance to the requested locale", async () => {
+  it("re-localizes the library name/description/helpText but not stored compliance", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)
     const sv = await asAdmin.query(api.evaluationModel.method.getMethodModel, {
@@ -302,15 +326,18 @@ describe("getMethodModel", () => {
       orgId,
       locale: "en",
     })
-    const svPurpose = sv?.criteria[0]?.purpose ?? ""
-    const enPurpose = en?.criteria[0]?.purpose ?? ""
-    expect(svPurpose.length).toBeGreaterThan(0)
-    expect(enPurpose.length).toBeGreaterThan(0)
-    // Template compliance re-localizes like the name: sv and en prose differ.
-    expect(enPurpose).not.toBe(svPurpose)
+    // The library-derived display fields re-localize per request.
+    expect(sv?.criteria[0]?.name).toBe("Kunskapsdjup och specialistnivå")
+    expect(en?.criteria[0]?.name).toBe("Knowledge depth and specialist level")
+    expect(sv?.criteria[0]?.description).not.toBe(en?.criteria[0]?.description)
+    // The stored compliance documentation (purpose/whyRelevant), pre-filled
+    // once at activation in the org's own content locale, is read verbatim
+    // and never re-localized by the request locale.
+    expect(sv?.criteria[0]?.purpose).toBe(en?.criteria[0]?.purpose)
+    expect(sv?.criteria[0]?.purpose?.length).toBeGreaterThan(0)
   })
 
-  it("stops re-localizing seeded compliance once HR edits it", async () => {
+  it("keeps HR-authored compliance identical across locales", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)
     const before = await asAdmin.query(
@@ -329,7 +356,7 @@ describe("getMethodModel", () => {
       biasComment: "HR authored bias",
       biasAction: "",
     })
-    // Requesting en no longer re-localizes: the stored HR text wins.
+    // Requesting en still shows the stored HR text verbatim.
     const en = await asAdmin.query(api.evaluationModel.method.getMethodModel, {
       orgId,
       locale: "en",

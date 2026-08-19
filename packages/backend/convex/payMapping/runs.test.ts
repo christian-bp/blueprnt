@@ -14,7 +14,7 @@ const OPERATOR_NAME = "HR Person"
 // always <= the freeze reference date (Date.now() inside the mutation).
 const PAST = 1_700_000_000_000
 
-// Seeds an org with: a template model (criteria + levelThresholds), one fully
+// Seeds an org with: a default model (criteria + level rules), one fully
 // evaluated role (every criterion rated so the engine returns a non-null
 // level/score), and two classified active people (confirmed open assignment
 // to that role) one of whom has a pay record and one who does not. Satisfies
@@ -42,10 +42,25 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
   })
   const asHr = t.withIdentity({ subject: userId })
 
-  // Model with criteria + level thresholds.
-  await asHr.mutation(api.evaluationModel.model.createModelFromTemplate, {
+  // Model with criteria + level rules.
+  await asHr.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
+  for (const libraryKey of [
+    "knowledge-depth",
+    "knowledge-breadth",
+    "complexity-ambiguity",
+    "communication-effort",
+    "scope-impact",
+    "autonomy-mandate",
+    "risk-consequence",
+    "safety-exposure",
+  ] as const) {
+    await asHr.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey,
+    })
+  }
   const model = await asHr.query(api.evaluationModel.model.getModel, { orgId })
   if (model === null) throw new Error("seed: model")
   const track = model.tracks[0]

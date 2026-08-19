@@ -1,3 +1,5 @@
+import { DIMENSION_KEYS, type DimensionKey, ZONE_KEYS } from "@workspace/core"
+import type { ZoneKey } from "@workspace/core"
 import { defineTable } from "convex/server"
 import type { Infer } from "convex/values"
 import { v } from "convex/values"
@@ -34,19 +36,38 @@ type _LibraryKeysExact = LibraryKeyFromValidator extends CriteriaLibraryKey
 const _assertLibraryKeysMatch: _LibraryKeysExact = true
 void _assertLibraryKeysMatch
 
+// The four fixed evaluation dimensions (ADR-0021) as a validator. MUST stay in
+// sync with DIMENSION_KEYS in @workspace/core (compile-time guard below).
+// Used by getModel/getMethodModel's wire shape and the audit payloads.
+export const dimensionKeyValidator = v.union(
+  ...DIMENSION_KEYS.map((k) => v.literal(k))
+)
+type DimensionKeyFromValidator = Infer<typeof dimensionKeyValidator>
+type _DimensionKeysExact = DimensionKeyFromValidator extends DimensionKey
+  ? DimensionKey extends DimensionKeyFromValidator
+    ? true
+    : never
+  : never
+const _assertDimensionKeysMatch: _DimensionKeysExact = true
+void _assertDimensionKeysMatch
+
+// The four fixed zones (ADR-0022) as a validator. MUST stay in sync with
+// ZONE_KEYS in @workspace/core (compile-time guard below).
+export const zoneKeyValidator = v.union(...ZONE_KEYS.map((k) => v.literal(k)))
+type ZoneKeyFromValidator = Infer<typeof zoneKeyValidator>
+type _ZoneKeysExact = ZoneKeyFromValidator extends ZoneKey
+  ? ZoneKey extends ZoneKeyFromValidator
+    ? true
+    : never
+  : never
+const _assertZoneKeysMatch: _ZoneKeysExact = true
+void _assertZoneKeysMatch
+
 // One living model per organization (V1: no versioning, ADR-0002). Score and
 // level are NEVER stored; they are derived by packages/core.
 export const models = defineTable({
   orgId: v.string(),
   name: v.string(),
-  templateKey: v.optional(v.string()),
-  // Level thresholds are an aggregate of the model (ADR-0006): always exactly
-  // 7 entries (level 1-7, Level 1 = highest), read as a complete set and edited
-  // as a set, so they live on the model document. minScore is the lowest
-  // inclusive score on the normalized 0-100 scale (ADR-0004).
-  levelThresholds: v.array(
-    v.object({ level: v.number(), minScore: v.number() })
-  ),
   // Model approval: denormalized approval grant from the model author (ADR-0023).
   approval: v.optional(
     v.object({ approvedBy: v.string(), approvedAt: v.number() })
@@ -62,72 +83,54 @@ export const models = defineTable({
       decidedAt: v.number(),
     })
   ),
-  // Level rules: mapping from seniority level to minimum composite score (ADR-0021).
-  levelRules: v.optional(
-    v.array(v.object({ level: v.number(), minScore: v.number() }))
-  ),
-  // Zone profile rules: each role's profile-eligibility thresholds per zone anchor (ADR-0022).
-  zoneProfileRules: v.optional(
-    v.array(
-      v.object({
-        zone: v.union(
-          v.literal("A"),
-          v.literal("B"),
-          v.literal("C"),
-          v.literal("D")
-        ),
-        minStep: v.number(),
-      })
-    )
+  // Level rules: an aggregate of the model (ADR-0006), always exactly 12
+  // entries (level 1-12, Level 1 = highest; ADR-0022's four zones derive from
+  // this range and are never stored). minScore is the lowest inclusive score
+  // on the normalized 0-100 scale (ADR-0004/ADR-0021).
+  levelRules: v.array(v.object({ level: v.number(), minScore: v.number() })),
+  // Zone profile rules: each zone's minimum profile-criterion step for a role
+  // to place there (ADR-0022); zones with no rule (C, D) admit unconditionally.
+  zoneProfileRules: v.array(
+    v.object({ zone: zoneKeyValidator, minStep: v.number() })
   ),
 }).index("by_org", ["orgId"])
 
+// A pure selection row (ADR-0021 addendum, decision 8): no stored texts at
+// all. name/description/measures/notMeasures/anchors/the assessment question
+// always render localized from criteriaLibraryContent via libraryKey; the
+// dimension is always derived from LIBRARY_DIMENSION[libraryKey], never
+// stored. One row per (modelId, libraryKey), enforced in activateCriterion.
 export const criteria = defineTable({
   orgId: v.string(),
   modelId: v.id("models"),
-  name: v.string(),
-  description: v.string(),
-  helpText: v.string(),
-  // Anchor texts for scores 0-5, always exactly 6, ordered by step. Anchors
-  // are an aggregate of the criterion (ADR-0006): never referenced from
-  // elsewhere and never read without it, so they live on its document and
-  // cannot outlive it.
-  anchors: v.array(v.object({ step: v.number(), text: v.string() })),
-  // standard template criterion key ("scope".."formal") set at seed time; display
-  // localizes pristine template rows from the content modules. E2 editing MUST
-  // clear this key when any text field changes (ownership transfer to the
-  // organization).
-  templateKey: v.optional(v.string()),
+  // Which of the 21 library criteria this row instantiates. Required: every
+  // row is a library selection, never a custom criterion.
+  libraryKey: libraryKeyValidator,
   // 1-5 weight points under the point budget (criteria count x 3, exact sum;
-  // ADR-0004). Mutations keep the model balanced at all times: new criteria
-  // enter at 3, reweighting is an atomic batch, and removal redistributes the
-  // removed criterion's points deterministically across the survivors
-  // (one-click removal; ADR-0004 2026-06-07 amendment).
+  // ADR-0004). Mutations keep the model balanced at all times: activation
+  // enters at 3 (the budget grows by 3 at the same time), reweighting is an
+  // atomic batch, and deactivation redistributes the removed criterion's
+  // points deterministically across the survivors (one-click removal;
+  // ADR-0004 2026-06-07 amendment).
   weightPoints: v.number(),
   order: v.number(),
-  isCustom: v.boolean(),
-  // Criterion rationale (kriterieurvalsprotokoll), filled in E2.
+  // Weight motivation: rationale for why this criterion holds its weight
+  // points (captured when the section 12.4 warnings trigger).
+  weightMotivation: v.optional(v.string()),
+  // Criterion rationale (kriterieurvalsprotokoll), pre-filled from library
+  // content at activation and editable thereafter.
   purpose: v.optional(v.string()),
   whyRelevant: v.optional(v.string()),
   overlapNotes: v.optional(v.string()),
-  // Bias review (bias-granskning), filled in E2.
+  // Bias review (bias-granskning).
   biasRisk: v.optional(
     v.union(v.literal("low"), v.literal("medium"), v.literal("high"))
   ),
   biasComment: v.optional(v.string()),
   biasAction: v.optional(v.string()),
-  // true once HR edits compliance via saveCriterionCompliance: the row's stored
-  // compliance is then authored, not template, so getMethodModel stops
-  // re-localizing it. undefined/false = template content (re-localizes at read).
-  complianceEdited: v.optional(v.boolean()),
   approved: v.optional(v.boolean()),
   decidedBy: v.optional(v.string()),
   decidedAt: v.optional(v.number()),
-  // Library key: which of the 21 masterdokument criteria (competence, effort,
-  // responsibility, workingConditions) this row instantiates; null for custom criteria.
-  libraryKey: v.optional(libraryKeyValidator),
-  // Weight motivation: rationale for why this criterion holds its weight points.
-  weightMotivation: v.optional(v.string()),
 })
   .index("by_model", ["modelId"])
   .index("by_org", ["orgId"])

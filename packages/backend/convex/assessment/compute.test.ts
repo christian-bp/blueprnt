@@ -3,6 +3,20 @@ import { api, components } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 import { deriveResults, logLevelShifts } from "./compute"
 
+// A spread of 8 library keys across every dimension at (or under) its own
+// DIMENSION_MAX_ACTIVE cap (competence 2, effort 2, responsibility 3,
+// workingConditions 1), so activating all of them never trips a cap.
+const EIGHT_KEYS = [
+  "knowledge-depth",
+  "knowledge-breadth",
+  "complexity-ambiguity",
+  "communication-effort",
+  "scope-impact",
+  "autonomy-mandate",
+  "risk-consequence",
+  "safety-exposure",
+] as const
+
 async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
   const { orgId, userId } = await t.mutation(
     components.betterAuth.testing.seedMembership,
@@ -18,9 +32,15 @@ async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
     })
   })
   const asAdmin = t.withIdentity({ subject: userId })
-  await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
+  for (const libraryKey of EIGHT_KEYS) {
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey,
+    })
+  }
   const model = await asAdmin.query(api.evaluationModel.model.getModel, {
     orgId,
   })
@@ -53,7 +73,7 @@ describe("deriveResults", () => {
         })
       }
       const derived = await deriveResults(ctx, orgId)
-      expect(derived.totalCriteria).toBe(9)
+      expect(derived.totalCriteria).toBe(8)
       expect(derived.results).toHaveLength(1)
       expect(derived.results[0]).toMatchObject({
         complete: true,
@@ -123,7 +143,7 @@ describe("logLevelShifts", () => {
           {
             roleId: "a",
             ratedCount: 9,
-            totalCriteria: 9,
+            totalCriteria: 8,
             complete: true,
             score: 100,
             level: 1,
@@ -131,7 +151,7 @@ describe("logLevelShifts", () => {
           {
             roleId: "b",
             ratedCount: 9,
-            totalCriteria: 9,
+            totalCriteria: 8,
             complete: true,
             score: 55,
             level: 5,
@@ -139,7 +159,7 @@ describe("logLevelShifts", () => {
           {
             roleId: "gone",
             ratedCount: 9,
-            totalCriteria: 9,
+            totalCriteria: 8,
             complete: true,
             score: 0,
             level: 7,
@@ -149,7 +169,7 @@ describe("logLevelShifts", () => {
           {
             roleId: "a",
             ratedCount: 9,
-            totalCriteria: 9,
+            totalCriteria: 8,
             complete: true,
             score: 90,
             level: 2,
@@ -157,7 +177,7 @@ describe("logLevelShifts", () => {
           {
             roleId: "b",
             ratedCount: 9,
-            totalCriteria: 9,
+            totalCriteria: 8,
             complete: true,
             score: 55,
             level: 5,
@@ -165,7 +185,7 @@ describe("logLevelShifts", () => {
           {
             roleId: "new",
             ratedCount: 0,
-            totalCriteria: 9,
+            totalCriteria: 8,
             complete: false,
             score: null,
             level: null,
@@ -186,7 +206,7 @@ describe("logLevelShifts", () => {
       const a = payloads.find((p) => p.roleId === "a")
       expect(a).toBeDefined()
       expect(a?.cause).toEqual({ event: "model.updated" })
-      expect(a?.totalCriteria).toBe(9)
+      expect(a?.totalCriteria).toBe(8)
       expect(a?.changes).toEqual({
         level: { from: 1, to: 2 },
         score: { from: 100, to: 90 },
@@ -197,7 +217,7 @@ describe("logLevelShifts", () => {
       // absent values.
       const gone = payloads.find((p) => p.roleId === "gone")
       expect(gone).toBeDefined()
-      expect(gone?.totalCriteria).toBe(9)
+      expect(gone?.totalCriteria).toBe(8)
       expect(gone?.changes).toMatchObject({
         level: { from: 7, to: null },
         score: { from: 0, to: null },
@@ -218,7 +238,7 @@ describe("logLevelShifts", () => {
           {
             roleId: "a",
             ratedCount: 9,
-            totalCriteria: 9,
+            totalCriteria: 8,
             complete: true,
             score: 100,
             level: 1,
@@ -228,7 +248,7 @@ describe("logLevelShifts", () => {
           {
             roleId: "a",
             ratedCount: 9,
-            totalCriteria: 9,
+            totalCriteria: 8,
             complete: true,
             score: 80,
             level: 3,

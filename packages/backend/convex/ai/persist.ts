@@ -1,5 +1,4 @@
 import { MAX_FAMILIES, MAX_ROLES } from "@workspace/constants"
-import { isBalanced } from "@workspace/core"
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import { internalMutation, type MutationCtx } from "../_generated/server"
@@ -32,38 +31,6 @@ async function patchOpenSuggestion(
   if (suggestion === null || isSuggestionClosed(suggestion.status)) return
   await ctx.db.patch(suggestionId, patch)
 }
-
-export const saveDraft = internalMutation({
-  args: {
-    suggestionId: v.id("suggestions"),
-    criteria: v.array(
-      v.object({
-        name: v.string(),
-        description: v.string(),
-        helpText: v.string(),
-        weightPoints: v.number(),
-        // Convex has no length validator; the handler guards anchors.length.
-        anchors: v.array(v.string()),
-      })
-    ),
-  },
-  returns: v.null(),
-  handler: async (ctx, { suggestionId, criteria }) => {
-    if (criteria.some((criterion) => criterion.anchors.length !== 6)) {
-      throw appError(ERROR_CODES.invalidInput)
-    }
-    // The action repairs the allocation before calling; this gate keeps an
-    // unbalanced draft from ever reaching the suggestion store (ADR-0004).
-    if (!isBalanced(criteria.map((criterion) => criterion.weightPoints))) {
-      throw appError(ERROR_CODES.weightsUnbalanced)
-    }
-    await patchOpenSuggestion(ctx, suggestionId, {
-      suggestedValue: { criteria },
-      status: "suggested",
-    })
-    return null
-  },
-})
 
 export const saveWeightReview = internalMutation({
   args: {

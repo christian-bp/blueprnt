@@ -225,19 +225,23 @@ describe("organization settings", () => {
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard",
-        levelThresholds: [],
+        levelRules: [],
+        zoneProfileRules: [],
       })
-      for (let index = 0; index < 5; index++) {
+      const libraryKeys = [
+        "knowledge-depth",
+        "knowledge-breadth",
+        "complexity-ambiguity",
+        "scope-impact",
+        "autonomy-mandate",
+      ] as const
+      for (const [index, libraryKey] of libraryKeys.entries()) {
         await ctx.db.insert("criteria", {
           orgId,
           modelId,
-          name: `Criterion ${index + 1}`,
-          description: "",
-          helpText: "",
-          anchors: [],
+          libraryKey,
           weightPoints: 3,
           order: index + 1,
-          isCustom: true,
         })
       }
     })
@@ -270,19 +274,21 @@ describe("organization settings", () => {
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Scratch",
-        levelThresholds: [],
+        levelRules: [],
+        zoneProfileRules: [],
       })
-      for (let index = 0; index < 3; index++) {
+      const libraryKeys = [
+        "knowledge-depth",
+        "knowledge-breadth",
+        "complexity-ambiguity",
+      ] as const
+      for (const [index, libraryKey] of libraryKeys.entries()) {
         await ctx.db.insert("criteria", {
           orgId,
           modelId,
-          name: `Criterion ${index + 1}`,
-          description: "",
-          helpText: "",
-          anchors: [],
+          libraryKey,
           weightPoints: 3,
           order: index + 1,
-          isCustom: true,
         })
       }
     })
@@ -333,19 +339,23 @@ describe("organization settings", () => {
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard",
-        levelThresholds: [],
+        levelRules: [],
+        zoneProfileRules: [],
       })
-      for (let index = 0; index < 5; index++) {
+      const libraryKeys = [
+        "knowledge-depth",
+        "knowledge-breadth",
+        "complexity-ambiguity",
+        "scope-impact",
+        "autonomy-mandate",
+      ] as const
+      for (const [index, libraryKey] of libraryKeys.entries()) {
         await ctx.db.insert("criteria", {
           orgId,
           modelId,
-          name: `Criterion ${index + 1}`,
-          description: "",
-          helpText: "",
-          anchors: [],
+          libraryKey,
           weightPoints: 3,
           order: index + 1,
-          isCustom: true,
         })
       }
     })

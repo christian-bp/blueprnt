@@ -19,9 +19,19 @@ async function seedRoleOrganization(t: ReturnType<typeof initConvexTest>) {
     })
   })
   const asAdmin = t.withIdentity({ subject: userId })
-  await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
   })
+  for (const libraryKey of [
+    "knowledge-depth",
+    "complexity-ambiguity",
+    "scope-impact",
+  ] as const) {
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey,
+    })
+  }
   const model = await asAdmin.query(api.evaluationModel.model.getModel, {
     orgId,
   })
@@ -35,17 +45,7 @@ async function seedRoleOrganization(t: ReturnType<typeof initConvexTest>) {
     team: "Core",
     trackKey: track.key,
   })
-  return { orgId, asAdmin, roleId }
-}
-
-// A single criterion at the neutral 3 is balanced on its own (budget 3), so
-// it passes saveDraft's balance gate.
-const VALID_DRAFT_CRITERION = {
-  name: "Komplexitet",
-  description: "Hur svåra problem rollen hanterar.",
-  helpText: "Bedöm mot ankartexterna.",
-  weightPoints: 3,
-  anchors: ["a0", "a1", "a2", "a3", "a4", "a5"],
+  return { orgId, asAdmin, roleId, model }
 }
 
 async function seedScratchOrganization(t: ReturnType<typeof initConvexTest>) {
@@ -63,208 +63,22 @@ async function seedScratchOrganization(t: ReturnType<typeof initConvexTest>) {
     })
   })
   const asAdmin = t.withIdentity({ subject: userId })
-  await asAdmin.mutation(api.evaluationModel.model.createEmptyModel, {
+  await asAdmin.mutation(api.evaluationModel.model.createDefaultModel, {
     orgId,
-    name: "Scratch",
   })
   return { orgId, asAdmin }
 }
 
 describe("AI suggestion lifecycle", () => {
-  it("requestModelDraft inserts a generating row with provenance", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedScratchOrganization(t)
-    const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestModelDraft,
-      { orgId, description: "Vi bygger HR-mjukvara." }
-    )
-    await t.run(async (ctx) => {
-      const suggestion = await ctx.db.get(suggestionId)
-      expect(suggestion?.status).toBe("generating")
-      expect(suggestion?.source).toBe("ai")
-      expect(suggestion?.target.kind).toBe("model.draft")
-      expect(suggestion?.model?.provider).toBe("mistral")
-      // The model draft stays on the quality-defining default model.
-      expect(suggestion?.model?.model).toBe(AI_MODEL_ID)
-    })
-  })
-
-  it("requestModelDraft stamps requestedBy with the caller", async () => {
-    const t = initConvexTest()
-    const { orgId, userId } = await t.mutation(
-      components.betterAuth.testing.seedMembership,
-      { email: "requester@acme.se", name: "Requester", role: "admin" }
-    )
-    await t.run(async (ctx) => {
-      await ctx.db.insert("organizations", {
-        orgId,
-        country: "se",
-        currency: "SEK",
-        language: "sv",
-        industry: "itTelecom",
-      })
-    })
-    const asAdmin = t.withIdentity({ subject: userId })
-    await asAdmin.mutation(api.evaluationModel.model.createEmptyModel, {
-      orgId,
-      name: "Scratch",
-    })
-    const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestModelDraft,
-      { orgId }
-    )
-    await t.run(async (ctx) => {
-      const suggestion = await ctx.db.get(suggestionId)
-      expect(suggestion?.requestedBy).toBe(userId)
-    })
-  })
-
-  it("requires a complete profile", async () => {
-    const t = initConvexTest()
-    const { orgId, userId } = await t.mutation(
-      components.betterAuth.testing.seedMembership,
-      { email: "hr@acme.se", name: "HR Person", role: "admin" }
-    )
-    await expect(
-      t
-        .withIdentity({ subject: userId })
-        .mutation(api.ai.suggest.requestModelDraft, { orgId })
-    ).rejects.toThrow(/errors.profileIncomplete/)
-  })
-
-  it("confirmModelDraft inserts only valid accepted criteria, repairs the subset, and audits", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedScratchOrganization(t)
-    const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestModelDraft,
-      { orgId }
-    )
-    // Injected directly past saveDraft's balance gate: confirm must hold the
-    // trust boundary on its own (defense in depth).
-    await t.run(async (ctx) => {
-      await ctx.db.patch(suggestionId, {
-        status: "suggested",
-        suggestedValue: {
-          criteria: [
-            { ...VALID_DRAFT_CRITERION, weightPoints: 5 },
-            {
-              name: "Ogiltig",
-              description: "d",
-              helpText: "h",
-              weightPoints: 9,
-              anchors: ["a0", "a1", "a2", "a3", "a4", "a5"],
-            },
-          ],
-        },
-      })
-    })
-    await asAdmin.mutation(api.ai.suggest.confirmModelDraft, {
-      orgId,
-      suggestionId,
-      acceptedIndexes: [0, 1, 7],
-    })
-    await t.run(async (ctx) => {
-      const criteria = await ctx.db
-        .query("criteria")
-        .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .collect()
-      // index 1 has weightPoints 9 (off scale) and is skipped; index 7 is out of range.
-      expect(criteria).toHaveLength(1)
-      expect(criteria[0]?.name).toBe("Komplexitet")
-      expect(criteria[0]?.isCustom).toBe(true)
-      // The accepted subset is repaired to ITS budget (1 criterion -> 3), so
-      // a partial accept of a balanced draft never unbalances the model.
-      expect(criteria[0]?.weightPoints).toBe(3)
-      const suggestion = await ctx.db.get(suggestionId)
-      expect(suggestion?.status).toBe("confirmed")
-      const audit = await ctx.db
-        .query("auditLog")
-        .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "ai.suggestionConfirmed")
-        )
-        .collect()
-      expect(audit).toHaveLength(1)
-      const payload = audit[0]?.payload as {
-        kind: string
-        modelId: string
-        acceptedCount: number
-        totalProposed: number
-        count: number
-        items: Array<{
-          criterionId: string
-          label: string
-          changes: Record<string, { from: null; to: unknown }>
-        }>
-      }
-      // One valid criterion landed out of two proposed.
-      expect(payload.kind).toBe("model.draft")
-      // The permanent entity attribution: the trail must always record which
-      // model the confirmation touched.
-      expect(payload.modelId).toBe(criteria[0]?.modelId)
-      expect(payload.acceptedCount).toBe(1)
-      expect(payload.totalProposed).toBe(2)
-      expect(payload.count).toBe(1)
-      expect(payload.items).toHaveLength(1)
-      const item = payload.items[0]
-      if (item === undefined) throw new Error("missing item")
-      // The retained insert id matches the criterion that actually landed.
-      expect(item.criterionId).toBe(criteria[0]?._id)
-      expect(item.label).toBe("Komplexitet")
-      // originalWeightPoints is the AI's proposed value (5); weightPoints is the
-      // repaired/applied value (a single-criterion subset repairs to 3).
-      expect(item.changes.originalWeightPoints).toEqual({ from: null, to: 5 })
-      expect(item.changes.weightPoints).toEqual({ from: null, to: 3 })
-      expect(item.changes.isCustom).toEqual({ from: null, to: true })
-    })
-  })
-
-  it("saveDraft rejects an unbalanced allocation with errors.weightsUnbalanced", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedScratchOrganization(t)
-    const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestModelDraft,
-      { orgId }
-    )
-    await expect(
-      t.mutation(internal.ai.persist.saveDraft, {
-        suggestionId,
-        criteria: [{ ...VALID_DRAFT_CRITERION, weightPoints: 5 }],
-      })
-    ).rejects.toThrow(/errors.weightsUnbalanced/)
-  })
-
-  it("rejects requestModelDraft when a profile field is an empty string", async () => {
-    const t = initConvexTest()
-    const { orgId, userId } = await t.mutation(
-      components.betterAuth.testing.seedMembership,
-      { email: "hr2@acme.se", name: "HR Person 2", role: "admin" }
-    )
-    // Insert a profile with industry as an empty string: must be rejected
-    // by the truthiness guard.
-    await t.run(async (ctx) => {
-      await ctx.db.insert("organizations", {
-        orgId,
-        country: "se",
-        currency: "SEK",
-        language: "sv",
-        industry: "",
-      })
-    })
-    const asAdmin = t.withIdentity({ subject: userId })
-    await asAdmin.mutation(api.evaluationModel.model.createEmptyModel, {
-      orgId,
-      name: "Empty-field organization",
-    })
-    await expect(
-      asAdmin.mutation(api.ai.suggest.requestModelDraft, { orgId })
-    ).rejects.toThrow(/errors.profileIncomplete/)
-  })
-
   it("markFailed stores a translatable error code", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedScratchOrganization(t)
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey: "complexity-ambiguity",
+    })
     const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestModelDraft,
+      api.ai.suggest.requestWeightReview,
       { orgId }
     )
     await t.mutation(internal.ai.persist.markFailed, {
@@ -279,90 +93,25 @@ describe("AI suggestion lifecycle", () => {
     expect(open[0]?.errorCode).toBe("errors.aiGenerationFailed")
   })
 
-  it("confirmModelDraft produces unique orders after a criterion is removed", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedScratchOrganization(t)
-
-    // Add two criteria via the editor so they get order 1 and 2.
-    const anchors = ["a0", "a1", "a2", "a3", "a4", "a5"]
-    const firstId = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      {
-        orgId,
-        name: "First",
-        description: "d",
-        helpText: "h",
-        anchors,
-      }
-    )
-    await asAdmin.mutation(api.evaluationModel.criteria.addCriterion, {
-      orgId,
-      name: "Second",
-      description: "d",
-      helpText: "h",
-      anchors,
-    })
-
-    // Remove the FIRST criterion, leaving a gap: remaining criterion has order 2.
-    await asAdmin.mutation(api.evaluationModel.criteria.removeCriterion, {
-      orgId,
-      criterionId: firstId,
-    })
-
-    // Simulate a completed AI draft and accept the single valid criterion.
-    const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestModelDraft,
-      { orgId }
-    )
-    await t.mutation(internal.ai.persist.saveDraft, {
-      suggestionId,
-      criteria: [VALID_DRAFT_CRITERION],
-    })
-    await asAdmin.mutation(api.ai.suggest.confirmModelDraft, {
-      orgId,
-      suggestionId,
-      acceptedIndexes: [0],
-    })
-
-    // All criterion orders must be unique; max-based ordering must not collide
-    // with the remaining criterion at order 2.
-    await t.run(async (ctx) => {
-      const criteria = await ctx.db
-        .query("criteria")
-        .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .collect()
-      const orders = criteria.map((c) => c.order)
-      const uniqueOrders = new Set(orders)
-      expect(uniqueOrders.size).toBe(orders.length)
-    })
-  })
-
   it("confirmWeightReview applies only same-org, in-bounds moves", async () => {
     const t = initConvexTest()
-    const anchors = ["a0", "a1", "a2", "a3", "a4", "a5"]
 
     // Foreign organization: seed a real criterion id that belongs to ANOTHER org.
     const foreign = await seedScratchOrganization(t)
     const foreignCriterionId = await foreign.asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      {
-        orgId: foreign.orgId,
-        name: "Foreign",
-        description: "d",
-        helpText: "h",
-        anchors,
-      }
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId: foreign.orgId, libraryKey: "complexity-ambiguity" }
     )
 
     // Same-org organization: two criteria at the neutral 3 each.
     const { orgId, asAdmin } = await seedScratchOrganization(t)
     const ownA = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      { orgId, name: "Own A", description: "d", helpText: "h", anchors }
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
     )
     const ownB = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      { orgId, name: "Own B", description: "d", helpText: "h", anchors }
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
     )
 
     const suggestionId = await asAdmin.mutation(
@@ -472,8 +221,8 @@ describe("AI suggestion lifecycle", () => {
       const bItem = payload.items.find((i) => i.criterionId === ownB)
       expect(aItem?.changes.weightPoints).toEqual({ from: 3, to: 2 })
       expect(bItem?.changes.weightPoints).toEqual({ from: 3, to: 4 })
-      expect(aItem?.label).toBe("Own A")
-      expect(bItem?.label).toBe("Own B")
+      expect(aItem?.label).toBe("Komplexitet och otydlighet")
+      expect(bItem?.label).toBe("Scope och påverkan")
       // Only the two genuinely-changed criteria appear (no zero-delta entries).
       expect(payload.items).toHaveLength(2)
       expect(payload.count).toBe(2)
@@ -503,38 +252,19 @@ describe("AI suggestion lifecycle", () => {
 
   it("confirmWeightReview records net per-criterion items across a normal multi-move chain", async () => {
     const t = initConvexTest()
-    const anchors = ["a0", "a1", "a2", "a3", "a4", "a5"]
     const { orgId, asAdmin } = await seedScratchOrganization(t)
     // Three criteria at the neutral 3 each (budget 9).
     const a = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      {
-        orgId,
-        name: "Alpha",
-        description: "d",
-        helpText: "h",
-        anchors,
-      }
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
     )
     const b = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      {
-        orgId,
-        name: "Beta",
-        description: "d",
-        helpText: "h",
-        anchors,
-      }
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
     )
     const c = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      {
-        orgId,
-        name: "Gamma",
-        description: "d",
-        helpText: "h",
-        anchors,
-      }
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "autonomy-mandate" }
     )
 
     const suggestionId = await asAdmin.mutation(
@@ -600,10 +330,9 @@ describe("AI suggestion lifecycle", () => {
     })
   })
 
-  it("confirmModelDraft level.shift rows carry the AI-confirm cause", async () => {
+  it("confirmWeightReview level.shift rows carry the AI-confirm cause", async () => {
     const t = initConvexTest()
-    const anchors = ["a0", "a1", "a2", "a3", "a4", "a5"]
-    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
+    const { orgId, asAdmin, roleId, model } = await seedRoleOrganization(t)
     // setRating requires a complete profile; the seeded role has none, so give
     // it one before rating.
     await t.run(async (ctx) => {
@@ -614,48 +343,43 @@ describe("AI suggestion lifecycle", () => {
         responsibilities: "Ships features",
       })
     })
-    // Fully rate the role against the seeded template so it has a complete level.
-    const criteria = await t.run(async (ctx) =>
-      ctx.db
-        .query("criteria")
-        .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .collect()
-    )
-    for (const criterion of criteria) {
+    // Fully rate the role, skewed toward the first criterion, so a rebalance
+    // that moves points onto it actually shifts the score/level.
+    for (const [index, criterion] of model.criteria.entries()) {
       await asAdmin.mutation(api.assessment.ratings.setRating, {
         orgId,
         roleId,
-        criterionId: criterion._id,
-        value: 5,
+        criterionId: criterion.criterionId,
+        value: index === 0 ? 5 : 1,
       })
     }
-    // A confirmed model draft adds a new criterion, which flips the fully-rated
-    // role to incomplete (level -> null): a deterministic level.shift. The shift
-    // rows must be traceable back to the suggestion that caused them.
+    // A confirmed weight review that moves points onto the role's strong
+    // criterion shifts its score/level: the shift rows must be traceable
+    // back to the suggestion that caused them.
+    const first = model.criteria[0]
+    const rest = model.criteria.slice(1)
+    if (first === undefined) throw new Error("seed")
     const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestModelDraft,
+      api.ai.suggest.requestWeightReview,
       { orgId }
     )
-    await t.run(async (ctx) => {
-      await ctx.db.patch(suggestionId, {
-        status: "suggested",
-        suggestedValue: {
-          criteria: [
-            {
-              name: "Ny aspekt",
-              description: "d",
-              helpText: "h",
-              weightPoints: 3,
-              anchors,
-            },
-          ],
+    const donor = rest[0]
+    if (donor === undefined) throw new Error("seed")
+    await t.mutation(internal.ai.persist.saveWeightReview, {
+      suggestionId,
+      moves: [
+        {
+          fromCriterionId: donor.criterionId as string,
+          toCriterionId: first.criterionId as string,
+          points: 2,
+          motivation: "Weights toward the strongest criterion.",
         },
-      })
+      ],
     })
-    await asAdmin.mutation(api.ai.suggest.confirmModelDraft, {
+    await asAdmin.mutation(api.ai.suggest.confirmWeightReview, {
       orgId,
       suggestionId,
-      acceptedIndexes: [0],
+      acceptedMoveIndexes: [0],
     })
 
     await t.run(async (ctx) => {
@@ -694,15 +418,14 @@ describe("AI suggestion lifecycle", () => {
 
   it("getWeightReviewLock holds after a confirmed review and releases on a model change", async () => {
     const t = initConvexTest()
-    const anchors = ["a0", "a1", "a2", "a3", "a4", "a5"]
     const { orgId, asAdmin } = await seedScratchOrganization(t)
     const a = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      { orgId, name: "A", description: "d", helpText: "h", anchors }
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
     )
     const b = await asAdmin.mutation(
-      api.evaluationModel.criteria.addCriterion,
-      { orgId, name: "B", description: "d", helpText: "h", anchors }
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
     )
 
     // No review yet: unlocked.
@@ -765,29 +488,44 @@ describe("AI suggestion lifecycle", () => {
     ).toBe(false)
   })
 
-  it("confirmModelDraft rejects a second confirm on the same suggestion", async () => {
+  it("confirmWeightReview rejects a second confirm on the same suggestion", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedScratchOrganization(t)
+    const a = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
+    )
+    const b = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
+    )
     const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestModelDraft,
+      api.ai.suggest.requestWeightReview,
       { orgId }
     )
-    await t.mutation(internal.ai.persist.saveDraft, {
+    await t.mutation(internal.ai.persist.saveWeightReview, {
       suggestionId,
-      criteria: [VALID_DRAFT_CRITERION],
+      moves: [
+        {
+          fromCriterionId: a,
+          toCriterionId: b,
+          points: 1,
+          motivation: "Fits the profile.",
+        },
+      ],
     })
-    await asAdmin.mutation(api.ai.suggest.confirmModelDraft, {
+    await asAdmin.mutation(api.ai.suggest.confirmWeightReview, {
       orgId,
       suggestionId,
-      acceptedIndexes: [0],
+      acceptedMoveIndexes: [0],
     })
     // The first confirm moved status off "suggested"; a second confirm must
     // not double-apply.
     await expect(
-      asAdmin.mutation(api.ai.suggest.confirmModelDraft, {
+      asAdmin.mutation(api.ai.suggest.confirmWeightReview, {
         orgId,
         suggestionId,
-        acceptedIndexes: [0],
+        acceptedMoveIndexes: [0],
       })
     ).rejects.toThrow(/errors.notFound/)
   })
@@ -795,15 +533,19 @@ describe("AI suggestion lifecycle", () => {
   it("rejectSuggestion records rejectedBy and an audit row without touching confirmedBy", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedScratchOrganization(t)
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey: "complexity-ambiguity",
+    })
     const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestModelDraft,
+      api.ai.suggest.requestWeightReview,
       { orgId }
     )
-    // saveDraft moves the row to "suggested"; dismissing it must not run the
-    // confirm path's confirmedBy attribution.
-    await t.mutation(internal.ai.persist.saveDraft, {
+    // saveWeightReview moves the row to "suggested"; dismissing it must not
+    // run the confirm path's confirmedBy attribution.
+    await t.mutation(internal.ai.persist.saveWeightReview, {
       suggestionId,
-      criteria: [VALID_DRAFT_CRITERION],
+      moves: [],
     })
     await asAdmin.mutation(api.ai.suggest.rejectSuggestion, {
       orgId,
@@ -828,15 +570,15 @@ describe("AI suggestion lifecycle", () => {
         modelId?: string
         roleId?: string
       }
-      expect(payload.kind).toBe("model.draft")
-      // status before->after: saveDraft moved the row to "suggested", the
-      // dismissal flips it to "rejected".
+      expect(payload.kind).toBe("model.weightReview")
+      // status before->after: saveWeightReview moved the row to "suggested",
+      // the dismissal flips it to "rejected".
       expect(payload.changes.status).toEqual({
         from: "suggested",
         to: "rejected",
       })
-      // model.draft targets a model: the id-only target carries modelId, never
-      // a null roleId/criterionId key.
+      // model.weightReview targets a model: the id-only target carries
+      // modelId, never a null roleId/criterionId key.
       expect(payload.modelId).toBeTruthy()
       expect("roleId" in payload).toBe(false)
       expect("criterionId" in payload).toBe(false)
@@ -857,18 +599,33 @@ describe("AI suggestion lifecycle", () => {
   it("rejectSuggestion refuses to overwrite a confirmed suggestion", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedScratchOrganization(t)
+    const a = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
+    )
+    const b = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
+    )
     const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestModelDraft,
+      api.ai.suggest.requestWeightReview,
       { orgId }
     )
-    await t.mutation(internal.ai.persist.saveDraft, {
+    await t.mutation(internal.ai.persist.saveWeightReview, {
       suggestionId,
-      criteria: [VALID_DRAFT_CRITERION],
+      moves: [
+        {
+          fromCriterionId: a,
+          toCriterionId: b,
+          points: 1,
+          motivation: "Fits the profile.",
+        },
+      ],
     })
-    await asAdmin.mutation(api.ai.suggest.confirmModelDraft, {
+    await asAdmin.mutation(api.ai.suggest.confirmWeightReview, {
       orgId,
       suggestionId,
-      acceptedIndexes: [0],
+      acceptedMoveIndexes: [0],
     })
     // The confirmed row is terminal: its provenance cannot be flipped to
     // rejected after the fact.
@@ -948,50 +705,6 @@ describe("AI suggestion lifecycle", () => {
       const suggestion = await ctx.db.get(roleSuggestionId)
       expect(suggestion?.status).toBe("rejected")
       expect(suggestion?.rejectedBy).toBe(editorId)
-    })
-  })
-
-  it("confirmModelDraft skips malformed draft values and rejects the suggestion", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedScratchOrganization(t)
-    const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestModelDraft,
-      { orgId }
-    )
-    await t.mutation(internal.ai.persist.saveDraft, {
-      suggestionId,
-      criteria: [
-        {
-          // Whitespace-only name must be skipped.
-          name: "  ",
-          description: "d",
-          helpText: "h",
-          weightPoints: 3,
-          anchors: ["a0", "a1", "a2", "a3", "a4", "a5"],
-        },
-        {
-          // Empty anchor text must be skipped.
-          name: "HasEmptyAnchor",
-          description: "d",
-          helpText: "h",
-          weightPoints: 3,
-          anchors: ["a0", "", "a2", "a3", "a4", "a5"],
-        },
-      ],
-    })
-    await asAdmin.mutation(api.ai.suggest.confirmModelDraft, {
-      orgId,
-      suggestionId,
-      acceptedIndexes: [0, 1],
-    })
-    await t.run(async (ctx) => {
-      const criteria = await ctx.db
-        .query("criteria")
-        .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .collect()
-      expect(criteria).toHaveLength(0)
-      const suggestion = await ctx.db.get(suggestionId)
-      expect(suggestion?.status).toBe("rejected")
     })
   })
 })
@@ -1940,14 +1653,18 @@ describe("getOpenSuggestions kind filter", () => {
   it("returns only the requested kind via the kind-scoped index", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedScratchOrganization(t)
-    // One open import row plus several open drafts that would otherwise
-    // compete for the same per-status cap.
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey: "complexity-ambiguity",
+    })
+    // One open import row plus several open weight reviews that would
+    // otherwise compete for the same per-status cap.
     const importId = await asAdmin.mutation(
       api.ai.suggest.requestStarterImport,
       { orgId, rawText: "Developer" }
     )
     for (let i = 0; i < 3; i++) {
-      await asAdmin.mutation(api.ai.suggest.requestModelDraft, { orgId })
+      await asAdmin.mutation(api.ai.suggest.requestWeightReview, { orgId })
     }
     const filtered = await asAdmin.query(api.ai.suggest.getOpenSuggestions, {
       orgId,

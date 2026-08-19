@@ -20,20 +20,17 @@ describe("domain schema skeleton", () => {
       const modelId = await ctx.db.insert("models", {
         orgId: "org1",
         name: "Standard",
-        // Thresholds and anchors are aggregates on their parent documents
-        // (ADR-0006), not tables.
-        levelThresholds: [{ level: 1, minScore: 98 }],
+        // Level rules are an aggregate on the model document (ADR-0006), not
+        // a table; criteria carry no stored text at all (decision 8).
+        levelRules: [{ level: 1, minScore: 98 }],
+        zoneProfileRules: [{ zone: "A", minStep: 4 }],
       })
       const criterionId = await ctx.db.insert("criteria", {
         orgId: "org1",
         modelId,
-        name: "Scope & Impact",
-        description: "d",
-        helpText: "h",
-        anchors: [{ step: 0, text: "anchor" }],
+        libraryKey: "scope-impact",
         weightPoints: 5,
         order: 1,
-        isCustom: false,
       })
       const roleId = await ctx.db.insert("roles", {
         orgId: "org1",

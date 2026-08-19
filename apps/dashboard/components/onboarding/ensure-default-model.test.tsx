@@ -16,8 +16,7 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
     evaluationModel: {
       model: {
         getModel: "evaluationModel.model.getModel",
-        createModelFromTemplate:
-          "evaluationModel.model.createModelFromTemplate",
+        createDefaultModel: "evaluationModel.model.createDefaultModel",
       },
     },
   },

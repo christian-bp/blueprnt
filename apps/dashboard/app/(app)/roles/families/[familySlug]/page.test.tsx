@@ -98,10 +98,9 @@ function loaded(roles: Array<Record<string, unknown>> = ROLES) {
       return {
         modelId: "m1",
         name: "Model",
-        templateKey: null,
         criteria: [],
         tracks: TRACKS,
-        levelThresholds: [{ level: 1, minScore: 0 }],
+        levelRules: [{ level: 1, minScore: 0 }],
       }
     }
     return undefined

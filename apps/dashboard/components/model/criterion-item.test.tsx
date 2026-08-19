@@ -16,7 +16,6 @@ const editor = messages.dashboard.model.editor
 function renderItem(props: {
   anchors?: { step: number; text: string }[]
   editable?: boolean
-  onEdit?: () => void
   onRemove?: () => void
 }) {
   return render(
@@ -84,18 +83,10 @@ describe("CriterionItem row menu", async () => {
   }
 
   it("renders no menu in read mode", () => {
-    renderItem({ editable: false, onEdit: () => {}, onRemove: () => {} })
+    renderItem({ editable: false, onRemove: () => {} })
     expect(
       screen.queryByRole("button", { name: "Actions for Complexity" })
     ).toBeNull()
-  })
-
-  it("forwards Edit from the menu", async () => {
-    const onEdit = vi.fn()
-    renderItem({ editable: true, onEdit })
-    await openItemMenu()
-    fireEvent.click(screen.getByRole("menuitem", { name: editor.editCta }))
-    expect(onEdit).toHaveBeenCalledTimes(1)
   })
 
   it("confirms removal through the alert dialog", async () => {

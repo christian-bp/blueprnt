@@ -5,7 +5,6 @@ import {
   ASSIGNMENT_AUDIT_FIELDS,
   AUDIT_CATEGORIES,
   AUDIT_EVENTS,
-  CRITERION_AUDIT_FIELDS,
   ERASED_FIELD_VALUE,
   GROUP_ANALYSIS_AUDIT_FIELDS,
   NOTE_AUDIT_FIELDS,
@@ -18,6 +17,7 @@ import {
   ROLE_CREATE_FIELDS,
   SETTINGS_AUDIT_FIELDS,
 } from "@workspace/backend/convex/lib/audit"
+import { COMPLIANCE_AUDIT_FIELDS } from "@workspace/backend/convex/evaluationModel/method"
 import { ACTION_TARGET_KINDS } from "@workspace/backend/convex/payMapping/tables"
 import {
   COUNTRY_KEYS,
@@ -144,12 +144,17 @@ describe("audit log category filters", () => {
 // with the writers (evaluationModel/method.ts, engine level.shift, ratings, and
 // the flat-stats event payloads in auditPayloads.ts).
 const OTHER_AUDIT_FIELDS = [
-  // criterion.complianceUpdated (COMPLIANCE_AUDIT_FIELDS in method.ts)
-  "whyRelevant",
-  "overlapNotes",
-  "biasRisk",
-  "biasComment",
-  "biasAction",
+  // criterion.activated/criterion.deactivated flat-stat fields (criteria.ts).
+  // libraryKey/dimensionKey are coded values (resolved via
+  // criteriaLibraryContent, not a dashboard.auditLog.values.* Record), but
+  // they still need a FIELD label like every other payload key.
+  "libraryKey",
+  "dimensionKey",
+  "deletedRatingCount",
+  "budget",
+  // model.created create-changes (MODEL_AUDIT_FIELDS also has "name", already
+  // covered by the person/role "name" field above).
+  "levelRules",
   // level.shift diffs (assessment/compute.ts FIELDS) + rating.change
   "level",
   "score",
@@ -157,14 +162,9 @@ const OTHER_AUDIT_FIELDS = [
   "ratedCount",
   "value",
   "motivation",
-  // ai.suggestionConfirmed model.draft bulk item diffs (ai/suggest.ts)
-  "originalWeightPoints",
-  "anchorCount",
-  // ai.suggestionConfirmed model.draft / model.weightReview flat-stat fields
+  // ai.suggestionConfirmed model.weightReview flat-stat fields
   // (auditPayloads.ts AiConfirmedPayload). These render through
   // payloadStats/StatList, so an unlabelled one prints its raw payload key.
-  "acceptedCount",
-  "totalProposed",
   "appliedCount",
   "totalMoves",
   // member.* / invitation.* / platform.membership* / organization.created scalars
@@ -207,7 +207,7 @@ const OTHER_AUDIT_FIELDS = [
 
 const ALL_AUDIT_FIELDS = [
   ...new Set<string>([
-    ...CRITERION_AUDIT_FIELDS,
+    ...COMPLIANCE_AUDIT_FIELDS,
     ...ANCHOR_AUDIT_FIELDS,
     ...MODEL_AUDIT_FIELDS,
     ...SETTINGS_AUDIT_FIELDS,

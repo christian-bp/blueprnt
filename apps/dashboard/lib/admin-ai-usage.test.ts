@@ -285,11 +285,11 @@ describe("kindCounts", () => {
     expect(
       kindCounts({
         "role.profile": 2,
-        "model.draft": 5,
+        "starter.import": 5,
         "model.weightReview": 2,
       })
     ).toEqual([
-      { kind: "model.draft", count: 5 },
+      { kind: "starter.import", count: 5 },
       { kind: "model.weightReview", count: 2 },
       { kind: "role.profile", count: 2 },
     ])

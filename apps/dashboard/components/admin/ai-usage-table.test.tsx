@@ -122,11 +122,11 @@ describe("AiUsageTable", () => {
         row({
           orgId: "a",
           orgName: "Acme",
-          byKind: { "model.draft": 3, "role.profile": 1 },
+          byKind: { "model.weightReview": 3, "role.profile": 1 },
         }),
       ],
     })
-    expect(screen.getByText("model.draft 3")).toBeTruthy()
+    expect(screen.getByText("model.weightReview 3")).toBeTruthy()
     expect(screen.getByText("role.profile 1")).toBeTruthy()
   })
 

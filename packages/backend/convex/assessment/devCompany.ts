@@ -9,7 +9,7 @@
 // the onboarding industry starter; it is a hardcoded demo fixture for
 // seedRatedRoles.
 import type { WeightPoints } from "@workspace/core"
-import type { CriterionKey } from "../evaluationModel/standardTemplate"
+import type { CriteriaLibraryKey } from "../evaluationModel/criteriaLibrary"
 
 import type { RatingValue } from "@workspace/core"
 
@@ -384,11 +384,19 @@ export const DEV_COMPANY: DevFamily[] = [
   },
 ]
 
-// Per-role 0-5 ratings across the nine criteria in CRITERION_KEYS order
-// [scope, complexity, autonomy, risk, knowledge, stakeholders, financial,
-// people, formal]. The vectors mirror the hand-tuned ratings of the production
-// demo org, so a reseed reproduces that calibration exactly; when the demo
-// ratings are re-tuned there, this map is what must be updated to match.
+// Per-role 1-5 ratings across the demo's 8 selected library criteria, in
+// DEMO_SELECTED_KEYS order: [knowledge-depth, knowledge-breadth,
+// complexity-ambiguity, communication-effort, scope-impact, autonomy-mandate,
+// risk-consequence, people-leadership]. The vectors are re-keyed from the
+// production demo org's nine-criterion standard-template ratings (see
+// git history for the source vectors): each new position takes its value
+// straight from the template criterion the masterdokument content maps it to
+// (knowledge-breadth <- formal, communication-effort <- stakeholders,
+// people-leadership <- people, the rest 1:1 by concept), and the old
+// financial vector is dropped entirely (no library key selected for it in
+// this demo). The values themselves are UNCHANGED by this re-key (still the
+// original 0-5 numbers); recalibrating them against the library's own
+// semantics is a later phase (T5), not this one.
 // Profiles VARY across criteria by function, which is what makes the weighting
 // matter: boosting the technical criteria (complexity/knowledge) lifts the
 // engineering profiles and drops the leadership-heavy ones. Verified in
@@ -397,9 +405,20 @@ export const DEV_COMPANY: DevFamily[] = [
 // Only three shapes are shared between titles; every other role carries its
 // own vector.
 //
-// One rating per criterion in CRITERION_KEYS order; the tuple type makes a
-// wrong-length, non-integer, or out-of-range vector a compile error instead of
-// a seed-time surprise.
+// One rating per selected criterion in DEMO_SELECTED_KEYS order; the tuple
+// type makes a wrong-length, non-integer, or out-of-range vector a compile
+// error instead of a seed-time surprise.
+export const DEMO_SELECTED_KEYS = [
+  "knowledge-depth",
+  "knowledge-breadth",
+  "complexity-ambiguity",
+  "communication-effort",
+  "scope-impact",
+  "autonomy-mandate",
+  "risk-consequence",
+  "people-leadership",
+] as const satisfies readonly CriteriaLibraryKey[]
+type DemoLibraryKey = (typeof DEMO_SELECTED_KEYS)[number]
 type RatingVector = readonly [
   RatingValue,
   RatingValue,
@@ -409,81 +428,79 @@ type RatingVector = readonly [
   RatingValue,
   RatingValue,
   RatingValue,
-  RatingValue,
 ]
-const EXEC_HEAD: RatingVector = [5, 3, 4, 4, 3, 5, 5, 5, 5] // functional head (HR/Sales/Product)
-const SPECIALIST_IC: RatingVector = [2, 2, 2, 3, 3, 2, 1, 0, 3] // hands-on specialist, no people responsibility
-const COORDINATOR_IC: RatingVector = [2, 2, 2, 2, 2, 3, 1, 0, 3] // coordinating IC, stakeholder-tilted
+const EXEC_HEAD: RatingVector = [3, 5, 3, 5, 5, 4, 4, 5] // functional head (HR/Sales/Product)
+const SPECIALIST_IC: RatingVector = [3, 3, 2, 2, 2, 2, 3, 0] // hands-on specialist, no people responsibility
+const COORDINATOR_IC: RatingVector = [2, 3, 2, 3, 2, 2, 2, 0] // coordinating IC, stakeholder-tilted
 
 export const RATINGS_BY_TITLE: Record<string, RatingVector> = {
-  CEO: [5, 5, 5, 5, 5, 5, 5, 5, 3],
+  CEO: [5, 3, 5, 5, 5, 5, 5, 5],
   "Head of HR": EXEC_HEAD,
-  "Head of Finance": [5, 4, 5, 4, 4, 5, 5, 5, 3],
+  "Head of Finance": [4, 3, 4, 5, 5, 5, 4, 5],
   "Head of Sales & Marketing": EXEC_HEAD,
   "Head of Product": EXEC_HEAD,
   "Software Developer": SPECIALIST_IC,
-  "Software Tester": [2, 3, 4, 2, 3, 3, 0, 0, 3],
+  "Software Tester": [3, 3, 3, 3, 2, 4, 2, 0],
   "Embedded Developer": SPECIALIST_IC,
   "Hardware Developer": SPECIALIST_IC,
-  Konstruktör: [2, 2, 2, 2, 2, 2, 1, 0, 3],
-  "Cloud Architect": [3, 4, 3, 3, 4, 2, 1, 0, 3],
-  "Infrastructure Engineer": [2, 3, 2, 2, 3, 2, 1, 0, 3],
-  "Technical Solutions Architect": [4, 4, 4, 3, 3, 4, 3, 2, 3],
-  "Department Manager Software": [3, 3, 4, 3, 2, 3, 3, 2, 3],
-  "Strategy Engineer": [4, 5, 2, 4, 1, 5, 0, 0, 3],
-  "Data Developer": [2, 2, 2, 2, 2, 2, 0, 0, 1],
-  "Department Manager Data": [4, 3, 4, 3, 3, 4, 3, 2, 2],
-  "Product Manager": [3, 3, 4, 3, 2, 4, 2, 0, 3],
-  "Product Coordinator": [2, 3, 3, 3, 2, 3, 1, 0, 3],
-  "Product Promotor": [2, 2, 2, 3, 3, 3, 0, 0, 3],
-  "UX Lead": [4, 3, 4, 3, 3, 3, 0, 0, 3],
-  "Account Manager": [3, 2, 3, 3, 3, 4, 3, 1, 2],
-  "Key Account Manager": [3, 3, 2, 4, 2, 4, 4, 0, 3],
-  "Sales Manager": [4, 4, 4, 4, 2, 3, 4, 2, 2],
-  "Order & Indoor Sales": [2, 3, 2, 2, 3, 3, 2, 1, 2],
+  Konstruktör: [2, 3, 2, 2, 2, 2, 2, 0],
+  "Cloud Architect": [4, 3, 4, 2, 3, 3, 3, 0],
+  "Infrastructure Engineer": [3, 3, 3, 2, 2, 2, 2, 0],
+  "Technical Solutions Architect": [3, 3, 4, 4, 4, 4, 3, 2],
+  "Department Manager Software": [2, 3, 3, 3, 3, 4, 3, 2],
+  "Strategy Engineer": [1, 3, 5, 5, 4, 2, 4, 0],
+  "Data Developer": [2, 1, 2, 2, 2, 2, 2, 0],
+  "Department Manager Data": [3, 2, 3, 4, 4, 4, 3, 2],
+  "Product Manager": [2, 3, 3, 4, 3, 4, 3, 0],
+  "Product Coordinator": [2, 3, 3, 3, 2, 3, 3, 0],
+  "Product Promotor": [3, 3, 2, 3, 2, 2, 3, 0],
+  "UX Lead": [3, 3, 3, 3, 4, 4, 3, 0],
+  "Account Manager": [3, 2, 2, 4, 3, 3, 3, 1],
+  "Key Account Manager": [2, 3, 3, 4, 3, 2, 4, 0],
+  "Sales Manager": [2, 2, 4, 3, 4, 4, 4, 2],
+  "Order & Indoor Sales": [3, 2, 3, 3, 2, 2, 2, 1],
   Marknadskoordinator: COORDINATOR_IC,
-  "E-Commerce Strategy Lead": [4, 4, 4, 4, 3, 3, 2, 0, 3],
+  "E-Commerce Strategy Lead": [3, 3, 4, 3, 4, 4, 4, 0],
   "Partner & Cooperations Manager": COORDINATOR_IC,
-  "Content Delivery Manager": [4, 3, 4, 3, 3, 3, 3, 0, 3],
-  "IT Manager": [3, 2, 4, 3, 2, 2, 3, 2, 3],
-  "IT-specialist": [2, 2, 2, 2, 3, 2, 1, 0, 3],
-  "IT-support": [1, 1, 2, 2, 1, 2, 1, 0, 2],
-  Supporttekniker: [2, 3, 2, 3, 2, 3, 1, 0, 2],
+  "Content Delivery Manager": [3, 3, 3, 3, 4, 4, 3, 0],
+  "IT Manager": [2, 3, 2, 2, 3, 4, 3, 2],
+  "IT-specialist": [3, 3, 2, 2, 2, 2, 2, 0],
+  "IT-support": [1, 2, 1, 2, 1, 2, 2, 0],
+  Supporttekniker: [2, 2, 3, 3, 2, 2, 3, 0],
   Controller: SPECIALIST_IC,
-  Redovisningsekonom: [2, 1, 2, 1, 1, 2, 0, 0, 3],
-  "Strategic Purchaser": [3, 3, 3, 3, 3, 4, 1, 0, 3],
-  "Admin & Purchasing": [2, 2, 2, 2, 1, 2, 1, 0, 2],
-  "Project Manager": [3, 3, 3, 3, 1, 3, 2, 1, 3],
-  "Project Management Officer": [1, 2, 3, 3, 2, 2, 1, 0, 3],
-  "Project & Operations Manager": [4, 3, 4, 3, 2, 4, 3, 2, 3],
+  Redovisningsekonom: [1, 3, 1, 2, 2, 2, 1, 0],
+  "Strategic Purchaser": [3, 3, 3, 4, 3, 3, 3, 0],
+  "Admin & Purchasing": [1, 2, 2, 2, 2, 2, 2, 0],
+  "Project Manager": [1, 3, 3, 3, 3, 3, 3, 1],
+  "Project Management Officer": [2, 3, 2, 2, 1, 3, 3, 0],
+  "Project & Operations Manager": [2, 3, 3, 4, 4, 4, 3, 2],
 }
 
-// The demo org's calibrated weight points, mirroring the production demo org
-// like RATINGS_BY_TITLE does. Four criteria deviate from the standard
-// template's defaults (autonomy 4->3, risk 3->4, financial 2->3, people 2->1);
-// the sum stays on the exact 27-point budget (guarded in devCompany.test.ts).
-// seedRatedRoles patches these onto the seeded criteria, so the demo org is a
-// company that has DONE its weighting, not one sitting on defaults.
-export const DEMO_WEIGHT_POINTS: Record<CriterionKey, WeightPoints> = {
-  scope: 5,
-  complexity: 4,
-  autonomy: 3,
-  risk: 4,
-  knowledge: 3,
-  stakeholders: 3,
-  financial: 3,
-  people: 1,
-  formal: 1,
+// The demo org's calibrated weight points (ADR-0021 library keys), summing to
+// the exact 24-point budget (8 criteria x 3; guarded in devCompany.test.ts).
+// seedRatedRoles inserts the demo's 8 criteria directly at these weights, so
+// the demo org is a company that has DONE its weighting, not one sitting on
+// a neutral default.
+export const DEMO_WEIGHT_POINTS: Record<DemoLibraryKey, WeightPoints> = {
+  "knowledge-depth": 3,
+  "knowledge-breadth": 2,
+  "complexity-ambiguity": 4,
+  "communication-effort": 3,
+  "scope-impact": 5,
+  "autonomy-mandate": 3,
+  "risk-consequence": 3,
+  "people-leadership": 1,
 }
 
 // Anchor-role designations, mirroring the production demo org. Keyed by role
 // title; seedRatedRoles stamps status "active" and reviewedAt at seed time.
+// expectedLevel is on the new 1-12 scale (ADR-0022).
 export const DEMO_ANCHOR_ROLES: Record<
   string,
   { expectedLevel: number; motivation: string }
 > = {
   "Technical Solutions Architect": {
-    expectedLevel: 4,
+    expectedLevel: 6,
     motivation:
       "Det är en tung roll både kunskapsmässigt och personal som kräver både en ledarskapsförmåga samt specialistkompetens inom domän.",
   },
