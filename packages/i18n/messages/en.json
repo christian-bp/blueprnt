@@ -1849,8 +1849,7 @@
         "recommendedChip": "Recommended for your industry",
         "overlapChip": "Overlaps {names}",
         "addCta": "Add",
-        "addLabel": "Add {name} to the model",
-        "dragLabel": "Move {name} into its dimension"
+        "addLabel": "Add {name} to the model"
       },
       "change": {
         "cancel": "Cancel"
@@ -1982,6 +1981,7 @@
       "whyChange": "Why this change?"
     },
     "help": {
+      "dimensionLabel": "What does this dimension cover?",
       "criterionLabel": "What is a criterion?",
       "criterionBody": "Something every role is evaluated against, like scope or complexity. Its 1 to 5 scale describes what each rating means; its weighting decides how much it counts.",
       "anchorsLabel": "How does the evaluation scale work?",

@@ -40,8 +40,6 @@ import {
 // key presses, and it is the path that has to work for a reader who does not
 // use a pointer at all.
 
-const build = messages.dashboard.model.build
-
 // Two columns of the four, laid out as the build view lays them out: the zone
 // on top, its own library list directly underneath.
 const LAYOUT = {
@@ -171,10 +169,10 @@ function Harness({
 }
 
 const zone = (title: string) => screen.getByRole("region", { name: title })
+// The draggable body carries no label of its own, so it is found the way a
+// screen reader names it: by the content inside it.
 const card = (name: string) =>
-  screen.getByRole("button", {
-    name: build.dragLabel.replace("{name}", name),
-  })
+  screen.getByRole("button", { name: (label) => label.startsWith(name) })
 const stateOf = (title: string) => zone(title).dataset.state
 
 // happy-dom has no layout, so every element the drag measures is given the

@@ -72,13 +72,26 @@ export function zoneDropData(data: unknown): ZoneDropData | null {
   return { dimensionKey, full }
 }
 
+// Why a zone would take this card, or which of the two refusals it is. The
+// reason and not just the yes/no, because a refusal has to be SAID: "not this
+// dimension" and "this dimension is full" are different things to do next.
+export type ZoneVerdict = "ok" | "wrongDimension" | "full"
+
 // The one rule. A card lands only in its own dimension's zone, and only while
 // that dimension still has room.
-export function zoneAccepts(cardData: unknown, zoneData: unknown): boolean {
+export function zoneVerdict(cardData: unknown, zoneData: unknown): ZoneVerdict {
   const card = libraryDragData(cardData)
   const zone = zoneDropData(zoneData)
-  if (card === null || zone === null) return false
-  return !zone.full && zone.dimensionKey === card.dimensionKey
+  // A payload that is not the builder's own is not this zone's card either.
+  if (card === null || zone === null) return "wrongDimension"
+  // Dimension before cap: a foreign card told "this dimension is full" would
+  // be given a reason that is true and not the one that stopped it.
+  if (zone.dimensionKey !== card.dimensionKey) return "wrongDimension"
+  return zone.full ? "full" : "ok"
+}
+
+export function zoneAccepts(cardData: unknown, zoneData: unknown): boolean {
+  return zoneVerdict(cardData, zoneData) === "ok"
 }
 
 // Which zone a card is over.
@@ -160,6 +173,10 @@ export function nextZoneCoordinates(
   let best: { rect: ClientRect; distance: number } | null = null
   for (const container of droppableContainers.getEnabled()) {
     if (container === null || container.disabled) continue
+    // Zones only. The context carries every droppable the view has registered,
+    // and an arrow key that landed the card on one of the others would move it
+    // somewhere the pointer cannot drop it either.
+    if (!String(container.id).startsWith(ZONE_PREFIX)) continue
     const rect = droppableRects.get(container.id)
     if (rect === undefined) continue
     const to = centerOf(rect)

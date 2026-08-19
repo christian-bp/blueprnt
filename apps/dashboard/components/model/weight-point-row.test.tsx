@@ -35,20 +35,22 @@ describe("WeightPointRow", () => {
   afterEach(cleanup)
 
   // The allocation is 1-5 weight points under a fixed budget (ADR-0004), so
-  // the control offers exactly the five values and nothing in between.
-  it("offers the five weight points and presses the current one", () => {
+  // the control offers exactly the five values and nothing in between. They
+  // run low to high, the direction every other scale in the product reads,
+  // including this row's own hover copy.
+  it("offers the five weight points ascending and presses the current one", () => {
     const { group } = renderRow(4)
     const options = within(group).getAllByRole("button")
     expect(options.map((option) => option.textContent)).toEqual([
-      "5",
-      "4",
-      "3",
-      "2",
       "1",
+      "2",
+      "3",
+      "4",
+      "5",
     ])
     expect(
       options.map((option) => option.getAttribute("aria-pressed"))
-    ).toEqual(["false", "true", "false", "false", "false"])
+    ).toEqual(["false", "false", "false", "true", "false"])
   })
 
   it("reports the point the user picked", () => {

@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
+import { motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
@@ -28,6 +29,7 @@ export function PlacedCriterionCard({
   share,
   removing,
   disabled,
+  layoutId,
   onWeightChange,
   onRemove,
 }: {
@@ -41,6 +43,11 @@ export function PlacedCriterionCard({
   // The allocation is being saved: the weight row refuses input rather than
   // taking edits that the batch about to land would overwrite.
   disabled?: boolean
+  // Shared with the library card of the same criterion, so the card MORPHS
+  // into the zone rather than appearing here while the other vanishes there.
+  // Undefined leaves the card inert: with no partner id there is no layout
+  // animation, and nothing on it moves.
+  layoutId?: string
   onWeightChange: (points: number) => void
   onRemove: () => Promise<void> | void
 }) {
@@ -48,13 +55,24 @@ export function PlacedCriterionCard({
   const tBuilder = useTranslations("dashboard.model.builder")
   const tChange = useTranslations("dashboard.model.change")
   const [confirmRemove, setConfirmRemove] = useState(false)
+  // A layout-animated box FLIPs its size with a scale transform, and plain
+  // children inherit that scale raw, which stretches text and icons for the
+  // length of the morph (ui-animation.md rule 1). The direct children carry
+  // the counter-transform exactly while a shared id is wired.
+  const childLayout = layoutId === undefined ? false : "position"
 
   return (
-    <li className="rounded-md border bg-card p-3">
+    <motion.li layoutId={layoutId} className="rounded-md border bg-card p-3">
       {/* The name and the row's actions on one line, with the trigger always
           rendered rather than revealed on hover, so nothing appears or moves
           as the pointer crosses the card. */}
-      <div className="flex items-start justify-between gap-2">
+      <motion.div
+        layout={childLayout}
+        className="flex items-start justify-between gap-2"
+      >
+        {/* pt-1.5 sets the name on the icon button's first-line optical
+            centre: the button's box is taller than a line of text, so at
+            items-start the two would not read as one row. */}
         <span className="min-w-0 flex-1 truncate pt-1.5 font-medium text-sm">
           {criterion.name}
         </span>
@@ -67,6 +85,8 @@ export function PlacedCriterionCard({
                 size="icon"
                 disabled={removing}
                 aria-label={tEditor("rowMenuLabel", { name: criterion.name })}
+                // Pulled back into the card's padding so the icon, not the
+                // button's larger hit box, lines up with the card's corner.
                 className="-mt-1 -mr-1 shrink-0 text-muted-foreground hover:text-foreground"
               />
             }
@@ -82,25 +102,28 @@ export function PlacedCriterionCard({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
+      </motion.div>
 
-      <div className="mt-2">
+      <motion.div layout={childLayout} className="mt-2">
         <WeightPointRow
           name={criterion.name}
           value={weight}
           disabled={disabled}
           onChange={onWeightChange}
         />
-      </div>
+      </motion.div>
 
       {/* A single constant-height line, so no height needs reserving: changing
           the weight only changes the percentage in place. */}
-      <p className="mt-1.5 text-muted-foreground text-xs">
+      <motion.p
+        layout={childLayout}
+        className="mt-1.5 text-muted-foreground text-xs"
+      >
         <span className="font-medium text-foreground tabular-nums">
           {share}
         </span>{" "}
         {tBuilder("shareOfTotal")}
-      </p>
+      </motion.p>
 
       {/* Removal deletes the criterion's ratings on every role and
           redistributes its weight points, so it confirms in a dialog rather
@@ -115,6 +138,6 @@ export function PlacedCriterionCard({
         pending={removing}
         onConfirm={onRemove}
       />
-    </li>
+    </motion.li>
   )
 }

@@ -1,5 +1,6 @@
 "use client"
 
+import { WEIGHT_POINT_VALUES } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import { ButtonGroup } from "@workspace/ui/components/button-group"
 import {
@@ -8,7 +9,6 @@ import {
   HoverCardTrigger,
 } from "@workspace/ui/components/hover-card"
 import { useTranslations } from "next-intl"
-import { WEIGHT_POINT_OPTIONS } from "@/lib/weighting"
 
 type WeightMeaningKey = `weightMeaning${1 | 2 | 3 | 4 | 5}`
 
@@ -16,6 +16,10 @@ type WeightMeaningKey = `weightMeaning${1 | 2 | 3 | 4 | 5}`
 // buttons. The only control anywhere for weight points (ADR-0004: 1-5 points
 // under a fixed budget, never a free percentage), shared by every surface that
 // weights a criterion so the semantics cannot drift between them.
+//
+// The buttons run 1 to 5, the direction every scale in this product reads: the
+// evaluation scale, the anchor steps, and this row's own hover copy, which
+// runs from "very low" to "very strong".
 export function WeightPointRow({
   name,
   value,
@@ -43,7 +47,7 @@ export function WeightPointRow({
       aria-label={tEditor("setWeightPoints", { name })}
       className="w-full"
     >
-      {WEIGHT_POINT_OPTIONS.map((option) => {
+      {WEIGHT_POINT_VALUES.map((option) => {
         // Weight meanings are always the generic section 12.2 semantics
         // (getModel carries no per-criterion weighting text; decision 8).
         const meaning = tBuilder(`weightMeaning${option}` as WeightMeaningKey)

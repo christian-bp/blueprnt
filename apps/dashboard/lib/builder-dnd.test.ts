@@ -8,6 +8,7 @@ import {
   zoneAccepts,
   zoneDropData,
   zoneDroppableId,
+  zoneVerdict,
 } from "@/lib/builder-dnd"
 
 function rect(left: number, top: number, width: number, height: number) {
@@ -33,15 +34,18 @@ const ZONES: [string, ClientRect][] = [
 function context(options: {
   collisionRect: ClientRect
   disabledIds?: readonly string[]
+  // Droppables the view has registered that are not dimension zones.
+  others?: readonly [string, ClientRect][]
 }): ZoneNavigationContext {
   const disabled = new Set(options.disabledIds ?? [])
-  const droppableRects = new Map<UniqueIdentifier, ClientRect>(ZONES)
+  const containers = [...ZONES, ...(options.others ?? [])]
+  const droppableRects = new Map<UniqueIdentifier, ClientRect>(containers)
   return {
     collisionRect: options.collisionRect,
     droppableRects,
     droppableContainers: {
       getEnabled: () =>
-        ZONES.map(([id]) => ({ id, disabled: disabled.has(id) })),
+        containers.map(([id]) => ({ id, disabled: disabled.has(id) })),
     },
   }
 }
@@ -82,28 +86,57 @@ describe("builder drag payloads", () => {
   })
 })
 
-describe("zoneAccepts", () => {
+describe("zoneVerdict", () => {
   const card = { libraryKey: "analytical-effort", dimensionKey: "effort" }
 
   it("accepts a card into its own dimension's zone", () => {
-    expect(zoneAccepts(card, { dimensionKey: "effort", full: false })).toBe(
-      true
+    expect(zoneVerdict(card, { dimensionKey: "effort", full: false })).toBe(
+      "ok"
     )
   })
 
-  it("refuses a card in a foreign dimension's zone", () => {
-    expect(zoneAccepts(card, { dimensionKey: "competence", full: false })).toBe(
-      false
+  // The reason, not just the refusal: a reader who is told only "no" while the
+  // card is in the air has nothing to do about it, and the two refusals ask
+  // for opposite things (aim elsewhere, or make room first).
+  it("refuses a card in a foreign dimension's zone as the wrong dimension", () => {
+    expect(zoneVerdict(card, { dimensionKey: "competence", full: false })).toBe(
+      "wrongDimension"
     )
   })
 
-  it("refuses a card once its own dimension is full", () => {
-    expect(zoneAccepts(card, { dimensionKey: "effort", full: true })).toBe(
-      false
+  it("refuses a card once its own dimension is full, as full", () => {
+    expect(zoneVerdict(card, { dimensionKey: "effort", full: true })).toBe(
+      "full"
+    )
+  })
+
+  // A foreign zone that is also full is answered by the mismatch: telling this
+  // card the dimension is full would be a true sentence about a dimension it
+  // was never going into.
+  it("names the mismatch first when a foreign zone is full too", () => {
+    expect(zoneVerdict(card, { dimensionKey: "competence", full: true })).toBe(
+      "wrongDimension"
     )
   })
 
   it("refuses a drop with nothing under it", () => {
+    expect(zoneVerdict(card, undefined)).toBe("wrongDimension")
+  })
+})
+
+describe("zoneAccepts", () => {
+  const card = { libraryKey: "analytical-effort", dimensionKey: "effort" }
+
+  it("says yes only where the verdict is ok", () => {
+    expect(zoneAccepts(card, { dimensionKey: "effort", full: false })).toBe(
+      true
+    )
+    expect(zoneAccepts(card, { dimensionKey: "competence", full: false })).toBe(
+      false
+    )
+    expect(zoneAccepts(card, { dimensionKey: "effort", full: true })).toBe(
+      false
+    )
     expect(zoneAccepts(card, undefined)).toBe(false)
   })
 })
@@ -153,6 +186,25 @@ describe("keyboard zone navigation", () => {
         })
       )
     ).toEqual({ x: 10, y: 30 })
+  })
+
+  // The arrow keys move the card between DIMENSIONS. Any other droppable the
+  // view registers (a library list, a bin) is enabled and has a rect like any
+  // other, so an unfiltered search would happily park the card on one, in a
+  // place no drop can land.
+  it("never lands on a droppable that is not a zone", () => {
+    const collisionRect = rect(450, 400, 180, 60)
+    expect(
+      nextZoneCoordinates(
+        "ArrowUp",
+        context({
+          collisionRect,
+          // Nearer in the pressed direction than every zone, so it would win
+          // outright if it were a candidate at all.
+          others: [["lib:analytical-effort", rect(440, 300, 200, 40)]],
+        })
+      )
+    ).toEqual({ x: 450, y: 30 })
   })
 
   it("ignores keys that are not a direction", () => {

@@ -1845,12 +1845,11 @@
       },
       "build": {
         "zoneCount": "{count} af maks. {max}",
-        "zoneEmpty": "Ingen kriterier inden for denne dimension endnu",
+        "zoneEmpty": "Ingen kriterier i denne dimension endnu",
         "recommendedChip": "Anbefalet til jeres branche",
         "overlapChip": "Overlapper {names}",
         "addCta": "Tilføj",
-        "addLabel": "Tilføj {name} til modellen",
-        "dragLabel": "Flyt {name} til sin dimension"
+        "addLabel": "Tilføj {name} til modellen"
       },
       "change": {
         "cancel": "Annuller"
@@ -1982,6 +1981,7 @@
       "whyChange": "Hvorfor denne ændring?"
     },
     "help": {
+      "dimensionLabel": "Hvad dækker denne dimension?",
       "criterionLabel": "Hvad er et kriterium?",
       "criterionBody": "Noget hver rolle vurderes mod, som omfang eller kompleksitet. Dens 1-til-5-skala beskriver, hvad hver karakter betyder; vægtningen afgør, hvor meget den tæller.",
       "anchorsLabel": "Hvordan fungerer bedømmelsesskalaen?",

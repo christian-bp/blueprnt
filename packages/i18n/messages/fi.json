@@ -1844,13 +1844,12 @@
         "weightMeaning5": "Erittäin vahva vaikutus mallissa"
       },
       "build": {
-        "zoneCount": "{count} / enintään {max}",
+        "zoneCount": "{count} enintään {max}:sta",
         "zoneEmpty": "Tähän ulottuvuuteen ei ole vielä valittu kriteerejä",
         "recommendedChip": "Suositeltu toimialallenne",
-        "overlapChip": "Päällekkäinen: {names}",
+        "overlapChip": "Menee päällekkäin näiden kanssa: {names}",
         "addCta": "Lisää",
-        "addLabel": "Lisää {name} malliin",
-        "dragLabel": "Siirrä {name} omaan ulottuvuuteensa"
+        "addLabel": "Lisää {name} malliin"
       },
       "change": {
         "cancel": "Peruuta"
@@ -1982,6 +1981,7 @@
       "whyChange": "Miksi tämä muutos?"
     },
     "help": {
+      "dimensionLabel": "Mitä tämä ulottuvuus kattaa?",
       "criterionLabel": "Mikä kriteeri on?",
       "criterionBody": "Asia, jota vasten jokainen rooli arvioidaan, kuten laajuus tai monimutkaisuus. Sen asteikko 1-5 kertoo mitä kukin arvio tarkoittaa; painotus ratkaisee kuinka paljon se painaa.",
       "anchorsLabel": "Miten arviointiasteikko toimii?",

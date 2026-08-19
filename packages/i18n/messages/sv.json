@@ -1845,12 +1845,11 @@
       },
       "build": {
         "zoneCount": "{count} av max {max}",
-        "zoneEmpty": "Inga kriterier inom denna dimension ännu",
+        "zoneEmpty": "Inga kriterier i denna dimension ännu",
         "recommendedChip": "Rekommenderas för er bransch",
         "overlapChip": "Överlappar {names}",
         "addCta": "Lägg till",
-        "addLabel": "Lägg till {name} i modellen",
-        "dragLabel": "Flytta {name} till sin dimension"
+        "addLabel": "Lägg till {name} i modellen"
       },
       "change": {
         "cancel": "Avbryt"
@@ -1982,6 +1981,7 @@
       "whyChange": "Varför den här ändringen?"
     },
     "help": {
+      "dimensionLabel": "Vad täcker denna dimension?",
       "criterionLabel": "Vad är ett kriterium?",
       "criterionBody": "Något varje roll bedöms mot, som omfattning eller komplexitet. Dess 1-till-5-skala beskriver vad varje betyg betyder; dess viktning avgör hur mycket det räknas.",
       "anchorsLabel": "Hur fungerar bedömningsskalan?",

@@ -277,7 +277,7 @@ describe("ModelBuilder", () => {
     expect(
       screen.getByRole("button", { name: "Problem solving" })
     ).toBeDefined()
-    // The 1-5 control (options 5..1) with the current allocation (4) pressed.
+    // The 1-5 control (options 1..5) with the current allocation (4) pressed.
     const group = screen.getByRole("group", {
       name: editor.setWeightPoints.replace("{name}", "Problem solving"),
     })
@@ -285,9 +285,9 @@ describe("ModelBuilder", () => {
     expect(options).toHaveLength(5)
     expect(options.map((o) => o.getAttribute("aria-pressed"))).toEqual([
       "false",
+      "false",
+      "false",
       "true",
-      "false",
-      "false",
       "false",
     ])
     // AI review trigger is offered on a saved (not dirty) allocation.

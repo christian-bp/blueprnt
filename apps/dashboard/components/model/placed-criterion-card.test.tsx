@@ -100,15 +100,26 @@ describe("PlacedCriterionCard", () => {
   })
 
   // The row's action lives behind one trailing trigger that is always there,
-  // so nothing appears or disappears under the pointer as it crosses the card.
+  // so nothing appears, disappears or moves under the pointer as it crosses
+  // the card: the whole card is the same card before and after the hover, node
+  // for node and name for name.
   it("keeps its actions in a slot that is always present", () => {
     const { container } = renderCard()
     expect(menuTrigger()).toBeDefined()
+    const namesOf = () =>
+      screen
+        .getAllByRole("button", { hidden: true })
+        .map(
+          (button) => button.getAttribute("aria-label") ?? button.textContent
+        )
+    const nodesBefore = container.querySelectorAll("*").length
+    const namesBefore = namesOf()
     fireEvent.mouseEnter(container.querySelectorAll("li")[0] as HTMLElement)
-    expect(screen.getAllByRole("button", { hidden: true })).toHaveLength(
-      // five weight points plus the one row-actions trigger
-      6
-    )
+    expect(container.querySelectorAll("*").length).toBe(nodesBefore)
+    expect(namesOf()).toEqual(namesBefore)
+    // The five weight points plus the one row-actions trigger, and nothing a
+    // hover brought with it.
+    expect(namesBefore).toHaveLength(6)
   })
 
   it("takes no input while the removal is in flight", () => {

@@ -69,11 +69,14 @@ export function DimensionDropZone({
   // count/max because the model's own 6-8 ceiling can close a zone that has
   // not reached its per-dimension cap.
   full: boolean
-  // The dimension's placed criteria. Absent while count is 0, where the hatch
-  // stands in for them.
+  // The dimension's placed criteria, as list ITEMS: the zone renders them
+  // inside its own <ul>, so a card cannot end up an orphan <li> in whichever
+  // view mounted it. Absent while count is 0, where the hatch stands in for
+  // them.
   children?: ReactNode
 }) {
   const t = useTranslations("dashboard.model.build")
+  const tHelp = useTranslations("dashboard.help")
   const titleId = useId()
   const data: ZoneDropData = { dimensionKey, full }
   const { setNodeRef, isOver, active } = useDroppable({
@@ -103,6 +106,7 @@ export function DimensionDropZone({
       ref={setNodeRef}
       aria-labelledby={titleId}
       data-state={state}
+      data-full={String(full)}
       className={cn(
         // `transition` rather than transition-colors: the receding state is an
         // opacity change, and a zone that snapped to 60% the instant a drag
@@ -116,14 +120,24 @@ export function DimensionDropZone({
           <span id={titleId} className="truncate">
             {title}
           </span>
-          <HelpMorphButton label={title}>{helpBody}</HelpMorphButton>
+          {/* Named after what it answers rather than after the dimension: a
+              trigger named "Effort" beside a region and a heading of the same
+              name puts three nodes with one name in the reader's ear, and none
+              of them says what pressing it would tell them. */}
+          <HelpMorphButton label={tHelp("dimensionLabel")}>
+            {helpBody}
+          </HelpMorphButton>
         </h3>
-        {/* The count IS the full state: "2 of max 2" has already said it, and a
-            second sentence saying the same thing is one more line to read on a
-            page carrying four of these. The words for what to do about it
-            belong on the library cards the cap is blocking, which is where the
-            reader is reaching. */}
-        <Badge variant="secondary" className="shrink-0 tabular-nums">
+        {/* The count IS the full state, and it says so by FILLING IN rather
+            than by gaining a line: a second sentence would be one more thing to
+            read on a page carrying four of these, and a zone that grew when it
+            filled would shift its column under the reader. The words for what
+            to do about it belong on the library cards the cap is blocking,
+            which is where the reader is reaching. */}
+        <Badge
+          variant={full ? "secondary" : "outline"}
+          className="shrink-0 tabular-nums"
+        >
           {t("zoneCount", { count, max })}
         </Badge>
       </div>
@@ -133,7 +147,9 @@ export function DimensionDropZone({
         {/* The hatch leaves by fading only, popped out of flow, so the first
             card dropped into the zone reflows once instead of waiting for a
             placeholder to finish collapsing under it (ui-animation.md rule 6).
-            Nothing here animates geometry: the card arriving owns that. */}
+            The zone grows under the card arriving, so it must never gain
+            overflow-hidden: a card morphing across this edge would be clipped
+            for the length of the spring (rule 4). */}
         <AnimatePresence initial={false} mode="popLayout">
           {count === 0 && (
             <motion.div
@@ -151,7 +167,10 @@ export function DimensionDropZone({
             />
           )}
         </AnimatePresence>
-        {children}
+        {/* The zone owns the list rather than the caller: the placed cards are
+            list items, and a contract that asked every view to remember the
+            <ul> around them is one an orphan <li> eventually ships past. */}
+        {children !== undefined && <ul className="space-y-2">{children}</ul>}
       </div>
     </section>
   )

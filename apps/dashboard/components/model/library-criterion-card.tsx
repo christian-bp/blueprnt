@@ -5,6 +5,7 @@ import type { DimensionKey } from "@workspace/core"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import { motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { type LibraryDragData, libraryDraggableId } from "@/lib/builder-dnd"
 
@@ -15,6 +16,23 @@ export interface LibraryCardEntry {
   dimensionKey: DimensionKey
   name: string
   shortUiText: string
+}
+
+// Constructing an Intl formatter is the expensive part of using one, and a
+// dimension's library is a whole list of these cards, re-rendering together
+// every time a drag changes state. One formatter per locale, reused.
+const listFormatters = new Map<string, Intl.ListFormat>()
+
+function formatNames(locale: string, names: readonly string[]): string {
+  let formatter = listFormatters.get(locale)
+  if (formatter === undefined) {
+    formatter = new Intl.ListFormat(locale, {
+      style: "short",
+      type: "conjunction",
+    })
+    listFormatters.set(locale, formatter)
+  }
+  return formatter.format(names)
 }
 
 // An unselected criterion in a dimension's library list, waiting to be pulled
@@ -35,6 +53,7 @@ export function LibraryCriterionCard({
   recommended,
   overlapsSelected,
   dimmedReason,
+  layoutId,
   onAdd,
 }: {
   entry: LibraryCardEntry
@@ -49,11 +68,21 @@ export function LibraryCriterionCard({
   // (which cap bound is the caller's knowledge). Its presence closes BOTH
   // routes in, so the drag can never do what the button refuses.
   dimmedReason?: string
+  // Shared with the placed card of the same criterion, so the card MORPHS out
+  // of the list into its zone rather than vanishing here and appearing there.
+  // Undefined leaves the card inert: with no partner id there is no layout
+  // animation, and nothing on it moves.
+  layoutId?: string
   onAdd: () => void
 }) {
   const t = useTranslations("dashboard.model.build")
   const locale = useLocale()
   const blocked = dimmedReason !== undefined
+  // A layout-animated box FLIPs its size with a scale transform, and plain
+  // children inherit that scale raw, which stretches text and icons for the
+  // length of the morph (ui-animation.md rule 1). The direct children carry
+  // the counter-transform exactly while a shared id is wired.
+  const childLayout = layoutId === undefined ? false : "position"
 
   const data: LibraryDragData = {
     libraryKey: entry.libraryKey,
@@ -68,8 +97,9 @@ export function LibraryCriterionCard({
   const overlaps = overlapsSelected ?? []
 
   return (
-    <li className="rounded-md border bg-card p-3">
-      <div
+    <motion.li layoutId={layoutId} className="rounded-md border bg-card p-3">
+      <motion.div
+        layout={childLayout}
         className={cn(
           "flex items-start gap-2 transition-opacity motion-reduce:transition-none",
           // The card stays in place while it is dragged (the drag overlay is
@@ -90,11 +120,15 @@ export function LibraryCriterionCard({
             the element that says so in the markup is the one that gets the
             focus handling and the keyboard activation for free. It carries no
             onClick because pressing it IS the pick-up, which the keyboard
-            sensor handles. */}
+            sensor handles.
+            No aria-label: one would REPLACE the name computed from the
+            content, and the criterion's one-liner and its chips would then be
+            announced by nothing at all. dnd-kit's attributes already supply
+            the role, the "draggable" roledescription, and the instructions
+            they point at. */}
         <button
           ref={setNodeRef}
           type="button"
-          aria-label={t("dragLabel", { name: entry.name })}
           className={cn(
             "min-w-0 flex-1 touch-none rounded-sm text-left outline-none focus-visible:ring-2 focus-visible:ring-ring",
             !blocked && "cursor-grab active:cursor-grabbing"
@@ -118,14 +152,20 @@ export function LibraryCriterionCard({
                 // status word and wrong for a chip naming two criteria in a
                 // column this narrow: it would cut the second name off with no
                 // ellipsis. Allowed to wrap here, and only here.
-                <Badge variant="outline" className="h-auto whitespace-normal">
+                //
+                // The amber tint is a call-site override (the design system
+                // has no warning variant): this chip is the one thing on the
+                // card the reader has to weigh, and beside a filled
+                // recommendation chip a plain outline reads as the quieter of
+                // the two.
+                <Badge
+                  variant="outline"
+                  className="h-auto whitespace-normal border-amber-500/50 text-amber-700 dark:text-amber-400"
+                >
                   {t("overlapChip", {
                     // Joined by the locale's own list rules rather than a comma
                     // we picked: a criterion name can itself contain "and".
-                    names: new Intl.ListFormat(locale, {
-                      style: "short",
-                      type: "conjunction",
-                    }).format(overlaps),
+                    names: formatNames(locale, overlaps),
                   })}
                 </Badge>
               )}
@@ -145,15 +185,20 @@ export function LibraryCriterionCard({
         >
           {t("addCta")}
         </Button>
-      </div>
+      </motion.div>
       {/* Below both controls rather than inside the draggable body: it is
           about the card, it needs the card's full width for a sentence, and a
           control's own subtree is not where an explanation of that control
           belongs. It extends the card downwards and moves nothing already on
           screen. */}
       {blocked && (
-        <p className="mt-2 text-muted-foreground text-xs">{dimmedReason}</p>
+        <motion.p
+          layout={childLayout}
+          className="mt-2 text-muted-foreground text-xs"
+        >
+          {dimmedReason}
+        </motion.p>
       )}
-    </li>
+    </motion.li>
   )
 }

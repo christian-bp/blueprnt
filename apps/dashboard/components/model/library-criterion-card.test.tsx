@@ -38,9 +38,11 @@ const addButton = () =>
     name: build.addLabel.replace("{name}", ENTRY.name),
   })
 
+// The draggable body carries no label of its own, so it is found the way a
+// screen reader names it: by the content inside it.
 const dragBody = () =>
   screen.getByRole("button", {
-    name: build.dragLabel.replace("{name}", ENTRY.name),
+    name: (name) => name.startsWith(ENTRY.name),
   })
 
 describe("LibraryCriterionCard", () => {
@@ -62,10 +64,21 @@ describe("LibraryCriterionCard", () => {
 
   // Several of these sit on screen at once, so "Add" alone would leave a
   // screen reader with a list of identical buttons.
-  it("names the criterion in both of its controls", () => {
+  it("names the criterion on its Add button", () => {
     renderCard()
     expect(addButton().textContent).toContain(build.addCta)
-    expect(dragBody()).toBeDefined()
+  })
+
+  // The drag surface is named by its CONTENT. A label of our own would replace
+  // that name, and everything the card says about the criterion (what it
+  // measures, the chips under it) would be announced by nothing at all.
+  it("makes the card's own content the draggable's name", () => {
+    renderCard()
+    const body = screen.getByRole("button", {
+      name: (name) =>
+        name.includes(ENTRY.name) && name.includes(ENTRY.shortUiText),
+    })
+    expect(body.hasAttribute("aria-label")).toBe(false)
   })
 
   it("marks a criterion the industry hints recommend", () => {
