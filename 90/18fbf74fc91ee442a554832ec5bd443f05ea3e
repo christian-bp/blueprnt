@@ -1,0 +1,38 @@
+apps/dashboard/lib/todo.ts
+  s_58dd112dc09435::t_b7849fbc67bee3 66-69,136-144,152,193-200,213-214,216
+apps/dashboard/lib/audit-detail.test.tsx
+  s_58dd112dc09435::t_dcccefe1569f61 768-803
+packages/backend/convex/assessment/roles.test.ts
+  s_58dd112dc09435::t_955ac98fdf7b63 174-175
+  s_58dd112dc09435::t_a530786abe4681 194-240
+  s_58dd112dc09435::t_e02edfc3da5cea 8
+packages/backend/convex/assessment/locking.test.ts
+  s_58dd112dc09435::t_61e5c3904bef4e 117-120,124-172
+  s_58dd112dc09435::t_0426d09357ac9e 121-123
+packages/backend/convex/assessment/roles.ts
+  s_58dd112dc09435::t_5d8cb7b6c6e4aa 211-214
+  s_58dd112dc09435::t_11eee80a93be68 253
+apps/dashboard/lib/todo.test.ts
+  s_58dd112dc09435::t_a6eaabdff0f594 90,92-99,108-125
+  s_58dd112dc09435::t_1acc29408aec63 126,329-372
+  s_58dd112dc09435::t_10b1dd374d4088 13-15
+  s_58dd112dc09435::t_7479e3288dd5cb 127
+apps/dashboard/lib/audit-detail.tsx
+  s_58dd112dc09435::t_484a9d90b58c46 751-762
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "9018fbf74fc91ee442a554832ec5bd443f05ea3e",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
