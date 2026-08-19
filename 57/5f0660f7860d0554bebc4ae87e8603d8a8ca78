@@ -1,0 +1,168 @@
+apps/dashboard/components/rating/rating-result.test.tsx
+  s_58dd112dc09435::t_59b68c7e309141 26
+  s_58dd112dc09435::t_01e46e0888562b 86-92
+apps/dashboard/components/levels/family-level-matrix.test.tsx
+  s_58dd112dc09435::t_e5e04457105a85 24
+apps/dashboard/lib/levels.ts
+  s_58dd112dc09435::t_c5f2d5948222ca 15-18
+apps/dashboard/content/docs/da/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_b25368546839a7 108-130
+packages/backend/convex/assessment/locking.ts
+  s_58dd112dc09435::t_e1c99c94b7cb28 1-150,155-175
+  s_58dd112dc09435::t_500bbb475069ff 151-154
+packages/backend/convex/payMapping/erasure.test.ts
+  s_58dd112dc09435::t_10c3db49ef1e2d 83-89
+apps/dashboard/components/levels/pending-roles.tsx
+  s_58dd112dc09435::t_c34e6bade24b3a 3,10-17,43-45
+apps/dashboard/components/assessment-lock-badges.tsx
+  s_58dd112dc09435::t_9862c9bf045f04 1-34
+packages/backend/convex/assessment/results.test.ts
+  s_58dd112dc09435::t_cf51ad55603efe 94-108,120,130,155-156,164-165,176,186,197-199,208-254,259-263,271,319,329-350,359-362,380-403,423-424
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_58dd112dc09435::t_11e14936f20fc9 287-301
+  s_58dd112dc09435::t_103472ba969af4 138
+  s_58dd112dc09435::t_9080d86f0c8525 35-38,41-42,49-55
+  s_58dd112dc09435::t_9f9d9ebde579e9 81
+  s_58dd112dc09435::t_5db45953bf6cd3 162-164
+  s_58dd112dc09435::t_4a4117eb3fb336 87,91-94,102-103,106,126-128,154-158,160-161,165-167,182-218,220-223,225-237,239,242-258,260
+  s_58dd112dc09435::t_878083a05822a4 159
+  s_58dd112dc09435::t_f0a9c432c32b5a 181
+apps/dashboard/components/rating/unlock-assessment-dialog.test.tsx
+  s_58dd112dc09435::t_5db45953bf6cd3 1-7,31
+  s_58dd112dc09435::t_06499717f270b1 8-30,32-85
+apps/dashboard/components/levels/role-chip.test.tsx
+  s_58dd112dc09435::t_040e3629d02f6c 20
+apps/dashboard/components/levels/pending-roles.test.tsx
+  s_58dd112dc09435::t_798e297e4e2e1a 50-53,57-63
+  s_58dd112dc09435::t_ee8e0a172bf039 19
+  s_58dd112dc09435::t_5db45953bf6cd3 54-56
+apps/dashboard/components/levels/level-matrix.test.tsx
+  s_58dd112dc09435::t_03f39730ec4a98 24
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_58dd112dc09435::t_b2a78f81fc81ce 166-167,172-185,188-190,192-223
+  s_58dd112dc09435::t_cf73824ae805d7 8,17,20
+  s_58dd112dc09435::t_89c3a52611e455 53-58,60
+  s_58dd112dc09435::t_c7b3cabd694165 168-171
+packages/backend/convex/assessment/ratings.ts
+  s_58dd112dc09435::t_31b17b0bf30d91 41-46
+apps/dashboard/components/rating/lock-assessment-panel.test.tsx
+  s_58dd112dc09435::t_5db45953bf6cd3 1-7
+  s_58dd112dc09435::t_563a88828465df 8-74
+apps/dashboard/content/docs/fi/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_c90ad43bc44535 113-135
+packages/backend/convex/payMapping/runs.test.ts
+  s_58dd112dc09435::t_3cf4f49e0290bb 98-104
+  s_58dd112dc09435::t_5dcdab11309971 507-582,593-601
+  s_58dd112dc09435::t_a21ce14a7e5651 583-592
+  s_58dd112dc09435::t_7a384a8c4c06e6 18-24
+apps/dashboard/components/role-sheet.tsx
+  s_58dd112dc09435::t_6414cb3d76b949 141-149
+  s_58dd112dc09435::t_bb7f1a896352aa 213-214,220,227-229,231-238
+  s_58dd112dc09435::t_d793b7253afbc9 27-30
+packages/backend/convex/lib/audit.test.ts
+  s_58dd112dc09435::t_1ec7cfe6336801 324-326
+  s_58dd112dc09435::t_f2018278d994ef 514-516
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_effdc5814630b5 190-192,776-777,865-868,1102-1104,1205,1572,1589-1598,1618-1619,2633-2635
+packages/backend/convex/assessment/locking.test.ts
+  s_58dd112dc09435::t_16b3c429b741d9 458-474
+  s_58dd112dc09435::t_6c1608d7ad333a 1-457,475-514
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.test.tsx
+  s_58dd112dc09435::t_e5eb1cf79bc9dd 9-11,13-50,55-116,118-177,179-211,215-245
+  s_58dd112dc09435::t_5db45953bf6cd3 1-8,51-54,117,178,212-214
+  s_58dd112dc09435::t_caeb4895fd842f 12
+packages/backend/convex/lib/audit.ts
+  s_58dd112dc09435::t_a11d3456104337 204-212
+  s_58dd112dc09435::t_fe7a2ed95d97a7 47-49
+packages/backend/convex/payMapping/runs.ts
+  s_58dd112dc09435::t_9c56960749e338 51-55
+  s_58dd112dc09435::t_13ff1652b3d597 111-117
+packages/backend/convex/lib/errors.ts
+  s_58dd112dc09435::t_0fc26e11779275 44-45
+apps/dashboard/components/rating/lock-assessment-panel.tsx
+  s_58dd112dc09435::t_2bdbc89b849fac 1-62
+packages/backend/convex/assessment/seed.ts
+  s_58dd112dc09435::t_ad67ae0904da7c 198-213
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_58dd112dc09435::t_6046420f2429aa 206
+  s_58dd112dc09435::t_3ddb25d43c07c7 77-80
+  s_58dd112dc09435::t_0975279dec82a0 288
+  s_58dd112dc09435::t_088efa121ef4b5 90
+  s_58dd112dc09435::t_6ad932a031093f 267-270
+  s_58dd112dc09435::t_b19d23ff219887 1
+  s_58dd112dc09435::t_ddfde6689787f6 259-260
+  s_58dd112dc09435::t_f8b90e0e9518c3 28-29,47
+  s_58dd112dc09435::t_5a585980166e0c 155,161,164-184,195-205,207-210
+  s_58dd112dc09435::t_e9c5d9250f6920 211
+packages/backend/convex/lib/auditPayloads.ts
+  s_58dd112dc09435::t_f4fb961c41604f 312-321
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_effdc5814630b5 190-192,776-777,865-868,1102-1104,1205,1572,1589-1598,1618-1619,2633-2635
+apps/dashboard/content/docs/nb/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_c63d5dd32d75df 110-132
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_7e8c7bf6a908ed 1572,1574-1582
+  s_58dd112dc09435::t_6096fd8c7fa938 866-868
+  s_58dd112dc09435::t_d19a20111fccdc 1614
+  s_58dd112dc09435::t_4bb0714850aa95 1097-1098
+  s_58dd112dc09435::t_89d4792b8ac407 1205
+  s_58dd112dc09435::t_0781d85948cf98 776-777
+  s_58dd112dc09435::t_d7482cd4374378 2633-2635
+  s_58dd112dc09435::t_cde72e9e66592c 865
+  s_58dd112dc09435::t_ba26b523df7b3c 190-192
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_effdc5814630b5 190-192,776-777,865-868,1102-1104,1205,1572,1589-1598,1618-1619,2633-2635
+apps/dashboard/components/role-sheet.test.tsx
+  s_58dd112dc09435::t_5f61685b30f8c3 108
+  s_58dd112dc09435::t_42429cd9a3c328 46-47
+  s_58dd112dc09435::t_df85b6e350a7a4 134,145-170,177
+packages/backend/convex/assessment/results.ts
+  s_58dd112dc09435::t_a27168bace57f8 2,16-48,52-54,68-71,74,76,130-131,138,141-149,181-189,200-203,206,208,252-253,257,260-268
+  s_58dd112dc09435::t_500bbb475069ff 8-11
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_effdc5814630b5 190-192,776-777,865-868,1102-1104,1205,1572,1589-1598,1618-1619,2633-2635
+apps/dashboard/content/docs/en/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_ec7c402845a465 112-134
+apps/dashboard/components/levels/level-ladder.test.tsx
+  s_58dd112dc09435::t_a1de360e83f544 24
+packages/backend/convex/assessment/seed.test.ts
+  s_58dd112dc09435::t_a2d9c0cae9a0e5 328-357
+  s_58dd112dc09435::t_64f6e62cf1f6b1 3
+  s_58dd112dc09435::t_500bbb475069ff 225
+  s_58dd112dc09435::t_72f8f7c0d2f6d5 215-224,226
+  s_58dd112dc09435::t_b9deeecd85aa74 227-231
+apps/dashboard/content/docs/sv/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_403550d57e3288 111-133
+apps/dashboard/components/pay-mapping/pay-mapping-preconditions-panel.test.tsx
+  s_58dd112dc09435::t_faab9db2ef0c98 50,68,83
+apps/dashboard/components/rating/unlock-assessment-dialog.tsx
+  s_58dd112dc09435::t_5ad344611652c7 1-54
+apps/dashboard/components/rating/rating-result.tsx
+  s_58dd112dc09435::t_6eb87cbc9f9804 50-54
+packages/backend/convex/_generated/api.d.ts
+  s_f0717d949ca9a5::t_5aa2a337939fa1 39,149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "575f0660f7860d0554bebc4ae87e8603d8a8ca78",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_f0717d949ca9a5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a0b436b0d31bd7c35",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
