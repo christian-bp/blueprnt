@@ -2,7 +2,8 @@ import type { DimensionKey } from "./dimensions"
 import type { WeightPoints } from "./weighting"
 import type { ProfileFailure, ZoneKey, ZoneProfileRule } from "./zones"
 
-// A rating is the raw 0-5 an assessor gives a role on a criterion.
+// A rating is the raw 1-5 an assessor gives a role on a criterion; 0 is valid
+// only for a workingConditions criterion (assertValidRatingValue).
 export type RatingValue = 0 | 1 | 2 | 3 | 4 | 5
 
 // Level 1 is the HIGHEST level. Higher level number = lower weight.

@@ -11,8 +11,9 @@ import { usePageTitle } from "@/hooks/use-page-title"
 // into its four dimension sections, each with its own picker (ADR-0021
 // addendum, decision 8: there is no free-text criterion editor left, only a
 // library to select from). Weighting lives on its own page (/model/weighting),
-// reached via the header ModelTabs, so the role-facing 0-5 scale and the
-// model-facing 1-5 weighting are never shown together.
+// reached via the header ModelTabs, so the role-facing 1-5 scale (0 only for a
+// working-conditions criterion) and the model-facing 1-5 weighting are never
+// shown together.
 export default function ModelCriteriaPage() {
   const { orgId } = useOrganization()
   const t = useTranslations("dashboard.model.tabs")

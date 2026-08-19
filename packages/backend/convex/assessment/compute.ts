@@ -75,7 +75,8 @@ export async function deriveResults(
   for (const rating of ratingRows) {
     const key = rating.roleId as string
     const list = byRole.get(key) ?? []
-    // Stored as v.number(); the engine re-validates the 0-5 integer range.
+    // Stored as v.number(); the engine re-validates the 1-5 integer range (0
+    // only for a workingConditions criterion).
     list.push({
       criterionId: rating.criterionId as string,
       value: rating.value as RatingValue,

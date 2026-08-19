@@ -11,11 +11,12 @@ import { deepestMatch, SECTION_PAGES } from "@/lib/section-pages"
 // section's SectionTabs and the Admin section's AdminTabs). The sidebar
 // renders the same list under the Model entry; both surfaces come from
 // SECTION_PAGES so they cannot drift apart. Criteria is the /model index (the
-// 0-5 evaluation scale); Weighting is the nested route (the 1-5 allocation).
-// Splitting them across pages is what keeps the role-facing scale from being
-// confused with the weighting. The underline uses a layoutId distinct from the
-// other sections' so they never cross-animate. The header only mounts this
-// inside the model section, so one tab is always active.
+// 1-5 rating scale, 0 only for a working-conditions criterion); Weighting is
+// the nested route (the 1-5 weight-point allocation). Splitting them across
+// pages is what keeps the role-facing scale from being confused with the
+// weighting. The underline uses a layoutId distinct from the other sections'
+// so they never cross-animate. The header only mounts this inside the model
+// section, so one tab is always active.
 export function ModelTabs() {
   const t = useTranslations("dashboard")
   const pathname = usePathname()

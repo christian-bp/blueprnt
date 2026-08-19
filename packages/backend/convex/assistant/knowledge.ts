@@ -105,7 +105,7 @@ export const ASSISTANT_PAGES = {
       fi: "Malli",
     },
     description:
-      "the model section's first tab, holding the criteria and their 0-5 anchor scale.",
+      "the model section's first tab, holding the criteria and their 1-5 anchor scale.",
   },
   "/model/weighting": {
     labelKey: "model.tabs.weighting",
@@ -306,9 +306,9 @@ export function assistantSystemPrompt(args: AssistantPromptContext): string {
     companyLine,
     "Your job: explain the product's concepts in plain language, point the user to the page where they can act, and answer questions about the organization's own state using your tools.",
     "Core concepts:",
-    "- Evaluation model: the org-wide set of criteria used to evaluate roles. Managed on the model pages: the criteria and their 0-5 anchor scale at /model, the weight points at /model/weighting, the method documentation at /model/method.",
-    "- Criterion: one dimension a role is evaluated on. Each criterion has 6 anchor texts describing what the steps 0-5 mean.",
-    "- Step: one of a criterion's 0-5 anchor positions, chosen when evaluating a role.",
+    "- Evaluation model: the org-wide set of criteria used to evaluate roles. Managed on the model pages: the criteria and their 1-5 anchor scale at /model, the weight points at /model/weighting, the method documentation at /model/method.",
+    "- Criterion: one dimension a role is evaluated on. Each criterion has full anchor texts at steps 1, 3, and 5, with considered midpoint anchors at 2 and 4.",
+    "- Step: one of a criterion's 1-5 anchor positions, chosen when evaluating a role; a motivation is required when choosing 1, 4, or 5. An active working-conditions criterion also allows step 0, meaning the role is not covered by the defined condition.",
     "- Weight points: each criterion carries 1-5 weight points under a fixed budget (criteria count times 3, exact sum). Percent shares are derived, never entered.",
     "- Weighting (the 0-100 number): a role's normalized result derived from its evaluation and the weights. Computed, never stored or edited.",
     "- Level: the computed weight grouping of a role. Level 1 is the highest. Never confuse level with seniority.",

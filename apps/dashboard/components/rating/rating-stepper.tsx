@@ -118,8 +118,8 @@ export function RatingStepper({
   } | null>(null)
 
   // Keyboard shortcuts for the blind rating flow: press a digit (an anchor
-  // step, 0-5, 0 only offered on a workingConditions criterion) to choose it,
-  // Enter to save and continue. Editable fields (the motivation textarea)
+  // step, 1-5, or 0 on a workingConditions criterion) to choose it, Enter to
+  // save and continue. Editable fields (the motivation textarea)
   // keep their own typing, and Enter on a focused button (Next/Back/anchor)
   // is left to that button's native activation so we never advance twice.
   // The Next button carries the matching Enter hint (Kbd).
@@ -370,7 +370,7 @@ export function RatingStepper({
                       // Frozen while the step is saving, so a click cannot
                       // change the selection out from under the in-flight
                       // write. Deliberately no disabled styling: the save is
-                      // brief, and greying six anchors for it would flash.
+                      // brief, and greying every anchor for it would flash.
                       // enabled: keeps the hover cue off while locked, so a
                       // locked anchor never looks clickable.
                       disabled={pending}

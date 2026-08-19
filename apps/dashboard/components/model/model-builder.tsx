@@ -37,10 +37,11 @@ import { WeightReviewPanel } from "@/components/model/weight-review-panel"
 import { formatShare, WEIGHT_POINT_OPTIONS } from "@/lib/weighting"
 
 // The two activities of building a model, kept on separate phases so the
-// role-facing 0-5 evaluation scale and the model-facing 1-5 weighting are never
-// shown at the same time (the source of the "is this scale the weight?"
-// confusion). Define owns identity + the evaluation scale; Weight owns the
-// 1-5 allocation. The two are never co-mounted.
+// role-facing 1-5 evaluation scale (0 only for a working-conditions criterion)
+// and the model-facing 1-5 weighting are never shown at the same time (the
+// source of the "is this scale the weight?" confusion). Define owns identity +
+// the evaluation scale; Weight owns the 1-5 allocation. The two are never
+// co-mounted.
 export type ModelPhase = "define" | "weight"
 
 // Error codes with their own translated message; everything else falls back

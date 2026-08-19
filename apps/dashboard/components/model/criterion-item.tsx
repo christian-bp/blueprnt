@@ -81,7 +81,7 @@ const rowVariants: Variants = {
 //   note             - optional reserved-height block below the row (Weight
 //                      phase: the selected level's meaning and share)
 //   anchorsCaption   - optional caption shown inside the expanded scale, tying
-//                      the 0-5 scale to the act of evaluating a role
+//                      the 1-5 scale to the act of evaluating a role
 //   editable         - when false: no row menu (Remove)
 //   onRemove         - called with no args after the user confirms inline
 //   removing         - disables the button while the delete mutation is in flight
@@ -105,11 +105,12 @@ export function CriterionItem({
   // `description` stays inline as the subtitle.
   extendedDescription?: string
   // The weight control for the Weight phase; undefined on the Define phase, so
-  // the 0-5 evaluation scale and the 1-5 weight control are never co-rendered.
+  // the 1-5 evaluation scale (0 only for a working-conditions criterion) and
+  // the 1-5 weight control are never co-rendered.
   importanceNode?: ReactNode
   // Reserved-height content below the main row (Weight phase meaning + share).
   note?: ReactNode
-  // The criterion's 0-5 anchor scale; when given, the row gets a collapsible
+  // The criterion's 1-5 anchor scale; when given, the row gets a collapsible
   // section revealing the texts (shared by onboarding and the model page).
   anchors?: { step: number; text: string }[]
   // Optional caption rendered inside the expanded scale.

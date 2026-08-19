@@ -8,8 +8,9 @@ import { PageHeader } from "@/components/page-header"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // The model's Weighting page (the Weight phase): the 1-5 allocation, the live
-// budget meter, and the AI weighting review. The criteria and their 0-5
-// evaluation scale live on /model.
+// budget meter, and the AI weighting review. The criteria and their 1-5
+// evaluation scale (0 only for a working-conditions criterion) live on
+// /model.
 export default function ModelWeightingPage() {
   const { orgId } = useOrganization()
   const t = useTranslations("dashboard.model.tabs")
