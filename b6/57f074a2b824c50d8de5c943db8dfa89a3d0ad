@@ -1,0 +1,19 @@
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_351025609d7f9c 232-238,244,248-251
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b657f074a2b824c50d8de5c943db8dfa89a3d0ad",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
