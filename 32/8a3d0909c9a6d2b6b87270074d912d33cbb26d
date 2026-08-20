@@ -1,0 +1,48 @@
+apps/dashboard/components/model/weight-point-row.tsx
+  s_58dd112dc09435::t_ba8a853d4c3b2d 45-53
+apps/dashboard/components/model/model-spine.tsx
+  s_58dd112dc09435::t_ba8a853d4c3b2d 38-45,47
+apps/dashboard/components/model/model-section-shell.tsx
+  s_58dd112dc09435::t_ba8a853d4c3b2d 58
+apps/dashboard/components/model/placed-criterion-card.test.tsx
+  s_58dd112dc09435::t_3fb3739edc4b25 113
+  s_58dd112dc09435::t_ead62a352c0b96 99-107,117-120
+  s_58dd112dc09435::t_88b3f49b4e9fa7 108-112,114-116
+apps/dashboard/components/model/weight-point-row.test.tsx
+  s_58dd112dc09435::t_1df44fa6fcc477 70-81
+apps/dashboard/components/model/placed-criterion-card.tsx
+  s_58dd112dc09435::t_ba8a853d4c3b2d 89-92,112-114
+apps/dashboard/components/model/library-picker-dialog.tsx
+  s_58dd112dc09435::t_5fe037e98d1cdc 189-195
+apps/dashboard/components/model/model-spine.test.tsx
+  s_58dd112dc09435::t_f5b1e6f69937c0 40-42,45,59
+apps/dashboard/components/model/model-section-shell.test.tsx
+  s_58dd112dc09435::t_f357eb0188f089 80-86
+  s_58dd112dc09435::t_f5b1e6f69937c0 120
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_853ccbd9b9e1ee 1818,2068
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_c75665a7f0fe71 1818,2068
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_a79b0a5ec0838a 1818,2068
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_63b6382407e4bb 1818,2068
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_00ed506819eb3e 1818,2068
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "328a3d0909c9a6d2b6b87270074d912d33cbb26d",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
