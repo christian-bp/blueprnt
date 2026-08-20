@@ -3,7 +3,7 @@ import { v } from "convex/values"
 import type { Doc } from "../_generated/dataModel"
 import { AUDIT_EVENTS, buildChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation, adminQuery } from "../lib/functions"
+import { adminMutation, orgQuery } from "../lib/functions"
 import {
   buildCriterionHelpText,
   criteriaLibraryContent,
@@ -164,7 +164,15 @@ export const setCriterionApproval = adminMutation({
 const orderShape = (a: { order: number }, b: { order: number }) =>
   a.order - b.order
 
-export const getMethodModel = adminQuery({
+// An orgQuery, not an adminQuery, for the same reason getMethodChecks is one
+// (evaluationModel/approval.ts): the Metod chapter is one of the model
+// section's four, and an admin gate on its only read throws in render and
+// leaves an editor a live tab that crashes. It carries org-level method
+// content only: each criterion's protokoll and bias documentation, its weight
+// and derived share, and the model's own rules. No person data, no salary.
+// Both writes in this file stay adminMutation, and the panel offers an editor
+// neither of them.
+export const getMethodModel = orgQuery({
   args: { locale: v.optional(v.string()) },
   returns: v.union(
     v.null(),

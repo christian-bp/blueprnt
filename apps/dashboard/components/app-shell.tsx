@@ -96,6 +96,14 @@ export function shellLayoutClasses(pathname: string) {
   // four tiles across at the same cap its analysis tables use, and a run that
   // changed width from tab to tab read as two different pages.
   const wide = /^\/pay-mappings\/[^/]+(\/|$)/.test(pathname)
+  // The model section takes the whole width: its Kriterier and Viktning
+  // chapters lay four dimension columns side by side, which the 6xl cap
+  // squeezed to about 264px each, half a criterion name wide in sv and fi.
+  // Uncapped rather than `wide` because the columns keep dividing whatever
+  // they are given, and unlike /work it keeps normal page flow and the
+  // shell's own padding, so the section's one left edge is the same one every
+  // other page starts at.
+  const uncapped = pathname === "/model" || pathname.startsWith("/model/")
   return {
     sidebarInset: cn(
       // The content pane sits flush against the sidebar with no margin of its
@@ -121,7 +129,7 @@ export function shellLayoutClasses(pathname: string) {
       // (the conversations panel, the docs nav) must sit against the app
       // sidebar's border, which no centered cap allows; each page centers
       // its own reading column in the space beside the panel.
-      !(heightLocked || hasInnerSidebar) &&
+      !(heightLocked || hasInnerSidebar || uncapped) &&
         (wide ? PAGE_WIDE_MAX_W : PAGE_MAX_W)
     ),
   }

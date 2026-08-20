@@ -17,6 +17,7 @@ import { CriterionComplianceDialog } from "@/components/model/criterion-complian
 import { CriterionItem } from "@/components/model/criterion-item"
 import { CriterionListSkeleton } from "@/components/model/criterion-list-skeleton"
 import { MethodStatusBadge } from "@/components/model/method-status-badge"
+import { useOrganization } from "@/components/org-context"
 
 const MethodAppendixDownload = dynamic(
   () =>
@@ -34,6 +35,13 @@ export function MethodPanel({ orgId }: { orgId: string }) {
   const t = useTranslations("dashboard.model.method")
   const tWeighting = useTranslations("dashboard.model.weighting")
   const locale = useLocale()
+  // The method content READS for every member (the chapter's own query is an
+  // orgQuery), but documenting a criterion and approving one are both
+  // adminMutations. An editor therefore reads the list, the statuses and the
+  // shares, and exports the appendix, without being offered the one control
+  // that would change any of it: the same split the approval card draws.
+  const { role } = useOrganization()
+  const isAdmin = role === "admin"
   const data = useQuery(api.evaluationModel.method.getMethodModel, {
     orgId,
     locale,
@@ -137,24 +145,37 @@ export function MethodPanel({ orgId }: { orgId: string }) {
                     status={c.status}
                     label={t(`status.${c.status}`)}
                   />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setTargetId(c.criterionId)}
-                  >
-                    {t("openCta")}
-                  </Button>
+                  {/* The dialog behind this button is a write surface end to
+                      end (the protokoll form, the bias review and the
+                      per-criterion approve), so an editor is not offered its
+                      entry point at all. The status badge beside it still
+                      says where the criterion stands, and the appendix export
+                      above carries the documented text itself. */}
+                  {isAdmin && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setTargetId(c.criterionId)}
+                    >
+                      {t("openCta")}
+                    </Button>
+                  )}
                 </span>
               }
             />
           ))}
         </AnimatePresence>
       </ul>
-      <CriterionComplianceDialog
-        orgId={orgId}
-        target={target}
-        onClose={() => setTargetId(null)}
-      />
+      {/* Not mounted at all for an editor: with no way to open it there is
+          nothing for it to do, and a write form on the page is a write form on
+          the page. */}
+      {isAdmin && (
+        <CriterionComplianceDialog
+          orgId={orgId}
+          target={target}
+          onClose={() => setTargetId(null)}
+        />
+      )}
     </div>
   )
 }

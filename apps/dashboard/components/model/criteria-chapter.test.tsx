@@ -482,6 +482,20 @@ describe("the Kriterier chapter", () => {
     expect(deactivateCriterion).not.toHaveBeenCalled()
   })
 
+  // The section is uncapped, so the columns divide the whole page width. The
+  // two states must divide it identically: one GRID_CLASS constant feeds both,
+  // and this is what fails if a second grid string ever appears.
+  it("lays the loading and loaded grids out with the same classes", () => {
+    const { container: loaded } = renderChapter()
+    const loadedGrid = loaded.querySelector('[class*="grid-cols"]')?.className
+    cleanup()
+    modelResult = undefined
+    const { container: loading } = renderChapter()
+    expect(loading.querySelector('[class*="grid-cols"]')?.className).toBe(
+      loadedGrid
+    )
+  })
+
   it("shows the chapter's own skeleton while the model loads", () => {
     modelResult = undefined
     renderChapter()

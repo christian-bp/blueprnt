@@ -91,6 +91,41 @@ describe("shellLayoutClasses", () => {
     expect(overview).toContain(PAGE_MAX_W)
   })
 
+  // The model section's chapters divide their width into four dimension
+  // columns, so a cap costs them directly. Uncapped but otherwise an ORDINARY
+  // page: normal flow, the shell's own padding, one left edge shared with
+  // every other page, and no height lock.
+  it("uncaps the model section while it keeps the shell's padding and flow", () => {
+    for (const path of [
+      "/model",
+      "/model/criteria",
+      "/model/weighting",
+      "/model/method",
+      "/model/approval",
+    ]) {
+      const layout = shellLayoutClasses(path)
+      const content = classList(layout.pageContent)
+      expect(content, path).not.toContain(PAGE_MAX_W)
+      expect(content, path).not.toContain(PAGE_WIDE_MAX_W)
+      // Padded like an ordinary page: the section starts at the same left
+      // edge every other page does.
+      expect(content, path).toContain("px-4")
+      expect(content, path).toContain("lg:px-6")
+      expect(content, path).toContain("py-4")
+      // Not centered and not height-locked: it is a normal scrolling page.
+      expect(content, path).not.toContain("mx-auto")
+      expect(content, path).not.toContain("min-h-0")
+      expect(layout.sidebarInset, path).toBe("")
+    }
+  })
+
+  // Segment-matched, never a bare prefix: a future sibling route beginning
+  // with the same characters must keep the ordinary cap.
+  it("keeps the cap on a route that merely starts like the model section", () => {
+    const content = classList(shellLayoutClasses("/modelling").pageContent)
+    expect(content).toContain(PAGE_MAX_W)
+  })
+
   it("applies the wide cap inside a pay-mapping run, unbounded in height", () => {
     const layout = shellLayoutClasses("/pay-mappings/pay-2026/analysis")
     expect(layout.sidebarInset).toBe("")

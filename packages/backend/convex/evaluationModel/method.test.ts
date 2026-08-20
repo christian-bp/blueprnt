@@ -255,6 +255,27 @@ describe("criterion compliance write path", () => {
   })
 })
 
+// Attaches a second, EDITOR-role member to an existing org: a second
+// seedMembership mints a real user (its own throwaway org is never used), then
+// seedDuplicateMember adds that user to the FIRST org. Mirrors addEditor in
+// assessment/roles.test.ts and evaluationModel/approval.test.ts.
+async function addEditor(
+  t: ReturnType<typeof initConvexTest>,
+  orgId: string,
+  email: string
+) {
+  const { userId } = await t.mutation(
+    components.betterAuth.testing.seedMembership,
+    { email, name: "Editor Person", role: "editor" }
+  )
+  await t.mutation(components.betterAuth.testing.seedDuplicateMember, {
+    orgId,
+    userId,
+    role: "editor",
+  })
+  return t.withIdentity({ subject: userId })
+}
+
 describe("getMethodModel", () => {
   it("returns localized names, shares, status, and aggregate progress", async () => {
     const t = initConvexTest()
@@ -386,5 +407,85 @@ describe("getMethodModel", () => {
     // Approving the model does not retroactively approve any criterion's own
     // compliance write-up: the two are independent completions.
     expect(after?.progress.approved).toBe(0)
+  })
+
+  // The Metod chapter is one of the model section's four, so an admin gate on
+  // its only read throws in render and leaves an editor a live tab that
+  // crashes. Org-level method content, no person data: readable by any member.
+  it("answers an editor member of the org", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedReadyOrganization(t)
+    const asEditor = await addEditor(t, orgId, "method-editor@acme.se")
+    const result = await asEditor.query(
+      api.evaluationModel.method.getMethodModel,
+      { orgId, locale: "sv" }
+    )
+    expect(result?.criteria.length).toBe(8)
+    expect(result?.progress.total).toBe(8)
+  })
+
+  // Org scoping is untouched by the relax: a signed-in user who is not a
+  // member of THIS org still gets nothing.
+  it("refuses a signed-in non-member with notAMember", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedReadyOrganization(t)
+    const { userId: outsiderId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "method-outsider@other.se", name: "Outsider", role: "admin" }
+    )
+    const asOutsider = t.withIdentity({ subject: outsiderId })
+    await expect(
+      asOutsider.query(api.evaluationModel.method.getMethodModel, {
+        orgId,
+        locale: "sv",
+      })
+    ).rejects.toThrow(/errors\.notAMember/)
+  })
+
+  it("refuses an unauthenticated caller", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedReadyOrganization(t)
+    await expect(
+      t.query(api.evaluationModel.method.getMethodModel, {
+        orgId,
+        locale: "sv",
+      })
+    ).rejects.toThrow(/errors\.notAuthenticated/)
+  })
+})
+
+// The relax is a READ relax. Both writes in this file stay admin-gated, so an
+// editor who can now SEE the documentation still cannot write or approve it.
+describe("the method writes stay admin-only", () => {
+  it("refuses an editor's compliance save and criterion approval", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    const model = await asAdmin.query(
+      api.evaluationModel.method.getMethodModel,
+      { orgId, locale: "sv" }
+    )
+    const criterionId = model?.criteria[0]?.criterionId
+    if (criterionId === undefined) throw new Error("seed")
+    const asEditor = await addEditor(t, orgId, "method-editor2@acme.se")
+
+    await expect(
+      asEditor.mutation(api.evaluationModel.method.saveCriterionCompliance, {
+        orgId,
+        criterionId,
+        purpose: "Editor tried.",
+        whyRelevant: "Editor tried.",
+        overlapNotes: "Editor tried.",
+        biasRisk: "low",
+        biasComment: "Editor tried.",
+        biasAction: "Editor tried.",
+      })
+    ).rejects.toThrow(/errors\.adminRequired/)
+    await expect(
+      asEditor.mutation(api.evaluationModel.method.setCriterionApproval, {
+        orgId,
+        criterionId,
+        approved: true,
+      })
+    ).rejects.toThrow(/errors\.adminRequired/)
   })
 })

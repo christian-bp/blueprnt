@@ -266,6 +266,19 @@ describe("the Viktning chapter", () => {
     ).toBeTruthy()
   })
 
+  // Same as the Kriterier chapter: uncapped width divided by one shared grid
+  // constant, so the loading and loaded states can never drift apart.
+  it("lays the loading and loaded grids out with the same classes", () => {
+    const { container: loaded } = renderChapter()
+    const loadedGrid = loaded.querySelector('[class*="grid-cols"]')?.className
+    cleanup()
+    modelResult = undefined
+    const { container: loading } = renderChapter()
+    expect(loading.querySelector('[class*="grid-cols"]')?.className).toBe(
+      loadedGrid
+    )
+  })
+
   it("shows the chapter's own skeleton while the model loads", () => {
     modelResult = undefined
     renderChapter()
