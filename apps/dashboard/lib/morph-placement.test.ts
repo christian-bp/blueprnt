@@ -119,6 +119,22 @@ describe("morphPanelPlacement", () => {
     )
   })
 
+  // The same impossible panel on the OTHER anchored side. Both branches have
+  // to keep the same edge, or which half of the panel survives would depend on
+  // which side the call site happened to prefer.
+  it("keeps the left edge on screen on the right side too", () => {
+    const trigger = { left: 300, right: 420 }
+    const placement = morphPanelPlacement({
+      triggerLeft: trigger.left,
+      triggerRight: trigger.right,
+      panelWidth: 900,
+      viewportWidth: 500,
+      preferred: "right",
+    })
+    expect(placement.side).toBe("right")
+    expect(boxOf(placement, trigger, 900).left).toBe(MORPH_VIEWPORT_MARGIN)
+  })
+
   // Whatever the trigger's position, the panel's box stays within the
   // viewport: swept rather than spot-checked, because the defect was one
   // untested trigger position. The bound is the viewport itself, not the

@@ -99,8 +99,9 @@ describe("MorphPopover", () => {
 
   // The primitive actually consumes the placement helper. happy-dom reports
   // every rect as zero, so the trigger and the panel content are given real
-  // boxes: a trigger 120px wide sitting at the right edge of an 1814px
-  // viewport, which is the geometry the owner's screenshot showed.
+  // boxes: a trigger 120px wide in the right gutter of a wide viewport, where
+  // a panel anchored to the trigger's left edge would grow straight off the
+  // screen and so must be placed fully on-screen instead.
   it("flips the panel inward when the preferred side would leave the screen", () => {
     const original = Element.prototype.getBoundingClientRect
     const innerWidth = window.innerWidth

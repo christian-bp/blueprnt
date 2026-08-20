@@ -34,6 +34,10 @@ export interface MorphPlacementInput {
 // trigger's own, so it follows the trigger; a trigger flush against the
 // viewport gets a panel flush with it, which is the layout's decision and not
 // this module's to override. Every real trigger sits inside the page padding.
+//
+// The one exception is a panel WIDER than the room between the margins, which
+// cannot satisfy both edges: there the title-bearing left edge is kept and the
+// far edge overflows, on both sides (see the two returns below).
 export interface MorphPlacement {
   side: MorphSide
   // How far to pull the panel inward along its anchored side, in pixels.
@@ -87,10 +91,16 @@ export function morphPanelPlacement({
     }
   }
   // Panel spans [triggerRight - panelWidth + shift, triggerRight + shift].
-  // Push right by the left-hand overflow, never past the far edge.
+  // Push right by the left-hand overflow, which lands the panel's left edge
+  // exactly on the margin. Deliberately NOT capped at the far edge: when the
+  // panel is wider than the room, capping would protect the RIGHT edge and let
+  // the title-bearing left edge run off, the opposite of what the "left" branch
+  // above decides for the identical situation. Both branches keep the left edge.
+  //
+  // Unreachable today (every consumer's panel is capped at max-w-[85vw], so
+  // some side always fits), which is exactly why it is worth pinning: the two
+  // branches have to agree about which edge is worth keeping before a wider
+  // panel ever reaches them.
   const needed = low - (triggerRight - panelWidth)
-  return {
-    side,
-    shift: clamp(Math.max(0, needed), 0, Math.max(0, high - triggerRight)),
-  }
+  return { side, shift: Math.max(0, needed) }
 }

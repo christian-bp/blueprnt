@@ -16,8 +16,8 @@ export function NextButton({
   label,
   ...props
 }: Omit<React.ComponentProps<typeof Button>, "children"> & {
-  // Override the default "Next" label (e.g. "Continue to weighting" for the
-  // first phase of the model builder). The hover-nudge arrow is unchanged.
+  // Override the default "Next" label (e.g. "Create the organization" on the
+  // wizard's final review screen). The hover-nudge arrow is unchanged.
   label?: string
 }) {
   const t = useTranslations("dashboard.onboarding.screens")
