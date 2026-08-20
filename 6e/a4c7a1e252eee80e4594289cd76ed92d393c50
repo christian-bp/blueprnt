@@ -1,0 +1,29 @@
+apps/dashboard/lib/model-chapters.ts
+  s_58dd112dc09435::t_9b5a4d44515cb0 168-175,179-183,188
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_dfcc34318e7220 75-78
+  s_58dd112dc09435::t_321c39535bf7c9 453-465
+  s_58dd112dc09435::t_e2e1f0b7ec3b01 441-452
+apps/dashboard/lib/model-chapters.test.ts
+  s_58dd112dc09435::t_4940593ffb4522 164-166,174-191,193
+  s_58dd112dc09435::t_aae1deb167505f 192
+  s_58dd112dc09435::t_9652cece002237 194-195
+apps/dashboard/components/model/library-picker-dialog.tsx
+  s_58dd112dc09435::t_97d822bf76d248 215-222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6ea4c7a1e252eee80e4594289cd76ed92d393c50",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
