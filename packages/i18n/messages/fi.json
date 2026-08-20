@@ -97,19 +97,7 @@
       "dropped": "{title} sijoitettiin perheeseen {family}.",
       "instructions": "Poimi rooli painamalla välilyöntiä tai enteriä, siirrä sitä nuolinäppäimillä ja pudota se painamalla välilyöntiä tai enteriä uudelleen. Peruuta painamalla escape.",
       "over": "{title} on perheen {family} päällä.",
-      "pickedUp": "Poimittiin {title}.",
-      "criterion": {
-        "cancelled": "Kriteerin {name} siirto peruutettiin.",
-        "dropped": "{name} lisättiin ulottuvuuteen {dimension}.",
-        "full": "Ulottuvuus {dimension} on täynnä.",
-        "instructions": "Poimi kriteeri painamalla välilyöntiä tai enteriä, siirrä sitä ulottuvuuksien välillä nuolinäppäimillä ja pudota se painamalla välilyöntiä tai enteriä uudelleen. Peruuta painamalla escape.",
-        "notAddedBusy": "{name} ei lisätty uudelleen: sitä ollaan jo lisäämässä.",
-        "notAddedFull": "{name} ei lisätty: ulottuvuus {dimension} on täynnä.",
-        "notAddedWrongDimension": "{name} ei lisätty: se ei kuulu ulottuvuuteen {dimension}.",
-        "over": "{name} on ulottuvuuden {dimension} päällä.",
-        "pickedUp": "Poimittiin {name}.",
-        "wrongDimension": "{name} ei kuulu ulottuvuuteen {dimension}."
-      }
+      "pickedUp": "Poimittiin {title}."
     },
     "familyTable": {
       "addFamily": "Lisää perhe",
@@ -1817,9 +1805,23 @@
     "model": {
       "error": "Jotakin meni vikaan. Yritä uudelleen.",
       "retry": "Yritä uudelleen",
-      "tabs": {
-        "build": "Rakenna malli",
-        "method": "Menetelmä"
+      "chapters": {
+        "criteria": "Kriteerit",
+        "weighting": "Painotus",
+        "method": "Menetelmä",
+        "approval": "Hyväksyntä",
+        "tab": "<num>{position}.</num> {chapter}",
+        "nav": "Mallin luvut",
+        "progressLabel": "Päätetty",
+        "progressBarLabel": "Koko mallin edistyminen",
+        "count": "{done}/{total}",
+        "countRich": "<done></done> / <total></total>",
+        "framing": {
+          "criteria": "Neljä ulottuvuutta ovat laajoja. Kriteerit tekevät niistä riittävän konkreettisia todellisen työn vertailuun.",
+          "weighting": "Kuinka paljon kukin kriteeri painaa, jaettuna yhdestä kiinteästä pistebudjetista.",
+          "method": "Miksi kukin kriteeri kuuluu malliin, ja sen vinoumatarkastus, dokumentoituna kriteeri kerrallaan.",
+          "approval": "Täällä malli tarkistetaan jokaista vaatimusta vasten ja hyväksytään, jotta roolit voidaan arvioida."
+        }
       },
       "review": {
         "heading": "Organisaation {name} malli",
@@ -1832,26 +1834,17 @@
         "removeDialogTitle": "Poistetaanko {name}?",
         "removeDialogDescription": "Kriteerin arviot poistetaan kaikilta rooleilta ja sen painopisteet jaetaan uudelleen jäljellä oleville kriteereille. Tätä ei voi kumota."
       },
-      "build": {
-        "description": "Kokoa yrityksenne blueprnt-malli: vedä kriteerejä kunkin ulottuvuuden kirjastosta sen yläpuolella olevalle alueelle ja päätä sitten, kuinka paljon kukin niistä painaa.",
-        "framing": {
-          "whyLabel": "Miksi olemme täällä?",
-          "whyBody": "Neljä ulottuvuutta ovat laajoja. Kriteerit tekevät niistä riittävän konkreettisia todellisen työn vertailuun.",
-          "decideLabel": "Mistä teette päätöksen?",
-          "decideBody": "Mitä roolien välisiä eroja malli tunnistaa ja kuinka paljon kukin niistä painaa.",
-          "nextLabel": "Mitä tapahtuu seuraavaksi?",
-          "nextBody": "Menetelmä tarkistaa kattavuuden, päällekkäisyydet ja painobudjetin ennen mallin hyväksyntää."
-        },
+      "criteria": {
+        "addCta": "Lisää kriteeri",
+        "addLabel": "Lisää kriteeri ulottuvuuteen {dimension}",
         "zoneCount": "{count} enintään {max}:sta",
         "zoneEmpty": "Tähän ulottuvuuteen ei ole vielä valittu kriteerejä",
-        "libraryLabel": "Ulottuvuudelle {dimension} saatavilla olevat kriteerit",
-        "libraryEmpty": "Kaikki tämän ulottuvuuden kriteerit on valittu.",
         "recommendedChip": "Suositeltu toimialallenne",
         "overlapChip": "Menee päällekkäin näiden kanssa: {names}",
-        "addCta": "Lisää",
-        "addLabel": "Lisää {name} malliin",
         "capDimension": "Tähän ulottuvuuteen mahtuu enintään {max}. Poista jokin sen kriteereistä lisätäksesi toisen.",
-        "capModel": "Malliin mahtuu enintään {max} kriteeriä. Poista yksi lisätäksesi toisen.",
+        "capModel": "Malliin mahtuu enintään {max} kriteeriä. Poista yksi lisätäksesi toisen."
+      },
+      "weighting": {
         "budgetAllocated": "<allocated></allocated>/<budget></budget> painopistettä jaettu",
         "budgetEmpty": "Lisää kriteerejä aloittaaksesi painopisteiden jakamisen.",
         "balanced": "Kaikki painopisteet on jaettu",
@@ -1864,7 +1857,16 @@
         "weightMeaning2": "Matala tai kohtalainen vaikutus mallissa",
         "weightMeaning3": "Selkeä ja tasapainoinen vaikutus mallissa",
         "weightMeaning4": "Vahva vaikutus mallissa",
-        "weightMeaning5": "Erittäin vahva vaikutus mallissa"
+        "weightMeaning5": "Erittäin vahva vaikutus mallissa",
+        "empty": "Ei vielä kriteerejä. <link>Valitse ne Kriteerit-luvussa</link>; kukin lisätään painolla 3."
+      },
+      "picker": {
+        "title": "Kriteerit: {dimension}",
+        "description": "Valitse kirjastosta. Kriteeri lisätään painolla 3, ja määrität sen painon Painotus-luvussa.",
+        "addRowCta": "Lisää",
+        "addRowLabel": "Lisää {name} malliin",
+        "empty": "Kaikki tämän ulottuvuuden kriteerit on valittu.",
+        "closeCta": "Sulje"
       },
       "change": {
         "cancel": "Peruuta"
@@ -2059,6 +2061,8 @@
       "collaborationBody": "Yhteistoimintaa työntekijöiden ja heidän luottamusmiestensä kanssa koko palkkakartoituksen ajan. Työehtosopimuksen piirissä he voivat myös vaatia tarvitsemansa tiedot.",
       "analysisProgressLabel": "Mitä tässä lasketaan?",
       "analysisProgressBody": "Vaiheet, jotka on dokumentoitava ennen palkkakartoituksen valmistumista: yhteistoiminta, palkkakäytäntöjen arviointi ja jokainen ryhmä, jonka palkkaero vaatii perustelun. Muuta ei lasketa.",
+      "modelProgressLabel": "Mitä tässä lasketaan?",
+      "modelProgressBody": "Päätökset, jotka malli tarvitsee ennen hyväksymistä: kriteerit, niiden painotus, kunkin kriteerin dokumentaatio ja itse hyväksyntä.",
       "payGapScatterMeansBody": "Katkoviivat ovat kummankin sukupuolen keskipalkka ryhmässä, joten näet ketkä ovat oman keskiarvonsa ylä- ja alapuolella."
     },
     "widgetCard": {

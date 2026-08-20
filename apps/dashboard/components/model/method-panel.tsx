@@ -32,7 +32,7 @@ const MethodAppendixDownload = dynamic(
 // renders the PDF export button above the list.
 export function MethodPanel({ orgId }: { orgId: string }) {
   const t = useTranslations("dashboard.model.method")
-  const tBuild = useTranslations("dashboard.model.build")
+  const tWeighting = useTranslations("dashboard.model.weighting")
   const locale = useLocale()
   const data = useQuery(api.evaluationModel.method.getMethodModel, {
     orgId,
@@ -72,7 +72,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
       ? null
       : (data.criteria.find((c) => c.criterionId === targetId) ?? null)
 
-  // Mirrors the build view's budget status: a check + neutral tint when the
+  // Mirrors the Viktning chapter's budget block: a check + neutral tint when the
   // model is fully approved, an amber heads-up while documentation is still
   // outstanding. Alert has no warning variant, so the amber tint is a
   // call-site override (same pattern as model-builder.tsx).
@@ -123,7 +123,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
                   <span className="font-medium text-foreground tabular-nums">
                     {c.share}%
                   </span>{" "}
-                  {tBuild("shareOfTotal")}
+                  {tWeighting("shareOfTotal")}
                 </span>
               }
               importanceNode={

@@ -10,7 +10,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { WeightPointRow } from "@/components/model/weight-point-row"
 
-const build = messages.dashboard.model.build
+const build = messages.dashboard.model.weighting
 
 function renderRow(value: number, onChange = vi.fn(), disabled = false) {
   render(

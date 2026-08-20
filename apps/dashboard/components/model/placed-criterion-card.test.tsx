@@ -8,36 +8,56 @@ import {
 } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
+import type { ReactNode } from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
+import {
+  PlacedCriterionCard,
+  type PlacedCriterionWeight,
+} from "@/components/model/placed-criterion-card"
 import { openMenu } from "@/test/menu"
 
 const editor = messages.dashboard.model.editor
-const build = messages.dashboard.model.build
+const weighting = messages.dashboard.model.weighting
 const change = messages.dashboard.model.change
 
-const CRITERION = { criterionId: "c1", name: "Analytical effort" }
+const CRITERION = {
+  criterionId: "c1",
+  name: "Analytical effort",
+  shortUiText: "How much analysis the work demands",
+}
 
-function renderCard(
-  props: Partial<Parameters<typeof PlacedCriterionCard>[0]> = {}
-) {
-  const onWeightChange = props.onWeightChange ?? vi.fn()
-  const onRemove = props.onRemove ?? vi.fn()
-  const view = render(
+function wrap(card: ReactNode) {
+  return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <ul>
-        <PlacedCriterionCard
-          criterion={CRITERION}
-          weight={3}
-          share="17.6%"
-          {...props}
-          onWeightChange={onWeightChange}
-          onRemove={onRemove}
-        />
-      </ul>
+      <ul>{card}</ul>
     </NextIntlClientProvider>
   )
-  return { ...view, onWeightChange, onRemove }
+}
+
+// The Kriterier chapter's card: the criterion is in the model, and the one
+// thing that chapter decides about it is whether it stays.
+function renderSelection(overrides: { removing?: boolean } = {}) {
+  const onRemove = vi.fn()
+  const view = wrap(
+    <PlacedCriterionCard
+      criterion={CRITERION}
+      onRemove={onRemove}
+      {...overrides}
+    />
+  )
+  return { ...view, onRemove }
+}
+
+// The Viktning chapter's card: how much the criterion counts.
+function renderWeighted(overrides: Partial<PlacedCriterionWeight> = {}) {
+  const onChange = vi.fn()
+  const view = wrap(
+    <PlacedCriterionCard
+      criterion={CRITERION}
+      weight={{ points: 3, share: "17.6%", onChange, ...overrides }}
+    />
+  )
+  return { ...view, onChange }
 }
 
 const menuTrigger = () =>
@@ -48,43 +68,95 @@ const menuTrigger = () =>
 describe("PlacedCriterionCard", () => {
   afterEach(cleanup)
 
-  it("shows the criterion and what share of the model it carries", () => {
-    renderCard()
+  // With the library lists gone from the page there is room for the library's
+  // own one-liner, and it is what tells the reader what they actually chose.
+  // Both chapters carry it, so a criterion reads the same wherever it is
+  // listed.
+  it("names the criterion and says what it is for, on both cards", () => {
+    renderSelection()
     expect(screen.getByText(CRITERION.name)).toBeDefined()
-    expect(screen.getByText("17.6%")).toBeDefined()
-    expect(screen.getByText(build.shareOfTotal)).toBeDefined()
+    expect(screen.getByText(CRITERION.shortUiText)).toBeDefined()
+    cleanup()
+    renderWeighted()
+    expect(screen.getByText(CRITERION.name)).toBeDefined()
+    expect(screen.getByText(CRITERION.shortUiText)).toBeDefined()
   })
 
-  // The weight lives ON the card rather than on a separate weighting page:
-  // the same five-button control, the same 1-5 semantics.
+  // Built on the design system's Item family rather than hand-rolled markup,
+  // so a criterion row reads like every other listed thing in the app.
+  it("is a design-system Item, with the name and one-liner in its own slots", () => {
+    const { container } = renderSelection()
+    const item = container.querySelector('[data-slot="item"]')
+    expect(item?.tagName).toBe("LI")
+    expect(item?.querySelector('[data-slot="item-title"]')?.textContent).toBe(
+      CRITERION.name
+    )
+    expect(
+      item?.querySelector('[data-slot="item-description"]')?.textContent
+    ).toBe(CRITERION.shortUiText)
+    expect(item?.querySelector('[data-slot="item-actions"]')).not.toBeNull()
+  })
+
+  // The Kriterier chapter is about which criteria are IN the model, and
+  // nothing else: a 1-5 weight row beside a criterion the reader is still
+  // deciding to include is the confusion the chapters exist to end.
+  it("carries no weighting on the selection card", () => {
+    const { container } = renderSelection()
+    expect(screen.queryByText(weighting.shareOfTotal)).toBeNull()
+    expect(
+      screen.queryByRole("group", {
+        name: weighting.setWeightPoints.replace("{name}", CRITERION.name),
+      })
+    ).toBeNull()
+    // The row menu is the card's only control here.
+    expect(container.querySelectorAll("button")).toHaveLength(1)
+  })
+
+  // The name is what the card exists to say, and a four-column grid cuts a
+  // real library name in half, so it wraps instead of truncating.
+  it("lets the criterion's name wrap rather than truncating it", () => {
+    renderSelection()
+    expect(screen.getByText(CRITERION.name).className).not.toContain("truncate")
+  })
+
+  it("shows what share of the model it carries once weighted", () => {
+    renderWeighted()
+    expect(screen.getByText("17.6%")).toBeDefined()
+    expect(screen.getByText(weighting.shareOfTotal)).toBeDefined()
+  })
+
   it("weights the criterion in place", () => {
-    const { onWeightChange } = renderCard()
+    const { onChange } = renderWeighted()
     const group = screen.getByRole("group", {
-      name: build.setWeightPoints.replace("{name}", CRITERION.name),
+      name: weighting.setWeightPoints.replace("{name}", CRITERION.name),
     })
     const options = within(group).getAllByRole("button")
     expect(
       options.map((option) => option.getAttribute("aria-pressed"))
     ).toEqual(["false", "false", "true", "false", "false"])
     fireEvent.click(within(group).getByRole("button", { name: "5" }))
-    expect(onWeightChange).toHaveBeenCalledWith(5)
+    expect(onChange).toHaveBeenCalledWith(5)
   })
 
-  // The 1-5 evaluation scale and the 1-5 weighting are never on screen
-  // together: that pairing is the confusion the phase split existed to kill,
-  // and the scale leaves the model surface entirely in this phase.
-  it("shows no evaluation scale beside the weighting", () => {
-    const { container } = renderCard()
-    // Everything the card offers: the five weight points and the row menu.
-    // Any scale disclosure would be a seventh control, so counting them is
-    // what says the scale is not one press away either.
-    expect(container.querySelectorAll("button")).toHaveLength(6)
+  // Changing WHICH criteria are in the model is the Kriterier chapter's job
+  // alone; this chapter only distributes points among them.
+  it("offers no way out on the weighting card", () => {
+    const { container } = renderWeighted()
+    expect(
+      screen.queryByRole("button", {
+        name: editor.rowMenuLabel.replace("{name}", CRITERION.name),
+      })
+    ).toBeNull()
+    // Exactly the five weight points, and nothing else. Any scale disclosure
+    // or removal would be a sixth control, so counting them is what says the
+    // evaluation scale is not one press away from the weighting either.
+    expect(container.querySelectorAll("button")).toHaveLength(5)
   })
 
   // Removing deletes the criterion's ratings on every role, so it confirms
   // first, and the confirmation says what it costs.
   it("confirms before removing the criterion", async () => {
-    const { onRemove } = renderCard()
+    const { onRemove } = renderSelection()
     await openMenu(menuTrigger())
     fireEvent.click(screen.getByRole("menuitem", { name: editor.removeCta }))
     await waitFor(() => {
@@ -107,7 +179,7 @@ describe("PlacedCriterionCard", () => {
   // the card: the whole card is the same card before and after the hover, node
   // for node and name for name.
   it("keeps its actions in a slot that is always present", () => {
-    const { container } = renderCard()
+    const { container } = renderSelection()
     expect(menuTrigger()).toBeDefined()
     const namesOf = () =>
       screen
@@ -120,13 +192,11 @@ describe("PlacedCriterionCard", () => {
     fireEvent.mouseEnter(container.querySelectorAll("li")[0] as HTMLElement)
     expect(container.querySelectorAll("*").length).toBe(nodesBefore)
     expect(namesOf()).toEqual(namesBefore)
-    // The five weight points plus the one row-actions trigger, and nothing a
-    // hover brought with it.
-    expect(namesBefore).toHaveLength(6)
+    expect(namesBefore).toHaveLength(1)
   })
 
   it("takes no input while the removal is in flight", () => {
-    renderCard({ removing: true })
+    renderSelection({ removing: true })
     expect((menuTrigger() as HTMLButtonElement).disabled).toBe(true)
   })
 })

@@ -10,6 +10,7 @@ import {
   sectionItems,
 } from "@/lib/command-palette"
 import type { DocsIndex } from "@/lib/docs/docs-index"
+import { chapterHref, MODEL_CHAPTERS } from "@/lib/model-chapters"
 
 // The real en labels, resolved the way useTranslations resolves them, so a
 // renamed key fails here instead of rendering a raw key in the palette.
@@ -49,9 +50,23 @@ describe("pageItems", () => {
       "/work",
       "/roles",
     ])
-    expect(hrefs).toContain("/model/method")
     expect(hrefs).toContain("/people/classify")
     expect(hrefs).toContain("/docs")
+  })
+
+  // The model section is one guided journey, so its chapters have no sidebar
+  // row; they are still real pages a user searches for by name, and a query
+  // for "approval" or "weighting" has to find one.
+  it("lists every chapter of the model section", () => {
+    const hrefs = pageItems("admin", label).map((item) => item.href)
+    for (const chapter of MODEL_CHAPTERS) {
+      expect(hrefs).toContain(chapterHref(chapter))
+    }
+    const weighting = pageItems("admin", label).find(
+      (item) => item.href === "/model/weighting"
+    )
+    expect(weighting?.label).toBe(messages.dashboard.model.chapters.weighting)
+    expect(weighting?.detail).toBe(messages.dashboard.nav.model)
   })
 
   it("names a sub-page by its own label with its section as the detail", () => {

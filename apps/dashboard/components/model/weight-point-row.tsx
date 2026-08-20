@@ -35,7 +35,7 @@ export function WeightPointRow({
   disabled?: boolean
   onChange: (points: number) => void
 }) {
-  const t = useTranslations("dashboard.model.build")
+  const t = useTranslations("dashboard.model.weighting")
 
   return (
     // Each weight button is its own hover trigger, so hovering (or focusing) a

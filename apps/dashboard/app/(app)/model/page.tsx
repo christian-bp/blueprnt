@@ -1,37 +1,11 @@
-"use client"
+import { redirect } from "next/navigation"
 
-import { useTranslations } from "next-intl"
-import { HelpMorphButton } from "@/components/help-morph-button"
-import { BuildFraming } from "@/components/model/build-framing"
-import { ModelBuilder } from "@/components/model/model-builder"
-import { useOrganization } from "@/components/org-context"
-import { PageHeader } from "@/components/page-header"
-import { usePageTitle } from "@/hooks/use-page-title"
-
-// The model's build page: the company's own model assembled in one place,
-// criteria and their weights together (ADR-0021 addendum, decision 8: there is
-// no free-text criterion editor, only a library to choose from). Weighting no
-// longer has a page of its own; what stays apart is the role-facing 1-5
-// evaluation scale, which belongs to rating a role and renders there.
-export default function ModelBuildPage() {
-  const { orgId } = useOrganization()
-  const t = useTranslations("dashboard.model.build")
-  const tTabs = useTranslations("dashboard.model.tabs")
-  const tHelp = useTranslations("dashboard.help")
-  usePageTitle(tTabs("build"))
-  return (
-    <div className="space-y-4">
-      <PageHeader
-        title={tTabs("build")}
-        titleAdornment={
-          <HelpMorphButton label={tHelp("criterionLabel")}>
-            {tHelp("criterionBody")}
-          </HelpMorphButton>
-        }
-        description={t("description")}
-      />
-      <BuildFraming />
-      <ModelBuilder orgId={orgId} />
-    </div>
-  )
+// The model section has no page of its own: every route under it IS a chapter,
+// and the spine and the chapter tab row in the layout above already answer
+// "how far along" on every one of them. Kept as a redirect rather than deleted
+// so the section's own path stays a valid address instead of a 404: every
+// existing link, bookmark and sidebar row that names /model still lands on the
+// first chapter.
+export default function ModelPage() {
+  redirect("/model/criteria")
 }

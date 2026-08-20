@@ -62,10 +62,12 @@ const NAV_GROUPS_SOURCE = [
         icon: Briefcase01Icon,
         adminOnly: false,
       },
+      // The model section has no static sub-pages here: its four chapters
+      // carry their own in-page tab row under the section's progress spine,
+      // the same way one kartläggning's analysis chapters do.
       {
         labelKey: "nav.model",
         href: "/model",
-        section: "model",
         icon: Layers01Icon,
         adminOnly: false,
       },

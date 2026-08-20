@@ -1,24 +1,16 @@
 import { describe, expect, it } from "vitest"
 import { deepestMatch, SECTION_PAGES } from "@/lib/section-pages"
 
-const MODEL = SECTION_PAGES.model.map((page) => page.href)
+const WORK = SECTION_PAGES.work.map((page) => page.href)
 const PEOPLE = SECTION_PAGES.people.map((page) => page.href)
 
 describe("deepestMatch", () => {
   it("resolves the section index on the index path", () => {
-    expect(deepestMatch(MODEL, "/model")).toBe("/model")
+    expect(deepestMatch(PEOPLE, "/people")).toBe("/people")
   })
 
   it("hands the index over to a deeper matching sibling", () => {
-    expect(deepestMatch(MODEL, "/model/method")).toBe("/model/method")
     expect(deepestMatch(PEOPLE, "/people/classify")).toBe("/people/classify")
-  })
-
-  // /model/weighting retired into the build view and redirects there. Its tab
-  // is gone, so the index keeps the section current while the redirect runs
-  // rather than leaving the strip with nothing marked.
-  it("keeps the index current on a retired nested route", () => {
-    expect(deepestMatch(MODEL, "/model/weighting")).toBe("/model")
   })
 
   it("keeps a register current on its detail pages", () => {
@@ -27,11 +19,27 @@ describe("deepestMatch", () => {
   })
 
   it("matches whole path segments, not string prefixes", () => {
-    expect(deepestMatch(MODEL, "/modelling")).toBeUndefined()
+    expect(deepestMatch(WORK, "/workspace")).toBeUndefined()
   })
 
   it("returns undefined outside the section", () => {
-    expect(deepestMatch(MODEL, "/people")).toBeUndefined()
+    expect(deepestMatch(PEOPLE, "/work")).toBeUndefined()
+  })
+})
+
+// The model section's four chapters are a guided journey with their own
+// in-page tab row, so they are deliberately NOT section pages: listing them
+// here would put the same four destinations in the header strip and the
+// sidebar sub-menu as well as under the spine that already draws them.
+describe("the guided sections", () => {
+  it("keeps the model section out of the header/sidebar sub-page registry", () => {
+    expect(Object.keys(SECTION_PAGES)).not.toContain("model")
+    for (const pages of Object.values(SECTION_PAGES)) {
+      for (const page of pages) {
+        expect(page.href.startsWith("/model")).toBe(false)
+        expect(page.href.startsWith("/pay-mappings")).toBe(false)
+      }
+    }
   })
 })
 

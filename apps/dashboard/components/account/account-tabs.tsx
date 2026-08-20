@@ -6,7 +6,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { SPRING } from "@/lib/motion"
 
-// Sub-pages of the account section, shown as header tabs (mirrors ModelTabs).
+// Sub-pages of the account section, shown as header tabs (mirrors PeopleTabs).
 // Profile covers display name, email and language; Security covers password,
 // two-step verification, and account deletion. The underline uses a layoutId
 // distinct from other sections so they never cross-animate.

@@ -2,34 +2,29 @@
 
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { ApprovalCard } from "@/components/model/approval-card"
+import { ChapterFraming } from "@/components/model/chapter-framing"
 import { MethodPanel } from "@/components/model/method-panel"
 import { useOrganization } from "@/components/org-context"
-import { PageHeader } from "@/components/page-header"
 import { usePageTitle } from "@/hooks/use-page-title"
 
-// The Method page (/model/method): documents each criterion's rationale and
-// bias review, hosts the method appendix export, and (Task 6) the model
-// approval lifecycle: the twelve-check checklist, the approval state and
-// action, and the working-conditions materiality decision.
-export default function ModelMethodPage() {
+// Chapter 3 of the model section: each criterion's rationale and bias review
+// (the kriterieurvalsprotokoll), and the method appendix export built from it.
+// The approval gate it feeds is the next chapter's.
+export default function ModelMethodChapterPage() {
   const { orgId } = useOrganization()
-  const t = useTranslations("dashboard.model.method")
-  const tTabs = useTranslations("dashboard.model.tabs")
+  const tChapters = useTranslations("dashboard.model.chapters")
   const tHelp = useTranslations("dashboard.help")
-  usePageTitle(tTabs("method"))
+  usePageTitle(tChapters("method"))
   return (
     <div className="space-y-4">
-      <PageHeader
-        title={tTabs("method")}
-        titleAdornment={
+      <ChapterFraming
+        chapter="method"
+        help={
           <HelpMorphButton label={tHelp("methodAppendixLabel")}>
             {tHelp("methodAppendixBody")}
           </HelpMorphButton>
         }
-        description={t("description")}
       />
-      <ApprovalCard orgId={orgId} />
       <MethodPanel orgId={orgId} />
     </div>
   )

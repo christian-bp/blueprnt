@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import { AccountTabs } from "@/components/account/account-tabs"
 import { AdminTabs } from "@/components/admin/admin-tabs"
-import { ModelTabs } from "@/components/model/model-tabs"
 import { OrganizationTabs } from "@/components/organization/organization-tabs"
 import { PayMappingRunIndicator } from "@/components/pay-mapping/pay-mapping-run-indicator"
 import { PayMappingTabs } from "@/components/pay-mapping/pay-mapping-tabs"
@@ -21,14 +20,19 @@ export function SiteHeader() {
   const [section] = segments
 
   // The header carries the section identity: the Work section (/work, /roles),
-  // the Admin, Model, and People sections get switchable tabs; the other
-  // top-level sections get a plain title. Inside one kartläggning
+  // the Admin and People sections get switchable tabs; the other top-level
+  // sections get a plain title. Inside one kartläggning
   // (/pay-mappings/<slug>...) the header owns the whole workspace chrome:
   // the per-run tabs and the run switcher on the right (identity + the way
   // between runs and back to the list); the pay-mappings LIST keeps the
   // plain header (the tabs belong to a run). The Analysis sub-page is now
   // the guided review journey (ADR-0012), which owns its own in-page
   // progress chrome instead of a second header row.
+  //
+  // The Model section is the same shape: its four chapters are a guided
+  // journey with their own in-page tab row under their own progress spine, so
+  // the header names the section rather than repeating those four
+  // destinations one row above the row that already draws them.
   const inWorkSection = section === "work" || section === "roles"
   const inAdminSection = section === "admin"
   const inModelSection = section === "model"
@@ -36,7 +40,7 @@ export function SiteHeader() {
   const inAccountSection = section === "account"
   const inOrganizationSection = section === "organization"
   const inPayMappingRun = section === "pay-mappings" && segments.length >= 2
-  const sectionTitle = t("nav.home")
+  const sectionTitle = inModelSection ? t("nav.model") : t("nav.home")
 
   return (
     <header className="flex h-(--header-height) w-full shrink-0 items-center gap-1 border-b px-4 transition-[width,height] ease-linear lg:gap-2 lg:px-6">
@@ -54,8 +58,6 @@ export function SiteHeader() {
         <SectionTabs />
       ) : inAdminSection ? (
         <AdminTabs />
-      ) : inModelSection ? (
-        <ModelTabs />
       ) : inPeopleSection ? (
         <PeopleTabs />
       ) : inAccountSection ? (

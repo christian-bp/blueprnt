@@ -105,10 +105,34 @@ export const ASSISTANT_PAGES = {
       fi: "Malli",
     },
     description:
-      "the guided build view: criteria are dragged from each dimension's library into one of the four dimension zones and weighted on the card they land in, with a budget bar for the weight points. The 1-5 anchor scale is not shown here; it belongs to evaluating a role.",
+      "the model section, a guided journey of four chapters (Criteria, Weighting, Method, Approval) under one progress bar. It has no page of its own: opening it lands on the first chapter, /model/criteria.",
+  },
+  "/model/criteria": {
+    labelKey: "model.chapters.criteria",
+    name: {
+      en: "Criteria",
+      sv: "Kriterier",
+      nb: "Kriterier",
+      da: "Kriterier",
+      fi: "Kriteerit",
+    },
+    description:
+      "chapter 1 of the model section: which criteria the model is built from, shown as four dimension columns, each adding from the criteria library in a dialog. The 1-5 anchor scale is not shown here; it belongs to evaluating a role.",
+  },
+  "/model/weighting": {
+    labelKey: "model.chapters.weighting",
+    name: {
+      en: "Weighting",
+      sv: "Viktning",
+      nb: "Vekting",
+      da: "Vægtning",
+      fi: "Painotus",
+    },
+    description:
+      "chapter 2 of the model section: each chosen criterion's 1-5 weight points and derived share, with the point-budget bar and the one save for the whole allocation.",
   },
   "/model/method": {
-    labelKey: "model.tabs.method",
+    labelKey: "model.chapters.method",
     name: {
       en: "Method",
       sv: "Metod",
@@ -116,7 +140,20 @@ export const ASSISTANT_PAGES = {
       da: "Metode",
       fi: "Menetelmä",
     },
-    description: "the model section's tab for the method documentation.",
+    description:
+      "chapter 3 of the model section: each criterion's rationale and bias review, and the method appendix export.",
+  },
+  "/model/approval": {
+    labelKey: "model.chapters.approval",
+    name: {
+      en: "Approval",
+      sv: "Godkännande",
+      nb: "Godkjenning",
+      da: "Godkendelse",
+      fi: "Hyväksyntä",
+    },
+    description:
+      "chapter 4 of the model section: the pre-approval checklist, the working-conditions materiality decision, and approving the model, which is what makes rating a role possible.",
   },
   "/people": {
     labelKey: "nav.people",
@@ -294,7 +331,7 @@ export function assistantSystemPrompt(args: AssistantPromptContext): string {
     companyLine,
     "Your job: explain the product's concepts in plain language, point the user to the page where they can act, and answer questions about the organization's own state using your tools.",
     "Core concepts:",
-    "- Evaluation model: the org-wide set of criteria used to evaluate roles. Managed on the model pages: the criteria and their weight points are built together at /model, the method documentation at /model/method. The 1-5 anchor scale is read where a role is evaluated, never on /model.",
+    "- Evaluation model: the org-wide set of criteria used to evaluate roles. Built in the model section as four chapters, in order: choose the criteria at /model/criteria, weight them at /model/weighting, document them at /model/method, approve the model at /model/approval. The 1-5 anchor scale is read where a role is evaluated, never in the model section.",
     "- Criterion: one dimension a role is evaluated on. Each criterion has full anchor texts at steps 1, 3, and 5, with considered midpoint anchors at 2 and 4.",
     "- Step: one of a criterion's 1-5 anchor positions, chosen when evaluating a role; a motivation is required when choosing 1, 4, or 5. An active working-conditions criterion also allows step 0, meaning the role is not covered by the defined condition.",
     "- Weight points: each criterion carries 1-5 weight points under a fixed budget (criteria count times 3, exact sum). Percent shares are derived, never entered.",

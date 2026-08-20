@@ -97,19 +97,7 @@
       "dropped": "{title} was placed in {family}.",
       "instructions": "Press space or enter to pick up a role, use the arrow keys to move it, and press space or enter again to drop it. Press escape to cancel.",
       "over": "{title} is over {family}.",
-      "pickedUp": "Picked up {title}.",
-      "criterion": {
-        "cancelled": "Moving {name} was cancelled.",
-        "dropped": "{name} was added to {dimension}.",
-        "full": "{dimension} is full.",
-        "instructions": "Press space or enter to pick up a criterion, use the arrow keys to move it between dimensions, and press space or enter again to drop it. Press escape to cancel.",
-        "notAddedBusy": "{name} was not added again: it is already being added.",
-        "notAddedFull": "{name} was not added: {dimension} is full.",
-        "notAddedWrongDimension": "{name} was not added: it does not belong to {dimension}.",
-        "over": "{name} is over {dimension}.",
-        "pickedUp": "Picked up {name}.",
-        "wrongDimension": "{name} does not belong to {dimension}."
-      }
+      "pickedUp": "Picked up {title}."
     },
     "familyTable": {
       "addFamily": "Add family",
@@ -1817,9 +1805,23 @@
     "model": {
       "error": "Something went wrong. Try again.",
       "retry": "Try again",
-      "tabs": {
-        "build": "Build the model",
-        "method": "Method"
+      "chapters": {
+        "criteria": "Criteria",
+        "weighting": "Weighting",
+        "method": "Method",
+        "approval": "Approval",
+        "tab": "<num>{position}.</num> {chapter}",
+        "nav": "Model chapters",
+        "progressLabel": "Decided",
+        "progressBarLabel": "Overall model progress",
+        "count": "{done} of {total}",
+        "countRich": "<done></done> of <total></total>",
+        "framing": {
+          "criteria": "The four dimensions are broad. Criteria are what make them concrete enough to compare real jobs.",
+          "weighting": "How much each criterion counts, allocated from one fixed point budget.",
+          "method": "Why each criterion belongs in the model, and its bias review, documented criterion by criterion.",
+          "approval": "The model is checked against every requirement here, then approved so roles can be evaluated."
+        }
       },
       "review": {
         "heading": "{name}'s model",
@@ -1832,26 +1834,17 @@
         "removeDialogTitle": "Remove {name}?",
         "removeDialogDescription": "The criterion's ratings are removed from every role and its weight points are redistributed across the remaining criteria. This cannot be undone."
       },
-      "build": {
-        "description": "Assemble your company's blueprnt model: drag criteria from each dimension's library into the zone above it, then decide how much each one counts.",
-        "framing": {
-          "whyLabel": "Why are we here?",
-          "whyBody": "The four dimensions are broad. Criteria are what make them concrete enough to compare real jobs.",
-          "decideLabel": "What do you decide here?",
-          "decideBody": "Which differences between roles your model captures, and how much each of them counts.",
-          "nextLabel": "What happens next?",
-          "nextBody": "Method checks coverage, overlap and the weight budget before the model is approved."
-        },
+      "criteria": {
+        "addCta": "Add criterion",
+        "addLabel": "Add a criterion to {dimension}",
         "zoneCount": "{count} of max {max}",
         "zoneEmpty": "No criteria in this dimension yet",
-        "libraryLabel": "Criteria available for {dimension}",
-        "libraryEmpty": "Every criterion in this dimension is selected.",
         "recommendedChip": "Recommended for your industry",
         "overlapChip": "Overlaps {names}",
-        "addCta": "Add",
-        "addLabel": "Add {name} to the model",
         "capDimension": "This dimension holds its maximum of {max}. Remove one of its criteria to add another.",
-        "capModel": "The model holds its maximum of {max} criteria. Remove one to add another.",
+        "capModel": "The model holds its maximum of {max} criteria. Remove one to add another."
+      },
+      "weighting": {
         "budgetAllocated": "<allocated></allocated> of <budget></budget> weight points allocated",
         "budgetEmpty": "Add criteria to start allocating weight points.",
         "balanced": "All weight points are distributed",
@@ -1864,7 +1857,16 @@
         "weightMeaning2": "Low to moderate influence in the model",
         "weightMeaning3": "Clear and balanced influence in the model",
         "weightMeaning4": "Strong influence in the model",
-        "weightMeaning5": "Very strong influence in the model"
+        "weightMeaning5": "Very strong influence in the model",
+        "empty": "No criteria yet. <link>Choose them in the Criteria chapter</link>; each one enters at weight 3."
+      },
+      "picker": {
+        "title": "Criteria for {dimension}",
+        "description": "Choose from the library. The criterion enters the model at weight 3; you set its weight in the Weighting chapter.",
+        "addRowCta": "Add",
+        "addRowLabel": "Add {name} to the model",
+        "empty": "Every criterion in this dimension is selected.",
+        "closeCta": "Close"
       },
       "change": {
         "cancel": "Cancel"
@@ -2059,6 +2061,8 @@
       "collaborationBody": "Cooperating with employees and union representatives through the whole pay mapping (Diskrimineringslagen 3 kap. 11 §). Under a collective agreement they may also require the information (12 §).",
       "analysisProgressLabel": "What is counted here?",
       "analysisProgressBody": "The steps that must be documented before the pay mapping can be completed: collaboration, the pay-practice review, and every group whose pay difference needs a reason. Nothing else is counted.",
+      "modelProgressLabel": "What is counted here?",
+      "modelProgressBody": "The decisions the model needs before it can be approved: the criteria, their weighting, each criterion's documentation, and the approval itself.",
       "payGapScatterMeansBody": "The dashed lines are each gender's average pay in the group, so you can see who sits above and below their own average."
     },
     "widgetCard": {

@@ -97,19 +97,7 @@
       "dropped": "{title} ble plassert i {family}.",
       "instructions": "Trykk mellomrom eller enter for å plukke opp en rolle, bruk piltastene for å flytte den, og trykk mellomrom eller enter igjen for å slippe den. Trykk escape for å avbryte.",
       "over": "{title} er over {family}.",
-      "pickedUp": "Plukket opp {title}.",
-      "criterion": {
-        "cancelled": "Flyttingen av {name} ble avbrutt.",
-        "dropped": "{name} ble lagt til i {dimension}.",
-        "full": "{dimension} er full.",
-        "instructions": "Trykk mellomrom eller enter for å plukke opp et kriterium, bruk piltastene for å flytte det mellom dimensjoner, og trykk mellomrom eller enter igjen for å slippe det. Trykk escape for å avbryte.",
-        "notAddedBusy": "{name} ble ikke lagt til igjen: det holder allerede på å bli lagt til.",
-        "notAddedFull": "{name} ble ikke lagt til: {dimension} er full.",
-        "notAddedWrongDimension": "{name} ble ikke lagt til: det hører ikke til {dimension}.",
-        "over": "{name} er over {dimension}.",
-        "pickedUp": "Plukket opp {name}.",
-        "wrongDimension": "{name} hører ikke til {dimension}."
-      }
+      "pickedUp": "Plukket opp {title}."
     },
     "familyTable": {
       "addFamily": "Legg til familie",
@@ -1817,9 +1805,23 @@
     "model": {
       "error": "Noe gikk galt. Prøv igjen.",
       "retry": "Prøv igjen",
-      "tabs": {
-        "build": "Bygg modellen",
-        "method": "Metode"
+      "chapters": {
+        "criteria": "Kriterier",
+        "weighting": "Vekting",
+        "method": "Metode",
+        "approval": "Godkjenning",
+        "tab": "<num>{position}.</num> {chapter}",
+        "nav": "Modellens kapitler",
+        "progressLabel": "Besluttet",
+        "progressBarLabel": "Hele modellens framdrift",
+        "count": "{done} av {total}",
+        "countRich": "<done></done> av <total></total>",
+        "framing": {
+          "criteria": "De fire dimensjonene er brede. Kriteriene er det som gjør dem konkrete nok til å sammenligne virkelig arbeid.",
+          "weighting": "Hvor mye hvert kriterium teller, fordelt fra ett fast poengbudsjett.",
+          "method": "Hvorfor hvert kriterium hører hjemme i modellen, og bias-gjennomgangen, dokumentert kriterium for kriterium.",
+          "approval": "Her kontrolleres modellen mot hvert krav og godkjennes deretter, slik at roller kan verdsettes."
+        }
       },
       "review": {
         "heading": "Modellen til {name}",
@@ -1832,26 +1834,17 @@
         "removeDialogTitle": "Fjerne {name}?",
         "removeDialogDescription": "Kriteriets vurderinger fjernes fra alle roller og vektpoengene omfordeles til de gjenværende kriteriene. Dette kan ikke angres."
       },
-      "build": {
-        "description": "Sett sammen selskapets blueprnt-modell: dra kriterier fra hver dimensjons bibliotek opp i sonen over, og bestem så hvor mye hvert av dem skal telle.",
-        "framing": {
-          "whyLabel": "Hvorfor er vi her?",
-          "whyBody": "De fire dimensjonene er brede. Kriteriene er det som gjør dem konkrete nok til å sammenligne virkelig arbeid.",
-          "decideLabel": "Hva skal dere ta stilling til?",
-          "decideBody": "Hvilke forskjeller mellom roller modellen skal fange, og hvor mye hver av dem skal telle.",
-          "nextLabel": "Hva skjer så?",
-          "nextBody": "Metode kontrollerer dekning, overlapp og vektbudsjett før modellen godkjennes."
-        },
+      "criteria": {
+        "addCta": "Legg til kriterium",
+        "addLabel": "Legg til et kriterium i {dimension}",
         "zoneCount": "{count} av maks {max}",
         "zoneEmpty": "Ingen kriterier i denne dimensjonen ennå",
-        "libraryLabel": "Kriterier som er tilgjengelige for {dimension}",
-        "libraryEmpty": "Alle kriterier i denne dimensjonen er valgt.",
         "recommendedChip": "Anbefalt for deres bransje",
         "overlapChip": "Overlapper {names}",
-        "addCta": "Legg til",
-        "addLabel": "Legg til {name} i modellen",
         "capDimension": "Denne dimensjonen rommer høyst {max}. Fjern ett av kriteriene for å legge til et annet.",
-        "capModel": "Modellen rommer høyst {max} kriterier. Fjern ett for å legge til et annet.",
+        "capModel": "Modellen rommer høyst {max} kriterier. Fjern ett for å legge til et annet."
+      },
+      "weighting": {
         "budgetAllocated": "<allocated></allocated> av <budget></budget> vektpoeng fordelt",
         "budgetEmpty": "Legg til kriterier for å begynne å fordele vektpoeng.",
         "balanced": "Alle vektpoeng er fordelt",
@@ -1864,7 +1857,16 @@
         "weightMeaning2": "Lav til moderat påvirkning i modellen",
         "weightMeaning3": "Tydelig og balansert påvirkning i modellen",
         "weightMeaning4": "Sterk påvirkning i modellen",
-        "weightMeaning5": "Svært sterk påvirkning i modellen"
+        "weightMeaning5": "Svært sterk påvirkning i modellen",
+        "empty": "Ingen kriterier ennå. <link>Velg dem i kapittelet Kriterier</link>, hvert av dem legges til med vekt 3."
+      },
+      "picker": {
+        "title": "Kriterier for {dimension}",
+        "description": "Velg fra biblioteket. Kriteriet legges til med vekt 3, og du bestemmer vekten i kapittelet Vekting.",
+        "addRowCta": "Legg til",
+        "addRowLabel": "Legg til {name} i modellen",
+        "empty": "Alle kriterier i denne dimensjonen er valgt.",
+        "closeCta": "Lukk"
       },
       "change": {
         "cancel": "Avbryt"
@@ -2059,6 +2061,8 @@
       "collaborationBody": "Å samarbeide med de ansatte og deres tillitsvalgte gjennom hele lønnskartleggingen (diskrimineringsloven 3 kap. 11 §). Ved tariffavtale kan de også kreve informasjonen (12 §).",
       "analysisProgressLabel": "Hva telles her?",
       "analysisProgressBody": "Stegene som må dokumenteres før lønnskartleggingen kan fullføres: samarbeidet, gjennomgangen av lønnspraksis, og hver gruppe hvis lønnsforskjell krever en begrunnelse. Ingenting annet telles.",
+      "modelProgressLabel": "Hva telles her?",
+      "modelProgressBody": "Beslutningene modellen trenger før den kan godkjennes: kriteriene, vektingen av dem, dokumentasjonen for hvert kriterium og selve godkjenningen.",
       "payGapScatterMeansBody": "De stiplede linjene er hvert kjønns gjennomsnittslønn i gruppen, så du ser hvem som ligger over og under sitt eget gjennomsnitt."
     },
     "widgetCard": {

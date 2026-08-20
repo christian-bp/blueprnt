@@ -8,7 +8,7 @@ import { useOrganization } from "@/components/org-context"
 import { useClassificationSummary } from "@/hooks/use-classification-summary"
 import { deepestMatch, SECTION_PAGES } from "@/lib/section-pages"
 
-// Sub-pages of the People section, shown as header tabs (mirrors ModelTabs).
+// Sub-pages of the People section, shown as header tabs (mirrors SectionTabs).
 // The sidebar renders the same list under the People entry; both surfaces
 // come from SECTION_PAGES so they cannot drift apart. Directory is the
 // /people index (including person detail pages, which deepestMatch keeps

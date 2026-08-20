@@ -1,6 +1,6 @@
 ---
 title: Model overview
-description: What the evaluation model is, its two tabs, and how a new organization builds and approves its own.
+description: What the evaluation model is, its four chapters, and how a new organization builds and approves its own.
 section: model
 ---
 
@@ -11,28 +11,39 @@ organization. Changing it (selecting a criterion, reallocating weight)
 recomputes every role's weighting and level immediately; nothing needs a
 manual refresh, and there is no separate "apply changes" step.
 
-## The two tabs
+## The four chapters
 
-The [Model](/model) area has two tabs: "Build the model" and "Method".
-Each owns one part of building and maintaining the model:
+The [Model](/model) area is one guided journey of four chapters, worked
+through in order under a single progress bar. Opening the area lands you
+on the first one.
 
-- "Build the model" is where you assemble the model itself: one column per
-  dimension, where you drag criteria from blueprnt's library into the
-  dimension they belong to and set how much each one counts, using weight
-  points from 1 to 5. See
-  [Criteria and the evaluation scale](/docs/criteria-and-scale) and
-  [Weighting and the point budget](/docs/weighting-and-point-budget).
-- "Method" is where you document why each criterion belongs in the model,
-  review it for bias, decide whether working conditions materially apply,
-  and approve the model. See
-  [Method documentation](/docs/method-documentation).
+1. **[Criteria](/model/criteria)** is where you choose which criteria
+   the model is built from: one column per dimension, and an "Add
+   criterion" button on each that opens that dimension's library. See
+   [Criteria and the evaluation scale](/docs/criteria-and-scale).
+2. **[Weighting](/model/weighting)** is where you set how much each
+   chosen criterion counts, using weight points from 1 to 5 under a
+   fixed budget. See
+   [Weighting and the point budget](/docs/weighting-and-point-budget).
+3. **[Method](/model/method)** is where you document why each criterion
+   belongs in the model and review it for bias. See
+   [Method documentation](/docs/method-documentation).
+4. **[Approval](/model/approval)** is where you decide whether working
+   conditions materially apply, check the model against every
+   requirement, and approve it.
+
+The progress bar above the chapters is weighted by how much work each
+one holds, so Method, which needs a protocol per criterion, is the
+widest part of it. Nothing tracks which chapters you have visited: a
+chapter reads as done when its own work is actually done, and re-opens
+if that stops being true.
 
 A criterion's evaluation scale and its weighting are deliberately never
 shown on the same screen. The 1 to 5 scale a role is rated against
 describes how demanding a role is on that criterion, and it appears where
-you [evaluate a role](/docs/evaluating-a-role), never on the build view;
-the 1 to 5 weight points on a criterion's card there say how much that
-criterion matters relative to the others. Keeping them apart is
+you [evaluate a role](/docs/evaluating-a-role), never in the Model area;
+the 1 to 5 weight points on a criterion's card in the Weighting chapter
+say how much that criterion matters relative to the others. Keeping them apart is
 intentional: mixing them up is the single most common source of confusion
 when building a model.
 
@@ -51,7 +62,7 @@ even though the model itself keeps only its current state.
 
 A new organization's model starts empty during onboarding: no criteria
 selected yet, nothing weighted. There is no starting template to adjust;
-building the model is dragging 6 to 8 criteria from the library into
+building the model is choosing 6 to 8 criteria from the library into
 their four dimensions, weighting and documenting each one, and approving
 the result. See the [onboarding guide](/docs/onboarding-guide) for
 exactly how a fresh organization arrives at this starting point, and

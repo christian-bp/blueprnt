@@ -2,6 +2,7 @@ import {
   BookOpen01Icon,
   Briefcase01Icon,
   HashIcon,
+  Layers01Icon,
   Settings01Icon,
   UserGroup03Icon,
 } from "@hugeicons/core-free-icons"
@@ -40,6 +41,36 @@ export interface PaletteItem {
 // account section is the signed-in user's own, so none of these needs the
 // role filter that navEntriesFor applies to the sidebar entries.
 const EXTRA_PAGES = [
+  // The model section's four chapters. They are real static pages with no
+  // sidebar row of their own (the section is one guided journey, so its
+  // chapters live in an in-page tab row rather than in the sidebar and header
+  // strips), and they are exactly what a user searches for by name: "approval"
+  // and "weighting" have to find something. Their per-run counterparts in a
+  // kartläggning cannot be listed here, because those paths carry a run slug.
+  {
+    href: "/model/criteria",
+    labelKey: "model.chapters.criteria",
+    detailKey: "nav.model",
+    icon: Layers01Icon,
+  },
+  {
+    href: "/model/weighting",
+    labelKey: "model.chapters.weighting",
+    detailKey: "nav.model",
+    icon: Layers01Icon,
+  },
+  {
+    href: "/model/method",
+    labelKey: "model.chapters.method",
+    detailKey: "nav.model",
+    icon: Layers01Icon,
+  },
+  {
+    href: "/model/approval",
+    labelKey: "model.chapters.approval",
+    detailKey: "nav.model",
+    icon: Layers01Icon,
+  },
   {
     href: "/people/import",
     labelKey: "people.import.title",
