@@ -1,5 +1,8 @@
-import { MODEL_MIN_CRITERIA } from "@workspace/core"
-import { chapterHref } from "@/lib/model-chapters"
+import {
+  chapterHref,
+  modelChapterProgress,
+  type ModelProgressCheck,
+} from "@/lib/model-chapters"
 
 // Pure derivation of the front-page "To do" from the existing role + method
 // queries. No stored aggregate (derive, like score/level). The profileComplete
@@ -48,12 +51,15 @@ export type StartPayMappingItem = { id: string; href: string }
 export type ImportPeopleItem = { id: string; href: string }
 // The state-aware "build the company's model" row, first in priority order
 // (the whole evaluation journey depends on it): while the criteria selection
-// itself is short of MODEL_MIN_CRITERIA, `selected` names how many are chosen
-// so far and href sends the admin through the bare /model redirect into the
-// Kriterier chapter; once the selection clears that bar but the model still
-// lacks a current approval (ADR-0023, distinct from per-criterion
-// approveCriteria), it becomes the approve state, href pointing straight at
-// the Godkännande chapter. The two states are mutually exclusive.
+// itself is not yet done by the Kriterier chapter's own definition
+// (modelChapterProgress, which also fails a selection that clears
+// MODEL_MIN_CRITERIA by raw count but still breaks a dimension cap or misses
+// a mandatory dimension), `selected` names how many are chosen so far and
+// href sends the admin through the bare /model redirect into that chapter;
+// once the selection is done but the model still lacks a current approval
+// (ADR-0023, distinct from per-criterion approveCriteria), it becomes the
+// approve state, href pointing straight at the Godkännande chapter. The two
+// states are mutually exclusive.
 export type BuildModelItem =
   | { id: "buildModel"; state: "criteria"; href: string; selected: number }
   | { id: "buildModel"; state: "approve"; href: string }
@@ -96,6 +102,15 @@ type TodoMethod = {
   // individually approved and still lack this, or vice versa.
   modelApproved: boolean
 } | null
+// The slice of getMethodChecks buildModel's criteria-incomplete/ready-to-
+// approve boundary needs: the raw checks array, fed straight into
+// modelChapterProgress (structurally compatible with its leaner
+// ModelProgressCheck), so a selection that clears the raw MODEL_MIN_CRITERIA
+// count by number but still fails a dimension cap or misses a mandatory
+// dimension's coverage keeps reading as incomplete here exactly like it does
+// on the Kriterier chapter itself (model-chapters.ts's
+// CRITERIA_STATION_CHECKS), instead of jumping straight to "ready to approve".
+type TodoMethodChecks = { checks: readonly ModelProgressCheck[] } | null
 type TodoTitleGroup = {
   title: string | null
   people: {
@@ -117,16 +132,18 @@ type TodoPayMappingRun = {
 export type BuildTodoInput = {
   roles: TodoRole[]
   method: TodoMethod
+  methodChecks: TodoMethodChecks
   peopleByTitle: TodoTitleGroup[]
   payMappingRuns: TodoPayMappingRun[]
 }
 
-// One pass over the four queries, shared by buildTodo (the grouped to-do
+// One pass over the five queries, shared by buildTodo (the grouped to-do
 // list) and buildOverviewStats (the overview widget cards), so the two views
 // can never disagree about what still needs attention.
 function computeCounts({
   roles,
   method,
+  methodChecks,
   peopleByTitle,
   payMappingRuns,
 }: BuildTodoInput) {
@@ -201,17 +218,43 @@ function computeCounts({
     }
   }
   // The model itself (spec 2.7), read ahead of documentItems/approveItems
-  // above: below MODEL_MIN_CRITERIA the selection is the work (the bare
-  // /model redirect lands in the Kriterier chapter, so no chapter segment is
-  // hardcoded here); at or past it but still carrying no current approval
-  // (ADR-0023) the model needs its own approve step, sent straight to the
-  // Godkännande chapter via chapterHref rather than a literal path. A model
-  // that clears both is done and contributes nothing here.
+  // above: the bare /model redirect lands in the Kriterier chapter (so no
+  // chapter segment is hardcoded here) while the criteria selection itself
+  // is not yet DONE by the chapter's own definition; once it is but the
+  // model still carries no current approval (ADR-0023), the model needs its
+  // own approve step, sent straight to the Godkännande chapter via
+  // chapterHref rather than a literal path. A model that clears both is done
+  // and contributes nothing here.
+  //
+  // "Done" is modelChapterProgress's own criteria-chapter reading (the same
+  // derivation the Kriterier chapter's progress spine uses), not a naive
+  // count against MODEL_MIN_CRITERIA: a selection of six or more that still
+  // breaks a dimension cap or leaves a mandatory dimension uncovered stays
+  // capped below the chapter's total there, so it keeps showing the build
+  // entry here too instead of jumping straight to "ready to approve". The
+  // raw `criteriaSelected` count still drives the incomplete state's own "N
+  // of 6-8" copy: a reader picking criteria wants the number they actually
+  // chose, not a value the station checks can cap below it.
   const criteriaSelected = method?.criteria.length ?? 0
+  const criteriaProgress = methodChecks
+    ? modelChapterProgress(
+        {
+          checks: methodChecks.checks,
+          // Unread by the "criteria" case of modelChapterProgress (only the
+          // other three chapters consult approved/workingConditionsDecided);
+          // supplied for the input's shape only.
+          approved: method?.modelApproved ?? false,
+          workingConditionsDecided: false,
+        },
+        "criteria"
+      )
+    : null
+  const criteriaDone =
+    criteriaProgress !== null && criteriaProgress.done >= criteriaProgress.total
   const buildModel: BuildModelItem | null =
     method === null
       ? null
-      : criteriaSelected < MODEL_MIN_CRITERIA
+      : !criteriaDone
         ? {
             id: "buildModel",
             state: "criteria",

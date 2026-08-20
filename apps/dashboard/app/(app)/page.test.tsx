@@ -57,6 +57,7 @@ function mockNeutralQueries() {
         },
       ]
     if (ref === "evaluationModel.method.getMethodModel") return null
+    if (ref === "evaluationModel.approval.getMethodChecks") return null
     if (ref === "people.classificationQueries.listPeopleByTitle")
       return [
         {
@@ -84,6 +85,7 @@ function mockWorkFixture() {
   useQueryMock.mockImplementation((ref: string) => {
     if (ref === "assessment.roles.listRoles") return []
     if (ref === "evaluationModel.method.getMethodModel") return null
+    if (ref === "evaluationModel.approval.getMethodChecks") return null
     if (ref === "people.classificationQueries.listPeopleByTitle")
       return [
         { title: "Sales Manager", people: [{ currentAssignment: null }] },
@@ -135,6 +137,7 @@ describe("OverviewPage", () => {
     useQueryMock.mockImplementation((ref: string) => {
       if (ref === "assessment.roles.listRoles") return []
       if (ref === "evaluationModel.method.getMethodModel") return null
+      if (ref === "evaluationModel.approval.getMethodChecks") return null
       if (ref === "people.classificationQueries.listPeopleByTitle") return []
       if (ref === "payMapping.runs.listPayMappingRuns") return []
       if (ref === "assessment.results.getResults")

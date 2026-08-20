@@ -1,6 +1,11 @@
-import { MODEL_MIN_CRITERIA } from "@workspace/core"
+import { MODEL_MAX_CRITERIA, MODEL_MIN_CRITERIA } from "@workspace/core"
 import { describe, expect, it } from "vitest"
-import { buildOverviewStats, buildTodo, MAX_ITEMS } from "./todo"
+import {
+  buildOverviewStats,
+  buildTodo,
+  type BuildTodoInput,
+  MAX_ITEMS,
+} from "./todo"
 
 const role = (
   over: Partial<Parameters<typeof buildTodo>[0]["roles"][number]> = {}
@@ -25,15 +30,29 @@ const role = (
 // unasked and desync their total/groups assertions (mirrors role()'s locked
 // default). Tests about buildModel's own criteria-incomplete state pass
 // pad: false to keep an exact, intentionally-short list.
-const method = (
+//
+// Returns BOTH `method` and `methodChecks`, spread into buildTodo's input at
+// the call site (`...method(...)`): the two describe the same model, so one
+// factory builds them together rather than risking two independently
+// hand-written fixtures drifting apart. methodChecks' three station checks
+// (criterionCount, dimensionCaps, dimensionCoverage -- model-chapters.ts's
+// CRITERIA_STATION_CHECKS) read "ok" exactly when the criteria count sits
+// within [MODEL_MIN_CRITERIA, MODEL_MAX_CRITERIA] by default (stationOk:
+// true), matching the naive count boundary every fixture below that is not
+// about the chapter-progress boundary itself already assumes; stationOk:
+// false fails dimensionCaps/dimensionCoverage while leaving criterionCount's
+// own count untouched, for exercising the coverage-failing-but-count-passing
+// state (a selection of six or more that still reads incomplete).
+function method(
   criteria: {
     criterionId: string
     name: string
     status: "notStarted" | "inProgress" | "documented" | "approved"
   }[],
   modelApproved = true,
-  pad = true
-) => {
+  pad = true,
+  stationOk = true
+): Pick<BuildTodoInput, "method" | "methodChecks"> {
   const filler = pad
     ? Array.from(
         { length: Math.max(0, MODEL_MIN_CRITERIA - criteria.length) },
@@ -44,8 +63,32 @@ const method = (
         })
       )
     : []
-  return { criteria: [...criteria, ...filler], modelApproved }
+  const allCriteria = [...criteria, ...filler]
+  const count = allCriteria.length
+  return {
+    method: { criteria: allCriteria, modelApproved },
+    methodChecks: {
+      checks: [
+        {
+          key: "criterionCount",
+          ok:
+            stationOk &&
+            count >= MODEL_MIN_CRITERIA &&
+            count <= MODEL_MAX_CRITERIA,
+          count,
+        },
+        { key: "dimensionCaps", ok: stationOk },
+        { key: "dimensionCoverage", ok: stationOk },
+      ],
+    },
+  }
 }
+
+// Spread alongside a `method: null` fixture (no model exists at all): both
+// getMethodModel and getMethodChecks read the same underlying absence, so
+// methodChecks mirrors method's null exactly, the "no model" reading
+// buildModel's own derivation expects.
+const NO_MODEL = { method: null, methodChecks: null } as const
 
 // An open (non-completed) run: the neutral default for tests that are not
 // about the startPayMapping group itself, so a vacuously "ready" empty-input
@@ -81,7 +124,7 @@ describe("buildTodo", () => {
           totalCriteria: 9,
         }),
       ],
-      method: null,
+      ...NO_MODEL,
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
     })
@@ -93,7 +136,7 @@ describe("buildTodo", () => {
   it("routes a profiled, partly-rated role to evaluateRoles with progress + rate link", () => {
     const todo = buildTodo({
       roles: [role({ profileComplete: true, ratedCount: 3, totalCriteria: 9 })],
-      method: null,
+      ...NO_MODEL,
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
     })
@@ -119,7 +162,7 @@ describe("buildTodo", () => {
           locked: true,
         }),
       ],
-      method: null,
+      ...NO_MODEL,
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
     })
@@ -137,7 +180,7 @@ describe("buildTodo", () => {
           locked: false,
         }),
       ],
-      method: null,
+      ...NO_MODEL,
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
     })
@@ -152,7 +195,7 @@ describe("buildTodo", () => {
       roles: [],
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
-      method: method([
+      ...method([
         { criterionId: "c1", name: "Scope", status: "notStarted" },
         { criterionId: "c2", name: "Risk", status: "inProgress" },
         { criterionId: "c3", name: "Autonomy", status: "documented" },
@@ -184,9 +227,7 @@ describe("buildTodo", () => {
       ],
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
-      method: method([
-        { criterionId: "c1", name: "Scope", status: "documented" },
-      ]),
+      ...method([{ criterionId: "c1", name: "Scope", status: "documented" }]),
     })
     expect(todo.groups.map((g) => g.key)).toEqual([
       "describeRoles",
@@ -202,7 +243,7 @@ describe("buildTodo", () => {
   it("treats a null method as no criteria groups", () => {
     const todo = buildTodo({
       roles: [],
-      method: null,
+      ...NO_MODEL,
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
     })
@@ -212,7 +253,7 @@ describe("buildTodo", () => {
   it("puts unconfirmed title groups first as classifyPeople, counting awaiting people", () => {
     const todo = buildTodo({
       roles: [role({ profileComplete: false })],
-      method: null,
+      ...NO_MODEL,
       payMappingRuns: OPEN_RUN,
       peopleByTitle: [
         {
@@ -256,7 +297,7 @@ describe("buildTodo", () => {
   it("carries the no-title bucket as title null with a stable id", () => {
     const todo = buildTodo({
       roles: [],
-      method: null,
+      ...NO_MODEL,
       payMappingRuns: OPEN_RUN,
       peopleByTitle: [{ title: null, people: [{ currentAssignment: null }] }],
     })
@@ -270,7 +311,7 @@ describe("buildTodo", () => {
   it("caps classify items at MAX_ITEMS while count stays full", () => {
     const todo = buildTodo({
       roles: [],
-      method: null,
+      ...NO_MODEL,
       payMappingRuns: OPEN_RUN,
       peopleByTitle: Array.from({ length: 6 }, (_, i) => ({
         title: `Title ${i}`,
@@ -290,7 +331,7 @@ describe("buildTodo buildModel group", () => {
       roles: [],
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
-      method: method(
+      ...method(
         [
           { criterionId: "c1", name: "Scope", status: "approved" },
           { criterionId: "c2", name: "Impact", status: "documented" },
@@ -311,7 +352,7 @@ describe("buildTodo buildModel group", () => {
       roles: [],
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
-      method: method(
+      ...method(
         [{ criterionId: "c1", name: "Scope", status: "approved" }],
         false
       ),
@@ -323,12 +364,41 @@ describe("buildTodo buildModel group", () => {
     expect(g?.count).toBe(1)
   })
 
+  it("keeps the criteria state when the count clears MODEL_MIN_CRITERIA but a station check still fails (coverage-failing-but-count-passing)", () => {
+    const criteria = Array.from({ length: MODEL_MIN_CRITERIA }, (_, i) => ({
+      criterionId: `c${i}`,
+      name: `Criterion ${i}`,
+      status: "approved" as const,
+    }))
+    const todo = buildTodo({
+      roles: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
+      payMappingRuns: OPEN_RUN,
+      // Every naive count-only signal reads "done": six criteria chosen,
+      // modelApproved true. stationOk: false alone (a broken dimension cap
+      // or a mandatory dimension left uncovered, model-chapters.ts's
+      // CRITERIA_STATION_CHECKS) must still keep this in the criteria state,
+      // never jump to approve, and must not distort the live count shown.
+      ...method(criteria, true, false, false),
+    })
+    const g = todo.groups.find((g) => g.key === "buildModel")
+    expect(g?.items).toEqual([
+      {
+        id: "buildModel",
+        state: "criteria",
+        href: "/model",
+        selected: MODEL_MIN_CRITERIA,
+      },
+    ])
+    expect(g?.count).toBe(1)
+  })
+
   it("hides it once the selection clears MODEL_MIN_CRITERIA and the model is approved", () => {
     const todo = buildTodo({
       roles: [],
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
-      method: method(
+      ...method(
         [{ criterionId: "c1", name: "Scope", status: "approved" }],
         true
       ),
@@ -341,7 +411,7 @@ describe("buildTodo buildModel group", () => {
       roles: [],
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
-      method: null,
+      ...NO_MODEL,
     })
     expect(todo.groups.map((g) => g.key)).not.toContain("buildModel")
   })
@@ -351,7 +421,7 @@ describe("buildTodo buildModel group", () => {
       roles: [],
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: [],
-      method: method(
+      ...method(
         [{ criterionId: "c1", name: "Scope", status: "documented" }],
         false
       ),
@@ -366,7 +436,7 @@ describe("buildTodo buildModel group", () => {
   it("sits first even ahead of importPeople, for a fresh org with zero criteria selected", () => {
     const todo = buildTodo({
       roles: [role({ profileComplete: false })],
-      method: method([], true, false),
+      ...method([], true, false),
       peopleByTitle: [],
       payMappingRuns: [],
     })
@@ -391,9 +461,7 @@ describe("buildTodo startPayMapping group", () => {
       roles: [],
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: [],
-      method: method([
-        { criterionId: "c1", name: "Scope", status: "documented" },
-      ]),
+      ...method([{ criterionId: "c1", name: "Scope", status: "documented" }]),
     })
     expect(todo.groups.map((g) => g.key)).toEqual([
       "approveCriteria",
@@ -408,7 +476,7 @@ describe("buildTodo startPayMapping group", () => {
   it("does not add it while a person is unclassified", () => {
     const todo = buildTodo({
       roles: [],
-      method: null,
+      ...NO_MODEL,
       payMappingRuns: [],
       peopleByTitle: [
         { title: "Sales Manager", people: [{ currentAssignment: null }] },
@@ -420,7 +488,7 @@ describe("buildTodo startPayMapping group", () => {
   it("keeps it hidden, and lists the person under classify, when their assignment points to an archived/missing role (C1: listPeopleByTitle exposes this as currentAssignment: null, the same shape as no assignment at all)", () => {
     const todo = buildTodo({
       roles: [],
-      method: null,
+      ...NO_MODEL,
       payMappingRuns: [],
       peopleByTitle: [
         { title: "Retired Role", people: [{ currentAssignment: null }] },
@@ -433,7 +501,7 @@ describe("buildTodo startPayMapping group", () => {
   it("does not add it while a staffed role is not fully evaluated", () => {
     const todo = buildTodo({
       roles: [role({ roleId: "r1", ratedCount: 3, totalCriteria: 9 })],
-      method: null,
+      ...NO_MODEL,
       payMappingRuns: [],
       peopleByTitle: [
         {
@@ -454,7 +522,7 @@ describe("buildTodo startPayMapping group", () => {
       roles: [
         role({ roleId: "r1", ratedCount: 9, totalCriteria: 9, locked: false }),
       ],
-      method: null,
+      ...NO_MODEL,
       payMappingRuns: [],
       peopleByTitle: [
         {
@@ -477,7 +545,7 @@ describe("buildTodo startPayMapping group", () => {
       roles: [
         role({ roleId: "r1", ratedCount: 9, totalCriteria: 9, locked: true }),
       ],
-      method: null,
+      ...NO_MODEL,
       payMappingRuns: [],
       peopleByTitle: [
         {
@@ -496,7 +564,7 @@ describe("buildTodo startPayMapping group", () => {
   it("does not block on an unstaffed role that is not fully evaluated", () => {
     const todo = buildTodo({
       roles: [role({ roleId: "r1", profileComplete: false })],
-      method: null,
+      ...NO_MODEL,
       payMappingRuns: [],
       peopleByTitle: PEOPLE_NEUTRAL,
     })
@@ -509,7 +577,7 @@ describe("buildTodo startPayMapping group", () => {
   it("does not add it while a non-completed run already exists", () => {
     const todo = buildTodo({
       roles: [],
-      method: null,
+      ...NO_MODEL,
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: [{ status: "underReview" }],
     })
@@ -519,7 +587,7 @@ describe("buildTodo startPayMapping group", () => {
   it("adds it once every existing run is completed", () => {
     const todo = buildTodo({
       roles: [],
-      method: null,
+      ...NO_MODEL,
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: [{ status: "completed" }, { status: "completed" }],
     })
@@ -531,7 +599,7 @@ describe("buildTodo importPeople group", () => {
   it("puts the import row first, alone, when the org has no people", () => {
     const todo = buildTodo({
       roles: [],
-      method: null,
+      ...NO_MODEL,
       peopleByTitle: [],
       payMappingRuns: [],
     })
@@ -547,9 +615,7 @@ describe("buildTodo importPeople group", () => {
       roles: [],
       peopleByTitle: [],
       payMappingRuns: [],
-      method: method([
-        { criterionId: "c1", name: "Scope", status: "approved" },
-      ]),
+      ...method([{ criterionId: "c1", name: "Scope", status: "approved" }]),
     })
     expect(todo.groups.map((g) => g.key)).toEqual(["importPeople"])
     expect(todo.groups.map((g) => g.key)).not.toContain("startPayMapping")
@@ -558,14 +624,14 @@ describe("buildTodo importPeople group", () => {
   it("keeps the import row while a run is somehow open, and drops it once people exist", () => {
     const empty = buildTodo({
       roles: [],
-      method: null,
+      ...NO_MODEL,
       peopleByTitle: [],
       payMappingRuns: OPEN_RUN,
     })
     expect(empty.groups.map((g) => g.key)).toEqual(["importPeople"])
     const staffed = buildTodo({
       roles: [],
-      method: null,
+      ...NO_MODEL,
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
     })
@@ -577,7 +643,7 @@ describe("buildOverviewStats", () => {
   it("reports totalPeople 0 when the org holds no people", () => {
     const stats = buildOverviewStats({
       roles: [],
-      method: null,
+      ...NO_MODEL,
       peopleByTitle: [],
       payMappingRuns: [],
     })
@@ -597,7 +663,7 @@ describe("buildOverviewStats", () => {
           totalCriteria: 9,
         }),
       ],
-      method: method([
+      ...method([
         { criterionId: "c1", name: "Scope", status: "notStarted" },
         { criterionId: "c2", name: "Risk", status: "documented" },
       ]),

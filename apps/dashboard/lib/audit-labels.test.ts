@@ -45,6 +45,7 @@ import {
   GENDER_VALUE_KEYS,
   INDUSTRY_VALUE_KEYS,
   MEMBER_ROLE_VALUE_KEYS,
+  MODEL_UPDATED_CHANGE_VALUE_KEYS,
   NOTE_TYPE_VALUE_KEYS,
   PAY_GAP_REASON_VALUE_KEYS,
   PLATFORM_AUDIT_FILTER_CATEGORIES,
@@ -305,6 +306,12 @@ const APPROVAL_REOPEN_CAUSES = [
   "model.levelRulesUpdated",
   "model.zoneProfileRulesUpdated",
 ] as const
+// model.updated `change` (lib/auditPayloads.ts's ModelUpdatedPayload
+// discriminant), mirrored by hand, the same convention as PAY_MAPPING_SCOPES.
+const MODEL_UPDATED_CHANGES = [
+  "weights.rebalanced",
+  "criterion.complianceUpdated",
+] as const
 // payMapping.action*/note* domains (payMapping/tables.ts validators).
 // ACTION_TARGET_KINDS is imported from there rather than restated: a local
 // copy went stale through the pair-to-comparison rename and the guard below
@@ -395,6 +402,9 @@ describe("audit log value labels", () => {
     expect(Object.keys(CAUSE_EVENT_VALUE_KEYS).sort()).toEqual(
       [...APPROVAL_REOPEN_CAUSES].sort()
     )
+    expect(Object.keys(MODEL_UPDATED_CHANGE_VALUE_KEYS).sort()).toEqual(
+      [...MODEL_UPDATED_CHANGES].sort()
+    )
   })
 
   it("every coded value's i18n key resolves to a real string in en", () => {
@@ -416,6 +426,7 @@ describe("audit log value labels", () => {
       ...Object.values(TRACK_VALUE_KEYS),
       ...Object.values(AI_KIND_VALUE_KEYS),
       ...Object.values(CAUSE_EVENT_VALUE_KEYS),
+      ...Object.values(MODEL_UPDATED_CHANGE_VALUE_KEYS),
     ]
     const missing = allKeys.filter(
       (key) => typeof resolveDashboardKey(key) !== "string"

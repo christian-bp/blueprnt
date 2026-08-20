@@ -801,6 +801,10 @@
           "IC": "Individual Contributor",
           "Lead": "Lead",
           "M": "Manager"
+        },
+        "modelUpdatedChange": {
+          "weightsRebalanced": "Vekter omfordelt",
+          "complianceUpdated": "Dokumentasjon oppdatert"
         }
       },
       "events": {

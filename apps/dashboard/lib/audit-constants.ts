@@ -333,6 +333,23 @@ export const CAUSE_EVENT_VALUE_KEYS: Record<ApprovalReopenCause, string> =
     ])
   ) as Record<ApprovalReopenCause, string>
 
+// model.updated `change`: the coded kind of update the row records
+// (evaluationModel/criteria.ts's rebalanceWeights vs
+// evaluationModel/method.ts's saveCriterionCompliance), mirrored by hand from
+// lib/auditPayloads.ts's ModelUpdatedPayload discriminant, the same
+// hand-synced convention as the other domains above. No existing surface
+// names either concept, so both live under auditLog.values.* rather than
+// reusing wording from elsewhere.
+type ModelUpdatedChange = "weights.rebalanced" | "criterion.complianceUpdated"
+export const MODEL_UPDATED_CHANGE_VALUE_KEYS: Record<
+  ModelUpdatedChange,
+  string
+> = {
+  "weights.rebalanced": "auditLog.values.modelUpdatedChange.weightsRebalanced",
+  "criterion.complianceUpdated":
+    "auditLog.values.modelUpdatedChange.complianceUpdated",
+}
+
 // Field name -> its coded domain's value-key Record. One lookup table so
 // resolveCodedValue stays a two-liner as domains accrue; `reasons` is
 // special-cased inside resolveCodedValue (its value is a ", "-joined token
@@ -358,6 +375,7 @@ const CODED_FIELD_DOMAINS: Record<string, Record<string, string>> = {
   targetKind: TARGET_KIND_VALUE_KEYS,
   reason: PAY_GAP_REASON_VALUE_KEYS,
   causeEvent: CAUSE_EVENT_VALUE_KEYS,
+  change: MODEL_UPDATED_CHANGE_VALUE_KEYS,
 }
 
 // The tombstone the backend writes over an erased person's identity values in
