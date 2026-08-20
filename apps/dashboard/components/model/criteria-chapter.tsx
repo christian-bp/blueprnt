@@ -28,7 +28,13 @@ import { toast } from "@/lib/toast"
 
 // The grid's geometry, declared once and used by both states, so the loading
 // state and the loaded one can never drift into two different grids.
-const GRID_CLASS = "grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-4"
+//
+// Four across begins at 2xl, not xl: at a 1440-class laptop width the four
+// columns compress to about 272px each and the criterion titles wrap hard,
+// while the 2x2 arrangement at those widths reads comfortably. From 1536 up
+// there is room for four, and the section runs the full viewport width to give
+// it to them.
+const GRID_CLASS = "grid items-start gap-4 sm:grid-cols-2 2xl:grid-cols-4"
 
 // The Kriterier chapter: which criteria the company's model is built from.
 //

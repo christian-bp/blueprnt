@@ -164,8 +164,34 @@ describe("ApprovalCard", () => {
     expect(
       screen.getByText("Weight points balanced to the budget")
     ).toBeDefined()
-    // Neither write is on offer.
+    // The card's one write is not on offer.
     expect(screen.queryByRole("button", { name: "Approve model" })).toBeNull()
-    expect(screen.queryByText("Working conditions")).toBeNull()
+  })
+
+  // The materiality DECISION moved to the Metod chapter, where the spine
+  // counts it; this card keeps the check ROW that reports it. Asserted for an
+  // ADMIN, because an editor never saw the form anyway: it is the admin render
+  // that would still carry it if the move had been half done.
+  it("reports the working-conditions decision without making it", () => {
+    queryResult = {
+      checks: ALL_GREEN_CHECKS,
+      approval: null,
+      workingConditions: {
+        status: "active",
+        motivation: "Standby duty is a recurring requirement.",
+        decidedBy: "auth-1",
+        decidedAt: 1_700_000_000_000,
+      },
+    }
+    renderCard()
+    // The check row stays.
+    expect(screen.getByText("Working conditions tested")).toBeDefined()
+    // The decision's own controls do not: no status toggle, no motivation
+    // field, no save.
+    expect(
+      screen.queryByRole("button", { name: "Tested, not material" })
+    ).toBeNull()
+    expect(screen.queryByRole("textbox")).toBeNull()
+    expect(screen.queryByRole("button", { name: "Save decision" })).toBeNull()
   })
 })

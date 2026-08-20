@@ -1,6 +1,5 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Alert02Icon,
   Cancel01Icon,
@@ -17,34 +16,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@workspace/ui/components/form"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group"
-import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation, useQuery } from "convex/react"
 import { ConvexError } from "convex/values"
 import { useFormatter, useTranslations } from "next-intl"
-import { useMemo } from "react"
-import { useForm } from "react-hook-form"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
-import { SubmitButton } from "@/components/submit-button"
 import { toast } from "@/lib/toast"
-import {
-  makeWorkingConditionsSchema,
-  type WorkingConditionsValues,
-} from "@/lib/working-conditions-schema"
 
 const KNOWN_ERROR_KEYS = ["methodBlocked", "invalidTransition"] as const
 
@@ -93,126 +72,6 @@ function CheckRow({
       <span>{label}</span>
       <span className="text-muted-foreground text-xs">({levelLabel})</span>
     </li>
-  )
-}
-
-function WorkingConditionsForm({
-  orgId,
-  current,
-}: {
-  orgId: string
-  current: {
-    status: "active" | "testedNotMaterial"
-    motivation: string
-  } | null
-}) {
-  const t = useTranslations("dashboard.model.method")
-  const tHelp = useTranslations("dashboard.help")
-  const tv = useTranslations("dashboard.validation")
-  const tErrors = useTranslations("errors")
-  const tToast = useTranslations("dashboard.toast")
-  const save = useMutation(
-    api.evaluationModel.approval.setWorkingConditionsDecision
-  )
-
-  const schema = useMemo(() => makeWorkingConditionsSchema(tv), [tv])
-  const form = useForm<WorkingConditionsValues>({
-    resolver: zodResolver(schema),
-    mode: "onTouched",
-    defaultValues: {
-      status: current?.status ?? "active",
-      motivation: current?.motivation ?? "",
-    },
-  })
-  const { isDirty, isSubmitting, isValid } = form.formState
-
-  async function onValid(values: WorkingConditionsValues) {
-    try {
-      await save({ orgId, ...values })
-      toast.success(tToast("workingConditionsDecided"))
-      form.reset(values)
-    } catch (error) {
-      toast.error(errorMessage(error, tErrors, tToast("error")))
-    }
-  }
-
-  return (
-    <div className="space-y-3 border-t pt-4">
-      <div>
-        <p className="flex items-center gap-1.5 font-medium text-sm">
-          {t("workingConditions.heading")}
-          <HelpMorphButton label={tHelp("workingConditionsDecisionLabel")}>
-            {tHelp("workingConditionsDecisionBody")}
-          </HelpMorphButton>
-        </p>
-        <p className="text-muted-foreground text-sm">
-          {t("workingConditions.description")}
-        </p>
-      </div>
-      <Form {...form}>
-        <form className="space-y-3" onSubmit={form.handleSubmit(onValid)}>
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("workingConditions.statusLabel")}</FormLabel>
-                <FormControl>
-                  <ToggleGroup
-                    variant="outline"
-                    value={field.value ? [field.value] : []}
-                    onValueChange={(groupValue) => {
-                      const next = groupValue[0]
-                      if (next !== undefined) field.onChange(next)
-                    }}
-                  >
-                    <ToggleGroupItem
-                      value="active"
-                      className="data-pressed:border-brand data-pressed:bg-brand data-pressed:text-brand-foreground data-pressed:hover:bg-brand"
-                    >
-                      {t("workingConditions.activeOption")}
-                    </ToggleGroupItem>
-                    <ToggleGroupItem
-                      value="testedNotMaterial"
-                      className="data-pressed:border-brand data-pressed:bg-brand data-pressed:text-brand-foreground data-pressed:hover:bg-brand"
-                    >
-                      {t("workingConditions.testedNotMaterialOption")}
-                    </ToggleGroupItem>
-                  </ToggleGroup>
-                </FormControl>
-                {field.value === "testedNotMaterial" && (
-                  <p className="text-muted-foreground text-xs">
-                    {t("workingConditions.activeBlockedHint")}
-                  </p>
-                )}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="motivation"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("workingConditions.motivationLabel")}</FormLabel>
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <SubmitButton
-            type="submit"
-            isSubmitting={isSubmitting}
-            disabled={!isValid || !isDirty}
-            size="sm"
-          >
-            {t("workingConditions.saveCta")}
-          </SubmitButton>
-        </form>
-      </Form>
-    </div>
   )
 }
 
@@ -326,15 +185,6 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
             )
           })}
         </ul>
-        {/* The materiality decision is a write too, so an editor reads the
-            checklist above without being offered the one control on this card
-            that would change it. */}
-        {isAdmin && (
-          <WorkingConditionsForm
-            orgId={orgId}
-            current={data.workingConditions}
-          />
-        )}
       </CardContent>
     </Card>
   )

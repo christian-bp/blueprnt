@@ -486,14 +486,27 @@ describe("the Kriterier chapter", () => {
   // two states must divide it identically: one GRID_CLASS constant feeds both,
   // and this is what fails if a second grid string ever appears.
   it("lays the loading and loaded grids out with the same classes", () => {
+    // Selected on the chapter grid's OWN breakpoint class, not on a bare
+    // "grid-cols": the status Alert above carries a grid-cols of its own
+    // (alertVariants' has-[>svg]:grid-cols-[auto_1fr]) and would be matched
+    // first, which made this compare the Alert with itself.
+    const gridOf = (root: HTMLElement) =>
+      root.querySelector('[class*="sm:grid-cols-2"]')?.className
     const { container: loaded } = renderChapter()
-    const loadedGrid = loaded.querySelector('[class*="grid-cols"]')?.className
+    const loadedGrid = gridOf(loaded)
+    expect(loadedGrid).toBeDefined()
     cleanup()
     modelResult = undefined
     const { container: loading } = renderChapter()
-    expect(loading.querySelector('[class*="grid-cols"]')?.className).toBe(
-      loadedGrid
-    )
+    expect(gridOf(loading)).toBe(loadedGrid)
+    // Four across begins at 2xl, not xl: at a 1440-class laptop width four
+    // columns compress past what a criterion title can wrap into, and 2x2
+    // reads comfortably there. Split into tokens, because "2xl:grid-cols-4"
+    // contains "xl:grid-cols-4" as a substring and a contains-check could
+    // never tell the two breakpoints apart.
+    const gridTokens = (loadedGrid ?? "").split(/\s+/)
+    expect(gridTokens).toContain("2xl:grid-cols-4")
+    expect(gridTokens).not.toContain("xl:grid-cols-4")
   })
 
   it("shows the chapter's own skeleton while the model loads", () => {

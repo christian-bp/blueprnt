@@ -22,8 +22,11 @@ import { toast } from "@/lib/toast"
 import { formatShare } from "@/lib/weighting"
 
 // The grid's geometry, declared once and used by both states, so the loading
-// state and the loaded one can never drift into two different grids.
-const GRID_CLASS = "grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-4"
+// state and the loaded one can never drift into two different grids. Four
+// across begins at 2xl for the reason the Kriterier chapter's grid records:
+// at a 1440-class laptop width four columns compress past what a criterion
+// title can wrap into, and 2x2 reads comfortably there.
+const GRID_CLASS = "grid items-start gap-4 sm:grid-cols-2 2xl:grid-cols-4"
 
 // A figure standing inside a line of prose: it sits in the text flow rather
 // than opening a block of its own, and is sized to the one or two digits it
