@@ -692,7 +692,7 @@ export function PayMappingScatter({
           />
         )}
         {omitted > 0 && (
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             {xMode === "age"
               ? t("omittedAge", { count: omitted })
               : t("omittedTenure", { count: omitted })}

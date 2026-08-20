@@ -195,7 +195,7 @@ function DesignateForm({
         disabled={pending}
         onChange={setMotivation}
       />
-      <p className="text-muted-foreground text-xs">
+      <p className="text-muted-foreground text-sm">
         {activeCount >= 5
           ? t("tooMany", { count: activeCount })
           : t("countHint")}

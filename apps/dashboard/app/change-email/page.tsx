@@ -50,7 +50,7 @@ function ChangeEmailContent() {
             </h1>
             <p className="text-muted-foreground text-sm">{t("invalidBody")}</p>
           </div>
-          <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
+          <p className="text-muted-foreground text-sm">{t("closeHint")}</p>
         </div>
       ) : isConfirmed ? (
         <div className="flex flex-col items-center gap-4 text-center">
@@ -63,7 +63,7 @@ function ChangeEmailContent() {
               {t("confirmedBody")}
             </p>
           </div>
-          <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
+          <p className="text-muted-foreground text-sm">{t("closeHint")}</p>
         </div>
       ) : isDone ? (
         <div className="flex flex-col items-center gap-4 text-center">
@@ -74,7 +74,7 @@ function ChangeEmailContent() {
             </h1>
             <p className="text-muted-foreground text-sm">{t("doneBody")}</p>
           </div>
-          <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
+          <p className="text-muted-foreground text-sm">{t("closeHint")}</p>
         </div>
       ) : (
         <div className="flex flex-col items-center gap-4 text-center">
@@ -84,7 +84,7 @@ function ChangeEmailContent() {
             </h1>
             <p className="text-muted-foreground text-sm">{t("fallbackBody")}</p>
           </div>
-          <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
+          <p className="text-muted-foreground text-sm">{t("closeHint")}</p>
         </div>
       )}
     </AuthShell>

@@ -334,7 +334,7 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
         </Table>
       )}
       {adminCount === 1 ? (
-        <p className="text-muted-foreground text-xs">{t("soleAdminNote")}</p>
+        <p className="text-muted-foreground text-sm">{t("soleAdminNote")}</p>
       ) : null}
       {error === "member" && (
         <p role="alert" className="text-destructive text-sm">

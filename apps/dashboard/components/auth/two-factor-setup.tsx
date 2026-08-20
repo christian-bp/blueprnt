@@ -334,7 +334,7 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
         )}
         {method === "totp" && totpUri && (
           <div className="flex w-full flex-col items-center gap-1.5">
-            <p className="text-center text-muted-foreground text-xs">
+            <p className="text-center text-muted-foreground text-sm leading-relaxed">
               {t("totp.manualKey")}
             </p>
             <div className="flex w-full items-center gap-2 rounded-lg border p-3">

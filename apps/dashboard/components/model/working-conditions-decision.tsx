@@ -182,7 +182,7 @@ function DecisionForm({
                 // is a round trip the system can make for them. It names the
                 // criterion and the consequence, so the save below it is an
                 // informed one and needs no second confirm dialog on top.
-                <p className="text-muted-foreground text-xs">
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   {t("removeOffer", { name: criterion.name })}
                 </p>
               )}
@@ -369,7 +369,7 @@ export function WorkingConditionsDecision({
             already chosen, "no criterion is needed" is not the fact the
             reader needs. */}
         {!hasCriterion && (
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm leading-relaxed">
             {t("noCriterionHint")}
           </p>
         )}

@@ -153,7 +153,7 @@ export function AssistantComposer(props: {
           the disclaimer never reflows the thread above, but wrapped text at
           narrow widths can still grow the slot downward instead of
           clipping. */}
-      <p className="min-h-4 pt-1 text-muted-foreground text-xs">
+      <p className="min-h-5 pt-1 text-muted-foreground text-sm">
         {props.error !== undefined ? (
           <span role="alert" className="text-destructive">
             {props.error}

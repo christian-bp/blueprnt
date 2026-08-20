@@ -109,7 +109,7 @@ export function AssistantMessage({
           <>
             {partNodes}
             {message.status === "stopped" ? (
-              <p className="text-muted-foreground text-xs">
+              <p className="text-muted-foreground text-sm">
                 {t("stoppedNote")}
               </p>
             ) : null}

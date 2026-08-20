@@ -393,7 +393,7 @@ export function AiUsageTable({
               mystery. Sits with the table rather than the chart above it
               (the flags live here): the chart no longer colors by outlier
               status, it carries period context only. */}
-          <p className="text-muted-foreground text-xs">{t("flaggedCaption")}</p>
+          <p className="text-muted-foreground text-sm">{t("flaggedCaption")}</p>
         </>
       )}
     </div>

@@ -811,7 +811,7 @@ function SortableRoleRow({
         {/* Under the field it is about, following the FormMessage precedent.
             It extends the row downwards and moves nothing already on screen. */}
         {note !== null && (
-          <p className="mt-1 whitespace-normal text-muted-foreground text-xs">
+          <p className="mt-1 whitespace-normal text-muted-foreground text-sm">
             {note}
           </p>
         )}

@@ -272,7 +272,7 @@ export function RoleFormFields({
             </FormControl>
             {/* Responsibilities render one-per-line as a list on the role
                 page, so tell the editor to write one per row. */}
-            <p className="text-muted-foreground text-xs">
+            <p className="text-muted-foreground text-sm">
               {t("responsibilitiesHint")}
             </p>
             <FormMessage />

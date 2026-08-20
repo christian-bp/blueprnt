@@ -180,7 +180,7 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
           {/* Which approved state the restore goes back to, on its own line so
               naming the date never crowds the two buttons. */}
           {canRestore && data.lastApprovedAt !== null && (
-            <p className="text-muted-foreground text-xs">
+            <p className="text-muted-foreground text-sm">
               {t("restoreHint", {
                 date: format.dateTime(new Date(data.lastApprovedAt), {
                   dateStyle: "medium",

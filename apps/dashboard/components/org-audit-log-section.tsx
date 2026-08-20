@@ -799,7 +799,7 @@ function AuditDetailSheet({
                         ) : null}
                       </div>
                       {move.motivation ? (
-                        <div className="break-words text-muted-foreground text-xs">
+                        <div className="break-words text-muted-foreground text-sm">
                           {move.motivation}
                         </div>
                       ) : null}
@@ -853,7 +853,7 @@ function AuditDetailSheet({
         )}
 
         {/* Footer meta: provenance and the raw event key, for traceability. */}
-        <div className="space-y-1 border-border border-t pt-3 text-muted-foreground text-xs">
+        <div className="space-y-1 border-border border-t pt-3 text-muted-foreground text-sm leading-relaxed">
           {provenance.length > 0 ? (
             <p className="break-words">
               {provenance

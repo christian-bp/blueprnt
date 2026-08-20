@@ -188,7 +188,7 @@ describe("AssistantPrompt", () => {
   it("reserves a minimum height for the error slot instead of a fixed one, so wrapped text can grow it", () => {
     const { container } = renderPrompt()
     const slot = container.querySelector("p.text-destructive")
-    expect(slot?.className).toContain("min-h-4")
-    expect(slot?.className).not.toMatch(/(?<!min-)h-4\b/)
+    expect(slot?.className).toContain("min-h-5")
+    expect(slot?.className).not.toMatch(/(?<!min-)h-5\b/)
   })
 })

@@ -416,7 +416,7 @@ export function RoleProfileCard({
                 {/* Responsibilities render one-per-line as a list, so tell the
                     editor to write one per row. */}
                 {row.key === "responsibilities" && (
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-muted-foreground text-sm">
                     {tForm("responsibilitiesHint")}
                   </p>
                 )}

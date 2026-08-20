@@ -346,7 +346,7 @@ export function AiUsageChart({
         </ChartContainer>
         <SeriesLegend items={legendItems} />
         {capped.others !== null && (
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             {t("seriesCap", {
               cap: CHART_SERIES_CAP,
               count: capped.others.count,

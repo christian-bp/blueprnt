@@ -386,9 +386,9 @@ function PayComparisonChart({
           { series: "men", label: tGender("Man") },
         ]}
       />
-      <p className="text-muted-foreground text-xs">{t("footnote")}</p>
+      <p className="text-muted-foreground text-sm">{t("footnote")}</p>
       {excludedCount > 0 && (
-        <p className="text-muted-foreground text-xs">
+        <p className="text-muted-foreground text-sm">
           {t("excluded", { count: excludedCount })}
         </p>
       )}

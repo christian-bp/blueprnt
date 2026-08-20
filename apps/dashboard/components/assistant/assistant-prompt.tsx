@@ -159,7 +159,7 @@ export function AssistantPrompt({
           downward instead of overlapping the row below. */}
       <p
         className={cn(
-          "min-h-4 text-destructive text-xs",
+          "min-h-5 text-destructive text-sm",
           align === "center" && "text-center"
         )}
       >

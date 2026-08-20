@@ -206,7 +206,7 @@ export function MorphPopover({
                 <div className="space-y-1">
                   <h3 className="font-medium text-sm">{title}</h3>
                   {description !== undefined && (
-                    <p className="text-muted-foreground text-xs">
+                    <p className="text-muted-foreground text-sm leading-relaxed">
                       {description}
                     </p>
                   )}

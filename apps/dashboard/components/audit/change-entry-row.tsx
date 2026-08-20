@@ -60,7 +60,7 @@ export function ChangeEntryRow({
         )}
       </div>
       {clearedNote ? (
-        <div className="mt-1 text-muted-foreground text-xs">{clearedNote}</div>
+        <div className="mt-1 text-muted-foreground text-sm">{clearedNote}</div>
       ) : null}
     </li>
   )

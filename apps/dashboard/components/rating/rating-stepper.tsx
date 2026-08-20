@@ -330,7 +330,7 @@ export function RatingStepper({
                       transition={SPRING}
                       className="overflow-hidden"
                     >
-                      <div className="space-y-1.5 pt-2 text-muted-foreground text-xs">
+                      <div className="space-y-1.5 pt-2 text-muted-foreground text-sm leading-relaxed">
                         <p>
                           <span className="font-medium text-foreground">
                             {`${t("measuresLabel")}: `}
@@ -402,7 +402,7 @@ export function RatingStepper({
                 {isWorkingConditions && (
                   <p
                     id={notCoveredExplanationId}
-                    className="text-muted-foreground text-xs"
+                    className="text-muted-foreground text-sm"
                   >
                     {t("notCoveredExplanation")}
                   </p>

@@ -103,7 +103,7 @@ export function RoleCriterionBreakdown({
               />
             </div>
             {row.motivation !== null && (
-              <p className="text-muted-foreground text-xs">{row.motivation}</p>
+              <p className="text-muted-foreground text-sm">{row.motivation}</p>
             )}
           </motion.div>
         ))}
