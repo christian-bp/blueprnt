@@ -1,0 +1,42 @@
+apps/dashboard/components/model/working-conditions-section.test.tsx
+  s_58dd112dc09435::t_8f8dadc2bf6bdc 122-123
+  s_58dd112dc09435::t_1398de9d611447 1-90,97-121,124-148
+  s_58dd112dc09435::t_15894e4714f932 91-96
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_ccf55ecd318df6 282-287,289-290,294
+  s_58dd112dc09435::t_0e75b857feeddb 295-296
+  s_58dd112dc09435::t_03ea69aa46a468 297-302
+apps/dashboard/app/(app)/model/method/page.tsx
+  s_58dd112dc09435::t_8cd19a908bf2b7 7,12-14,30-43
+apps/dashboard/app/(app)/model/approval/page.tsx
+  s_58dd112dc09435::t_8cd19a908bf2b7 9-16,24-29
+apps/dashboard/components/model/criteria-chapter.tsx
+  s_58dd112dc09435::t_8cd19a908bf2b7 31-37
+apps/dashboard/components/model/working-conditions-section.tsx
+  s_58dd112dc09435::t_3a6f5af6472e21 1-210
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_ccf55ecd318df6 489-494,496-497,501
+  s_58dd112dc09435::t_0e75b857feeddb 502-503
+  s_58dd112dc09435::t_03ea69aa46a468 504-509
+apps/dashboard/components/model/weighting-chapter.tsx
+  s_58dd112dc09435::t_8cd19a908bf2b7 25-29
+apps/dashboard/components/model/approval-card.test.tsx
+  s_58dd112dc09435::t_d7821ffb0c3504 167,169-194
+  s_58dd112dc09435::t_15894e4714f932 195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8eaa363bf25e84a9ec3cee9d97359ce63493c7fa",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
