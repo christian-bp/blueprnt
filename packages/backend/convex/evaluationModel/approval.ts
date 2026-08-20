@@ -20,7 +20,7 @@ import {
   logAudit,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation, adminQuery, type AuditWriter } from "../lib/functions"
+import { adminMutation, type AuditWriter, orgQuery } from "../lib/functions"
 import { LIBRARY_DIMENSION, LIBRARY_OVERLAP_PAIRS } from "./criteriaLibrary"
 import { filled } from "./method"
 import {
@@ -171,7 +171,16 @@ async function requireModel(
 // strings, pairs as two-string-tuple arrays) plus the current approval and
 // working-conditions decision state, so the dashboard's approval card and its
 // working-conditions control never need a second query.
-export const getMethodChecks = adminQuery({
+//
+// An orgQuery, not an adminQuery: the model section's layout reads this on
+// every one of its four chapters to draw the progress spine, so an admin gate
+// here throws in render for an editor and takes the whole section down. It
+// carries method-check results and approval metadata only: no person data, no
+// salary, nothing outside the model itself, and the Model destination is
+// deliberately visible to every member (navigation.ts, adminOnly: false).
+// Every WRITE in this file stays an adminMutation; read access is not write
+// access.
+export const getMethodChecks = orgQuery({
   args: {},
   returns: v.union(
     v.null(),

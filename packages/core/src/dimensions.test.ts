@@ -31,6 +31,21 @@ describe("dimension constants", () => {
     expect(MODEL_MAX_CRITERIA).toBe(8)
   })
 
+  // The per-dimension caps sum to exactly the model's own ceiling, so a full
+  // model is always four full dimensions and the binding bound is always the
+  // dimension's. The builder's model-cap sentence
+  // (dashboard.model.criteria.capModel) is therefore unreachable today and
+  // goes live the moment this stops holding: raise a dimension cap, or lower
+  // MODEL_MAX_CRITERIA, and the model ceiling starts binding first on a
+  // dimension that still has room.
+  it("keeps the dimension caps summing to the model's own ceiling", () => {
+    const capped = DIMENSION_KEYS.reduce(
+      (sum, key) => sum + DIMENSION_MAX_ACTIVE[key],
+      0
+    )
+    expect(capped).toBe(MODEL_MAX_CRITERIA)
+  })
+
   it("narrows dimension keys", () => {
     expect(isDimensionKey("effort")).toBe(true)
     expect(isDimensionKey("Effort")).toBe(false)

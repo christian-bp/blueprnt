@@ -38,6 +38,7 @@ import { useFormatter, useTranslations } from "next-intl"
 import { useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { useOrganization } from "@/components/org-context"
 import { SubmitButton } from "@/components/submit-button"
 import { toast } from "@/lib/toast"
 import {
@@ -221,6 +222,12 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
   const format = useFormatter()
+  // The checks READ for every member (the chapter's spine needs them), but
+  // every write behind this card is an adminMutation. An editor therefore sees
+  // where the model stands and is offered none of the controls that change it,
+  // the same split the roles surface draws with isAdmin.
+  const { role } = useOrganization()
+  const isAdmin = role === "admin"
   const data = useQuery(api.evaluationModel.approval.getMethodChecks, {
     orgId,
   })
@@ -294,7 +301,7 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
                 })
               : t("draftState")}
           </p>
-          {data.approval === null && (
+          {data.approval === null && isAdmin && (
             <Button
               type="button"
               disabled={hasFailingBlocker}
@@ -319,7 +326,15 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
             )
           })}
         </ul>
-        <WorkingConditionsForm orgId={orgId} current={data.workingConditions} />
+        {/* The materiality decision is a write too, so an editor reads the
+            checklist above without being offered the one control on this card
+            that would change it. */}
+        {isAdmin && (
+          <WorkingConditionsForm
+            orgId={orgId}
+            current={data.workingConditions}
+          />
+        )}
       </CardContent>
     </Card>
   )

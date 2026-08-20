@@ -1,3 +1,4 @@
+import { METHOD_CHECK_KEYS } from "@workspace/core"
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
@@ -245,6 +246,27 @@ describe("approveModel", () => {
   })
 })
 
+// Attaches a second, EDITOR-role member to an existing org: a second
+// seedMembership mints a real user (its own throwaway org is never used), then
+// seedDuplicateMember adds that user to the FIRST org. Mirrors addEditor in
+// assessment/roles.test.ts.
+async function addEditor(
+  t: ReturnType<typeof initConvexTest>,
+  orgId: string,
+  email: string
+) {
+  const { userId } = await t.mutation(
+    components.betterAuth.testing.seedMembership,
+    { email, name: "Editor Person", role: "editor" }
+  )
+  await t.mutation(components.betterAuth.testing.seedDuplicateMember, {
+    orgId,
+    userId,
+    role: "editor",
+  })
+  return t.withIdentity({ subject: userId })
+}
+
 describe("getMethodChecks", () => {
   it("returns the twelve checks, approval, and working-conditions state", async () => {
     const t = initConvexTest()
@@ -280,6 +302,102 @@ describe("getMethodChecks", () => {
       { orgId }
     )
     expect(result).toBeNull()
+  })
+
+  // The model section's LAYOUT reads this on all four chapters to draw the
+  // spine, so an admin gate here throws in render and takes the section down
+  // for an editor. Read access, and read access only.
+  it("answers an editor member of the org", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedApprovableModel(t)
+    const asEditor = await addEditor(t, orgId, "editor@acme.se")
+    const result = await asEditor.query(
+      api.evaluationModel.approval.getMethodChecks,
+      { orgId }
+    )
+    expect(result?.checks).toHaveLength(METHOD_CHECK_KEYS.length)
+    expect(result?.workingConditions?.status).toBe("testedNotMaterial")
+  })
+
+  // Org scoping is untouched by the relax: a signed-in user who is not a
+  // member of THIS org still gets nothing.
+  it("refuses a signed-in non-member with notAMember", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedApprovableModel(t)
+    const { userId: outsiderId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "outsider@other.se", name: "Outsider", role: "admin" }
+    )
+    const asOutsider = t.withIdentity({ subject: outsiderId })
+    await expect(
+      asOutsider.query(api.evaluationModel.approval.getMethodChecks, { orgId })
+    ).rejects.toThrow(/errors\.notAMember/)
+  })
+
+  it("refuses an unauthenticated caller", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedApprovableModel(t)
+    await expect(
+      t.query(api.evaluationModel.approval.getMethodChecks, { orgId })
+    ).rejects.toThrow(/errors\.notAuthenticated/)
+  })
+})
+
+// The relax is a READ relax. Every write in this file stays admin-gated, and
+// an editor who can now SEE the checklist must still not be able to act on it.
+describe("the model writes stay admin-only", () => {
+  it("refuses an editor's approveModel, working-conditions decision and rules edits", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedApprovableModel(t)
+    const asEditor = await addEditor(t, orgId, "editor2@acme.se")
+
+    await expect(
+      asEditor.mutation(api.evaluationModel.approval.approveModel, { orgId })
+    ).rejects.toThrow(/errors\.adminRequired/)
+    await expect(
+      asEditor.mutation(
+        api.evaluationModel.approval.setWorkingConditionsDecision,
+        { orgId, status: "testedNotMaterial", motivation: "Nope." }
+      )
+    ).rejects.toThrow(/errors\.adminRequired/)
+    await expect(
+      asEditor.mutation(api.evaluationModel.approval.updateLevelRules, {
+        orgId,
+        levelRules: [{ level: 1, minScore: 90 }],
+      })
+    ).rejects.toThrow(/errors\.adminRequired/)
+    await expect(
+      asEditor.mutation(api.evaluationModel.approval.updateZoneProfileRules, {
+        orgId,
+        zoneProfileRules: [{ zone: "A", minStep: 4 }],
+      })
+    ).rejects.toThrow(/errors\.adminRequired/)
+
+    // The criteria writes the chapters offer are gated by the same wrapper.
+    await expect(
+      asEditor.mutation(api.evaluationModel.criteria.activateCriterion, {
+        orgId,
+        libraryKey: "risk-consequence",
+      })
+    ).rejects.toThrow(/errors\.adminRequired/)
+    await expect(
+      asEditor.mutation(api.evaluationModel.criteria.deactivateCriterion, {
+        orgId,
+        criterionId: model.criteria[0]?.criterionId as Id<"criteria">,
+      })
+    ).rejects.toThrow(/errors\.adminRequired/)
+    await expect(
+      asEditor.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+        orgId,
+        allocations: model.criteria.map((criterion) => ({
+          criterionId: criterion.criterionId,
+          weightPoints: 3,
+        })),
+      })
+    ).rejects.toThrow(/errors\.adminRequired/)
+
+    // The admin path is unaffected: the gate is the role, not the mutation.
+    await asAdmin.mutation(api.evaluationModel.approval.approveModel, { orgId })
   })
 })
 

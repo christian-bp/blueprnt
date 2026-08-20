@@ -18,6 +18,7 @@ import { LockAssessmentPanel } from "@/components/rating/lock-assessment-panel"
 import { RatingResult } from "@/components/rating/rating-result"
 import { RatingStepper } from "@/components/rating/rating-stepper"
 import { UnlockAssessmentDialog } from "@/components/rating/unlock-assessment-dialog"
+import { chapterHref } from "@/lib/model-chapters"
 
 // Steps 1-5 are always per-criterion; the library leaves 2/4 undefined when
 // it has nothing more specific to say than "a considered midpoint", and the
@@ -134,8 +135,11 @@ export default function RatePage(props: {
         <p className="text-muted-foreground text-sm">
           {t("modelUnapprovedExplanation")}
         </p>
+        {/* Resolved through the chapter registry rather than written out: the
+            approve control lives in one chapter at a time, and a hardcoded
+            path here is what made this link a dead end when it moved. */}
         <Link
-          href="/model/method"
+          href={chapterHref("approval")}
           className="text-sm underline underline-offset-4"
         >
           {t("modelUnapprovedCta")}

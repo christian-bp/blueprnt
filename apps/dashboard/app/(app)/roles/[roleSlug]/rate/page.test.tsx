@@ -28,6 +28,7 @@ vi.mock("@/lib/toast", () => ({
 }))
 
 import RatePage from "@/app/(app)/roles/[roleSlug]/rate/page"
+import { chapterHref } from "@/lib/model-chapters"
 
 const t = messages.dashboard.rating
 const tDetail = messages.dashboard.roles.detail
@@ -101,11 +102,12 @@ function result(overrides: Record<string, unknown> = {}) {
 
 let roleFixture: unknown = role()
 let resultFixture: unknown = result()
+let modelFixture: unknown = MODEL
 
 function install() {
   onQuery((ref) => {
     if (ref === "assessment.roles.getRoleBySlug") return roleFixture
-    if (ref === "evaluationModel.model.getModel") return MODEL
+    if (ref === "evaluationModel.model.getModel") return modelFixture
     if (ref === "assessment.results.getRoleResult") return resultFixture
     if (ref === "assessment.anchorRoles.listAnchorRoles") return []
     return undefined
@@ -143,6 +145,7 @@ describe("RatePage (lock-as-reveal)", () => {
   beforeEach(() => {
     roleFixture = role()
     resultFixture = result()
+    modelFixture = MODEL
     install()
     setRatingMock.mockReset().mockResolvedValue(null)
     lockAssessmentMock.mockReset().mockResolvedValue(null)
@@ -241,5 +244,20 @@ describe("RatePage (lock-as-reveal)", () => {
     install()
     await renderPage()
     expect(screen.getByText(tDetail.profileIncomplete)).toBeDefined()
+  })
+
+  // The unblock link has to land on the chapter where the approve control
+  // actually is. It pointed at the method page after approval moved to its own
+  // chapter, which sent every blocked rater to a page with no way forward.
+  it("sends an unapproved model to the chapter that can approve it", async () => {
+    modelFixture = { ...MODEL, approval: null }
+    install()
+    await renderPage()
+    expect(screen.getByText(t.modelUnapprovedExplanation)).toBeDefined()
+    const link = screen.getByRole("link", { name: t.modelUnapprovedCta })
+    expect(link.getAttribute("href")).toBe(chapterHref("approval"))
+    expect(link.getAttribute("href")).toBe("/model/approval")
+    // The stepper is not offered at all: the precondition is stated instead.
+    expect(screen.queryByText("Scope")).toBeNull()
   })
 })

@@ -235,7 +235,7 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
 // so the bar (which the columns scroll under) measures identically in both
 // states. How many criteria there are and which dimensions hold them is
 // entirely the data, so the list above is bars.
-export function WeightingChapterSkeleton() {
+function WeightingChapterSkeleton() {
   const t = useTranslations("dashboard.model.weighting")
   const tAi = useTranslations("dashboard.ai")
   return (

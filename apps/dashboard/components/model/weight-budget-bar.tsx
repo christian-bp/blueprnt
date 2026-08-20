@@ -60,8 +60,8 @@ export function WeightBudgetBar({
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
       <Alert
-        // role="status" rather than the component's default role="alert": the
-        // figures here change on every weight the reader clicks, and an
+        // role="status" rather than the component's default role="alert":
+        // these figures change under the reader's own actions, and an
         // assertive live region would interrupt them with their own edit.
         // Polite is right for a readout the reader is driving themselves.
         role="status"

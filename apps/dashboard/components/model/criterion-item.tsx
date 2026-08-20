@@ -140,9 +140,12 @@ export function CriterionItem({
       exit="exit"
     >
       {/* Inner div owns all visual box styling and is the positioning context
-          for the MorphConfirmButton corner anchor. The group/relative classes
-          move here so the hover reveal and absolute corner overlap are
-          unchanged from the consumer's perspective. */}
+          for anything this row anchors absolutely. The group/relative classes
+          live here so a hover reveal and an absolute corner overlap are
+          unchanged from the consumer's perspective. This row confirms in an
+          AlertDialog, not the inline RemoveConfirm morph: its menu closes as
+          the item is chosen, so there is no trigger left in the row for a
+          morph to expand out of. */}
       <div className="group relative rounded-md border p-3">
         <div className="flex min-h-9 items-center gap-3">
           {/* Name + description take all remaining space and stay

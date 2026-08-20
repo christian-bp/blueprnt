@@ -29,8 +29,8 @@ const NOTE_SAVE_DEBOUNCE_MS = 800
 // the last reason, or clearing the note, while the group is already marked
 // done: errors.payMappingDocumentationRequired) from transient failures, so
 // the toast can name the real problem instead of a generic error. Same
-// instanceof-ConvexError + data.code idiom as model-builder.tsx's
-// errorKeyFor; the backend serializes the i18n key into `data.code`
+// instanceof-ConvexError + data.code idiom as lib/model-errors.ts's
+// modelErrorKey; the backend serializes the i18n key into `data.code`
 // (packages/backend/convex/lib/errors.ts appError).
 function isDocumentationRequiredError(error: unknown): boolean {
   return (

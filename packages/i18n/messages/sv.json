@@ -1586,7 +1586,7 @@
       },
       "lockedExplanation": "Betygsättningen är låst eftersom rollen är arkiverad. Arkivering kan inte ångras, så skapa en ny roll om arbetet behöver betygsättas igen.",
       "modelUnapprovedExplanation": "Utvärderingsmodellen måste godkännas innan roller kan bedömas.",
-      "modelUnapprovedCta": "Gå till sidan Metod",
+      "modelUnapprovedCta": "Gå till kapitlet Godkännande",
       "lockCta": "Lås bedömningen",
       "readyToLockExplanation": "Alla kriterier har en bedömning. Lås bedömningen för att visa viktning och nivå.",
       "lockError": "Bedömningen kunde inte låsas. Försök igen.",
@@ -1829,6 +1829,7 @@
       },
       "editor": {
         "removeCta": "Ta bort",
+        "removeLabel": "Ta bort {name}",
         "removeConfirm": "Ja, ta bort kriteriet",
         "rowMenuLabel": "Åtgärder för {name}",
         "removeDialogTitle": "Ta bort {name}?",

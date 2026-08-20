@@ -27,14 +27,18 @@ const CHAPTER_SEGMENTS: Record<ModelChapter, string> = {
   approval: "approval",
 }
 
-export function chapterSegment(chapter: ModelChapter): string {
+// Not exported: unlike the analysis registry's twin (whose segment a
+// kartläggning's header tabs and actions overview build hrefs from), nothing
+// outside this module needs a model chapter's segment on its own. chapterHref
+// is the way in.
+function chapterSegment(chapter: ModelChapter): string {
   return CHAPTER_SEGMENTS[chapter]
 }
 
 // The chapter a route segment names, or undefined for the section's own path
 // (no segment, a redirect into the first chapter) and for anything
-// unrecognised.
-export function chapterForSegment(
+// unrecognised. Not exported: currentChapter is the way in.
+function chapterForSegment(
   segment: string | undefined
 ): ModelChapter | undefined {
   if (segment === undefined) return undefined

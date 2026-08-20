@@ -14,7 +14,6 @@ import {
   PlacedCriterionCard,
   type PlacedCriterionWeight,
 } from "@/components/model/placed-criterion-card"
-import { openMenu } from "@/test/menu"
 
 const editor = messages.dashboard.model.editor
 const weighting = messages.dashboard.model.weighting
@@ -60,9 +59,9 @@ function renderWeighted(overrides: Partial<PlacedCriterionWeight> = {}) {
   return { ...view, onChange }
 }
 
-const menuTrigger = () =>
+const removeTrigger = () =>
   screen.getByRole("button", {
-    name: editor.rowMenuLabel.replace("{name}", CRITERION.name),
+    name: editor.removeLabel.replace("{name}", CRITERION.name),
   })
 
 describe("PlacedCriterionCard", () => {
@@ -108,15 +107,24 @@ describe("PlacedCriterionCard", () => {
         name: weighting.setWeightPoints.replace("{name}", CRITERION.name),
       })
     ).toBeNull()
-    // The row menu is the card's only control here.
+    // The remove trigger is the card's only control here.
     expect(container.querySelectorAll("button")).toHaveLength(1)
   })
 
   // The name is what the card exists to say, and a four-column grid cuts a
-  // real library name in half, so it wraps instead of truncating.
-  it("lets the criterion's name wrap rather than truncating it", () => {
+  // real library name in half, so it wraps instead of truncating. Asserted
+  // against ItemTitle's OWN vendor base (line-clamp-1): a "not truncate" check
+  // passes with the override deleted, because the vendor never used that word.
+  it("lets the criterion's name and one-liner wrap rather than clamping them", () => {
     renderSelection()
-    expect(screen.getByText(CRITERION.name).className).not.toContain("truncate")
+    for (const node of [
+      screen.getByText(CRITERION.name),
+      screen.getByText(CRITERION.shortUiText),
+    ]) {
+      expect(node.className).toContain("line-clamp-none")
+      expect(node.className).not.toContain("line-clamp-1")
+      expect(node.className).not.toContain("line-clamp-2")
+    }
   })
 
   it("shows what share of the model it carries once weighted", () => {
@@ -144,7 +152,7 @@ describe("PlacedCriterionCard", () => {
     const { container } = renderWeighted()
     expect(
       screen.queryByRole("button", {
-        name: editor.rowMenuLabel.replace("{name}", CRITERION.name),
+        name: editor.removeLabel.replace("{name}", CRITERION.name),
       })
     ).toBeNull()
     // Exactly the five weight points, and nothing else. Any scale disclosure
@@ -153,25 +161,61 @@ describe("PlacedCriterionCard", () => {
     expect(container.querySelectorAll("button")).toHaveLength(5)
   })
 
-  // Removing deletes the criterion's ratings on every role, so it confirms
-  // first, and the confirmation says what it costs.
-  it("confirms before removing the criterion", async () => {
+  // Removal takes the criterion's ratings off every role, so it never fires on
+  // one press: the trashcan arms into a confirm pill, and the confirm names
+  // the object rather than saying "Delete".
+  it("arms before removing, and confirms on the second press", async () => {
     const { onRemove } = renderSelection()
-    await openMenu(menuTrigger())
-    fireEvent.click(screen.getByRole("menuitem", { name: editor.removeCta }))
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          editor.removeDialogTitle.replace("{name}", CRITERION.name)
-        )
-      ).toBeDefined()
+    // Idle: the trashcan only. Nothing to confirm yet.
+    expect(removeTrigger()).toBeDefined()
+    expect(
+      screen.queryByRole("button", { name: editor.removeConfirm })
+    ).toBeNull()
+
+    fireEvent.click(removeTrigger())
+    const confirm = await screen.findByRole("button", {
+      name: editor.removeConfirm,
     })
-    expect(screen.getByText(editor.removeDialogDescription)).toBeDefined()
+    expect(onRemove).not.toHaveBeenCalled()
     expect(screen.getByRole("button", { name: change.cancel })).toBeDefined()
-    fireEvent.click(screen.getByRole("button", { name: editor.removeConfirm }))
+
+    fireEvent.click(confirm)
     await waitFor(() => {
       expect(onRemove).toHaveBeenCalledTimes(1)
     })
+  })
+
+  // The way back is where the reader armed it: cancelling restores the
+  // trashcan and calls nothing.
+  it("disarms without removing when cancelled", async () => {
+    const { onRemove } = renderSelection()
+    fireEvent.click(removeTrigger())
+    await screen.findByRole("button", { name: editor.removeConfirm })
+    fireEvent.click(screen.getByRole("button", { name: change.cancel }))
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("button", { name: editor.removeConfirm })
+      ).toBeNull()
+    })
+    expect(onRemove).not.toHaveBeenCalled()
+    expect(removeTrigger()).toBeDefined()
+  })
+
+  // The armed pill overlays the card leftwards from an absolutely positioned
+  // slot, so nothing in its ancestor chain may clip it.
+  it("anchors the armed pill in a positioned slot no ancestor clips", () => {
+    const { container } = renderSelection()
+    const slot = removeTrigger().closest("span.relative")
+    expect(slot).not.toBeNull()
+    for (
+      let node = slot?.parentElement ?? null;
+      node !== null && node !== container;
+      node = node.parentElement
+    ) {
+      expect(node.className).not.toContain("overflow-hidden")
+      expect(node.className).not.toContain("overflow-x-")
+      expect(node.className).not.toContain("overflow-y-")
+    }
   })
 
   // The row's action lives behind one trailing trigger that is always there,
@@ -180,7 +224,7 @@ describe("PlacedCriterionCard", () => {
   // for node and name for name.
   it("keeps its actions in a slot that is always present", () => {
     const { container } = renderSelection()
-    expect(menuTrigger()).toBeDefined()
+    expect(removeTrigger()).toBeDefined()
     const namesOf = () =>
       screen
         .getAllByRole("button", { hidden: true })
@@ -197,6 +241,6 @@ describe("PlacedCriterionCard", () => {
 
   it("takes no input while the removal is in flight", () => {
     renderSelection({ removing: true })
-    expect((menuTrigger() as HTMLButtonElement).disabled).toBe(true)
+    expect((removeTrigger() as HTMLButtonElement).disabled).toBe(true)
   })
 })

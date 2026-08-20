@@ -1,14 +1,5 @@
 "use client"
 
-import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { Button } from "@workspace/ui/components/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
 import {
   Item,
   ItemActions,
@@ -18,9 +9,8 @@ import {
 } from "@workspace/ui/components/item"
 import { motion } from "motion/react"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
-import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { WeightPointRow } from "@/components/model/weight-point-row"
+import { RemoveConfirm } from "@/components/remove-confirm"
 import { SPRING } from "@/lib/motion"
 
 // The criterion's weight, as the Viktning chapter hands it to the card. Absent
@@ -88,7 +78,6 @@ export function PlacedCriterionCard(
   const t = useTranslations("dashboard.model.weighting")
   const tEditor = useTranslations("dashboard.model.editor")
   const tChange = useTranslations("dashboard.model.change")
-  const [confirmRemove, setConfirmRemove] = useState(false)
 
   return (
     // Enter and leave are real transitions (a criterion genuinely arrives in
@@ -143,55 +132,30 @@ export function PlacedCriterionCard(
       </ItemContent>
 
       {onRemove !== undefined && (
+        // The shared inline remove morph, the same affordance the family
+        // review table uses: a ghost trashcan in a fixed-size slot that arms
+        // into a confirm pill anchored to the slot's right edge, so the
+        // confirmation overlays the card leftwards and reflows nothing.
+        //
         // self-start because Item centres its slots and the content here is
-        // several lines tall: a row-actions trigger belongs on the title's
-        // line, not halfway down the card.
-        // The trigger is always rendered rather than revealed on hover, so
-        // nothing appears or moves as the pointer crosses the card.
+        // several lines tall: the control belongs on the title's line, not
+        // halfway down the card. The trigger is always rendered rather than
+        // revealed on hover, so nothing appears or moves as the pointer
+        // crosses the card.
+        //
+        // The confirm label names the object rather than saying "Delete", the
+        // same way the criterion rows on the method surface do: removal takes
+        // the criterion's ratings off every role and redistributes its weight
+        // points, so the second press has to read as that decision.
         <ItemActions className="self-start">
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  disabled={removing}
-                  aria-label={tEditor("rowMenuLabel", { name: criterion.name })}
-                  // Pulled back into the card's padding so the icon, not the
-                  // button's larger hit box, lines up with the card's corner.
-                  className="-mt-1 -mr-1 text-muted-foreground hover:text-foreground"
-                />
-              }
-            >
-              <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                variant="destructive"
-                onClick={() => setConfirmRemove(true)}
-              >
-                {tEditor("removeCta")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <RemoveConfirm
+            triggerLabel={tEditor("removeLabel", { name: criterion.name })}
+            confirmLabel={tEditor("removeConfirm")}
+            cancelLabel={tChange("cancel")}
+            disabled={removing}
+            onConfirm={onRemove}
+          />
         </ItemActions>
-      )}
-
-      {/* Removal deletes the criterion's ratings on every role and
-          redistributes its weight points, so it confirms in a dialog rather
-          than inline. It portals out, so nothing of it sits in this card. */}
-      {onRemove !== undefined && (
-        <ConfirmDeleteDialog
-          open={confirmRemove}
-          onOpenChange={setConfirmRemove}
-          title={tEditor("removeDialogTitle", { name: criterion.name })}
-          description={tEditor("removeDialogDescription")}
-          confirmLabel={tEditor("removeConfirm")}
-          cancelLabel={tChange("cancel")}
-          pending={removing}
-          onConfirm={onRemove}
-        />
       )}
     </Item>
   )

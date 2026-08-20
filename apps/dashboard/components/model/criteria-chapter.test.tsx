@@ -23,7 +23,6 @@ vi.mock("@/lib/toast", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
 import { CriteriaChapter } from "@/components/model/criteria-chapter"
 import { toast } from "@/lib/toast"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
-import { openMenu } from "@/test/menu"
 
 const criteria = messages.dashboard.model.criteria
 const picker = messages.dashboard.model.picker
@@ -359,6 +358,20 @@ describe("the Kriterier chapter", () => {
     )
   })
 
+  // Same rule as the card: a clipped criterion NAME is the one thing a picker
+  // must never show. Asserted against ItemTitle's own vendor base
+  // (line-clamp-1), since a "not truncate" check passes with the override
+  // deleted.
+  it("lets a picker row's criterion name wrap rather than clamping it", async () => {
+    renderChapter()
+    await openPicker("Competence")
+    const title = within(screen.getByRole("dialog")).getByText(
+      KNOWLEDGE_BREADTH
+    )
+    expect(title.className).toContain("line-clamp-none")
+    expect(title.className).not.toContain("line-clamp-1")
+  })
+
   it("recommends nothing when the organization has no industry", async () => {
     industryResult = null
     renderChapter()
@@ -420,27 +433,53 @@ describe("the Kriterier chapter", () => {
     ).toHaveLength(0)
   })
 
-  // Removing a criterion deletes its ratings on every role, so it confirms.
-  it("confirms before removing a criterion", async () => {
+  // Removing a criterion deletes its ratings on every role, so it never fires
+  // on one press: the card's trashcan arms into a confirm pill first.
+  it("arms, then removes the criterion and says so", async () => {
     renderChapter()
-    await openMenu(
-      screen.getByRole("button", {
-        name: editor.rowMenuLabel.replace("{name}", KNOWLEDGE_DEPTH),
-      })
-    )
-    fireEvent.click(screen.getByRole("menuitem", { name: editor.removeCta }))
-    expect(deactivateCriterion).not.toHaveBeenCalled()
     fireEvent.click(
-      within(screen.getByRole("alertdialog")).getByRole("button", {
-        name: editor.removeConfirm,
+      screen.getByRole("button", {
+        name: editor.removeLabel.replace("{name}", KNOWLEDGE_DEPTH),
       })
     )
+    const confirm = await screen.findByRole("button", {
+      name: editor.removeConfirm,
+    })
+    expect(deactivateCriterion).not.toHaveBeenCalled()
+
+    fireEvent.click(confirm)
     await waitFor(() => {
       expect(deactivateCriterion).toHaveBeenCalledWith({
         orgId: "org-1",
         criterionId: "c4",
       })
     })
+    // Nothing completes silently.
+    await waitFor(() => {
+      expect(vi.mocked(toast.success)).toHaveBeenCalled()
+    })
+  })
+
+  // The way back is where the reader armed it: cancelling calls nothing.
+  it("disarms without removing when cancelled", async () => {
+    renderChapter()
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: editor.removeLabel.replace("{name}", KNOWLEDGE_DEPTH),
+      })
+    )
+    await screen.findByRole("button", { name: editor.removeConfirm })
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: messages.dashboard.model.change.cancel,
+      })
+    )
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("button", { name: editor.removeConfirm })
+      ).toBeNull()
+    })
+    expect(deactivateCriterion).not.toHaveBeenCalled()
   })
 
   it("shows the chapter's own skeleton while the model loads", () => {

@@ -200,7 +200,7 @@ function ColumnSkeleton({
 // The chapter's loading state: the same four-column grid, with the four
 // dimensions real (they are fixed method law, ADR-0021, and their names and
 // guiding questions are locale-keyed library constants, not org data).
-export function CriteriaChapterSkeleton() {
+function CriteriaChapterSkeleton() {
   const locale = useLocale()
   const content = criteriaLibraryContent(locale)
   return (

@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
 vi.mock("@/lib/toast", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
@@ -23,10 +23,14 @@ const ALL_GREEN_CHECKS = [
 ] as const
 
 let queryResult: unknown
+let orgRole = "admin"
 
 vi.mock("convex/react", () => ({
   useQuery: () => queryResult,
   useMutation: () => vi.fn(),
+}))
+vi.mock("@/components/org-context", () => ({
+  useOrganization: () => ({ orgId: "org1", name: "Acme", role: orgRole }),
 }))
 
 import { ApprovalCard } from "@/components/model/approval-card"
@@ -40,6 +44,9 @@ function renderCard(orgId = "org1") {
 }
 
 describe("ApprovalCard", () => {
+  beforeEach(() => {
+    orgRole = "admin"
+  })
   afterEach(() => {
     cleanup()
     vi.mocked(toast.success).mockClear()
@@ -139,5 +146,26 @@ describe("ApprovalCard", () => {
     queryResult = null
     const { container } = renderCard()
     expect(container.textContent).toBe("")
+  })
+
+  // The checks READ for every member (the section's spine needs them), but
+  // every write behind this card is an adminMutation. An editor sees where the
+  // model stands and is offered none of the controls that change it.
+  it("shows an editor the state without offering the writes", () => {
+    orgRole = "editor"
+    queryResult = {
+      checks: ALL_GREEN_CHECKS,
+      approval: null,
+      workingConditions: null,
+    }
+    renderCard()
+    // The state is readable.
+    expect(screen.getByText("Not yet approved")).toBeDefined()
+    expect(
+      screen.getByText("Weight points balanced to the budget")
+    ).toBeDefined()
+    // Neither write is on offer.
+    expect(screen.queryByRole("button", { name: "Approve model" })).toBeNull()
+    expect(screen.queryByText("Working conditions")).toBeNull()
   })
 })

@@ -1,9 +1,7 @@
 import { MODEL_MIN_CRITERIA } from "@workspace/core"
 import { describe, expect, it } from "vitest"
 import {
-  chapterForSegment,
   chapterHref,
-  chapterSegment,
   currentChapter,
   MODEL_CHAPTERS,
   type ModelProgressCheck,
@@ -55,15 +53,18 @@ describe("the model chapter registry", () => {
     ])
   })
 
-  it("round-trips every chapter through its route segment", () => {
+  // Round-tripped through the public pair rather than the private segment
+  // map: linking to a chapter and resolving the chapter you landed on is the
+  // contract every surface actually depends on.
+  it("round-trips every chapter from its href back to itself", () => {
     for (const chapter of MODEL_CHAPTERS) {
-      expect(chapterForSegment(chapterSegment(chapter))).toBe(chapter)
+      expect(currentChapter(chapterHref(chapter))).toBe(chapter)
     }
   })
 
-  it("has no page of its own and no segment for one", () => {
-    expect(chapterForSegment(undefined)).toBeUndefined()
-    expect(chapterForSegment("weighting-and-things")).toBeUndefined()
+  it("gives every chapter its own distinct path", () => {
+    const hrefs = MODEL_CHAPTERS.map(chapterHref)
+    expect(new Set(hrefs).size).toBe(hrefs.length)
   })
 
   it("links a chapter at its own path under /model", () => {

@@ -1586,7 +1586,7 @@
       },
       "lockedExplanation": "Vurderingen er låst fordi rollen er arkivert. Arkivering kan ikke angres, så opprett en ny rolle hvis arbeidet skal vurderes på nytt.",
       "modelUnapprovedExplanation": "Evalueringsmodellen må godkjennes før roller kan vurderes.",
-      "modelUnapprovedCta": "Gå til Metode-siden",
+      "modelUnapprovedCta": "Gå til kapittelet Godkjenning",
       "lockCta": "Lås vurderingen",
       "readyToLockExplanation": "Alle kriterier har en vurdering. Lås vurderingen for å vise vekting og nivå.",
       "lockError": "Vurderingen kunne ikke låses. Prøv igjen.",
@@ -1829,6 +1829,7 @@
       },
       "editor": {
         "removeCta": "Fjern",
+        "removeLabel": "Fjern {name}",
         "removeConfirm": "Ja, fjern kriteriet",
         "rowMenuLabel": "Handlinger for {name}",
         "removeDialogTitle": "Fjerne {name}?",

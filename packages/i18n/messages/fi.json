@@ -1586,7 +1586,7 @@
       },
       "lockedExplanation": "Arviointi on lukittu, koska rooli on arkistoitu. Arkistointia ei voi perua, joten luo uusi rooli, jos työ pitää arvioida uudelleen.",
       "modelUnapprovedExplanation": "Arviointimalli on hyväksyttävä ennen kuin rooleja voi arvioida.",
-      "modelUnapprovedCta": "Siirry Menetelmä-sivulle",
+      "modelUnapprovedCta": "Siirry Hyväksyntä-lukuun",
       "lockCta": "Lukitse arviointi",
       "readyToLockExplanation": "Jokaisella kriteerillä on arvo. Lukitse arviointi näyttääksesi painotuksen ja tason.",
       "lockError": "Arviointia ei voitu lukita. Yritä uudelleen.",
@@ -1829,6 +1829,7 @@
       },
       "editor": {
         "removeCta": "Poista",
+        "removeLabel": "Poista {name}",
         "removeConfirm": "Kyllä, poista kriteeri",
         "rowMenuLabel": "Toiminnot: {name}",
         "removeDialogTitle": "Poistetaanko {name}?",

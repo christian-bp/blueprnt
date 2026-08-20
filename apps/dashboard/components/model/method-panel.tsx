@@ -51,7 +51,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
           {/* Reuse the real progress Alert (with its icon) and skeleton only the
               not-yet-known counts, so the toolbar height is identical to the
               loaded state and the list below does not shift. */}
-          <Alert className="w-auto">
+          <Alert role="status" className="w-auto">
             <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} />
             <AlertTitle>
               <Skeleton className="h-5 w-52" />
@@ -75,7 +75,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
   // Mirrors the Viktning chapter's budget block: a check + neutral tint when the
   // model is fully approved, an amber heads-up while documentation is still
   // outstanding. Alert has no warning variant, so the amber tint is a
-  // call-site override (same pattern as model-builder.tsx).
+  // call-site override (same pattern as weight-budget-bar.tsx).
   const allApproved =
     data.progress.total > 0 && data.progress.approved === data.progress.total
 
@@ -83,6 +83,11 @@ export function MethodPanel({ orgId }: { orgId: string }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Alert
+          // role="status" rather than the component's default role="alert":
+          // these figures change under the reader's own actions, and an
+          // assertive live region would interrupt them with their own edit.
+          // Polite is right for a readout the reader is driving themselves.
+          role="status"
           className={cn(
             "w-auto",
             !allApproved &&
