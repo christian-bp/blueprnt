@@ -24,7 +24,6 @@ import { RestoreApprovedDialog } from "@/components/model/restore-approved-dialo
 const PREVIEW = {
   approvedAt: 1_700_000_000_000,
   diff: {
-    deletedRatingCount: 12,
     changes: {
       motivation: { from: "Reviewed again.", to: "Tested, not material." },
       levelRules: { from: "12 rules, top 97", to: "12 rules, top 90" },
@@ -128,7 +127,7 @@ describe("RestoreApprovedDialog", () => {
   it("cannot be confirmed when there is nothing to undo", () => {
     previewResult = {
       approvedAt: 1_700_000_000_000,
-      diff: { criteria: [], changes: {}, deletedRatingCount: 0 },
+      diff: { criteria: [], changes: {} },
     }
     renderDialog()
     expect(

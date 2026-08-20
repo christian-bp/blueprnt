@@ -2,7 +2,13 @@ import type { LevelRule, ZoneProfileRule } from "@workspace/core"
 import { v } from "convex/values"
 import type { Doc } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
-import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
+import { appError, ERROR_CODES } from "../lib/errors"
+import {
+  type CriteriaLibraryKey,
+  criteriaLibraryContent,
+  isCriteriaLibraryKey,
+  LIBRARY_DIMENSION,
+} from "./criteriaLibrary"
 import type { ModelEvidence } from "./tables"
 
 // The model's method evidence: ONE builder and ONE diff, shared by every
@@ -22,6 +28,45 @@ import type { ModelEvidence } from "./tables"
 // so what the dialog promised and what the trail records can never disagree.
 
 export type EvidenceCriterion = ModelEvidence["criteria"][number]
+
+// A buffer criterion the restore can actually write back: one whose library
+// key the CURRENT library still knows.
+export type RestorableCriterion = EvidenceCriterion & {
+  libraryKey: CriteriaLibraryKey
+}
+
+// The buffer's criteria as the restorable set, keyed by library key and in the
+// buffer's own order. The ONE predicate for "can this entry be restored",
+// shared by the diff builder and the restore mutation, so the change list and
+// the writes can never disagree about which entries count.
+//
+// It THROWS rather than filtering, and that is the whole point. An entry whose
+// key the library no longer knows cannot be written back, and skipping it
+// silently is the worst of the three possible outcomes: the restore would
+// report success, write an audit row asserting a restoration that never
+// happened, and leave the surviving criteria off the ADR-0004 point budget
+// (criteria count x 3, an exact sum, so dropping one entry unbalances it).
+// Failing the whole transaction leaves the model exactly as it was.
+//
+// Unreachable for a buffer approveModel wrote against the current library. The
+// shared evidence shape keeps libraryKey a loose optional string only because
+// pre-cutover frozen pay-mapping runs need it to be, which is precisely why
+// the check belongs here rather than in the validator. invalidInput is the
+// code because the stored buffer no longer validates against the library, not
+// because the caller passed anything wrong.
+export function restorableCriteria(
+  buffer: ModelEvidence
+): Map<CriteriaLibraryKey, RestorableCriterion> {
+  const restorable = new Map<CriteriaLibraryKey, RestorableCriterion>()
+  for (const criterion of buffer.criteria) {
+    const libraryKey = criterion.libraryKey
+    if (libraryKey === undefined || !isCriteriaLibraryKey(libraryKey)) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+    restorable.set(libraryKey, { ...criterion, libraryKey })
+  }
+  return restorable
+}
 
 // Builds the model's full method evidence from the live rows. `locale` is the
 // content locale the criterion display names are frozen in (resolved by the
@@ -122,9 +167,6 @@ export type ModelRestoreDiff = {
   // Model-level changes: the working-conditions materiality decision and the
   // level/zone-profile rules.
   changes: RestoreChanges
-  // Ratings deleted across every removed criterion, for the dialog's headline
-  // consequence. Per-criterion counts live on each removed entry's changes.
-  deletedRatingCount: number
 }
 
 // The criterion-level diff fields, and the model-level ones. Exported so the
@@ -217,22 +259,12 @@ export async function buildModelRestoreDiff(
       libraryKey
     ]?.name ?? libraryKey
 
-  // A buffer criterion without a libraryKey cannot be restored (nothing names
-  // which library entry to bring back). Unreachable for a buffer approveModel
-  // wrote; the shared evidence validator keeps the field optional only because
-  // pre-cutover frozen pay-mapping runs need it to be.
-  const buffered = new Map(
-    buffer.criteria
-      .filter(
-        (criterion): criterion is EvidenceCriterion & { libraryKey: string } =>
-          criterion.libraryKey !== undefined
-      )
-      .map((criterion) => [criterion.libraryKey, criterion])
-  )
+  // The same predicate the restore mutation writes from, so the change list
+  // can never name an entry the writes will not touch (and vice versa).
+  const buffered = restorableCriteria(buffer)
   const live = new Map(rows.map((row) => [row.libraryKey as string, row]))
 
   const criteria: RestoreCriterionDiff[] = []
-  let deletedRatingCount = 0
 
   // Criteria selected since the approval: restoring removes them, and their
   // ratings go with them (the same deletion deactivateCriterion performs).
@@ -242,7 +274,6 @@ export async function buildModelRestoreDiff(
       .query("ratings")
       .withIndex("by_criterion", (q) => q.eq("criterionId", row._id))
       .collect()
-    deletedRatingCount += ratings.length
     criteria.push({
       libraryKey: row.libraryKey,
       name: nameOf(row.libraryKey),
@@ -315,7 +346,7 @@ export async function buildModelRestoreDiff(
     changes.zoneProfileRules = { from: liveZoneRules, to: bufferZoneRules }
   }
 
-  return { criteria, changes, deletedRatingCount }
+  return { criteria, changes }
 }
 
 // The diff over the wire, for the confirm dialog's preview query. Kept as a
@@ -347,5 +378,4 @@ export const modelRestoreDiffShape = v.object({
     })
   ),
   changes: restoreChangesShape,
-  deletedRatingCount: v.number(),
 })

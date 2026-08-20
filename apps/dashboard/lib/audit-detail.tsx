@@ -158,7 +158,13 @@ function firstItemId(item: Record<string, unknown>, index: number): string {
 export function payloadItems(
   payload: unknown,
   fieldLabel: (field: string) => string,
-  boolLabel?: (value: boolean) => string
+  boolLabel?: (value: boolean) => string,
+  // Localizes a coded field VALUE inside an item's own changes (a bias risk, a
+  // materiality status). Threaded through for the same reason the top-level
+  // `changes` map gets it: an item's diff is rendered by the same
+  // ChangeEntryRow list, so without it a coded value renders as its raw wire
+  // code in the sheet while every other surface shows the label.
+  valueLabel?: (field: string, value: string) => string | undefined
 ): {
   count: number
   items: Array<{
@@ -177,7 +183,7 @@ export function payloadItems(
       key: firstItemId(item, index),
       title: typeof item.label === "string" ? item.label : "",
       entries: changes
-        ? changeEntries(changes, fieldLabel, undefined, boolLabel)
+        ? changeEntries(changes, fieldLabel, undefined, boolLabel, valueLabel)
         : [],
     }
   })

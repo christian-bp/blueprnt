@@ -20,17 +20,13 @@ import {
 import type { AuditItem } from "../lib/auditPayloads"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, type AuditWriter, orgQuery } from "../lib/functions"
-import {
-  type CriteriaLibraryKey,
-  isCriteriaLibraryKey,
-  LIBRARY_DIMENSION,
-  LIBRARY_OVERLAP_PAIRS,
-} from "./criteriaLibrary"
+import { LIBRARY_DIMENSION, LIBRARY_OVERLAP_PAIRS } from "./criteriaLibrary"
 import {
   buildModelEvidence,
   buildModelRestoreDiff,
-  type EvidenceCriterion,
   modelRestoreDiffShape,
+  type RestorableCriterion,
+  restorableCriteria,
   summarizeLevelRules,
   summarizeZoneProfileRules,
 } from "./evidence"
@@ -548,7 +544,7 @@ export const getModelRestorePreview = orgQuery({
 // optional field is written explicitly, `undefined` included: db.patch removes a
 // field set to undefined, which is what makes this a restore rather than a
 // merge (a bias comment written after the approval has to go, not linger).
-function restoreCriterionPatch(criterion: EvidenceCriterion, index: number) {
+function restoreCriterionPatch(criterion: RestorableCriterion, index: number) {
   return {
     weightPoints: criterion.weightPoints,
     // Order is display order only, and a pre-cutover buffer may not carry it;
@@ -613,18 +609,12 @@ export const restoreApprovedModel = adminMutation({
       .withIndex("by_model", (q) => q.eq("modelId", model._id))
       .collect()
     const rowByKey = new Map(rows.map((row) => [row.libraryKey as string, row]))
-    // A buffer criterion with no library key, or one the library no longer
-    // knows, cannot be restored: nothing names which entry to bring back.
-    // Unreachable for a buffer approveModel wrote against the current library;
-    // the shared evidence shape keeps the field a loose optional string only
-    // because pre-cutover frozen pay-mapping runs need it to be.
-    const buffered = buffer.criteria.filter(
-      (
-        criterion
-      ): criterion is EvidenceCriterion & { libraryKey: CriteriaLibraryKey } =>
-        criterion.libraryKey !== undefined &&
-        isCriteriaLibraryKey(criterion.libraryKey)
-    )
+    // The SAME predicate buildModelRestoreDiff read the change list from, so
+    // the writes below cover exactly the entries the dialog listed. It throws
+    // on an entry the library no longer knows rather than skipping it: see
+    // restorableCriteria for why a silent skip is the one unacceptable
+    // outcome. The diff above already ran it, so reaching here means it passed.
+    const buffered = [...restorableCriteria(buffer).values()]
     const keep = new Set(buffered.map((criterion) => criterion.libraryKey))
 
     for (const row of rows) {

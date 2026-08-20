@@ -526,7 +526,25 @@ suite covers them before go-live:
   the same shape from the other direction: before it even reaches its own
   level-shift diff, it deletes one `ratings` row per role that had rated the
   deactivated criterion, all inside the same mutation that deletes the
-  criterion. Bound all three before large-org onboarding.
+  criterion. `restoreApprovedModel` (`evaluationModel/approval.ts`) is the
+  heaviest of the group because it combines both shapes: it performs
+  `deactivateCriterion`'s per-role rating deletion once per criterion the
+  restore removes (up to 8), runs TWO whole-org `deriveResults` passes around
+  the writes, and then logs one `level.shift` row per role whose level moved,
+  all in the one transaction that also rewrites every criterion row and the
+  model. It is bounded in criteria (8) but not in roles or ratings, and it is
+  deliberately atomic (a half-restored model would be off the ADR-0004 point
+  budget), so bounding it means chunking the restore itself, not relaxing the
+  transaction. Bound all four before large-org onboarding.
+
+  Note (data, not scale, same surface): the model-evidence shape shared by
+  `models.lastApprovedModel` and `payMappingRuns.frozenModel`
+  (`evaluationModel/tables.ts`) now carries HR-authored free text per criterion
+  (`weightMotivation`, `purpose`, `whyRelevant`, `overlapNotes`, `biasComment`,
+  `biasAction`). That is role/model-level content, never person data, but it is
+  retained indefinitely inside frozen runs with no erasure hook, the same
+  posture as `payMappingRuns.collaboration`; fold it into that entry's
+  pre-launch decision rather than treating it as a separate one.
 
 - [ ] **Re-introducing an erased employee: decide suppression vs controller
   process.** Nothing records that an `externalRef` has been erased, so a later

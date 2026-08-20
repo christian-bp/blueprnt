@@ -1047,3 +1047,157 @@ describe("restoreApprovedModel", () => {
     })
   })
 })
+
+// The contract the "audits the diff the preview showed" test structurally
+// cannot express: that test compares two DESCRIPTIONS of the change (the
+// preview's and the trail's), which agree by construction because one builder
+// produces both. What it cannot see is whether the WRITES agree with either.
+// A silent skip in the restore loop would leave both descriptions right and
+// the database wrong, which is exactly the failure the shared predicate exists
+// to make impossible.
+describe("restoreApprovedModel writes what the diff promised", () => {
+  it("leaves the model in the state the diff described, on budget", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedApprovableModel(t)
+    await asAdmin.mutation(api.evaluationModel.approval.approveModel, { orgId })
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey: "risk-consequence",
+    })
+
+    const preview = await asAdmin.query(
+      api.evaluationModel.approval.getModelRestorePreview,
+      { orgId, locale: "en" }
+    )
+    if (preview === null) throw new Error("no preview")
+    await asAdmin.mutation(api.evaluationModel.approval.restoreApprovedModel, {
+      orgId,
+    })
+
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (model == null) throw new Error("no model")
+      const rows = await ctx.db
+        .query("criteria")
+        .withIndex("by_model", (q) => q.eq("modelId", model._id))
+        .collect()
+      const byKey = new Map(rows.map((row) => [row.libraryKey as string, row]))
+
+      // Every promise in the diff, checked against the rows themselves.
+      for (const criterion of preview.diff.criteria) {
+        const row = byKey.get(criterion.libraryKey)
+        if (criterion.kind === "removed") {
+          expect(row, `${criterion.libraryKey} still present`).toBeUndefined()
+          continue
+        }
+        expect(row, `${criterion.libraryKey} missing`).toBeDefined()
+        if (row === undefined) continue
+        for (const [field, change] of Object.entries(criterion.changes)) {
+          if (field === "selected" || field === "deletedRatingCount") continue
+          const actual =
+            field === "approved"
+              ? row.approved === true
+              : ((row as unknown as Record<string, unknown>)[field] ?? null)
+          expect(actual, `${criterion.libraryKey}.${field}`).toEqual(change.to)
+        }
+      }
+
+      // Nothing the diff did NOT name moved: the live key set is exactly the
+      // buffer's, so a skipped entry (which the diff would also not name)
+      // cannot hide here.
+      const bufferKeys = (model.lastApprovedModel?.criteria ?? []).map(
+        (criterion) => criterion.libraryKey
+      )
+      expect([...byKey.keys()].sort()).toEqual([...bufferKeys].sort())
+
+      // The ADR-0004 invariant a silent skip would break: the allocation sums
+      // to exactly criteria count x 3.
+      const total = rows.reduce((sum, row) => sum + row.weightPoints, 0)
+      expect(total).toBe(rows.length * 3)
+    })
+  })
+
+  it("refuses a buffer whose library key no longer exists, changing nothing", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedApprovableModel(t)
+    await asAdmin.mutation(api.evaluationModel.approval.approveModel, { orgId })
+    await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey: "risk-consequence",
+    })
+
+    // Retire a key inside the stored buffer. The evidence shape holds
+    // libraryKey as a loose optional string (frozen pay-mapping runs need that
+    // tolerance), so this validates at the schema level exactly as a genuinely
+    // retired key would.
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      const buffer = model?.lastApprovedModel
+      if (model == null || buffer === undefined) throw new Error("no buffer")
+      await ctx.db.patch(model._id, {
+        lastApprovedModel: {
+          ...buffer,
+          criteria: buffer.criteria.map((criterion, index) =>
+            index === 0
+              ? { ...criterion, libraryKey: "retired-key" }
+              : criterion
+          ),
+        },
+      })
+    })
+
+    const before = await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (model == null) throw new Error("no model")
+      const rows = await ctx.db
+        .query("criteria")
+        .withIndex("by_model", (q) => q.eq("modelId", model._id))
+        .collect()
+      return [...rows.map((row) => row.libraryKey)].sort()
+    })
+
+    // The preview refuses too: a change list promising a restore the mutation
+    // would reject is worse than no change list.
+    await expect(
+      asAdmin.query(api.evaluationModel.approval.getModelRestorePreview, {
+        orgId,
+        locale: "en",
+      })
+    ).rejects.toThrow(/errors\.invalidInput/)
+    await expect(
+      asAdmin.mutation(api.evaluationModel.approval.restoreApprovedModel, {
+        orgId,
+      })
+    ).rejects.toThrow(/errors\.invalidInput/)
+
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (model == null) throw new Error("no model")
+      const rows = await ctx.db
+        .query("criteria")
+        .withIndex("by_model", (q) => q.eq("modelId", model._id))
+        .collect()
+      // Not a single row moved, and no audit row claims otherwise.
+      expect([...rows.map((row) => row.libraryKey)].sort()).toEqual(before)
+      const audited = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.restored")
+        )
+        .collect()
+      expect(audited).toHaveLength(0)
+    })
+  })
+})

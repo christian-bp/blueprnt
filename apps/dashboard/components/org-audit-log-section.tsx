@@ -633,7 +633,7 @@ function AuditDetailSheet({
         : t("detail.changes")
   // Annotate the role profile fields when a rename auto-cleared them.
   const clearedByRename = p.profileClearedByRename === true
-  const items = payloadItems(row.payload, fieldLabel, boolLabel)
+  const items = payloadItems(row.payload, fieldLabel, boolLabel, valueLabel)
   const moves = payloadMoves(row.payload)
   const suggestions = payloadSuggestions(row.payload)
   const provenance = payloadProvenance(row.payload)

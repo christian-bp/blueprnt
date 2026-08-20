@@ -1232,6 +1232,54 @@ describe("payloadItems", () => {
     expect(out?.items[0]?.key).toBe("f1")
   })
 
+  // The detail SHEET renders each item's diff through this, so a coded value
+  // inside an item has to resolve here too. Without the threaded valueLabel a
+  // model.restored criterion showed "medium -> low" in the sheet while the
+  // restore dialog, reading the same diff, showed "Medium -> Low".
+  it("resolves a coded value inside an item's own changes", () => {
+    const out = payloadItems(
+      {
+        count: 1,
+        items: [
+          {
+            libraryKey: "knowledge-breadth",
+            label: "Knowledge breadth",
+            changes: { biasRisk: { from: "medium", to: "low" } },
+          },
+        ],
+      },
+      fieldLabel,
+      undefined,
+      valueLabel
+    )
+    const entry = out?.items[0]?.entries[0]
+    expect(entry?.from).toBe(BIAS_RISK_VALUE_KEYS.medium.toUpperCase())
+    expect(entry?.to).toBe(BIAS_RISK_VALUE_KEYS.low.toUpperCase())
+  })
+
+  // Boolean and coded resolution compose: the restore's `selected` row reads
+  // Yes/No in the same item whose biasRisk reads its label.
+  it("resolves booleans and coded values in the same item", () => {
+    const out = payloadItems(
+      {
+        count: 1,
+        items: [
+          {
+            libraryKey: "risk-consequence",
+            label: "Risk and consequence",
+            changes: { selected: { from: true, to: false } },
+          },
+        ],
+      },
+      fieldLabel,
+      (value) => (value ? "Yes" : "No"),
+      valueLabel
+    )
+    const entry = out?.items[0]?.entries[0]
+    expect(entry?.from).toBe("Yes")
+    expect(entry?.to).toBe("No")
+  })
+
   it("returns null when there is no items array", () => {
     expect(payloadItems({ count: 3 }, fieldLabel)).toBeNull()
     expect(payloadItems(null, fieldLabel)).toBeNull()
