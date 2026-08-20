@@ -229,16 +229,26 @@ describe("the Viktning chapter", () => {
 
   // Changing WHICH criteria are in the model is the Kriterier chapter's job
   // alone; this chapter only distributes points among them.
+  //
+  // Queried by the LIVE control's own labels. It named the retired dropdown's
+  // rowMenuLabel for a while, which no longer matches anything on any surface,
+  // so the test passed whether or not the rule held. The card's prop union is
+  // the primary lock (a weight card cannot be given an onRemove); this is the
+  // runtime pin, and it discriminates because the same removeLabel query is
+  // what the Kriterier chapter's own removal test clicks.
   it("offers no way to remove a criterion", () => {
     renderChapter()
     for (const name of [COMPLEXITY, KNOWLEDGE_DEPTH]) {
       expect(
         screen.queryByRole("button", {
-          name: editor.rowMenuLabel.replace("{name}", name),
+          name: editor.removeLabel.replace("{name}", name),
         })
       ).toBeNull()
     }
-    expect(screen.queryByText(editor.removeCta)).toBeNull()
+    // Nor an armed confirm pill, the only other control the morph ever shows.
+    expect(
+      screen.queryByRole("button", { name: editor.removeConfirm })
+    ).toBeNull()
   })
 
   // Never a bare page: the chapter has nothing to weight until the previous
