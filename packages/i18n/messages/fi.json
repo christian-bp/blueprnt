@@ -1852,7 +1852,27 @@
         "columnCount": "{count} enintään {max}:sta",
         "columnEmpty": "Tähän ulottuvuuteen ei ole vielä valittu kriteerejä",
         "recommendedChip": "Suositeltu toimialallenne",
-        "overlapChip": "Menee päällekkäin näiden kanssa: {names}"
+        "overlapChip": "Menee päällekkäin näiden kanssa: {names}",
+        "workingConditions": {
+          "testHeading": "Olennaisuustesti",
+          "description": "Päätä, ovatko erityiset työolosuhteet toistuva ja olennainen osa jotakin roolia, vai oletteko testanneet tämän ja todenneet sen ei-olennaiseksi. Kumpikin vastaus ratkaisee ulottuvuuden.",
+          "statusLabel": "Tila",
+          "activeOption": "Aktiivinen",
+          "materialSlotLine": "Olette arvioineet erityiset työolosuhteet olennaisiksi. Valitse kriteeri, joka arvioi ne.",
+          "materialFootnote": "Arvioitu olennaisiksi",
+          "notMaterialLine": "Olette testanneet työolosuhteet ja todenneet ne ei-olennaisiksi.",
+          "testedNotMaterialOption": "Testattu, ei olennainen",
+          "removeOffer": "Kriteeri {name} on valittuna mallissa. Päätöksen tallentaminen poistaa sen, ja sen arviot poistetaan.",
+          "removeAndSaveCta": "Poista kriteeri ja tallenna päätös",
+          "motivationLabel": "Perustelu",
+          "saveCta": "Tallenna päätös",
+          "materialityQuestion": "Ovatko erityiset työolosuhteet (päivystys, vuorotyö, fyysinen kuormitus, riski) toistuva ja olennainen osa jotakin roolia?",
+          "yesCta": "Kyllä, olennainen",
+          "noCta": "Ei, ei olennainen",
+          "noCriterionHint": "Monet organisaatiot toteavat ulottuvuuden ei-olennaiseksi. Silloin dokumentoitu testi riittää; kriteeriä ei tarvita.",
+          "changeCta": "Muuta päätöstä",
+          "decidedOn": "Päätetty {date}"
+        }
       },
       "weighting": {
         "budgetAllocated": "<allocated></allocated>/<budget></budget> painopistettä jaettu",
@@ -1953,17 +1973,6 @@
           "dimensionWeightBalance": "Yksikään ulottuvuus ei hallitse painotusta ilman perustelua",
           "peopleLeadershipWeight": "Henkilöstöjohtamisen paino on perusteltu",
           "overlapPairs": "Päällekkäiset kriteerit on käyty läpi"
-        },
-        "workingConditions": {
-          "heading": "Työolosuhteet",
-          "description": "Päätä, ovatko erityiset työolosuhteet toistuva ja olennainen osa jotakin roolia, vai oletteko testanneet tämän ja todenneet sen ei-olennaiseksi.",
-          "statusLabel": "Tila",
-          "activeOption": "Aktiivinen",
-          "testedNotMaterialOption": "Testattu, ei olennainen",
-          "activeBlockedHint": "Mallissa on valittuna työolosuhteiden kriteeri. Poista se ensin käytöstä, jotta voit merkitä tämän testatuksi ja ei-olennaiseksi.",
-          "motivationLabel": "Perustelu",
-          "saveCta": "Tallenna päätös",
-          "currentLabel": "Nykyinen päätös"
         }
       },
       "methodAppendix": {
@@ -2014,6 +2023,10 @@
     },
     "help": {
       "dimensionLabel": "Mitä tämä ulottuvuus kattaa?",
+      "dimensionCompetenceBody": "Mitä rooli edellyttää osaamiselta: tiedon syvyys, tiedon laajuus, muodolliset pätevyydet, toimialatuntemus ja neuvonantajan harkinta.",
+      "dimensionEffortBody": "Kuinka vaativaa työ on: monimutkaisuus ja epäselvyys, analyyttinen ponnistus, viestintä, operatiivinen intensiteetti ja fyysiset vaatimukset.",
+      "dimensionResponsibilityBody": "Roolin muodollinen vastuu ja päätösten ulottuvuus: laajuus, itsenäisyys, riski sekä henkilöstö-, resurssi-, liiketoiminta- ja vaatimustenmukaisuusvastuu.",
+      "dimensionWorkingConditionsBody": "Objektiiviset ja pysyvät olosuhteet itse työssä: altistuminen ja turvallisuus, päivystys, epäsäännöllisyys, rajoitetut ympäristöt. Kriteeriä ei tarvita, jos testi ei löydä olennaista.",
       "criterionLabel": "Mikä kriteeri on?",
       "criterionBody": "Asia, jota vasten jokainen rooli arvioidaan, kuten laajuus tai monimutkaisuus. Sen asteikko 1-5 kertoo mitä kukin arvio tarkoittaa; painotus ratkaisee kuinka paljon se painaa.",
       "anchorRoleLabel": "Mikä on ankkurirooli?",

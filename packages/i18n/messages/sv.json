@@ -1852,7 +1852,27 @@
         "columnCount": "{count} av max {max}",
         "columnEmpty": "Inga kriterier i denna dimension ännu",
         "recommendedChip": "Rekommenderas för er bransch",
-        "overlapChip": "Överlappar {names}"
+        "overlapChip": "Överlappar {names}",
+        "workingConditions": {
+          "testHeading": "Materialitetsprövning",
+          "description": "Avgör om särskilda arbetsförhållanden är en återkommande, materiell del av någon roll, eller om ni har testat detta och funnit det inte materiellt. Båda svaren avgör dimensionen.",
+          "statusLabel": "Status",
+          "activeOption": "Aktivt",
+          "materialSlotLine": "Ni har bedömt att särskilda arbetsförhållanden är materiella. Välj kriteriet som bedömer dem.",
+          "materialFootnote": "Bedömda som materiella",
+          "notMaterialLine": "Ni har prövat arbetsförhållanden och funnit dem inte materiella.",
+          "testedNotMaterialOption": "Testat, inte materiellt",
+          "removeOffer": "Kriteriet {name} är valt i modellen. Att spara beslutet tar bort det, och dess bedömningar raderas.",
+          "removeAndSaveCta": "Ta bort kriteriet och spara beslutet",
+          "motivationLabel": "Motivering",
+          "saveCta": "Spara beslut",
+          "materialityQuestion": "Är särskilda arbetsförhållanden (jour, skift, fysisk belastning, risk) ett återkommande, materiellt inslag i någon roll?",
+          "yesCta": "Ja, materiellt",
+          "noCta": "Nej, inte materiellt",
+          "noCriterionHint": "Många företag finner dimensionen inte materiell. Då räcker den dokumenterade prövningen; inget kriterium behövs.",
+          "changeCta": "Ändra beslut",
+          "decidedOn": "Beslutat {date}"
+        }
       },
       "weighting": {
         "budgetAllocated": "<allocated></allocated> av <budget></budget> viktpoäng fördelade",
@@ -1953,17 +1973,6 @@
           "dimensionWeightBalance": "Ingen dimension dominerar viktningen utan motivering",
           "peopleLeadershipWeight": "Personalledarskapets vikt är motiverad",
           "overlapPairs": "Överlappande kriterier är granskade"
-        },
-        "workingConditions": {
-          "heading": "Arbetsförhållanden",
-          "description": "Avgör om särskilda arbetsförhållanden är en återkommande, materiell del av någon roll, eller om ni har testat detta och funnit det inte materiellt.",
-          "statusLabel": "Status",
-          "activeOption": "Aktivt",
-          "testedNotMaterialOption": "Testat, inte materiellt",
-          "activeBlockedHint": "Ett kriterium för arbetsförhållanden är valt i modellen. Inaktivera det först för att markera detta som testat, inte materiellt.",
-          "motivationLabel": "Motivering",
-          "saveCta": "Spara beslut",
-          "currentLabel": "Nuvarande beslut"
         }
       },
       "methodAppendix": {
@@ -2014,6 +2023,10 @@
     },
     "help": {
       "dimensionLabel": "Vad täcker denna dimension?",
+      "dimensionCompetenceBody": "Vad rollen behöver kunna: kunskapsdjup, kunskapsbredd, formella behörigheter, domänkunskap och rådgivande omdöme.",
+      "dimensionEffortBody": "Hur krävande arbetet är: komplexitet och otydlighet, analytisk ansträngning, kommunikation, operativ intensitet och fysiska krav.",
+      "dimensionResponsibilityBody": "Rollens formella ansvar och hur långt besluten når: scope, autonomi, risk, personal-, resurs-, affärs- och regelefterlevnadsansvar.",
+      "dimensionWorkingConditionsBody": "Objektiva och varaktiga villkor i själva arbetet: exponering och säkerhet, beredskap, oregelbundenhet, begränsade miljöer. Inget kriterium krävs om prövningen inte finner något materiellt.",
       "criterionLabel": "Vad är ett kriterium?",
       "criterionBody": "Något varje roll bedöms mot, som omfattning eller komplexitet. Dess 1-till-5-skala beskriver vad varje betyg betyder; dess viktning avgör hur mycket det räknas.",
       "anchorRoleLabel": "Vad är en ankarroll?",

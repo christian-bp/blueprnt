@@ -4,14 +4,14 @@ import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { ChapterFraming } from "@/components/model/chapter-framing"
 import { MethodPanel } from "@/components/model/method-panel"
-import { WorkingConditionsSection } from "@/components/model/working-conditions-section"
 import { useOrganization } from "@/components/org-context"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // Chapter 3 of the model section: each criterion's rationale and bias review
-// (the kriterieurvalsprotokoll), the working-conditions materiality decision,
-// and the method appendix export built from them. The approval gate they feed
-// is the next chapter's.
+// (the kriterieurvalsprotokoll) and the method appendix export built from them.
+// The approval gate they feed is the next chapter's. The working-conditions
+// materiality decision is NOT here: it is made in the column it is about, on
+// the Kriterier chapter.
 export default function ModelMethodChapterPage() {
   const { orgId } = useOrganization()
   const tChapters = useTranslations("dashboard.model.chapters")
@@ -37,9 +37,6 @@ export default function ModelMethodChapterPage() {
           descriptions run past it and gain nothing. */}
       <div className="max-w-4xl space-y-4">
         <MethodPanel orgId={orgId} />
-        {/* Below the documentation it belongs with: it is method
-            documentation, and the spine counts it as this chapter's work. */}
-        <WorkingConditionsSection orgId={orgId} />
       </div>
     </div>
   )

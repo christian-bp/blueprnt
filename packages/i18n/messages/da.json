@@ -1852,7 +1852,27 @@
         "columnCount": "{count} af maks. {max}",
         "columnEmpty": "Ingen kriterier i denne dimension endnu",
         "recommendedChip": "Anbefalet til jeres branche",
-        "overlapChip": "Overlapper {names}"
+        "overlapChip": "Overlapper {names}",
+        "workingConditions": {
+          "testHeading": "Væsentlighedstest",
+          "description": "Afgør, om særlige arbejdsforhold er en tilbagevendende, væsentlig del af en rolle, eller om I har testet dette og fundet det ikke væsentligt. Begge svar afgør dimensionen.",
+          "statusLabel": "Status",
+          "activeOption": "Aktiv",
+          "materialSlotLine": "I har vurderet, at særlige arbejdsforhold er væsentlige. Vælg det kriterium, der vurderer dem.",
+          "materialFootnote": "Vurderet som væsentlige",
+          "notMaterialLine": "I har testet arbejdsforhold og fundet dem ikke væsentlige.",
+          "testedNotMaterialOption": "Testet, ikke væsentligt",
+          "removeOffer": "Kriteriet {name} er valgt i modellen. At gemme beslutningen fjerner det, og dets vurderinger slettes.",
+          "removeAndSaveCta": "Fjern kriteriet, og gem beslutningen",
+          "motivationLabel": "Begrundelse",
+          "saveCta": "Gem beslutning",
+          "materialityQuestion": "Er særlige arbejdsforhold (vagtberedskab, skift, fysisk belastning, risiko) en tilbagevendende, væsentlig del af nogen rolle?",
+          "yesCta": "Ja, væsentligt",
+          "noCta": "Nej, ikke væsentligt",
+          "noCriterionHint": "Mange virksomheder finder dimensionen ikke væsentlig. Så er den dokumenterede test nok; der kræves intet kriterium.",
+          "changeCta": "Ændr beslutning",
+          "decidedOn": "Besluttet {date}"
+        }
       },
       "weighting": {
         "budgetAllocated": "<allocated></allocated> af <budget></budget> vægtpoint fordelt",
@@ -1953,17 +1973,6 @@
           "dimensionWeightBalance": "Ingen dimension dominerer vægtningen uden begrundelse",
           "peopleLeadershipWeight": "Personaleledelsens vægt er begrundet",
           "overlapPairs": "Overlappende kriterier er gennemgået"
-        },
-        "workingConditions": {
-          "heading": "Arbejdsforhold",
-          "description": "Afgør, om særlige arbejdsforhold er en tilbagevendende, væsentlig del af en rolle, eller om I har testet dette og fundet det ikke væsentligt.",
-          "statusLabel": "Status",
-          "activeOption": "Aktiv",
-          "testedNotMaterialOption": "Testet, ikke væsentligt",
-          "activeBlockedHint": "Et kriterium for arbejdsforhold er valgt i modellen. Deaktiver det først for at markere dette som testet, ikke væsentligt.",
-          "motivationLabel": "Begrundelse",
-          "saveCta": "Gem beslutning",
-          "currentLabel": "Nuværende beslutning"
         }
       },
       "methodAppendix": {
@@ -2014,6 +2023,10 @@
     },
     "help": {
       "dimensionLabel": "Hvad dækker denne dimension?",
+      "dimensionCompetenceBody": "Hvad rollen skal kunne: vidensdybde, vidensbredde, formelle kvalifikationer, domæneviden og rådgivende dømmekraft.",
+      "dimensionEffortBody": "Hvor krævende arbejdet er: kompleksitet og uklarhed, analytisk indsats, kommunikation, operativ intensitet og fysiske krav.",
+      "dimensionResponsibilityBody": "Rollens formelle ansvar, og hvor langt beslutningerne rækker: scope, autonomi, risiko, personale-, ressource-, forretnings- og complianceansvar.",
+      "dimensionWorkingConditionsBody": "Objektive og varige forhold i selve arbejdet: eksponering og sikkerhed, vagtberedskab, uregelmæssighed, begrænsede miljøer. Der kræves intet kriterium, hvis testen ikke finder noget væsentligt.",
       "criterionLabel": "Hvad er et kriterium?",
       "criterionBody": "Noget hver rolle vurderes mod, som omfang eller kompleksitet. Dens 1-til-5-skala beskriver, hvad hver karakter betyder; vægtningen afgør, hvor meget den tæller.",
       "anchorRoleLabel": "Hvad er en ankerrolle?",

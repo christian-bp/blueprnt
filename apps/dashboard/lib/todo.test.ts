@@ -79,6 +79,11 @@ function method(
         },
         { key: "dimensionCaps", ok: stationOk },
         { key: "dimensionCoverage", ok: stationOk },
+        // The Kriterier chapter's seventh unit (the working-conditions
+        // materiality decision). Not one of the station checks these fixtures
+        // flip, so it passes by default: a todo test is about the selection,
+        // never about that decision.
+        { key: "workingConditionsTested", ok: true },
       ],
     },
   }

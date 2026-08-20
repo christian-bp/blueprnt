@@ -191,10 +191,11 @@ export const STATUS_VALUE_KEYS: Record<AuditStatus, string> = {
   notStarted: "payMapping.actions.status.notStarted",
   inProgress: "payMapping.actions.status.inProgress",
   done: "payMapping.actions.status.done",
-  // Reuses the working-conditions decision control's own option label
-  // (model/method page) rather than inventing new auditLog.values.* wording
-  // for a concept that already has a real, dedicated surface.
-  testedNotMaterial: "model.method.workingConditions.testedNotMaterialOption",
+  // Reuses the working-conditions decision control's own option label (the
+  // materiality test, in its column on the Kriterier chapter) rather than
+  // inventing new auditLog.values.* wording for a concept that already has a
+  // real, dedicated surface.
+  testedNotMaterial: "model.criteria.workingConditions.testedNotMaterialOption",
 }
 
 // organization/person `country`: the onboarding country select's labels.

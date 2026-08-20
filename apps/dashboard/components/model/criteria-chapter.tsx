@@ -25,6 +25,7 @@ import { HelpMorphButton } from "@/components/help-morph-button"
 import { DimensionColumn } from "@/components/model/dimension-column"
 import { LibraryPickerDialog } from "@/components/model/library-picker-dialog"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
+import { WorkingConditionsDecision } from "@/components/model/working-conditions-decision"
 import { modelErrorKey } from "@/lib/model-errors"
 import { toast } from "@/lib/toast"
 
@@ -38,6 +39,18 @@ import { toast } from "@/lib/toast"
 // it to them.
 const GRID_CLASS = "grid items-start gap-4 sm:grid-cols-2 2xl:grid-cols-4"
 
+// Each dimension's help body, which says what the dimension COVERS rather than
+// asking the reader a question: a column heading with a question mark behind it
+// left the reader to answer it themselves, when what they needed was the list
+// of things this dimension is for. A total Record, so a fifth dimension could
+// not compile without its own body.
+const DIMENSION_HELP_BODY = {
+  competence: "dimensionCompetenceBody",
+  effort: "dimensionEffortBody",
+  responsibility: "dimensionResponsibilityBody",
+  workingConditions: "dimensionWorkingConditionsBody",
+} as const satisfies Record<DimensionKey, string>
+
 // The Kriterier chapter: which criteria the company's model is built from.
 //
 // Four columns, one per dimension (ADR-0021: fixed method law), each holding
@@ -49,6 +62,7 @@ const GRID_CLASS = "grid items-start gap-4 sm:grid-cols-2 2xl:grid-cols-4"
 export function CriteriaChapter({ orgId }: { orgId: string }) {
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
+  const tHelp = useTranslations("dashboard.help")
   const locale = useLocale()
 
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
@@ -100,21 +114,57 @@ export function CriteriaChapter({ orgId }: { orgId: string }) {
     }
   }
 
+  // The materiality decision, and what it does to the fourth column. Read from
+  // the chapter's own model query, so the column costs no second subscription.
+  //
+  // The criterion SLOT exists only under an active decision. Before one the
+  // column is the materiality question and nothing else: no empty slot, and no
+  // way to reach the picker, so "this dimension is material" and "a criterion
+  // belongs here" are one state rather than two things a reader has to
+  // connect. Answering "not material" settles the dimension and the slot never
+  // opens at all.
+  const decision = model.workingConditions
+  const slotOpen = decision?.status === "active"
+
   return (
     <div className={GRID_CLASS}>
       {model.dimensions.map((dimension) => {
         const placed = model.criteria.filter(
           (criterion) => criterion.dimensionKey === dimension.key
         )
-        const room = hasRoom(dimension.key)
+        const isWorkingConditions = dimension.key === "workingConditions"
+        const room =
+          hasRoom(dimension.key) && (!isWorkingConditions || slotOpen)
         return (
           <DimensionColumn
             key={dimension.key}
             title={dimension.name}
-            helpBody={dimension.question}
+            helpBody={tHelp(DIMENSION_HELP_BODY[dimension.key])}
             count={placed.length}
             max={DIMENSION_MAX_ACTIVE[dimension.key]}
             full={!room}
+            // The hatch IS the empty slot, so it appears exactly when the slot
+            // does: under an active decision with nothing chosen yet. Before
+            // any answer the question stands in its place, and after "not
+            // material" the documented decision does.
+            explained={isWorkingConditions && !slotOpen}
+            // The decision rides in the column it is about, in every one of
+            // its states: the question while nothing is recorded, and the
+            // decision once something is. The other three dimensions carry no
+            // decision at all.
+            note={
+              isWorkingConditions ? (
+                <WorkingConditionsDecision
+                  orgId={orgId}
+                  decision={decision}
+                  // The dimension caps at one, so the first placed criterion
+                  // is the criterion: the decision block needs it by name and
+                  // by id, because answering "not material" is an offer to
+                  // remove it rather than an instruction to go and do it.
+                  criterion={placed[0] ?? null}
+                />
+              ) : undefined
+            }
             action={
               room ? (
                 <LibraryPickerDialog
@@ -201,10 +251,12 @@ function ColumnSkeleton({
 }
 
 // The chapter's loading state: the same four-column grid, with the four
-// dimensions real (they are fixed method law, ADR-0021, and their names and
-// guiding questions are locale-keyed library constants, not org data).
+// dimensions real (they are fixed method law, ADR-0021, their names are
+// locale-keyed library constants and their help bodies are the app's own copy,
+// so neither waits on org data).
 function CriteriaChapterSkeleton() {
   const locale = useLocale()
+  const tHelp = useTranslations("dashboard.help")
   const content = criteriaLibraryContent(locale)
   return (
     <div className={GRID_CLASS}>
@@ -212,7 +264,7 @@ function CriteriaChapterSkeleton() {
         <ColumnSkeleton
           key={key}
           title={content.dimensions[key].name}
-          helpBody={content.dimensions[key].question}
+          helpBody={tHelp(DIMENSION_HELP_BODY[key])}
         />
       ))}
     </div>

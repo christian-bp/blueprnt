@@ -77,6 +77,19 @@ const CRITERIA_STATION_CHECKS: readonly MethodCheckKey[] = [
   "dimensionCoverage",
 ]
 
+// The fourth dimension's materiality decision, which the Kriterier chapter now
+// asks for in the working-conditions column itself. Its own unit rather than a
+// station check: the selection can be finished while the decision is not, and
+// the reader should see one of seven outstanding rather than a chapter that
+// silently refuses to complete.
+//
+// The ENGINE's check, never a re-derivation: it is ok for a documented
+// "tested, not material" with no criterion, and for exactly one active
+// working-conditions criterion under a recorded decision. Reading the same
+// check the approval gate reads is what keeps the spine and the gate from
+// disagreeing about a chapter the reader is looking at.
+const CRITERIA_MATERIALITY_CHECK: MethodCheckKey = "workingConditionsTested"
+
 // The slice of getMethodChecks a progress reading needs. Structural rather
 // than the wire type itself, so the derivation can be exercised with a
 // handful of checks instead of a whole model.
@@ -94,9 +107,6 @@ export interface ModelProgressInput {
   checks: readonly ModelProgressCheck[]
   // The model carries an approval right now.
   approved: boolean
-  // The working-conditions materiality decision has been recorded, whichever
-  // way it went.
-  workingConditionsDecided: boolean
 }
 
 interface ChapterProgress {
@@ -126,9 +136,8 @@ function criteriaCount(input: ModelProgressInput): number {
 // re-opens the moment its work stops being true.
 //
 // The totals are the chapters' real work, which is what makes the spine's
-// segments honest: Metod carries a step per criterion plus the materiality
-// decision and is therefore the wide segment, exactly as the kartläggning
-// bar's biggest chapter is.
+// segments honest: Metod carries one step per criterion and is therefore the
+// wide segment, exactly as the kartläggning bar's biggest chapter is.
 export function modelChapterProgress(
   input: ModelProgressInput,
   chapter: ModelChapter
@@ -137,7 +146,9 @@ export function modelChapterProgress(
     case "criteria": {
       // The model needs at least six criteria, so six is the work; the
       // maximum of eight is a ceiling, not a target, and counting against it
-      // would leave a finished selection reading as three quarters done.
+      // would leave a finished selection reading as three quarters done. The
+      // seventh unit is the working-conditions materiality decision, which the
+      // fourth column asks for on this chapter.
       const selected = Math.min(criteriaCount(input), MODEL_MIN_CRITERIA)
       const stationOk = CRITERIA_STATION_CHECKS.every((key) =>
         passes(input, key)
@@ -146,8 +157,10 @@ export function modelChapterProgress(
         // A selection of six that breaks a dimension cap or leaves a
         // mandatory dimension uncovered is not a finished chapter, so it
         // never reads as one.
-        done: stationOk ? selected : Math.min(selected, MODEL_MIN_CRITERIA - 1),
-        total: MODEL_MIN_CRITERIA,
+        done:
+          (stationOk ? selected : Math.min(selected, MODEL_MIN_CRITERIA - 1)) +
+          (passes(input, CRITERIA_MATERIALITY_CHECK) ? 1 : 0),
+        total: MODEL_MIN_CRITERIA + 1,
       }
     }
     case "weighting": {
@@ -165,17 +178,13 @@ export function modelChapterProgress(
       }
     }
     case "method": {
-      // One protokoll per criterion, plus the working-conditions materiality
-      // decision.
+      // One protokoll per criterion, and nothing else: the materiality
+      // decision moved to the Kriterier chapter with the column that asks for
+      // it, so counting it here would count one decision on two chapters.
       const count = criteriaCount(input)
       const undocumented =
         checkOf(input, "documentationComplete")?.criterionIds?.length ?? 0
-      return {
-        done:
-          Math.max(count - undocumented, 0) +
-          (input.workingConditionsDecided ? 1 : 0),
-        total: count + 1,
-      }
+      return { done: Math.max(count - undocumented, 0), total: count }
     }
     case "approval":
       return { done: input.approved ? 1 : 0, total: 1 }

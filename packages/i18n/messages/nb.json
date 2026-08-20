@@ -1852,7 +1852,27 @@
         "columnCount": "{count} av maks {max}",
         "columnEmpty": "Ingen kriterier i denne dimensjonen ennå",
         "recommendedChip": "Anbefalt for deres bransje",
-        "overlapChip": "Overlapper {names}"
+        "overlapChip": "Overlapper {names}",
+        "workingConditions": {
+          "testHeading": "Materialitetstest",
+          "description": "Avgjør om spesielle arbeidsforhold er en tilbakevendende, materiell del av en rolle, eller om dere har testet dette og funnet det ikke materielt. Begge svar avgjør dimensjonen.",
+          "statusLabel": "Status",
+          "activeOption": "Aktivt",
+          "materialSlotLine": "Dere har vurdert at spesielle arbeidsforhold er materielle. Velg kriteriet som vurderer dem.",
+          "materialFootnote": "Vurdert som materielle",
+          "notMaterialLine": "Dere har prøvd arbeidsforhold og funnet dem ikke materielle.",
+          "testedNotMaterialOption": "Testet, ikke materielt",
+          "removeOffer": "Kriteriet {name} er valgt i modellen. Å lagre beslutningen fjerner det, og vurderingene av det slettes.",
+          "removeAndSaveCta": "Fjern kriteriet og lagre beslutningen",
+          "motivationLabel": "Begrunnelse",
+          "saveCta": "Lagre beslutning",
+          "materialityQuestion": "Er spesielle arbeidsforhold (beredskap, skift, fysisk belastning, risiko) et tilbakevendende, materielt innslag i noen rolle?",
+          "yesCta": "Ja, materielt",
+          "noCta": "Nei, ikke materielt",
+          "noCriterionHint": "Mange virksomheter finner dimensjonen ikke materiell. Da holder den dokumenterte prøvingen; intet kriterium trengs.",
+          "changeCta": "Endre beslutning",
+          "decidedOn": "Besluttet {date}"
+        }
       },
       "weighting": {
         "budgetAllocated": "<allocated></allocated> av <budget></budget> vektpoeng fordelt",
@@ -1953,17 +1973,6 @@
           "dimensionWeightBalance": "Ingen dimensjon dominerer vektingen uten begrunnelse",
           "peopleLeadershipWeight": "Personalledelsens vekt er begrunnet",
           "overlapPairs": "Overlappende kriterier er gjennomgått"
-        },
-        "workingConditions": {
-          "heading": "Arbeidsforhold",
-          "description": "Avgjør om spesielle arbeidsforhold er en tilbakevendende, materiell del av en rolle, eller om dere har testet dette og funnet det ikke materielt.",
-          "statusLabel": "Status",
-          "activeOption": "Aktivt",
-          "testedNotMaterialOption": "Testet, ikke materielt",
-          "activeBlockedHint": "Et kriterium for arbeidsforhold er valgt i modellen. Deaktiver det først for å markere dette som testet, ikke materielt.",
-          "motivationLabel": "Begrunnelse",
-          "saveCta": "Lagre beslutning",
-          "currentLabel": "Nåværende beslutning"
         }
       },
       "methodAppendix": {
@@ -2014,6 +2023,10 @@
     },
     "help": {
       "dimensionLabel": "Hva dekker denne dimensjonen?",
+      "dimensionCompetenceBody": "Hva rollen må kunne: kunnskapsdybde, kunnskapsbredde, formelle kvalifikasjoner, domenekunnskap og rådgivende skjønn.",
+      "dimensionEffortBody": "Hvor krevende arbeidet er: kompleksitet og uklarhet, analytisk innsats, kommunikasjon, operativ intensitet og fysiske krav.",
+      "dimensionResponsibilityBody": "Rollens formelle ansvar og hvor langt beslutningene rekker: scope, autonomi, risiko, personal-, ressurs-, forretnings- og etterlevelsesansvar.",
+      "dimensionWorkingConditionsBody": "Objektive og varige forhold i selve arbeidet: eksponering og sikkerhet, beredskap, uregelmessighet, begrensede miljøer. Intet kriterium kreves hvis testen ikke finner noe materielt.",
       "criterionLabel": "Hva er et kriterium?",
       "criterionBody": "Noe hver rolle vurderes mot, som omfang eller kompleksitet. Dens 1-til-5-skala beskriver hva hver karakter betyr; vektingen avgjør hvor mye den teller.",
       "anchorRoleLabel": "Hva er en ankerrolle?",

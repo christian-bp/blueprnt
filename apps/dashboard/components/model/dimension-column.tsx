@@ -21,13 +21,15 @@ export function DimensionColumn({
   count,
   max,
   full,
+  explained,
+  note,
   action,
   children,
 }: {
   title: string
-  // The dimension's guiding question, shown behind the help affordance beside
-  // the title. Supplied by the caller because the wording is localized library
-  // content, not this component's copy.
+  // What the dimension covers, shown behind the help affordance beside the
+  // title. Supplied by the caller because the wording is localized copy, not
+  // this component's own.
   helpBody: string
   count: number
   max: number
@@ -35,6 +37,20 @@ export function DimensionColumn({
   // count/max because the model's own 6-8 ceiling can close a column that has
   // not reached its per-dimension cap.
   full: boolean
+  // The column is empty for a reason it STATES ITSELF (its `note` carries the
+  // reason), so the hatch comes off: the hatch says "nothing here yet", which
+  // is the wrong story over a column that has just explained its own
+  // emptiness. Whether the column can still take a criterion is a separate
+  // question, answered by `action`: a dimension tested and found not material
+  // has neither, while one decided material but not yet staffed keeps its add
+  // row. Today only the fourth column.
+  explained?: boolean
+  // A block the dimension itself carries, inside the body and above the add
+  // row: today only the fourth column's materiality decision, as its question
+  // or as the answer that settled it. It LEADS an empty column (it is the
+  // context for the emptiness) and FOLLOWS a filled one (there the criteria
+  // are the content).
+  note?: ReactNode
   // The way to add another criterion, as a quiet row at the column's own
   // bottom. Absent when the dimension can take nothing more: see the render
   // site for why this surface refuses in silence.
@@ -90,6 +106,14 @@ export function DimensionColumn({
       {/* relative: popLayout takes the leaving hatch out of flow, which needs
             a positioned ancestor. */}
       <div className="relative mt-3">
+        {/* An EMPTY column's note leads: it is the context for the emptiness
+            under it, and a slot with its explanation below it reads backwards
+            (the reader meets a dashed box, then finds out what it is for). A
+            column that holds criteria puts the note last instead: there the
+            cards are the content and the note is their footnote. */}
+        {count === 0 && note !== undefined && (
+          <div className={explained === true ? undefined : "mb-2"}>{note}</div>
+        )}
         {/* The hatch leaves by fading only, popped out of flow, so the first
               card added reflows once instead of waiting for a placeholder to
               collapse under it (ui-animation.md rule 6). The column grows under
@@ -97,7 +121,7 @@ export function DimensionColumn({
               animating across this edge would be clipped for the length of the
               spring (rule 4). */}
         <AnimatePresence initial={false} mode="popLayout">
-          {count === 0 && (
+          {count === 0 && explained !== true && (
             <motion.div
               key="empty"
               initial={{ opacity: 0 }}
@@ -126,6 +150,7 @@ export function DimensionColumn({
             </AnimatePresence>
           </ul>
         )}
+        {count > 0 && note !== undefined && <div className="mt-2">{note}</div>}
       </div>
       {/* The way to add sits at the column's own bottom, after its cards,
           inside the card that holds them: adding is this column's work, and a

@@ -35,13 +35,12 @@ function checks(
 function input(
   overrides: Partial<ModelProgressInput> = {}
 ): ModelProgressInput {
-  return {
-    checks: checks(),
-    approved: false,
-    workingConditionsDecided: true,
-    ...overrides,
-  }
+  return { checks: checks(), approved: false, ...overrides }
 }
+
+// The Kriterier chapter's own total: six criteria plus the working-conditions
+// materiality decision, which the fourth column asks for on that chapter.
+const CRITERIA_TOTAL = MODEL_MIN_CRITERIA + 1
 
 describe("the model chapter registry", () => {
   it("names the four chapters in the order the work is done", () => {
@@ -94,11 +93,39 @@ describe("chapter progress", () => {
         }),
         "criteria"
       )
-    expect(at(0)).toEqual({ done: 0, total: MODEL_MIN_CRITERIA })
-    expect(at(3)).toEqual({ done: 3, total: MODEL_MIN_CRITERIA })
-    expect(at(6)).toEqual({ done: 6, total: MODEL_MIN_CRITERIA })
+    // The counts below all run with the materiality decision recorded, which
+    // is the chapter's seventh unit and always the last +1 here.
+    expect(at(0)).toEqual({ done: 1, total: CRITERIA_TOTAL })
+    expect(at(3)).toEqual({ done: 4, total: CRITERIA_TOTAL })
+    expect(at(6)).toEqual({ done: 7, total: CRITERIA_TOTAL })
     // Eight is still six of six: the ceiling is not more work.
-    expect(at(8)).toEqual({ done: 6, total: MODEL_MIN_CRITERIA })
+    expect(at(8)).toEqual({ done: 7, total: CRITERIA_TOTAL })
+  })
+
+  // The materiality decision is the Kriterier chapter's own unit now that the
+  // fourth column is where it is made: a selection of six with the dimension
+  // untested is six of seven, and the column is showing the prompt that closes
+  // it. The ENGINE's check, so the spine and the approval gate agree.
+  //
+  // This also covers the decided-but-unstaffed state (a recorded ACTIVE
+  // decision over an empty working-conditions dimension). The engine's
+  // active branch requires exactly one working-conditions criterion
+  // (method-checks.ts, pinned by "rejects an active decision without a
+  // working-conditions criterion"), so the check is NOT ok there and the
+  // chapter honestly reads six of seven while the column asks for a criterion
+  // or a different decision. Nothing extra is needed here for it: the state
+  // reaches this derivation as exactly this failing check.
+  it("counts the working-conditions materiality decision as the chapter's seventh unit", () => {
+    expect(
+      modelChapterProgress(
+        input({ checks: checks({ workingConditionsTested: { ok: false } }) }),
+        "criteria"
+      )
+    ).toEqual({ done: 6, total: CRITERIA_TOTAL })
+    expect(modelChapterProgress(input(), "criteria")).toEqual({
+      done: 7,
+      total: CRITERIA_TOTAL,
+    })
   })
 
   // A selection of six that breaks a dimension cap or leaves a mandatory
@@ -130,7 +157,7 @@ describe("chapter progress", () => {
         input({ checks: checks({ documentationComplete: { ok: false } }) }),
         "criteria"
       )
-    ).toEqual({ done: 6, total: MODEL_MIN_CRITERIA })
+    ).toEqual({ done: 7, total: CRITERIA_TOTAL })
   })
 
   // Criteria enter at weight 3, so a fresh selection's budget is already
@@ -173,9 +200,11 @@ describe("chapter progress", () => {
     ).toEqual({ done: 3, total: 3 })
   })
 
-  // One protokoll per criterion plus the materiality decision, which is what
-  // makes Metod the widest segment on the bar.
-  it("counts one documentation step per criterion, plus the materiality decision", () => {
+  // One protokoll per criterion and nothing else, which is what makes Metod
+  // the widest segment on the bar. The materiality decision is NOT counted
+  // here: it is the Kriterier chapter's unit, and counting it twice would put
+  // one decision on two chapters.
+  it("counts one documentation step per criterion, and only that", () => {
     expect(
       modelChapterProgress(
         input({
@@ -186,16 +215,18 @@ describe("chapter progress", () => {
         }),
         "method"
       )
-    ).toEqual({ done: 6, total: 8 })
+    ).toEqual({ done: 5, total: 7 })
     expect(
       modelChapterProgress(
         input({
-          checks: checks({ criterionCount: { count: 7 } }),
-          workingConditionsDecided: false,
+          checks: checks({
+            criterionCount: { count: 7 },
+            workingConditionsTested: { ok: false },
+          }),
         }),
         "method"
       )
-    ).toEqual({ done: 7, total: 8 })
+    ).toEqual({ done: 7, total: 7 })
   })
 
   it("counts approval as the one step it is", () => {
@@ -210,11 +241,7 @@ describe("chapter progress", () => {
 
   // An org with no model at all still has the same four chapters ahead of it.
   it("reads a model that does not exist yet as nothing decided", () => {
-    const empty: ModelProgressInput = {
-      checks: [],
-      approved: false,
-      workingConditionsDecided: false,
-    }
+    const empty: ModelProgressInput = { checks: [], approved: false }
     expect(modelProgress(empty).done).toBe(0)
     expect(modelProgress(empty).total).toBeGreaterThan(0)
   })

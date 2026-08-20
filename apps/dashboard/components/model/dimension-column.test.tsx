@@ -128,6 +128,74 @@ describe("DimensionColumn", () => {
     ).toBeDefined()
   })
 
+  // A column that has EXPLAINED its own emptiness does not also need the
+  // hatch: "nothing here yet" is the wrong story under a note that just said
+  // why, so the note stands exactly where the hatch was.
+  it("takes the hatch off an explained column and stands its note where it was", () => {
+    renderColumn({
+      count: 0,
+      explained: true,
+      action: undefined,
+      note: <p>Tested, not material</p>,
+    })
+    expect(screen.queryByRole("img", { name: criteria.columnEmpty })).toBeNull()
+    expect(screen.queryByRole("button", { name: "Add criterion" })).toBeNull()
+    expect(screen.getByText("Tested, not material")).toBeDefined()
+  })
+
+  // Explained is not the same as closed: a column can say why it is empty and
+  // still take a criterion, which is exactly the state a dimension decided
+  // material but not yet staffed sits in. The hatch and the add row are two
+  // different questions, and only the first is this prop's.
+  it("keeps the add row on an explained column that still takes something", () => {
+    renderColumn({ count: 0, explained: true, note: <p>Decided active</p> })
+    expect(screen.queryByRole("img", { name: criteria.columnEmpty })).toBeNull()
+    expect(screen.getByRole("button", { name: "Add criterion" })).toBeDefined()
+    expect(screen.getByText("Decided active")).toBeDefined()
+  })
+
+  // A note that is only a PROMPT settles nothing: the column still takes a
+  // criterion, so it keeps both the hatch and the add row.
+  it("keeps the hatch and the add row while the note is only a prompt", () => {
+    renderColumn({ count: 0, note: <p>Test materiality</p> })
+    expect(
+      screen.getByRole("img", { name: criteria.columnEmpty })
+    ).toBeDefined()
+    expect(screen.getByRole("button", { name: "Add criterion" })).toBeDefined()
+    expect(screen.getByText("Test materiality")).toBeDefined()
+  })
+
+  // An EMPTY column's note LEADS: it is the context for the emptiness under
+  // it, and a slot whose explanation sits below it reads backwards (a dashed
+  // box first, what it is for second). Decision, then place, then action.
+  it("leads an empty column with its note, above the hatch and the add row", () => {
+    renderColumn({ count: 0, note: <p>Decided material</p> })
+    const note = screen.getByText("Decided material")
+    const hatch = screen.getByRole("img", { name: criteria.columnEmpty })
+    const add = screen.getByRole("button", { name: "Add criterion" })
+    expect(
+      note.compareDocumentPosition(hatch) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      hatch.compareDocumentPosition(add) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
+  // A FILLED column turns it around: there the criteria are the content and
+  // the note is their footnote, so it follows them.
+  it("puts the note under the criteria and above the add row", () => {
+    renderColumn({ count: 1, note: <p>note</p> }, <li>Analytical effort</li>)
+    const note = screen.getByText("note")
+    const list = column().querySelector("ul") as HTMLElement
+    const add = screen.getByRole("button", { name: "Add criterion" })
+    expect(
+      list.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      note.compareDocumentPosition(add) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
   // A full dimension SHOWS it: the count chip fills in and the column itself
   // carries the state, so "2 of max 2" reads as complete at a glance instead
   // of as two numbers to compare. It says so without adding a node, because a

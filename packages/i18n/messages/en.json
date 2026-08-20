@@ -1852,7 +1852,27 @@
         "columnCount": "{count} of max {max}",
         "columnEmpty": "No criteria in this dimension yet",
         "recommendedChip": "Recommended for your industry",
-        "overlapChip": "Overlaps {names}"
+        "overlapChip": "Overlaps {names}",
+        "workingConditions": {
+          "testHeading": "Materiality test",
+          "description": "Decide whether special working conditions are a recurring, material part of any role, or whether you have tested this and found it not material. Either answer completes the dimension.",
+          "statusLabel": "Status",
+          "activeOption": "Active",
+          "materialSlotLine": "You have judged special working conditions to be material. Choose the criterion that assesses them.",
+          "materialFootnote": "Judged material",
+          "notMaterialLine": "You have tested working conditions and found them not material.",
+          "testedNotMaterialOption": "Tested, not material",
+          "removeOffer": "The criterion {name} is selected in the model. Saving this decision removes it, and its ratings are deleted.",
+          "removeAndSaveCta": "Remove the criterion and save the decision",
+          "motivationLabel": "Motivation",
+          "saveCta": "Save decision",
+          "materialityQuestion": "Are special working conditions (on-call duty, shifts, physical load, risk) a recurring, material part of any role?",
+          "yesCta": "Yes, material",
+          "noCta": "No, not material",
+          "noCriterionHint": "Many organizations find this dimension not material. The documented test is then enough; no criterion is needed.",
+          "changeCta": "Change decision",
+          "decidedOn": "Decided {date}"
+        }
       },
       "weighting": {
         "budgetAllocated": "<allocated></allocated> of <budget></budget> weight points allocated",
@@ -1953,17 +1973,6 @@
           "dimensionWeightBalance": "No dimension dominates the weighting unexplained",
           "peopleLeadershipWeight": "People leadership's weight is motivated",
           "overlapPairs": "Overlapping criteria are reviewed"
-        },
-        "workingConditions": {
-          "heading": "Working conditions",
-          "description": "Decide whether special working conditions are a recurring, material part of any role, or whether you have tested this and found it not material.",
-          "statusLabel": "Status",
-          "activeOption": "Active",
-          "testedNotMaterialOption": "Tested, not material",
-          "activeBlockedHint": "A working-conditions criterion is selected in the model. Deactivate it first to mark this tested, not material.",
-          "motivationLabel": "Motivation",
-          "saveCta": "Save decision",
-          "currentLabel": "Current decision"
         }
       },
       "methodAppendix": {
@@ -2014,6 +2023,10 @@
     },
     "help": {
       "dimensionLabel": "What does this dimension cover?",
+      "dimensionCompetenceBody": "What the role has to know: knowledge depth, knowledge breadth, formal qualifications, domain knowledge and advisory judgment.",
+      "dimensionEffortBody": "How demanding the work is: complexity and ambiguity, analytical effort, communication effort, operational intensity and physical demands.",
+      "dimensionResponsibilityBody": "The role's formal responsibility and how far its decisions reach: scope, autonomy, risk, people, resources, business and compliance.",
+      "dimensionWorkingConditionsBody": "Objective, lasting conditions in the work itself: exposure and safety, on-call duty, irregularity, restricted environments. No criterion is required if the materiality test finds none.",
       "criterionLabel": "What is a criterion?",
       "criterionBody": "Something every role is evaluated against, like scope or complexity. Its 1 to 5 scale describes what each rating means; its weighting decides how much it counts.",
       "anchorRoleLabel": "What is an anchor role?",

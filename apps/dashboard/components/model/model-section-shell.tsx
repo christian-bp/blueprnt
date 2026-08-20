@@ -22,8 +22,8 @@ import {
 // a skeleton on a chapter switch.
 //
 // One query for all four chapters' progress. getMethodChecks already carries
-// everything the derivation needs (the twelve checks, the approval, the
-// working-conditions decision), so the section's standing readout costs one
+// everything the derivation needs (the twelve checks, the materiality one
+// among them, and the approval), so the section's standing readout costs one
 // subscription rather than one per chapter.
 export function ModelSectionShell({ children }: { children: ReactNode }) {
   const { orgId } = useOrganization()
@@ -37,12 +37,8 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
   // what says so.
   const input: ModelProgressInput =
     data === undefined || data === null
-      ? { checks: [], approved: false, workingConditionsDecided: false }
-      : {
-          checks: data.checks,
-          approved: data.approval !== null,
-          workingConditionsDecided: data.workingConditions !== null,
-        }
+      ? { checks: [], approved: false }
+      : { checks: data.checks, approved: data.approval !== null }
   const overall = modelProgress(input)
 
   return (
