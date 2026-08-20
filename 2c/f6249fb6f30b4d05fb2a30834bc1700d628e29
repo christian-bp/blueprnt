@@ -1,0 +1,59 @@
+apps/dashboard/components/model/model-spine.tsx
+  s_58dd112dc09435::t_1e359121700032 72-75
+packages/backend/convex/assessment/seed.ts
+  s_58dd112dc09435::t_daf5d4e3aff627 81
+packages/backend/convex/assistant/knowledge.ts
+  s_58dd112dc09435::t_74b4d449f3b911 120
+  s_58dd112dc09435::t_2b331322b565b6 144
+  s_58dd112dc09435::t_3206394d5018b4 156
+apps/dashboard/content/docs/nb/model-overview.mdx
+  s_58dd112dc09435::t_5e33571d2de561 31
+  s_58dd112dc09435::t_936f9e9858b2d9 22-24
+apps/dashboard/content/docs/da/model-overview.mdx
+  s_58dd112dc09435::t_c5ffa56fcfad7f 31
+  s_58dd112dc09435::t_84aa84d985969a 23-25
+apps/dashboard/components/model/weight-point-row.test.tsx
+  s_58dd112dc09435::t_8fa238c872d9a6 84-88
+apps/dashboard/content/docs/en/model-overview.mdx
+  s_58dd112dc09435::t_d0f340d17070a9 22-24
+  s_58dd112dc09435::t_5f74598960420b 31
+packages/backend/convex/evaluationModel/model.ts
+  s_58dd112dc09435::t_ad46361ecb0bb2 61-63
+apps/dashboard/components/segmented-progress.tsx
+  s_58dd112dc09435::t_9451aff959e6c9 63-69
+  s_58dd112dc09435::t_3a3c122c89f7a2 48-51
+apps/dashboard/components/model/weight-point-row.tsx
+  s_58dd112dc09435::t_b3c7a4f10f04e6 50-53
+apps/dashboard/components/model/method-panel.tsx
+  s_58dd112dc09435::t_5a07046515f486 30
+apps/dashboard/content/docs/sv/model-overview.mdx
+  s_58dd112dc09435::t_05194cba3a70ce 22-24
+  s_58dd112dc09435::t_0aeb46a350ed61 31
+apps/dashboard/components/model/placed-criterion-card.tsx
+  s_58dd112dc09435::t_81144ba3c4fb3f 164-167
+apps/dashboard/components/model/method-status-badge.tsx
+  s_58dd112dc09435::t_8b89406556d1d7 12
+apps/dashboard/content/docs/fi/model-overview.mdx
+  s_58dd112dc09435::t_f5439a5ff60017 25-26
+  s_58dd112dc09435::t_7a1dc2bf65693a 33
+packages/backend/convex/assessment/devCompany.ts
+  s_58dd112dc09435::t_0249fcd1c06832 510
+apps/dashboard/app/(app)/model/approval/page.tsx
+  s_58dd112dc09435::t_695fe5f4a2f0f5 13-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2cf6249fb6f30b4d05fb2a30834bc1700d628e29",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
