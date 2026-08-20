@@ -1822,7 +1822,7 @@
         "heading": "Yrityksenne blueprnt-malli",
         "progressBarLabel": "Koko mallin edistyminen",
         "count": "{done}/{total}",
-        "countRich": "<done></done> / <total></total>",
+        "countRich": "{chapter} · <done></done> / <total></total>",
         "framing": {
           "criteria": "Neljä ulottuvuutta ovat laajoja. Kriteerit tekevät niistä riittävän konkreettisia todellisen työn vertailuun.",
           "weighting": "Kuinka paljon kukin kriteeri painaa, jaettuna yhdestä kiinteästä pistebudjetista.",
@@ -1848,9 +1848,7 @@
         "zoneCount": "{count} enintään {max}:sta",
         "zoneEmpty": "Tähän ulottuvuuteen ei ole vielä valittu kriteerejä",
         "recommendedChip": "Suositeltu toimialallenne",
-        "overlapChip": "Menee päällekkäin näiden kanssa: {names}",
-        "capDimension": "Tähän ulottuvuuteen mahtuu enintään {max}. Poista jokin sen kriteereistä lisätäksesi toisen.",
-        "capModel": "Malliin mahtuu enintään {max} kriteeriä. Poista yksi lisätäksesi toisen."
+        "overlapChip": "Menee päällekkäin näiden kanssa: {names}"
       },
       "weighting": {
         "budgetAllocated": "<allocated></allocated>/<budget></budget> painopistettä jaettu",

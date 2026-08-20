@@ -1822,7 +1822,7 @@
         "heading": "Selskapets blueprnt-modell",
         "progressBarLabel": "Hele modellens framdrift",
         "count": "{done} av {total}",
-        "countRich": "<done></done> av <total></total>",
+        "countRich": "{chapter} · <done></done> av <total></total>",
         "framing": {
           "criteria": "De fire dimensjonene er brede. Kriteriene er det som gjør dem konkrete nok til å sammenligne virkelig arbeid.",
           "weighting": "Hvor mye hvert kriterium teller, fordelt fra ett fast poengbudsjett.",
@@ -1848,9 +1848,7 @@
         "zoneCount": "{count} av maks {max}",
         "zoneEmpty": "Ingen kriterier i denne dimensjonen ennå",
         "recommendedChip": "Anbefalt for deres bransje",
-        "overlapChip": "Overlapper {names}",
-        "capDimension": "Denne dimensjonen rommer høyst {max}. Fjern ett av kriteriene for å legge til et annet.",
-        "capModel": "Modellen rommer høyst {max} kriterier. Fjern ett for å legge til et annet."
+        "overlapChip": "Overlapper {names}"
       },
       "weighting": {
         "budgetAllocated": "<allocated></allocated> av <budget></budget> vektpoeng fordelt",

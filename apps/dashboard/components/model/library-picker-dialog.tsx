@@ -1,5 +1,7 @@
 "use client"
 
+import { PlusSignIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
   CRITERIA_LIBRARY_KEYS,
@@ -156,18 +158,24 @@ export function LibraryPickerDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
+      {/* The column's last row rather than a button standing on the page: a
+          quiet full-width ghost control, plus icon first, that reads as "one
+          more line here" instead of competing with the criterion cards above
+          it. */}
       <DialogTrigger
         render={
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             size="sm"
             // The chapter carries four of these; "Add criterion" alone would
             // leave a screen reader with four identical buttons.
             aria-label={tCriteria("addLabel", { dimension: dimensionName })}
+            className="w-full justify-start text-muted-foreground hover:text-foreground"
           />
         }
       >
+        <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} aria-hidden="true" />
         {tCriteria("addCta")}
       </DialogTrigger>
       <DialogContent>

@@ -4,6 +4,7 @@ import NumberFlow from "@number-flow/react"
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SegmentedProgress } from "@/components/segmented-progress"
+import type { ModelChapter } from "@/lib/model-chapters"
 
 // Where the whole model stands, in one line, above every chapter page. The
 // same anatomy the kartläggning's analysis spine draws (they share
@@ -23,7 +24,9 @@ export function ModelSpine({
   done: number
   total: number
   // Each chapter's own done/total, in chapter order, for the segmented bar.
-  chapters: { key: string; done: number; total: number }[]
+  // Keyed by ModelChapter, not by a bare string, so the count row can resolve
+  // each chapter's own label without a cast.
+  chapters: { key: ModelChapter; done: number; total: number }[]
   // The chapter whose page is open. Its segment is held at full strength
   // while the rest recede, which is what ties the bar to the tab row
   // underneath it.
@@ -31,6 +34,15 @@ export function ModelSpine({
 }) {
   const t = useTranslations("dashboard.model.chapters")
   const tHelp = useTranslations("dashboard.help")
+  // The chapters' own labels, resolved where the key is still typed. The count
+  // row gets a plain ProgressSegment back from the shared bar (its key is a
+  // string there, because the kartläggning's chapters are not this section's),
+  // so the lookup happens against the same array that drew the segments; a
+  // miss falls back to the key rather than to an empty name, which would leave
+  // a bare separator hanging in front of the figures.
+  const labelFor = new Map<string, string>(
+    chapters.map((chapter) => [chapter.key, t(chapter.key)])
+  )
 
   return (
     <section className="space-y-3">
@@ -57,8 +69,14 @@ export function ModelSpine({
         total={total}
         segments={chapters}
         activeSegment={activeChapter}
+        // The open chapter's NAME joins its figures, so the count under the
+        // bar says which chapter it belongs to instead of leaving the reader
+        // to match it against the tab row by position. Supplied through the
+        // shared bar's per-section callback, so the kartläggning's spine keeps
+        // its own bare count.
         renderCount={(segment) =>
           t.rich("countRich", {
+            chapter: labelFor.get(segment.key) ?? segment.key,
             done: () => <NumberFlow value={segment.done} />,
             total: () => <NumberFlow value={segment.total} />,
           })

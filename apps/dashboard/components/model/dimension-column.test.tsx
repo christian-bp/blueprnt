@@ -86,13 +86,46 @@ describe("DimensionColumn", () => {
     expect(screen.getByText("Analytical effort")).toBeDefined()
   })
 
-  // The way to add sits OUTSIDE the box, under it: adding a criterion grows
-  // the box, and a control inside would move under the reader's own pointer
-  // the moment they used it.
-  it("keeps the way to add outside the box it fills", () => {
-    renderColumn()
+  // The way to add is the column's own last row, inside the card that holds
+  // its criteria: adding is this column's work, and a control parked outside
+  // the box read as page furniture rather than as the column's next line.
+  it("carries the way to add as its own last row, inside the card", () => {
+    renderColumn({ count: 1 }, <li>Analytical effort</li>)
     const add = screen.getByRole("button", { name: "Add criterion" })
-    expect(column().contains(add)).toBe(false)
+    expect(column().contains(add)).toBe(true)
+    // After the criteria, never before them.
+    const list = column().querySelector("ul") as HTMLElement
+    expect(
+      list.compareDocumentPosition(add) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
+  // The empty column keeps both: the hatch standing in for the criteria it has
+  // none of, and the add row beneath it.
+  it("keeps the add row under the hatch while the column is empty", () => {
+    renderColumn({ count: 0 })
+    const hatch = screen.getByRole("img", { name: criteria.zoneEmpty })
+    const add = screen.getByRole("button", { name: "Add criterion" })
+    expect(column().contains(add)).toBe(true)
+    expect(
+      hatch.compareDocumentPosition(add) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
+  // A full dimension simply has no add row: no disabled control, and no
+  // sentence explaining the cap. The count chip and the dimension's help are
+  // the cap's voice here (the owner's exception to preconditions-in-words).
+  it("drops the add row, silently, when the dimension is full", () => {
+    renderColumn(
+      { count: 2, max: 2, full: true, action: undefined },
+      <li>x</li>
+    )
+    expect(screen.queryByRole("button", { name: "Add criterion" })).toBeNull()
+    // The chip still says it, and the help is still reachable.
+    expect(countChip(2, 2).dataset.variant).toBe("secondary")
+    expect(
+      screen.getByRole("button", { name: help.dimensionLabel })
+    ).toBeDefined()
   })
 
   // A full dimension SHOWS it: the count chip fills in and the column itself

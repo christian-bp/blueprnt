@@ -388,10 +388,11 @@ describe("the Kriterier chapter", () => {
     expect(row.textContent).not.toContain("Overlaps")
   })
 
-  // A flow states its preconditions in words rather than silently refusing,
-  // and the sentence REPLACES the control it closes: a button that cannot be
-  // pressed says nothing about why.
-  it("explains a full dimension in words instead of offering a dead button", () => {
+  // A full dimension simply loses its add row: no disabled control, and no
+  // sentence explaining the cap (the owner's exception to
+  // preconditions-in-words on this surface). The count chip and the
+  // dimension's help are what say it instead.
+  it("drops a full dimension's add row, silently", () => {
     modelResult = COMPETENCE_FULL
     renderChapter()
     expect(column("Competence").dataset.full).toBe("true")
@@ -400,34 +401,27 @@ describe("the Kriterier chapter", () => {
         name: criteria.addLabel.replace("{dimension}", "Competence"),
       })
     ).toBeNull()
+    // The chip carries the state, filled in.
     expect(
-      screen.getByText(criteria.capDimension.replace("{max}", "2"))
-    ).toBeDefined()
-    // A dimension with room still offers its picker.
+      within(column("Competence")).getByText(
+        criteria.zoneCount.replace("{count}", "2").replace("{max}", "2")
+      ).dataset.variant
+    ).toBe("secondary")
+    // A dimension with room still offers its picker, in its own column.
     expect(column("Effort and complexity").dataset.full).toBe("false")
-    expect(addButton("Effort and complexity")).toBeDefined()
+    const add = addButton("Effort and complexity")
+    expect(column("Effort and complexity").contains(add)).toBe(true)
   })
 
-  // A finished selection closes every column, and each says the bound that
-  // actually stopped it. The per-dimension caps sum to exactly the model's own
-  // ceiling of 8, so a full model is always four full dimensions and it is the
-  // dimension's own sentence that is true on each.
-  it("closes every column once the model is full, each with its own reason", () => {
+  // The per-dimension caps sum to exactly the model's own ceiling of 8, so a
+  // full model is always four full dimensions and every column loses its row.
+  it("leaves no add row anywhere once the model is full", () => {
     modelResult = MODEL_FULL
     renderChapter()
     for (const dimension of DIMENSIONS) {
       expect(column(dimension.name).dataset.full).toBe("true")
     }
-    expect(
-      screen.getAllByText(criteria.capDimension.replace("{max}", "2"))
-    ).toHaveLength(2)
-    expect(
-      screen.getByText(criteria.capDimension.replace("{max}", "3"))
-    ).toBeDefined()
-    expect(
-      screen.getByText(criteria.capDimension.replace("{max}", "1"))
-    ).toBeDefined()
-    // Not one add control anywhere on the chapter: the sentence replaces it.
+    // Not one add control anywhere on the chapter.
     expect(
       screen.queryAllByRole("button", { name: criteria.addCta })
     ).toHaveLength(0)

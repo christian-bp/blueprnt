@@ -14,6 +14,12 @@ import { ModelSpine } from "@/components/model/model-spine"
 
 const m = messages.dashboard.model.chapters
 
+// The reserved-height strip the shared bar renders under its segments. Matched
+// on its own box, not on a bare aria-hidden: the help trigger's icon carries
+// that attribute too and comes first in the DOM.
+const countRowOf = (container: HTMLElement) =>
+  container.querySelector('[aria-hidden="true"][class*="h-4"]')
+
 function renderSpine(
   overrides: Partial<Parameters<typeof ModelSpine>[0]> = {}
 ) {
@@ -80,10 +86,23 @@ describe("ModelSpine", () => {
     ).toBe(m.progressBarLabel)
   })
 
-  it("shows the open chapter's own count under its own segment", () => {
-    renderSpine({ activeChapter: "method" })
-    expect(screen.getByText("1")).toBeDefined()
-    expect(screen.getByText("7")).toBeDefined()
+  // The figure under the bar names the chapter it belongs to, so the reader
+  // does not have to match it against the tab row by position.
+  it("shows the open chapter's own count, under its own name", () => {
+    const { container } = renderSpine({ activeChapter: "method" })
+    const countRow = countRowOf(container)
+    expect(countRow?.textContent).toContain(m.method)
+    expect(countRow?.textContent).toContain("1")
+    expect(countRow?.textContent).toContain("7")
+    // Only the open chapter's, never all four.
+    expect(countRow?.textContent).not.toContain(m.criteria)
+  })
+
+  it("switches the name with the chapter", () => {
+    const { container } = renderSpine({ activeChapter: "criteria" })
+    const countRow = countRowOf(container)
+    expect(countRow?.textContent).toContain(m.criteria)
+    expect(countRow?.textContent).not.toContain(m.method)
   })
 
   // The section's own explainer, not the kartläggning's: two guided sections

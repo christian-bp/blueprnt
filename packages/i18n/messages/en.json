@@ -1822,7 +1822,7 @@
         "heading": "Your company's blueprnt model",
         "progressBarLabel": "Overall model progress",
         "count": "{done} of {total}",
-        "countRich": "<done></done> of <total></total>",
+        "countRich": "{chapter} · <done></done> of <total></total>",
         "framing": {
           "criteria": "The four dimensions are broad. Criteria are what make them concrete enough to compare real jobs.",
           "weighting": "How much each criterion counts, allocated from one fixed point budget.",
@@ -1848,9 +1848,7 @@
         "zoneCount": "{count} of max {max}",
         "zoneEmpty": "No criteria in this dimension yet",
         "recommendedChip": "Recommended for your industry",
-        "overlapChip": "Overlaps {names}",
-        "capDimension": "This dimension holds its maximum of {max}. Remove one of its criteria to add another.",
-        "capModel": "The model holds its maximum of {max} criteria. Remove one to add another."
+        "overlapChip": "Overlaps {names}"
       },
       "weighting": {
         "budgetAllocated": "<allocated></allocated> of <budget></budget> weight points allocated",
