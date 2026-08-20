@@ -78,7 +78,7 @@ export const seedRatedRoles = internalMutation({
       // (evaluationModel/criteria.ts): purpose from the library's own
       // definition, whyRelevant from its "when suitable" text, in the org's
       // content locale. Without this the demo's approved criteria would show
-      // blank locked documentation in the Method tab's compliance dialog
+      // blank locked documentation in the Method chapter's compliance dialog
       // under a green checklist (documented only requires approved === true,
       // but a real reviewer opening the dialog expects real text there).
       const locale = await resolveContentLocale(ctx, orgId)

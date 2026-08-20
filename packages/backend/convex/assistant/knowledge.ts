@@ -117,7 +117,7 @@ export const ASSISTANT_PAGES = {
       fi: "Kriteerit",
     },
     description:
-      "chapter 1 of the model section: which criteria the model is built from, shown as four dimension columns, each adding from the criteria library in a dialog. The 1-5 anchor scale is not shown here; it belongs to evaluating a role.",
+      "chapter 1 of the model section: which criteria the model is built from, shown as four dimension columns, each adding from the criteria library in a dialog. The fourth column (working conditions) also asks whether working conditions materially apply, active or tested and not material, with a motivation either way. The 1-5 anchor scale is not shown here; it belongs to evaluating a role.",
   },
   "/model/weighting": {
     labelKey: "model.chapters.weighting",
@@ -141,7 +141,7 @@ export const ASSISTANT_PAGES = {
       fi: "Menetelmä",
     },
     description:
-      "chapter 3 of the model section: each criterion's rationale and bias review, the working-conditions materiality decision (Active, or tested and not material, with a motivation either way), and the method appendix export.",
+      "chapter 3 of the model section: each criterion's rationale and bias review, and the method appendix export.",
   },
   "/model/approval": {
     labelKey: "model.chapters.approval",
@@ -153,7 +153,7 @@ export const ASSISTANT_PAGES = {
       fi: "Hyväksyntä",
     },
     description:
-      "chapter 4 of the model section: the pre-approval checklist, which reports the working-conditions decision made on the Method chapter rather than making it, and approving the model, which is what makes rating a role possible.",
+      "chapter 4 of the model section: the pre-approval checklist, which reports the working-conditions decision made on the Criteria chapter rather than making it, and approving the model, which is what makes rating a role possible.",
   },
   "/people": {
     labelKey: "nav.people",

@@ -9,7 +9,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 type ComplianceStatus = "notStarted" | "inProgress" | "documented" | "approved"
 
-// The per-criterion compliance status shown on the Method tab, adapted from the
+// The per-criterion compliance status shown on the Method chapter, adapted from the
 // polyform table status badge: one outline pill with muted text where the icon
 // carries the state (an empty circle for not-started, a pencil while in
 // progress, a neutral check once documented, and a success-green check once

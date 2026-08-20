@@ -45,10 +45,10 @@ export function SegmentedProgress({
   activeSegment?: string
   // The open chapter's own count, as the caller's own localized message.
   renderCount: (segment: ProgressSegment) => ReactNode
-  // EXPERIMENT A. The open chapter's own NAME, above its segment, mirroring
-  // the count below it. Optional and absent by default: a section that does
-  // not pass it renders exactly the DOM it rendered before, which is how the
-  // kartläggning's spine stays untouched by an experiment on the model's.
+  // The open chapter's own NAME, above its segment, mirroring the count
+  // below it. Optional and absent by default: a section that does not pass
+  // it renders exactly the DOM it rendered before, which is how the
+  // kartläggning's spine keeps its own layout, distinct from the model's.
   renderTitle?: (segment: ProgressSegment) => ReactNode
 }) {
   const pct = total <= 0 ? 0 : Math.round((done / total) * 100)
@@ -60,13 +60,13 @@ export function SegmentedProgress({
     // of the bar and that is the honest picture. Equal-width segments would
     // read "2 of 4 chapters done" as halfway when it is a sixth of the work.
     <div className="space-y-1">
-      {/* EXPERIMENT A: the active chapter's name, over its own segment. The
-          mirror of the count row below the bar, and built the same way: the
-          same flex weights so the name sits over the part of the bar it
-          names, a RESERVED height so a name appearing never pushes the bar
-          down, nowrap so a long name overflows its segment rather than
-          wrapping and changing the row's height, and the enter/exit mirrored
-          (it rises INTO place from the bar, where the count falls away from
+      {/* The active chapter's name, over its own segment. The mirror of the
+          count row below the bar, and built the same way: the same flex
+          weights so the name sits over the part of the bar it names, a
+          RESERVED height so a name appearing never pushes the bar down,
+          nowrap so a long name overflows its segment rather than wrapping
+          and changing the row's height, and the enter/exit mirrored (it
+          rises INTO place from the bar, where the count falls away from
           it). Not rendered at all without renderTitle. */}
       {renderTitle !== undefined && (
         <div aria-hidden="true" className="flex h-5 w-full gap-0.5">

@@ -47,10 +47,10 @@ const PANEL_HEIGHT_ESTIMATE = 96
 const STEP_FILL =
   "border-brand/40 bg-brand/10 text-brand-edge hover:bg-brand/10 hover:text-brand-edge"
 
-// EXPERIMENT B v3. The 1-5 weight allocation for one criterion: the ascending
-// horizontal row the surface has always had, upgraded to read as a GAUGE as
-// well as a scale. The only control anywhere for weight points (ADR-0004: 1-5
-// points under a fixed budget, never a free percentage).
+// The 1-5 weight allocation for one criterion: the ascending horizontal row
+// the surface has always had, upgraded to read as a GAUGE as well as a
+// scale. The only control anywhere for weight points (ADR-0004: 1-5 points
+// under a fixed budget, never a free percentage).
 //
 // A pure discrete gauge. Every step at or below the chosen one carries one
 // soft brand tint and steps above stay neutral, so the row reads left to right

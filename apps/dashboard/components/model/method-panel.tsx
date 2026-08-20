@@ -27,7 +27,7 @@ const MethodAppendixDownload = dynamic(
   { ssr: false }
 )
 
-// The Method tab panel. Queries the method model and renders a list of
+// The Method chapter panel. Queries the method model and renders a list of
 // criteria using the shared CriterionItem, with their compliance status badge
 // and a Document action button in the importance slot. MethodAppendixDownload
 // renders the PDF export button above the list.

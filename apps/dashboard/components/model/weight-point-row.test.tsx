@@ -81,12 +81,11 @@ describe("WeightPointRow", () => {
     expect(group.className).not.toContain("mx-auto")
   })
 
-  // EXPERIMENT B v2. The meaning is asserted VISIBLE, not merely mounted: v1's
-  // panel was in the DOM the whole time and still could not be read, so
-  // presence proves nothing. Motion settles its opacity in this environment,
-  // which is what makes "visible" checkable here at all. The tooltip IS the
-  // animated box: one element carries the surface, the placement and the
-  // slide.
+  // The meaning is asserted VISIBLE, not merely mounted: presence in the DOM
+  // does not prove the panel can be read, since a panel can be mounted and
+  // still hidden. Motion settles its opacity in this environment, which is
+  // what makes "visible" checkable here at all. The tooltip IS the animated
+  // box: one element carries the surface, the placement and the slide.
   const meaningBox = () => screen.getByRole("tooltip")
 
   it("slides a step's own meaning out on hover, and hides it again on leave", async () => {

@@ -58,8 +58,9 @@ export async function resolveContentLocale(
 // The calibrate-before-launch defaults (packages/core), copied into plain
 // mutable arrays for storage. Used by BOTH createDefaultModel and
 // seedDefaultModel so a fresh model (interactive or seeded) always starts
-// from the same starting point; levelRules/zoneProfileRules are editable
-// later in the builder (phase 3).
+// from the same starting point. Nothing in the product edits
+// levelRules/zoneProfileRules, so this is the only place their values are
+// set.
 function defaultLevelRules() {
   return DEFAULT_LEVEL_RULES.map((rule) => ({
     level: rule.level,

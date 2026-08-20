@@ -161,10 +161,10 @@ export function PlacedCriterionCard(
         // revealed on hover, so nothing appears or moves as the pointer
         // crosses the card.
         //
-        // The confirm label names the object rather than saying "Delete", the
-        // same way the criterion rows on the method surface do: removal takes
-        // the criterion's ratings off every role and redistributes its weight
-        // points, so the second press has to read as that decision.
+        // The confirm label names the object rather than saying "Delete":
+        // removal takes the criterion's ratings off every role and
+        // redistributes its weight points, so the second press has to read
+        // as that decision.
         <ItemActions className="self-start">
           <RemoveConfirm
             triggerLabel={tEditor("removeLabel", { name: criterion.name })}

@@ -507,7 +507,7 @@ export const DEMO_RATING_MOTIVATION =
 // seedRatedRoles stamps every one of the 8 selected criteria "approved" with
 // this bias comment, so the demo model's checklist is genuinely all-green
 // (assessment/seed.test.ts guards this), not a bypass that would leave the
-// Method tab showing an approved criterion with no bias review recorded.
+// Method chapter showing an approved criterion with no bias review recorded.
 export const DEMO_BIAS_COMMENT =
   "Kriteriet bedöms könsneutralt: det mäter rollens krav, inte innehavarens egenskaper."
 

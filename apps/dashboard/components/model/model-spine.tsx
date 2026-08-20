@@ -69,10 +69,10 @@ export function ModelSpine({
         total={total}
         segments={chapters}
         activeSegment={activeChapter}
-        // EXPERIMENT A: the open chapter's NAME sits ABOVE the bar, over its
-        // own segment, and the count keeps the mirror position below it. Both
-        // ride the shared bar's per-section callbacks, so the kartläggning's
-        // spine renders neither and stays exactly as it was.
+        // The open chapter's NAME sits ABOVE the bar, over its own segment,
+        // and the count keeps the mirror position below it. Both ride the
+        // shared bar's per-section callbacks, so the kartläggning's spine
+        // renders neither and stays exactly as it was.
         renderTitle={(segment) => labelFor.get(segment.key) ?? segment.key}
         renderCount={(segment) =>
           t.rich("countRich", {
