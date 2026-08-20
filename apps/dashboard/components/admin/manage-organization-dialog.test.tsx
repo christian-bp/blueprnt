@@ -94,11 +94,6 @@ describe("ManageOrganizationDialog", () => {
     expect(screen.getByText(manageLabels.membersHeading)).toBeDefined()
   })
 
-  it("does not render an add-member control", () => {
-    renderDialog()
-    expect(screen.queryByText(manageLabels.addMemberHeading)).toBeNull()
-  })
-
   it("renders the settings heading", () => {
     renderDialog()
     expect(screen.getByText(manageLabels.settingsHeading)).toBeDefined()

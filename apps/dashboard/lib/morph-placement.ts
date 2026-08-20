@@ -144,30 +144,6 @@ export function morphPanelPlacement({
   })
 }
 
-// A panel BESIDE its trigger, separated by a gap: it starts at the trigger's
-// right edge plus the gap when it opens rightward, and ends at the trigger's
-// left edge minus the gap when it opens leftward. This is the weight bar's
-// shape, where the panel sits next to the control rather than over it, so the
-// flip is a mirror: same gap, other side.
-export function morphAsidePlacement({
-  triggerLeft,
-  triggerRight,
-  gap,
-  panelWidth,
-  viewportWidth,
-  preferred,
-  margin = MORPH_VIEWPORT_MARGIN,
-}: MorphPlacementInput & { gap: number }): MorphPlacement {
-  return place({
-    leftEdgeOpeningRight: triggerRight + gap,
-    rightEdgeOpeningLeft: triggerLeft - gap,
-    panelWidth,
-    viewportWidth,
-    preferred,
-    margin,
-  })
-}
-
 // The vertical shape: a panel STACKED over its trigger, centred on it, rather
 // than sitting to one side. The weight row's step meanings are this one.
 //

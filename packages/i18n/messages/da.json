@@ -494,12 +494,10 @@
         "addDescription": "Tilføj en lønpost til medarbejderens historik.",
         "payYear": "Lønår",
         "basicMonthly": "Fast månedsløn",
-        "components": "Yderligere komponenter",
         "addComponent": "Tilføj komponent",
         "removeComponent": "Fjern komponent",
         "componentKind": "Type",
         "componentAmount": "Månedligt beløb",
-        "effectiveAt": "Gælder fra",
         "submit": "Gem løn",
         "cancel": "Annuller",
         "componentKinds": {
@@ -1076,7 +1074,6 @@
         "removeConfirm": "Ja, fjern",
         "removeHint": "Rollerne beholder alle deres data; de forlader blot familien.",
         "error": "Noget gik galt. Prøv igen.",
-        "rolesHeading": "Roller i familien",
         "rolesEmpty": "Ingen roller i denne familie endnu.",
         "notFound": "Denne familie findes ikke.",
         "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
@@ -1092,7 +1089,6 @@
         "manageCta": "Administrer",
         "cancelCta": "Annuller",
         "editCta": "Rediger",
-        "doneCta": "Færdig",
         "saveCta": "Gem",
         "saveError": "Kunne ikke gemme. Prøv igen.",
         "profileIncompleteTitle": "Færdiggør jobprofilen først",
@@ -1119,8 +1115,7 @@
         "confirm": "Ja, arkiver",
         "cancel": "Annuller",
         "dialogTitle": "Arkivér rollen?",
-        "dialogBody": "Arkivering fjerner rollen fra den aktive liste og alle resultater. Dens data og historik bevares.",
-        "error": "Rollen kunne ikke arkiveres. Prøv igen."
+        "dialogBody": "Arkivering fjerner rollen fra den aktive liste og alle resultater. Dens data og historik bevares."
       },
       "ai": {
         "descriptionLabel": "Beskriv rollen (valgfrit)",
@@ -1835,7 +1830,6 @@
         }
       },
       "review": {
-        "heading": "Modellen for {name}",
         "cta": "Åbn dashboardet"
       },
       "editor": {
@@ -1904,7 +1898,6 @@
         "cancel": "Annuller"
       },
       "method": {
-        "description": "Dokumenter, hvorfor hvert kriterium findes, og dets bias-gennemgang, og eksporter derefter metodebilag.",
         "documented": "{documented}/{total} dokumenteret",
         "approved": "{approved}/{total} godkendt",
         "status": {
@@ -2194,11 +2187,7 @@
           "title": "Administrer {name}",
           "membersHeading": "Medlemmer",
           "noMembers": "Ingen medlemmer endnu.",
-          "addMemberHeading": "Tilføj et medlem",
-          "userLabel": "Bruger",
-          "userPlaceholder": "Vælg en bruger",
           "roleLabel": "Rolle",
-          "addCta": "Tilføj medlem",
           "removeCta": "Fjern",
           "memberActions": "Handlinger for {name}",
           "roleAdmin": "Admin",
@@ -2421,7 +2410,6 @@
         "nameSaved": "Navn gemt.",
         "error": "Kunne ikke gemme dit navn. Prøv igen.",
         "languageLabel": "Visningssprog",
-        "languageTitle": "Sprog",
         "languageDescription": "Vælg det sprog, der bruges i dashboardet.",
         "avatar": {
           "title": "Avatar",
@@ -2548,8 +2536,7 @@
         "emailLabel": "E-mailadresse",
         "roleLabel": "Rolle",
         "submit": "Send invitation",
-        "error": "Kunne ikke sende invitationen. Prøv igen.",
-        "success": "Invitation sendt."
+        "error": "Kunne ikke sende invitationen. Prøv igen."
       },
       "invitations": {
         "invitationActions": "Handlinger for {email}",

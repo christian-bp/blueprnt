@@ -494,12 +494,10 @@
         "addDescription": "Lägg till en lönepost i den anställdas historik.",
         "payYear": "Löneår",
         "basicMonthly": "Fast månadslön",
-        "components": "Ytterligare komponenter",
         "addComponent": "Lägg till komponent",
         "removeComponent": "Ta bort komponent",
         "componentKind": "Typ",
         "componentAmount": "Månadsbelopp",
-        "effectiveAt": "Gäller från",
         "submit": "Spara lön",
         "cancel": "Avbryt",
         "componentKinds": {
@@ -1076,7 +1074,6 @@
         "removeConfirm": "Ja, ta bort",
         "removeHint": "Rollerna behåller alla sina data; de lämnar bara familjen.",
         "error": "Något gick fel. Försök igen.",
-        "rolesHeading": "Roller i familjen",
         "rolesEmpty": "Inga roller i den här familjen än.",
         "notFound": "Den här familjen finns inte.",
         "roleCount": "{count, plural, =1 {1 roll} other {# roller}}",
@@ -1092,7 +1089,6 @@
         "manageCta": "Hantera",
         "cancelCta": "Avbryt",
         "editCta": "Redigera",
-        "doneCta": "Klar",
         "saveCta": "Spara",
         "saveError": "Kunde inte spara. Försök igen.",
         "profileIncompleteTitle": "Slutför jobbprofilen först",
@@ -1119,8 +1115,7 @@
         "confirm": "Ja, arkivera",
         "cancel": "Avbryt",
         "dialogTitle": "Arkivera rollen?",
-        "dialogBody": "Att arkivera tar bort rollen från den aktiva listan och alla resultat. Dess data och historik sparas.",
-        "error": "Rollen kunde inte arkiveras. Försök igen."
+        "dialogBody": "Att arkivera tar bort rollen från den aktiva listan och alla resultat. Dess data och historik sparas."
       },
       "ai": {
         "descriptionLabel": "Beskriv rollen (frivilligt)",
@@ -1835,7 +1830,6 @@
         }
       },
       "review": {
-        "heading": "Modellen för {name}",
         "cta": "Öppna dashboarden"
       },
       "editor": {
@@ -1904,7 +1898,6 @@
         "cancel": "Avbryt"
       },
       "method": {
-        "description": "Dokumentera varför varje kriterium finns och dess biasgranskning, exportera sedan metodbilagan.",
         "documented": "{documented}/{total} dokumenterade",
         "approved": "{approved}/{total} godkända",
         "status": {
@@ -2194,11 +2187,7 @@
           "title": "Hantera {name}",
           "membersHeading": "Medlemmar",
           "noMembers": "Inga medlemmar än.",
-          "addMemberHeading": "Lägg till en medlem",
-          "userLabel": "Användare",
-          "userPlaceholder": "Välj en användare",
           "roleLabel": "Roll",
-          "addCta": "Lägg till medlem",
           "removeCta": "Ta bort",
           "memberActions": "Åtgärder för {name}",
           "roleAdmin": "Admin",
@@ -2421,7 +2410,6 @@
         "nameSaved": "Namn sparat.",
         "error": "Det gick inte att spara ditt namn. Försök igen.",
         "languageLabel": "Visningsspråk",
-        "languageTitle": "Språk",
         "languageDescription": "Välj vilket språk som används i instrumentpanelen.",
         "avatar": {
           "title": "Profilbild",
@@ -2548,8 +2536,7 @@
         "emailLabel": "E-postadress",
         "roleLabel": "Roll",
         "submit": "Skicka inbjudan",
-        "error": "Det gick inte att skicka inbjudan. Försök igen.",
-        "success": "Inbjudan har skickats."
+        "error": "Det gick inte att skicka inbjudan. Försök igen."
       },
       "invitations": {
         "invitationActions": "Åtgärder för {email}",

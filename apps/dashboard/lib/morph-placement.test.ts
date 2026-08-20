@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
   MORPH_VIEWPORT_MARGIN,
-  morphAsidePlacement,
   morphPanelPlacement,
   morphStackPlacement,
 } from "@/lib/morph-placement"
@@ -161,104 +160,6 @@ describe("morphPanelPlacement", () => {
         expect(box.right, `${preferred} at ${left}`).toBeLessThanOrEqual(
           viewportWidth
         )
-      }
-    }
-  })
-})
-
-// The weight bar's shape: a panel BESIDE its trigger across a gap, mirroring
-// to the other side rather than overlaying the control.
-describe("morphAsidePlacement", () => {
-  const GAP = 8
-  const MEANING = 224
-
-  // Where the panel actually lands, so every case is checked against its box
-  // rather than against the side/shift pair alone.
-  function asideBox(
-    placement: { side: "left" | "right"; shift: number },
-    trigger: { left: number; right: number },
-    panelWidth = MEANING
-  ) {
-    if (placement.side === "left") {
-      const left = trigger.right + GAP - placement.shift
-      return { left, right: left + panelWidth }
-    }
-    const right = trigger.left - GAP + placement.shift
-    return { left: right - panelWidth, right }
-  }
-
-  const place = (
-    trigger: { left: number; right: number },
-    viewportWidth: number,
-    panelWidth = MEANING
-  ) =>
-    morphAsidePlacement({
-      triggerLeft: trigger.left,
-      triggerRight: trigger.right,
-      gap: GAP,
-      panelWidth,
-      viewportWidth,
-      preferred: "left",
-    })
-
-  // A bar in an inner column has room to its right, so the panel opens the way
-  // the reading order runs and never moves off its own control.
-  it("opens rightward, unshifted, when there is room", () => {
-    const trigger = { left: 620, right: 656 }
-    expect(place(trigger, 1920)).toEqual({ side: "left", shift: 0 })
-  })
-
-  // The owner's screenshot: the RIGHTMOST dimension column at a wide viewport,
-  // where opening rightward runs the panel off the page. It mirrors to the
-  // bar's other side instead, and stays unshifted because that side has room.
-  it("mirrors to the bar's left in the rightmost column of a wide viewport", () => {
-    const trigger = { left: 1844, right: 1880 }
-    const placement = place(trigger, 1920)
-    expect(placement).toEqual({ side: "right", shift: 0 })
-    const box = asideBox(placement, trigger)
-    expect(box.right).toBeLessThanOrEqual(1920 - MORPH_VIEWPORT_MARGIN)
-    expect(box.left).toBeGreaterThanOrEqual(MORPH_VIEWPORT_MARGIN)
-  })
-
-  // The two-column arrangement at a narrow viewport: the left column still
-  // opens rightward, the right one mirrors.
-  it("keeps the left column rightward and mirrors the right one, narrow", () => {
-    expect(place({ left: 260, right: 296 }, 640).side).toBe("left")
-    expect(place({ left: 572, right: 608 }, 640).side).toBe("right")
-  })
-
-  // One column on a phone: there is no room to the right of a bar at the
-  // card's edge, so it mirrors and still lands inside.
-  it("mirrors on a single narrow column", () => {
-    const trigger = { left: 312, right: 348 }
-    const placement = place(trigger, 380)
-    expect(placement.side).toBe("right")
-    const box = asideBox(placement, trigger)
-    expect(box.left).toBeGreaterThanOrEqual(MORPH_VIEWPORT_MARGIN)
-    expect(box.right).toBeLessThanOrEqual(380 - MORPH_VIEWPORT_MARGIN)
-  })
-
-  // Neither side has the room, so the mirror cannot help and the panel is
-  // pulled inward instead. It still never leaves the viewport.
-  it("pulls the panel in when neither side fits", () => {
-    const trigger = { left: 204, right: 240 }
-    const placement = place(trigger, 260)
-    expect(placement.shift).toBeGreaterThan(0)
-    const box = asideBox(placement, trigger)
-    expect(box.left).toBeGreaterThanOrEqual(MORPH_VIEWPORT_MARGIN)
-    expect(box.right).toBeLessThanOrEqual(260 - MORPH_VIEWPORT_MARGIN)
-  })
-
-  // Swept rather than spot-checked, at both a wide and a narrow viewport,
-  // because the defect the owner hit was one untested bar position.
-  it("never leaves the viewport at any bar position", () => {
-    for (const viewportWidth of [1920, 1440, 640, 380]) {
-      for (let left = 0; left <= viewportWidth - 36; left += 12) {
-        const trigger = { left, right: left + 36 }
-        const box = asideBox(place(trigger, viewportWidth), trigger)
-        const where = `${viewportWidth} at ${left}`
-        expect(box.left, where).toBeGreaterThanOrEqual(0)
-        expect(box.right, where).toBeLessThanOrEqual(viewportWidth)
       }
     }
   })

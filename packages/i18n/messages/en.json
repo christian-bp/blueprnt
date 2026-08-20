@@ -494,12 +494,10 @@
         "addDescription": "Add a salary record to this employee's history.",
         "payYear": "Salary year",
         "basicMonthly": "Basic monthly salary",
-        "components": "Additional components",
         "addComponent": "Add component",
         "removeComponent": "Remove component",
         "componentKind": "Type",
         "componentAmount": "Monthly amount",
-        "effectiveAt": "Effective date",
         "submit": "Save salary",
         "cancel": "Cancel",
         "componentKinds": {
@@ -1076,7 +1074,6 @@
         "removeConfirm": "Yes, remove",
         "removeHint": "Roles keep all their data; they just leave the family.",
         "error": "Something went wrong. Try again.",
-        "rolesHeading": "Roles in the family",
         "rolesEmpty": "No roles in this family yet.",
         "notFound": "This family does not exist.",
         "roleCount": "{count, plural, =1 {1 role} other {# roles}}",
@@ -1092,7 +1089,6 @@
         "manageCta": "Manage",
         "cancelCta": "Cancel",
         "editCta": "Edit",
-        "doneCta": "Done",
         "saveCta": "Save",
         "saveError": "Could not save. Try again.",
         "profileIncompleteTitle": "Complete the job profile first",
@@ -1119,8 +1115,7 @@
         "confirm": "Yes, archive",
         "cancel": "Cancel",
         "dialogTitle": "Archive this role?",
-        "dialogBody": "Archiving removes this role from the active list and all results. Its data and history are kept.",
-        "error": "The role could not be archived. Try again."
+        "dialogBody": "Archiving removes this role from the active list and all results. Its data and history are kept."
       },
       "ai": {
         "descriptionLabel": "Describe the role (optional)",
@@ -1835,7 +1830,6 @@
         }
       },
       "review": {
-        "heading": "{name}'s model",
         "cta": "Open the dashboard"
       },
       "editor": {
@@ -1904,7 +1898,6 @@
         "cancel": "Cancel"
       },
       "method": {
-        "description": "Document why each criterion exists and its bias review, then export the method appendix.",
         "documented": "{documented}/{total} documented",
         "approved": "{approved}/{total} approved",
         "status": {
@@ -2194,11 +2187,7 @@
           "title": "Manage {name}",
           "membersHeading": "Members",
           "noMembers": "No members yet.",
-          "addMemberHeading": "Add a member",
-          "userLabel": "User",
-          "userPlaceholder": "Select a user",
           "roleLabel": "Role",
-          "addCta": "Add member",
           "removeCta": "Remove",
           "memberActions": "Actions for {name}",
           "roleAdmin": "Admin",
@@ -2421,7 +2410,6 @@
         "nameSaved": "Name saved.",
         "error": "Could not save your name. Please try again.",
         "languageLabel": "Display language",
-        "languageTitle": "Language",
         "languageDescription": "Choose the language used across the dashboard.",
         "avatar": {
           "title": "Avatar",
@@ -2548,8 +2536,7 @@
         "emailLabel": "Email address",
         "roleLabel": "Role",
         "submit": "Send invitation",
-        "error": "Could not send the invitation. Please try again.",
-        "success": "Invitation sent."
+        "error": "Could not send the invitation. Please try again."
       },
       "invitations": {
         "invitationActions": "Actions for {email}",

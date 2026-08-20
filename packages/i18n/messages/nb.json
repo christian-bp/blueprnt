@@ -494,12 +494,10 @@
         "addDescription": "Legg til en lønnsoppføring i den ansattes historikk.",
         "payYear": "Lønnår",
         "basicMonthly": "Fast månedslønn",
-        "components": "Tilleggskomponenter",
         "addComponent": "Legg til komponent",
         "removeComponent": "Fjern komponent",
         "componentKind": "Type",
         "componentAmount": "Månedlig beløp",
-        "effectiveAt": "Gjelder fra",
         "submit": "Lagre lønn",
         "cancel": "Avbryt",
         "componentKinds": {
@@ -1076,7 +1074,6 @@
         "removeConfirm": "Ja, fjern",
         "removeHint": "Rollene beholder alle sine data; de forlater bare familien.",
         "error": "Noe gikk galt. Prøv igjen.",
-        "rolesHeading": "Roller i familien",
         "rolesEmpty": "Ingen roller i denne familien ennå.",
         "notFound": "Denne familien finnes ikke.",
         "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
@@ -1092,7 +1089,6 @@
         "manageCta": "Administrer",
         "cancelCta": "Avbryt",
         "editCta": "Rediger",
-        "doneCta": "Ferdig",
         "saveCta": "Lagre",
         "saveError": "Kunne ikke lagre. Prøv igjen.",
         "profileIncompleteTitle": "Fullfør jobbprofilen først",
@@ -1119,8 +1115,7 @@
         "confirm": "Ja, arkiver",
         "cancel": "Avbryt",
         "dialogTitle": "Arkivere rollen?",
-        "dialogBody": "Arkivering fjerner rollen fra den aktive listen og alle resultater. Dataene og historikken beholdes.",
-        "error": "Rollen kunne ikke arkiveres. Prøv igjen."
+        "dialogBody": "Arkivering fjerner rollen fra den aktive listen og alle resultater. Dataene og historikken beholdes."
       },
       "ai": {
         "descriptionLabel": "Beskriv rollen (valgfritt)",
@@ -1835,7 +1830,6 @@
         }
       },
       "review": {
-        "heading": "Modellen til {name}",
         "cta": "Åpne dashbordet"
       },
       "editor": {
@@ -1904,7 +1898,6 @@
         "cancel": "Avbryt"
       },
       "method": {
-        "description": "Dokumenter hvorfor hvert kriterium finnes og dets biasvurdering, og eksporter deretter metodevedlegget.",
         "documented": "{documented}/{total} dokumentert",
         "approved": "{approved}/{total} godkjent",
         "status": {
@@ -2194,11 +2187,7 @@
           "title": "Administrer {name}",
           "membersHeading": "Medlemmer",
           "noMembers": "Ingen medlemmer ennå.",
-          "addMemberHeading": "Legg til et medlem",
-          "userLabel": "Bruker",
-          "userPlaceholder": "Velg en bruker",
           "roleLabel": "Rolle",
-          "addCta": "Legg til medlem",
           "removeCta": "Fjern",
           "memberActions": "Handlinger for {name}",
           "roleAdmin": "Admin",
@@ -2421,7 +2410,6 @@
         "nameSaved": "Navn lagret.",
         "error": "Kunne ikke lagre navnet ditt. Prøv igjen.",
         "languageLabel": "Visningsspråk",
-        "languageTitle": "Språk",
         "languageDescription": "Velg språket som brukes i dashbordet.",
         "avatar": {
           "title": "Avatar",
@@ -2548,8 +2536,7 @@
         "emailLabel": "E-postadresse",
         "roleLabel": "Rolle",
         "submit": "Send invitasjon",
-        "error": "Kunne ikke sende invitasjonen. Prøv igjen.",
-        "success": "Invitasjon sendt."
+        "error": "Kunne ikke sende invitasjonen. Prøv igjen."
       },
       "invitations": {
         "invitationActions": "Handlinger for {email}",

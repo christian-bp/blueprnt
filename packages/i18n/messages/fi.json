@@ -494,12 +494,10 @@
         "addDescription": "Lisää palkkatietue työntekijän historiaan.",
         "payYear": "Palkkavuosi",
         "basicMonthly": "Kiinteä kuukausipalkka",
-        "components": "Lisäkomponentit",
         "addComponent": "Lisää komponentti",
         "removeComponent": "Poista komponentti",
         "componentKind": "Tyyppi",
         "componentAmount": "Kuukausittainen summa",
-        "effectiveAt": "Voimassa alkaen",
         "submit": "Tallenna palkka",
         "cancel": "Peruuta",
         "componentKinds": {
@@ -1076,7 +1074,6 @@
         "removeConfirm": "Kyllä, poista",
         "removeHint": "Roolit säilyttävät kaikki tietonsa; ne vain poistuvat perheestä.",
         "error": "Jokin meni pieleen. Yritä uudelleen.",
-        "rolesHeading": "Roolit perheessä",
         "rolesEmpty": "Ei vielä rooleja tässä perheessä.",
         "notFound": "Tätä perhettä ei ole olemassa.",
         "roleCount": "{count, plural, =1 {1 rooli} other {# roolia}}",
@@ -1092,7 +1089,6 @@
         "manageCta": "Hallitse",
         "cancelCta": "Peruuta",
         "editCta": "Muokkaa",
-        "doneCta": "Valmis",
         "saveCta": "Tallenna",
         "saveError": "Tallennus epäonnistui. Yritä uudelleen.",
         "profileIncompleteTitle": "Täydennä tehtäväprofiili ensin",
@@ -1119,8 +1115,7 @@
         "confirm": "Kyllä, arkistoi",
         "cancel": "Peruuta",
         "dialogTitle": "Arkistoidaanko rooli?",
-        "dialogBody": "Arkistointi poistaa roolin aktiivisesta luettelosta ja kaikista tuloksista. Sen tiedot ja historia säilyvät.",
-        "error": "Roolia ei voitu arkistoida. Yritä uudelleen."
+        "dialogBody": "Arkistointi poistaa roolin aktiivisesta luettelosta ja kaikista tuloksista. Sen tiedot ja historia säilyvät."
       },
       "ai": {
         "descriptionLabel": "Kuvaile roolia (valinnainen)",
@@ -1835,7 +1830,6 @@
         }
       },
       "review": {
-        "heading": "Organisaation {name} malli",
         "cta": "Avaa hallintapaneeli"
       },
       "editor": {
@@ -1904,7 +1898,6 @@
         "cancel": "Peruuta"
       },
       "method": {
-        "description": "Dokumentoi, miksi kukin kriteeri on olemassa ja sen vinoumien arviointi, ja vie sitten menetelmäliite.",
         "documented": "{documented}/{total} dokumentoitu",
         "approved": "{approved}/{total} hyväksytty",
         "status": {
@@ -2194,11 +2187,7 @@
           "title": "Hallitse organisaatiota {name}",
           "membersHeading": "Jäsenet",
           "noMembers": "Ei jäseniä vielä.",
-          "addMemberHeading": "Lisää jäsen",
-          "userLabel": "Käyttäjä",
-          "userPlaceholder": "Valitse käyttäjä",
           "roleLabel": "Rooli",
-          "addCta": "Lisää jäsen",
           "removeCta": "Poista",
           "memberActions": "Toiminnot jäsenelle {name}",
           "roleAdmin": "Admin",
@@ -2421,7 +2410,6 @@
         "nameSaved": "Nimi tallennettu.",
         "error": "Nimeä ei voitu tallentaa. Yritä uudelleen.",
         "languageLabel": "Näyttökieli",
-        "languageTitle": "Kieli",
         "languageDescription": "Valitse kieli, jota käytetään kojelaudassa.",
         "avatar": {
           "title": "Avatar",
@@ -2548,8 +2536,7 @@
         "emailLabel": "Sähköpostiosoite",
         "roleLabel": "Rooli",
         "submit": "Lähetä kutsu",
-        "error": "Kutsua ei voitu lähettää. Yritä uudelleen.",
-        "success": "Kutsu lähetetty."
+        "error": "Kutsua ei voitu lähettää. Yritä uudelleen."
       },
       "invitations": {
         "invitationActions": "Toiminnot: {email}",

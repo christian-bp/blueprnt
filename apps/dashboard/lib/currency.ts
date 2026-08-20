@@ -1,6 +1,6 @@
-// Locale-aware currency formatting for the whole app: the money counterpart to
-// formatShare in weighting.ts. Renders `value` in `currency` for the given
-// locale, to whole units (comp figures are shown without minor units).
+// Locale-aware currency formatting for the whole app. Renders `value` in
+// `currency` for the given locale, to whole units (comp figures are shown
+// without minor units).
 // `signed` shows an explicit +/- for deltas (e.g. a pay gap; zero stays
 // unsigned). Imported currency codes are not schema-constrained, so an invalid
 // code falls back to "<value> <currency>" instead of throwing.
