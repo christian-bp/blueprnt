@@ -1826,7 +1826,7 @@
         "heading": "Virksomhedens blueprnt-model",
         "progressBarLabel": "Hele modellens fremdrift",
         "count": "{done} af {total}",
-        "countRich": "{chapter} · <done></done> af <total></total>",
+        "countRich": "<done></done> af <total></total>",
         "framing": {
           "criteria": "De fire dimensioner er brede. Kriterierne er det, der gør dem konkrete nok til at sammenligne virkeligt arbejde.",
           "weighting": "Hvor meget hvert kriterium tæller, fordelt fra ét fast pointbudget.",

@@ -69,14 +69,13 @@ export function ModelSpine({
         total={total}
         segments={chapters}
         activeSegment={activeChapter}
-        // The open chapter's NAME joins its figures, so the count under the
-        // bar says which chapter it belongs to instead of leaving the reader
-        // to match it against the tab row by position. Supplied through the
-        // shared bar's per-section callback, so the kartläggning's spine keeps
-        // its own bare count.
+        // EXPERIMENT A: the open chapter's NAME sits ABOVE the bar, over its
+        // own segment, and the count keeps the mirror position below it. Both
+        // ride the shared bar's per-section callbacks, so the kartläggning's
+        // spine renders neither and stays exactly as it was.
+        renderTitle={(segment) => labelFor.get(segment.key) ?? segment.key}
         renderCount={(segment) =>
           t.rich("countRich", {
-            chapter: labelFor.get(segment.key) ?? segment.key,
             done: () => <NumberFlow value={segment.done} />,
             total: () => <NumberFlow value={segment.total} />,
           })

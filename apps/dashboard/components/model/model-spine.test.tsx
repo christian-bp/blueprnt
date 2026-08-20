@@ -20,6 +20,11 @@ const m = messages.dashboard.model.chapters
 const countRowOf = (container: HTMLElement) =>
   container.querySelector('[aria-hidden="true"][class*="h-4"]')
 
+// The reserved-height strip ABOVE the bar, carrying the open chapter's name.
+// Matched on its own box for the same reason the count row is.
+const titleRowOf = (container: HTMLElement) =>
+  container.querySelector('[aria-hidden="true"][class*="h-5"]')
+
 function renderSpine(
   overrides: Partial<Parameters<typeof ModelSpine>[0]> = {}
 ) {
@@ -86,23 +91,26 @@ describe("ModelSpine", () => {
     ).toBe(m.progressBarLabel)
   })
 
-  // The figure under the bar names the chapter it belongs to, so the reader
-  // does not have to match it against the tab row by position.
-  it("shows the open chapter's own count, under its own name", () => {
+  // The open chapter's name sits ABOVE the bar, over its own segment, and its
+  // count keeps the mirror position below: the reader gets the name and the
+  // figures without matching either against the tab row by position, and
+  // neither row has to carry both.
+  it("names the open chapter above the bar and counts it below", () => {
     const { container } = renderSpine({ activeChapter: "method" })
+    expect(titleRowOf(container)?.textContent).toContain(m.method)
     const countRow = countRowOf(container)
-    expect(countRow?.textContent).toContain(m.method)
     expect(countRow?.textContent).toContain("1")
     expect(countRow?.textContent).toContain("7")
-    // Only the open chapter's, never all four.
-    expect(countRow?.textContent).not.toContain(m.criteria)
+    // The name is the title row's job alone, so the count row does not repeat
+    // it, and neither row carries a chapter that is not open.
+    expect(countRow?.textContent).not.toContain(m.method)
+    expect(titleRowOf(container)?.textContent).not.toContain(m.criteria)
   })
 
   it("switches the name with the chapter", () => {
     const { container } = renderSpine({ activeChapter: "criteria" })
-    const countRow = countRowOf(container)
-    expect(countRow?.textContent).toContain(m.criteria)
-    expect(countRow?.textContent).not.toContain(m.method)
+    expect(titleRowOf(container)?.textContent).toContain(m.criteria)
+    expect(titleRowOf(container)?.textContent).not.toContain(m.method)
   })
 
   // The section's own explainer, not the kartläggning's: two guided sections

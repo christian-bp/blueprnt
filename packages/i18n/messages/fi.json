@@ -1826,7 +1826,7 @@
         "heading": "Yrityksenne blueprnt-malli",
         "progressBarLabel": "Koko mallin edistyminen",
         "count": "{done}/{total}",
-        "countRich": "{chapter} · <done></done> / <total></total>",
+        "countRich": "<done></done> / <total></total>",
         "framing": {
           "criteria": "Neljä ulottuvuutta ovat laajoja. Kriteerit tekevät niistä riittävän konkreettisia todellisen työn vertailuun.",
           "weighting": "Kuinka paljon kukin kriteeri painaa, jaettuna yhdestä kiinteästä pistebudjetista.",
