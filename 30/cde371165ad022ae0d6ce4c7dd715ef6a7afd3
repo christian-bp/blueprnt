@@ -1,0 +1,61 @@
+apps/dashboard/lib/todo.test.ts
+  s_58dd112dc09435::t_8ea33fae5fb3dd 230,464,618
+  s_58dd112dc09435::t_35050f97f53c21 33-46,53-55,66-84,87-91
+  s_58dd112dc09435::t_a814ea0d7d4976 355
+  s_58dd112dc09435::t_a2006b248d2712 401
+  s_58dd112dc09435::t_d2e70ffb2eb0ef 666
+  s_58dd112dc09435::t_cbb09963994419 127,139,165,183,246,256,300,314,414,479,491,504,525,548,567,580,590,602,627,634,646
+  s_58dd112dc09435::t_292f25e5fc555a 367-395
+  s_58dd112dc09435::t_8947a0201547f1 334
+  s_58dd112dc09435::t_d9c0d58ce1c38f 439
+  s_58dd112dc09435::t_43f1d87f684b53 1,3-8
+  s_58dd112dc09435::t_4f5fa32f0d0a85 424
+  s_58dd112dc09435::t_28ce5eac74af46 198
+  s_58dd112dc09435::t_a5eab1d1c4d75b 92
+apps/dashboard/lib/todo.ts
+  s_58dd112dc09435::t_6289bbb63c9460 1-5
+  s_58dd112dc09435::t_32fc3d2a774c15 105-113
+  s_58dd112dc09435::t_bfb7f34a1d83f6 135,140
+  s_58dd112dc09435::t_613a36929f08ec 54-62
+  s_58dd112dc09435::t_5f58760111e72f 146
+  s_58dd112dc09435::t_a4032478b6f6d3 221-237,239-253,257
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_4d9100847cf186 804-807
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_e913f23641174e 804-807
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_a5e5202bb15d45 804-807
+apps/dashboard/lib/audit-labels.test.ts
+  s_58dd112dc09435::t_e3a1a956c455c6 405-407
+  s_58dd112dc09435::t_be4b400d0014c2 48
+  s_58dd112dc09435::t_9870e2e80a6282 309-314
+  s_58dd112dc09435::t_58168d12dc41ad 429
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_c91d6d3f72fdcc 804-807
+apps/dashboard/app/(app)/page.test.tsx
+  s_58dd112dc09435::t_80adf20e21d7d1 140
+  s_58dd112dc09435::t_845f9db8007bbe 60,88
+apps/dashboard/lib/audit-constants.ts
+  s_58dd112dc09435::t_34c3f3dec5dd51 336-352
+  s_58dd112dc09435::t_660a3be1cd4d37 378
+apps/dashboard/hooks/use-todo.ts
+  s_58dd112dc09435::t_93b66ad8e4ffd7 7,10-16,27-29,40,45
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_aac980e8db298d 804-807
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "30cde371165ad022ae0d6ce4c7dd715ef6a7afd3",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
