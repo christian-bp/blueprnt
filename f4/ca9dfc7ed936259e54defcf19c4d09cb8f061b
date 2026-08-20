@@ -1,0 +1,165 @@
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_97c266d3136a6b 106
+apps/dashboard/components/nav-main.tsx
+  s_58dd112dc09435::t_2a55e806186d17 106-108
+apps/dashboard/content/docs/nb/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_52a700be6b77ca 3
+  s_58dd112dc09435::t_9f4d1ae76bbf2b 36-42
+  s_58dd112dc09435::t_a9afc7e99d0caa 53-60
+  s_58dd112dc09435::t_7530394c3ba9b3 7-11
+apps/dashboard/content/docs/sv/ai-weighting-review.mdx
+  s_58dd112dc09435::t_b5fc80864a4a1a 7-9
+  s_58dd112dc09435::t_110bdc994ccdae 15
+apps/dashboard/content/docs/sv/glossary.mdx
+  s_58dd112dc09435::t_36db9517292685 359-360
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_18948d73aa9bf0 106
+apps/dashboard/hooks/use-build-dnd.ts
+  s_58dd112dc09435::t_9cf072f41828e7 44-47,52-56,62-67
+  s_58dd112dc09435::t_046912f91256ee 15
+  s_58dd112dc09435::t_4245a4254ffcb4 89,93-94
+  s_58dd112dc09435::t_422279779e6a5e 143-148
+apps/dashboard/content/docs/nb/navigating-the-app.mdx
+  s_58dd112dc09435::t_52a700be6b77ca 34-37
+apps/dashboard/content/docs/en/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_b131322e3eb4bc 36-42
+  s_58dd112dc09435::t_c3caf431588e73 53-55,60
+  s_58dd112dc09435::t_513201232b1c70 3,7-11
+apps/dashboard/content/docs/da/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_bfc9dcc153d5c2 34-36
+apps/dashboard/content/docs/sv/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_65a225eca0fd52 3,7-11
+  s_58dd112dc09435::t_bdaa9e6fe3f55c 35-41
+  s_58dd112dc09435::t_929b31b8a671bb 52-53,58-59
+apps/dashboard/content/docs/nb/ai-weighting-review.mdx
+  s_58dd112dc09435::t_52a700be6b77ca 7-9,15
+apps/dashboard/content/docs/fi/key-concepts.mdx
+  s_58dd112dc09435::t_5e3ec76592027c 65-67
+apps/dashboard/content/docs/fi/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_5bc8112a77de8c 36-38
+apps/dashboard/content/docs/sv/navigating-the-app.mdx
+  s_58dd112dc09435::t_f4c25c86fae2fd 33-36
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_81a534ddb23d19 106
+apps/dashboard/content/docs/en/glossary.mdx
+  s_58dd112dc09435::t_c96c3a58e5e591 350
+apps/dashboard/content/docs/da/score-and-levels.mdx
+  s_58dd112dc09435::t_f5f67e96875b1f 11-12
+apps/dashboard/components/model/build-budget-bar.tsx
+  s_58dd112dc09435::t_89d08fd12d29af 1-81
+apps/dashboard/content/docs/nb/glossary.mdx
+  s_58dd112dc09435::t_52a700be6b77ca 360-361
+apps/dashboard/content/docs/fi/score-and-levels.mdx
+  s_58dd112dc09435::t_91a580b321b139 12
+apps/dashboard/content/docs/da/glossary.mdx
+  s_58dd112dc09435::t_818722afe39526 370-371
+apps/dashboard/content/docs/da/key-concepts.mdx
+  s_58dd112dc09435::t_c11b51408f896b 63-65
+apps/dashboard/content/docs/en/navigating-the-app.mdx
+  s_58dd112dc09435::t_4868673e1a57b3 33-36
+apps/dashboard/content/docs/en/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_463efc2515c555 33-34
+  s_58dd112dc09435::t_75b5e48fc7b497 35-36
+apps/dashboard/content/docs/fi/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_4b2466c468f5fb 54-57,61-62
+  s_58dd112dc09435::t_0552ccd8c2844c 3,7-12
+  s_58dd112dc09435::t_53d0f551edf45e 37-39
+apps/dashboard/content/docs/fi/ai-weighting-review.mdx
+  s_58dd112dc09435::t_4a0b48ede55bda 15
+  s_58dd112dc09435::t_06ce8c54bd7a3d 7-9
+apps/dashboard/content/docs/en/ai-weighting-review.mdx
+  s_58dd112dc09435::t_ab166e37c2b8f2 7-9
+  s_58dd112dc09435::t_56e2bafa8cb76e 15
+apps/dashboard/components/model/model-builder.test.tsx
+  s_58dd112dc09435::t_087df718ccfc9f 363-397
+  s_58dd112dc09435::t_bd1b6570840354 83-84
+  s_58dd112dc09435::t_a289d26b77cfe5 429-453,468-518
+  s_58dd112dc09435::t_3a43578cbc7f88 240-242
+  s_58dd112dc09435::t_51983df620cf91 611-612,616-621
+  s_58dd112dc09435::t_061dd092bcd6b9 45
+  s_58dd112dc09435::t_d8c8062b99dbb9 194
+  s_58dd112dc09435::t_d7e97481ad8b2f 330,334
+  s_58dd112dc09435::t_a8d1b3828960d6 519
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_075a03d04fc226 106
+packages/backend/convex/assistant/knowledge.ts
+  s_58dd112dc09435::t_48467f9cc54295 297
+  s_58dd112dc09435::t_e14d10f244f46d 108
+apps/dashboard/content/docs/sv/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_ad8fa3952f7c4a 35
+apps/dashboard/content/docs/en/key-concepts.mdx
+  s_58dd112dc09435::t_50e218ed5c2a22 60-62
+apps/dashboard/content/docs/da/ai-weighting-review.mdx
+  s_58dd112dc09435::t_be2f62dbf3b762 15
+  s_58dd112dc09435::t_392090d717cc93 7-9
+apps/dashboard/content/docs/da/navigating-the-app.mdx
+  s_58dd112dc09435::t_e8920c474286bb 35-38
+apps/dashboard/components/model/library-criterion-card.tsx
+  s_58dd112dc09435::t_b4a25bfe825cab 72-78
+  s_58dd112dc09435::t_8ef35cf6a7b1ec 187
+  s_58dd112dc09435::t_e7606031a8394d 56
+apps/dashboard/lib/section-pages.ts
+  s_58dd112dc09435::t_8a8ba1f7edf75d 28
+apps/dashboard/content/docs/sv/score-and-levels.mdx
+  s_58dd112dc09435::t_247ed0efc84432 11-12
+apps/dashboard/components/model/model-builder.tsx
+  s_58dd112dc09435::t_12e823d3e91a62 117-123
+  s_58dd112dc09435::t_3ace7da1e3710e 228-230
+  s_58dd112dc09435::t_cb4962679e63a4 376-377
+  s_58dd112dc09435::t_f54098948ecca8 35
+  s_58dd112dc09435::t_1d0a6d4265a76a 388,390-405,428-460
+  s_58dd112dc09435::t_3f5f2bcaf5ed03 289
+  s_58dd112dc09435::t_c2c492a811b517 34
+  s_58dd112dc09435::t_c2937fea0b2303 203,210-211,215-227,231-232
+  s_58dd112dc09435::t_1aaca122247dc8 233-234
+apps/dashboard/components/model/criterion-list-skeleton.test.tsx
+  s_58dd112dc09435::t_a22f239310843d 116-118
+  s_58dd112dc09435::t_fbe4ce21338af1 79-81,84-88,95,104-115,119-130
+  s_58dd112dc09435::t_d5283d6c93395c 131
+apps/dashboard/components/model/criterion-list-skeleton.tsx
+  s_58dd112dc09435::t_3282a934459349 187-192,195-196,199-212,215,218-252
+  s_58dd112dc09435::t_0df1f2bc30df08 213-214
+  s_58dd112dc09435::t_c983cbe61c93e3 216-217
+  s_58dd112dc09435::t_0a9a5f8b7a65db 3-4,10,17
+  s_58dd112dc09435::t_2be71ea8cc7d19 93-97
+  s_58dd112dc09435::t_ef221f8aa92d83 98-103
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_033532aa211ff1 106
+apps/dashboard/content/docs/nb/key-concepts.mdx
+  s_58dd112dc09435::t_52a700be6b77ca 61-63
+apps/dashboard/content/docs/en/score-and-levels.mdx
+  s_58dd112dc09435::t_81afa6fd9ff09e 11-12
+apps/dashboard/content/docs/fi/glossary.mdx
+  s_58dd112dc09435::t_c30139bd85913f 377
+apps/dashboard/content/docs/nb/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_52a700be6b77ca 35-37
+apps/dashboard/content/docs/sv/key-concepts.mdx
+  s_58dd112dc09435::t_7eb77bc639174b 61-62
+apps/dashboard/components/model/criterion-item.tsx
+  s_58dd112dc09435::t_ec923efeed475d 29-33,35-37
+  s_58dd112dc09435::t_6a9c7b3744e3a7 45-47
+apps/dashboard/content/docs/nb/score-and-levels.mdx
+  s_58dd112dc09435::t_52a700be6b77ca 11-12
+apps/dashboard/content/docs/da/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_769e251dbecac0 3,7-11
+  s_58dd112dc09435::t_8a7c810fb83ec8 37-43
+  s_58dd112dc09435::t_169bc428a81c64 54-56,61
+apps/dashboard/content/docs/fi/navigating-the-app.mdx
+  s_58dd112dc09435::t_d0d91dac26227f 36-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f4ca9dfc7ed936259e54defcf19c4d09cb8f061b",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
