@@ -1258,7 +1258,10 @@ describe("payloadItems", () => {
   })
 
   // Boolean and coded resolution compose: the restore's `selected` row reads
-  // Yes/No in the same item whose biasRisk reads its label.
+  // Yes/No in the same item whose biasRisk reads its label. Both resolvers are
+  // asserted on their own row, because the two run through separate branches of
+  // changeEntries' display() and a test carrying only one of the fields would
+  // pass while the other resolver was never threaded at all.
   it("resolves booleans and coded values in the same item", () => {
     const out = payloadItems(
       {
@@ -1267,7 +1270,10 @@ describe("payloadItems", () => {
           {
             libraryKey: "risk-consequence",
             label: "Risk and consequence",
-            changes: { selected: { from: true, to: false } },
+            changes: {
+              selected: { from: true, to: false },
+              biasRisk: { from: "medium", to: "low" },
+            },
           },
         ],
       },
@@ -1275,9 +1281,15 @@ describe("payloadItems", () => {
       (value) => (value ? "Yes" : "No"),
       valueLabel
     )
-    const entry = out?.items[0]?.entries[0]
-    expect(entry?.from).toBe("Yes")
-    expect(entry?.to).toBe("No")
+    const entries = out?.items[0]?.entries ?? []
+    const byField = (field: string) =>
+      entries.find((entry) => entry.field === field)
+    expect(byField("selected")?.from).toBe("Yes")
+    expect(byField("selected")?.to).toBe("No")
+    expect(byField("biasRisk")?.from).toBe(
+      BIAS_RISK_VALUE_KEYS.medium.toUpperCase()
+    )
+    expect(byField("biasRisk")?.to).toBe(BIAS_RISK_VALUE_KEYS.low.toUpperCase())
   })
 
   it("returns null when there is no items array", () => {
