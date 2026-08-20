@@ -84,7 +84,7 @@ export function DimensionColumn({
           variant={full ? "secondary" : "outline"}
           className="shrink-0 tabular-nums"
         >
-          {t("zoneCount", { count, max })}
+          {t("columnCount", { count, max })}
         </Badge>
       </div>
       {/* relative: popLayout takes the leaving hatch out of flow, which needs
@@ -104,7 +104,7 @@ export function DimensionColumn({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.12 } }}
               role="img"
-              aria-label={t("zoneEmpty")}
+              aria-label={t("columnEmpty")}
               // Deep enough to read as a slot with room in it rather than as
               // a rule under the title, shallow enough that four empty
               // columns side by side stay on one screen, which is the state
@@ -132,11 +132,10 @@ export function DimensionColumn({
           control parked outside the box read as page furniture rather than as
           the column's last row.
           Absent, not disabled and not explained, when the dimension can take
-          nothing more. That is a deliberate exception to the
-          preconditions-in-words rule for this surface (owner's call): the
-          count chip filling in and the dimension's own help are the cap's
-          voice here, and a fourth sentence across four columns was more to
-          read than the state was worth. */}
+          nothing more: on this surface the cap renders no prose at all. The
+          count chip filling in and the dimension's own help carry it instead,
+          because a fourth sentence across four columns costs more reading than
+          the state is worth. */}
       {action !== undefined && <div className="mt-2">{action}</div>}
     </section>
   )

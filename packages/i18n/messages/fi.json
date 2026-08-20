@@ -1845,8 +1845,8 @@
       "criteria": {
         "addCta": "Lisää kriteeri",
         "addLabel": "Lisää kriteeri ulottuvuuteen {dimension}",
-        "zoneCount": "{count} enintään {max}:sta",
-        "zoneEmpty": "Tähän ulottuvuuteen ei ole vielä valittu kriteerejä",
+        "columnCount": "{count} enintään {max}:sta",
+        "columnEmpty": "Tähän ulottuvuuteen ei ole vielä valittu kriteerejä",
         "recommendedChip": "Suositeltu toimialallenne",
         "overlapChip": "Menee päällekkäin näiden kanssa: {names}"
       },
@@ -1999,8 +1999,6 @@
       "dimensionLabel": "Mitä tämä ulottuvuus kattaa?",
       "criterionLabel": "Mikä kriteeri on?",
       "criterionBody": "Asia, jota vasten jokainen rooli arvioidaan, kuten laajuus tai monimutkaisuus. Sen asteikko 1-5 kertoo mitä kukin arvio tarkoittaa; painotus ratkaisee kuinka paljon se painaa.",
-      "anchorsLabel": "Miten arviointiasteikko toimii?",
-      "anchorsBody": "Asteikko 1-5, jota vasten rooli arvioidaan tässä kriteerissä. Kirjoita jokainen taso konkreettisesti, jotta kaksi arvioijaa päätyy samaan tulokseen; paljonko kriteeri painaa on sen painotus.",
       "anchorRoleLabel": "Mikä on ankkurirooli?",
       "anchorRoleBody": "Vertailurooli, jonka organisaationne on arvioinut ja hyväksynyt. Nimeä muutama, 2-5 riittää yleensä, muiden arviointien tarkistamiseen; vertailu tukee päätöstä, ei koskaan korvaa sitä.",
       "trackLabel": "Mikä on track?",

@@ -1845,8 +1845,8 @@
       "criteria": {
         "addCta": "Add criterion",
         "addLabel": "Add a criterion to {dimension}",
-        "zoneCount": "{count} of max {max}",
-        "zoneEmpty": "No criteria in this dimension yet",
+        "columnCount": "{count} of max {max}",
+        "columnEmpty": "No criteria in this dimension yet",
         "recommendedChip": "Recommended for your industry",
         "overlapChip": "Overlaps {names}"
       },
@@ -1999,8 +1999,6 @@
       "dimensionLabel": "What does this dimension cover?",
       "criterionLabel": "What is a criterion?",
       "criterionBody": "Something every role is evaluated against, like scope or complexity. Its 1 to 5 scale describes what each rating means; its weighting decides how much it counts.",
-      "anchorsLabel": "How does the evaluation scale work?",
-      "anchorsBody": "The 1 to 5 scale a role is rated against on this criterion. Write each step concretely so two assessors reading the same profile land on the same rating; how much it counts is its weighting.",
       "anchorRoleLabel": "What is an anchor role?",
       "anchorRoleBody": "A reference role your organization has assessed and agreed on. Designate a few, 2 to 5 is usually enough, to sanity-check other assessments; the comparison supports a decision, never replaces it.",
       "trackLabel": "What is a track?",

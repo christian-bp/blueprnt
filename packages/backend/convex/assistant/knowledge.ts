@@ -141,7 +141,7 @@ export const ASSISTANT_PAGES = {
       fi: "Menetelmä",
     },
     description:
-      "chapter 3 of the model section: each criterion's rationale and bias review, and the method appendix export.",
+      "chapter 3 of the model section: each criterion's rationale and bias review, the working-conditions materiality decision (Active, or tested and not material, with a motivation either way), and the method appendix export.",
   },
   "/model/approval": {
     labelKey: "model.chapters.approval",
@@ -153,7 +153,7 @@ export const ASSISTANT_PAGES = {
       fi: "Hyväksyntä",
     },
     description:
-      "chapter 4 of the model section: the pre-approval checklist, the working-conditions materiality decision, and approving the model, which is what makes rating a role possible.",
+      "chapter 4 of the model section: the pre-approval checklist, which reports the working-conditions decision made on the Method chapter rather than making it, and approving the model, which is what makes rating a role possible.",
   },
   "/people": {
     labelKey: "nav.people",

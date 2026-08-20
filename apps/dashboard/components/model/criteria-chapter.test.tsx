@@ -389,9 +389,8 @@ describe("the Kriterier chapter", () => {
   })
 
   // A full dimension simply loses its add row: no disabled control, and no
-  // sentence explaining the cap (the owner's exception to
-  // preconditions-in-words on this surface). The count chip and the
-  // dimension's help are what say it instead.
+  // sentence explaining the cap. The count chip and the dimension's help carry
+  // it instead; no prose renders.
   it("drops a full dimension's add row, silently", () => {
     modelResult = COMPETENCE_FULL
     renderChapter()
@@ -404,7 +403,7 @@ describe("the Kriterier chapter", () => {
     // The chip carries the state, filled in.
     expect(
       within(column("Competence")).getByText(
-        criteria.zoneCount.replace("{count}", "2").replace("{max}", "2")
+        criteria.columnCount.replace("{count}", "2").replace("{max}", "2")
       ).dataset.variant
     ).toBe("secondary")
     // A dimension with room still offers its picker, in its own column.

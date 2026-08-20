@@ -16,7 +16,7 @@ const MODEL_ERROR_KEYS = [
   "weightsUnbalanced",
 ] as const
 
-export type ModelErrorKey = (typeof MODEL_ERROR_KEYS)[number]
+type ModelErrorKey = (typeof MODEL_ERROR_KEYS)[number]
 
 // The known error this failure is, or undefined for anything else (which the
 // caller answers with its generic toast).

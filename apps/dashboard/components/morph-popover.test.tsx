@@ -96,4 +96,54 @@ describe("MorphPopover", () => {
       screen.getByRole("button", { name: "Close" })
     )
   })
+
+  // The primitive actually consumes the placement helper. happy-dom reports
+  // every rect as zero, so the trigger and the panel content are given real
+  // boxes: a trigger 120px wide sitting at the right edge of an 1814px
+  // viewport, which is the geometry the owner's screenshot showed.
+  it("flips the panel inward when the preferred side would leave the screen", () => {
+    const original = Element.prototype.getBoundingClientRect
+    const innerWidth = window.innerWidth
+    Object.defineProperty(window, "innerWidth", {
+      configurable: true,
+      value: 1814,
+    })
+    Element.prototype.getBoundingClientRect = function measured(this: Element) {
+      // The trigger: a small button hard against the page's right gutter.
+      if (this.tagName === "BUTTON") {
+        return { left: 1670, right: 1790, width: 120, height: 36 } as DOMRect
+      }
+      // The panel's content, at its settled w-[26rem].
+      if (this.className.includes("space-y-4")) {
+        return { left: 0, right: 416, width: 416, height: 300 } as DOMRect
+      }
+      return { left: 0, right: 0, width: 0, height: 0 } as DOMRect
+    }
+    try {
+      // anchor="left" would grow 416px rightward from x=1670, off the screen.
+      render(
+        <MorphPopover
+          triggerLabel="Review"
+          anchor="left"
+          title="AI assistance"
+          closeLabel="Close"
+        >
+          <p>panel content</p>
+        </MorphPopover>
+      )
+      fireEvent.click(screen.getByRole("button", { name: "Review" }))
+      const panel = screen.getByRole("dialog")
+      // Flipped to the trigger's other edge, and anchored there rather than
+      // shifted off it: the panel now grows leftward, into the page.
+      expect(panel.className).toContain("right-0")
+      expect(panel.className).not.toContain("left-0")
+      expect(panel.style.right).toBe("0px")
+    } finally {
+      Element.prototype.getBoundingClientRect = original
+      Object.defineProperty(window, "innerWidth", {
+        configurable: true,
+        value: innerWidth,
+      })
+    }
+  })
 })

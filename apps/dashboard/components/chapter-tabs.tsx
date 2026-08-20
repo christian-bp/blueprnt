@@ -7,6 +7,10 @@ import { SPRING } from "@/lib/motion"
 
 // One tab in a chapter row: its identity, what it reads as, where it goes, and
 // whether its page is the one open.
+//
+// Exported although nothing imports it by name today: it is this shared
+// primitive's published contract, and a section building its own tab row types
+// its rows against it rather than re-describing the shape.
 export interface ChapterTab {
   key: string
   // Already localized and already numbered by the section that owns the

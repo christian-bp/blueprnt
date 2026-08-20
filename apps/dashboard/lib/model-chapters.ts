@@ -99,7 +99,7 @@ export interface ModelProgressInput {
   workingConditionsDecided: boolean
 }
 
-export interface ChapterProgress {
+interface ChapterProgress {
   done: number
   total: number
 }

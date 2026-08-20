@@ -154,10 +154,11 @@ const OTHER_AUDIT_FIELDS = [
   "dimensionKey",
   "deletedRatingCount",
   "budget",
-  // model.updated bulk payload fields (weights.rebalanced/criterion.removed,
-  // evaluationModel/criteria.ts's ModelUpdatedPayload): `change` is the coded
-  // kind of update and `count` is the bulk item count, both flat (non-diffed)
-  // top-level fields that payloadStats picks up alongside items/budget.
+  // model.updated payload fields (its ModelUpdatedPayload variants,
+  // weights.rebalanced and criterion.complianceUpdated, in
+  // convex/lib/auditPayloads.ts): `change` is the coded kind of update and
+  // `count` is the bulk item count, both flat (non-diffed) top-level fields
+  // that payloadStats picks up alongside items/budget.
   "count",
   "change",
   // model.created create-changes (MODEL_AUDIT_FIELDS also has "name", already

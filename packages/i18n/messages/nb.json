@@ -1845,8 +1845,8 @@
       "criteria": {
         "addCta": "Legg til kriterium",
         "addLabel": "Legg til et kriterium i {dimension}",
-        "zoneCount": "{count} av maks {max}",
-        "zoneEmpty": "Ingen kriterier i denne dimensjonen ennå",
+        "columnCount": "{count} av maks {max}",
+        "columnEmpty": "Ingen kriterier i denne dimensjonen ennå",
         "recommendedChip": "Anbefalt for deres bransje",
         "overlapChip": "Overlapper {names}"
       },
@@ -1999,8 +1999,6 @@
       "dimensionLabel": "Hva dekker denne dimensjonen?",
       "criterionLabel": "Hva er et kriterium?",
       "criterionBody": "Noe hver rolle vurderes mot, som omfang eller kompleksitet. Dens 1-til-5-skala beskriver hva hver karakter betyr; vektingen avgjør hvor mye den teller.",
-      "anchorsLabel": "Hvordan fungerer vurderingsskalaen?",
-      "anchorsBody": "1-til-5-skalaen en rolle vurderes mot på dette kriteriet. Skriv hvert steg konkret så to vurderere som leser samme profil lander på samme karakter; hvor mye kriteriet teller er vektingen.",
       "anchorRoleLabel": "Hva er en ankerrolle?",
       "anchorRoleBody": "En referanserolle organisasjonen har vurdert og blitt enige om. Utpek noen få, 2 til 5 holder som regel, for å kontrollere andre vurderinger; sammenligningen støtter en beslutning, den erstatter den aldri.",
       "trackLabel": "Hva er en track?",

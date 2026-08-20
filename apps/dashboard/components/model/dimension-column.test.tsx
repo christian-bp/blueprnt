@@ -10,7 +10,7 @@ const help = messages.dashboard.help
 
 const countChip = (count: number, max: number) =>
   screen.getByText(
-    criteria.zoneCount
+    criteria.columnCount
       .replace("{count}", String(count))
       .replace("{max}", String(max))
   )
@@ -74,7 +74,7 @@ describe("DimensionColumn", () => {
   // to be filled rather than as a card that failed to render.
   it("fills an empty column with the shared hatch", () => {
     const { container } = renderColumn({ count: 0 })
-    const empty = screen.getByRole("img", { name: criteria.zoneEmpty })
+    const empty = screen.getByRole("img", { name: criteria.columnEmpty })
     expect(empty.className).toContain("repeating-linear-gradient")
     // The size pin that keeps the hatch crisp in WebKit travels with it.
     expect(container.querySelector('[class*="background-size:"]')).toBe(empty)
@@ -82,7 +82,7 @@ describe("DimensionColumn", () => {
 
   it("drops the hatch as soon as the dimension holds a criterion", () => {
     renderColumn({ count: 1 }, <li>Analytical effort</li>)
-    expect(screen.queryByRole("img", { name: criteria.zoneEmpty })).toBeNull()
+    expect(screen.queryByRole("img", { name: criteria.columnEmpty })).toBeNull()
     expect(screen.getByText("Analytical effort")).toBeDefined()
   })
 
@@ -104,7 +104,7 @@ describe("DimensionColumn", () => {
   // none of, and the add row beneath it.
   it("keeps the add row under the hatch while the column is empty", () => {
     renderColumn({ count: 0 })
-    const hatch = screen.getByRole("img", { name: criteria.zoneEmpty })
+    const hatch = screen.getByRole("img", { name: criteria.columnEmpty })
     const add = screen.getByRole("button", { name: "Add criterion" })
     expect(column().contains(add)).toBe(true)
     expect(
@@ -113,8 +113,8 @@ describe("DimensionColumn", () => {
   })
 
   // A full dimension simply has no add row: no disabled control, and no
-  // sentence explaining the cap. The count chip and the dimension's help are
-  // the cap's voice here (the owner's exception to preconditions-in-words).
+  // sentence explaining the cap. The count chip and the dimension's help carry
+  // it instead; no prose renders.
   it("drops the add row, silently, when the dimension is full", () => {
     renderColumn(
       { count: 2, max: 2, full: true, action: undefined },

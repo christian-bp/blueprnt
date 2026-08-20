@@ -6,8 +6,15 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
-import { type ReactNode, useEffect, useRef, useState } from "react"
+import {
+  type ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react"
 import { SPRING } from "@/lib/motion"
+import { type MorphPlacement, morphPanelPlacement } from "@/lib/morph-placement"
 
 // A trigger button that morphs into a floating panel (used for the AI
 // assistance surfaces). The discipline follows docs/ui-animation.md and
@@ -15,10 +22,18 @@ import { SPRING } from "@/lib/motion"
 //
 //   Idle: an in-flow outline button (icon + label).
 //   Open: the panel expands FROM the button's measured rect to its full
-//         size, absolutely anchored to the trigger's top-right corner, so
+//         size, absolutely anchored to one of the trigger's top corners, so
 //         it overlays the surroundings and neighbors never move. The
 //         trigger stays mounted but invisible while open, so the wrapper
 //         keeps its size: zero layout shift.
+//
+// Anchoring to the trigger is what makes the morph possible (the panel has to
+// grow out of that exact rect), and it is also why this panel gets no
+// collision handling from a positioning library the way the portaled help
+// popover does. It therefore does its own: on open it measures the settled
+// panel against the viewport and flips to the trigger's other edge, or pulls
+// itself in, so the panel never renders past the screen. `anchor` is the
+// preference, not a promise; see lib/morph-placement.ts.
 //
 // The panel content has a fixed width (so text never rewraps mid-morph)
 // and fades in after the box has mostly settled (staged, rule 4). Escape
@@ -58,9 +73,40 @@ export function MorphPopover({
   const [open, setOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   // The trigger's size at the moment of opening; the panel morphs from and
   // back to this rect. Falls back to a button-ish size before first measure.
   const [fromRect, setFromRect] = useState({ width: 120, height: 36 })
+  // Where the panel may actually sit. Recomputed on every open and left alone
+  // on close, so the exit morph shrinks back from wherever the panel stood
+  // rather than jumping to the preferred side first.
+  const [placement, setPlacement] = useState<MorphPlacement>({
+    side: anchor,
+    shift: 0,
+  })
+
+  // Measured in a LAYOUT effect, not a passive one: the panel is already in
+  // the DOM here, and the correction is committed before the browser paints,
+  // so a panel that needs flipping is never painted on the wrong side first.
+  // The content is what gets measured, not the animating box: the box is
+  // mid-morph and clipped, while the content carries the panel's real width.
+  useLayoutEffect(() => {
+    if (!open) return
+    const trigger = triggerRef.current?.getBoundingClientRect()
+    const panelWidth = contentRef.current?.getBoundingClientRect().width
+    if (trigger === undefined || panelWidth === undefined || panelWidth <= 0) {
+      return
+    }
+    setPlacement(
+      morphPanelPlacement({
+        triggerLeft: trigger.left,
+        triggerRight: trigger.right,
+        panelWidth,
+        viewportWidth: window.innerWidth,
+        preferred: anchor,
+      })
+    )
+  }, [open, anchor])
 
   useEffect(() => {
     if (open) closeRef.current?.focus()
@@ -128,9 +174,15 @@ export function MorphPopover({
             transition={SPRING}
             className={cn(
               "absolute top-0 z-30 overflow-hidden rounded-lg border bg-popover text-popover-foreground shadow-md",
-              anchor === "right" ? "right-0" : "left-0",
+              placement.side === "right" ? "right-0" : "left-0",
               panelClassName
             )}
+            // A negative inset on the anchored side, so 0 leaves the panel
+            // exactly on the trigger's edge and anything else pulls it back
+            // inside the viewport. An inset rather than a transform: Motion
+            // owns this element's animated styles, and an inset is a property
+            // it never writes.
+            style={{ [placement.side]: -placement.shift }}
             onKeyDown={(event) => {
               if (event.key !== "Escape") return
               // Escape closes the PANEL only. Without stopping propagation a
@@ -144,6 +196,7 @@ export function MorphPopover({
                 while the box morphs; the fade is staged after the box has
                 mostly settled. */}
             <motion.div
+              ref={contentRef}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: { delay: 0.12 } }}
               exit={{ opacity: 0, transition: { duration: 0.08 } }}

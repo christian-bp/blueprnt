@@ -32,12 +32,11 @@ describe("dimension constants", () => {
   })
 
   // The per-dimension caps sum to exactly the model's own ceiling, so a full
-  // model is always four full dimensions and the binding bound is always the
-  // dimension's. The builder's model-cap sentence
-  // (dashboard.model.criteria.capModel) is therefore unreachable today and
-  // goes live the moment this stops holding: raise a dimension cap, or lower
-  // MODEL_MAX_CRITERIA, and the model ceiling starts binding first on a
-  // dimension that still has room.
+  // model is always four full dimensions and the bound that binds is always a
+  // dimension's own. Asserted rather than assumed: raising a cap or lowering
+  // MODEL_MAX_CRITERIA makes the model ceiling start binding first on a
+  // dimension that still has room, which changes what the builder can offer
+  // and has to be a deliberate engine decision rather than a side effect.
   it("keeps the dimension caps summing to the model's own ceiling", () => {
     const capped = DIMENSION_KEYS.reduce(
       (sum, key) => sum + DIMENSION_MAX_ACTIVE[key],

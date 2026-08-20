@@ -55,7 +55,7 @@ function formatNames(locale: string, names: readonly string[]): string {
 // A criterion the org has already chosen, as this dialog needs to know it:
 // which library entry it is (so the row is not offered twice) and what it is
 // called (so an overlap can be named rather than counted).
-export interface SelectedCriterion {
+interface SelectedCriterion {
   libraryKey: string
   name: string
 }
