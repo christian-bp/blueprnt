@@ -76,19 +76,23 @@ describe("BuildGridSkeleton", () => {
     ).toHaveLength(4)
   })
 
+  // Sized to the whole library, because the state this page exists for is an
+  // organization with nothing selected yet: that is also the widest a column
+  // ever gets, so the columns only ever shrink as criteria move into a zone.
   it("stands the library cards in as bars under a real Add button", () => {
     const { container } = renderBuildGrid()
-    // The dimension libraries minus their caps: 5-2, 5-2, 7-3 and 4-1.
-    expect(rows(container)).toHaveLength(3 + 3 + 4 + 3)
-    // Two bars per card (name, one-liner) plus one per zone's count chip.
-    expect(skeletons(container)).toHaveLength(13 * 2 + 4)
+    // Every dimension's whole library: 5, 5, 7 and 4.
+    expect(rows(container)).toHaveLength(5 + 5 + 7 + 4)
+    // Two bars per card (name, one-liner), one per zone's count chip, two for
+    // the budget's figures, one for its status line.
+    expect(skeletons(container)).toHaveLength(21 * 2 + 4 + 3)
     // The Add button's label is static i18n text, so it renders as itself
     // rather than as a gray bar; it is inert because WHICH criterion it would
     // add is exactly the unknown. Queried through the DOM rather than by role:
     // the placeholder list is aria-hidden, so none of it reaches the
     // accessibility tree, which is the point of a placeholder.
     const adds = Array.from(container.querySelectorAll("ul li button"))
-    expect(adds).toHaveLength(13)
+    expect(adds).toHaveLength(21)
     expect(
       adds.every(
         (add) =>
@@ -96,5 +100,33 @@ describe("BuildGridSkeleton", () => {
           add.className.includes("pointer-events-none")
       )
     ).toBe(true)
+  })
+
+  // The budget bar is the page's chrome, not its data: it renders for real
+  // from the first paint, in the same shell the loaded bar uses, so the grid
+  // above it cannot shift when the model arrives.
+  it("renders the budget bar for real, with only its figures as bars", () => {
+    renderBuildGrid()
+    // The sentence around the two unknown figures is real text.
+    expect(
+      screen.getByText(/weight points allocated/, { exact: false })
+    ).toBeDefined()
+    // The weighting concept's help is a live control, not a placeholder.
+    expect(
+      screen.getByRole("button", {
+        name: messages.dashboard.help.weightingLabel,
+      })
+    ).toBeDefined()
+    // The save renders as itself and disabled, which is the loaded bar's own
+    // initial state on a clean model.
+    const save = screen.getByRole("button", { name: build.saveCta })
+    expect((save as HTMLButtonElement).disabled).toBe(true)
+    // The AI review's slot is reserved so the bar cannot change height when
+    // the trigger appears, and hidden so it can be neither reached nor
+    // announced while there is nothing to review.
+    const review = screen.getByText(messages.dashboard.ai.openReviewCta)
+    expect(review.closest("[aria-hidden='true']")?.className).toContain(
+      "invisible"
+    )
   })
 })

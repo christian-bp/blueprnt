@@ -105,19 +105,7 @@ export const ASSISTANT_PAGES = {
       fi: "Malli",
     },
     description:
-      "the model section's first tab, holding the criteria and their 1-5 anchor scale.",
-  },
-  "/model/weighting": {
-    labelKey: "model.tabs.weighting",
-    name: {
-      en: "Weighting",
-      sv: "Viktning",
-      nb: "Vekting",
-      da: "Vægtning",
-      fi: "Painotus",
-    },
-    description:
-      "the model section's tab where the criteria's weight points are allocated.",
+      "the guided build view: criteria are dragged from each dimension's library into one of the four dimension zones and weighted on the card they land in, with a budget bar for the weight points. The 1-5 anchor scale is not shown here; it belongs to evaluating a role.",
   },
   "/model/method": {
     labelKey: "model.tabs.method",
@@ -306,7 +294,7 @@ export function assistantSystemPrompt(args: AssistantPromptContext): string {
     companyLine,
     "Your job: explain the product's concepts in plain language, point the user to the page where they can act, and answer questions about the organization's own state using your tools.",
     "Core concepts:",
-    "- Evaluation model: the org-wide set of criteria used to evaluate roles. Managed on the model pages: the criteria and their 1-5 anchor scale at /model, the weight points at /model/weighting, the method documentation at /model/method.",
+    "- Evaluation model: the org-wide set of criteria used to evaluate roles. Managed on the model pages: the criteria and their weight points are built together at /model, the method documentation at /model/method. The 1-5 anchor scale is read where a role is evaluated, never on /model.",
     "- Criterion: one dimension a role is evaluated on. Each criterion has full anchor texts at steps 1, 3, and 5, with considered midpoint anchors at 2 and 4.",
     "- Step: one of a criterion's 1-5 anchor positions, chosen when evaluating a role; a motivation is required when choosing 1, 4, or 5. An active working-conditions criterion also allows step 0, meaning the role is not covered by the defined condition.",
     "- Weight points: each criterion carries 1-5 weight points under a fixed budget (criteria count times 3, exact sum). Percent shares are derived, never entered.",

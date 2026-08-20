@@ -25,7 +25,7 @@ export const SECTION_PAGES = {
 } as const
 
 // The current page within a section is the deepest matching link: an index
-// page (/model) yields to its nested siblings (/model/weighting), and a
+// page (/model) yields to its nested siblings (/model/method), and a
 // register's detail pages keep the register's own page current
 // (/people/<id> resolves to /people).
 export function deepestMatch(

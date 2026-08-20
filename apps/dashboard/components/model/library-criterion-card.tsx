@@ -53,6 +53,7 @@ export function LibraryCriterionCard({
   recommended,
   overlapsSelected,
   dimmedReason,
+  busy,
   layoutId,
   onAdd,
 }: {
@@ -68,6 +69,13 @@ export function LibraryCriterionCard({
   // (which cap bound is the caller's knowledge). Its presence closes BOTH
   // routes in, so the drag can never do what the button refuses.
   dimmedReason?: string
+  // This criterion's own activation is in flight. Only the button closes: a
+  // press that repeated the add would be discarded in silence, where a DRAG
+  // that repeats it is refused out loud by the drag narration, which is the
+  // better answer than a card that stops being grabbable under the hand.
+  // Nothing is dimmed and nothing moves, so the card cannot flicker for the
+  // length of a round trip.
+  busy?: boolean
   // Shared with the placed card of the same criterion, so the card MORPHS out
   // of the list into its zone rather than vanishing here and appearing there.
   // Undefined leaves the card inert: with no partner id there is no layout
@@ -176,7 +184,7 @@ export function LibraryCriterionCard({
           type="button"
           variant="outline"
           size="sm"
-          disabled={blocked}
+          disabled={blocked || busy === true}
           // The page carries a dozen of these; "Add" alone would leave a screen
           // reader with a dozen identical buttons.
           aria-label={t("addLabel", { name: entry.name })}

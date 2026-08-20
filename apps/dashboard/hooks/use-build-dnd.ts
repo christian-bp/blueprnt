@@ -12,7 +12,7 @@ import {
 } from "@dnd-kit/core"
 import type { DimensionKey } from "@workspace/core"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import {
   builderCollisionDetection,
   builderKeyboardCoordinates,
@@ -41,19 +41,30 @@ export interface BuildDragCard {
 // re-derived here, so the zone's own "I cannot take this" tint and this
 // controller's decision can never disagree.
 export function useBuildDnd(options: {
-  // Every draggable card currently on the page. Only cards that are actually
-  // draggable belong here: a card the caps have closed is not one.
+  // Every unselected library card on the page, INCLUDING the ones a cap has
+  // closed: a card that cannot be dropped still has to be narrated by name
+  // while it is refused, and a cap can close under a drag that is already in
+  // the air.
   cards: readonly BuildDragCard[]
   // The dimension's own localized name, for the narration. Supplied by the
   // caller because the wording is library content, not this hook's copy.
   dimensionName: (key: DimensionKey) => string
-  // A card landed in its own dimension's zone.
-  onDrop: (libraryKey: string) => void
+  // A card landed in its own dimension's zone. Answers whether the add
+  // actually started: the same criterion cannot be added twice at once, and a
+  // drop that lands on one already in flight is refused rather than dropped on
+  // the floor.
+  onDrop: (libraryKey: string) => boolean
 }) {
   const { cards, dimensionName, onDrop } = options
   const t = useTranslations("dashboard.dnd.criterion")
 
   const [activeKey, setActiveKey] = useState<string | null>(null)
+  // What the drop just handled actually did. Recorded rather than re-derived,
+  // because the narration must report the decision instead of reaching its own:
+  // dnd-kit calls the onDragEnd PROP first and the monitor the announcement
+  // rides on second, so by announcement time the add is already in flight and a
+  // second look would call an accepted drop busy.
+  const dropRefused = useRef(false)
 
   const sensors = useSensors(
     // The distance constraint keeps a plain click on the card body from
@@ -75,10 +86,12 @@ export function useBuildDnd(options: {
 
   function handleDragEnd({ active, over }: DragEndEvent) {
     setActiveKey(null)
+    dropRefused.current = false
     if (over === null) return
     if (zoneVerdict(active.data.current, over.data.current) !== "ok") return
     const card = cardOf(active.data.current)
-    if (card !== null) onDrop(card.libraryKey)
+    if (card === null) return
+    dropRefused.current = !onDrop(card.libraryKey)
   }
 
   function handleDragCancel() {
@@ -127,7 +140,12 @@ export function useBuildDnd(options: {
       if (at === null) return t("cancelled", { name: card.name })
       switch (at.verdict) {
         case "ok":
-          return t("dropped", { name: card.name, dimension: at.dimension })
+          // The zone would take it, but the same criterion is already on its
+          // way in. Saying so is the whole point: a reader who is told "added"
+          // while nothing happened has no way to find out otherwise.
+          return dropRefused.current
+            ? t("notAddedBusy", { name: card.name })
+            : t("dropped", { name: card.name, dimension: at.dimension })
         case "wrongDimension":
           return t("notAddedWrongDimension", {
             name: card.name,

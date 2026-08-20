@@ -26,13 +26,15 @@ import { type ReactNode, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SPRING } from "@/lib/motion"
 
-// Shared criterion row used by both the model review screen (editable or
-// read-only depending on the edit toggle) and the scratch editor (always
-// editable). Keeps the row markup in one place so both surfaces stay in sync.
+// The criterion row of the method surface: the method panel's documentation
+// list, mirrored by CriterionListSkeleton while that list loads. It stays a
+// shared component rather than folding into the panel because the skeleton has
+// to measure identical to it, and a row whose box lives in one file cannot
+// drift from a placeholder built against it.
 //
-// Zero-layout-shift design: a single bordered row keeps the same box in read
-// and edit mode. State changes reveal controls outside the row's layout box;
-// nothing resizes its neighbors.
+// Zero-layout-shift design: a single bordered row keeps the same box in every
+// state. State changes reveal controls outside the row's layout box; nothing
+// resizes its neighbors.
 //
 //   - The weight slot is a fixed-size right-aligned container that renders the
 //     weight control filling the slot. It is omitted entirely where the
@@ -40,10 +42,9 @@ import { SPRING } from "@/lib/motion"
 //   - The note slot is a reserved-height block below the main row, carrying a
 //     criterion's share of the model. Its height is reserved so a changed
 //     figure never reflows neighboring rows.
-//   - The remove affordance is the shared RemoveConfirm (ghost trashcan that
-//     morphs to an inline confirm pill, same as the onboarding family rows),
-//     sitting in an ALWAYS-reserved fixed slot right of the importance slot,
-//     so toggling edit mode or the removal floor never reflows the row.
+//   - The row actions are a trailing dropdown menu in an ALWAYS-reserved fixed
+//     slot right of the importance slot, so a row that gains or loses its
+//     actions never reflows.
 //   - The gap between items is marginBottom: 12 on the motion.li (animated to
 //     0 on exit so the gap collapses with the height). Consumers must not
 //     apply space-y or gap on the ul.

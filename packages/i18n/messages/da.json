@@ -103,6 +103,7 @@
         "dropped": "{name} blev tilføjet til {dimension}.",
         "full": "{dimension} er fuld.",
         "instructions": "Tryk på mellemrum eller enter for at samle et kriterium op, brug piletasterne til at flytte det mellem dimensioner, og tryk på mellemrum eller enter igen for at slippe det. Tryk på escape for at annullere.",
+        "notAddedBusy": "{name} blev ikke tilføjet igen: det er allerede ved at blive tilføjet.",
         "notAddedFull": "{name} blev ikke tilføjet: {dimension} er fuld.",
         "notAddedWrongDimension": "{name} blev ikke tilføjet: det hører ikke til {dimension}.",
         "over": "{name} er over {dimension}.",
@@ -1818,7 +1819,6 @@
       "retry": "Prøv igen",
       "tabs": {
         "build": "Byg modellen",
-        "weighting": "Vægtning",
         "method": "Metode"
       },
       "review": {

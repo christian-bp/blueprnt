@@ -1,21 +1,20 @@
 "use client"
 
+import { AiEditingIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
   CRITERIA_LIBRARY_KEYS,
   criteriaLibraryContent,
   LIBRARY_DIMENSION,
 } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
-import {
-  DIMENSION_KEYS,
-  DIMENSION_MAX_ACTIVE,
-  type DimensionKey,
-} from "@workspace/core"
+import { DIMENSION_KEYS, type DimensionKey } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useLocale, useTranslations } from "next-intl"
 import type { ReactNode } from "react"
 import { HATCH_CLASS } from "@/components/hatch"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { BuildBudgetBar } from "@/components/model/build-budget-bar"
 
 // A content-shaped loading state for the criteria list, the list-equivalent of
 // TableSkeleton: render it in place of the <ul> of CriterionItem rows while the
@@ -91,11 +90,17 @@ export function CriterionListSkeleton({ rows = 6 }: { rows?: number }) {
 export const BUILD_GRID_CLASS =
   "grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-4"
 
-// How many library cards a dimension's column shows once the model is built:
-// its whole library minus the criteria the caps let it hold. That is the state
-// a returning reader opens the page in, and sizing the placeholder to it keeps
-// the columns from growing or collapsing when the data lands. Derived from the
-// library itself, never a copied count.
+// A figure standing inside a line of prose: it sits in the text flow rather
+// than opening a block of its own, and is sized to the one or two digits it
+// stands in for.
+const NUMBER_BAR_CLASS = "inline-block h-3 w-5 align-middle"
+
+// How many library cards a dimension's column offers with nothing selected:
+// its whole library. That is the state the page exists for, an organization
+// building its first model, and it is also the widest the column ever gets, so
+// sizing the placeholder to it means the columns only ever shrink as criteria
+// move up into their zones. Derived from the library itself, never a copied
+// count.
 function librarySize(dimensionKey: DimensionKey): number {
   return CRITERIA_LIBRARY_KEYS.filter(
     (key) => LIBRARY_DIMENSION[key] === dimensionKey
@@ -179,24 +184,72 @@ function BuildColumnSkeleton({
   )
 }
 
-// The build view's loading state: the same four-column grid, with the four
-// dimension zones real (they are fixed method law, ADR-0021, and their names
-// and guiding questions are locale-keyed library constants, not org data) and
-// only the unknowns as bars: how many criteria each dimension holds, and which
-// cards its library still offers.
+// The build view's loading state: the same four-column grid over the same
+// budget bar, with the four dimension zones real (they are fixed method law,
+// ADR-0021, and their names and guiding questions are locale-keyed library
+// constants, not org data) and only the unknowns as bars: how many criteria
+// each dimension holds, which cards its library still offers, and the two
+// figures in the budget readout.
 export function BuildGridSkeleton() {
   const locale = useLocale()
+  const t = useTranslations("dashboard.model.build")
+  const tAi = useTranslations("dashboard.ai")
   const content = criteriaLibraryContent(locale)
   return (
-    <div className={BUILD_GRID_CLASS}>
-      {DIMENSION_KEYS.map((key) => (
-        <BuildColumnSkeleton
-          key={key}
-          title={content.dimensions[key].name}
-          helpBody={content.dimensions[key].question}
-          rows={librarySize(key) - DIMENSION_MAX_ACTIVE[key]}
-        />
-      ))}
+    <div className="space-y-4">
+      <div className={BUILD_GRID_CLASS}>
+        {DIMENSION_KEYS.map((key) => (
+          <BuildColumnSkeleton
+            key={key}
+            title={content.dimensions[key].name}
+            helpBody={content.dimensions[key].question}
+            rows={librarySize(key)}
+          />
+        ))}
+      </div>
+      <BuildBudgetBar
+        readout={
+          // The sentence is static i18n text and renders for real; only the
+          // two figures are unknown, so only they are bars, sized to the one
+          // or two digits they stand in for.
+          t.rich("budgetAllocated", {
+            allocated: () => <Skeleton className={NUMBER_BAR_CLASS} />,
+            budget: () => <Skeleton className={NUMBER_BAR_CLASS} />,
+          })
+        }
+        status={
+          // Which of the four sentences is true is entirely the data.
+          <Skeleton className="h-3 w-52 max-w-full" />
+        }
+        // Whether the review is on offer needs the model and the review lock,
+        // so the slot stays reserved and empty, exactly as it does whenever the
+        // loaded bar has nothing to offer.
+        reviewOffered={false}
+        review={
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            tabIndex={-1}
+            className="pointer-events-none"
+          >
+            <HugeiconsIcon
+              icon={AiEditingIcon}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
+            {tAi("openReviewCta")}
+          </Button>
+        }
+        action={
+          // The real save button, disabled: that is the truthful state, not a
+          // loading effect. The loaded bar opens clean (nothing edited), where
+          // the save is disabled too.
+          <Button type="button" size="sm" disabled>
+            {t("saveCta")}
+          </Button>
+        }
+      />
     </div>
   )
 }

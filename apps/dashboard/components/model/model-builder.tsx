@@ -31,8 +31,8 @@ import { useMutation, useQuery } from "convex/react"
 import { ConvexError } from "convex/values"
 import { LayoutGroup } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
-import { useState } from "react"
-import { HelpMorphButton } from "@/components/help-morph-button"
+import { useRef, useState } from "react"
+import { BuildBudgetBar } from "@/components/model/build-budget-bar"
 import {
   BUILD_GRID_CLASS,
   BuildGridSkeleton,
@@ -82,7 +82,6 @@ function morphIdFor(libraryKey: string): string {
 // button is not a fallback.
 export function ModelBuilder({ orgId }: { orgId: string }) {
   const t = useTranslations("dashboard.model.build")
-  const tHelp = useTranslations("dashboard.help")
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
   const tAi = useTranslations("dashboard.ai")
@@ -115,7 +114,13 @@ export function ModelBuilder({ orgId }: { orgId: string }) {
   // sum: a single criterion moving is never a valid allocation on its own.
   const [draft, setDraft] = useState<Record<string, number>>({})
   const [saving, setSaving] = useState(false)
-  const [adding, setAdding] = useState<string | null>(null)
+  // The criteria whose activation is in flight, by library key. The Set in the
+  // ref is the authority and the array in state exists only to render from:
+  // the drop handler has to answer "is this one already going?" synchronously,
+  // inside the gesture, and a state value read from a render closure is a tick
+  // behind exactly when two gestures land together.
+  const addingRef = useRef<Set<string>>(new Set())
+  const [addingKeys, setAddingKeys] = useState<readonly string[]>([])
   const [removing, setRemoving] = useState<string | null>(null)
 
   const content = criteriaLibraryContent(locale)
@@ -195,19 +200,36 @@ export function ModelBuilder({ orgId }: { orgId: string }) {
     toast.error(tToast("error"))
   }
 
-  async function onAdd(libraryKey: CriteriaLibraryKey) {
-    // One at a time: both routes in land on the same mutation, and a second
-    // press before the first lands would only earn an already-selected error.
-    if (adding !== null) return
-    setAdding(libraryKey)
+  async function runAdd(libraryKey: CriteriaLibraryKey) {
     try {
       await activateCriterion({ orgId, libraryKey })
       toast.success(tToast("criterionActivated"))
     } catch (error) {
       errorToast(error)
     } finally {
-      setAdding(null)
+      addingRef.current.delete(libraryKey)
+      setAddingKeys([...addingRef.current])
     }
+  }
+
+  // Claims a criterion for an add, or refuses because that same criterion is
+  // already on its way in. Synchronous and boolean-returning on purpose: both
+  // routes in (the drop and the Add button) have to know whether the gesture
+  // took, and the drag narration is written from the answer.
+  //
+  // Per criterion rather than one global lock: two DIFFERENT criteria may go at
+  // once. The backend serializes them, enforces both caps, and rejects a
+  // duplicate with its own code, so blocking the second one here would only
+  // slow down a reader filling four dimensions.
+  function beginAdd(libraryKey: string): boolean {
+    if (addingRef.current.has(libraryKey)) return false
+    addingRef.current.add(libraryKey)
+    setAddingKeys([...addingRef.current])
+    // Narrowed by construction rather than by a check: a drop only reaches
+    // here after the controller has matched the drag against a card THIS view
+    // rendered, and those keys come from the library's own key list.
+    void runAdd(libraryKey as CriteriaLibraryKey)
+    return true
   }
 
   async function onRemove(criterionId: Id<"criteria">) {
@@ -264,9 +286,7 @@ export function ModelBuilder({ orgId }: { orgId: string }) {
   const { dndContextProps, activeCard } = useBuildDnd({
     cards: dragCards,
     dimensionName,
-    onDrop: (libraryKey) => {
-      void onAdd(libraryKey as CriteriaLibraryKey)
-    },
+    onDrop: beginAdd,
   })
 
   if (model === undefined) return <BuildGridSkeleton />
@@ -353,7 +373,8 @@ export function ModelBuilder({ orgId }: { orgId: string }) {
                           recommended={recommendedKeys.includes(key)}
                           overlapsSelected={overlapsSelected(key)}
                           dimmedReason={dimmedReason}
-                          onAdd={() => onAdd(key)}
+                          busy={addingKeys.includes(key)}
+                          onAdd={() => beginAdd(key)}
                         />
                       ))}
                     </ul>
@@ -364,52 +385,24 @@ export function ModelBuilder({ orgId }: { orgId: string }) {
           </div>
         </LayoutGroup>
 
-        {/* The budget and the one save, in a bar that stays on screen while
-            the columns scroll past it: the allocation is a sum over all four
+        {/* The budget and the one save. The allocation is a sum over all four
             dimensions, so the figure that says whether it adds up cannot live
-            at the bottom of a page taller than the viewport. */}
-        <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-background p-3 shadow-sm">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="font-medium text-sm tabular-nums">
-                {/* Both figures move while the reader watches (a weight click
-                    changes the sum, adding a criterion changes the budget),
-                    so they roll rather than swap. Tagged inside the message
-                    rather than concatenated around it: the connective and the
-                    unit are the translator's. */}
-                {t.rich("budgetAllocated", {
-                  allocated: () => <NumberFlow value={totalPoints} />,
-                  budget: () => <NumberFlow value={budget} />,
-                })}
-              </p>
-              <HelpMorphButton label={tHelp("weightingLabel")}>
-                {tHelp("weightingBody")}
-              </HelpMorphButton>
-              {/* Last in the LEFT group on purpose: it comes and goes with the
-                  lock and with the first unsaved edit, and there it grows into
-                  free space instead of shifting the save button out from under
-                  the pointer. */}
-              {showReview && (
-                <MorphPopover
-                  triggerLabel={tAi("openReviewCta")}
-                  triggerIcon={AiEditingIcon}
-                  anchor="left"
-                  title={tAi("heading")}
-                  description={tAi("provenance")}
-                  closeLabel={tAi("closeLabel")}
-                >
-                  {(close) => (
-                    <WeightReviewPanel
-                      orgId={orgId}
-                      model={model}
-                      autoRequest
-                      onDone={close}
-                    />
-                  )}
-                </MorphPopover>
-              )}
-            </div>
-            <p
+            at the bottom of a page taller than the viewport; the bar's own
+            shell (shared with the loading state) is what keeps it on screen. */}
+        <BuildBudgetBar
+          readout={
+            // Both figures move while the reader watches (a weight click
+            // changes the sum, adding a criterion changes the budget), so they
+            // roll rather than swap. Tagged inside the message rather than
+            // concatenated around it: the connective and the unit are the
+            // translator's.
+            t.rich("budgetAllocated", {
+              allocated: () => <NumberFlow value={totalPoints} />,
+              budget: () => <NumberFlow value={budget} />,
+            })
+          }
+          status={
+            <span
               className={cn(
                 "flex items-center gap-1.5 text-sm",
                 balanced
@@ -432,17 +425,39 @@ export function ModelBuilder({ orgId }: { orgId: string }) {
                   : delta < 0
                     ? t("pointsLeft", { count: -delta })
                     : t("pointsOver", { count: delta })}
-            </p>
-          </div>
-          <Button
-            type="button"
-            size="sm"
-            disabled={saving || !balanced || !dirty}
-            onClick={onSave}
-          >
-            {t("saveCta")}
-          </Button>
-        </div>
+            </span>
+          }
+          reviewOffered={showReview}
+          review={
+            <MorphPopover
+              triggerLabel={tAi("openReviewCta")}
+              triggerIcon={AiEditingIcon}
+              anchor="left"
+              title={tAi("heading")}
+              description={tAi("provenance")}
+              closeLabel={tAi("closeLabel")}
+            >
+              {(close) => (
+                <WeightReviewPanel
+                  orgId={orgId}
+                  model={model}
+                  autoRequest
+                  onDone={close}
+                />
+              )}
+            </MorphPopover>
+          }
+          action={
+            <Button
+              type="button"
+              size="sm"
+              disabled={saving || !balanced || !dirty}
+              onClick={onSave}
+            >
+              {t("saveCta")}
+            </Button>
+          }
+        />
       </div>
       {/* What the hand is carrying. The card itself stays in its list at
           reduced opacity, so the list never reflows under the pointer. */}

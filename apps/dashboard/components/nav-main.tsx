@@ -103,9 +103,9 @@ export function NavMain({
             const subs = item.items ?? []
             const open = active && subs.length > 0 && !railCollapsed
             // The active sub-page is the deepest matching link, so an index
-            // sub-page (/model -> Criteria) yields to its nested siblings
-            // (/model/weighting) and a register's detail pages keep its own
-            // tab active (/people/<id> -> People).
+            // sub-page (/model -> the build view) yields to its nested
+            // siblings (/model/method) and a register's detail pages keep its
+            // own tab active (/people/<id> -> People).
             const activeSub = open
               ? deepestMatch(
                   subs.map((sub) => sub.url),

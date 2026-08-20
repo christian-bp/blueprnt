@@ -103,6 +103,7 @@
         "dropped": "{name} lades till i {dimension}.",
         "full": "{dimension} är full.",
         "instructions": "Tryck på mellanslag eller enter för att plocka upp ett kriterium, använd piltangenterna för att flytta det mellan dimensioner och tryck på mellanslag eller enter igen för att släppa det. Tryck på escape för att avbryta.",
+        "notAddedBusy": "{name} lades inte till igen: det håller redan på att läggas till.",
         "notAddedFull": "{name} lades inte till: {dimension} är full.",
         "notAddedWrongDimension": "{name} lades inte till: det hör inte till {dimension}.",
         "over": "{name} är över {dimension}.",
@@ -1818,7 +1819,6 @@
       "retry": "Försök igen",
       "tabs": {
         "build": "Bygg modellen",
-        "weighting": "Viktning",
         "method": "Metod"
       },
       "review": {

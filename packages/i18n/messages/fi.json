@@ -103,6 +103,7 @@
         "dropped": "{name} lisättiin ulottuvuuteen {dimension}.",
         "full": "Ulottuvuus {dimension} on täynnä.",
         "instructions": "Poimi kriteeri painamalla välilyöntiä tai enteriä, siirrä sitä ulottuvuuksien välillä nuolinäppäimillä ja pudota se painamalla välilyöntiä tai enteriä uudelleen. Peruuta painamalla escape.",
+        "notAddedBusy": "{name} ei lisätty uudelleen: sitä ollaan jo lisäämässä.",
         "notAddedFull": "{name} ei lisätty: ulottuvuus {dimension} on täynnä.",
         "notAddedWrongDimension": "{name} ei lisätty: se ei kuulu ulottuvuuteen {dimension}.",
         "over": "{name} on ulottuvuuden {dimension} päällä.",
@@ -1818,7 +1819,6 @@
       "retry": "Yritä uudelleen",
       "tabs": {
         "build": "Rakenna malli",
-        "weighting": "Painotus",
         "method": "Menetelmä"
       },
       "review": {

@@ -1,11 +1,14 @@
 ---
 title: Weighting and the point budget
-description: How weight points, the point budget, and saving a balanced allocation work on the Weighting tab.
+description: How weight points, the point budget, and saving a balanced allocation work on the build view.
 section: model
 ---
 
-The "Weighting" tab of the [Model](/model) area is where you decide how
-much each criterion counts relative to the others. This is separate from
+Weighting is where you decide how much each criterion counts relative to
+the others, and it happens inline on the [Model](/model) area's build
+view: every criterion you have chosen carries its own five-button weight
+row on the card it sits in, and the bar at the foot of the page keeps the
+running budget and the one save. This is separate from
 the criterion's evaluation scale (see
 [Criteria and the evaluation scale](/docs/criteria-and-scale)); weighting
 is never a verdict on whether a criterion is good, it is how much
@@ -30,14 +33,13 @@ custom-number option: weighting always works this way.
 
 ## Zero-sum rebalancing
 
-Changing one criterion's weight point on the Weighting tab stays an
-unsaved draft until you save; nothing changes for anyone else until
-then. While you work, a
-status line at the top of the tab tracks the budget: "All weight points
-are distributed" once the total matches the budget exactly, or a count of
-how many points are still left to distribute, or how many are over the
-budget, while it does not. Raising one criterion's weight always means
-lowering others to stay on budget.
+Changing one criterion's weight point stays an unsaved draft until you
+save; nothing changes for anyone else until then. While you work, the
+budget bar tracks it: "All weight points are distributed" once the total
+matches the budget exactly, or a count of how many points are still left
+to distribute, or how many are over the budget, while it does not.
+Raising one criterion's weight always means lowering others to stay on
+budget.
 
 ## Derived shares
 
@@ -48,14 +50,14 @@ whenever any criterion's weight point changes.
 
 ## Saving the whole allocation at once
 
-"Save weighting" saves every criterion's weight point in one go. The
-allocation you see is what you get: it is never saved half-finished, so
-the model is never left off budget. The button is
+"Save weighting", in the budget bar, saves every criterion's weight point
+in one go. The allocation you see is what you get: it is never saved
+half-finished, so the model is never left off budget. The button is
 only enabled once the budget is exactly balanced and something has
 actually changed; saving an allocation that matches what is already
 stored does nothing and does not appear in the audit log. A precondition
 worth knowing: you cannot save a partial or over-budget allocation, the
-tab requires the whole model to balance first.
+whole model has to balance first.
 
 ## Related
 

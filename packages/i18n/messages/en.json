@@ -103,6 +103,7 @@
         "dropped": "{name} was added to {dimension}.",
         "full": "{dimension} is full.",
         "instructions": "Press space or enter to pick up a criterion, use the arrow keys to move it between dimensions, and press space or enter again to drop it. Press escape to cancel.",
+        "notAddedBusy": "{name} was not added again: it is already being added.",
         "notAddedFull": "{name} was not added: {dimension} is full.",
         "notAddedWrongDimension": "{name} was not added: it does not belong to {dimension}.",
         "over": "{name} is over {dimension}.",
@@ -1818,7 +1819,6 @@
       "retry": "Try again",
       "tabs": {
         "build": "Build the model",
-        "weighting": "Weighting",
         "method": "Method"
       },
       "review": {

@@ -42,6 +42,7 @@ import { openMenu } from "@/test/menu"
 
 const build = messages.dashboard.model.build
 const editor = messages.dashboard.model.editor
+const dnd = messages.dashboard.dnd.criterion
 
 const activateCriterion = mockMutation(
   "evaluationModel.criteria.activateCriterion"
@@ -79,6 +80,8 @@ const KNOWLEDGE_BREADTH =
   "Knowledge breadth and cross-disciplinary understanding"
 const ANALYTICAL = "Analytical and problem-solving effort"
 const COMPLEXITY = "Complexity and ambiguity"
+const COMMUNICATION = "Communication and relationship effort"
+const OPERATIONAL = "Operational intensity and simultaneous demands"
 const ANCHOR_LOW = "Follows an established method"
 const ANCHOR_HIGH = "Defines how the field works"
 
@@ -188,6 +191,7 @@ const COMPETENCE_FULL = makeModel([
 ])
 
 let modelResult: unknown = BALANCED
+let industryResult: string | null = "itTelecom"
 
 function renderBuilder() {
   return render(
@@ -233,6 +237,9 @@ const cardBody = (name: string) =>
   screen.getByRole("button", { name: (label) => label.startsWith(name) })
 const addButton = (name: string) =>
   screen.getByRole("button", { name: build.addLabel.replace("{name}", name) })
+// dnd-kit narrates the drag into its own live region; there is exactly one per
+// mounted DndContext.
+const liveRegion = () => screen.getByRole("status")
 
 // Lays the grid out as the view lays it out: the four zones in a row, each
 // dragged card in its own dimension's column directly below its zone.
@@ -320,10 +327,11 @@ describe("the model build view", () => {
     deactivateCriterion.mockResolvedValue(null)
     rebalanceWeights.mockResolvedValue(null)
     modelResult = BALANCED
+    industryResult = "itTelecom"
     onQuery((ref) => {
       if (ref === "evaluationModel.model.getModel") return modelResult
       if (ref === "accounts.organization.getOrganizationSettings") {
-        return { orgId: "org-1", industry: "itTelecom" }
+        return { orgId: "org-1", industry: industryResult }
       }
       if (ref === "ai.suggest.getWeightReviewLock") return false
       if (ref === "ai.suggest.getOpenSuggestions") return []
@@ -350,6 +358,41 @@ describe("the model build view", () => {
     expect(screen.getByText(COMPLEXITY)).toBeDefined()
     expect(screen.queryByText(ANCHOR_LOW)).toBeNull()
     expect(screen.queryByText(ANCHOR_HIGH)).toBeNull()
+  })
+
+  // A hint from the library's combination tables, never a selection: the org's
+  // industry decides which cards carry it, so a card only wears the chip while
+  // the settings read says so.
+  it("chips the criteria the organization's industry points at", () => {
+    renderBuilder()
+    // itTelecom hints at six criteria and five of them are already selected,
+    // so exactly one card in the whole library is left to recommend.
+    expect(screen.getAllByText(build.recommendedChip)).toHaveLength(1)
+    expect(cardBody(KNOWLEDGE_BREADTH).textContent).toContain(
+      build.recommendedChip
+    )
+  })
+
+  it("recommends nothing when the organization has no industry", () => {
+    industryResult = null
+    renderBuilder()
+    expect(screen.queryByText(build.recommendedChip)).toBeNull()
+  })
+
+  // "Overlaps something" is a warning nobody can act on, so the chip names the
+  // criterion already in the model that this one would double up on.
+  it("names the selected criterion a library card would overlap", () => {
+    renderBuilder()
+    expect(cardBody(KNOWLEDGE_BREADTH).textContent).toContain(
+      build.overlapChip.replace("{names}", KNOWLEDGE_DEPTH)
+    )
+    expect(cardBody(ANALYTICAL).textContent).toContain(
+      build.overlapChip.replace("{names}", COMPLEXITY)
+    )
+    // A criterion in no overlap pair carries no warning at all.
+    expect(cardBody(COMMUNICATION).textContent).not.toContain(
+      build.overlapChip.replace("{names}", "")
+    )
   })
 
   it("adds a criterion when its card is dropped in its own dimension", async () => {
@@ -383,6 +426,31 @@ describe("the model build view", () => {
     expect(activateCriterion).not.toHaveBeenCalled()
   })
 
+  // The zone's tint is the answer for a reader who can see it. This is the
+  // same answer for a reader who cannot: the refusal, with its reason, through
+  // dnd-kit's live region. It fails if the two refusal branches are swapped or
+  // if the accessibility props stop reaching the DndContext.
+  it("says the refusal out loud, with its reason", async () => {
+    renderBuilder()
+    measure([{ name: ANALYTICAL, column: 1 }])
+
+    await pickUp(ANALYTICAL)
+    await move("ArrowUp")
+    await move("ArrowLeft")
+    expect(liveRegion().textContent).toBe(
+      dnd.wrongDimension
+        .replace("{name}", ANALYTICAL)
+        .replace("{dimension}", "Competence")
+    )
+
+    await drop()
+    expect(liveRegion().textContent).toBe(
+      dnd.notAddedWrongDimension
+        .replace("{name}", ANALYTICAL)
+        .replace("{dimension}", "Competence")
+    )
+  })
+
   // Two equal routes in: the button is not a fallback for people who cannot
   // drag, it is the faster route for everyone, and it lands on exactly the
   // same call.
@@ -395,6 +463,58 @@ describe("the model build view", () => {
         libraryKey: "analytical-effort",
       })
     })
+  })
+
+  // The same criterion cannot be added twice at once. What matters is not only
+  // that the second call never happens: a gesture that is refused has to SAY
+  // so, because a reader told "added" while nothing happened has no way to
+  // find out otherwise.
+  it("refuses a repeat add of a criterion already in flight, out loud", async () => {
+    const pending = new Map<string, (value: string) => void>()
+    activateCriterion.mockImplementation(
+      ({ libraryKey }: { libraryKey: string }) =>
+        new Promise<string>((resolve) => {
+          pending.set(libraryKey, resolve)
+        })
+    )
+    renderBuilder()
+    measure([{ name: ANALYTICAL, column: 1 }])
+
+    // The first add starts and stays in flight.
+    fireEvent.click(addButton(ANALYTICAL))
+    await waitFor(() => {
+      expect((addButton(ANALYTICAL) as HTMLButtonElement).disabled).toBe(true)
+    })
+    expect(activateCriterion).toHaveBeenCalledTimes(1)
+
+    // The button route is closed while it holds, so the gesture cannot even
+    // be made a second time.
+    fireEvent.click(addButton(ANALYTICAL))
+    expect(activateCriterion).toHaveBeenCalledTimes(1)
+
+    // The drag route stays open (a card that stopped being grabbable under the
+    // hand would be the worse answer), so it refuses out loud instead.
+    await pickUp(ANALYTICAL)
+    await move("ArrowUp")
+    await drop()
+    expect(activateCriterion).toHaveBeenCalledTimes(1)
+    expect(liveRegion().textContent).toBe(
+      dnd.notAddedBusy.replace("{name}", ANALYTICAL)
+    )
+
+    // A DIFFERENT criterion is not held up by it: the backend serializes the
+    // two, enforces both caps, and rejects a duplicate with its own code.
+    fireEvent.click(addButton(OPERATIONAL))
+    await waitFor(() => {
+      expect(activateCriterion).toHaveBeenCalledTimes(2)
+    })
+
+    // The card reopens once its own add lands.
+    pending.get("analytical-effort")?.("c9")
+    await waitFor(() => {
+      expect((addButton(ANALYTICAL) as HTMLButtonElement).disabled).toBe(false)
+    })
+    pending.get("operational-intensity")?.("c10")
   })
 
   // A flow states its preconditions in words rather than silently refusing.
@@ -488,11 +608,16 @@ describe("the model build view", () => {
   it("shows the build grid's own skeleton while the model loads", () => {
     modelResult = undefined
     renderBuilder()
-    // The four dimensions are already on screen, in the same grid; what is
-    // missing is the data, so there is no save action yet.
+    // The four dimensions are already on screen, in the same grid, over the
+    // same budget bar: what is missing is only the data.
     expect(
       screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)
     ).toEqual(DIMENSIONS.map((dimension) => dimension.name))
-    expect(screen.queryByRole("button", { name: build.saveCta })).toBeNull()
+    // The save is real and disabled, which is the truthful state rather than a
+    // loading effect: the loaded bar opens clean, where it is disabled too.
+    const save = screen.getByRole("button", { name: build.saveCta })
+    expect((save as HTMLButtonElement).disabled).toBe(true)
+    // Nothing is placed yet, so no weight row exists to be edited.
+    expect(screen.queryAllByRole("group")).toHaveLength(0)
   })
 })
