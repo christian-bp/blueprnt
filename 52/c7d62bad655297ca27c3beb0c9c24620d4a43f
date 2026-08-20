@@ -1,0 +1,77 @@
+apps/dashboard/lib/model-chapters.test.ts
+  s_58dd112dc09435::t_3524e106fd6c25 56-59,61,65-67
+apps/dashboard/components/model/approval-card.tsx
+  s_58dd112dc09435::t_6cf6d46c006b55 333-336
+  s_58dd112dc09435::t_34946f2c75e157 225-230
+  s_58dd112dc09435::t_416e747a1eb470 41,304,329-332,337
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_6a05a7e7db2c6e 1589,1832
+apps/dashboard/lib/model-chapters.ts
+  s_58dd112dc09435::t_3677486baf2419 30-34,40-41
+packages/backend/convex/evaluationModel/approval.test.ts
+  s_58dd112dc09435::t_2f7e7037cfb1d9 249-269,306-401
+  s_58dd112dc09435::t_82b50d40ecb105 1
+apps/dashboard/components/model/model-section-shell.test.tsx
+  s_58dd112dc09435::t_0aa19c548a8d05 1-94,96-121
+  s_58dd112dc09435::t_6cf6d46c006b55 95
+apps/dashboard/components/model/placed-criterion-card.test.tsx
+  s_58dd112dc09435::t_83b060e1909818 115-118,120-127
+  s_58dd112dc09435::t_a8c7c314d33885 62,64,110,155,164-167,169-177,179,181-182,188-220,227,244
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_6a05a7e7db2c6e 1598,1832
+packages/core/src/dimensions.test.ts
+  s_58dd112dc09435::t_d88719a8afcf30 34-48
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_58dd112dc09435::t_642111a2a49a13 21
+  s_58dd112dc09435::t_cf9c62d2863628 138-140,142
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_6a05a7e7db2c6e 1589,1832
+apps/dashboard/components/model/criterion-item.tsx
+  s_58dd112dc09435::t_9c27261c784d09 143-148
+apps/dashboard/components/model/method-panel.tsx
+  s_58dd112dc09435::t_81dc8a26b86f44 54,86-90
+  s_58dd112dc09435::t_d88719a8afcf30 78
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_6a05a7e7db2c6e 1589,1832
+apps/dashboard/components/model/approval-card.test.tsx
+  s_58dd112dc09435::t_1d111d3f3a83bd 3,26,32-34,47-49,150-162,164,170
+  s_58dd112dc09435::t_b3900f9cdd4e33 163,165-169
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.test.tsx
+  s_58dd112dc09435::t_1c0e81302c149b 31,105,110,148,248-261
+  s_58dd112dc09435::t_22b26c9bff5d0a 262
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_6a05a7e7db2c6e 1589,1832
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_efbf4f4611049e 436-438,440,442,445-447,449-450,457-472,476-482
+  s_58dd112dc09435::t_6cf6d46c006b55 368-370,473-475
+  s_58dd112dc09435::t_8a12dc9074990b 361-367,371-374
+apps/dashboard/components/pay-mapping/pay-mapping-group-analysis-form.tsx
+  s_58dd112dc09435::t_d88719a8afcf30 32-33
+packages/backend/convex/evaluationModel/approval.ts
+  s_58dd112dc09435::t_a3c16be28dcd5b 23
+  s_58dd112dc09435::t_2074c08c1b8f59 174-183
+apps/dashboard/components/model/criteria-chapter.tsx
+  s_58dd112dc09435::t_3677486baf2419 203
+apps/dashboard/components/model/weighting-chapter.tsx
+  s_58dd112dc09435::t_3677486baf2419 238
+apps/dashboard/components/model/weight-budget-bar.tsx
+  s_58dd112dc09435::t_941f80d8a1923f 63-64
+apps/dashboard/components/model/placed-criterion-card.tsx
+  s_58dd112dc09435::t_f8e31f7dd9d7ea 13,135-139,141-149,151-157
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "52c7d62bad655297ca27c3beb0c9c24620d4a43f",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
