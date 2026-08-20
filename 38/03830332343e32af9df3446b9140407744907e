@@ -1,0 +1,19 @@
+apps/dashboard/lib/audit-detail.test.tsx
+  s_58dd112dc09435::t_ce852b95dac20f 1261-1264,1273-1276,1284-1292
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3803830332343e32af9df3446b9140407744907e",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
