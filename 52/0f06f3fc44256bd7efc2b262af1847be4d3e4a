@@ -1,0 +1,36 @@
+apps/dashboard/content/docs/da/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_ed9907fe3f8f46 160-161,166-171,181-185
+apps/dashboard/content/docs/sv/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_ed9907fe3f8f46 162-163,168-173,183-187
+apps/dashboard/components/morph-popover.test.tsx
+  s_58dd112dc09435::t_5d52469728775f 102-104
+apps/dashboard/content/docs/nb/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_ed9907fe3f8f46 161-172,182-186
+apps/dashboard/content/docs/en/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_ed9907fe3f8f46 163-170,183-184
+apps/dashboard/lib/morph-placement.test.ts
+  s_58dd112dc09435::t_23eab0ec75fcb3 122-137
+apps/dashboard/components/next-button.tsx
+  s_58dd112dc09435::t_82632cf2fc35e9 19-20
+apps/dashboard/lib/morph-placement.ts
+  s_58dd112dc09435::t_59386b46e7670d 37-40
+  s_58dd112dc09435::t_a66bc1c0321a21 94-103,105
+apps/dashboard/content/docs/fi/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_ed9907fe3f8f46 165,172-177,187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "520f06f3fc44256bd7efc2b262af1847be4d3e4a",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
