@@ -165,16 +165,27 @@ export function modelChapterProgress(
     }
     case "weighting": {
       // The budget, plus one step per warning that asks for a motivation.
-      // Born passing is accepted: criteria enter at weight 3, so a fresh
-      // selection's budget is already exact and the chapter opens done.
+      // Born passing is accepted once there is something to weigh: criteria
+      // enter at weight 3, so a selection's budget is already exact and the
+      // chapter opens done as soon as Kriterier is complete. Before that, the
+      // same checks pass VACUOUSLY (budget 0=0, no warnings pending on zero
+      // criteria) and a check that passes on empty input is not progress: the
+      // segment must never show work the user has not begun, so done is held
+      // at zero until modelChapterProgress reads Kriterier itself as
+      // complete.
       const motivations = WEIGHT_MOTIVATION_CHECKS.map((key) =>
         checkOf(input, key)
       ).filter((check) => check !== undefined)
+      const total = 1 + motivations.length
+      const criteria = modelChapterProgress(input, "criteria")
+      if (criteria.done < criteria.total) {
+        return { done: 0, total }
+      }
       return {
         done:
           (passes(input, "weightBudget") ? 1 : 0) +
           motivations.filter((check) => check.ok).length,
-        total: 1 + motivations.length,
+        total,
       }
     }
     case "method": {

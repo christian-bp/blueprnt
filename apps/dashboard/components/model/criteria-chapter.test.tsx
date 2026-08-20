@@ -72,6 +72,10 @@ const DIMENSIONS = [
 const KNOWLEDGE_DEPTH = "Knowledge depth and specialist level"
 const KNOWLEDGE_BREADTH =
   "Knowledge breadth and cross-disciplinary understanding"
+// The library's own full definition for knowledge-breadth, so the assertion
+// reads the same string the picker renders from the library module.
+const KNOWLEDGE_BREADTH_FULL =
+  "Captures the role's requirement to combine and integrate several competence areas, such as product, data, business and technology, and to understand how they connect. It measures breadth of integration, not the number of people the role works with."
 const ANALYTICAL = "Analytical and problem-solving effort"
 const COMPLEXITY = "Complexity and ambiguity"
 // The library's own one-liner for complexity-ambiguity, so the assertion reads
@@ -432,6 +436,31 @@ describe("the Kriterier chapter", () => {
     expect(row.textContent).toContain(
       criteria.overlapChip.replace("{names}", KNOWLEDGE_DEPTH)
     )
+  })
+
+  // The picker is where the reader decides whether to add a criterion, so a
+  // row has to carry its whole definition, not the one-line summary the card
+  // uses once something is chosen.
+  it("shows a picker row's full definition, not the one-line summary", async () => {
+    renderChapter()
+    await openPicker("Competence")
+    const row = within(screen.getByRole("dialog"))
+      .getByText(KNOWLEDGE_BREADTH)
+      .closest("li") as HTMLElement
+    expect(within(row).getByText(KNOWLEDGE_BREADTH_FULL)).toBeDefined()
+  })
+
+  // The definition must never clip: line-clamp-none overrides
+  // ItemDescription's own two-line clamp, asserted against the vendor base
+  // the same way the title's is, below.
+  it("lets a picker row's full definition wrap rather than clamping it", async () => {
+    renderChapter()
+    await openPicker("Competence")
+    const description = within(screen.getByRole("dialog")).getByText(
+      KNOWLEDGE_BREADTH_FULL
+    )
+    expect(description.className).toContain("line-clamp-none")
+    expect(description.className).not.toContain("line-clamp-2")
   })
 
   // Same rule as the card: a clipped criterion NAME is the one thing a picker

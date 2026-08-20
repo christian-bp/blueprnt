@@ -212,8 +212,14 @@ export function LibraryPickerDialog({
                     <ItemTitle className="line-clamp-none">
                       {content.criteria[key].name}
                     </ItemTitle>
-                    <ItemDescription>
-                      {content.criteria[key].shortUiText}
+                    {/* The full definition, not the one-line shortUiText: the
+                        picker is where the reader decides whether to add a
+                        criterion, so the whole description has to be
+                        readable here, not a teaser. line-clamp-none overrides
+                        ItemDescription's default two-line clamp; the list
+                        already scrolls, so a taller row costs nothing. */}
+                    <ItemDescription className="line-clamp-none">
+                      {content.criteria[key].fullDefinition}
                     </ItemDescription>
                     {(recommended || overlaps.length > 0) && (
                       <span className="flex flex-wrap gap-1">

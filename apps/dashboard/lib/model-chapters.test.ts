@@ -161,10 +161,34 @@ describe("chapter progress", () => {
   })
 
   // Criteria enter at weight 3, so a fresh selection's budget is already
-  // exact: the chapter is allowed to open done.
+  // exact: the chapter is allowed to open done, but only once Kriterier
+  // itself is complete (the default fixture's six criteria pass every
+  // station check).
   it("opens the weighting chapter done when the budget is born balanced", () => {
     expect(modelChapterProgress(input(), "weighting")).toEqual({
       done: 3,
+      total: 3,
+    })
+  })
+
+  // The owner's bug: a fresh org with no criteria yet showed "Weighting 3 of
+  // 3" full, because the budget and motivation checks pass VACUOUSLY on an
+  // empty model (0 = 0, no warnings pending on zero criteria). A check that
+  // passes on empty input is not progress, so the segment stays at zero
+  // until Kriterier reads as complete on its own rule, even though
+  // weighting's own checks already say "done".
+  it("holds the weighting chapter at zero while criteria is incomplete, even though its own checks pass vacuously", () => {
+    const freshOrg = input({
+      checks: checks({
+        criterionCount: { count: 0, ok: false },
+        dimensionCoverage: { ok: false },
+        workingConditionsTested: { ok: false },
+      }),
+    })
+    const criteria = modelChapterProgress(freshOrg, "criteria")
+    expect(criteria.done).toBeLessThan(criteria.total)
+    expect(modelChapterProgress(freshOrg, "weighting")).toEqual({
+      done: 0,
       total: 3,
     })
   })
