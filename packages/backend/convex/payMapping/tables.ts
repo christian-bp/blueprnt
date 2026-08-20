@@ -2,6 +2,7 @@ import type { PayGapReason } from "@workspace/constants"
 import { defineTable } from "convex/server"
 import type { Infer } from "convex/values"
 import { v } from "convex/values"
+import { levelRuleShape, modelEvidenceFields } from "../evaluationModel/tables"
 
 // Lifecycle status of a pay-mapping run. Shared by the table definition and
 // every wire shape that carries a run's status (runs.ts), so the 4-literal
@@ -59,77 +60,20 @@ export const payMappingRuns = defineTable({
   orgGapPct: v.union(v.number(), v.null()),
   orgGapFlag: payGapFlag,
   // Full method evidence, frozen once at run creation (ADR-0023, ADR-0011):
-  // this is the ONLY place the product versions its method. Every field
-  // below (levelRules/zoneProfileRules/workingConditions/approval, and each
-  // criterion's dimensionKey/libraryKey) is populated unconditionally by
-  // startPayMappingRun going forward, but stays optional here: a pre-cutover
-  // frozen run carries the old sparse shape (criteria with only name/
-  // weightPoints/anchorCount, the legacy levelThresholds array, no
-  // levelRules/zoneProfileRules/workingConditions/approval), and frozen
-  // evidence is never migrated, so the validator must keep tolerating it.
+  // this is the ONLY place the product versions its method. The shape is the
+  // SHARED modelEvidenceFields (evaluationModel/tables.ts), written by the one
+  // builder in evaluationModel/evidence.ts that also writes the model's
+  // last-approved buffer, plus the one legacy field only a frozen run can
+  // carry. Everything startPayMappingRun writes going forward is fully
+  // populated; the optionality in the shared shape is what lets a pre-cutover
+  // frozen run (criteria with only name/weightPoints/anchorCount, the legacy
+  // levelThresholds array, no rules/workingConditions/approval) keep
+  // validating, since frozen evidence is never migrated.
   frozenModel: v.object({
-    criteria: v.array(
-      v.object({
-        // Which of the 21 library criteria this row is.
-        libraryKey: v.optional(v.string()),
-        // The criterion's library display name, localized in the org's
-        // content locale at freeze time; never re-resolved later, so a
-        // subsequent locale change or content edit cannot alter an
-        // already-frozen run.
-        name: v.string(),
-        dimensionKey: v.optional(v.string()),
-        weightPoints: v.number(),
-        // The number of anchor texts the library carries for this criterion
-        // at freeze time: 5 for a section-13.5 entry, 3 otherwise.
-        anchorCount: v.number(),
-      })
-    ),
-    // Superseded by levelRules below; no longer populated by
-    // startPayMappingRun. Kept only so a pre-cutover frozen run's stored
-    // array still validates.
-    levelThresholds: v.optional(
-      v.array(v.object({ level: v.number(), minScore: v.number() }))
-    ),
-    // Seniority-to-score mapping, copied from the live model at freeze time.
-    levelRules: v.optional(
-      v.array(v.object({ level: v.number(), minScore: v.number() }))
-    ),
-    // Per-zone profile-eligibility thresholds, copied from the live model at
-    // freeze time.
-    zoneProfileRules: v.optional(
-      v.array(
-        v.object({
-          zone: v.union(
-            v.literal("A"),
-            v.literal("B"),
-            v.literal("C"),
-            v.literal("D")
-          ),
-          minStep: v.number(),
-        })
-      )
-    ),
-    // The working-conditions materiality decision, copied from the live
-    // model at freeze time.
-    workingConditions: v.optional(
-      v.object({
-        status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
-        motivation: v.string(),
-        decidedBy: v.string(),
-        decidedAt: v.number(),
-      })
-    ),
-    // Model approval grant, copied from the live model at freeze time.
-    // Legitimately absent, not just a defensive fallback: a method-affecting
-    // edit reopens approval (reopenApprovalIfSet) without unlocking any role
-    // already locked under the prior approval, so a run can start with
-    // staffed, locked roles while the model itself carries no current
-    // approval. ADR-0023 accepts this as visible-never-prevented (the
-    // affected roles' methodDrift marking is the visibility); there is no
-    // behavioral gate on run start for it.
-    approval: v.optional(
-      v.object({ approvedBy: v.string(), approvedAt: v.number() })
-    ),
+    ...modelEvidenceFields,
+    // Superseded by levelRules; no longer populated by startPayMappingRun.
+    // Kept only so a pre-cutover frozen run's stored array still validates.
+    levelThresholds: v.optional(v.array(levelRuleShape)),
   }),
   // The samverkansredogörelse (DL 3 kap. 11-14 §§): who the employer
   // cooperated with on the kartläggning and how. Cleared (undefined) when

@@ -28,6 +28,7 @@ export function ConfirmDeleteDialog({
   cancelLabel,
   onConfirm,
   pending,
+  confirmDisabled,
   children,
 }: {
   open: boolean
@@ -38,6 +39,11 @@ export function ConfirmDeleteDialog({
   cancelLabel: string
   onConfirm: () => Promise<void> | void
   pending?: boolean
+  // Blocks the confirm while the dialog is not ready to be confirmed (for
+  // example a consequence list still loading, which must not be confirmed
+  // unseen). Distinct from `pending`, which is the in-flight state and blocks
+  // Cancel too: a not-yet-ready dialog must still be dismissable.
+  confirmDisabled?: boolean
   children?: ReactNode
 }) {
   return (
@@ -54,7 +60,7 @@ export function ConfirmDeleteDialog({
           </AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            disabled={pending}
+            disabled={pending || confirmDisabled}
             className="relative"
             onClick={async () => {
               // A rejected onConfirm means the action failed (the caller

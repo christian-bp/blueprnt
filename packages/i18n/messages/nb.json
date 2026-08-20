@@ -187,6 +187,7 @@
       "payMappingReasonsApplied": "Årsaker brukt",
       "criterionActivated": "Kriterium lagt til",
       "modelApproved": "Modell godkjent",
+      "modelRestored": "Modell tilbakestilt",
       "workingConditionsDecided": "Beslutning om arbeidsforhold lagret",
       "assessmentLocked": "Vurderingen låst",
       "assessmentUnlocked": "Vurderingen låst opp"
@@ -698,6 +699,8 @@
         "approved": "Godkjent",
         "responsibilities": "Ansvar",
         "weightPoints": "Vektpoeng",
+        "selected": "Valgt",
+        "weightMotivation": "Vektbegrunnelse",
         "order": "Rekkefølge",
         "value": "Vurdering",
         "motivation": "Begrunnelse",
@@ -867,6 +870,7 @@
         "modelLevelRulesUpdated": "Nivågrenser oppdatert",
         "modelZoneProfileRulesUpdated": "Soneprofilregler oppdatert",
         "modelApprovalReopened": "Modellgodkjenning gjenåpnet",
+        "modelRestored": "Modell tilbakestilt til sist godkjente",
         "roleAssessmentLocked": "Vurdering låst",
         "roleAssessmentUnlocked": "Vurdering låst opp",
         "roleAssessmentCalibrated": "Vurdering kalibrert"
@@ -1919,6 +1923,17 @@
         "approvalDescription": "Modellen må bestå hver obligatoriske kontroll nedenfor før roller kan vurderes.",
         "draftState": "Ikke godkjent ennå",
         "approveModelCta": "Godkjenn modell",
+        "restoreCta": "Tilbakestill til sist godkjente",
+        "restoreHint": "Modellen som ble godkjent den {date} kan tilbakestilles.",
+        "restoreDialogTitle": "Tilbakestille til sist godkjente modell?",
+        "restoreDialogDescription": "Dette erstatter modellens nåværende kriterier, vekter og dokumentasjon med tilstanden som ble godkjent den {date}. Det kan ikke angres, og modellen forblir åpen for godkjenning etterpå.",
+        "restoreConfirmCta": "Tilbakestill",
+        "restoreCriteriaHeading": "Kriterier",
+        "restoreModelHeading": "Regler og beslutninger",
+        "restoreCriterionRemoved": "Fjernes fra modellen.",
+        "restoreCriterionRemovedWithRatings": "Fjernes fra modellen, sammen med {count, plural, =1 {# vurdering} other {# vurderinger}}.",
+        "restoreCriterionReturns": "Går tilbake i modellen. Hver rolle må vurderes på det på nytt.",
+        "restoreNoChanges": "Modellen samsvarer allerede med sist godkjente tilstand, så en tilbakestilling endrer ingenting.",
         "checkLevel": {
           "blocker": "Obligatorisk",
           "warning": "Anbefalt"

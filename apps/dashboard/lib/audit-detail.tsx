@@ -425,11 +425,16 @@ export const FIELD_DISPLAY_ORDER = [
   "biasAction",
   "approved",
   "responsibilities",
+  // model.restored per-criterion fields (evaluationModel/evidence.ts): whether
+  // the criterion is in the model at all leads its item, since a removed or
+  // returning criterion's row carries nothing else to read it against.
+  "selected",
   // criterion.activated/criterion.deactivated flat-stats fields (criteria.ts):
   // libraryKey/dimensionKey lead as identity, like name/title above.
   "libraryKey",
   "dimensionKey",
   "weightPoints",
+  "weightMotivation",
   "order",
   "deletedRatingCount",
   "budget",
@@ -891,6 +896,29 @@ export function formatAuditDetail(
       const fieldCount = changes ? Object.keys(changes).length : 0
       const summary = labels.fieldsChanged(fieldCount)
       return label ? `${label}: ${summary}` : summary
+    }
+    // A restore to the last approved model touches the criteria set, the
+    // model's own rules and decisions, or both, so the cell states BOTH halves.
+    // The generic bulk branch would state only the item count, and would read
+    // "0 items changed" for a restore that only put the rules back.
+    case "model.restored": {
+      const criteriaPart = bulkCount > 0 ? labels.itemsChanged(bulkCount) : ""
+      if (changes === null) return criteriaPart
+      const changesPart = formatChanges(
+        changes,
+        fieldLabel,
+        undefined,
+        boolLabel,
+        valueLabel,
+        dateLabel
+      )
+      return criteriaPart === "" ? (
+        changesPart
+      ) : (
+        <>
+          {criteriaPart}; {changesPart}
+        </>
+      )
     }
     case "organization.onboardingCompleted":
     case "ai.suggestionConfirmed":

@@ -187,6 +187,7 @@
       "payMappingReasonsApplied": "Perusteet otettu käyttöön",
       "criterionActivated": "Kriteeri lisätty",
       "modelApproved": "Malli hyväksytty",
+      "modelRestored": "Malli palautettu",
       "workingConditionsDecided": "Työolosuhteiden päätös tallennettu",
       "assessmentLocked": "Arviointi lukittu",
       "assessmentUnlocked": "Arvioinnin lukitus avattu"
@@ -698,6 +699,8 @@
         "approved": "Hyväksytty",
         "responsibilities": "Vastuut",
         "weightPoints": "Painopisteet",
+        "selected": "Valittu",
+        "weightMotivation": "Painotuksen perustelu",
         "order": "Järjestys",
         "value": "Arviointi",
         "motivation": "Perustelu",
@@ -867,6 +870,7 @@
         "modelLevelRulesUpdated": "Tasorajat päivitetty",
         "modelZoneProfileRulesUpdated": "Vyöhykeprofiilisäännöt päivitetty",
         "modelApprovalReopened": "Mallin hyväksyntä avattu uudelleen",
+        "modelRestored": "Malli palautettu viimeksi hyväksyttyyn",
         "roleAssessmentLocked": "Arviointi lukittu",
         "roleAssessmentUnlocked": "Arvioinnin lukitus avattu",
         "roleAssessmentCalibrated": "Arviointi kalibroitu"
@@ -1919,6 +1923,17 @@
         "approvalDescription": "Mallin on läpäistävä jokainen alla oleva pakollinen tarkistus ennen kuin rooleja voi arvioida.",
         "draftState": "Ei vielä hyväksytty",
         "approveModelCta": "Hyväksy malli",
+        "restoreCta": "Palauta viimeksi hyväksyttyyn",
+        "restoreHint": "Malli, joka hyväksyttiin {date}, voidaan palauttaa.",
+        "restoreDialogTitle": "Palautetaanko viimeksi hyväksyttyyn malliin?",
+        "restoreDialogDescription": "Tämä korvaa mallin nykyiset kriteerit, painot ja dokumentaation tilalla, joka hyväksyttiin {date}. Sitä ei voi kumota, ja malli pysyy hyväksyntää vailla myös jälkeenpäin.",
+        "restoreConfirmCta": "Palauta",
+        "restoreCriteriaHeading": "Kriteerit",
+        "restoreModelHeading": "Säännöt ja päätökset",
+        "restoreCriterionRemoved": "Poistetaan mallista.",
+        "restoreCriterionRemovedWithRatings": "Poistetaan mallista yhdessä {count, plural, =1 {# arvioinnin} other {# arvioinnin}} kanssa.",
+        "restoreCriterionReturns": "Palaa malliin. Jokainen rooli on arvioitava sen osalta uudelleen.",
+        "restoreNoChanges": "Malli vastaa jo viimeksi hyväksyttyä tilaa, joten palauttaminen ei muuta mitään.",
         "checkLevel": {
           "blocker": "Pakollinen",
           "warning": "Suositeltu"

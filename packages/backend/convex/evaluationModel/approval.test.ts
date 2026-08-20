@@ -718,3 +718,332 @@ describe("grantModelApproval test helper", () => {
     })
   })
 })
+
+// The last-approved buffer and the restore that reads it (ADR-0023 decision
+// 11). The buffer is written by the SHARED evidence builder a pay-mapping run
+// freezes with, and the restore's confirm preview and its audit diff come from
+// the SHARED diff builder, so both pairs are asserted here as one contract.
+describe("restoreApprovedModel", () => {
+  // Approves, then makes a spread of method-affecting edits so the restore has
+  // something of every kind to undo: a criterion added, one removed, weights
+  // moved, and the materiality decision changed.
+  async function approveThenEdit(t: ReturnType<typeof initConvexTest>) {
+    const { orgId, asAdmin, model } = await seedApprovableModel(t)
+    await asAdmin.mutation(api.evaluationModel.approval.approveModel, { orgId })
+    // Add a criterion that was not in the approved model.
+    const addedId = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "risk-consequence" }
+    )
+    // Remove one that was.
+    const removed = model.criteria[0]?.criterionId as Id<"criteria">
+    await asAdmin.mutation(api.evaluationModel.criteria.deactivateCriterion, {
+      orgId,
+      criterionId: removed,
+    })
+    // Change the materiality decision's motivation.
+    await asAdmin.mutation(
+      api.evaluationModel.approval.setWorkingConditionsDecision,
+      {
+        orgId,
+        status: "testedNotMaterial",
+        motivation: "Omprovad efter godkannandet.",
+      }
+    )
+    return { orgId, asAdmin, model, addedId }
+  }
+
+  it("stores the full approved evidence as the buffer on approve", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedApprovableModel(t)
+    await asAdmin.mutation(api.evaluationModel.approval.approveModel, { orgId })
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      const buffer = model?.lastApprovedModel
+      if (buffer === undefined) throw new Error("no buffer")
+      expect(buffer.criteria).toHaveLength(6)
+      expect(buffer.approval?.approvedAt).toBe(model?.approval?.approvedAt)
+      // The restore half of the evidence, not only the weights: every
+      // criterion's protokoll, bias review and per-criterion approval.
+      const first = buffer.criteria[0]
+      expect(first?.libraryKey).toBeDefined()
+      expect(first?.dimensionKey).toBeDefined()
+      expect(first?.weightPoints).toBe(3)
+      expect(first?.purpose).toBe(
+        "Motiverar varför kriteriet ingår i modellen."
+      )
+      expect(first?.biasRisk).toBe("low")
+      expect(first?.approved).toBe(true)
+      expect(first?.decidedBy).toBeDefined()
+      // The model's own rules and materiality decision ride along.
+      expect(buffer.levelRules).toHaveLength(12)
+      expect(buffer.workingConditions?.status).toBe("testedNotMaterial")
+    })
+  })
+
+  it("round-trips the model back to the approved state", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await approveThenEdit(t)
+    await asAdmin.mutation(api.evaluationModel.approval.restoreApprovedModel, {
+      orgId,
+    })
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (model == null) throw new Error("no model")
+      const rows = await ctx.db
+        .query("criteria")
+        .withIndex("by_model", (q) => q.eq("modelId", model._id))
+        .collect()
+      // The approved six are back, the criterion added afterwards is gone.
+      expect(rows).toHaveLength(6)
+      expect([...rows.map((row) => row.libraryKey)].sort()).toEqual(
+        [...HEALTHY_KEYS].sort()
+      )
+      // Every restored row carries its documentation and its own approval.
+      for (const row of rows) {
+        expect(row.weightPoints).toBe(3)
+        expect(row.approved).toBe(true)
+        expect(row.purpose).toBe("Motiverar varför kriteriet ingår i modellen.")
+        expect(row.biasRisk).toBe("low")
+      }
+      // The model-level decision is back too.
+      expect(model.workingConditions?.motivation).toBe(
+        "Testat men inte materiellt relevant i denna verksamhet."
+      )
+      // Approval stays REOPENED: the ordinary one-click approve closes the
+      // loop, so there is exactly one approval path.
+      expect(model.approval).toBeUndefined()
+    })
+    // ... and that one click now works, with a green checklist.
+    await asAdmin.mutation(api.evaluationModel.approval.approveModel, { orgId })
+  })
+
+  it("deletes the ratings of every criterion it removes", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, addedId } = await approveThenEdit(t)
+    // A role rated on the criterion added after the approval.
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Utvecklare",
+      function: "Teknik",
+      team: "Kärna",
+      trackKey: "IC",
+      // setRating requires a complete job profile before rating starts.
+      purpose: "Bygger produkten.",
+      responsibilities: "Utvecklar och underhåller tjänsten.",
+    })
+    await grantModelApproval(t, orgId)
+    await asAdmin.mutation(api.assessment.ratings.setRating, {
+      orgId,
+      roleId,
+      criterionId: addedId,
+      value: 3,
+    })
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      // grantModelApproval stamped an approval directly; clear it so the
+      // restore's reopened-approval precondition holds.
+      if (model != null) await ctx.db.patch(model._id, { approval: undefined })
+      const ratings = await ctx.db
+        .query("ratings")
+        .withIndex("by_criterion", (q) => q.eq("criterionId", addedId))
+        .collect()
+      expect(ratings).toHaveLength(1)
+    })
+    await asAdmin.mutation(api.evaluationModel.approval.restoreApprovedModel, {
+      orgId,
+    })
+    await t.run(async (ctx) => {
+      const ratings = await ctx.db
+        .query("ratings")
+        .withIndex("by_criterion", (q) => q.eq("criterionId", addedId))
+        .collect()
+      expect(ratings).toHaveLength(0)
+      expect(await ctx.db.get(addedId)).toBeNull()
+    })
+  })
+
+  it("audits model.restored with the diff the preview showed", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await approveThenEdit(t)
+    const preview = await asAdmin.query(
+      api.evaluationModel.approval.getModelRestorePreview,
+      { orgId, locale: "en" }
+    )
+    if (preview === null) throw new Error("no preview")
+    expect(preview.approvedAt).toBeGreaterThan(0)
+    const kinds = new Map(
+      preview.diff.criteria.map((criterion) => [
+        criterion.libraryKey,
+        criterion.kind,
+      ])
+    )
+    // The criterion added after the approval is removed by the restore, the
+    // one deactivated comes back, and the survivors whose weights the
+    // deactivation redistributed read as changed.
+    expect(kinds.get("risk-consequence")).toBe("removed")
+    expect(kinds.get(HEALTHY_KEYS[0])).toBe("restored")
+    // The materiality motivation is a model-level before/after row.
+    expect(preview.diff.changes.motivation?.to).toBe(
+      "Testat men inte materiellt relevant i denna verksamhet."
+    )
+
+    await asAdmin.mutation(api.evaluationModel.approval.restoreApprovedModel, {
+      orgId,
+    })
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.restored")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      const payload = rows[0]?.payload as {
+        modelId: string
+        count: number
+        changes: Record<string, { from: unknown; to: unknown }>
+        items: {
+          libraryKey: string
+          label: string
+          changes: Record<string, { from: unknown; to: unknown }>
+        }[]
+      }
+      // ONE diff builder: the audited item set is exactly the previewed one.
+      expect(payload.count).toBe(preview.diff.criteria.length)
+      expect([...payload.items.map((item) => item.libraryKey)].sort()).toEqual(
+        [...preview.diff.criteria.map((c) => c.libraryKey)].sort()
+      )
+      expect(payload.changes.motivation?.to).toBe(
+        preview.diff.changes.motivation?.to
+      )
+      // Criteria are named, not keyed, in the trail.
+      const removedItem = payload.items.find(
+        (item) => item.libraryKey === "risk-consequence"
+      )
+      expect(removedItem?.label.length).toBeGreaterThan(0)
+      expect(removedItem?.changes.selected).toEqual({ from: true, to: false })
+      const returning = payload.items.find(
+        (item) => item.libraryKey === HEALTHY_KEYS[0]
+      )
+      expect(returning?.changes.selected).toEqual({ from: false, to: true })
+      expect(rows[0]?.category).toBe("model")
+    })
+  })
+
+  it("refuses while the model is still approved", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedApprovableModel(t)
+    await asAdmin.mutation(api.evaluationModel.approval.approveModel, { orgId })
+    await expect(
+      asAdmin.mutation(api.evaluationModel.approval.restoreApprovedModel, {
+        orgId,
+      })
+    ).rejects.toThrow(/errors\.invalidTransition/)
+  })
+
+  it("refuses when the model has never been approved (no buffer)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedApprovableModel(t)
+    await expect(
+      asAdmin.mutation(api.evaluationModel.approval.restoreApprovedModel, {
+        orgId,
+      })
+    ).rejects.toThrow(/errors\.notFound/)
+  })
+
+  it("refuses an editor, and offers them the preview read", async () => {
+    const t = initConvexTest()
+    const { orgId } = await approveThenEdit(t)
+    const asEditor = await addEditor(t, orgId, "editor3@acme.se")
+    await expect(
+      asEditor.mutation(api.evaluationModel.approval.restoreApprovedModel, {
+        orgId,
+      })
+    ).rejects.toThrow(/errors\.adminRequired/)
+    // The read stays org-scoped, like getMethodChecks: an editor sees where
+    // the model stands and is offered none of the writes.
+    const preview = await asEditor.query(
+      api.evaluationModel.approval.getModelRestorePreview,
+      { orgId, locale: "en" }
+    )
+    expect(preview).not.toBeNull()
+  })
+
+  it("offers no preview while the approval still stands, or with no buffer", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedApprovableModel(t)
+    // No buffer yet.
+    expect(
+      await asAdmin.query(api.evaluationModel.approval.getModelRestorePreview, {
+        orgId,
+        locale: "en",
+      })
+    ).toBeNull()
+    await asAdmin.mutation(api.evaluationModel.approval.approveModel, { orgId })
+    // Buffer written, but the approval stands.
+    expect(
+      await asAdmin.query(api.evaluationModel.approval.getModelRestorePreview, {
+        orgId,
+        locale: "en",
+      })
+    ).toBeNull()
+    const checks = await asAdmin.query(
+      api.evaluationModel.approval.getMethodChecks,
+      { orgId }
+    )
+    // The chapter still learns a buffer exists, so the control can appear the
+    // moment an edit reopens approval.
+    expect(checks?.lastApprovedAt).toBeGreaterThan(0)
+  })
+
+  it("writes nothing when the live model already matches the buffer", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedApprovableModel(t)
+    await asAdmin.mutation(api.evaluationModel.approval.approveModel, { orgId })
+    // Reopen approval with an edit that changes nothing the buffer records:
+    // a rebalance back to the same allocation is a no-op, so unapprove one
+    // criterion and re-approve it instead.
+    const criterionId = model.criteria[0]?.criterionId as Id<"criteria">
+    await asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
+      orgId,
+      criterionId,
+      approved: false,
+    })
+    await asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
+      orgId,
+      criterionId,
+      approved: true,
+    })
+    await t.run(async (ctx) => {
+      const row = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      // A per-criterion reopen does not reopen the MODEL's approval (spec
+      // 2.3), so clear it by hand to reach the restore's precondition.
+      if (row != null) await ctx.db.patch(row._id, { approval: undefined })
+    })
+    await asAdmin.mutation(api.evaluationModel.approval.restoreApprovedModel, {
+      orgId,
+    })
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.restored")
+        )
+        .collect()
+      expect(rows).toHaveLength(0)
+    })
+  })
+})

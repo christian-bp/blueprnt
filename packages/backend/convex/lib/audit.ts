@@ -44,6 +44,7 @@ export const AUDIT_EVENTS = {
   modelLevelRulesUpdated: "model.levelRulesUpdated",
   modelZoneProfileRulesUpdated: "model.zoneProfileRulesUpdated",
   modelApprovalReopened: "model.approvalReopened",
+  modelRestored: "model.restored",
   assessmentLocked: "role.assessmentLocked",
   assessmentUnlocked: "role.assessmentUnlocked",
   assessmentCalibrated: "role.assessmentCalibrated",
@@ -201,6 +202,7 @@ const AUDIT_SUBJECTS: {
   "model.levelRulesUpdated": null,
   "model.zoneProfileRulesUpdated": null,
   "model.approvalReopened": null,
+  "model.restored": null,
   "role.assessmentLocked": (payload) => ({ kind: "role", id: payload.roleId }),
   "role.assessmentUnlocked": (payload) => ({
     kind: "role",

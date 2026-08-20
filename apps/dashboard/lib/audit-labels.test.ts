@@ -17,6 +17,10 @@ import {
   ROLE_CREATE_FIELDS,
   SETTINGS_AUDIT_FIELDS,
 } from "@workspace/backend/convex/lib/audit"
+import {
+  RESTORE_CRITERION_AUDIT_FIELDS,
+  RESTORE_MODEL_AUDIT_FIELDS,
+} from "@workspace/backend/convex/evaluationModel/evidence"
 import { COMPLIANCE_AUDIT_FIELDS } from "@workspace/backend/convex/evaluationModel/method"
 import { ACTION_TARGET_KINDS } from "@workspace/backend/convex/payMapping/tables"
 import {
@@ -245,6 +249,11 @@ const ALL_AUDIT_FIELDS = [
     ...ACTION_AUDIT_FIELDS,
     ...ACTION_UPDATE_AUDIT_FIELDS,
     ...NOTE_AUDIT_FIELDS,
+    // model.restored: the per-criterion and model-level diff fields the ONE
+    // restore diff builder emits (evaluationModel/evidence.ts), which the
+    // confirm dialog and the audit payload both render.
+    ...RESTORE_CRITERION_AUDIT_FIELDS,
+    ...RESTORE_MODEL_AUDIT_FIELDS,
     ...OTHER_AUDIT_FIELDS,
   ]),
 ]

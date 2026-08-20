@@ -23,10 +23,22 @@ const ALL_GREEN_CHECKS = [
 ] as const
 
 let queryResult: unknown
+let previewResult: unknown
 let orgRole = "admin"
 
+// Two queries render behind this card: the card's own getMethodChecks
+// ({ orgId }) and, once the restore dialog is open, getModelRestorePreview
+// ({ orgId, locale }). They are told apart by their args rather than by
+// function identity, since the api proxy is not comparable inside a hoisted
+// mock factory.
 vi.mock("convex/react", () => ({
-  useQuery: () => queryResult,
+  useQuery: (_fn: unknown, args: unknown) => {
+    if (args === "skip") return undefined
+    if (args !== null && typeof args === "object" && "locale" in args) {
+      return previewResult
+    }
+    return queryResult
+  },
   useMutation: () => vi.fn(),
 }))
 vi.mock("@/components/org-context", () => ({
@@ -46,6 +58,7 @@ function renderCard(orgId = "org1") {
 describe("ApprovalCard", () => {
   beforeEach(() => {
     orgRole = "admin"
+    previewResult = undefined
   })
   afterEach(() => {
     cleanup()
@@ -57,6 +70,7 @@ describe("ApprovalCard", () => {
     queryResult = {
       checks: ALL_GREEN_CHECKS,
       approval: null,
+      lastApprovedAt: null,
       workingConditions: null,
     }
     renderCard()
@@ -78,6 +92,7 @@ describe("ApprovalCard", () => {
         check.key === "documentationComplete" ? { ...check, ok: false } : check
       ),
       approval: null,
+      lastApprovedAt: null,
       workingConditions: null,
     }
     renderCard()
@@ -91,6 +106,7 @@ describe("ApprovalCard", () => {
         check.key === "overlapPairs" ? { ...check, ok: false } : check
       ),
       approval: null,
+      lastApprovedAt: null,
       workingConditions: null,
     }
     renderCard()
@@ -106,6 +122,7 @@ describe("ApprovalCard", () => {
         approvedByName: "Alex",
         approvedAt: 1_700_000_000_000,
       },
+      lastApprovedAt: null,
       workingConditions: {
         status: "active",
         motivation: "Standby duty is a recurring requirement.",
@@ -122,6 +139,7 @@ describe("ApprovalCard", () => {
     queryResult = {
       checks: ALL_GREEN_CHECKS,
       approval: null,
+      lastApprovedAt: null,
       workingConditions: null,
     }
     renderCard()
@@ -156,6 +174,7 @@ describe("ApprovalCard", () => {
     queryResult = {
       checks: ALL_GREEN_CHECKS,
       approval: null,
+      lastApprovedAt: null,
       workingConditions: null,
     }
     renderCard()
@@ -176,6 +195,7 @@ describe("ApprovalCard", () => {
     queryResult = {
       checks: ALL_GREEN_CHECKS,
       approval: null,
+      lastApprovedAt: null,
       workingConditions: {
         status: "active",
         motivation: "Standby duty is a recurring requirement.",
@@ -193,5 +213,66 @@ describe("ApprovalCard", () => {
     ).toBeNull()
     expect(screen.queryByRole("textbox")).toBeNull()
     expect(screen.queryByRole("button", { name: "Save decision" })).toBeNull()
+  })
+  // The restore control (ADR-0023 decision 11) is offered only where it is
+  // meaningful: approval re-opened by a method-affecting edit AND a stored
+  // last-approved buffer to go back to. Admin-only, like approve.
+  describe("restore to last approved", () => {
+    const REOPENED_WITH_BUFFER = {
+      checks: ALL_GREEN_CHECKS,
+      approval: null,
+      lastApprovedAt: 1_700_000_000_000,
+      workingConditions: null,
+    }
+
+    it("offers the restore, naming the date it goes back to", () => {
+      queryResult = REOPENED_WITH_BUFFER
+      renderCard()
+      expect(
+        screen.getByRole("button", { name: "Restore to last approved" })
+      ).toBeDefined()
+      expect(
+        screen.getByText(/The model approved on .* can be restored\./)
+      ).toBeDefined()
+    })
+
+    it("hides it while the model carries no buffer", () => {
+      queryResult = {
+        checks: ALL_GREEN_CHECKS,
+        approval: null,
+        lastApprovedAt: null,
+        workingConditions: null,
+      }
+      renderCard()
+      expect(
+        screen.queryByRole("button", { name: "Restore to last approved" })
+      ).toBeNull()
+    })
+
+    it("hides it while the approval still stands", () => {
+      queryResult = {
+        checks: ALL_GREEN_CHECKS,
+        approval: {
+          approvedBy: "auth-1",
+          approvedByName: "Alex",
+          approvedAt: 1_700_000_000_000,
+        },
+        lastApprovedAt: 1_700_000_000_000,
+        workingConditions: null,
+      }
+      renderCard()
+      expect(
+        screen.queryByRole("button", { name: "Restore to last approved" })
+      ).toBeNull()
+    })
+
+    it("hides it from an editor", () => {
+      orgRole = "editor"
+      queryResult = REOPENED_WITH_BUFFER
+      renderCard()
+      expect(
+        screen.queryByRole("button", { name: "Restore to last approved" })
+      ).toBeNull()
+    })
   })
 })

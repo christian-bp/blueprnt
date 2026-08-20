@@ -187,6 +187,7 @@
       "payMappingReasonsApplied": "Reasons applied",
       "criterionActivated": "Criterion added",
       "modelApproved": "Model approved",
+      "modelRestored": "Model restored",
       "workingConditionsDecided": "Working conditions decision saved",
       "assessmentLocked": "Assessment locked",
       "assessmentUnlocked": "Assessment unlocked"
@@ -698,6 +699,8 @@
         "approved": "Approved",
         "responsibilities": "Responsibilities",
         "weightPoints": "Weight points",
+        "selected": "Selected",
+        "weightMotivation": "Weight motivation",
         "order": "Order",
         "value": "Rating",
         "motivation": "Motivation",
@@ -867,6 +870,7 @@
         "modelLevelRulesUpdated": "Level thresholds updated",
         "modelZoneProfileRulesUpdated": "Zone profile rules updated",
         "modelApprovalReopened": "Model approval reopened",
+        "modelRestored": "Model restored to last approved",
         "roleAssessmentLocked": "Assessment locked",
         "roleAssessmentUnlocked": "Assessment unlocked",
         "roleAssessmentCalibrated": "Assessment calibrated"
@@ -1919,6 +1923,17 @@
         "approvalDescription": "The model must pass every required check below before roles can be rated.",
         "draftState": "Not yet approved",
         "approveModelCta": "Approve model",
+        "restoreCta": "Restore to last approved",
+        "restoreHint": "The model approved on {date} can be restored.",
+        "restoreDialogTitle": "Restore to the last approved model?",
+        "restoreDialogDescription": "This replaces the model's current criteria, weights and documentation with the state approved on {date}. It cannot be undone, and the model stays open for approval afterwards.",
+        "restoreConfirmCta": "Restore",
+        "restoreCriteriaHeading": "Criteria",
+        "restoreModelHeading": "Rules and decisions",
+        "restoreCriterionRemoved": "Removed from the model.",
+        "restoreCriterionRemovedWithRatings": "Removed from the model, together with {count, plural, =1 {# rating} other {# ratings}}.",
+        "restoreCriterionReturns": "Returns to the model. Every role has to be evaluated on it again.",
+        "restoreNoChanges": "The model already matches the last approved state, so restoring changes nothing.",
         "checkLevel": {
           "blocker": "Required",
           "warning": "Recommended"

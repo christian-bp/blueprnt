@@ -19,26 +19,13 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation, useQuery } from "convex/react"
-import { ConvexError } from "convex/values"
 import { useFormatter, useTranslations } from "next-intl"
+import { useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { RestoreApprovedDialog } from "@/components/model/restore-approved-dialog"
 import { useOrganization } from "@/components/org-context"
+import { methodErrorMessage } from "@/lib/method-error"
 import { toast } from "@/lib/toast"
-
-const KNOWN_ERROR_KEYS = ["methodBlocked", "invalidTransition"] as const
-
-function errorMessage(
-  error: unknown,
-  tErrors: (key: (typeof KNOWN_ERROR_KEYS)[number]) => string,
-  fallback: string
-): string {
-  if (error instanceof ConvexError) {
-    const code = (error.data as { code?: string } | null)?.code
-    const known = KNOWN_ERROR_KEYS.find((key) => code === `errors.${key}`)
-    if (known !== undefined) return tErrors(known)
-  }
-  return fallback
-}
 
 function CheckRow({
   ok,
@@ -91,6 +78,7 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
     orgId,
   })
   const approve = useMutation(api.evaluationModel.approval.approveModel)
+  const [restoreOpen, setRestoreOpen] = useState(false)
 
   if (data === undefined) {
     // Content-shaped loading state: the card's own chrome (title/description)
@@ -128,12 +116,19 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
     (check) => check.level === "blocker" && !check.ok
   )
 
+  // The restore is offered only where it is meaningful: approval re-opened by
+  // a method-affecting edit AND a stored last-approved buffer to go back to.
+  // An approved model already IS its last-approved state, and a model approved
+  // before the buffer existed has nothing to restore. Admin-only, like approve.
+  const canRestore =
+    isAdmin && data.approval === null && data.lastApprovedAt !== null
+
   async function onApprove() {
     try {
       await approve({ orgId })
       toast.success(tToast("modelApproved"))
     } catch (error) {
-      toast.error(errorMessage(error, tErrors, tToast("error")))
+      toast.error(methodErrorMessage(error, tErrors, tToast("error")))
     }
   }
 
@@ -149,27 +144,58 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
         <CardDescription>{t("approvalDescription")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm">
-            {data.approval
-              ? t("decidedBy", {
-                  name: data.approval.approvedByName ?? "",
-                  date: format.dateTime(new Date(data.approval.approvedAt), {
-                    dateStyle: "medium",
-                  }),
-                })
-              : t("draftState")}
-          </p>
-          {data.approval === null && isAdmin && (
-            <Button
-              type="button"
-              disabled={hasFailingBlocker}
-              onClick={onApprove}
-            >
-              {t("approveModelCta")}
-            </Button>
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm">
+              {data.approval
+                ? t("decidedBy", {
+                    name: data.approval.approvedByName ?? "",
+                    date: format.dateTime(new Date(data.approval.approvedAt), {
+                      dateStyle: "medium",
+                    }),
+                  })
+                : t("draftState")}
+            </p>
+            <div className="flex items-center gap-2">
+              {canRestore && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setRestoreOpen(true)}
+                >
+                  {t("restoreCta")}
+                </Button>
+              )}
+              {data.approval === null && isAdmin && (
+                <Button
+                  type="button"
+                  disabled={hasFailingBlocker}
+                  onClick={onApprove}
+                >
+                  {t("approveModelCta")}
+                </Button>
+              )}
+            </div>
+          </div>
+          {/* Which approved state the restore goes back to, on its own line so
+              naming the date never crowds the two buttons. */}
+          {canRestore && data.lastApprovedAt !== null && (
+            <p className="text-muted-foreground text-xs">
+              {t("restoreHint", {
+                date: format.dateTime(new Date(data.lastApprovedAt), {
+                  dateStyle: "medium",
+                }),
+              })}
+            </p>
           )}
         </div>
+        {canRestore && (
+          <RestoreApprovedDialog
+            orgId={orgId}
+            open={restoreOpen}
+            onOpenChange={setRestoreOpen}
+          />
+        )}
         <ul className="space-y-2">
           {METHOD_CHECK_KEYS.map((key) => {
             const check = checksByKey.get(key)

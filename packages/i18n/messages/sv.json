@@ -187,6 +187,7 @@
       "payMappingReasonsApplied": "Skäl tillämpade",
       "criterionActivated": "Kriterium tillagt",
       "modelApproved": "Modell godkänd",
+      "modelRestored": "Modell återställd",
       "workingConditionsDecided": "Beslut om arbetsförhållanden sparat",
       "assessmentLocked": "Bedömningen låst",
       "assessmentUnlocked": "Bedömningen upplåst"
@@ -698,6 +699,8 @@
         "approved": "Godkänd",
         "responsibilities": "Ansvar",
         "weightPoints": "Viktpoäng",
+        "selected": "Vald",
+        "weightMotivation": "Viktmotivering",
         "order": "Ordning",
         "value": "Bedömning",
         "motivation": "Motivering",
@@ -867,6 +870,7 @@
         "modelLevelRulesUpdated": "Nivågränser uppdaterade",
         "modelZoneProfileRulesUpdated": "Zonprofilregler uppdaterade",
         "modelApprovalReopened": "Modellgodkännande återöppnat",
+        "modelRestored": "Modell återställd till senast godkända",
         "roleAssessmentLocked": "Bedömning låst",
         "roleAssessmentUnlocked": "Bedömning upplåst",
         "roleAssessmentCalibrated": "Bedömning kalibrerad"
@@ -1919,6 +1923,17 @@
         "approvalDescription": "Modellen måste klara varje obligatorisk kontroll nedan innan roller kan bedömas.",
         "draftState": "Ej godkänd än",
         "approveModelCta": "Godkänn modell",
+        "restoreCta": "Återställ till senast godkända",
+        "restoreHint": "Modellen som godkändes den {date} kan återställas.",
+        "restoreDialogTitle": "Återställ till senast godkända modellen?",
+        "restoreDialogDescription": "Detta ersätter modellens nuvarande kriterier, vikter och dokumentation med det tillstånd som godkändes den {date}. Det går inte att ångra, och modellen förblir öppen för godkännande efteråt.",
+        "restoreConfirmCta": "Återställ",
+        "restoreCriteriaHeading": "Kriterier",
+        "restoreModelHeading": "Regler och beslut",
+        "restoreCriterionRemoved": "Tas bort ur modellen.",
+        "restoreCriterionRemovedWithRatings": "Tas bort ur modellen, tillsammans med {count, plural, =1 {# bedömning} other {# bedömningar}}.",
+        "restoreCriterionReturns": "Återgår till modellen. Varje roll måste bedömas på det igen.",
+        "restoreNoChanges": "Modellen motsvarar redan det senast godkända tillståndet, så en återställning ändrar ingenting.",
         "checkLevel": {
           "blocker": "Obligatorisk",
           "warning": "Rekommenderad"

@@ -321,6 +321,18 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
     modelId: "model-1",
     causeEvent: "criterion.activated",
   },
+  "model.restored": {
+    modelId: "model-1",
+    changes: {},
+    count: 1,
+    items: [
+      {
+        libraryKey: "knowledge-breadth",
+        label: "Knowledge breadth",
+        changes: { selected: { from: true, to: false } },
+      },
+    ],
+  },
   "role.assessmentLocked": { roleId: "role-1", ratedCount: 8 },
   "role.assessmentUnlocked": { roleId: "role-1" },
   "role.assessmentCalibrated": { roleId: "role-1", noteProvided: true },
@@ -511,6 +523,7 @@ const EXPECTED_SUBJECTS: { [E in AuditEvent]: AuditSubject | undefined } = {
   "model.levelRulesUpdated": undefined,
   "model.zoneProfileRulesUpdated": undefined,
   "model.approvalReopened": undefined,
+  "model.restored": undefined,
   "role.assessmentLocked": { kind: "role", id: "role-1" },
   "role.assessmentUnlocked": { kind: "role", id: "role-1" },
   "role.assessmentCalibrated": { kind: "role", id: "role-1" },

@@ -66,6 +66,7 @@ import type * as email_templates from "../email/templates.js";
 import type * as evaluationModel_approval from "../evaluationModel/approval.js";
 import type * as evaluationModel_criteria from "../evaluationModel/criteria.js";
 import type * as evaluationModel_criteriaLibrary from "../evaluationModel/criteriaLibrary.js";
+import type * as evaluationModel_evidence from "../evaluationModel/evidence.js";
 import type * as evaluationModel_localize from "../evaluationModel/localize.js";
 import type * as evaluationModel_method from "../evaluationModel/method.js";
 import type * as evaluationModel_model from "../evaluationModel/model.js";
@@ -176,6 +177,7 @@ declare const fullApi: ApiFromModules<{
   "evaluationModel/approval": typeof evaluationModel_approval;
   "evaluationModel/criteria": typeof evaluationModel_criteria;
   "evaluationModel/criteriaLibrary": typeof evaluationModel_criteriaLibrary;
+  "evaluationModel/evidence": typeof evaluationModel_evidence;
   "evaluationModel/localize": typeof evaluationModel_localize;
   "evaluationModel/method": typeof evaluationModel_method;
   "evaluationModel/model": typeof evaluationModel_model;

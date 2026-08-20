@@ -11,10 +11,7 @@ import type {
   QueryCtx,
 } from "../_generated/server"
 import { deriveResults } from "../assessment/compute"
-import {
-  criteriaLibraryContent,
-  LIBRARY_DIMENSION,
-} from "../evaluationModel/criteriaLibrary"
+import { buildModelEvidence } from "../evaluationModel/evidence"
 import { resolveContentLocale } from "../evaluationModel/model"
 import { AUDIT_EVENTS, resolveActorName } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
@@ -170,57 +167,20 @@ export const startPayMappingRun = orgMutation({
 
     const slug = await uniqueSlug(ctx, "payMappingRuns", ctx.orgId, trimmed)
 
-    // Freeze the model config once (ADR-0008).
+    // Freeze the model config once (ADR-0008). Built by the SHARED evidence
+    // builder (evaluationModel/evidence.ts), the same one approveModel writes
+    // the model's last-approved buffer with, so the two copies of the method
+    // evidence can never diverge in shape or content. Criterion display names
+    // and anchor counts come from the library content in the org's own content
+    // locale at freeze time and are never re-resolved, so a later locale change
+    // or content edit cannot alter an already-frozen run. This is the ADR-0023
+    // freeze, the only place the product versions its method (spec 2.6).
     const model = await ctx.db
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .unique()
-    const criteriaRows = model
-      ? await ctx.db
-          .query("criteria")
-          .withIndex("by_model", (q) => q.eq("modelId", model._id))
-          .collect()
-      : []
-    // Every criterion is a library selection (decision 8): its display name
-    // and anchor count are frozen from the library content in the org's own
-    // content locale at freeze time, never from a stored text (criteria rows
-    // carry no name/anchors of their own) and never re-resolved later, so a
-    // subsequent locale change or content edit cannot alter an already-frozen
-    // run. The rest of the model's method evidence is copied from the live
-    // model row as-is: this is the ADR-0023 freeze, the only place the
-    // product versions its method (spec 2.6).
     const freezeLocale = await resolveContentLocale(ctx, ctx.orgId)
-    const freezeContent = criteriaLibraryContent(freezeLocale)
-    const frozenModel = {
-      criteria: criteriaRows.map((c) => {
-        const entry = freezeContent.criteria[c.libraryKey]
-        const anchorCount =
-          3 +
-          (entry.anchor2 !== undefined ? 1 : 0) +
-          (entry.anchor4 !== undefined ? 1 : 0)
-        return {
-          libraryKey: c.libraryKey,
-          name: entry.name,
-          dimensionKey: LIBRARY_DIMENSION[c.libraryKey],
-          weightPoints: c.weightPoints,
-          anchorCount,
-        }
-      }),
-      levelRules: model?.levelRules ?? [],
-      zoneProfileRules: model?.zoneProfileRules ?? [],
-      workingConditions: model?.workingConditions,
-      // Approval can be legitimately absent here, not just as a defensive
-      // fallback: a method-affecting edit reopens approval
-      // (reopenApprovalIfSet) without touching any role already locked under
-      // the prior approval, so a staffed role can stay locked while the
-      // model's current approval is unset. Preconditions require every
-      // staffed role to be locked, never that the model is currently
-      // approved, so a run can start in exactly this state. ADR-0023 accepts
-      // this as visible-never-prevented: the frozen `undefined` here, next
-      // to the affected roles' methodDrift marking, IS the visibility; there
-      // is no behavioral gate on run start for it.
-      approval: model?.approval,
-    }
+    const frozenModel = await buildModelEvidence(ctx, model, freezeLocale)
 
     // Derive level/score for every role once, index by roleId.
     const derived = await deriveResults(ctx, ctx.orgId)

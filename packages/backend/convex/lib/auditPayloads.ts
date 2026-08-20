@@ -308,6 +308,24 @@ export interface AuditPayloads {
   // reserved by PROVENANCE_KEYS for level.shift's nested { event, ... } shape,
   // and this field is a flat string.
   "model.approvalReopened": { modelId: string; causeEvent: string }
+  // The restore to the last-approved state (ADR-0023 decision 11). Both halves
+  // of the payload come from the ONE diff builder
+  // (evaluationModel/evidence.ts) that also feeds the confirm dialog's change
+  // list, so the trail and the preview can never disagree: `changes` is the
+  // model-level diff (materiality decision, level/zone-profile rules, the
+  // rules as compact summary strings for the same reason
+  // model.levelRulesUpdated uses them), and `items[]` is one entry per
+  // criterion the restore moved. Each item is keyed by libraryKey, not a
+  // criterionId: a removed criterion's row is deleted by this same mutation
+  // and a returning one has no row yet, so the id would dangle or not exist.
+  // A returning/removed criterion diffs `selected`; a removed one also records
+  // its deleted ratings as a COUNT only (never a value or note; Role != Person).
+  "model.restored": {
+    modelId: string
+    changes: Changes
+    count: number
+    items: AuditItem[]
+  }
   // Locking lifecycle (ADR-0023, spec 2.4/6): lock-as-reveal never wraps in a
   // level.shift (locking/unlocking changes what getResults exposes, not the
   // underlying derivation), so these three carry only their own marker/stat

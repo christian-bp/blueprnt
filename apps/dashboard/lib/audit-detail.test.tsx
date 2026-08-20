@@ -437,6 +437,65 @@ describe("formatAuditDetail", () => {
     ).toBe("System Developer")
   })
 
+  // A restore to the last approved model can move criteria, the model's own
+  // rules and decisions, or both, so the cell must state whichever halves are
+  // present. The generic bulk branch would state only the count, and would
+  // read "0 items" for a restore that only put the rules back.
+  it("renders model.restored as both halves when it moved criteria and rules", () => {
+    expect(
+      formatAuditDetail(
+        "model.restored",
+        {
+          modelId: "m1",
+          count: 2,
+          items: [{ libraryKey: "a", label: "A", changes: {} }],
+          changes: {
+            levelRules: { from: "12 rules, top 97", to: "12 rules, top 90" },
+          },
+        },
+        {},
+        labels,
+        fieldLabel
+      )
+    ).toBe("2 items; LevelRules: 12 rules, top 97 → 12 rules, top 90")
+  })
+
+  it("renders a rules-only model.restored without a zero item count", () => {
+    expect(
+      formatAuditDetail(
+        "model.restored",
+        {
+          modelId: "m1",
+          count: 0,
+          items: [],
+          changes: {
+            levelRules: { from: "12 rules, top 97", to: "12 rules, top 90" },
+          },
+        },
+        {},
+        labels,
+        fieldLabel
+      )
+    ).toBe("LevelRules: 12 rules, top 97 → 12 rules, top 90")
+  })
+
+  it("renders a criteria-only model.restored as the item count alone", () => {
+    expect(
+      formatAuditDetail(
+        "model.restored",
+        {
+          modelId: "m1",
+          count: 3,
+          items: [{ libraryKey: "a", label: "A", changes: {} }],
+          changes: {},
+        },
+        {},
+        labels,
+        fieldLabel
+      )
+    ).toBe("3 items")
+  })
+
   it("renders role.updated as 'title: <changes>'", () => {
     const names = { r1: "System Developer" }
     expect(

@@ -1,12 +1,10 @@
 import {
   dimensionWeightShares,
-  type LevelRule,
   type MethodCheckCriterion,
   type MethodCheckInput,
   methodBlockersPass,
   validateMethod,
   type WeightPoints,
-  type ZoneProfileRule,
 } from "@workspace/core"
 import { v } from "convex/values"
 import { internalMutation } from "../_generated/server"
@@ -19,14 +17,32 @@ import {
   buildChanges,
   logAudit,
 } from "../lib/audit"
+import type { AuditItem } from "../lib/auditPayloads"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, type AuditWriter, orgQuery } from "../lib/functions"
-import { LIBRARY_DIMENSION, LIBRARY_OVERLAP_PAIRS } from "./criteriaLibrary"
+import {
+  type CriteriaLibraryKey,
+  isCriteriaLibraryKey,
+  LIBRARY_DIMENSION,
+  LIBRARY_OVERLAP_PAIRS,
+} from "./criteriaLibrary"
+import {
+  buildModelEvidence,
+  buildModelRestoreDiff,
+  type EvidenceCriterion,
+  modelRestoreDiffShape,
+  summarizeLevelRules,
+  summarizeZoneProfileRules,
+} from "./evidence"
+import { clampLocale } from "./localize"
 import { filled } from "./method"
+import { resolveContentLocale } from "./model"
 import {
   dimensionKeyValidator,
+  levelRuleShape,
   methodCheckKeyValidator,
-  zoneKeyValidator,
+  workingConditionsShape,
+  zoneProfileRuleShape,
 } from "./tables"
 
 // The model approval lifecycle and the materiality decision (ADR-0023): a
@@ -36,13 +52,6 @@ import {
 // rating a role (assessment/ratings.ts). A method-affecting change falls the
 // status back to draft (reopenApprovalIfSet), so every approval event in the
 // audit log is a de facto version boundary without a version table.
-
-const workingConditionsShape = v.object({
-  status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
-  motivation: v.string(),
-  decidedBy: v.string(),
-  decidedAt: v.number(),
-})
 
 // Builds the engine's MethodCheckInput from a model row: criteria rows mapped
 // with their derived dimension (never stored), the org's kriterieurvalsprotokoll
@@ -87,22 +96,6 @@ export async function buildMethodCheckInput(
     levelRules: model.levelRules,
     zoneProfileRules: model.zoneProfileRules,
   }
-}
-
-// Compact technical summaries for a level/zone-profile rules diff's from/to
-// values, not localized prose: an array-valued changes entry renders as an
-// opaque complexValue placeholder (formatChanges/changeEntries), which would
-// make every rules edit read identically in the audit log ("Level thresholds:
-// ..."). Level 1 is the highest (house convention), so "top" is its minScore.
-function summarizeLevelRules(rules: readonly LevelRule[]): string {
-  const top = rules.find((rule) => rule.level === 1)?.minScore
-  return `${rules.length} rules, top ${top ?? 0}`
-}
-
-function summarizeZoneProfileRules(rules: readonly ZoneProfileRule[]): string {
-  if (rules.length === 0) return "0 rules"
-  const detail = rules.map((rule) => `${rule.zone}>=${rule.minStep}`).join(", ")
-  return `${rules.length} rules: ${detail}`
 }
 
 // The model.approved audit payload, shared by approveModel and
@@ -155,6 +148,23 @@ export async function reopenApprovalIfSet(
   })
 }
 
+// The last-approved buffer, built by the SHARED evidence builder (the same one
+// a pay-mapping run freezes with) and stamped with the approval being granted:
+// the model row's own `approval` field is still the pre-patch value when this
+// runs, so passing the grant explicitly is what keeps the buffer self-describing
+// ("this is the state, and this is when it was approved"). Shared by both
+// approval paths so the interactive and the seeded approval write the same
+// buffer.
+async function buildApprovedEvidence(
+  ctx: MutationCtx,
+  model: Doc<"models">,
+  approval: { approvedBy: string; approvedAt: number }
+) {
+  const locale = await resolveContentLocale(ctx, model.orgId)
+  const evidence = await buildModelEvidence(ctx, model, locale)
+  return { ...evidence, approval }
+}
+
 async function requireModel(
   ctx: QueryCtx | MutationCtx,
   orgId: string
@@ -204,6 +214,13 @@ export const getMethodChecks = orgQuery({
         }),
         v.null()
       ),
+      // When the last-approved buffer was approved, or null when the model
+      // carries no buffer (never approved, or last approved before the buffer
+      // existed). The Godkännande chapter needs only this scalar to decide
+      // whether to offer the restore control and what date to name on it; the
+      // change list itself is a separate query the confirm dialog runs when it
+      // opens, so the chapter never pays for the diff it may not show.
+      lastApprovedAt: v.union(v.number(), v.null()),
       workingConditions: v.union(workingConditionsShape, v.null()),
     })
   ),
@@ -245,6 +262,7 @@ export const getMethodChecks = orgQuery({
               approvedByName,
               approvedAt: model.approval.approvedAt,
             },
+      lastApprovedAt: model.lastApprovedModel?.approval?.approvedAt ?? null,
       workingConditions: model.workingConditions ?? null,
     }
   },
@@ -269,8 +287,14 @@ export const approveModel = adminMutation({
     if (!methodBlockersPass(checks)) {
       throw appError(ERROR_CODES.methodBlocked)
     }
+    const approval = { approvedBy: ctx.authUserId, approvedAt: Date.now() }
     await ctx.db.patch(model._id, {
-      approval: { approvedBy: ctx.authUserId, approvedAt: Date.now() },
+      approval,
+      // The single last-approved buffer (ADR-0023 decision 11), overwritten on
+      // every approval so it always names the state the model is approved IN,
+      // approval stamp included. No history: one buffer is what keeps the
+      // no-versioning decision standing.
+      lastApprovedModel: await buildApprovedEvidence(ctx, model, approval),
     })
     await ctx.audit.log({
       type: AUDIT_EVENTS.modelApproved,
@@ -304,8 +328,10 @@ export const approveSeededModel = internalMutation({
         "approveSeededModel: the seeded model's checklist is not all-green"
       )
     }
+    const approval = { approvedBy: actorId, approvedAt: Date.now() }
     await ctx.db.patch(model._id, {
-      approval: { approvedBy: actorId, approvedAt: Date.now() },
+      approval,
+      lastApprovedModel: await buildApprovedEvidence(ctx, model, approval),
     })
     await logAudit(ctx, {
       orgId,
@@ -386,12 +412,6 @@ export const setWorkingConditionsDecision = adminMutation({
     })
     return null
   },
-})
-
-const levelRuleShape = v.object({ level: v.number(), minScore: v.number() })
-const zoneProfileRuleShape = v.object({
-  zone: zoneKeyValidator,
-  minStep: v.number(),
 })
 
 // Validated by the SAME engine checks the approval gate uses
@@ -475,6 +495,191 @@ export const updateZoneProfileRules = adminMutation({
             to: summarizeZoneProfileRules(zoneProfileRules),
           },
         },
+      },
+    })
+    return null
+  },
+})
+
+// The restore preview: what restoring the last-approved buffer would undo, or
+// null when no restore is on offer (no model, no buffer, or an approval that is
+// still standing, in which case the model already IS its last-approved state).
+//
+// An orgQuery for the same reason getMethodChecks is one: an admin gate on a
+// read the Godkännande chapter renders throws in render for an editor and takes
+// the chapter down. It carries model-level method content only. The WRITE below
+// stays an adminMutation, and the chapter offers an editor no control.
+//
+// `locale` is the VIEWER's display language: the criteria are named from the
+// library content, and the change list is read by whoever opens the dialog, not
+// by the org's default-language reader. The change SET itself comes from the
+// same builder the mutation audits with, so preview and trail cannot disagree
+// about what happens, only about which language the criteria are named in.
+export const getModelRestorePreview = orgQuery({
+  args: { locale: v.optional(v.string()) },
+  returns: v.union(
+    v.null(),
+    v.object({
+      approvedAt: v.union(v.number(), v.null()),
+      diff: modelRestoreDiffShape,
+    })
+  ),
+  handler: async (ctx, { locale }) => {
+    const model = await ctx.db
+      .query("models")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+      .unique()
+    if (model === null) return null
+    const buffer = model.lastApprovedModel
+    if (buffer === undefined || model.approval !== undefined) return null
+    return {
+      approvedAt: buffer.approval?.approvedAt ?? null,
+      diff: await buildModelRestoreDiff(
+        ctx,
+        model,
+        buffer,
+        clampLocale(locale)
+      ),
+    }
+  },
+})
+
+// The stored criterion fields a restore writes back, as ONE patch. Every
+// optional field is written explicitly, `undefined` included: db.patch removes a
+// field set to undefined, which is what makes this a restore rather than a
+// merge (a bias comment written after the approval has to go, not linger).
+function restoreCriterionPatch(criterion: EvidenceCriterion, index: number) {
+  return {
+    weightPoints: criterion.weightPoints,
+    // Order is display order only, and a pre-cutover buffer may not carry it;
+    // the buffer's own array order is the fallback, which is the order the
+    // evidence builder wrote it in.
+    order: criterion.order ?? index + 1,
+    weightMotivation: criterion.weightMotivation,
+    purpose: criterion.purpose,
+    whyRelevant: criterion.whyRelevant,
+    overlapNotes: criterion.overlapNotes,
+    biasRisk: criterion.biasRisk,
+    biasComment: criterion.biasComment,
+    biasAction: criterion.biasAction,
+    approved: criterion.approved,
+    decidedBy: criterion.decidedBy,
+    decidedAt: criterion.decidedAt,
+  }
+}
+
+// Restores the live model to its last-approved state (ADR-0023 decision 11):
+// the criteria selection, their weights, weight motivation, kriterieurvals-
+// protokoll and bias documentation with their per-criterion approvals, the
+// working-conditions materiality decision, and the level/zone-profile rules.
+//
+// One transaction, deliberately: the model holds at most 8 criteria
+// (MODEL_MAX_CRITERIA), so the write set is bounded well inside Convex's
+// document limits and a half-restored model can never exist. The ratings of a
+// criterion the restore removes go with it, the same deletion
+// deactivateCriterion performs, so no orphans linger.
+//
+// Approval is deliberately left reopened. Restoring is not a second way to
+// become approved: it puts the model back where the checklist is green again
+// and the ordinary one-click approveModel closes the loop, so there stays
+// exactly ONE approval path and one approval provenance.
+export const restoreApprovedModel = adminMutation({
+  args: {},
+  returns: v.null(),
+  handler: async (ctx) => {
+    const model = await requireModel(ctx, ctx.orgId)
+    // An approved model already IS its last-approved state; restoring it would
+    // be a no-op that still rewrote every criterion row and its audit trail.
+    if (model.approval !== undefined) {
+      throw appError(ERROR_CODES.invalidTransition)
+    }
+    const buffer = model.lastApprovedModel
+    if (buffer === undefined) throw appError(ERROR_CODES.notFound)
+
+    const locale = await resolveContentLocale(ctx, ctx.orgId)
+    // The SAME builder the confirm dialog previewed with: what the user was
+    // shown and what the trail records are one computation, not two.
+    const diff = await buildModelRestoreDiff(ctx, model, buffer, locale)
+    // Nothing to undo (the model was edited back by hand, or the edit that
+    // reopened approval touched nothing the buffer records): write no rows at
+    // all rather than an audit entry with an empty diff.
+    if (diff.criteria.length === 0 && Object.keys(diff.changes).length === 0) {
+      return null
+    }
+
+    const before = await deriveResults(ctx, ctx.orgId)
+    const rows = await ctx.db
+      .query("criteria")
+      .withIndex("by_model", (q) => q.eq("modelId", model._id))
+      .collect()
+    const rowByKey = new Map(rows.map((row) => [row.libraryKey as string, row]))
+    // A buffer criterion with no library key, or one the library no longer
+    // knows, cannot be restored: nothing names which entry to bring back.
+    // Unreachable for a buffer approveModel wrote against the current library;
+    // the shared evidence shape keeps the field a loose optional string only
+    // because pre-cutover frozen pay-mapping runs need it to be.
+    const buffered = buffer.criteria.filter(
+      (
+        criterion
+      ): criterion is EvidenceCriterion & { libraryKey: CriteriaLibraryKey } =>
+        criterion.libraryKey !== undefined &&
+        isCriteriaLibraryKey(criterion.libraryKey)
+    )
+    const keep = new Set(buffered.map((criterion) => criterion.libraryKey))
+
+    for (const row of rows) {
+      if (keep.has(row.libraryKey)) continue
+      const ratings = await ctx.db
+        .query("ratings")
+        .withIndex("by_criterion", (q) => q.eq("criterionId", row._id))
+        .collect()
+      for (const rating of ratings) {
+        await ctx.db.delete(rating._id)
+      }
+      await ctx.db.delete(row._id)
+    }
+
+    for (const [index, criterion] of buffered.entries()) {
+      const patch = restoreCriterionPatch(criterion, index)
+      const row = rowByKey.get(criterion.libraryKey)
+      if (row === undefined) {
+        await ctx.db.insert("criteria", {
+          orgId: ctx.orgId,
+          modelId: model._id,
+          libraryKey: criterion.libraryKey,
+          ...patch,
+        })
+      } else {
+        await ctx.db.patch(row._id, patch)
+      }
+    }
+
+    await ctx.db.patch(model._id, {
+      workingConditions: buffer.workingConditions,
+      levelRules: buffer.levelRules ?? model.levelRules,
+      zoneProfileRules: buffer.zoneProfileRules ?? model.zoneProfileRules,
+    })
+
+    const after = await deriveResults(ctx, ctx.orgId)
+    await ctx.audit.levelShifts({
+      before: before.results,
+      after: after.results,
+      cause: { event: AUDIT_EVENTS.modelRestored, entityId: model._id },
+    })
+    const items: AuditItem[] = diff.criteria.map((criterion) => ({
+      // The criterion's identity across the diff: the rows it names are being
+      // deleted or created, so a criterionId would dangle or not exist yet.
+      libraryKey: criterion.libraryKey,
+      label: criterion.name,
+      changes: criterion.changes,
+    }))
+    await ctx.audit.log({
+      type: AUDIT_EVENTS.modelRestored,
+      payload: {
+        modelId: model._id,
+        changes: diff.changes,
+        count: items.length,
+        items,
       },
     })
     return null

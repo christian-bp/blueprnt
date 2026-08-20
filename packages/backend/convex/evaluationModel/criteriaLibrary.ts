@@ -189,6 +189,19 @@ export function criteriaLibraryContent(locale: string): CriteriaLibraryContent {
   return CONTENT_BY_LOCALE[clampLocale(locale)]
 }
 
+// Narrows a stored string back to a library key. Needed where a value comes
+// from a shape that carries it as a plain string (the shared model-evidence
+// copy, whose criterion identity stays a loose string so pre-cutover frozen
+// pay-mapping runs keep validating) but is about to be written to a criteria
+// row, whose libraryKey is the strict union.
+const CRITERIA_LIBRARY_KEY_SET: ReadonlySet<string> = new Set(
+  CRITERIA_LIBRARY_KEYS
+)
+
+export function isCriteriaLibraryKey(key: string): key is CriteriaLibraryKey {
+  return CRITERIA_LIBRARY_KEY_SET.has(key)
+}
+
 // The library's measures/notMeasures split, joined into the one help-text
 // sentence every consumer actually needs (what the criterion DOES and does
 // NOT cover, in one line): the method-builder wire (method.ts), the rating

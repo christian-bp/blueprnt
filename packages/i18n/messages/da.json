@@ -187,6 +187,7 @@
       "payMappingReasonsApplied": "Årsager anvendt",
       "criterionActivated": "Kriterium tilføjet",
       "modelApproved": "Model godkendt",
+      "modelRestored": "Model gendannet",
       "workingConditionsDecided": "Beslutning om arbejdsforhold gemt",
       "assessmentLocked": "Vurderingen låst",
       "assessmentUnlocked": "Vurderingen låst op"
@@ -698,6 +699,8 @@
         "approved": "Godkendt",
         "responsibilities": "Ansvar",
         "weightPoints": "Vægtpoint",
+        "selected": "Valgt",
+        "weightMotivation": "Vægtbegrundelse",
         "order": "Rækkefølge",
         "value": "Vurdering",
         "motivation": "Begrundelse",
@@ -867,6 +870,7 @@
         "modelLevelRulesUpdated": "Niveaugrænser opdateret",
         "modelZoneProfileRulesUpdated": "Zoneprofilregler opdateret",
         "modelApprovalReopened": "Modelgodkendelse genåbnet",
+        "modelRestored": "Model gendannet til senest godkendte",
         "roleAssessmentLocked": "Vurdering låst",
         "roleAssessmentUnlocked": "Vurdering låst op",
         "roleAssessmentCalibrated": "Vurdering kalibreret"
@@ -1919,6 +1923,17 @@
         "approvalDescription": "Modellen skal bestå hvert obligatorisk tjek nedenfor, før roller kan vurderes.",
         "draftState": "Endnu ikke godkendt",
         "approveModelCta": "Godkend model",
+        "restoreCta": "Gendan til senest godkendte",
+        "restoreHint": "Modellen, der blev godkendt den {date}, kan gendannes.",
+        "restoreDialogTitle": "Gendan til den senest godkendte model?",
+        "restoreDialogDescription": "Dette erstatter modellens nuværende kriterier, vægte og dokumentation med den tilstand, der blev godkendt den {date}. Det kan ikke fortrydes, og modellen forbliver åben for godkendelse bagefter.",
+        "restoreConfirmCta": "Gendan",
+        "restoreCriteriaHeading": "Kriterier",
+        "restoreModelHeading": "Regler og beslutninger",
+        "restoreCriterionRemoved": "Fjernes fra modellen.",
+        "restoreCriterionRemovedWithRatings": "Fjernes fra modellen sammen med {count, plural, =1 {# vurdering} other {# vurderinger}}.",
+        "restoreCriterionReturns": "Vender tilbage til modellen. Hver rolle skal vurderes på det igen.",
+        "restoreNoChanges": "Modellen svarer allerede til den senest godkendte tilstand, så en gendannelse ændrer ingenting.",
         "checkLevel": {
           "blocker": "Obligatorisk",
           "warning": "Anbefalet"

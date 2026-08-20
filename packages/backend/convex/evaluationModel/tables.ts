@@ -84,36 +84,118 @@ type _MethodCheckKeysExact = MethodCheckKeyFromValidator extends MethodCheckKey
 const _assertMethodCheckKeysMatch: _MethodCheckKeysExact = true
 void _assertMethodCheckKeysMatch
 
+// The three-literal bias-risk scale of a criterion's bias review. Declared here
+// (with every other stored shape) rather than inside method.ts, so the criteria
+// table, the compliance mutation's args, and the model-evidence shape below all
+// read from one union.
+export const biasRiskValidator = v.union(
+  v.literal("low"),
+  v.literal("medium"),
+  v.literal("high")
+)
+
+// The model's own rule shapes and its two decision stamps, declared once and
+// reused by the models table, the model-evidence shape below, and the
+// mutations that write them (evaluationModel/approval.ts).
+export const levelRuleShape = v.object({
+  level: v.number(),
+  minScore: v.number(),
+})
+
+export const zoneProfileRuleShape = v.object({
+  zone: zoneKeyValidator,
+  minStep: v.number(),
+})
+
+export const workingConditionsShape = v.object({
+  status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
+  motivation: v.string(),
+  decidedBy: v.string(),
+  decidedAt: v.number(),
+})
+
+export const modelApprovalShape = v.object({
+  approvedBy: v.string(),
+  approvedAt: v.number(),
+})
+
+// The model's full method evidence as ONE shape, produced by the single builder
+// in evidence.ts and stored by BOTH of its consumers: the model's own
+// `lastApprovedModel` buffer (ADR-0023 decision 11) and a pay-mapping run's
+// `frozenModel` (ADR-0011/ADR-0023 freeze). Declared as a field MAP rather than
+// a finished object so payMapping/tables.ts can add its one legacy-tolerance
+// field without restating the rest.
+//
+// libraryKey/dimensionKey stay optional strings rather than the strict
+// libraryKeyValidator/dimensionKeyValidator above: a pre-cutover frozen run
+// carries the old sparse criterion shape, and frozen evidence is never
+// migrated, so the shared validator has to keep tolerating it. Everything
+// written from here on (approveModel, startPayMappingRun) is fully populated.
+export const modelEvidenceFields = {
+  criteria: v.array(
+    v.object({
+      libraryKey: v.optional(v.string()),
+      // The criterion's library display name, localized in the org's content
+      // locale at write time and never re-resolved, so a later locale change
+      // or content edit cannot alter an already-written evidence copy.
+      name: v.string(),
+      dimensionKey: v.optional(v.string()),
+      weightPoints: v.number(),
+      // The number of anchor texts the library carries for this criterion:
+      // 5 for a section-13.5 entry, 3 otherwise.
+      anchorCount: v.number(),
+      // The RESTORE half of the evidence: everything a criteria row carries
+      // beyond its selection and weight, so restoring the buffer puts the
+      // model's documentation back exactly as it was approved rather than
+      // only its weights.
+      order: v.optional(v.number()),
+      weightMotivation: v.optional(v.string()),
+      purpose: v.optional(v.string()),
+      whyRelevant: v.optional(v.string()),
+      overlapNotes: v.optional(v.string()),
+      biasRisk: v.optional(biasRiskValidator),
+      biasComment: v.optional(v.string()),
+      biasAction: v.optional(v.string()),
+      approved: v.optional(v.boolean()),
+      decidedBy: v.optional(v.string()),
+      decidedAt: v.optional(v.number()),
+    })
+  ),
+  levelRules: v.optional(v.array(levelRuleShape)),
+  zoneProfileRules: v.optional(v.array(zoneProfileRuleShape)),
+  workingConditions: v.optional(workingConditionsShape),
+  approval: v.optional(modelApprovalShape),
+}
+
+export const modelEvidenceValidator = v.object(modelEvidenceFields)
+export type ModelEvidence = Infer<typeof modelEvidenceValidator>
+
 // One living model per organization (V1: no versioning, ADR-0002). Score and
 // level are NEVER stored; they are derived by packages/core.
 export const models = defineTable({
   orgId: v.string(),
   name: v.string(),
   // Model approval: denormalized approval grant from the model author (ADR-0023).
-  approval: v.optional(
-    v.object({ approvedBy: v.string(), approvedAt: v.number() })
-  ),
+  approval: v.optional(modelApprovalShape),
+  // The single last-approved buffer (ADR-0023 decision 11): every approveModel
+  // overwrites it with the evidence it just approved, so a model whose approval
+  // was reopened by an edit can be restored to that state. ONE buffer, never a
+  // history, which is what keeps ADR-0023's no-versioning stand. Optional: a
+  // model approved before this field existed simply has none, and its restore
+  // control stays hidden until the next approval writes one.
+  lastApprovedModel: v.optional(modelEvidenceValidator),
   // Working conditions rules: status and rationale for whether workingConditions
   // is material in this model (ADR-0022); only one workingConditions criterion
   // can be active per model (section 6.1).
-  workingConditions: v.optional(
-    v.object({
-      status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
-      motivation: v.string(),
-      decidedBy: v.string(),
-      decidedAt: v.number(),
-    })
-  ),
+  workingConditions: v.optional(workingConditionsShape),
   // Level rules: an aggregate of the model (ADR-0006), always exactly 12
   // entries (level 1-12, Level 1 = highest; ADR-0022's four zones derive from
   // this range and are never stored). minScore is the lowest inclusive score
   // on the normalized 0-100 scale (ADR-0004/ADR-0021).
-  levelRules: v.array(v.object({ level: v.number(), minScore: v.number() })),
+  levelRules: v.array(levelRuleShape),
   // Zone profile rules: each zone's minimum profile-criterion step for a role
   // to place there (ADR-0022); zones with no rule (C, D) admit unconditionally.
-  zoneProfileRules: v.array(
-    v.object({ zone: zoneKeyValidator, minStep: v.number() })
-  ),
+  zoneProfileRules: v.array(zoneProfileRuleShape),
 }).index("by_org", ["orgId"])
 
 // A pure selection row (ADR-0021 addendum, decision 8): no stored texts at
@@ -144,9 +226,7 @@ export const criteria = defineTable({
   whyRelevant: v.optional(v.string()),
   overlapNotes: v.optional(v.string()),
   // Bias review (bias-granskning).
-  biasRisk: v.optional(
-    v.union(v.literal("low"), v.literal("medium"), v.literal("high"))
-  ),
+  biasRisk: v.optional(biasRiskValidator),
   biasComment: v.optional(v.string()),
   biasAction: v.optional(v.string()),
   approved: v.optional(v.boolean()),
