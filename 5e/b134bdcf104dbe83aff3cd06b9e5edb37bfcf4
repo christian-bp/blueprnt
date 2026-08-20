@@ -1,0 +1,87 @@
+apps/dashboard/content/docs/da/onboarding-guide.mdx
+  s_58dd112dc09435::t_d394aac6c4a227 75-84
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_ecb6e5611d3623 911-912,914
+  s_58dd112dc09435::t_6e9c98a031a21a 1958
+  s_58dd112dc09435::t_2cdf3cd62ee20b 766-767
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_f6604a64fbf5b0 766-767
+  s_58dd112dc09435::t_6ff98f8cb2f601 911-912,914
+  s_58dd112dc09435::t_b74999768d8b36 1958
+apps/dashboard/components/overview/todo-actions.test.tsx
+  s_58dd112dc09435::t_f032d78cfff256 202-224
+  s_58dd112dc09435::t_b5ed2bdbc0ec0d 85-94
+apps/dashboard/lib/todo.ts
+  s_58dd112dc09435::t_cb343f644319c2 2-3,11
+  s_58dd112dc09435::t_ce571d036046a3 351
+  s_58dd112dc09435::t_f582f563ad2dd0 1
+  s_58dd112dc09435::t_57ff80bcb18f92 223-227
+  s_58dd112dc09435::t_061260d1792855 203-222
+  s_58dd112dc09435::t_01a1e61235a701 281
+  s_58dd112dc09435::t_a448679a1b3593 295-302
+  s_58dd112dc09435::t_9b4a63ba9026d8 49-59,62
+apps/dashboard/components/overview/todo-actions.tsx
+  s_58dd112dc09435::t_f27a3d1f308ed6 60-61
+  s_58dd112dc09435::t_abc61c39ef7118 171
+  s_58dd112dc09435::t_e7cdf9d36c5141 302-303
+  s_58dd112dc09435::t_3eabe697812420 7,13,23-29,39-40,43,45-47,49
+  s_58dd112dc09435::t_f8dc4b3d66d64f 300-301,306-316
+  s_58dd112dc09435::t_57ff80bcb18f92 304-305
+  s_58dd112dc09435::t_6672acc0247dce 41-42,44
+apps/dashboard/content/docs/nb/onboarding-guide.mdx
+  s_58dd112dc09435::t_d71b25cff3c067 76-84
+apps/dashboard/content/docs/sv/onboarding-guide.mdx
+  s_58dd112dc09435::t_3dcb127aab487a 75-83
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_53dac35996ae4c 911-912,914
+  s_58dd112dc09435::t_cb2a8bab4047af 766-767
+  s_58dd112dc09435::t_cf33ff8d0f16b1 1958
+apps/dashboard/lib/audit-labels.test.ts
+  s_58dd112dc09435::t_68c39012862b77 156-161
+apps/dashboard/content/docs/fi/onboarding-guide.mdx
+  s_58dd112dc09435::t_755103cd979ef0 83-94
+apps/dashboard/components/onboarding/onboarding-gate.test.tsx
+  s_58dd112dc09435::t_56658bba6c0ede 1,10-12
+  s_58dd112dc09435::t_a3eca383c6b567 84-99
+  s_58dd112dc09435::t_52ff8cc9303d02 68
+  s_58dd112dc09435::t_4016dc16ff6ab5 40-46
+  s_58dd112dc09435::t_4c6f3847ddd29e 13
+apps/dashboard/components/role-sheet.test.tsx
+  s_58dd112dc09435::t_44cf50d395f759 156-176
+apps/dashboard/lib/todo.test.ts
+  s_58dd112dc09435::t_a68f9c499ff36b 21-27,34-48
+  s_58dd112dc09435::t_d874474728359b 287-309,319-322,326,336,346,349,360,365-385
+  s_58dd112dc09435::t_1967946ba05919 1
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_48554238dd19a2 766-767
+  s_58dd112dc09435::t_50f857494bf4c2 911-912,914
+  s_58dd112dc09435::t_cf6123584f92ca 1958
+apps/dashboard/content/docs/en/onboarding-guide.mdx
+  s_58dd112dc09435::t_66bc01b7172737 74-82
+apps/dashboard/components/onboarding/onboarding-gate.tsx
+  s_58dd112dc09435::t_effcb0a28baff4 7
+  s_58dd112dc09435::t_8a7c4c4368f5f3 121-130
+  s_58dd112dc09435::t_ea61a703eeec2c 89
+apps/dashboard/components/role-sheet.tsx
+  s_58dd112dc09435::t_6274d17df94579 220,222-227
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_0605fc64d04b0a 1958
+  s_58dd112dc09435::t_559bf04d8e2ae5 766-767
+  s_58dd112dc09435::t_5d69a1aa104d26 911-912,914
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5eb134bdcf104dbe83aff3cd06b9e5edb37bfcf4",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
