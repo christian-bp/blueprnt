@@ -1815,7 +1815,7 @@
         "approval": "Godkjenning",
         "tab": "<num>{position}.</num> {chapter}",
         "nav": "Modellens kapitler",
-        "progressLabel": "Besluttet",
+        "heading": "Selskapets blueprnt-modell",
         "progressBarLabel": "Hele modellens framdrift",
         "count": "{done} av {total}",
         "countRich": "<done></done> av <total></total>",
@@ -2065,7 +2065,7 @@
       "collaborationBody": "Å samarbeide med de ansatte og deres tillitsvalgte gjennom hele lønnskartleggingen (diskrimineringsloven 3 kap. 11 §). Ved tariffavtale kan de også kreve informasjonen (12 §).",
       "analysisProgressLabel": "Hva telles her?",
       "analysisProgressBody": "Stegene som må dokumenteres før lønnskartleggingen kan fullføres: samarbeidet, gjennomgangen av lønnspraksis, og hver gruppe hvis lønnsforskjell krever en begrunnelse. Ingenting annet telles.",
-      "modelProgressLabel": "Hva telles her?",
+      "modelProgressLabel": "Hva trenger modellen?",
       "modelProgressBody": "Beslutningene modellen trenger før den kan godkjennes: kriteriene, vektingen av dem, dokumentasjonen for hvert kriterium og selve godkjenningen.",
       "payGapScatterMeansBody": "De stiplede linjene er hvert kjønns gjennomsnittslønn i gruppen, så du ser hvem som ligger over og under sitt eget gjennomsnitt."
     },

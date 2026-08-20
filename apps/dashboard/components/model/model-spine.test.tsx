@@ -37,10 +37,12 @@ function renderSpine(
 describe("ModelSpine", () => {
   afterEach(cleanup)
 
-  it("labels the bar and keeps the overall count for a screen reader only", () => {
+  // The heading names what the section is building; the progress reading is
+  // the bar below it and its per-chapter counts.
+  it("names the model and keeps the overall count for a screen reader only", () => {
     renderSpine()
     const heading = screen.getByRole("heading", { level: 3 })
-    expect(heading.textContent).toContain(m.progressLabel)
+    expect(heading.textContent).toContain(m.heading)
     const srOnly = heading.querySelector(".sr-only")
     expect(srOnly?.textContent).toContain("4")
     expect(srOnly?.textContent).toContain("17")
@@ -54,7 +56,7 @@ describe("ModelSpine", () => {
       )
       .map((node) => node.textContent)
       .join("")
-    expect(visible.trim()).toBe(m.progressLabel)
+    expect(visible.trim()).toBe(m.heading)
   })
 
   // Metod carries a step per criterion plus the materiality decision, so it is

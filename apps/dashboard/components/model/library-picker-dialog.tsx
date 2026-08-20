@@ -186,6 +186,13 @@ export function LibraryPickerDialog({
                 <Item
                   key={key}
                   variant="outline"
+                  // The Item family's default size, like the card this row
+                  // becomes: a criterion the reader picks here and then finds
+                  // in its column has to read as the same object, and a
+                  // denser row here would make the pick and its result two
+                  // different things. The dialog scrolls, so the extra height
+                  // costs rows on screen, not reachability.
+                  //
                   // A real list item: the rows are a list, and Item's default
                   // div would leave an orphan in one.
                   render={<li />}

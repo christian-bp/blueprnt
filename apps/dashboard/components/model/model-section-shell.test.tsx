@@ -77,7 +77,13 @@ describe("ModelSectionShell", () => {
 
   it("mounts the spine and the chapter row above the chapter's own body", () => {
     renderShell()
-    expect(screen.getByRole("heading", { name: /Decided/ })).toBeDefined()
+    // The loaded heading's accessible name is the model's name plus the
+    // sr-only overall count, which is the whole point of that span: the bar
+    // announces a percentage and the per-chapter figure is aria-hidden, so
+    // the pair only reaches a screen reader here.
+    const heading = screen.getByRole("heading", { level: 3 })
+    expect(heading.textContent).toContain(m.heading)
+    expect(heading.querySelector(".sr-only")?.textContent).toContain("of")
     expect(screen.getByRole("navigation", { name: m.nav })).toBeDefined()
     expect(screen.getByText("chapter body")).toBeDefined()
   })
@@ -111,7 +117,7 @@ describe("ModelSectionShell", () => {
   it("shows the spine's own skeleton while the checks load", () => {
     checksResult = undefined
     const { container } = renderShell()
-    expect(screen.getByRole("heading", { name: m.progressLabel })).toBeDefined()
+    expect(screen.getByRole("heading", { name: m.heading })).toBeDefined()
     expect(screen.queryByRole("progressbar")).toBeNull()
     expect(container.querySelector(".bg-primary\\/12")).not.toBeNull()
     // The chapter row and the chapter's body are never held back by the bar.

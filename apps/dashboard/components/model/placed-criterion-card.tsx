@@ -86,11 +86,12 @@ export function PlacedCriterionCard(
     // needs would only put ui-animation.md rule 1's scale correction back on
     // every child.
     //
-    // size="sm" because these sit four columns across: the default size's
-    // padding is written for a full-width list.
+    // The Item family's DEFAULT size, no deviation: with the section running
+    // the full viewport width the small variant under-read, and the picker
+    // rows a criterion is chosen from are default too, so the same criterion
+    // reads the same in both places. Both card variants take it together.
     <Item
       variant="outline"
-      size="sm"
       // The card is a real list item inside the column's own <ul>; Item's
       // default div would leave an orphan in a list.
       render={
@@ -108,7 +109,9 @@ export function PlacedCriterionCard(
             ("Kunskapsdjup och speciali...") and a real one-liner off at its
             second line. They wrap instead. */}
         <ItemTitle className="line-clamp-none">{criterion.name}</ItemTitle>
-        <ItemDescription className="line-clamp-none text-xs">
+        {/* No type-size override: the description takes ItemDescription's
+            own text-sm at this Item size. */}
+        <ItemDescription className="line-clamp-none">
           {criterion.shortUiText}
         </ItemDescription>
         {weight !== undefined && (

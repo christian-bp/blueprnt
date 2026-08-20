@@ -55,7 +55,7 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
         // carries no visible figure to stand in for.
         <section className="space-y-3">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-base">{t("progressLabel")}</h3>
+            <h3 className="font-semibold text-base">{t("heading")}</h3>
           </div>
           <div className="space-y-1">
             <div className="h-2 w-full rounded-full bg-primary/12" />

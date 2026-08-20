@@ -67,4 +67,16 @@ describe("WeightPointRow", () => {
     fireEvent.click(within(group).getByRole("button", { name: "2" }))
     expect(onChange).not.toHaveBeenCalled()
   })
+
+  // Five buttons stretched across a full-width column read as five separate
+  // controls rather than as one 1-5 scale, so the row stops at 20rem. w-full
+  // under the cap is what keeps it filling a narrow card, and neither mx-auto
+  // nor a self-centring class: it stays at the card's left edge while the card
+  // grows past it.
+  it("caps its width and stays left-aligned", () => {
+    const { group } = renderRow(3)
+    expect(group.className).toContain("max-w-xs")
+    expect(group.className).toContain("w-full")
+    expect(group.className).not.toContain("mx-auto")
+  })
 })

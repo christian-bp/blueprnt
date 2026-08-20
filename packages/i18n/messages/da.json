@@ -1815,7 +1815,7 @@
         "approval": "Godkendelse",
         "tab": "<num>{position}.</num> {chapter}",
         "nav": "Modellens kapitler",
-        "progressLabel": "Besluttet",
+        "heading": "Virksomhedens blueprnt-model",
         "progressBarLabel": "Hele modellens fremdrift",
         "count": "{done} af {total}",
         "countRich": "<done></done> af <total></total>",
@@ -2065,7 +2065,7 @@
       "collaborationBody": "At samarbejde med medarbejderne og deres tillidsrepræsentanter gennem hele lønkortlægningen (ligebehandlingsloven). Ved overenskomst kan de også kræve informationen.",
       "analysisProgressLabel": "Hvad tælles her?",
       "analysisProgressBody": "De trin, der skal dokumenteres, før lønkortlægningen kan afsluttes: samarbejdet, gennemgangen af lønpraksis, og hver gruppe hvis lønforskel kræver en begrundelse. Intet andet tælles med.",
-      "modelProgressLabel": "Hvad tælles her?",
+      "modelProgressLabel": "Hvad skal modellen have?",
       "modelProgressBody": "De beslutninger modellen skal have, før den kan godkendes: kriterierne, deres vægtning, dokumentationen for hvert kriterium og selve godkendelsen.",
       "payGapScatterMeansBody": "De stiplede linjer er hvert køns gennemsnitsløn i gruppen, så du kan se, hvem der ligger over og under deres eget gennemsnit."
     },

@@ -96,6 +96,28 @@ describe("PlacedCriterionCard", () => {
     expect(item?.querySelector('[data-slot="item-actions"]')).not.toBeNull()
   })
 
+  // No size deviation: the card takes the Item family's default, which is what
+  // makes it read at full column width, and both variants take it together.
+  // The picker rows a criterion is chosen from are default too, so the same
+  // criterion reads the same in both places.
+  it("takes the Item family's default size on both variants", () => {
+    for (const render of [renderSelection, renderWeighted]) {
+      const { container } = render()
+      const item = container.querySelector('[data-slot="item"]')
+      expect(item?.getAttribute("data-size")).toBe("default")
+      // The description takes ItemDescription's own text-sm at this size,
+      // never a call-site shrink. Split into tokens rather than substring
+      // matched: the vendor base itself carries a
+      // group-data-[size=xs]/item:text-xs variant, which a naive
+      // not.toContain would hit whether or not a bare text-xs was added.
+      const description = item?.querySelector('[data-slot="item-description"]')
+      const tokens = (description?.className ?? "").split(/\s+/)
+      expect(tokens).toContain("text-sm")
+      expect(tokens).not.toContain("text-xs")
+      cleanup()
+    }
+  })
+
   // The Kriterier chapter is about which criteria are IN the model, and
   // nothing else: a 1-5 weight row beside a criterion the reader is still
   // deciding to include is the confusion the chapters exist to end.

@@ -1815,7 +1815,7 @@
         "approval": "Hyväksyntä",
         "tab": "<num>{position}.</num> {chapter}",
         "nav": "Mallin luvut",
-        "progressLabel": "Päätetty",
+        "heading": "Yrityksenne blueprnt-malli",
         "progressBarLabel": "Koko mallin edistyminen",
         "count": "{done}/{total}",
         "countRich": "<done></done> / <total></total>",
@@ -2065,7 +2065,7 @@
       "collaborationBody": "Yhteistoimintaa työntekijöiden ja heidän luottamusmiestensä kanssa koko palkkakartoituksen ajan. Työehtosopimuksen piirissä he voivat myös vaatia tarvitsemansa tiedot.",
       "analysisProgressLabel": "Mitä tässä lasketaan?",
       "analysisProgressBody": "Vaiheet, jotka on dokumentoitava ennen palkkakartoituksen valmistumista: yhteistoiminta, palkkakäytäntöjen arviointi ja jokainen ryhmä, jonka palkkaero vaatii perustelun. Muuta ei lasketa.",
-      "modelProgressLabel": "Mitä tässä lasketaan?",
+      "modelProgressLabel": "Mitä malli tarvitsee?",
       "modelProgressBody": "Päätökset, jotka malli tarvitsee ennen hyväksymistä: kriteerit, niiden painotus, kunkin kriteerin dokumentaatio ja itse hyväksyntä.",
       "payGapScatterMeansBody": "Katkoviivat ovat kummankin sukupuolen keskipalkka ryhmässä, joten näet ketkä ovat oman keskiarvonsa ylä- ja alapuolella."
     },

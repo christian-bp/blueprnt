@@ -42,7 +42,15 @@ export function WeightPointRow({
     // single weight point reveals ONLY that point's meaning. Root/Trigger
     // (render) add no DOM and Content portals out, so the joined ButtonGroup
     // styling (which targets direct children) is unaffected.
-    <ButtonGroup aria-label={t("setWeightPoints", { name })} className="w-full">
+    // max-w-xs (20rem) from the spacing scale, with w-full under it so the row
+    // fills a narrow card and stops at 20rem in a wide one: five buttons
+    // stretched across a full-width column read as five separate controls
+    // rather than as one 1-5 scale. It stays at the card's left edge while the
+    // card grows past it.
+    <ButtonGroup
+      aria-label={t("setWeightPoints", { name })}
+      className="w-full max-w-xs"
+    >
       {WEIGHT_POINT_VALUES.map((option) => {
         // Weight meanings are always the generic section 12.2 semantics
         // (getModel carries no per-criterion weighting text; decision 8).

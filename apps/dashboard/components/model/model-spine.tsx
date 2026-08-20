@@ -35,13 +35,16 @@ export function ModelSpine({
   return (
     <section className="space-y-3">
       <div className="flex items-center gap-2">
-        {/* The heading labels the bar. The overall count lives here as text
-            for a screen reader only: the per-chapter figure under the bar is
-            aria-hidden and the bar alone would announce a percentage, while on
-            screen two unlabelled pairs of numbers a line apart read as
-            clutter. */}
+        {/* The heading names what the section is BUILDING, not how far along
+            it is: the bar directly below and its per-chapter counts are the
+            progress reading, and an abstract progress word above them said the
+            same thing twice while naming nothing. The overall count lives here
+            as text for a screen reader only: the per-chapter figure under the
+            bar is aria-hidden and the bar alone would announce a percentage,
+            while on screen two unlabelled pairs of numbers a line apart read
+            as clutter. */}
         <h3 className="font-semibold text-base">
-          {t("progressLabel")}
+          {t("heading")}
           <span className="sr-only"> {t("count", { done, total })}</span>
         </h3>
         <HelpMorphButton label={tHelp("modelProgressLabel")}>
