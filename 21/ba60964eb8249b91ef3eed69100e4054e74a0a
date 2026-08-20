@@ -1,0 +1,63 @@
+apps/dashboard/components/organization/organization-members-section.tsx
+  s_58dd112dc09435::t_ab2214261cc428 337
+apps/dashboard/components/morph-popover.tsx
+  s_58dd112dc09435::t_ab2214261cc428 209
+apps/dashboard/components/pay-mapping/pay-mapping-scatter.tsx
+  s_58dd112dc09435::t_ab2214261cc428 695
+apps/dashboard/components/family-review-table.tsx
+  s_58dd112dc09435::t_ab2214261cc428 814
+apps/dashboard/components/assistant/assistant-prompt.test.tsx
+  s_58dd112dc09435::t_b8be243441789a 191-192
+apps/dashboard/components/people/pay-comparison-section.tsx
+  s_58dd112dc09435::t_ab2214261cc428 389,391
+apps/dashboard/app/change-email/page.tsx
+  s_58dd112dc09435::t_cd40457f678dfe 53,66,77,87
+apps/dashboard/components/assistant/assistant-message.tsx
+  s_58dd112dc09435::t_ab2214261cc428 112
+apps/dashboard/components/model/approval-card.tsx
+  s_58dd112dc09435::t_ab2214261cc428 183
+apps/dashboard/components/role-form-fields.tsx
+  s_58dd112dc09435::t_ab2214261cc428 275
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_58dd112dc09435::t_ab2214261cc428 333,405
+apps/dashboard/components/audit/change-entry-row.tsx
+  s_58dd112dc09435::t_ab2214261cc428 63
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_58dd112dc09435::t_ab2214261cc428 419
+apps/dashboard/components/roles/role-anchor-control.tsx
+  s_58dd112dc09435::t_ab2214261cc428 198
+apps/dashboard/components/assistant/assistant-composer.test.tsx
+  s_58dd112dc09435::t_b8be243441789a 121-122
+apps/dashboard/components/org-audit-log-section.tsx
+  s_58dd112dc09435::t_ab2214261cc428 802,856
+apps/dashboard/components/roles/role-criterion-breakdown.tsx
+  s_58dd112dc09435::t_ab2214261cc428 106
+apps/dashboard/components/assistant/assistant-composer.tsx
+  s_58dd112dc09435::t_ab2214261cc428 156
+apps/dashboard/components/admin/ai-usage-table.tsx
+  s_58dd112dc09435::t_ab2214261cc428 396
+apps/dashboard/components/admin/ai-usage-chart.tsx
+  s_58dd112dc09435::t_ab2214261cc428 349
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_58dd112dc09435::t_ab2214261cc428 337
+apps/dashboard/components/assistant/assistant-prompt.tsx
+  s_58dd112dc09435::t_ab2214261cc428 162
+apps/dashboard/components/model/working-conditions-decision.tsx
+  s_58dd112dc09435::t_20ec363fc195fc 185,372
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "21ba60964eb8249b91ef3eed69100e4054e74a0a",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
