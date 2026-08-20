@@ -12,6 +12,7 @@ import { AnimatePresence } from "motion/react"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
+import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
 import { WeightBudgetBar } from "@/components/model/weight-budget-bar"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
 import { WeightReviewPanel } from "@/components/model/weight-review-panel"
@@ -20,13 +21,6 @@ import { chapterHref } from "@/lib/model-chapters"
 import { modelErrorKey } from "@/lib/model-errors"
 import { toast } from "@/lib/toast"
 import { DIMENSION_SHARE_FORMAT, shareFraction } from "@/lib/weighting"
-
-// The grid's geometry, declared once and used by both states, so the loading
-// state and the loaded one can never drift into two different grids. Four
-// across begins at 2xl for the reason the Kriterier chapter's grid records:
-// at a 1440-class laptop width four columns compress past what a criterion
-// title can wrap into, and 2x2 reads comfortably there.
-const GRID_CLASS = "grid items-start gap-4 sm:grid-cols-2 2xl:grid-cols-4"
 
 // A figure standing inside a line of prose: it sits in the text flow rather
 // than opening a block of its own, and is sized to the one or two digits it
@@ -183,7 +177,7 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
           })}
         </p>
       ) : (
-        <div className={GRID_CLASS}>
+        <div className={CHAPTER_GRID_CLASS}>
           {model.dimensions.map((dimension) => {
             const placed = criteria.filter(
               (criterion) => criterion.dimensionKey === dimension.key
@@ -310,7 +304,7 @@ function WeightingChapterSkeleton() {
           </Button>
         }
       />
-      <div className={GRID_CLASS}>
+      <div className={CHAPTER_GRID_CLASS}>
         {Array.from({ length: 2 }, (_, column) => (
           <div
             // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable

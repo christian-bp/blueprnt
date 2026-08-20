@@ -1,28 +1,8 @@
 "use client"
 
-import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@workspace/ui/components/alert-dialog"
-import { Button } from "@workspace/ui/components/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { motion } from "motion/react"
 import type { Variants } from "motion/react"
-import { useTranslations } from "next-intl"
-import { type ReactNode, useState } from "react"
+import type { ReactNode } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SPRING } from "@/lib/motion"
 
@@ -31,6 +11,10 @@ import { SPRING } from "@/lib/motion"
 // shared component rather than folding into the panel because the skeleton has
 // to measure identical to it, and a row whose box lives in one file cannot
 // drift from a placeholder built against it.
+//
+// Read-only: the method surface documents and approves criteria, it does not
+// remove them. The section's one remove gesture is the RemoveConfirm morph on
+// the Kriterier chapter's PlacedCriterionCard.
 //
 // Zero-layout-shift design: a single bordered row keeps the same box in every
 // state. State changes reveal controls outside the row's layout box; nothing
@@ -42,9 +26,6 @@ import { SPRING } from "@/lib/motion"
 //   - The note slot is a reserved-height block below the main row, carrying a
 //     criterion's share of the model. Its height is reserved so a changed
 //     figure never reflows neighboring rows.
-//   - The row actions are a trailing dropdown menu in an ALWAYS-reserved fixed
-//     slot right of the importance slot, so a row that gains or loses its
-//     actions never reflows.
 //   - The gap between items is marginBottom: 12 on the motion.li (animated to
 //     0 on exit so the gap collapses with the height). Consumers must not
 //     apply space-y or gap on the ul.
@@ -79,18 +60,12 @@ const rowVariants: Variants = {
 //                      entirely
 //   note             - optional reserved-height block below the row (the
 //                      criterion's share of the model)
-//   editable         - when false: no row menu (Remove)
-//   onRemove         - called with no args after the user confirms inline
-//   removing         - disables the button while the delete mutation is in flight
 export function CriterionItem({
   name,
   description,
   extendedDescription,
   importanceNode,
   note,
-  editable,
-  onRemove,
-  removing,
 }: {
   name: string
   // Optional muted subtitle (the short description).
@@ -103,19 +78,7 @@ export function CriterionItem({
   importanceNode?: ReactNode
   // Reserved-height content below the main row (the criterion's share).
   note?: ReactNode
-  editable: boolean
-  // The row action, rendered as a one-item dropdown menu while editable:
-  // onRemove (behind an AlertDialog confirmation) deletes the criterion.
-  // Library-only selection (decision 8): there is no edit-text action left.
-  onRemove?: () => void
-  removing?: boolean
 }) {
-  const tEditor = useTranslations("dashboard.model.editor")
-  const tChange = useTranslations("dashboard.model.change")
-
-  const showMenu = editable && onRemove !== undefined
-  const [confirmRemove, setConfirmRemove] = useState(false)
-
   return (
     // Outer motion.li carries ONLY animated geometry: layout spring for
     // siblings, height/marginBottom collapse on exit, and opacity fade.
@@ -128,7 +91,7 @@ export function CriterionItem({
     // now-invisible shell after a 0.1 s delay. Because the inner div is already
     // transparent when height shrinks, content that momentarily overflows the
     // li boundary is invisible, so overflow-hidden is not needed on the li at
-    // rest (adding it would clip the corner button's -top-2.5 overlap).
+    // rest.
     //
     // Variants are used so the exit state can carry its own per-property
     // transition without affecting the enter (animate) transition.
@@ -139,13 +102,7 @@ export function CriterionItem({
       animate="visible"
       exit="exit"
     >
-      {/* Inner div owns all visual box styling and is the positioning context
-          for anything this row anchors absolutely. The group/relative classes
-          live here so a hover reveal and an absolute corner overlap are
-          unchanged from the consumer's perspective. This row confirms in an
-          AlertDialog, not the inline RemoveConfirm morph: its menu closes as
-          the item is chosen, so there is no trigger left in the row for a
-          morph to expand out of. */}
+      {/* Inner div owns all visual box styling. */}
       <div className="group relative rounded-md border p-3">
         <div className="flex min-h-9 items-center gap-3">
           {/* Name + description take all remaining space and stay
@@ -178,45 +135,6 @@ export function CriterionItem({
               {importanceNode}
             </span>
           )}
-
-          {/* Actions slot, rendered only while editable so the importance
-              column sits flush with the row edge in read mode. Entering
-              edit is a full mode switch that already swaps the weight
-              control, so the column moving left with the menu is part of
-              that one deliberate relayout, not a hover/state shift. Within
-              edit mode the slot stays reserved when the menu has no
-              actions. */}
-          {editable &&
-            (showMenu ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      disabled={removing}
-                      aria-label={tEditor("rowMenuLabel", { name })}
-                      className="shrink-0 text-muted-foreground hover:text-foreground"
-                    />
-                  }
-                >
-                  <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {onRemove !== undefined && (
-                    <DropdownMenuItem
-                      variant="destructive"
-                      onClick={() => setConfirmRemove(true)}
-                    >
-                      {tEditor("removeCta")}
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <span aria-hidden="true" className="size-9 shrink-0" />
-            ))}
         </div>
 
         {/* Optional below-row note (Weight phase: the derived share). A single
@@ -225,37 +143,6 @@ export function CriterionItem({
         {note !== undefined && (
           <div className="mt-1 text-muted-foreground text-xs">{note}</div>
         )}
-
-        {/* Destructive confirmation in an AlertDialog (the standard pattern
-            for irreversible actions): removal deletes the criterion's
-            ratings on every role and redistributes its weight points. */}
-        <AlertDialog open={confirmRemove} onOpenChange={setConfirmRemove}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {tEditor("removeDialogTitle", { name })}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {tEditor("removeDialogDescription")}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel disabled={removing}>
-                {tChange("cancel")}
-              </AlertDialogCancel>
-              <AlertDialogAction
-                variant="destructive"
-                disabled={removing}
-                onClick={async () => {
-                  await onRemove?.()
-                  setConfirmRemove(false)
-                }}
-              >
-                {tEditor("removeConfirm")}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </div>
     </motion.li>
   )

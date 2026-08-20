@@ -1833,12 +1833,8 @@
         "cta": "Åbn dashboardet"
       },
       "editor": {
-        "removeCta": "Fjern",
         "removeLabel": "Fjern {name}",
-        "removeConfirm": "Ja, fjern kriteriet",
-        "rowMenuLabel": "Handlinger for {name}",
-        "removeDialogTitle": "Fjern {name}?",
-        "removeDialogDescription": "Kriteriets vurderinger fjernes fra alle roller, og vægtpointene omfordeles til de resterende kriterier. Dette kan ikke fortrydes."
+        "removeConfirm": "Ja, fjern kriteriet"
       },
       "criteria": {
         "addCta": "Tilføj kriterium",

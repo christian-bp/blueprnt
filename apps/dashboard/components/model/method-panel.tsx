@@ -1,18 +1,15 @@
 "use client"
 
-import { InformationCircleIcon, Tick02Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { Alert, AlertTitle } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { AnimatePresence } from "motion/react"
 import dynamic from "next/dynamic"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
+import { ChapterStatusAlert } from "@/components/model/chapter-status-alert"
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
 import { CriterionItem } from "@/components/model/criterion-item"
 import { CriterionListSkeleton } from "@/components/model/criterion-list-skeleton"
@@ -55,20 +52,17 @@ export function MethodPanel({ orgId }: { orgId: string }) {
     // appears instantly and nothing reflows when the data arrives.
     return (
       <div className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          {/* Reuse the real progress Alert (with its icon) and skeleton only the
-              not-yet-known counts, so the toolbar height is identical to the
-              loaded state and the list below does not shift. */}
-          <Alert role="status" className="w-auto">
-            <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} />
-            <AlertTitle>
-              <Skeleton className="h-5 w-52" />
-            </AlertTitle>
-          </Alert>
-          {/* The real download button (static chrome): it loads its own data
-              and disables itself until ready. */}
-          <MethodAppendixDownload orgId={orgId} />
-        </div>
+        {/* Reuse the real status block (with its icon) and skeleton only the
+            not-yet-known counts, so the toolbar height is identical to the
+            loaded state and the list below does not shift. ok=undefined is
+            the "not yet known" state: the info icon, no tint. */}
+        <ChapterStatusAlert
+          ok={undefined}
+          title={<Skeleton className="h-5 w-52" />}
+          // The real download button (static chrome): it loads its own data
+          // and disables itself until ready.
+          actions={<MethodAppendixDownload orgId={orgId} />}
+        />
         <CriterionListSkeleton />
       </div>
     )
@@ -80,33 +74,18 @@ export function MethodPanel({ orgId }: { orgId: string }) {
       ? null
       : (data.criteria.find((c) => c.criterionId === targetId) ?? null)
 
-  // Mirrors the Viktning chapter's budget block: a check + neutral tint when the
-  // model is fully approved, an amber heads-up while documentation is still
-  // outstanding. Alert has no warning variant, so the amber tint is a
-  // call-site override (same pattern as weight-budget-bar.tsx).
+  // Mirrors the Viktning chapter's budget block through the same
+  // ChapterStatusAlert: a check + neutral tint when the model is fully
+  // approved, an amber heads-up while documentation is still outstanding.
   const allApproved =
     data.progress.total > 0 && data.progress.approved === data.progress.total
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <Alert
-          // role="status" rather than the component's default role="alert":
-          // these figures change under the reader's own actions, and an
-          // assertive live region would interrupt them with their own edit.
-          // Polite is right for a readout the reader is driving themselves.
-          role="status"
-          className={cn(
-            "w-auto",
-            !allApproved &&
-              "border-amber-500/50 text-amber-700 dark:text-amber-400"
-          )}
-        >
-          <HugeiconsIcon
-            icon={allApproved ? Tick02Icon : InformationCircleIcon}
-            strokeWidth={2}
-          />
-          <AlertTitle>
+      <ChapterStatusAlert
+        ok={allApproved}
+        title={
+          <>
             {t("documented", {
               documented: data.progress.documented,
               total: data.progress.total,
@@ -116,10 +95,10 @@ export function MethodPanel({ orgId }: { orgId: string }) {
               approved: data.progress.approved,
               total: data.progress.total,
             })}
-          </AlertTitle>
-        </Alert>
-        <MethodAppendixDownload orgId={orgId} />
-      </div>
+          </>
+        }
+        actions={<MethodAppendixDownload orgId={orgId} />}
+      />
       {/* No space-y/gap on the ul: CriterionItem manages its own marginBottom
           via the motion.li variants; consumer gap would double-space items. */}
       <ul>
@@ -130,7 +109,6 @@ export function MethodPanel({ orgId }: { orgId: string }) {
               name={c.name}
               description={c.description || undefined}
               extendedDescription={c.helpText || undefined}
-              editable={false}
               note={
                 <span>
                   <span className="font-medium text-foreground tabular-nums">

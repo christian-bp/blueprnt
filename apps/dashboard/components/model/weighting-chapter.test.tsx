@@ -40,6 +40,7 @@ vi.mock("@number-flow/react", () => ({
   ),
 }))
 
+import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
 import { WeightingChapter } from "@/components/model/weighting-chapter"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 
@@ -318,8 +319,9 @@ describe("the Viktning chapter", () => {
     ).toBeTruthy()
   })
 
-  // Same as the Kriterier chapter: uncapped width divided by one shared grid
-  // constant, so the loading and loaded states can never drift apart.
+  // Same as the Kriterier chapter: uncapped width divided by the one exported
+  // CHAPTER_GRID_CLASS constant both chapters and both loading states read,
+  // so none of the four can ever drift apart.
   it("lays the loading and loaded grids out with the same classes", () => {
     // Selected on the chapter grid's OWN breakpoint class, not on a bare
     // "grid-cols": the status Alert above carries a grid-cols of its own
@@ -329,7 +331,7 @@ describe("the Viktning chapter", () => {
       root.querySelector('[class*="sm:grid-cols-2"]')?.className
     const { container: loaded } = renderChapter()
     const loadedGrid = gridOf(loaded)
-    expect(loadedGrid).toBeDefined()
+    expect(loadedGrid).toBe(CHAPTER_GRID_CLASS)
     cleanup()
     modelResult = undefined
     const { container: loading } = renderChapter()

@@ -22,22 +22,13 @@ import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { HATCH_CLASS } from "@/components/hatch"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
 import { DimensionColumn } from "@/components/model/dimension-column"
 import { LibraryPickerDialog } from "@/components/model/library-picker-dialog"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
 import { WorkingConditionsDecision } from "@/components/model/working-conditions-decision"
 import { modelErrorKey } from "@/lib/model-errors"
 import { toast } from "@/lib/toast"
-
-// The grid's geometry, declared once and used by both states, so the loading
-// state and the loaded one can never drift into two different grids.
-//
-// Four across begins at 2xl, not xl: at a 1440-class laptop width the four
-// columns compress to about 272px each and the criterion titles wrap hard,
-// while the 2x2 arrangement at those widths reads comfortably. From 1536 up
-// there is room for four, and the section runs the full viewport width to give
-// it to them.
-const GRID_CLASS = "grid items-start gap-4 sm:grid-cols-2 2xl:grid-cols-4"
 
 // Each dimension's help body, which says what the dimension COVERS rather than
 // asking the reader a question: a column heading with a question mark behind it
@@ -127,7 +118,7 @@ export function CriteriaChapter({ orgId }: { orgId: string }) {
   const slotOpen = decision?.status === "active"
 
   return (
-    <div className={GRID_CLASS}>
+    <div className={CHAPTER_GRID_CLASS}>
       {model.dimensions.map((dimension) => {
         const placed = model.criteria.filter(
           (criterion) => criterion.dimensionKey === dimension.key
@@ -259,7 +250,7 @@ function CriteriaChapterSkeleton() {
   const tHelp = useTranslations("dashboard.help")
   const content = criteriaLibraryContent(locale)
   return (
-    <div className={GRID_CLASS}>
+    <div className={CHAPTER_GRID_CLASS}>
       {DIMENSION_KEYS.map((key) => (
         <ColumnSkeleton
           key={key}

@@ -1833,12 +1833,8 @@
         "cta": "Öppna dashboarden"
       },
       "editor": {
-        "removeCta": "Ta bort",
         "removeLabel": "Ta bort {name}",
-        "removeConfirm": "Ja, ta bort kriteriet",
-        "rowMenuLabel": "Åtgärder för {name}",
-        "removeDialogTitle": "Ta bort {name}?",
-        "removeDialogDescription": "Kriteriets betyg tas bort från alla roller och dess viktpoäng omfördelas till de återstående kriterierna. Detta kan inte ångras."
+        "removeConfirm": "Ja, ta bort kriteriet"
       },
       "criteria": {
         "addCta": "Lägg till kriterium",

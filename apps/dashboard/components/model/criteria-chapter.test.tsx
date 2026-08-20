@@ -27,6 +27,7 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org-1", name: "Acme", role: orgRole }),
 }))
 
+import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
 import { CriteriaChapter } from "@/components/model/criteria-chapter"
 import { toast } from "@/lib/toast"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
@@ -1074,9 +1075,10 @@ describe("the Kriterier chapter", () => {
     })
   })
 
-  // The section is uncapped, so the columns divide the whole page width. The
-  // two states must divide it identically: one GRID_CLASS constant feeds both,
-  // and this is what fails if a second grid string ever appears.
+  // The section is uncapped, so the columns divide the whole page width. Both
+  // states, and the Viktning chapter's own grid, all read the one exported
+  // CHAPTER_GRID_CLASS constant, and this is what fails if a second grid
+  // string ever appears anywhere in the pair.
   it("lays the loading and loaded grids out with the same classes", () => {
     // Selected on the chapter grid's OWN breakpoint class, not on a bare
     // "grid-cols": the status Alert above carries a grid-cols of its own
@@ -1086,7 +1088,7 @@ describe("the Kriterier chapter", () => {
       root.querySelector('[class*="sm:grid-cols-2"]')?.className
     const { container: loaded } = renderChapter()
     const loadedGrid = gridOf(loaded)
-    expect(loadedGrid).toBeDefined()
+    expect(loadedGrid).toBe(CHAPTER_GRID_CLASS)
     cleanup()
     modelResult = undefined
     const { container: loading } = renderChapter()

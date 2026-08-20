@@ -1833,12 +1833,8 @@
         "cta": "Avaa hallintapaneeli"
       },
       "editor": {
-        "removeCta": "Poista",
         "removeLabel": "Poista {name}",
-        "removeConfirm": "Kyllä, poista kriteeri",
-        "rowMenuLabel": "Toiminnot: {name}",
-        "removeDialogTitle": "Poistetaanko {name}?",
-        "removeDialogDescription": "Kriteerin arviot poistetaan kaikilta rooleilta ja sen painopisteet jaetaan uudelleen jäljellä oleville kriteereille. Tätä ei voi kumota."
+        "removeConfirm": "Kyllä, poista kriteeri"
       },
       "criteria": {
         "addCta": "Lisää kriteeri",

@@ -1833,12 +1833,8 @@
         "cta": "Open the dashboard"
       },
       "editor": {
-        "removeCta": "Remove",
         "removeLabel": "Remove {name}",
-        "removeConfirm": "Yes, remove the criterion",
-        "rowMenuLabel": "Actions for {name}",
-        "removeDialogTitle": "Remove {name}?",
-        "removeDialogDescription": "The criterion's ratings are removed from every role and its weight points are redistributed across the remaining criteria. This cannot be undone."
+        "removeConfirm": "Yes, remove the criterion"
       },
       "criteria": {
         "addCta": "Add criterion",
