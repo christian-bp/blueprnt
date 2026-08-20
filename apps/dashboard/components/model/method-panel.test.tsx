@@ -58,6 +58,8 @@ vi.mock("convex/react", () => ({
 
 import { MethodPanel } from "@/components/model/method-panel"
 
+const weighting = messages.dashboard.model.weighting
+
 function renderPanel(orgId = "org1") {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
@@ -82,7 +84,13 @@ describe("MethodPanel", () => {
     expect(screen.getByText("Approved")).toBeDefined()
     expect(screen.getByText("Not started")).toBeDefined()
     // Share line mirrors the Weighting page format
-    expect(screen.getAllByText(/of the total weight/).length).toBeGreaterThan(0)
+    // The phrase shortened when the Viktning card unified its two figures onto
+    // one line: the full "of the total weight" lives in the budget block, and
+    // repeating it on every row was the longer half of a line nobody reads
+    // twice.
+    expect(
+      screen.getAllByText(new RegExp(weighting.shareOfTotal)).length
+    ).toBeGreaterThan(0)
   })
 
   const m = messages.dashboard.model.method

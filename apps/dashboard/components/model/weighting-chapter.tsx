@@ -19,7 +19,7 @@ import { MorphPopover } from "@/components/morph-popover"
 import { chapterHref } from "@/lib/model-chapters"
 import { modelErrorKey } from "@/lib/model-errors"
 import { toast } from "@/lib/toast"
-import { formatShare } from "@/lib/weighting"
+import { DIMENSION_SHARE_FORMAT, shareFraction } from "@/lib/weighting"
 
 // The grid's geometry, declared once and used by both states, so the loading
 // state and the loaded one can never drift into two different grids. Four
@@ -191,8 +191,30 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
             if (placed.length === 0) return null
             return (
               <section key={dimension.key} className="space-y-2">
+                {/* The dimension's own share of the weighting, beside its
+                    name: the balance between dimensions is the thing this
+                    chapter can get wrong, and it was only visible on the
+                    Godkännande checklist after the fact. Derived from the
+                    LOCAL allocation, so it moves with an unsaved edit the way
+                    the cards' own shares do, and rounded to whole points
+                    because a heading is a balance reading rather than a figure
+                    anyone reconciles. */}
                 <h3 className="truncate font-medium text-sm">
-                  {dimension.name}
+                  {t.rich("dimensionShare", {
+                    dimension: dimension.name,
+                    share: () => (
+                      <NumberFlow
+                        value={shareFraction(
+                          placed.reduce(
+                            (sum, criterion) => sum + pointsFor(criterion),
+                            0
+                          ),
+                          totalPoints
+                        )}
+                        format={DIMENSION_SHARE_FORMAT}
+                      />
+                    ),
+                  })}
                 </h3>
                 {/* Nothing on this chapter adds or removes a criterion (that
                     is the Kriterier chapter's job), but the model is a live
@@ -209,10 +231,9 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
                         criterion={criterion}
                         weight={{
                           points: pointsFor(criterion),
-                          share: formatShare(
+                          share: shareFraction(
                             pointsFor(criterion),
-                            totalPoints,
-                            locale
+                            totalPoints
                           ),
                           onChange: (points) =>
                             setDraft((current) => ({

@@ -50,13 +50,82 @@ export interface MorphPlacement {
 const clamp = (value: number, low: number, high: number) =>
   Math.min(Math.max(value, low), high)
 
-// The panel's placement: the preferred side when it fits, the opposite side
-// when that one does and the preferred one does not, and a pull inward when
-// neither fits outright (a panel wider than the room beside its trigger).
+// The one rule, over the two candidate positions a panel can take: the
+// preferred side when it fits, the opposite side when that one does and the
+// preferred one does not, and a pull inward when neither fits outright.
 //
 // Flipping before shifting is deliberate. A shift moves the panel off the
 // trigger it morphed from, so the cheapest correction is choosing the side
 // with the room; shifting is the fallback for when there is no such side.
+//
+// Both public entry points below feed this the same two numbers: where the
+// panel's LEFT edge would sit if it opens rightward, and where its RIGHT edge
+// would sit if it opens leftward. What differs between them is only how those
+// two numbers are derived from the trigger.
+function place({
+  leftEdgeOpeningRight,
+  rightEdgeOpeningLeft,
+  panelWidth,
+  viewportWidth,
+  preferred,
+  margin,
+}: {
+  leftEdgeOpeningRight: number
+  rightEdgeOpeningLeft: number
+  panelWidth: number
+  viewportWidth: number
+  preferred: MorphSide
+  margin: number
+}): MorphPlacement {
+  const low = margin
+  const high = viewportWidth - margin
+
+  const fitsOpeningRight = leftEdgeOpeningRight + panelWidth <= high
+  const fitsOpeningLeft = rightEdgeOpeningLeft - panelWidth >= low
+
+  let side = preferred
+  if (preferred === "left" && !fitsOpeningRight && fitsOpeningLeft) {
+    side = "right"
+  } else if (preferred === "right" && !fitsOpeningLeft && fitsOpeningRight) {
+    side = "left"
+  }
+
+  if (side === "left") {
+    // Panel spans [start - shift, start - shift + panelWidth].
+    // Pull left by the right-hand overflow, but never so far that the panel's
+    // own left edge leaves the viewport: with a panel wider than the room, the
+    // left edge is the one worth keeping (it carries the title).
+    const needed = leftEdgeOpeningRight + panelWidth - high
+    return {
+      side,
+      shift: clamp(
+        Math.max(0, needed),
+        0,
+        Math.max(0, leftEdgeOpeningRight - low)
+      ),
+    }
+  }
+  // Panel spans [end + shift - panelWidth, end + shift].
+  // Push right by the left-hand overflow, so the panel's left edge lands
+  // exactly on the margin. Deliberately NOT capped at the far edge: when the
+  // panel is wider than the room, capping would protect the RIGHT edge and let
+  // the title-bearing left edge run off, the opposite of what the "left"
+  // branch above decides for the identical situation. Both branches keep the
+  // left edge.
+  //
+  // Unreachable for today's consumers (the morph popover's panel is capped at
+  // max-w-[85vw] and the weight meaning is 224px beside a 36px bar, so some
+  // side always fits), which is exactly why it is worth pinning: the two
+  // branches have to agree about which edge is worth keeping before a wider
+  // panel ever reaches them.
+  const needed = low - (rightEdgeOpeningLeft - panelWidth)
+  return { side, shift: Math.max(0, needed) }
+}
+
+// A panel ALIGNED to its trigger: its left edge on the trigger's left when it
+// opens rightward, its right edge on the trigger's right when it opens
+// leftward. This is the morph popover's shape, where the panel grows out of
+// the trigger's own rect and overlays it.
 export function morphPanelPlacement({
   triggerLeft,
   triggerRight,
@@ -65,42 +134,104 @@ export function morphPanelPlacement({
   preferred,
   margin = MORPH_VIEWPORT_MARGIN,
 }: MorphPlacementInput): MorphPlacement {
+  return place({
+    leftEdgeOpeningRight: triggerLeft,
+    rightEdgeOpeningLeft: triggerRight,
+    panelWidth,
+    viewportWidth,
+    preferred,
+    margin,
+  })
+}
+
+// A panel BESIDE its trigger, separated by a gap: it starts at the trigger's
+// right edge plus the gap when it opens rightward, and ends at the trigger's
+// left edge minus the gap when it opens leftward. This is the weight bar's
+// shape, where the panel sits next to the control rather than over it, so the
+// flip is a mirror: same gap, other side.
+export function morphAsidePlacement({
+  triggerLeft,
+  triggerRight,
+  gap,
+  panelWidth,
+  viewportWidth,
+  preferred,
+  margin = MORPH_VIEWPORT_MARGIN,
+}: MorphPlacementInput & { gap: number }): MorphPlacement {
+  return place({
+    leftEdgeOpeningRight: triggerRight + gap,
+    rightEdgeOpeningLeft: triggerLeft - gap,
+    panelWidth,
+    viewportWidth,
+    preferred,
+    margin,
+  })
+}
+
+// The vertical shape: a panel STACKED over its trigger, centred on it, rather
+// than sitting to one side. The weight row's step meanings are this one.
+//
+// Two independent corrections, because the two axes fail differently: the
+// panel flips between above and below (the axis it is anchored on), and slides
+// horizontally to stay inside the side edges (the axis it is centred on).
+export type MorphVerticalSide = "top" | "bottom"
+
+export interface MorphStackPlacement {
+  // "top" hangs the panel above the trigger, "bottom" drops it below.
+  side: MorphVerticalSide
+  // Horizontal correction for a panel centred on its trigger, in pixels:
+  // positive moves it right, negative left. SIGNED, unlike the horizontal
+  // shapes' inward-only pull, because a centred panel can overflow either
+  // side.
+  shift: number
+}
+
+export function morphStackPlacement({
+  triggerLeft,
+  triggerRight,
+  triggerTop,
+  triggerBottom,
+  gap,
+  panelWidth,
+  panelHeight,
+  viewportWidth,
+  viewportHeight,
+  preferred,
+  margin = MORPH_VIEWPORT_MARGIN,
+}: {
+  triggerLeft: number
+  triggerRight: number
+  triggerTop: number
+  triggerBottom: number
+  gap: number
+  panelWidth: number
+  panelHeight: number
+  viewportWidth: number
+  viewportHeight: number
+  preferred: MorphVerticalSide
+  margin?: number
+}): MorphStackPlacement {
   const low = margin
   const high = viewportWidth - margin
 
-  // Where each side would put the panel's far edge, and whether that is inside.
-  const fitsGrowingRight = triggerLeft + panelWidth <= high
-  const fitsGrowingLeft = triggerRight - panelWidth >= low
-
+  // Vertical: flip only, never shift. A panel nudged down over the control it
+  // explains would cover the thing the reader is pointing at.
+  const fitsAbove = triggerTop - gap - panelHeight >= margin
+  const fitsBelow = triggerBottom + gap + panelHeight <= viewportHeight - margin
   let side = preferred
-  if (preferred === "left" && !fitsGrowingRight && fitsGrowingLeft) {
-    side = "right"
-  } else if (preferred === "right" && !fitsGrowingLeft && fitsGrowingRight) {
-    side = "left"
+  if (preferred === "top" && !fitsAbove && fitsBelow) {
+    side = "bottom"
+  } else if (preferred === "bottom" && !fitsBelow && fitsAbove) {
+    side = "top"
   }
 
-  if (side === "left") {
-    // Panel spans [triggerLeft - shift, triggerLeft - shift + panelWidth].
-    // Pull left by the right-hand overflow, but never so far that the panel's
-    // own left edge leaves the viewport: with a panel wider than the room, the
-    // left edge is the one worth keeping (it carries the title).
-    const needed = triggerLeft + panelWidth - high
-    return {
-      side,
-      shift: clamp(Math.max(0, needed), 0, Math.max(0, triggerLeft - low)),
-    }
-  }
-  // Panel spans [triggerRight - panelWidth + shift, triggerRight + shift].
-  // Push right by the left-hand overflow, which lands the panel's left edge
-  // exactly on the margin. Deliberately NOT capped at the far edge: when the
-  // panel is wider than the room, capping would protect the RIGHT edge and let
-  // the title-bearing left edge run off, the opposite of what the "left" branch
-  // above decides for the identical situation. Both branches keep the left edge.
-  //
-  // Unreachable today (every consumer's panel is capped at max-w-[85vw], so
-  // some side always fits), which is exactly why it is worth pinning: the two
-  // branches have to agree about which edge is worth keeping before a wider
-  // panel ever reaches them.
-  const needed = low - (triggerRight - panelWidth)
-  return { side, shift: Math.max(0, needed) }
+  // Horizontal: the panel is centred on the trigger, so correct whichever edge
+  // leaves the viewport. The left-edge rule is applied SECOND and therefore
+  // wins, exactly as it does in the horizontal shapes: with a panel wider than
+  // the room, the left edge is the one worth keeping.
+  const naturalLeft = (triggerLeft + triggerRight) / 2 - panelWidth / 2
+  let shift = 0
+  if (naturalLeft + panelWidth > high) shift = high - (naturalLeft + panelWidth)
+  if (naturalLeft + shift < low) shift = low - naturalLeft
+  return { side, shift }
 }

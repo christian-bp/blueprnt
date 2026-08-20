@@ -7,11 +7,13 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@workspace/ui/components/item"
+import NumberFlow from "@number-flow/react"
 import { motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { WeightPointRow } from "@/components/model/weight-point-row"
 import { RemoveConfirm } from "@/components/remove-confirm"
 import { SPRING } from "@/lib/motion"
+import { SHARE_FORMAT } from "@/lib/weighting"
 
 // The criterion's weight, as the Viktning chapter hands it to the card. Absent
 // on the Kriterier chapter, where the card is the selection and nothing else:
@@ -19,9 +21,12 @@ import { SPRING } from "@/lib/motion"
 // to INCLUDE was the confusion the chapters exist to end.
 export interface PlacedCriterionWeight {
   points: number
-  // The derived percent share of the model's total weight, already formatted
-  // for the locale (ADR-0004: a display value, never an input).
-  share: string
+  // The derived share of the model's total weight, as a FRACTION (ADR-0004: a
+  // display value, never an input). A number rather than formatted text
+  // because it changes while the reader watches, so it renders through
+  // NumberFlow; the formatting lives with the shares' one source
+  // (lib/weighting.ts SHARE_FORMAT).
+  share: number
   onChange: (points: number) => void
 }
 
@@ -122,13 +127,23 @@ export function PlacedCriterionCard(
               disabled={disabled}
               onChange={weight.onChange}
             />
-            {/* A single constant-height line, so no height needs reserving:
-                changing the weight only changes the percentage in place. */}
-            <p className="text-muted-foreground text-xs">
-              <span className="font-medium text-foreground tabular-nums">
-                {weight.share}
-              </span>{" "}
-              {t("shareOfTotal")}
+            {/* ONE line under the row, carrying the SHARE alone: the row's
+                fill already says which of the five points is set, and
+                repeating it here made the reader read one allocation twice.
+                What the row cannot say is what those points come to against
+                the model's total, which is the derived figure (ADR-0004).
+                A single constant-height line, so no height needs reserving:
+                changing the weight only changes the figure in place, and it
+                rolls rather than swaps because it moves while the reader
+                watches. */}
+            <p className="text-muted-foreground text-xs tabular-nums">
+              {t.rich("criterionShare", {
+                share: () => (
+                  <span className="font-medium text-foreground">
+                    <NumberFlow value={weight.share} format={SHARE_FORMAT} />
+                  </span>
+                ),
+              })}
             </p>
           </>
         )}

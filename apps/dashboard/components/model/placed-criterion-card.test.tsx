@@ -10,6 +10,27 @@ import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import type { ReactNode } from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
+
+// NumberFlow renders a custom element happy-dom never upgrades, and the card's
+// two figures change in place. The digit animation is the library's business;
+// these tests are about the figures.
+vi.mock("@number-flow/react", () => ({
+  // Format-aware on purpose: the figures this surface rolls are percentages,
+  // so a mock that ignored `format` would let a wrong Intl option pass.
+  default: ({
+    value,
+    format,
+  }: {
+    value: number
+    format?: Intl.NumberFormatOptions
+  }) => (
+    <span>
+      {format === undefined
+        ? value
+        : new Intl.NumberFormat("en", format).format(value)}
+    </span>
+  ),
+}))
 import {
   PlacedCriterionCard,
   type PlacedCriterionWeight,
@@ -53,7 +74,9 @@ function renderWeighted(overrides: Partial<PlacedCriterionWeight> = {}) {
   const view = wrap(
     <PlacedCriterionCard
       criterion={CRITERION}
-      weight={{ points: 3, share: "17.6%", onChange, ...overrides }}
+      // A fraction now, not formatted text: the card renders it through
+      // NumberFlow, so the formatting lives with the shares' one source.
+      weight={{ points: 3, share: 0.176, onChange, ...overrides }}
     />
   )
   return { ...view, onChange }
@@ -149,10 +172,20 @@ describe("PlacedCriterionCard", () => {
     }
   })
 
-  it("shows what share of the model it carries once weighted", () => {
-    renderWeighted()
-    expect(screen.getByText("17.6%")).toBeDefined()
-    expect(screen.getByText(weighting.shareOfTotal)).toBeDefined()
+  // ONE line under the row, carrying the SHARE alone: the row's fill already
+  // says which of the five points is set, so repeating the value here made the
+  // reader read one allocation twice. The share is what the row cannot say.
+  it("shows the share alone under the row, never the points again", () => {
+    const { container } = renderWeighted()
+    const line = [...container.querySelectorAll("p")].find((p) =>
+      p.textContent?.includes(weighting.shareOfTotal)
+    )
+    expect(line).toBeDefined()
+    expect(line?.textContent).toBe(
+      weighting.criterionShare.replace("<share></share>", "17.6%")
+    )
+    // The 3 the row is set to appears on the row and nowhere else on the card.
+    expect(line?.textContent).not.toContain("3 ·")
   })
 
   it("weights the criterion in place", () => {

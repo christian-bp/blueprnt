@@ -33,6 +33,12 @@
     --primary-foreground: var(--brand-foreground);
     --brand: oklch(0.6289 0.2079 15.74);
     --brand-foreground: oklch(0.985 0 0);
+    /* A darker step of the brand's own ink, for TEXT on a brand-tinted
+       surface: --brand measures 3.42:1 on its own bg-brand/10 wash, which
+       fails AA for small text, and this step measures 6.35:1 there. The same
+       correction --flag-critical and --flag-ok make for the destructive and
+       success tints. */
+    --brand-edge: oklch(0.48 0.19 15.74);
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
     --muted: oklch(0.97 0 0);
@@ -159,6 +165,9 @@
     --primary-foreground: var(--brand-foreground);
     --brand: oklch(0.6289 0.2079 15.74);
     --brand-foreground: oklch(0.985 0 0);
+    /* See the light plane. Same step: the brand value is identical in both
+       planes, so its dark step is too. */
+    --brand-edge: oklch(0.48 0.19 15.74);
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
     --muted: oklch(0.269 0 0);
@@ -231,6 +240,7 @@
     --color-ring: var(--ring);
     --color-brand: var(--brand);
     --color-brand-foreground: var(--brand-foreground);
+    --color-brand-edge: var(--brand-edge);
     --color-chart-1: var(--chart-1);
     --color-chart-2: var(--chart-2);
     --color-chart-3: var(--chart-3);

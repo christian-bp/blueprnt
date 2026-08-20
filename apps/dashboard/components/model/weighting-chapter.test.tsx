@@ -23,7 +23,21 @@ vi.mock(
 // is exactly what a weight click does to the budget readout. The digit
 // animation is the library's business; these tests are about the figures.
 vi.mock("@number-flow/react", () => ({
-  default: ({ value }: { value: number }) => <span>{value}</span>,
+  // Format-aware on purpose: the figures this surface rolls are percentages,
+  // so a mock that ignored `format` would let a wrong Intl option pass.
+  default: ({
+    value,
+    format,
+  }: {
+    value: number
+    format?: Intl.NumberFormatOptions
+  }) => (
+    <span>
+      {format === undefined
+        ? value
+        : new Intl.NumberFormat("en", format).format(value)}
+    </span>
+  ),
 }))
 
 import { WeightingChapter } from "@/components/model/weighting-chapter"
@@ -172,14 +186,42 @@ describe("the Viktning chapter", () => {
   it("groups the chosen criteria by dimension, each with its weight row", () => {
     renderChapter()
     const responsibility = screen
-      .getByRole("heading", { name: "Responsibility and impact" })
+      .getByRole("heading", { name: /Responsibility and impact/ })
       .closest("section") as HTMLElement
     expect(within(responsibility).getAllByRole("group")).toHaveLength(3)
     expect(groupFor(COMPLEXITY)).toBeDefined()
     // A dimension with nothing chosen draws no empty column here.
     expect(
-      screen.queryByRole("heading", { name: "Working conditions" })
+      screen.queryByRole("heading", { name: /Working conditions/ })
     ).toBeNull()
+  })
+
+  // The balance between dimensions is the thing this chapter can get wrong,
+  // and it was only visible on the Godkännande checklist after the fact. Each
+  // heading now carries its dimension's own share, derived from the LOCAL
+  // allocation so it moves with an unsaved edit.
+  it("shows each dimension's own share in its heading, live", () => {
+    renderChapter()
+    const headingFor = (name: string) =>
+      screen.getByRole("heading", { name: new RegExp(name) }).textContent
+    // BALANCED is 4+2+3+3+3 = 15: responsibility holds 2+3+3 = 8, competence 3,
+    // effort 4.
+    expect(headingFor("Responsibility and impact")).toBe(
+      "Responsibility and impact · 53% of the weight"
+    )
+    expect(headingFor("Competence")).toBe("Competence · 20% of the weight")
+    expect(headingFor("Effort and complexity")).toBe(
+      "Effort and complexity · 27% of the weight"
+    )
+
+    // An unsaved edit moves it: dropping effort from 4 to 1 rebalances the
+    // shares before anything is saved.
+    fireEvent.click(
+      within(groupFor(COMPLEXITY)).getByRole("button", { name: "1" })
+    )
+    expect(headingFor("Effort and complexity")).toBe(
+      "Effort and complexity · 8% of the weight"
+    )
   })
 
   // The whole reason criteria and weights are separate chapters: the 1-5
