@@ -1,0 +1,114 @@
+apps/dashboard/components/confirm-delete-dialog.tsx
+  s_58dd112dc09435::t_568568919fb246 31,42-46
+  s_58dd112dc09435::t_9d7cf1ea8c387e 63
+apps/dashboard/lib/audit-detail.tsx
+  s_58dd112dc09435::t_fa0f119ccc2fdd 900-922
+  s_58dd112dc09435::t_5b58852c57b875 428-431,437
+apps/dashboard/components/model/approval-card.test.tsx
+  s_58dd112dc09435::t_435c639f85f7a1 26,29-33,35-41
+  s_58dd112dc09435::t_ab352f2c1b88ad 61
+  s_58dd112dc09435::t_1aadac1614917d 73,95,109,125,142,177,198
+  s_58dd112dc09435::t_15ee1470816aa1 217-277
+apps/dashboard/content/docs/sv/method-documentation.mdx
+  s_58dd112dc09435::t_10f29676f7cbcc 81-92
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_a3ae62a7592fe3 190,702-703,873,1926-1936
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_a3ae62a7592fe3 190,702-703,873,1926-1936
+apps/dashboard/components/model/restore-approved-dialog.test.tsx
+  s_58dd112dc09435::t_c085e552c46fe5 64
+  s_58dd112dc09435::t_da100bc4b79a79 1-63,65-162
+apps/dashboard/content/docs/da/method-documentation.mdx
+  s_58dd112dc09435::t_10f29676f7cbcc 82-93
+apps/dashboard/components/model/restore-approved-dialog.tsx
+  s_58dd112dc09435::t_c085e552c46fe5 56
+  s_58dd112dc09435::t_4cea161d285b40 1-55,57-200
+apps/dashboard/lib/audit-detail.test.tsx
+  s_58dd112dc09435::t_51fd0b9feee1ed 440-451,455-470,474-498
+  s_58dd112dc09435::t_c085e552c46fe5 452-454,471-473
+packages/backend/convex/evaluationModel/tables.ts
+  s_58dd112dc09435::t_4adda067a390b7 87-172,179-186,190,195,198
+  s_58dd112dc09435::t_07ecb732a114bb 229
+packages/backend/convex/lib/auditPayloads.ts
+  s_58dd112dc09435::t_8beee896280c28 311-328
+apps/dashboard/lib/audit-labels.test.ts
+  s_58dd112dc09435::t_a3c6bfef65bd81 252-256
+  s_58dd112dc09435::t_644d35600d4f6b 20-23
+packages/backend/convex/evaluationModel/criteriaLibrary.ts
+  s_58dd112dc09435::t_2b58efc91c5842 192-204
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_a3ae62a7592fe3 190,702-703,873,1926-1936
+apps/dashboard/content/docs/en/method-documentation.mdx
+  s_58dd112dc09435::t_10f29676f7cbcc 77-88
+apps/dashboard/components/model/approval-card.tsx
+  s_58dd112dc09435::t_5c5b571c843378 119-125,131,147-189,192-198
+  s_58dd112dc09435::t_9efb3c418c9d6c 81
+  s_58dd112dc09435::t_1a0c09507d27be 23,25,27
+apps/dashboard/lib/method-error.ts
+  s_58dd112dc09435::t_6385dae724ba9b 1-34
+packages/backend/convex/payMapping/runs.ts
+  s_58dd112dc09435::t_775b7890d55f7a 170-177,183
+  s_58dd112dc09435::t_574eb61873201c 14
+packages/backend/convex/lib/audit.ts
+  s_58dd112dc09435::t_c617492684760d 205
+  s_58dd112dc09435::t_7d264ff0778638 47
+packages/backend/convex/evaluationModel/evidence.ts
+  s_58dd112dc09435::t_149bda185730a7 1-23,25-56,67-169,184,186-262,264-351
+  s_58dd112dc09435::t_84eed89495ebcd 170-183,185
+  s_58dd112dc09435::t_dacaf8f7426841 263
+  s_58dd112dc09435::t_d2981441f62e8c 24
+  s_58dd112dc09435::t_dd0551f1431d86 57-66
+packages/backend/convex/evaluationModel/approval.test.ts
+  s_58dd112dc09435::t_bca1867d6e7f8b 721-774,778-830,841-986,991-994,999-1049
+  s_58dd112dc09435::t_c085e552c46fe5 775-777,831-840,987-990,995-998
+packages/backend/convex/payMapping/tables.ts
+  s_58dd112dc09435::t_7d104658ecea09 63-71,73-76
+  s_58dd112dc09435::t_c085e552c46fe5 5
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_a3ae62a7592fe3 190,702-703,873,1926-1936
+apps/dashboard/content/docs/nb/method-documentation.mdx
+  s_58dd112dc09435::t_10f29676f7cbcc 80-92
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_a3ae62a7592fe3 190,702-703,873,1926-1936
+apps/dashboard/content/docs/fi/method-documentation.mdx
+  s_58dd112dc09435::t_10f29676f7cbcc 85-97
+packages/backend/convex/evaluationModel/approval.ts
+  s_58dd112dc09435::t_2eb6a788ea60d0 20,29-37,39,42,44-45
+  s_58dd112dc09435::t_4cd8c8635e0c4a 290,292-297
+  s_58dd112dc09435::t_45692d8067b26b 151-167
+  s_58dd112dc09435::t_ad79edd4726081 503-536,543-687
+  s_58dd112dc09435::t_ed57c907428b0c 331,333-334
+  s_58dd112dc09435::t_c97cd8ee45a6e4 23-28
+  s_58dd112dc09435::t_0c0650fcc94751 265
+  s_58dd112dc09435::t_c085e552c46fe5 537-542
+  s_58dd112dc09435::t_14b073b837224b 217-223
+packages/backend/convex/lib/audit.test.ts
+  s_58dd112dc09435::t_b6eba1628f3546 526
+  s_58dd112dc09435::t_1292fab1c861ed 324-335
+packages/backend/convex/_generated/api.d.ts
+  s_6e85a2f9b30539::t_63e13886dd8ad4 69,180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c12eb8c84e1ed7db044dfd2124a1b2ea4261c530",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_6e85a2f9b30539": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-ac2f9ef0a5cb7e36c",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
