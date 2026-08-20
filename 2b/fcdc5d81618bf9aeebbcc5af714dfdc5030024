@@ -1,0 +1,93 @@
+apps/dashboard/content/docs/nb/model-overview.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 29-30,32-33
+apps/dashboard/content/docs/da/method-documentation.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 35-41
+apps/dashboard/content/docs/en/method-documentation.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 32-38
+apps/dashboard/content/docs/sv/model-overview.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 29-30,32-33
+apps/dashboard/content/docs/en/model-overview.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 29-30,32-33
+apps/dashboard/content/docs/nb/method-documentation.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 33-39
+apps/dashboard/content/docs/nb/criteria-and-scale.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 28-30,38-40
+apps/dashboard/lib/audit-labels.test.ts
+  s_58dd112dc09435::t_6b44067efa1430 157-161
+apps/dashboard/lib/model-chapters.ts
+  s_58dd112dc09435::t_6b44067efa1430 102
+apps/dashboard/content/docs/sv/criteria-and-scale.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 28-30,38-40
+apps/dashboard/content/docs/da/model-overview.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 29-30,32-33
+apps/dashboard/components/model/library-picker-dialog.tsx
+  s_58dd112dc09435::t_6b44067efa1430 58
+apps/dashboard/components/chapter-tabs.tsx
+  s_58dd112dc09435::t_6b44067efa1430 10-13
+apps/dashboard/content/docs/fi/criteria-and-scale.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 30-31,40-43
+apps/dashboard/content/docs/sv/method-documentation.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 33-39
+packages/backend/convex/assistant/knowledge.ts
+  s_58dd112dc09435::t_cb9b439c23d5b8 144,156
+apps/dashboard/components/model/dimension-column.tsx
+  s_58dd112dc09435::t_4e7225e8609f32 135-138
+  s_58dd112dc09435::t_88bee291f1a029 87,107
+packages/core/src/dimensions.test.ts
+  s_58dd112dc09435::t_6b44067efa1430 35-39
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_76e64db2831d95 1848-1849
+apps/dashboard/components/model/dimension-column.test.tsx
+  s_58dd112dc09435::t_4e7225e8609f32 116-117
+  s_58dd112dc09435::t_88bee291f1a029 13,77,85,107
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_4e7225e8609f32 392-393
+  s_58dd112dc09435::t_88bee291f1a029 406
+apps/dashboard/content/docs/en/criteria-and-scale.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 29-31,39-41
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_76e64db2831d95 1848-1849
+apps/dashboard/components/morph-popover.tsx
+  s_58dd112dc09435::t_ae5da5ec700fbb 17
+  s_58dd112dc09435::t_bf9812cd52767c 9-15,25,30-37,76,80-109,177,180-185,199
+apps/dashboard/components/hatch.ts
+  s_58dd112dc09435::t_6b44067efa1430 3-5
+apps/dashboard/content/docs/fi/model-overview.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 32-33,35-36
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_76e64db2831d95 1848-1849
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_76e64db2831d95 1848-1849
+apps/dashboard/components/morph-popover.test.tsx
+  s_58dd112dc09435::t_4b2a102931abb8 99-148
+apps/dashboard/lib/model-errors.ts
+  s_58dd112dc09435::t_6b44067efa1430 19
+apps/dashboard/lib/morph-placement.ts
+  s_58dd112dc09435::t_9dcc678a86b5a3 32-36
+  s_58dd112dc09435::t_b6ebf1ed47646e 1-31,37-96
+apps/dashboard/content/docs/fi/method-documentation.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 35-41
+apps/dashboard/lib/morph-placement.test.ts
+  s_58dd112dc09435::t_9dcc678a86b5a3 72-87,90-91,122-126,142,144
+  s_58dd112dc09435::t_5e97971b44ba1b 1-71,88-89,92-121,127-141,143,145-149
+apps/dashboard/content/docs/da/criteria-and-scale.mdx
+  s_58dd112dc09435::t_1a4775a57052c7 28-30,38-40
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_76e64db2831d95 1848-1849
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2bfcdc5d81618bf9aeebbcc5af714dfdc5030024",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
