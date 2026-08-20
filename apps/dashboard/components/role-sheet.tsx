@@ -217,9 +217,14 @@ function RoleSheetContent({
                 <div className="flex justify-center py-4">
                   <Spinner aria-label={t("loading")} />
                 </div>
-              ) : result?.locked ? (
+              ) : result?.locked && result.complete && result.level !== null ? (
                 // Level now lives in the header; the body carries only the
-                // per-criterion contribution breakdown.
+                // per-criterion contribution breakdown. Gated on complete AND
+                // level (not locked alone): a criterion added after the lock
+                // can leave a locked role incomplete again, reading back as
+                // complete=false, level=null while locked stays true
+                // (results.ts), and the breakdown must not render a partial
+                // reveal for that drifted state (mirrors rating-result.tsx).
                 <RoleCriterionBreakdown criteria={result.criteria} />
               ) : (
                 <div className="space-y-1">

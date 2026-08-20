@@ -4,6 +4,7 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import type { FunctionReturnType } from "convex/server"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
+import { useRouter } from "next/navigation"
 import { type ReactNode, useEffect, useState } from "react"
 import { AppShell } from "@/components/app-shell"
 import { LoadingScreen } from "@/components/loading-screen"
@@ -85,6 +86,7 @@ export function OnboardingGate(props: { children: ReactNode }) {
 // completed org always has one; the check only bites if that ever failed.
 function OnboardingSession(props: { status: Status; children: ReactNode }) {
   const { status } = props
+  const router = useRouter()
   const [sessionStarted, setSessionStarted] = useState(false)
   const [sessionFinished, setSessionFinished] = useState(false)
   const incomplete =
@@ -116,7 +118,16 @@ function OnboardingSession(props: { status: Status; children: ReactNode }) {
   return (
     <OnboardingWizard
       status={status}
-      onFinished={() => setSessionFinished(true)}
+      onFinished={() => {
+        setSessionFinished(true)
+        // The wizard never changes the URL while it runs (it is entirely
+        // state-driven), so whatever route the browser carried into the
+        // session is still current when it ends. A deep link into the model
+        // section (an admin invite, a stale bookmark) would otherwise drop a
+        // just-onboarded admin straight into the model editor instead of the
+        // overview; finishing always exits to the overview explicitly.
+        router.push("/")
+      }}
     />
   )
 }

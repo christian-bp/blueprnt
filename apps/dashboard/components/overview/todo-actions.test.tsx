@@ -82,6 +82,16 @@ const EVALUATE: TodoGroup = {
   items: [],
   count: 4,
 }
+const BUILD_MODEL_CRITERIA: TodoGroup = {
+  key: "buildModel",
+  items: [{ id: "buildModel", state: "criteria", href: "/model", selected: 3 }],
+  count: 1,
+}
+const BUILD_MODEL_APPROVE: TodoGroup = {
+  key: "buildModel",
+  items: [{ id: "buildModel", state: "approve", href: "/model/approval" }],
+  count: 1,
+}
 
 function todoWith(groups: TodoGroup[]): Todo {
   return { groups, total: groups.reduce((sum, g) => sum + g.count, 0) }
@@ -187,6 +197,29 @@ describe("TodoActions", () => {
         .getByRole("link", { name: t.todo.groups.describeRoles })
         .getAttribute("href")
     ).toBe("/roles")
+  })
+
+  // buildModel's own href is state-dependent (unlike every other group,
+  // which resolves through the static GROUP_HREF map): the criteria state
+  // reads its live count from the item and links the bare /model redirect,
+  // the approve state links straight at the Godkännande chapter, never the
+  // stale /model/method literal.
+  it("renders the criteria-incomplete state, linking /model and naming the live count", () => {
+    renderActions(todoWith([BUILD_MODEL_CRITERIA]))
+    const link = screen.getByRole("link", {
+      name: t.todo.groups.buildModel,
+    })
+    expect(link.getAttribute("href")).toBe("/model")
+    expect(screen.getByText("3 of 6-8 criteria")).toBeDefined()
+  })
+
+  it("renders the approve state, linking the Godkännande chapter rather than /model/method", () => {
+    renderActions(todoWith([BUILD_MODEL_APPROVE]))
+    const link = screen.getByRole("link", {
+      name: t.todo.groups.buildModel,
+    })
+    expect(link.getAttribute("href")).toBe("/model/approval")
+    expect(screen.getByText(t.todo.buildModelApproveItem)).toBeDefined()
   })
 
   it("says how much is waiting on each card", () => {

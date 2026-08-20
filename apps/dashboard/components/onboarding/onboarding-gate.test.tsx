@@ -1,4 +1,4 @@
-import { render, screen, cleanup } from "@testing-library/react"
+import { render, screen, cleanup, fireEvent } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { beforeEach, describe, expect, it, vi, afterEach } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
@@ -6,6 +6,10 @@ import messages from "@workspace/i18n/messages/en.json"
 const useQueryMock = vi.fn()
 vi.mock("convex/react", () => ({
   useQuery: (...args: unknown[]) => useQueryMock(...args),
+}))
+const pushMock = vi.fn()
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: pushMock }),
 }))
 // The gate now resolves the active company through Better Auth before it
 // queries: a membership and an active org must be present for it to reach the
@@ -33,7 +37,13 @@ vi.mock("@/components/app-shell", () => ({
   ),
 }))
 vi.mock("@/components/onboarding/onboarding-wizard", () => ({
-  OnboardingWizard: () => <div data-testid="wizard" />,
+  OnboardingWizard: (props: { onFinished: () => void }) => (
+    <div data-testid="wizard">
+      <button type="button" onClick={() => props.onFinished()}>
+        finish
+      </button>
+    </div>
+  ),
 }))
 
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate"
@@ -55,6 +65,7 @@ describe("OnboardingGate", () => {
     activePending = false
     setActiveMock.mockReset()
     setActiveMock.mockResolvedValue(undefined)
+    pushMock.mockReset()
   })
   afterEach(() => {
     cleanup()
@@ -68,6 +79,22 @@ describe("OnboardingGate", () => {
     })
     renderGate()
     expect(screen.getByTestId("wizard")).toBeDefined()
+  })
+
+  // The wizard never changes the URL while it runs (fully state-driven), so a
+  // deep link into the model section left the browser there once onboarding
+  // finished. The gate now navigates explicitly on exit, regardless of what
+  // route was current when the session started.
+  it("routes to the overview when the wizard hands control back", () => {
+    useQueryMock.mockReturnValue({
+      organization: null,
+      settingsComplete: false,
+      hasModel: false,
+      completed: false,
+    })
+    renderGate()
+    fireEvent.click(screen.getByText("finish"))
+    expect(pushMock).toHaveBeenCalledWith("/")
   })
 
   it("keeps the wizard when the model exists but onboarding is not completed", () => {

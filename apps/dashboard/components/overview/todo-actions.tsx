@@ -4,11 +4,13 @@ import {
   Briefcase01Icon,
   ChartColumnIcon,
   Layers01Icon,
+  Structure01Icon,
   Tag01Icon,
   Tick02Icon,
   UserGroup03Icon,
 } from "@hugeicons/core-free-icons"
 import type { IconSvgElement } from "@hugeicons/react"
+import { MODEL_MAX_CRITERIA, MODEL_MIN_CRITERIA } from "@workspace/core"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useEffect, useState } from "react"
@@ -18,33 +20,45 @@ import { useOrganization } from "@/components/org-context"
 import { usePageSettled } from "@/hooks/use-page-settled"
 import type { Todo, TodoGroup, TodoGroupKey } from "@/lib/todo"
 
-// Where each kind of outstanding work is done. Total over the group keys, so
-// a new to-do group cannot ship without a destination.
-const GROUP_HREF: Record<TodoGroupKey, string> = {
+// Where each kind of outstanding work is done, for every group EXCEPT
+// buildModel: its destination is state-dependent (the criteria-incomplete
+// state redirects through /model, the approve state through the Godkännande
+// chapter), so it carries its own href on its single item instead (see
+// groupHref below). Still total over the rest of the group keys, so a new
+// to-do group cannot ship without a destination.
+const GROUP_HREF: Record<Exclude<TodoGroupKey, "buildModel">, string> = {
   importPeople: "/people/import",
   classifyPeople: "/people/classify",
   describeRoles: "/roles",
   evaluateRoles: "/roles",
   documentCriteria: "/model/method",
   approveCriteria: "/model/method",
-  approveModel: "/model/method",
   startPayMapping: "/pay-mappings",
 }
 
+// buildModel reads its own item's href (state-dependent, derived once in
+// lib/todo.ts); every other group resolves through the static map above.
+// buildTodo always populates exactly one item for this key; the fallback
+// below only satisfies noUncheckedIndexedAccess, never a real render path.
+function groupHref(group: TodoGroup): string {
+  if (group.key === "buildModel") return group.items[0]?.href ?? "/model"
+  return GROUP_HREF[group.key]
+}
+
 const GROUP_ICONS: Record<TodoGroupKey, IconSvgElement> = {
+  buildModel: Structure01Icon,
   importPeople: UserGroup03Icon,
   classifyPeople: Tag01Icon,
   describeRoles: Briefcase01Icon,
   evaluateRoles: Briefcase01Icon,
   documentCriteria: Layers01Icon,
   approveCriteria: Tick02Icon,
-  approveModel: Tick02Icon,
   startPayMapping: ChartColumnIcon,
 }
 
 // The row holds one line of cards. buildTodo already emits its groups in
-// priority order (import, classify, describe, evaluate, document criteria,
-// approve criteria, approve the model, start the mapping), so the first
+// priority order (build the model, import, classify, describe, evaluate,
+// document criteria, approve criteria, start the mapping), so the first
 // three ARE the three most pressing things.
 const MAX_CARDS = 3
 
@@ -154,7 +168,7 @@ export function TodoActions({
 
   const work = groups.slice(0, MAX_CARDS).map((group) => ({
     key: group.key,
-    href: GROUP_HREF[group.key],
+    href: groupHref(group),
     icon: GROUP_ICONS[group.key],
     title: t(`todo.groups.${group.key}`),
     description: groupDetail(group, t),
@@ -283,12 +297,27 @@ function groupDetail(
   t: ReturnType<typeof useTranslations<"dashboard.overview">>
 ): string {
   switch (group.key) {
+    case "buildModel": {
+      const item = group.items[0]
+      // buildTodo always populates exactly one item for this key; the
+      // fallback below only satisfies noUncheckedIndexedAccess.
+      if (item === undefined)
+        return t("todo.groupCount", { count: group.count })
+      // The criteria state names its own live count against the fixed
+      // MODEL_MIN_CRITERIA/MODEL_MAX_CRITERIA range; the approve state
+      // reuses the same wording the model's own approve action carries.
+      return item.state === "criteria"
+        ? t("todo.buildModelCriteriaCount", {
+            selected: item.selected,
+            min: MODEL_MIN_CRITERIA,
+            max: MODEL_MAX_CRITERIA,
+          })
+        : t("todo.buildModelApproveItem")
+    }
     case "importPeople":
       return t("todo.importPeopleItem")
     case "startPayMapping":
       return t("todo.startPayMappingItem")
-    case "approveModel":
-      return t("todo.approveModelItem")
     case "classifyPeople":
       return t("todo.classifyPeopleCount", { count: group.count })
     default:

@@ -153,6 +153,27 @@ describe("RoleSheet", () => {
     expect(screen.getByText("Assessed under a previous method")).toBeTruthy()
   })
 
+  it("hides the breakdown for a locked-but-incomplete role (drift added a criterion after lock)", () => {
+    // results.ts: a criterion added after the lock can leave a locked role
+    // incomplete again, reading back as complete=false, level=null while
+    // locked stays true. The breakdown must not render a partial reveal for
+    // that state (mirrors rating-result.tsx's own locked/complete/level gate).
+    result = {
+      ...(result as Result),
+      complete: false,
+      score: null,
+      level: null,
+    }
+    install()
+    renderSheet()
+    open()
+    expect(screen.queryByText("Level 3")).toBeNull()
+    expect(screen.queryByText("Locked")).toBeNull()
+    expect(screen.queryByText("Complexity")).toBeNull()
+    expect(screen.getByText("Not yet evaluated")).toBeTruthy()
+    expect(screen.getByText("2 / 3 criteria assessed")).toBeTruthy()
+  })
+
   it("shows ready-to-lock wording for a complete role that is not yet locked", () => {
     result = {
       ...(result as Result),

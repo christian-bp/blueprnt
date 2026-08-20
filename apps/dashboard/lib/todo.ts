@@ -1,3 +1,6 @@
+import { MODEL_MIN_CRITERIA } from "@workspace/core"
+import { chapterHref } from "@/lib/model-chapters"
+
 // Pure derivation of the front-page "To do" from the existing role + method
 // queries. No stored aggregate (derive, like score/level). The profileComplete
 // gate splits roles: a role without a profile can only be described, never
@@ -5,13 +8,13 @@
 export const MAX_ITEMS = 4
 
 export type TodoGroupKey =
+  | "buildModel"
   | "importPeople"
   | "classifyPeople"
   | "describeRoles"
   | "evaluateRoles"
   | "documentCriteria"
   | "approveCriteria"
-  | "approveModel"
   | "startPayMapping"
 
 export type RoleItem = {
@@ -43,18 +46,26 @@ export type ClassifyItem = {
 export type StartPayMappingItem = { id: string; href: string }
 // The single "import your employees" row while the org holds no people.
 export type ImportPeopleItem = { id: string; href: string }
-// The single "go approve it" row once the model itself still lacks a
-// current approval (ADR-0023), distinct from per-criterion approveCriteria.
-export type ApproveModelItem = { id: string; href: string }
+// The state-aware "build the company's model" row, first in priority order
+// (the whole evaluation journey depends on it): while the criteria selection
+// itself is short of MODEL_MIN_CRITERIA, `selected` names how many are chosen
+// so far and href sends the admin through the bare /model redirect into the
+// Kriterier chapter; once the selection clears that bar but the model still
+// lacks a current approval (ADR-0023, distinct from per-criterion
+// approveCriteria), it becomes the approve state, href pointing straight at
+// the Godkännande chapter. The two states are mutually exclusive.
+export type BuildModelItem =
+  | { id: "buildModel"; state: "criteria"; href: string; selected: number }
+  | { id: "buildModel"; state: "approve"; href: string }
 
 export type TodoGroup =
+  | { key: "buildModel"; items: BuildModelItem[]; count: number }
   | { key: "importPeople"; items: ImportPeopleItem[]; count: number }
   | { key: "classifyPeople"; items: ClassifyItem[]; count: number }
   | { key: "describeRoles"; items: RoleItem[]; count: number }
   | { key: "evaluateRoles"; items: EvaluateItem[]; count: number }
   | { key: "documentCriteria"; items: CriterionItem[]; count: number }
   | { key: "approveCriteria"; items: CriterionItem[]; count: number }
-  | { key: "approveModel"; items: ApproveModelItem[]; count: number }
   | { key: "startPayMapping"; items: StartPayMappingItem[]; count: number }
 
 export type Todo = { groups: TodoGroup[]; total: number }
@@ -189,10 +200,31 @@ function computeCounts({
       })
     }
   }
-  // The final method-level step (spec 2.7): a model already exists but
-  // carries no current approval yet. Sits with documentItems/approveItems
-  // above as the third and last of the method groups.
-  const modelNeedsApproval = method !== null && !method.modelApproved
+  // The model itself (spec 2.7), read ahead of documentItems/approveItems
+  // above: below MODEL_MIN_CRITERIA the selection is the work (the bare
+  // /model redirect lands in the Kriterier chapter, so no chapter segment is
+  // hardcoded here); at or past it but still carrying no current approval
+  // (ADR-0023) the model needs its own approve step, sent straight to the
+  // Godkännande chapter via chapterHref rather than a literal path. A model
+  // that clears both is done and contributes nothing here.
+  const criteriaSelected = method?.criteria.length ?? 0
+  const buildModel: BuildModelItem | null =
+    method === null
+      ? null
+      : criteriaSelected < MODEL_MIN_CRITERIA
+        ? {
+            id: "buildModel",
+            state: "criteria",
+            href: "/model",
+            selected: criteriaSelected,
+          }
+        : method.modelApproved
+          ? null
+          : {
+              id: "buildModel",
+              state: "approve",
+              href: chapterHref("approval"),
+            }
 
   // With no people at all, every other check below is vacuously clear, so
   // the whole journey starts with the import. One row, first in priority,
@@ -246,7 +278,7 @@ function computeCounts({
     evaluate,
     documentItems,
     approveItems,
-    modelNeedsApproval,
+    buildModel,
     totalPeople,
     totalUnclassified,
     unevaluatedStaffedRoles,
@@ -260,6 +292,14 @@ export function buildTodo(input: BuildTodoInput): Todo {
   const c = computeCounts(input)
 
   const groups: TodoGroup[] = []
+  // First in priority order (spec 2.7): the whole evaluation journey depends
+  // on the model, so it leads even the import row.
+  if (c.buildModel !== null)
+    groups.push({
+      key: "buildModel",
+      items: [c.buildModel],
+      count: 1,
+    })
   if (c.totalPeople === 0)
     groups.push({
       key: "importPeople",
@@ -296,13 +336,6 @@ export function buildTodo(input: BuildTodoInput): Todo {
       items: c.approveItems.slice(0, MAX_ITEMS),
       count: c.approveItems.length,
     })
-  if (c.modelNeedsApproval)
-    groups.push({
-      key: "approveModel",
-      items: [{ id: "approveModel", href: "/model/method" }],
-      count: 1,
-    })
-
   // Rendered as its own final group only once the gate is clear AND no
   // non-completed run is already in flight (nothing left to start).
   const startPayMapping = c.payMappingReady && !c.hasOpenRun
@@ -315,13 +348,13 @@ export function buildTodo(input: BuildTodoInput): Todo {
   }
 
   const total =
+    (c.buildModel !== null ? 1 : 0) +
     (c.totalPeople === 0 ? 1 : 0) +
     c.classify.length +
     c.describe.length +
     c.evaluate.length +
     c.documentItems.length +
     c.approveItems.length +
-    (c.modelNeedsApproval ? 1 : 0) +
     (startPayMapping ? 1 : 0)
   return { groups, total }
 }
