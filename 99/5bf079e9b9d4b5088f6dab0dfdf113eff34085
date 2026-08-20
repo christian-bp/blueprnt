@@ -1,0 +1,56 @@
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_ac88df0b3e199c 1837
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_cf683ff6752c30 1837
+apps/dashboard/components/model/weighting-chapter.tsx
+  s_58dd112dc09435::t_45f9e20f03764e 15
+  s_58dd112dc09435::t_6d801664b15fea 180,307
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_fd2b9d17e8ad56 1837
+apps/dashboard/components/model/method-panel.tsx
+  s_58dd112dc09435::t_a02aa136d20e8a 77-79,85-88,98-101
+  s_58dd112dc09435::t_497c00053d8523 55-65
+  s_58dd112dc09435::t_be11d4f776a358 12
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_b160e9d75de527 43
+  s_58dd112dc09435::t_9ad4a9bbe9dd21 322-324,334
+apps/dashboard/components/model/chapter-status-alert.tsx
+  s_58dd112dc09435::t_6524de038b813d 1-64
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_38807593dd6694 1837
+apps/dashboard/components/model/criterion-item.test.tsx
+  s_58dd112dc09435::t_a40b8435c5cd12 1,4,8-11,14-15,19,25,30-33,36-40,42-45,47-48,50-52,55-65,67-74,76-86
+  s_58dd112dc09435::t_0ca59accf90c1f 3,12-13
+  s_58dd112dc09435::t_e05a4616c34e2d 75
+  s_58dd112dc09435::t_acc2db14a91eaf 46
+apps/dashboard/components/model/weight-budget-bar.tsx
+  s_58dd112dc09435::t_512f6f38e49925 7,11-14,22,58-64,74-86
+apps/dashboard/components/model/chapter-grid.ts
+  s_58dd112dc09435::t_d64b51d92a6670 1-14
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_258ab39739d7ac 30
+  s_58dd112dc09435::t_9cf1cb1b3f8245 1078-1081,1091
+apps/dashboard/components/model/criterion-item.tsx
+  s_58dd112dc09435::t_db337be3937c4f 5,15-18,94,105
+apps/dashboard/components/model/criteria-chapter.tsx
+  s_58dd112dc09435::t_052dfa6967aa22 25
+  s_58dd112dc09435::t_8c17703e0b550c 121,253
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_84c321a19c9f3f 1837
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "995bf079e9b9d4b5088f6dab0dfdf113eff34085",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
