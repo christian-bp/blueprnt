@@ -1,9 +1,10 @@
-// The grid the Kriterier and Viktning chapters both lay their dimension
-// columns out on, declared once and used by all four call sites (each
-// chapter's loaded state and its own loading skeleton), so no two of them can
-// ever drift into different grids. The two chapters must keep the same grid:
-// a criterion has to stay where the reader last saw it when the reader moves
-// from choosing it to weighting it.
+// The one grid the model section's chapters lay their dimension columns out
+// on. Every chapter that draws columns uses it in BOTH its states, and the
+// drift pins in each chapter's own tests bind its skeleton to it, so no two
+// of them can drift into different grids however many chapters adopt it.
+// They must keep the same grid: a criterion has to stay where the reader last
+// saw it as the reader moves from choosing it, to weighting it, to
+// documenting it.
 //
 // Four across begins at 2xl, not xl: at a 1440-class laptop width the four
 // columns compress to about 272px each and the criterion titles wrap hard,

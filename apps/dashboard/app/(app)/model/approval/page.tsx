@@ -21,9 +21,12 @@ export default function ModelApprovalChapterPage() {
   return (
     <div className="space-y-4">
       <ChapterFraming chapter="approval" />
-      {/* The same reading cap the Metod chapter takes, for the same reason:
-          the checklist is twelve single lines of text, and at full viewport
-          width they run as long as the page. Content only, left-aligned. */}
+      {/* A reading cap of this chapter's own: the checklist is twelve single
+          lines of text, each with a remedy line under it, and at full viewport
+          width they run as long as the page. A chapter that is a reading
+          surface caps its measure; the three that are grids of dimension
+          columns do not, because a column already is one. Content only,
+          left-aligned. */}
       <div className="max-w-4xl">
         <ApprovalCard orgId={orgId} />
       </div>

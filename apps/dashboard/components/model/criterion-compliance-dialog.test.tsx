@@ -190,6 +190,23 @@ describe("CriterionComplianceDialog", () => {
     expect(screen.getByText(DEFINITION)).toBeDefined()
   })
 
+  // The definition is the reference the protokoll is written against, so it is
+  // never clipped. Asserted against the Item family's OWN vendor bases
+  // (line-clamp-1 on the title, line-clamp-2 on the description): a "not
+  // truncate" check would pass with the override deleted, because the vendor
+  // never used that word.
+  it("lets the criterion's name and definition wrap rather than clamping them", () => {
+    renderDialog()
+    for (const node of [
+      screen.getByText("Scope"),
+      screen.getByText(DEFINITION),
+    ]) {
+      expect(node.className).toContain("line-clamp-none")
+      expect(node.className).not.toContain("line-clamp-1")
+      expect(node.className).not.toContain("line-clamp-2")
+    }
+  })
+
   it("renders the section headings for Rationale and Bias review", () => {
     renderDialog()
     expect(screen.getByText("Rationale")).toBeDefined()
