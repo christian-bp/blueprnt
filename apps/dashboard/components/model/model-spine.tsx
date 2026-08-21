@@ -74,6 +74,10 @@ export function ModelSpine({
         // shared bar's per-section callbacks, so the kartläggning's spine
         // renders neither and stays exactly as it was.
         renderTitle={(segment) => labelFor.get(segment.key) ?? segment.key}
+        // A chapter reaching its own done/total plays the same celebration a
+        // finished to-do card does. The kartläggning's analysis spine does
+        // not opt in: it stays exactly as it was.
+        celebrateOnComplete
         renderCount={(segment) =>
           t.rich("countRich", {
             done: () => <NumberFlow value={segment.done} />,

@@ -15,7 +15,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useEffect, useState } from "react"
 import { ActionCard, ActionCardSkeleton } from "@/components/action-card"
-import { ConfettiBurst } from "@/components/confetti-burst"
+import { CelebrationBurst } from "@/components/celebration-burst"
 import { useOrganization } from "@/components/org-context"
 import { usePageSettled } from "@/hooks/use-page-settled"
 import type { Todo, TodoGroup, TodoGroupKey } from "@/lib/todo"
@@ -194,49 +194,29 @@ export function TodoActions({
       label={work.length > 0 ? t("sectionTodo") : t("sectionQuickActions")}
     >
       {[...work, ...links].slice(0, MAX_CARDS).map((card, index) => (
-        // The burst is a SIBLING of the card, not a child: a Card clips its
-        // overflow, so confetti thrown inside one is cut off at its edge in a
-        // straight line. The wrapper is the positioned parent it throws from
-        // and nothing clips it.
+        // CelebrationBurst is the positioned parent the burst throws from and
+        // renders it BEFORE the card, so the opaque card paints over the
+        // portion that overlaps it; see that component for the occlusion
+        // mechanism (shared with the progress spine's completing segment).
         //
         // Keyed by SLOT, not by the card in it. The row is always three slots
         // and the to-do query keeps pushing while an org's data settles, so
         // keying by card would remount the wrapper every time a group's
         // membership changed and restart the burst from its first frame,
         // which reads as a flicker that never finishes.
-        // biome-ignore lint/suspicious/noArrayIndexKey: the slot IS the identity here
-        <div key={index} className="relative">
-          {/* BEFORE the card, so the card paints over it. That is the whole
-              clipping mechanism: the card is opaque, so no piece is ever
-              visible INSIDE its bounds, and what shows is only what has
-              cleared the edge. No mask, no overflow rule, nothing to keep in
-              sync with the card's size or its rounded corners.
-
-              It only works with an edge origin. Behind + center was built and
-              rejected: the card swallowed the first half of every flight, so
-              the burst surfaced late and weak. Launching at the rim means a
-              piece is outside from its first frame and only the half still
-              overlapping the card is hidden. Do not reorder these two, and do
-              not move the origin back to center without moving this too.
-
-              Every work card, and only the first time THIS COMPANY's row
-              shows work this session: the burst marks WHICH of the three cards
-              are waiting on the reader, so lighting one of three would point
-              at the wrong thing. Never the padding links, which are not
-              work.
-
-              Staggered along the row so it reads as one sweep rather than
-              three simultaneous pops, and a small spread keeps the pieces
-              around each card instead of across the dashboard. */}
-          {card.tone === "brand" && (
-            <ConfettiBurst
-              active={celebrate}
-              delay={index * 0.09}
-              spread={0.45}
-              origin="edges"
-              intensity="soft"
-            />
-          )}
+        //
+        // Every work card, and only the first time THIS COMPANY's row shows
+        // work this session: the burst marks WHICH of the three cards are
+        // waiting on the reader, so lighting one of three would point at the
+        // wrong thing. Never the padding links, which are not work.
+        // Staggered along the row so it reads as one sweep rather than three
+        // simultaneous pops.
+        <CelebrationBurst
+          // biome-ignore lint/suspicious/noArrayIndexKey: the slot IS the identity here
+          key={index}
+          active={card.tone === "brand" && celebrate}
+          delay={index * 0.09}
+        >
           <ActionCard
             title={card.title}
             description={card.description}
@@ -244,7 +224,7 @@ export function TodoActions({
             href={card.href}
             tone={card.tone}
           />
-        </div>
+        </CelebrationBurst>
       ))}
     </TodoSection>
   )

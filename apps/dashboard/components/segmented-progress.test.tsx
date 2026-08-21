@@ -1,6 +1,8 @@
-import { cleanup, render } from "@testing-library/react"
+import { cleanup, render, waitFor } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
 import { SegmentedProgress } from "@/components/segmented-progress"
+
+const BURST = '[data-testid="success-confetti"]'
 
 const CHAPTERS = [
   { key: "start", done: 1, total: 1 },
@@ -97,5 +99,120 @@ describe("SegmentedProgress", () => {
     const countRow = container.querySelector('[aria-hidden="true"]')
     expect(countRow?.className).toContain("h-4")
     expect(countRow?.textContent).toBe("4 of 4")
+  })
+})
+
+// The same celebration the overview to-do row throws (CelebrationBurst), over
+// a segment the instant it finishes. Opt-in and transition-only: see
+// celebration-burst.test.tsx for the burst itself and todo-actions.test.tsx
+// for the row's own arrival version.
+describe("SegmentedProgress celebration", () => {
+  afterEach(cleanup)
+
+  function oneSegment(done: number, total = 4) {
+    return [{ key: "only", done, total }]
+  }
+
+  it("fires when a mounted segment crosses from incomplete to complete", async () => {
+    const { container, rerender } = renderBar({
+      done: 1,
+      total: 4,
+      segments: oneSegment(1),
+      celebrateOnComplete: true,
+    })
+    expect(container.querySelector(BURST)).toBeNull()
+
+    rerender(
+      <SegmentedProgress
+        barLabel="Overall progress"
+        done={4}
+        total={4}
+        segments={oneSegment(4)}
+        renderCount={(segment) => `${segment.done} of ${segment.total}`}
+        celebrateOnComplete
+      />
+    )
+    await waitFor(() => {
+      expect(container.querySelector(BURST)).not.toBeNull()
+    })
+  })
+
+  it("never fires for a segment that is already complete on mount", () => {
+    const { container } = renderBar({
+      done: 4,
+      total: 4,
+      segments: oneSegment(4),
+      celebrateOnComplete: true,
+    })
+    // No waitFor: nothing here is on a timer or a frame, so whatever is true
+    // once mount's effects have flushed is true for good.
+    expect(container.querySelector(BURST)).toBeNull()
+  })
+
+  it("fires a second time for a different segment, independently of the first", async () => {
+    const start = [
+      { key: "a", done: 1, total: 2 },
+      { key: "b", done: 0, total: 2 },
+    ]
+    const { container, rerender } = renderBar({
+      done: 1,
+      total: 4,
+      segments: start,
+      celebrateOnComplete: true,
+    })
+
+    rerender(
+      <SegmentedProgress
+        barLabel="Overall progress"
+        done={2}
+        total={4}
+        segments={[
+          { key: "a", done: 2, total: 2 },
+          { key: "b", done: 0, total: 2 },
+        ]}
+        renderCount={(segment) => `${segment.done} of ${segment.total}`}
+        celebrateOnComplete
+      />
+    )
+    await waitFor(() => {
+      expect(container.querySelectorAll(BURST)).toHaveLength(1)
+    })
+
+    rerender(
+      <SegmentedProgress
+        barLabel="Overall progress"
+        done={4}
+        total={4}
+        segments={[
+          { key: "a", done: 2, total: 2 },
+          { key: "b", done: 2, total: 2 },
+        ]}
+        renderCount={(segment) => `${segment.done} of ${segment.total}`}
+        celebrateOnComplete
+      />
+    )
+    // Both fire: the second segment's own crossing, and the first segment's
+    // burst still parked from its own earlier one.
+    await waitFor(() => {
+      expect(container.querySelectorAll(BURST)).toHaveLength(2)
+    })
+  })
+
+  it("renders no celebration markup at all without the prop, even across a completing transition", () => {
+    const { container, rerender } = renderBar({
+      done: 1,
+      total: 4,
+      segments: oneSegment(1),
+    })
+    rerender(
+      <SegmentedProgress
+        barLabel="Overall progress"
+        done={4}
+        total={4}
+        segments={oneSegment(4)}
+        renderCount={(segment) => `${segment.done} of ${segment.total}`}
+      />
+    )
+    expect(container.querySelector(BURST)).toBeNull()
   })
 })

@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, render, screen, waitFor } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
@@ -122,5 +122,42 @@ describe("ModelSpine", () => {
         name: messages.dashboard.help.modelProgressLabel,
       })
     ).toBeDefined()
+  })
+
+  // The model spine is the one guided section that opts SegmentedProgress
+  // into its shared celebration (the kartläggning's analysis spine does
+  // not): a chapter finishing plays the same burst a finished to-do card
+  // does.
+  it("celebrates a chapter that crosses from incomplete to complete", async () => {
+    const chapters = [
+      { key: "criteria" as const, done: 5, total: 6 },
+      { key: "weighting" as const, done: 3, total: 3 },
+      { key: "method" as const, done: 1, total: 7 },
+      { key: "approval" as const, done: 0, total: 1 },
+    ]
+    const { container, rerender } = renderSpine({ chapters })
+    expect(
+      container.querySelector('[data-testid="success-confetti"]')
+    ).toBeNull()
+
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <ModelSpine
+          done={5}
+          total={17}
+          chapters={[
+            { key: "criteria", done: 6, total: 6 },
+            { key: "weighting", done: 3, total: 3 },
+            { key: "method", done: 1, total: 7 },
+            { key: "approval", done: 0, total: 1 },
+          ]}
+        />
+      </NextIntlClientProvider>
+    )
+    await waitFor(() => {
+      expect(
+        container.querySelector('[data-testid="success-confetti"]')
+      ).not.toBeNull()
+    })
   })
 })

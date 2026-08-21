@@ -1,7 +1,8 @@
 "use client"
 
 import { AnimatePresence, motion } from "motion/react"
-import type { ReactNode } from "react"
+import { type ReactNode, useEffect, useRef, useState } from "react"
+import { CelebrationBurst } from "@/components/celebration-burst"
 import { SPRING } from "@/lib/motion"
 
 // One chapter's share of a journey: how much work it holds, and how much of
@@ -29,6 +30,7 @@ export function SegmentedProgress({
   activeSegment,
   renderCount,
   renderTitle,
+  celebrateOnComplete,
 }: {
   // The bar always shows the WHOLE journey, whichever page it is on, so its
   // accessible name says so rather than borrowing the heading's.
@@ -50,8 +52,54 @@ export function SegmentedProgress({
   // it renders exactly the DOM it rendered before, which is how the
   // kartläggning's spine keeps its own layout, distinct from the model's.
   renderTitle?: (segment: ProgressSegment) => ReactNode
+  // Plays the same celebration the overview to-do row throws when a work
+  // card arrives (CelebrationBurst), over a segment the moment it crosses
+  // from incomplete to complete while mounted. Off by default, so a caller
+  // that does not pass it renders exactly the DOM it rendered before: the
+  // kartläggning's analysis spine stays as it was, and only a section that
+  // opts in (the model spine) gets the burst.
+  celebrateOnComplete?: boolean
 }) {
   const pct = total <= 0 ? 0 : Math.round((done / total) * 100)
+
+  // Remembers each segment's own completeness across renders, so a fresh
+  // crossing can be told apart from a segment that simply arrived finished.
+  // Keyed by segment key, the same identity the caller already keys its own
+  // list by.
+  const wasCompleteRef = useRef<Record<string, boolean>>({})
+  // How many times each segment has been SEEN completing, not just whether
+  // it has: a chapter here can move backward (a criterion removed, an
+  // approval reopened) and forward again, and each forward crossing earns
+  // its own burst. The count doubles as the celebration's React key below,
+  // so a second crossing of the same segment remounts the burst instead of
+  // reusing one already parked at its finished, invisible end state.
+  const [celebrations, setCelebrations] = useState<Record<string, number>>({})
+
+  useEffect(() => {
+    if (!celebrateOnComplete) return
+    const wasComplete = wasCompleteRef.current
+    const justCompleted: string[] = []
+    for (const segment of segments) {
+      const isComplete = segment.total > 0 && segment.done >= segment.total
+      // Strictly `false`, never `undefined`: a segment seen for the first
+      // time this mount has no prior state to have crossed FROM, so an
+      // already-complete segment on arrival is not a completion, it is just
+      // where the journey started.
+      if (wasComplete[segment.key] === false && isComplete) {
+        justCompleted.push(segment.key)
+      }
+      wasComplete[segment.key] = isComplete
+    }
+    if (justCompleted.length > 0) {
+      setCelebrations((current) => {
+        const next = { ...current }
+        for (const key of justCompleted) {
+          next[key] = (next[key] ?? 0) + 1
+        }
+        return next
+      })
+    }
+  }, [celebrateOnComplete, segments])
 
   return (
     // One bar, split into the chapters and weighted by how much work each one
@@ -104,33 +152,29 @@ export function SegmentedProgress({
         aria-valuenow={pct}
         className="flex h-2 w-full gap-0.5 rounded-full"
       >
-        {segments.map((segment) => (
-          <div
-            key={segment.key}
-            // The bar's segments and the tab row can never line up: segments
-            // are weighted by how much work a chapter holds, tabs by how long
-            // their names are. Simultaneous highlighting is what links them
-            // instead. With no active chapter the whole bar reads at full
-            // strength.
-            data-active={
-              activeSegment === undefined || activeSegment === segment.key
-            }
-            style={{
-              flexGrow: Math.max(segment.total, 0),
-              flexBasis: "0.75rem",
-            }}
-            // The dimming rides on the FILL, never on the track: the track is
-            // "work not yet done" and that reads the same in every chapter, so
-            // fading it made the open chapter's remainder a different colour
-            // from everyone else's for no reason. Only the done part recedes.
-            // The track sits at 12% and a receded fill at 45%, so "done" reads
-            // as done even in a chapter you are not on. At 20/35 the two were
-            // only 1.75x apart and a finished chapter looked untouched. The
-            // track still has to be visible: it is the only hint of how big a
-            // chapter is before you start it, so it stays a wash rather than
-            // disappearing into the card.
-            className="group/segment h-full overflow-hidden rounded-full bg-primary/12"
-          >
+        {segments.map((segment) => {
+          // The bar's segments and the tab row can never line up: segments
+          // are weighted by how much work a chapter holds, tabs by how long
+          // their names are. Simultaneous highlighting is what links them
+          // instead. With no active chapter the whole bar reads at full
+          // strength.
+          const isActive =
+            activeSegment === undefined || activeSegment === segment.key
+          const flexStyle = {
+            flexGrow: Math.max(segment.total, 0),
+            flexBasis: "0.75rem",
+          }
+          // The dimming rides on the FILL, never on the track: the track is
+          // "work not yet done" and that reads the same in every chapter, so
+          // fading it made the open chapter's remainder a different colour
+          // from everyone else's for no reason. Only the done part recedes.
+          // The track sits at 12% and a receded fill at 45%, so "done" reads
+          // as done even in a chapter you are not on. At 20/35 the two were
+          // only 1.75x apart and a finished chapter looked untouched. The
+          // track still has to be visible: it is the only hint of how big a
+          // chapter is before you start it, so it stays a wash rather than
+          // disappearing into the card.
+          const fill = (
             <div
               className="h-full rounded-full bg-primary opacity-45 transition-[width,opacity] duration-500 group-data-[active=true]/segment:opacity-100"
               style={{
@@ -140,8 +184,48 @@ export function SegmentedProgress({
                     : `${Math.round((segment.done / segment.total) * 100)}%`,
               }}
             />
-          </div>
-        ))}
+          )
+          // Off by default: the exact two-node shape this bar has always
+          // rendered, track clipping fill to a pill. On, the fill moves
+          // inside CelebrationBurst's own unclipped box instead, because
+          // "overflow-hidden" on the segment's own sliver would clip the
+          // burst the instant a piece crosses the edge it is thrown from.
+          if (!celebrateOnComplete) {
+            return (
+              <div
+                key={segment.key}
+                data-active={isActive}
+                style={flexStyle}
+                className="group/segment h-full overflow-hidden rounded-full bg-primary/12"
+              >
+                {fill}
+              </div>
+            )
+          }
+          return (
+            <div
+              key={segment.key}
+              data-active={isActive}
+              style={flexStyle}
+              className="group/segment h-full"
+            >
+              <CelebrationBurst
+                // Keyed by the crossing count, not just the segment: a second
+                // crossing (a chapter completed, reopened, completed again)
+                // has to remount the burst, because the first one is already
+                // parked at its finished, invisible end state and a prop
+                // that stays `true` would not replay it.
+                key={celebrations[segment.key] ?? 0}
+                active={(celebrations[segment.key] ?? 0) > 0}
+                className="h-full"
+              >
+                <div className="h-full overflow-hidden rounded-full bg-primary/12">
+                  {fill}
+                </div>
+              </CelebrationBurst>
+            </div>
+          )
+        })}
       </div>
       {/* The open chapter's own count, under its own segment. Mirrors the
           bar's flex weights so the figure sits beneath the part of the bar it
