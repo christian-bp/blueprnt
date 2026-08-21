@@ -1,0 +1,75 @@
+apps/dashboard/components/pdf/method-appendix-download.tsx
+  s_58dd112dc09435::t_5363245113c257 14,106
+apps/dashboard/components/model/chapter-framing.tsx
+  s_58dd112dc09435::t_bf81f89f3ca42c 7-31,33-36,44,48-51,55-71
+apps/dashboard/content/docs/en/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_736d39d8bb01d2 10-16,38-41,48-49,54-57
+apps/dashboard/content/docs/sv/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_736d39d8bb01d2 11-16,38-43,48-50,54-61
+apps/dashboard/app/(app)/model/criteria/page.tsx
+  s_58dd112dc09435::t_d34864c10b5651 11-13,18
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_f5d74a815d48b8 1913
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_f5d74a815d48b8 1913
+apps/dashboard/components/model/weighting-chapter.tsx
+  s_58dd112dc09435::t_ba6a437e08d916 531-535,538,541-546,549-551,553-567
+  s_58dd112dc09435::t_04ad7922041b47 552
+  s_58dd112dc09435::t_56d77c4493ebba 394-397
+  s_58dd112dc09435::t_67d32ef1e362c7 20,480-486,510-523
+  s_58dd112dc09435::t_48471806ae64c4 476-479,487-509,524-526
+  s_58dd112dc09435::t_ec9d6399585bb2 87
+  s_58dd112dc09435::t_9cf0c5e4c97f7f 25-32,44,188-198,201-210,212-230
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_f5d74a815d48b8 1913
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_f5d74a815d48b8 1913
+apps/dashboard/app/(app)/model/method/page.tsx
+  s_58dd112dc09435::t_d34864c10b5651 17
+apps/dashboard/components/model/criteria-chapter.tsx
+  s_58dd112dc09435::t_d34864c10b5651 26,123-183,185-201,274-293
+apps/dashboard/content/docs/da/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_736d39d8bb01d2 11-16,39-44,48-51,55-56,58-62
+apps/dashboard/components/pay-mapping/pay-mapping-preconditions-panel.tsx
+  s_58dd112dc09435::t_5363245113c257 31
+apps/dashboard/content/docs/fi/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_736d39d8bb01d2 10-17,40-45,50-51,56,59-63
+apps/dashboard/app/(app)/model/weighting/page.tsx
+  s_58dd112dc09435::t_d34864c10b5651 10-12,17
+apps/dashboard/components/model/method-panel.tsx
+  s_58dd112dc09435::t_88357c2ad326d4 314,317-318,327,331-342
+  s_58dd112dc09435::t_f1e5736cd036a1 131-141,143,180-190,258-259,264-267,283-291,296,305-307
+  s_58dd112dc09435::t_9b1363d3c9cdc2 148-149
+  s_58dd112dc09435::t_cbee3e5249876d 60
+  s_58dd112dc09435::t_01409e4b4dece9 11,22,30,277,292-295,297-304
+apps/dashboard/components/model/chapter-framing.test.tsx
+  s_58dd112dc09435::t_ca7495f0bada3f 1-34,37-75,106-123,125,129-178,212-213
+  s_58dd112dc09435::t_8dfa2261d40a10 35-36,76-105,124,126-128,179-211
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_ec8253577dcd5b 217-219,221-222,226-229,375-377,379-380,384,387-388,394,443-444,447-462,473-479,483-486,488-491,493,500-511,513-514,521-540,573-574,576,583-584
+  s_58dd112dc09435::t_0ed0b1784951f8 223-225,230-235,395,512
+  s_58dd112dc09435::t_fba8456200f38c 48,463-472,480-482,487,492,494-499,515-520
+apps/dashboard/content/docs/nb/weighting-and-point-budget.mdx
+  s_58dd112dc09435::t_736d39d8bb01d2 11-16,39-43,49-51,55-62
+apps/dashboard/components/model/method-panel.test.tsx
+  s_58dd112dc09435::t_a4ecfd6e7a5fbe 148-158,173,210-219,237,242,257-260,262-308,347-350,352-355,445-447
+apps/dashboard/components/model/weight-budget-pill.tsx
+  s_58dd112dc09435::t_2c24844136a3e1 1-2,10-11,13-14,53-73,82-95,108-111,117,126-135,138,144
+  s_58dd112dc09435::t_6f9b91085d0e31 3-9,12,15-52,74-81,96-107,112-116,118-125,136-137,139-143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "6d8f44b4b7a08f7dc18d47365809ab00cb6930fe",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
