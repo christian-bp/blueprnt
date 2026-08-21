@@ -1,0 +1,44 @@
+apps/dashboard/lib/model-chapters.test.ts
+  s_58dd112dc09435::t_c4b351e4172f88 172-177,179,184-194,196,200,204,207-210,213,217,228-248,254-257
+  s_58dd112dc09435::t_1bbc5ec9a51834 304-308
+  s_58dd112dc09435::t_50e4e7b47226a1 38-43
+apps/dashboard/lib/model-chapters.ts
+  s_58dd112dc09435::t_52e9f03a5b9627 144-145,203-218,222-225,238
+  s_58dd112dc09435::t_f16a45425d41d0 226-235,237
+packages/backend/convex/evaluationModel/criteria.ts
+  s_58dd112dc09435::t_8b12918ceff9f2 165-168
+  s_58dd112dc09435::t_71e06973fc28ef 163-164,169
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_c4b351e4172f88 496
+apps/dashboard/lib/todo.ts
+  s_58dd112dc09435::t_1bbc5ec9a51834 243-245,247
+packages/backend/convex/evaluationModel/approval.ts
+  s_58dd112dc09435::t_9b874be3cc8657 315
+  s_58dd112dc09435::t_75475e0067ef9e 251-257
+apps/dashboard/components/model/criteria-chapter.tsx
+  s_58dd112dc09435::t_50e4e7b47226a1 74-75,79
+apps/dashboard/components/model/model-section-shell.tsx
+  s_58dd112dc09435::t_50e4e7b47226a1 45-50
+apps/dashboard/components/model/model-section-shell.test.tsx
+  s_58dd112dc09435::t_2aeaa8855ccf3a 49-52,72
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_58dd112dc09435::t_924659f8934854 1101-1175
+packages/backend/convex/evaluationModel/tables.ts
+  s_58dd112dc09435::t_71e06973fc28ef 180-188
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "feeb5122fa1d8567a96b5c888c96d615d01d7fbf",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
