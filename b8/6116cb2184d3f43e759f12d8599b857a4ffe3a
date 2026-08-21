@@ -1,0 +1,23 @@
+apps/dashboard/components/model/weighting-chapter.tsx
+  s_58dd112dc09435::t_31475759d8617c 20,27-31,160-165,201-202,204-257
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_31475759d8617c 386,394,397-398,405-406,460,464-474,476-523,525-528,545,572-575,577-578,583-585,591,628-629
+apps/dashboard/components/floating-pill.tsx
+  s_58dd112dc09435::t_31475759d8617c 27,37,47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "b86116cb2184d3f43e759f12d8599b857a4ffe3a",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
