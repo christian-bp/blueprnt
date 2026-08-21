@@ -1,0 +1,44 @@
+apps/dashboard/content/docs/en/ai-weighting-review.mdx
+  s_58dd112dc09435::t_7e7f29c0e859d6 7-10
+apps/dashboard/content/docs/nb/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_7e7f29c0e859d6 35-39
+apps/dashboard/components/floating-pill.test.tsx
+  s_58dd112dc09435::t_8f986f3ae1cc69 30-43
+apps/dashboard/content/docs/fi/ai-weighting-review.mdx
+  s_58dd112dc09435::t_7e7f29c0e859d6 7-10
+apps/dashboard/content/docs/sv/ai-weighting-review.mdx
+  s_58dd112dc09435::t_7e7f29c0e859d6 7-10
+apps/dashboard/content/docs/en/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_7e7f29c0e859d6 33-37
+apps/dashboard/components/model/method-panel.test.tsx
+  s_58dd112dc09435::t_619328fbd26962 627-632,641-655
+  s_58dd112dc09435::t_2c76fe7cdd8973 633-640
+apps/dashboard/components/floating-pill.tsx
+  s_58dd112dc09435::t_8f986f3ae1cc69 114-122
+apps/dashboard/content/docs/nb/ai-weighting-review.mdx
+  s_58dd112dc09435::t_7e7f29c0e859d6 7-10
+apps/dashboard/content/docs/sv/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_7e7f29c0e859d6 34-39
+apps/dashboard/content/docs/fi/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_7e7f29c0e859d6 34-40
+apps/dashboard/content/docs/da/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_7e7f29c0e859d6 33-34,36-38
+apps/dashboard/content/docs/da/ai-weighting-review.mdx
+  s_58dd112dc09435::t_7e7f29c0e859d6 7-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "1ff61d4c3a3b2b052a47a27cd0fe7122855f7a58",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
