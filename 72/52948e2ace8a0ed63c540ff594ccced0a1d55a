@@ -1,0 +1,39 @@
+packages/backend/convex/evaluationModel/approvalCauses.ts
+  s_58dd112dc09435::t_13dc10cd9c06a4 1-30
+apps/dashboard/lib/audit-labels.test.ts
+  s_58dd112dc09435::t_1cd2a5059a3c79 26
+packages/backend/convex/evaluationModel/approval.ts
+  s_58dd112dc09435::t_a6b9569230a61d 19
+apps/dashboard/lib/backend-imports.test.ts
+  s_58dd112dc09435::t_1324598dec5f21 1-59,64-175
+  s_58dd112dc09435::t_ae7d6585eaca0e 60-63
+apps/dashboard/lib/audit-constants.ts
+  s_58dd112dc09435::t_1cd2a5059a3c79 4,314-317
+  s_58dd112dc09435::t_7643cc404559e3 318
+packages/backend/convex/_generated/api.d.ts
+  s_31f7625685cebe::t_8dbeed1f0f266e 67,179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "7252948e2ace8a0ed63c540ff594ccced0a1d55a",
+  "prompts": {},
+  "sessions": {
+    "s_31f7625685cebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a20c0b49285fa7d2a",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
