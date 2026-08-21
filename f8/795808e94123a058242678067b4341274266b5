@@ -1,0 +1,41 @@
+apps/dashboard/components/celebration-burst.test.tsx
+  s_58dd112dc09435::t_36fd38bd447356 1-58,66-77
+  s_58dd112dc09435::t_564463945ffcf9 59-65
+apps/dashboard/components/overview/todo-actions.tsx
+  s_58dd112dc09435::t_32944939d3b2f7 215
+  s_58dd112dc09435::t_125df25ded8d37 18
+  s_58dd112dc09435::t_f41c1ddca3e231 197-200,207-214,216-219,227
+apps/dashboard/components/model/model-spine.tsx
+  s_58dd112dc09435::t_ec1b93e7dd0092 77-80
+apps/dashboard/components/model/model-spine.test.tsx
+  s_58dd112dc09435::t_d2b70445c806d0 126-162
+  s_58dd112dc09435::t_4ba7847d1c80a3 1
+apps/dashboard/components/celebration-burst.tsx
+  s_58dd112dc09435::t_402b0d11842472 1-45
+apps/dashboard/components/segmented-progress.test.tsx
+  s_58dd112dc09435::t_33cbde95f305b7 104-218
+  s_58dd112dc09435::t_7415e3a7981840 1,5
+  s_58dd112dc09435::t_72a13bda9060a0 6
+apps/dashboard/components/segmented-progress.tsx
+  s_58dd112dc09435::t_259e44e6f68769 155-177,187-228
+  s_58dd112dc09435::t_a52cd45dd50ed5 55-61,65-102
+  s_58dd112dc09435::t_850805e56cf1e5 33
+  s_58dd112dc09435::t_0e2ca78bf7b466 4-5
+  s_58dd112dc09435::t_1952f483f74ed9 103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f8795808e94123a058242678067b4341274266b5",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
