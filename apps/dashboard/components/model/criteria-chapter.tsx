@@ -71,9 +71,12 @@ function remainingStep(
   checks: SelectionChecks | undefined | null
 ): RemainingStep | null {
   if (checks === undefined || checks === null) return null
+  // Kriterier's own units are its selection acts; the weighting save is
+  // another chapter's and never reaches this reading.
   const input: ModelProgressInput = {
     checks: checks.checks,
     approved: checks.approval !== null,
+    weightsSaved: false,
   }
   const progress = modelChapterProgress(input, "criteria")
   if (progress.done >= progress.total) return null

@@ -42,8 +42,12 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
   // what says so.
   const input: ModelProgressInput =
     data === undefined || data === null
-      ? { checks: [], approved: false }
-      : { checks: data.checks, approved: data.approval !== null }
+      ? { checks: [], approved: false, weightsSaved: false }
+      : {
+          checks: data.checks,
+          approved: data.approval !== null,
+          weightsSaved: data.weightsSaved,
+        }
   const overall = modelProgress(input)
   // Each chapter's own done/total, in chapter order, for the instrument's
   // segments and the count under the open one.

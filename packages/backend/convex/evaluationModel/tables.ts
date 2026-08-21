@@ -177,6 +177,15 @@ export const models = defineTable({
   name: v.string(),
   // Model approval: denormalized approval grant from the model author (ADR-0023).
   approval: v.optional(modelApprovalShape),
+  // When the weighting was last SAVED by a human, from the Viktning chapter's
+  // own save. It exists because the weighting has no other trace of having
+  // been decided: criteria enter at 3 points and the budget is the criteria
+  // count times 3, so a fresh selection is already balanced and every
+  // validation of it passes without anyone having weighed anything. A progress
+  // reading that counted the budget check would show a chapter as begun before
+  // it was opened, so it counts THIS instead: the act, not its arithmetic.
+  // Absent means nobody has saved a weighting yet.
+  weightsSavedAt: v.optional(v.number()),
   // The single last-approved buffer (ADR-0023 decision 11): every approveModel
   // overwrites it with the evidence it just approved, so a model whose approval
   // was reopened by an edit can be restored to that state. ONE buffer, never a

@@ -1098,6 +1098,81 @@ describe("criteria audit payloads (before/after)", () => {
     expect(allKeys(payload)).not.toContain("notes")
   })
 
+  // The weighting has no other trace of having been decided: criteria enter
+  // at 3 points and the budget is the criteria count times 3, so a fresh
+  // selection is already balanced and every check of it passes before anyone
+  // has weighed anything. The save writes the act itself.
+  it("records the weighting save on the model, and not before", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedEmptyModel(t)
+    const a = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
+    )
+    const b = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
+    )
+    // Born balanced, and nobody has saved: the marker is absent.
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(model?.weightsSavedAt).toBeUndefined()
+    })
+
+    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+      orgId,
+      allocations: [
+        { criterionId: a, weightPoints: 2 },
+        { criterionId: b, weightPoints: 4 },
+      ],
+    })
+
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(model?.weightsSavedAt).toBeGreaterThan(0)
+    })
+  })
+
+  // The query the model section reads its progress from carries the marker as
+  // a boolean, so the chapter can count the act without a second query.
+  it("reports the save through getMethodChecks", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedEmptyModel(t)
+    const a = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
+    )
+    const b = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
+    )
+    const before = await asAdmin.query(
+      api.evaluationModel.approval.getMethodChecks,
+      { orgId }
+    )
+    expect(before?.weightsSaved).toBe(false)
+
+    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+      orgId,
+      allocations: [
+        { criterionId: a, weightPoints: 2 },
+        { criterionId: b, weightPoints: 4 },
+      ],
+    })
+
+    const after = await asAdmin.query(
+      api.evaluationModel.approval.getMethodChecks,
+      { orgId }
+    )
+    expect(after?.weightsSaved).toBe(true)
+  })
+
   it("weights.rebalanced records bulk items, budget, and count", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedEmptyModel(t)

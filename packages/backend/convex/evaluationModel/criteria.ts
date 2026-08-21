@@ -160,6 +160,13 @@ export const rebalanceWeights = orgMutation({
       if (weightPoints === undefined) continue
       await ctx.db.patch(criterion._id, { weightPoints })
     }
+    // The weighting has been decided by a human now, which nothing else on
+    // the model records: a fresh selection is already balanced, so the budget
+    // check cannot tell a weighed model from an untouched one. No payload
+    // field for it: this mutation's own modelUpdated row IS the record that
+    // the save happened, and a field that is always true beside it would say
+    // the same thing twice while dragging a label through the audit surface.
+    await ctx.db.patch(model._id, { weightsSavedAt: Date.now() })
     // A method-affecting change re-opens approval (ADR-0023).
     await reopenApprovalIfSet(ctx, model, AUDIT_EVENTS.modelUpdated)
     const after = await deriveResults(ctx, ctx.orgId)

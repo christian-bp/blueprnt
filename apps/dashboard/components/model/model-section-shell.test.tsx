@@ -46,6 +46,10 @@ const CHECKS = [
 let checksResult: unknown = {
   checks: CHECKS,
   approval: null,
+  // A model whose weighting a human has saved: the Viktning chapter counts
+  // the act, not the budget arithmetic, so an unsaved fixture would read as
+  // an untouched chapter.
+  weightsSaved: true,
   workingConditions: { status: "testedNotMaterial", motivation: "x" },
 }
 
@@ -65,6 +69,7 @@ describe("ModelSectionShell", () => {
     checksResult = {
       checks: CHECKS,
       approval: null,
+      weightsSaved: true,
       workingConditions: { status: "testedNotMaterial", motivation: "x" },
     }
     onQuery((ref) =>

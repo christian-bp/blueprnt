@@ -141,6 +141,8 @@ export interface ModelProgressInput {
   checks: readonly ModelProgressCheck[]
   // The model carries an approval right now.
   approved: boolean
+  // A human has SAVED a weighting at least once (models.weightsSavedAt).
+  weightsSaved: boolean
 }
 
 interface ChapterProgress {
@@ -198,28 +200,42 @@ export function modelChapterProgress(
       }
     }
     case "weighting": {
-      // The budget, plus one step per warning that asks for a motivation.
-      // Born passing is accepted once there is something to weigh: criteria
-      // enter at weight 3, so a selection's budget is already exact and the
-      // chapter opens done as soon as Kriterier is complete. Before that, the
-      // same checks pass VACUOUSLY (budget 0=0, no warnings pending on zero
-      // criteria) and a check that passes on empty input is not progress: the
-      // segment must never show work the user has not begun, so done is held
-      // at zero until modelChapterProgress reads Kriterier itself as
-      // complete.
+      // The save, plus one step per warning that asks for a motivation. Every
+      // unit here is an ACT the user performed, which is the rule this chapter
+      // had to learn twice.
+      //
+      // The first unit is the SAVE, not the budget check. Criteria enter at 3
+      // points and the budget is the criteria count times 3, so a selection is
+      // already balanced the moment it exists: the check passes on a model
+      // nobody has opened, and on an empty one it passes vacuously (0 = 0).
+      // models.weightsSavedAt records the act instead, so this unit is true
+      // when someone has weighed the model and false otherwise.
+      //
+      // And no neighbour zeroes it. This chapter used to return 0 whenever
+      // Kriterier was incomplete, which meant deactivating a criterion after a
+      // real save reported "0 of 3" against a saved weighting and a written
+      // motivation still on screen. A unit is the user's own act; another
+      // chapter's state cannot un-perform it.
       const motivations = WEIGHT_MOTIVATION_CHECKS.map((key) =>
         checkOf(input, key)
       ).filter((check) => check !== undefined)
-      const total = 1 + motivations.length
-      const criteria = modelChapterProgress(input, "criteria")
-      if (criteria.done < criteria.total) {
-        return { done: 0, total }
-      }
+      // The warnings are the ENGINE's, so they only exist once there are
+      // criteria to warn about, and a model with none has nothing to motivate.
+      // Its total is the save alone, which keeps done at 0 of 1 rather than
+      // inventing units for work that cannot be started.
+      //
+      // The motivation units are gated on the save for the same reason the
+      // first unit is the save: both warnings report ok when they simply do
+      // not APPLY (no dimension over its share, no people-leadership criterion
+      // above the floor), so on an untouched selection they are born true and
+      // the chapter would open two thirds done. Once the weighting has been
+      // saved the chapter has been used, and from then on each unit reads its
+      // own real state, including falling back to false if a later edit
+      // reopens the warning.
+      const used = input.weightsSaved
       return {
-        done:
-          (passes(input, "weightBudget") ? 1 : 0) +
-          motivations.filter((check) => check.ok).length,
-        total,
+        done: used ? 1 + motivations.filter((check) => check.ok).length : 0,
+        total: 1 + motivations.length,
       }
     }
     case "method": {

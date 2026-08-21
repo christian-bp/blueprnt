@@ -248,6 +248,13 @@ export const getMethodChecks = orgQuery({
       // control. Read-only extension of an existing query (the dimensionShares
       // pattern), so the chapter costs no second subscription.
       restoreWouldChange: v.boolean(),
+      // Whether a human has ever SAVED a weighting on this model. The Viktning
+      // chapter's progress counts the act, not its arithmetic: a fresh
+      // selection is already balanced, so every check of it passes before
+      // anyone has weighed anything. Read-only extension of an existing query
+      // (the dimensionShares pattern), so the section costs no second
+      // subscription.
+      weightsSaved: v.boolean(),
       workingConditions: v.union(workingConditionsShape, v.null()),
       // Every dimension's share of the model's total weight, from the engine's
       // own dimensionWeightShares over the SAME criteria the checks above were
@@ -305,6 +312,7 @@ export const getMethodChecks = orgQuery({
               approvedAt: model.approval.approvedAt,
             },
       lastApprovedAt: model.lastApprovedModel?.approval?.approvedAt ?? null,
+      weightsSaved: model.weightsSavedAt !== undefined,
       restoreWouldChange: await restoreWouldChange(
         ctx,
         model,

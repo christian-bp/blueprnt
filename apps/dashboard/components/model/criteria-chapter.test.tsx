@@ -493,6 +493,7 @@ describe("the Kriterier chapter", () => {
           // derivation wants its own narrower slice of the same rows.
           checks: checks.checks as ModelProgressInput["checks"],
           approved: false,
+          weightsSaved: false,
         },
         "criteria"
       )

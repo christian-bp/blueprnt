@@ -35,7 +35,12 @@ function checks(
 function input(
   overrides: Partial<ModelProgressInput> = {}
 ): ModelProgressInput {
-  return { checks: checks(), approved: false, ...overrides }
+  return {
+    checks: checks(),
+    approved: false,
+    weightsSaved: false,
+    ...overrides,
+  }
 }
 
 // The Kriterier chapter's own total: six criteria plus the working-conditions
@@ -164,45 +169,52 @@ describe("chapter progress", () => {
   // exact: the chapter is allowed to open done, but only once Kriterier
   // itself is complete (the default fixture's six criteria pass every
   // station check).
-  it("opens the weighting chapter done when the budget is born balanced", () => {
+  // Born-done was the first dishonesty. Criteria enter at 3 points and the
+  // budget is the criteria count times 3, so a selection is already balanced
+  // the moment it exists and the budget check passes on a model nobody has
+  // opened. The unit is the SAVE now, so a fresh six-criteria selection with
+  // no save reads zero for it.
+  it("opens the weighting chapter at zero on a selection nobody has weighed", () => {
     expect(modelChapterProgress(input(), "weighting")).toEqual({
-      done: 3,
-      total: 3,
-    })
-  })
-
-  // The owner's bug: a fresh org with no criteria yet showed "Weighting 3 of
-  // 3" full, because the budget and motivation checks pass VACUOUSLY on an
-  // empty model (0 = 0, no warnings pending on zero criteria). A check that
-  // passes on empty input is not progress, so the segment stays at zero
-  // until Kriterier reads as complete on its own rule, even though
-  // weighting's own checks already say "done".
-  it("holds the weighting chapter at zero while criteria is incomplete, even though its own checks pass vacuously", () => {
-    const freshOrg = input({
-      checks: checks({
-        criterionCount: { count: 0, ok: false },
-        dimensionCoverage: { ok: false },
-        workingConditionsTested: { ok: false },
-      }),
-    })
-    const criteria = modelChapterProgress(freshOrg, "criteria")
-    expect(criteria.done).toBeLessThan(criteria.total)
-    expect(modelChapterProgress(freshOrg, "weighting")).toEqual({
       done: 0,
       total: 3,
     })
   })
 
-  it("counts the budget and each motivation the warnings ask for", () => {
+  it("counts the save once a human has performed it", () => {
     expect(
-      modelChapterProgress(
-        input({ checks: checks({ weightBudget: { ok: false } }) }),
-        "weighting"
-      )
-    ).toEqual({ done: 2, total: 3 })
+      modelChapterProgress(input({ weightsSaved: true }), "weighting")
+    ).toEqual({ done: 3, total: 3 })
+  })
+
+  // A fresh org with no criteria yet must not read as begun. The motivation
+  // warnings are the engine's, so they do not exist on an empty model, and the
+  // save has not happened: 0 of 1, with nothing invented for work that cannot
+  // be started.
+  it("shows an untouched model as zero, with no units it cannot have", () => {
+    const freshOrg = input({
+      checks: [],
+    })
+    expect(modelChapterProgress(freshOrg, "weighting")).toEqual({
+      done: 0,
+      total: 1,
+    })
+  })
+
+  it("counts the save and each motivation the warnings ask for", () => {
     expect(
       modelChapterProgress(
         input({
+          weightsSaved: true,
+          checks: checks({ weightBudget: { ok: false } }),
+        }),
+        "weighting"
+      )
+    ).toEqual({ done: 3, total: 3 })
+    expect(
+      modelChapterProgress(
+        input({
+          weightsSaved: true,
           checks: checks({
             dimensionWeightBalance: { ok: false },
             peopleLeadershipWeight: { ok: false },
@@ -213,12 +225,36 @@ describe("chapter progress", () => {
     ).toEqual({ done: 1, total: 3 })
   })
 
+  // THE OWNER'S CASE. Five active criteria (one under the minimum), a real
+  // save, and one of the two motivations written: the chapter reported "0 of
+  // 3" against work visibly on screen, because it zeroed itself whenever
+  // Kriterier was incomplete. A unit is the user's own act, and a neighbouring
+  // chapter cannot un-perform it.
+  it("keeps a saved weighting counted when the selection drops below the minimum", () => {
+    const fiveCriteria = input({
+      weightsSaved: true,
+      checks: checks({
+        criterionCount: { count: 5, ok: false },
+        peopleLeadershipWeight: { ok: false },
+      }),
+    })
+    const criteria = modelChapterProgress(fiveCriteria, "criteria")
+    expect(criteria.done).toBeLessThan(criteria.total)
+    expect(modelChapterProgress(fiveCriteria, "weighting")).toEqual({
+      done: 2,
+      total: 3,
+    })
+  })
+
   // The overlap warning is satisfied by the overlap protokoll, which is
   // Metod's work, so it is not one of Viktning's motivations.
   it("leaves the overlap warning out of the weighting chapter", () => {
     expect(
       modelChapterProgress(
-        input({ checks: checks({ overlapPairs: { ok: false } }) }),
+        input({
+          weightsSaved: true,
+          checks: checks({ overlapPairs: { ok: false } }),
+        }),
         "weighting"
       )
     ).toEqual({ done: 3, total: 3 })
@@ -265,7 +301,11 @@ describe("chapter progress", () => {
 
   // An org with no model at all still has the same four chapters ahead of it.
   it("reads a model that does not exist yet as nothing decided", () => {
-    const empty: ModelProgressInput = { checks: [], approved: false }
+    const empty: ModelProgressInput = {
+      checks: [],
+      approved: false,
+      weightsSaved: false,
+    }
     expect(modelProgress(empty).done).toBe(0)
     expect(modelProgress(empty).total).toBeGreaterThan(0)
   })

@@ -240,9 +240,11 @@ function computeCounts({
     ? modelChapterProgress(
         {
           checks: methodChecks.checks,
-          // Unread by the "criteria" case of modelChapterProgress (only the
-          // approval chapter consults it); supplied for the input's shape only.
+          // Both unread by the "criteria" case of modelChapterProgress (the
+          // approval chapter consults one, the weighting chapter the other);
+          // supplied for the input's shape only.
           approved: method?.modelApproved ?? false,
+          weightsSaved: false,
         },
         "criteria"
       )
