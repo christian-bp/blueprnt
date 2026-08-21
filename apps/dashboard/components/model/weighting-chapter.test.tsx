@@ -173,7 +173,11 @@ let methodChecksResult: unknown = null
 // BALANCED is 4+2+3+3+3 = 15: responsibility 8/15, effort 4/15, competence
 // 3/15. The engine computes these; the fixture states them once so a test never
 // spells a fraction out inline.
-function checksFor(unmotivated: string[], leadershipOk = true) {
+function checksFor(
+  unmotivated: string[],
+  leadershipOk = true,
+  weightsSaved = true
+) {
   return {
     checks: [
       {
@@ -186,6 +190,7 @@ function checksFor(unmotivated: string[], leadershipOk = true) {
     ],
     approval: null,
     lastApprovedAt: null,
+    weightsSaved,
     workingConditions: null,
     dimensionShares: [
       { key: "competence", share: 3 / 15 },
@@ -362,6 +367,41 @@ describe("the Viktning chapter", () => {
     renderChapter()
     expect(screen.getByText(COMPLEXITY)).toBeDefined()
     expect(screen.queryByText(ANCHOR_LOW)).toBeNull()
+  })
+
+  // A model weighted before weightsSavedAt existed: balanced, undirty, and
+  // with the act unrecorded. The dirty-only gate left its owner a disabled
+  // button and a chapter reading zero forever, with no gesture anywhere that
+  // could record what they had already done.
+  it("offers the save on a balanced model whose weighting was never recorded", async () => {
+    methodChecksResult = checksFor(["responsibility"], true, false)
+    renderChapter()
+    const button = save()
+    expect(button.hasAttribute("disabled")).toBe(false)
+
+    fireEvent.click(button)
+    // The allocation posted is the STORED one, unchanged: the act is what is
+    // being recorded, not an edit.
+    await waitFor(() => {
+      expect(rebalanceWeights).toHaveBeenCalledWith({
+        orgId: "org-1",
+        allocations: [
+          { criterionId: "c1", weightPoints: 4 },
+          { criterionId: "c2", weightPoints: 2 },
+          { criterionId: "c3", weightPoints: 3 },
+          { criterionId: "c4", weightPoints: 3 },
+          { criterionId: "c5", weightPoints: 3 },
+        ],
+      })
+    })
+  })
+
+  // Once the act is on record, an unchanged allocation has nothing to say
+  // again: the pill goes quiet exactly as it did before.
+  it("says nothing on a balanced model whose weighting is already recorded", () => {
+    methodChecksResult = checksFor(["responsibility"], true, true)
+    renderChapter()
+    expect(querySave()).toBeNull()
   })
 
   it("saves the whole allocation at once, and only when it balances", async () => {

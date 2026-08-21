@@ -141,6 +141,18 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
   const dirty = criteria.some(
     (criterion) => pointsFor(criterion) !== criterion.weightPoints
   )
+  // Whether the weighting has ever been SAVED, from the checks this chapter
+  // already subscribes to. It gates the save button alongside dirtiness: a
+  // model weighted before the marker existed is balanced and undirty, so a
+  // dirty-only gate left its owner with a disabled button and a chapter
+  // reading zero forever, with no gesture anywhere that could record the act
+  // they had already performed. Confirming an unchanged allocation is a real
+  // state change while the act is unrecorded, and nothing at all after.
+  //
+  // Defaults to true while the checks load: an enabled button that would post
+  // a no-op is worse than one that arrives a moment late.
+  const weightsSaved = checks?.weightsSaved ?? true
+  const canSave = balanced && (dirty || !weightsSaved)
   const showReview =
     reviewLocked === false && !dirty && criteria.length > 0 && !saving
 
@@ -150,7 +162,7 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
   }
 
   async function onSave() {
-    if (!dirty || delta !== 0) return
+    if (!canSave) return
     setSaving(true)
     try {
       await rebalanceWeights({
@@ -466,7 +478,11 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
               ? t("pointsLeft", { count: -delta })
               : t("pointsOver", { count: delta })}
           </FloatingPillText>
-        ) : dirty ? (
+        ) : canSave ? (
+          // canSave, not merely dirty: on a model weighted before the marker
+          // existed the allocation is already balanced and undirty, and a pill
+          // that stayed silent there would hide the only gesture that can
+          // record the act.
           <>
             <FloatingPillText>
               {/* Both figures move while the reader watches (a weight click
@@ -499,7 +515,7 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
                 type="button"
                 size="sm"
                 className="rounded-full"
-                disabled={saving || !balanced || !dirty}
+                disabled={saving || !canSave}
                 onClick={onSave}
               >
                 {t("saveCta")}

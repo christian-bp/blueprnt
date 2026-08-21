@@ -350,31 +350,10 @@ describe("rebalanceWeights", () => {
     })
   })
 
-  it("no-ops (no audit row) when the allocation is unchanged", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, a, b } = await seedTwoCriteria(t)
-    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
-      orgId,
-      allocations: [
-        { criterionId: a, weightPoints: 3 },
-        { criterionId: b, weightPoints: 3 },
-      ],
-    })
-    await t.run(async (ctx) => {
-      const auditRows = await ctx.db
-        .query("auditLog")
-        .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "model.updated")
-        )
-        .collect()
-      const rebalanceRows = auditRows.filter(
-        (row) =>
-          (row.payload as Record<string, unknown>).change ===
-          "weights.rebalanced"
-      )
-      expect(rebalanceRows).toHaveLength(0)
-    })
-  })
+  // An unchanged allocation is a no-op only once the act is ON RECORD. Before
+  // that it is the confirm that records it, which is what lets a model
+  // weighted before weightsSavedAt existed ever count its own weighting; both
+  // halves are pinned by the marker tests below.
 
   it("rejects a sum off the point budget with errors.weightsUnbalanced", async () => {
     const t = initConvexTest()
@@ -1136,6 +1115,131 @@ describe("criteria audit payloads (before/after)", () => {
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .unique()
       expect(model?.weightsSavedAt).toBeGreaterThan(0)
+    })
+  })
+
+  // A model weighted before weightsSavedAt existed: balanced, unchanged, and
+  // with the act unrecorded. Confirming the allocation it already has IS a
+  // state change, and it is the only way such a model can ever record the act.
+  it("stamps the marker when an unchanged allocation is confirmed", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedEmptyModel(t)
+    const a = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
+    )
+    const b = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
+    )
+    const stored = await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("criteria")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      return rows.map((row) => ({
+        id: row._id,
+        weightPoints: row.weightPoints,
+        creationTime: row._creationTime,
+      }))
+    })
+
+    // The stored allocation, posted back unchanged.
+    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+      orgId,
+      allocations: [
+        { criterionId: a, weightPoints: 3 },
+        { criterionId: b, weightPoints: 3 },
+      ],
+    })
+
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(model?.weightsSavedAt).toBeGreaterThan(0)
+      // No criterion row was touched: the weights are the same objects with
+      // the same points.
+      const rows = await ctx.db
+        .query("criteria")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(
+        rows.map((row) => ({
+          id: row._id,
+          weightPoints: row.weightPoints,
+          creationTime: row._creationTime,
+        }))
+      ).toEqual(stored)
+      // The act is on the trail, as this mutation's own row.
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.updated")
+        )
+        .collect()
+      const confirms = audit.filter(
+        (row) =>
+          (row.payload as { change?: string }).change === "weights.rebalanced"
+      )
+      expect(confirms).toHaveLength(1)
+      expect(confirms[0]?.payload).toMatchObject({ count: 0, items: [] })
+    })
+  })
+
+  // Once the act is on record, an unchanged allocation is a true no-op: no
+  // second marker write, and no audit noise.
+  it("does nothing at all when an unchanged allocation is confirmed twice", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedEmptyModel(t)
+    const a = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
+    )
+    const b = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
+    )
+    const allocations = [
+      { criterionId: a, weightPoints: 3 },
+      { criterionId: b, weightPoints: 3 },
+    ]
+    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+      orgId,
+      allocations,
+    })
+    const first = await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      return model?.weightsSavedAt
+    })
+
+    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+      orgId,
+      allocations,
+    })
+
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(model?.weightsSavedAt).toBe(first)
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.updated")
+        )
+        .collect()
+      expect(
+        audit.filter(
+          (row) =>
+            (row.payload as { change?: string }).change === "weights.rebalanced"
+        )
+      ).toHaveLength(1)
     })
   })
 

@@ -148,8 +148,31 @@ export const rebalanceWeights = orgMutation({
       (criterion) =>
         pointsById.get(criterion._id as string) !== criterion.weightPoints
     )
-    // No-op when nothing moves; avoids spurious audit rows.
-    if (changed.length === 0) return null
+    if (changed.length === 0) {
+      // Nothing moved AND the act is already on record: a true no-op, which
+      // avoids spurious audit rows. The client's save gate makes this
+      // unreachable, and the guard is here anyway because a mutation defends
+      // its own invariants.
+      if (model.weightsSavedAt !== undefined) return null
+      // Nothing moved, but the act is NOT on record: a model weighted before
+      // weightsSavedAt existed, whose owner is confirming the allocation they
+      // already have. That IS a state change, so it is recorded, and it is the
+      // ONLY thing recorded: no criterion row is touched, and the approval is
+      // not reopened, because reopening an approved model over a save that
+      // moved no weight would invalidate it for nothing.
+      await ctx.db.patch(model._id, { weightsSavedAt: Date.now() })
+      await ctx.audit.log({
+        type: AUDIT_EVENTS.modelUpdated,
+        payload: {
+          change: "weights.rebalanced",
+          modelId: model._id,
+          budget: criteria.length * 3,
+          count: 0,
+          items: [],
+        },
+      })
+      return null
+    }
 
     const locale = await resolveContentLocale(ctx, ctx.orgId)
     const content = criteriaLibraryContent(locale)
