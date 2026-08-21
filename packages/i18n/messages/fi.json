@@ -1877,7 +1877,6 @@
         "pointsOver": "{count, plural, one {# painopiste} other {# painopistettä}} yli budjetin",
         "saveCta": "Tallenna painotus",
         "setWeightPoints": "Painopisteet: {name}",
-        "shareOfTotal": "painosta",
         "criterionShare": "<share></share> painosta",
         "dimensionShare": "{dimension} · <share></share> painosta",
         "weightMeaning1": "Hyvin vähäinen vaikutus mallissa",

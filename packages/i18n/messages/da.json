@@ -1877,7 +1877,6 @@
         "pointsOver": "{count} vægtpoint over budgettet",
         "saveCta": "Gem vægtning",
         "setWeightPoints": "Vægtpoint for {name}",
-        "shareOfTotal": "af vægten",
         "criterionShare": "<share></share> af vægten",
         "dimensionShare": "{dimension} · <share></share> af vægten",
         "weightMeaning1": "Meget lav indflydelse i modellen",

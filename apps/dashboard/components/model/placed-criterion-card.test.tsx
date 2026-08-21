@@ -39,6 +39,13 @@ import {
 const editor = messages.dashboard.model.editor
 const weighting = messages.dashboard.model.weighting
 const change = messages.dashboard.model.change
+const method = messages.dashboard.model.method
+
+// The share line's own words, taken from the one message that renders it: a
+// card that carries no share carries none of this either.
+const SHARE_TEXT = weighting.criterionShare
+  .replace("<share></share>", "")
+  .trim()
 
 const CRITERION = {
   criterionId: "c1",
@@ -82,6 +89,30 @@ function renderWeighted(overrides: Partial<PlacedCriterionWeight> = {}) {
   return { ...view, onChange }
 }
 
+// The Metod chapter's card: where the criterion's documentation stands, and
+// the way into the dialog that moves it.
+function renderDocumented(
+  overrides: {
+    status?: "notStarted" | "inProgress" | "documented" | "approved"
+    partners?: string[]
+    admin?: boolean
+  } = {}
+) {
+  const { status = "inProgress", partners = [], admin = true } = overrides
+  const onDocument = vi.fn()
+  const view = wrap(
+    <PlacedCriterionCard
+      criterion={CRITERION}
+      documentation={{
+        status,
+        partners,
+        onDocument: admin ? onDocument : undefined,
+      }}
+    />
+  )
+  return { ...view, onDocument }
+}
+
 const removeTrigger = () =>
   screen.getByRole("button", {
     name: editor.removeLabel.replace("{name}", CRITERION.name),
@@ -94,14 +125,17 @@ describe("PlacedCriterionCard", () => {
   // own one-liner, and it is what tells the reader what they actually chose.
   // Both chapters carry it, so a criterion reads the same wherever it is
   // listed.
-  it("names the criterion and says what it is for, on both cards", () => {
-    renderSelection()
-    expect(screen.getByText(CRITERION.name)).toBeDefined()
-    expect(screen.getByText(CRITERION.shortUiText)).toBeDefined()
-    cleanup()
-    renderWeighted()
-    expect(screen.getByText(CRITERION.name)).toBeDefined()
-    expect(screen.getByText(CRITERION.shortUiText)).toBeDefined()
+  it("names the criterion and says what it is for, on every card", () => {
+    for (const renderCard of [
+      renderSelection,
+      renderWeighted,
+      renderDocumented,
+    ]) {
+      renderCard()
+      expect(screen.getByText(CRITERION.name)).toBeDefined()
+      expect(screen.getByText(CRITERION.shortUiText)).toBeDefined()
+      cleanup()
+    }
   })
 
   // Built on the design system's Item family rather than hand-rolled markup,
@@ -123,8 +157,8 @@ describe("PlacedCriterionCard", () => {
   // makes it read at full column width, and both variants take it together.
   // The picker rows a criterion is chosen from are default too, so the same
   // criterion reads the same in both places.
-  it("takes the Item family's default size on both variants", () => {
-    for (const render of [renderSelection, renderWeighted]) {
+  it("takes the Item family's default size on every variant", () => {
+    for (const render of [renderSelection, renderWeighted, renderDocumented]) {
       const { container } = render()
       const item = container.querySelector('[data-slot="item"]')
       expect(item?.getAttribute("data-size")).toBe("default")
@@ -146,7 +180,7 @@ describe("PlacedCriterionCard", () => {
   // deciding to include is the confusion the chapters exist to end.
   it("carries no weighting on the selection card", () => {
     const { container } = renderSelection()
-    expect(screen.queryByText(weighting.shareOfTotal)).toBeNull()
+    expect(screen.queryByText(new RegExp(SHARE_TEXT))).toBeNull()
     expect(
       screen.queryByRole("group", {
         name: weighting.setWeightPoints.replace("{name}", CRITERION.name),
@@ -178,7 +212,7 @@ describe("PlacedCriterionCard", () => {
   it("shows the share alone under the row, never the points again", () => {
     const { container } = renderWeighted()
     const line = [...container.querySelectorAll("p")].find((p) =>
-      p.textContent?.includes(weighting.shareOfTotal)
+      p.textContent?.includes(SHARE_TEXT)
     )
     expect(line).toBeDefined()
     expect(line?.textContent).toBe(
@@ -214,6 +248,68 @@ describe("PlacedCriterionCard", () => {
     // or removal would be a sixth control, so counting them is what says the
     // evaluation scale is not one press away from the weighting either.
     expect(container.querySelectorAll("button")).toHaveLength(5)
+  })
+
+  // The Metod card: the chapter's own decision, in the Item family's footer
+  // slot so the name above it keeps the card's full width.
+  it("states the documentation status and offers the way in, in its footer", () => {
+    const { container } = renderDocumented({ status: "documented" })
+    const footer = container.querySelector('[data-slot="item-footer"]')
+    expect(footer).not.toBeNull()
+    const inFooter = within(footer as HTMLElement)
+    expect(inFooter.getByText(method.status.documented)).toBeDefined()
+    expect(inFooter.getByRole("button", { name: method.openCta })).toBeDefined()
+  })
+
+  it("opens the documentation from the card's own action", () => {
+    const { onDocument } = renderDocumented()
+    fireEvent.click(screen.getByRole("button", { name: method.openCta }))
+    expect(onDocument).toHaveBeenCalledTimes(1)
+  })
+
+  // The dialog behind the action is a write surface end to end, so an editor is
+  // not offered its entry point at all. Where the criterion stands is still
+  // said: reading the documentation is every member's.
+  it("offers an editor no way in, while still saying where the criterion stands", () => {
+    const { container } = renderDocumented({ admin: false })
+    expect(screen.getByText(method.status.inProgress)).toBeDefined()
+    expect(screen.queryByRole("button", { name: method.openCta })).toBeNull()
+    expect(container.querySelectorAll("button")).toHaveLength(0)
+  })
+
+  // The overlap the Godkännande checklist calls "unreviewed", named on the card
+  // whose own action writes the note that clears it.
+  it("names the criteria an unreviewed overlap is against", () => {
+    renderDocumented({ partners: ["Complexity", "Domain knowledge"] })
+    expect(
+      screen.getByText(
+        method.overlapFlag.replace("{names}", "Complexity and Domain knowledge")
+      )
+    ).toBeDefined()
+  })
+
+  it("raises no overlap flag when the engine reports none", () => {
+    renderDocumented()
+    expect(screen.queryByText(/Overlap with/)).toBeNull()
+  })
+
+  // Documenting a criterion neither weights it nor removes it: those are the
+  // other two chapters', and the card carries one chapter's decision only.
+  it("carries no weighting and no way out on the documentation card", () => {
+    const { container } = renderDocumented()
+    expect(screen.queryByText(new RegExp(SHARE_TEXT))).toBeNull()
+    expect(
+      screen.queryByRole("group", {
+        name: weighting.setWeightPoints.replace("{name}", CRITERION.name),
+      })
+    ).toBeNull()
+    expect(
+      screen.queryByRole("button", {
+        name: editor.removeLabel.replace("{name}", CRITERION.name),
+      })
+    ).toBeNull()
+    // The one way into the dialog is the card's only control.
+    expect(container.querySelectorAll("button")).toHaveLength(1)
   })
 
   // Removal takes the criterion's ratings off every role, so it never fires on

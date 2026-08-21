@@ -51,9 +51,16 @@ vi.mock("@workspace/backend/convex/_generated/api", () => {
 
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
 
+// The library's full definition of the criterion, as the chapter's wire
+// carries it: the dialog is where it is read, because the card that opens the
+// dialog carries only the one-liner.
+const DEFINITION =
+  "Captures the reach of the role's responsibility and the consequences of its decisions."
+
 const TARGET = {
   criterionId: "c1" as Id<"criteria">,
   name: "Scope",
+  description: DEFINITION,
   purpose: "Measure scope of impact",
   whyRelevant: "Distinguishes seniority",
   overlapNotes: null,
@@ -68,6 +75,7 @@ const TARGET = {
 const DOCUMENTED_TARGET = {
   criterionId: "c2" as Id<"criteria">,
   name: "Scope",
+  description: DEFINITION,
   purpose: "Measure scope",
   whyRelevant: "Distinguishes seniority",
   overlapNotes: null,
@@ -82,6 +90,7 @@ const DOCUMENTED_TARGET = {
 const APPROVED_TARGET = {
   criterionId: "c3" as Id<"criteria">,
   name: "Scope",
+  description: DEFINITION,
   purpose: "Measure scope",
   whyRelevant: "Distinguishes seniority",
   overlapNotes: null,
@@ -169,6 +178,16 @@ describe("CriterionComplianceDialog", () => {
     // Undirty documented target: Approve is shown, Save is not
     expect(screen.getByRole("button", { name: /approve/i })).toBeDefined()
     expect(screen.queryByRole("button", { name: /save/i })).toBeNull()
+  })
+
+  // The Metod chapter's cards are compact (name, one-liner, status, action),
+  // so the criterion's long definition lives here, where the documentation is
+  // written against it. A dialog that named neither the criterion nor what it
+  // covers would leave the reader documenting from memory.
+  it("names the criterion and shows the library's definition of it", () => {
+    renderDialog()
+    expect(screen.getByText("Scope")).toBeDefined()
+    expect(screen.getByText(DEFINITION)).toBeDefined()
   })
 
   it("renders the section headings for Rationale and Bias review", () => {
@@ -292,6 +311,7 @@ describe("CriterionComplianceDialog", () => {
     const inProgressTarget = {
       criterionId: "c4" as Id<"criteria">,
       name: "Scope",
+      description: DEFINITION,
       purpose: "Existing purpose",
       whyRelevant: "Existing relevance",
       overlapNotes: null,

@@ -1877,7 +1877,6 @@
         "pointsOver": "{count, plural, one {# weight point} other {# weight points}} over the budget",
         "saveCta": "Save weighting",
         "setWeightPoints": "Weight points for {name}",
-        "shareOfTotal": "of the weight",
         "criterionShare": "<share></share> of the weight",
         "dimensionShare": "{dimension} · <share></share> of the weight",
         "weightMeaning1": "Very low influence in the model",

@@ -25,6 +25,12 @@ import {
   FormMessage,
 } from "@workspace/ui/components/form"
 import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+} from "@workspace/ui/components/item"
+import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
@@ -46,6 +52,10 @@ import {
 type Row = {
   criterionId: Id<"criteria">
   name: string
+  // The library's full definition of the criterion: what it covers and what it
+  // does not. The chapter's cards carry the one-liner, so this is where the
+  // long text lives, beside the fields it is the reference for.
+  description: string
   purpose: string | null
   whyRelevant: string | null
   overlapNotes: string | null
@@ -170,6 +180,20 @@ function CriterionComplianceForm({
         </div>
         <DialogDescription>{t("dialogDescription")}</DialogDescription>
       </DialogHeader>
+      {/* WHICH criterion this is, and the library's own definition of it. The
+          chapter's cards are compact (a name, a one-liner, a status and this
+          action), so the long definition lives where the documentation is
+          actually written, beside the fields it is the reference for. The same
+          Item the library picker presents a criterion in, so a criterion and
+          its definition read the same wherever the two appear together. */}
+      <Item variant="muted">
+        <ItemContent>
+          <ItemTitle className="line-clamp-none">{target.name}</ItemTitle>
+          <ItemDescription className="line-clamp-none">
+            {target.description}
+          </ItemDescription>
+        </ItemContent>
+      </Item>
       {draftError !== null && (
         <p role="alert" className="text-destructive text-sm">
           {draftError}

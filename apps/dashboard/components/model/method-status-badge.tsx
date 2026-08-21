@@ -7,7 +7,14 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
-type ComplianceStatus = "notStarted" | "inProgress" | "documented" | "approved"
+// The four states a criterion's documentation moves through, as the Metod
+// chapter's wire reports them. Exported so the card that shows the badge types
+// its own state against this one definition rather than repeating the union.
+export type ComplianceStatus =
+  | "notStarted"
+  | "inProgress"
+  | "documented"
+  | "approved"
 
 // The per-criterion compliance status shown on the Method chapter, adapted from the
 // polyform table status badge: one outline pill with muted text where the icon

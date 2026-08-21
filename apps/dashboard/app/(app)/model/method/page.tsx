@@ -27,17 +27,10 @@ export default function ModelMethodChapterPage() {
           </HelpMorphButton>
         }
       />
-      {/* max-w-4xl on the CONTENT only, not on the framing line above it: the
-          chapter's chrome (spine, tab row, framing) stays the same width on
-          all four chapters, and only the part that is prose stops stretching.
-          Left-aligned, never centered, so the section keeps one left edge.
-          4xl rather than 5xl because a criterion row spends a fixed 13rem on
-          its status and action slot, so at 56rem the flexible name and
-          description column lands near the readable measure; at 5xl the
-          descriptions run past it and gain nothing. */}
-      <div className="max-w-4xl space-y-4">
-        <MethodPanel orgId={orgId} />
-      </div>
+      {/* No reading cap, unlike the Godkännande chapter next door: this
+          chapter is a grid of dimension columns like its other two
+          neighbours, and a column is already a readable measure. */}
+      <MethodPanel orgId={orgId} />
     </div>
   )
 }

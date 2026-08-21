@@ -1,17 +1,28 @@
 "use client"
 
+import { Alert02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Button } from "@workspace/ui/components/button"
 import {
   Item,
   ItemActions,
   ItemContent,
   ItemDescription,
+  ItemFooter,
   ItemTitle,
 } from "@workspace/ui/components/item"
+import { cn } from "@workspace/ui/lib/utils"
 import NumberFlow from "@number-flow/react"
 import { motion } from "motion/react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
+import {
+  type ComplianceStatus,
+  MethodStatusBadge,
+} from "@/components/model/method-status-badge"
 import { WeightPointRow } from "@/components/model/weight-point-row"
 import { RemoveConfirm } from "@/components/remove-confirm"
+import { WARNING_TEXT_CLASS } from "@/lib/alert-tone"
+import { formatNames } from "@/lib/list-format"
 import { SPRING } from "@/lib/motion"
 import { SHARE_FORMAT } from "@/lib/weighting"
 
@@ -30,6 +41,23 @@ export interface PlacedCriterionWeight {
   onChange: (points: number) => void
 }
 
+// The criterion's documentation, as the Metod chapter hands it to the card:
+// where the protokoll stands, whether the reader still owes the model an
+// overlap note, and the way into the dialog that answers both.
+export interface MethodCriterionDocumentation {
+  status: ComplianceStatus
+  // The criteria this one still has an unreviewed overlap against, by name.
+  // Named rather than counted, and shown on the CARD, because the note that
+  // clears it is written behind this card's own action: the checklist two
+  // chapters later can only say that some pair is unreviewed, and the reader
+  // then has to work out which of six criteria to open.
+  partners: readonly string[]
+  // Opening the documentation dialog. Absent for an editor: the dialog is a
+  // write surface end to end, so the entry point is not offered at all, while
+  // the status and the flag still say where the criterion stands.
+  onDocument?: () => void
+}
+
 // The Kriterier chapter's card: the criterion is IN the model, and the one
 // thing that chapter decides about it is whether it stays.
 interface SelectionCard {
@@ -38,6 +66,7 @@ interface SelectionCard {
   removing?: boolean
   weight?: never
   disabled?: never
+  documentation?: never
 }
 
 // The Viktning chapter's card: how much the criterion counts. It carries no
@@ -50,6 +79,19 @@ interface WeightCard {
   disabled?: boolean
   onRemove?: never
   removing?: never
+  documentation?: never
+}
+
+// The Metod chapter's card: the criterion's rationale and bias review. It
+// carries no weight row and no way out for the same reason the other two carry
+// only their own decision, and its own decision (is this documented, is the
+// overlap noted) lives in the footer where every card in the column puts it.
+interface MethodCard {
+  documentation: MethodCriterionDocumentation
+  weight?: never
+  disabled?: never
+  onRemove?: never
+  removing?: never
 }
 
 // A criterion the org has chosen, in its dimension's column.
@@ -59,11 +101,11 @@ interface WeightCard {
 // ItemDescription, and whatever the chapter decides about it goes in the
 // content area or the actions slot.
 //
-// One component with one exclusive block rather than two cards: the box, the
-// name row and the enter/leave transition are identical in both chapters, and
-// two files carrying that markup would drift the moment either is touched. The
-// union is what keeps the two chapters honest: a card cannot carry both a
-// weight row and a way out, and it cannot carry neither.
+// One component with one exclusive block rather than three cards: the box, the
+// name row and the enter/leave transition are identical in all three chapters,
+// and three files carrying that markup would drift the moment any of them is
+// touched. The union is what keeps the chapters honest: a card carries exactly
+// one chapter's decision, never two of them and never none.
 //
 // What is deliberately never here is the 1-5 EVALUATION scale: the weighting
 // is also 1-5, and the two side by side is exactly the "is this scale the
@@ -77,12 +119,15 @@ export function PlacedCriterionCard(
       // The library's one-liner for the criterion, in the reader's language.
       shortUiText: string
     }
-  } & (SelectionCard | WeightCard)
+  } & (SelectionCard | WeightCard | MethodCard)
 ) {
-  const { criterion, weight, removing, disabled, onRemove } = props
+  const { criterion, weight, removing, disabled, onRemove, documentation } =
+    props
   const t = useTranslations("dashboard.model.weighting")
   const tEditor = useTranslations("dashboard.model.editor")
   const tChange = useTranslations("dashboard.model.change")
+  const tMethod = useTranslations("dashboard.model.method")
+  const locale = useLocale()
 
   return (
     // Enter and leave are real transitions (a criterion genuinely arrives in
@@ -147,6 +192,25 @@ export function PlacedCriterionCard(
             </p>
           </>
         )}
+        {/* The overlap the Godkännande checklist calls "unreviewed", said on
+            the card that can answer it: the dialog behind this card's action
+            carries the overlap field, and writing a note on EITHER member of
+            the pair clears the check. It sits under the one-liner rather than
+            in the footer because it describes the criterion, while the footer
+            is where the reader acts. */}
+        {documentation !== undefined && documentation.partners.length > 0 && (
+          <p className={cn("flex items-start gap-1", WARNING_TEXT_CLASS)}>
+            <HugeiconsIcon
+              icon={Alert02Icon}
+              strokeWidth={2}
+              className="mt-0.5 size-4 shrink-0"
+              aria-hidden="true"
+            />
+            {tMethod("overlapFlag", {
+              names: formatNames(locale, documentation.partners),
+            })}
+          </p>
+        )}
       </ItemContent>
 
       {onRemove !== undefined && (
@@ -174,6 +238,33 @@ export function PlacedCriterionCard(
             onConfirm={onRemove}
           />
         </ItemActions>
+      )}
+
+      {documentation !== undefined && (
+        // A footer row rather than the trailing ItemActions slot the Kriterier
+        // card uses: that slot holds one icon, while this chapter's card has a
+        // status to state as well as an action to offer, and both of them
+        // beside a wrapping title would leave the name (the thing the card
+        // exists to say) a narrow strip in a four-column grid. basis-full puts
+        // them on their own line, where the status reads from the left of
+        // every card in the column and the action sits where a dialog's
+        // primary action always does.
+        <ItemFooter>
+          <MethodStatusBadge
+            status={documentation.status}
+            label={tMethod(`status.${documentation.status}`)}
+          />
+          {documentation.onDocument !== undefined && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={documentation.onDocument}
+            >
+              {tMethod("openCta")}
+            </Button>
+          )}
+        </ItemFooter>
       )}
     </Item>
   )

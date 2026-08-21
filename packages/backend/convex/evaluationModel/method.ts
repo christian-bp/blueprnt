@@ -5,11 +5,7 @@ import { AUDIT_EVENTS, buildChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
 import { reopenApprovalIfSet } from "./approval"
-import {
-  buildCriterionHelpText,
-  criteriaLibraryContent,
-  LIBRARY_DIMENSION,
-} from "./criteriaLibrary"
+import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
 import { clampLocale } from "./localize"
 import { dimensionKeyValidator, libraryKeyValidator } from "./tables"
 
@@ -215,8 +211,11 @@ export const getMethodModel = orgQuery({
           libraryKey: libraryKeyValidator,
           dimensionKey: dimensionKeyValidator,
           name: v.string(),
+          // The library's full definition of the criterion: what it covers and
+          // what it does not. The Metod chapter's cards carry the one-liner and
+          // this text opens with the documentation dialog, where it is the
+          // reference the protokoll is written against.
           description: v.string(),
-          helpText: v.string(),
           weightPoints: v.number(),
           share: v.number(),
           order: v.number(),
@@ -293,7 +292,6 @@ export const getMethodModel = orgQuery({
       dimensionKey: DimensionKey
       name: string
       description: string
-      helpText: string
       weightPoints: number
       share: number
       order: number
@@ -321,7 +319,6 @@ export const getMethodModel = orgQuery({
         dimensionKey: LIBRARY_DIMENSION[row.libraryKey],
         name: entry.name,
         description: entry.fullDefinition,
-        helpText: buildCriterionHelpText(entry),
         weightPoints: row.weightPoints,
         share:
           totalPoints > 0

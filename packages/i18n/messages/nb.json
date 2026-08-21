@@ -1877,7 +1877,6 @@
         "pointsOver": "{count} vektpoeng over budsjettet",
         "saveCta": "Lagre vekting",
         "setWeightPoints": "Vektpoeng for {name}",
-        "shareOfTotal": "av vekten",
         "criterionShare": "<share></share> av vekten",
         "dimensionShare": "{dimension} · <share></share> av vekten",
         "weightMeaning1": "Svært lav påvirkning i modellen",

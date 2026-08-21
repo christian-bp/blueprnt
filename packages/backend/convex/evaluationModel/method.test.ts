@@ -475,7 +475,7 @@ describe("getMethodModel", () => {
     expect(after?.progress.approved).toBe(1)
   })
 
-  it("re-localizes the library name/description/helpText but not stored compliance", async () => {
+  it("re-localizes the library name and description but not stored compliance", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)
     const sv = await asAdmin.query(api.evaluationModel.method.getMethodModel, {

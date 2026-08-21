@@ -367,7 +367,13 @@ describe("the Kriterier chapter", () => {
   it("carries no weight row and no evaluation scale", () => {
     renderChapter()
     expect(screen.queryAllByRole("group")).toHaveLength(0)
-    expect(screen.queryByText(weighting.shareOfTotal)).toBeNull()
+    expect(
+      screen.queryByText(
+        new RegExp(
+          weighting.criterionShare.replace("<share></share>", "").trim()
+        )
+      )
+    ).toBeNull()
     expect(screen.queryByText(ANCHOR_LOW)).toBeNull()
     expect(screen.queryByText(ANCHOR_HIGH)).toBeNull()
   })
