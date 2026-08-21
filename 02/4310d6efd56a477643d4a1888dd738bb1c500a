@@ -1,0 +1,29 @@
+apps/dashboard/components/model/weighting-chapter.tsx
+  s_58dd112dc09435::t_920336c8a401b3 144-155,165,518
+  s_58dd112dc09435::t_11c507e06024a6 481-485
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_1cc67d673a77a8 176-180,193,372-384,396-405
+  s_58dd112dc09435::t_fc4c6b6f6c5fc5 385-395
+  s_58dd112dc09435::t_3b903a51fd515d 406
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_58dd112dc09435::t_6eea1ab0996b54 353-356
+  s_58dd112dc09435::t_bec12f4f333811 1121-1245
+packages/backend/convex/evaluationModel/criteria.ts
+  s_58dd112dc09435::t_b1f99b14f164af 151-175
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "024310d6efd56a477643d4a1888dd738bb1c500a",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
