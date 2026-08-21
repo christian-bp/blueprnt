@@ -1,13 +1,18 @@
 "use client"
 
 import { useTranslations } from "next-intl"
+import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { ChapterActionSlotProvider } from "@/components/chapter-action-slot"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SectionTitleRow } from "@/components/section-title-row"
+import { SegmentedProgress } from "@/components/segmented-progress"
 import { AnalysisChapterTabs } from "./analysis-chapter-tabs"
-import { ANALYSIS_CHAPTERS, chapterProgress } from "./analysis-chapters"
-
+import {
+  ANALYSIS_CHAPTERS,
+  chapterProgress,
+  currentChapter,
+} from "./analysis-chapters"
 import { usePayMappingRun } from "./pay-mapping-run-context"
 
 // The analysis section's shared chrome, mounted by analysis/layout.tsx so it
@@ -27,7 +32,9 @@ import { usePayMappingRun } from "./pay-mapping-run-context"
 export function AnalysisSectionShell({ children }: { children: ReactNode }) {
   const t = useTranslations("dashboard.payMapping.analysis")
   const tHelp = useTranslations("dashboard.help")
+  const pathname = usePathname()
   const { queue } = usePayMappingRun()
+  const active = currentChapter(pathname)
   // Derived ONCE and handed to both the instrument and the tab row, so a
   // chapter's segment and its tab can never disagree about the chapter they
   // both describe.
@@ -44,8 +51,8 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
     // and lands in the tab row above it (ChapterActionSlot).
     <ChapterActionSlotProvider>
       <div className="space-y-4">
-        {/* The section's title and its one explainer. The reading is on the
-            journey row below, with the tabs and the chapter's own action. */}
+        {/* The section's title, its one explainer, and where the whole
+            mapping stands, opposite it. */}
         <SectionTitleRow
           heading={t("progressLabel")}
           help={
@@ -53,16 +60,20 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
               {tHelp("analysisProgressBody")}
             </HelpMorphButton>
           }
+          instrument={
+            <SegmentedProgress
+              activeSegment={active}
+              barLabel={t("progressBarLabel")}
+              done={queue?.progress.overall.done ?? 0}
+              segments={chapters ?? []}
+              total={queue?.progress.overall.total ?? 0}
+            />
+          }
         />
-        {/* The journey row: the tabs, the open chapter's own figures, the
-            whole mapping's instrument, and this chapter's action. The figures
-            are withheld while the run loads, so a tab never shows a zero it is
-            about to replace. */}
-        <AnalysisChapterTabs
-          chapters={chapters}
-          done={queue?.progress.overall.done ?? 0}
-          total={queue?.progress.overall.total ?? 0}
-        />
+        {/* The journey row: the tabs, the open chapter's own figures, and
+            this chapter's action. The figures are withheld while the run
+            loads, so a tab never shows a zero it is about to replace. */}
+        <AnalysisChapterTabs chapters={chapters} />
         {children}
       </div>
     </ChapterActionSlotProvider>

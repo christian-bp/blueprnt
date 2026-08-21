@@ -3,13 +3,16 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
+import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { ChapterActionSlotProvider } from "@/components/chapter-action-slot"
 import { ModelChapterTabs } from "@/components/model/model-chapter-tabs"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SectionTitleRow } from "@/components/section-title-row"
+import { SegmentedProgress } from "@/components/segmented-progress"
 import { useOrganization } from "@/components/org-context"
 import {
+  currentChapter,
   MODEL_CHAPTERS,
   modelChapterProgress,
   type ModelProgressInput,
@@ -29,7 +32,9 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
   const { orgId } = useOrganization()
   const t = useTranslations("dashboard.model.chapters")
   const tHelp = useTranslations("dashboard.help")
+  const pathname = usePathname()
   const data = useQuery(api.evaluationModel.approval.getMethodChecks, { orgId })
+  const active = currentChapter(pathname)
 
   // No model yet reads as nothing decided, not as no bar: an org that has not
   // started still has the same four chapters ahead of it, and the empty bar is
@@ -53,8 +58,8 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
     // and lands in the tab row above it (ChapterActionSlot).
     <ChapterActionSlotProvider>
       <div className="space-y-4">
-        {/* The section's title and its one explainer. The reading is on the
-            journey row below, with the tabs and the chapter's own action. */}
+        {/* The section's title, its one explainer, and where the whole model
+            stands, opposite it. */}
         <SectionTitleRow
           heading={t("heading")}
           help={
@@ -62,16 +67,24 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
               {tHelp("modelProgressBody")}
             </HelpMorphButton>
           }
+          instrument={
+            <SegmentedProgress
+              activeSegment={active}
+              barLabel={t("progressBarLabel")}
+              // A chapter reaching its own done/total plays the same
+              // celebration a finished to-do card does. The kartläggning's
+              // analysis section does not opt in.
+              celebrateOnComplete
+              done={overall.done}
+              segments={chapters}
+              total={overall.total}
+            />
+          }
         />
-        {/* The journey row: the tabs, the open chapter's own figures, the
-            whole model's instrument, and this chapter's action. The figures
-            are withheld while the query is in flight, so a tab never shows a
-            zero it is about to replace. */}
-        <ModelChapterTabs
-          chapters={loading ? undefined : chapters}
-          done={overall.done}
-          total={overall.total}
-        />
+        {/* The journey row: the tabs, the open chapter's own figures, and
+            this chapter's action. The figures are withheld while the query is
+            in flight, so a tab never shows a zero it is about to replace. */}
+        <ModelChapterTabs chapters={loading ? undefined : chapters} />
         {children}
       </div>
     </ChapterActionSlotProvider>

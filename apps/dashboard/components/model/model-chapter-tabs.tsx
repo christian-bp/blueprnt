@@ -4,7 +4,6 @@ import NumberFlow from "@number-flow/react"
 import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import { ChapterTabs, chapterTabNumber } from "@/components/chapter-tabs"
-import { SegmentedProgress } from "@/components/segmented-progress"
 import {
   chapterHref,
   currentChapter,
@@ -20,13 +19,7 @@ import {
 // stays here is the model's own registry and its own wording.
 export function ModelChapterTabs({
   chapters,
-  done,
-  total,
 }: {
-  // The whole journey's done/total, for the instrument's announced
-  // percentage.
-  done: number
-  total: number
   // Each chapter's own done/total, in chapter order: the SAME array the spine
   // above draws its segments from, passed down by the section shell rather
   // than derived a second time here, so the tab and the segment above it can
@@ -59,19 +52,6 @@ export function ModelChapterTabs({
       // Its own id, distinct from the analysis chapter row's, or the two would
       // cross-animate their underlines.
       underlineId="model-chapter-tab-underline"
-      instrument={
-        <SegmentedProgress
-          barLabel={t("progressBarLabel")}
-          done={done}
-          total={total}
-          segments={chapters ?? []}
-          activeSegment={active}
-          // A chapter reaching its own done/total plays the same celebration
-          // a finished to-do card does. The kartläggning's analysis row does
-          // not opt in.
-          celebrateOnComplete
-        />
-      }
       tabs={MODEL_CHAPTERS.map((chapter, index) => ({
         key: chapter,
         // Numbered, because the chapters are a sequence: the number says where

@@ -14,16 +14,11 @@ const TABS = [
 
 function renderRow(
   underlineId = "x-underline",
-  extras: { instrument?: React.ReactNode; action?: React.ReactNode } = {}
+  extras: { action?: React.ReactNode } = {}
 ) {
   return render(
     <ChapterActionSlotProvider>
-      <ChapterTabs
-        instrument={extras.instrument}
-        navLabel="Chapters"
-        tabs={TABS}
-        underlineId={underlineId}
-      />
+      <ChapterTabs navLabel="Chapters" tabs={TABS} underlineId={underlineId} />
       {extras.action !== undefined && (
         <ChapterAction>{extras.action}</ChapterAction>
       )}
@@ -38,26 +33,25 @@ const rowOf = (container: HTMLElement) =>
 describe("ChapterTabs", () => {
   afterEach(cleanup)
 
-  // The section's journey line: where you are, how far along the whole thing
-  // is, and what this chapter offers, on one axis. The three clusters sit in
-  // that order, and the instrument is pushed to the right edge by the row's
-  // one auto margin.
-  it("carries the tabs, the instrument and the chapter's action in order", () => {
+  // The journey row is the tabs and this chapter's action, and nothing else.
+  // The journey's own instrument sits on the title row above, with the
+  // section's name.
+  it("carries the tabs and the chapter's action, and no instrument", () => {
     const { container } = renderRow("x-underline", {
-      instrument: <div data-testid="instrument" />,
       action: <button type="button">Export</button>,
     })
     const row = rowOf(container)
     const clusters = [...(row?.children ?? [])] as HTMLElement[]
+    expect(clusters).toHaveLength(2)
     expect(clusters[0]?.tagName).toBe("NAV")
-    expect(
-      clusters[1]?.querySelector('[data-testid="instrument"]')
-    ).not.toBeNull()
+    expect(clusters[1]?.getAttribute("data-slot")).toBe("chapter-action")
+    expect(clusters[1]?.textContent).toBe("Export")
+    // The row draws no progress of its own: an instrument here would be the
+    // drift back to the shape the owner rejected.
+    expect(container.querySelector('[role="progressbar"]')).toBeNull()
+    // One auto margin only, on the action: a second would split the free
+    // space instead of consuming it.
     expect(clusters[1]?.className).toContain("ms-auto")
-    expect(clusters[2]?.getAttribute("data-slot")).toBe("chapter-action")
-    expect(clusters[2]?.textContent).toBe("Export")
-    // One auto margin only: a second would split the free space instead of
-    // consuming it, and the instrument would drift to the middle.
     expect(
       clusters.filter((cluster) => cluster.className.includes("ms-auto"))
     ).toHaveLength(1)
@@ -65,18 +59,17 @@ describe("ChapterTabs", () => {
 
   // The row's height is the action button's, held whether or not a chapter
   // offers one, so the content below starts at the same Y on every chapter.
-  // The instrument is two pixels tall and must not change it either.
-  it("holds one height with an action, without one, and with the instrument", () => {
+  it("holds one height with an action and without one", () => {
     const { container: bare } = renderRow()
     expect(rowOf(bare)?.className).toContain("min-h-9")
     cleanup()
     const { container: full } = renderRow("x-underline", {
-      instrument: <div className="h-2" data-testid="instrument" />,
       action: <button type="button">Export</button>,
     })
     expect(rowOf(full)?.className).toContain("min-h-9")
-    // Wrapping, not squeezing: at a narrow width a cluster drops to its own
-    // line rather than the tabs truncating.
+    // Wrapping, not squeezing: at a narrow width the action drops to its own
+    // right-aligned line rather than the tabs truncating. That is the only
+    // wrap this row has.
     expect(rowOf(full)?.className).toContain("flex-wrap")
   })
 

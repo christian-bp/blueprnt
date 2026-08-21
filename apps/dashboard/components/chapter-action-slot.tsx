@@ -44,9 +44,10 @@ export function ChapterActionSlot() {
   return (
     // Named, so the size rule has something a test can hold it to: every
     // control in this slot is a chapter action, whichever chapter put it
-    // there.
+    // there. ms-auto is the row's ONE auto margin, which is what holds the
+    // slot against the right edge whether or not a chapter fills it.
     <span
-      className="flex shrink-0 items-center gap-2"
+      className="ms-auto flex shrink-0 items-center gap-2"
       data-slot="chapter-action"
       ref={slot?.setTarget}
     />

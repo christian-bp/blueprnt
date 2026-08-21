@@ -34,7 +34,7 @@ const CHAPTERS = [
 function renderTabs(chapters: typeof CHAPTERS | null = CHAPTERS) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <ModelChapterTabs chapters={chapters ?? undefined} done={4} total={17} />
+      <ModelChapterTabs chapters={chapters ?? undefined} />
     </NextIntlClientProvider>
   )
 }
@@ -45,36 +45,11 @@ const tab = (label: string) =>
 afterEach(() => cleanup())
 
 describe("ModelChapterTabs", () => {
-  // The instrument rides the journey row now, not the title above it: same
-  // fixed width in both guided sections, and its announced percentage is the
-  // whole model's WORK, not its chapter count.
-  it("carries the whole model's instrument on the journey row", () => {
+  // The journey's own instrument sits on the title row above this one. A
+  // progressbar here would be the drift back to the shape the owner rejected.
+  it("draws no instrument of its own", () => {
     const { container } = renderTabs()
-    const bar = container.querySelector('[role="progressbar"]')
-    expect(bar?.getAttribute("aria-label")).toBe(m.progressBarLabel)
-    // 4 of 17 steps, not 2 of 4 chapters.
-    expect(bar?.getAttribute("aria-valuenow")).toBe("24")
-    const tokens = (bar?.className ?? "").split(/\s+/)
-    expect(tokens).toContain("w-64")
-    expect(tokens).toContain("shrink-0")
-    // One segment per chapter, all the same width whatever each holds.
-    expect(
-      [...(bar?.children ?? [])].map(
-        (segment) => (segment as HTMLElement).style.flexGrow
-      )
-    ).toEqual(["1", "1", "1", "1"])
-  })
-
-  // The open chapter's segment is held at full strength while the rest
-  // recede, which is what ties the instrument to the tab beside it.
-  it("holds the open chapter's segment up and lets the rest recede", () => {
-    const { container } = renderTabs()
-    const bar = container.querySelector('[role="progressbar"]')
-    expect(
-      [...(bar?.children ?? [])].map(
-        (segment) => (segment as HTMLElement).dataset.active
-      )
-    ).toEqual(["false", "false", "true", "false"])
+    expect(container.querySelector('[role="progressbar"]')).toBeNull()
   })
 
   // Only the chapter being worked in prints its own figures: a pair on all

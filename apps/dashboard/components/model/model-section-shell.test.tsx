@@ -75,6 +75,44 @@ describe("ModelSectionShell", () => {
   })
   afterEach(() => cleanup())
 
+  // The instrument sits on the TITLE row, opposite the section's name, not
+  // down among the tabs: a section's overall state belongs with the section's
+  // name. Its announced percentage is the whole model's WORK, not its
+  // chapter count.
+  it("carries the instrument on the title row, opposite the name", () => {
+    const { container } = renderShell()
+    const heading = screen.getByRole("heading", { level: 3 })
+    const bar = screen.getByRole("progressbar", { name: m.progressBarLabel })
+    // Same row: the title's own box holds both.
+    expect(heading.closest("div")?.parentElement).toBe(bar.parentElement)
+    // The fixture leaves only the approval outstanding: 16 of 17 STEPS, so
+    // 94%, not the 75% three closed chapters of four would read as.
+    expect(bar.getAttribute("aria-valuenow")).toBe("94")
+    const tokens = bar.className.split(/\s+/)
+    expect(tokens).toContain("w-64")
+    expect(tokens).toContain("shrink-0")
+    // One segment per chapter, all the same width whatever each holds, with
+    // the open one held up while the rest recede.
+    const segments = [...bar.children] as HTMLElement[]
+    expect(segments.map((segment) => segment.style.flexGrow)).toEqual([
+      "1",
+      "1",
+      "1",
+      "1",
+    ])
+    expect(segments.map((segment) => segment.dataset.active)).toEqual([
+      "true",
+      "false",
+      "false",
+      "false",
+    ])
+    // And NOT on the journey row: an instrument there is the drift back to
+    // the shape the owner rejected.
+    const nav = screen.getByRole("navigation", { name: m.nav })
+    expect(nav.parentElement?.querySelector('[role="progressbar"]')).toBeNull()
+    expect(container.querySelectorAll('[role="progressbar"]')).toHaveLength(1)
+  })
+
   it("mounts the spine and the chapter row above the chapter's own body", () => {
     const { container } = renderShell()
     // The title names the model; the instrument opposite it on the same row

@@ -72,37 +72,26 @@ export function ChapterTabs({
   navLabel,
   underlineId,
   tabs,
-  instrument,
 }: {
   navLabel: string
   underlineId: string
   tabs: readonly ChapterTab[]
-  // The journey instrument, right-aligned between the tabs and the chapter's
-  // own action. It rides this row rather than the title above it because this
-  // is the section's journey line: where you are, how far along the whole
-  // thing is, and what this chapter offers, on one axis.
-  instrument?: ReactNode
 }) {
   return (
     // The section's journey row: tabs and the open chapter's own count left,
-    // then the whole journey's instrument, then that chapter's action. The
-    // action used to sit in a row of its own between this one and the
-    // chapter's content, which spent a whole band of vertical space on a
-    // single button and pushed every chapter's grid that much further down.
+    // that chapter's action right. The action used to sit in a row of its own
+    // between this one and the chapter's content, which spent a whole band of
+    // vertical space on a single button and pushed every chapter's grid that
+    // much further down. The journey's own instrument sits on the title row
+    // above, with the section's name.
     //
     // min-h-9 is the action button's height, held whether or not a chapter
     // offers one, so the content below starts at the same Y on every chapter
-    // and switching chapters holds the columns still. The instrument is two
-    // pixels tall with nothing to hover, so it rides that height rather than
-    // setting it.
+    // and switching chapters holds the columns still.
     //
-    // The tabs never truncate: they are the navigation, and they come first
-    // in both senses. What gives way is whatever sits at the end of the line,
-    // which under flex-wrap is the last cluster in order. Visual order and
-    // wrap order are the same list, so the row cannot both put the instrument
-    // left of the action AND drop it first; the owner's order wins and the
-    // action takes its own right-aligned line at narrow widths. Nothing
-    // overlaps either way.
+    // The tabs never truncate: they are the navigation. At a narrow width the
+    // action drops to its own right-aligned line, which is the only wrap this
+    // row has.
     <div className="flex min-h-9 flex-wrap items-center gap-x-4 gap-y-1">
       <nav
         aria-label={navLabel}
@@ -149,10 +138,6 @@ export function ChapterTabs({
           </Link>
         ))}
       </nav>
-      {/* Always rendered, empty or not: it carries the row's ONE auto margin,
-          which is what pushes everything after it to the right edge. A second
-          auto margin would split the free space instead of consuming it. */}
-      <span className="ms-auto flex items-center">{instrument}</span>
       <ChapterActionSlot />
     </div>
   )
