@@ -1,0 +1,62 @@
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_88069d9008c4c6 1883
+apps/dashboard/components/model/placed-criterion-card.tsx
+  s_58dd112dc09435::t_ae50c7a33d19e6 185
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_88069d9008c4c6 1883
+apps/dashboard/components/model/working-conditions-empty-column.tsx
+  s_58dd112dc09435::t_f81351084103a1 29-45
+  s_58dd112dc09435::t_b952ab8552c4bf 76
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_88069d9008c4c6 1883
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_88069d9008c4c6 1883
+apps/dashboard/components/model/chapter-status-alert.test.tsx
+  s_58dd112dc09435::t_c99b53688cd818 116-118,127
+  s_58dd112dc09435::t_4bbdd65790900c 1-22,26,30-115,119-126,128-146
+  s_58dd112dc09435::t_3424a723064e1a 23-25,27-29
+apps/dashboard/components/model/chapter-status-alert.tsx
+  s_58dd112dc09435::t_5aeba3a81f40f6 71-79
+  s_58dd112dc09435::t_d72fc3870c6399 26-36
+apps/dashboard/components/model/placed-criterion-card.test.tsx
+  s_58dd112dc09435::t_4672bf29324f4d 217
+  s_58dd112dc09435::t_287f50a7fb26e0 46
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_88069d9008c4c6 1883
+apps/dashboard/components/pdf/method-appendix-download.tsx
+  s_58dd112dc09435::t_241e25a27f4aee 14,106-109
+apps/dashboard/components/model/method-panel.tsx
+  s_58dd112dc09435::t_4b3ebb1faff6e7 25-28,307-318,320-321
+apps/dashboard/components/morph-popover.tsx
+  s_58dd112dc09435::t_fc50d967b7408c 46,58-62,141
+  s_58dd112dc09435::t_1f2ecee50cfb88 10
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_287f50a7fb26e0 218-230,307,309,314,316-319,326-342,499-520,579-580
+apps/dashboard/components/model/weighting-chapter.tsx
+  s_58dd112dc09435::t_ae50c7a33d19e6 359-387
+  s_58dd112dc09435::t_241e25a27f4aee 25,216,235,524,540
+  s_58dd112dc09435::t_a2e2bde7ca3b55 349-355
+  s_58dd112dc09435::t_4b3ebb1faff6e7 34-37,561-575,577-587
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_4672bf29324f4d 378
+apps/dashboard/components/model/method-panel.test.tsx
+  s_58dd112dc09435::t_f12d412aee0787 509-510,512,518,523-541
+  s_58dd112dc09435::t_4672bf29324f4d 335
+  s_58dd112dc09435::t_3292ea28893fdb 542-543
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "4b21f5dacf98056929129122163f146401a73631",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
