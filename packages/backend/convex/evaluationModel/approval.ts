@@ -24,6 +24,7 @@ import {
   modelRestoreDiffShape,
   type RestorableCriterion,
   restorableCriteria,
+  restoreWouldChange,
   summarizeLevelRules,
   summarizeZoneProfileRules,
 } from "./evidence"
@@ -239,6 +240,14 @@ export const getMethodChecks = orgQuery({
       // change list itself is a separate query the confirm dialog runs when it
       // opens, so the chapter never pays for the diff it may not show.
       lastApprovedAt: v.union(v.number(), v.null()),
+      // Whether restoring the buffer would change anything at all. The
+      // Godkännande chapter offers its restore control on this, not on the
+      // buffer's mere existence: a model edited and manually reverted back to
+      // its approved state reopens approval while having nothing to restore,
+      // and a control promising a change it will not make is worse than no
+      // control. Read-only extension of an existing query (the dimensionShares
+      // pattern), so the chapter costs no second subscription.
+      restoreWouldChange: v.boolean(),
       workingConditions: v.union(workingConditionsShape, v.null()),
       // Every dimension's share of the model's total weight, from the engine's
       // own dimensionWeightShares over the SAME criteria the checks above were
@@ -296,6 +305,11 @@ export const getMethodChecks = orgQuery({
               approvedAt: model.approval.approvedAt,
             },
       lastApprovedAt: model.lastApprovedModel?.approval?.approvedAt ?? null,
+      restoreWouldChange: await restoreWouldChange(
+        ctx,
+        model,
+        model.lastApprovedModel
+      ),
       workingConditions: model.workingConditions ?? null,
       dimensionShares: DIMENSION_KEYS.map((key) => ({
         key,

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { grantModelApproval, initConvexTest } from "../testing.helpers"
+import { COMPARED_CRITERION_FIELDS } from "./evidence"
 
 // Six library keys, two per dimension (competence/effort/responsibility),
 // deliberately chosen so activating all six trips NEITHER an overlap-pair
@@ -752,6 +753,177 @@ describe("restoreApprovedModel", () => {
     )
     return { orgId, asAdmin, model, addedId }
   }
+
+  // The Godkännande chapter offers its restore control on this flag, so it has
+  // to be exactly as strict as the restore itself: false where restoring would
+  // write nothing, true for every class of divergence the restore undoes.
+  describe("restoreWouldChange", () => {
+    const flagOf = async (
+      asAdmin: ReturnType<ReturnType<typeof initConvexTest>["withIdentity"]>,
+      orgId: string
+    ) => {
+      const checks = await asAdmin.query(
+        api.evaluationModel.approval.getMethodChecks,
+        { orgId }
+      )
+      return checks?.restoreWouldChange
+    }
+
+    it("is false while the model has never been approved", async () => {
+      const t = initConvexTest()
+      const { orgId, asAdmin } = await seedApprovableModel(t)
+      expect(await flagOf(asAdmin, orgId)).toBe(false)
+    })
+
+    // Right after an approval the live state IS the buffer, so there is
+    // nothing to go back to even though the buffer exists.
+    it("is false on a freshly approved model", async () => {
+      const t = initConvexTest()
+      const { orgId, asAdmin } = await seedApprovableModel(t)
+      await asAdmin.mutation(api.evaluationModel.approval.approveModel, {
+        orgId,
+      })
+      expect(await flagOf(asAdmin, orgId)).toBe(false)
+    })
+
+    // The case that prompted the flag: an edit made and manually reverted.
+    // Approval is reopened and the buffer is there, but restoring it would
+    // write nothing, so the control must not offer itself.
+    it("is false once an edit is reverted back to the approved state", async () => {
+      const t = initConvexTest()
+      const { orgId, asAdmin, model } = await seedApprovableModel(t)
+      await asAdmin.mutation(api.evaluationModel.approval.approveModel, {
+        orgId,
+      })
+      const first = model.criteria[0]?.criterionId as Id<"criteria">
+      const second = model.criteria[1]?.criterionId as Id<"criteria">
+      const before = await t.run(async (ctx) => ({
+        first: (await ctx.db.get(first))?.weightPoints,
+        second: (await ctx.db.get(second))?.weightPoints,
+      }))
+      const allocations = model.criteria.map((criterion) => ({
+        criterionId: criterion.criterionId,
+        weightPoints:
+          criterion.criterionId === first
+            ? (before.first ?? 3) + 1
+            : criterion.criterionId === second
+              ? (before.second ?? 3) - 1
+              : criterion.weightPoints,
+      }))
+      await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+        orgId,
+        allocations,
+      })
+      expect(await flagOf(asAdmin, orgId)).toBe(true)
+
+      // Put it back by hand: same field, same values, no restore involved.
+      await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+        orgId,
+        allocations: model.criteria.map((criterion) => ({
+          criterionId: criterion.criterionId,
+          weightPoints: criterion.weightPoints,
+        })),
+      })
+      expect(await flagOf(asAdmin, orgId)).toBe(false)
+    })
+
+    it("is true when the selection itself moved", async () => {
+      const t = initConvexTest()
+      const { orgId, asAdmin } = await seedApprovableModel(t)
+      await asAdmin.mutation(api.evaluationModel.approval.approveModel, {
+        orgId,
+      })
+      await asAdmin.mutation(api.evaluationModel.criteria.activateCriterion, {
+        orgId,
+        libraryKey: "risk-consequence",
+      })
+      expect(await flagOf(asAdmin, orgId)).toBe(true)
+    })
+
+    it("is true when the materiality decision moved", async () => {
+      const t = initConvexTest()
+      const { orgId, asAdmin } = await seedApprovableModel(t)
+      await asAdmin.mutation(api.evaluationModel.approval.approveModel, {
+        orgId,
+      })
+      await asAdmin.mutation(
+        api.evaluationModel.approval.setWorkingConditionsDecision,
+        {
+          orgId,
+          status: "testedNotMaterial",
+          motivation: "Omprovad efter godkannandet.",
+        }
+      )
+      expect(await flagOf(asAdmin, orgId)).toBe(true)
+    })
+
+    it("is true when a level rule moved", async () => {
+      const t = initConvexTest()
+      const { orgId, asAdmin, model } = await seedApprovableModel(t)
+      await asAdmin.mutation(api.evaluationModel.approval.approveModel, {
+        orgId,
+      })
+      // Level 1's minScore must stay strictly above level 2's (92, the
+      // default): 99 keeps the rules valid while still being a real edit, the
+      // same edit updateLevelRules' own test makes.
+      await asAdmin.mutation(api.evaluationModel.approval.updateLevelRules, {
+        orgId,
+        levelRules: model.levelRules.map((rule) =>
+          rule.level === 1 ? { ...rule, minScore: 99 } : rule
+        ),
+      })
+      expect(await flagOf(asAdmin, orgId)).toBe(true)
+    })
+
+    // Every per-criterion field the restore writes, driven off the exported
+    // list itself: a field added to COMPARED_CRITERION_FIELDS without a value
+    // here fails the coverage assertion below, and one the comparison ignores
+    // fails its own case. The comparison and the restore cannot disagree about
+    // WHICH fields matter, because they run the same function over this list.
+    const DIVERGENCE: Record<
+      (typeof COMPARED_CRITERION_FIELDS)[number],
+      Record<string, unknown>
+    > = {
+      weightPoints: { weightPoints: 5 },
+      weightMotivation: { weightMotivation: "Tillagd efter godkannandet." },
+      purpose: { purpose: "Omskrivet syfte." },
+      whyRelevant: { whyRelevant: "Omskriven relevans." },
+      overlapNotes: { overlapNotes: "Noterad overlappning." },
+      biasRisk: { biasRisk: "high" },
+      biasComment: { biasComment: "Omskriven biaskommentar." },
+      biasAction: { biasAction: "Atgard tillagd." },
+      approved: {
+        approved: undefined,
+        decidedBy: undefined,
+        decidedAt: undefined,
+      },
+    }
+
+    it("covers every compared criterion field", () => {
+      expect(Object.keys(DIVERGENCE).sort()).toEqual(
+        [...COMPARED_CRITERION_FIELDS].sort()
+      )
+    })
+
+    for (const field of COMPARED_CRITERION_FIELDS) {
+      it(`is true when a criterion's ${field} moved`, async () => {
+        const t = initConvexTest()
+        const { orgId, asAdmin, model } = await seedApprovableModel(t)
+        await asAdmin.mutation(api.evaluationModel.approval.approveModel, {
+          orgId,
+        })
+        expect(await flagOf(asAdmin, orgId)).toBe(false)
+        // Patched directly: the point is the COMPARISON, and going through
+        // each field's own mutation would test the mutations instead (several
+        // of them refuse an approved criterion by design).
+        const criterionId = model.criteria[0]?.criterionId as Id<"criteria">
+        await t.run(async (ctx) => {
+          await ctx.db.patch(criterionId, DIVERGENCE[field])
+        })
+        expect(await flagOf(asAdmin, orgId)).toBe(true)
+      })
+    }
+  })
 
   it("stores the full approved evidence as the buffer on approve", async () => {
     const t = initConvexTest()

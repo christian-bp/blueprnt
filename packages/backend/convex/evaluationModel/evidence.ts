@@ -197,7 +197,7 @@ export const RESTORE_MODEL_AUDIT_FIELDS = [
 // each one reads as a scalar. decidedBy/decidedAt are deliberately excluded
 // (an id and a timestamp that carry no reviewable meaning next to `approved`),
 // as are order and anchorCount (derived, never edited).
-const COMPARED_CRITERION_FIELDS = [
+export const COMPARED_CRITERION_FIELDS = [
   "weightPoints",
   "weightMotivation",
   "purpose",
@@ -232,6 +232,100 @@ function criterionValue(
   // comparison and reading as "unchanged".
   if (field === "approved") return source.approved === true
   return source[field] ?? null
+}
+
+// The per-criterion comparison, as its own function because THREE readers need
+// to agree on it: the confirm dialog's change list, the model.restored audit
+// payload, and the cheap boolean that decides whether the restore control is
+// offered at all. A field added to COMPARED_CRITERION_FIELDS joins all three at
+// once; a second implementation would eventually offer a restore that changes
+// nothing, or hide one that changes something.
+export function criterionRestoreChanges(
+  live: ComparableCriterion,
+  buffered: ComparableCriterion
+): RestoreChanges {
+  const changes: RestoreChanges = {}
+  for (const field of COMPARED_CRITERION_FIELDS) {
+    const from = criterionValue(live, field)
+    const to = criterionValue(buffered, field)
+    if (from !== to) changes[field] = { from, to }
+  }
+  return changes
+}
+
+// The model's OWN fields the restore writes back: the materiality decision and
+// the two rule sets. Same reasoning as the per-criterion comparison above, and
+// the rules compare through the same summaries the diff renders, so "changed"
+// means exactly what the change list will show.
+export function modelRestoreChanges(
+  model: Doc<"models">,
+  buffer: ModelEvidence
+): RestoreChanges {
+  const changes: RestoreChanges = {}
+  const liveStatus = model.workingConditions?.status ?? null
+  const bufferStatus = buffer.workingConditions?.status ?? null
+  if (liveStatus !== bufferStatus) {
+    changes.status = { from: liveStatus, to: bufferStatus }
+  }
+  const liveMotivation = model.workingConditions?.motivation ?? null
+  const bufferMotivation = buffer.workingConditions?.motivation ?? null
+  if (liveMotivation !== bufferMotivation) {
+    changes.motivation = { from: liveMotivation, to: bufferMotivation }
+  }
+  const liveLevelRules = summarizeLevelRules(model.levelRules)
+  const bufferLevelRules = summarizeLevelRules(
+    buffer.levelRules ?? model.levelRules
+  )
+  if (liveLevelRules !== bufferLevelRules) {
+    changes.levelRules = { from: liveLevelRules, to: bufferLevelRules }
+  }
+  const liveZoneRules = summarizeZoneProfileRules(model.zoneProfileRules)
+  const bufferZoneRules = summarizeZoneProfileRules(
+    buffer.zoneProfileRules ?? model.zoneProfileRules
+  )
+  if (liveZoneRules !== bufferZoneRules) {
+    changes.zoneProfileRules = { from: liveZoneRules, to: bufferZoneRules }
+  }
+  return changes
+}
+
+// Whether restoring the buffer would change anything at all.
+//
+// The Godkännande chapter asks this on every render to decide whether to offer
+// the restore at all: a model whose live state is already identical to its
+// buffer (an edit made and manually reverted, say) reopens approval but has
+// nothing to restore, and a control that promises a change it will not make is
+// worse than no control.
+//
+// Deliberately cheaper than buildModelRestoreDiff, which answers "what would
+// change" for a dialog the reader has opened. It skips the criteria library
+// resolution (names are for rendering; a boolean needs none) and, more
+// importantly, the per-removed-criterion ratings collect: that is one indexed
+// read PER criterion the restore would remove, and this runs on a query the
+// whole model section subscribes to on all four chapters. The rating count is
+// the confirm dialog's business, where it costs one read on one open.
+export async function restoreWouldChange(
+  ctx: QueryCtx | MutationCtx,
+  model: Doc<"models">,
+  buffer: ModelEvidence | undefined
+): Promise<boolean> {
+  if (buffer === undefined) return false
+  const rows = await ctx.db
+    .query("criteria")
+    .withIndex("by_model", (q) => q.eq("modelId", model._id))
+    .collect()
+  const buffered = restorableCriteria(buffer)
+  // The selection itself: either side holding a key the other does not is a
+  // criterion the restore would add or remove.
+  if (rows.length !== buffered.size) return true
+  for (const row of rows) {
+    const criterion = buffered.get(row.libraryKey)
+    if (criterion === undefined) return true
+    if (Object.keys(criterionRestoreChanges(row, criterion)).length > 0) {
+      return true
+    }
+  }
+  return Object.keys(modelRestoreChanges(model, buffer)).length > 0
 }
 
 // The ONE diff both consumers derive from: everything restoring the buffer
@@ -305,12 +399,7 @@ export async function buildModelRestoreDiff(
   for (const [libraryKey, criterion] of buffered) {
     const row = live.get(libraryKey)
     if (row === undefined) continue
-    const changes: RestoreChanges = {}
-    for (const field of COMPARED_CRITERION_FIELDS) {
-      const from = criterionValue(row, field)
-      const to = criterionValue(criterion, field)
-      if (from !== to) changes[field] = { from, to }
-    }
+    const changes = criterionRestoreChanges(row, criterion)
     if (Object.keys(changes).length === 0) continue
     criteria.push({
       libraryKey,
@@ -320,33 +409,7 @@ export async function buildModelRestoreDiff(
     })
   }
 
-  const changes: RestoreChanges = {}
-  const liveStatus = model.workingConditions?.status ?? null
-  const bufferStatus = buffer.workingConditions?.status ?? null
-  if (liveStatus !== bufferStatus) {
-    changes.status = { from: liveStatus, to: bufferStatus }
-  }
-  const liveMotivation = model.workingConditions?.motivation ?? null
-  const bufferMotivation = buffer.workingConditions?.motivation ?? null
-  if (liveMotivation !== bufferMotivation) {
-    changes.motivation = { from: liveMotivation, to: bufferMotivation }
-  }
-  const liveLevelRules = summarizeLevelRules(model.levelRules)
-  const bufferLevelRules = summarizeLevelRules(
-    buffer.levelRules ?? model.levelRules
-  )
-  if (liveLevelRules !== bufferLevelRules) {
-    changes.levelRules = { from: liveLevelRules, to: bufferLevelRules }
-  }
-  const liveZoneRules = summarizeZoneProfileRules(model.zoneProfileRules)
-  const bufferZoneRules = summarizeZoneProfileRules(
-    buffer.zoneProfileRules ?? model.zoneProfileRules
-  )
-  if (liveZoneRules !== bufferZoneRules) {
-    changes.zoneProfileRules = { from: liveZoneRules, to: bufferZoneRules }
-  }
-
-  return { criteria, changes }
+  return { criteria, changes: modelRestoreChanges(model, buffer) }
 }
 
 // The diff over the wire, for the confirm dialog's preview query. Kept as a

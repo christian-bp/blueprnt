@@ -192,12 +192,21 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
     (check) => check.level === "blocker" && !check.ok
   )
 
-  // The restore is offered only where it is meaningful: approval re-opened by
-  // a method-affecting edit AND a stored last-approved buffer to go back to.
-  // An approved model already IS its last-approved state, and a model approved
-  // before the buffer existed has nothing to restore. Admin-only, like approve.
+  // The restore is offered only where it is meaningful: approval re-opened by a
+  // method-affecting edit, AND restoring would actually change something. An
+  // approved model already IS its last-approved state; a model edited and
+  // manually reverted back to it reopens approval while having nothing to
+  // restore, and a control promising a change it will not make is worse than
+  // no control at all.
+  //
+  // The buffer's mere existence is subsumed: restoreWouldChange is false
+  // whenever there is no buffer (a model approved before the buffer existed
+  // has nothing to go back to), so the old lastApprovedAt condition would only
+  // repeat what the flag already says. The DATE below still reads
+  // lastApprovedAt, because the flag says whether to offer the control and the
+  // date says which state it goes back to. Admin-only, like approve.
   const canRestore =
-    isAdmin && data.approval === null && data.lastApprovedAt !== null
+    isAdmin && data.approval === null && data.restoreWouldChange
 
   async function onApprove() {
     try {

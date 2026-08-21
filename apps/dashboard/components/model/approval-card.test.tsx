@@ -94,6 +94,7 @@ describe("ApprovalCard", () => {
         checks,
         approval: null,
         lastApprovedAt: null,
+        restoreWouldChange: false,
         workingConditions: null,
         dimensionShares: DIMENSION_SHARES,
       }
@@ -185,6 +186,7 @@ describe("ApprovalCard", () => {
           approvedAt: Date.UTC(2026, 1, 2),
         },
         lastApprovedAt: null,
+        restoreWouldChange: false,
         workingConditions: null,
         dimensionShares: DIMENSION_SHARES,
       }
@@ -213,6 +215,7 @@ describe("ApprovalCard", () => {
           approvedAt: Date.UTC(2026, 1, 2),
         },
         lastApprovedAt: null,
+        restoreWouldChange: false,
         workingConditions: null,
         dimensionShares: DIMENSION_SHARES,
       }
@@ -239,6 +242,7 @@ describe("ApprovalCard", () => {
       checks: ALL_GREEN_CHECKS,
       approval: null,
       lastApprovedAt: null,
+      restoreWouldChange: false,
       workingConditions: null,
       dimensionShares: DIMENSION_SHARES,
     }
@@ -262,6 +266,7 @@ describe("ApprovalCard", () => {
       ),
       approval: null,
       lastApprovedAt: null,
+      restoreWouldChange: false,
       workingConditions: null,
       dimensionShares: DIMENSION_SHARES,
     }
@@ -277,6 +282,7 @@ describe("ApprovalCard", () => {
       ),
       approval: null,
       lastApprovedAt: null,
+      restoreWouldChange: false,
       workingConditions: null,
       dimensionShares: DIMENSION_SHARES,
     }
@@ -294,6 +300,7 @@ describe("ApprovalCard", () => {
         approvedAt: 1_700_000_000_000,
       },
       lastApprovedAt: null,
+      restoreWouldChange: false,
       workingConditions: {
         status: "active",
         motivation: "Standby duty is a recurring requirement.",
@@ -312,6 +319,7 @@ describe("ApprovalCard", () => {
       checks: ALL_GREEN_CHECKS,
       approval: null,
       lastApprovedAt: null,
+      restoreWouldChange: false,
       workingConditions: null,
       dimensionShares: DIMENSION_SHARES,
     }
@@ -348,6 +356,7 @@ describe("ApprovalCard", () => {
       checks: ALL_GREEN_CHECKS,
       approval: null,
       lastApprovedAt: null,
+      restoreWouldChange: false,
       workingConditions: null,
       dimensionShares: DIMENSION_SHARES,
     }
@@ -370,6 +379,7 @@ describe("ApprovalCard", () => {
       checks: ALL_GREEN_CHECKS,
       approval: null,
       lastApprovedAt: null,
+      restoreWouldChange: false,
       workingConditions: {
         status: "active",
         motivation: "Standby duty is a recurring requirement.",
@@ -397,6 +407,7 @@ describe("ApprovalCard", () => {
       checks: ALL_GREEN_CHECKS,
       approval: null,
       lastApprovedAt: 1_700_000_000_000,
+      restoreWouldChange: true,
       workingConditions: null,
       dimensionShares: DIMENSION_SHARES,
     }
@@ -417,6 +428,7 @@ describe("ApprovalCard", () => {
         checks: ALL_GREEN_CHECKS,
         approval: null,
         lastApprovedAt: null,
+        restoreWouldChange: false,
         workingConditions: null,
         dimensionShares: DIMENSION_SHARES,
       }
@@ -435,6 +447,7 @@ describe("ApprovalCard", () => {
           approvedAt: 1_700_000_000_000,
         },
         lastApprovedAt: 1_700_000_000_000,
+        restoreWouldChange: true,
         workingConditions: null,
         dimensionShares: DIMENSION_SHARES,
       }
@@ -442,6 +455,40 @@ describe("ApprovalCard", () => {
       expect(
         screen.queryByRole("button", { name: "Restore to last approved" })
       ).toBeNull()
+    })
+
+    // A model edited and manually reverted back to its approved state: the
+    // approval is reopened and the buffer is there, but restoring it would
+    // write nothing. A control promising a change it will not make is worse
+    // than no control, so the card reads exactly as it does with no buffer.
+    it("hides it when restoring would change nothing", () => {
+      queryResult = {
+        ...REOPENED_WITH_BUFFER,
+        restoreWouldChange: false,
+      }
+      const { container } = renderCard()
+      expect(
+        screen.queryByRole("button", { name: "Restore to last approved" })
+      ).toBeNull()
+      // And the line that names the date goes with it: it exists to explain
+      // the control.
+      expect(
+        screen.queryByText(/The model approved on .* can be restored\./)
+      ).toBeNull()
+      // Captured before the unmount empties the container, with React's
+      // generated ids normalized: they differ per render and say nothing about
+      // what the card shows.
+      const withoutIds = (html: string) => html.replace(/_r_[0-9a-z]+_/g, "id")
+      const rendered = withoutIds(container.innerHTML)
+      cleanup()
+
+      queryResult = {
+        ...REOPENED_WITH_BUFFER,
+        lastApprovedAt: null,
+        restoreWouldChange: false,
+      }
+      const { container: noBuffer } = renderCard()
+      expect(rendered).toBe(withoutIds(noBuffer.innerHTML))
     })
 
     it("hides it from an editor", () => {
@@ -474,6 +521,7 @@ describe("ApprovalCard", () => {
         ),
         approval: null,
         lastApprovedAt: null,
+        restoreWouldChange: false,
         workingConditions: null,
         dimensionShares: DIMENSION_SHARES,
       }
@@ -485,6 +533,7 @@ describe("ApprovalCard", () => {
         checks: ALL_GREEN_CHECKS,
         approval: null,
         lastApprovedAt: null,
+        restoreWouldChange: false,
         workingConditions: null,
         dimensionShares: DIMENSION_SHARES,
       }
