@@ -1,0 +1,35 @@
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_58dd112dc09435::t_471bd283167b63 53-59,138
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_08e2ab826a8b4b 63-64
+packages/backend/convex/evaluationModel/model.test.ts
+  s_58dd112dc09435::t_8a8fad556a788e 3,319-361,379-493
+  s_58dd112dc09435::t_0a86cbdc2ef603 494
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.test.tsx
+  s_58dd112dc09435::t_253f66f35df9ff 50,107-110,112,114,116,270
+  s_58dd112dc09435::t_4a4dfe0d00e1ff 172-182
+apps/dashboard/components/model/chapter-framing.test.tsx
+  s_58dd112dc09435::t_08e2ab826a8b4b 62
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_08e2ab826a8b4b 31,60-61,762-767,769-770
+packages/backend/convex/evaluationModel/model.ts
+  s_58dd112dc09435::t_81f28f5bf97388 196-265
+  s_58dd112dc09435::t_6fe99ca2c067eb 310-312,314,357,374
+  s_58dd112dc09435::t_f2cda63b4887b2 175-195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "cc3882cc695c5b08b97c16a9d7c221b4cfecd08d",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
