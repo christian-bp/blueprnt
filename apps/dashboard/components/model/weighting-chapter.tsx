@@ -22,6 +22,7 @@ import Link from "next/link"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
+import { CHAPTER_ACTION_BUTTON_SIZE } from "@/components/model/chapter-status-alert"
 import { DimensionFrame } from "@/components/model/dimension-frame"
 import { WeightBudgetBar } from "@/components/model/weight-budget-bar"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
@@ -30,7 +31,10 @@ import {
   type WeightMotivationTarget,
 } from "@/components/model/weight-motivation-dialog"
 import { WeightReviewPanel } from "@/components/model/weight-review-panel"
-import { WorkingConditionsEmptyColumn } from "@/components/model/working-conditions-empty-column"
+import {
+  WorkingConditionsColumnSkeleton,
+  WorkingConditionsEmptyColumn,
+} from "@/components/model/working-conditions-empty-column"
 import { MorphPopover } from "@/components/morph-popover"
 import { useOrganization } from "@/components/org-context"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
@@ -209,6 +213,7 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
           <MorphPopover
             triggerLabel={tAi("openReviewCta")}
             triggerIcon={AiEditingIcon}
+            triggerSize={CHAPTER_ACTION_BUTTON_SIZE}
             anchor="left"
             title={tAi("heading")}
             description={tAi("provenance")}
@@ -227,7 +232,7 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
         action={
           <Button
             type="button"
-            size="sm"
+            size={CHAPTER_ACTION_BUTTON_SIZE}
             disabled={saving || !balanced || !dirty}
             onClick={onSave}
           >
@@ -341,35 +346,45 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
             }
             return (
               // The same dashed frame every chapter draws its dimensions in;
-              // this chapter's lens is the share beside the name.
-              //
-              // The dimension's own share of the weighting, beside its name:
-              // the balance between dimensions is the thing this chapter can
-              // get wrong, and it was only visible on the Godkännande
-              // checklist after the fact. Derived from the LOCAL allocation,
-              // so it moves with an unsaved edit the way the cards' own shares
-              // do, and rounded to whole points because a heading is a balance
-              // reading rather than a figure anyone reconciles.
+              // this chapter's lens is the share opposite the name. The
+              // balance between dimensions is the thing this chapter can get
+              // wrong, and it was only visible on the Godkännande checklist
+              // after the fact. Derived from the LOCAL allocation, so it moves
+              // with an unsaved edit the way the cards' own shares do, and
+              // rounded to whole points because a heading is a balance reading
+              // rather than a figure anyone reconciles.
               <DimensionFrame
                 key={dimension.key}
                 heading={
-                  <h3 className="truncate font-medium text-sm">
-                    {t.rich("dimensionShare", {
-                      dimension: dimension.name,
-                      share: () => (
-                        <NumberFlow
-                          value={shareFraction(
-                            placed.reduce(
-                              (sum, criterion) => sum + pointsFor(criterion),
-                              0
-                            ),
-                            totalPoints
-                          )}
-                          format={DIMENSION_SHARE_FORMAT}
-                        />
-                      ),
-                    })}
-                  </h3>
+                  <>
+                    <h3 className="truncate font-medium text-sm">
+                      {dimension.name}
+                    </h3>
+                    {/* The share sits OPPOSITE the name, in the same slot the
+                        Kriterier column puts its count chip in, so the two
+                        chapters' heading rows read as one anatomy rather than
+                        as a name-and-a-figure here and a name-and-a-chip
+                        there. Its own element rather than a clause spliced
+                        into the title: a concatenated heading truncates the
+                        figure away first at column width, which is the half a
+                        reader came to this chapter for. */}
+                    <span className="shrink-0 text-muted-foreground text-sm tabular-nums">
+                      {t.rich("shareOfWeight", {
+                        share: () => (
+                          <NumberFlow
+                            value={shareFraction(
+                              placed.reduce(
+                                (sum, criterion) => sum + pointsFor(criterion),
+                                0
+                              ),
+                              totalPoints
+                            )}
+                            format={DIMENSION_SHARE_FORMAT}
+                          />
+                        ),
+                      })}
+                    </span>
+                  </>
                 }
               >
                 {/* The frame's body carries no spacing of its own (the
@@ -506,7 +521,7 @@ function WeightingChapterSkeleton() {
           <Button
             type="button"
             variant="outline"
-            size="sm"
+            size={CHAPTER_ACTION_BUTTON_SIZE}
             tabIndex={-1}
             className="pointer-events-none"
           >
@@ -522,7 +537,7 @@ function WeightingChapterSkeleton() {
           // The real save button, disabled: that is the truthful state, not a
           // loading effect. The loaded bar opens clean (nothing edited), where
           // the save is disabled too.
-          <Button type="button" size="sm" disabled>
+          <Button type="button" size={CHAPTER_ACTION_BUTTON_SIZE} disabled>
             {t("saveCta")}
           </Button>
         }
@@ -543,25 +558,33 @@ function WeightingChapterSkeleton() {
               </div>
             }
           >
-            <ul aria-hidden="true" className="space-y-2">
-              {Array.from({ length: SKELETON_CARDS[key] }, (_, row) => (
-                <li
-                  // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
-                  key={row}
-                  className="rounded-md border bg-card p-3"
-                >
-                  {/* The name line, the weight row's own height, and the share
+            {key === "workingConditions" ? (
+              // The fourth dimension is as likely to resolve to a sentence
+              // over a hatch as to a weighted card, so it waits as a neutral
+              // bar rather than as a card that would have to become a
+              // paragraph.
+              <WorkingConditionsColumnSkeleton />
+            ) : (
+              <ul aria-hidden="true" className="space-y-2">
+                {Array.from({ length: SKELETON_CARDS[key] }, (_, row) => (
+                  <li
+                    // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
+                    key={row}
+                    className="rounded-md border bg-card p-3"
+                  >
+                    {/* The name line, the weight row's own height, and the share
                       line, so a placeholder card measures like a real one. */}
-                  <div className="flex h-9 items-center">
-                    <Skeleton className="h-4 w-36 max-w-full" />
-                  </div>
-                  <Skeleton className="mt-2 h-8 w-full" />
-                  <div className="mt-1.5 flex h-4 items-center">
-                    <Skeleton className="h-3 w-28" />
-                  </div>
-                </li>
-              ))}
-            </ul>
+                    <div className="flex h-9 items-center">
+                      <Skeleton className="h-4 w-36 max-w-full" />
+                    </div>
+                    <Skeleton className="mt-2 h-8 w-full" />
+                    <div className="mt-1.5 flex h-4 items-center">
+                      <Skeleton className="h-3 w-28" />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </DimensionFrame>
         ))}
       </div>

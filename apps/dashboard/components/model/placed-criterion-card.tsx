@@ -182,7 +182,7 @@ export function PlacedCriterionCard(
                 rolls rather than swaps because it moves while the reader
                 watches. */}
             <p className="text-muted-foreground text-xs tabular-nums">
-              {t.rich("criterionShare", {
+              {t.rich("shareOfWeight", {
                 share: () => (
                   <span className="font-medium text-foreground">
                     <NumberFlow value={weight.share} format={SHARE_FORMAT} />

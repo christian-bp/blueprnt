@@ -43,9 +43,7 @@ const method = messages.dashboard.model.method
 
 // The share line's own words, taken from the one message that renders it: a
 // card that carries no share carries none of this either.
-const SHARE_TEXT = weighting.criterionShare
-  .replace("<share></share>", "")
-  .trim()
+const SHARE_TEXT = weighting.shareOfWeight.replace("<share></share>", "").trim()
 
 const CRITERION = {
   criterionId: "c1",
@@ -216,7 +214,7 @@ describe("PlacedCriterionCard", () => {
     )
     expect(line).toBeDefined()
     expect(line?.textContent).toBe(
-      weighting.criterionShare.replace("<share></share>", "17.6%")
+      weighting.shareOfWeight.replace("<share></share>", "17.6%")
     )
     // The 3 the row is set to appears on the row and nowhere else on the card.
     expect(line?.textContent).not.toContain("3 ·")

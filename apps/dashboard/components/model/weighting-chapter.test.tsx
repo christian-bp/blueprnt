@@ -215,6 +215,19 @@ const groupFor = (name: string) =>
   })
 const save = () => screen.getByRole("button", { name: weighting.saveCta })
 
+// A dimension's heading row (the frame's own two-sided slot), its name, and the
+// share opposite it.
+const headingRow = (name: string) =>
+  screen.getByRole("heading", { name }).parentElement as HTMLElement
+const headingFor = (name: string) =>
+  screen.getByRole("heading", { name }).textContent
+const shareFor = (name: string) =>
+  headingRow(name).lastElementChild?.textContent
+// The share as its one message renders it, rather than as a literal repeated
+// per assertion.
+const shareText = (share: string) =>
+  weighting.shareOfWeight.replace("<share></share>", share)
+
 // The fourth dimension's column, which is drawn whether or not it holds a
 // criterion.
 const workingConditionsColumn = () =>
@@ -291,29 +304,42 @@ describe("the Viktning chapter", () => {
 
   // The balance between dimensions is the thing this chapter can get wrong,
   // and it was only visible on the Godkännande checklist after the fact. Each
-  // heading now carries its dimension's own share, derived from the LOCAL
+  // heading row now carries its dimension's own share, derived from the LOCAL
   // allocation so it moves with an unsaved edit.
-  it("shows each dimension's own share in its heading, live", () => {
+  it("shows each dimension's own share opposite its name, live", () => {
     renderChapter()
-    const headingFor = (name: string) =>
-      screen.getByRole("heading", { name: new RegExp(name) }).textContent
     // BALANCED is 4+2+3+3+3 = 15: responsibility holds 2+3+3 = 8, competence 3,
     // effort 4.
     expect(headingFor("Responsibility and impact")).toBe(
-      "Responsibility and impact · 53% of the weight"
+      "Responsibility and impact"
     )
-    expect(headingFor("Competence")).toBe("Competence · 20% of the weight")
-    expect(headingFor("Effort and complexity")).toBe(
-      "Effort and complexity · 27% of the weight"
-    )
+    expect(shareFor("Responsibility and impact")).toBe(shareText("53%"))
+    expect(headingFor("Competence")).toBe("Competence")
+    expect(shareFor("Competence")).toBe(shareText("20%"))
+    expect(shareFor("Effort and complexity")).toBe(shareText("27%"))
 
     // An unsaved edit moves it: dropping effort from 4 to 1 rebalances the
     // shares before anything is saved.
     fireEvent.click(
       within(groupFor(COMPLEXITY)).getByRole("button", { name: "1" })
     )
-    expect(headingFor("Effort and complexity")).toBe(
-      "Effort and complexity · 8% of the weight"
+    expect(shareFor("Effort and complexity")).toBe(shareText("8%"))
+  })
+
+  // The name is the whole heading, and the share is the element opposite it:
+  // the Kriterier column's title-left/chip-right anatomy, in the same frame's
+  // heading row. A share spliced into the title truncates away first at column
+  // width, which is the half a reader comes to this chapter for.
+  it("splits the heading row into the name and the share", () => {
+    renderChapter()
+    const row = headingRow("Competence")
+    expect(row.children).toHaveLength(2)
+    expect(row.children[0]?.tagName).toBe("H3")
+    expect(row.children[0]?.textContent).toBe("Competence")
+    expect(row.children[1]?.textContent).toBe(shareText("20%"))
+    // The figure never shrinks away with the name beside it.
+    expect((row.children[1]?.className ?? "").split(/\s+/)).toContain(
+      "shrink-0"
     )
   })
 
@@ -470,9 +496,28 @@ describe("the Viktning chapter", () => {
     expect(
       container.querySelectorAll('[data-slot="dimension-frame"]')
     ).toHaveLength(4)
-    // Two placeholder cards each, except the fourth: its dimension caps at
-    // one, so a second there would promise a criterion the model cannot hold.
-    expect(container.querySelectorAll("ul li")).toHaveLength(7)
+    // Two placeholder cards each, for the three dimensions whose staffed
+    // shape is the near-certain one.
+    expect(container.querySelectorAll("ul li")).toHaveLength(6)
+  })
+
+  // The fourth dimension resolves as readily to a sentence over a hatch as to
+  // a card (many organizations test it and find it not material), so its
+  // loading shape guesses neither: a text-line bar that either outcome fills
+  // in, rather than a card that would have to become a paragraph.
+  it("waits for the fourth dimension with a neutral bar, not a card", () => {
+    modelResult = undefined
+    const { container } = renderChapter()
+    const grid = container.querySelector('[class*="sm:grid-cols-2"]')
+    // DIMENSION_KEYS order, which is fixed method law: working conditions is
+    // the fourth column.
+    const wc = grid?.children[3] as HTMLElement
+    expect(wc.querySelector("li")).toBeNull()
+    expect(wc.querySelector('[class*="border"]')).toBeNull()
+    expect(within(wc).queryByRole("img")).toBeNull()
+    expect(
+      wc.querySelectorAll('[data-slot="skeleton"]').length
+    ).toBeGreaterThan(0)
   })
   // The fourth dimension never vanishes: an empty competence column is a gap
   // on the way to being filled, while an empty working-conditions column can
@@ -531,13 +576,8 @@ describe("the Viktning chapter", () => {
     // dimension carrying nothing carries 0% of the weight, which is true.
     it("keeps its share in the heading, at an honest zero", () => {
       renderChapter()
-      expect(
-        screen.getByRole("heading", { name: /Working conditions/ }).textContent
-      ).toBe(
-        weighting.dimensionShare
-          .replace("{dimension}", "Working conditions")
-          .replace("<share></share>", "0%")
-      )
+      expect(headingFor("Working conditions")).toBe("Working conditions")
+      expect(shareFor("Working conditions")).toBe(shareText("0%"))
     })
 
     // Staffed, the column is every other column: its criterion's weight row,

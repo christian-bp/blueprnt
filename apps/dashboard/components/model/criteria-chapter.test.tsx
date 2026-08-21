@@ -375,7 +375,7 @@ describe("the Kriterier chapter", () => {
     expect(
       screen.queryByText(
         new RegExp(
-          weighting.criterionShare.replace("<share></share>", "").trim()
+          weighting.shareOfWeight.replace("<share></share>", "").trim()
         )
       )
     ).toBeNull()

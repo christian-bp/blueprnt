@@ -7,6 +7,7 @@ import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
 import {
+  type ComponentProps,
   type ReactNode,
   useEffect,
   useLayoutEffect,
@@ -42,6 +43,7 @@ import { type MorphPlacement, morphPanelPlacement } from "@/lib/morph-placement"
 export function MorphPopover({
   triggerLabel,
   triggerIcon,
+  triggerSize = "sm",
   anchor = "right",
   title,
   description,
@@ -53,6 +55,11 @@ export function MorphPopover({
 }: {
   triggerLabel: string
   triggerIcon?: IconSvgElement
+  // The trigger button's size. Compact by default, because most of these sit
+  // inside a card's own header row; a host whose surrounding controls are the
+  // design system's default size (a chapter's status block) passes that
+  // instead, so the row does not step down at one control.
+  triggerSize?: ComponentProps<typeof Button>["size"]
   // Which trigger edge the panel anchors to. "right" grows leftward (fits
   // controls at a container's right edge); "left" grows rightward (fits
   // triggers next to left-aligned headings).
@@ -131,7 +138,7 @@ export function MorphPopover({
         ref={triggerRef}
         type="button"
         variant="outline"
-        size="sm"
+        size={triggerSize}
         aria-hidden={open}
         tabIndex={open ? -1 : undefined}
         className={cn(open && "pointer-events-none opacity-0")}

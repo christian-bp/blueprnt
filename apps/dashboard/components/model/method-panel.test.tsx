@@ -332,7 +332,7 @@ describe("MethodPanel", () => {
   // cannot change it is one allocation read twice.
   it("repeats no weight share, on the cards or the headings", () => {
     renderPanel()
-    const shareText = weighting.criterionShare.replace("<share></share>", "")
+    const shareText = weighting.shareOfWeight.replace("<share></share>", "")
     expect(screen.queryByText(new RegExp(shareText.trim()))).toBeNull()
     expect(screen.queryByText(/33%/)).toBeNull()
   })
@@ -506,19 +506,39 @@ describe("MethodPanel", () => {
 
     it("stands placeholder cards in the columns, with the real action", () => {
       const { container } = renderPanel()
-      // Two per column, except the fourth: its dimension caps at one
-      // criterion, so a second placeholder there would promise one the model
-      // cannot hold.
+      // Two per column, for the three dimensions whose staffed shape is the
+      // near-certain one. The fourth waits as a neutral bar instead (below).
       const cards = container.querySelectorAll("ul li")
-      expect(cards).toHaveLength(7)
+      expect(cards).toHaveLength(6)
       // The action's label is static i18n text, so it renders as itself
       // (muted and inert) rather than as a gray bar. The placeholder is out of
       // the accessibility tree and out of the tab order, so the inert copy is
       // never offered to anyone: queried by text for exactly that reason.
       const actions = screen.getAllByText(m.openCta)
-      expect(actions).toHaveLength(7)
+      expect(actions).toHaveLength(6)
       expect(actions[0]?.getAttribute("tabindex")).toBe("-1")
       expect(cards[0]?.getAttribute("aria-hidden")).toBe("true")
+    })
+
+    // The fourth dimension resolves as readily to a sentence over a hatch as
+    // to a card (many organizations test it and find it not material), so its
+    // loading shape guesses neither: a text-line bar that either outcome fills
+    // in, rather than a card that would have to become a paragraph.
+    it("waits for the fourth dimension with a neutral bar, not a card", () => {
+      const { container } = renderPanel()
+      const wc = screen
+        .getByRole("heading", {
+          name: library.dimensions.workingConditions.name,
+        })
+        .closest("section") as HTMLElement
+      expect(wc.querySelector("li")).toBeNull()
+      expect(within(wc).queryByRole("img")).toBeNull()
+      expect(within(wc).queryByText(m.openCta)).toBeNull()
+      expect(
+        wc.querySelectorAll('[data-slot="skeleton"]').length
+      ).toBeGreaterThan(0)
+      // The other three still stand their card placeholders up.
+      expect(container.querySelectorAll("ul li")).toHaveLength(6)
     })
 
     it("offers an editor no action, loading or loaded", () => {

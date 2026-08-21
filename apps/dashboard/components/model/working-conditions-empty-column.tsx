@@ -26,6 +26,23 @@ import { chapterHref } from "@/lib/model-chapters"
 // drops it, because there the box is a slot the reader can fill on the spot
 // and here it is not: what it says on these two chapters is "this dimension's
 // place in the method", which is true whichever way the test went.
+// The fourth column's loading shape: one text-line bar, and nothing else.
+//
+// It stands in for the whole column while a chapter's model is loading, where
+// the other three dimensions get card placeholders. Those three are all but
+// certainly staffed, so a card is the honest guess; this one is as likely to
+// resolve to a sentence over a hatch, because many organizations test the
+// dimension and find it not material. A bar resolves into EITHER by filling
+// in, while a bordered card resolving into a paragraph is a shape swap the
+// reader watches happen.
+export function WorkingConditionsColumnSkeleton() {
+  return (
+    <div className="flex h-5 items-center">
+      <Skeleton className="h-3 w-4/5" />
+    </div>
+  )
+}
+
 export function WorkingConditionsEmptyColumn({
   decision,
 }: {
@@ -56,9 +73,7 @@ export function WorkingConditionsEmptyColumn({
         // The line's BOX while the answer is still loading, never a guessed
         // sentence: which of the three is true is exactly what is missing, and
         // two of them would be wrong.
-        <div className="flex h-5 items-center">
-          <Skeleton className="h-3 w-4/5" />
-        </div>
+        <WorkingConditionsColumnSkeleton />
       ) : (
         <p className="text-muted-foreground text-sm">
           {decision === null

@@ -22,7 +22,10 @@ import { ChapterStatusAlert } from "@/components/model/chapter-status-alert"
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
 import { DimensionFrame } from "@/components/model/dimension-frame"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
-import { WorkingConditionsEmptyColumn } from "@/components/model/working-conditions-empty-column"
+import {
+  WorkingConditionsColumnSkeleton,
+  WorkingConditionsEmptyColumn,
+} from "@/components/model/working-conditions-empty-column"
 import { useOrganization } from "@/components/org-context"
 import { chapterHref } from "@/lib/model-chapters"
 
@@ -301,10 +304,21 @@ function MethodPanelSkeleton({
       />
       <div className={CHAPTER_GRID_CLASS}>
         {DIMENSION_KEYS.map((key) => (
-          <DimensionSection key={key} title={content.dimensions[key].name}>
+          <DimensionSection
+            key={key}
+            title={content.dimensions[key].name}
+            // The fourth dimension is as likely to resolve to a sentence over
+            // a hatch as to a card, so it waits as a neutral bar rather than
+            // as a card that would have to become a paragraph.
+            empty={
+              key === "workingConditions" ? (
+                <WorkingConditionsColumnSkeleton />
+              ) : undefined
+            }
+          >
             {/* Two placeholder cards, or the dimension's own cap where that is
-                lower, so the fourth column never promises a second criterion
-                the model cannot hold. */}
+                lower, so a column never promises a second criterion the model
+                cannot hold. */}
             {Array.from({ length: SKELETON_CARDS[key] }, (_, card) => (
               <MethodCardSkeleton
                 // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable

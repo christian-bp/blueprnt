@@ -23,6 +23,17 @@ import type { ReactNode } from "react"
 // chapter composes whatever spans, separators and help button its own
 // readout needs, or hands over a single sentence, and this component imposes
 // no structure or classes on content it did not write.
+// The size EVERY action in a chapter's status block takes. One size across the
+// section, owned here rather than chosen per chapter: the blocks sit at the
+// same place on four chapters, and a reader moving between them reads a row of
+// controls that changes height as they go. It is the design system's DEFAULT,
+// because nothing about this row is a reason to deviate from it (the house
+// rule: never hand-pick a size per call site) and because the row's height is
+// set by the Alert beside it either way, so the larger control costs no space.
+// Viktning's own actions had drifted to `sm` while Metod's export stayed at
+// the default; a new chapter passes this rather than picking again.
+export const CHAPTER_ACTION_BUTTON_SIZE = "default" as const
+
 export function ChapterStatusAlert({
   ok,
   title,
@@ -57,7 +68,15 @@ export function ChapterStatusAlert({
         <AlertTitle>{title}</AlertTitle>
       </Alert>
       {actions !== undefined && (
-        <span className="flex items-center gap-2">{actions}</span>
+        // Named, so the size rule above has something a test can hold it to:
+        // every control in this slot is a chapter action, whichever chapter
+        // put it there.
+        <span
+          data-slot="chapter-status-actions"
+          className="flex items-center gap-2"
+        >
+          {actions}
+        </span>
       )}
     </div>
   )

@@ -11,6 +11,7 @@ import {
   MethodAppendix,
   type MethodAppendixLabels,
 } from "@/components/pdf/method-appendix"
+import { CHAPTER_ACTION_BUTTON_SIZE } from "@/components/model/chapter-status-alert"
 import { SubmitButton } from "@/components/submit-button"
 import { assembleMethodAppendix } from "@/lib/pdf/method-appendix-data"
 
@@ -102,6 +103,10 @@ export function MethodAppendixDownload({ orgId }: { orgId: string }) {
   return (
     <SubmitButton
       type="button"
+      // The size every chapter's status-block action takes; it is the design
+      // system's default, and passing it says so rather than leaving the row's
+      // consistency to a default nobody stated.
+      size={CHAPTER_ACTION_BUTTON_SIZE}
       isSubmitting={busy}
       disabled={data === undefined || data === null}
       onClick={onExport}
