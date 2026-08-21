@@ -28,6 +28,7 @@ vi.mock("@/components/org-context", () => ({
 }))
 
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
+import { criteriaLibraryContent } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import { CriteriaChapter } from "@/components/model/criteria-chapter"
 import {
   modelChapterProgress,
@@ -56,19 +57,15 @@ const setWorkingConditionsDecision = mockMutation(
 // The four dimensions exactly as getModel serves them (localized library
 // content, ADR-0021: fixed method law).
 const DIMENSIONS = [
-  { key: "competence", name: "Competence", question: "q1", why: "w1" },
-  { key: "effort", name: "Effort and complexity", question: "q2", why: "w2" },
+  { key: "competence", name: "Competence" },
+  { key: "effort", name: "Effort and complexity" },
   {
     key: "responsibility",
     name: "Responsibility and impact",
-    question: "q3",
-    why: "w3",
   },
   {
     key: "workingConditions",
     name: "Working conditions",
-    question: "q4",
-    why: "w4",
   },
 ]
 
@@ -99,7 +96,6 @@ function criterion(overrides: Record<string, unknown>) {
     dimensionKey: "effort",
     name: "Criterion",
     shortUiText: "",
-    fullDefinition: "",
     measures: "",
     notMeasures: "",
     assessmentQuestion: "",
@@ -130,7 +126,6 @@ function makeModel(
     approval: null,
     workingConditions,
     criteria: entries,
-    sharedScale: [],
     midpoints: { step2: "", step4: "" },
     dimensions: DIMENSIONS,
     tracks: [],
@@ -764,8 +759,15 @@ describe("the Kriterier chapter", () => {
       })
     )
     expect(screen.getByText(help.dimensionWorkingConditionsBody)).toBeDefined()
+    // The library's own question for each dimension, which this column
+    // deliberately does not ask: the heading says what the dimension COVERS,
+    // and the help beside it answers rather than asks. Read from the library
+    // content rather than from a fixture field, because the wire stopped
+    // carrying the question at all and the text still exists there.
+    const library = criteriaLibraryContent("en")
     for (const dimension of DIMENSIONS) {
-      expect(screen.queryByText(dimension.question)).toBeNull()
+      const key = dimension.key as keyof typeof library.dimensions
+      expect(screen.queryByText(library.dimensions[key].question)).toBeNull()
     }
   })
 

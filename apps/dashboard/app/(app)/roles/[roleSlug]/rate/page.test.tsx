@@ -47,7 +47,7 @@ const CRITERION = {
 }
 
 const MODEL = {
-  approval: { approvedBy: "u1", approvedAt: 1 },
+  approved: true,
   criteria: [CRITERION],
   midpoints: {
     step2: "A considered midpoint.",
@@ -104,10 +104,16 @@ let roleFixture: unknown = role()
 let resultFixture: unknown = result()
 let modelFixture: unknown = MODEL
 
+// Every query ref this page actually asks for, so a test can assert what it
+// does NOT ask for.
+let requestedRefs: string[] = []
+
 function install() {
+  requestedRefs = []
   onQuery((ref) => {
+    requestedRefs.push(ref)
     if (ref === "assessment.roles.getRoleBySlug") return roleFixture
-    if (ref === "evaluationModel.model.getModel") return modelFixture
+    if (ref === "evaluationModel.model.getRatingModel") return modelFixture
     if (ref === "assessment.results.getRoleResult") return resultFixture
     if (ref === "assessment.anchorRoles.listAnchorRoles") return []
     return undefined
@@ -161,6 +167,17 @@ describe("RatePage (lock-as-reveal)", () => {
     ).toBeDefined()
     // No reveal, no lock action yet.
     expect(screen.queryByText(t.lockCta)).toBeNull()
+  })
+
+  // The firewall, at the wire rather than at the render: an assessor rates
+  // against the anchors and must not know how much each criterion counts, so
+  // the weighting is not in this client at all. Asserted as "this page never
+  // asks for the model wire", because a page that asked for it would have the
+  // weights one devtools panel away however carefully it rendered them.
+  it("never asks for the model wire that carries the weighting", async () => {
+    await renderPage()
+    expect(requestedRefs).toContain("evaluationModel.model.getRatingModel")
+    expect(requestedRefs).not.toContain("evaluationModel.model.getModel")
   })
 
   it("offers Lock assessment once the last criterion is answered, without revealing anything", async () => {
@@ -250,7 +267,7 @@ describe("RatePage (lock-as-reveal)", () => {
   // actually is. It pointed at the method page after approval moved to its own
   // chapter, which sent every blocked rater to a page with no way forward.
   it("sends an unapproved model to the chapter that can approve it", async () => {
-    modelFixture = { ...MODEL, approval: null }
+    modelFixture = { ...MODEL, approved: false }
     install()
     await renderPage()
     expect(screen.getByText(t.modelUnapprovedExplanation)).toBeDefined()

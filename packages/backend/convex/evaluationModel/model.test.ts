@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
-import { initConvexTest } from "../testing.helpers"
+import { grantModelApproval, initConvexTest } from "../testing.helpers"
 
 async function seedReadyOrganization(t: ReturnType<typeof initConvexTest>) {
   const { orgId, userId } = await t.mutation(
@@ -279,8 +279,6 @@ describe("getModel", () => {
     expect(result?.zoneProfileRules).toHaveLength(2)
     expect(result?.tracks).toHaveLength(3)
     expect(result?.dimensions).toHaveLength(4)
-    const step3 = result?.sharedScale.find((entry) => entry.step === 3)
-    expect(step3?.name.length).toBeGreaterThan(0)
     expect(result?.midpoints.step2.length).toBeGreaterThan(0)
 
     const first = result?.criteria[0]
@@ -318,6 +316,49 @@ describe("getModel", () => {
     expect(enIc?.name).toBe("Individual Contributor")
   })
 
+  // The wire carries what a surface renders and nothing else. Four fields were
+  // resolved from library content and shipped to every model-section client
+  // without a reader: the dimension `question`/`why` (the columns' help is the
+  // app's own authored copy), the criterion `fullDefinition` (the picker
+  // resolves definitions from the library itself), and `sharedScale` (never
+  // displayed; the shared-scale surface will get its own read when it is
+  // built). Asserted on the KEY SETS, so re-adding one fails here rather than
+  // riding along unnoticed.
+  it("carries neither the retired criterion nor dimension fields", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedModelWithCriteria(t, [
+      "knowledge-depth",
+    ])
+    const result = await asAdmin.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    expect(result).not.toBeNull()
+    expect(Object.keys(result ?? {})).not.toContain("sharedScale")
+    const criterion = result?.criteria[0]
+    expect(criterion).toBeDefined()
+    expect(Object.keys(criterion ?? {})).not.toContain("fullDefinition")
+    // What the surfaces DO read stays, so the pin cannot pass by the payload
+    // having quietly emptied.
+    expect(Object.keys(criterion ?? {})).toEqual(
+      expect.arrayContaining([
+        "criterionId",
+        "libraryKey",
+        "dimensionKey",
+        "name",
+        "shortUiText",
+        "measures",
+        "notMeasures",
+        "assessmentQuestion",
+        "anchors",
+        "weightPoints",
+        "order",
+        "weightMotivation",
+      ])
+    )
+    const dimension = result?.dimensions[0]
+    expect(Object.keys(dimension ?? {}).sort()).toEqual(["key", "name"])
+  })
+
   it("falls back to English criteria content for an unsupported locale", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedModelWithCriteria(t, [
@@ -333,5 +374,121 @@ describe("getModel", () => {
     })
     expect(result?.criteria[0]?.name).toBe(en?.criteria[0]?.name)
     expect(result?.dimensions[0]?.name).toBe(en?.dimensions[0]?.name)
+  })
+})
+
+describe("getRatingModel", () => {
+  it("returns null before any model exists", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    expect(
+      await asAdmin.query(api.evaluationModel.model.getRatingModel, { orgId })
+    ).toBeNull()
+  })
+
+  // The firewall this query exists for: an assessor rates against the anchors
+  // and must not know how much each criterion counts. Serving the rating page
+  // from the full model wire put the weighting in that client, one devtools
+  // panel away, however carefully the page rendered it.
+  it("carries no weight of any kind", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedModelWithCriteria(t, [
+      "knowledge-depth",
+      "scope-impact",
+    ])
+    const result = await asAdmin.query(
+      api.evaluationModel.model.getRatingModel,
+      { orgId }
+    )
+    expect(result?.criteria).toHaveLength(2)
+    const criterion = result?.criteria[0]
+    expect(Object.keys(criterion ?? {}).sort()).toEqual([
+      "anchors",
+      "assessmentQuestion",
+      "criterionId",
+      "dimensionKey",
+      "measures",
+      "name",
+      "notMeasures",
+    ])
+    // Named as well as counted: a key set assertion alone would pass a rename.
+    for (const key of ["weightPoints", "weightMotivation", "order"]) {
+      expect(Object.keys(criterion ?? {})).not.toContain(key)
+    }
+    // Nor at the top level: approval is a bare boolean, never the approver.
+    expect(Object.keys(result ?? {}).sort()).toEqual([
+      "approved",
+      "criteria",
+      "midpoints",
+    ])
+  })
+
+  it("reports the approval as a boolean the page can gate on", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedModelWithCriteria(t)
+    expect(
+      (await asAdmin.query(api.evaluationModel.model.getRatingModel, { orgId }))
+        ?.approved
+    ).toBe(false)
+    await grantModelApproval(t, orgId)
+    expect(
+      (await asAdmin.query(api.evaluationModel.model.getRatingModel, { orgId }))
+        ?.approved
+    ).toBe(true)
+  })
+
+  // The array IS the order, which is why no `order` field ships: the page
+  // steps through the criteria as given.
+  it("returns the criteria in the model's own order, with their anchors", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedModelWithCriteria(t, [
+      "knowledge-depth",
+      "scope-impact",
+      "on-call",
+    ])
+    const result = await asAdmin.query(
+      api.evaluationModel.model.getRatingModel,
+      { orgId }
+    )
+    const first = result?.criteria[0]
+    expect(first?.dimensionKey).toBe("competence")
+    expect(first?.name.length).toBeGreaterThan(0)
+    expect(first?.assessmentQuestion.length).toBeGreaterThan(0)
+    // 1/3/5 always; 2/4 only where the library defines them, and the page
+    // fills the rest from midpoints.
+    expect(first?.anchors.map((a) => a.step)).toContain(1)
+    expect(first?.anchors.map((a) => a.step)).toContain(5)
+    expect(result?.midpoints.step2.length).toBeGreaterThan(0)
+  })
+
+  it("localizes the criteria to the requested locale", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedModelWithCriteria(t, [
+      "knowledge-depth",
+    ])
+    const sv = await asAdmin.query(api.evaluationModel.model.getRatingModel, {
+      orgId,
+      locale: "sv",
+    })
+    const en = await asAdmin.query(api.evaluationModel.model.getRatingModel, {
+      orgId,
+      locale: "en",
+    })
+    expect(sv?.criteria[0]?.name).not.toBe(en?.criteria[0]?.name)
+  })
+
+  // Org scoping, like every neighbour: another org's admin reads their own
+  // model, never this one's.
+  it("serves each organization only its own model", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedModelWithCriteria(t, ["knowledge-depth"])
+    const other = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "hr@other.se", name: "Other HR", role: "admin" }
+    )
+    const asOther = t.withIdentity({ subject: other.userId })
+    await expect(
+      asOther.query(api.evaluationModel.model.getRatingModel, { orgId })
+    ).rejects.toThrow()
   })
 })

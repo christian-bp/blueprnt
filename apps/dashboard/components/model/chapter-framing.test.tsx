@@ -57,15 +57,12 @@ const MODEL = {
       order: 1,
     },
   ],
-  sharedScale: [],
   midpoints: { step2: "", step4: "" },
   dimensions: [
-    { key: "effort", name: "Effort and complexity", question: "", why: "" },
+    { key: "effort", name: "Effort and complexity" },
     {
       key: "workingConditions",
       name: "Working conditions",
-      question: "",
-      why: "",
     },
   ],
   tracks: [],

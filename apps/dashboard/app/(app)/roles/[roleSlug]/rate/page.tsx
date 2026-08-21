@@ -50,7 +50,13 @@ export default function RatePage(props: {
     slug: roleSlug,
     locale,
   })
-  const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
+  // The rating read, not the model wire: an assessor is served the criteria and
+  // their anchors without the weighting, so what they must not see is not in
+  // the client at all rather than merely unrendered.
+  const model = useQuery(api.evaluationModel.model.getRatingModel, {
+    orgId,
+    locale,
+  })
   // Lock state (spec 2.4/6): fetched as soon as the role resolves, so it is
   // ready before either the reveal or the already-locked notice needs it.
   const result = useQuery(
@@ -129,7 +135,7 @@ export default function RatePage(props: {
   // The model must be approved before any role can be rated (ADR-0023): state
   // the precondition in words and send the admin to where it is resolved,
   // rather than letting setRating fail silently on the first save attempt.
-  if (model.approval === null) {
+  if (!model.approved) {
     return (
       <div className="space-y-2">
         <p className="text-muted-foreground text-sm">

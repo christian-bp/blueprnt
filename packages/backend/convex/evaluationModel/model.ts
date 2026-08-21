@@ -172,6 +172,97 @@ export const seedDefaultModel = internalMutation({
 
 const anchorShape = v.object({ step: v.number(), text: v.string() })
 
+// A criterion's anchor steps from its library entry. Steps 1/3/5 are always
+// defined; 2/4 exist only where the library says something more specific than
+// "a considered midpoint", and the reading surface fills those gaps from the
+// model's shared midpoints. Shared by the two reads below so a criterion's
+// scale cannot be assembled two ways.
+function criterionAnchors(entry: {
+  anchor1: string
+  anchor2?: string
+  anchor3: string
+  anchor4?: string
+  anchor5: string
+}): { step: number; text: string }[] {
+  return [
+    { step: 1, text: entry.anchor1 },
+    ...(entry.anchor2 !== undefined ? [{ step: 2, text: entry.anchor2 }] : []),
+    { step: 3, text: entry.anchor3 },
+    ...(entry.anchor4 !== undefined ? [{ step: 4, text: entry.anchor4 }] : []),
+    { step: 5, text: entry.anchor5 },
+  ]
+}
+
+// What the RATING surface reads, and nothing else.
+//
+// A separate read rather than a slice of getModel, because the difference is
+// not convenience: an assessor rates a role criterion by criterion against the
+// 0-5 anchors, and must not see how much each criterion COUNTS. The weighting
+// is the model owner's decision and knowing it while rating invites steering
+// the score toward a level. Serving that surface from the full model wire left
+// the firewall standing at render level only: the weights were in the client,
+// one devtools panel away, on every rating session.
+//
+// So this carries no weightPoints, no weightMotivation, and no order (the
+// array IS the order), and it reports approval as a bare boolean: whether
+// rating is allowed at all, never who approved or when.
+export const getRatingModel = orgQuery({
+  args: { locale: v.optional(v.string()) },
+  returns: v.union(
+    v.null(),
+    v.object({
+      // The gate (ADR-0023): a role cannot be rated until the model is
+      // approved. The page states the precondition; the mutation enforces it.
+      approved: v.boolean(),
+      criteria: v.array(
+        v.object({
+          criterionId: v.id("criteria"),
+          dimensionKey: dimensionKeyValidator,
+          name: v.string(),
+          measures: v.string(),
+          notMeasures: v.string(),
+          assessmentQuestion: v.string(),
+          anchors: v.array(anchorShape),
+        })
+      ),
+      // Fills the steps a criterion's own scale leaves out (see
+      // criterionAnchors).
+      midpoints: v.object({ step2: v.string(), step4: v.string() }),
+    })
+  ),
+  handler: async (ctx, { locale }) => {
+    const model = await ctx.db
+      .query("models")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+      .unique()
+    if (model === null) return null
+
+    const content = criteriaLibraryContent(clampLocale(locale))
+    const rows = await ctx.db
+      .query("criteria")
+      .withIndex("by_model", (q) => q.eq("modelId", model._id))
+      .collect()
+    rows.sort((a, b) => a.order - b.order)
+
+    return {
+      approved: model.approval !== undefined,
+      criteria: rows.map((row) => {
+        const entry = content.criteria[row.libraryKey]
+        return {
+          criterionId: row._id,
+          dimensionKey: LIBRARY_DIMENSION[row.libraryKey],
+          name: entry.name,
+          measures: entry.measures,
+          notMeasures: entry.notMeasures,
+          assessmentQuestion: entry.assessmentQuestion,
+          anchors: criterionAnchors(entry),
+        }
+      }),
+      midpoints: content.midpoints,
+    }
+  },
+})
+
 // The org's selection + method-law wire, localized from library content by
 // libraryKey (decision 8: there is no stored text left to fall back to). The
 // dimension is always derived (LIBRARY_DIMENSION), never stored. This is the
@@ -204,7 +295,6 @@ export const getModel = orgQuery({
           dimensionKey: dimensionKeyValidator,
           name: v.string(),
           shortUiText: v.string(),
-          fullDefinition: v.string(),
           measures: v.string(),
           notMeasures: v.string(),
           assessmentQuestion: v.string(),
@@ -216,21 +306,12 @@ export const getModel = orgQuery({
           weightMotivation: v.union(v.string(), v.null()),
         })
       ),
-      // An array, not an object keyed "1".."5": Convex object-validator keys
-      // must be identifiers (cannot start with a digit), so the library
-      // content's Record<"1"|...|"5", ...> shape cannot be mirrored directly
-      // in a returns validator.
-      sharedScale: v.array(
-        v.object({ step: v.number(), name: v.string(), meaning: v.string() })
-      ),
       midpoints: v.object({ step2: v.string(), step4: v.string() }),
+      // The name and nothing else: the columns' own help bodies are the app's
+      // authored i18n copy, not the library's `question`/`why`, so shipping
+      // those was shipping text no surface reads.
       dimensions: v.array(
-        v.object({
-          key: dimensionKeyValidator,
-          name: v.string(),
-          question: v.string(),
-          why: v.string(),
-        })
+        v.object({ key: dimensionKeyValidator, name: v.string() })
       ),
       tracks: v.array(
         v.object({
@@ -264,28 +345,16 @@ export const getModel = orgQuery({
     criteriaRows.sort((a, b) => a.order - b.order)
     const criteria = criteriaRows.map((row) => {
       const entry = content.criteria[row.libraryKey]
-      const anchors = [
-        { step: 1, text: entry.anchor1 },
-        ...(entry.anchor2 !== undefined
-          ? [{ step: 2, text: entry.anchor2 }]
-          : []),
-        { step: 3, text: entry.anchor3 },
-        ...(entry.anchor4 !== undefined
-          ? [{ step: 4, text: entry.anchor4 }]
-          : []),
-        { step: 5, text: entry.anchor5 },
-      ]
       return {
         criterionId: row._id,
         libraryKey: row.libraryKey,
         dimensionKey: LIBRARY_DIMENSION[row.libraryKey],
         name: entry.name,
         shortUiText: entry.shortUiText,
-        fullDefinition: entry.fullDefinition,
         measures: entry.measures,
         notMeasures: entry.notMeasures,
         assessmentQuestion: entry.assessmentQuestion,
-        anchors,
+        anchors: criterionAnchors(entry),
         weightPoints: row.weightPoints,
         order: row.order,
         weightMotivation: row.weightMotivation ?? null,
@@ -302,14 +371,7 @@ export const getModel = orgQuery({
 
     const dimensions = DIMENSION_KEYS.map((key) => ({
       key,
-      ...content.dimensions[key],
-    }))
-
-    // Steps 1-5, in order; see the sharedScale validator comment above for
-    // why this cannot be the content module's own "1".."5"-keyed object.
-    const sharedScale = (["1", "2", "3", "4", "5"] as const).map((step) => ({
-      step: Number(step),
-      ...content.sharedScale[step],
+      name: content.dimensions[key].name,
     }))
 
     const levelRules = [...model.levelRules].sort((a, b) => a.level - b.level)
@@ -321,7 +383,6 @@ export const getModel = orgQuery({
       approval: model.approval ?? null,
       workingConditions: model.workingConditions ?? null,
       criteria,
-      sharedScale,
       midpoints: content.midpoints,
       dimensions,
       tracks,

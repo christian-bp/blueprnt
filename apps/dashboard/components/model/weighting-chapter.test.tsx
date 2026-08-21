@@ -60,19 +60,15 @@ const setMotivation = mockMutation(
 )
 
 const DIMENSIONS = [
-  { key: "competence", name: "Competence", question: "q1", why: "w1" },
-  { key: "effort", name: "Effort and complexity", question: "q2", why: "w2" },
+  { key: "competence", name: "Competence" },
+  { key: "effort", name: "Effort and complexity" },
   {
     key: "responsibility",
     name: "Responsibility and impact",
-    question: "q3",
-    why: "w3",
   },
   {
     key: "workingConditions",
     name: "Working conditions",
-    question: "q4",
-    why: "w4",
   },
 ]
 
@@ -88,7 +84,6 @@ function criterion(overrides: Record<string, unknown>) {
     dimensionKey: "effort",
     name: "Criterion",
     shortUiText: "",
-    fullDefinition: "",
     measures: "",
     notMeasures: "",
     assessmentQuestion: "",
@@ -116,7 +111,6 @@ function makeModel(
     approval: null,
     workingConditions,
     criteria: entries,
-    sharedScale: [],
     midpoints: { step2: "", step4: "" },
     dimensions: DIMENSIONS,
     tracks: [],
