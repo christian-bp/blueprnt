@@ -1,0 +1,32 @@
+apps/dashboard/components/pay-mapping/analysis-spine.test.tsx
+  s_58dd112dc09435::t_7ef5154af1fe08 80-85,92-94,96,105
+apps/dashboard/components/pay-mapping/analysis-spine.tsx
+  s_58dd112dc09435::t_255084051cf6c7 75-77
+apps/dashboard/components/segmented-progress.tsx
+  s_58dd112dc09435::t_acc219ad4279e7 163-166
+  s_58dd112dc09435::t_540ab5346562bc 21,134,200,211,242
+  s_58dd112dc09435::t_2c5535e140a194 16-20,22
+  s_58dd112dc09435::t_337a990870d137 112-119
+  s_58dd112dc09435::t_65517889408c49 24-26
+apps/dashboard/components/segmented-progress.test.tsx
+  s_58dd112dc09435::t_ea897b9e7ba0c9 53-56,60-65,67-68,77-79,92-108,111
+  s_58dd112dc09435::t_35e7e381d5d0aa 35-37
+apps/dashboard/components/model/model-spine.test.tsx
+  s_58dd112dc09435::t_f7e54225e5406c 75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "f1e4e15bc4e49487b045c2313d0d4e33d249835c",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
