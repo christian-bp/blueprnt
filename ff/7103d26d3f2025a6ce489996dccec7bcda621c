@@ -1,0 +1,42 @@
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_82dfee673af05f 2651-2653
+apps/dashboard/components/model/model-spine.test.tsx
+  s_58dd112dc09435::t_5b3c33fc278d6c 22,154-231
+  s_58dd112dc09435::t_36f87edfa24147 232
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_82dfee673af05f 2651-2653
+apps/dashboard/components/spine-header.tsx
+  s_58dd112dc09435::t_f23f93fe3468be 3,5
+  s_58dd112dc09435::t_586ec3efbba2f1 53-85,87,99-101,103-116
+  s_58dd112dc09435::t_ce1a8475357684 86
+  s_58dd112dc09435::t_ddfe4606e9a61b 88-98,102
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_82dfee673af05f 2651-2653
+apps/dashboard/components/pay-mapping/analysis-spine.test.tsx
+  s_58dd112dc09435::t_6364b600ef7c57 25,167-227
+  s_58dd112dc09435::t_7e4c587cd3923c 228
+apps/dashboard/components/model/model-spine.tsx
+  s_58dd112dc09435::t_82dfee673af05f 7,38,83-96
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_82dfee673af05f 2651-2653
+apps/dashboard/components/pay-mapping/analysis-spine.tsx
+  s_58dd112dc09435::t_82dfee673af05f 8,45,86-99
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_82dfee673af05f 2651-2653
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "ff7103d26d3f2025a6ce489996dccec7bcda621c",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
