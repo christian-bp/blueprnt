@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
@@ -73,6 +79,114 @@ describe("ApprovalCard", () => {
     cleanup()
     vi.mocked(toast.success).mockClear()
     vi.mocked(toast.error).mockClear()
+  })
+
+  // The gate reads as two groups now: what blocks approval, and what is merely
+  // recommended. The distinction used to ride every row as a parenthetical,
+  // twelve times on one card.
+  describe("the checklist's shape", () => {
+    const m = messages.dashboard.model.method
+
+    const renderChecks = (
+      checks: readonly { key: string; level: string; ok: boolean }[]
+    ) => {
+      queryResult = {
+        checks,
+        approval: null,
+        lastApprovedAt: null,
+        workingConditions: null,
+        dimensionShares: DIMENSION_SHARES,
+      }
+      return renderCard()
+    }
+    const groupOf = (label: string) =>
+      screen.getByText(label).parentElement as HTMLElement
+    const rowFor = (label: string) =>
+      screen.getByText(label).closest("li") as HTMLElement
+
+    it("groups the twelve into required and recommended", () => {
+      const { container } = renderChecks(ALL_GREEN_CHECKS)
+      const required = within(groupOf(m.requiredChecks))
+      const recommended = within(groupOf(m.recommendedChecks))
+      expect(required.getAllByRole("listitem")).toHaveLength(9)
+      expect(recommended.getAllByRole("listitem")).toHaveLength(3)
+      // Membership, not just the counts: a blocker in the recommended group
+      // would keep both numbers right.
+      expect(required.getByText(m.checks.documentationComplete)).toBeDefined()
+      expect(recommended.getByText(m.checks.overlapPairs)).toBeDefined()
+      // The per-row parenthetical is gone: the group says it once.
+      expect(container.textContent).not.toContain("(Required)")
+      expect(container.textContent).not.toContain("(Recommended)")
+    })
+
+    // A settled row is not what the reader came for: it recedes into muted
+    // text behind a small calm mark, with no circle chrome around it.
+    it("lets a passing row recede", () => {
+      renderChecks(ALL_GREEN_CHECKS)
+      const row = rowFor(m.checks.overlapPairs)
+      expect(row.className).toContain("text-muted-foreground")
+      const mark = row.querySelector("svg") as SVGElement
+      expect(mark.getAttribute("class")).toContain("text-success")
+      // Small and bare: the icons carry 24px unless a size class says
+      // otherwise, and a circled check at this size reads as a control.
+      expect(mark.getAttribute("class")).toContain("size-4")
+      expect(mark.getAttribute("aria-hidden")).toBe("true")
+      // Decorative mark, so the state is carried in text a reader can hear.
+      expect(row.textContent).toContain(m.checkMet)
+    })
+
+    it("lets a failing blocker lead, with its remedy under it", () => {
+      renderChecks(
+        ALL_GREEN_CHECKS.map((check) =>
+          check.key === "criterionCount"
+            ? { ...check, ok: false, count: 4 }
+            : check
+        )
+      )
+      const row = rowFor(m.checks.criterionCount)
+      // Full-strength ink: nothing about this row is receding.
+      expect(row.className).not.toContain("text-muted-foreground")
+      const mark = row.querySelector("svg") as SVGElement
+      expect(mark.getAttribute("class")).toContain("text-destructive")
+      expect(mark.getAttribute("class")).toContain("size-4")
+      expect(row.textContent).toContain(m.checkNotMet)
+      // The remedy line still lands under the finding, untouched.
+      expect(row.textContent).toContain("it needs 6 to 8")
+    })
+
+    it("marks a failing recommendation in the app's amber", () => {
+      renderChecks(
+        ALL_GREEN_CHECKS.map((check) =>
+          check.key === "overlapPairs"
+            ? { ...check, ok: false, pairs: [["knowledge-depth", "on-call"]] }
+            : check
+        )
+      )
+      const row = rowFor(m.checks.overlapPairs)
+      const mark = row.querySelector("svg") as SVGElement
+      expect(mark.getAttribute("class")).toContain("amber")
+      expect(row.className).not.toContain("text-muted-foreground")
+    })
+
+    // The approved model's own reading: every row settled, so the whole
+    // checklist is a quiet receipt under the sign-off metadata.
+    it("recedes entirely once the model is approved", () => {
+      queryResult = {
+        checks: ALL_GREEN_CHECKS,
+        approval: {
+          approvedBy: "u1",
+          approvedByName: "Alex",
+          approvedAt: Date.UTC(2026, 1, 2),
+        },
+        lastApprovedAt: null,
+        workingConditions: null,
+        dimensionShares: DIMENSION_SHARES,
+      }
+      renderCard()
+      for (const row of screen.getAllByRole("listitem")) {
+        expect(row.className).toContain("text-muted-foreground")
+      }
+    })
   })
 
   it("shows the draft state and an enabled Approve button when every blocker passes", () => {

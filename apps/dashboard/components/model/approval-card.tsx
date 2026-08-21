@@ -3,7 +3,7 @@
 import {
   Alert02Icon,
   Cancel01Icon,
-  CheckmarkCircle02Icon,
+  Tick02Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
@@ -29,22 +29,43 @@ import { WARNING_TEXT_CLASS } from "@/lib/alert-tone"
 import { methodErrorMessage } from "@/lib/method-error"
 import { toast } from "@/lib/toast"
 
+// One line of the twelve-item gate.
+//
+// A passing row RECEDES and a failing one LEADS: the reader of this chapter is
+// looking for what is left, and a checklist that shouts every settled item as
+// loudly as the one outstanding thing makes them find it themselves. Passed is
+// muted text behind a small calm mark; failing keeps the full-strength ink,
+// its own mark, and the remedy line under it.
+//
+// The marks are small and bare: size-4, no circle chrome. The icons carry
+// their intrinsic 24px unless a size class says otherwise, which is how a
+// checklist ends up with twelve badges down its left edge, and the circle
+// around a checkmark at that size reads as a control rather than a state.
+// The two groups, in the order the gate reads: what blocks approval first.
+const CHECK_GROUPS = [
+  { level: "blocker", labelKey: "requiredChecks" },
+  { level: "warning", labelKey: "recommendedChecks" },
+] as const
+
 function CheckRow({
   ok,
   level,
   label,
-  levelLabel,
+  stateLabel,
   remedy,
 }: {
   ok: boolean
   level: "blocker" | "warning"
   label: string
-  levelLabel: string
+  // Met or not met, for a screen reader. The mark is the only thing that
+  // carries this on screen, and a mark is decorative by definition, so the
+  // state is said in text that is not painted.
+  stateLabel: string
   // The "how to fix it" line, rendered under the row when the check fails.
   remedy?: ReactNode
 }) {
   const icon = ok
-    ? CheckmarkCircle02Icon
+    ? Tick02Icon
     : level === "blocker"
       ? Cancel01Icon
       : Alert02Icon
@@ -56,16 +77,21 @@ function CheckRow({
   return (
     // The row's own line stays a flex row; the remedy sits UNDER it in flow, so
     // a long instruction wraps under the finding instead of squeezing it.
-    <li className="text-sm">
-      <span className="flex items-center gap-2">
+    <li className={cn("text-sm", ok && "text-muted-foreground")}>
+      <span className="flex items-start gap-2">
+        {/* mt-0.5 rather than items-center: a label that wraps should keep its
+            mark on the FIRST line, where the eye starts, not centred against
+            two lines of text. */}
         <HugeiconsIcon
           icon={icon}
           strokeWidth={2}
-          className={cn("shrink-0", tone)}
+          className={cn("mt-0.5 size-4 shrink-0", tone)}
           aria-hidden="true"
         />
-        <span>{label}</span>
-        <span className="text-muted-foreground text-xs">({levelLabel})</span>
+        <span>
+          <span className="sr-only">{stateLabel} </span>
+          {label}
+        </span>
       </span>
       {remedy}
     </li>
@@ -206,27 +232,46 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
             onOpenChange={setRestoreOpen}
           />
         )}
-        <ul className="space-y-2">
-          {METHOD_CHECK_KEYS.map((key) => {
+        {/* Two groups, in the engine's own order within each: what BLOCKS the
+            approval and what is merely recommended. The distinction used to
+            ride every row as a parenthetical, which put the same two words
+            twelve times on one card and still left the reader to sort them;
+            the group says it once, and the rows underneath are then only
+            themselves. */}
+        {CHECK_GROUPS.map(({ level, labelKey }) => {
+          const checks = METHOD_CHECK_KEYS.flatMap((key) => {
             const check = checksByKey.get(key)
-            if (check === undefined) return null
-            return (
-              <CheckRow
-                key={key}
-                ok={check.ok}
-                level={check.level}
-                label={t(`checks.${key}`)}
-                levelLabel={t(`checkLevel.${check.level}`)}
-                remedy={
-                  <CheckRemedy
-                    check={check}
-                    dimensionShares={data.dimensionShares}
+            return check !== undefined && check.level === level ? [check] : []
+          })
+          if (checks.length === 0) return null
+          return (
+            <div key={level} className="space-y-1.5">
+              <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+                {t(labelKey)}
+              </p>
+              {/* Tighter than the old rhythm: most of these rows are settled
+                  most of the time, and a settled row does not need the air an
+                  outstanding one does. */}
+              <ul className="space-y-1.5">
+                {checks.map((check) => (
+                  <CheckRow
+                    key={check.key}
+                    ok={check.ok}
+                    level={check.level}
+                    label={t(`checks.${check.key}`)}
+                    stateLabel={t(check.ok ? "checkMet" : "checkNotMet")}
+                    remedy={
+                      <CheckRemedy
+                        check={check}
+                        dimensionShares={data.dimensionShares}
+                      />
+                    }
                   />
-                }
-              />
-            )
-          })}
-        </ul>
+                ))}
+              </ul>
+            </div>
+          )
+        })}
       </CardContent>
     </Card>
   )

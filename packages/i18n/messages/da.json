@@ -1961,10 +1961,10 @@
         "restoreCriterionRemovedWithRatings": "Fjernes fra modellen sammen med {count, plural, =1 {# vurdering} other {# vurderinger}}.",
         "restoreCriterionReturns": "Vender tilbage til modellen. Hver rolle skal vurderes på det igen.",
         "restoreNoChanges": "Modellen svarer allerede til den senest godkendte tilstand, så en gendannelse ændrer ingenting.",
-        "checkLevel": {
-          "blocker": "Obligatorisk",
-          "warning": "Anbefalet"
-        },
+        "requiredChecks": "Obligatoriske kontroller",
+        "recommendedChecks": "Anbefalede",
+        "checkMet": "Opfyldt",
+        "checkNotMet": "Ikke opfyldt",
         "checks": {
           "dimensionCoverage": "Kompetence, indsats og ansvar er alle dækket",
           "workingConditionsTested": "Arbejdsforhold testet",

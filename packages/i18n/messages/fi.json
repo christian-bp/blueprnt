@@ -1961,10 +1961,10 @@
         "restoreCriterionRemovedWithRatings": "Poistetaan mallista yhdessä {count, plural, =1 {# arvioinnin} other {# arvioinnin}} kanssa.",
         "restoreCriterionReturns": "Palaa malliin. Jokainen rooli on arvioitava sen osalta uudelleen.",
         "restoreNoChanges": "Malli vastaa jo viimeksi hyväksyttyä tilaa, joten palauttaminen ei muuta mitään.",
-        "checkLevel": {
-          "blocker": "Pakollinen",
-          "warning": "Suositeltu"
-        },
+        "requiredChecks": "Pakolliset tarkistukset",
+        "recommendedChecks": "Suositellut",
+        "checkMet": "Täyttyy",
+        "checkNotMet": "Ei täyty",
         "checks": {
           "dimensionCoverage": "Osaaminen, ponnistus ja vastuu on kaikki katettu",
           "workingConditionsTested": "Työolosuhteet testattu",

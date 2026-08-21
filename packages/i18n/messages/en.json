@@ -1961,10 +1961,10 @@
         "restoreCriterionRemovedWithRatings": "Removed from the model, together with {count, plural, =1 {# rating} other {# ratings}}.",
         "restoreCriterionReturns": "Returns to the model. Every role has to be evaluated on it again.",
         "restoreNoChanges": "The model already matches the last approved state, so restoring changes nothing.",
-        "checkLevel": {
-          "blocker": "Required",
-          "warning": "Recommended"
-        },
+        "requiredChecks": "Required checks",
+        "recommendedChecks": "Recommended",
+        "checkMet": "Met",
+        "checkNotMet": "Not met",
         "checks": {
           "dimensionCoverage": "Competence, effort, and responsibility are each covered",
           "workingConditionsTested": "Working conditions tested",

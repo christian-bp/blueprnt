@@ -1961,10 +1961,10 @@
         "restoreCriterionRemovedWithRatings": "Tas bort ur modellen, tillsammans med {count, plural, =1 {# bedömning} other {# bedömningar}}.",
         "restoreCriterionReturns": "Återgår till modellen. Varje roll måste bedömas på det igen.",
         "restoreNoChanges": "Modellen motsvarar redan det senast godkända tillståndet, så en återställning ändrar ingenting.",
-        "checkLevel": {
-          "blocker": "Obligatorisk",
-          "warning": "Rekommenderad"
-        },
+        "requiredChecks": "Obligatoriska kontroller",
+        "recommendedChecks": "Rekommenderade",
+        "checkMet": "Uppfylld",
+        "checkNotMet": "Ej uppfylld",
         "checks": {
           "dimensionCoverage": "Kompetens, ansträngning och ansvar är alla täckta",
           "workingConditionsTested": "Arbetsförhållanden testade",
