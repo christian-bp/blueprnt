@@ -50,6 +50,17 @@ async function seedPersonAndFreeze(t: ReturnType<typeof initConvexTest>) {
     orgId,
   })
   if (model === null) throw new Error("seed: model")
+  // Approve the model directly (bypassing approveModel's checklist
+  // re-validation, like the ratings and the lock below): the preconditions
+  // gate now also requires a CURRENT approval before a run can start, and
+  // this fixture is about erasure mechanics, not the approval lifecycle.
+  await t.run(async (ctx) => {
+    const modelDocId = ctx.db.normalizeId("models", model.modelId)
+    if (modelDocId === null) throw new Error("seed: model id")
+    await ctx.db.patch(modelDocId, {
+      approval: { approvedBy: userId, approvedAt: Date.now() },
+    })
+  })
   const track = model.tracks[0]
   if (track === undefined) throw new Error("seed: track")
   const seniority =

@@ -1202,13 +1202,16 @@
         "labelPlaceholder": "f.eks. Lønkortlægning 2026",
         "cta": "Start",
         "cancel": "Annuller",
-        "error": "Lønkortlægningen kunne ikke startes. Prøv igen."
+        "error": "Lønkortlægningen kunne ikke startes. Prøv igen.",
+        "frozenModelLine": "Kortlægningen fastfryser den senest godkendte model (godkendt {date}) som metodebevis."
       },
       "preconditions": {
         "title": "Ikke klar endnu",
         "importLine": "Ingen medarbejdere er importeret endnu",
         "classifyLine": "{count, plural, one {# person er ikke klassificeret endnu} other {# personer er ikke klassificeret endnu}}",
-        "evaluateLine": "{count, plural, one {# rolle med medarbejdere mangler stadig at få vurderingen låst} other {# roller med medarbejdere mangler stadig at få vurderingen låst}}"
+        "evaluateLine": "{count, plural, one {# rolle med medarbejdere mangler stadig at få vurderingen låst} other {# roller med medarbejdere mangler stadig at få vurderingen låst}}",
+        "approvalLine": "Modellen skal være godkendt, før en lønkortlægning kan startes",
+        "driftWarning": "{count, plural, one {# rolle blev låst under en tidligere version af metoden. Overvej at låse den igen først.} other {# roller blev låst under en tidligere version af metoden. Overvej at låse dem igen først.}}"
       },
       "actions": {
         "status": {

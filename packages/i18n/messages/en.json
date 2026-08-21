@@ -1202,13 +1202,16 @@
         "labelPlaceholder": "e.g. Pay mapping 2026",
         "cta": "Start",
         "cancel": "Cancel",
-        "error": "The pay mapping could not be started. Try again."
+        "error": "The pay mapping could not be started. Try again.",
+        "frozenModelLine": "This pay mapping freezes the most recently approved model (approved {date}) as its method evidence."
       },
       "preconditions": {
         "title": "Not ready yet",
         "importLine": "No employees have been imported yet",
         "classifyLine": "{count, plural, one {# person is not classified yet} other {# people are not classified yet}}",
-        "evaluateLine": "{count, plural, one {# role with employees still needs its evaluation locked} other {# roles with employees still need their evaluation locked}}"
+        "evaluateLine": "{count, plural, one {# role with employees still needs its evaluation locked} other {# roles with employees still need their evaluation locked}}",
+        "approvalLine": "The model must be approved before a pay mapping can start",
+        "driftWarning": "{count, plural, one {# role was locked under an earlier version of the method. Consider re-locking it first.} other {# roles were locked under an earlier version of the method. Consider re-locking them first.}}"
       },
       "actions": {
         "status": {

@@ -555,9 +555,144 @@ describe("getPayMappingPreconditions", () => {
       peopleCount: expect.any(Number),
       unclassifiedCount: 0,
       unevaluatedRoles: [],
+      modelApproved: true,
+      modelApprovedAt: expect.any(Number),
+      driftedRolesCount: 0,
       ready: true,
     })
     expect(result.peopleCount).toBeGreaterThan(0)
+  })
+
+  it("reports not ready when the model's approval is unset, even though every person is classified and every staffed role is evaluated and locked; re-approving restores ready and lets the run start", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr } = await seedForFreeze(t)
+
+    // Reopen approval directly (mirrors how locking.test.ts's "method drift
+    // derivation" suite forces approval state): every other precondition
+    // stays exactly as seedForFreeze left it, satisfied.
+    const modelBefore = await t.run(async (ctx) => {
+      const modelDoc = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (modelDoc === null) throw new Error("seed: model")
+      await ctx.db.patch(modelDoc._id, { approval: undefined })
+      return modelDoc
+    })
+
+    const unmet = await asHr.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    expect(unmet.modelApproved).toBe(false)
+    expect(unmet.modelApprovedAt).toBeNull()
+    expect(unmet.unclassifiedCount).toBe(0)
+    expect(unmet.unevaluatedRoles).toEqual([])
+    expect(unmet.ready).toBe(false)
+
+    await expect(
+      asHr.mutation(api.payMapping.runs.startPayMappingRun, {
+        orgId,
+        label: "Test",
+      })
+    ).rejects.toThrow(/errors.payMappingPreconditionsUnmet/)
+
+    // Re-approving restores ready and lets the run start.
+    const approvedAt = Date.now()
+    await t.run(async (ctx) => {
+      await ctx.db.patch(modelBefore._id, {
+        approval: { approvedBy: "second-approver", approvedAt },
+      })
+    })
+    const ready = await asHr.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    expect(ready.modelApproved).toBe(true)
+    expect(ready.modelApprovedAt).toBe(approvedAt)
+    expect(ready.ready).toBe(true)
+
+    const { runId } = await asHr.mutation(
+      api.payMapping.runs.startPayMappingRun,
+      { orgId, label: "Test" }
+    )
+    const run = await t.run((ctx) => ctx.db.get(runId))
+    // The frozen evidence carries the CURRENT (non-null) approval metadata,
+    // never a stale or empty one.
+    expect(run?.frozenModel.approval).toEqual({
+      approvedBy: "second-approver",
+      approvedAt,
+    })
+  })
+
+  it("counts a staffed, evaluated, locked role as drifted once the model is re-approved after that role's lock, and clears once the role is re-locked", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr } = await seedForFreeze(t)
+
+    const lockedAt = await t.run(async (ctx) => {
+      const roles = await ctx.db
+        .query("roles")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const role = roles.find((r) => r.title === "Software Engineer")
+      return role?.assessment?.lockedAt ?? 0
+    })
+
+    // A later re-approval (direct write, same as locking.test.ts's "method
+    // drift derivation" suite): the role stays locked, but under a method
+    // that is no longer the one currently approved.
+    await t.run(async (ctx) => {
+      const modelDoc = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (modelDoc === null) throw new Error("seed: model")
+      await ctx.db.patch(modelDoc._id, {
+        approval: {
+          approvedBy: "second-approver",
+          approvedAt: lockedAt + 1000,
+        },
+      })
+    })
+
+    const drifted = await asHr.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    // Still ready: drift is a recommended warning, never a blocker.
+    expect(drifted.ready).toBe(true)
+    expect(drifted.driftedRolesCount).toBe(1)
+
+    // Re-locking under the current approval clears the drift again. A real
+    // re-lock a moment later in wall-clock time is not reliably past the
+    // artificial `lockedAt + 1000` used above (this test runs in well under a
+    // second), so approvedAt is moved back to just-before "now" first
+    // (mirrors locking.test.ts's "method drift derivation" suite): still
+    // exercises the real lockedAt-vs-approvedAt comparison, deterministically.
+    await t.run(async (ctx) => {
+      const modelDoc = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (modelDoc === null) throw new Error("seed: model")
+      await ctx.db.patch(modelDoc._id, {
+        approval: { approvedBy: "second-approver", approvedAt: Date.now() - 1 },
+      })
+      const roles = await ctx.db
+        .query("roles")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const role = roles.find((r) => r.title === "Software Engineer")
+      if (role === undefined) throw new Error("seed: role")
+      await ctx.db.patch(role._id, {
+        assessment: { lockedBy: "second-approver", lockedAt: Date.now() },
+      })
+    })
+    const relocked = await asHr.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    expect(relocked.driftedRolesCount).toBe(0)
   })
 
   it("reports the unclassified count and the unevaluated staffed roles, excluding unstaffed ones", async () => {
@@ -738,6 +873,11 @@ describe("getPayMappingPreconditions", () => {
       peopleCount: 0,
       unclassifiedCount: 0,
       unevaluatedRoles: [],
+      // No model was ever created for this org, so there is nothing to
+      // approve either.
+      modelApproved: false,
+      modelApprovedAt: null,
+      driftedRolesCount: 0,
       ready: false,
     })
 

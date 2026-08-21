@@ -1202,13 +1202,16 @@
         "labelPlaceholder": "f.eks. Lønnskartlegging 2026",
         "cta": "Start",
         "cancel": "Avbryt",
-        "error": "Lønnskartleggingen kunne ikke startes. Prøv igjen."
+        "error": "Lønnskartleggingen kunne ikke startes. Prøv igjen.",
+        "frozenModelLine": "Kartleggingen fryser den sist godkjente modellen (godkjent {date}) som metodebevis."
       },
       "preconditions": {
         "title": "Ikke klart ennå",
         "importLine": "Ingen ansatte er importert ennå",
         "classifyLine": "{count, plural, one {# person er ikke klassifisert ennå} other {# personer er ikke klassifisert ennå}}",
-        "evaluateLine": "{count, plural, one {# rolle med ansatte må fortsatt få vurderingen låst} other {# roller med ansatte må fortsatt få vurderingen låst}}"
+        "evaluateLine": "{count, plural, one {# rolle med ansatte må fortsatt få vurderingen låst} other {# roller med ansatte må fortsatt få vurderingen låst}}",
+        "approvalLine": "Modellen må være godkjent før en lønnskartlegging kan startes",
+        "driftWarning": "{count, plural, one {# rolle ble låst under en tidligere versjon av metoden. Vurder å låse den på nytt først.} other {# roller ble låst under en tidligere versjon av metoden. Vurder å låse dem på nytt først.}}"
       },
       "actions": {
         "status": {

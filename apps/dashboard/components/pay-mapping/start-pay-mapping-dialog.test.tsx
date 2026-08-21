@@ -46,12 +46,18 @@ let preconditionsResult:
       peopleCount: number
       unclassifiedCount: number
       unevaluatedRoles: unknown[]
+      modelApproved: boolean
+      modelApprovedAt: number | null
+      driftedRolesCount: number
       ready: boolean
     }
   | undefined = {
   peopleCount: 12,
   unclassifiedCount: 0,
   unevaluatedRoles: [],
+  modelApproved: true,
+  modelApprovedAt: 1_700_000_000_000,
+  driftedRolesCount: 0,
   ready: true,
 }
 
@@ -79,6 +85,9 @@ describe("StartPayMappingDialog", () => {
       peopleCount: 12,
       unclassifiedCount: 0,
       unevaluatedRoles: [],
+      modelApproved: true,
+      modelApprovedAt: 1_700_000_000_000,
+      driftedRolesCount: 0,
       ready: true,
     }
   })
@@ -172,6 +181,9 @@ describe("StartPayMappingDialog", () => {
       peopleCount: 12,
       unclassifiedCount: 3,
       unevaluatedRoles: [{ roleId: "r1", title: "Designer", slug: "designer" }],
+      modelApproved: true,
+      modelApprovedAt: 1_700_000_000_000,
+      driftedRolesCount: 0,
       ready: false,
     }
     renderDialog()
@@ -187,6 +199,9 @@ describe("StartPayMappingDialog", () => {
       peopleCount: 12,
       unclassifiedCount: 0,
       unevaluatedRoles: [],
+      modelApproved: true,
+      modelApprovedAt: 1_700_000_000_000,
+      driftedRolesCount: 0,
       ready: true,
     }
     renderDialog()
@@ -194,6 +209,59 @@ describe("StartPayMappingDialog", () => {
 
     expect(screen.getByLabelText(labels.labelLabel)).toBeDefined()
     expect(screen.queryByText(preconditionLabels.title)).toBeNull()
+  })
+
+  it("shows the approval line in the precondition panel when the model is unapproved, even though people and roles are otherwise ready", () => {
+    preconditionsResult = {
+      peopleCount: 12,
+      unclassifiedCount: 0,
+      unevaluatedRoles: [],
+      modelApproved: false,
+      modelApprovedAt: null,
+      driftedRolesCount: 0,
+      ready: false,
+    }
+    renderDialog()
+    fireEvent.click(screen.getByRole("button", { name: triggerLabel }))
+
+    expect(screen.getByText(preconditionLabels.approvalLine)).toBeDefined()
+    expect(screen.queryByLabelText(labels.labelLabel)).toBeNull()
+  })
+
+  it("states which model gets frozen, with its approval date, once the gate is met", () => {
+    preconditionsResult = {
+      peopleCount: 12,
+      unclassifiedCount: 0,
+      unevaluatedRoles: [],
+      modelApproved: true,
+      modelApprovedAt: 1_700_000_000_000,
+      driftedRolesCount: 0,
+      ready: true,
+    }
+    renderDialog()
+    fireEvent.click(screen.getByRole("button", { name: triggerLabel }))
+
+    expect(
+      screen.getByText(/freezes the most recently approved model/)
+    ).toBeDefined()
+  })
+
+  it("shows the non-blocking drift warning next to the form once the gate is met", () => {
+    preconditionsResult = {
+      peopleCount: 12,
+      unclassifiedCount: 0,
+      unevaluatedRoles: [],
+      modelApproved: true,
+      modelApprovedAt: 1_700_000_000_000,
+      driftedRolesCount: 3,
+      ready: true,
+    }
+    renderDialog()
+    fireEvent.click(screen.getByRole("button", { name: triggerLabel }))
+
+    expect(screen.getByText(/earlier version of the method/)).toBeDefined()
+    // Non-blocking: the form is still shown and usable.
+    expect(screen.getByLabelText(labels.labelLabel)).toBeDefined()
   })
 
   it("shows a loading indicator, not the form or the panel, while the precondition check is in flight", () => {

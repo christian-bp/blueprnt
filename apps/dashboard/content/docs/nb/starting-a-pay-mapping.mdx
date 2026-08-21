@@ -19,7 +19,9 @@ dag automatisk i det øyeblikket dere starter kartleggingen.
 
 ## Forutsetninger
 
-Å starte krever at ansatte allerede er importert til [Ansatte](/people),
+Å starte krever at organisasjonens evalueringsmodell er godkjent akkurat
+nå, fra [kapittelet Godkjenning](/model/approval) i modellområdet; at
+ansatte allerede er importert til [Ansatte](/people),
 at hver person er klassifisert til en rolle og senioritet fra
 [Klassifiser](/people/classify), og at hver aktive, bemannede rolle i
 [Roller](/roles) (en med minst én person for øyeblikket tildelt den) har
@@ -32,13 +34,23 @@ Dere kan åpne "Start lønnskartlegging" når som helst. Hvis en
 forutsetning ikke er oppfylt, viser dialogen hva som gjenstår i stedet
 for navnefeltet, som en ren liste over uoppfylte betingelser, hver en
 lenke til der arbeidet
-skjer: å importere ansatte når ingen er importert enda, å klassifisere
+skjer: å godkjenne modellen når den ikke er godkjent akkurat nå, å
+importere ansatte når ingen er importert enda, å klassifisere
 de personene som fortsatt venter (med et antall), eller å låse de
 vurderingene som fortsatt mangler (med et antall og, under det, opp til
 en håndfull av de spesifikke rollene det gjelder). Se
+[Metodedokumentasjon](/docs/method-documentation),
 [Importere ansatte](/docs/importing-people),
 [Klassifisere ansatte](/docs/classifying-people) og
 [Vurdere en rolle](/docs/evaluating-a-role) for det arbeidet.
+
+Hvis alle forutsetningene over er oppfylt, men noen allerede låste,
+bemannede roller ble låst før modellens nåværende godkjenning, viser
+dialogen en egen, ikke-blokkerende merknad som anbefaler at dere låser
+dem opp på nytt først: ingenting hindrer kartleggingen i å starte, men
+disse rollenes avslørte resultater ble bekreftet under en tidligere
+versjon av metoden. Se [Vurdere en rolle](/docs/evaluating-a-role) for å
+låse en rolle på nytt.
 
 ## Det frosne øyeblikksbildet
 
@@ -46,7 +58,13 @@ en håndfull av de spesifikke rollene det gjelder). Se
 fullstendige metodedokumentasjon (kriteriene med dimensjonene og
 vektpoengene deres, nivå- og sonereglene, materialitetsvurderingen for
 arbeidsforhold, og hvem som godkjente modellen og når) sammen med hver
-persons rolle, senioritet, nivå og lønn. Den frosne kopien, aldri de levende dataene deres, er det
+persons rolle, senioritet, nivå og lønn. Siden det kreves at modellen er
+godkjent akkurat nå for å starte, og enhver metodepåvirkende endring
+åpner godkjenningen på nytt til noen godkjenner den igjen, er det som
+fryses alltid modellens sist godkjente tilstand, aldri en levende
+endring som ennå ikke er gjennomgått; når organisasjonen deres er klar
+til å starte, sier dialogen dette direkte og navngir
+godkjenningsdatoen. Den frosne kopien, aldri de levende dataene deres, er det
 hvert kapittels sammenligning, diagram og funn i denne kartleggingen
 leser fra deretter. Dette er hvorfor en lønnskartleggings tall ligger
 stille selv etter at dere går videre og legger til personer, vurderer

@@ -11,6 +11,7 @@ import type {
   QueryCtx,
 } from "../_generated/server"
 import { deriveResults } from "../assessment/compute"
+import { deriveMethodDrift } from "../assessment/results"
 import { buildModelEvidence } from "../evaluationModel/evidence"
 import { resolveContentLocale } from "../evaluationModel/model"
 import { AUDIT_EVENTS, resolveActorName } from "../lib/audit"
@@ -36,6 +37,32 @@ export type PayMappingPreconditions = {
   peopleCount: number
   unclassifiedCount: number
   unevaluatedRoles: PreconditionRole[]
+  // The org's model carries a CURRENT approval (model.approval !== undefined,
+  // not merely a past one sitting in lastApprovedModel). Required for ready:
+  // startPayMappingRun freezes the live model as the run's statutory method
+  // evidence (ADR-0011/ADR-0023), and a model whose approval was reopened by
+  // a later method edit (reopenApprovalIfSet) is no longer a reviewed,
+  // signed-off method, so freezing it would stamp unapproved evidence with
+  // null approval metadata.
+  modelApproved: boolean
+  // model.approval.approvedAt when modelApproved is true, else null. Powers
+  // the start dialog's "this freezes the model approved on {date}" copy;
+  // never populated from lastApprovedModel, which names a PAST approval that
+  // may no longer be the live one.
+  modelApprovedAt: number | null
+  // Non-blocking (CLAUDE.md: recommended, never a blocker): how many staffed,
+  // active roles are both evaluated AND locked (so they do NOT appear in
+  // unevaluatedRoles above) but were locked before the model's CURRENT
+  // approval -- the same drift the roles wire reveals per role
+  // (assessment/results.ts's deriveMethodDrift, reused here verbatim so the
+  // two can never name a different set of roles). A role only counts once
+  // its own lock is stale against the model that is actually approved right
+  // now; while modelApproved is false every currently-locked role is
+  // trivially stale (deriveMethodDrift treats "no current approval" as
+  // drift), which is expected: the modelApproved line above is already the
+  // blocker in that state, and this count still names the roles that will
+  // need re-locking once approval is restored.
+  driftedRolesCount: number
   ready: boolean
 }
 
@@ -44,21 +71,24 @@ export type PayMappingPreconditions = {
 // ACTIVE role ("classified" = confirmed AND the role still exists and is
 // not archived; the same definition listPeopleByTitle's currentAssignment,
 // countClassified, the people-tab badge, and the to-do's classify group all
-// use), and every ACTIVE role holding at least one open assignment
-// ("staffed") is both evaluated (resolves a level, the same deriveResults
-// resolution the frozen snapshot reads) AND locked (spec 2.4/6: a run may
-// only include roles whose result has actually been revealed, not merely a
-// complete-but-unlocked draft). An unstaffed role's evaluation/lock state
-// never blocks. Shared by startPayMappingRun's server-side gate and
-// getPayMappingPreconditions so the two can never fork. Archived roles are
-// excluded from BOTH checks: from the staffed-evaluation check because
-// deriveResults never resolves a level for them (so they can never block),
-// and from the classified check because a confirmed open assignment to an
-// archived (or otherwise missing) role is NOT a real classification -- it
-// counts toward unclassifiedCount, same as no assignment at all. archiveRole
-// normally ends a role's open assignments at archive time (assessment/
-// roles.ts), so this only guards a pre-existing stale row, not the everyday
-// path.
+// use), every ACTIVE role holding at least one open assignment ("staffed")
+// is both evaluated (resolves a level, the same deriveResults resolution the
+// frozen snapshot reads) AND locked (spec 2.4/6: a run may only include
+// roles whose result has actually been revealed, not merely a
+// complete-but-unlocked draft), AND the org's model carries a CURRENT
+// approval (ADR-0011/ADR-0023: the freeze below stamps the live model as the
+// run's statutory method evidence, so an unapproved method can never become
+// one). An unstaffed role's evaluation/lock state never blocks. Shared by
+// startPayMappingRun's server-side gate and getPayMappingPreconditions so
+// the two can never fork. Archived roles are excluded from BOTH the
+// staffed-evaluation and classified checks: from the staffed-evaluation
+// check because deriveResults never resolves a level for them (so they can
+// never block), and from the classified check because a confirmed open
+// assignment to an archived (or otherwise missing) role is NOT a real
+// classification -- it counts toward unclassifiedCount, same as no
+// assignment at all. archiveRole normally ends a role's open assignments at
+// archive time (assessment/roles.ts), so this only guards a pre-existing
+// stale row, not the everyday path.
 export async function computePayMappingPreconditions(
   ctx: QueryCtx | MutationCtx,
   orgId: string
@@ -71,6 +101,13 @@ export async function computePayMappingPreconditions(
 
   const derived = await deriveResults(ctx, orgId)
   const levelByRole = new Map(derived.results.map((r) => [r.roleId, r]))
+
+  const model = await ctx.db
+    .query("models")
+    .withIndex("by_org", (q) => q.eq("orgId", orgId))
+    .unique()
+  const modelApproved = model?.approval !== undefined
+  const modelApprovedAt = model?.approval?.approvedAt ?? null
 
   const roleRows = await ctx.db
     .query("roles")
@@ -102,9 +139,11 @@ export async function computePayMappingPreconditions(
     if (open !== null) staffedRoleIds.add(open.roleId as string)
   }
 
-  const unevaluatedRoles: PreconditionRole[] = [...staffedRoleIds]
+  const staffedActiveRoles = [...staffedRoleIds]
     .map((roleId) => activeRoleById.get(roleId))
     .filter((role): role is Doc<"roles"> => role !== undefined)
+
+  const unevaluatedRoles: PreconditionRole[] = staffedActiveRoles
     .filter((role) => {
       const level = levelByRole.get(role._id as string)?.level ?? null
       // Evaluated AND locked (spec 2.4/6): a staffed role that is complete
@@ -115,16 +154,28 @@ export async function computePayMappingPreconditions(
     .map((role) => ({ roleId: role._id, title: role.title, slug: role.slug }))
     .sort((a, b) => a.title.localeCompare(b.title))
 
+  // Drift is a property of the LOCKED, non-blocking subset: an unevaluated
+  // role above already blocks on its own, and there is no lock timestamp to
+  // compare while it has none.
+  const driftedRolesCount = staffedActiveRoles.filter(
+    (role) =>
+      role.assessment !== undefined && deriveMethodDrift(role.assessment, model)
+  ).length
+
   return {
     peopleCount: active.length,
     unclassifiedCount,
     unevaluatedRoles,
+    modelApproved,
+    modelApprovedAt,
+    driftedRolesCount,
     // An org with no people at all is never ready: DL 3 kap. maps employees,
     // so an empty population must import before anything can start.
     ready:
       active.length > 0 &&
       unclassifiedCount === 0 &&
-      unevaluatedRoles.length === 0,
+      unevaluatedRoles.length === 0 &&
+      modelApproved,
   }
 }
 
@@ -143,6 +194,9 @@ export const getPayMappingPreconditions = orgQuery({
     peopleCount: v.number(),
     unclassifiedCount: v.number(),
     unevaluatedRoles: v.array(preconditionRoleShape),
+    modelApproved: v.boolean(),
+    modelApprovedAt: v.union(v.number(), v.null()),
+    driftedRolesCount: v.number(),
     ready: v.boolean(),
   }),
   handler: async (ctx) => computePayMappingPreconditions(ctx, ctx.orgId),
@@ -175,6 +229,20 @@ export const startPayMappingRun = orgMutation({
     // locale at freeze time and are never re-resolved, so a later locale change
     // or content edit cannot alter an already-frozen run. This is the ADR-0023
     // freeze, the only place the product versions its method (spec 2.6).
+    //
+    // INVARIANT this freeze relies on: the preconditions gate just above
+    // already required modelApproved (model.approval !== undefined), and
+    // every method-affecting mutation clears approval the moment it changes
+    // anything the method depends on (reopenApprovalIfSet, wired into
+    // activateCriterion/deactivateCriterion/rebalanceWeights/
+    // setWorkingConditionsDecision/updateLevelRules/updateZoneProfileRules).
+    // So a model whose approval is currently set has had no method-affecting
+    // edit since that approval was granted: the live model IS the
+    // last-approved model, byte for byte. The evidence built below is
+    // therefore, by construction, the latest APPROVED method (with non-null
+    // approval metadata), never a live-but-unreviewed edit -- there is no
+    // separate "freeze the approved version instead of the live one" step
+    // to write, because for an approved model there is only one version.
     const model = await ctx.db
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))

@@ -1202,13 +1202,16 @@
         "labelPlaceholder": "esim. Palkkakartoitus 2026",
         "cta": "Aloita",
         "cancel": "Peruuta",
-        "error": "Palkkakartoitusta ei voitu aloittaa. Yritä uudelleen."
+        "error": "Palkkakartoitusta ei voitu aloittaa. Yritä uudelleen.",
+        "frozenModelLine": "Kartoitus jäädyttää viimeksi hyväksytyn mallin (hyväksytty {date}) menetelmän näyttönä."
       },
       "preconditions": {
         "title": "Ei vielä valmis",
         "importLine": "Työntekijöitä ei ole vielä tuotu",
         "classifyLine": "{count, plural, one {# henkilö ei ole vielä luokiteltu} other {# henkilöä ei ole vielä luokiteltu}}",
-        "evaluateLine": "{count, plural, one {# roolin, jossa on työntekijöitä, arviointi odottaa vielä lukitsemista} other {# roolin, joissa on työntekijöitä, arviointi odottaa vielä lukitsemista}}"
+        "evaluateLine": "{count, plural, one {# roolin, jossa on työntekijöitä, arviointi odottaa vielä lukitsemista} other {# roolin, joissa on työntekijöitä, arviointi odottaa vielä lukitsemista}}",
+        "approvalLine": "Malli on hyväksyttävä ennen kuin palkkakartoitus voidaan aloittaa",
+        "driftWarning": "{count, plural, one {# rooli lukittiin menetelmän aiemman version mukaisesti. Harkitse sen lukitsemista uudelleen ennen aloittamista.} other {# roolia lukittiin menetelmän aiemman version mukaisesti. Harkitse niiden lukitsemista uudelleen ennen aloittamista.}}"
       },
       "actions": {
         "status": {

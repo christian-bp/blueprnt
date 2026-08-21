@@ -27,7 +27,13 @@ import { familyNames, trackNames } from "./names"
 // prior approval, so a locked role next to an unapproved model means the
 // method moved since that role's lock, exactly the case this marking exists
 // to surface (ADR-0023 accepts this as visible-never-prevented).
-function deriveMethodDrift(
+//
+// Exported so payMapping/runs.ts's precondition computation can reuse this
+// EXACT predicate for its (non-blocking) drift warning, rather than
+// re-deriving a second notion of "locked under an earlier method": the roles
+// wire and the pay-mapping start dialog must never be able to name a
+// different set of drifted roles.
+export function deriveMethodDrift(
   assessment: Doc<"roles">["assessment"],
   model: Doc<"models"> | null
 ): boolean {

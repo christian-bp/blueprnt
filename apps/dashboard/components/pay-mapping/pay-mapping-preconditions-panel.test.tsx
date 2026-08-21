@@ -4,12 +4,28 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import { PayMappingPreconditionsPanel } from "@/components/pay-mapping/pay-mapping-preconditions-panel"
 
+// modelApproved/driftedRolesCount default to the all-clear state so every
+// pre-existing call below (about the people/role rows only) keeps exercising
+// exactly what it did before; the approval and drift tests override them.
 function renderPanel(
-  props: Parameters<typeof PayMappingPreconditionsPanel>[0]
+  props: Omit<
+    Parameters<typeof PayMappingPreconditionsPanel>[0],
+    "modelApproved" | "driftedRolesCount"
+  > &
+    Partial<
+      Pick<
+        Parameters<typeof PayMappingPreconditionsPanel>[0],
+        "modelApproved" | "driftedRolesCount"
+      >
+    >
 ) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <PayMappingPreconditionsPanel {...props} />
+      <PayMappingPreconditionsPanel
+        modelApproved={true}
+        driftedRolesCount={0}
+        {...props}
+      />
     </NextIntlClientProvider>
   )
 }
@@ -83,5 +99,60 @@ describe("PayMappingPreconditionsPanel", () => {
         "1 role with employees still needs its evaluation locked"
       )
     ).toBeDefined()
+  })
+
+  it("shows the approval line, leading the other rows, linking to the model's Approval chapter, only while the model is unapproved", () => {
+    renderPanel({
+      peopleCount: 8,
+      unclassifiedCount: 2,
+      unevaluatedRoles: [],
+      modelApproved: false,
+    })
+    const line = screen.getByText(
+      "The model must be approved before a pay mapping can start"
+    )
+    expect(line.closest("a")?.getAttribute("href")).toBe("/model/approval")
+  })
+
+  it("omits the approval line once the model is approved", () => {
+    renderPanel({ peopleCount: 8, unclassifiedCount: 2, unevaluatedRoles: [] })
+    expect(
+      screen.queryByText(
+        "The model must be approved before a pay mapping can start"
+      )
+    ).toBeNull()
+  })
+
+  it("shows the non-blocking drift warning alongside a blocking row, pluralized by count", () => {
+    renderPanel({
+      peopleCount: 8,
+      unclassifiedCount: 2,
+      unevaluatedRoles: [],
+      driftedRolesCount: 2,
+    })
+    expect(
+      screen.getByText(
+        "2 roles were locked under an earlier version of the method. Consider re-locking them first."
+      )
+    ).toBeDefined()
+  })
+
+  it("singularizes the drift warning for one role", () => {
+    renderPanel({
+      peopleCount: 8,
+      unclassifiedCount: 0,
+      unevaluatedRoles: [],
+      driftedRolesCount: 1,
+    })
+    expect(
+      screen.getByText(
+        "1 role was locked under an earlier version of the method. Consider re-locking it first."
+      )
+    ).toBeDefined()
+  })
+
+  it("omits the drift warning when no role is drifted", () => {
+    renderPanel({ peopleCount: 8, unclassifiedCount: 2, unevaluatedRoles: [] })
+    expect(screen.queryByText(/earlier version of the method/)).toBeNull()
   })
 })

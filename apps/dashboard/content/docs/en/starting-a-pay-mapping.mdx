@@ -19,7 +19,9 @@ you start the mapping.
 
 ## Preconditions
 
-Starting requires that people have already been imported into
+Starting requires that your organization's evaluation model is currently
+approved, from the [Approval chapter](/model/approval) of the Model area;
+that people have already been imported into
 [People](/people), that every person is classified into a role and
 seniority from [Classify](/people/classify), and that every active,
 staffed role in [Roles](/roles) (one with at least one person currently
@@ -30,12 +32,21 @@ roles are never counted.
 
 You can open "Start pay mapping" at any time. If a precondition is unmet,
 the dialog shows what remains instead of the name field, as a plain list
-of unmet conditions, each one a link to where the work happens: importing
+of unmet conditions, each one a link to where the work happens: approving
+the model when it is not currently approved, importing
 people when none have been imported yet, classifying the people still waiting
 (with a count), or locking the evaluations still missing (with a count
 and, below it, up to a handful of the specific roles involved). See
-[Importing people](/docs/importing-people), [Classifying people](/docs/classifying-people),
+[Method documentation](/docs/method-documentation), [Importing people](/docs/importing-people),
+[Classifying people](/docs/classifying-people),
 and [Evaluating a role](/docs/evaluating-a-role) for that work.
+
+If every precondition above is met but some already-locked, staffed roles
+were locked before the model's current approval, the dialog shows a
+separate, non-blocking note recommending you re-lock them first: nothing
+stops the mapping from starting, but those roles' revealed results were
+confirmed under an earlier version of the method. See
+[Evaluating a role](/docs/evaluating-a-role) for re-locking a role.
 
 ## The frozen snapshot
 
@@ -43,7 +54,12 @@ Confirming captures, as of that instant, your current model's full
 method evidence (the criteria with their dimensions and weight points,
 the level and zone rules, the working-conditions materiality decision,
 and who approved the model and when) together with every person's role,
-seniority, level, and pay. That frozen copy,
+seniority, level, and pay. Because starting requires the model to be
+currently approved, and any method-affecting change reopens that approval
+until someone grants it again, what gets frozen is always the model's
+most recently approved state, never a live edit still under review; once
+your organization is ready to start, the dialog states this directly and
+names the approval date. That frozen copy,
 never your live data, is what every chapter's comparison, chart, and
 finding in this mapping reads from then on. This is why a pay mapping's
 numbers stay put even after you go on to add people, evaluate more roles,

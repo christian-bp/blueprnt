@@ -23,13 +23,16 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useMutation, useQuery } from "convex/react"
-import { useTranslations } from "next-intl"
+import { useFormatter, useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "@/lib/toast"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { PayMappingPreconditionsPanel } from "@/components/pay-mapping/pay-mapping-preconditions-panel"
+import {
+  PayMappingDriftWarning,
+  PayMappingPreconditionsPanel,
+} from "@/components/pay-mapping/pay-mapping-preconditions-panel"
 import { SubmitButton } from "@/components/submit-button"
 import {
   makeRunLabelSchema,
@@ -63,6 +66,7 @@ export function StartPayMappingDialog({
   const tHelp = useTranslations("dashboard.help")
   const tv = useTranslations("dashboard.validation")
   const tToast = useTranslations("dashboard.toast")
+  const format = useFormatter()
   const startPayMappingRun = useMutation(api.payMapping.runs.startPayMappingRun)
   const preconditions = useQuery(
     api.payMapping.runs.getPayMappingPreconditions,
@@ -119,6 +123,8 @@ export function StartPayMappingDialog({
               peopleCount={preconditions.peopleCount}
               unclassifiedCount={preconditions.unclassifiedCount}
               unevaluatedRoles={preconditions.unevaluatedRoles}
+              modelApproved={preconditions.modelApproved}
+              driftedRolesCount={preconditions.driftedRolesCount}
             />
           </>
         ) : preconditions === undefined ? (
@@ -141,6 +147,26 @@ export function StartPayMappingDialog({
               </div>
               <DialogDescription>{t("description")}</DialogDescription>
             </DialogHeader>
+            {/* modelApprovedAt is only ever null while modelApproved is
+                false (computePayMappingPreconditions in payMapping/runs.ts
+                sets it from model.approval.approvedAt, which exists exactly
+                when modelApproved is true), and this branch only renders
+                once preconditions.ready is true, which itself requires
+                modelApproved -- so the guard below never actually hides this
+                line, it only satisfies the type. */}
+            {preconditions.modelApprovedAt !== null && (
+              <p className="text-muted-foreground text-sm">
+                {t("frozenModelLine", {
+                  date: format.dateTime(
+                    new Date(preconditions.modelApprovedAt),
+                    { dateStyle: "medium" }
+                  ),
+                })}
+              </p>
+            )}
+            {preconditions.driftedRolesCount > 0 && (
+              <PayMappingDriftWarning count={preconditions.driftedRolesCount} />
+            )}
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
