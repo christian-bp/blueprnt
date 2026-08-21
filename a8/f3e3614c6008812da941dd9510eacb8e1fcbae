@@ -1,0 +1,61 @@
+apps/dashboard/lib/admin-surface.test.ts
+  s_58dd112dc09435::t_4fb62b6152c6a3 193
+  s_58dd112dc09435::t_3f9965762aa17a 18-22,28,49-53,55-64,69-81,98-122,128-143,146-164,167-171,173,176-178,180-181,184-185,189-192,194-198,200-206
+  s_58dd112dc09435::t_47c8e7f35eaecf 54
+  s_58dd112dc09435::t_538f375978259e 199
+packages/backend/convex/people/people.test.ts
+  s_58dd112dc09435::t_8870343960029f 3
+  s_58dd112dc09435::t_40ab22cffd3e76 820-844
+packages/backend/convex/people/import.ts
+  s_58dd112dc09435::t_4a89d1109dece6 440
+packages/backend/convex/assessment/anchorRoles.test.ts
+  s_58dd112dc09435::t_9831be7d8a9163 3-7
+  s_58dd112dc09435::t_8ef795ac8b1f7c 578-614
+packages/backend/convex/ai/suggest.test.ts
+  s_58dd112dc09435::t_029e319838fa75 4-8
+  s_58dd112dc09435::t_64d174202a12c7 769-818,822-823,825-826
+packages/backend/convex/ai/draft.ts
+  s_58dd112dc09435::t_4a89d1109dece6 198-201
+packages/backend/convex/assessment/anchorRoles.ts
+  s_58dd112dc09435::t_4a89d1109dece6 18-19
+packages/backend/convex/accounts/context.ts
+  s_58dd112dc09435::t_aa86e474ffec37 2-8
+  s_58dd112dc09435::t_3fde25882d923b 32-45
+packages/backend/convex/ai/suggest.ts
+  s_58dd112dc09435::t_b8fc23f15a05c0 31
+  s_58dd112dc09435::t_af617467b415b4 642-644
+  s_58dd112dc09435::t_c1805934705b17 850-851,853
+packages/backend/convex/testing.helpers.ts
+  s_58dd112dc09435::t_2ff2616f047288 63-88
+  s_58dd112dc09435::t_c0c18bebc02df3 5
+packages/backend/convex/lib/functions.ts
+  s_58dd112dc09435::t_45683afdd721f8 141-143
+  s_58dd112dc09435::t_615563138aff2c 195-199
+  s_58dd112dc09435::t_b2182e9834cf52 57-69,71-77
+  s_58dd112dc09435::t_42fdb13f41f47f 70
+  s_58dd112dc09435::t_8165091c578bdb 108
+packages/backend/convex/people/import.test.ts
+  s_58dd112dc09435::t_bb14a7c0e743e6 5,1101-1128
+  s_58dd112dc09435::t_83c162538e50d9 1129-1130
+packages/backend/convex/lib/functions.test.ts
+  s_58dd112dc09435::t_dd93e0b5da4340 85-124
+packages/backend/convex/ai/prefillData.ts
+  s_58dd112dc09435::t_c1805934705b17 97-99
+  s_58dd112dc09435::t_2fefa1af364c05 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "a8f3e3614c6008812da941dd9510eacb8e1fcbae",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
