@@ -190,7 +190,8 @@
       "modelRestored": "Model restored",
       "workingConditionsDecided": "Working conditions decision saved",
       "assessmentLocked": "Assessment locked",
-      "assessmentUnlocked": "Assessment unlocked"
+      "assessmentUnlocked": "Assessment unlocked",
+      "weightMotivationSaved": "Motivation saved"
     },
     "accountMenu": "Account menu",
     "commandPalette": {
@@ -805,7 +806,8 @@
         },
         "modelUpdatedChange": {
           "weightsRebalanced": "Weights rebalanced",
-          "complianceUpdated": "Documentation updated"
+          "complianceUpdated": "Documentation updated",
+          "weightMotivationUpdated": "Weight motivation updated"
         }
       },
       "events": {
@@ -1883,7 +1885,19 @@
         "weightMeaning3": "Clear and balanced influence in the model",
         "weightMeaning4": "Strong influence in the model",
         "weightMeaning5": "Very strong influence in the model",
-        "empty": "No criteria yet. <link>Choose them in the Criteria chapter</link>; each one enters at weight 3."
+        "empty": "No criteria yet. <link>Choose them in the Criteria chapter</link>; each one enters at weight 3.",
+        "dominanceNote": "{dimension} carries {share} of the weighting with no recorded reason.",
+        "dominanceMotivatedNote": "{dimension} carries {share} of the weighting. The reason is recorded.",
+        "motivateCta": "Motivate the weighting",
+        "editMotivationCta": "Edit the motivation",
+        "motivationDialogTitle": "Why {subject} weighs this much",
+        "motivationDialogDescription": "Record what about the work makes {subject} weigh as much as it does. The reason is saved on {criterion} and goes into the method appendix.",
+        "motivationLabel": "Motivation",
+        "motivationSaveCta": "Save motivation",
+        "cancelCta": "Cancel",
+        "motivationDialogDescriptionSelf": "Record what about the work makes {subject} weigh as much as it does. The reason goes into the method appendix, beside this criterion.",
+        "leadershipNote": "{criterion} weighs {points} of 5 with no recorded reason.",
+        "leadershipMotivatedNote": "{criterion} weighs {points} of 5. The reason is recorded."
       },
       "picker": {
         "title": "Criteria for {dimension}",
@@ -1965,7 +1979,23 @@
           "dimensionWeightBalance": "No dimension dominates the weighting unexplained",
           "peopleLeadershipWeight": "People leadership's weight is motivated",
           "overlapPairs": "Overlapping criteria are reviewed"
-        }
+        },
+        "remedies": {
+          "dimensionCoverage": "No criterion yet in: {dimensions}. Add one per dimension in <link>{chapter}</link>.",
+          "workingConditionsTested": "Working conditions has no recorded decision. Answer the materiality question, with a motivation, in <link>{chapter}</link>.",
+          "criterionCount": "The model holds {count, plural, =1 {# criterion} other {# criteria}}; it needs 6 to 8. Adjust the selection in <link>{chapter}</link>.",
+          "dimensionCaps": "Too many criteria in: {dimensions}. Remove one from each in <link>{chapter}</link>.",
+          "anchorsComplete": "A criterion is missing steps on its evaluation scale. Remove it and choose it again in <link>{chapter}</link>.",
+          "documentationComplete": "{count, plural, =1 {# criterion is} other {# criteria are}} still undocumented or unapproved. Open Document on each in <link>{chapter}</link>.",
+          "weightBudget": "The weight points do not add up to the budget. Balance them and save in <link>{chapter}</link>.",
+          "levelRulesValid": "The model's level thresholds are not a valid 1 to 12 scale. Nothing in the app edits them, so this needs support.",
+          "zoneProfileMonotonic": "The model's zone profile rules are not consistent. Nothing in the app edits them, so this needs support.",
+          "dimensionWeightBalance": "{dimensions} carries a dominant share of the weighting with no recorded reason. Motivate it in <link>{chapter}</link>, or move weight points to another dimension.",
+          "peopleLeadershipWeight": "{criterion} carries a heavy weight with no recorded reason. Motivate it in <link>{chapter}</link>, or lower its weight points.",
+          "overlapPairs": "Overlapping criteria: {pairs}. Note the overlap on either criterion of a pair in <link>{chapter}</link>."
+        },
+        "overlapFlag": "Overlap with {names} not noted yet",
+        "overlapPairFormat": "{first} / {second}"
       },
       "methodAppendix": {
         "docTitle": "Method appendix",
@@ -2089,7 +2119,9 @@
       "analysisProgressBody": "The steps that must be documented before the pay mapping can be completed: collaboration, the pay-practice review, and every group whose pay difference needs a reason. Nothing else is counted.",
       "modelProgressLabel": "What does the model need?",
       "modelProgressBody": "The decisions the model needs before it can be approved: the criteria, their weighting, each criterion's documentation, and the approval itself.",
-      "payGapScatterMeansBody": "The dashed lines are each gender's average pay in the group, so you can see who sits above and below their own average."
+      "payGapScatterMeansBody": "The dashed lines are each gender's average pay in the group, so you can see who sits above and below their own average.",
+      "weightMotivationLabel": "What is a weight motivation?",
+      "weightMotivationBody": "The recorded reason a dimension may weigh as much as it does. It motivates the weighting, not the 0-5 scale: say what about the work weighs more, never who does it."
     },
     "widgetCard": {
       "expand": "Expand"

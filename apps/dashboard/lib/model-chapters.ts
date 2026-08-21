@@ -59,6 +59,40 @@ export function currentChapter(pathname: string): ModelChapter | undefined {
   return chapterForSegment(segments[1])
 }
 
+// Where a failing check is FIXED: the chapter whose own controls satisfy it.
+// The approval checklist reports the twelve verdicts but owns none of the work,
+// so a row that fails has to be able to say where the work is, and a reader who
+// has to guess which of four chapters a verdict belongs to is being told they
+// are wrong without being told what to do.
+//
+// A total Record over MethodCheckKey, not a lookup with a default: a thirteenth
+// check must not compile until someone decides where its remedy lives, the same
+// guard idiom AUDIT_SUBJECTS uses in the backend.
+//
+// `null` is the reviewed decision that a check has NO in-app remedy: the level
+// and zone-profile rules are validated by the same engine on every write path
+// that could change them, so the only way to see them fail is a model whose
+// stored rules were never valid. Nothing in the app edits them, and a remedy
+// line pointing at a chapter that cannot fix it would be worse than one that
+// says so.
+export const CHECK_CHAPTER: Record<MethodCheckKey, ModelChapter | null> = {
+  dimensionCoverage: "criteria",
+  // The materiality decision is asked on the Kriterier chapter's fourth column.
+  workingConditionsTested: "criteria",
+  criterionCount: "criteria",
+  dimensionCaps: "criteria",
+  // Anchors are library-guaranteed, so this can only fail for a criterion whose
+  // library entry is gone; re-choosing it is a Kriterier gesture.
+  anchorsComplete: "criteria",
+  documentationComplete: "method",
+  weightBudget: "weighting",
+  levelRulesValid: null,
+  zoneProfileMonotonic: null,
+  dimensionWeightBalance: "weighting",
+  peopleLeadershipWeight: "weighting",
+  overlapPairs: "method",
+}
+
 // The two warning checks whose satisfaction IS a weight motivation, and so
 // belong to the Viktning chapter's own work. The third warning (overlapPairs)
 // is satisfied by the overlap protokoll, which is Metod's.

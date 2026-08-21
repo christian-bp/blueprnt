@@ -9,6 +9,7 @@ import {
 } from "@workspace/ui/components/empty"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
+import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import { chapterHref } from "@/lib/model-chapters"
 import { MAX_ITEMS } from "@/lib/todo"
 
@@ -32,10 +33,7 @@ export interface PreconditionRole {
 export function PayMappingDriftWarning({ count }: { count: number }) {
   const t = useTranslations("dashboard.payMapping.preconditions")
   return (
-    <Alert
-      role="status"
-      className="border-amber-500/50 text-amber-700 dark:text-amber-400"
-    >
+    <Alert role="status" className={WARNING_ALERT_CLASS}>
       <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} aria-hidden="true" />
       <AlertTitle>{t("driftWarning", { count })}</AlertTitle>
     </Alert>

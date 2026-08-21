@@ -515,6 +515,287 @@ async function seedRatedOrganization(
   return { orgId, asAdmin, model, roleId }
 }
 
+// The dominance warning's ONLY write path. Before this existed, the
+// Godkännande checklist could say "no dimension dominates the weighting
+// unexplained" was failing and there was no surface anywhere in the app that
+// could answer it: weightMotivation was in the schema and read by the engine,
+// and nothing wrote it.
+describe("setCriterionWeightMotivation", () => {
+  // Responsibility carries 7 of 9 points (78%), well past the engine's 40%
+  // warning share, so dimensionWeightBalance fires on it.
+  async function seedDominantResponsibility(
+    t: ReturnType<typeof initConvexTest>
+  ) {
+    const { orgId, asAdmin } = await seedEmptyModel(t)
+    const scope = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
+    )
+    const risk = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "risk-consequence" }
+    )
+    const complexity = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
+    )
+    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+      orgId,
+      allocations: [
+        { criterionId: scope, weightPoints: 4 },
+        { criterionId: risk, weightPoints: 3 },
+        { criterionId: complexity, weightPoints: 2 },
+      ],
+    })
+    return { orgId, asAdmin, scope, risk, complexity }
+  }
+
+  const balanceCheck = (checks: { key: string; ok: boolean }[]) =>
+    checks.find((check) => check.key === "dimensionWeightBalance")
+
+  it("clears the engine's dominance warning end to end", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, scope } = await seedDominantResponsibility(t)
+
+    const before = await asAdmin.query(
+      api.evaluationModel.approval.getMethodChecks,
+      { orgId }
+    )
+    expect(balanceCheck(before?.checks ?? [])).toMatchObject({
+      ok: false,
+      dimensions: ["responsibility"],
+    })
+
+    await asAdmin.mutation(
+      api.evaluationModel.criteria.setCriterionWeightMotivation,
+      {
+        orgId,
+        criterionId: scope,
+        motivation: "Accountability is what this organization pays for.",
+      }
+    )
+
+    const after = await asAdmin.query(
+      api.evaluationModel.approval.getMethodChecks,
+      { orgId }
+    )
+    expect(balanceCheck(after?.checks ?? [])?.ok).toBe(true)
+    // The dimension is still dominant; what changed is that the reason is on
+    // the record. The share the checklist quotes therefore does not move.
+    const responsibility = after?.dimensionShares.find(
+      (entry) => entry.key === "responsibility"
+    )
+    expect(responsibility?.share).toBeCloseTo(7 / 9)
+  })
+
+  // Any criterion in the dimension clears it, which is the engine's rule
+  // (packages/core method-checks.ts), not the surface's convention.
+  it("clears the warning from any criterion in the dominant dimension", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, risk } = await seedDominantResponsibility(t)
+    await asAdmin.mutation(
+      api.evaluationModel.criteria.setCriterionWeightMotivation,
+      { orgId, criterionId: risk, motivation: "Consequence scale is wide." }
+    )
+    const after = await asAdmin.query(
+      api.evaluationModel.approval.getMethodChecks,
+      { orgId }
+    )
+    expect(balanceCheck(after?.checks ?? [])?.ok).toBe(true)
+  })
+
+  // A motivation on a DIFFERENT dimension answers nothing.
+  it("leaves the warning standing when another dimension is motivated", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, complexity } = await seedDominantResponsibility(t)
+    await asAdmin.mutation(
+      api.evaluationModel.criteria.setCriterionWeightMotivation,
+      { orgId, criterionId: complexity, motivation: "Ambiguity is constant." }
+    )
+    const after = await asAdmin.query(
+      api.evaluationModel.approval.getMethodChecks,
+      { orgId }
+    )
+    expect(balanceCheck(after?.checks ?? [])).toMatchObject({
+      ok: false,
+      dimensions: ["responsibility"],
+    })
+  })
+
+  it("audits the change as a before/after diff", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, scope } = await seedDominantResponsibility(t)
+    await asAdmin.mutation(
+      api.evaluationModel.criteria.setCriterionWeightMotivation,
+      { orgId, criterionId: scope, motivation: "Accountability drives pay." }
+    )
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.updated")
+        )
+        .collect()
+      const row = rows.find(
+        (entry) =>
+          (entry.payload as Record<string, unknown>).change ===
+          "criterion.weightMotivationUpdated"
+      )
+      expect(row).toBeDefined()
+      expect(row?.payload).toMatchObject({
+        criterionId: scope,
+        changes: {
+          weightMotivation: { from: null, to: "Accountability drives pay." },
+        },
+      })
+      // The category the log filters on comes from the event prefix, not the
+      // variant.
+      expect(row?.category).toBe("model")
+    })
+  })
+
+  it("no-ops (no audit row) when the motivation is unchanged", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, scope } = await seedDominantResponsibility(t)
+    const args = { orgId, criterionId: scope, motivation: "Same text." }
+    await asAdmin.mutation(
+      api.evaluationModel.criteria.setCriterionWeightMotivation,
+      args
+    )
+    await asAdmin.mutation(
+      api.evaluationModel.criteria.setCriterionWeightMotivation,
+      args
+    )
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.updated")
+        )
+        .collect()
+      const written = rows.filter(
+        (entry) =>
+          (entry.payload as Record<string, unknown>).change ===
+          "criterion.weightMotivationUpdated"
+      )
+      expect(written).toHaveLength(1)
+    })
+  })
+
+  // Documentation, not a method change: it moves no weight point, so it must
+  // not un-approve a model for writing down why it was approved (ADR-0023, the
+  // same rule the compliance texts follow).
+  it("does not reopen an existing approval", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, scope } = await seedDominantResponsibility(t)
+    await grantModelApproval(t, orgId)
+    await asAdmin.mutation(
+      api.evaluationModel.criteria.setCriterionWeightMotivation,
+      { orgId, criterionId: scope, motivation: "Recorded after approval." }
+    )
+    const after = await asAdmin.query(
+      api.evaluationModel.approval.getMethodChecks,
+      { orgId }
+    )
+    expect(after?.approval).not.toBeNull()
+    await t.run(async (ctx) => {
+      const reopened = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.approvalReopened")
+        )
+        .collect()
+      expect(reopened).toHaveLength(0)
+    })
+  })
+
+  // Not gated on the criterion's own protokoll sign-off: that flag approves the
+  // kriterieurvalsprotokoll, and locking the weight motivation behind it would
+  // mean reopening a criterion to answer a warning about the weighting.
+  it("stays writable on an approved criterion", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, scope } = await seedDominantResponsibility(t)
+    await t.run(async (ctx) => {
+      await ctx.db.patch(scope, {
+        purpose: "p",
+        whyRelevant: "w",
+        biasRisk: "low",
+        biasComment: "b",
+        approved: true,
+      })
+    })
+    await asAdmin.mutation(
+      api.evaluationModel.criteria.setCriterionWeightMotivation,
+      { orgId, criterionId: scope, motivation: "Still writable." }
+    )
+    await t.run(async (ctx) => {
+      const doc = (await ctx.db.get(scope)) as Doc<"criteria"> | null
+      expect(doc?.weightMotivation).toBe("Still writable.")
+    })
+  })
+
+  it("clears the field on an empty motivation, which re-raises the warning", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, scope } = await seedDominantResponsibility(t)
+    await asAdmin.mutation(
+      api.evaluationModel.criteria.setCriterionWeightMotivation,
+      { orgId, criterionId: scope, motivation: "Recorded." }
+    )
+    await asAdmin.mutation(
+      api.evaluationModel.criteria.setCriterionWeightMotivation,
+      { orgId, criterionId: scope, motivation: "   " }
+    )
+    await t.run(async (ctx) => {
+      const doc = (await ctx.db.get(scope)) as Doc<"criteria"> | null
+      expect(doc?.weightMotivation).toBeUndefined()
+    })
+    const after = await asAdmin.query(
+      api.evaluationModel.approval.getMethodChecks,
+      { orgId }
+    )
+    expect(balanceCheck(after?.checks ?? [])?.ok).toBe(false)
+  })
+
+  it("rejects another org's criterion with errors.notFound", async () => {
+    const t = initConvexTest()
+    const { asAdmin } = await seedDominantResponsibility(t)
+    const other = await seedDominantResponsibility(t)
+    await expect(
+      asAdmin.mutation(
+        api.evaluationModel.criteria.setCriterionWeightMotivation,
+        {
+          orgId: other.orgId,
+          criterionId: other.scope,
+          motivation: "Elsewhere.",
+        }
+      )
+    ).rejects.toThrow()
+  })
+
+  it("rejects same-org editors with errors.adminRequired", async () => {
+    const t = initConvexTest()
+    const { orgId, scope } = await seedDominantResponsibility(t)
+    const { userId: editorId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "editor-wm@other.se", name: "Editor WM", role: "editor" }
+    )
+    await t.mutation(components.betterAuth.testing.seedDuplicateMember, {
+      orgId,
+      userId: editorId,
+      role: "editor",
+    })
+    await expect(
+      t
+        .withIdentity({ subject: editorId })
+        .mutation(api.evaluationModel.criteria.setCriterionWeightMotivation, {
+          orgId,
+          criterionId: scope,
+          motivation: "Not allowed.",
+        })
+    ).rejects.toThrow(/errors.adminRequired/)
+  })
+})
+
 describe("model edits shift levels live", () => {
   it("rebalanceWeights logs level.shift when a derived level moves", async () => {
     const t = initConvexTest()

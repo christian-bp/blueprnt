@@ -20,10 +20,12 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
-import { useState } from "react"
+import { type ReactNode, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { CheckRemedy } from "@/components/model/check-remedy"
 import { RestoreApprovedDialog } from "@/components/model/restore-approved-dialog"
 import { useOrganization } from "@/components/org-context"
+import { WARNING_TEXT_CLASS } from "@/lib/alert-tone"
 import { methodErrorMessage } from "@/lib/method-error"
 import { toast } from "@/lib/toast"
 
@@ -32,11 +34,14 @@ function CheckRow({
   level,
   label,
   levelLabel,
+  remedy,
 }: {
   ok: boolean
   level: "blocker" | "warning"
   label: string
   levelLabel: string
+  // The "how to fix it" line, rendered under the row when the check fails.
+  remedy?: ReactNode
 }) {
   const icon = ok
     ? CheckmarkCircle02Icon
@@ -47,17 +52,22 @@ function CheckRow({
     ? "text-success"
     : level === "blocker"
       ? "text-destructive"
-      : "text-amber-700 dark:text-amber-400"
+      : WARNING_TEXT_CLASS
   return (
-    <li className="flex items-center gap-2 text-sm">
-      <HugeiconsIcon
-        icon={icon}
-        strokeWidth={2}
-        className={cn("shrink-0", tone)}
-        aria-hidden="true"
-      />
-      <span>{label}</span>
-      <span className="text-muted-foreground text-xs">({levelLabel})</span>
+    // The row's own line stays a flex row; the remedy sits UNDER it in flow, so
+    // a long instruction wraps under the finding instead of squeezing it.
+    <li className="text-sm">
+      <span className="flex items-center gap-2">
+        <HugeiconsIcon
+          icon={icon}
+          strokeWidth={2}
+          className={cn("shrink-0", tone)}
+          aria-hidden="true"
+        />
+        <span>{label}</span>
+        <span className="text-muted-foreground text-xs">({levelLabel})</span>
+      </span>
+      {remedy}
     </li>
   )
 }
@@ -207,6 +217,12 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
                 level={check.level}
                 label={t(`checks.${key}`)}
                 levelLabel={t(`checkLevel.${check.level}`)}
+                remedy={
+                  <CheckRemedy
+                    check={check}
+                    dimensionShares={data.dimensionShares}
+                  />
+                }
               />
             )
           })}

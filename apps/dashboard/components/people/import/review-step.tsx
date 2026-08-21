@@ -25,6 +25,7 @@ import type { FunctionReturnType } from "convex/server"
 import { useAction } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useEffect, useRef, useState } from "react"
+import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import { toast } from "@/lib/toast"
 import { useOrganization } from "@/components/org-context"
 import { WizardFooter } from "@/components/wizard-footer"
@@ -413,10 +414,7 @@ export function ReviewStep({
           no warning variant; the amber tint is the call-site override used
           across the app. */}
       {nameMismatches.length > 0 && (
-        <Alert
-          className="border-amber-500/50 text-amber-700 dark:text-amber-400"
-          data-testid="name-mismatch"
-        >
+        <Alert className={WARNING_ALERT_CLASS} data-testid="name-mismatch">
           <AlertTitle>{tChanges("mismatchTitle")}</AlertTitle>
           <AlertDescription>
             <p>{tChanges("mismatchBody")}</p>

@@ -18,6 +18,10 @@ vi.mock(
   "@workspace/backend/convex/_generated/api",
   async () => (await import("@/test/convex-mocks")).apiModule
 )
+let orgRole = "admin"
+vi.mock("@/components/org-context", () => ({
+  useOrganization: () => ({ orgId: "org-1", name: "Acme", role: orgRole }),
+}))
 // NumberFlow renders a custom element happy-dom never upgrades, so its
 // getSnapshotBeforeUpdate throws the moment the value CHANGES in place, which
 // is exactly what a weight click does to the budget readout. The digit
@@ -50,6 +54,9 @@ const editor = messages.dashboard.model.editor
 const rebalanceWeights = mockMutation(
   "evaluationModel.criteria.rebalanceWeights"
 )
+const setMotivation = mockMutation(
+  "evaluationModel.criteria.setCriterionWeightMotivation"
+)
 
 const DIMENSIONS = [
   { key: "competence", name: "Competence", question: "q1", why: "w1" },
@@ -74,6 +81,7 @@ const ANCHOR_LOW = "Follows an established method"
 
 function criterion(overrides: Record<string, unknown>) {
   return {
+    weightMotivation: null as string | null,
     criterionId: "c",
     libraryKey: "complexity-ambiguity",
     dimensionKey: "effort",
@@ -86,7 +94,6 @@ function criterion(overrides: Record<string, unknown>) {
     anchors: [] as { step: number; text: string }[],
     weightPoints: 3,
     order: 1,
-    weightMotivation: null,
     ...overrides,
   }
 }
@@ -153,6 +160,36 @@ const BALANCED = makeModel([
 ])
 
 let modelResult: unknown = BALANCED
+// The engine's answer about the weighting, as getMethodChecks returns it: the
+// per-dimension shares (fractions) and which dimensions the
+// dimensionWeightBalance check names as dominant-and-unmotivated.
+let methodChecksResult: unknown = null
+
+// BALANCED is 4+2+3+3+3 = 15: responsibility 8/15, effort 4/15, competence
+// 3/15. The engine computes these; the fixture states them once so a test never
+// spells a fraction out inline.
+function checksFor(unmotivated: string[], leadershipOk = true) {
+  return {
+    checks: [
+      {
+        key: "dimensionWeightBalance",
+        level: "warning",
+        ok: unmotivated.length === 0,
+        ...(unmotivated.length > 0 ? { dimensions: unmotivated } : {}),
+      },
+      { key: "peopleLeadershipWeight", level: "warning", ok: leadershipOk },
+    ],
+    approval: null,
+    lastApprovedAt: null,
+    workingConditions: null,
+    dimensionShares: [
+      { key: "competence", share: 3 / 15 },
+      { key: "effort", share: 4 / 15 },
+      { key: "responsibility", share: 8 / 15 },
+      { key: "workingConditions", share: 0 },
+    ],
+  }
+}
 
 function renderChapter() {
   return render(
@@ -172,9 +209,16 @@ describe("the Viktning chapter", () => {
   beforeEach(() => {
     rebalanceWeights.mockReset()
     rebalanceWeights.mockResolvedValue(null)
+    setMotivation.mockReset()
+    setMotivation.mockResolvedValue(null)
+    orgRole = "admin"
     modelResult = BALANCED
+    methodChecksResult = checksFor(["responsibility"])
     onQuery((ref) => {
       if (ref === "evaluationModel.model.getModel") return modelResult
+      if (ref === "evaluationModel.approval.getMethodChecks") {
+        return methodChecksResult
+      }
       if (ref === "ai.suggest.getWeightReviewLock") return false
       if (ref === "ai.suggest.getOpenSuggestions") return []
       return undefined
@@ -365,5 +409,297 @@ describe("the Viktning chapter", () => {
     expect((save() as HTMLButtonElement).disabled).toBe(true)
     // Nothing is weighted yet, so no weight row exists to be edited.
     expect(screen.queryAllByRole("group")).toHaveLength(0)
+  })
+  // The dominance warning WHERE THE DECISION IS MADE. It used to exist only as
+  // a verdict on the Godkännande checklist two chapters later, with no surface
+  // anywhere in the app that could write the motivation it asked for.
+  describe("the dominance note", () => {
+    const noteFor = (key: "dominanceNote" | "dominanceMotivatedNote") =>
+      weighting[key]
+        .replace("{dimension}", "Responsibility and impact")
+        .replace("{share}", "53%")
+
+    it("names the dominant dimension and its share, and offers the motivation", () => {
+      renderChapter()
+      expect(screen.getByText(noteFor("dominanceNote"))).toBeDefined()
+      expect(
+        screen.getByRole("button", { name: weighting.motivateCta })
+      ).toBeDefined()
+    })
+
+    // The dimensions that are NOT dominant say nothing at all: a note on every
+    // column would be four notes and no finding.
+    it("says nothing about a dimension under the threshold", () => {
+      renderChapter()
+      const competence = screen
+        .getByRole("heading", { name: /Competence/ })
+        .closest("section") as HTMLElement
+      expect(
+        within(competence).queryByRole("button", {
+          name: weighting.motivateCta,
+        })
+      ).toBeNull()
+      expect(
+        within(competence).queryByRole("button", {
+          name: weighting.editMotivationCta,
+        })
+      ).toBeNull()
+    })
+
+    // The engine decides, not the chapter: once dimensionWeightBalance stops
+    // naming the dimension the warning is gone, and what stays is the reading
+    // plus the way back into the text.
+    it("drops the warning once the engine reports the dimension motivated", () => {
+      methodChecksResult = checksFor([])
+      renderChapter()
+      expect(screen.queryByText(noteFor("dominanceNote"))).toBeNull()
+      expect(screen.getByText(noteFor("dominanceMotivatedNote"))).toBeDefined()
+      expect(
+        screen.getByRole("button", { name: weighting.editMotivationCta })
+      ).toBeDefined()
+    })
+
+    it("writes the motivation to the heaviest criterion in the dimension", async () => {
+      renderChapter()
+      fireEvent.click(
+        screen.getByRole("button", { name: weighting.motivateCta })
+      )
+      // The dialog names the criterion the text lands on rather than storing it
+      // out of sight. Responsibility holds 2 + 3 + 3: "Scope and impact" and
+      // "Risk and consequence" tie at 3, and display order breaks it.
+      expect(
+        screen.getByText(
+          weighting.motivationDialogDescription
+            .replace("{subject}", "Responsibility and impact")
+            .replace("{criterion}", "Scope and impact")
+        )
+      ).toBeDefined()
+
+      const submit = screen.getByRole("button", {
+        name: weighting.motivationSaveCta,
+      }) as HTMLButtonElement
+      // Nothing typed yet: the save is shut, so an empty motivation can never
+      // be written over a warning it would not answer.
+      expect(submit.disabled).toBe(true)
+      fireEvent.change(screen.getByRole("textbox"), {
+        target: { value: "Accountability drives pay in this organization." },
+      })
+      await waitFor(() => {
+        expect(submit.disabled).toBe(false)
+      })
+      fireEvent.click(submit)
+      await waitFor(() => {
+        expect(setMotivation).toHaveBeenCalledWith({
+          orgId: "org-1",
+          criterionId: "c3",
+          motivation: "Accountability drives pay in this organization.",
+        })
+      })
+    })
+
+    // An existing motivation is EDITED where it lives, never shadowed by a
+    // second copy on whichever criterion has since become the heaviest.
+    it("reopens the criterion that already carries the motivation", () => {
+      modelResult = makeModel(
+        BALANCED.criteria.map((entry) =>
+          entry.criterionId === "c2"
+            ? { ...entry, weightMotivation: "Already recorded." }
+            : entry
+        )
+      )
+      methodChecksResult = checksFor([])
+      renderChapter()
+      fireEvent.click(
+        screen.getByRole("button", { name: weighting.editMotivationCta })
+      )
+      expect(
+        screen.getByText(
+          weighting.motivationDialogDescription
+            .replace("{subject}", "Responsibility and impact")
+            .replace("{criterion}", "Autonomy and decision mandate")
+        )
+      ).toBeDefined()
+      expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe(
+        "Already recorded."
+      )
+    })
+
+    // Writing a motivation is an adminMutation. An editor reads the note (it
+    // explains the balance they are looking at) and is offered no control.
+    it("shows an editor the note without offering the write", () => {
+      orgRole = "editor"
+      renderChapter()
+      expect(screen.getByText(noteFor("dominanceNote"))).toBeDefined()
+      expect(
+        screen.queryByRole("button", { name: weighting.motivateCta })
+      ).toBeNull()
+    })
+  })
+
+  // The model's OTHER weight warning has the same shape and the same missing
+  // write path: it asks about one criterion, not a dimension, and clears only
+  // on that criterion's own motivation.
+  describe("the people-leadership note", () => {
+    const LEADERSHIP = "People and management responsibility"
+
+    // Four criteria on a budget of 12, with responsibility deliberately UNDER
+    // the dominance threshold (4 of 12, or 3 of 12), so the only note in the
+    // column is the leadership one and the two cases stay separable.
+    function withLeadership(points: number) {
+      modelResult = makeModel([
+        criterion({
+          criterionId: "c1",
+          libraryKey: "people-leadership",
+          dimensionKey: "responsibility",
+          name: LEADERSHIP,
+          weightPoints: points,
+          order: 1,
+        }),
+        criterion({
+          criterionId: "c2",
+          libraryKey: "complexity-ambiguity",
+          dimensionKey: "effort",
+          name: COMPLEXITY,
+          weightPoints: 4,
+          order: 2,
+        }),
+        criterion({
+          criterionId: "c3",
+          libraryKey: "knowledge-depth",
+          dimensionKey: "competence",
+          name: KNOWLEDGE_DEPTH,
+          weightPoints: 3,
+          order: 3,
+        }),
+        criterion({
+          criterionId: "c4",
+          libraryKey: "analytical-effort",
+          dimensionKey: "effort",
+          name: "Analytical effort",
+          weightPoints: 5 - points,
+          order: 4,
+        }),
+      ])
+      methodChecksResult = {
+        ...checksFor([], points < 4),
+        dimensionShares: [
+          { key: "competence", share: 3 / 12 },
+          { key: "effort", share: (9 - points) / 12 },
+          { key: "responsibility", share: points / 12 },
+          { key: "workingConditions", share: 0 },
+        ],
+      }
+    }
+
+    it("names the criterion and its weight, and offers the motivation", () => {
+      withLeadership(4)
+      renderChapter()
+      expect(
+        screen.getByText(
+          weighting.leadershipNote
+            .replace("{criterion}", LEADERSHIP)
+            .replace("{points}", "4")
+        )
+      ).toBeDefined()
+      expect(
+        screen.getByRole("button", { name: weighting.motivateCta })
+      ).toBeDefined()
+    })
+
+    // Below the high-impact weight class the engine asks nothing, so neither
+    // does the chapter.
+    it("says nothing below the profile weight floor", () => {
+      withLeadership(3)
+      renderChapter()
+      // The criterion is on the page; it just has nothing asked of it. Scoped
+      // to its own column, because the fixture's other dimensions carry their
+      // own shares and this assertion is about this one.
+      const responsibility = screen
+        .getByRole("heading", { name: /Responsibility and impact/ })
+        .closest("section") as HTMLElement
+      expect(within(responsibility).getByText(LEADERSHIP)).toBeDefined()
+      expect(
+        within(responsibility).queryByRole("button", {
+          name: weighting.motivateCta,
+        })
+      ).toBeNull()
+      expect(
+        within(responsibility).queryByRole("button", {
+          name: weighting.editMotivationCta,
+        })
+      ).toBeNull()
+    })
+
+    it("writes to the criterion itself, not to the dimension's heaviest", async () => {
+      withLeadership(4)
+      renderChapter()
+      fireEvent.click(
+        screen.getByRole("button", { name: weighting.motivateCta })
+      )
+      // Subject and storage are the same criterion here, so the dialog says so
+      // once instead of naming it twice.
+      expect(
+        screen.getByText(
+          weighting.motivationDialogDescriptionSelf.replace(
+            "{subject}",
+            LEADERSHIP
+          )
+        )
+      ).toBeDefined()
+      const submit = screen.getByRole("button", {
+        name: weighting.motivationSaveCta,
+      }) as HTMLButtonElement
+      fireEvent.change(screen.getByRole("textbox"), {
+        target: { value: "Staff responsibility is real work here." },
+      })
+      await waitFor(() => {
+        expect(submit.disabled).toBe(false)
+      })
+      fireEvent.click(submit)
+      await waitFor(() => {
+        expect(setMotivation).toHaveBeenCalledWith({
+          orgId: "org-1",
+          criterionId: "c1",
+          motivation: "Staff responsibility is real work here.",
+        })
+      })
+    })
+
+    // One motivation clears both warnings when the dimension's own target IS
+    // this criterion, so the column offers one field rather than two that write
+    // to the same place.
+    it("collapses into the dominance note when they share a criterion", () => {
+      modelResult = makeModel([
+        criterion({
+          criterionId: "c1",
+          libraryKey: "people-leadership",
+          dimensionKey: "responsibility",
+          name: LEADERSHIP,
+          weightPoints: 5,
+          order: 1,
+        }),
+        criterion({
+          criterionId: "c2",
+          libraryKey: "complexity-ambiguity",
+          dimensionKey: "effort",
+          name: COMPLEXITY,
+          weightPoints: 1,
+          order: 2,
+        }),
+      ])
+      methodChecksResult = {
+        ...checksFor(["responsibility"], false),
+        dimensionShares: [
+          { key: "competence", share: 0 },
+          { key: "effort", share: 1 / 6 },
+          { key: "responsibility", share: 5 / 6 },
+          { key: "workingConditions", share: 0 },
+        ],
+      }
+      renderChapter()
+      expect(
+        screen.getAllByRole("button", { name: weighting.motivateCta })
+      ).toHaveLength(1)
+    })
   })
 })

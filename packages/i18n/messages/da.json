@@ -190,7 +190,8 @@
       "modelRestored": "Model gendannet",
       "workingConditionsDecided": "Beslutning om arbejdsforhold gemt",
       "assessmentLocked": "Vurderingen låst",
-      "assessmentUnlocked": "Vurderingen låst op"
+      "assessmentUnlocked": "Vurderingen låst op",
+      "weightMotivationSaved": "Begrundelse gemt"
     },
     "accountMenu": "Kontomenu",
     "commandPalette": {
@@ -805,7 +806,8 @@
         },
         "modelUpdatedChange": {
           "weightsRebalanced": "Vægte omfordelt",
-          "complianceUpdated": "Dokumentation opdateret"
+          "complianceUpdated": "Dokumentation opdateret",
+          "weightMotivationUpdated": "Vægtbegrundelse opdateret"
         }
       },
       "events": {
@@ -1883,7 +1885,19 @@
         "weightMeaning3": "Tydelig og balanceret indflydelse i modellen",
         "weightMeaning4": "Stærk indflydelse i modellen",
         "weightMeaning5": "Meget stærk indflydelse i modellen",
-        "empty": "Ingen kriterier endnu. <link>Vælg dem i kapitlet Kriterier</link>, hvert af dem tilføjes med vægt 3."
+        "empty": "Ingen kriterier endnu. <link>Vælg dem i kapitlet Kriterier</link>, hvert af dem tilføjes med vægt 3.",
+        "dominanceNote": "{dimension} bærer {share} af vægtningen uden dokumenteret grund.",
+        "dominanceMotivatedNote": "{dimension} bærer {share} af vægtningen. Grunden er dokumenteret.",
+        "motivateCta": "Begrund vægtningen",
+        "editMotivationCta": "Redigér begrundelsen",
+        "motivationDialogTitle": "Hvorfor {subject} vejer så meget",
+        "motivationDialogDescription": "Dokumentér hvad ved arbejdet der gør, at {subject} vejer så meget, som den gør. Grunden gemmes på {criterion} og kommer med i metodebilaget.",
+        "motivationLabel": "Begrundelse",
+        "motivationSaveCta": "Gem begrundelse",
+        "cancelCta": "Annuller",
+        "motivationDialogDescriptionSelf": "Dokumentér hvad ved arbejdet der gør, at {subject} vejer så meget, som den gør. Grunden kommer med i metodebilaget, ved siden af dette kriterium.",
+        "leadershipNote": "{criterion} vejer {points} af 5 uden dokumenteret grund.",
+        "leadershipMotivatedNote": "{criterion} vejer {points} af 5. Grunden er dokumenteret."
       },
       "picker": {
         "title": "Kriterier for {dimension}",
@@ -1965,7 +1979,23 @@
           "dimensionWeightBalance": "Ingen dimension dominerer vægtningen uden begrundelse",
           "peopleLeadershipWeight": "Personaleledelsens vægt er begrundet",
           "overlapPairs": "Overlappende kriterier er gennemgået"
-        }
+        },
+        "remedies": {
+          "dimensionCoverage": "Ingen kriterier endnu i: {dimensions}. Tilføj ét pr. dimension i <link>{chapter}</link>.",
+          "workingConditionsTested": "Arbejdsforhold mangler en dokumenteret beslutning. Besvar væsentlighedsspørgsmålet, med en begrundelse, i <link>{chapter}</link>.",
+          "criterionCount": "Modellen har {count, plural, =1 {# kriterium} other {# kriterier}}; den skal have 6 til 8. Justér udvalget i <link>{chapter}</link>.",
+          "dimensionCaps": "For mange kriterier i: {dimensions}. Fjern ét fra hver i <link>{chapter}</link>.",
+          "anchorsComplete": "Et kriterium mangler trin på sin vurderingsskala. Fjern det, og vælg det igen i <link>{chapter}</link>.",
+          "documentationComplete": "{count, plural, =1 {# kriterium er} other {# kriterier er}} endnu ikke dokumenteret og godkendt. Åbn Dokumenter på hvert af dem i <link>{chapter}</link>.",
+          "weightBudget": "Vægtpointene går ikke op med budgettet. Balancér dem, og gem i <link>{chapter}</link>.",
+          "levelRulesValid": "Modellens niveaugrænser er ikke en gyldig skala fra 1 til 12. Intet i appen ændrer dem, så det her kræver support.",
+          "zoneProfileMonotonic": "Modellens zoneprofilregler er ikke konsekvente. Intet i appen ændrer dem, så det her kræver support.",
+          "dimensionWeightBalance": "{dimensions} bærer en dominerende andel af vægtningen uden dokumenteret grund. Begrund det i <link>{chapter}</link>, eller flyt vægtpoint til en anden dimension.",
+          "peopleLeadershipWeight": "{criterion} har en høj vægt uden dokumenteret grund. Begrund den i <link>{chapter}</link>, eller sænk dens vægtpoint.",
+          "overlapPairs": "Overlappende kriterier: {pairs}. Notér overlappet på ét af kriterierne i parret i <link>{chapter}</link>."
+        },
+        "overlapFlag": "Overlap med {names} er ikke noteret endnu",
+        "overlapPairFormat": "{first} / {second}"
       },
       "methodAppendix": {
         "docTitle": "Metodebilag",
@@ -2089,7 +2119,9 @@
       "analysisProgressBody": "De trin, der skal dokumenteres, før lønkortlægningen kan afsluttes: samarbejdet, gennemgangen af lønpraksis, og hver gruppe hvis lønforskel kræver en begrundelse. Intet andet tælles med.",
       "modelProgressLabel": "Hvad skal modellen have?",
       "modelProgressBody": "De beslutninger modellen skal have, før den kan godkendes: kriterierne, deres vægtning, dokumentationen for hvert kriterium og selve godkendelsen.",
-      "payGapScatterMeansBody": "De stiplede linjer er hvert køns gennemsnitsløn i gruppen, så du kan se, hvem der ligger over og under deres eget gennemsnit."
+      "payGapScatterMeansBody": "De stiplede linjer er hvert køns gennemsnitsløn i gruppen, så du kan se, hvem der ligger over og under deres eget gennemsnit.",
+      "weightMotivationLabel": "Hvad er en vægtbegrundelse?",
+      "weightMotivationBody": "Den dokumenterede grund til, at en dimension må veje så meget, som den gør. Den begrunder vægtningen, ikke 0-5-skalaen: sig hvad ved arbejdet der vejer mere, aldrig hvem der udfører det."
     },
     "widgetCard": {
       "expand": "Forstør"

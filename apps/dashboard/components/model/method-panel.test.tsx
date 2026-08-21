@@ -8,55 +8,85 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org1", name: "Acme", role: orgRole }),
 }))
 
-vi.mock("convex/react", () => ({
-  useQuery: () => ({
-    modelName: "Standard model",
-    pointBudget: 27,
-    criteria: [
-      {
-        criterionId: "c1",
-        name: "Scope",
-        description: "",
-        helpText: "",
-        weightPoints: 3,
-        share: 33,
-        order: 1,
-        purpose: null,
-        whyRelevant: null,
-        overlapNotes: null,
-        biasRisk: null,
-        biasComment: null,
-        biasAction: null,
-        status: "notStarted",
-        decidedByName: null,
-        decidedAt: null,
-      },
-      {
-        criterionId: "c2",
-        name: "Risk",
-        description: "",
-        helpText: "",
-        weightPoints: 3,
-        share: 33,
-        order: 2,
-        purpose: "p",
-        whyRelevant: "w",
-        overlapNotes: null,
-        biasRisk: "low",
-        biasComment: "b",
-        biasAction: null,
-        status: "approved",
-        decidedByName: "Alex",
-        decidedAt: 1,
-      },
-    ],
-    levelRules: [],
-    progress: { documented: 1, approved: 1, total: 2 },
-  }),
-  useMutation: () => vi.fn(),
-}))
+vi.mock(
+  "convex/react",
+  async () => (await import("@/test/convex-mocks")).convexReactModule
+)
+vi.mock(
+  "@workspace/backend/convex/_generated/api",
+  async () => (await import("@/test/convex-mocks")).apiModule
+)
 
 import { MethodPanel } from "@/components/model/method-panel"
+import { onQuery } from "@/test/convex-mocks"
+
+const METHOD_MODEL = {
+  modelName: "Standard model",
+  pointBudget: 27,
+  criteria: [
+    {
+      criterionId: "c1",
+      libraryKey: "knowledge-depth",
+      name: "Scope",
+      description: "",
+      helpText: "",
+      weightPoints: 3,
+      share: 33,
+      order: 1,
+      purpose: null,
+      whyRelevant: null,
+      overlapNotes: null,
+      biasRisk: null,
+      biasComment: null,
+      biasAction: null,
+      status: "notStarted",
+      decidedByName: null,
+      decidedAt: null,
+    },
+    {
+      criterionId: "c2",
+      libraryKey: "knowledge-breadth",
+      name: "Risk",
+      description: "",
+      helpText: "",
+      weightPoints: 3,
+      share: 33,
+      order: 2,
+      purpose: "p",
+      whyRelevant: "w",
+      overlapNotes: null,
+      biasRisk: "low",
+      biasComment: "b",
+      biasAction: null,
+      status: "approved",
+      decidedByName: "Alex",
+      decidedAt: 1,
+    },
+  ],
+  levelRules: [],
+  progress: { documented: 1, approved: 1, total: 2 },
+}
+
+// The engine's twelve checks, as the chapter reads them: only overlapPairs
+// matters to this surface, so the rest stay green.
+function methodChecks(pairs: string[][]) {
+  return {
+    checks: [
+      {
+        key: "overlapPairs",
+        level: "warning",
+        ok: pairs.length === 0,
+        ...(pairs.length > 0 ? { pairs } : {}),
+      },
+    ],
+    approval: null,
+    lastApprovedAt: null,
+    workingConditions: null,
+    dimensionShares: [],
+  }
+}
+
+let overlapPairs: string[][] = []
 
 const weighting = messages.dashboard.model.weighting
 
@@ -71,6 +101,14 @@ function renderPanel(orgId = "org1") {
 describe("MethodPanel", () => {
   beforeEach(() => {
     orgRole = "admin"
+    overlapPairs = []
+    onQuery((ref) => {
+      if (ref === "evaluationModel.method.getMethodModel") return METHOD_MODEL
+      if (ref === "evaluationModel.approval.getMethodChecks") {
+        return methodChecks(overlapPairs)
+      }
+      return undefined
+    })
   })
   afterEach(() => {
     cleanup()
@@ -115,5 +153,40 @@ describe("MethodPanel", () => {
     expect(screen.queryByRole("button", { name: m.openCta })).toBeNull()
     expect(screen.queryByRole("dialog")).toBeNull()
     expect(screen.queryByText(m.dialogTitle)).toBeNull()
+  })
+
+  // The Godkännande checklist can only say that SOME pair is unreviewed; the
+  // note that clears it is written behind an individual criterion's Document
+  // button, so the flag belongs on the row that can answer it.
+  describe("unreviewed overlaps", () => {
+    const flag = (names: string) => m.overlapFlag.replace("{names}", names)
+
+    it("marks both members of an unacknowledged pair, naming the partner", () => {
+      overlapPairs = [["knowledge-depth", "knowledge-breadth"]]
+      renderPanel()
+      // Each row names the OTHER criterion, never itself.
+      expect(screen.getByText(flag("Risk"))).toBeDefined()
+      expect(screen.getByText(flag("Scope"))).toBeDefined()
+    })
+
+    it("raises no flag once the engine reports the pair acknowledged", () => {
+      overlapPairs = []
+      renderPanel()
+      expect(screen.queryByText(flag("Risk"))).toBeNull()
+      expect(screen.queryByText(flag("Scope"))).toBeNull()
+      // The share readout is untouched by the flag being absent.
+      expect(
+        screen.getAllByText(new RegExp(weighting.shareOfTotal)).length
+      ).toBeGreaterThan(0)
+    })
+
+    // A pair whose partner is not in the model cannot be named, so it is not
+    // flagged either: the engine only reports pairs whose BOTH members are
+    // selected, and a half-known pair would render "Overlap with  not noted".
+    it("names no partner the model does not hold", () => {
+      overlapPairs = [["knowledge-depth", "domain-knowledge"]]
+      renderPanel()
+      expect(screen.queryByText(/Overlap with/)).toBeNull()
+    })
   })
 })

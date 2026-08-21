@@ -190,7 +190,8 @@
       "modelRestored": "Malli palautettu",
       "workingConditionsDecided": "Työolosuhteiden päätös tallennettu",
       "assessmentLocked": "Arviointi lukittu",
-      "assessmentUnlocked": "Arvioinnin lukitus avattu"
+      "assessmentUnlocked": "Arvioinnin lukitus avattu",
+      "weightMotivationSaved": "Perustelu tallennettu"
     },
     "accountMenu": "Tilivalikko",
     "commandPalette": {
@@ -805,7 +806,8 @@
         },
         "modelUpdatedChange": {
           "weightsRebalanced": "Painot jaettu uudelleen",
-          "complianceUpdated": "Dokumentaatio päivitetty"
+          "complianceUpdated": "Dokumentaatio päivitetty",
+          "weightMotivationUpdated": "Painotuksen perustelu päivitetty"
         }
       },
       "events": {
@@ -1883,7 +1885,19 @@
         "weightMeaning3": "Selkeä ja tasapainoinen vaikutus mallissa",
         "weightMeaning4": "Vahva vaikutus mallissa",
         "weightMeaning5": "Erittäin vahva vaikutus mallissa",
-        "empty": "Ei vielä kriteerejä. <link>Valitse ne Kriteerit-luvussa</link>; kukin lisätään painolla 3."
+        "empty": "Ei vielä kriteerejä. <link>Valitse ne Kriteerit-luvussa</link>; kukin lisätään painolla 3.",
+        "dominanceNote": "{dimension} kantaa {share} painotuksesta ilman kirjattua syytä.",
+        "dominanceMotivatedNote": "{dimension} kantaa {share} painotuksesta. Syy on kirjattu.",
+        "motivateCta": "Perustele painotus",
+        "editMotivationCta": "Muokkaa perustelua",
+        "motivationDialogTitle": "Miksi {subject} painaa näin paljon",
+        "motivationDialogDescription": "Kirjaa, mikä työssä saa kohteen {subject} painamaan niin paljon kuin se painaa. Syy tallennetaan kriteerille {criterion} ja tulee mukaan menetelmäliitteeseen.",
+        "motivationLabel": "Perustelu",
+        "motivationSaveCta": "Tallenna perustelu",
+        "cancelCta": "Peruuta",
+        "motivationDialogDescriptionSelf": "Kirjaa, mikä työssä saa kohteen {subject} painamaan niin paljon kuin se painaa. Syy tulee mukaan menetelmäliitteeseen tämän kriteerin viereen.",
+        "leadershipNote": "{criterion} painaa {points}/5 ilman kirjattua syytä.",
+        "leadershipMotivatedNote": "{criterion} painaa {points}/5. Syy on kirjattu."
       },
       "picker": {
         "title": "Kriteerit: {dimension}",
@@ -1965,7 +1979,23 @@
           "dimensionWeightBalance": "Yksikään ulottuvuus ei hallitse painotusta ilman perustelua",
           "peopleLeadershipWeight": "Henkilöstöjohtamisen paino on perusteltu",
           "overlapPairs": "Päällekkäiset kriteerit on käyty läpi"
-        }
+        },
+        "remedies": {
+          "dimensionCoverage": "Ei vielä kriteeriä näissä: {dimensions}. Lisää kuhunkin ulottuvuuteen yksi luvussa <link>{chapter}</link>.",
+          "workingConditionsTested": "Työolosuhteista ei ole kirjattua päätöstä. Vastaa olennaisuuskysymykseen perusteluineen luvussa <link>{chapter}</link>.",
+          "criterionCount": "Mallissa on {count, plural, =1 {# kriteeri} other {# kriteeriä}}; niitä tarvitaan 6-8. Muuta valintaa luvussa <link>{chapter}</link>.",
+          "dimensionCaps": "Liikaa kriteerejä näissä: {dimensions}. Poista kustakin yksi luvussa <link>{chapter}</link>.",
+          "anchorsComplete": "Yhdeltä kriteeriltä puuttuu askelia arviointiasteikolta. Poista se ja valitse uudelleen luvussa <link>{chapter}</link>.",
+          "documentationComplete": "{count, plural, =1 {# kriteeri on} other {# kriteeriä on}} yhä dokumentoimatta ja hyväksymättä. Avaa Dokumentoi kunkin kohdalla luvussa <link>{chapter}</link>.",
+          "weightBudget": "Painopisteet eivät täsmää budjettiin. Tasapainota ne ja tallenna luvussa <link>{chapter}</link>.",
+          "levelRulesValid": "Mallin tasorajat eivät muodosta kelvollista asteikkoa 1-12. Mikään sovelluksessa ei muuta niitä, joten tämä vaatii tuen apua.",
+          "zoneProfileMonotonic": "Mallin vyöhykeprofiilisäännöt eivät ole johdonmukaisia. Mikään sovelluksessa ei muuta niitä, joten tämä vaatii tuen apua.",
+          "dimensionWeightBalance": "{dimensions} kantaa hallitsevan osan painotuksesta ilman kirjattua syytä. Perustele se luvussa <link>{chapter}</link> tai siirrä painopisteitä toiseen ulottuvuuteen.",
+          "peopleLeadershipWeight": "{criterion} on painava ilman kirjattua syytä. Perustele se luvussa <link>{chapter}</link> tai laske sen painopisteitä.",
+          "overlapPairs": "Päällekkäiset kriteerit: {pairs}. Kirjaa päällekkäisyys jommallekummalle parin kriteerille luvussa <link>{chapter}</link>."
+        },
+        "overlapFlag": "Päällekkäisyyttä ei ole vielä kirjattu: {names}",
+        "overlapPairFormat": "{first} / {second}"
       },
       "methodAppendix": {
         "docTitle": "Menetelmäliite",
@@ -2089,7 +2119,9 @@
       "analysisProgressBody": "Vaiheet, jotka on dokumentoitava ennen palkkakartoituksen valmistumista: yhteistoiminta, palkkakäytäntöjen arviointi ja jokainen ryhmä, jonka palkkaero vaatii perustelun. Muuta ei lasketa.",
       "modelProgressLabel": "Mitä malli tarvitsee?",
       "modelProgressBody": "Päätökset, jotka malli tarvitsee ennen hyväksymistä: kriteerit, niiden painotus, kunkin kriteerin dokumentaatio ja itse hyväksyntä.",
-      "payGapScatterMeansBody": "Katkoviivat ovat kummankin sukupuolen keskipalkka ryhmässä, joten näet ketkä ovat oman keskiarvonsa ylä- ja alapuolella."
+      "payGapScatterMeansBody": "Katkoviivat ovat kummankin sukupuolen keskipalkka ryhmässä, joten näet ketkä ovat oman keskiarvonsa ylä- ja alapuolella.",
+      "weightMotivationLabel": "Mikä on painotuksen perustelu?",
+      "weightMotivationBody": "Kirjattu syy sille, miksi ulottuvuus saa painaa niin paljon kuin se painaa. Se perustelee painotuksen, ei 0-5-asteikkoa: kerro mikä työssä painaa enemmän, älä koskaan kuka sen tekee."
     },
     "widgetCard": {
       "expand": "Suurenna"

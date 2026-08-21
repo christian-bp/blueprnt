@@ -22,6 +22,7 @@ import {
   RESTORE_MODEL_AUDIT_FIELDS,
 } from "@workspace/backend/convex/evaluationModel/evidence"
 import { COMPLIANCE_AUDIT_FIELDS } from "@workspace/backend/convex/evaluationModel/method"
+import { WEIGHT_MOTIVATION_AUDIT_FIELDS } from "@workspace/backend/convex/evaluationModel/criteria"
 import { ACTION_TARGET_KINDS } from "@workspace/backend/convex/payMapping/tables"
 import {
   COUNTRY_KEYS,
@@ -238,6 +239,7 @@ const OTHER_AUDIT_FIELDS = [
 const ALL_AUDIT_FIELDS = [
   ...new Set<string>([
     ...COMPLIANCE_AUDIT_FIELDS,
+    ...WEIGHT_MOTIVATION_AUDIT_FIELDS,
     ...ANCHOR_AUDIT_FIELDS,
     ...MODEL_AUDIT_FIELDS,
     ...SETTINGS_AUDIT_FIELDS,
@@ -321,6 +323,7 @@ const APPROVAL_REOPEN_CAUSES = [
 const MODEL_UPDATED_CHANGES = [
   "weights.rebalanced",
   "criterion.complianceUpdated",
+  "criterion.weightMotivationUpdated",
 ] as const
 // payMapping.action*/note* domains (payMapping/tables.ts validators).
 // ACTION_TARGET_KINDS is imported from there rather than restated: a local

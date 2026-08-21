@@ -1,4 +1,5 @@
 import {
+  DIMENSION_KEYS,
   dimensionWeightShares,
   type MethodCheckCriterion,
   type MethodCheckInput,
@@ -178,6 +179,13 @@ async function requireModel(
 // working-conditions decision state, so the dashboard's approval card and its
 // working-conditions control never need a second query.
 //
+// It also carries every dimension's SHARE of the weighting, because a checklist
+// row that only states a verdict is a dead end: "no dimension dominates the
+// weighting unexplained" leaves the reader with no way to tell which dimension,
+// or by how much. The remedy line under the row names both, and the Viktning
+// chapter's own note uses the same numbers, so the two surfaces cannot disagree
+// with each other or with the gate.
+//
 // An orgQuery, not an adminQuery: the model section's layout reads this on
 // every one of its four chapters to draw the progress spine, so an admin gate
 // here throws in render for an editor and takes the whole section down. It
@@ -218,6 +226,20 @@ export const getMethodChecks = orgQuery({
       // opens, so the chapter never pays for the diff it may not show.
       lastApprovedAt: v.union(v.number(), v.null()),
       workingConditions: v.union(workingConditionsShape, v.null()),
+      // Every dimension's share of the model's total weight, from the engine's
+      // own dimensionWeightShares over the SAME criteria the checks above were
+      // validated from. All four dimensions, always, in DIMENSION_KEYS order, so
+      // a reader can see the balance rather than only the dimension that broke
+      // it.
+      //
+      // A FRACTION (0..1), never a rounded percent: a surface compares it
+      // against DIMENSION_WEIGHT_WARNING_SHARE to reach exactly the verdict the
+      // dimensionWeightBalance check reached, and a share of 0.404 rounds to 40
+      // and would read as "not over 40%" while the engine flags it. Rounding is
+      // the frontend's, at display time.
+      dimensionShares: v.array(
+        v.object({ key: dimensionKeyValidator, share: v.number() })
+      ),
     })
   ),
   handler: async (ctx) => {
@@ -228,6 +250,7 @@ export const getMethodChecks = orgQuery({
     if (model === null) return null
     const input = await buildMethodCheckInput(ctx, model)
     const checks = validateMethod(input)
+    const shares = dimensionWeightShares(input.criteria)
     // Resolves the approver's Better Auth id to a display name (users
     // mirror), the same lookup getMethodModel already does for
     // decidedBy/decidedAt, so the card never shows a raw auth id.
@@ -260,6 +283,10 @@ export const getMethodChecks = orgQuery({
             },
       lastApprovedAt: model.lastApprovedModel?.approval?.approvedAt ?? null,
       workingConditions: model.workingConditions ?? null,
+      dimensionShares: DIMENSION_KEYS.map((key) => ({
+        key,
+        share: shares[key],
+      })),
     }
   },
 })

@@ -190,7 +190,8 @@
       "modelRestored": "Modell återställd",
       "workingConditionsDecided": "Beslut om arbetsförhållanden sparat",
       "assessmentLocked": "Bedömningen låst",
-      "assessmentUnlocked": "Bedömningen upplåst"
+      "assessmentUnlocked": "Bedömningen upplåst",
+      "weightMotivationSaved": "Motivering sparad"
     },
     "accountMenu": "Kontomeny",
     "commandPalette": {
@@ -805,7 +806,8 @@
         },
         "modelUpdatedChange": {
           "weightsRebalanced": "Vikter omfördelade",
-          "complianceUpdated": "Dokumentation uppdaterad"
+          "complianceUpdated": "Dokumentation uppdaterad",
+          "weightMotivationUpdated": "Viktmotivering uppdaterad"
         }
       },
       "events": {
@@ -1883,7 +1885,19 @@
         "weightMeaning3": "Tydlig och balanserad påverkan i modellen",
         "weightMeaning4": "Stark påverkan i modellen",
         "weightMeaning5": "Mycket stark påverkan i modellen",
-        "empty": "Inga kriterier än. <link>Välj dem i kapitlet Kriterier</link>, vart och ett läggs till med vikt 3."
+        "empty": "Inga kriterier än. <link>Välj dem i kapitlet Kriterier</link>, vart och ett läggs till med vikt 3.",
+        "dominanceNote": "{dimension} bär {share} av viktningen utan dokumenterat skäl.",
+        "dominanceMotivatedNote": "{dimension} bär {share} av viktningen. Skälet är dokumenterat.",
+        "motivateCta": "Motivera viktningen",
+        "editMotivationCta": "Ändra motiveringen",
+        "motivationDialogTitle": "Varför {subject} väger så här mycket",
+        "motivationDialogDescription": "Dokumentera vad i arbetet som gör att {subject} väger så mycket som den gör. Skälet sparas på {criterion} och följer med i metodbilagan.",
+        "motivationLabel": "Motivering",
+        "motivationSaveCta": "Spara motivering",
+        "cancelCta": "Avbryt",
+        "motivationDialogDescriptionSelf": "Dokumentera vad i arbetet som gör att {subject} väger så mycket som den gör. Skälet följer med i metodbilagan, bredvid det här kriteriet.",
+        "leadershipNote": "{criterion} väger {points} av 5 utan dokumenterat skäl.",
+        "leadershipMotivatedNote": "{criterion} väger {points} av 5. Skälet är dokumenterat."
       },
       "picker": {
         "title": "Kriterier för {dimension}",
@@ -1965,7 +1979,23 @@
           "dimensionWeightBalance": "Ingen dimension dominerar viktningen utan motivering",
           "peopleLeadershipWeight": "Personalledarskapets vikt är motiverad",
           "overlapPairs": "Överlappande kriterier är granskade"
-        }
+        },
+        "remedies": {
+          "dimensionCoverage": "Inget kriterium än i: {dimensions}. Lägg till ett per dimension i <link>{chapter}</link>.",
+          "workingConditionsTested": "Arbetsförhållanden saknar ett dokumenterat beslut. Svara på väsentlighetsfrågan, med en motivering, i <link>{chapter}</link>.",
+          "criterionCount": "Modellen har {count, plural, =1 {# kriterium} other {# kriterier}}; den behöver 6 till 8. Justera urvalet i <link>{chapter}</link>.",
+          "dimensionCaps": "För många kriterier i: {dimensions}. Ta bort ett ur var och en i <link>{chapter}</link>.",
+          "anchorsComplete": "Ett kriterium saknar steg på sin bedömningsskala. Ta bort det och välj det på nytt i <link>{chapter}</link>.",
+          "documentationComplete": "{count, plural, =1 {# kriterium är} other {# kriterier är}} ännu inte dokumenterade och godkända. Öppna Dokumentera på vart och ett i <link>{chapter}</link>.",
+          "weightBudget": "Viktpoängen går inte ihop med budgeten. Balansera dem och spara i <link>{chapter}</link>.",
+          "levelRulesValid": "Modellens nivågränser är inte en giltig skala 1 till 12. Inget i appen ändrar dem, så det här kräver support.",
+          "zoneProfileMonotonic": "Modellens zonprofilregler är inte konsekventa. Inget i appen ändrar dem, så det här kräver support.",
+          "dimensionWeightBalance": "{dimensions} bär en dominerande andel av viktningen utan dokumenterat skäl. Motivera det i <link>{chapter}</link>, eller flytta viktpoäng till en annan dimension.",
+          "peopleLeadershipWeight": "{criterion} har en hög vikt utan dokumenterat skäl. Motivera den i <link>{chapter}</link>, eller sänk dess viktpoäng.",
+          "overlapPairs": "Överlappande kriterier: {pairs}. Notera överlappningen på ettdera kriteriet i paret i <link>{chapter}</link>."
+        },
+        "overlapFlag": "Överlappning med {names} är inte noterad än",
+        "overlapPairFormat": "{first} / {second}"
       },
       "methodAppendix": {
         "docTitle": "Metodbilaga",
@@ -2089,7 +2119,9 @@
       "analysisProgressBody": "Stegen som måste dokumenteras innan lönekartläggningen kan slutföras: samverkan, granskningen av lönepraxis, och varje grupp vars löneskillnad kräver en förklaring. Inget annat räknas.",
       "modelProgressLabel": "Vad behöver modellen?",
       "modelProgressBody": "Besluten som modellen behöver innan den kan godkännas: kriterierna, deras viktning, varje kriteriums dokumentation och själva godkännandet.",
-      "payGapScatterMeansBody": "De streckade linjerna är respektive köns medellön i gruppen, så du ser vilka som ligger över och under sitt eget medel."
+      "payGapScatterMeansBody": "De streckade linjerna är respektive köns medellön i gruppen, så du ser vilka som ligger över och under sitt eget medel.",
+      "weightMotivationLabel": "Vad är en viktmotivering?",
+      "weightMotivationBody": "Det dokumenterade skälet till att en dimension får väga så mycket som den gör. Den motiverar viktningen, inte 0-5-skalan: säg vad i arbetet som väger mer, aldrig vem som utför det."
     },
     "widgetCard": {
       "expand": "Förstora"

@@ -9,7 +9,7 @@ import { v } from "convex/values"
 import type { Id } from "../_generated/dataModel"
 import { repairDraftWeights } from "../ai/weights"
 import { deriveResults } from "../assessment/compute"
-import { AUDIT_EVENTS } from "../lib/audit"
+import { AUDIT_EVENTS, buildChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation } from "../lib/functions"
 import { reopenApprovalIfSet } from "./approval"
@@ -190,6 +190,80 @@ export const rebalanceWeights = adminMutation({
             },
           },
         })),
+      },
+    })
+    return null
+  },
+})
+
+// The one field a weight motivation diffs. A constant rather than an inline
+// literal for the same reason every other *_AUDIT_FIELDS list is one: the
+// audit-label coverage test imports it, so a field added here without its
+// dashboard.auditLog.fields.* label fails the suite instead of shipping a raw
+// payload key.
+export const WEIGHT_MOTIVATION_AUDIT_FIELDS = ["weightMotivation"] as const
+
+// Mirrors method.ts's MAX_COMPLIANCE_TEXT for the same reason it exists: an
+// unbounded text field on a document is a document-size risk. The client's Zod
+// schema carries the same number (lib/weight-motivation-schemas.ts); the
+// backend is the one that decides.
+const MAX_WEIGHT_MOTIVATION = 2000
+
+// Records WHY a dimension may carry the share of the weighting it does: the
+// method evidence behind the model's two weight warnings (spec §17.2 items
+// 9-10), and until now the one piece of the checklist with no way to write it
+// at all.
+//
+// Stored PER CRITERION because that is what the engine reads. validateMethod
+// clears dimensionWeightBalance for a dimension as soon as ANY criterion in it
+// carries a weightMotivation, and clears peopleLeadershipWeight when the
+// people-leadership criterion carries one; there is no model-level motivation
+// field, so a surface motivating a DIMENSION has to choose the criterion that
+// carries the text. The Viktning chapter's note picks the dimension's heaviest
+// criterion (ties by display order), because that is the criterion the share
+// being questioned mostly consists of, and it names it in the dialog rather
+// than writing somewhere the reader cannot see.
+//
+// Documentation, not a method change: it moves no weight point, so it shifts no
+// level, writes no level.shift diff, and deliberately does NOT reopen approval,
+// the same rule the compliance texts follow (ADR-0023; spec §2.3). Reopening
+// here would un-approve a model for writing down why it was approved.
+//
+// Nor is it gated on the criterion's own `approved` flag (unlike
+// saveCriterionCompliance): that flag signs off the kriterieurvalsprotokoll,
+// and locking the weight motivation behind it would mean reopening a
+// criterion's protokoll to answer a warning about the weighting.
+export const setCriterionWeightMotivation = adminMutation({
+  args: { criterionId: v.id("criteria"), motivation: v.string() },
+  returns: v.null(),
+  handler: async (ctx, { criterionId, motivation }) => {
+    const criterion = await ctx.db.get(criterionId)
+    if (criterion === null || criterion.orgId !== ctx.orgId) {
+      throw appError(ERROR_CODES.notFound)
+    }
+    if (motivation.length > MAX_WEIGHT_MOTIVATION) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+    // An empty string clears the field (stored as undefined so the optional
+    // stays clean), the same normalization saveCriterionCompliance uses.
+    const trimmed = motivation.trim()
+    const next = trimmed.length === 0 ? undefined : trimmed
+    // No-op short-circuit (mirrors rebalanceWeights and
+    // setWorkingConditionsDecision): an identical resubmission writes nothing,
+    // so a dialog reopened and saved unchanged never adds an audit row.
+    if (criterion.weightMotivation === next) return null
+    await ctx.db.patch(criterionId, { weightMotivation: next })
+    await ctx.audit.log({
+      type: AUDIT_EVENTS.modelUpdated,
+      payload: {
+        change: "criterion.weightMotivationUpdated",
+        criterionId,
+        modelId: criterion.modelId,
+        changes: buildChanges(
+          criterion,
+          { weightMotivation: next },
+          WEIGHT_MOTIVATION_AUDIT_FIELDS
+        ),
       },
     })
     return null

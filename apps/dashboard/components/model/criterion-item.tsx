@@ -137,11 +137,17 @@ export function CriterionItem({
           )}
         </div>
 
-        {/* Optional below-row note (Weight phase: the derived share). A single
-            constant-height line, so no reserved height is needed: changing the
-            weight only changes the percentage in place, never the line count. */}
+        {/* Optional below-row note (the derived share, and any flag the surface
+            raises about the criterion). A single constant-height line, so no
+            reserved height is needed: changing the weight only changes the
+            percentage in place, never the line count.
+
+            text-sm, not text-xs: the note stopped being a bare figure once it
+            started carrying words a reader has to act on, and reading text does
+            not go below the app's floor. CriterionListSkeleton's note line box
+            is sized to this. */}
         {note !== undefined && (
-          <div className="mt-1 text-muted-foreground text-xs">{note}</div>
+          <div className="mt-1 text-muted-foreground text-sm">{note}</div>
         )}
       </div>
     </motion.li>

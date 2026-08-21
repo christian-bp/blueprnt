@@ -32,25 +32,11 @@ import {
 import { useMutation } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useRef, useState } from "react"
+import { cn } from "@workspace/ui/lib/utils"
+import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
+import { formatNames } from "@/lib/list-format"
 import { modelErrorKey } from "@/lib/model-errors"
 import { toast } from "@/lib/toast"
-
-// Constructing an Intl formatter is the expensive part of using one, and a
-// dimension's library is a whole list of rows re-rendering together. One
-// formatter per locale, reused.
-const listFormatters = new Map<string, Intl.ListFormat>()
-
-function formatNames(locale: string, names: readonly string[]): string {
-  let formatter = listFormatters.get(locale)
-  if (formatter === undefined) {
-    formatter = new Intl.ListFormat(locale, {
-      style: "short",
-      type: "conjunction",
-    })
-    listFormatters.set(locale, formatter)
-  }
-  return formatter.format(names)
-}
 
 // A criterion the org has already chosen, as this dialog needs to know it:
 // which library entry it is (so the row is not offered twice) and what it is
@@ -241,7 +227,10 @@ export function LibraryPickerDialog({
                           // as the quieter of the two.
                           <Badge
                             variant="outline"
-                            className="h-auto whitespace-normal border-amber-500/50 text-amber-700 dark:text-amber-400"
+                            className={cn(
+                              "h-auto whitespace-normal",
+                              WARNING_ALERT_CLASS
+                            )}
                           >
                             {tCriteria("overlapChip", {
                               // Joined by the locale's own list rules rather

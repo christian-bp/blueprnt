@@ -22,6 +22,15 @@ const ALL_GREEN_CHECKS = [
   { key: "overlapPairs", level: "warning", ok: true },
 ] as const
 
+// Whole-model shares, as the engine returns them (fractions of 1). Responsibility
+// dominates at 46%, which is what makes the dominance remedy quotable.
+const DIMENSION_SHARES = [
+  { key: "competence", share: 0.3 },
+  { key: "effort", share: 0.24 },
+  { key: "responsibility", share: 0.46 },
+  { key: "workingConditions", share: 0 },
+]
+
 let queryResult: unknown
 let previewResult: unknown
 let orgRole = "admin"
@@ -72,6 +81,7 @@ describe("ApprovalCard", () => {
       approval: null,
       lastApprovedAt: null,
       workingConditions: null,
+      dimensionShares: DIMENSION_SHARES,
     }
     renderCard()
     expect(screen.getByText("Not yet approved")).toBeDefined()
@@ -94,6 +104,7 @@ describe("ApprovalCard", () => {
       approval: null,
       lastApprovedAt: null,
       workingConditions: null,
+      dimensionShares: DIMENSION_SHARES,
     }
     renderCard()
     const approveButton = screen.getByRole("button", { name: "Approve model" })
@@ -108,6 +119,7 @@ describe("ApprovalCard", () => {
       approval: null,
       lastApprovedAt: null,
       workingConditions: null,
+      dimensionShares: DIMENSION_SHARES,
     }
     renderCard()
     const approveButton = screen.getByRole("button", { name: "Approve model" })
@@ -129,6 +141,7 @@ describe("ApprovalCard", () => {
         decidedBy: "auth-1",
         decidedAt: 1_700_000_000_000,
       },
+      dimensionShares: DIMENSION_SHARES,
     }
     renderCard()
     expect(screen.getByText(/Approved by Alex on/)).toBeDefined()
@@ -141,6 +154,7 @@ describe("ApprovalCard", () => {
       approval: null,
       lastApprovedAt: null,
       workingConditions: null,
+      dimensionShares: DIMENSION_SHARES,
     }
     renderCard()
     fireEvent.click(screen.getByRole("button", { name: "Approve model" }))
@@ -176,6 +190,7 @@ describe("ApprovalCard", () => {
       approval: null,
       lastApprovedAt: null,
       workingConditions: null,
+      dimensionShares: DIMENSION_SHARES,
     }
     renderCard()
     // The state is readable.
@@ -202,6 +217,7 @@ describe("ApprovalCard", () => {
         decidedBy: "auth-1",
         decidedAt: 1_700_000_000_000,
       },
+      dimensionShares: DIMENSION_SHARES,
     }
     renderCard()
     // The check row stays.
@@ -223,6 +239,7 @@ describe("ApprovalCard", () => {
       approval: null,
       lastApprovedAt: 1_700_000_000_000,
       workingConditions: null,
+      dimensionShares: DIMENSION_SHARES,
     }
 
     it("offers the restore, naming the date it goes back to", () => {
@@ -242,6 +259,7 @@ describe("ApprovalCard", () => {
         approval: null,
         lastApprovedAt: null,
         workingConditions: null,
+        dimensionShares: DIMENSION_SHARES,
       }
       renderCard()
       expect(
@@ -259,6 +277,7 @@ describe("ApprovalCard", () => {
         },
         lastApprovedAt: 1_700_000_000_000,
         workingConditions: null,
+        dimensionShares: DIMENSION_SHARES,
       }
       renderCard()
       expect(
@@ -273,6 +292,128 @@ describe("ApprovalCard", () => {
       expect(
         screen.queryByRole("button", { name: "Restore to last approved" })
       ).toBeNull()
+    })
+  })
+  // Every FAILING row says what to do and where, with the specifics the check
+  // already computed. The card used to state twelve verdicts and no remedies:
+  // the two warnings were unactionable, and one of them named no surface that
+  // could answer it at all.
+  describe("remedy lines", () => {
+    const remedies = messages.dashboard.model.method.remedies
+    const checks = messages.dashboard.model.method.checks
+
+    // The remedy sits in the same <li> as its finding, and a chapter LINK
+    // splits its sentence across elements, so the assertions read the row's
+    // whole text rather than hunting for one unbroken string.
+    const rowText = (label: string) =>
+      screen.getByText(label).closest("li")?.textContent ?? ""
+
+    function failing(key: string, extra: Record<string, unknown> = {}) {
+      queryResult = {
+        checks: ALL_GREEN_CHECKS.map((check) =>
+          check.key === key ? { ...check, ok: false, ...extra } : check
+        ),
+        approval: null,
+        lastApprovedAt: null,
+        workingConditions: null,
+        dimensionShares: DIMENSION_SHARES,
+      }
+      renderCard()
+    }
+
+    it("says nothing under a passing row", () => {
+      queryResult = {
+        checks: ALL_GREEN_CHECKS,
+        approval: null,
+        lastApprovedAt: null,
+        workingConditions: null,
+        dimensionShares: DIMENSION_SHARES,
+      }
+      renderCard()
+      // The all-green card carries twelve findings and no instructions.
+      expect(screen.queryByText(/Adjust the selection in/)).toBeNull()
+      expect(screen.queryByText(/Motivate it in/)).toBeNull()
+    })
+
+    // The row the owner got stuck on. It names the dimension AND its share, so
+    // "which one, and by how much" is answered in the same sentence.
+    it("names the dominant dimension and its share, and links to Weighting", () => {
+      failing("dimensionWeightBalance", { dimensions: ["responsibility"] })
+      const line = rowText(checks.dimensionWeightBalance)
+      expect(line).toContain("Responsibility and impact (46%)")
+      expect(line).toContain("Weighting")
+      expect(line).toContain("move weight points")
+      expect(
+        screen.getByRole("link", { name: "Weighting" }).getAttribute("href")
+      ).toBe("/model/weighting")
+    })
+
+    // The other row the owner got stuck on. Overlapping criteria are named as
+    // PAIRS, so the reader knows which two to open.
+    it("names the overlapping pairs, and links to Method", () => {
+      failing("overlapPairs", {
+        pairs: [["knowledge-depth", "knowledge-breadth"]],
+      })
+      const line = rowText(checks.overlapPairs)
+      expect(line).toContain(
+        "Knowledge depth and specialist level / Knowledge breadth and cross-disciplinary understanding"
+      )
+      expect(
+        screen.getByRole("link", { name: "Method" }).getAttribute("href")
+      ).toBe("/model/method")
+    })
+
+    // The second warning names its criterion from the library, since the check
+    // itself carries no ids (there is only ever one such criterion).
+    it("names the people-leadership criterion", () => {
+      failing("peopleLeadershipWeight")
+      expect(rowText(checks.peopleLeadershipWeight)).toContain(
+        "People and management responsibility"
+      )
+      expect(
+        screen.getByRole("link", { name: "Weighting" }).getAttribute("href")
+      ).toBe("/model/weighting")
+    })
+
+    it("counts the criteria a documentation gap names", () => {
+      failing("documentationComplete", { criterionIds: ["c1", "c2", "c3"] })
+      expect(rowText(checks.documentationComplete)).toContain(
+        "3 criteria are still undocumented or unapproved"
+      )
+    })
+
+    it("states the model's criterion count against the 6 to 8 range", () => {
+      failing("criterionCount", { count: 4 })
+      expect(rowText(checks.criterionCount)).toContain(
+        "The model holds 4 criteria; it needs 6 to 8"
+      )
+    })
+
+    it("names the uncovered dimensions", () => {
+      failing("dimensionCoverage", { dimensions: ["effort", "responsibility"] })
+      expect(rowText(checks.dimensionCoverage)).toContain(
+        "Effort and complexity and Responsibility and impact"
+      )
+    })
+
+    // Nothing in the app edits the level or zone-profile rules, so their
+    // remedy points at no chapter rather than at one that cannot fix it.
+    it("offers no chapter link where no chapter can fix it", () => {
+      failing("levelRulesValid")
+      expect(rowText(checks.levelRulesValid)).toContain(
+        remedies.levelRulesValid
+      )
+      expect(screen.queryByRole("link")).toBeNull()
+    })
+
+    // An editor cannot approve, but the instructions are exactly what tells
+    // them what still has to happen.
+    it("shows an editor the remedies", () => {
+      orgRole = "editor"
+      failing("weightBudget")
+      expect(rowText(checks.weightBudget)).toContain(
+        "The weight points do not add up to the budget"
+      )
     })
   })
 })

@@ -335,13 +335,16 @@ export const CAUSE_EVENT_VALUE_KEYS: Record<ApprovalReopenCause, string> =
   ) as Record<ApprovalReopenCause, string>
 
 // model.updated `change`: the coded kind of update the row records
-// (evaluationModel/criteria.ts's rebalanceWeights vs
-// evaluationModel/method.ts's saveCriterionCompliance), mirrored by hand from
-// lib/auditPayloads.ts's ModelUpdatedPayload discriminant, the same
-// hand-synced convention as the other domains above. No existing surface
-// names either concept, so both live under auditLog.values.* rather than
-// reusing wording from elsewhere.
-type ModelUpdatedChange = "weights.rebalanced" | "criterion.complianceUpdated"
+// (evaluationModel/criteria.ts's rebalanceWeights and
+// setCriterionWeightMotivation vs evaluationModel/method.ts's
+// saveCriterionCompliance), mirrored by hand from lib/auditPayloads.ts's
+// ModelUpdatedPayload discriminant, the same hand-synced convention as the
+// other domains above. No existing surface names either concept, so both live
+// under auditLog.values.* rather than reusing wording from elsewhere.
+type ModelUpdatedChange =
+  | "weights.rebalanced"
+  | "criterion.complianceUpdated"
+  | "criterion.weightMotivationUpdated"
 export const MODEL_UPDATED_CHANGE_VALUE_KEYS: Record<
   ModelUpdatedChange,
   string
@@ -349,6 +352,8 @@ export const MODEL_UPDATED_CHANGE_VALUE_KEYS: Record<
   "weights.rebalanced": "auditLog.values.modelUpdatedChange.weightsRebalanced",
   "criterion.complianceUpdated":
     "auditLog.values.modelUpdatedChange.complianceUpdated",
+  "criterion.weightMotivationUpdated":
+    "auditLog.values.modelUpdatedChange.weightMotivationUpdated",
 }
 
 // Field name -> its coded domain's value-key Record. One lookup table so

@@ -1,9 +1,12 @@
 "use client"
 
+import { Alert02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { AnimatePresence } from "motion/react"
 import dynamic from "next/dynamic"
@@ -15,6 +18,8 @@ import { CriterionItem } from "@/components/model/criterion-item"
 import { CriterionListSkeleton } from "@/components/model/criterion-list-skeleton"
 import { MethodStatusBadge } from "@/components/model/method-status-badge"
 import { useOrganization } from "@/components/org-context"
+import { WARNING_TEXT_CLASS } from "@/lib/alert-tone"
+import { formatNames } from "@/lib/list-format"
 
 const MethodAppendixDownload = dynamic(
   () =>
@@ -42,6 +47,14 @@ export function MethodPanel({ orgId }: { orgId: string }) {
   const data = useQuery(api.evaluationModel.method.getMethodModel, {
     orgId,
     locale,
+  })
+  // The ENGINE's unacknowledged overlap pairs, from the same query the section's
+  // spine and the Godkännande checklist already subscribe to. Never a second
+  // derivation of the rule: a pair reads acknowledged once EITHER member carries
+  // an overlap note, and a surface that re-implemented that would eventually
+  // flag a criterion the gate considers done.
+  const checks = useQuery(api.evaluationModel.approval.getMethodChecks, {
+    orgId,
   })
 
   const [targetId, setTargetId] = useState<Id<"criteria"> | null>(null)
@@ -80,6 +93,39 @@ export function MethodPanel({ orgId }: { orgId: string }) {
   const allApproved =
     data.progress.total > 0 && data.progress.approved === data.progress.total
 
+  const unacknowledgedPairs =
+    checks?.checks.find((check) => check.key === "overlapPairs")?.pairs ?? []
+  // Keyed by plain string, not the strict library union: the pairs come off the
+  // wire as strings, and narrowing them back only to look up a name would be
+  // ceremony for nothing.
+  const nameByLibraryKey = new Map<string, string>(
+    data.criteria.map((criterion) => [criterion.libraryKey, criterion.name])
+  )
+  // The criteria this one still has an unreviewed overlap against, by name.
+  // Named rather than counted, and shown on the ROW, because the note that
+  // clears it is written behind that row's own Document button: the checklist
+  // two chapters later can only say that some pair is unreviewed, and the
+  // reader then has to work out which of six criteria to open.
+  function unreviewedPartners(libraryKey: string): string[] {
+    const names: string[] = []
+    for (const pair of unacknowledgedPairs) {
+      // Two-string arrays over the wire, not tuples (a Convex array validator
+      // cannot express a fixed length), so the members are read defensively.
+      const [first, second] = pair
+      if (first === undefined || second === undefined) continue
+      const partner =
+        first === libraryKey
+          ? second
+          : second === libraryKey
+            ? first
+            : undefined
+      if (partner === undefined) continue
+      const name = nameByLibraryKey.get(partner)
+      if (name !== undefined) names.push(name)
+    }
+    return names
+  }
+
   return (
     <div className="space-y-4">
       <ChapterStatusAlert
@@ -103,45 +149,72 @@ export function MethodPanel({ orgId }: { orgId: string }) {
           via the motion.li variants; consumer gap would double-space items. */}
       <ul>
         <AnimatePresence initial={false}>
-          {data.criteria.map((c) => (
-            <CriterionItem
-              key={c.criterionId}
-              name={c.name}
-              description={c.description || undefined}
-              extendedDescription={c.helpText || undefined}
-              note={
-                <span>
-                  <span className="font-medium text-foreground tabular-nums">
-                    {c.share}%
-                  </span>{" "}
-                  {tWeighting("shareOfTotal")}
-                </span>
-              }
-              importanceNode={
-                <span className="flex items-center gap-2">
-                  <MethodStatusBadge
-                    status={c.status}
-                    label={t(`status.${c.status}`)}
-                  />
-                  {/* The dialog behind this button is a write surface end to
+          {data.criteria.map((c) => {
+            const partners = unreviewedPartners(c.libraryKey)
+            return (
+              <CriterionItem
+                key={c.criterionId}
+                name={c.name}
+                description={c.description || undefined}
+                extendedDescription={c.helpText || undefined}
+                note={
+                  <span className="flex flex-wrap items-center gap-x-2">
+                    <span>
+                      <span className="font-medium text-foreground tabular-nums">
+                        {c.share}%
+                      </span>{" "}
+                      {tWeighting("shareOfTotal")}
+                    </span>
+                    {/* The overlap the checklist calls "unreviewed", said on the
+                      row that can answer it: the Document dialog behind this
+                      row carries the overlap field, and writing a note on
+                      EITHER member of the pair clears the check. */}
+                    {partners.length > 0 && (
+                      <span
+                        className={cn(
+                          "flex items-center gap-1",
+                          WARNING_TEXT_CLASS
+                        )}
+                      >
+                        <HugeiconsIcon
+                          icon={Alert02Icon}
+                          strokeWidth={2}
+                          className="size-4 shrink-0"
+                          aria-hidden="true"
+                        />
+                        {t("overlapFlag", {
+                          names: formatNames(locale, partners),
+                        })}
+                      </span>
+                    )}
+                  </span>
+                }
+                importanceNode={
+                  <span className="flex items-center gap-2">
+                    <MethodStatusBadge
+                      status={c.status}
+                      label={t(`status.${c.status}`)}
+                    />
+                    {/* The dialog behind this button is a write surface end to
                       end (the protokoll form, the bias review and the
                       per-criterion approve), so an editor is not offered its
                       entry point at all. The status badge beside it still
                       says where the criterion stands, and the appendix export
                       above carries the documented text itself. */}
-                  {isAdmin && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setTargetId(c.criterionId)}
-                    >
-                      {t("openCta")}
-                    </Button>
-                  )}
-                </span>
-              }
-            />
-          ))}
+                    {isAdmin && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setTargetId(c.criterionId)}
+                      >
+                        {t("openCta")}
+                      </Button>
+                    )}
+                  </span>
+                }
+              />
+            )
+          })}
         </AnimatePresence>
       </ul>
       {/* Not mounted at all for an editor: with no way to open it there is

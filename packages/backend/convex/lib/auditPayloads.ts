@@ -53,11 +53,12 @@ export type LevelCause = {
 }
 
 // model.updated is heterogeneous, keyed on `change` (whole-allocation
-// rebalance, compliance edit). Criterion activation/deactivation carry their
-// own top-level events (criterion.activated/criterion.deactivated) instead of
-// a `change` variant here, now that they are library selections rather than
-// text edits. Discriminated so per-variant fields (budget/items) stay
-// required on their own variant.
+// rebalance, compliance edit, weight motivation). Criterion
+// activation/deactivation carry their own top-level events
+// (criterion.activated/criterion.deactivated) instead of a `change` variant
+// here, now that they are library selections rather than text edits.
+// Discriminated so per-variant fields (budget/items) stay required on their own
+// variant.
 export type ModelUpdatedPayload =
   | {
       change: "weights.rebalanced"
@@ -68,6 +69,12 @@ export type ModelUpdatedPayload =
     }
   | {
       change: "criterion.complianceUpdated"
+      criterionId: string
+      modelId: string
+      changes: Changes
+    }
+  | {
+      change: "criterion.weightMotivationUpdated"
       criterionId: string
       modelId: string
       changes: Changes

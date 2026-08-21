@@ -4,23 +4,50 @@ import { AiEditingIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import NumberFlow from "@number-flow/react"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { pointBudget } from "@workspace/core"
+import {
+  type DimensionKey,
+  DIMENSION_WEIGHT_WARNING_SHARE,
+  PEOPLE_LEADERSHIP_LIBRARY_KEY,
+  pointBudget,
+  PROFILE_WEIGHT_FLOOR,
+} from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { cn } from "@workspace/ui/lib/utils"
 import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence } from "motion/react"
 import Link from "next/link"
-import { useLocale, useTranslations } from "next-intl"
+import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
 import { WeightBudgetBar } from "@/components/model/weight-budget-bar"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
+import {
+  WeightMotivationDialog,
+  type WeightMotivationTarget,
+} from "@/components/model/weight-motivation-dialog"
 import { WeightReviewPanel } from "@/components/model/weight-review-panel"
 import { MorphPopover } from "@/components/morph-popover"
+import { useOrganization } from "@/components/org-context"
+import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import { chapterHref } from "@/lib/model-chapters"
 import { modelErrorKey } from "@/lib/model-errors"
 import { toast } from "@/lib/toast"
-import { DIMENSION_SHARE_FORMAT, shareFraction } from "@/lib/weighting"
+import {
+  DIMENSION_SHARE_FORMAT,
+  shareFraction,
+  weightMotivationTarget,
+} from "@/lib/weighting"
+
+// One weight warning as the column renders it: which of the chapter's two the
+// note is, whether it is still unanswered (the amber), the sentence it states,
+// and what the dialog behind it writes.
+interface MotivationNote {
+  id: string
+  flagged: boolean
+  text: string
+  target: WeightMotivationTarget
+}
 
 // A figure standing inside a line of prose: it sits in the text flow rather
 // than opening a block of its own, and is sized to the one or two digits it
@@ -41,11 +68,24 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
   const tToast = useTranslations("dashboard.toast")
   const tAi = useTranslations("dashboard.ai")
   const locale = useLocale()
+  const format = useFormatter()
+  // Writing a motivation is an adminMutation, like saving the weighting itself.
+  // An editor reads the dominance note (it explains the balance they are
+  // looking at) and is offered neither control.
+  const { role } = useOrganization()
+  const isAdmin = role === "admin"
 
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   // True right after a confirmed weight review, until the weighting changes
   // again: the review trigger is hidden while it holds.
   const reviewLocked = useQuery(api.ai.suggest.getWeightReviewLock, { orgId })
+  // The ENGINE's verdict on the weighting, not a second derivation of it: the
+  // same query (and the same live subscription) the section's spine and the
+  // Godkännande checklist read, so the note here and the checklist row there
+  // can never disagree about whether a dimension dominates.
+  const checks = useQuery(api.evaluationModel.approval.getMethodChecks, {
+    orgId,
+  })
 
   const rebalanceWeights = useMutation(
     api.evaluationModel.criteria.rebalanceWeights
@@ -55,11 +95,34 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
   // points until Save posts the whole allocation atomically.
   const [draft, setDraft] = useState<Record<string, number>>({})
   const [saving, setSaving] = useState(false)
+  const [motivating, setMotivating] = useState<WeightMotivationTarget | null>(
+    null
+  )
 
   if (model === undefined) return <WeightingChapterSkeleton />
   if (model === null) return null
 
   const criteria = model.criteria
+
+  // The stored share per dimension (a fraction), as the engine computed it.
+  // Deliberately NOT the draft-aware share the headings show: the warning is
+  // about the allocation that is saved, and a note that appeared mid-drag would
+  // be scolding the reader for an edit they have not made yet.
+  const storedShare = (key: DimensionKey) =>
+    checks?.dimensionShares.find((entry) => entry.key === key)?.share ?? 0
+  // Which dimensions the engine's own dimensionWeightBalance check names, i.e.
+  // over the threshold AND with no motivation recorded anywhere in them.
+  const unmotivated = new Set<DimensionKey>(
+    checks?.checks.find((check) => check.key === "dimensionWeightBalance")
+      ?.dimensions ?? []
+  )
+  // The engine's second weight warning: a people-leadership criterion in the
+  // high-impact weight class needs its own recorded reason. It names no
+  // criterion in its result (there is only ever one), so the column finds it by
+  // library key.
+  const leadershipOk =
+    checks?.checks.find((check) => check.key === "peopleLeadershipWeight")
+      ?.ok !== false
   const pointsFor = (criterion: {
     criterionId: string
     weightPoints: number
@@ -183,6 +246,83 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
               (criterion) => criterion.dimensionKey === dimension.key
             )
             if (placed.length === 0) return null
+            // The same comparison the engine makes, against the same exported
+            // constant and the same unrounded fraction, so the note and the
+            // checklist row cannot land on opposite sides of the threshold.
+            const share = storedShare(dimension.key)
+            // The criterion a DIMENSION-level motivation is written on. An
+            // existing one wins over the heaviest: a motivation written when a
+            // different criterion was the heaviest must be EDITED where it
+            // lives, not shadowed by a second copy on a criterion that has
+            // since overtaken it (which would leave two for one dimension).
+            const dimensionTarget =
+              placed.find(
+                (criterion) => (criterion.weightMotivation ?? "").length > 0
+              ) ?? weightMotivationTarget(placed)
+            // The people-leadership criterion, when this column holds it and it
+            // sits in the model's high-impact weight class. Its warning asks
+            // about the CRITERION, not the dimension, and clears only on its
+            // own motivation, so it gets its own note even where the dimension
+            // is already answered. Collapsed into one when the dimension's own
+            // target IS this criterion: one motivation clears both there, and
+            // two notes offering the same field would be a bug in disguise.
+            const leadership = placed.find(
+              (criterion) =>
+                criterion.libraryKey === PEOPLE_LEADERSHIP_LIBRARY_KEY &&
+                criterion.weightPoints >= PROFILE_WEIGHT_FLOOR
+            )
+            const notes: MotivationNote[] = []
+            if (
+              share > DIMENSION_WEIGHT_WARNING_SHARE &&
+              dimensionTarget !== undefined
+            ) {
+              const flagged = unmotivated.has(dimension.key)
+              notes.push({
+                id: `dimension:${dimension.key}`,
+                flagged,
+                text: t(flagged ? "dominanceNote" : "dominanceMotivatedNote", {
+                  dimension: dimension.name,
+                  share: format.number(share, DIMENSION_SHARE_FORMAT),
+                }),
+                target: {
+                  subject: dimension.name,
+                  criterionId: dimensionTarget.criterionId,
+                  criterionName: dimensionTarget.name,
+                  savedOnSubject: false,
+                  motivation: dimensionTarget.weightMotivation,
+                },
+              })
+            }
+            if (
+              leadership !== undefined &&
+              // Collapse only against a note that was actually pushed: the
+              // dimension's target exists even when the dimension is under the
+              // threshold and draws nothing, and testing it directly hid the
+              // leadership note in exactly the case that needs it (a
+              // people-leadership criterion alone in its column).
+              !notes.some(
+                (note) => note.target.criterionId === leadership.criterionId
+              )
+            ) {
+              notes.push({
+                id: `criterion:${leadership.criterionId}`,
+                flagged: !leadershipOk,
+                text: t(
+                  leadershipOk ? "leadershipMotivatedNote" : "leadershipNote",
+                  {
+                    criterion: leadership.name,
+                    points: leadership.weightPoints,
+                  }
+                ),
+                target: {
+                  subject: leadership.name,
+                  criterionId: leadership.criterionId,
+                  criterionName: leadership.name,
+                  savedOnSubject: true,
+                  motivation: leadership.weightMotivation,
+                },
+              })
+            }
             return (
               <section key={dimension.key} className="space-y-2">
                 {/* The dimension's own share of the weighting, beside its
@@ -210,6 +350,42 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
                     ),
                   })}
                 </h3>
+                {/* The weight warnings WHERE THE DECISION IS MADE, not only as
+                    a verdict two chapters later. Each sits under the heading it
+                    is about, so the fact, the figure and both ways out (record
+                    why, or move points) are one thing to read; the Godkännande
+                    checklist reports the same findings and links back here.
+
+                    Answered and unanswered render the same box, so recording a
+                    motivation changes the tone and the wording without moving
+                    the cards under it. */}
+                {notes.map((note) => (
+                  // Not a live region: it describes the SAVED allocation, so it
+                  // never changes under the reader's own hands the way the
+                  // budget bar above does, and more polite regions on one
+                  // chapter only make the first one harder to hear.
+                  <div
+                    key={note.id}
+                    className={cn(
+                      "space-y-2 rounded-md border p-3 text-sm",
+                      note.flagged
+                        ? WARNING_ALERT_CLASS
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    <p>{note.text}</p>
+                    {isAdmin && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setMotivating(note.target)}
+                      >
+                        {t(note.flagged ? "motivateCta" : "editMotivationCta")}
+                      </Button>
+                    )}
+                  </div>
+                ))}
                 {/* Nothing on this chapter adds or removes a criterion (that
                     is the Kriterier chapter's job), but the model is a live
                     query: a criterion removed there, or in another tab, still
@@ -244,6 +420,15 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
             )
           })}
         </div>
+      )}
+      {/* Not mounted at all for an editor: with no way to open it there is
+          nothing for it to do. */}
+      {isAdmin && (
+        <WeightMotivationDialog
+          orgId={orgId}
+          target={motivating}
+          onClose={() => setMotivating(null)}
+        />
       )}
     </div>
   )

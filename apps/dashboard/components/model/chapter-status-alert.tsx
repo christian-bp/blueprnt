@@ -4,6 +4,7 @@ import { InformationCircleIcon, Tick02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Alert, AlertTitle } from "@workspace/ui/components/alert"
 import { cn } from "@workspace/ui/lib/utils"
+import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import type { ReactNode } from "react"
 
 // The status block every model chapter opens with: a role="status" Alert
@@ -46,8 +47,7 @@ export function ChapterStatusAlert({
           "w-auto",
           // Alert has no warning variant, so the amber is a call-site
           // override.
-          ok === false &&
-            "border-amber-500/50 text-amber-700 dark:text-amber-400"
+          ok === false && WARNING_ALERT_CLASS
         )}
       >
         <HugeiconsIcon

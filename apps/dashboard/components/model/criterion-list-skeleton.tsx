@@ -36,9 +36,9 @@ function CriterionRowSkeleton({ trailing }: { trailing: ReactNode }) {
         </span>
         {trailing}
       </div>
-      {/* Share note in its text-xs line box (16px + mt-1), matching the real
+      {/* Share note in its text-sm line box (20px + mt-1), matching the real
           note so the row height still lines up. */}
-      <div className="mt-1 flex h-4 items-center">
+      <div className="mt-1 flex h-5 items-center">
         <Skeleton className="h-3 w-28" />
       </div>
     </li>
