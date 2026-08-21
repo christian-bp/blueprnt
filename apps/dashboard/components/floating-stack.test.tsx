@@ -13,44 +13,33 @@ const railOf = (container: HTMLElement) =>
   container.querySelector('[data-slot="floating-stack"]') as HTMLElement
 
 describe("FloatingStack", () => {
-  // The instrument is the stack's persistent BASE and a chapter's pills stack
-  // above it, so the reading a section always has sits closest to the edge and
-  // what a chapter has to say arrives on top of it.
-  it("keeps the instrument at the base and stacks pills above it", () => {
+  // The rail carries a chapter's pills and nothing else.
+  it("carries the chapter's pill", () => {
     const { container } = render(
       <FloatingStackProvider>
         <FloatingPill tone="info">
           <FloatingPillText alone>Two criteria left</FloatingPillText>
         </FloatingPill>
-        <FloatingStack instrument={<div data-testid="instrument" />} />
+        <FloatingStack />
       </FloatingStackProvider>
     )
     const rail = railOf(container)
-    const flow = [
-      ...rail.querySelectorAll(
-        '[data-slot="floating-pill"], [data-testid="instrument"]'
-      ),
-    ]
-    expect(
-      flow.map(
-        (node) =>
-          node.getAttribute("data-slot") ?? node.getAttribute("data-testid")
-      )
-    ).toEqual(["floating-pill", "instrument"])
+    expect(rail.querySelector('[data-slot="floating-pill"]')).not.toBeNull()
+    // Never the journey instrument: that sits centred on the section's title
+    // row, where it does not pass over the reader's data.
+    expect(rail.querySelector('[role="progressbar"]')).toBeNull()
   })
 
-  // The instrument is persistent: a section with nothing to say still shows
-  // where it stands, which is the whole reason it moved down here.
-  it("shows the instrument with no pill in the stack", () => {
+  // Nothing at all when nothing has anything to say: a section whose open
+  // chapter carries no pill should leave no fixed element behind, empty or
+  // not.
+  it("mounts nothing when the stack is empty", () => {
     const { container } = render(
       <FloatingStackProvider>
-        <FloatingStack instrument={<div data-testid="instrument" />} />
+        <FloatingStack />
       </FloatingStackProvider>
     )
-    expect(screen.getByTestId("instrument")).toBeDefined()
-    expect(
-      railOf(container).querySelector('[data-slot="floating-pill"]')
-    ).toBeNull()
+    expect(railOf(container)).toBeNull()
   })
 
   // Fixed, bottom-centre, above the page and below the toast layer: the same
@@ -59,7 +48,10 @@ describe("FloatingStack", () => {
   it("floats out of flow, bottom-centre, under the toasts", () => {
     const { container } = render(
       <FloatingStackProvider>
-        <FloatingStack instrument={<div data-testid="instrument" />} />
+        <FloatingPill tone="info">
+          <FloatingPillText alone>Two criteria left</FloatingPillText>
+        </FloatingPill>
+        <FloatingStack />
       </FloatingStackProvider>
     )
     const tokens = railOf(container).className.split(/\s+/)

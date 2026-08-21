@@ -66,8 +66,8 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
     <ChapterActionSlotProvider>
       <FloatingStackProvider>
         <div className="space-y-4">
-          {/* The section's title and its one explainer. The journey's reading
-              floats with the pill stack. */}
+          {/* The section's title and its one explainer, with the whole
+              mapping's instrument centred on the page beside them. */}
           <SectionTitleRow
             heading={t("progressLabel")}
             help={
@@ -75,32 +75,32 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
                 {tHelp("analysisProgressBody")}
               </HelpMorphButton>
             }
+            instrument={
+              <SegmentedProgress
+                activeSegment={active}
+                barLabel={t("progressBarLabel")}
+                done={queue?.progress.overall.done ?? 0}
+                renderTitle={(segment) =>
+                  nameFor.get(segment.key) ?? segment.key
+                }
+                renderCount={(segment) =>
+                  tJourney.rich("countRich", {
+                    done: () => <NumberFlow value={segment.done} />,
+                    total: () => <NumberFlow value={segment.total} />,
+                  })
+                }
+                segments={chapters ?? []}
+                total={queue?.progress.overall.total ?? 0}
+              />
+            }
           />
           {/* The journey row: the tabs and this chapter's action. */}
           <AnalysisChapterTabs />
           {children}
         </div>
         {/* The same stack the model section keeps. This section carries no
-            pills of its own today, so the instrument is alone in it; the rail
-            is shared anyway, because a second one would be a second corner. */}
-        <FloatingStack
-          instrument={
-            <SegmentedProgress
-              activeSegment={active}
-              barLabel={t("progressBarLabel")}
-              done={queue?.progress.overall.done ?? 0}
-              renderTitle={(segment) => nameFor.get(segment.key) ?? segment.key}
-              renderCount={(segment) =>
-                tJourney.rich("countRich", {
-                  done: () => <NumberFlow value={segment.done} />,
-                  total: () => <NumberFlow value={segment.total} />,
-                })
-              }
-              segments={chapters ?? []}
-              total={queue?.progress.overall.total ?? 0}
-            />
-          }
-        />
+            pills of its own today, so the rail renders nothing at all. */}
+        <FloatingStack />
       </FloatingStackProvider>
     </ChapterActionSlotProvider>
   )

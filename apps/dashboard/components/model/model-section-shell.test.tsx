@@ -80,25 +80,20 @@ describe("ModelSectionShell", () => {
   })
   afterEach(() => cleanup())
 
-  // The instrument floats with the section's pill stack, at the base of it:
-  // a section's state is what you check WHILE working, and on the title row
-  // it was the one reading a reader lost by scrolling. Its announced
-  // percentage is the whole model's WORK, not its chapter count.
-  it("floats the instrument at the base of the section's stack", () => {
+  // The instrument is centred on the page at title level, and floats
+  // nowhere: over the reader's data was the cost the float carried.
+  it("centres the instrument on the title row", () => {
     const { container } = renderShell()
     const heading = screen.getByRole("heading", { level: 3 })
     const bar = screen.getByRole("progressbar", { name: m.progressBarLabel })
     const instrument = bar.parentElement as HTMLElement
-    const rail = container.querySelector(
-      '[data-slot="floating-stack"]'
-    ) as HTMLElement
-    // One stack, and the instrument is in it, not on the title row.
-    expect(
-      container.querySelectorAll('[data-slot="floating-stack"]')
-    ).toHaveLength(1)
-    expect(instrument.parentElement).toBe(rail)
-    expect(heading.closest("div")?.contains(bar)).toBe(false)
-    expect(rail.className.split(/\s+/)).toContain("fixed")
+    // Same row as the title, positioned against it rather than laid out
+    // after it.
+    const row = heading.closest("div")?.parentElement as HTMLElement
+    expect(row.contains(instrument)).toBe(true)
+    expect(row.className.split(/\s+/)).toContain("relative")
+    expect(instrument.parentElement?.className).toContain("md:left-1/2")
+    expect(container.querySelector('[class*="fixed"]')).toBeNull()
     // The fixture leaves only the approval outstanding: 16 of 17 STEPS, so
     // 94%, not the 75% three closed chapters of four would read as.
     expect(bar.getAttribute("aria-valuenow")).toBe("94")
@@ -127,15 +122,12 @@ describe("ModelSectionShell", () => {
     expect(container.querySelectorAll('[role="progressbar"]')).toHaveLength(1)
   })
 
-  // The kartläggning's shell mounts the same stack with the same instrument;
-  // it simply has no pills of its own to put above it today. Pinned here
-  // because a second rail would be a second corner.
-  it("mounts exactly one stack, whatever the chapter puts in it", () => {
+  // One instrument, and no fixed rail at all on a chapter whose body carries
+  // no pill: an empty rail is a fixed element left behind for nothing.
+  it("mounts one instrument and no empty rail", () => {
     const { container } = renderShell()
-    expect(
-      container.querySelectorAll('[data-slot="floating-stack"]')
-    ).toHaveLength(1)
     expect(container.querySelectorAll('[role="progressbar"]')).toHaveLength(1)
+    expect(container.querySelector('[data-slot="floating-stack"]')).toBeNull()
   })
 
   it("mounts the spine and the chapter row above the chapter's own body", () => {

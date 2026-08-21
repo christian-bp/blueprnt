@@ -68,13 +68,12 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
 
   return (
     // Two slots the chapter fills from its own tree: its action, which lands
-    // on the journey row, and its pills, which land in the floating stack
-    // above the instrument.
+    // on the journey row, and its pills, which land in the floating stack.
     <ChapterActionSlotProvider>
       <FloatingStackProvider>
         <div className="space-y-4">
-          {/* The section's title and its one explainer. The journey's reading
-              floats with the pill stack. */}
+          {/* The section's title and its one explainer, with the whole
+              model's instrument centred on the page beside them. */}
           <SectionTitleRow
             heading={t("heading")}
             help={
@@ -82,34 +81,34 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
                 {tHelp("modelProgressBody")}
               </HelpMorphButton>
             }
+            instrument={
+              <SegmentedProgress
+                activeSegment={active}
+                barLabel={t("progressBarLabel")}
+                // A chapter reaching its own done/total plays the same
+                // celebration a finished to-do card does. The kartläggning's
+                // analysis section does not opt in.
+                celebrateOnComplete
+                done={overall.done}
+                renderTitle={(segment) =>
+                  nameFor.get(segment.key) ?? segment.key
+                }
+                renderCount={(segment) =>
+                  t.rich("countRich", {
+                    done: () => <NumberFlow value={segment.done} />,
+                    total: () => <NumberFlow value={segment.total} />,
+                  })
+                }
+                segments={chapters}
+                total={overall.total}
+              />
+            }
           />
           {/* The journey row: the tabs and this chapter's action. */}
           <ModelChapterTabs />
           {children}
         </div>
-        <FloatingStack
-          instrument={
-            <SegmentedProgress
-              activeSegment={active}
-              barLabel={t("progressBarLabel")}
-              // A chapter reaching its own done/total plays the same
-              // celebration a finished to-do card does, and the instrument
-              // floats now, so the burst is thrown where it can be seen. The
-              // kartläggning's analysis section does not opt in.
-              celebrateOnComplete
-              done={overall.done}
-              renderTitle={(segment) => nameFor.get(segment.key) ?? segment.key}
-              renderCount={(segment) =>
-                t.rich("countRich", {
-                  done: () => <NumberFlow value={segment.done} />,
-                  total: () => <NumberFlow value={segment.total} />,
-                })
-              }
-              segments={chapters}
-              total={overall.total}
-            />
-          }
-        />
+        <FloatingStack />
       </FloatingStackProvider>
     </ChapterActionSlotProvider>
   )

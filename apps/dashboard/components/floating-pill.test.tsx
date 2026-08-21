@@ -23,7 +23,7 @@ describe("FloatingPill", () => {
         <FloatingPill tone="info">
           <FloatingPillText alone>Two criteria left</FloatingPillText>
         </FloatingPill>
-        <FloatingStack instrument={<div data-testid="instrument" />} />
+        <FloatingStack />
       </FloatingStackProvider>
     )
     const rail = container.querySelector(
@@ -36,22 +36,9 @@ describe("FloatingPill", () => {
     expect(classes).toContain("z-40")
     expect(classes).toContain("pointer-events-none")
     expect(pill(container)?.className).toContain("pointer-events-auto")
-    // The pill sits ABOVE the instrument in the stack: the instrument is the
-    // section's persistent base, and what a chapter has to say stacks on it.
-    // Order, not child index: the pills land inside a display:contents span,
-    // which keeps them DOM children of that span while making them flex items
-    // of the rail. DOM order is what the flex order follows.
-    const flow = [
-      ...rail.querySelectorAll(
-        '[data-slot="floating-pill"], [data-testid="instrument"]'
-      ),
-    ]
-    expect(
-      flow.map(
-        (node) =>
-          node.getAttribute("data-slot") ?? node.getAttribute("data-testid")
-      )
-    ).toEqual(["floating-pill", "instrument"])
+    // The rail carries pills and nothing else: the journey instrument sits
+    // centred on the section's title row, where it does not pass over data.
+    expect(rail.querySelector('[role="progressbar"]')).toBeNull()
   })
 
   // A polite live region, so the readings it carries (points left, over
