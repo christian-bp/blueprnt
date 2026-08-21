@@ -1912,6 +1912,7 @@
       "method": {
         "documented": "{documented}/{total} dokumenteret",
         "approved": "{approved}/{total} godkendt",
+        "empty": "Ingen kriterier endnu. <link>Vælg dem i kapitlet Kriterier</link>, hvert af dem dokumenteres og godkendes her.",
         "status": {
           "notStarted": "Ikke startet",
           "inProgress": "I gang",

@@ -10,6 +10,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useQuery } from "convex/react"
 import { AnimatePresence } from "motion/react"
 import dynamic from "next/dynamic"
+import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { type ReactNode, useState } from "react"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
@@ -17,6 +18,7 @@ import { ChapterStatusAlert } from "@/components/model/chapter-status-alert"
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
 import { useOrganization } from "@/components/org-context"
+import { chapterHref } from "@/lib/model-chapters"
 
 const MethodAppendixDownload = dynamic(
   () =>
@@ -131,54 +133,73 @@ export function MethodPanel({ orgId }: { orgId: string }) {
         }
         actions={<MethodAppendixDownload orgId={orgId} />}
       />
-      <div className={CHAPTER_GRID_CLASS}>
-        {DIMENSION_KEYS.map((key) => {
-          const placed = data.criteria.filter(
-            (criterion) => criterion.dimensionKey === key
-          )
-          // A dimension the model holds nothing in has nothing to document, so
-          // it draws no column at all (the same rule the Viktning chapter
-          // follows; choosing a criterion for it is the Kriterier chapter's).
-          if (placed.length === 0) return null
-          return (
-            <DimensionSection key={key} title={content.dimensions[key].name}>
-              {/* Nothing on this chapter adds or removes a criterion, but the
+      {data.criteria.length === 0 ? (
+        // Never a bare page: the chapter has nothing to document until the
+        // first one has been chosen, and it says so with the way back. The
+        // status block above stays: 0/0 is an honest reading of this state,
+        // and it is where the appendix export lives.
+        <p className="text-muted-foreground text-sm">
+          {t.rich("empty", {
+            link: (chunks) => (
+              <Link
+                href={chapterHref("criteria")}
+                className="text-brand underline underline-offset-4"
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
+      ) : (
+        <div className={CHAPTER_GRID_CLASS}>
+          {DIMENSION_KEYS.map((key) => {
+            const placed = data.criteria.filter(
+              (criterion) => criterion.dimensionKey === key
+            )
+            // A dimension the model holds nothing in has nothing to document, so
+            // it draws no column at all (the same rule the Viktning chapter
+            // follows; choosing a criterion for it is the Kriterier chapter's).
+            if (placed.length === 0) return null
+            return (
+              <DimensionSection key={key} title={content.dimensions[key].name}>
+                {/* Nothing on this chapter adds or removes a criterion, but the
                   model is a live query: a criterion removed on the Kriterier
                   chapter, or in another tab, still leaves this column.
                   popLayout takes it out of flow at once so the cards under it
                   close the gap in one pass rather than waiting out the fade
                   (ui-animation.md rules 3 and 6), and initial={false} keeps
                   arriving on the page from animating. */}
-              <AnimatePresence initial={false} mode="popLayout">
-                {placed.map((criterion) => (
-                  <PlacedCriterionCard
-                    key={criterion.criterionId}
-                    criterion={{
-                      criterionId: criterion.criterionId,
-                      name: criterion.name,
-                      shortUiText:
-                        content.criteria[criterion.libraryKey].shortUiText,
-                    }}
-                    documentation={{
-                      status: criterion.status,
-                      partners: unreviewedPartners(criterion.libraryKey),
-                      // The dialog behind this action is a write surface end to
-                      // end (the protokoll form, the bias review and the
-                      // per-criterion approve), so an editor is not offered its
-                      // entry point at all. The status badge beside it still
-                      // says where the criterion stands, and the appendix
-                      // export above carries the documented text itself.
-                      onDocument: isAdmin
-                        ? () => setTargetId(criterion.criterionId)
-                        : undefined,
-                    }}
-                  />
-                ))}
-              </AnimatePresence>
-            </DimensionSection>
-          )
-        })}
-      </div>
+                <AnimatePresence initial={false} mode="popLayout">
+                  {placed.map((criterion) => (
+                    <PlacedCriterionCard
+                      key={criterion.criterionId}
+                      criterion={{
+                        criterionId: criterion.criterionId,
+                        name: criterion.name,
+                        shortUiText:
+                          content.criteria[criterion.libraryKey].shortUiText,
+                      }}
+                      documentation={{
+                        status: criterion.status,
+                        partners: unreviewedPartners(criterion.libraryKey),
+                        // The dialog behind this action is a write surface end to
+                        // end (the protokoll form, the bias review and the
+                        // per-criterion approve), so an editor is not offered its
+                        // entry point at all. The status badge beside it still
+                        // says where the criterion stands, and the appendix
+                        // export above carries the documented text itself.
+                        onDocument: isAdmin
+                          ? () => setTargetId(criterion.criterionId)
+                          : undefined,
+                      }}
+                    />
+                  ))}
+                </AnimatePresence>
+              </DimensionSection>
+            )
+          })}
+        </div>
+      )}
       {/* Not mounted at all for an editor: with no way to open it there is
           nothing for it to do, and a write form on the page is a write form on
           the page. */}

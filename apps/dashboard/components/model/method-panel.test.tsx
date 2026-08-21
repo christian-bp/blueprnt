@@ -122,11 +122,34 @@ function methodChecks(pairs: string[][]) {
   }
 }
 
+// The model as a brand-new org has it: a model exists, nothing is chosen for
+// it yet. Reachable in the app, because choosing the criteria is the chapter
+// before this one.
+const EMPTY_MODEL = {
+  ...METHOD_MODEL,
+  criteria: [],
+  progress: { documented: 0, approved: 0, total: 0 },
+}
+
 let overlapPairs: string[][] = []
 let loading = false
+let empty = false
 
 const m = messages.dashboard.model.method
 const weighting = messages.dashboard.model.weighting
+
+// The empty line's own words, with the link tag taken off: the message is one
+// sentence with a link inside it, and the test asserts the sentence the reader
+// sees rather than the markup around it.
+const EMPTY_TEXT = m.empty.replace(/<\/?link>/g, "")
+const EMPTY_LINK_TEXT = /<link>(.*)<\/link>/.exec(m.empty)?.[1] ?? ""
+
+// The line itself, matched on the whole paragraph: the link inside it splits
+// the sentence across elements, which the default text matcher does not join.
+const emptyLine = () =>
+  screen.queryByText(
+    (_, node) => node?.tagName === "P" && node.textContent === EMPTY_TEXT
+  )
 
 function renderPanel(orgId = "org1") {
   return render(
@@ -155,9 +178,11 @@ describe("MethodPanel", () => {
     orgRole = "admin"
     overlapPairs = []
     loading = false
+    empty = false
     onQuery((ref) => {
       if (ref === "evaluationModel.method.getMethodModel") {
-        return loading ? undefined : METHOD_MODEL
+        if (loading) return undefined
+        return empty ? EMPTY_MODEL : METHOD_MODEL
       }
       if (ref === "evaluationModel.approval.getMethodChecks") {
         return methodChecks(overlapPairs)
@@ -193,6 +218,37 @@ describe("MethodPanel", () => {
     expect(
       column(library.dimensions.competence.name).queryByText("Impact")
     ).toBeNull()
+  })
+
+  // Never a bare page: with nothing chosen there is nothing to document, and
+  // the chapter says so with the way back rather than an empty grid.
+  describe("with no criteria chosen yet", () => {
+    beforeEach(() => {
+      empty = true
+    })
+
+    it("says where to start, linking the chapter that starts it", () => {
+      const { container } = renderPanel()
+      expect(emptyLine()).not.toBeNull()
+      const link = screen.getByRole("link", { name: EMPTY_LINK_TEXT })
+      expect(link.getAttribute("href")).toBe("/model/criteria")
+      // No grid, and no column standing empty in it.
+      expect(container.querySelector("section")).toBeNull()
+    })
+
+    // The status block stays: 0/0 is an honest reading of this state, and it
+    // is where the appendix export lives.
+    it("keeps the status block above it", () => {
+      renderPanel()
+      expect(screen.getByText(/0\/0 documented/)).toBeDefined()
+      expect(screen.getByText(/0\/0 approved/)).toBeDefined()
+    })
+  })
+
+  it("says nothing about starting once a criterion exists", () => {
+    renderPanel()
+    expect(emptyLine()).toBeNull()
+    expect(screen.queryByRole("link", { name: EMPTY_LINK_TEXT })).toBeNull()
   })
 
   // A dimension the model holds nothing in has nothing to document, so it
