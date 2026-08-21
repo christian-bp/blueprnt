@@ -1,0 +1,79 @@
+apps/dashboard/content/docs/fi/method-documentation.mdx
+  s_58dd112dc09435::t_e5333509984585 24-30
+  s_58dd112dc09435::t_b219a4d1e51d36 69-76
+apps/dashboard/components/model/criteria-chapter.tsx
+  s_58dd112dc09435::t_14f07c43c07adc 95-103
+apps/dashboard/components/model/method-panel.test.tsx
+  s_58dd112dc09435::t_f2b84028710f42 395-396,398,401-402,407-410
+  s_58dd112dc09435::t_7c21b313fe1d88 422-423,426-429,561-564
+apps/dashboard/components/model/placed-criterion-card.tsx
+  s_58dd112dc09435::t_e0d6037398ce96 20,263-268,282
+  s_58dd112dc09435::t_cd0047bd970859 21-22,254-262,269,277-281,283-285
+apps/dashboard/content/docs/sv/method-documentation.mdx
+  s_58dd112dc09435::t_e5333509984585 22-27
+  s_58dd112dc09435::t_b219a4d1e51d36 64-71
+apps/dashboard/components/model/criterion-compliance-dialog.test.tsx
+  s_58dd112dc09435::t_dcb3281dfe63d0 74-89
+  s_58dd112dc09435::t_9e2e2ec6225f4a 122-125,297
+  s_58dd112dc09435::t_dd9d082c3aa39a 18-25,28-36,120-121,126-128,131-135
+  s_58dd112dc09435::t_ec184a924c6623 188-192,195-199,202-214,217-221,225-296,298-300,342-345,361-363
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_1fee46a775d870 1940
+  s_58dd112dc09435::t_9810012bb8ea54 1923
+  s_58dd112dc09435::t_9e2e2ec6225f4a 1939
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_bd61540f56f545 32-35,496-501
+  s_58dd112dc09435::t_42e4df991452bc 489-495,502-504
+  s_58dd112dc09435::t_14f07c43c07adc 306,311,315,483-488
+  s_58dd112dc09435::t_4755122bd97c11 505-508
+apps/dashboard/content/docs/nb/method-documentation.mdx
+  s_58dd112dc09435::t_b219a4d1e51d36 65-72
+  s_58dd112dc09435::t_e5333509984585 23-28
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_9e2e2ec6225f4a 1939
+  s_58dd112dc09435::t_1fee46a775d870 1940
+  s_58dd112dc09435::t_9810012bb8ea54 1923
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_9e2e2ec6225f4a 1939
+  s_58dd112dc09435::t_1fee46a775d870 1940
+  s_58dd112dc09435::t_9810012bb8ea54 1923
+apps/dashboard/components/model/criterion-compliance-dialog.tsx
+  s_58dd112dc09435::t_3863e5091f2a1a 419,446-474,480-490
+  s_58dd112dc09435::t_9589b735c6e87f 99-103,119,121-141,166-177,180-207
+apps/dashboard/components/model/placed-criterion-card.test.tsx
+  s_58dd112dc09435::t_cb424b065f8476 253,258-260,263-264,268-270,272,274-275,277-278,282-300,313-317,319
+  s_58dd112dc09435::t_eea3c9b9903f8f 254-257,265-267,271,273,276,279-281
+apps/dashboard/content/docs/en/method-documentation.mdx
+  s_58dd112dc09435::t_e5333509984585 22-27
+  s_58dd112dc09435::t_b219a4d1e51d36 65-72
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_9810012bb8ea54 1923
+  s_58dd112dc09435::t_9e2e2ec6225f4a 1939
+apps/dashboard/content/docs/da/method-documentation.mdx
+  s_58dd112dc09435::t_e5333509984585 24-29
+  s_58dd112dc09435::t_b219a4d1e51d36 67-74
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_9810012bb8ea54 1923
+  s_58dd112dc09435::t_9e2e2ec6225f4a 1939
+  s_58dd112dc09435::t_1fee46a775d870 1940
+apps/dashboard/components/model/method-status-mark.tsx
+  s_58dd112dc09435::t_8a68e7098879d8 1-11,13-16,19-20,22-27,45,54-57,59-62,70-72
+  s_58dd112dc09435::t_679a82b6e1ca7e 12,17-18,28-31,43-44,46-53,63-69
+  s_58dd112dc09435::t_e0d6037398ce96 21,32-42,58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "7c43131986e640e02f8cb99caf35668b77bfda34",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
