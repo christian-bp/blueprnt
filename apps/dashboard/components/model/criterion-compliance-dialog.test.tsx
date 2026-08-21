@@ -15,41 +15,25 @@ vi.mock("@/lib/toast", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
 
 import { toast } from "@/lib/toast"
 
-// Module-level variable: useAction returns a closure over this so the
-// component always calls the current mock. The describe-level beforeEach
-// reassigns it to a fresh vi.fn() so each test starts from a clean identity.
-// (bun correlates rejected Promises to a specific vi.fn() instance; a fresh
-// identity per test prevents spurious unhandledRejection events when the
-// error test runs after a success test.)
-let draftMock = vi.fn()
-
-vi.mock("convex/react", () => ({
-  useMutation: () => vi.fn(),
-  useAction: () => draftMock,
-}))
-
-vi.mock("@workspace/backend/convex/_generated/api", () => {
-  function pathProxy(path: string): unknown {
-    return new Proxy(
-      {},
-      {
-        get(_target, prop) {
-          if (
-            prop === Symbol.toPrimitive ||
-            prop === "toString" ||
-            prop === "valueOf"
-          )
-            return () => path
-          if (typeof prop !== "string") return undefined
-          return pathProxy(path === "" ? prop : `${path}.${prop}`)
-        },
-      }
-    )
-  }
-  return { api: pathProxy("") }
-})
+vi.mock(
+  "convex/react",
+  async () => (await import("@/test/convex-mocks")).convexReactModule
+)
+vi.mock(
+  "@workspace/backend/convex/_generated/api",
+  async () => (await import("@/test/convex-mocks")).apiModule
+)
 
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
+import { mockAction, mockMutation } from "@/test/convex-mocks"
+
+// The dialog's own two mutations and its one action, by the ref paths the
+// component asks for. Saving a criterion is up to three calls now (the
+// sign-off rides the same submit), so the ORDER they land in is part of what
+// these tests assert.
+const save = mockMutation("evaluationModel.method.saveCriterionCompliance")
+const setApproval = mockMutation("evaluationModel.method.setCriterionApproval")
+const draftMock = mockAction("ai.draft.draftCriterionCompliance")
 
 // The library's full definition of the criterion, as the chapter's wire
 // carries it: the dialog is where it is read, because the card that opens the
@@ -87,6 +71,22 @@ const DOCUMENTED_TARGET = {
   decidedAt: null,
 }
 
+// Half a form: nothing the backend would accept an approval for.
+const INCOMPLETE_TARGET = {
+  criterionId: "c5" as Id<"criteria">,
+  name: "Scope",
+  description: DEFINITION,
+  purpose: "Measure scope",
+  whyRelevant: "",
+  overlapNotes: null,
+  biasRisk: null,
+  biasComment: "",
+  biasAction: null,
+  status: "inProgress" as const,
+  decidedByName: null,
+  decidedAt: null,
+}
+
 const APPROVED_TARGET = {
   criterionId: "c3" as Id<"criteria">,
   name: "Scope",
@@ -117,9 +117,22 @@ function renderDialog({
   )
 }
 
+const m = messages.dashboard.model.method
+
+// The sign-off checkbox, named by its own label. Base UI renders it as a span
+// carrying the role, so its state is read off aria rather than off the DOM
+// properties an <input> would have.
+const approveBox = () => screen.getByRole("checkbox", { name: m.approveLabel })
+const saveButton = () =>
+  screen.getByRole("button", { name: m.saveCta }) as HTMLButtonElement
+
 describe("CriterionComplianceDialog", () => {
   beforeEach(() => {
-    draftMock = vi.fn()
+    draftMock.mockReset()
+    save.mockReset()
+    save.mockResolvedValue(null)
+    setApproval.mockReset()
+    setApproval.mockResolvedValue(null)
   })
 
   afterEach(() => {
@@ -172,39 +185,117 @@ describe("CriterionComplianceDialog", () => {
     expect(screen.queryByRole("combobox")).toBeNull()
   })
 
-  it("renders Cancel and Approve (not Save) for a documented, untouched criterion", () => {
+  // Approving used to be a second act after saving, reachable only once the
+  // documentation was already stored: finishing a criterion took two trips
+  // through this dialog. The sign-off is a field of the form now, and the save
+  // carries it.
+  it("offers one way out, with the sign-off as a field of the form", () => {
     renderDialog()
     expect(screen.getByRole("button", { name: /cancel/i })).toBeDefined()
-    // Undirty documented target: Approve is shown, Save is not
-    expect(screen.getByRole("button", { name: /approve/i })).toBeDefined()
-    expect(screen.queryByRole("button", { name: /save/i })).toBeNull()
+    expect(saveButton()).toBeDefined()
+    expect(approveBox()).toBeDefined()
+    // No standalone approve or reopen control anywhere.
+    expect(screen.queryByRole("button", { name: /^approve/i })).toBeNull()
+    expect(screen.queryByRole("button", { name: /reopen/i })).toBeNull()
   })
 
-  // The Metod chapter's cards are compact (name, one-liner, status, action),
-  // so the criterion's long definition lives here, where the documentation is
-  // written against it. A dialog that named neither the criterion nor what it
-  // covers would leave the reader documenting from memory.
-  it("names the criterion and shows the library's definition of it", () => {
-    renderDialog()
-    expect(screen.getByText("Scope")).toBeDefined()
-    expect(screen.getByText(DEFINITION)).toBeDefined()
-  })
-
-  // The definition is the reference the protokoll is written against, so it is
-  // never clipped. Asserted against the Item family's OWN vendor bases
-  // (line-clamp-1 on the title, line-clamp-2 on the description): a "not
-  // truncate" check would pass with the override deleted, because the vendor
-  // never used that word.
-  it("lets the criterion's name and definition wrap rather than clamping them", () => {
-    renderDialog()
-    for (const node of [
-      screen.getByText("Scope"),
-      screen.getByText(DEFINITION),
-    ]) {
-      expect(node.className).toContain("line-clamp-none")
-      expect(node.className).not.toContain("line-clamp-1")
-      expect(node.className).not.toContain("line-clamp-2")
+  // A standing sign-off locks the text (the backend refuses to write over
+  // approved documentation), and clearing the box lifts the lock in place, so
+  // a correction is one act rather than a separate reopen trip.
+  it("opens an approved criterion signed off and locked, and unlocks in place", () => {
+    renderDialog({ target: APPROVED_TARGET })
+    expect(approveBox().getAttribute("aria-checked")).toBe("true")
+    for (const field of screen.getAllByRole("textbox")) {
+      expect((field as HTMLTextAreaElement).disabled).toBe(true)
     }
+    fireEvent.click(approveBox())
+    for (const field of screen.getAllByRole("textbox")) {
+      expect((field as HTMLTextAreaElement).disabled).toBe(false)
+    }
+  })
+
+  it("opens an unapproved criterion with the sign-off clear and its fields open", () => {
+    renderDialog({ target: DOCUMENTED_TARGET })
+    expect(approveBox().getAttribute("aria-checked")).toBe("false")
+    for (const field of screen.getAllByRole("textbox")) {
+      expect((field as HTMLTextAreaElement).disabled).toBe(false)
+    }
+  })
+
+  // Nothing to post: a reader who opens a finished criterion and changes
+  // nothing must not be able to write an audit row by pressing save.
+  it("keeps the save shut until the text or the sign-off changes", () => {
+    renderDialog({ target: DOCUMENTED_TARGET })
+    expect(saveButton().disabled).toBe(true)
+    fireEvent.click(approveBox())
+    expect(saveButton().disabled).toBe(false)
+  })
+
+  // One act: the text lands first, then the sign-off, because the backend
+  // refuses an approval its stored row does not yet support.
+  it("saves the documentation and then approves it, in that order", async () => {
+    renderDialog({ target: DOCUMENTED_TARGET })
+    fireEvent.change(screen.getByDisplayValue("Measure scope"), {
+      target: { value: "Measure the scope of impact" },
+    })
+    fireEvent.click(approveBox())
+    fireEvent.click(saveButton())
+    await waitFor(() => {
+      expect(setApproval).toHaveBeenCalledWith({
+        orgId: "org1",
+        criterionId: "c2",
+        approved: true,
+      })
+    })
+    expect(save).toHaveBeenCalledTimes(1)
+    expect(setApproval).toHaveBeenCalledTimes(1)
+    expect(save.mock.invocationCallOrder[0]).toBeLessThan(
+      setApproval.mock.invocationCallOrder[0] as number
+    )
+  })
+
+  // Clearing a standing sign-off is how a correction begins, and it reopens
+  // the MODEL's approval on the backend (the engine's blocker rule): this is
+  // the call that carries that consequence, so it is pinned here.
+  it("un-approves when the sign-off is cleared on an approved criterion", async () => {
+    renderDialog({ target: APPROVED_TARGET })
+    fireEvent.click(approveBox())
+    fireEvent.click(saveButton())
+    await waitFor(() => {
+      expect(setApproval).toHaveBeenCalledWith({
+        orgId: "org1",
+        criterionId: "c3",
+        approved: false,
+      })
+    })
+    // Nothing else: the text was never touched, so there is nothing to write
+    // and no second approval call to make.
+    expect(setApproval).toHaveBeenCalledTimes(1)
+    expect(save).not.toHaveBeenCalled()
+  })
+
+  // A documented draft nobody has signed off is a legitimate state of the
+  // model: the approval gate counts it as outstanding, and saving it writes no
+  // approval at all.
+  it("saves a draft without a sign-off, touching the approval not at all", async () => {
+    renderDialog({ target: DOCUMENTED_TARGET })
+    fireEvent.change(screen.getByDisplayValue("Measure scope"), {
+      target: { value: "Measure the scope of impact" },
+    })
+    fireEvent.click(saveButton())
+    await waitFor(() => {
+      expect(save).toHaveBeenCalledTimes(1)
+    })
+    expect(setApproval).not.toHaveBeenCalled()
+  })
+
+  // The backend refuses an approval the stored row does not support, so a box
+  // that could be checked against half a form would be a trap; the reason sits
+  // beside it rather than leaving a dead control.
+  it("offers the sign-off only against complete documentation", () => {
+    renderDialog({ target: INCOMPLETE_TARGET })
+    expect(approveBox().getAttribute("aria-disabled")).toBe("true")
+    expect(screen.getByText(m.approveHint)).toBeDefined()
   })
 
   it("renders the section headings for Rationale and Bias review", () => {
@@ -230,40 +321,6 @@ describe("CriterionComplianceDialog", () => {
     expect(screen.queryByText("Rationale")).toBeNull()
   })
 
-  it("renders fields as disabled and shows Reopen but no Save when status is approved", () => {
-    renderDialog({ target: APPROVED_TARGET })
-    // All textareas must be disabled
-    const textareas = screen.getAllByRole("textbox")
-    for (const textarea of textareas) {
-      expect((textarea as HTMLTextAreaElement).disabled).toBe(true)
-    }
-    // Save button must not be present
-    expect(screen.queryByRole("button", { name: /save/i })).toBeNull()
-    // Approve button must not be present
-    expect(screen.queryByRole("button", { name: /approve/i })).toBeNull()
-    // Reopen button must be present
-    expect(screen.getByRole("button", { name: /reopen/i })).toBeDefined()
-    // Cancel button present
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeDefined()
-    // No Fill using AI button on a locked criterion
-    expect(screen.queryByRole("button", { name: /Fill using AI/i })).toBeNull()
-  })
-
-  it("renders fields as editable and shows Approve but no Save or Reopen when documented and untouched", () => {
-    renderDialog({ target: DOCUMENTED_TARGET })
-    // Textareas must be enabled
-    const textareas = screen.getAllByRole("textbox")
-    for (const textarea of textareas) {
-      expect((textarea as HTMLTextAreaElement).disabled).toBe(false)
-    }
-    // Approve is present (untouched documented target)
-    expect(screen.getByRole("button", { name: /approve/i })).toBeDefined()
-    // Save is NOT present (only shown when dirty)
-    expect(screen.queryByRole("button", { name: /save/i })).toBeNull()
-    // Reopen button must not be present
-    expect(screen.queryByRole("button", { name: /reopen/i })).toBeNull()
-  })
-
   it("fills all six fields from the AI draft, hides Approve, and shows Save when dirty", async () => {
     draftMock.mockResolvedValue({
       purpose: "AIP",
@@ -282,9 +339,10 @@ describe("CriterionComplianceDialog", () => {
     // The "medium" bias-risk toggle should be pressed
     const mediumBtn = screen.getByRole("button", { name: /medium/i })
     expect(mediumBtn.getAttribute("aria-pressed")).toBe("true")
-    // Form is now dirty: Save is shown, Approve is not
-    expect(screen.getByRole("button", { name: /save/i })).toBeDefined()
-    expect(screen.queryByRole("button", { name: /approve/i })).toBeNull()
+    // The form is dirty, so there is something to post.
+    expect(saveButton().disabled).toBe(true)
+    fireEvent.click(screen.getByRole("checkbox", { name: m.aiAckLabel }))
+    expect(saveButton().disabled).toBe(false)
   })
 
   it("requires acknowledging the AI draft before Save is enabled", async () => {
@@ -300,22 +358,9 @@ describe("CriterionComplianceDialog", () => {
     fireEvent.click(screen.getByRole("button", { name: /Fill using AI/i }))
     await waitFor(() => expect(screen.getByDisplayValue("AIP")).toBeDefined())
     // Save is present but disabled until the AI acknowledgement is checked.
-    const save = screen.getByRole("button", { name: /save/i })
-    expect((save as HTMLButtonElement).disabled).toBe(true)
-    fireEvent.click(screen.getByRole("checkbox"))
-    expect((save as HTMLButtonElement).disabled).toBe(false)
-  })
-
-  it("requires acknowledging the documentation before Approve is enabled", () => {
-    // Documented + untouched: Approve is shown but gated on an explicit
-    // sign-off. The only checkbox on screen here is that acknowledgement
-    // (the AI-draft checkbox appears only after an AI fill, which makes the
-    // form dirty and swaps Approve for Save).
-    renderDialog({ target: DOCUMENTED_TARGET })
-    const approve = screen.getByRole("button", { name: /approve/i })
-    expect((approve as HTMLButtonElement).disabled).toBe(true)
-    fireEvent.click(screen.getByRole("checkbox"))
-    expect((approve as HTMLButtonElement).disabled).toBe(false)
+    expect(saveButton().disabled).toBe(true)
+    fireEvent.click(screen.getByRole("checkbox", { name: m.aiAckLabel }))
+    expect(saveButton().disabled).toBe(false)
   })
 
   it("shows no Fill using AI button on an approved (locked) criterion", () => {

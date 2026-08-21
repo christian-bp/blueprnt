@@ -17,8 +17,9 @@ import { motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import {
   type ComplianceStatus,
-  MethodStatusBadge,
-} from "@/components/model/method-status-badge"
+  isDocumentationComplete,
+  MethodStatusMark,
+} from "@/components/model/method-status-mark"
 import { WeightPointRow } from "@/components/model/weight-point-row"
 import { RemoveConfirm } from "@/components/remove-confirm"
 import { WARNING_TEXT_CLASS } from "@/lib/alert-tone"
@@ -250,10 +251,22 @@ export function PlacedCriterionCard(
         // every card in the column and the action sits where a dialog's
         // primary action always does.
         <ItemFooter>
-          <MethodStatusBadge
-            status={documentation.status}
-            label={tMethod(`status.${documentation.status}`)}
-          />
+          {/* The left slot is always here, empty or not: with one child a
+              justify-between row would pull the action across to the left, and
+              the actions in a column would then sit at two different edges
+              depending on how far each criterion's documentation had got. */}
+          <span className="flex min-w-0 items-center">
+            {/* Nothing at all until the documentation is complete. Absence is
+                the unstarted state's whole reading, and a word for "not
+                started" on every card of a fresh model is six sentences
+                saying the model is new. */}
+            {isDocumentationComplete(documentation.status) && (
+              <MethodStatusMark
+                status={documentation.status}
+                label={tMethod(`status.${documentation.status}`)}
+              />
+            )}
+          </span>
           {documentation.onDocument !== undefined && (
             <Button
               type="button"
@@ -261,7 +274,15 @@ export function PlacedCriterionCard(
               size="sm"
               onClick={documentation.onDocument}
             >
-              {tMethod("openCta")}
+              {/* What is left to do, which is not the same thing once there
+                  is something written: "document" is an errand, "change" is
+                  an edit, and a card offering to document what it has just
+                  said is documented reads as a contradiction. */}
+              {tMethod(
+                isDocumentationComplete(documentation.status)
+                  ? "editCta"
+                  : "openCta"
+              )}
             </Button>
           )}
         </ItemFooter>

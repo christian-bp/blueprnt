@@ -250,13 +250,54 @@ describe("PlacedCriterionCard", () => {
 
   // The Metod card: the chapter's own decision, in the Item family's footer
   // slot so the name above it keeps the card's full width.
+  //
+  // The status is a word in plain text now: the outline Badge that used to
+  // carry it read as a chip the reader could act on, and put a bordered box on
+  // every card in a four-column grid. The INK is the distinction between the
+  // two complete states, so it is asserted rather than eyeballed.
+  const footerOf = (container: HTMLElement) =>
+    within(container.querySelector('[data-slot="item-footer"]') as HTMLElement)
+
   it("states the documentation status and offers the way in, in its footer", () => {
     const { container } = renderDocumented({ status: "documented" })
-    const footer = container.querySelector('[data-slot="item-footer"]')
-    expect(footer).not.toBeNull()
-    const inFooter = within(footer as HTMLElement)
-    expect(inFooter.getByText(method.status.documented)).toBeDefined()
-    expect(inFooter.getByRole("button", { name: method.openCta })).toBeDefined()
+    expect(container.querySelector('[data-slot="item-footer"]')).not.toBeNull()
+    const inFooter = footerOf(container)
+    const word = inFooter.getByText(method.status.documented)
+    // Written but not signed off: the muted ink, never the success green.
+    expect(word.className).toContain("text-muted-foreground")
+    expect(container.querySelector(".text-success")).toBeNull()
+    // Something is written: the action is to change it, not to write it.
+    expect(inFooter.getByRole("button", { name: method.editCta })).toBeDefined()
+    // No pill and no mark: the word alone carries the state.
+    expect(container.querySelector('[data-slot="badge"]')).toBeNull()
+    expect(container.querySelector("svg")).toBeNull()
+  })
+
+  it("says an approved criterion in the success ink", () => {
+    const { container } = renderDocumented({ status: "approved" })
+    const inFooter = footerOf(container)
+    const word = inFooter.getByText(method.status.approved)
+    expect(word.className).toContain("text-success")
+    expect(word.className).not.toContain("text-muted-foreground")
+    expect(inFooter.getByRole("button", { name: method.editCta })).toBeDefined()
+  })
+
+  // Absence is the status. A word for "not started" on every card of a fresh
+  // model is six sentences saying the model is new, and the action beside the
+  // empty slot already says what to do about it.
+  it("says nothing at all about a criterion nobody has documented", () => {
+    for (const status of ["notStarted", "inProgress"] as const) {
+      const { container } = renderDocumented({ status })
+      const inFooter = footerOf(container)
+      expect(container.querySelector("svg")).toBeNull()
+      expect(
+        inFooter.getByRole("button", { name: method.openCta })
+      ).toBeDefined()
+      expect(
+        inFooter.queryByRole("button", { name: method.editCta })
+      ).toBeNull()
+      cleanup()
+    }
   })
 
   it("opens the documentation from the card's own action", () => {
@@ -269,9 +310,13 @@ describe("PlacedCriterionCard", () => {
   // not offered its entry point at all. Where the criterion stands is still
   // said: reading the documentation is every member's.
   it("offers an editor no way in, while still saying where the criterion stands", () => {
-    const { container } = renderDocumented({ admin: false })
-    expect(screen.getByText(method.status.inProgress)).toBeDefined()
+    const { container } = renderDocumented({
+      status: "documented",
+      admin: false,
+    })
+    expect(screen.getByText(method.status.documented)).toBeDefined()
     expect(screen.queryByRole("button", { name: method.openCta })).toBeNull()
+    expect(screen.queryByRole("button", { name: method.editCta })).toBeNull()
     expect(container.querySelectorAll("button")).toHaveLength(0)
   })
 

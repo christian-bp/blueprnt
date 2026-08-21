@@ -29,6 +29,10 @@ vi.mock("@/components/org-context", () => ({
 
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
 import { CriteriaChapter } from "@/components/model/criteria-chapter"
+import {
+  modelChapterProgress,
+  type ModelProgressInput,
+} from "@/lib/model-chapters"
 import { toast } from "@/lib/toast"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 
@@ -299,13 +303,16 @@ function selectionChecks({
   count,
   uncovered = [],
   materialityDecided = true,
+  capsOk = true,
 }: {
   count: number
   uncovered?: string[]
   materialityDecided?: boolean
+  capsOk?: boolean
 }) {
   return {
     checks: [
+      { key: "dimensionCaps", level: "blocker", ok: capsOk },
       {
         key: "criterionCount",
         level: "blocker",
@@ -469,6 +476,32 @@ describe("the Kriterier chapter", () => {
     // Complete by its own rule: nothing to say, so nothing on screen.
     it("says nothing once the chapter is complete", () => {
       checksResult = selectionChecks({ count: 6 })
+      renderChapter()
+      expect(pill()).toBeNull()
+    })
+
+    // A dimension over its own cap leaves the chapter incomplete, and the pill
+    // deliberately says nothing: the column holding the extra criterion states
+    // its count against its cap in its own chip, and the picker refuses to add
+    // past it. Recorded here because it is a CHOICE, not an oversight (and the
+    // state is unreachable through today's write paths at all).
+    it("says nothing about a dimension over its cap, which its column carries", () => {
+      const checks = selectionChecks({ count: 6, capsOk: false })
+      checksResult = checks
+      // The state is genuinely incomplete by the chapter's own rule, so the
+      // silence below is the pill choosing not to speak rather than the
+      // chapter being finished. Without this the test would pass vacuously if
+      // dimensionCaps ever left the chapter's station checks.
+      const progress = modelChapterProgress(
+        {
+          // The fixture states check results as the wire carries them; the
+          // derivation wants its own narrower slice of the same rows.
+          checks: checks.checks as ModelProgressInput["checks"],
+          approved: false,
+        },
+        "criteria"
+      )
+      expect(progress.done).toBeLessThan(progress.total)
       renderChapter()
       expect(pill()).toBeNull()
     })

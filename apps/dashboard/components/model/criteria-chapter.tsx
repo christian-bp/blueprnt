@@ -92,9 +92,15 @@ function remainingStep(
   if (checkOf("workingConditionsTested")?.ok === false) {
     return { kind: "materiality" }
   }
-  // Over the MAXIMUM is the only way left to be incomplete here, and the
-  // column holding the extra criterion already says so with its own count
-  // chip; the pill would only repeat it.
+  // Two ways to be incomplete are deliberately NOT spoken here, and both are
+  // already said where they happen: over the model's MAXIMUM, and over a
+  // dimension's own cap (dimensionCaps). The column holding the extra
+  // criterion states its count against its cap in its own chip, and the picker
+  // refuses to add past it, so a pill repeating the rule would be a third
+  // voice on a state the reader is already looking at. A caps-only failure is
+  // unreachable through today's write paths anyway (both the picker gate and
+  // activateCriterion enforce the cap); this returns null rather than
+  // inventing a sentence for it.
   return null
 }
 

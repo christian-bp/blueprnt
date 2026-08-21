@@ -392,15 +392,22 @@ describe("MethodPanel", () => {
     expect(
       inCard.getByText(library.criteria["knowledge-depth"].shortUiText)
     ).toBeDefined()
-    expect(inCard.getByText(m.status.notStarted)).toBeDefined()
+    // Nobody has documented this one, and absence is that status: the footer
+    // holds the action and nothing else.
     expect(inCard.getByRole("button", { name: m.openCta })).toBeDefined()
+    expect(inCard.queryByRole("button", { name: m.editCta })).toBeNull()
   })
 
+  // The two states that have something to say, said in the checklist's own
+  // language; the third says nothing.
   it("shows each criterion's own documentation status", () => {
     renderPanel()
-    expect(screen.getByText(m.status.notStarted)).toBeDefined()
     expect(screen.getByText(m.status.approved)).toBeDefined()
     expect(screen.getByText(m.status.documented)).toBeDefined()
+    // Two of the three carry a mark and a word, so two of the three offer to
+    // change what is written rather than to write it.
+    expect(screen.getAllByRole("button", { name: m.editCta })).toHaveLength(2)
+    expect(screen.getAllByRole("button", { name: m.openCta })).toHaveLength(1)
   })
 
   // The weighting is Viktning's lens, and a figure repeated on a chapter that
@@ -412,9 +419,14 @@ describe("MethodPanel", () => {
     expect(screen.queryByText(/33%/)).toBeNull()
   })
 
+  // Every criterion has a way in; what the way in is CALLED depends on whether
+  // anything is written yet.
   it("offers the documentation action on every criterion for an admin", () => {
     renderPanel()
-    expect(screen.getAllByRole("button", { name: m.openCta })).toHaveLength(3)
+    expect([
+      ...screen.getAllByRole("button", { name: m.openCta }),
+      ...screen.getAllByRole("button", { name: m.editCta }),
+    ]).toHaveLength(3)
   })
 
   // The long definition left the card for the dialog, which is where the
@@ -546,7 +558,10 @@ describe("MethodPanel", () => {
       expect(screen.queryByText(flag("Risk"))).toBeNull()
       expect(screen.queryByText(flag("Scope"))).toBeNull()
       // The cards are otherwise untouched by the flag being absent.
-      expect(screen.getAllByRole("button", { name: m.openCta })).toHaveLength(3)
+      expect([
+        ...screen.getAllByRole("button", { name: m.openCta }),
+        ...screen.getAllByRole("button", { name: m.editCta }),
+      ]).toHaveLength(3)
     })
 
     // A pair whose partner is not in the model cannot be named, so it is not

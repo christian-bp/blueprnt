@@ -96,7 +96,11 @@ function CriterionComplianceForm({
   const [aiDrafted, setAiDrafted] = useState(false)
   const [draftError, setDraftError] = useState<string | null>(null)
   const [aiAcknowledged, setAiAcknowledged] = useState(false)
-  const [approveAcknowledged, setApproveAcknowledged] = useState(false)
+  // The sign-off, as a field of this form rather than an act of its own. It
+  // opens on the criterion's stored answer, so a dialog reopened on an
+  // approved criterion shows it checked.
+  const wasApproved = target.status === "approved"
+  const [approved, setApproved] = useState(wasApproved)
 
   const schema = useMemo(() => makeCriterionComplianceSchema(tv), [tv])
   const form = useForm<CriterionComplianceValues>({
@@ -112,9 +116,29 @@ function CriterionComplianceForm({
     },
   })
   const { isDirty, isSubmitting } = form.formState
+  const values = form.watch()
 
-  const locked = target.status === "approved"
-  const canApprove = target.status === "documented"
+  // A standing sign-off locks the text: an approved criterion's documentation
+  // is evidence, and the backend refuses to write over it
+  // (saveCriterionCompliance throws criterionLocked). Clearing the checkbox
+  // lifts the lock HERE, before anything is saved, so a correction is one act
+  // (uncheck, edit, save) instead of a separate reopen trip.
+  const locked = wasApproved && approved
+
+  // Whether the documentation is complete as it stands in the FORM, which is
+  // what the sign-off needs: the two are saved in one act, so gating on the
+  // stored status would refuse a criterion the reader has just finished
+  // filling in. The rule mirrors the backend's isDocumented
+  // (evaluationModel/method.ts), which stays the authority and re-validates.
+  const filled = (value: string | undefined) => (value?.trim().length ?? 0) > 0
+  const documented =
+    filled(values.purpose) &&
+    filled(values.whyRelevant) &&
+    values.biasRisk !== undefined &&
+    filled(values.biasComment)
+  // Nothing to post: the text is untouched and the sign-off stands where it
+  // stood.
+  const unchanged = !isDirty && approved === wasApproved
 
   async function onDraft() {
     setDrafting(true)
@@ -139,11 +163,48 @@ function CriterionComplianceForm({
     }
   }
 
-  async function handleValid(values: CriterionComplianceValues) {
+  // One act, up to three calls, in the order the backend's own guards demand:
+  // a standing approval is lifted BEFORE the text is written (it refuses a
+  // write while approved) and a new one is set AFTER (it refuses an approval
+  // the stored row does not yet support). The remove-offer on the
+  // working-conditions decision sequences its two mutations the same way.
+  //
+  // Each call is skipped when it would change nothing, because
+  // setCriterionApproval writes an audit row unconditionally: its own guards
+  // reject an impossible transition, not a repeat of the current state, so a
+  // no-op here would leave "criterion approved" in the log for a dialog the
+  // reader only cancelled out of.
+  async function handleValid(formValues: CriterionComplianceValues) {
     setFailed(false)
     try {
-      await save({ orgId, criterionId: target.criterionId, ...values })
-      toast.success(tToast("complianceSaved"))
+      if (wasApproved && (!approved || isDirty)) {
+        await setApproval({
+          orgId,
+          criterionId: target.criterionId,
+          approved: false,
+        })
+      }
+      if (isDirty) {
+        await save({ orgId, criterionId: target.criterionId, ...formValues })
+      }
+      if (approved && (!wasApproved || isDirty)) {
+        await setApproval({
+          orgId,
+          criterionId: target.criterionId,
+          approved: true,
+        })
+      }
+      // What actually happened, in the reader's terms: the sign-off is the
+      // headline whenever it moved, and the text is the headline otherwise.
+      toast.success(
+        tToast(
+          approved !== wasApproved
+            ? approved
+              ? "criterionApproved"
+              : "criterionReopened"
+            : "complianceSaved"
+        )
+      )
       onClose()
     } catch {
       setFailed(true)
@@ -355,7 +416,7 @@ function CriterionComplianceForm({
               {t("error")}
             </p>
           )}
-          {locked &&
+          {wasApproved &&
             target.decidedByName !== null &&
             target.decidedAt !== null && (
               <p className="text-muted-foreground text-sm">
@@ -367,9 +428,6 @@ function CriterionComplianceForm({
                 })}
               </p>
             )}
-          {!locked && !isDirty && !canApprove && (
-            <p className="text-muted-foreground text-sm">{t("approveHint")}</p>
-          )}
           {/* When the fields were AI-drafted, saving requires an explicit human
               acknowledgement of review (ADR-0003: HR confirms AI output). */}
           {aiDrafted && !locked && (
@@ -385,68 +443,51 @@ function CriterionComplianceForm({
               </label>
             </div>
           )}
-          {/* Approval is a formal sign-off: gate it on an explicit confirmation
-              that the documentation was reviewed. Shown only when the Approve
-              action is available (documented, no unsaved edits). */}
-          {!locked && !isDirty && canApprove && (
-            <div className="flex items-start gap-2">
-              <Checkbox
-                id="approve-ack"
-                checked={approveAcknowledged}
-                onCheckedChange={(v) => setApproveAcknowledged(v === true)}
-                className="mt-0.5"
-              />
-              <label htmlFor="approve-ack" className="text-sm">
-                {t("approveAckLabel")}
-              </label>
-            </div>
+          {/* The sign-off, as the last field of the form rather than a second
+              act after it. Approving used to be its own button, reachable only
+              once the documentation was saved, so finishing a criterion took
+              two trips through this dialog; it is a checkbox the save carries
+              now. Leaving it clear is a legitimate answer: a documented draft
+              nobody has signed off is a real state of the model, and the
+              approval gate counts it as outstanding until someone does.
+              Unchecking a standing sign-off is how a correction begins, and it
+              reopens the MODEL's approval on save (the engine's blocker rule),
+              which is exactly what it should do. */}
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="approve"
+              checked={approved}
+              // Only ever offered against complete documentation: the backend
+              // refuses an approval the stored row does not support, and a
+              // checkbox that threw on submit would be a trap.
+              disabled={!documented}
+              onCheckedChange={(v) => setApproved(v === true)}
+              className="mt-0.5"
+            />
+            <label htmlFor="approve" className="text-sm">
+              {t("approveLabel")}
+            </label>
+          </div>
+          {/* Why the box is not offered yet, next to the box. A disabled
+              control with no reason beside it is the reader's dead end. */}
+          {!documented && (
+            <p className="text-muted-foreground text-sm">{t("approveHint")}</p>
           )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               {t("cancelCta")}
             </Button>
-            {locked ? (
-              // Reopen does NOT call onClose: the query updates, the derived
-              // target.status becomes "documented", locked becomes false, and
-              // the fields become editable in place without remounting.
-              <Button
-                type="button"
-                onClick={async () => {
-                  await setApproval({
-                    orgId,
-                    criterionId: target.criterionId,
-                    approved: false,
-                  })
-                  toast.success(tToast("criterionReopened"))
-                }}
-              >
-                {t("reopenCta")}
-              </Button>
-            ) : isDirty ? (
-              <SubmitButton
-                type="submit"
-                isSubmitting={isSubmitting}
-                disabled={aiDrafted && !aiAcknowledged}
-              >
-                {t("saveCta")}
-              </SubmitButton>
-            ) : canApprove ? (
-              <Button
-                type="button"
-                disabled={!approveAcknowledged}
-                onClick={async () => {
-                  await setApproval({
-                    orgId,
-                    criterionId: target.criterionId,
-                    approved: true,
-                  })
-                  toast.success(tToast("criterionApproved"))
-                  onClose()
-                }}
-              >
-                {t("approveCta")}
-              </Button>
-            ) : null}
+            {/* One way out of this dialog now, and it carries both halves of
+                the act. Disabled while there is nothing to post, so a reader
+                who opens a finished criterion and changes nothing cannot write
+                an audit row by pressing it. */}
+            <SubmitButton
+              type="submit"
+              isSubmitting={isSubmitting}
+              disabled={unchanged || (aiDrafted && !aiAcknowledged)}
+            >
+              {t("saveCta")}
+            </SubmitButton>
           </DialogFooter>
         </form>
       </Form>
