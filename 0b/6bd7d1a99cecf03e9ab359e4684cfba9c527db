@@ -1,0 +1,75 @@
+packages/backend/convex/evaluationModel/criteriaLibrary.content.nb.ts
+  s_58dd112dc09435::t_2edf5cb32aa700 560
+  s_58dd112dc09435::t_c8dbbaea8fdbfa 320
+  s_58dd112dc09435::t_426e45fd0b1c96 411
+  s_58dd112dc09435::t_64851389ecc74b 539
+  s_58dd112dc09435::t_3f422f4271ee5d 523
+  s_58dd112dc09435::t_1dcf553845115a 41-42
+  s_58dd112dc09435::t_fb7076350e9b0b 527
+  s_58dd112dc09435::t_fe124b30663baa 35
+  s_58dd112dc09435::t_d0d09d668cf5ce 535
+  s_58dd112dc09435::t_32e6e207537606 8-10
+  s_58dd112dc09435::t_5cfed8cc814b3e 453,455,457
+packages/backend/convex/evaluationModel/criteriaLibrary.content.da.ts
+  s_58dd112dc09435::t_1a8ced6d80803d 454,456,458
+  s_58dd112dc09435::t_4ea2ff401fc0ee 8-10
+  s_58dd112dc09435::t_b826ede79e4224 42
+  s_58dd112dc09435::t_b110026359334f 562
+  s_58dd112dc09435::t_ca852f6a80912f 320
+  s_58dd112dc09435::t_6b8ffe2b3d33d2 35
+packages/backend/convex/evaluationModel/criteriaLibrary.content.fi.ts
+  s_58dd112dc09435::t_72c81497ccef43 222
+  s_58dd112dc09435::t_1f1dca1399bd96 249
+  s_58dd112dc09435::t_c6ec068156e517 79,81
+  s_58dd112dc09435::t_96b0db8f58d368 8-10
+  s_58dd112dc09435::t_5e5f5313fa5048 148
+  s_58dd112dc09435::t_ea282f5d6e534d 185
+  s_58dd112dc09435::t_b4a3a8ac902090 499
+  s_58dd112dc09435::t_dbd07e3ee735bf 322
+  s_58dd112dc09435::t_ac2f4168031eed 42
+  s_58dd112dc09435::t_2bbc7f50d99579 363
+  s_58dd112dc09435::t_884fdf7eea8d89 29
+  s_58dd112dc09435::t_253c3b554ccd90 123
+  s_58dd112dc09435::t_aa40b02c4160d3 241,243
+  s_58dd112dc09435::t_7f103b8014a7b5 99
+  s_58dd112dc09435::t_490081a3b8bd3f 61,63,66
+  s_58dd112dc09435::t_37f6802c0fdd99 204
+  s_58dd112dc09435::t_2182e3b14d4714 35
+  s_58dd112dc09435::t_99938aeb608709 208
+  s_58dd112dc09435::t_eff2a664f8778e 197
+  s_58dd112dc09435::t_7fcabc2277cc47 338
+  s_58dd112dc09435::t_ea131bd9d2cdbf 254
+  s_58dd112dc09435::t_ae7922a80fa165 256
+  s_58dd112dc09435::t_9e00789bc18351 425
+  s_58dd112dc09435::t_128c90f9eaa986 273
+  s_58dd112dc09435::t_2fe87afe47de6d 509
+  s_58dd112dc09435::t_c8f39bd55e1ef4 331
+  s_58dd112dc09435::t_3a8f64ba762e7d 263,265,267
+  s_58dd112dc09435::t_07a630ed4ff963 83
+  s_58dd112dc09435::t_80efba11cc9a32 329
+  s_58dd112dc09435::t_20d52f71a51344 482
+  s_58dd112dc09435::t_c5350a790d214c 212
+  s_58dd112dc09435::t_060544764b9aaf 227
+  s_58dd112dc09435::t_d4915dd947ff0a 563
+  s_58dd112dc09435::t_a6414412e49d3b 327
+  s_58dd112dc09435::t_127a20b98ee7a0 359-360
+  s_58dd112dc09435::t_984d742e21de6b 523
+  s_58dd112dc09435::t_c5f89f728b9cd3 336
+  s_58dd112dc09435::t_6a9f9628ef2e8b 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "0b6bd7d1a99cecf03e9ab359e4684cfba9c527db",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
