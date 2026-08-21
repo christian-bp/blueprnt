@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl"
 import { ApprovalCard } from "@/components/model/approval-card"
-import { ChapterFraming } from "@/components/model/chapter-framing"
 import { useOrganization } from "@/components/org-context"
 import { usePageTitle } from "@/hooks/use-page-title"
 
@@ -20,7 +19,6 @@ export default function ModelApprovalChapterPage() {
   usePageTitle(tChapters("approval"))
   return (
     <div className="space-y-4">
-      <ChapterFraming />
       {/* A reading cap of this chapter's own: the checklist is twelve single
           lines of text, each with a remedy line under it, and at full viewport
           width they run as long as the page. A chapter that is a reading

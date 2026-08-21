@@ -3,13 +3,13 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
-import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
+import { ChapterActionSlotProvider } from "@/components/chapter-action-slot"
 import { ModelChapterTabs } from "@/components/model/model-chapter-tabs"
-import { ModelSpine } from "@/components/model/model-spine"
+import { HelpMorphButton } from "@/components/help-morph-button"
+import { SectionTitleRow } from "@/components/section-title-row"
 import { useOrganization } from "@/components/org-context"
 import {
-  currentChapter,
   MODEL_CHAPTERS,
   modelChapterProgress,
   type ModelProgressInput,
@@ -28,9 +28,8 @@ import {
 export function ModelSectionShell({ children }: { children: ReactNode }) {
   const { orgId } = useOrganization()
   const t = useTranslations("dashboard.model.chapters")
-  const pathname = usePathname()
+  const tHelp = useTranslations("dashboard.help")
   const data = useQuery(api.evaluationModel.approval.getMethodChecks, { orgId })
-  const active = currentChapter(pathname)
 
   // No model yet reads as nothing decided, not as no bar: an org that has not
   // started still has the same four chapters ahead of it, and the empty bar is
@@ -50,30 +49,31 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
   const loading = data === undefined
 
   return (
-    <div className="space-y-4">
-      {loading ? (
-        // Content-shaped: the spine's real title (static i18n text, so it
-        // renders real) with a flat track standing in for the instrument
-        // opposite it, at the instrument's own width, so nothing moves when
-        // the data lands. No counter beside it: the figures are exactly what
-        // is still loading.
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <h3 className="font-semibold text-base">{t("heading")}</h3>
-          <div className="h-2 w-64 shrink-0 rounded-full bg-primary/12" />
-        </div>
-      ) : (
-        <ModelSpine
+    // The chapter's own action renders inside the chapter, where its data is,
+    // and lands in the tab row above it (ChapterActionSlot).
+    <ChapterActionSlotProvider>
+      <div className="space-y-4">
+        {/* The section's title and its one explainer. The reading is on the
+            journey row below, with the tabs and the chapter's own action. */}
+        <SectionTitleRow
+          heading={t("heading")}
+          help={
+            <HelpMorphButton label={tHelp("modelProgressLabel")}>
+              {tHelp("modelProgressBody")}
+            </HelpMorphButton>
+          }
+        />
+        {/* The journey row: the tabs, the open chapter's own figures, the
+            whole model's instrument, and this chapter's action. The figures
+            are withheld while the query is in flight, so a tab never shows a
+            zero it is about to replace. */}
+        <ModelChapterTabs
+          chapters={loading ? undefined : chapters}
           done={overall.done}
           total={overall.total}
-          chapters={chapters}
-          activeChapter={active}
         />
-      )}
-      {/* The tab row prints the OPEN chapter's own figures, from the same
-          array the instrument above draws. Withheld while the query is in
-          flight, so a tab never shows a zero it is about to replace. */}
-      <ModelChapterTabs chapters={loading ? undefined : chapters} />
-      {children}
-    </div>
+        {children}
+      </div>
+    </ChapterActionSlotProvider>
   )
 }

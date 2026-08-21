@@ -112,16 +112,19 @@ describe("ModelSectionShell", () => {
     expect(screen.getByText("chapter body")).toBeDefined()
   })
 
-  // Content-shaped: the spine's real heading over a flat track and the
-  // reserved count line, so nothing reflows when the query resolves.
-  it("shows the spine's own skeleton while the checks load", () => {
+  // The section IS its own skeleton: the title, the four chapter links and
+  // the instrument's empty track are all known without the query, so they
+  // render for real and only the figures wait.
+  it("renders the whole journey row while the checks load", () => {
     checksResult = undefined
-    const { container } = renderShell()
+    renderShell()
     expect(screen.getByRole("heading", { name: m.heading })).toBeDefined()
-    expect(screen.queryByRole("progressbar")).toBeNull()
-    expect(container.querySelector(".bg-primary\\/12")).not.toBeNull()
-    // The chapter row and the chapter's body are never held back by the bar.
     expect(screen.getByRole("navigation", { name: m.nav })).toBeDefined()
+    // No count on any tab: a figure the section does not know yet is one it
+    // would have to replace a moment later.
+    for (const link of screen.getAllByRole("link")) {
+      expect(link.textContent).not.toMatch(/\d+ of \d+/)
+    }
     expect(screen.getByText("chapter body")).toBeDefined()
   })
 })

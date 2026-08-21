@@ -35,7 +35,11 @@ const CHAPTERS = [
 function renderTabs(chapters: typeof CHAPTERS | null = CHAPTERS) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <AnalysisChapterTabs chapters={chapters ?? undefined} />
+      <AnalysisChapterTabs
+        chapters={chapters ?? undefined}
+        done={12}
+        total={31}
+      />
     </NextIntlClientProvider>
   )
 }
@@ -49,6 +53,35 @@ function tab(label: string) {
 afterEach(() => cleanup())
 
 describe("AnalysisChapterTabs", () => {
+  // The instrument rides the journey row now, not the title above it: the
+  // same fixed width the model section uses, and its announced percentage is
+  // the whole mapping's WORK, not its chapter count.
+  it("carries the whole mapping's instrument on the journey row", () => {
+    const { container } = renderTabs()
+    const bar = container.querySelector('[role="progressbar"]')
+    expect(bar?.getAttribute("aria-label")).toBe(mAnalysis.progressBarLabel)
+    // 12 of 31 steps, not 1 of 4 chapters.
+    expect(bar?.getAttribute("aria-valuenow")).toBe("39")
+    const tokens = (bar?.className ?? "").split(/\s+/)
+    expect(tokens).toContain("w-64")
+    expect(tokens).toContain("shrink-0")
+    expect(
+      [...(bar?.children ?? [])].map(
+        (segment) => (segment as HTMLElement).style.flexGrow
+      )
+    ).toEqual(["1", "1", "1", "1"])
+  })
+
+  it("holds the open chapter's segment up and lets the rest recede", () => {
+    const { container } = renderTabs()
+    const bar = container.querySelector('[role="progressbar"]')
+    expect(
+      [...(bar?.children ?? [])].map(
+        (segment) => (segment as HTMLElement).dataset.active
+      )
+    ).toEqual(["false", "false", "true", "false"])
+  })
+
   // Only the chapter being worked in prints its own figures: a pair on all
   // four would turn a switcher into a status table, and the reader only ever
   // needs the one they are inside.

@@ -19,7 +19,7 @@ import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { type ReactNode, useState } from "react"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
-import { ChapterFraming } from "@/components/model/chapter-framing"
+import { ChapterAction } from "@/components/chapter-action-slot"
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
 import { DimensionFrame } from "@/components/model/dimension-frame"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
@@ -122,7 +122,11 @@ export function MethodPanel({ orgId }: { orgId: string }) {
           still. The progress that used to stand in a block of its own here is
           in the columns now, one count per dimension, where the criteria it
           counts actually are. */}
-      <ChapterFraming action={<MethodAppendixDownload orgId={orgId} />} />
+      {/* The chapter's own action, rendered here where its data is and
+          portalled up into the tab row. */}
+      <ChapterAction>
+        <MethodAppendixDownload orgId={orgId} />
+      </ChapterAction>
       {data.criteria.length === 0 ? (
         // Never a bare page: the chapter has nothing to document until the
         // first one has been chosen, and it says so with the way back. The
@@ -293,7 +297,11 @@ function MethodPanelSkeleton({ orgId }: { orgId: string }) {
           chapter chrome rather than data, so the row renders in full and the
           columns below it never move when the model lands. The export button
           loads its own data and disables itself until ready. */}
-      <ChapterFraming action={<MethodAppendixDownload orgId={orgId} />} />
+      {/* The chapter's own action, rendered here where its data is and
+          portalled up into the tab row. */}
+      <ChapterAction>
+        <MethodAppendixDownload orgId={orgId} />
+      </ChapterAction>
       <div className={CHAPTER_GRID_CLASS}>
         {DIMENSION_KEYS.map((key) => (
           <DimensionSection

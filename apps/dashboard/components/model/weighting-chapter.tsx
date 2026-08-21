@@ -22,10 +22,8 @@ import Link from "next/link"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
-import {
-  CHAPTER_ACTION_BUTTON_SIZE,
-  ChapterFraming,
-} from "@/components/model/chapter-framing"
+import { ChapterAction } from "@/components/chapter-action-slot"
+import { CHAPTER_ACTION_BUTTON_SIZE } from "@/components/chapter-tabs"
 import { FloatingPill, FloatingPillText } from "@/components/floating-pill"
 import { DimensionFrame } from "@/components/model/dimension-frame"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
@@ -178,40 +176,40 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
           still. The weighting concept's help rides it, next to the sentence
           that frames the chapter, because the block it used to sit on is gone
           and help never floats. */}
-      <ChapterFraming
-        action={
-          // The trigger's slot is reserved whether or not the review is on
-          // offer, and only its CONTENT hides: mounting it would change the
-          // row's width, and at a width where the row wraps, its height.
-          // `invisible` is what hides it: visibility:hidden keeps the box
-          // while taking the trigger out of the tab order and out of the
-          // accessibility tree, so a hidden control can be neither reached nor
-          // announced.
-          <span
-            className={cn("flex", !showReview && "invisible")}
-            aria-hidden={!showReview}
+      {/* The chapter's own action, rendered here where its model and its
+          review lock are, and portalled up into the tab row. */}
+      <ChapterAction>
+        {/* The trigger's slot is reserved whether or not the review is on
+            offer, and only its CONTENT hides: mounting it would change the
+            row's width, and at a width where the row wraps, its height.
+            `invisible` is what hides it: visibility:hidden keeps the box
+            while taking the trigger out of the tab order and out of the
+            accessibility tree, so a hidden control can be neither reached nor
+            announced. */}
+        <span
+          className={cn("flex", !showReview && "invisible")}
+          aria-hidden={!showReview}
+        >
+          <MorphPopover
+            triggerLabel={tAi("openReviewCta")}
+            triggerIcon={AiEditingIcon}
+            triggerSize={CHAPTER_ACTION_BUTTON_SIZE}
+            anchor="right"
+            title={tAi("heading")}
+            description={tAi("provenance")}
+            closeLabel={tAi("closeLabel")}
           >
-            <MorphPopover
-              triggerLabel={tAi("openReviewCta")}
-              triggerIcon={AiEditingIcon}
-              triggerSize={CHAPTER_ACTION_BUTTON_SIZE}
-              anchor="right"
-              title={tAi("heading")}
-              description={tAi("provenance")}
-              closeLabel={tAi("closeLabel")}
-            >
-              {(close) => (
-                <WeightReviewPanel
-                  orgId={orgId}
-                  model={model}
-                  autoRequest
-                  onDone={close}
-                />
-              )}
-            </MorphPopover>
-          </span>
-        }
-      />
+            {(close) => (
+              <WeightReviewPanel
+                orgId={orgId}
+                model={model}
+                autoRequest
+                onDone={close}
+              />
+            )}
+          </MorphPopover>
+        </span>
+      </ChapterAction>
       {criteria.length === 0 ? (
         // Never a bare page: the chapter has nothing to weight until the
         // previous one has been done, and it says so with the way back.
@@ -523,29 +521,29 @@ function WeightingChapterSkeleton() {
   const tAi = useTranslations("dashboard.ai")
   return (
     <div className="space-y-4">
-      <ChapterFraming
-        action={
-          // Whether the review is on offer needs the model and the review
-          // lock, so the slot stays reserved and its content hidden, exactly
-          // as it does whenever the loaded row has nothing to offer.
-          <span className="invisible flex" aria-hidden="true">
-            <Button
-              type="button"
-              variant="outline"
-              size={CHAPTER_ACTION_BUTTON_SIZE}
-              tabIndex={-1}
-              className="pointer-events-none"
-            >
-              <HugeiconsIcon
-                icon={AiEditingIcon}
-                strokeWidth={2}
-                aria-hidden="true"
-              />
-              {tAi("openReviewCta")}
-            </Button>
-          </span>
-        }
-      />
+      {/* The chapter's own action, rendered here where its model and its
+          review lock are, and portalled up into the tab row. */}
+      <ChapterAction>
+        {/* Whether the review is on offer needs the model and the review
+            lock, so the slot stays reserved and its content hidden, exactly
+            as it does whenever the loaded row has nothing to offer. */}
+        <span aria-hidden="true" className="invisible flex">
+          <Button
+            type="button"
+            variant="outline"
+            size={CHAPTER_ACTION_BUTTON_SIZE}
+            tabIndex={-1}
+            className="pointer-events-none"
+          >
+            <HugeiconsIcon
+              icon={AiEditingIcon}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
+            {tAi("openReviewCta")}
+          </Button>
+        </span>
+      </ChapterAction>
       {/* Four columns, one per dimension: the fourth always draws (it explains
           its own emptiness rather than vanishing), and the other three draw
           here because the common model fills every one of them. */}

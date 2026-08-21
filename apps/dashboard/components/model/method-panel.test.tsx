@@ -298,11 +298,12 @@ describe("MethodPanel", () => {
   // The aggregate block is gone: its counts said the same thing four column
   // chips now say, in a block that pushed this chapter's grid below the other
   // chapters' and made switching tabs a jump.
-  it("stands no block between the framing row and the grid", () => {
+  it("stands no block between the chapter's top and its grid", () => {
     const { container } = renderPanel()
     const root = container.firstElementChild as HTMLElement
-    expect(root.children[0]?.className).toContain("min-h-9")
-    expect(root.children[1]?.className).toContain("sm:grid-cols-2")
+    // The action row is the TAB row now, mounted by the section shell above
+    // this component, so the chapter itself opens straight onto its grid.
+    expect(root.children[0]?.className).toContain("sm:grid-cols-2")
     expect(screen.queryByRole("status")).toBeNull()
   })
 
@@ -342,17 +343,14 @@ describe("MethodPanel", () => {
       expect(container.querySelector("section")).toBeNull()
     })
 
-    // The action row stays: it is where the appendix export lives, and its
-    // reserved height keeps this chapter's content at the same place as the
-    // others'. No column chips, because there are no columns.
-    it("keeps the action row above it", () => {
-      const { container } = renderPanel()
-      const root = container.firstElementChild as HTMLElement
-      expect(root.children[0]?.className).toContain("min-h-9")
-      expect(
-        root.children[0]?.querySelector('[data-slot="chapter-action"]')
-      ).not.toBeNull()
+    // The export still renders, from this chapter, even with nothing to
+    // document: it lands in the tab row above via the action slot, so the
+    // chapter itself shows only its empty line. No column chips, because
+    // there are no columns.
+    it("still offers its export, and no headings", () => {
+      renderPanel()
       expect(screen.queryByRole("heading")).toBeNull()
+      expect(emptyLine()).not.toBeNull()
     })
   })
 

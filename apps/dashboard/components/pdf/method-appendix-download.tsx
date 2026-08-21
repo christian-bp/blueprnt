@@ -11,7 +11,7 @@ import {
   MethodAppendix,
   type MethodAppendixLabels,
 } from "@/components/pdf/method-appendix"
-import { CHAPTER_ACTION_BUTTON_SIZE } from "@/components/model/chapter-framing"
+import { CHAPTER_ACTION_BUTTON_SIZE } from "@/components/chapter-tabs"
 import { SubmitButton } from "@/components/submit-button"
 import { assembleMethodAppendix } from "@/lib/pdf/method-appendix-data"
 

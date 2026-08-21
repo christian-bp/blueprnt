@@ -3,7 +3,16 @@
 import { motion } from "motion/react"
 import Link from "next/link"
 import type { ReactNode } from "react"
+import { ChapterActionSlot } from "@/components/chapter-action-slot"
 import { SPRING } from "@/lib/motion"
+
+// The size EVERY chapter action takes. One size across a section, owned by the
+// row they all sit in rather than chosen per chapter: the actions sit at the
+// same place on every chapter, and a reader moving between them should not
+// meet a control that changes height as they go. It is the design system's
+// DEFAULT, because nothing about this row is a reason to deviate from it (the
+// house rule: never hand-pick a size per call site).
+export const CHAPTER_ACTION_BUTTON_SIZE = "default" as const
 
 // One tab in a chapter row: its identity, what it reads as, where it goes, and
 // whether its page is the one open.
@@ -63,56 +72,88 @@ export function ChapterTabs({
   navLabel,
   underlineId,
   tabs,
+  instrument,
 }: {
   navLabel: string
   underlineId: string
   tabs: readonly ChapterTab[]
+  // The journey instrument, right-aligned between the tabs and the chapter's
+  // own action. It rides this row rather than the title above it because this
+  // is the section's journey line: where you are, how far along the whole
+  // thing is, and what this chapter offers, on one axis.
+  instrument?: ReactNode
 }) {
   return (
-    <nav
-      aria-label={navLabel}
-      className="-mx-1 flex items-stretch gap-1 overflow-x-auto"
-    >
-      {tabs.map((tab) => (
-        <Link
-          key={tab.key}
-          href={tab.href}
-          aria-current={tab.current ? "page" : undefined}
-          className={`relative flex shrink-0 items-center whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${
-            tab.current
-              ? "text-foreground"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {tab.label}
-          {/* The open chapter's own figures, after its name. ms-1.5 carries
-              the gap rather than a space in the markup, because a tab is a
-              flex container and a whitespace-only text node between two
-              children is dropped entirely. tabular-nums so a count ticking
-              upward inside a chapter cannot nudge the tabs beside it: the pair
-              only ever grows at a 9-to-10 boundary. */}
-          {tab.current && tab.count !== undefined && (
-            <span className="ms-1.5 text-muted-foreground tabular-nums">
-              {tab.count}
-            </span>
-          )}
-          {/* inset-x-2 is the tab's own box, and the bar may span the whole of
-              it because everything inside belongs to this tab: its name, and
-              on the open one its figures. The rule this replaces was about a
-              done mark's EMPTY slot sitting in front of the label, which left
-              the bar running 20px past the start of the text with nothing
-              above that stretch. Anything added here must likewise be visible
-              whenever it takes space, or the bar has to be anchored to the
-              label itself instead. */}
-          {tab.current && (
-            <motion.span
-              layoutId={underlineId}
-              transition={SPRING}
-              className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground"
-            />
-          )}
-        </Link>
-      ))}
-    </nav>
+    // The section's journey row: tabs and the open chapter's own count left,
+    // then the whole journey's instrument, then that chapter's action. The
+    // action used to sit in a row of its own between this one and the
+    // chapter's content, which spent a whole band of vertical space on a
+    // single button and pushed every chapter's grid that much further down.
+    //
+    // min-h-9 is the action button's height, held whether or not a chapter
+    // offers one, so the content below starts at the same Y on every chapter
+    // and switching chapters holds the columns still. The instrument is two
+    // pixels tall with nothing to hover, so it rides that height rather than
+    // setting it.
+    //
+    // The tabs never truncate: they are the navigation, and they come first
+    // in both senses. What gives way is whatever sits at the end of the line,
+    // which under flex-wrap is the last cluster in order. Visual order and
+    // wrap order are the same list, so the row cannot both put the instrument
+    // left of the action AND drop it first; the owner's order wins and the
+    // action takes its own right-aligned line at narrow widths. Nothing
+    // overlaps either way.
+    <div className="flex min-h-9 flex-wrap items-center gap-x-4 gap-y-1">
+      <nav
+        aria-label={navLabel}
+        className="-mx-1 flex items-stretch gap-1 overflow-x-auto"
+      >
+        {tabs.map((tab) => (
+          <Link
+            key={tab.key}
+            href={tab.href}
+            aria-current={tab.current ? "page" : undefined}
+            className={`relative flex shrink-0 items-center whitespace-nowrap px-2 py-2 font-medium text-sm transition-colors ${
+              tab.current
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {tab.label}
+            {/* The open chapter's own figures, after its name. ms-1.5 carries
+                the gap rather than a space in the markup, because a tab is a
+                flex container and a whitespace-only text node between two
+                children is dropped entirely. tabular-nums so a count ticking
+                upward inside a chapter cannot nudge the tabs beside it: the pair
+                only ever grows at a 9-to-10 boundary. */}
+            {tab.current && tab.count !== undefined && (
+              <span className="ms-1.5 text-muted-foreground tabular-nums">
+                {tab.count}
+              </span>
+            )}
+            {/* inset-x-2 is the tab's own box, and the bar may span the whole of
+                it because everything inside belongs to this tab: its name, and
+                on the open one its figures. The rule this replaces was about a
+                done mark's EMPTY slot sitting in front of the label, which left
+                the bar running 20px past the start of the text with nothing
+                above that stretch. Anything added here must likewise be visible
+                whenever it takes space, or the bar has to be anchored to the
+                label itself instead. */}
+            {tab.current && (
+              <motion.span
+                layoutId={underlineId}
+                transition={SPRING}
+                className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground"
+              />
+            )}
+          </Link>
+        ))}
+      </nav>
+      {/* Always rendered, empty or not: it carries the row's ONE auto margin,
+          which is what pushes everything after it to the right edge. A second
+          auto margin would split the free space instead of consuming it. */}
+      <span className="ms-auto flex items-center">{instrument}</span>
+      <ChapterActionSlot />
+    </div>
   )
 }

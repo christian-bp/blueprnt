@@ -1,15 +1,13 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
+import { ChapterActionSlotProvider } from "@/components/chapter-action-slot"
+import { HelpMorphButton } from "@/components/help-morph-button"
+import { SectionTitleRow } from "@/components/section-title-row"
 import { AnalysisChapterTabs } from "./analysis-chapter-tabs"
-import {
-  ANALYSIS_CHAPTERS,
-  chapterProgress,
-  currentChapter,
-} from "./analysis-chapters"
-import { AnalysisSpine } from "./analysis-spine"
+import { ANALYSIS_CHAPTERS, chapterProgress } from "./analysis-chapters"
+
 import { usePayMappingRun } from "./pay-mapping-run-context"
 
 // The analysis section's shared chrome, mounted by analysis/layout.tsx so it
@@ -28,9 +26,8 @@ import { usePayMappingRun } from "./pay-mapping-run-context"
 // copy of it above five pages was weight without a job.
 export function AnalysisSectionShell({ children }: { children: ReactNode }) {
   const t = useTranslations("dashboard.payMapping.analysis")
-  const pathname = usePathname()
+  const tHelp = useTranslations("dashboard.help")
   const { queue } = usePayMappingRun()
-  const active = currentChapter(pathname)
   // Derived ONCE and handed to both the instrument and the tab row, so a
   // chapter's segment and its tab can never disagree about the chapter they
   // both describe.
@@ -43,30 +40,31 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
         }))
 
   return (
-    <div className="space-y-4">
-      {queue === null ? (
-        // Content-shaped: the spine's real title (static i18n text, so it
-        // renders real) with a flat track standing in for the instrument
-        // opposite it, at the instrument's own width, so nothing moves when
-        // the data lands. No counter beside it: the figures are exactly what
-        // is still loading.
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <h3 className="font-semibold text-base">{t("progressLabel")}</h3>
-          <div className="h-2 w-64 shrink-0 rounded-full bg-primary/12" />
-        </div>
-      ) : (
-        <AnalysisSpine
-          done={queue.progress.overall.done}
-          total={queue.progress.overall.total}
-          chapters={chapters ?? []}
-          activeChapter={active}
+    // The chapter's own action renders inside the chapter, where its data is,
+    // and lands in the tab row above it (ChapterActionSlot).
+    <ChapterActionSlotProvider>
+      <div className="space-y-4">
+        {/* The section's title and its one explainer. The reading is on the
+            journey row below, with the tabs and the chapter's own action. */}
+        <SectionTitleRow
+          heading={t("progressLabel")}
+          help={
+            <HelpMorphButton label={tHelp("analysisProgressLabel")}>
+              {tHelp("analysisProgressBody")}
+            </HelpMorphButton>
+          }
         />
-      )}
-      {/* The tab row prints the OPEN chapter's own figures, from the same
-          array the instrument above draws. Withheld while the run is loading,
-          so a tab never shows a zero it is about to replace. */}
-      <AnalysisChapterTabs chapters={chapters} />
-      {children}
-    </div>
+        {/* The journey row: the tabs, the open chapter's own figures, the
+            whole mapping's instrument, and this chapter's action. The figures
+            are withheld while the run loads, so a tab never shows a zero it is
+            about to replace. */}
+        <AnalysisChapterTabs
+          chapters={chapters}
+          done={queue?.progress.overall.done ?? 0}
+          total={queue?.progress.overall.total ?? 0}
+        />
+        {children}
+      </div>
+    </ChapterActionSlotProvider>
   )
 }

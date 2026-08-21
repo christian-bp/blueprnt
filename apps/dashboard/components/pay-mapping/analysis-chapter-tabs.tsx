@@ -4,6 +4,7 @@ import NumberFlow from "@number-flow/react"
 import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import { ChapterTabs, chapterTabNumber } from "@/components/chapter-tabs"
+import { SegmentedProgress } from "@/components/segmented-progress"
 import {
   ANALYSIS_CHAPTERS,
   type AnalysisChapter,
@@ -25,7 +26,13 @@ import {
 // here is the analysis's own registry and its own wording.
 export function AnalysisChapterTabs({
   chapters,
+  done,
+  total,
 }: {
+  // The whole mapping's done/total, for the instrument's announced
+  // percentage.
+  done: number
+  total: number
   // Each chapter's own done/total, in chapter order: the SAME array the spine
   // above draws its segments from, passed down by the section shell rather
   // than derived a second time here, so the tab and the segment above it can
@@ -60,6 +67,15 @@ export function AnalysisChapterTabs({
       // Its own id, distinct from the header tab rows above it and from the
       // model section's, or the stacked rows would cross-animate.
       underlineId="analysis-chapter-tab-underline"
+      instrument={
+        <SegmentedProgress
+          barLabel={tAnalysis("progressBarLabel")}
+          done={done}
+          total={total}
+          segments={chapters ?? []}
+          activeSegment={active}
+        />
+      }
       tabs={ANALYSIS_CHAPTERS.map((chapter, index) => ({
         key: chapter,
         // The SHORT names here, not the descriptive ones. Full titles plus

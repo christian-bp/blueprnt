@@ -574,11 +574,11 @@ describe("the Viktning chapter", () => {
 
   it("shows the chapter's own skeleton while the model loads", () => {
     modelResult = undefined
-    // The action row is the chapter's chrome, not its data: it reserves its
-    // height for real, so nothing shifts when the model arrives.
+    // The chapter opens straight onto its grid: the action row is the TAB
+    // row now, mounted by the section shell above this component.
     const { container } = renderChapter()
     const row = container.firstElementChild?.children[0]
-    expect(row?.className).toContain("min-h-9")
+    expect(row?.className).toContain("sm:grid-cols-2")
     // No pill: what it would say is exactly what is still loading.
     expect(querySave()).toBeNull()
     // Nothing is weighted yet, so no weight row exists to be edited.

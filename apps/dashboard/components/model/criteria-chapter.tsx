@@ -26,7 +26,6 @@ import { HATCH_CLASS } from "@/components/hatch"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { FloatingPill, FloatingPillText } from "@/components/floating-pill"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
-import { ChapterFraming } from "@/components/model/chapter-framing"
 import { DimensionColumn } from "@/components/model/dimension-column"
 import { DimensionFrame } from "@/components/model/dimension-frame"
 import { LibraryPickerDialog } from "@/components/model/library-picker-dialog"
@@ -227,7 +226,6 @@ export function CriteriaChapter({ orgId }: { orgId: string }) {
           still. This chapter offers no action of its own (adding a criterion
           is a column's work, not the chapter's), and the row keeps the slot's
           height anyway so the grid does not sit higher here than next door. */}
-      <ChapterFraming />
       <div className={CHAPTER_GRID_CLASS}>
         {model.dimensions.map((dimension) => {
           const placed = model.criteria.filter(
@@ -374,9 +372,6 @@ function CriteriaChapterSkeleton() {
   const content = criteriaLibraryContent(locale)
   return (
     <div className="space-y-4">
-      {/* Chapter chrome, not data: it renders in full while the model loads,
-          so the columns below never move when it lands. */}
-      <ChapterFraming />
       <div className={CHAPTER_GRID_CLASS}>
         {DIMENSION_KEYS.map((key) => (
           <ColumnSkeleton
