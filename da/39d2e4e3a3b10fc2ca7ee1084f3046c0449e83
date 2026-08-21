@@ -1,0 +1,39 @@
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_caadb465079a31 1915
+apps/dashboard/components/model/method-panel.test.tsx
+  s_58dd112dc09435::t_29a9cd260b965f 147-153
+  s_58dd112dc09435::t_3b280ae5815c13 125-133,136,141-145
+  s_58dd112dc09435::t_cad32257ff52be 223-231,233-249,251-253
+  s_58dd112dc09435::t_7debed4bf4d681 181,184-185
+  s_58dd112dc09435::t_8494515fb16f24 232,250
+  s_58dd112dc09435::t_fa6c19446f4563 146
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_caadb465079a31 1915
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_caadb465079a31 1915
+apps/dashboard/components/model/method-panel.tsx
+  s_58dd112dc09435::t_b5afd0842fcdf1 156-165,172-199
+  s_58dd112dc09435::t_f5c3e78fd87e41 13,21
+  s_58dd112dc09435::t_7b323aacebde63 200-202
+  s_58dd112dc09435::t_02eb7ce2f98b1f 136-155
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_caadb465079a31 1915
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_caadb465079a31 1915
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "da39d2e4e3a3b10fc2ca7ee1084f3046c0449e83",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
