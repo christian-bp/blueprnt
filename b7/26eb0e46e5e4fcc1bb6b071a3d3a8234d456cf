@@ -1,0 +1,23 @@
+apps/dashboard/components/assistant/assistant-composer.tsx
+  s_58dd112dc09435::t_de651885c9c077 3-7
+  s_58dd112dc09435::t_efbd77ff20c66f 64-68,87-91
+apps/dashboard/components/assistant/assistant-composer.test.tsx
+  s_58dd112dc09435::t_97d0257ea65b8f 5-8
+  s_58dd112dc09435::t_d66ac1e96ddcca 128-167
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b726eb0e46e5e4fcc1bb6b071a3d3a8234d456cf",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
