@@ -80,22 +80,30 @@ describe("ModelSectionShell", () => {
   })
   afterEach(() => cleanup())
 
-  // The instrument sits on the TITLE row, opposite the section's name, not
-  // down among the tabs: a section's overall state belongs with the section's
-  // name. Its announced percentage is the whole model's WORK, not its
-  // chapter count.
-  it("carries the instrument on the title row, opposite the name", () => {
+  // The instrument floats with the section's pill stack, at the base of it:
+  // a section's state is what you check WHILE working, and on the title row
+  // it was the one reading a reader lost by scrolling. Its announced
+  // percentage is the whole model's WORK, not its chapter count.
+  it("floats the instrument at the base of the section's stack", () => {
     const { container } = renderShell()
     const heading = screen.getByRole("heading", { level: 3 })
     const bar = screen.getByRole("progressbar", { name: m.progressBarLabel })
-    // Same row: the title's own box and the instrument's box are siblings.
     const instrument = bar.parentElement as HTMLElement
-    expect(heading.closest("div")?.parentElement).toBe(instrument.parentElement)
+    const rail = container.querySelector(
+      '[data-slot="floating-stack"]'
+    ) as HTMLElement
+    // One stack, and the instrument is in it, not on the title row.
+    expect(
+      container.querySelectorAll('[data-slot="floating-stack"]')
+    ).toHaveLength(1)
+    expect(instrument.parentElement).toBe(rail)
+    expect(heading.closest("div")?.contains(bar)).toBe(false)
+    expect(rail.className.split(/\s+/)).toContain("fixed")
     // The fixture leaves only the approval outstanding: 16 of 17 STEPS, so
     // 94%, not the 75% three closed chapters of four would read as.
     expect(bar.getAttribute("aria-valuenow")).toBe("94")
     const tokens = instrument.className.split(/\s+/)
-    expect(tokens).toContain("w-72")
+    expect(tokens).toContain("w-80")
     expect(tokens).toContain("shrink-0")
     // One segment per chapter, all the same width whatever each holds, with
     // the open one held up while the rest recede.
@@ -116,6 +124,17 @@ describe("ModelSectionShell", () => {
     // the shape the owner rejected.
     const nav = screen.getByRole("navigation", { name: m.nav })
     expect(nav.parentElement?.querySelector('[role="progressbar"]')).toBeNull()
+    expect(container.querySelectorAll('[role="progressbar"]')).toHaveLength(1)
+  })
+
+  // The kartläggning's shell mounts the same stack with the same instrument;
+  // it simply has no pills of its own to put above it today. Pinned here
+  // because a second rail would be a second corner.
+  it("mounts exactly one stack, whatever the chapter puts in it", () => {
+    const { container } = renderShell()
+    expect(
+      container.querySelectorAll('[data-slot="floating-stack"]')
+    ).toHaveLength(1)
     expect(container.querySelectorAll('[role="progressbar"]')).toHaveLength(1)
   })
 

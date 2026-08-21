@@ -7,6 +7,10 @@ import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { ChapterActionSlotProvider } from "@/components/chapter-action-slot"
+import {
+  FloatingStack,
+  FloatingStackProvider,
+} from "@/components/floating-stack"
 import { ModelChapterTabs } from "@/components/model/model-chapter-tabs"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SectionTitleRow } from "@/components/section-title-row"
@@ -57,26 +61,35 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
   }))
 
   return (
-    // The chapter's own action renders inside the chapter, where its data is,
-    // and lands in the tab row above it (ChapterActionSlot).
+    // Two slots the chapter fills from its own tree: its action, which lands
+    // on the journey row, and its pills, which land in the floating stack
+    // above the instrument.
     <ChapterActionSlotProvider>
-      <div className="space-y-4">
-        {/* The section's title, its one explainer, and where the whole model
-            stands, opposite it. */}
-        <SectionTitleRow
-          heading={t("heading")}
-          help={
-            <HelpMorphButton label={tHelp("modelProgressLabel")}>
-              {tHelp("modelProgressBody")}
-            </HelpMorphButton>
-          }
+      <FloatingStackProvider>
+        <div className="space-y-4">
+          {/* The section's title and its one explainer. The journey's reading
+              floats with the pill stack. */}
+          <SectionTitleRow
+            heading={t("heading")}
+            help={
+              <HelpMorphButton label={tHelp("modelProgressLabel")}>
+                {tHelp("modelProgressBody")}
+              </HelpMorphButton>
+            }
+          />
+          {/* The journey row: the tabs and this chapter's action. */}
+          <ModelChapterTabs />
+          {children}
+        </div>
+        <FloatingStack
           instrument={
             <SegmentedProgress
               activeSegment={active}
               barLabel={t("progressBarLabel")}
               // A chapter reaching its own done/total plays the same
-              // celebration a finished to-do card does. The kartläggning's
-              // analysis section does not opt in.
+              // celebration a finished to-do card does, and the instrument
+              // floats now, so the burst is thrown where it can be seen. The
+              // kartläggning's analysis section does not opt in.
               celebrateOnComplete
               done={overall.done}
               renderCount={(segment) =>
@@ -90,11 +103,7 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
             />
           }
         />
-        {/* The journey row: the tabs and this chapter's action. The open
-            chapter's figures sit under the instrument above. */}
-        <ModelChapterTabs />
-        {children}
-      </div>
+      </FloatingStackProvider>
     </ChapterActionSlotProvider>
   )
 }

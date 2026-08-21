@@ -5,6 +5,10 @@ import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { ChapterActionSlotProvider } from "@/components/chapter-action-slot"
+import {
+  FloatingStack,
+  FloatingStackProvider,
+} from "@/components/floating-stack"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SectionTitleRow } from "@/components/section-title-row"
 import { SegmentedProgress } from "@/components/segmented-progress"
@@ -51,16 +55,26 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
     // The chapter's own action renders inside the chapter, where its data is,
     // and lands in the tab row above it (ChapterActionSlot).
     <ChapterActionSlotProvider>
-      <div className="space-y-4">
-        {/* The section's title, its one explainer, and where the whole
-            mapping stands, opposite it. */}
-        <SectionTitleRow
-          heading={t("progressLabel")}
-          help={
-            <HelpMorphButton label={tHelp("analysisProgressLabel")}>
-              {tHelp("analysisProgressBody")}
-            </HelpMorphButton>
-          }
+      <FloatingStackProvider>
+        <div className="space-y-4">
+          {/* The section's title and its one explainer. The journey's reading
+              floats with the pill stack. */}
+          <SectionTitleRow
+            heading={t("progressLabel")}
+            help={
+              <HelpMorphButton label={tHelp("analysisProgressLabel")}>
+                {tHelp("analysisProgressBody")}
+              </HelpMorphButton>
+            }
+          />
+          {/* The journey row: the tabs and this chapter's action. */}
+          <AnalysisChapterTabs />
+          {children}
+        </div>
+        {/* The same stack the model section keeps. This section carries no
+            pills of its own today, so the instrument is alone in it; the rail
+            is shared anyway, because a second one would be a second corner. */}
+        <FloatingStack
           instrument={
             <SegmentedProgress
               activeSegment={active}
@@ -77,11 +91,7 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
             />
           }
         />
-        {/* The journey row: the tabs and this chapter's action. The open
-            chapter's figures sit under the instrument above. */}
-        <AnalysisChapterTabs />
-        {children}
-      </div>
+      </FloatingStackProvider>
     </ChapterActionSlotProvider>
   )
 }

@@ -65,9 +65,12 @@ describe("SegmentedProgress", () => {
   it("holds a fixed compact width rather than filling its row", () => {
     const { container } = renderBar()
     const tokens = (container.firstElementChild?.className ?? "").split(/\s+/)
-    expect(tokens).toContain("w-72")
+    expect(tokens).toContain("w-80")
     expect(tokens).toContain("shrink-0")
     expect(tokens).not.toContain("w-full")
+    // It floats over the page, so anything it covers stays clickable through
+    // it: the instrument is a shape, never a control.
+    expect(tokens).toContain("pointer-events-none")
   })
 
   // The one annotation the instrument carries: the OPEN chapter's own pair,

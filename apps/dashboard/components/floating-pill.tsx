@@ -9,6 +9,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@workspace/ui/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
 import type { ReactNode } from "react"
+import { FloatingStackItem } from "@/components/floating-stack"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import { SPRING } from "@/lib/motion"
 
@@ -63,11 +64,10 @@ const TONE_ICON_CLASS: Record<FloatingPillTone, string> = {
 // confirm it is a control the reader has to look past every time they open the
 // page. Nothing to say, nothing on screen.
 //
-// Bottom-CENTER rather than a corner: what it carries is the chapter's whole
-// subject, so it belongs on the reader's centre line, and the toasts own the
-// bottom-right on this app. It sits under them in the stack (z-40 against
-// their z-50) for the one moment both are on screen, which is the instant
-// after a save, when the pill is on its way out anyway.
+// It does not position itself: it renders into the section's FloatingStack,
+// which owns the rail's corner, its gap and its order, and keeps the journey
+// instrument at the base with the pills above it. One rail per section means
+// a pill and the instrument can never overlap or drift apart.
 //
 // Shared rather than written per chapter: two chapters carry one of these
 // already (the Viktning budget, the Kriterier selection rule), they must read
@@ -82,11 +82,7 @@ export function FloatingPill({
   children: ReactNode | null
 }) {
   return (
-    // The fixed wrapper never animates and never takes pointer events: it is
-    // only the centring rail. Keeping the transform off it leaves the pill's
-    // own transform free for the enter/leave, which a `-translate-x-1/2`
-    // centring would otherwise fight (Motion writes the whole transform).
-    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex justify-center px-4">
+    <FloatingStackItem>
       <AnimatePresence initial={false}>
         {children !== null && (
           <motion.div
@@ -139,7 +135,7 @@ export function FloatingPill({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </FloatingStackItem>
   )
 }
 

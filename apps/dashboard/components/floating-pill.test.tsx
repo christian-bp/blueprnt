@@ -1,6 +1,10 @@
 import { cleanup, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
 import { FloatingPill, FloatingPillText } from "@/components/floating-pill"
+import {
+  FloatingStack,
+  FloatingStackProvider,
+} from "@/components/floating-stack"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 
 const pill = (container: HTMLElement) =>
@@ -10,14 +14,21 @@ describe("FloatingPill", () => {
   afterEach(cleanup)
 
   // Fixed and out of flow, which is the whole reason a chapter's standing
-  // readout floats: nothing it says can push the grid below the framing row.
+  // readout floats: nothing it says can push the grid below it. The rail
+  // itself belongs to the section's FloatingStack now, so the pill is placed
+  // by rendering into one.
   it("floats out of the page's flow, under the toasts", () => {
     const { container } = render(
-      <FloatingPill tone="info">
-        <FloatingPillText alone>Two criteria left</FloatingPillText>
-      </FloatingPill>
+      <FloatingStackProvider>
+        <FloatingPill tone="info">
+          <FloatingPillText alone>Two criteria left</FloatingPillText>
+        </FloatingPill>
+        <FloatingStack instrument={<div data-testid="instrument" />} />
+      </FloatingStackProvider>
     )
-    const rail = container.firstElementChild as HTMLElement
+    const rail = container.querySelector(
+      '[data-slot="floating-stack"]'
+    ) as HTMLElement
     const classes = rail.className.split(/\s+/)
     expect(classes).toContain("fixed")
     // Above the page, below the toast layer (z-50), so a save's confirmation
@@ -25,6 +36,22 @@ describe("FloatingPill", () => {
     expect(classes).toContain("z-40")
     expect(classes).toContain("pointer-events-none")
     expect(pill(container)?.className).toContain("pointer-events-auto")
+    // The pill sits ABOVE the instrument in the stack: the instrument is the
+    // section's persistent base, and what a chapter has to say stacks on it.
+    // Order, not child index: the pills land inside a display:contents span,
+    // which keeps them DOM children of that span while making them flex items
+    // of the rail. DOM order is what the flex order follows.
+    const flow = [
+      ...rail.querySelectorAll(
+        '[data-slot="floating-pill"], [data-testid="instrument"]'
+      ),
+    ]
+    expect(
+      flow.map(
+        (node) =>
+          node.getAttribute("data-slot") ?? node.getAttribute("data-testid")
+      )
+    ).toEqual(["floating-pill", "instrument"])
   })
 
   // A polite live region, so the readings it carries (points left, over

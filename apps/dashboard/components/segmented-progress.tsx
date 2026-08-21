@@ -119,14 +119,17 @@ export function SegmentedProgress({
     // so a section whose chapters hold 21 and 1 steps can never read as
     // halfway on two of four.
     //
-    // A FIXED width: the instrument states where the journey stands, it does
-    // not measure the page. It never shrinks below w-72, so on a narrow
-    // viewport its title row wraps and the instrument comes down whole rather
-    // than squeezing into slivers. w-72 leaves a quarter segment about 70px
-    // wide, which is what the count line under it needs: the longest pair any
-    // locale prints here is eight characters ("12 av 21"), and it is
-    // left-aligned inside its own segment's slot.
-    <div className="w-72 shrink-0 space-y-1">
+    // A FIXED width, now that it floats rather than sharing a row: w-80
+    // leaves a quarter segment about 78px wide, which the count line under it
+    // uses comfortably (the longest pair any locale prints there is eight
+    // characters, "12 av 21", left-aligned in its own slot). It caps against
+    // the viewport so the narrowest supported phone shows it whole rather than
+    // running it off the edge.
+    //
+    // Transparent to the pointer: the instrument is a shape, not a control,
+    // and it floats over the page, so anything it happens to cover has to stay
+    // clickable through it.
+    <div className="pointer-events-none w-80 max-w-[calc(100vw-2rem)] shrink-0 space-y-1">
       <div
         role="progressbar"
         aria-label={barLabel}

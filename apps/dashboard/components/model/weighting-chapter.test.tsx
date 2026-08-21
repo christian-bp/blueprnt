@@ -483,8 +483,11 @@ describe("the Viktning chapter", () => {
   // switching tabs would jump.
   describe("the budget pill", () => {
     // Fixed, so it is out of flow and can push nothing.
+    // The pill's own shell. The RAIL it floats on belongs to the section's
+    // FloatingStack, which the shell mounts above this chapter, so the
+    // chapter's own tests reach for the pill rather than for a fixed box.
     const pillOf = (node: Element) =>
-      node.closest('[class*="fixed"]') as HTMLElement | null
+      node.closest('[data-slot="floating-pill"]') as HTMLElement | null
 
     it("says nothing while the allocation adds up and is saved", () => {
       const { container } = renderChapter()
@@ -571,17 +574,19 @@ describe("the Viktning chapter", () => {
 
     // It floats, so it can never sit between the framing row and the grid, and
     // the columns begin where every other chapter's do.
-    it("is fixed, out of the chapter's own flow", () => {
+    // The pill positions nothing itself: it renders into the section's
+    // FloatingStack, which owns the rail's corner and keeps the journey
+    // instrument at its base. A chapter that hand-rolled its own fixed box
+    // would be a second corner and would fail this.
+    it("leaves its placement to the section's floating stack", () => {
       const { container } = renderChapter()
       fireEvent.click(
         within(groupFor(COMPLEXITY)).getByRole("button", { name: "3" })
       )
-      const rail = container.querySelector('[class*="fixed"]') as HTMLElement
-      expect(rail.className.split(/\s+/)).toContain("fixed")
-      // Last in the chapter's own DOM, after the grid it floats over.
-      expect(rail.previousElementSibling?.className ?? "").toContain(
-        "sm:grid-cols-2"
-      )
+      expect(container.querySelector('[class*="fixed"]')).toBeNull()
+      expect(
+        container.querySelector('[data-slot="floating-pill"]')
+      ).not.toBeNull()
     })
   })
 
@@ -617,8 +622,7 @@ describe("the Viktning chapter", () => {
     // The chapter opens straight onto its grid: the action row is the TAB
     // row now, mounted by the section shell above this component.
     const { container } = renderChapter()
-    const row = container.firstElementChild?.children[0]
-    expect(row?.className).toContain("sm:grid-cols-2")
+    expect(container.querySelector('[class*="sm:grid-cols-2"]')).not.toBeNull()
     // No pill: what it would say is exactly what is still loading.
     expect(querySave()).toBeNull()
     // Nothing is weighted yet, so no weight row exists to be edited.
