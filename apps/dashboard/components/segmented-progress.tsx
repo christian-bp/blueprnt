@@ -13,10 +13,17 @@ export interface ProgressSegment {
   total: number
 }
 
+// The one flex every segment carries, in all three rows (the name above, the
+// bar, the count below), so a name and a figure always sit over and under the
+// segment they belong to. Constant because every chapter is the same width;
+// the basis is what keeps a chapter with no work in it from collapsing to
+// nothing.
+const SEGMENT_STYLE = { flexGrow: 1, flexBasis: "0.75rem" }
+
 // The segmented journey bar, shared by every guided section that has
-// chapters (the kartläggning analysis, the model section). Geometry, the
-// weighting rule and the count row live here once, so two sections drawing
-// "how far along is this" can never drift into two different bars.
+// chapters (the kartläggning analysis, the model section). Geometry, the fill
+// rule and the count row live here once, so two sections drawing "how far
+// along is this" can never drift into two different bars.
 //
 // What stays with the caller is everything that is section-specific: the
 // heading above it, the help beside that heading, and the WORDS of the count
@@ -31,7 +38,6 @@ export function SegmentedProgress({
   renderCount,
   renderTitle,
   celebrateOnComplete,
-  equalSegments,
 }: {
   // The bar always shows the WHOLE journey, whichever page it is on, so its
   // accessible name says so rather than borrowing the heading's.
@@ -60,24 +66,8 @@ export function SegmentedProgress({
   // kartläggning's analysis spine stays as it was, and only a section that
   // opts in (the model spine) gets the burst.
   celebrateOnComplete?: boolean
-  // Gives every chapter the same width instead of one proportional to the
-  // work it holds. Off by default, so a caller that does not pass it renders
-  // exactly the DOM it rendered before: the kartläggning's analysis spine
-  // stays weighted, and only a section that opts in (the model spine) reads
-  // as a row of equal stations. Fill and announced percentage are untouched
-  // either way (see the geometry note below).
-  equalSegments?: boolean
 }) {
   const pct = total <= 0 ? 0 : Math.round((done / total) * 100)
-
-  // The one flex rule all three rows share (name above, bar, count below), so
-  // whichever geometry the section chose, a name and a figure sit over and
-  // under the segment they belong to. The basis keeps a chapter with no work
-  // in it from collapsing to nothing in either mode.
-  const segmentStyle = (segment: ProgressSegment) => ({
-    flexGrow: equalSegments ? 1 : Math.max(segment.total, 0),
-    flexBasis: "0.75rem",
-  })
 
   // Remembers each segment's own completeness across renders, so a fresh
   // crossing can be told apart from a segment that simply arrived finished.
@@ -119,14 +109,14 @@ export function SegmentedProgress({
   }, [celebrateOnComplete, segments])
 
   return (
-    // One bar, split into the chapters, in one of two geometries the section
-    // chooses. WEIGHTED (the default): a segment is as wide as the work its
-    // chapter holds, so a journey where one chapter carries 21 of 29 steps
-    // shows that shape instead of letting "2 of 4 chapters done" read as
-    // halfway. EQUAL (equalSegments): every chapter takes the same width and
-    // the bar reads as a row of stations. Neither changes what the bar
-    // CLAIMS: each segment still fills by its own done/total, and the
-    // announced percentage stays the whole journey's work.
+    // One bar, split into equally wide chapters: a guided section's chapters
+    // are its stations, and a station's width is not a claim about the work
+    // behind it. What the work is stays on the surface where it can be read
+    // rather than estimated from a shape: each segment FILLS by its own
+    // done/total, the open chapter's count sits under its own segment, and the
+    // bar announces the whole journey's WORK-weighted percentage, so a section
+    // whose chapters hold 21 and 1 steps can never read as halfway on two of
+    // four.
     <div className="space-y-1">
       {/* The active chapter's name, over its own segment. The mirror of the
           count row below the bar, and built the same way: the bar's own flex
@@ -141,7 +131,7 @@ export function SegmentedProgress({
           {segments.map((segment) => (
             <div
               key={segment.key}
-              style={segmentStyle(segment)}
+              style={SEGMENT_STYLE}
               className="relative h-full"
             >
               <AnimatePresence>
@@ -170,14 +160,12 @@ export function SegmentedProgress({
         className="flex h-2 w-full gap-0.5 rounded-full"
       >
         {segments.map((segment) => {
-          // The bar's segments and the tab row can never line up: a segment's
-          // width comes from its chapter's work or from an equal split, a
-          // tab's from how long its name is. Simultaneous highlighting is what
-          // links them instead. With no active chapter the whole bar reads at
-          // full strength.
+          // The bar's segments and the tab row can never line up: every
+          // segment is the same width, a tab's comes from how long its name
+          // is. Simultaneous highlighting is what links them instead. With no
+          // active chapter the whole bar reads at full strength.
           const isActive =
             activeSegment === undefined || activeSegment === segment.key
-          const flexStyle = segmentStyle(segment)
           // The dimming rides on the FILL, never on the track: the track is
           // "work not yet done" and that reads the same in every chapter, so
           // fading it made the open chapter's remainder a different colour
@@ -209,7 +197,7 @@ export function SegmentedProgress({
               <div
                 key={segment.key}
                 data-active={isActive}
-                style={flexStyle}
+                style={SEGMENT_STYLE}
                 className="group/segment h-full overflow-hidden rounded-full bg-primary/12"
               >
                 {fill}
@@ -220,7 +208,7 @@ export function SegmentedProgress({
             <div
               key={segment.key}
               data-active={isActive}
-              style={flexStyle}
+              style={SEGMENT_STYLE}
               className="group/segment h-full"
             >
               <CelebrationBurst
@@ -251,7 +239,7 @@ export function SegmentedProgress({
         {segments.map((segment) => (
           <div
             key={segment.key}
-            style={segmentStyle(segment)}
+            style={SEGMENT_STYLE}
             className="relative h-full"
           >
             <AnimatePresence>

@@ -72,8 +72,9 @@ export function AnalysisSpine({
         {right}
       </div>
       {/* The bar itself is the shared journey primitive (its geometry, its
-          weighting rule and its count row are the same anatomy the model
-          section draws); what stays here is the mapping's own wording. */}
+          fill rule and its count row are the same anatomy the model section
+          draws, equally wide chapters included); what stays here is the
+          mapping's own wording. */}
       <SegmentedProgress
         barLabel={t("progressBarLabel")}
         done={done}

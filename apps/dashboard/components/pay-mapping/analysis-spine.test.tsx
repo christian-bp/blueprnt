@@ -77,23 +77,23 @@ describe("AnalysisSpine", () => {
     expect(srOnly?.textContent).toContain("31")
   })
 
-  it("weights each chapter's segment by how much work it holds", () => {
-    // One chapter carrying 21 of 31 steps must own most of the bar: equal
-    // segments would read "2 of 4 chapters done" as halfway when it is a
-    // sixth of the work. This spine does NOT take the shared bar's
-    // equalSegments geometry (the model spine does), and the exact weights
-    // are pinned here so that cannot change from the primitive's side.
+  it("gives every chapter the same width whatever it holds", () => {
+    // The fixture's chapters run 1, 4, 5 and 21 steps and every segment is the
+    // same width: a chapter is a station, and a station's width is not a claim
+    // about the work behind it. Where the work reads instead is the fill (per
+    // chapter), the count under the open one, and the announced percentage,
+    // which stays work-weighted.
     const { container } = renderSpine()
     const bar = container.querySelector('[role="progressbar"]')
     const segments = [...(bar?.children ?? [])] as HTMLElement[]
     expect(segments).toHaveLength(4)
     expect(segments.map((segment) => segment.style.flexGrow)).toEqual([
       "1",
-      "4",
-      "5",
-      "21",
+      "1",
+      "1",
+      "1",
     ])
-    // The count row under the bar carries the same weights, so a figure stays
+    // The count row under the bar carries the same flex, so a figure stays
     // under the chapter it describes.
     const countRow = container.querySelector(
       '[aria-hidden="true"][class*="h-4"]'
@@ -102,7 +102,7 @@ describe("AnalysisSpine", () => {
       [...(countRow?.children ?? [])].map(
         (cell) => (cell as HTMLElement).style.flexGrow
       )
-    ).toEqual(["1", "4", "5", "21"])
+    ).toEqual(["1", "1", "1", "1"])
     // A finished chapter's fill runs the whole segment; an untouched one
     // shows none.
     expect(

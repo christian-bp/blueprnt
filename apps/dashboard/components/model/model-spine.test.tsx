@@ -72,8 +72,7 @@ describe("ModelSpine", () => {
 
   // This section's chapters are stations of one build, so they are equally
   // wide whatever they hold: Metod carries a step per criterion and would
-  // otherwise be most of the bar. The kartläggning's analysis spine takes the
-  // other geometry (see analysis-spine.test.tsx).
+  // otherwise be most of the bar.
   it("gives every chapter the same width whatever it holds", () => {
     const { container } = renderSpine()
     const segments = [

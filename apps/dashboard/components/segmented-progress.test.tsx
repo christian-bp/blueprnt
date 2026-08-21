@@ -32,9 +32,9 @@ const segmentsOf = (container: HTMLElement) =>
   ] as HTMLElement[]
 
 // The three rows the bar draws: the open chapter's name above, the segments
-// themselves, and its count below. All three carry the same flex, so whichever
-// geometry the section chose, the name and the figure sit over and under the
-// segment they belong to. The title row only exists with renderTitle.
+// themselves, and its count below. All three carry the same flex, so the name
+// and the figure sit over and under the segment they belong to. The title row
+// only exists with renderTitle.
 const rowsOf = (container: HTMLElement) => {
   const cells = (selector: string) =>
     [...(container.querySelector(selector)?.children ?? [])].map(
@@ -50,18 +50,22 @@ const rowsOf = (container: HTMLElement) => {
 describe("SegmentedProgress", () => {
   afterEach(cleanup)
 
-  // The default geometry: a chapter carrying 21 of 31 steps owns most of the
-  // bar, so "2 of 4 chapters done" cannot read as halfway when it is a sixth
-  // of the work. A section wanting equal stations opts in; nothing gets it by
-  // accident.
-  it("weights each segment by how much work it holds", () => {
+  // Chapters are stations, so their widths say nothing about the work behind
+  // them: the fixture's totals run 1, 4, 5 and 21 and every segment is the
+  // same width. The one geometry there is, for both guided sections.
+  it("gives every segment the same width whatever it holds", () => {
     const { container } = renderBar()
     const segments = segmentsOf(container)
     expect(segments).toHaveLength(4)
-    expect(segments[0]?.style.flexGrow).toBe("1")
-    expect(segments[3]?.style.flexGrow).toBe("21")
+    expect(segments.map((segment) => segment.style.flexGrow)).toEqual([
+      "1",
+      "1",
+      "1",
+      "1",
+    ])
     // A finished chapter's fill runs the whole segment; an untouched one
-    // shows none.
+    // shows none. This is where a chapter's own progress reads, and it is per
+    // chapter, so an equal width costs nothing.
     expect(
       (segments[1]?.firstElementChild as HTMLElement | null)?.style.width
     ).toBe("100%")
@@ -70,26 +74,12 @@ describe("SegmentedProgress", () => {
     ).toBe("0%")
   })
 
-  it("carries the weighted flex through all three rows", () => {
+  // The name and the count ride the bar's own flex, so they stay over and
+  // under the segment they name.
+  it("carries the same flex through all three rows", () => {
     const { container } = renderBar({
       activeSegment: "praxis",
       renderTitle: (segment) => segment.key,
-    })
-    const weighted = ["1", "4", "5", "21"]
-    expect(rowsOf(container)).toEqual({
-      title: weighted,
-      bar: weighted,
-      count: weighted,
-    })
-  })
-
-  // Equal stations, opted into: the name and the count still ride the same
-  // flex as the bar, so they stay over and under the segment they name.
-  it("gives every segment the same width in all three rows when asked", () => {
-    const { container } = renderBar({
-      activeSegment: "praxis",
-      renderTitle: (segment) => segment.key,
-      equalSegments: true,
     })
     const equal = ["1", "1", "1", "1"]
     expect(rowsOf(container)).toEqual({
@@ -97,41 +87,28 @@ describe("SegmentedProgress", () => {
       bar: equal,
       count: equal,
     })
-    // Fill is per-segment work either way: the geometry changes how wide a
-    // chapter is, never how far along it reads.
-    const segments = segmentsOf(container)
-    expect(
-      (segments[1]?.firstElementChild as HTMLElement | null)?.style.width
-    ).toBe("100%")
-    expect(
-      (segments[3]?.firstElementChild as HTMLElement | null)?.style.width
-    ).toBe("0%")
   })
 
-  // Equal geometry must not launder a skewed journey into a flattering
-  // number: the announced percentage is the work done over the whole journey,
-  // so both modes announce the same thing about the same run.
-  it("announces the same work-weighted percentage in both geometries", () => {
-    const skewed = [
-      { key: "criteria", done: 21, total: 21 },
-      { key: "weighting", done: 1, total: 1 },
-      { key: "method", done: 0, total: 6 },
-      { key: "approval", done: 0, total: 1 },
-    ]
-    const valueNow = (equalSegments: boolean) => {
-      const { container } = renderBar({
-        done: 22,
-        total: 29,
-        segments: skewed,
-        equalSegments,
-      })
-      return container
+  // Equal widths must not launder a skewed journey into a flattering number:
+  // the honesty moved to the announced percentage, which is work done over the
+  // whole journey and not chapters closed.
+  it("announces the work-weighted percentage, not the chapter count", () => {
+    const { container } = renderBar({
+      done: 22,
+      total: 29,
+      segments: [
+        { key: "criteria", done: 21, total: 21 },
+        { key: "weighting", done: 1, total: 1 },
+        { key: "method", done: 0, total: 6 },
+        { key: "approval", done: 0, total: 1 },
+      ],
+    })
+    // Two of four chapters done, but 22 of 29 steps: 76%, not 50%.
+    expect(
+      container
         .querySelector('[role="progressbar"]')
         ?.getAttribute("aria-valuenow")
-    }
-    // Three of four chapters done, but 22 of 29 steps: 76%, not 75%.
-    expect(valueNow(false)).toBe("76")
-    expect(valueNow(true)).toBe("76")
+    ).toBe("76")
   })
 
   it("announces the journey's own percentage under its own name", () => {
