@@ -176,25 +176,44 @@ describe("the chapter framing row", () => {
   })
 
   // The whole point of the row: every chapter's grid begins directly under it,
-  // so switching tabs holds the columns still. Anything between the two (the
-  // budget block, the documentation counts) moved one chapter's grid down and
-  // made the switch a jump; the counts live in the columns now and the budget
-  // floats.
+  // at the same height, so switching chapters holds the columns still.
+  // Anything between the two (the budget block, the documentation counts, the
+  // framing sentence the row used to carry) moved one chapter's grid down and
+  // made the switch a jump.
   it("stands nothing between itself and the chapter's grid", () => {
     const chapters = [
-      { chapter: "criteria", node: <CriteriaChapter orgId="org-1" /> },
-      { chapter: "weighting", node: <WeightingChapter orgId="org-1" /> },
-      { chapter: "method", node: <MethodPanel orgId="org-1" /> },
-    ] as const
-    for (const { chapter, node } of chapters) {
+      <CriteriaChapter key="criteria" orgId="org-1" />,
+      <WeightingChapter key="weighting" orgId="org-1" />,
+      <MethodPanel key="method" orgId="org-1" />,
+    ]
+    for (const node of chapters) {
       const { container } = wrap(node)
       const root = container.firstElementChild as HTMLElement
-      // First the row, with this chapter's own sentence in it.
-      expect(root.children[0]?.textContent).toContain(
-        messages.dashboard.model.chapters.framing[chapter]
-      )
+      // First the row, reserving the action slot's height and nothing else.
+      expect(root.children[0]?.className).toContain("min-h-9")
       // Then the grid. Nothing in between.
       expect(root.children[1]?.className).toContain("sm:grid-cols-2")
+      cleanup()
+    }
+  })
+
+  // The chapter surfaces speak for themselves: the spine names the chapter and
+  // marks it current, the columns carry their own titles and counts. A
+  // permanent sentence restating that is prose the reader passes through on
+  // every visit to reach the work.
+  it("carries no framing sentence of its own", () => {
+    for (const node of [
+      <CriteriaChapter key="criteria" orgId="org-1" />,
+      <WeightingChapter key="weighting" orgId="org-1" />,
+      <MethodPanel key="method" orgId="org-1" />,
+    ]) {
+      const { container } = wrap(node)
+      const row = container.firstElementChild?.firstElementChild as HTMLElement
+      expect(row.className).toContain("min-h-9")
+      // Only the action slot, or nothing at all: no text of the row's own.
+      expect(row.textContent).toBe(
+        row.querySelector('[data-slot="chapter-action"]')?.textContent ?? ""
+      )
       cleanup()
     }
   })
@@ -202,7 +221,7 @@ describe("the chapter framing row", () => {
   // The row keeps the action slot's height even where a chapter offers none,
   // so Kriterier's grid does not sit a control higher than the other two.
   it("keeps its height on a chapter with no action", () => {
-    const { container } = wrap(<ChapterFraming chapter="criteria" />)
+    const { container } = wrap(<ChapterFraming />)
     const row = container.firstElementChild as HTMLElement
     expect(row.className.split(/\s+/)).toContain("min-h-9")
     expect(row.querySelector('[data-slot="chapter-action"]')).toBeNull()

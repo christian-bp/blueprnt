@@ -38,7 +38,6 @@ import {
   WorkingConditionsColumnSkeleton,
   WorkingConditionsEmptyColumn,
 } from "@/components/model/working-conditions-empty-column"
-import { HelpMorphButton } from "@/components/help-morph-button"
 import { MorphPopover } from "@/components/morph-popover"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import { chapterHref } from "@/lib/model-chapters"
@@ -80,7 +79,6 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
   const tAi = useTranslations("dashboard.ai")
-  const tHelp = useTranslations("dashboard.help")
   const locale = useLocale()
   const format = useFormatter()
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
@@ -181,12 +179,6 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
           that frames the chapter, because the block it used to sit on is gone
           and help never floats. */}
       <ChapterFraming
-        chapter="weighting"
-        help={
-          <HelpMorphButton label={tHelp("weightingLabel")}>
-            {tHelp("weightingBody")}
-          </HelpMorphButton>
-        }
         action={
           // The trigger's slot is reserved whether or not the review is on
           // offer, and only its CONTENT hides: mounting it would change the
@@ -529,16 +521,9 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
 // is still loading, and it says nothing until it has something to say.
 function WeightingChapterSkeleton() {
   const tAi = useTranslations("dashboard.ai")
-  const tHelp = useTranslations("dashboard.help")
   return (
     <div className="space-y-4">
       <ChapterFraming
-        chapter="weighting"
-        help={
-          <HelpMorphButton label={tHelp("weightingLabel")}>
-            {tHelp("weightingBody")}
-          </HelpMorphButton>
-        }
         action={
           // Whether the review is on offer needs the model and the review
           // lock, so the slot stays reserved and its content hidden, exactly

@@ -1825,13 +1825,7 @@
         "nav": "Modellens kapitler",
         "heading": "Selskapets blueprnt-modell",
         "progressBarLabel": "Hele modellens framdrift",
-        "countRich": "<done></done> av <total></total>",
-        "framing": {
-          "criteria": "De fire dimensjonene er brede. Kriteriene er det som gjør dem konkrete nok til å sammenligne virkelig arbeid.",
-          "weighting": "Hvor mye hvert kriterium teller, fordelt fra ett fast poengbudsjett.",
-          "method": "Hvorfor hvert kriterium hører hjemme i modellen, og bias-gjennomgangen, dokumentert kriterium for kriterium.",
-          "approval": "Her kontrolleres modellen mot hvert krav og godkjennes deretter, slik at roller kan vurderes."
-        }
+        "countRich": "<done></done> av <total></total>"
       },
       "review": {
         "cta": "Åpne dashbordet"
@@ -2047,16 +2041,12 @@
       "dimensionEffortBody": "Hvor krevende arbeidet er: kompleksitet og uklarhet, analytisk innsats, kommunikasjon, operativ intensitet og fysiske krav.",
       "dimensionResponsibilityBody": "Rollens formelle ansvar og hvor langt beslutningene rekker: scope, autonomi, risiko, personal-, ressurs-, forretnings- og etterlevelsesansvar.",
       "dimensionWorkingConditionsBody": "Objektive og varige forhold i selve arbeidet: eksponering og sikkerhet, beredskap, uregelmessighet, begrensede miljøer. Intet kriterium kreves hvis testen ikke finner noe vesentlig.",
-      "criterionLabel": "Hva er et kriterium?",
-      "criterionBody": "Noe hver rolle vurderes opp mot, som omfang eller kompleksitet. Skalaen fra 1 til 5 beskriver hva hver karakter betyr; vektingen avgjør hvor mye det teller.",
       "anchorRoleLabel": "Hva er en ankerrolle?",
       "anchorRoleBody": "En referanserolle organisasjonen har vurdert og blitt enige om. Utpek noen få, 2 til 5 holder som regel, for å kontrollere andre vurderinger; sammenligningen støtter en beslutning, den erstatter den aldri.",
       "trackLabel": "Hva er en track?",
       "trackBody": "Typen jobb, for eksempel individuell spesialist eller leder. Den settes på rollen og sier ingenting om personens senioritet.",
       "familyLabel": "Hva er en rollefamilie?",
       "familyBody": "Grupperer roller som deler samme slags arbeid, som Teknologi eller Salg. Familier organiserer registeret og filtrene; de påvirker aldri vektingen.",
-      "weightingLabel": "Hvordan fungerer vekting?",
-      "weightingBody": "Hvor mye hvert kriterium påvirker rollevurderingen, og dermed relativ lønn. Hvert får 1 til 5 poeng fra ett fast budsjett, så å heve ett senker de andre; det er ingen dom om kriteriet.",
       "scoreLabel": "Hvordan beregnes vekting og nivå?",
       "scoreBody": "Hvert kriteriums karakter 1 til 5 ganger vektpoengene, normalisert til en vekting 0 til 100. Nivået følger av vektingen, der nivå 1 er høyest; ingen av dem kan settes for hånd.",
       "blindRatingLabel": "Hvordan fungerer vurderingen?",
@@ -2075,8 +2065,6 @@
       "orgCurrencyBody": "Valutaen som brukes overalt der beløp vises. Den følger av landet deres; å endre den regner ikke om eksisterende verdier.",
       "orgLanguageLabel": "Hva er standardspråket?",
       "orgLanguageBody": "Organisasjonens standardspråk, brukt til for eksempel invitasjonse-poster. Hver person kan likevel velge sitt eget visningsspråk.",
-      "methodAppendixLabel": "Metodevedlegg",
-      "methodAppendixBody": "Et eksporterbart dokument med kriteriene, vektene, begrunnelsen og biasgjennomgangen som etterlevelsesgrunnlag.",
       "biasReviewLabel": "Biasvurdering",
       "biasReviewBody": "En kontroll per kriterium av kjønn og biasrisiko med et mottiltak. Den viser at modellen er utformet for å redusere bias.",
       "criterionRationaleLabel": "Kriterievalgsprotokoll",
@@ -2116,7 +2104,7 @@
       "analysisProgressLabel": "Hva telles her?",
       "analysisProgressBody": "Stegene som må dokumenteres før lønnskartleggingen kan fullføres: samarbeidet, gjennomgangen av lønnspraksis, og hver gruppe hvis lønnsforskjell krever en begrunnelse. Ingenting annet telles.",
       "modelProgressLabel": "Hva trenger modellen?",
-      "modelProgressBody": "Beslutningene modellen trenger før den kan godkjennes: kriteriene, vektingen av dem, dokumentasjonen for hvert kriterium og selve godkjenningen.",
+      "modelProgressBody": "Beslutningene modellen trenger før godkjenning: hvilke kriterier roller vurderes mot, hvor mye hvert av dem teller, dokumentasjonen og selve godkjenningen.",
       "payGapScatterMeansBody": "De stiplede linjene er hvert kjønns gjennomsnittslønn i gruppen, så du ser hvem som ligger over og under sitt eget gjennomsnitt.",
       "weightMotivationLabel": "Hva er en vektbegrunnelse?",
       "weightMotivationBody": "Den dokumenterte grunnen til at en dimensjon kan veie så mye som den gjør. Den begrunner vektingen, ikke 0-5-skalaen: si hva ved arbeidet som veier mer, aldri hvem som utfører det."

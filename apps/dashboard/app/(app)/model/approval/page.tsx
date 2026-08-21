@@ -20,7 +20,7 @@ export default function ModelApprovalChapterPage() {
   usePageTitle(tChapters("approval"))
   return (
     <div className="space-y-4">
-      <ChapterFraming chapter="approval" />
+      <ChapterFraming />
       {/* A reading cap of this chapter's own: the checklist is twelve single
           lines of text, each with a remedy line under it, and at full viewport
           width they run as long as the page. A chapter that is a reading

@@ -27,7 +27,6 @@ import {
   WorkingConditionsColumnSkeleton,
   WorkingConditionsEmptyColumn,
 } from "@/components/model/working-conditions-empty-column"
-import { HelpMorphButton } from "@/components/help-morph-button"
 import { chapterHref } from "@/lib/model-chapters"
 
 // How many placeholder cards a dimension's column stands up while the model
@@ -56,7 +55,6 @@ const MethodAppendixDownload = dynamic(
 // of one allocation.
 export function MethodPanel({ orgId }: { orgId: string }) {
   const t = useTranslations("dashboard.model.method")
-  const tHelp = useTranslations("dashboard.help")
   const locale = useLocale()
   const data = useQuery(api.evaluationModel.method.getMethodModel, {
     orgId,
@@ -124,15 +122,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
           still. The progress that used to stand in a block of its own here is
           in the columns now, one count per dimension, where the criteria it
           counts actually are. */}
-      <ChapterFraming
-        chapter="method"
-        help={
-          <HelpMorphButton label={tHelp("methodAppendixLabel")}>
-            {tHelp("methodAppendixBody")}
-          </HelpMorphButton>
-        }
-        action={<MethodAppendixDownload orgId={orgId} />}
-      />
+      <ChapterFraming action={<MethodAppendixDownload orgId={orgId} />} />
       {data.criteria.length === 0 ? (
         // Never a bare page: the chapter has nothing to document until the
         // first one has been chosen, and it says so with the way back. The
@@ -296,7 +286,6 @@ function DimensionSection({
 // count, and everything on a card, is exactly what is being waited for.
 function MethodPanelSkeleton({ orgId }: { orgId: string }) {
   const locale = useLocale()
-  const tHelp = useTranslations("dashboard.help")
   const content = criteriaLibraryContent(locale)
   return (
     <div className="space-y-4">
@@ -304,15 +293,7 @@ function MethodPanelSkeleton({ orgId }: { orgId: string }) {
           chapter chrome rather than data, so the row renders in full and the
           columns below it never move when the model lands. The export button
           loads its own data and disables itself until ready. */}
-      <ChapterFraming
-        chapter="method"
-        help={
-          <HelpMorphButton label={tHelp("methodAppendixLabel")}>
-            {tHelp("methodAppendixBody")}
-          </HelpMorphButton>
-        }
-        action={<MethodAppendixDownload orgId={orgId} />}
-      />
+      <ChapterFraming action={<MethodAppendixDownload orgId={orgId} />} />
       <div className={CHAPTER_GRID_CLASS}>
         {DIMENSION_KEYS.map((key) => (
           <DimensionSection

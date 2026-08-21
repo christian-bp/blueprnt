@@ -301,9 +301,7 @@ describe("MethodPanel", () => {
   it("stands no block between the framing row and the grid", () => {
     const { container } = renderPanel()
     const root = container.firstElementChild as HTMLElement
-    expect(root.children[0]?.textContent).toContain(
-      messages.dashboard.model.chapters.framing.method
-    )
+    expect(root.children[0]?.className).toContain("min-h-9")
     expect(root.children[1]?.className).toContain("sm:grid-cols-2")
     expect(screen.queryByRole("status")).toBeNull()
   })
@@ -344,14 +342,16 @@ describe("MethodPanel", () => {
       expect(container.querySelector("section")).toBeNull()
     })
 
-    // The framing row stays: it is the chapter's own sentence, and it is where
-    // the appendix export lives. No column chips, because there are no
-    // columns.
-    it("keeps the framing row above it", () => {
-      renderPanel()
+    // The action row stays: it is where the appendix export lives, and its
+    // reserved height keeps this chapter's content at the same place as the
+    // others'. No column chips, because there are no columns.
+    it("keeps the action row above it", () => {
+      const { container } = renderPanel()
+      const root = container.firstElementChild as HTMLElement
+      expect(root.children[0]?.className).toContain("min-h-9")
       expect(
-        screen.getByText(messages.dashboard.model.chapters.framing.method)
-      ).toBeDefined()
+        root.children[0]?.querySelector('[data-slot="chapter-action"]')
+      ).not.toBeNull()
       expect(screen.queryByRole("heading")).toBeNull()
     })
   })

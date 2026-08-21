@@ -1825,13 +1825,7 @@
         "nav": "Model chapters",
         "heading": "Your company's blueprnt model",
         "progressBarLabel": "Overall model progress",
-        "countRich": "<done></done> of <total></total>",
-        "framing": {
-          "criteria": "The four dimensions are broad. Criteria are what make them concrete enough to compare real jobs.",
-          "weighting": "How much each criterion counts, allocated from one fixed point budget.",
-          "method": "Why each criterion belongs in the model, and its bias review, documented criterion by criterion.",
-          "approval": "The model is checked against every requirement here, then approved so roles can be evaluated."
-        }
+        "countRich": "<done></done> of <total></total>"
       },
       "review": {
         "cta": "Open the dashboard"
@@ -2047,16 +2041,12 @@
       "dimensionEffortBody": "How demanding the work is: complexity and ambiguity, analytical effort, communication effort, operational intensity and physical demands.",
       "dimensionResponsibilityBody": "The role's formal responsibility and how far its decisions reach: scope, autonomy, risk, people, resources, business and compliance.",
       "dimensionWorkingConditionsBody": "Objective, lasting conditions in the work itself: exposure and safety, on-call duty, irregularity, restricted environments. No criterion is required if the materiality test finds none.",
-      "criterionLabel": "What is a criterion?",
-      "criterionBody": "Something every role is evaluated against, like scope or complexity. Its 1 to 5 scale describes what each rating means; its weighting decides how much it counts.",
       "anchorRoleLabel": "What is an anchor role?",
       "anchorRoleBody": "A reference role your organization has assessed and agreed on. Designate a few, 2 to 5 is usually enough, to sanity-check other assessments; the comparison supports a decision, never replaces it.",
       "trackLabel": "What is a track?",
       "trackBody": "The kind of job, for example individual contributor or manager. It is set on the role and says nothing about the person's seniority.",
       "familyLabel": "What is a role family?",
       "familyBody": "Groups roles that share the same kind of work, like Engineering or Sales. Families organize the register and the filters; they never affect the weighting.",
-      "weightingLabel": "How does weighting work?",
-      "weightingBody": "How much each criterion influences role valuation, and so relative pay. Each gets 1 to 5 points from one fixed budget, so raising one lowers the rest; it is not a verdict on the criterion.",
       "scoreLabel": "How are the weighting and level computed?",
       "scoreBody": "Each criterion's 1 to 5 rating times its weight points, normalized to a 0 to 100 weighting. The level follows from that weighting, where level 1 is highest; neither can be set by hand.",
       "blindRatingLabel": "How does rating work?",
@@ -2075,8 +2065,6 @@
       "orgCurrencyBody": "The currency used wherever amounts are shown. It defaults from your country; changing it does not convert existing values.",
       "orgLanguageLabel": "What is the default language?",
       "orgLanguageBody": "The organization's default language, used for things like invitation emails. Each person can still pick their own display language.",
-      "methodAppendixLabel": "Method appendix",
-      "methodAppendixBody": "An exportable document with your criteria, weights, rationale, and bias review as compliance evidence.",
       "biasReviewLabel": "Bias review",
       "biasReviewBody": "A per-criterion check of gender and bias risk with a mitigating action. It shows the model is designed to reduce bias.",
       "criterionRationaleLabel": "Criterion rationale",
@@ -2116,7 +2104,7 @@
       "analysisProgressLabel": "What is counted here?",
       "analysisProgressBody": "The steps that must be documented before the pay mapping can be completed: collaboration, the pay-practice review, and every group whose pay difference needs a reason. Nothing else is counted.",
       "modelProgressLabel": "What does the model need?",
-      "modelProgressBody": "The decisions the model needs before it can be approved: the criteria, their weighting, each criterion's documentation, and the approval itself.",
+      "modelProgressBody": "The decisions the model needs before approval: which criteria roles are evaluated against, how much each one counts, its documentation, and the approval itself.",
       "payGapScatterMeansBody": "The dashed lines are each gender's average pay in the group, so you can see who sits above and below their own average.",
       "weightMotivationLabel": "What is a weight motivation?",
       "weightMotivationBody": "The recorded reason a dimension may weigh as much as it does. It motivates the weighting, not the 0-5 scale: say what about the work weighs more, never who does it."

@@ -227,15 +227,7 @@ export function CriteriaChapter({ orgId }: { orgId: string }) {
           still. This chapter offers no action of its own (adding a criterion
           is a column's work, not the chapter's), and the row keeps the slot's
           height anyway so the grid does not sit higher here than next door. */}
-      <ChapterFraming
-        chapter="criteria"
-        help={
-          // The chapter that introduces the term explains it, once.
-          <HelpMorphButton label={tHelp("criterionLabel")}>
-            {tHelp("criterionBody")}
-          </HelpMorphButton>
-        }
-      />
+      <ChapterFraming />
       <div className={CHAPTER_GRID_CLASS}>
         {model.dimensions.map((dimension) => {
           const placed = model.criteria.filter(
@@ -384,14 +376,7 @@ function CriteriaChapterSkeleton() {
     <div className="space-y-4">
       {/* Chapter chrome, not data: it renders in full while the model loads,
           so the columns below never move when it lands. */}
-      <ChapterFraming
-        chapter="criteria"
-        help={
-          <HelpMorphButton label={tHelp("criterionLabel")}>
-            {tHelp("criterionBody")}
-          </HelpMorphButton>
-        }
-      />
+      <ChapterFraming />
       <div className={CHAPTER_GRID_CLASS}>
         {DIMENSION_KEYS.map((key) => (
           <ColumnSkeleton

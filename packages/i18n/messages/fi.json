@@ -1825,13 +1825,7 @@
         "nav": "Mallin luvut",
         "heading": "Yrityksenne blueprnt-malli",
         "progressBarLabel": "Koko mallin edistyminen",
-        "countRich": "<done></done> / <total></total>",
-        "framing": {
-          "criteria": "Neljä ulottuvuutta on laajoja. Kriteerit tekevät niistä riittävän konkreettisia todellisen työn vertailuun.",
-          "weighting": "Kuinka paljon kukin kriteeri painaa, jaettuna yhdestä kiinteästä pistebudjetista.",
-          "method": "Miksi kukin kriteeri kuuluu malliin, ja sen vinoumatarkastus, dokumentoituna kriteeri kerrallaan.",
-          "approval": "Täällä malli tarkistetaan jokaista vaatimusta vasten ja hyväksytään, jotta roolit voidaan arvioida."
-        }
+        "countRich": "<done></done> / <total></total>"
       },
       "review": {
         "cta": "Avaa hallintapaneeli"
@@ -2047,16 +2041,12 @@
       "dimensionEffortBody": "Kuinka vaativaa työ on: monimutkaisuus ja epäselvyys, analyyttinen ponnistus, viestintä, operatiivinen intensiteetti ja fyysiset vaatimukset.",
       "dimensionResponsibilityBody": "Roolin muodollinen vastuu ja se, kuinka pitkälle päätökset ulottuvat: laajuus, itsenäisyys, riski sekä henkilöstö-, resurssi-, liiketoiminta- ja vaatimustenmukaisuusvastuu.",
       "dimensionWorkingConditionsBody": "Objektiiviset ja pysyvät olosuhteet itse työssä: altistuminen ja turvallisuus, päivystys, epäsäännöllisyys, rajoitetut ympäristöt. Kriteeriä ei tarvita, jos testi ei löydä olennaista.",
-      "criterionLabel": "Mikä kriteeri on?",
-      "criterionBody": "Asia, jota vasten jokainen rooli arvioidaan, kuten laajuus tai monimutkaisuus. Sen asteikko 1-5 kertoo, mitä kukin arvio tarkoittaa; painotus ratkaisee, kuinka paljon se painaa.",
       "anchorRoleLabel": "Mikä on ankkurirooli?",
       "anchorRoleBody": "Vertailurooli, jonka organisaationne on arvioinut ja hyväksynyt. Nimeä muutama, 2-5 riittää yleensä, muiden arviointien tarkistamiseen; vertailu tukee päätöstä, ei koskaan korvaa sitä.",
       "trackLabel": "Mikä on track?",
       "trackBody": "Työn tyyppi, esimerkiksi yksilöasiantuntija tai esihenkilö. Se asetetaan roolille eikä kerro mitään henkilön senioriteetista.",
       "familyLabel": "Mikä on rooliperhe?",
       "familyBody": "Ryhmittelee roolit, jotka jakavat samanlaisen työn, kuten Teknologia tai Myynti. Perheet järjestävät luettelon ja suodattimet; ne eivät koskaan vaikuta painotukseen.",
-      "weightingLabel": "Miten painotus toimii?",
-      "weightingBody": "Kuinka paljon kukin kriteeri vaikuttaa roolin arvoon ja siten suhteelliseen palkkaan. Kukin saa 1-5 pistettä yhdestä kiinteästä budjetista, joten yhden nosto laskee muita; se ei ole arvio kriteeristä.",
       "scoreLabel": "Miten painotus ja vaativuustaso lasketaan?",
       "scoreBody": "Kunkin kriteerin arvio 1-5 kerrottuna sen painopisteillä, normalisoituna painotukseksi 0-100. Taso seuraa painotuksesta, jossa taso 1 on korkein; kumpaakaan ei voi asettaa käsin.",
       "blindRatingLabel": "Miten arviointi toimii?",
@@ -2075,8 +2065,6 @@
       "orgCurrencyBody": "Valuutta, jota käytetään kaikkialla missä summia näytetään. Se tulee maastanne; sen vaihtaminen ei muunna olemassa olevia arvoja.",
       "orgLanguageLabel": "Mikä on oletuskieli?",
       "orgLanguageBody": "Organisaation oletuskieli, jota käytetään esimerkiksi kutsusähköposteissa. Jokainen voi silti valita oman näyttökielensä.",
-      "methodAppendixLabel": "Menetelmäliite",
-      "methodAppendixBody": "Vietävä dokumentti, jossa ovat kriteerit, painot, perustelut ja vinoumatarkistus vaatimustenmukaisuuden todisteena.",
       "biasReviewLabel": "Vinoumien arviointi",
       "biasReviewBody": "Kriteerikohtainen sukupuoli- ja vinoumariskin tarkistus korjaavine toimineen. Se osoittaa, että malli on suunniteltu vähentämään vinoumaa.",
       "criterionRationaleLabel": "Kriteerin perustelu",
@@ -2116,7 +2104,7 @@
       "analysisProgressLabel": "Mitä tässä lasketaan?",
       "analysisProgressBody": "Vaiheet, jotka on dokumentoitava ennen palkkakartoituksen valmistumista: yhteistoiminta, palkkakäytäntöjen arviointi ja jokainen ryhmä, jonka palkkaero vaatii perustelun. Muuta ei lasketa.",
       "modelProgressLabel": "Mitä malli tarvitsee?",
-      "modelProgressBody": "Päätökset, jotka malli tarvitsee ennen hyväksymistä: kriteerit, niiden painotus, kunkin kriteerin dokumentaatio ja itse hyväksyntä.",
+      "modelProgressBody": "Päätökset, jotka malli tarvitsee ennen hyväksyntää: mitä kriteerejä vasten rooleja arvioidaan, kuinka paljon kukin painaa, dokumentaatio ja itse hyväksyntä.",
       "payGapScatterMeansBody": "Katkoviivat ovat kummankin sukupuolen keskipalkka ryhmässä, joten näet ketkä ovat oman keskiarvonsa ylä- ja alapuolella.",
       "weightMotivationLabel": "Mikä on painotuksen perustelu?",
       "weightMotivationBody": "Kirjattu syy sille, miksi ulottuvuus saa painaa näin paljon. Se perustelee painotuksen, ei 0-5-asteikkoa: kerro, mikä työssä painaa enemmän, älä koskaan kuka sen tekee."
