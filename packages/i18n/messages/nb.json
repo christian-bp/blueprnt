@@ -2648,6 +2648,9 @@
         "body": "Lenken kan være utdatert eller feilskrevet.",
         "backToIndex": "Tilbake til dokumentasjonen"
       }
+    },
+    "progress": {
+      "done": "Ferdig"
     }
   },
   "errors": {

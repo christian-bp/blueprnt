@@ -22,6 +22,7 @@ import { AnalysisSpine } from "@/components/pay-mapping/analysis-spine"
 
 const m = messages.dashboard.payMapping.analysis
 const mReview = messages.dashboard.payMapping.review
+const mProgress = messages.dashboard.progress
 
 function renderSpine(
   overrides: Partial<{
@@ -161,6 +162,68 @@ describe("AnalysisSpine", () => {
       ...(container.querySelector('[role="progressbar"]')?.children ?? []),
     ] as HTMLElement[]
     expect(segments.every((s) => s.dataset.active === "true")).toBe(true)
+  })
+
+  // The same shared slot the model spine uses: a finished mapping states the
+  // fact rather than asking the reader to compare two equal numbers.
+  it("says the word instead of counting itself once nothing is left", () => {
+    const { container } = renderSpine({
+      done: 31,
+      total: 31,
+      chapters: [
+        { key: "start", done: 1, total: 1 },
+        { key: "praxis", done: 4, total: 4 },
+        { key: "equalWork", done: 5, total: 5 },
+        { key: "equivalentWork", done: 21, total: 21 },
+      ],
+    })
+    const word = screen.getByText(mProgress.done)
+    expect(word.className).toContain("text-success")
+    expect(container.textContent).not.toContain("31 of 31")
+    expect(container.querySelector(".tabular-nums")).toBeNull()
+    // The announced percentage is untouched by the visual word.
+    expect(
+      container
+        .querySelector('[role="progressbar"]')
+        ?.getAttribute("aria-valuenow")
+    ).toBe("100")
+  })
+
+  // A mapping moves backwards too: a klarmarkering is undone and the figures
+  // have to come back.
+  it("counts itself again when a finished mapping reopens", async () => {
+    const { container, rerender } = renderSpine({
+      done: 31,
+      total: 31,
+      chapters: [
+        { key: "start", done: 1, total: 1 },
+        { key: "praxis", done: 4, total: 4 },
+        { key: "equalWork", done: 5, total: 5 },
+        { key: "equivalentWork", done: 21, total: 21 },
+      ],
+    })
+    expect(screen.getByText(mProgress.done)).toBeDefined()
+
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <AnalysisSpine
+          done={30}
+          total={31}
+          chapters={[
+            { key: "start", done: 1, total: 1 },
+            { key: "praxis", done: 4, total: 4 },
+            { key: "equalWork", done: 5, total: 5 },
+            { key: "equivalentWork", done: 20, total: 21 },
+          ]}
+        />
+      </NextIntlClientProvider>
+    )
+    await waitFor(() => {
+      expect(container.querySelector(".tabular-nums")?.textContent).toBe(
+        "30 of 31"
+      )
+      expect(screen.queryByText(mProgress.done)).toBeNull()
+    })
   })
 
   it("reads zero rather than dividing by zero when nothing is required", () => {

@@ -19,6 +19,7 @@ vi.mock("@number-flow/react", () => ({
 import { ModelSpine } from "@/components/model/model-spine"
 
 const m = messages.dashboard.model.chapters
+const mProgress = messages.dashboard.progress
 
 // The bar's own segments, in chapter order.
 const segmentsOf = (container: HTMLElement) =>
@@ -148,6 +149,85 @@ describe("ModelSpine", () => {
         name: messages.dashboard.help.modelProgressLabel,
       })
     ).toBeDefined()
+  })
+
+  // "17 of 17" is a sum that has stopped being a reading: it asks the reader
+  // to compare two numbers to learn a fact the section can simply state.
+  it("says the word instead of counting itself once nothing is left", () => {
+    const { container } = renderSpine({
+      done: 17,
+      total: 17,
+      chapters: [
+        { key: "criteria", done: 6, total: 6 },
+        { key: "weighting", done: 3, total: 3 },
+        { key: "method", done: 7, total: 7 },
+        { key: "approval", done: 1, total: 1 },
+      ],
+    })
+    expect(screen.getByText(mProgress.done)).toBeDefined()
+    // The pair is gone, not merely joined by the word.
+    expect(container.textContent).not.toContain("17 of 17")
+    expect(container.querySelector(".tabular-nums")).toBeNull()
+    // The success ink the Metod cards' signed-off status already uses; the
+    // word alone, because at this size a mark beside it reads as decoration.
+    const word = screen.getByText(mProgress.done)
+    expect(word.className).toContain("text-success")
+    expect(word.querySelector("svg")).toBeNull()
+    // The announced percentage is untouched by the visual word.
+    expect(
+      container
+        .querySelector('[role="progressbar"]')
+        ?.getAttribute("aria-valuenow")
+    ).toBe("100")
+  })
+
+  // A model can move backwards: an approval reopens, a criterion is removed.
+  // The counter has to come back with it, numbers and all.
+  it("counts itself again when a finished model reopens", async () => {
+    const finished = [
+      { key: "criteria" as const, done: 6, total: 6 },
+      { key: "weighting" as const, done: 3, total: 3 },
+      { key: "method" as const, done: 7, total: 7 },
+      { key: "approval" as const, done: 1, total: 1 },
+    ]
+    const { container, rerender } = renderSpine({
+      done: 17,
+      total: 17,
+      chapters: finished,
+    })
+    expect(screen.getByText(mProgress.done)).toBeDefined()
+
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <ModelSpine
+          done={16}
+          total={17}
+          chapters={[
+            ...finished.slice(0, 3),
+            {
+              key: "approval" as const,
+              done: 0,
+              total: 1,
+            },
+          ]}
+        />
+      </NextIntlClientProvider>
+    )
+    await waitFor(() => {
+      expect(container.querySelector(".tabular-nums")?.textContent).toBe(
+        "16 of 17"
+      )
+      expect(screen.queryByText(mProgress.done)).toBeNull()
+    })
+  })
+
+  // An empty journey is not a finished one: a section whose data has not
+  // arrived reads 0 of 0, and congratulating that would be the first thing it
+  // ever said.
+  it("does not congratulate a journey with no work in it", () => {
+    const { container } = renderSpine({ done: 0, total: 0, chapters: [] })
+    expect(screen.queryByText(mProgress.done)).toBeNull()
+    expect(container.querySelector(".tabular-nums")?.textContent).toBe("0 of 0")
   })
 
   // The model spine is the one guided section that opts SegmentedProgress

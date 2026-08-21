@@ -2648,6 +2648,9 @@
         "body": "Länken kan vara inaktuell eller felstavad.",
         "backToIndex": "Tillbaka till dokumentationen"
       }
+    },
+    "progress": {
+      "done": "Klart"
     }
   },
   "errors": {

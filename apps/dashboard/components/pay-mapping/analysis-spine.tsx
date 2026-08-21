@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl"
 import type { RefObject } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SegmentedProgress } from "@/components/segmented-progress"
-import { SpineHeader } from "@/components/spine-header"
+import { SpineCounter, SpineHeader } from "@/components/spine-header"
 import type { AnalysisChapter } from "./analysis-chapters"
 
 // Rung 0 of the analysis ladder: where the whole mapping stands, on the
@@ -42,6 +42,7 @@ export function AnalysisSpine({
   const tHelp = useTranslations("dashboard.help")
   const tJourney = useTranslations("dashboard.payMapping.journey")
   const tReview = useTranslations("dashboard.payMapping.review")
+  const tProgress = useTranslations("dashboard.progress")
   // The chapters' own names, for the hover alone: the tab row under the title
   // is what names them on screen. The SHORT names, the same ones that row
   // uses, so the two can never call the same chapter two different things.
@@ -82,13 +83,20 @@ export function AnalysisSpine({
               reader's only copy of the pair, because nothing on the surface
               showed it; now it is on screen for everyone. Both numbers move
               while the reader works, so the message is tag-based and each one
-              carries NumberFlow rather than swapping in place. */}
-          <span className="whitespace-nowrap text-muted-foreground text-sm tabular-nums">
-            {tJourney.rich("countRich", {
-              done: () => <NumberFlow value={done} />,
-              total: () => <NumberFlow value={total} />,
-            })}
-          </span>
+              carries NumberFlow rather than swapping in place. Once there is
+              nothing left to count, the shared slot says so instead
+              (SpineCounter). */}
+          <SpineCounter
+            doneLabel={tProgress("done")}
+            done={done}
+            renderCount={() =>
+              tJourney.rich("countRich", {
+                done: () => <NumberFlow value={done} />,
+                total: () => <NumberFlow value={total} />,
+              })
+            }
+            total={total}
+          />
         </>
       }
     />
