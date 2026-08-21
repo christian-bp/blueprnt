@@ -2,7 +2,10 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { AssistantComposer } from "@/components/assistant/assistant-composer"
+import {
+  AssistantComposer,
+  AssistantSuggestionChip,
+} from "@/components/assistant/assistant-composer"
 
 afterEach(cleanup)
 
@@ -120,5 +123,45 @@ describe("AssistantComposer", () => {
     const disclaimer = screen.getByText(messages.dashboard.assistant.disclaimer)
     expect(disclaimer.className).toContain("min-h-5")
     expect(disclaimer.className).not.toMatch(/(?<!min-)h-5\b/)
+  })
+})
+
+describe("AssistantSuggestionChip", () => {
+  afterEach(cleanup)
+
+  it("leads with an icon before the label, and calls onSelect when clicked", () => {
+    const onSelect = vi.fn()
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <AssistantSuggestionChip label="Ask something" onSelect={onSelect} />
+      </NextIntlClientProvider>
+    )
+    const button = screen.getByRole("button", { name: "Ask something" })
+    // The icon carries no accessible text of its own (aria-hidden): the
+    // button's accessible name stays exactly the label, with the glyph
+    // rendered as a leading, decorative sibling.
+    const icon = button.querySelector("svg")
+    expect(icon).not.toBeNull()
+    expect(icon?.getAttribute("aria-hidden")).toBe("true")
+    expect(button.textContent).toBe("Ask something")
+
+    fireEvent.click(button)
+    expect(onSelect).toHaveBeenCalledTimes(1)
+  })
+
+  it("disables the chip when told to", () => {
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <AssistantSuggestionChip
+          label="Ask something"
+          disabled
+          onSelect={vi.fn()}
+        />
+      </NextIntlClientProvider>
+    )
+    const button = screen.getByRole("button", {
+      name: "Ask something",
+    }) as HTMLButtonElement
+    expect(button.disabled).toBe(true)
   })
 })

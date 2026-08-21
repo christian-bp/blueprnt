@@ -1,6 +1,10 @@
 "use client"
 
-import { ArrowUp02Icon, StopIcon } from "@hugeicons/core-free-icons"
+import {
+  ArrowUp02Icon,
+  CornerDownRightIcon,
+  StopIcon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -57,7 +61,11 @@ export const ASSISTANT_TEXTAREA_COMPACT_CLASS = "min-h-0 p-3"
 // with muted text instead of the outline variant, whose border and weight
 // read as a genuine secondary action and competed with the page's real
 // buttons. rounded-full is the same call-site chat idiom the send control
-// already follows.
+// already follows. The leading corner-down-right glyph marks the label as
+// something that FEEDS INTO the field above rather than a standalone action,
+// the same "this flows into the input" cue a reply/enter arrow carries
+// elsewhere; aria-hidden since the label alone is already the accessible
+// name.
 export function AssistantSuggestionChip({
   label,
   disabled,
@@ -76,6 +84,11 @@ export function AssistantSuggestionChip({
       onClick={onSelect}
       className="rounded-full font-normal text-muted-foreground hover:text-foreground"
     >
+      <HugeiconsIcon
+        icon={CornerDownRightIcon}
+        strokeWidth={2}
+        aria-hidden="true"
+      />
       {label}
     </Button>
   )
