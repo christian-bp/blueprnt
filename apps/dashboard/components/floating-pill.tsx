@@ -111,6 +111,15 @@ export function FloatingPill({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12, transition: { duration: 0.12 } }}
             transition={SPRING}
+            // role="status" rather than the component default of an alert:
+            // these readings change under the reader's OWN actions (a weight
+            // click changes the budget, choosing a criterion changes what
+            // remains), and an assertive live region would interrupt them with
+            // their own edit. Polite is right for a readout the reader is
+            // driving themselves, and it is what carries the state changes
+            // (points left, over budget, ready to save) to a screen reader now
+            // that the chapter's status block is gone.
+            role="status"
             data-slot="floating-pill"
             data-tone={tone}
             className={cn(

@@ -624,6 +624,35 @@ describe("MethodPanel", () => {
       expect(screen.queryByRole("button", { name: m.openCta })).toBeNull()
     })
 
+    // The chip's placeholder holds the Badge's own box, so the heading row
+    // does not resize when the count lands. Pinned by comparing the two
+    // rendered boxes rather than by matching the Badge's classes from
+    // memory, the same way the card's placeholder is pinned to the Item.
+    it("stands the count chip's own box while the count loads", () => {
+      const { container } = renderPanel()
+      // Scoped to a column's own heading ROW, not to the first pill-shaped
+      // bar on the page: the card placeholders below carry a status pill of
+      // their own, and a loose query would compare the wrong one.
+      const headingRow = container.querySelector(
+        '[data-slot="dimension-frame"]'
+      )?.firstElementChild as HTMLElement
+      const chip = headingRow.querySelector(
+        '[data-slot="skeleton"]'
+      ) as HTMLElement
+      expect(chip).not.toBeNull()
+      cleanup()
+
+      loading = false
+      renderPanel()
+      const badge = chipIn(library.dimensions.competence.name) as HTMLElement
+      const box = (node: HTMLElement) =>
+        node.className
+          .split(/\s+/)
+          .filter((token) => /^(h-\d+|rounded-\w+|shrink-0)$/.test(token))
+          .sort()
+      expect(box(chip)).toEqual(box(badge))
+    })
+
     // The placeholder's BOX is the loaded card's box: the same design-system
     // Item, in the same variant and size, so the two states cannot measure
     // differently. A placeholder that copied those classes by hand would drift

@@ -27,6 +27,20 @@ describe("FloatingPill", () => {
     expect(pill(container)?.className).toContain("pointer-events-auto")
   })
 
+  // A polite live region, so the readings it carries (points left, over
+  // budget, ready to save, what remains to choose) reach a screen reader as
+  // they change. Polite and not assertive: the reader is driving the changes
+  // themselves, and an assertive region interrupts them with their own edit.
+  it("announces politely, as a status region", () => {
+    const { container } = render(
+      <FloatingPill tone="info">
+        <FloatingPillText alone>Two criteria left</FloatingPillText>
+      </FloatingPill>
+    )
+    expect(pill(container)?.getAttribute("role")).toBe("status")
+    expect(screen.getByRole("status").textContent).toBe("Two criteria left")
+  })
+
   // Nothing to say, nothing on screen: the quiet state is the steady state of
   // a finished chapter, and a pill standing there to confirm it is one more
   // thing to look past.
