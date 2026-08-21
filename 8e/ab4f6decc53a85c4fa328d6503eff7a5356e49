@@ -1,0 +1,33 @@
+apps/dashboard/components/segmented-progress.test.tsx
+  s_58dd112dc09435::t_97414af442c91b 77-113,118,120
+  s_58dd112dc09435::t_b0f17211a3809e 26,69,235,275,293,320
+apps/dashboard/components/floating-stack.tsx
+  s_58dd112dc09435::t_c07d8f58ee35b2 46-50
+apps/dashboard/components/model/model-section-shell.tsx
+  s_58dd112dc09435::t_968d54f597a6b4 62-67,101
+apps/dashboard/components/segmented-progress.tsx
+  s_58dd112dc09435::t_1ae03d2c9432c7 26-32,44,66-69
+  s_58dd112dc09435::t_c07d8f58ee35b2 128-136,142-175
+apps/dashboard/components/model/model-section-shell.test.tsx
+  s_58dd112dc09435::t_5826118e330c7c 106
+apps/dashboard/components/pay-mapping/analysis-section-shell.tsx
+  s_58dd112dc09435::t_968d54f597a6b4 41,47-54,92
+apps/dashboard/components/floating-stack.test.tsx
+  s_58dd112dc09435::t_9f22415bc7283f 70-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "8eab4f6decc53a85c4fa328d6503eff7a5356e49",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
