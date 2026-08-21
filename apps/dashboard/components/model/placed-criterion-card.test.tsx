@@ -214,7 +214,7 @@ describe("PlacedCriterionCard", () => {
     )
     expect(line).toBeDefined()
     expect(line?.textContent).toBe(
-      weighting.shareOfWeight.replace("<share></share>", "17.6%")
+      weighting.shareOfWeight.replace("<share></share>", "18%")
     )
     // The 3 the row is set to appears on the row and nowhere else on the card.
     expect(line?.textContent).not.toContain("3 ·")

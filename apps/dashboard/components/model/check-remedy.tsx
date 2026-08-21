@@ -11,7 +11,7 @@ import { useFormatter, useLocale, useTranslations } from "next-intl"
 import type { ReactNode } from "react"
 import { formatNames } from "@/lib/list-format"
 import { CHECK_CHAPTER, chapterHref } from "@/lib/model-chapters"
-import { DIMENSION_SHARE_FORMAT } from "@/lib/weighting"
+import { SHARE_FORMAT } from "@/lib/weighting"
 
 // The line under a FAILING checklist row that says what to do about it.
 //
@@ -73,7 +73,7 @@ export function CheckRemedy({
   const shareOf = (key: DimensionKey) =>
     format.number(
       dimensionShares.find((entry) => entry.key === key)?.share ?? 0,
-      DIMENSION_SHARE_FORMAT
+      SHARE_FORMAT
     )
 
   // The dimensions a check names, each with its own share in parentheses, so

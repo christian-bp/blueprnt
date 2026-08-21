@@ -7,18 +7,20 @@ export function shareFraction(points: number, totalPoints: number): number {
   return points / totalPoints
 }
 
-// The Intl options the shares are formatted with wherever they render, kept
-// here beside shareFraction so every NumberFlow surface rounds the same way.
-// One decimal matches the source document's tables (18,5 % etc.).
+// The Intl options EVERY share is formatted with, kept here beside
+// shareFraction so the figure and its rounding come from one place.
+//
+// Whole percent, at both levels. A share is a balance reading ("is one
+// dimension dominating?", "how much does this criterion count?"), not a figure
+// anyone reconciles: the decimal it used to carry on the criterion line
+// invited exactly that reconciling, and it read as a different KIND of number
+// from the whole percent in the dimension heading directly above it.
+//
+// Rounded shares need not sum to exactly 100, and that is accepted: the
+// allocation itself is the weight POINTS, which always sum to the budget
+// exactly (ADR-0004), and the percent is a derived display value on top of
+// them. Never present these figures as an audited total.
 export const SHARE_FORMAT = {
-  style: "percent",
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-} as const
-
-// The dimension headings round to whole points: a heading is a balance
-// reading ("is one dimension dominating?"), not a figure anyone reconciles.
-export const DIMENSION_SHARE_FORMAT = {
   style: "percent",
   maximumFractionDigits: 0,
 } as const

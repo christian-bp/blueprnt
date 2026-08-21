@@ -46,7 +46,7 @@ import { chapterHref } from "@/lib/model-chapters"
 import { modelErrorKey } from "@/lib/model-errors"
 import { toast } from "@/lib/toast"
 import {
-  DIMENSION_SHARE_FORMAT,
+  SHARE_FORMAT,
   shareFraction,
   weightMotivationTarget,
 } from "@/lib/weighting"
@@ -290,7 +290,7 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
                 flagged,
                 text: t(flagged ? "dominanceNote" : "dominanceMotivatedNote", {
                   dimension: dimension.name,
-                  share: format.number(share, DIMENSION_SHARE_FORMAT),
+                  share: format.number(share, SHARE_FORMAT),
                 }),
                 target: {
                   subject: dimension.name,
@@ -366,7 +366,7 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
                               ),
                               totalPoints
                             )}
-                            format={DIMENSION_SHARE_FORMAT}
+                            format={SHARE_FORMAT}
                           />
                         ),
                       })}
