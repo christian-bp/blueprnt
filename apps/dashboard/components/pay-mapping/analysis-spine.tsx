@@ -1,11 +1,10 @@
 "use client"
 
-import NumberFlow from "@number-flow/react"
 import { useTranslations } from "next-intl"
 import type { RefObject } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SegmentedProgress } from "@/components/segmented-progress"
-import { SpineCounter, SpineHeader } from "@/components/spine-header"
+import { SpineHeader } from "@/components/spine-header"
 import type { AnalysisChapter } from "./analysis-chapters"
 
 // Rung 0 of the analysis ladder: where the whole mapping stands, on the
@@ -40,16 +39,6 @@ export function AnalysisSpine({
 }) {
   const t = useTranslations("dashboard.payMapping.analysis")
   const tHelp = useTranslations("dashboard.help")
-  const tJourney = useTranslations("dashboard.payMapping.journey")
-  const tReview = useTranslations("dashboard.payMapping.review")
-  const tProgress = useTranslations("dashboard.progress")
-  // The chapters' own names, for the hover alone: the tab row under the title
-  // is what names them on screen. The SHORT names, the same ones that row
-  // uses, so the two can never call the same chapter two different things.
-  const segments = chapters.map((chapter) => ({
-    ...chapter,
-    name: tReview(`chaptersShort.${chapter.key}`),
-  }))
 
   return (
     <SpineHeader
@@ -63,41 +52,13 @@ export function AnalysisSpine({
         </HelpMorphButton>
       }
       instrument={
-        <>
-          <SegmentedProgress
-            barLabel={t("progressBarLabel")}
-            done={done}
-            total={total}
-            segments={segments}
-            activeSegment={activeChapter}
-            renderCount={(segment) =>
-              tJourney.rich("countRich", {
-                done: () => <NumberFlow value={segment.done} />,
-                total: () => <NumberFlow value={segment.total} />,
-              })
-            }
-          />
-          {/* The mapping's own figures, beside the instrument that draws
-              them, so eye and ear agree: these are the same work units the
-              announced percentage is computed from. It used to be a screen
-              reader's only copy of the pair, because nothing on the surface
-              showed it; now it is on screen for everyone. Both numbers move
-              while the reader works, so the message is tag-based and each one
-              carries NumberFlow rather than swapping in place. Once there is
-              nothing left to count, the shared slot says so instead
-              (SpineCounter). */}
-          <SpineCounter
-            doneLabel={tProgress("done")}
-            done={done}
-            renderCount={() =>
-              tJourney.rich("countRich", {
-                done: () => <NumberFlow value={done} />,
-                total: () => <NumberFlow value={total} />,
-              })
-            }
-            total={total}
-          />
-        </>
+        <SegmentedProgress
+          barLabel={t("progressBarLabel")}
+          done={done}
+          total={total}
+          segments={chapters}
+          activeSegment={activeChapter}
+        />
       }
     />
   )

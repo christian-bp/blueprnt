@@ -1,23 +1,12 @@
 "use client"
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
-import { type ReactNode, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { CelebrationBurst } from "@/components/celebration-burst"
 
-// One chapter's share of a journey: what it is called, how much work it holds,
-// and how much of it is done.
+// One chapter's share of a journey: how much work it holds, and how much of it
+// is done.
 export interface ProgressSegment {
   key: string
-  // Already localized by the section that owns the message. Carried here for
-  // the hover alone: the tab row under the instrument is what NAMES the
-  // chapters on screen, and a pointer resting on a two-pixel sliver should not
-  // have to count segments to find out which one it is on.
-  name: string
   done: number
   total: number
 }
@@ -28,29 +17,26 @@ export interface ProgressSegment {
 const SEGMENT_STYLE = { flexGrow: 1, flexBasis: "0.5rem" }
 
 // The journey instrument, shared by every guided section that has chapters
-// (the kartläggning analysis, the model section). Geometry, the fill rule and
-// the hover live here once, so two sections drawing "how far along is this"
-// can never drift into two different instruments.
+// (the kartläggning analysis, the model section). Geometry and the fill rule
+// live here once, so two sections drawing "how far along is this" can never
+// drift into two different instruments.
 //
-// It is an INSTRUMENT, not a banner: a fixed, compact width that sits on its
-// section's title row rather than a full-width bar with a name over it and a
-// figure under it. The full-width version annotated itself because it had the
-// room to; at this size the annotations are what the surface around it already
-// says. The chapters are named by the tab row directly under the title, the
-// journey's own figures sit beside the instrument as the caller's counter, and
-// a chapter's own standing is one hover away.
+// It is an INSTRUMENT, not a banner: a fixed width on its section's title row
+// rather than a full-width bar carrying a name over it and a figure under it.
+// It also carries no annotation of its own, in any direction. Everything it
+// could have said is said better by the surface around it: the tab row under
+// the title names the chapters and marks the open one, and that tab prints its
+// own chapter's figures. What is left here is the shape of the whole journey
+// at a glance, plus the announced percentage for a reader who cannot see it.
 //
 // What stays with the caller is everything that is section-specific: the title
-// row it rides, the help beside that title, its overall counter, and the WORDS
-// of a chapter's count (renderCount), because a message key belongs to the
-// surface that owns the concept, not to a geometry primitive.
+// row it rides and the help beside that title.
 export function SegmentedProgress({
   barLabel,
   done,
   total,
   segments,
   activeSegment,
-  renderCount,
   celebrateOnComplete,
 }: {
   // The bar always shows the WHOLE journey, whichever page it is on, so its
@@ -66,11 +52,6 @@ export function SegmentedProgress({
   // underneath it. Optional only for the moment before a path resolves to a
   // chapter; every real page has one.
   activeSegment?: string
-  // A chapter's own status, as the caller's own localized message. Its one
-  // consumer is the hover: at instrument size there is no room to print a
-  // figure per chapter, and the journey's own figures sit beside the
-  // instrument instead.
-  renderCount: (segment: ProgressSegment) => ReactNode
   // Plays the same celebration the overview to-do row throws when a work
   // card arrives (CelebrationBurst), over a segment the moment it crosses
   // from incomplete to complete while mounted. Off by default, so a caller
@@ -124,24 +105,25 @@ export function SegmentedProgress({
     // Equally wide chapters: a guided section's chapters are its stations,
     // and a station's width is not a claim about the work behind it. What the
     // work is stays where it can be read rather than estimated from a shape:
-    // each segment FILLS by its own done/total, each names itself and states
-    // its own standing on hover, the caller's counter beside the instrument
-    // carries the journey's own figures, and the announced percentage is
-    // WORK-weighted, so a section whose chapters hold 21 and 1 steps can
-    // never read as halfway on two of four.
+    // each segment FILLS by its own done/total, the open chapter's own figures
+    // are printed on its tab, and the announced percentage is WORK-weighted,
+    // so a section whose chapters hold 21 and 1 steps can never read as
+    // halfway on two of four.
     //
-    // A FIXED, compact width: the instrument states where the journey stands,
-    // it does not measure the page. w-52 leaves four segments wide enough that
-    // a part-filled one still reads as part filled. It never shrinks below
-    // that, so on a narrow viewport its title row wraps and the instrument
-    // comes down whole rather than squeezing into slivers.
+    // A FIXED width: the instrument states where the journey stands, it does
+    // not measure the page. It never shrinks below w-64, so on a narrow
+    // viewport its title row wraps and the instrument comes down whole rather
+    // than squeezing into slivers. The width grew when the counter beside it
+    // went: the reading is the only thing on that side of the row now, and at
+    // the old size four segments read as a detail rather than as the section's
+    // own state.
     <div
       role="progressbar"
       aria-label={barLabel}
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={pct}
-      className="flex h-2 w-52 shrink-0 gap-0.5 rounded-full"
+      className="flex h-2 w-64 shrink-0 gap-0.5 rounded-full"
     >
       {segments.map((segment) => {
         // The instrument's segments and the tab row can never line up: every
@@ -176,10 +158,6 @@ export function SegmentedProgress({
         // inside CelebrationBurst's own unclipped box instead, because
         // "overflow-hidden" on the segment's own sliver would clip the
         // burst the instant a piece crosses the edge it is thrown from.
-        // The visible sliver, and its own padded hit area: the trigger box
-        // above is the segment's full height while the track inside it is
-        // two pixels, so the pointer catches a chapter without having to
-        // land on the sliver itself.
         const strip = celebrateOnComplete ? (
           <CelebrationBurst
             // Keyed by the crossing count, not just the segment: a second
@@ -201,34 +179,18 @@ export function SegmentedProgress({
           </div>
         )
         return (
-          // Its own provider, so the bar works wherever it is dropped (the
-          // same self-contained idiom DeviationBadge uses).
-          <TooltipProvider key={segment.key}>
-            <Tooltip>
-              {/* The segment itself is the hover target. A sliver two
-                    pixels tall is not a shape anyone can read a chapter off,
-                    so resting on one answers both questions at once: which
-                    chapter this is, and where it stands. The tab row under
-                    the bar is what NAMES them on screen; this is the same
-                    fact where the pointer already is. */}
-              <TooltipTrigger
-                render={
-                  <div
-                    data-active={isActive}
-                    style={SEGMENT_STYLE}
-                    className="group/segment flex h-full items-center"
-                  />
-                }
-              >
-                {strip}
-              </TooltipTrigger>
-              <TooltipContent>
-                {segment.name}
-                {" · "}
-                {renderCount(segment)}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          // Non-interactive geometry: a segment is a shape, not a control.
+          // Nothing here is hoverable, focusable or clickable, because the tab
+          // row directly under it is where a chapter is chosen and where its
+          // own figures are read.
+          <div
+            key={segment.key}
+            data-active={isActive}
+            style={SEGMENT_STYLE}
+            className="group/segment flex h-full items-center"
+          >
+            {strip}
+          </div>
         )
       })}
     </div>

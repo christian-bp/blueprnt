@@ -40,10 +40,18 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
       ? { checks: [], approved: false }
       : { checks: data.checks, approved: data.approval !== null }
   const overall = modelProgress(input)
+  // Derived ONCE and handed to both the instrument and the tab row, so a
+  // chapter's segment and its tab can never disagree about the chapter they
+  // both describe.
+  const chapters = MODEL_CHAPTERS.map((chapter) => ({
+    key: chapter,
+    ...modelChapterProgress(input, chapter),
+  }))
+  const loading = data === undefined
 
   return (
     <div className="space-y-4">
-      {data === undefined ? (
+      {loading ? (
         // Content-shaped: the spine's real title (static i18n text, so it
         // renders real) with a flat track standing in for the instrument
         // opposite it, at the instrument's own width, so nothing moves when
@@ -51,20 +59,20 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
         // is still loading.
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <h3 className="font-semibold text-base">{t("heading")}</h3>
-          <div className="h-2 w-52 shrink-0 rounded-full bg-primary/12" />
+          <div className="h-2 w-64 shrink-0 rounded-full bg-primary/12" />
         </div>
       ) : (
         <ModelSpine
           done={overall.done}
           total={overall.total}
-          chapters={MODEL_CHAPTERS.map((chapter) => ({
-            key: chapter,
-            ...modelChapterProgress(input, chapter),
-          }))}
+          chapters={chapters}
           activeChapter={active}
         />
       )}
-      <ModelChapterTabs />
+      {/* The tab row prints the OPEN chapter's own figures, from the same
+          array the instrument above draws. Withheld while the query is in
+          flight, so a tab never shows a zero it is about to replace. */}
+      <ModelChapterTabs chapters={loading ? undefined : chapters} />
       {children}
     </div>
   )

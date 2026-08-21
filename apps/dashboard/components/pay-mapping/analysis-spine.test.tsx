@@ -1,10 +1,4 @@
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react"
+import { cleanup, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { createRef } from "react"
@@ -21,8 +15,6 @@ import type { AnalysisChapter } from "@/components/pay-mapping/analysis-chapters
 import { AnalysisSpine } from "@/components/pay-mapping/analysis-spine"
 
 const m = messages.dashboard.payMapping.analysis
-const mReview = messages.dashboard.payMapping.review
-const mProgress = messages.dashboard.progress
 
 function renderSpine(
   overrides: Partial<{
@@ -58,24 +50,18 @@ describe("AnalysisSpine", () => {
     cleanup()
   })
 
-  it("labels the instrument and states the mapping's own figures beside it", () => {
+  // The title names the section; the reading opposite it is the instrument
+  // alone. No figure of its own: the open chapter's tab under this row prints
+  // the only pair on the surface.
+  it("labels the instrument and carries no figure of its own", () => {
     const { container } = renderSpine()
     const heading = screen.getByRole("heading", { level: 3 })
     expect(heading.textContent).toBe(m.progressLabel)
-    // The pair used to be a screen reader's only copy of itself, because
-    // nothing on the surface showed it. It is on screen for everyone now.
     expect(heading.querySelector(".sr-only")).toBeNull()
-    const counter = container.querySelector(".tabular-nums")
-    expect(counter?.textContent).toBe("12 of 31")
-    // Both figures move while the reader works, so each is its OWN element
-    // carrying NumberFlow rather than text interpolated into the sentence
-    // (the mock above stands in for it). A concatenated string would leave
-    // this row empty.
-    expect(
-      [...(counter?.children ?? [])].map((node) => node.textContent)
-    ).toEqual(["12", "31"])
-    // The same work units the announced percentage is computed from, so eye
-    // and ear agree.
+    expect(container.querySelector(".tabular-nums")).toBeNull()
+    expect(container.textContent).toBe(m.progressLabel)
+    // The screen reader keeps the overall number even though the eye no
+    // longer gets one.
     const bar = container.querySelector('[role="progressbar"]')
     expect(bar?.getAttribute("aria-valuenow")).toBe("39")
   })
@@ -86,7 +72,7 @@ describe("AnalysisSpine", () => {
     const tokens = (
       container.querySelector('[role="progressbar"]')?.className ?? ""
     ).split(/\s+/)
-    expect(tokens).toContain("w-52")
+    expect(tokens).toContain("w-64")
     expect(tokens).toContain("shrink-0")
   })
 
@@ -118,26 +104,6 @@ describe("AnalysisSpine", () => {
     expect(fillOf(segments[3])).toBe("0%")
   })
 
-  // The chapters are named on screen by the tab row under the bar; a segment
-  // says which one it is when the pointer rests on it, with the same short
-  // name that row uses.
-  it("names a hovered chapter and states where it stands", async () => {
-    const { container } = renderSpine({ activeChapter: "equalWork" })
-    const segment = [
-      ...(container.querySelector('[role="progressbar"]')?.children ?? []),
-    ][3] as HTMLElement
-    fireEvent.pointerEnter(segment, { pointerType: "mouse" })
-    fireEvent.mouseEnter(segment)
-    await waitFor(() => {
-      const tooltip = document.querySelector('[data-slot="tooltip-content"]')
-      expect(tooltip?.textContent).toContain(
-        mReview.chaptersShort.equivalentWork
-      )
-      expect(tooltip?.textContent).toContain("0")
-      expect(tooltip?.textContent).toContain("21")
-    })
-  })
-
   it("holds the open chapter's segment up and lets the rest recede", () => {
     // The segments and the tab row can never line up (segments are equally
     // wide, tabs as wide as their names), so simultaneous highlighting is
@@ -162,68 +128,6 @@ describe("AnalysisSpine", () => {
       ...(container.querySelector('[role="progressbar"]')?.children ?? []),
     ] as HTMLElement[]
     expect(segments.every((s) => s.dataset.active === "true")).toBe(true)
-  })
-
-  // The same shared slot the model spine uses: a finished mapping states the
-  // fact rather than asking the reader to compare two equal numbers.
-  it("says the word instead of counting itself once nothing is left", () => {
-    const { container } = renderSpine({
-      done: 31,
-      total: 31,
-      chapters: [
-        { key: "start", done: 1, total: 1 },
-        { key: "praxis", done: 4, total: 4 },
-        { key: "equalWork", done: 5, total: 5 },
-        { key: "equivalentWork", done: 21, total: 21 },
-      ],
-    })
-    const word = screen.getByText(mProgress.done)
-    expect(word.className).toContain("text-success")
-    expect(container.textContent).not.toContain("31 of 31")
-    expect(container.querySelector(".tabular-nums")).toBeNull()
-    // The announced percentage is untouched by the visual word.
-    expect(
-      container
-        .querySelector('[role="progressbar"]')
-        ?.getAttribute("aria-valuenow")
-    ).toBe("100")
-  })
-
-  // A mapping moves backwards too: a klarmarkering is undone and the figures
-  // have to come back.
-  it("counts itself again when a finished mapping reopens", async () => {
-    const { container, rerender } = renderSpine({
-      done: 31,
-      total: 31,
-      chapters: [
-        { key: "start", done: 1, total: 1 },
-        { key: "praxis", done: 4, total: 4 },
-        { key: "equalWork", done: 5, total: 5 },
-        { key: "equivalentWork", done: 21, total: 21 },
-      ],
-    })
-    expect(screen.getByText(mProgress.done)).toBeDefined()
-
-    rerender(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <AnalysisSpine
-          done={30}
-          total={31}
-          chapters={[
-            { key: "start", done: 1, total: 1 },
-            { key: "praxis", done: 4, total: 4 },
-            { key: "equalWork", done: 5, total: 5 },
-            { key: "equivalentWork", done: 20, total: 21 },
-          ]}
-        />
-      </NextIntlClientProvider>
-    )
-    await waitFor(() => {
-      expect(container.querySelector(".tabular-nums")?.textContent).toBe(
-        "30 of 31"
-      )
-      expect(screen.queryByText(mProgress.done)).toBeNull()
-    })
   })
 
   it("reads zero rather than dividing by zero when nothing is required", () => {

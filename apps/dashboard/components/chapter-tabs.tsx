@@ -18,6 +18,14 @@ export interface ChapterTab {
   label: ReactNode
   href: string
   current: boolean
+  // This chapter's own done/total, already localized by the section that owns
+  // the message. Rendered ONLY on the open tab, and only when the section
+  // knows it: the reader gets a figure for the chapter they are working in,
+  // where the work is, and no figure for the three they are not, which would
+  // turn a switcher into a status table. Absent while a section's progress
+  // query is still in flight, so a tab never prints a zero it is about to
+  // replace.
+  count?: ReactNode
 }
 
 // The chunk renderer a chapter message uses for its position, so the two
@@ -77,14 +85,25 @@ export function ChapterTabs({
           }`}
         >
           {tab.label}
-          {/* inset-x-2 is the label's own box, because the tab holds nothing
-              but its label: the bar hugs the text, exactly as it does in the
-              header tab rows. While a done mark's slot sat in front of the
-              label, this same rule left the bar running 20px past the start of
-              the text on every chapter that was not yet finished, with nothing
-              above that stretch. Keep the tab a label and this stays true; put
-              anything beside the label again and the bar has to be anchored to
-              the label itself. */}
+          {/* The open chapter's own figures, after its name. ms-1.5 carries
+              the gap rather than a space in the markup, because a tab is a
+              flex container and a whitespace-only text node between two
+              children is dropped entirely. tabular-nums so a count ticking
+              upward inside a chapter cannot nudge the tabs beside it: the pair
+              only ever grows at a 9-to-10 boundary. */}
+          {tab.current && tab.count !== undefined && (
+            <span className="ms-1.5 text-muted-foreground tabular-nums">
+              {tab.count}
+            </span>
+          )}
+          {/* inset-x-2 is the tab's own box, and the bar may span the whole of
+              it because everything inside belongs to this tab: its name, and
+              on the open one its figures. The rule this replaces was about a
+              done mark's EMPTY slot sitting in front of the label, which left
+              the bar running 20px past the start of the text with nothing
+              above that stretch. Anything added here must likewise be visible
+              whenever it takes space, or the bar has to be anchored to the
+              label itself instead. */}
           {tab.current && (
             <motion.span
               layoutId={underlineId}

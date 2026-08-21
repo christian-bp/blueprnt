@@ -2648,9 +2648,6 @@
         "body": "Linkki voi olla vanhentunut tai kirjoitettu väärin.",
         "backToIndex": "Takaisin dokumentaatioon"
       }
-    },
-    "progress": {
-      "done": "Valmis"
     }
   },
   "errors": {

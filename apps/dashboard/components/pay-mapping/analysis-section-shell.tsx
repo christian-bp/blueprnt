@@ -31,6 +31,16 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const { queue } = usePayMappingRun()
   const active = currentChapter(pathname)
+  // Derived ONCE and handed to both the instrument and the tab row, so a
+  // chapter's segment and its tab can never disagree about the chapter they
+  // both describe.
+  const chapters =
+    queue === null
+      ? undefined
+      : ANALYSIS_CHAPTERS.map((chapter) => ({
+          key: chapter,
+          ...chapterProgress(queue, chapter),
+        }))
 
   return (
     <div className="space-y-4">
@@ -42,20 +52,20 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
         // is still loading.
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <h3 className="font-semibold text-base">{t("progressLabel")}</h3>
-          <div className="h-2 w-52 shrink-0 rounded-full bg-primary/12" />
+          <div className="h-2 w-64 shrink-0 rounded-full bg-primary/12" />
         </div>
       ) : (
         <AnalysisSpine
           done={queue.progress.overall.done}
           total={queue.progress.overall.total}
-          chapters={ANALYSIS_CHAPTERS.map((chapter) => ({
-            key: chapter,
-            ...chapterProgress(queue, chapter),
-          }))}
+          chapters={chapters ?? []}
           activeChapter={active}
         />
       )}
-      <AnalysisChapterTabs />
+      {/* The tab row prints the OPEN chapter's own figures, from the same
+          array the instrument above draws. Withheld while the run is loading,
+          so a tab never shows a zero it is about to replace. */}
+      <AnalysisChapterTabs chapters={chapters} />
       {children}
     </div>
   )

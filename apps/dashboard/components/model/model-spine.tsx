@@ -1,10 +1,9 @@
 "use client"
 
-import NumberFlow from "@number-flow/react"
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SegmentedProgress } from "@/components/segmented-progress"
-import { SpineCounter, SpineHeader } from "@/components/spine-header"
+import { SpineHeader } from "@/components/spine-header"
 import type { ModelChapter } from "@/lib/model-chapters"
 
 // Where the whole model stands, on the section's own title row. The same
@@ -35,14 +34,6 @@ export function ModelSpine({
 }) {
   const t = useTranslations("dashboard.model.chapters")
   const tHelp = useTranslations("dashboard.help")
-  const tProgress = useTranslations("dashboard.progress")
-  // The chapters' own names, resolved where the key is still typed. They are
-  // the hover's, not the instrument's: the tab row under the title is what
-  // names the chapters on screen.
-  const segments = chapters.map((chapter) => ({
-    ...chapter,
-    name: t(chapter.key),
-  }))
 
   return (
     <SpineHeader
@@ -57,44 +48,17 @@ export function ModelSpine({
         </HelpMorphButton>
       }
       instrument={
-        <>
-          <SegmentedProgress
-            barLabel={t("progressBarLabel")}
-            done={done}
-            total={total}
-            segments={segments}
-            activeSegment={activeChapter}
-            // A chapter reaching its own done/total plays the same
-            // celebration a finished to-do card does. The kartläggning's
-            // analysis spine does not opt in.
-            celebrateOnComplete
-            renderCount={(segment) =>
-              t.rich("countRich", {
-                done: () => <NumberFlow value={segment.done} />,
-                total: () => <NumberFlow value={segment.total} />,
-              })
-            }
-          />
-          {/* The journey's own figures, beside the instrument that draws
-              them, so eye and ear agree: these are the same work units the
-              announced percentage is computed from. Both numbers move while
-              the reader works, so the message is tag-based and each one
-              carries NumberFlow rather than swapping in place. The section's
-              own countRich, not a second message saying the same thing. Once
-              there is nothing left to count, the shared slot says so instead
-              (SpineCounter). */}
-          <SpineCounter
-            doneLabel={tProgress("done")}
-            done={done}
-            renderCount={() =>
-              t.rich("countRich", {
-                done: () => <NumberFlow value={done} />,
-                total: () => <NumberFlow value={total} />,
-              })
-            }
-            total={total}
-          />
-        </>
+        <SegmentedProgress
+          barLabel={t("progressBarLabel")}
+          done={done}
+          total={total}
+          segments={chapters}
+          activeSegment={activeChapter}
+          // A chapter reaching its own done/total plays the same celebration
+          // a finished to-do card does. The kartläggning's analysis spine
+          // does not opt in.
+          celebrateOnComplete
+        />
       }
     />
   )
