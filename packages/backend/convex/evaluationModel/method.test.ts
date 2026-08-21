@@ -99,6 +99,127 @@ describe("criterion compliance write path", () => {
     expect(levelShifts).toHaveLength(0)
   })
 
+  // The invariant its three siblings all hold: an identical resubmission
+  // writes nothing. It lived only in the dialog's dirty gate, which puts a
+  // backend rule in the client and leaves every other caller free to fill the
+  // log with "0 fields changed" rows.
+  it("writes no row when the same compliance text is submitted again", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    const model = await asAdmin.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    const criterionId = model?.criteria[0]?.criterionId
+    if (criterionId === undefined) throw new Error("no criterion")
+
+    const values = {
+      orgId,
+      criterionId,
+      purpose: "Measure scope of impact",
+      whyRelevant: "Distinguishes seniority objectively",
+      overlapNotes: "",
+      biasRisk: "low" as const,
+      biasComment: "Gender-neutral wording checked",
+      biasAction: "",
+    }
+    await asAdmin.mutation(
+      api.evaluationModel.method.saveCriterionCompliance,
+      values
+    )
+    await asAdmin.mutation(
+      api.evaluationModel.method.saveCriterionCompliance,
+      values
+    )
+
+    const rows = await t.run(async (ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+    )
+    expect(
+      rows.filter(
+        (r) =>
+          (r.payload as { change?: string }).change ===
+          "criterion.complianceUpdated"
+      )
+    ).toHaveLength(1)
+  })
+
+  // The sign-off date is evidence in the kriterieurvalsprotokoll: it moves
+  // when a human signs, never because a dialog was saved again.
+  it("writes no row and re-stamps nothing when an approved criterion is approved again", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    const model = await asAdmin.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    const criterionId = model?.criteria[0]?.criterionId
+    if (criterionId === undefined) throw new Error("no criterion")
+
+    await asAdmin.mutation(api.evaluationModel.method.saveCriterionCompliance, {
+      orgId,
+      criterionId,
+      purpose: "Measure scope of impact",
+      whyRelevant: "Distinguishes seniority objectively",
+      overlapNotes: "",
+      biasRisk: "low",
+      biasComment: "Gender-neutral wording checked",
+      biasAction: "",
+    })
+    await asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
+      orgId,
+      criterionId,
+      approved: true,
+    })
+    const first = await t.run(async (ctx) => ctx.db.get(criterionId))
+    const stampedAt = first?.decidedAt
+
+    await asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
+      orgId,
+      criterionId,
+      approved: true,
+    })
+
+    const after = await t.run(async (ctx) => ctx.db.get(criterionId))
+    expect(after?.decidedAt).toBe(stampedAt)
+    const rows = await t.run(async (ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "criterion.approved")
+        )
+        .collect()
+    )
+    expect(rows).toHaveLength(1)
+  })
+
+  // Symmetric: un-approving something that was never approved is not an event.
+  it("writes no row when an unapproved criterion is un-approved", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    const model = await asAdmin.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    const criterionId = model?.criteria[0]?.criterionId
+    if (criterionId === undefined) throw new Error("no criterion")
+
+    await asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
+      orgId,
+      criterionId,
+      approved: false,
+    })
+    const rows = await t.run(async (ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "criterion.reopened")
+        )
+        .collect()
+    )
+    expect(rows).toHaveLength(0)
+  })
+
   it("blocks approval until documented, then locks on approval and requires explicit reopen to edit", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)

@@ -333,6 +333,120 @@ describe("AI suggestion lifecycle", () => {
     })
   })
 
+  // The AI path changes the same field its manual twin does, so it owes the
+  // model the same consequence. Without this, a model would keep asserting an
+  // approval for a weighting nobody approved, and a pay-mapping run would
+  // freeze those AI-moved weights as reviewed statutory evidence.
+  it("confirmWeightReview reopens the model's approval, like its manual twin", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    const ownA = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
+    )
+    const ownB = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
+    )
+    await grantModelApproval(t, orgId)
+
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestWeightReview,
+      { orgId }
+    )
+    await t.mutation(internal.ai.persist.saveWeightReview, {
+      suggestionId,
+      moves: [
+        {
+          fromCriterionId: ownA,
+          toCriterionId: ownB,
+          points: 1,
+          motivation: "Fits the company profile.",
+        },
+      ],
+    })
+    await asAdmin.mutation(api.ai.suggest.confirmWeightReview, {
+      orgId,
+      suggestionId,
+      acceptedMoveIndexes: [0],
+    })
+
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      // The approval is gone, and the trail says what took it.
+      expect(model?.approval).toBeUndefined()
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.approvalReopened")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      expect(
+        (rows[0]?.payload as { causeEvent?: string } | undefined)?.causeEvent
+      ).toBe("model.updated")
+    })
+
+    // And the gate downstream reads it: the run that would have frozen this
+    // weighting as evidence is no longer ready to start.
+    const preconditions = await asAdmin.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    expect(preconditions.modelApproved).toBe(false)
+    expect(preconditions.ready).toBe(false)
+  })
+
+  // A confirm that applies nothing is a rejection: it must not disturb a
+  // standing approval.
+  it("confirmWeightReview leaves approval alone when no move applies", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    const ownA = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
+    )
+    await grantModelApproval(t, orgId)
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestWeightReview,
+      { orgId }
+    )
+    await t.mutation(internal.ai.persist.saveWeightReview, {
+      suggestionId,
+      moves: [
+        {
+          // Out of bounds on its own: 3 - 3 lands under the floor.
+          fromCriterionId: ownA,
+          toCriterionId: ownA,
+          points: 3,
+          motivation: "Neutralized at confirm.",
+        },
+      ],
+    })
+    await asAdmin.mutation(api.ai.suggest.confirmWeightReview, {
+      orgId,
+      suggestionId,
+      acceptedMoveIndexes: [0],
+    })
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(model?.approval).toBeDefined()
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.approvalReopened")
+        )
+        .collect()
+      expect(rows).toHaveLength(0)
+    })
+  })
+
   it("confirmWeightReview level.shift rows carry the AI-confirm cause", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, roleId, model } = await seedRoleOrganization(t)

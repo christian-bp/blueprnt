@@ -23,6 +23,7 @@ import {
 } from "@workspace/backend/convex/evaluationModel/evidence"
 import { COMPLIANCE_AUDIT_FIELDS } from "@workspace/backend/convex/evaluationModel/method"
 import { WEIGHT_MOTIVATION_AUDIT_FIELDS } from "@workspace/backend/convex/evaluationModel/criteria"
+import { APPROVAL_REOPEN_CAUSES } from "@workspace/backend/convex/evaluationModel/approval"
 import { ACTION_TARGET_KINDS } from "@workspace/backend/convex/payMapping/tables"
 import {
   COUNTRY_KEYS,
@@ -308,16 +309,10 @@ const AUDIT_STATUSES = [
   "done",
   "testedNotMaterial",
 ] as const
-// model.approvalReopened `causeEvent` (evaluationModel/approval.ts's
-// reopenApprovalIfSet), mirrored by hand from its six wiring call sites.
-const APPROVAL_REOPEN_CAUSES = [
-  "criterion.activated",
-  "criterion.deactivated",
-  "model.updated",
-  "model.workingConditionsDecided",
-  "model.levelRulesUpdated",
-  "model.zoneProfileRulesUpdated",
-] as const
+// model.approvalReopened `causeEvent`: imported from the helper that writes it,
+// like ACTION_TARGET_KINDS above and for the same reason. This list and the
+// domain it guards were both hand-mirrored once; a seventh cause arrived, both
+// stayed at six, and the guard passed while the log printed a raw code.
 // model.updated `change` (lib/auditPayloads.ts's ModelUpdatedPayload
 // discriminant), mirrored by hand, the same convention as PAY_MAPPING_SCOPES.
 const MODEL_UPDATED_CHANGES = [

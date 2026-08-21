@@ -175,11 +175,10 @@ function CriterionComplianceForm({
   // the stored row does not yet support). The remove-offer on the
   // working-conditions decision sequences its two mutations the same way.
   //
-  // Each call is skipped when it would change nothing, because
-  // setCriterionApproval writes an audit row unconditionally: its own guards
-  // reject an impossible transition, not a repeat of the current state, so a
-  // no-op here would leave "criterion approved" in the log for a dialog the
-  // reader only cancelled out of.
+  // Each call is skipped when it would change nothing. The backend owns that
+  // rule now (both mutations short-circuit an unchanged submission, like their
+  // siblings), so these skips are a round trip saved rather than the thing
+  // keeping the log clean.
   async function handleValid(formValues: CriterionComplianceValues) {
     setFailed(false)
     try {

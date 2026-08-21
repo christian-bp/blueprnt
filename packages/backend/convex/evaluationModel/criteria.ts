@@ -366,8 +366,19 @@ export const deactivateCriterion = adminMutation({
         // Ratings are COUNT-ONLY: never embed a rating value or notes anywhere
         // in the payload (no person/role-rating data on the model trail).
         deletedRatingCount: ratings.length,
-        // The budget shrinks by 3 (one criterion fewer).
-        budget: { from: (remaining.length + 1) * 3, to: remaining.length * 3 },
+        // The budget shrinks by 3 (one criterion fewer), in `changes` so it
+        // renders as the before->after arrow the house style prefers. It sat
+        // at the TOP LEVEL as an object once, which reached no surface at all:
+        // changeEntries walks only `changes`, and payloadStats keeps only
+        // top-level scalars, so an object between the two renderers fell
+        // through both. The shrinking budget is exactly the context that
+        // explains why the survivors' weights were repaired.
+        changes: {
+          budget: {
+            from: (remaining.length + 1) * 3,
+            to: remaining.length * 3,
+          },
+        },
         // Survivors whose weight was repaired onto the shrunken budget.
         count: rebalancedSurvivors.length,
         items: rebalancedSurvivors,

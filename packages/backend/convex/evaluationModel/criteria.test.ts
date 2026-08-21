@@ -957,14 +957,16 @@ describe("model edits shift levels live", () => {
       const deactivation = updated[updated.length - 1]
       const payload = deactivation?.payload as {
         count: number
-        budget: { from: number; to: number }
+        changes: { budget: { from: number; to: number } }
         items: Array<{
           criterionId: string
           label: string
           changes: { weightPoints: { from: number; to: number } }
         }>
       }
-      expect(payload.budget).toEqual({ from: 24, to: 21 })
+      // In `changes`, so the cell and the sheet render it as an arrow: a
+      // top-level object reached neither renderer.
+      expect(payload.changes.budget).toEqual({ from: 24, to: 21 })
       // The removed criterion stood at 5: survivors are 2 under budget, so
       // the deterministic repair walk lifts the lightest by 2 total.
       expect(payload.count).toBeGreaterThan(0)
@@ -1068,8 +1070,8 @@ describe("criteria audit payloads (before/after)", () => {
     expect(payload.modelId).toBeDefined()
     // One role was rated on the deactivated criterion: count present, no value.
     expect(payload.deletedRatingCount).toBe(1)
-    // Budget shrinks from 8*3 to 7*3.
-    expect(payload.budget).toEqual({ from: 24, to: 21 })
+    // Budget shrinks from 8*3 to 7*3, as a rendered before/after diff.
+    expect(payload.changes).toEqual({ budget: { from: 24, to: 21 } })
     // Ratings are count-only: no rating value/notes keys anywhere in the
     // payload. A bare number cannot be distinguished from a weight/order, so
     // assert structurally that no rating-shaped keys leaked.

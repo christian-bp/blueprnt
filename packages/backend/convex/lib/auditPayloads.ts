@@ -276,7 +276,11 @@ export interface AuditPayloads {
     weightPoints: number
     // Ratings are COUNT-ONLY (never a value or note; Role != Person).
     deletedRatingCount: number
-    budget: { from: number; to: number }
+    // The point budget's own before/after (it shrinks by 3). A `changes` map
+    // rather than a top-level object: the cell and the sheet render diffs from
+    // `changes` and flat stats from top-level SCALARS, so an object at the top
+    // level reaches neither.
+    changes: Changes
     // Survivors whose weight was repaired onto the shrunken budget.
     count: number
     items: AuditItem[]

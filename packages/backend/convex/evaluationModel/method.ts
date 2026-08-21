@@ -121,6 +121,16 @@ export const saveCriterionCompliance = adminMutation({
       biasComment: norm(args.biasComment),
       biasAction: norm(args.biasAction),
     }
+    // No-op short-circuit (mirrors rebalanceWeights,
+    // setCriterionWeightMotivation and setWorkingConditionsDecision): an
+    // identical resubmission writes nothing, so a dialog reopened and saved
+    // unchanged never adds an audit row. buildChanges returns {} for an
+    // unchanged patch, and a row carrying an empty diff reads "0 fields
+    // changed" in the log while recording nothing. The compliance dialog's own
+    // dirty gate keeps this clean in practice; the invariant belongs here,
+    // where every caller meets it.
+    const changes = buildChanges(criterion, patch, COMPLIANCE_AUDIT_FIELDS)
+    if (Object.keys(changes).length === 0) return null
     await ctx.db.patch(args.criterionId, patch)
     const model = await ctx.db.get(criterion.modelId)
     if (model !== null) {
@@ -132,7 +142,7 @@ export const saveCriterionCompliance = adminMutation({
         change: "criterion.complianceUpdated",
         criterionId: args.criterionId,
         modelId: criterion.modelId,
-        changes: buildChanges(criterion, patch, COMPLIANCE_AUDIT_FIELDS),
+        changes,
       },
     })
     return null
@@ -164,6 +174,13 @@ export const setCriterionApproval = adminMutation({
     if (args.approved && !isDocumented(criterion)) {
       throw appError(ERROR_CODES.invalidInput)
     }
+    // No-op short-circuit, like this file's sibling above and the three in
+    // criteria.ts/approval.ts. Re-approving an approved criterion used to pass
+    // (an approved criterion is by definition documented), re-stamp decidedBy
+    // and decidedAt with a NEW timestamp, and write a second criterion.approved
+    // row. The sign-off date is evidence in the kriterieurvalsprotokoll: it
+    // moves when a human signs, never because a dialog was saved again.
+    if ((criterion.approved === true) === args.approved) return null
     const patch = args.approved
       ? { approved: true, decidedBy: ctx.authUserId, decidedAt: Date.now() }
       : { approved: undefined, decidedBy: undefined, decidedAt: undefined }

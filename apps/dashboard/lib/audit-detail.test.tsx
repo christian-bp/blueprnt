@@ -460,6 +460,68 @@ describe("formatAuditDetail", () => {
     ).toBe("2 items; LevelRules: 12 rules, top 97 → 12 rules, top 90")
   })
 
+  // A deactivation's row used to fall to the generic bulk branch, whose count
+  // is the REPAIRED SURVIVORS: "0 items changed" whenever the removed
+  // criterion stood at the neutral 3, and never a word about what was removed.
+  it("names the removed criterion and the budget it shrank", () => {
+    expect(
+      formatAuditDetail(
+        "criterion.deactivated",
+        {
+          criterionId: "c1",
+          modelId: "m1",
+          libraryKey: "scope-impact",
+          dimensionKey: "responsibility",
+          weightPoints: 3,
+          deletedRatingCount: 0,
+          changes: { budget: { from: 24, to: 21 } },
+          count: 0,
+          items: [],
+        },
+        {},
+        labels,
+        fieldLabel,
+        undefined,
+        // The criterion row is deleted, so its name comes from the library key,
+        // the way the sheet already resolves it.
+        (field, value) =>
+          field === "libraryKey" && value === "scope-impact"
+            ? "Scope and impact"
+            : undefined
+      )
+    ).toBe("Scope and impact: Budget: 24 → 21")
+  })
+
+  it("adds the repaired survivors when the removal moved other weights", () => {
+    expect(
+      formatAuditDetail(
+        "criterion.deactivated",
+        {
+          criterionId: "c1",
+          modelId: "m1",
+          libraryKey: "scope-impact",
+          dimensionKey: "responsibility",
+          weightPoints: 5,
+          deletedRatingCount: 2,
+          changes: { budget: { from: 24, to: 21 } },
+          count: 2,
+          items: [
+            { criterionId: "c2", label: "B", changes: {} },
+            { criterionId: "c3", label: "C", changes: {} },
+          ],
+        },
+        {},
+        labels,
+        fieldLabel,
+        undefined,
+        (field, value) =>
+          field === "libraryKey" && value === "scope-impact"
+            ? "Scope and impact"
+            : undefined
+      )
+    ).toBe("Scope and impact: Budget: 24 → 21; 2 items")
+  })
+
   it("renders a rules-only model.restored without a zero item count", () => {
     expect(
       formatAuditDetail(

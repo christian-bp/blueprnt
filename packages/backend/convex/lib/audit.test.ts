@@ -297,7 +297,7 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
     dimensionKey: "responsibility",
     weightPoints: 3,
     deletedRatingCount: 0,
-    budget: { from: 24, to: 21 },
+    changes: { budget: { from: 24, to: 21 } },
     count: 0,
     items: [],
   },

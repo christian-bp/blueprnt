@@ -890,6 +890,43 @@ export function formatAuditDetail(
     case "criterion.approved":
     case "criterion.reopened":
       return criterionName(p.criterionId) ?? ""
+    // A removal's own row, with its own case for the reason model.restored has
+    // one: the generic bulk branch states only the item count, and that count
+    // is the REPAIRED SURVIVORS, which is 0 whenever the removed criterion
+    // stood at the neutral 3 (the common case). The row then read "0 items
+    // changed" and never named what was removed.
+    //
+    // Named from libraryKey, not criterionId: the criterion row is deleted, so
+    // the name map that serves every other criterion event resolves nothing
+    // here. The budget arrow follows, because a shrinking budget is what
+    // explains the survivors' repaired weights.
+    case "criterion.deactivated": {
+      const name =
+        typeof p.libraryKey === "string"
+          ? (valueLabel?.("libraryKey", p.libraryKey) ?? p.libraryKey)
+          : ""
+      const budget =
+        changes === null
+          ? null
+          : formatChanges(
+              changes,
+              fieldLabel,
+              undefined,
+              boolLabel,
+              valueLabel,
+              dateLabel
+            )
+      const repaired = bulkCount > 0 ? labels.itemsChanged(bulkCount) : null
+      if (budget === null && repaired === null) return name
+      return (
+        <>
+          {name === "" ? null : <>{name}: </>}
+          {budget}
+          {budget !== null && repaired !== null ? "; " : null}
+          {repaired}
+        </>
+      )
+    }
     case "model.updated": {
       // Bulk model.updated (weights.rebalanced, criterion.removed): item count.
       if (isBulk) return labels.itemsChanged(bulkCount)

@@ -22,6 +22,7 @@ import {
   criteriaLibraryContent,
 } from "../evaluationModel/criteriaLibrary"
 import { clampLocale, promptLocale } from "../evaluationModel/localize"
+import { reopenApprovalIfSet } from "../evaluationModel/approval"
 import { resolveContentLocale } from "../evaluationModel/model"
 import { trackKeyValidator } from "../evaluationModel/tables"
 import { TRACK_KEYS, trackName } from "../evaluationModel/trackSchema"
@@ -256,6 +257,24 @@ export const confirmWeightReview = adminMutation({
       motivation: move.motivation,
     }))
     if (appliedCount > 0) {
+      // The same method-affecting change its MANUAL twin makes, so it reopens
+      // the model's approval the same way (ADR-0023). rebalanceWeights patches
+      // this very field and calls this very helper here, between the patches
+      // and the shift diff; an AI-applied move that skipped it would leave the
+      // model asserting an approval for a weighting nobody approved, and
+      // startPayMappingRun would freeze that as reviewed statutory evidence.
+      //
+      // Cause model.updated, matching the twin exactly: the same field moved
+      // for the same reason, and a reader comparing two reopen rows should not
+      // have to know which surface moved the points.
+      //
+      // Inside the appliedCount guard because nothing moved otherwise: a
+      // confirm that applies no move is a rejection, and it must not disturb a
+      // standing approval.
+      const model = await ctx.db.get(modelId)
+      if (model !== null) {
+        await reopenApprovalIfSet(ctx, model, AUDIT_EVENTS.modelUpdated)
+      }
       const after = await deriveResults(ctx, ctx.orgId)
       await ctx.audit.levelShifts({
         before: before.results,

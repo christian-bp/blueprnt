@@ -1,3 +1,7 @@
+import {
+  APPROVAL_REOPEN_CAUSES,
+  type ApprovalReopenCause,
+} from "@workspace/backend/convex/evaluationModel/approval"
 import { criteriaLibraryContent } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import type { ActionTargetKind } from "@workspace/backend/convex/payMapping/tables"
 import type {
@@ -298,24 +302,19 @@ export const AI_KIND_VALUE_KEYS: Record<SuggestionKind, string> =
   ) as Record<SuggestionKind, string>
 
 // model.approvalReopened `causeEvent`: the AuditEvent that triggered the
-// reopen (evaluationModel/approval.ts's reopenApprovalIfSet), mirrored by
-// hand from its six wiring call sites (activateCriterion, deactivateCriterion,
-// rebalanceWeights via model.updated, setWorkingConditionsDecision,
-// updateLevelRules, updateZoneProfileRules) - the same hand-synced convention
-// as the other domains above, drift-guarded in audit-labels.test.ts. Reuses
-// each cause's own dashboard.auditLog.events.* label (dots->camelCase, the
-// same key derivation org-audit-log-section.tsx's eventKey uses) rather than
-// inventing parallel "this happened" wording for a concept the log already
-// names.
-const APPROVAL_REOPEN_CAUSES = [
-  "criterion.activated",
-  "criterion.deactivated",
-  "model.updated",
-  "model.workingConditionsDecided",
-  "model.levelRulesUpdated",
-  "model.zoneProfileRulesUpdated",
-] as const
-type ApprovalReopenCause = (typeof APPROVAL_REOPEN_CAUSES)[number]
+// reopen, IMPORTED from the helper that writes it rather than mirrored here.
+//
+// It was a hand-synced copy, and so was its drift guard; when a seventh cause
+// arrived both stayed at six, the guard compared two equally-stale lists and
+// passed, and the log printed the raw code "criterion.reopened" in all five
+// locales. The list is the backend's `cause` parameter type now, so a new call
+// site does not compile without joining it, and this domain follows without
+// anyone remembering to.
+//
+// Reuses each cause's own dashboard.auditLog.events.* label (dots->camelCase,
+// the same key derivation org-audit-log-section.tsx's eventKey uses) rather
+// than inventing parallel "this happened" wording for a concept the log
+// already names.
 
 function eventDotsToCamel(type: string): string {
   return type
