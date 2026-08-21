@@ -1,0 +1,24 @@
+apps/dashboard/components/model/criterion-compliance-dialog.test.tsx
+  s_58dd112dc09435::t_6324ff0014cb8e 193-199,204-209
+  s_58dd112dc09435::t_0bff4e59b84cf8 200-203
+apps/dashboard/app/(app)/model/approval/page.tsx
+  s_58dd112dc09435::t_878a64628a3fa1 24-29
+apps/dashboard/components/model/chapter-grid.ts
+  s_58dd112dc09435::t_f6ca0dcbba35fb 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "44889fe5eb18fbee80b4f51b500b9cdeae6911e7",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
