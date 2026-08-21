@@ -5,6 +5,8 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import NumberFlow from "@number-flow/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
+  DIMENSION_KEYS,
+  DIMENSION_MAX_ACTIVE,
   type DimensionKey,
   DIMENSION_WEIGHT_WARNING_SHARE,
   PEOPLE_LEADERSHIP_LIBRARY_KEY,
@@ -20,6 +22,7 @@ import Link from "next/link"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
+import { DimensionFrame } from "@/components/model/dimension-frame"
 import { WeightBudgetBar } from "@/components/model/weight-budget-bar"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
 import {
@@ -27,6 +30,7 @@ import {
   type WeightMotivationTarget,
 } from "@/components/model/weight-motivation-dialog"
 import { WeightReviewPanel } from "@/components/model/weight-review-panel"
+import { WorkingConditionsEmptyColumn } from "@/components/model/working-conditions-empty-column"
 import { MorphPopover } from "@/components/morph-popover"
 import { useOrganization } from "@/components/org-context"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
@@ -53,6 +57,13 @@ interface MotivationNote {
 // than opening a block of its own, and is sized to the one or two digits it
 // stands in for.
 const NUMBER_BAR_CLASS = "inline-block h-3 w-5 align-middle"
+
+// How many placeholder cards a dimension's column stands up while the model
+// loads: two, or the dimension's own cap where that is lower, so the fourth
+// column never promises a second criterion the model may not hold one of.
+const SKELETON_CARDS: Record<DimensionKey, number> = Object.fromEntries(
+  DIMENSION_KEYS.map((key) => [key, Math.min(2, DIMENSION_MAX_ACTIVE[key])])
+) as Record<DimensionKey, number>
 
 // The Viktning chapter: how much each chosen criterion counts.
 //
@@ -245,7 +256,12 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
             const placed = criteria.filter(
               (criterion) => criterion.dimensionKey === dimension.key
             )
-            if (placed.length === 0) return null
+            const isWorkingConditions = dimension.key === "workingConditions"
+            // An empty column draws nothing, EXCEPT the fourth: the other
+            // three are incomplete on their way to being filled, while
+            // working conditions can be empty as a finished answer, and the
+            // column says which (WorkingConditionsEmptyColumn).
+            if (placed.length === 0 && !isWorkingConditions) return null
             // The same comparison the engine makes, against the same exported
             // constant and the same unrounded fraction, so the note and the
             // checklist row cannot land on opposite sides of the threshold.
@@ -324,33 +340,43 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
               })
             }
             return (
-              <section key={dimension.key} className="space-y-2">
-                {/* The dimension's own share of the weighting, beside its
-                    name: the balance between dimensions is the thing this
-                    chapter can get wrong, and it was only visible on the
-                    Godkännande checklist after the fact. Derived from the
-                    LOCAL allocation, so it moves with an unsaved edit the way
-                    the cards' own shares do, and rounded to whole points
-                    because a heading is a balance reading rather than a figure
-                    anyone reconciles. */}
-                <h3 className="truncate font-medium text-sm">
-                  {t.rich("dimensionShare", {
-                    dimension: dimension.name,
-                    share: () => (
-                      <NumberFlow
-                        value={shareFraction(
-                          placed.reduce(
-                            (sum, criterion) => sum + pointsFor(criterion),
-                            0
-                          ),
-                          totalPoints
-                        )}
-                        format={DIMENSION_SHARE_FORMAT}
-                      />
-                    ),
-                  })}
-                </h3>
-                {/* The weight warnings WHERE THE DECISION IS MADE, not only as
+              // The same dashed frame every chapter draws its dimensions in;
+              // this chapter's lens is the share beside the name.
+              //
+              // The dimension's own share of the weighting, beside its name:
+              // the balance between dimensions is the thing this chapter can
+              // get wrong, and it was only visible on the Godkännande
+              // checklist after the fact. Derived from the LOCAL allocation,
+              // so it moves with an unsaved edit the way the cards' own shares
+              // do, and rounded to whole points because a heading is a balance
+              // reading rather than a figure anyone reconciles.
+              <DimensionFrame
+                key={dimension.key}
+                heading={
+                  <h3 className="truncate font-medium text-sm">
+                    {t.rich("dimensionShare", {
+                      dimension: dimension.name,
+                      share: () => (
+                        <NumberFlow
+                          value={shareFraction(
+                            placed.reduce(
+                              (sum, criterion) => sum + pointsFor(criterion),
+                              0
+                            ),
+                            totalPoints
+                          )}
+                          format={DIMENSION_SHARE_FORMAT}
+                        />
+                      ),
+                    })}
+                  </h3>
+                }
+              >
+                {/* The frame's body carries no spacing of its own (the
+                    Kriterier column's blocks space themselves), so this
+                    chapter's notes and cards get theirs here. */}
+                <div className="space-y-2">
+                  {/* The weight warnings WHERE THE DECISION IS MADE, not only as
                     a verdict two chapters later. Each sits under the heading it
                     is about, so the fact, the figure and both ways out (record
                     why, or move points) are one thing to read; the Godkännande
@@ -359,64 +385,76 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
                     Answered and unanswered render the same box, so recording a
                     motivation changes the tone and the wording without moving
                     the cards under it. */}
-                {notes.map((note) => (
-                  // Not a live region: it describes the SAVED allocation, so it
-                  // never changes under the reader's own hands the way the
-                  // budget bar above does, and more polite regions on one
-                  // chapter only make the first one harder to hear.
-                  <div
-                    key={note.id}
-                    className={cn(
-                      "space-y-2 rounded-md border p-3 text-sm",
-                      note.flagged
-                        ? WARNING_ALERT_CLASS
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    <p>{note.text}</p>
-                    {isAdmin && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setMotivating(note.target)}
-                      >
-                        {t(note.flagged ? "motivateCta" : "editMotivationCta")}
-                      </Button>
-                    )}
-                  </div>
-                ))}
-                {/* Nothing on this chapter adds or removes a criterion (that
+                  {notes.map((note) => (
+                    // Not a live region: it describes the SAVED allocation, so it
+                    // never changes under the reader's own hands the way the
+                    // budget bar above does, and more polite regions on one
+                    // chapter only make the first one harder to hear.
+                    <div
+                      key={note.id}
+                      className={cn(
+                        "space-y-2 rounded-md border p-3 text-sm",
+                        note.flagged
+                          ? WARNING_ALERT_CLASS
+                          : "text-muted-foreground"
+                      )}
+                    >
+                      <p>{note.text}</p>
+                      {isAdmin && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setMotivating(note.target)}
+                        >
+                          {t(
+                            note.flagged ? "motivateCta" : "editMotivationCta"
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  {/* Nothing on this chapter adds or removes a criterion (that
                     is the Kriterier chapter's job), but the model is a live
                     query: a criterion removed there, or in another tab, still
                     leaves this list. popLayout takes it out of flow at once so
                     the cards under it close the gap in one pass rather than
                     waiting out the fade (ui-animation.md rules 3 and 6), and
                     initial={false} keeps arriving on the page from animating. */}
-                <ul className="space-y-2">
-                  <AnimatePresence initial={false} mode="popLayout">
-                    {placed.map((criterion) => (
-                      <PlacedCriterionCard
-                        key={criterion.criterionId}
-                        criterion={criterion}
-                        weight={{
-                          points: pointsFor(criterion),
-                          share: shareFraction(
-                            pointsFor(criterion),
-                            totalPoints
-                          ),
-                          onChange: (points) =>
-                            setDraft((current) => ({
-                              ...current,
-                              [criterion.criterionId]: points,
-                            })),
-                        }}
-                        disabled={saving}
-                      />
-                    ))}
-                  </AnimatePresence>
-                </ul>
-              </section>
+                  {placed.length === 0 ? (
+                    // Only ever the fourth column: the heading above it carries
+                    // its honest 0%, and the line says why there is nothing
+                    // under it to weight.
+                    <WorkingConditionsEmptyColumn
+                      decision={model.workingConditions}
+                    />
+                  ) : (
+                    <ul className="space-y-2">
+                      <AnimatePresence initial={false} mode="popLayout">
+                        {placed.map((criterion) => (
+                          <PlacedCriterionCard
+                            key={criterion.criterionId}
+                            criterion={criterion}
+                            weight={{
+                              points: pointsFor(criterion),
+                              share: shareFraction(
+                                pointsFor(criterion),
+                                totalPoints
+                              ),
+                              onChange: (points) =>
+                                setDraft((current) => ({
+                                  ...current,
+                                  [criterion.criterionId]: points,
+                                })),
+                            }}
+                            disabled={saving}
+                          />
+                        ))}
+                      </AnimatePresence>
+                    </ul>
+                  )}
+                </div>
+              </DimensionFrame>
             )
           })}
         </div>
@@ -489,20 +527,24 @@ function WeightingChapterSkeleton() {
           </Button>
         }
       />
+      {/* Four columns, one per dimension: the fourth always draws (it explains
+          its own emptiness rather than vanishing), and the other three draw
+          here because the common model fills every one of them. */}
       <div className={CHAPTER_GRID_CLASS}>
-        {Array.from({ length: 2 }, (_, column) => (
-          <div
-            // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
-            key={column}
-            className="space-y-2"
+        {DIMENSION_KEYS.map((key) => (
+          <DimensionFrame
+            key={key}
+            heading={
+              /* The dimension's name is library content, but the SHARE beside
+                 it in the loaded heading is the data, so the whole heading
+                 waits as one bar rather than half a sentence. */
+              <div className="flex h-5 items-center">
+                <Skeleton className="h-4 w-32" />
+              </div>
+            }
           >
-            {/* The dimension's name is library content, but WHICH dimensions
-                hold criteria is the data, so the heading is a bar here. */}
-            <div className="flex h-5 items-center">
-              <Skeleton className="h-4 w-32" />
-            </div>
             <ul aria-hidden="true" className="space-y-2">
-              {Array.from({ length: 2 }, (_, row) => (
+              {Array.from({ length: SKELETON_CARDS[key] }, (_, row) => (
                 <li
                   // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
                   key={row}
@@ -520,7 +562,7 @@ function WeightingChapterSkeleton() {
                 </li>
               ))}
             </ul>
-          </div>
+          </DimensionFrame>
         ))}
       </div>
     </div>

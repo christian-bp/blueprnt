@@ -332,10 +332,15 @@ describe("the Kriterier chapter", () => {
   afterEach(() => cleanup())
 
   it("shows every dimension as a column holding its own chosen criteria", () => {
-    renderChapter()
+    const { container } = renderChapter()
     for (const dimension of DIMENSIONS) {
       expect(column(dimension.name)).toBeDefined()
     }
+    // In the one shared frame every chapter draws its dimensions in, so a
+    // tweak to the box lands on all three at once.
+    expect(
+      container.querySelectorAll('[data-slot="dimension-frame"]')
+    ).toHaveLength(DIMENSIONS.length)
     expect(
       within(column("Competence")).getByText(KNOWLEDGE_DEPTH)
     ).toBeDefined()

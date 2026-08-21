@@ -24,6 +24,7 @@ import { HATCH_CLASS } from "@/components/hatch"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
 import { DimensionColumn } from "@/components/model/dimension-column"
+import { DimensionFrame } from "@/components/model/dimension-frame"
 import { LibraryPickerDialog } from "@/components/model/library-picker-dialog"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
 import { WorkingConditionsDecision } from "@/components/model/working-conditions-decision"
@@ -200,28 +201,26 @@ function ColumnSkeleton({
   const t = useTranslations("dashboard.model.criteria")
   const tHelp = useTranslations("dashboard.help")
   return (
-    <div className="rounded-xl border border-dashed p-3">
-      <div className="flex items-center justify-between gap-2">
-        <h3 className="flex min-w-0 items-center gap-1 font-medium text-sm">
-          <span className="truncate">{title}</span>
-          <HelpMorphButton label={tHelp("dimensionLabel")}>
-            {helpBody}
-          </HelpMorphButton>
-        </h3>
-        {/* The count chip's box: a Badge is h-5 and pill-shaped. */}
-        <Skeleton className="h-5 w-20 shrink-0 rounded-4xl" />
-      </div>
-      <div className="mt-3">
-        <div
-          aria-hidden="true"
-          className={`h-16 w-full rounded-md ${HATCH_CLASS}`}
-        />
-      </div>
-      {/* The column's own add row, in the same slot the loaded column puts it:
-          static chrome with a static label, so it renders as itself, muted and
-          inert. Whether this dimension still has room is the unknown, so it
-          cannot be live. */}
-      <div className="mt-2">
+    // The real frame, so the loading column and the loaded one cannot measure
+    // differently: only what is unknown until the data arrives is a bar.
+    <DimensionFrame
+      heading={
+        <>
+          <h3 className="flex min-w-0 items-center gap-1 font-medium text-sm">
+            <span className="truncate">{title}</span>
+            <HelpMorphButton label={tHelp("dimensionLabel")}>
+              {helpBody}
+            </HelpMorphButton>
+          </h3>
+          {/* The count chip's box: a Badge is h-5 and pill-shaped. */}
+          <Skeleton className="h-5 w-20 shrink-0 rounded-4xl" />
+        </>
+      }
+      // The column's own add row, in the same slot the loaded column puts it:
+      // static chrome with a static label, so it renders as itself, muted and
+      // inert. Whether this dimension still has room is the unknown, so it
+      // cannot be live.
+      footer={
         <Button
           type="button"
           variant="ghost"
@@ -236,8 +235,13 @@ function ColumnSkeleton({
           />
           {t("addCta")}
         </Button>
-      </div>
-    </div>
+      }
+    >
+      <div
+        aria-hidden="true"
+        className={`h-16 w-full rounded-md ${HATCH_CLASS}`}
+      />
+    </DimensionFrame>
   )
 }
 

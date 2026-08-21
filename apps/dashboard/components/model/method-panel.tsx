@@ -3,7 +3,11 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { criteriaLibraryContent } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
-import { DIMENSION_KEYS } from "@workspace/core"
+import {
+  DIMENSION_KEYS,
+  DIMENSION_MAX_ACTIVE,
+  type DimensionKey,
+} from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import { Item, ItemContent, ItemFooter } from "@workspace/ui/components/item"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -16,9 +20,17 @@ import { type ReactNode, useState } from "react"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
 import { ChapterStatusAlert } from "@/components/model/chapter-status-alert"
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
+import { DimensionFrame } from "@/components/model/dimension-frame"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
+import { WorkingConditionsEmptyColumn } from "@/components/model/working-conditions-empty-column"
 import { useOrganization } from "@/components/org-context"
 import { chapterHref } from "@/lib/model-chapters"
+
+// How many placeholder cards a dimension's column stands up while the model
+// loads: two, or the dimension's own cap where that is lower.
+const SKELETON_CARDS: Record<DimensionKey, number> = Object.fromEntries(
+  DIMENSION_KEYS.map((key) => [key, Math.min(2, DIMENSION_MAX_ACTIVE[key])])
+) as Record<DimensionKey, number>
 
 const MethodAppendixDownload = dynamic(
   () =>
@@ -156,12 +168,28 @@ export function MethodPanel({ orgId }: { orgId: string }) {
             const placed = data.criteria.filter(
               (criterion) => criterion.dimensionKey === key
             )
-            // A dimension the model holds nothing in has nothing to document, so
-            // it draws no column at all (the same rule the Viktning chapter
-            // follows; choosing a criterion for it is the Kriterier chapter's).
-            if (placed.length === 0) return null
+            const isWorkingConditions = key === "workingConditions"
+            // A dimension the model holds nothing in has nothing to document,
+            // so it draws no column at all (the same rule the Viktning chapter
+            // follows; choosing a criterion for it is the Kriterier
+            // chapter's). The fourth is the exception, because its emptiness
+            // can be the finished answer rather than a gap, and the column
+            // itself says which.
+            if (placed.length === 0 && !isWorkingConditions) return null
             return (
-              <DimensionSection key={key} title={content.dimensions[key].name}>
+              <DimensionSection
+                key={key}
+                title={content.dimensions[key].name}
+                empty={
+                  placed.length === 0 ? (
+                    // Only ever the fourth column, and the decision rides the
+                    // checks query this chapter already subscribes to.
+                    <WorkingConditionsEmptyColumn
+                      decision={checks?.workingConditions}
+                    />
+                  ) : undefined
+                }
+              >
                 {/* Nothing on this chapter adds or removes a criterion, but the
                   model is a live query: a criterion removed on the Kriterier
                   chapter, or in another tab, still leaves this column.
@@ -220,17 +248,27 @@ export function MethodPanel({ orgId }: { orgId: string }) {
 function DimensionSection({
   title,
   children,
+  empty,
 }: {
   title: string
-  children: ReactNode
+  // The dimension's cards, as list ITEMS: the section owns the <ul>, so a card
+  // cannot end up an orphan <li> in whichever state mounted it.
+  children?: ReactNode
+  // What stands in for the list where the dimension holds nothing: today only
+  // the fourth column's explanation of its own emptiness. It REPLACES the
+  // list rather than sitting beside it, because an empty <ul> is a list a
+  // screen reader still announces.
+  empty?: ReactNode
 }) {
   return (
-    <section className="space-y-2">
-      {/* No share figure beside the name, unlike the Viktning heading: this
-          chapter neither sets nor reads the weighting. */}
-      <h3 className="truncate font-medium text-sm">{title}</h3>
-      <ul className="space-y-2">{children}</ul>
-    </section>
+    // The same dashed frame every chapter draws its dimensions in. No share
+    // figure beside the name, unlike the Viktning heading: this chapter
+    // neither sets nor reads the weighting.
+    <DimensionFrame
+      heading={<h3 className="truncate font-medium text-sm">{title}</h3>}
+    >
+      {empty ?? <ul className="space-y-2">{children}</ul>}
+    </DimensionFrame>
   )
 }
 
@@ -264,7 +302,10 @@ function MethodPanelSkeleton({
       <div className={CHAPTER_GRID_CLASS}>
         {DIMENSION_KEYS.map((key) => (
           <DimensionSection key={key} title={content.dimensions[key].name}>
-            {Array.from({ length: 2 }, (_, card) => (
+            {/* Two placeholder cards, or the dimension's own cap where that is
+                lower, so the fourth column never promises a second criterion
+                the model cannot hold. */}
+            {Array.from({ length: SKELETON_CARDS[key] }, (_, card) => (
               <MethodCardSkeleton
                 // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
                 key={card}

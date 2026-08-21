@@ -40,7 +40,10 @@ import {
 } from "@/lib/working-conditions-schema"
 
 // The two answers to the materiality question, in the engine's own words.
-type MaterialityStatus = "active" | "testedNotMaterial"
+// Exported because the chapters that only DISPLAY the model read the same
+// answer to explain their fourth column, and a second copy of the union would
+// be a third place to update when the engine's words change.
+export type MaterialityStatus = "active" | "testedNotMaterial"
 
 // The recorded materiality decision, as the Kriterier chapter's own model
 // query already serves it. decidedBy is deliberately not part of this shape:

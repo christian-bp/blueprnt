@@ -98,12 +98,22 @@ function criterion(overrides: Record<string, unknown>) {
   }
 }
 
-function makeModel(entries: ReturnType<typeof criterion>[]) {
+function makeModel(
+  entries: ReturnType<typeof criterion>[],
+  // The recorded materiality decision, as getModel carries it: what the fourth
+  // column says when it holds nothing.
+  workingConditions: {
+    status: "active" | "testedNotMaterial"
+    motivation: string
+    decidedBy: string
+    decidedAt: number
+  } | null = null
+) {
   return {
     modelId: "model-1",
     name: "Standard",
     approval: null,
-    workingConditions: null,
+    workingConditions,
     criteria: entries,
     sharedScale: [],
     midpoints: { step2: "", step4: "" },
@@ -205,6 +215,13 @@ const groupFor = (name: string) =>
   })
 const save = () => screen.getByRole("button", { name: weighting.saveCta })
 
+// The fourth dimension's column, which is drawn whether or not it holds a
+// criterion.
+const workingConditionsColumn = () =>
+  screen
+    .getByRole("heading", { name: /Working conditions/ })
+    .closest("section") as HTMLElement
+
 describe("the Viktning chapter", () => {
   beforeEach(() => {
     rebalanceWeights.mockReset()
@@ -235,10 +252,41 @@ describe("the Viktning chapter", () => {
       .closest("section") as HTMLElement
     expect(within(responsibility).getAllByRole("group")).toHaveLength(3)
     expect(groupFor(COMPLEXITY)).toBeDefined()
-    // A dimension with nothing chosen draws no empty column here.
+    // The fourth column is drawn whatever it holds, but nothing in it is
+    // weighted while it holds nothing.
+    expect(within(workingConditionsColumn()).queryAllByRole("group")).toEqual(
+      []
+    )
+  })
+
+  // Every chapter draws its dimensions in the one shared frame, so a tweak to
+  // the box lands on all three at once.
+  it("draws every column in the shared dimension frame", () => {
+    const { container } = renderChapter()
     expect(
-      screen.queryByRole("heading", { name: /Working conditions/ })
+      container.querySelectorAll('[data-slot="dimension-frame"]')
+    ).toHaveLength(4)
+  })
+
+  // Every OTHER dimension keeps the rule: an empty column is a gap on the way
+  // to being filled, and a gap draws nothing.
+  it("draws no column for an empty dimension that is not working conditions", () => {
+    modelResult = makeModel([
+      criterion({
+        criterionId: "c1",
+        libraryKey: "complexity-ambiguity",
+        dimensionKey: "effort",
+        name: COMPLEXITY,
+        weightPoints: 3,
+        order: 1,
+      }),
+    ])
+    renderChapter()
+    expect(screen.queryByRole("heading", { name: /Competence/ })).toBeNull()
+    expect(
+      screen.queryByRole("heading", { name: /Responsibility and impact/ })
     ).toBeNull()
+    expect(workingConditionsColumn()).toBeDefined()
   })
 
   // The balance between dimensions is the thing this chapter can get wrong,
@@ -410,6 +458,114 @@ describe("the Viktning chapter", () => {
     // Nothing is weighted yet, so no weight row exists to be edited.
     expect(screen.queryAllByRole("group")).toHaveLength(0)
   })
+
+  // One column per dimension, because the fourth is now drawn whatever it
+  // holds and the common model fills the other three.
+  it("stands four columns up while the model loads", () => {
+    modelResult = undefined
+    const { container } = renderChapter()
+    const grid = container.querySelector('[class*="sm:grid-cols-2"]')
+    expect(grid?.children).toHaveLength(4)
+    // In the same frame the loaded chapter draws them in.
+    expect(
+      container.querySelectorAll('[data-slot="dimension-frame"]')
+    ).toHaveLength(4)
+    // Two placeholder cards each, except the fourth: its dimension caps at
+    // one, so a second there would promise a criterion the model cannot hold.
+    expect(container.querySelectorAll("ul li")).toHaveLength(7)
+  })
+  // The fourth dimension never vanishes: an empty competence column is a gap
+  // on the way to being filled, while an empty working-conditions column can
+  // be the finished answer, and only the column itself can say which.
+  describe("the working-conditions column", () => {
+    const workingConditions =
+      messages.dashboard.model.criteria.workingConditions
+    const decision = (status: "active" | "testedNotMaterial") => ({
+      status,
+      motivation: "m",
+      decidedBy: "u1",
+      decidedAt: 1,
+    })
+    // The sentence as one paragraph: two of the three carry a link, which
+    // splits them across elements, and the default matcher does not join those.
+    const lineNode = (key: keyof typeof workingConditions) =>
+      within(workingConditionsColumn()).queryByText(
+        (_, node) =>
+          node?.tagName === "P" &&
+          node.textContent === workingConditions[key].replace(/<\/?link>/g, "")
+      )
+    const hatch = () =>
+      within(workingConditionsColumn()).queryByRole("img", {
+        name: messages.dashboard.model.criteria.columnEmpty,
+      })
+
+    it("stands empty with the materiality test still to take", () => {
+      renderChapter()
+      expect(lineNode("columnUndecided")).not.toBeNull()
+      expect(
+        within(workingConditionsColumn())
+          .getByRole("link", { name: /Criteria chapter/ })
+          .getAttribute("href")
+      ).toBe("/model/criteria")
+      expect(hatch()).not.toBeNull()
+    })
+
+    it("stands empty, judged material, pointing at where its criterion is chosen", () => {
+      modelResult = makeModel(BALANCED.criteria, decision("active"))
+      renderChapter()
+      expect(lineNode("columnMaterial")).not.toBeNull()
+      expect(hatch()).not.toBeNull()
+    })
+
+    // A finished answer, so there is nowhere to be sent: the dimension is
+    // settled and no criterion is coming.
+    it("stands empty, tested and found not material, with nowhere to go", () => {
+      modelResult = makeModel(BALANCED.criteria, decision("testedNotMaterial"))
+      renderChapter()
+      expect(lineNode("columnNotMaterial")).not.toBeNull()
+      expect(within(workingConditionsColumn()).queryByRole("link")).toBeNull()
+      expect(hatch()).not.toBeNull()
+    })
+
+    // The heading keeps this chapter's lens on the column it explains: a
+    // dimension carrying nothing carries 0% of the weight, which is true.
+    it("keeps its share in the heading, at an honest zero", () => {
+      renderChapter()
+      expect(
+        screen.getByRole("heading", { name: /Working conditions/ }).textContent
+      ).toBe(
+        weighting.dimensionShare
+          .replace("{dimension}", "Working conditions")
+          .replace("<share></share>", "0%")
+      )
+    })
+
+    // Staffed, the column is every other column: its criterion's weight row,
+    // and no explanation of an emptiness that is not there.
+    it("weights its criterion, and drops the hatch, once one is chosen", () => {
+      modelResult = makeModel(
+        [
+          ...BALANCED.criteria,
+          criterion({
+            criterionId: "c6",
+            libraryKey: "safety-exposure",
+            dimensionKey: "workingConditions",
+            name: "Safety exposure",
+            weightPoints: 3,
+            order: 6,
+          }),
+        ],
+        decision("active")
+      )
+      renderChapter()
+      expect(
+        within(workingConditionsColumn()).getAllByRole("group")
+      ).toHaveLength(1)
+      expect(hatch()).toBeNull()
+      expect(lineNode("columnMaterial")).toBeNull()
+    })
+  })
+
   // The dominance warning WHERE THE DECISION IS MADE. It used to exist only as
   // a verdict on the Godkännande checklist two chapters later, with no surface
   // anywhere in the app that could write the motivation it asked for.

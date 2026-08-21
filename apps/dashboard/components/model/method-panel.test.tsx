@@ -103,9 +103,12 @@ const METHOD_MODEL = {
   modelApproved: false,
 }
 
-// The engine's twelve checks, as the chapter reads them: only overlapPairs
-// matters to this surface, so the rest stay green.
-function methodChecks(pairs: string[][]) {
+// The engine's twelve checks, as the chapter reads them: overlapPairs and the
+// materiality decision are what this surface reads, so the rest stay green.
+function methodChecks(
+  pairs: string[][],
+  decision: { status: "active" | "testedNotMaterial" } | null
+) {
   return {
     checks: [
       {
@@ -117,9 +120,29 @@ function methodChecks(pairs: string[][]) {
     ],
     approval: null,
     lastApprovedAt: null,
-    workingConditions: null,
+    workingConditions:
+      decision === null
+        ? null
+        : { ...decision, motivation: "m", decidedBy: "u1", decidedAt: 1 },
     dimensionShares: [],
   }
+}
+
+// The same model with its fourth dimension staffed: the dimension caps at one
+// criterion, so this is the only shape the column's filled state has.
+const STAFFED_MODEL = {
+  ...METHOD_MODEL,
+  criteria: [
+    ...METHOD_MODEL.criteria,
+    {
+      ...METHOD_MODEL.criteria[0],
+      criterionId: "c4",
+      libraryKey: "safety-exposure",
+      dimensionKey: "workingConditions",
+      name: "Exposure",
+      order: 4,
+    },
+  ],
 }
 
 // The model as a brand-new org has it: a model exists, nothing is chosen for
@@ -134,9 +157,16 @@ const EMPTY_MODEL = {
 let overlapPairs: string[][] = []
 let loading = false
 let empty = false
+// The recorded materiality decision, and whether the model holds a
+// working-conditions criterion: the fourth column's two inputs.
+let materiality: { status: "active" | "testedNotMaterial" } | null = null
+let checksLoading = false
+let staffed = false
 
 const m = messages.dashboard.model.method
 const weighting = messages.dashboard.model.weighting
+const criteria = messages.dashboard.model.criteria
+const workingConditions = criteria.workingConditions
 
 // The empty line's own words, with the link tag taken off: the message is one
 // sentence with a link inside it, and the test asserts the sentence the reader
@@ -179,13 +209,19 @@ describe("MethodPanel", () => {
     overlapPairs = []
     loading = false
     empty = false
+    materiality = null
+    checksLoading = false
+    staffed = false
     onQuery((ref) => {
       if (ref === "evaluationModel.method.getMethodModel") {
         if (loading) return undefined
-        return empty ? EMPTY_MODEL : METHOD_MODEL
+        if (empty) return EMPTY_MODEL
+        return staffed ? STAFFED_MODEL : METHOD_MODEL
       }
       if (ref === "evaluationModel.approval.getMethodChecks") {
-        return methodChecks(overlapPairs)
+        return checksLoading
+          ? undefined
+          : methodChecks(overlapPairs, materiality)
       }
       return undefined
     })
@@ -251,17 +287,23 @@ describe("MethodPanel", () => {
     expect(screen.queryByRole("link", { name: EMPTY_LINK_TEXT })).toBeNull()
   })
 
+  // Every chapter draws its dimensions in the one shared frame, so a tweak to
+  // the box lands on all three at once.
+  it("draws every column in the shared dimension frame", () => {
+    const { container } = renderPanel()
+    // Competence, responsibility, and the fourth column that never vanishes.
+    expect(
+      container.querySelectorAll('[data-slot="dimension-frame"]')
+    ).toHaveLength(3)
+  })
+
   // A dimension the model holds nothing in has nothing to document, so it
   // draws no column at all (choosing a criterion for it is Kriterier's job).
+  // The fourth is the exception, and has its own describe below.
   it("draws no column for a dimension the model holds nothing in", () => {
     renderPanel()
     expect(
       screen.queryByRole("heading", { name: library.dimensions.effort.name })
-    ).toBeNull()
-    expect(
-      screen.queryByRole("heading", {
-        name: library.dimensions.workingConditions.name,
-      })
     ).toBeNull()
   })
 
@@ -332,6 +374,79 @@ describe("MethodPanel", () => {
     expect(screen.queryByText(m.dialogTitle)).toBeNull()
   })
 
+  // The fourth dimension never vanishes: an empty competence column is a gap
+  // on the way to being filled, while an empty working-conditions column can
+  // be the finished answer, and only the column itself can say which.
+  describe("the working-conditions column", () => {
+    const wc = () => column(library.dimensions.workingConditions.name)
+    const hatch = () => wc().queryByRole("img", { name: criteria.columnEmpty })
+    const line = (key: keyof typeof workingConditions) =>
+      workingConditions[key].replace(/<\/?link>/g, "")
+    // The sentence as one paragraph: two of the three carry a link, which
+    // splits them across elements, and the default matcher does not join those.
+    const lineNode = (key: keyof typeof workingConditions) =>
+      wc().queryByText(
+        (_, node) => node?.tagName === "P" && node.textContent === line(key)
+      )
+
+    it("stands empty with the materiality test still to take", () => {
+      materiality = null
+      renderPanel()
+      expect(lineNode("columnUndecided")).not.toBeNull()
+      expect(
+        wc()
+          .getByRole("link", { name: /Criteria chapter/ })
+          .getAttribute("href")
+      ).toBe("/model/criteria")
+      expect(hatch()).not.toBeNull()
+    })
+
+    it("stands empty, judged material, pointing at where its criterion is chosen", () => {
+      materiality = { status: "active" }
+      renderPanel()
+      expect(lineNode("columnMaterial")).not.toBeNull()
+      expect(wc().getByRole("link", { name: /Criteria chapter/ })).toBeDefined()
+      expect(hatch()).not.toBeNull()
+    })
+
+    // A finished answer, so there is nowhere to be sent: the dimension is
+    // settled and no criterion is coming.
+    it("stands empty, tested and found not material, with nowhere to go", () => {
+      materiality = { status: "testedNotMaterial" }
+      renderPanel()
+      expect(lineNode("columnNotMaterial")).not.toBeNull()
+      expect(wc().queryByRole("link")).toBeNull()
+      expect(hatch()).not.toBeNull()
+    })
+
+    // Which of the three sentences is true is precisely what the checks query
+    // carries, so none of them is guessed before it lands.
+    it("says nothing while the decision is still loading", () => {
+      checksLoading = true
+      renderPanel()
+      for (const key of [
+        "columnUndecided",
+        "columnMaterial",
+        "columnNotMaterial",
+      ] as const) {
+        expect(lineNode(key)).toBeNull()
+      }
+      expect(hatch()).not.toBeNull()
+    })
+
+    // Staffed, the column is every other column: its criterion's card, and no
+    // explanation of an emptiness that is not there.
+    it("draws its criterion's card, and no hatch, once one is chosen", () => {
+      staffed = true
+      materiality = { status: "active" }
+      renderPanel()
+      expect(wc().getByText("Exposure")).toBeDefined()
+      expect(wc().getByRole("button", { name: m.openCta })).toBeDefined()
+      expect(hatch()).toBeNull()
+      expect(lineNode("columnMaterial")).toBeNull()
+    })
+  })
+
   // The Godkännande checklist can only say that SOME pair is unreviewed; the
   // note that clears it is written behind an individual criterion's Document
   // button, so the flag belongs on the card that can answer it.
@@ -378,6 +493,10 @@ describe("MethodPanel", () => {
     it("draws the real dimension headings on the same grid", () => {
       const { container } = renderPanel()
       expect(gridOf(container)?.className).toBe(CHAPTER_GRID_CLASS)
+      // Four framed columns, the same box the loaded chapter draws.
+      expect(
+        container.querySelectorAll('[data-slot="dimension-frame"]')
+      ).toHaveLength(4)
       for (const dimension of Object.values(library.dimensions)) {
         expect(
           screen.getByRole("heading", { name: dimension.name })
@@ -387,14 +506,17 @@ describe("MethodPanel", () => {
 
     it("stands placeholder cards in the columns, with the real action", () => {
       const { container } = renderPanel()
+      // Two per column, except the fourth: its dimension caps at one
+      // criterion, so a second placeholder there would promise one the model
+      // cannot hold.
       const cards = container.querySelectorAll("ul li")
-      expect(cards).toHaveLength(8)
+      expect(cards).toHaveLength(7)
       // The action's label is static i18n text, so it renders as itself
       // (muted and inert) rather than as a gray bar. The placeholder is out of
       // the accessibility tree and out of the tab order, so the inert copy is
       // never offered to anyone: queried by text for exactly that reason.
       const actions = screen.getAllByText(m.openCta)
-      expect(actions).toHaveLength(8)
+      expect(actions).toHaveLength(7)
       expect(actions[0]?.getAttribute("tabindex")).toBe("-1")
       expect(cards[0]?.getAttribute("aria-hidden")).toBe("true")
     })
