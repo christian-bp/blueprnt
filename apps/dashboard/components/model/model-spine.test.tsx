@@ -70,25 +70,48 @@ describe("ModelSpine", () => {
     expect(visible.trim()).toBe(m.heading)
   })
 
-  // Metod carries a step per criterion plus the materiality decision, so it is
-  // the widest segment: the weighting is what makes that honest rather than
-  // "one chapter of four".
-  it("weights the chapters' segments by the work they hold", () => {
+  // This section's chapters are stations of one build, so they are equally
+  // wide whatever they hold: Metod carries a step per criterion and would
+  // otherwise be most of the bar. The kartläggning's analysis spine takes the
+  // other geometry (see analysis-spine.test.tsx).
+  it("gives every chapter the same width whatever it holds", () => {
     const { container } = renderSpine()
     const segments = [
       ...(container.querySelector('[role="progressbar"]')?.children ?? []),
     ] as HTMLElement[]
     expect(segments.map((segment) => segment.style.flexGrow)).toEqual([
-      "6",
-      "3",
-      "7",
+      "1",
+      "1",
+      "1",
       "1",
     ])
+    // The name above and the count below ride the same flex, so they stay
+    // over and under the chapter they belong to.
+    for (const row of [titleRowOf(container), countRowOf(container)]) {
+      expect(
+        [...(row?.children ?? [])].map(
+          (cell) => (cell as HTMLElement).style.flexGrow
+        )
+      ).toEqual(["1", "1", "1", "1"])
+    }
     expect(
       container
         .querySelector('[role="progressbar"]')
         ?.getAttribute("aria-label")
     ).toBe(m.progressBarLabel)
+  })
+
+  // Equal segments are geometry only: the announced figure is still the work
+  // done over the whole model, so a section of four chapters where one holds
+  // seven steps cannot read as further along than it is.
+  it("still announces the work-weighted percentage", () => {
+    const { container } = renderSpine()
+    // 4 of 17 steps, not 2 of 4 chapters.
+    expect(
+      container
+        .querySelector('[role="progressbar"]')
+        ?.getAttribute("aria-valuenow")
+    ).toBe("24")
   })
 
   // The open chapter's name sits ABOVE the bar, over its own segment, and its

@@ -80,13 +80,29 @@ describe("AnalysisSpine", () => {
   it("weights each chapter's segment by how much work it holds", () => {
     // One chapter carrying 21 of 31 steps must own most of the bar: equal
     // segments would read "2 of 4 chapters done" as halfway when it is a
-    // sixth of the work.
+    // sixth of the work. This spine does NOT take the shared bar's
+    // equalSegments geometry (the model spine does), and the exact weights
+    // are pinned here so that cannot change from the primitive's side.
     const { container } = renderSpine()
     const bar = container.querySelector('[role="progressbar"]')
     const segments = [...(bar?.children ?? [])] as HTMLElement[]
     expect(segments).toHaveLength(4)
-    expect(segments[0]?.style.flexGrow).toBe("1")
-    expect(segments[3]?.style.flexGrow).toBe("21")
+    expect(segments.map((segment) => segment.style.flexGrow)).toEqual([
+      "1",
+      "4",
+      "5",
+      "21",
+    ])
+    // The count row under the bar carries the same weights, so a figure stays
+    // under the chapter it describes.
+    const countRow = container.querySelector(
+      '[aria-hidden="true"][class*="h-4"]'
+    )
+    expect(
+      [...(countRow?.children ?? [])].map(
+        (cell) => (cell as HTMLElement).style.flexGrow
+      )
+    ).toEqual(["1", "4", "5", "21"])
     // A finished chapter's fill runs the whole segment; an untouched one
     // shows none.
     expect(

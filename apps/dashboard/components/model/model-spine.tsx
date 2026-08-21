@@ -69,6 +69,13 @@ export function ModelSpine({
         total={total}
         segments={chapters}
         activeSegment={activeChapter}
+        // Every chapter the same width, whatever it holds: this section's
+        // chapters are stations of one build, and Metod carrying a step per
+        // criterion made the bar mostly Metod. The kartläggning's analysis
+        // spine does not opt in and stays weighted by work. Each segment still
+        // fills by its own done/total, and the bar still announces the whole
+        // journey's percentage, so only the geometry changes.
+        equalSegments
         // The open chapter's NAME sits ABOVE the bar, over its own segment,
         // and the count keeps the mirror position below it. Both ride the
         // shared bar's per-section callbacks, so the kartläggning's spine
