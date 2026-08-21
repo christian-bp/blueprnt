@@ -43,7 +43,11 @@ export function FloatingStack({ instrument }: { instrument: ReactNode }) {
   const ref = slot.useSlotRef()
   return (
     <div
-      className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex flex-col items-center gap-2 px-4"
+      // gap-3 rather than the tighter spacing the pills had to themselves: a
+      // pill sitting directly on the instrument read as one object with a
+      // strip attached, and they are two readings of different scopes (this
+      // chapter's, the whole journey's).
+      className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex flex-col items-center gap-3 px-4"
       data-slot="floating-stack"
     >
       {/* The pills, ABOVE the instrument. display:contents makes them direct

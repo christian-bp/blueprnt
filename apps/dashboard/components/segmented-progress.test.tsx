@@ -23,6 +23,7 @@ function renderBar(
       done={12}
       total={31}
       renderCount={(segment) => `${segment.done} of ${segment.total}`}
+      renderTitle={(segment) => segment.key}
       segments={CHAPTERS}
       {...overrides}
     />
@@ -65,7 +66,7 @@ describe("SegmentedProgress", () => {
   it("holds a fixed compact width rather than filling its row", () => {
     const { container } = renderBar()
     const tokens = (container.firstElementChild?.className ?? "").split(/\s+/)
-    expect(tokens).toContain("w-80")
+    expect(tokens).toContain("w-96")
     expect(tokens).toContain("shrink-0")
     expect(tokens).not.toContain("w-full")
     // It floats over the page, so anything it covers stays clickable through
@@ -73,13 +74,50 @@ describe("SegmentedProgress", () => {
     expect(tokens).toContain("pointer-events-none")
   })
 
+  // The open chapter's own NAME, above its own segment. Only the open one: a
+  // name on all four is the tab row's job, and the instrument would be
+  // repeating it.
+  it("names the open chapter above its own segment", () => {
+    const { container } = renderBar({ activeSegment: "praxis" })
+    const titleRow = container.querySelector(
+      '[aria-hidden="true"][class*="h-4"]'
+    )
+    expect(
+      [...(titleRow?.children ?? [])].map(
+        (slot) => (slot as HTMLElement).style.flexGrow
+      )
+    ).toEqual(["1", "1", "1", "1"])
+    expect(
+      [...(titleRow?.children ?? [])].map((slot) => slot.textContent)
+    ).toEqual(["", "praxis", "", ""])
+  })
+
+  // Two reserved lines, mirrored around the bar: the name above, the figures
+  // below. Both hold their height with no chapter open, so the rail's total
+  // height is constant and the pills stacked above it never move.
+  it("reserves a line above and below the bar, whatever is open", () => {
+    const { container } = renderBar()
+    const lines = container.querySelectorAll(
+      '[aria-hidden="true"][class*="h-4"]'
+    )
+    expect(lines).toHaveLength(2)
+    for (const line of lines) {
+      expect(line.textContent).toBe("")
+      expect(line.children).toHaveLength(4)
+    }
+    // The bar sits between them.
+    const bar = container.querySelector('[role="progressbar"]')
+    expect(lines[0]?.nextElementSibling).toBe(bar)
+    expect(bar?.nextElementSibling).toBe(lines[1])
+  })
+
   // The one annotation the instrument carries: the OPEN chapter's own pair,
   // under its own segment, on a line that is always there.
   it("counts the open chapter under its own segment", () => {
     const { container } = renderBar({ activeSegment: "praxis" })
-    const countRow = container.querySelector(
+    const countRow = container.querySelectorAll(
       '[aria-hidden="true"][class*="h-4"]'
-    )
+    )[1]
     // Reserved height, one slot per segment on the bar's own flex, so the
     // figure sits beneath the part of the bar it describes.
     expect(
@@ -95,16 +133,6 @@ describe("SegmentedProgress", () => {
 
   // The line holds its height with no chapter open, so a figure sliding in
   // never pushes the title row up or the journey row below it down.
-  it("reserves the count line whether or not a chapter is open", () => {
-    const { container } = renderBar()
-    const countRow = container.querySelector(
-      '[aria-hidden="true"][class*="h-4"]'
-    )
-    expect(countRow).not.toBeNull()
-    expect(countRow?.textContent).toBe("")
-    expect(countRow?.children).toHaveLength(4)
-  })
-
   // Nothing annotates the instrument, in any direction: no name over a
   // segment, no figure under one, and nothing to hover. Everything it could
   // have said is said by the tab row under it, whose open tab prints that
@@ -204,6 +232,7 @@ describe("SegmentedProgress celebration", () => {
         done={4}
         total={4}
         renderCount={(segment) => `${segment.done} of ${segment.total}`}
+        renderTitle={(segment) => segment.key}
         segments={oneSegment(4)}
         celebrateOnComplete
       />
@@ -243,6 +272,7 @@ describe("SegmentedProgress celebration", () => {
         done={2}
         total={4}
         renderCount={(segment) => `${segment.done} of ${segment.total}`}
+        renderTitle={(segment) => segment.key}
         segments={[
           { key: "a", done: 2, total: 2 },
           { key: "b", done: 0, total: 2 },
@@ -260,6 +290,7 @@ describe("SegmentedProgress celebration", () => {
         done={4}
         total={4}
         renderCount={(segment) => `${segment.done} of ${segment.total}`}
+        renderTitle={(segment) => segment.key}
         segments={[
           { key: "a", done: 2, total: 2 },
           { key: "b", done: 2, total: 2 },
@@ -286,6 +317,7 @@ describe("SegmentedProgress celebration", () => {
         done={4}
         total={4}
         renderCount={(segment) => `${segment.done} of ${segment.total}`}
+        renderTitle={(segment) => segment.key}
         segments={oneSegment(4)}
       />
     )

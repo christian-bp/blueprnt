@@ -59,6 +59,12 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
     key: chapter,
     ...modelChapterProgress(input, chapter),
   }))
+  // The chapters' own names, resolved where the key is still typed: the
+  // instrument hands its callbacks a plain ProgressSegment, whose key is a
+  // bare string because the kartläggning's chapters are not this section's.
+  const nameFor = new Map<string, string>(
+    MODEL_CHAPTERS.map((chapter) => [chapter, t(chapter)])
+  )
 
   return (
     // Two slots the chapter fills from its own tree: its action, which lands
@@ -92,6 +98,7 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
               // kartläggning's analysis section does not opt in.
               celebrateOnComplete
               done={overall.done}
+              renderTitle={(segment) => nameFor.get(segment.key) ?? segment.key}
               renderCount={(segment) =>
                 t.rich("countRich", {
                   done: () => <NumberFlow value={segment.done} />,

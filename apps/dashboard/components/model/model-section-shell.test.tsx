@@ -103,7 +103,7 @@ describe("ModelSectionShell", () => {
     // 94%, not the 75% three closed chapters of four would read as.
     expect(bar.getAttribute("aria-valuenow")).toBe("94")
     const tokens = instrument.className.split(/\s+/)
-    expect(tokens).toContain("w-80")
+    expect(tokens).toContain("w-96")
     expect(tokens).toContain("shrink-0")
     // One segment per chapter, all the same width whatever each holds, with
     // the open one held up while the rest recede.

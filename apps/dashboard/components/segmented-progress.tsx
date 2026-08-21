@@ -23,12 +23,13 @@ const SEGMENT_STYLE = { flexGrow: 1, flexBasis: "0.5rem" }
 // live here once, so two sections drawing "how far along is this" can never
 // drift into two different instruments.
 //
-// It is an INSTRUMENT, not a banner: a fixed width on its section's title row
-// rather than a full-width bar. It carries exactly one annotation, the open
-// chapter's own figures, printed UNDER that chapter's own segment: the tab row
-// below names the chapters, so what a reader still cannot get from the shape
-// alone is how far the chapter they are in has come, and the figure says it
-// where the segment it belongs to already is.
+// It is an INSTRUMENT, not a banner: a fixed width on the section's floating
+// rail rather than a full-width bar. It annotates the OPEN chapter and only
+// the open one, on two reserved lines that mirror around the bar: its name
+// above, its figures below, both on the bar's own equal flex so each sits with
+// the segment it belongs to. A reader whose eye is on the rail should not have
+// to count segments back to the tab row to know which chapter the filling one
+// is.
 //
 // What stays with the caller is everything that is section-specific: the title
 // row it rides, the help beside that title, and the WORDS of the count
@@ -40,6 +41,7 @@ export function SegmentedProgress({
   total,
   segments,
   activeSegment,
+  renderTitle,
   renderCount,
   celebrateOnComplete,
 }: {
@@ -61,6 +63,10 @@ export function SegmentedProgress({
   // instrument into a status table, and the reader only ever needs the pair
   // for the chapter they are inside.
   renderCount: (segment: ProgressSegment) => ReactNode
+  // The open chapter's own NAME, above its own segment, mirroring the count
+  // below it. Same rule and same reason: only the open one, because a name on
+  // all four is the tab row's job and the instrument would be repeating it.
+  renderTitle: (segment: ProgressSegment) => ReactNode
   // Plays the same celebration the overview to-do row throws when a work
   // card arrives (CelebrationBurst), over a segment the moment it crosses
   // from incomplete to complete while mounted. Off by default, so a caller
@@ -119,17 +125,54 @@ export function SegmentedProgress({
     // so a section whose chapters hold 21 and 1 steps can never read as
     // halfway on two of four.
     //
-    // A FIXED width, now that it floats rather than sharing a row: w-80
-    // leaves a quarter segment about 78px wide, which the count line under it
-    // uses comfortably (the longest pair any locale prints there is eight
-    // characters, "12 av 21", left-aligned in its own slot). It caps against
-    // the viewport so the narrowest supported phone shows it whole rather than
+    // A FIXED width, now that it floats rather than sharing a row: w-96
+    // leaves a quarter segment about 94px wide, which is what the NAME line
+    // above wants (the count below needs eight characters at most, "12 av
+    // 21"). The longest chapter name any locale prints is nineteen characters
+    // ("Ligeværdigt arbejde", "Samanarvoista työtä") and still overruns that,
+    // which is why the name is nowrap and allowed to overflow its own slot
+    // rather than wrapping: a name that wrapped would change the reserved
+    // line's height and move the pills above it. It caps against the viewport
+    // so the narrowest supported phone shows the rail whole rather than
     // running it off the edge.
     //
     // Transparent to the pointer: the instrument is a shape, not a control,
     // and it floats over the page, so anything it happens to cover has to stay
     // clickable through it.
-    <div className="pointer-events-none w-80 max-w-[calc(100vw-2rem)] shrink-0 space-y-1">
+    <div className="pointer-events-none w-96 max-w-[calc(100vw-2rem)] shrink-0 space-y-1">
+      {/* The open chapter's own name, over its own segment, and the mirror of
+          the count line below the bar: same equal flex, same reserved height,
+          and the enter and exit mirrored around the bar. This one RISES into
+          place from the bar (y +4 to 0) where the count falls away from it, so
+          the two annotations read as arriving with the chapter rather than
+          appearing out of nothing.
+
+          Reserved, always: the line holds its 16px whether or not a chapter is
+          open, so the rail's total height is constant and a name swapping
+          never moves the pills stacked above it. */}
+      <div aria-hidden="true" className="flex h-4 w-full gap-0.5">
+        {segments.map((segment) => (
+          <div
+            key={segment.key}
+            style={SEGMENT_STYLE}
+            className="relative h-full"
+          >
+            <AnimatePresence>
+              {activeSegment === segment.key && (
+                <motion.span
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }}
+                  transition={SPRING}
+                  className="absolute bottom-0 left-0 whitespace-nowrap font-medium text-foreground text-xs"
+                >
+                  {renderTitle(segment)}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
+        ))}
+      </div>
       <div
         role="progressbar"
         aria-label={barLabel}

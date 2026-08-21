@@ -38,11 +38,20 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
   const t = useTranslations("dashboard.payMapping.analysis")
   const tHelp = useTranslations("dashboard.help")
   const tJourney = useTranslations("dashboard.payMapping.journey")
+  const tReview = useTranslations("dashboard.payMapping.review")
   const pathname = usePathname()
   const { queue } = usePayMappingRun()
   const active = currentChapter(pathname)
   // Each chapter's own done/total, in chapter order, for the instrument's
   // segments and the count under the open one.
+  // The chapters' own SHORT names, the same ones the tab row uses, resolved
+  // where the key is still typed.
+  const nameFor = new Map<string, string>(
+    ANALYSIS_CHAPTERS.map((chapter) => [
+      chapter,
+      tReview(`chaptersShort.${chapter}`),
+    ])
+  )
   const chapters =
     queue === null
       ? undefined
@@ -80,6 +89,7 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
               activeSegment={active}
               barLabel={t("progressBarLabel")}
               done={queue?.progress.overall.done ?? 0}
+              renderTitle={(segment) => nameFor.get(segment.key) ?? segment.key}
               renderCount={(segment) =>
                 tJourney.rich("countRich", {
                   done: () => <NumberFlow value={segment.done} />,

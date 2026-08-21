@@ -67,6 +67,10 @@ describe("FloatingStack", () => {
     expect(tokens).toContain("bottom-6")
     expect(tokens).toContain("z-40")
     expect(tokens).toContain("items-center")
+    // A clear gap between a chapter's pill and the instrument: they are two
+    // readings of different scopes, and sitting tight they read as one object
+    // with a strip attached.
+    expect(tokens).toContain("gap-3")
     // Nothing in the rail takes the pointer unless a pill opts back in, so
     // content underneath stays reachable through it.
     expect(tokens).toContain("pointer-events-none")
