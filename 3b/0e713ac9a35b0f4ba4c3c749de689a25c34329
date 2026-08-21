@@ -1,0 +1,55 @@
+apps/dashboard/components/pay-mapping/analysis-chapter-tabs.test.tsx
+  s_58dd112dc09435::t_93a0b5c3520c8a 10-15,21-35,38,52-84,113,144-147,162-164
+apps/dashboard/components/pay-mapping/analysis-section-shell.tsx
+  s_58dd112dc09435::t_596e9d4051461e 34-43,55,61,65-68
+apps/dashboard/components/model/model-spine.test.tsx
+  s_58dd112dc09435::t_d63b69365dc0ef 104-107,109,113
+  s_58dd112dc09435::t_2af063582374b9 40-43,48-51,57-67
+  s_58dd112dc09435::t_8fb34479d3e864 1
+apps/dashboard/components/model/model-chapter-tabs.test.tsx
+  s_58dd112dc09435::t_2091d11cee7093 10-15,20-31,48-74,76-80,86,90,112,130-133
+  s_58dd112dc09435::t_535ba155be7939 32-34,37,75
+apps/dashboard/components/model/model-spine.tsx
+  s_58dd112dc09435::t_e10fba73d0cb8c 6
+  s_58dd112dc09435::t_33d79d1140f6dc 51-61
+apps/dashboard/components/segmented-progress.test.tsx
+  s_58dd112dc09435::t_5e2d5e5fd5b7e6 11-14,68,73-77,80-83,94-97,152,192-193,208-209,224-225
+  s_58dd112dc09435::t_6b27cffc351cd3 1
+apps/dashboard/components/chapter-tabs.tsx
+  s_58dd112dc09435::t_c9aaa90bb65db5 94
+  s_58dd112dc09435::t_583e76e051243b 21-28,88-93,95-106
+apps/dashboard/components/spine-header.tsx
+  s_58dd112dc09435::t_e10fba73d0cb8c 6-7,32
+apps/dashboard/components/segmented-progress.tsx
+  s_58dd112dc09435::t_78460c3b89388c 3,6-7,20-22,24-30,33,108-111,113-119,126,182-193
+apps/dashboard/components/pay-mapping/analysis-chapter-tabs.tsx
+  s_58dd112dc09435::t_a82901867c2c46 3,9,26-35,38,41-55,82
+apps/dashboard/components/model/model-chapter-tabs.tsx
+  s_58dd112dc09435::t_af2059ec30151f 3,11,20-29,33-38
+  s_58dd112dc09435::t_7fe020e969deb7 68
+  s_58dd112dc09435::t_a82901867c2c46 39-47
+apps/dashboard/components/model/model-section-shell.tsx
+  s_58dd112dc09435::t_596e9d4051461e 43-50,54,62,68,72-75
+apps/dashboard/components/pay-mapping/analysis-spine.tsx
+  s_58dd112dc09435::t_e10fba73d0cb8c 7
+  s_58dd112dc09435::t_33d79d1140f6dc 55-61
+apps/dashboard/components/pay-mapping/analysis-spine.test.tsx
+  s_58dd112dc09435::t_210c11799f0eab 1
+  s_58dd112dc09435::t_3b1f112e694c5f 53-56,61-64,75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "3b0e713ac9a35b0f4ba4c3c749de689a25c34329",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
