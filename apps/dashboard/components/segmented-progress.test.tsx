@@ -1,14 +1,18 @@
-import { cleanup, render, waitFor } from "@testing-library/react"
+import { cleanup, fireEvent, render, waitFor } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
-import { SegmentedProgress } from "@/components/segmented-progress"
+import {
+  type ProgressSegment,
+  SegmentedProgress,
+} from "@/components/segmented-progress"
 
 const BURST = '[data-testid="success-confetti"]'
+const TOOLTIP = '[data-slot="tooltip-content"]'
 
-const CHAPTERS = [
-  { key: "start", done: 1, total: 1 },
-  { key: "praxis", done: 4, total: 4 },
-  { key: "equalWork", done: 7, total: 5 },
-  { key: "equivalentWork", done: 0, total: 21 },
+const CHAPTERS: ProgressSegment[] = [
+  { key: "start", name: "Collaboration", done: 1, total: 1 },
+  { key: "praxis", name: "Practice", done: 4, total: 4 },
+  { key: "equalWork", name: "Equal work", done: 7, total: 5 },
+  { key: "equivalentWork", name: "Equivalent work", done: 0, total: 21 },
 ]
 
 function renderBar(
@@ -31,22 +35,6 @@ const segmentsOf = (container: HTMLElement) =>
     ...(container.querySelector('[role="progressbar"]')?.children ?? []),
   ] as HTMLElement[]
 
-// The three rows the bar draws: the open chapter's name above, the segments
-// themselves, and its count below. All three carry the same flex, so the name
-// and the figure sit over and under the segment they belong to. The title row
-// only exists with renderTitle.
-const rowsOf = (container: HTMLElement) => {
-  const cells = (selector: string) =>
-    [...(container.querySelector(selector)?.children ?? [])].map(
-      (cell) => (cell as HTMLElement).style.flexGrow
-    )
-  return {
-    title: cells('[aria-hidden="true"][class*="h-5"]'),
-    bar: cells('[role="progressbar"]'),
-    count: cells('[aria-hidden="true"][class*="h-4"]'),
-  }
-}
-
 describe("SegmentedProgress", () => {
   afterEach(cleanup)
 
@@ -66,27 +54,31 @@ describe("SegmentedProgress", () => {
     // A finished chapter's fill runs the whole segment; an untouched one
     // shows none. This is where a chapter's own progress reads, and it is per
     // chapter, so an equal width costs nothing.
-    expect(
-      (segments[1]?.firstElementChild as HTMLElement | null)?.style.width
-    ).toBe("100%")
-    expect(
-      (segments[3]?.firstElementChild as HTMLElement | null)?.style.width
-    ).toBe("0%")
+    const fillOf = (segment: HTMLElement | undefined) =>
+      (segment?.querySelector(".bg-primary") as HTMLElement | null)?.style.width
+    expect(fillOf(segments[1])).toBe("100%")
+    expect(fillOf(segments[3])).toBe("0%")
   })
 
-  // The name and the count ride the bar's own flex, so they stay over and
-  // under the segment they name.
-  it("carries the same flex through all three rows", () => {
-    const { container } = renderBar({
-      activeSegment: "praxis",
-      renderTitle: (segment) => segment.key,
-    })
-    const equal = ["1", "1", "1", "1"]
-    expect(rowsOf(container)).toEqual({
-      title: equal,
-      bar: equal,
-      count: equal,
-    })
+  // A fixed, compact width: the instrument states where the journey stands,
+  // it does not measure the page, and it never shrinks below its own size on
+  // a narrow viewport.
+  it("holds a fixed compact width rather than filling its row", () => {
+    const { container } = renderBar()
+    const bar = container.querySelector('[role="progressbar"]')
+    const tokens = (bar?.className ?? "").split(/\s+/)
+    expect(tokens).toContain("w-52")
+    expect(tokens).toContain("shrink-0")
+    expect(tokens).not.toContain("w-full")
+  })
+
+  // Nothing annotates the instrument: no name over a segment, no figure under
+  // one. At this size those are what the surface around it already says, and
+  // the hover is where a chapter answers for itself.
+  it("draws no annotation rows of its own", () => {
+    const { container } = renderBar({ activeSegment: "praxis" })
+    expect(container.querySelector('[aria-hidden="true"]')).toBeNull()
+    expect(container.textContent).toBe("")
   })
 
   // Equal widths must not launder a skewed journey into a flattering number:
@@ -97,10 +89,10 @@ describe("SegmentedProgress", () => {
       done: 22,
       total: 29,
       segments: [
-        { key: "criteria", done: 21, total: 21 },
-        { key: "weighting", done: 1, total: 1 },
-        { key: "method", done: 0, total: 6 },
-        { key: "approval", done: 0, total: 1 },
+        { key: "criteria", name: "Criteria", done: 21, total: 21 },
+        { key: "weighting", name: "Weighting", done: 1, total: 1 },
+        { key: "method", name: "Method", done: 0, total: 6 },
+        { key: "approval", name: "Approval", done: 0, total: 1 },
       ],
     })
     // Two of four chapters done, but 22 of 29 steps: 76%, not 50%.
@@ -146,16 +138,39 @@ describe("SegmentedProgress", () => {
     ).toBe(true)
   })
 
-  // The count belongs to the open segment and sits under it, which is what
-  // makes "1 of 3" mean that chapter rather than the journey.
-  it("shows only the open segment's own count, in the caller's words", () => {
-    const { container, getByText } = renderBar({ activeSegment: "praxis" })
-    expect(getByText("4 of 4")).toBeDefined()
-    // The reserved row keeps its height whichever segment is open, so lighting
-    // one up never reflows the page.
-    const countRow = container.querySelector('[aria-hidden="true"]')
-    expect(countRow?.className).toContain("h-4")
-    expect(countRow?.textContent).toBe("4 of 4")
+  // A sliver two pixels tall is not a shape anyone can read a chapter off, so
+  // resting on one answers both questions at once. The tab row under the bar
+  // is what names the chapters on screen; this is the same fact where the
+  // pointer already is.
+  it("names a hovered chapter and states where it stands", async () => {
+    const { container } = renderBar({ activeSegment: "praxis" })
+    expect(document.querySelector(TOOLTIP)).toBeNull()
+
+    const closed = segmentsOf(container)[3]
+    if (closed === undefined) throw new Error("no segment")
+    fireEvent.pointerEnter(closed, { pointerType: "mouse" })
+    fireEvent.mouseEnter(closed)
+
+    await waitFor(() => {
+      const tooltip = document.querySelector(TOOLTIP)
+      expect(tooltip?.textContent).toContain("Equivalent work")
+      expect(tooltip?.textContent).toContain("0 of 21")
+    })
+  })
+
+  // The open chapter is not an exception: its own hover answers too, so the
+  // gesture means the same thing on all four.
+  it("answers on the open chapter as well", async () => {
+    const { container } = renderBar({ activeSegment: "praxis" })
+    const open = segmentsOf(container)[1]
+    if (open === undefined) throw new Error("no segment")
+    fireEvent.pointerEnter(open, { pointerType: "mouse" })
+    fireEvent.mouseEnter(open)
+    await waitFor(() => {
+      const tooltip = document.querySelector(TOOLTIP)
+      expect(tooltip?.textContent).toContain("Practice")
+      expect(tooltip?.textContent).toContain("4 of 4")
+    })
   })
 })
 
@@ -166,8 +181,8 @@ describe("SegmentedProgress", () => {
 describe("SegmentedProgress celebration", () => {
   afterEach(cleanup)
 
-  function oneSegment(done: number, total = 4) {
-    return [{ key: "only", done, total }]
+  function oneSegment(done: number, total = 4): ProgressSegment[] {
+    return [{ key: "only", name: "Only", done, total }]
   }
 
   it("fires when a mounted segment crosses from incomplete to complete", async () => {
@@ -207,9 +222,9 @@ describe("SegmentedProgress celebration", () => {
   })
 
   it("fires a second time for a different segment, independently of the first", async () => {
-    const start = [
-      { key: "a", done: 1, total: 2 },
-      { key: "b", done: 0, total: 2 },
+    const start: ProgressSegment[] = [
+      { key: "a", name: "A", done: 1, total: 2 },
+      { key: "b", name: "B", done: 0, total: 2 },
     ]
     const { container, rerender } = renderBar({
       done: 1,
@@ -224,8 +239,8 @@ describe("SegmentedProgress celebration", () => {
         done={2}
         total={4}
         segments={[
-          { key: "a", done: 2, total: 2 },
-          { key: "b", done: 0, total: 2 },
+          { key: "a", name: "A", done: 2, total: 2 },
+          { key: "b", name: "B", done: 0, total: 2 },
         ]}
         renderCount={(segment) => `${segment.done} of ${segment.total}`}
         celebrateOnComplete
@@ -241,8 +256,8 @@ describe("SegmentedProgress celebration", () => {
         done={4}
         total={4}
         segments={[
-          { key: "a", done: 2, total: 2 },
-          { key: "b", done: 2, total: 2 },
+          { key: "a", name: "A", done: 2, total: 2 },
+          { key: "b", name: "B", done: 2, total: 2 },
         ]}
         renderCount={(segment) => `${segment.done} of ${segment.total}`}
         celebrateOnComplete

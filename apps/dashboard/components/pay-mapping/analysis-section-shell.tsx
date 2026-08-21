@@ -35,20 +35,15 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
   return (
     <div className="space-y-4">
       {queue === null ? (
-        // Content-shaped: the spine's real heading (static i18n text, so it
-        // renders real) over a flat track standing in for the segmented
-        // bar, plus the reserved line the open chapter's count lands on, so
-        // nothing reflows on arrival. No skeleton bar beside the heading:
-        // the heading carries no visible figure to stand in for.
-        <section className="space-y-3">
-          <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-base">{t("progressLabel")}</h3>
-          </div>
-          <div className="space-y-1">
-            <div className="h-2 w-full rounded-full bg-primary/12" />
-            <div className="h-4" />
-          </div>
-        </section>
+        // Content-shaped: the spine's real title (static i18n text, so it
+        // renders real) with a flat track standing in for the instrument
+        // opposite it, at the instrument's own width, so nothing moves when
+        // the data lands. No counter beside it: the figures are exactly what
+        // is still loading.
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <h3 className="font-semibold text-base">{t("progressLabel")}</h3>
+          <div className="h-2 w-52 shrink-0 rounded-full bg-primary/12" />
+        </div>
       ) : (
         <AnalysisSpine
           done={queue.progress.overall.done}

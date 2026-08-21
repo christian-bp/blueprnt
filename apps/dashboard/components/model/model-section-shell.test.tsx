@@ -76,14 +76,14 @@ describe("ModelSectionShell", () => {
   afterEach(() => cleanup())
 
   it("mounts the spine and the chapter row above the chapter's own body", () => {
-    renderShell()
-    // The loaded heading's accessible name is the model's name plus the
-    // sr-only overall count, which is the whole point of that span: the bar
-    // announces a percentage and the per-chapter figure is aria-hidden, so
-    // the pair only reaches a screen reader here.
+    const { container } = renderShell()
+    // The title names the model; the instrument opposite it on the same row
+    // carries the reading, with the journey's own figures beside it.
     const heading = screen.getByRole("heading", { level: 3 })
-    expect(heading.textContent).toContain(m.heading)
-    expect(heading.querySelector(".sr-only")?.textContent).toContain("of")
+    expect(heading.textContent).toBe(m.heading)
+    expect(container.querySelector(".tabular-nums")?.textContent).toContain(
+      "of"
+    )
     expect(screen.getByRole("navigation", { name: m.nav })).toBeDefined()
     expect(screen.getByText("chapter body")).toBeDefined()
   })

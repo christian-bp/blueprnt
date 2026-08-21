@@ -1825,7 +1825,6 @@
         "nav": "Modellens kapitler",
         "heading": "Selskapets blueprnt-modell",
         "progressBarLabel": "Hele modellens framdrift",
-        "count": "{done} av {total}",
         "countRich": "<done></done> av <total></total>",
         "framing": {
           "criteria": "De fire dimensjonene er brede. Kriteriene er det som gjør dem konkrete nok til å sammenligne virkelig arbeid.",

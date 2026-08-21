@@ -1825,7 +1825,6 @@
         "nav": "Modellens kapitel",
         "heading": "Företagets blueprnt-modell",
         "progressBarLabel": "Hela modellens framsteg",
-        "count": "{done} av {total}",
         "countRich": "<done></done> av <total></total>",
         "framing": {
           "criteria": "De fyra dimensionerna är breda. Kriterierna är det som gör dem konkreta nog att jämföra verkliga arbeten med.",

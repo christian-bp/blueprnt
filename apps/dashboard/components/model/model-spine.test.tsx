@@ -1,4 +1,10 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
@@ -14,16 +20,11 @@ import { ModelSpine } from "@/components/model/model-spine"
 
 const m = messages.dashboard.model.chapters
 
-// The reserved-height strip the shared bar renders under its segments. Matched
-// on its own box, not on a bare aria-hidden: the help trigger's icon carries
-// that attribute too and comes first in the DOM.
-const countRowOf = (container: HTMLElement) =>
-  container.querySelector('[aria-hidden="true"][class*="h-4"]')
-
-// The reserved-height strip ABOVE the bar, carrying the open chapter's name.
-// Matched on its own box for the same reason the count row is.
-const titleRowOf = (container: HTMLElement) =>
-  container.querySelector('[aria-hidden="true"][class*="h-5"]')
+// The bar's own segments, in chapter order.
+const segmentsOf = (container: HTMLElement) =>
+  [
+    ...(container.querySelector('[role="progressbar"]')?.children ?? []),
+  ] as HTMLElement[]
 
 function renderSpine(
   overrides: Partial<Parameters<typeof ModelSpine>[0]> = {}
@@ -48,26 +49,31 @@ function renderSpine(
 describe("ModelSpine", () => {
   afterEach(cleanup)
 
-  // The heading names what the section is building; the progress reading is
-  // the bar below it and its per-chapter counts.
-  it("names the model and keeps the overall count for a screen reader only", () => {
-    renderSpine()
+  // The heading names what the section is building; the reading is the
+  // instrument opposite it on the same row.
+  it("names the model and states its own progress on the title row", () => {
+    const { container } = renderSpine()
     const heading = screen.getByRole("heading", { level: 3 })
-    expect(heading.textContent).toContain(m.heading)
-    const srOnly = heading.querySelector(".sr-only")
-    expect(srOnly?.textContent).toContain("4")
-    expect(srOnly?.textContent).toContain("17")
-    // Visible heading text is the label alone: two unlabelled pairs of numbers
-    // a line apart read as clutter.
-    const visible = [...heading.childNodes]
-      .filter(
-        (node) =>
-          node.nodeType === 3 ||
-          !(node as HTMLElement).classList?.contains("sr-only")
-      )
-      .map((node) => node.textContent)
-      .join("")
-    expect(visible.trim()).toBe(m.heading)
+    expect(heading.textContent).toBe(m.heading)
+    // The counter is on screen now, so it is no longer a screen reader's own
+    // copy of the pair.
+    expect(heading.querySelector(".sr-only")).toBeNull()
+    // 4 of 17: the same work units the announced percentage is computed from,
+    // so eye and ear agree.
+    const counter = container.querySelector(".tabular-nums")
+    expect(counter?.textContent).toBe("4 of 17")
+    expect(
+      container
+        .querySelector('[role="progressbar"]')
+        ?.getAttribute("aria-valuenow")
+    ).toBe(String(Math.round((4 / 17) * 100)))
+    // Both figures move while the reader works, so each is its OWN element
+    // carrying NumberFlow rather than text interpolated into the sentence
+    // (the mock above stands in for it). A concatenated string would leave
+    // this row empty.
+    expect(
+      [...(counter?.children ?? [])].map((node) => node.textContent)
+    ).toEqual(["4", "17"])
   })
 
   // This section's chapters are stations of one build, so they are equally
@@ -84,15 +90,6 @@ describe("ModelSpine", () => {
       "1",
       "1",
     ])
-    // The name above and the count below ride the same flex, so they stay
-    // over and under the chapter they belong to.
-    for (const row of [titleRowOf(container), countRowOf(container)]) {
-      expect(
-        [...(row?.children ?? [])].map(
-          (cell) => (cell as HTMLElement).style.flexGrow
-        )
-      ).toEqual(["1", "1", "1", "1"])
-    }
     expect(
       container
         .querySelector('[role="progressbar"]')
@@ -113,26 +110,33 @@ describe("ModelSpine", () => {
     ).toBe("24")
   })
 
-  // The open chapter's name sits ABOVE the bar, over its own segment, and its
-  // count keeps the mirror position below: the reader gets the name and the
-  // figures without matching either against the tab row by position, and
-  // neither row has to carry both.
-  it("names the open chapter above the bar and counts it below", () => {
+  // Nothing annotates the instrument: no per-chapter figure under it. The
+  // counter beside it is the JOURNEY's, and a chapter answers for itself on
+  // hover.
+  it("prints no per-chapter figure beside the instrument", () => {
     const { container } = renderSpine({ activeChapter: "method" })
-    expect(titleRowOf(container)?.textContent).toContain(m.method)
-    const countRow = countRowOf(container)
-    expect(countRow?.textContent).toContain("1")
-    expect(countRow?.textContent).toContain("7")
-    // The name is the title row's job alone, so the count row does not repeat
-    // it, and neither row carries a chapter that is not open.
-    expect(countRow?.textContent).not.toContain(m.method)
-    expect(titleRowOf(container)?.textContent).not.toContain(m.criteria)
+    const counter = container.querySelector(".tabular-nums")
+    expect(counter?.textContent).toBe("4 of 17")
+    expect(
+      container.querySelector('[aria-hidden="true"][class*="h-4"]')
+    ).toBeNull()
   })
 
-  it("switches the name with the chapter", () => {
+  // A segment is two pixels tall and carries no name of its own, so resting
+  // on one answers both questions at once: which chapter, and where it
+  // stands.
+  it("names a hovered chapter and states where it stands", async () => {
     const { container } = renderSpine({ activeChapter: "criteria" })
-    expect(titleRowOf(container)?.textContent).toContain(m.criteria)
-    expect(titleRowOf(container)?.textContent).not.toContain(m.method)
+    const segment = segmentsOf(container)[2]
+    if (segment === undefined) throw new Error("no segment")
+    fireEvent.pointerEnter(segment, { pointerType: "mouse" })
+    fireEvent.mouseEnter(segment)
+    await waitFor(() => {
+      const tooltip = document.querySelector('[data-slot="tooltip-content"]')
+      expect(tooltip?.textContent).toContain(m.method)
+      expect(tooltip?.textContent).toContain("1")
+      expect(tooltip?.textContent).toContain("7")
+    })
   })
 
   // The section's own explainer, not the kartläggning's: two guided sections

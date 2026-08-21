@@ -1825,7 +1825,6 @@
         "nav": "Model chapters",
         "heading": "Your company's blueprnt model",
         "progressBarLabel": "Overall model progress",
-        "count": "{done} of {total}",
         "countRich": "<done></done> of <total></total>",
         "framing": {
           "criteria": "The four dimensions are broad. Criteria are what make them concrete enough to compare real jobs.",

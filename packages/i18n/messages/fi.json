@@ -1825,7 +1825,6 @@
         "nav": "Mallin luvut",
         "heading": "Yrityksenne blueprnt-malli",
         "progressBarLabel": "Koko mallin edistyminen",
-        "count": "{done}/{total}",
         "countRich": "<done></done> / <total></total>",
         "framing": {
           "criteria": "Neljä ulottuvuutta on laajoja. Kriteerit tekevät niistä riittävän konkreettisia todellisen työn vertailuun.",

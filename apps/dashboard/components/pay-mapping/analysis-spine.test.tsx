@@ -1,18 +1,33 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { createRef } from "react"
-import { afterEach, describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 
+// NumberFlow renders a custom element happy-dom never upgrades, so its
+// getSnapshotBeforeUpdate throws the moment the value CHANGES in place. The
+// digit animation is the library's business; this test is about the figures.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}))
+
+import type { AnalysisChapter } from "@/components/pay-mapping/analysis-chapters"
 import { AnalysisSpine } from "@/components/pay-mapping/analysis-spine"
 
 const m = messages.dashboard.payMapping.analysis
+const mReview = messages.dashboard.payMapping.review
 
 function renderSpine(
   overrides: Partial<{
     done: number
     total: number
-    chapters: { key: string; done: number; total: number }[]
+    chapters: { key: AnalysisChapter; done: number; total: number }[]
     activeChapter: string
   }> = {}
 ) {
@@ -42,39 +57,36 @@ describe("AnalysisSpine", () => {
     cleanup()
   })
 
-  it("labels the bar without repeating the overall count on screen", () => {
-    // The visible surface carries ONE count, the open chapter's, under its
-    // own segment. The overall pair used to sit in this heading too, which
-    // put two unlabelled number pairs a line apart; the total lives on the
-    // run's Overview now.
+  it("labels the instrument and states the mapping's own figures beside it", () => {
     const { container } = renderSpine()
     const heading = screen.getByRole("heading", { level: 3 })
-    expect(heading.textContent).toContain(m.progressLabel)
-    expect(heading.querySelector(".sr-only")).not.toBeNull()
-    // Visible heading text is the label alone.
-    const visible = [...heading.childNodes]
-      .filter(
-        (node) =>
-          node.nodeType === 3 ||
-          !(node as HTMLElement).classList?.contains("sr-only")
-      )
-      .map((node) => node.textContent)
-      .join("")
-    expect(visible.trim()).toBe(m.progressLabel)
+    expect(heading.textContent).toBe(m.progressLabel)
+    // The pair used to be a screen reader's only copy of itself, because
+    // nothing on the surface showed it. It is on screen for everyone now.
+    expect(heading.querySelector(".sr-only")).toBeNull()
+    const counter = container.querySelector(".tabular-nums")
+    expect(counter?.textContent).toBe("12 of 31")
+    // Both figures move while the reader works, so each is its OWN element
+    // carrying NumberFlow rather than text interpolated into the sentence
+    // (the mock above stands in for it). A concatenated string would leave
+    // this row empty.
+    expect(
+      [...(counter?.children ?? [])].map((node) => node.textContent)
+    ).toEqual(["12", "31"])
+    // The same work units the announced percentage is computed from, so eye
+    // and ear agree.
     const bar = container.querySelector('[role="progressbar"]')
     expect(bar?.getAttribute("aria-valuenow")).toBe("39")
   })
 
-  it("keeps the overall count as text for a screen reader", () => {
-    // The per-chapter figure below is aria-hidden and the bar alone would
-    // only announce a percentage, so dropping the visible pair must not
-    // drop the fact.
-    renderSpine()
-    const srOnly = screen
-      .getByRole("heading", { level: 3 })
-      .querySelector(".sr-only")
-    expect(srOnly?.textContent).toContain("12")
-    expect(srOnly?.textContent).toContain("31")
+  // A fixed, compact width on the title row, never a bar measuring the page.
+  it("holds a fixed compact width on its title row", () => {
+    const { container } = renderSpine()
+    const tokens = (
+      container.querySelector('[role="progressbar"]')?.className ?? ""
+    ).split(/\s+/)
+    expect(tokens).toContain("w-52")
+    expect(tokens).toContain("shrink-0")
   })
 
   it("gives every chapter the same width whatever it holds", () => {
@@ -93,30 +105,42 @@ describe("AnalysisSpine", () => {
       "1",
       "1",
     ])
-    // The count row under the bar carries the same flex, so a figure stays
-    // under the chapter it describes.
-    const countRow = container.querySelector(
-      '[aria-hidden="true"][class*="h-4"]'
-    )
+    // Nothing annotates the instrument: no per-chapter figure under it.
     expect(
-      [...(countRow?.children ?? [])].map(
-        (cell) => (cell as HTMLElement).style.flexGrow
-      )
-    ).toEqual(["1", "1", "1", "1"])
+      container.querySelector('[aria-hidden="true"][class*="h-4"]')
+    ).toBeNull()
     // A finished chapter's fill runs the whole segment; an untouched one
     // shows none.
-    expect(
-      (segments[1]?.firstElementChild as HTMLElement | null)?.style.width
-    ).toBe("100%")
-    expect(
-      (segments[3]?.firstElementChild as HTMLElement | null)?.style.width
-    ).toBe("0%")
+    const fillOf = (segment: HTMLElement | undefined) =>
+      (segment?.querySelector(".bg-primary") as HTMLElement | null)?.style.width
+    expect(fillOf(segments[1])).toBe("100%")
+    expect(fillOf(segments[3])).toBe("0%")
+  })
+
+  // The chapters are named on screen by the tab row under the bar; a segment
+  // says which one it is when the pointer rests on it, with the same short
+  // name that row uses.
+  it("names a hovered chapter and states where it stands", async () => {
+    const { container } = renderSpine({ activeChapter: "equalWork" })
+    const segment = [
+      ...(container.querySelector('[role="progressbar"]')?.children ?? []),
+    ][3] as HTMLElement
+    fireEvent.pointerEnter(segment, { pointerType: "mouse" })
+    fireEvent.mouseEnter(segment)
+    await waitFor(() => {
+      const tooltip = document.querySelector('[data-slot="tooltip-content"]')
+      expect(tooltip?.textContent).toContain(
+        mReview.chaptersShort.equivalentWork
+      )
+      expect(tooltip?.textContent).toContain("0")
+      expect(tooltip?.textContent).toContain("21")
+    })
   })
 
   it("holds the open chapter's segment up and lets the rest recede", () => {
-    // The segments and the tab row can never line up (segments are weighted
-    // by work, tabs by name length), so simultaneous highlighting is what
-    // ties the bar to the chapter you are on.
+    // The segments and the tab row can never line up (segments are equally
+    // wide, tabs as wide as their names), so simultaneous highlighting is
+    // what ties the bar to the chapter you are on.
     const { container } = renderSpine({ activeChapter: "equalWork" })
     const segments = [
       ...(container.querySelector('[role="progressbar"]')?.children ?? []),

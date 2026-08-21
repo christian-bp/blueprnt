@@ -2,92 +2,95 @@
 
 import NumberFlow from "@number-flow/react"
 import { useTranslations } from "next-intl"
-import type { ReactNode, RefObject } from "react"
+import type { RefObject } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SegmentedProgress } from "@/components/segmented-progress"
+import { SpineHeader } from "@/components/spine-header"
+import type { AnalysisChapter } from "./analysis-chapters"
 
-// Rung 0 of the analysis ladder: where the whole mapping stands, in one
-// line, above everything else on the page. Deliberately NOT built on
-// WizardProgress: that component renders an unconditional Spinner (this is a
-// steady state, not a running job) and clamps its bar monotonically, so it
-// could never move backwards when a user undoes a klarmarkering.
+// Rung 0 of the analysis ladder: where the whole mapping stands, on the
+// section's own title row. The same anatomy the model section draws (they
+// share SpineHeader and SegmentedProgress), so the reading sits at the same
+// place in both guided sections.
+//
+// Deliberately NOT built on WizardProgress: that component renders an
+// unconditional Spinner (this is a steady state, not a running job) and clamps
+// its bar monotonically, so it could never move backwards when a user undoes a
+// klarmarkering.
 export function AnalysisSpine({
   done,
   total,
   chapters,
   activeChapter,
   headingRef,
-  right,
 }: {
   done: number
   total: number
   // Each chapter's own done/total, in chapter order, for the segmented
-  // bar below.
-  chapters: { key: string; done: number; total: number }[]
+  // instrument. Keyed by AnalysisChapter, not by a bare string, so each
+  // segment's own name resolves without a cast.
+  chapters: { key: AnalysisChapter; done: number; total: number }[]
   // The chapter whose page is open. Its segment is held at full strength
-  // while the rest recede, which is what ties the bar to the tab row
-  // underneath it. Optional only for the moment before a path resolves to
-  // a chapter; every real page has one.
+  // while the rest recede, which is what ties the instrument to the tab row
+  // underneath it. Optional only for the moment before a path resolves to a
+  // chapter; every real page has one.
   activeChapter?: string
   // An optional programmatic focus target.
   headingRef?: RefObject<HTMLHeadingElement | null>
-  // Optional trailing slot on the heading row.
-  right?: ReactNode
 }) {
   const t = useTranslations("dashboard.payMapping.analysis")
   const tHelp = useTranslations("dashboard.help")
   const tJourney = useTranslations("dashboard.payMapping.journey")
+  const tReview = useTranslations("dashboard.payMapping.review")
+  // The chapters' own names, for the hover alone: the tab row under the title
+  // is what names them on screen. The SHORT names, the same ones that row
+  // uses, so the two can never call the same chapter two different things.
+  const segments = chapters.map((chapter) => ({
+    ...chapter,
+    name: tReview(`chaptersShort.${chapter.key}`),
+  }))
 
   return (
-    <section className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          {/* The heading labels the bar; the page above already says
-              "Analysis", so a second title would only repeat it.
-              outline-none because this is a programmatic focus target only,
-              never reachable by Tab.
-
-              The overall count used to sit here as a second figure. Two
-              unlabelled pairs of numbers a line apart (the total, then the
-              open chapter's own) read as clutter, and the total is on the
-              run's Overview, where finishing lives. It survives as text for
-              a screen reader, because the per-chapter figure below is
-              aria-hidden and the bar alone would only announce a
-              percentage. */}
-          <h3
-            ref={headingRef}
-            tabIndex={-1}
-            className="font-semibold text-base outline-none"
-          >
-            {t("progressLabel")}
-            <span className="sr-only">
-              {" "}
-              {tJourney("count", { done, total })}
-            </span>
-          </h3>
-          <HelpMorphButton label={tHelp("analysisProgressLabel")}>
-            {tHelp("analysisProgressBody")}
-          </HelpMorphButton>
-        </div>
-        {right}
-      </div>
-      {/* The bar itself is the shared journey primitive (its geometry, its
-          fill rule and its count row are the same anatomy the model section
-          draws, equally wide chapters included); what stays here is the
-          mapping's own wording. */}
-      <SegmentedProgress
-        barLabel={t("progressBarLabel")}
-        done={done}
-        total={total}
-        segments={chapters}
-        activeSegment={activeChapter}
-        renderCount={(segment) =>
-          tJourney.rich("countRich", {
-            done: () => <NumberFlow value={segment.done} />,
-            total: () => <NumberFlow value={segment.total} />,
-          })
-        }
-      />
-    </section>
+    <SpineHeader
+      // The heading labels the instrument; the page above already says
+      // "Analysis", so a second title would only repeat it.
+      heading={t("progressLabel")}
+      headingRef={headingRef}
+      help={
+        <HelpMorphButton label={tHelp("analysisProgressLabel")}>
+          {tHelp("analysisProgressBody")}
+        </HelpMorphButton>
+      }
+      instrument={
+        <>
+          <SegmentedProgress
+            barLabel={t("progressBarLabel")}
+            done={done}
+            total={total}
+            segments={segments}
+            activeSegment={activeChapter}
+            renderCount={(segment) =>
+              tJourney.rich("countRich", {
+                done: () => <NumberFlow value={segment.done} />,
+                total: () => <NumberFlow value={segment.total} />,
+              })
+            }
+          />
+          {/* The mapping's own figures, beside the instrument that draws
+              them, so eye and ear agree: these are the same work units the
+              announced percentage is computed from. It used to be a screen
+              reader's only copy of the pair, because nothing on the surface
+              showed it; now it is on screen for everyone. Both numbers move
+              while the reader works, so the message is tag-based and each one
+              carries NumberFlow rather than swapping in place. */}
+          <span className="whitespace-nowrap text-muted-foreground text-sm tabular-nums">
+            {tJourney.rich("countRich", {
+              done: () => <NumberFlow value={done} />,
+              total: () => <NumberFlow value={total} />,
+            })}
+          </span>
+        </>
+      }
+    />
   )
 }
