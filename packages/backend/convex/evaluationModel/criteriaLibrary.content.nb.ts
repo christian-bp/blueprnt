@@ -5,8 +5,9 @@ import type { CriteriaLibraryContent } from "./criteriaLibrary.content.en"
 // substance source), cross-checked against criteriaLibraryContentEn where a
 // Swedish phrase was ambiguous. Structure mirrors en/sv exactly: only the
 // three section 13.5 entries (scope-impact, complexity-ambiguity,
-// risk-consequence) carry anchor2/anchor4. Machine draft, flagged for
-// native review.
+// risk-consequence) carry anchor2/anchor4. Reviewed against en and sv for
+// terminology, register and false friends; "vesentlig" is the Bokmål term
+// for material in the materiality sense, never "materiell".
 export const criteriaLibraryContentNb: CriteriaLibraryContent = {
   modelName: "Rollevurderingsmodell",
   dimensions: {
@@ -31,14 +32,14 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
     workingConditions: {
       name: "Arbeidsforhold",
       question:
-        "Finnes det særskilte, objektive og varige arbeidsvilkår som påvirker kravene?",
+        "Finnes det særskilte, objektive og varige arbeidsforhold som påvirker kravene?",
       why: "Synliggjør for eksempel beredskap, eksponering, sikkerhetskrav og uregelmessige forhold.",
     },
   },
   workingConditionsTest: {
     question:
-      "Finnes det minst én rollfamilie der særskilte arbeidsforhold er en tilbakevendende, objektiv og materiell del av rollens krav, og der kravet ikke allerede fanges korrekt opp av et annet kriterium?",
-    notMaterialLabel: "Vurdert, men ikke materielt relevant",
+      "Finnes det minst én rollfamilie der særskilte arbeidsforhold er en tilbakevendende, objektiv og vesentlig del av rollens krav, og der kravet ikke allerede fanges korrekt opp av et annet kriterium?",
+    notMaterialLabel: "Testet, men ikke vesentlig relevant",
   },
   sharedScale: {
     "1": {
@@ -316,7 +317,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       anchor3:
         "Rollen bærer selvstendig etablert, tilbakevendende fysisk belastning, presisjonsarbeid eller sensorisk konsentrasjon som en normal del av sitt eget område.",
       anchor5:
-        "Rollen bærer svært krevende, vedvarende fysisk eller sensorisk anstrengelse som ofte er virksomhetskritisk å utføre riktig, for eksempel presisjonsarbeid hvis standard andre holdes til.",
+        "Rollen bærer svært krevende, vedvarende fysisk eller sensorisk anstrengelse som ofte er virksomhetskritisk å utføre riktig, for eksempel presisjonsarbeid som setter standarden andre måles mot.",
     },
     "scope-impact": {
       name: "Omfang og påvirkning",
@@ -407,7 +408,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       notMeasures:
         "Prosjektledelse uten personalansvar, spesialistledelse eller teamstørrelse som eneste mål.",
       whenSuitable:
-        "Når formelt personalansvar er en materiell forskjell mellom roller.",
+        "Når formelt personalansvar er en vesentlig forskjell mellom roller.",
       whenNotSuitable:
         "Skal normalt ha lav til moderat vekt siden lederskap ofte allerede vises i omfang og mandat.",
       controlQuestion:
@@ -449,11 +450,11 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
     "business-customer": {
       name: "Forretnings- og kundeansvar",
       shortUiText:
-        "Rollens ansvar for å skape, sikre eller utvikle materiell forretningsverdi.",
+        "Rollens ansvar for å skape, sikre eller utvikle vesentlig forretningsverdi.",
       fullDefinition:
-        "Fanger rollens ansvar for å skape, sikre eller utvikle materiell forretningsverdi gjennom en vesentlig kunderelasjon, inntektsstrøm, forretningsportefølje eller kommersiell posisjon. Kriteriet måler stabiliteten i dette forretningsansvaret, ikke individuell salgsprestasjon, provisjon eller forhandlingsferdighet i seg selv.",
+        "Fanger rollens ansvar for å skape, sikre eller utvikle vesentlig forretningsverdi gjennom en vesentlig kunderelasjon, inntektsstrøm, forretningsportefølje eller kommersiell posisjon. Kriteriet måler stabiliteten i dette forretningsansvaret, ikke individuell salgsprestasjon, provisjon eller forhandlingsferdighet i seg selv.",
       measures:
-        "Ansvar for å skape, sikre eller utvikle materiell forretningsverdi.",
+        "Ansvar for å skape, sikre eller utvikle vesentlig forretningsverdi.",
       notMeasures:
         "Individuell salgsprestasjon, provisjon eller forhandlingsferdighet i seg selv.",
       whenSuitable:
@@ -519,11 +520,11 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
         "Rollen arbeider under svært krevende eller virksomhetskritiske eksponeringsforhold, der beskyttelsesstandarden den følger eller setter, ofte strekker seg utenfor eget nærmeste team.",
     },
     "on-call": {
-      name: "Jour, beredskap og tilgjengelighetskrav",
+      name: "Beredskapsvakt, hjemmevakt og tilgjengelighetskrav",
       shortUiText:
         "Rollens tilbakevendende krav til å være tilgjengelig utenfor ordinær arbeidstid eller å svare umiddelbart.",
       fullDefinition:
-        "Fanger rollens tilbakevendende krav til å være tilgjengelig utenfor ordinær arbeidstid, eller å svare umiddelbart, som en integrert forutsetning for rollen. Kriteriet måler et materielt, tilbakevendende beredskapskrav, ikke midlertidig overtid, frivillig fleksibilitet eller en generelt høy arbeidsmengde.",
+        "Fanger rollens tilbakevendende krav til å være tilgjengelig utenfor ordinær arbeidstid, eller å svare umiddelbart, som en integrert forutsetning for rollen. Kriteriet måler et vesentlig, tilbakevendende beredskapskrav, ikke midlertidig overtid, frivillig fleksibilitet eller en generelt høy arbeidsmengde.",
       measures:
         "Tilbakevendende krav til tilgjengelighet utenfor ordinær arbeidstid eller umiddelbar innsats.",
       notMeasures:
@@ -531,11 +532,11 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       whenSuitable:
         "Drift, IT, helse, sikkerhet og andre roller der beredskap er en integrert forutsetning for rollen.",
       whenNotSuitable:
-        "Skal være et eget kriterium bare når beredskap er materiell og tilbakevendende.",
+        "Skal være et eget kriterium bare når beredskap er vesentlig og tilbakevendende.",
       controlQuestion:
         "Har rollens tilbakevendende beredskapskrav betydning i seg selv, utover midlertidig overtid eller en generelt høy arbeidsmengde?",
       assessmentQuestion:
-        "Hvilket nivå av jour, beredskap og tilgjengelighet bærer rollen normalt og varig?",
+        "Hvilket nivå av beredskapsvakt, hjemmevakt og tilgjengelighet bærer rollen normalt og varig?",
       anchor1:
         "Rollen dekker enkelte ganger et tydelig avgrenset beredskapskrav med lav frekvens.",
       anchor3:
@@ -556,7 +557,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       whenSuitable:
         "Feltroller, internasjonal virksomhet, skiftarbeid eller høy reisefrekvens.",
       whenNotSuitable:
-        "Kan slås sammen med Jour/beredskap bare når begge inngår i samme stabile arbeidsvilkår.",
+        "Kan slås sammen med Beredskapsvakt/hjemmevakt bare når begge inngår i samme stabile arbeidsforhold.",
       controlQuestion:
         "Har rollens varige krav til uregelmessighet eller mobilitet betydning i seg selv, utover enkeltstående reiser eller et midlertidig prosjekt?",
       assessmentQuestion:

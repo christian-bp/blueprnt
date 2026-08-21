@@ -5,8 +5,9 @@ import type { CriteriaLibraryContent } from "./criteriaLibrary.content.en"
 // source), cross-checked against criteriaLibraryContentEn where a Swedish
 // phrase was ambiguous. Structure mirrors en/sv exactly: only the three
 // section 13.5 entries (scope-impact, complexity-ambiguity,
-// risk-consequence) carry anchor2/anchor4. Machine draft, flagged for
-// native review.
+// risk-consequence) carry anchor2/anchor4. Reviewed against en and sv for
+// terminology, register and false friends; "væsentlig" is the Danish term
+// for material in the materiality sense, never "materiel".
 export const criteriaLibraryContentDa: CriteriaLibraryContent = {
   modelName: "Rollevurderingsmodel",
   dimensions: {
@@ -31,14 +32,14 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
     workingConditions: {
       name: "Arbejdsforhold",
       question:
-        "Findes der særlige, objektive og varige arbejdsvilkår, som påvirker kravene?",
+        "Findes der særlige, objektive og varige arbejdsforhold, som påvirker kravene?",
       why: "Synliggør for eksempel rådighed, eksponering, sikkerhedskrav og uregelmæssige forhold.",
     },
   },
   workingConditionsTest: {
     question:
       "Findes der mindst én rollefamilie, hvor særlige arbejdsforhold er en tilbagevendende, objektiv og væsentlig del af rollens krav, og hvor kravet ikke allerede fanges korrekt af et andet kriterium?",
-    notMaterialLabel: "Vurderet, men ikke væsentligt relevant",
+    notMaterialLabel: "Testet, men ikke væsentligt relevant",
   },
   sharedScale: {
     "1": {
@@ -316,7 +317,7 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       anchor3:
         "Rollen bærer selvstændigt etableret, tilbagevendende fysisk belastning, præcisionsarbejde eller sensorisk koncentration som en normal del af sit eget område.",
       anchor5:
-        "Rollen bærer meget krævende, vedvarende fysisk eller sensorisk anstrengelse, der ofte er forretningskritisk at udføre korrekt, for eksempel præcisionsarbejde hvis standard andre holdes til.",
+        "Rollen bærer meget krævende, vedvarende fysisk eller sensorisk anstrengelse, der ofte er forretningskritisk at udføre korrekt, for eksempel præcisionsarbejde, der sætter den standard, andre måles op imod.",
     },
     "scope-impact": {
       name: "Omfang og indflydelse",
@@ -450,11 +451,11 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
     "business-customer": {
       name: "Forretnings- og kundeansvar",
       shortUiText:
-        "Rollens ansvar for at skabe, sikre eller udvikle materiel forretningsværdi.",
+        "Rollens ansvar for at skabe, sikre eller udvikle væsentlig forretningsværdi.",
       fullDefinition:
-        "Fanger rollens ansvar for at skabe, sikre eller udvikle materiel forretningsværdi gennem en væsentlig kunderelation, indtægtsstrøm, forretningsportefølje eller kommerciel position. Kriteriet måler stabiliteten i dette forretningsansvar, ikke individuel salgspræstation, provision eller forhandlingsevne i sig selv.",
+        "Fanger rollens ansvar for at skabe, sikre eller udvikle væsentlig forretningsværdi gennem en væsentlig kunderelation, indtægtsstrøm, forretningsportefølje eller kommerciel position. Kriteriet måler stabiliteten i dette forretningsansvar, ikke individuel salgspræstation, provision eller forhandlingsevne i sig selv.",
       measures:
-        "Ansvar for at skabe, sikre eller udvikle materiel forretningsværdi.",
+        "Ansvar for at skabe, sikre eller udvikle væsentlig forretningsværdi.",
       notMeasures:
         "Individuel salgspræstation, provision eller forhandlingsevne i sig selv.",
       whenSuitable:
@@ -558,7 +559,7 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       whenSuitable:
         "Feltroller, international virksomhed, skifteholdsarbejde eller høj rejsefrekvens.",
       whenNotSuitable:
-        "Kan lægges sammen med Rådighed/beredskab kun når begge indgår i samme stabile arbejdsvilkår.",
+        "Kan lægges sammen med Rådighed/beredskab kun når begge indgår i samme stabile arbejdsforhold.",
       controlQuestion:
         "Har rollens varige krav om uregelmæssighed eller mobilitet betydning i sig selv, ud over enkeltstående rejser eller et midlertidigt projekt?",
       assessmentQuestion:
