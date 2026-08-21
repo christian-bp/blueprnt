@@ -1,0 +1,77 @@
+apps/dashboard/components/model/method-panel.tsx
+  s_58dd112dc09435::t_8a0172d77f4252 6-10,25
+  s_58dd112dc09435::t_b798344c301ebd 23,264-269,271
+  s_58dd112dc09435::t_50dc5b001f441d 251,254-261,270
+  s_58dd112dc09435::t_b0abe1ce46c92e 29-34
+  s_58dd112dc09435::t_3e927bd15db57d 171-178
+  s_58dd112dc09435::t_198bd175f46e43 180-192
+  s_58dd112dc09435::t_d7dc06e2e3eaf7 305-308
+apps/dashboard/components/model/method-panel.test.tsx
+  s_58dd112dc09435::t_d9e74634870180 106-111,123-126,131-147,160-164,212-214,218-219,302,509-511,513,519
+  s_58dd112dc09435::t_7319c7a53d2935 290-299,496-499
+  s_58dd112dc09435::t_c45eadd0a19bdc 222-224,382
+  s_58dd112dc09435::t_b46685b6a341d2 377-381,383-384,391-394,396-406,408-416,418-431,433-445,447-449
+  s_58dd112dc09435::t_b105e8163621c3 168-169
+  s_58dd112dc09435::t_2068489a23070a 385-390,395,407,417,432,446
+apps/dashboard/components/model/dimension-frame.test.tsx
+  s_58dd112dc09435::t_30558e69bd0f90 1-54,56-61,66-79
+  s_58dd112dc09435::t_f01ac8ea857091 55,62-65
+apps/dashboard/components/model/working-conditions-decision.tsx
+  s_58dd112dc09435::t_087cdbc02fc2d4 43-46
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_8e8faa097e8780 1859-1861
+apps/dashboard/components/model/working-conditions-empty-column.tsx
+  s_58dd112dc09435::t_e9d14f876909dc 1-81
+apps/dashboard/components/model/dimension-frame.tsx
+  s_58dd112dc09435::t_977085b0363c95 52-55
+  s_58dd112dc09435::t_c8fd9332b10138 1-51,56-72
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_8e8faa097e8780 1859-1861
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_7319c7a53d2935 262-270,469-472
+  s_58dd112dc09435::t_2660e862b0f1a1 101-111,116,218-224,255-261,271-285,287,289
+  s_58dd112dc09435::t_87090f1b3ba7dd 477-480,483-494,496-522,524-525,527-568
+  s_58dd112dc09435::t_8c9ec46823e8fa 461-468,473-476
+  s_58dd112dc09435::t_b798344c301ebd 481-482,495,523,526
+apps/dashboard/components/model/weighting-chapter.tsx
+  s_58dd112dc09435::t_a6078f81edcc19 61-67
+  s_58dd112dc09435::t_53939de18b7e32 33
+  s_58dd112dc09435::t_fff67fcd45ae3d 375-379,388-417,424-456
+  s_58dd112dc09435::t_a96016b0a07487 8-9
+  s_58dd112dc09435::t_bf43fd750abd62 25,457,535-544,565
+  s_58dd112dc09435::t_8171564196f8b7 259-264
+  s_58dd112dc09435::t_4ca41b2339a77d 343-374
+  s_58dd112dc09435::t_fb8649bf19fab6 530-532,534,547
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_8e8faa097e8780 1859-1861
+apps/dashboard/components/model/dimension-column.tsx
+  s_58dd112dc09435::t_a06046f05328f9 11-13,15-17
+  s_58dd112dc09435::t_0bbbf8e785f5ad 115,120-123,129-146,152-159
+  s_58dd112dc09435::t_420cc06a4e54d8 9,103-112,160
+  s_58dd112dc09435::t_ca3650722cb4a8 69-73,75-81,85-89,95-102,113-114
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_8e8faa097e8780 1859-1861
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_1c46056dbdf2a0 335,339-343
+apps/dashboard/components/model/criteria-chapter.tsx
+  s_58dd112dc09435::t_22cb6506f5352f 27
+  s_58dd112dc09435::t_8afe2f9c378c3f 204-223,238-244
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_8e8faa097e8780 1859-1861
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "2d0e0d25067ea36d5ac6888e6e8358fbbbc68147",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
