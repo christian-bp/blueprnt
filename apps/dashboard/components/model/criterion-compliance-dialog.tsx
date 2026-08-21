@@ -123,6 +123,12 @@ function CriterionComplianceForm({
   // (saveCriterionCompliance throws criterionLocked). Clearing the checkbox
   // lifts the lock HERE, before anything is saved, so a correction is one act
   // (uncheck, edit, save) instead of a separate reopen trip.
+  //
+  // Re-checking it mid-edit locks the edited text again, and that is the
+  // intended reading rather than a state to escape: declaring the
+  // documentation approved freezes what you are declaring, exactly as it does
+  // on a criterion that was already signed off. The edit is not lost (it is in
+  // the form, and the save carries it), and clearing the box hands it back.
   const locked = wasApproved && approved
 
   // Whether the documentation is complete as it stands in the FORM, which is

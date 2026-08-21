@@ -20,7 +20,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
-import { type ReactNode, useState } from "react"
+import { type ReactNode, useId, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { CheckRemedy } from "@/components/model/check-remedy"
 import { RestoreApprovedDialog } from "@/components/model/restore-approved-dialog"
@@ -41,6 +41,46 @@ import { toast } from "@/lib/toast"
 // their intrinsic 24px unless a size class says otherwise, which is how a
 // checklist ends up with twelve badges down its left edge, and the circle
 // around a checkmark at that size reads as a control rather than a state.
+// One level's rows, under a label that NAMES the group to a screen reader as
+// well as to the eye.
+//
+// The label used to be a bare paragraph in front of a plain list, which reads
+// on screen and is silent everywhere else: a reader moving by list or by group
+// met twelve items with nothing saying which of them block approval, and that
+// level is exactly what the per-row parenthetical used to carry. A labelled
+// group is the app's established answer (dimension-frame.tsx does the same for
+// a dimension column), and it puts the level back where the grouping put it,
+// once per group rather than once per row.
+//
+// A section rather than a div carrying role="group": a titled part of the page
+// holding its own content is what a section IS, it needs no explicit role to
+// say so, and naming it makes it a place a reader can jump straight to, which
+// is how someone looking for what still blocks approval gets there. The same
+// reasoning (and the same shape) as a dimension column's frame.
+function CheckGroup({
+  label,
+  children,
+}: {
+  label: string
+  children: ReactNode
+}) {
+  const labelId = useId()
+  return (
+    <section aria-labelledby={labelId} className="space-y-1.5">
+      <p
+        id={labelId}
+        className="font-semibold text-muted-foreground text-xs uppercase tracking-wide"
+      >
+        {label}
+      </p>
+      {/* Tighter than the old rhythm: most of these rows are settled most of
+          the time, and a settled row does not need the air an outstanding one
+          does. */}
+      <ul className="space-y-1.5">{children}</ul>
+    </section>
+  )
+}
+
 // The two groups, in the order the gate reads: what blocks approval first.
 const CHECK_GROUPS = [
   { level: "blocker", labelKey: "requiredChecks" },
@@ -245,31 +285,23 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
           })
           if (checks.length === 0) return null
           return (
-            <div key={level} className="space-y-1.5">
-              <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
-                {t(labelKey)}
-              </p>
-              {/* Tighter than the old rhythm: most of these rows are settled
-                  most of the time, and a settled row does not need the air an
-                  outstanding one does. */}
-              <ul className="space-y-1.5">
-                {checks.map((check) => (
-                  <CheckRow
-                    key={check.key}
-                    ok={check.ok}
-                    level={check.level}
-                    label={t(`checks.${check.key}`)}
-                    stateLabel={t(check.ok ? "checkMet" : "checkNotMet")}
-                    remedy={
-                      <CheckRemedy
-                        check={check}
-                        dimensionShares={data.dimensionShares}
-                      />
-                    }
-                  />
-                ))}
-              </ul>
-            </div>
+            <CheckGroup key={level} label={t(labelKey)}>
+              {checks.map((check) => (
+                <CheckRow
+                  key={check.key}
+                  ok={check.ok}
+                  level={check.level}
+                  label={t(`checks.${check.key}`)}
+                  stateLabel={t(check.ok ? "checkMet" : "checkNotMet")}
+                  remedy={
+                    <CheckRemedy
+                      check={check}
+                      dimensionShares={data.dimensionShares}
+                    />
+                  }
+                />
+              ))}
+            </CheckGroup>
           )
         })}
       </CardContent>

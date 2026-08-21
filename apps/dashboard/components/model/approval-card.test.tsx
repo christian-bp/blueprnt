@@ -99,12 +99,15 @@ describe("ApprovalCard", () => {
       }
       return renderCard()
     }
+    // By ROLE and accessible name, which is what a screen reader has to work
+    // with: a label that only reads on screen leaves a reader moving by group
+    // or by list with no idea which items block approval.
     const groupOf = (label: string) =>
-      screen.getByText(label).parentElement as HTMLElement
+      screen.getByRole("region", { name: label })
     const rowFor = (label: string) =>
       screen.getByText(label).closest("li") as HTMLElement
 
-    it("groups the twelve into required and recommended", () => {
+    it("groups the twelve into required and recommended, each naming itself", () => {
       const { container } = renderChecks(ALL_GREEN_CHECKS)
       const required = within(groupOf(m.requiredChecks))
       const recommended = within(groupOf(m.recommendedChecks))
@@ -133,6 +136,9 @@ describe("ApprovalCard", () => {
       expect(mark.getAttribute("aria-hidden")).toBe("true")
       // Decorative mark, so the state is carried in text a reader can hear.
       expect(row.textContent).toContain(m.checkMet)
+      // And the level comes from the group the row sits in, which is where the
+      // retired per-row parenthetical went.
+      expect(row.closest("section")).toBe(groupOf(m.recommendedChecks))
     })
 
     it("lets a failing blocker lead, with its remedy under it", () => {
@@ -186,6 +192,45 @@ describe("ApprovalCard", () => {
       for (const row of screen.getAllByRole("listitem")) {
         expect(row.className).toContain("text-muted-foreground")
       }
+    })
+
+    // The boundary of that claim, recorded rather than assumed: the muting is
+    // driven per ROW by the check's own result, not by the model's approval, so
+    // an approved model that still fails a recommendation keeps that one row at
+    // full strength with its remedy. A warning never blocked approval, and a
+    // receipt that quietly greyed out the one thing still outstanding would be
+    // hiding it.
+    it("keeps a failing recommendation loud even on an approved model", () => {
+      queryResult = {
+        checks: ALL_GREEN_CHECKS.map((check) =>
+          check.key === "overlapPairs"
+            ? { ...check, ok: false, pairs: [["knowledge-depth", "on-call"]] }
+            : check
+        ),
+        approval: {
+          approvedBy: "u1",
+          approvedByName: "Alex",
+          approvedAt: Date.UTC(2026, 1, 2),
+        },
+        lastApprovedAt: null,
+        workingConditions: null,
+        dimensionShares: DIMENSION_SHARES,
+      }
+      renderCard()
+      const loud = rowFor(m.checks.overlapPairs)
+      expect(loud.className).not.toContain("text-muted-foreground")
+      expect(
+        (loud.querySelector("svg") as SVGElement).getAttribute("class")
+      ).toContain("amber")
+      // Its remedy stands too: the way to clear it is still on the card.
+      expect(loud.textContent).toContain("Overlapping criteria")
+      // Every other row still recedes, so the one outstanding item is the only
+      // thing on the card with any weight.
+      expect(
+        screen
+          .getAllByRole("listitem")
+          .filter((row) => !row.className.includes("text-muted-foreground"))
+      ).toHaveLength(1)
     })
   })
 

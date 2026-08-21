@@ -254,6 +254,64 @@ describe("CriterionComplianceDialog", () => {
     )
   })
 
+  // The full three-call branch, which is the one worth pinning: a signed-off
+  // criterion corrected and signed off again in a single act. The order is the
+  // backend's own requirement (it refuses a write while approved, and refuses
+  // an approval its stored row does not yet support), so it is asserted rather
+  // than assumed.
+  it("un-approves, saves, then re-approves when an approved criterion is corrected", async () => {
+    renderDialog({ target: APPROVED_TARGET })
+    fireEvent.click(approveBox())
+    fireEvent.change(screen.getByDisplayValue("Measure scope"), {
+      target: { value: "Measure the scope of impact" },
+    })
+    fireEvent.click(approveBox())
+    fireEvent.click(saveButton())
+    await waitFor(() => {
+      expect(save).toHaveBeenCalledTimes(1)
+    })
+    expect(setApproval.mock.calls.map(([args]) => args)).toEqual([
+      { orgId: "org1", criterionId: "c3", approved: false },
+      { orgId: "org1", criterionId: "c3", approved: true },
+    ])
+    const [unapprove, reapprove] = setApproval.mock.invocationCallOrder
+    const [write] = save.mock.invocationCallOrder
+    expect(unapprove as number).toBeLessThan(write as number)
+    expect(write as number).toBeLessThan(reapprove as number)
+  })
+
+  // Re-checking the box mid-edit locks the edited text again, which is the
+  // intended reading rather than a state to escape: declaring the
+  // documentation approved freezes what is being declared. The edit is not
+  // lost, and clearing the box hands it back.
+  it("re-locks the edited fields when the sign-off is checked again", () => {
+    renderDialog({ target: APPROVED_TARGET })
+    fireEvent.click(approveBox())
+    const field = screen.getByDisplayValue(
+      "Measure scope"
+    ) as HTMLTextAreaElement
+    fireEvent.change(field, {
+      target: { value: "Measure the scope of impact" },
+    })
+    fireEvent.click(approveBox())
+    for (const textbox of screen.getAllByRole("textbox")) {
+      expect((textbox as HTMLTextAreaElement).disabled).toBe(true)
+    }
+    // Frozen, not discarded.
+    expect(
+      screen.getByDisplayValue("Measure the scope of impact")
+    ).toBeDefined()
+    // And handed back on clearing it again.
+    fireEvent.click(approveBox())
+    expect(
+      (
+        screen.getByDisplayValue(
+          "Measure the scope of impact"
+        ) as HTMLTextAreaElement
+      ).disabled
+    ).toBe(false)
+  })
+
   // Clearing a standing sign-off is how a correction begins, and it reopens
   // the MODEL's approval on the backend (the engine's blocker rule): this is
   // the call that carries that consequence, so it is pinned here.
@@ -321,7 +379,7 @@ describe("CriterionComplianceDialog", () => {
     expect(screen.queryByText("Rationale")).toBeNull()
   })
 
-  it("fills all six fields from the AI draft, hides Approve, and shows Save when dirty", async () => {
+  it("fills all six fields from the AI draft and gates the save on the acknowledgement", async () => {
     draftMock.mockResolvedValue({
       purpose: "AIP",
       whyRelevant: "AIW",
