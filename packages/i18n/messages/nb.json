@@ -1869,7 +1869,6 @@
         }
       },
       "weighting": {
-        "budgetAllocated": "<allocated></allocated> av <budget></budget> vektpoeng fordelt",
         "pointsLeft": "{count} vektpoeng igjen å fordele",
         "pointsOver": "{count} vektpoeng over budsjettet",
         "saveCta": "Lagre vekting",

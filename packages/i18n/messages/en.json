@@ -1869,7 +1869,6 @@
         }
       },
       "weighting": {
-        "budgetAllocated": "<allocated></allocated> of <budget></budget> weight points allocated",
         "pointsLeft": "{count, plural, one {# weight point} other {# weight points}} left to distribute",
         "pointsOver": "{count, plural, one {# weight point} other {# weight points}} over the budget",
         "saveCta": "Save weighting",

@@ -1869,7 +1869,6 @@
         }
       },
       "weighting": {
-        "budgetAllocated": "<allocated></allocated>/<budget></budget> painopistettä jaettu",
         "pointsLeft": "{count, plural, one {# painopiste} other {# painopistettä}} jaettavana",
         "pointsOver": "{count, plural, one {# painopiste} other {# painopistettä}} yli budjetin",
         "saveCta": "Tallenna painotus",

@@ -17,14 +17,18 @@ import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation, useQuery } from "convex/react"
-import { AnimatePresence, motion } from "motion/react"
+import { AnimatePresence } from "motion/react"
 import Link from "next/link"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
 import { ChapterAction } from "@/components/chapter-action-slot"
 import { CHAPTER_ACTION_BUTTON_SIZE } from "@/components/chapter-tabs"
-import { FloatingPill, FloatingPillText } from "@/components/floating-pill"
+import {
+  type FloatingPillTone,
+  TONE_ICON,
+  TONE_ICON_CLASS,
+} from "@/components/floating-pill"
 import { DimensionFrame } from "@/components/model/dimension-frame"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
 import {
@@ -153,6 +157,12 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
   // a no-op is worse than one that arrives a moment late.
   const weightsSaved = checks?.weightsSaved ?? true
   const canSave = balanced && (dirty || !weightsSaved)
+  // Two things worth saying, in two of the three tones the pills use: points
+  // still to distribute is the ordinary way through this chapter, and an
+  // allocation over its budget is a state the model cannot be saved from.
+  // There is no third: an allocation that adds up needs no announcement that
+  // it adds up, so the readout is simply not there.
+  const tone: FloatingPillTone = delta < 0 ? "info" : "warning"
   const showReview =
     reviewLocked === false && !dirty && criteria.length > 0 && !saving
 
@@ -188,9 +198,63 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
           still. The weighting concept's help rides it, next to the sentence
           that frames the chapter, because the block it used to sit on is gone
           and help never floats. */}
-      {/* The chapter's own action, rendered here where its model and its
-          review lock are, and portalled up into the tab row. */}
+      {/* The chapter's own actions, rendered here where its model and its
+          review lock are, and portalled up into the journey row. */}
       <ChapterAction>
+        {/* The budget, in line with the review it sits beside. It floated
+            clear of the grid while it was a pill; on the row it is PERSISTENT
+            instead, because a readout that appeared and vanished would move
+            the review trigger beside it every time the allocation crossed its
+            budget. Three tones, one box: the same three things the pill said,
+            in the same language (its marks and inks are shared, not
+            re-picked). */}
+        {/* The budget, in line with the review it sits beside. It shows only
+            when it has something to SAY: points still to distribute, or an
+            allocation over its budget. When the points are all dealt out
+            there is nothing to announce, so nothing is announced. Nothing to
+            allocate at all (no criteria yet) is the same silence. */}
+        {criteria.length > 0 && !balanced && (
+          <span
+            className="flex shrink-0 items-center gap-2"
+            data-slot="weight-budget"
+            data-tone={tone}
+          >
+            <HugeiconsIcon
+              icon={TONE_ICON[tone]}
+              strokeWidth={2}
+              aria-hidden="true"
+              className={cn("size-4 shrink-0", TONE_ICON_CLASS[tone])}
+            />
+            {/* A polite live region: these readings change under the reader's
+                OWN weight clicks, and an assertive one would interrupt them
+                with their own edit. It carried this job as a pill and keeps
+                it.
+
+                The sentence stays whole: its figure is inside an ICU plural,
+                and splitting a plural around a component to roll one digit is
+                exactly the i18n boundary the house rules draw. */}
+            <span className="text-sm tabular-nums" role="status">
+              {delta < 0
+                ? t("pointsLeft", { count: -delta })
+                : t("pointsOver", { count: delta })}
+            </span>
+          </span>
+        )}
+        {/* Its own element, not the readout's child: a balanced allocation
+            says nothing while still being savable (a model weighted before
+            the marker existed, or one just edited back into balance), so the
+            save cannot come and go with the sentence. Sized by the row's own
+            constant: it is a chapter action among chapter actions. */}
+        {canSave && (
+          <Button
+            type="button"
+            size={CHAPTER_ACTION_BUTTON_SIZE}
+            disabled={saving}
+            onClick={onSave}
+          >
+            {t("saveCta")}
+          </Button>
+        )}
         {/* The trigger's slot is reserved whether or not the review is on
             offer, and only its CONTENT hides: mounting it would change the
             row's width, and at a width where the row wraps, its height.
@@ -457,73 +521,6 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
         target={motivating}
         onClose={() => setMotivating(null)}
       />
-      {/* The budget, floating clear of the grid. It renders only with
-          something to say (the allocation does not add up) or something to do
-          (it adds up and is unsaved); an allocation that adds up and is saved
-          is this chapter's steady state, and it says nothing. */}
-      <FloatingPill
-        // Under budget is the ordinary way through this chapter, over budget
-        // is a state the model cannot be saved from, and an allocation that
-        // adds up is done: three different things to say, in the status
-        // block's own three tones.
-        tone={balanced ? "ready" : delta < 0 ? "info" : "warning"}
-      >
-        {!balanced ? (
-          // The sentence stays whole: its figure is inside an ICU plural, and
-          // splitting a plural around a component to roll one digit is exactly
-          // the i18n boundary the house rules draw. The readout below, whose
-          // figures ARE tagged, is where the numbers roll.
-          <FloatingPillText alone>
-            {delta < 0
-              ? t("pointsLeft", { count: -delta })
-              : t("pointsOver", { count: delta })}
-          </FloatingPillText>
-        ) : canSave ? (
-          // canSave, not merely dirty: on a model weighted before the marker
-          // existed the allocation is already balanced and undirty, and a pill
-          // that stayed silent there would hide the only gesture that can
-          // record the act.
-          <>
-            <FloatingPillText>
-              {/* Both figures move while the reader watches (a weight click
-                  changes the sum, removing a criterion changes the budget), so
-                  they roll rather than swap. Tagged inside the message rather
-                  than concatenated around it: the connective and the unit are
-                  the translator's. */}
-              {t.rich("budgetAllocated", {
-                allocated: () => <NumberFlow value={totalPoints} />,
-                budget: () => <NumberFlow value={budget} />,
-              })}
-            </FloatingPillText>
-            {/* A direct child of the pill's layout animation, so Motion
-                counter-transforms its label instead of stretching it while
-                the box springs to the new width (ui-animation.md rule 1).
-                The primary variant is the action colour: it is the one thing
-                in the pill the reader is meant to press.
-
-                sm and rounded-full are a deliberate call-site deviation from
-                CHAPTER_ACTION_BUTTON_SIZE, which governs the chapter framing
-                row's actions and not this. A floating capsule has its own
-                density: a default-height block inside it stands taller than
-                the readout it serves and dominates the sentence it belongs
-                to. At sm it sits with an even inset inside the pill's own
-                padding, a capsule inside a capsule, and the pill's right end
-                is the button's height rather than a control bulging out of
-                it. */}
-            <motion.span layout="position" className="flex shrink-0">
-              <Button
-                type="button"
-                size="sm"
-                className="rounded-full"
-                disabled={saving || !canSave}
-                onClick={onSave}
-              >
-                {t("saveCta")}
-              </Button>
-            </motion.span>
-          </>
-        ) : null}
-      </FloatingPill>
     </div>
   )
 }

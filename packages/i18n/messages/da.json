@@ -1869,7 +1869,6 @@
         }
       },
       "weighting": {
-        "budgetAllocated": "<allocated></allocated> af <budget></budget> vægtpoint fordelt",
         "pointsLeft": "{count} vægtpoint tilbage at fordele",
         "pointsOver": "{count} vægtpoint over budgettet",
         "saveCta": "Gem vægtning",

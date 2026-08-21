@@ -45,7 +45,6 @@ vi.mock("@number-flow/react", () => ({
 }))
 
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
-import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import { WeightingChapter } from "@/components/model/weighting-chapter"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 
@@ -219,20 +218,6 @@ const groupFor = (name: string) =>
 const save = () => screen.getByRole("button", { name: weighting.saveCta })
 const querySave = () =>
   screen.queryByRole("button", { name: weighting.saveCta })
-// The pill's readout, as its one message renders it. Matched on the whole
-// span: its two figures are their own elements (they roll through NumberFlow),
-// which the default text matcher does not join.
-const readoutText = (allocated: string, budget: string) =>
-  weighting.budgetAllocated
-    .replace("<allocated></allocated>", allocated)
-    .replace("<budget></budget>", budget)
-const readoutNode = (allocated: string, budget: string) =>
-  screen.queryByText(
-    (_, node) =>
-      node?.tagName === "SPAN" &&
-      node.textContent === readoutText(allocated, budget)
-  )
-
 // A dimension's heading row (the frame's own two-sided slot), its name, and the
 // share opposite it.
 const headingRow = (name: string) =>
@@ -398,7 +383,7 @@ describe("the Viktning chapter", () => {
 
   // Once the act is on record, an unchanged allocation has nothing to say
   // again: the pill goes quiet exactly as it did before.
-  it("says nothing on a balanced model whose weighting is already recorded", () => {
+  it("offers nothing to press on a balanced model already recorded", () => {
     methodChecksResult = checksFor(["responsibility"], true, true)
     renderChapter()
     expect(querySave()).toBeNull()
@@ -406,27 +391,25 @@ describe("the Viktning chapter", () => {
 
   it("saves the whole allocation at once, and only when it balances", async () => {
     renderChapter()
-    // Nothing edited yet: balanced and saved, so the pill has nothing to say
-    // and nothing to offer, and it is not on screen at all.
+    // Nothing edited yet: balanced and saved, so there is nothing to press.
     expect(querySave()).toBeNull()
 
-    // c1 4 -> 3 alone leaves the budget short: the pill says what is missing
-    // and offers no save.
+    // c1 4 -> 3 alone leaves the budget short: the readout says what is
+    // missing and there is nothing to save.
     fireEvent.click(
       within(groupFor(COMPLEXITY)).getByRole("button", { name: "3" })
     )
     expect(querySave()).toBeNull()
     expect(screen.getByText("1 weight point left to distribute")).toBeDefined()
 
-    // Compensating elsewhere balances it: the pill swaps to the readout and
-    // the save, and the save posts every criterion.
+    // Compensating elsewhere balances it: the sentence goes, the save
+    // arrives, and it posts every criterion.
     fireEvent.click(
       within(groupFor("Autonomy and decision mandate")).getByRole("button", {
         name: "3",
       })
     )
     expect(screen.queryByText("1 weight point left to distribute")).toBeNull()
-    expect(readoutNode("15", "15")).not.toBeNull()
     expect((save() as HTMLButtonElement).disabled).toBe(false)
     fireEvent.click(save())
     await waitFor(() => {
@@ -474,27 +457,75 @@ describe("the Viktning chapter", () => {
     renderChapter()
     const link = screen.getByRole("link")
     expect(link.getAttribute("href")).toBe("/model/criteria")
-    // Nothing to allocate is nothing to say: the pill stays away entirely.
+    // Nothing to allocate is nothing to say: the budget stays away entirely.
     expect(querySave()).toBeNull()
   })
 
-  // The budget floats clear of the chapter instead of opening it: a block at
-  // the top would push this chapter's grid below the other chapters', and
-  // switching tabs would jump.
-  describe("the budget pill", () => {
-    // Fixed, so it is out of flow and can push nothing.
-    // The pill's own shell. The RAIL it floats on belongs to the section's
-    // FloatingStack, which the shell mounts above this chapter, so the
-    // chapter's own tests reach for the pill rather than for a fixed box.
-    const pillOf = (node: Element) =>
-      node.closest('[data-slot="floating-pill"]') as HTMLElement | null
+  // The budget rides the journey row, in line with the review it sits beside.
+  // It floated clear of the grid while it was a pill; on the row it is
+  // PERSISTENT, because a readout that appeared and vanished would move the
+  // review trigger every time the allocation crossed its budget.
+  describe("the budget readout", () => {
+    const readoutOf = (node: Element) =>
+      node.closest('[data-slot="weight-budget"]') as HTMLElement | null
 
-    it("says nothing while the allocation adds up and is saved", () => {
+    // Silence is the balanced state: all the points are dealt out, and saying
+    // so is saying nothing.
+    it("says nothing once every weight point is dealt out", () => {
       const { container } = renderChapter()
-      expect(querySave()).toBeNull()
+      expect(container.querySelector('[data-slot="weight-budget"]')).toBeNull()
+    })
+
+    // And it appears the moment there IS something to say, in both
+    // directions, so the two states are pinned against each other.
+    it("appears while the allocation does not add up, and goes again", () => {
+      const { container } = renderChapter()
+      const budget = () =>
+        container.querySelector('[data-slot="weight-budget"]')
+      fireEvent.click(
+        within(groupFor(COMPLEXITY)).getByRole("button", { name: "3" })
+      )
+      expect(budget()?.getAttribute("data-tone")).toBe("info")
+      fireEvent.click(
+        within(groupFor(COMPLEXITY)).getByRole("button", { name: "5" })
+      )
+      expect(budget()?.getAttribute("data-tone")).toBe("warning")
+      fireEvent.click(
+        within(groupFor(COMPLEXITY)).getByRole("button", { name: "4" })
+      )
+      expect(budget()).toBeNull()
+    })
+
+    // The save is its own element, not the readout's child: a balanced
+    // allocation says nothing while still being savable, so the button cannot
+    // come and go with the sentence.
+    it("keeps the save when the readout has gone quiet", () => {
+      methodChecksResult = checksFor(["responsibility"], true, false)
+      const { container } = renderChapter()
+      // Balanced, so no readout; unrecorded, so still savable.
+      expect(container.querySelector('[data-slot="weight-budget"]')).toBeNull()
+      expect((save() as HTMLButtonElement).disabled).toBe(false)
+      // Sized by the row's own constant: a chapter action among chapter
+      // actions, not the pill's deliberate compact deviation.
+      expect(save().className.split(/\s+/)).toContain("h-9")
+    })
+
+    // Both of this chapter's actions travel to the row together: the budget
+    // with its save, and the review beside them. (The chapter renders them
+    // into the row's slot; the row's own tests pin where the slot sits.)
+    it("carries the budget, its save and the review together", () => {
+      const { container } = renderChapter()
+      fireEvent.click(
+        within(groupFor(COMPLEXITY)).getByRole("button", { name: "3" })
+      )
+      const readout = container.querySelector(
+        '[data-slot="weight-budget"]'
+      ) as HTMLElement
       expect(
-        container.querySelector('[class*="fixed"]')?.textContent ?? ""
-      ).toBe("")
+        readout.parentElement?.textContent?.includes(
+          messages.dashboard.ai.openReviewCta
+        )
+      ).toBe(true)
     })
 
     // The three tones are the status block's own language, carried over when
@@ -504,8 +535,6 @@ describe("the Viktning chapter", () => {
     // read alike at a glance.
     const toneOf = (node: Element) =>
       node.closest("[data-tone]")?.getAttribute("data-tone")
-    const pillClasses = (node: Element) =>
-      (node.closest("[data-tone]")?.className ?? "").split(/\s+/)
 
     it("says what is missing while the allocation does not add up", () => {
       renderChapter()
@@ -513,14 +542,9 @@ describe("the Viktning chapter", () => {
         within(groupFor(COMPLEXITY)).getByRole("button", { name: "3" })
       )
       const line = screen.getByText("1 weight point left to distribute")
-      expect(pillOf(line)).not.toBeNull()
-      // The one shared shell, the same one the Kriterier chapter's own pill
-      // is built from: a chapter that hand-rolled its own would lose this
-      // marker and fail here.
-      expect(line.closest('[data-slot="floating-pill"]')).not.toBeNull()
+      expect(readoutOf(line)).not.toBeNull()
       // Informative, not alarming: being mid-allocation is the ordinary state.
       expect(toneOf(line)).toBe("info")
-      expect(pillClasses(line).join(" ")).not.toContain("amber")
       // Nothing to save while it does not add up.
       expect(querySave()).toBeNull()
     })
@@ -533,11 +557,6 @@ describe("the Viktning chapter", () => {
       const line = screen.getByText("1 weight point over the budget")
       expect(querySave()).toBeNull()
       expect(toneOf(line)).toBe("warning")
-      // The one amber the app defines, tinting border and text together.
-      const classes = pillClasses(line)
-      expect(classes).toEqual(
-        expect.arrayContaining(WARNING_ALERT_CLASS.split(/\s+/))
-      )
     })
 
     it("offers the readout and the save once it adds up unsaved", () => {
@@ -550,43 +569,26 @@ describe("the Viktning chapter", () => {
           name: "3",
         })
       )
-      const readout = readoutNode("15", "15") as HTMLElement
-      expect(pillOf(readout)).not.toBeNull()
-      expect(pillOf(save())).toBe(pillOf(readout))
-      // It adds up: the check, and no warning tint anywhere on the pill.
-      expect(toneOf(readout)).toBe("ready")
-      expect(pillClasses(readout).join(" ")).not.toContain("amber")
+      // It adds up again, so the sentence goes and only the save remains.
+      const { container } = renderChapter()
+      expect(container.querySelector('[data-slot="weight-budget"]')).toBeNull()
+      expect((save() as HTMLButtonElement).disabled).toBe(false)
       // The save carries the action colour, which is the design system's
-      // primary: it is the one thing in the pill meant to be pressed. It is
-      // sized and shaped to its host rather than to the framing row: a
-      // capsule inside the pill's capsule, at the compact size, because a
-      // default-height block in a floating pill dominates the readout it
-      // serves.
-      const classes = save().className.split(/\s+/)
-      expect(classes).toContain("bg-primary")
-      expect(classes).toContain("h-8")
-      expect(classes).toContain("rounded-full")
-      // The figures roll rather than swap: they change while the reader
-      // watches. (NumberFlow is mocked here to a plain span carrying its
-      // value, so their presence is what is asserted.)
-      expect(readout.textContent).toContain("15")
+      // primary.
+      expect(save().className.split(/\s+/)).toContain("bg-primary")
     })
 
     // It floats, so it can never sit between the framing row and the grid, and
     // the columns begin where every other chapter's do.
-    // The pill positions nothing itself: it renders into the section's
-    // FloatingStack, which owns the rail's corner and keeps the journey
-    // instrument at its base. A chapter that hand-rolled its own fixed box
-    // would be a second corner and would fail this.
-    it("leaves its placement to the section's floating stack", () => {
+    // This chapter floats nothing of its own any more: its budget is on the
+    // row, and the section's rail carries only the journey instrument.
+    it("floats nothing of its own", () => {
       const { container } = renderChapter()
       fireEvent.click(
         within(groupFor(COMPLEXITY)).getByRole("button", { name: "3" })
       )
       expect(container.querySelector('[class*="fixed"]')).toBeNull()
-      expect(
-        container.querySelector('[data-slot="floating-pill"]')
-      ).not.toBeNull()
+      expect(container.querySelector('[data-slot="floating-pill"]')).toBeNull()
     })
   })
 
@@ -623,7 +625,8 @@ describe("the Viktning chapter", () => {
     // row now, mounted by the section shell above this component.
     const { container } = renderChapter()
     expect(container.querySelector('[class*="sm:grid-cols-2"]')).not.toBeNull()
-    // No pill: what it would say is exactly what is still loading.
+    // No readout and no save: what they would say is exactly what is still
+    // loading.
     expect(querySave()).toBeNull()
     // Nothing is weighted yet, so no weight row exists to be edited.
     expect(screen.queryAllByRole("group")).toHaveLength(0)

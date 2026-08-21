@@ -1869,7 +1869,6 @@
         }
       },
       "weighting": {
-        "budgetAllocated": "<allocated></allocated> av <budget></budget> viktpoäng fördelade",
         "pointsLeft": "{count} viktpoäng kvar att fördela",
         "pointsOver": "{count} viktpoäng över budgeten",
         "saveCta": "Spara viktning",

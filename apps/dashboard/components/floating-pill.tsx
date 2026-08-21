@@ -24,7 +24,7 @@ import { SPRING } from "@/lib/motion"
 // is a warning. They must not read alike at a glance.
 export type FloatingPillTone = "info" | "warning" | "ready"
 
-const TONE_ICON = {
+export const TONE_ICON = {
   info: InformationCircleIcon,
   warning: Alert02Icon,
   ready: Tick02Icon,
@@ -34,7 +34,7 @@ const TONE_ICON = {
 // one amber, defined once in lib/alert-tone, and it tints the border AND the
 // text together so the whole pill reads as the warning rather than an ordinary
 // pill with an orange mark in it.
-const TONE_CLASS: Record<FloatingPillTone, string> = {
+export const TONE_CLASS: Record<FloatingPillTone, string> = {
   info: "",
   warning: WARNING_ALERT_CLASS,
   ready: "",
@@ -44,7 +44,7 @@ const TONE_CLASS: Record<FloatingPillTone, string> = {
 // drift from the border around it; the other two carry their own ink against
 // the card's ordinary foreground, which is what keeps the figures beside them
 // at full contrast instead of tinting a whole readout for one state word.
-const TONE_ICON_CLASS: Record<FloatingPillTone, string> = {
+export const TONE_ICON_CLASS: Record<FloatingPillTone, string> = {
   info: "text-muted-foreground",
   warning: "",
   ready: "text-success",
