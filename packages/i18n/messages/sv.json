@@ -1988,8 +1988,8 @@
           "anchorsComplete": "Ett kriterium saknar steg på sin bedömningsskala. Ta bort det och välj det på nytt i <link>{chapter}</link>.",
           "documentationComplete": "{count, plural, =1 {# kriterium är} other {# kriterier är}} ännu inte dokumenterade och godkända. Öppna Dokumentera på vart och ett i <link>{chapter}</link>.",
           "weightBudget": "Viktpoängen går inte ihop med budgeten. Balansera dem och spara i <link>{chapter}</link>.",
-          "levelRulesValid": "Modellens nivågränser är inte en giltig skala 1 till 12. Inget i appen ändrar dem, så det här kräver support.",
-          "zoneProfileMonotonic": "Modellens zonprofilregler är inte konsekventa. Inget i appen ändrar dem, så det här kräver support.",
+          "levelRulesValid": "Modellens nivågränser är inte en giltig skala 1 till 12. Det här kan inte rättas till i appen än.",
+          "zoneProfileMonotonic": "Modellens zonprofilregler är inte konsekventa. Det här kan inte rättas till i appen än.",
           "dimensionWeightBalance": "{dimensions} bär en dominerande andel av viktningen utan dokumenterat skäl. Motivera det i <link>{chapter}</link>, eller flytta viktpoäng till en annan dimension.",
           "peopleLeadershipWeight": "{criterion} har en hög vikt utan dokumenterat skäl. Motivera den i <link>{chapter}</link>, eller sänk dess viktpoäng.",
           "overlapPairs": "Överlappande kriterier: {pairs}. Notera överlappningen på ettdera kriteriet i paret i <link>{chapter}</link>."

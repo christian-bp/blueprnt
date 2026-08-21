@@ -133,8 +133,11 @@ export function CheckRemedy({
           // library's criteria are named "X and Y" themselves, so "Knowledge
           // depth and specialist level and Knowledge breadth and
           // cross-disciplinary understanding" cannot be read back as two
-          // things. The pairs are then joined without a connective for the same
-          // reason.
+          // things. The pairs are then joined by formatNames' "unit" type,
+          // which asks for no connective between them for the same reason;
+          // see list-format.ts for which locales' CLDR data actually grants
+          // that (not all of this app's five do) and why the fallback is
+          // accepted where it does not.
           pairs: formatNames(
             locale,
             (check.pairs ?? []).map((pair) =>

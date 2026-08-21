@@ -50,16 +50,44 @@ async function seedPersonAndFreeze(t: ReturnType<typeof initConvexTest>) {
     orgId,
   })
   if (model === null) throw new Error("seed: model")
-  // Approve the model directly (bypassing approveModel's checklist
-  // re-validation, like the ratings and the lock below): the preconditions
-  // gate now also requires a CURRENT approval before a run can start, and
-  // this fixture is about erasure mechanics, not the approval lifecycle.
+  // Decide working conditions, approve every criterion, and approve the
+  // model itself, all directly (bypassing setWorkingConditionsDecision/
+  // setCriterionApproval/approveModel's own checklist re-validation, like
+  // the ratings and the lock below): the preconditions gate now also
+  // requires a CURRENT approval AND a passing checklist re-check
+  // (methodBlockersPass, belt-and-braces) before a run can start, and this
+  // fixture is about erasure mechanics, not the approval lifecycle. All
+  // three are needed for that re-check to actually pass: the seeded
+  // safety-exposure criterion means workingConditionsTested only clears with
+  // a decided, active materiality (undecided reads as a blocker failure, not
+  // a vacuous pass), and documentationComplete reads each criterion's own
+  // `approved` flag directly (buildMethodCheckInput's `documented:
+  // row.approved === true`), so a model patched to look approved while its
+  // criteria or its materiality decision are not would fail that re-check.
   await t.run(async (ctx) => {
     const modelDocId = ctx.db.normalizeId("models", model.modelId)
     if (modelDocId === null) throw new Error("seed: model id")
     await ctx.db.patch(modelDocId, {
+      workingConditions: {
+        status: "active",
+        motivation: "Rollen exponeras regelbundet for sakerhetsrisker.",
+        decidedBy: userId,
+        decidedAt: Date.now(),
+      },
       approval: { approvedBy: userId, approvedAt: Date.now() },
     })
+    for (const criterion of model.criteria) {
+      const criterionDocId = ctx.db.normalizeId(
+        "criteria",
+        criterion.criterionId
+      )
+      if (criterionDocId === null) throw new Error("seed: criterion id")
+      await ctx.db.patch(criterionDocId, {
+        approved: true,
+        decidedBy: userId,
+        decidedAt: Date.now(),
+      })
+    }
   })
   const track = model.tracks[0]
   if (track === undefined) throw new Error("seed: track")

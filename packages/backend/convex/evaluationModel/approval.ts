@@ -127,11 +127,29 @@ function approvedPayload(
 // change falls the status back to draft (ADR-0023 decision 3). Deletes the
 // field and audits model.approvalReopened once, naming the domain event that
 // caused it. No-op (no audit row) when approval was not set, so an edit to an
-// already-draft model never writes a spurious reopen row. Wired into every
-// method-affecting mutation: activateCriterion, deactivateCriterion,
-// rebalanceWeights, setWorkingConditionsDecision, updateLevelRules,
-// updateZoneProfileRules. Compliance saves (purpose/whyRelevant/bias fields)
-// do NOT reset approval (spec §2.3) and never call this helper.
+// already-draft model never writes a spurious reopen row, and calling it on a
+// no-op transition (e.g. un-approving a criterion that was never approved)
+// costs nothing either.
+//
+// The governing rule: a mutation that can change a BLOCKER input (one of the
+// nine non-warning entries in validateMethod's checklist) reopens approval,
+// because leaving model.approval set while a blocker it was granted under no
+// longer holds would let startPayMappingRun freeze unapproved evidence as if
+// it were reviewed. Wired into every mutation that qualifies:
+// activateCriterion, deactivateCriterion, rebalanceWeights,
+// setWorkingConditionsDecision, updateLevelRules, updateZoneProfileRules
+// (method.ts's) setCriterionApproval on the UN-APPROVE direction only (it
+// flips this criterion's `documented` blocker input from true to false; the
+// approve direction only ever helps a blocker, never breaks one, so it does
+// not need to), and saveCriterionCompliance (defense in depth: it is only
+// reachable on a criterion setCriterionApproval already un-approved, so its
+// own call is normally a no-op, but it must not rely on being called after
+// setCriterionApproval to stay correct). The ONE deliberate exclusion:
+// setCriterionWeightMotivation only ever clears a WARNING
+// (dimensionWeightBalance/peopleLeadershipWeight) in the safe direction
+// (filling in a motivation cannot make either warning MORE unmet), so it can
+// never un-satisfy a check approval depended on, and reopening there would
+// un-approve a model for writing down why it was approved.
 export async function reopenApprovalIfSet(
   ctx: MutationCtx & { audit: AuditWriter },
   model: Doc<"models">,

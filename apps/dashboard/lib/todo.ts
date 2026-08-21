@@ -1,8 +1,5 @@
-import {
-  chapterHref,
-  modelChapterProgress,
-  type ModelProgressCheck,
-} from "@/lib/model-chapters"
+import { type MethodCheck, methodBlockersPass } from "@workspace/core"
+import { chapterHref, modelChapterProgress } from "@/lib/model-chapters"
 
 // Pure derivation of the front-page "To do" from the existing role + method
 // queries. No stored aggregate (derive, like score/level). The profileComplete
@@ -103,14 +100,17 @@ type TodoMethod = {
   modelApproved: boolean
 } | null
 // The slice of getMethodChecks buildModel's criteria-incomplete/ready-to-
-// approve boundary needs: the raw checks array, fed straight into
-// modelChapterProgress (structurally compatible with its leaner
-// ModelProgressCheck), so a selection that clears the raw MODEL_MIN_CRITERIA
-// count by number but still fails a dimension cap or misses a mandatory
-// dimension's coverage keeps reading as incomplete here exactly like it does
-// on the Kriterier chapter itself (model-chapters.ts's
-// CRITERIA_STATION_CHECKS), instead of jumping straight to "ready to approve".
-type TodoMethodChecks = { checks: readonly ModelProgressCheck[] } | null
+// approve boundary (and payMappingReady's own belt-and-braces check below)
+// needs: the raw checks array, at the engine's own MethodCheck shape (level
+// included, not narrowed to model-chapters.ts's leaner ModelProgressCheck),
+// so a selection that clears the raw MODEL_MIN_CRITERIA count by number but
+// still fails a dimension cap or misses a mandatory dimension's coverage
+// keeps reading as incomplete here exactly like it does on the Kriterier
+// chapter itself (model-chapters.ts's CRITERIA_STATION_CHECKS), instead of
+// jumping straight to "ready to approve", AND so payMappingReady can reuse
+// the SAME methodBlockersPass the backend gate re-checks with rather than
+// re-deriving which keys are blockers.
+type TodoMethodChecks = { checks: readonly MethodCheck[] } | null
 type TodoTitleGroup = {
   title: string | null
   people: {
@@ -281,9 +281,10 @@ function computeCounts({
   // (holding at least one open assignment, any confirmation state) is both
   // fully rated AND locked (spec 2.4/6: a complete-but-unlocked draft is not
   // a revealed evaluation, so it blocks the gate exactly like an unrated
-  // role). An unstaffed role's evaluation/lock state never blocks this,
-  // unlike describe/evaluate above, which track every role regardless of
-  // staffing.
+  // role), AND the model itself carries a CURRENT approval (ADR-0023) that
+  // still clears its own checklist. An unstaffed role's evaluation/lock state
+  // never blocks this, unlike describe/evaluate above, which track every
+  // role regardless of staffing.
   const totalUnclassified = classify.reduce(
     (sum, item) => sum + item.peopleCount,
     0
@@ -301,10 +302,22 @@ function computeCounts({
   const unevaluatedStaffedRoles = roles.filter(
     (r) => staffedRoleIds.has(r.roleId) && !isRoleReady(r)
   )
+  // modelApproved alone mirrors what the buildModel group above already
+  // reads; methodBlockersPass alongside it is the same belt-and-braces
+  // re-check computePayMappingPreconditions runs server-side (reusing the
+  // engine's own methodBlockersPass rather than re-deriving which checks are
+  // blockers), so this client-side reading can never drift from the
+  // authority even if a future mutation forgets to reopen approval on a
+  // blocker-moving edit.
+  const modelReady =
+    (method?.modelApproved ?? false) &&
+    methodChecks !== null &&
+    methodBlockersPass([...methodChecks.checks])
   const payMappingReady =
     totalPeople > 0 &&
     totalUnclassified === 0 &&
-    unevaluatedStaffedRoles.length === 0
+    unevaluatedStaffedRoles.length === 0 &&
+    modelReady
   const hasOpenRun = payMappingRuns.some((run) => run.status !== "completed")
   const isOpenRun = (
     run: TodoPayMappingRun

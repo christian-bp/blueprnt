@@ -1988,8 +1988,8 @@
           "anchorsComplete": "Yhdeltä kriteeriltä puuttuu askelia arviointiasteikolta. Poista se ja valitse uudelleen luvussa <link>{chapter}</link>.",
           "documentationComplete": "{count, plural, =1 {# kriteeri on} other {# kriteeriä on}} yhä dokumentoimatta ja hyväksymättä. Avaa Dokumentoi kunkin kohdalla luvussa <link>{chapter}</link>.",
           "weightBudget": "Painopisteet eivät täsmää budjettiin. Tasapainota ne ja tallenna luvussa <link>{chapter}</link>.",
-          "levelRulesValid": "Mallin tasorajat eivät muodosta kelvollista asteikkoa 1-12. Mikään sovelluksessa ei muuta niitä, joten tämä vaatii tuen apua.",
-          "zoneProfileMonotonic": "Mallin vyöhykeprofiilisäännöt eivät ole johdonmukaisia. Mikään sovelluksessa ei muuta niitä, joten tämä vaatii tuen apua.",
+          "levelRulesValid": "Mallin tasorajat eivät muodosta kelvollista asteikkoa 1-12. Tätä ei voi vielä korjata sovelluksessa.",
+          "zoneProfileMonotonic": "Mallin vyöhykeprofiilisäännöt eivät ole johdonmukaisia. Tätä ei voi vielä korjata sovelluksessa.",
           "dimensionWeightBalance": "{dimensions} kantaa hallitsevan osan painotuksesta ilman kirjattua syytä. Perustele se luvussa <link>{chapter}</link> tai siirrä painopisteitä toiseen ulottuvuuteen.",
           "peopleLeadershipWeight": "{criterion} on painava ilman kirjattua syytä. Perustele se luvussa <link>{chapter}</link> tai laske sen painopisteitä.",
           "overlapPairs": "Päällekkäiset kriteerit: {pairs}. Kirjaa päällekkäisyys jommallekummalle parin kriteerille luvussa <link>{chapter}</link>."

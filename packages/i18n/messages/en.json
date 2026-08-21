@@ -1988,8 +1988,8 @@
           "anchorsComplete": "A criterion is missing steps on its evaluation scale. Remove it and choose it again in <link>{chapter}</link>.",
           "documentationComplete": "{count, plural, =1 {# criterion is} other {# criteria are}} still undocumented or unapproved. Open Document on each in <link>{chapter}</link>.",
           "weightBudget": "The weight points do not add up to the budget. Balance them and save in <link>{chapter}</link>.",
-          "levelRulesValid": "The model's level thresholds are not a valid 1 to 12 scale. Nothing in the app edits them, so this needs support.",
-          "zoneProfileMonotonic": "The model's zone profile rules are not consistent. Nothing in the app edits them, so this needs support.",
+          "levelRulesValid": "The model's level thresholds are not a valid 1 to 12 scale. This cannot be corrected in the app yet.",
+          "zoneProfileMonotonic": "The model's zone profile rules are not consistent. This cannot be corrected in the app yet.",
           "dimensionWeightBalance": "{dimensions} carries a dominant share of the weighting with no recorded reason. Motivate it in <link>{chapter}</link>, or move weight points to another dimension.",
           "peopleLeadershipWeight": "{criterion} carries a heavy weight with no recorded reason. Motivate it in <link>{chapter}</link>, or lower its weight points.",
           "overlapPairs": "Overlapping criteria: {pairs}. Note the overlap on either criterion of a pair in <link>{chapter}</link>."

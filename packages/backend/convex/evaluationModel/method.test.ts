@@ -255,6 +255,145 @@ describe("criterion compliance write path", () => {
   })
 })
 
+// The model's own `approval` row, read directly (no wire shape carries it
+// alongside the criteria list): the fixture under test.
+async function readModelApproval(
+  t: ReturnType<typeof initConvexTest>,
+  orgId: string
+) {
+  const model = await t.run(async (ctx) =>
+    ctx.db
+      .query("models")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .unique()
+  )
+  return model?.approval
+}
+
+describe("model approval reopens when a criterion edit can move a blocker", () => {
+  it("clears the model's own approval once a previously-approved criterion is un-approved (the empirical scenario: approve, then un-approve, then approval is null)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    const model = await asAdmin.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    const criterionId = model?.criteria[0]?.criterionId
+    if (criterionId === undefined) throw new Error("no criterion")
+
+    // Document and approve the criterion for real, so the un-approve below is
+    // a genuine true -> false transition of the documentationComplete
+    // blocker's input, not a no-op on an already-unapproved row.
+    await asAdmin.mutation(api.evaluationModel.method.saveCriterionCompliance, {
+      orgId,
+      criterionId,
+      purpose: "p",
+      whyRelevant: "w",
+      overlapNotes: "",
+      biasRisk: "low",
+      biasComment: "b",
+      biasAction: "",
+    })
+    await asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
+      orgId,
+      criterionId,
+      approved: true,
+    })
+
+    // Grant the MODEL's own approval directly (bypassing approveModel's own
+    // checklist re-validation, like seedForFreeze does elsewhere): this test
+    // is about the reopen wiring, not the approval mutation's own gate.
+    await grantModelApproval(t, orgId)
+    expect(await readModelApproval(t, orgId)).toBeDefined()
+
+    // Un-approving this criterion's documentation flips its `documented`
+    // input (buildMethodCheckInput) from true to false, which the model was
+    // approved WITH: the model's own approval must not survive this stale.
+    await asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
+      orgId,
+      criterionId,
+      approved: false,
+    })
+    expect(await readModelApproval(t, orgId)).toBeUndefined()
+
+    // The reopen writes its own audit row, naming the cause.
+    const rows = await t.run(async (ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+    )
+    const reopen = rows.find((r) => r.type === "model.approvalReopened")
+    expect(reopen).toBeDefined()
+    expect(
+      (reopen?.payload as { causeEvent?: string } | undefined)?.causeEvent
+    ).toBe("criterion.reopened")
+  })
+
+  it("does not touch the model's approval when a criterion is un-approved on a model that was never approved (no-op, no spurious row)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    const model = await asAdmin.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    const criterionId = model?.criteria[0]?.criterionId
+    if (criterionId === undefined) throw new Error("no criterion")
+
+    expect(await readModelApproval(t, orgId)).toBeUndefined()
+    // Un-approving an already-unapproved criterion on an already-draft model:
+    // reopenApprovalIfSet's own no-op guard means this writes no reopen row.
+    await asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
+      orgId,
+      criterionId,
+      approved: false,
+    })
+    expect(await readModelApproval(t, orgId)).toBeUndefined()
+    const rows = await t.run(async (ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+    )
+    expect(rows.some((r) => r.type === "model.approvalReopened")).toBe(false)
+  })
+
+  it("also clears the model's approval from saveCriterionCompliance directly, in isolation from setCriterionApproval's own reopen (defense in depth)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    const model = await asAdmin.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    const criterionId = model?.criteria[0]?.criterionId
+    if (criterionId === undefined) throw new Error("no criterion")
+
+    await grantModelApproval(t, orgId)
+    // Force the exact state setCriterionApproval's own reopen would normally
+    // prevent from ever coexisting (a direct patch, bypassing
+    // setCriterionApproval on purpose): the model reads approved while this
+    // ONE criterion does not. Isolates saveCriterionCompliance's own
+    // defensive reopen from the one setCriterionApproval already provides.
+    await t.run(async (ctx) => {
+      await ctx.db.patch(criterionId, {
+        approved: undefined,
+        decidedBy: undefined,
+        decidedAt: undefined,
+      })
+    })
+    expect(await readModelApproval(t, orgId)).toBeDefined()
+
+    await asAdmin.mutation(api.evaluationModel.method.saveCriterionCompliance, {
+      orgId,
+      criterionId,
+      purpose: "p",
+      whyRelevant: "w",
+      overlapNotes: "reviewed",
+      biasRisk: "low",
+      biasComment: "b",
+      biasAction: "",
+    })
+    expect(await readModelApproval(t, orgId)).toBeUndefined()
+  })
+})
+
 // Attaches a second, EDITOR-role member to an existing org: a second
 // seedMembership mints a real user (its own throwaway org is never used), then
 // seedDuplicateMember adds that user to the FIRST org. Mirrors addEditor in

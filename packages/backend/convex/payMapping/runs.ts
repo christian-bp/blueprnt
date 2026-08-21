@@ -3,6 +3,7 @@ import {
   PRAXIS_AREA_KEYS,
   type PraxisAreaKey,
 } from "@workspace/constants"
+import { methodBlockersPass, validateMethod } from "@workspace/core"
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import type {
@@ -12,6 +13,7 @@ import type {
 } from "../_generated/server"
 import { deriveResults } from "../assessment/compute"
 import { deriveMethodDrift } from "../assessment/results"
+import { buildMethodCheckInput } from "../evaluationModel/approval"
 import { buildModelEvidence } from "../evaluationModel/evidence"
 import { resolveContentLocale } from "../evaluationModel/model"
 import { AUDIT_EVENTS, resolveActorName } from "../lib/audit"
@@ -162,6 +164,22 @@ export async function computePayMappingPreconditions(
       role.assessment !== undefined && deriveMethodDrift(role.assessment, model)
   ).length
 
+  // Belt-and-braces, alongside modelApproved above rather than instead of it:
+  // re-runs the SAME twelve-check gate approveModel itself refuses on
+  // (validateMethod/methodBlockersPass, packages/core), so a future mutation
+  // that changes a blocker input and forgets to wire reopenApprovalIfSet
+  // (approval.ts) cannot silently leave modelApproved true while the model no
+  // longer actually clears its own checklist. Every mutation that CAN move a
+  // blocker reopens approval today (approval.ts's governing-rule comment
+  // lists them), which makes modelApproved and this check agree in every
+  // reachable state -- this exists to keep it that way, not because the two
+  // are expected to differ. No separate panel message: modelApproved's own
+  // line already tells the reader what to do, and a state where blockers fail
+  // while modelApproved reads true should never occur to show it for.
+  const blockersPass =
+    model !== null &&
+    methodBlockersPass(validateMethod(await buildMethodCheckInput(ctx, model)))
+
   return {
     peopleCount: active.length,
     unclassifiedCount,
@@ -175,7 +193,8 @@ export async function computePayMappingPreconditions(
       active.length > 0 &&
       unclassifiedCount === 0 &&
       unevaluatedRoles.length === 0 &&
-      modelApproved,
+      modelApproved &&
+      blockersPass,
   }
 }
 
@@ -230,19 +249,25 @@ export const startPayMappingRun = orgMutation({
     // or content edit cannot alter an already-frozen run. This is the ADR-0023
     // freeze, the only place the product versions its method (spec 2.6).
     //
-    // INVARIANT this freeze relies on: the preconditions gate just above
-    // already required modelApproved (model.approval !== undefined), and
-    // every method-affecting mutation clears approval the moment it changes
-    // anything the method depends on (reopenApprovalIfSet, wired into
-    // activateCriterion/deactivateCriterion/rebalanceWeights/
-    // setWorkingConditionsDecision/updateLevelRules/updateZoneProfileRules).
-    // So a model whose approval is currently set has had no method-affecting
-    // edit since that approval was granted: the live model IS the
-    // last-approved model, byte for byte. The evidence built below is
-    // therefore, by construction, the latest APPROVED method (with non-null
-    // approval metadata), never a live-but-unreviewed edit -- there is no
-    // separate "freeze the approved version instead of the live one" step
-    // to write, because for an approved model there is only one version.
+    // INVARIANT this freeze relies on, made TRUE by two mechanisms, not
+    // narrated on trust: the preconditions gate just above already required
+    // modelApproved (model.approval !== undefined) AND, belt-and-braces,
+    // methodBlockersPass over the model's CURRENT checklist. modelApproved
+    // alone stays honest because every mutation that can change a checklist
+    // BLOCKER input reopens approval (reopenApprovalIfSet's governing rule,
+    // approval.ts: activateCriterion, deactivateCriterion, rebalanceWeights,
+    // setWorkingConditionsDecision, updateLevelRules, updateZoneProfileRules,
+    // setCriterionApproval's un-approve direction, and saveCriterionCompliance
+    // as defense in depth) -- so a model whose approval is currently set has
+    // had no blocker-moving edit since that approval was granted, and the
+    // live model IS the last-approved model, byte for byte. The
+    // methodBlockersPass re-check is the second, independent proof of the
+    // same fact: it would catch a future mutation that changes a blocker
+    // input and forgets to wire the reopen. The evidence built below is
+    // therefore the latest APPROVED method (with non-null approval metadata),
+    // never a live-but-unreviewed edit -- there is no separate "freeze the
+    // approved version instead of the live one" step to write, because for an
+    // approved model there is only one version.
     const model = await ctx.db
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))

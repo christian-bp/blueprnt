@@ -225,9 +225,16 @@ const MAX_WEIGHT_MOTIVATION = 2000
 // than writing somewhere the reader cannot see.
 //
 // Documentation, not a method change: it moves no weight point, so it shifts no
-// level, writes no level.shift diff, and deliberately does NOT reopen approval,
-// the same rule the compliance texts follow (ADR-0023; spec §2.3). Reopening
-// here would un-approve a model for writing down why it was approved.
+// level, writes no level.shift diff, and deliberately does NOT reopen approval
+// (approval.ts's reopenApprovalIfSet governing rule: only a mutation that can
+// change a BLOCKER input reopens approval). weightMotivation only ever feeds
+// the dimensionWeightBalance/peopleLeadershipWeight WARNINGS, and only ever
+// clears them (filling one in cannot make either warning MORE unmet), so it
+// can never un-satisfy anything approval depended on. Reopening here would
+// un-approve a model for writing down why it was approved. This is now the
+// ONE mutation excluded from reopenApprovalIfSet's coverage: compliance saves
+// (saveCriterionCompliance) and per-criterion sign-off (setCriterionApproval's
+// un-approve direction) both reopen, because both CAN move a blocker.
 //
 // Nor is it gated on the criterion's own `approved` flag (unlike
 // saveCriterionCompliance): that flag signs off the kriterieurvalsprotokoll,

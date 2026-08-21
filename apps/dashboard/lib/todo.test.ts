@@ -68,22 +68,29 @@ function method(
   return {
     method: { criteria: allCriteria, modelApproved },
     methodChecks: {
+      // level: "blocker" on all four: they are real blockers in
+      // validateMethod (packages/core), and payMappingReady's belt-and-braces
+      // methodBlockersPass reads it directly, so stationOk: false correctly
+      // fails that re-check too, not only the buildModel-group reading these
+      // fixtures already exercise -- a station failure genuinely fails the
+      // real checklist regardless of which chapter is asking.
       checks: [
         {
           key: "criterionCount",
+          level: "blocker",
           ok:
             stationOk &&
             count >= MODEL_MIN_CRITERIA &&
             count <= MODEL_MAX_CRITERIA,
           count,
         },
-        { key: "dimensionCaps", ok: stationOk },
-        { key: "dimensionCoverage", ok: stationOk },
+        { key: "dimensionCaps", level: "blocker", ok: stationOk },
+        { key: "dimensionCoverage", level: "blocker", ok: stationOk },
         // The Kriterier chapter's seventh unit (the working-conditions
         // materiality decision). Not one of the station checks these fixtures
         // flip, so it passes by default: a todo test is about the selection,
         // never about that decision.
-        { key: "workingConditionsTested", ok: true },
+        { key: "workingConditionsTested", level: "blocker", ok: true },
       ],
     },
   }
@@ -421,7 +428,11 @@ describe("buildTodo buildModel group", () => {
     expect(todo.groups.map((g) => g.key)).not.toContain("buildModel")
   })
 
-  it("sits FIRST in priority order, ahead of approveCriteria and startPayMapping", () => {
+  // startPayMapping cannot appear alongside buildModel's "approve" state any
+  // more (payMappingReady now requires modelApproved too): the two states are
+  // mutually exclusive by construction, so this fixture (modelApproved false)
+  // can no longer demonstrate "ahead of startPayMapping" the way it once did.
+  it("sits FIRST in priority order, ahead of approveCriteria", () => {
     const todo = buildTodo({
       roles: [],
       peopleByTitle: PEOPLE_NEUTRAL,
@@ -434,7 +445,6 @@ describe("buildTodo buildModel group", () => {
     expect(todo.groups.map((g) => g.key)).toEqual([
       "buildModel",
       "approveCriteria",
-      "startPayMapping",
     ])
   })
 
@@ -545,12 +555,17 @@ describe("buildTodo startPayMapping group", () => {
     expect(todo.groups.map((g) => g.key)).toContain("evaluateRoles")
   })
 
+  // ...method([]) (an approved model, zero non-filler criteria, so it
+  // contributes no document/approve items of its own), not NO_MODEL: these
+  // three are about role/run state, and now that payMappingReady also reads
+  // the model, NO_MODEL would block on the model instead of the thing each
+  // test actually names, per its own title.
   it("adds it once that same staffed role is locked", () => {
     const todo = buildTodo({
       roles: [
         role({ roleId: "r1", ratedCount: 9, totalCriteria: 9, locked: true }),
       ],
-      ...NO_MODEL,
+      ...method([]),
       payMappingRuns: [],
       peopleByTitle: [
         {
@@ -569,7 +584,7 @@ describe("buildTodo startPayMapping group", () => {
   it("does not block on an unstaffed role that is not fully evaluated", () => {
     const todo = buildTodo({
       roles: [role({ roleId: "r1", profileComplete: false })],
-      ...NO_MODEL,
+      ...method([]),
       payMappingRuns: [],
       peopleByTitle: PEOPLE_NEUTRAL,
     })
@@ -592,11 +607,61 @@ describe("buildTodo startPayMapping group", () => {
   it("adds it once every existing run is completed", () => {
     const todo = buildTodo({
       roles: [],
-      ...NO_MODEL,
+      ...method([]),
       peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: [{ status: "completed" }, { status: "completed" }],
     })
     expect(todo.groups.map((g) => g.key)).toEqual(["startPayMapping"])
+  })
+
+  it("never adds it for an org with no model at all, even once every other precondition (people, staffed role) is met", () => {
+    const todo = buildTodo({
+      roles: [
+        role({ roleId: "r1", ratedCount: 9, totalCriteria: 9, locked: true }),
+      ],
+      ...NO_MODEL,
+      payMappingRuns: [],
+      peopleByTitle: [
+        {
+          title: "Backend Engineer",
+          people: [
+            {
+              currentAssignment: { roleId: "r1", senioritySource: "confirmed" },
+            },
+          ],
+        },
+      ],
+    })
+    expect(todo.groups.map((g) => g.key)).not.toContain("startPayMapping")
+  })
+
+  it("hides it and shows the buildModel approve entry instead once a previously-approved model's approval is reopened, even though people and roles are otherwise fully ready", () => {
+    const todo = buildTodo({
+      roles: [
+        role({ roleId: "r1", ratedCount: 9, totalCriteria: 9, locked: true }),
+      ],
+      // modelApproved: false, station checks otherwise clean: the criteria
+      // selection itself is done, only the model's own approval is missing
+      // (the "reopened" state: a method-affecting edit fell it back to
+      // draft), same as a method-affecting mutation would leave it.
+      ...method([], false),
+      payMappingRuns: [],
+      peopleByTitle: [
+        {
+          title: "Backend Engineer",
+          people: [
+            {
+              currentAssignment: { roleId: "r1", senioritySource: "confirmed" },
+            },
+          ],
+        },
+      ],
+    })
+    const buildModel = todo.groups.find((g) => g.key === "buildModel")
+    expect(buildModel?.items).toEqual([
+      { id: "buildModel", state: "approve", href: "/model/approval" },
+    ])
+    expect(todo.groups.map((g) => g.key)).not.toContain("startPayMapping")
   })
 })
 

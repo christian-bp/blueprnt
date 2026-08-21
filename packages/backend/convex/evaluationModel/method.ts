@@ -4,6 +4,7 @@ import type { Doc } from "../_generated/dataModel"
 import { AUDIT_EVENTS, buildChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
+import { reopenApprovalIfSet } from "./approval"
 import {
   buildCriterionHelpText,
   criteriaLibraryContent,
@@ -78,6 +79,14 @@ export function complianceStatus(c: Doc<"criteria">): ComplianceStatus {
 // Saves rationale + bias texts. Empty strings clear a field (stored as
 // undefined so the optional stays clean). Approved criteria are locked: editing
 // requires an explicit reopen via setCriterionApproval first. No level-shift.
+//
+// Also reopens the MODEL's own approval if it is currently set (defense in
+// depth, approval.ts's reopenApprovalIfSet): the criterionLocked guard above
+// means this is only reachable once the criterion is already un-approved,
+// which itself already reopens the model (setCriterionApproval), so this call
+// is normally a no-op. It stays here anyway so this mutation is correct on
+// its own terms and does not silently depend on always being called after
+// setCriterionApproval to keep the model's approval honest.
 export const saveCriterionCompliance = adminMutation({
   args: {
     criterionId: v.id("criteria"),
@@ -117,6 +126,10 @@ export const saveCriterionCompliance = adminMutation({
       biasAction: norm(args.biasAction),
     }
     await ctx.db.patch(args.criterionId, patch)
+    const model = await ctx.db.get(criterion.modelId)
+    if (model !== null) {
+      await reopenApprovalIfSet(ctx, model, AUDIT_EVENTS.modelUpdated)
+    }
     await ctx.audit.log({
       type: AUDIT_EVENTS.modelUpdated,
       payload: {
@@ -133,6 +146,17 @@ export const saveCriterionCompliance = adminMutation({
 // Explicit admin sign-off. Approving requires the criterion to be documented
 // (required subset present); stamps decidedBy (the acting admin) + decidedAt.
 // Un-approving clears the stamp. No level-shift.
+//
+// Un-approving also reopens the MODEL's own approval if it is currently set
+// (approval.ts's reopenApprovalIfSet): this criterion's `documented` input
+// (buildMethodCheckInput: `documented: row.approved === true`) feeds the
+// documentationComplete BLOCKER, so flipping it from true to false can move a
+// model that currently reads approved to one that would no longer pass its
+// own checklist. Leaving model.approval set through that would let
+// startPayMappingRun freeze this state as reviewed evidence when it is not.
+// The approve direction never needs this: it can only make
+// documentationComplete MORE likely to pass, never less, so it cannot
+// invalidate an existing approval.
 export const setCriterionApproval = adminMutation({
   args: { criterionId: v.id("criteria"), approved: v.boolean() },
   returns: v.null(),
@@ -148,6 +172,12 @@ export const setCriterionApproval = adminMutation({
       ? { approved: true, decidedBy: ctx.authUserId, decidedAt: Date.now() }
       : { approved: undefined, decidedBy: undefined, decidedAt: undefined }
     await ctx.db.patch(args.criterionId, patch)
+    if (!args.approved) {
+      const model = await ctx.db.get(criterion.modelId)
+      if (model !== null) {
+        await reopenApprovalIfSet(ctx, model, AUDIT_EVENTS.criterionReopened)
+      }
+    }
     await ctx.audit.log({
       type: args.approved
         ? AUDIT_EVENTS.criterionApproved

@@ -87,11 +87,18 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
   const model = await asHr.query(api.evaluationModel.model.getModel, { orgId })
   if (model === null) throw new Error("seed: model")
 
-  // Decide working conditions and approve the model directly (bypassing
-  // setWorkingConditionsDecision/approveModel's checklist re-validation),
+  // Decide working conditions, individually approve every criterion, and
+  // approve the model, all directly (bypassing setWorkingConditionsDecision/
+  // setCriterionApproval/approveModel's own checklist re-validation),
   // mirroring how locking is bypassed below: this fixture is about freeze
   // mechanics, not the approval lifecycle, which has its own dedicated suite
-  // (evaluationModel/approval.test).
+  // (evaluationModel/approval.test). Every criterion's own `approved` must be
+  // true here too, not only the model's `approval`: computePayMappingPreconditions
+  // re-derives the full checklist (methodBlockersPass), and
+  // documentationComplete reads each criterion's own `approved` flag
+  // (buildMethodCheckInput's `documented: row.approved === true`), so a model
+  // patched to look approved while its criteria are not would fail that
+  // re-check exactly like a genuinely stale approval would.
   await t.run(async (ctx) => {
     const modelDocId = ctx.db.normalizeId("models", model.modelId)
     if (modelDocId === null) throw new Error("seed: model id")
@@ -104,6 +111,18 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
       },
       approval: { approvedBy: userId, approvedAt: Date.now() },
     })
+    for (const criterion of model.criteria) {
+      const criterionDocId = ctx.db.normalizeId(
+        "criteria",
+        criterion.criterionId
+      )
+      if (criterionDocId === null) throw new Error("seed: criterion id")
+      await ctx.db.patch(criterionDocId, {
+        approved: true,
+        decidedBy: userId,
+        decidedAt: Date.now(),
+      })
+    }
   })
 
   const track = model.tracks[0]
@@ -693,6 +712,55 @@ describe("getPayMappingPreconditions", () => {
       { orgId }
     )
     expect(relocked.driftedRolesCount).toBe(0)
+  })
+
+  it("goes not-ready again once a previously-approved criterion is un-approved through the real mutation, the empirical scenario approve -> un-approve -> approval null -> preconditions not ready", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr } = await seedForFreeze(t)
+
+    // seedForFreeze already leaves every criterion individually approved
+    // (directly patched, alongside the model's own approval) and the gate
+    // ready, so the un-approve below is a genuine true -> false transition of
+    // the documentationComplete blocker's input on an org that was actually
+    // ready a moment ago.
+    const model = await asHr.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    const criterionId = model?.criteria[0]?.criterionId
+    if (criterionId === undefined) throw new Error("seed: criterion")
+
+    const ready = await asHr.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    expect(ready.modelApproved).toBe(true)
+    expect(ready.ready).toBe(true)
+
+    // Reopening this criterion's documentation must clear the MODEL's own
+    // approval too (evaluationModel/approval.ts's reopenApprovalIfSet,
+    // wired into setCriterionApproval's un-approve direction): it changed the
+    // documentationComplete blocker's input, so the model no longer clears
+    // its own checklist and must not still read as approved.
+    await asHr.mutation(api.evaluationModel.method.setCriterionApproval, {
+      orgId,
+      criterionId,
+      approved: false,
+    })
+
+    const reopened = await asHr.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    expect(reopened.modelApproved).toBe(false)
+    expect(reopened.modelApprovedAt).toBeNull()
+    expect(reopened.ready).toBe(false)
+
+    await expect(
+      asHr.mutation(api.payMapping.runs.startPayMappingRun, {
+        orgId,
+        label: "Test",
+      })
+    ).rejects.toThrow(/errors.payMappingPreconditionsUnmet/)
   })
 
   it("reports the unclassified count and the unevaluated staffed roles, excluding unstaffed ones", async () => {
