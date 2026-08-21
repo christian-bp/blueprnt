@@ -35,14 +35,14 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
     workingConditions: {
       name: "Arbetsförhållanden",
       question:
-        "Finns särskilda objektiva och varaktiga arbetsvillkor som påverkar kraven?",
+        "Finns särskilda objektiva och varaktiga arbetsförhållanden som påverkar kraven?",
       why: "Synliggör exempelvis beredskap, exponering, säkerhetskrav och oregelbundna förhållanden.",
     },
   },
   workingConditionsTest: {
     question:
-      "Finns minst en rollfamilj där särskilda arbetsförhållanden är en återkommande, objektiv och materiell del av rollens krav, och där kravet inte redan fångas korrekt av ett annat kriterium?",
-    notMaterialLabel: "Prövad, men inte materiellt relevant",
+      "Finns minst en rollfamilj där särskilda arbetsförhållanden är en återkommande, objektiv och väsentlig del av rollens krav, och där kravet inte redan fångas korrekt av ett annat kriterium?",
+    notMaterialLabel: "Prövad, men inte väsentligt relevant",
   },
   sharedScale: {
     "1": {
@@ -410,7 +410,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       notMeasures:
         "Projektledning utan personalansvar, specialistledarskap eller teamstorlek som enda mått.",
       whenSuitable:
-        "När formellt personalansvar är en materiell skillnad mellan roller.",
+        "När formellt personalansvar är en väsentlig skillnad mellan roller.",
       whenNotSuitable:
         "Ska normalt ha låg till måttlig vikt eftersom chefskap ofta redan syns i scope och mandat.",
       controlQuestion:
@@ -451,11 +451,11 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
     "business-customer": {
       name: "Affärs- och kundansvar",
       shortUiText:
-        "Rollens ansvar för att skapa, säkra eller utveckla materiellt affärsvärde.",
+        "Rollens ansvar för att skapa, säkra eller utveckla väsentligt affärsvärde.",
       fullDefinition:
-        "Fångar rollens ansvar för att skapa, säkra eller utveckla materiellt affärsvärde genom en väsentlig kundrelation, intäktsström, affärsportfölj eller kommersiell position. Kriteriet mäter stabiliteten i detta affärsansvar, inte individuell säljprestation, provision eller förhandlingsskicklighet i sig.",
+        "Fångar rollens ansvar för att skapa, säkra eller utveckla väsentligt affärsvärde genom en väsentlig kundrelation, intäktsström, affärsportfölj eller kommersiell position. Kriteriet mäter stabiliteten i detta affärsansvar, inte individuell säljprestation, provision eller förhandlingsskicklighet i sig.",
       measures:
-        "Ansvar för att skapa, säkra eller utveckla materiellt affärsvärde.",
+        "Ansvar för att skapa, säkra eller utveckla väsentligt affärsvärde.",
       notMeasures:
         "Individuell säljprestation, provision eller förhandlingsskicklighet i sig.",
       whenSuitable:
@@ -525,7 +525,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       shortUiText:
         "Rollens återkommande krav på att vara tillgänglig utanför ordinarie arbetstid eller att svara omedelbart.",
       fullDefinition:
-        "Fångar rollens återkommande krav på att vara tillgänglig utanför ordinarie arbetstid, eller att svara omedelbart, som en integrerad rollförutsättning. Kriteriet mäter ett materiellt, återkommande beredskapskrav, inte tillfällig övertid, frivillig flexibilitet eller en generellt hög arbetsmängd.",
+        "Fångar rollens återkommande krav på att vara tillgänglig utanför ordinarie arbetstid, eller att svara omedelbart, som en integrerad rollförutsättning. Kriteriet mäter ett väsentligt, återkommande beredskapskrav, inte tillfällig övertid, frivillig flexibilitet eller en generellt hög arbetsmängd.",
       measures:
         "Återkommande krav på tillgänglighet utanför ordinarie arbetstid eller omedelbar insats.",
       notMeasures:
@@ -533,7 +533,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       whenSuitable:
         "Drift, IT, vård, säkerhet och andra roller där beredskap är en integrerad rollförutsättning.",
       whenNotSuitable:
-        "Ska vara ett eget kriterium endast när beredskap är materiell och återkommande.",
+        "Ska vara ett eget kriterium endast när beredskap är väsentlig och återkommande.",
       controlQuestion:
         "Har rollens återkommande beredskapskrav betydelse i sig, utöver tillfällig övertid eller en generellt hög arbetsmängd?",
       assessmentQuestion:
@@ -558,7 +558,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       whenSuitable:
         "Fältroller, internationell verksamhet, skiftverksamhet eller hög resfrekvens.",
       whenNotSuitable:
-        "Kan slås ihop med Jour/beredskap endast när båda ingår i samma stabila arbetsvillkor.",
+        "Kan slås ihop med Jour/beredskap endast när båda ingår i samma stabila arbetsförhållanden.",
       controlQuestion:
         "Har rollens varaktiga krav på oregelbundenhet eller mobilitet betydelse i sig, utöver enstaka resor eller ett tillfälligt projekt?",
       assessmentQuestion:

@@ -39,7 +39,7 @@ Kriteriets vikt, angiven av HR som ett heltal 1 till 5 (1 = relativt lägst, 3 =
 _Undvik_: Betydelse (den utgångna etikettskalan), Vikt (säg "viktpoäng"; kort "vikt" är ok beskrivande), Poäng (rollens viktade total, se assessment-ordlistan)
 
 **Poängbudget** *(kod: Point budget)*:
-Det totala antalet viktpoäng som får delas ut: **antal kriterier × 3**. Summan av alla viktpoäng måste vara exakt lika med budgeten (nollsummespel; 3 är skalans neutrala mittpunkt). Nya kriterier får alltid 3 viktpoäng så balansen består automatiskt; tas ett kriterium bort omfördelas mellanskillnaden deterministiskt till de kvarvarande (loggas i revisionsloggen).
+Det totala antalet viktpoäng som får delas ut: **antal kriterier × 3**. Summan av alla viktpoäng måste vara exakt lika med budgeten (nollsummespel; 3 är skalans neutrala mittpunkt). Nya kriterier får alltid 3 viktpoäng så balansen består automatiskt; tas ett kriterium bort omfördelas mellanskillnaden deterministiskt till de kvarvarande (loggas i händelseloggen).
 _Undvik_: Viktskala, Betydelseskala (utgångna), Maxpoäng (det är rollpoängens tak, inte viktbudgeten)
 
 **Andel** *(kod: Share)*:
@@ -58,9 +58,9 @@ _Undvik_: Gränsvärde, Intervallgräns
 En organisations levande värderingskonfiguration — kriterier, ankare, viktpoäng, track-schema, nivåtrösklar. Det finns **en** aktiv modell per organisation (V1: ingen versionering). När modellen ändras räknas alla rollers poäng/nivå om direkt — poäng och nivå **härleds** från sparade betyg + aktuell modell.
 _Undvik_: Mall (mallen är startförkonfigurationen; modellen är organisationens levande, redigerbara konfiguration), Modellversion (ingen versionering i V1)
 
-**Revisionslogg** *(kod: Audit log)*:
+**Händelselogg** *(kod: Audit log)*:
 Spårbar logg över ändringar som påverkar utfall — främst modelländringar (vem, vad, när) och vilka roller som bytte nivå som följd. Ger spårbarhet trots att V1 saknar versionering.
-_Undvik_: Ändringslogg, Historik (säg "revisionslogg")
+_Undvik_: Ändringslogg, Historik, Revisionslogg (säg "händelselogg", som navigationen)
 
 **Kriterieurvalsprotokoll** *(kod: Criterion rationale)*:
 Den dokumenterade motiveringen per kriterium — syfte, varför relevant, bias-risk, beslutade viktpoäng, beslutsfattare, datum. Visar *varför* ett kriterium finns (EU-direktivets saklighetskrav).
@@ -92,7 +92,7 @@ Nyckelformat är bibliotek-neutralt (punktnamnrymd). Svenska är standardspråk.
 | `model.share` | Andel | Share |
 | `model.template` | Mall | Template |
 | `model.levelThreshold` | Nivåtröskel | Level threshold |
-| `model.auditLog` | Revisionslogg | Audit log |
+| `model.auditLog` | Händelselogg | Audit log |
 | `model.criterionRationale` | Kriterieurvalsprotokoll | Criterion rationale |
 | `model.biasReview` | Bias-granskning | Bias review |
 | `model.methodAppendix` | Metodbilaga | Method appendix |
@@ -105,7 +105,7 @@ Etikettsordval är förslag, bekräftas med användaren. `model.*`-nycklarna är
 - **Track/senioritet vs nivå-orsakssamband**: en rolls track/senioritet *bestämmer inte* dess nivå — nivån kommer enbart från poängen. De korrelerar men är inte kausala.
 - **Track-guardrails** (Excelns min/max per (track, senioritet) per kriterium): **pensionerade ur V1:s betygsflöde** (ADR-0005) — de var definierade per senioritet och har inget fäste när rollen saknar senioritet. Intervallen ligger kvar som referensdata i standardmall.md för V2 (t.ex. placeringsstöd).
 - **Egna kriterier (full konfiguration)**: HR kan skapa egna kriterier utöver standardmallen, med egna 0–5-ankare, och anpassa kriterier/ankare/viktpoäng/nivåtrösklar fritt. Även egna kriterier viktas med **viktpoäng inom poängbudgeten** (nya kriterier startar på 3) — aldrig fria siffervikter eller procentsatser.
-- **Live-omräkning (V1-beslut)**: ingen modellversionering i V1 — en levande modell per organisation, och ändringar räknar om alla rollers poäng/nivå direkt (härleds från sparade betyg + aktuell modell). Avviker medvetet från briefens versioneringskrav; konsekvens: roller kan tyst byta nivå vid modelländring. Spårbarhet löses med en **revisionslogg** (ingår i V1). Se ADR-0002.
+- **Live-omräkning (V1-beslut)**: ingen modellversionering i V1 — en levande modell per organisation, och ändringar räknar om alla rollers poäng/nivå direkt (härleds från sparade betyg + aktuell modell). Avviker medvetet från briefens versioneringskrav; konsekvens: roller kan tyst byta nivå vid modelländring. Spårbarhet löses med en **händelselogg** (ingår i V1). Se ADR-0002.
 - **Rollfamiljens granularitet**: granulariteten bestäms per organisation (Software Developer eller bredare Software Engineering). Sedan 2026-06-06 är rollfamiljen en egen entitet med frivillig tillhörighet per roll. Samma sak gäller rollerna själva (ADR-0005): skiljer sig seniorens arbete åt på riktigt blir det en egen roll ("Senior System Developer"), annars är det samma roll och senioriteten bor hos individen.
 - **Mallinnehållets språk**: mallseedade, orörda rader (kriterier via templateKey, tracks/senioriteter via key) lokaliseras vid läsning till UI-språket (sv/en, fallback en). Egna och AI-skapade kriterier visas som de författats. När E2-redigering ändrar en mallrad rensas templateKey och organisationen äger texten (beslut 2026-06-05).
 
