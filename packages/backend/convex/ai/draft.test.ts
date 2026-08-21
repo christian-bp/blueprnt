@@ -543,7 +543,9 @@ describe("draftCriterionCompliance", () => {
     expect(capturedPrompt).not.toContain("Zelda Testperson")
   })
 
-  it("rejects a non-admin caller (editor) with adminRequired", async () => {
+  // Drafting the documentation asks no more than writing it does, and writing
+  // it is member-level work.
+  it("serves an editor, like the compliance write it drafts for", async () => {
     const t = initConvexTest()
     const { orgId } = await seedOrg(t, "compliance-admin@acme.se")
     const criterionId = await getAnyCriterionId(t, orgId)
@@ -559,14 +561,24 @@ describe("draftCriterionCompliance", () => {
       role: "editor",
     })
     const asEditor = t.withIdentity({ subject: editorId })
+    generateTextMock.mockImplementation(async () => ({
+      output: {
+        purpose: "Measures the scope of impact.",
+        whyRelevant: "Relevant because it reflects work value.",
+        overlapNotes: "",
+        biasRisk: "low",
+        biasComment: "No significant bias found.",
+        biasAction: "",
+      },
+      totalUsage: { inputTokens: 10, outputTokens: 20, totalTokens: 30 },
+    }))
 
-    await expect(
-      asEditor.action(api.ai.draft.draftCriterionCompliance, {
-        orgId,
-        criterionId,
-      })
-    ).rejects.toThrow(/errors.adminRequired/)
-    expect(generateTextMock).toHaveBeenCalledTimes(0)
+    const drafted = await asEditor.action(
+      api.ai.draft.draftCriterionCompliance,
+      { orgId, criterionId }
+    )
+    expect(drafted.purpose.length).toBeGreaterThan(0)
+    expect(generateTextMock).toHaveBeenCalledTimes(1)
   })
 
   it("rejects a criterion from a foreign org with notFound", async () => {

@@ -658,7 +658,7 @@ describe("updateRole", () => {
 })
 
 describe("archiveRole", () => {
-  it("soft-archives (admin only), logs level.shift to null, hides from listRoles", async () => {
+  it("soft-archives, logs level.shift to null, hides from listRoles", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const asEditor = await addEditor(t, orgId, "editor2@acme.se")
@@ -673,11 +673,12 @@ describe("archiveRole", () => {
     })
     await rateAll(t, orgId, roleId as string, model.criteria, 5)
 
-    await expect(
-      asEditor.mutation(api.assessment.roles.archiveRole, { orgId, roleId })
-    ).rejects.toThrow(/errors.adminRequired/)
-
-    await asAdmin.mutation(api.assessment.roles.archiveRole, { orgId, roleId })
+    // Archiving a role is member-level work: admin covers org administration
+    // and the audit log, not the role register.
+    await asEditor.mutation(api.assessment.roles.archiveRole, {
+      orgId,
+      roleId,
+    })
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
       expect(typeof role?.archivedAt).toBe("number")

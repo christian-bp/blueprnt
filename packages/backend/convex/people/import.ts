@@ -26,7 +26,7 @@ import {
 } from "@workspace/constants"
 import { internal } from "../_generated/api"
 import { action, type ActionCtx } from "../_generated/server"
-import { requireOrgAdminAction } from "../lib/functions"
+import { requireOrgMemberAction } from "../lib/functions"
 import {
   type BaselinePerson,
   diffImport,
@@ -483,8 +483,9 @@ export const importPayroll = action({
   handler: async (ctx, args) => {
     // Callers that do not track progress (tests) get a throwaway id.
     const importId = args.importId ?? randomUUID()
-    // Authenticate + assert org admin.
-    const actorId = await requireOrgAdminAction(ctx, args.orgId)
+    // Authenticate + assert org membership: importing people is member-level
+    // work, the same gate the people mutations take.
+    const actorId = await requireOrgMemberAction(ctx, args.orgId)
 
     const prepared = await prepareImport(ctx, args)
     if (prepared.kind === "blocked") {
@@ -728,7 +729,7 @@ export const previewImport = action({
   },
   returns: importPreviewValidator,
   handler: async (ctx, args): Promise<ImportPreview> => {
-    await requireOrgAdminAction(ctx, args.orgId)
+    await requireOrgMemberAction(ctx, args.orgId)
 
     const prepared = await prepareImport(ctx, args)
     if (prepared.kind === "blocked") {

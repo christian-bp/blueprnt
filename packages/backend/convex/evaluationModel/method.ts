@@ -3,7 +3,7 @@ import { v } from "convex/values"
 import type { Doc } from "../_generated/dataModel"
 import { AUDIT_EVENTS, buildChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation, orgQuery } from "../lib/functions"
+import { orgMutation, orgQuery } from "../lib/functions"
 import { reopenApprovalIfSet } from "./approval"
 import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
 import { clampLocale } from "./localize"
@@ -83,7 +83,7 @@ export function complianceStatus(c: Doc<"criteria">): ComplianceStatus {
 // is normally a no-op. It stays here anyway so this mutation is correct on
 // its own terms and does not silently depend on always being called after
 // setCriterionApproval to keep the model's approval honest.
-export const saveCriterionCompliance = adminMutation({
+export const saveCriterionCompliance = orgMutation({
   args: {
     criterionId: v.id("criteria"),
     purpose: v.string(),
@@ -163,7 +163,7 @@ export const saveCriterionCompliance = adminMutation({
 // The approve direction never needs this: it can only make
 // documentationComplete MORE likely to pass, never less, so it cannot
 // invalidate an existing approval.
-export const setCriterionApproval = adminMutation({
+export const setCriterionApproval = orgMutation({
   args: { criterionId: v.id("criteria"), approved: v.boolean() },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -213,8 +213,8 @@ const orderShape = (a: { order: number }, b: { order: number }) =>
 // leaves an editor a live tab that crashes. It carries org-level method
 // content only: each criterion's protokoll and bias documentation, its weight
 // and derived share, and the model's own rules. No person data, no salary.
-// Both writes in this file stay adminMutation, and the panel offers an editor
-// neither of them.
+// Both writes in this file are member-level, and the panel offers them to
+// every member.
 export const getMethodModel = orgQuery({
   args: { locale: v.optional(v.string()) },
   returns: v.union(

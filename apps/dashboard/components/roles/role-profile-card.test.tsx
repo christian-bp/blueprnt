@@ -75,17 +75,11 @@ function makeRole(overrides?: Partial<RoleProfile>): RoleProfile {
 
 function renderCard(
   role: RoleProfile,
-  isAdmin = true,
   tracks: { key: string; name: string }[] = []
 ) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <RoleProfileCard
-        orgId="org-1"
-        role={role}
-        isAdmin={isAdmin}
-        tracks={tracks}
-      />
+      <RoleProfileCard orgId="org-1" role={role} tracks={tracks} />
     </NextIntlClientProvider>
   )
 }
@@ -207,13 +201,16 @@ describe("RoleProfileCard", () => {
     ).toBeDefined()
   })
 
-  it("hides Archive in the manage menu for a non-admin", async () => {
-    renderCard(makeRole(), false)
+  // Archiving a role is member-level work now (admin covers org
+  // administration and the audit log), so the menu offers it to whoever opens
+  // it; what still hides it is an already archived role, asserted below.
+  it("offers Archive in the manage menu to any member", async () => {
+    renderCard(makeRole())
     await openManageMenu()
     expect(screen.getByRole("menuitem", { name: labels.editCta })).toBeDefined()
     expect(
-      screen.queryByRole("menuitem", { name: archiveLabels.cta })
-    ).toBeNull()
+      screen.getByRole("menuitem", { name: archiveLabels.cta })
+    ).toBeDefined()
   })
 
   it("archives through the confirm dialog, then navigates to /roles", async () => {
@@ -290,7 +287,6 @@ describe("RoleProfileCard", () => {
         <form>
           <RoleProfileCard
             orgId="org-1"
-            isAdmin
             role={makeRole({ trackKey: "IC", trackName: "IC" })}
             tracks={[
               { key: "IC", name: "IC" },

@@ -15,7 +15,7 @@ import { deriveResults } from "../assessment/compute"
 import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
 import type { AuditItem } from "../lib/auditPayloads"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation, type AuditWriter, orgQuery } from "../lib/functions"
+import { type AuditWriter, orgMutation, orgQuery } from "../lib/functions"
 import type { ApprovalReopenCause } from "./approvalCauses"
 import { LIBRARY_DIMENSION, LIBRARY_OVERLAP_PAIRS } from "./criteriaLibrary"
 import {
@@ -207,8 +207,8 @@ async function requireModel(
 // carries method-check results and approval metadata only: no person data, no
 // salary, nothing outside the model itself, and the Model destination is
 // deliberately visible to every member (navigation.ts, adminOnly: false).
-// Every WRITE in this file stays an adminMutation; read access is not write
-// access.
+// Every write in this file is member-level too (the ruling: admin means org
+// administration and the audit log); read access is not write access.
 export const getMethodChecks = orgQuery({
   args: {},
   returns: v.union(
@@ -325,7 +325,7 @@ export const getMethodChecks = orgQuery({
 // change, and every genuine method change already reopens approval via
 // reopenApprovalIfSet, so the only way to see this error is calling approve
 // twice, a client-state bug worth surfacing rather than swallowing).
-export const approveModel = adminMutation({
+export const approveModel = orgMutation({
   args: {},
   returns: v.null(),
   handler: async (ctx) => {
@@ -405,7 +405,7 @@ export const approveSeededModel = internalMutation({
 // (deactivate it first): the two states are mutually exclusive by
 // construction, so the mutation enforces the same invariant the checklist's
 // workingConditionsTested check reads.
-export const setWorkingConditionsDecision = adminMutation({
+export const setWorkingConditionsDecision = orgMutation({
   args: {
     status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
     motivation: v.string(),
@@ -470,7 +470,7 @@ export const setWorkingConditionsDecision = adminMutation({
 // before it is ever stored. Reopens approval (a rules change can move
 // levels) and wraps a level-shift diff (placeRole/scoreRole depend on
 // levelRules).
-export const updateLevelRules = adminMutation({
+export const updateLevelRules = orgMutation({
   args: { levelRules: v.array(levelRuleShape) },
   returns: v.null(),
   handler: async (ctx, { levelRules }) => {
@@ -508,7 +508,7 @@ export const updateLevelRules = adminMutation({
 })
 
 // Mirrors updateLevelRules for the zone-profile rules (zoneProfileMonotonic).
-export const updateZoneProfileRules = adminMutation({
+export const updateZoneProfileRules = orgMutation({
   args: { zoneProfileRules: v.array(zoneProfileRuleShape) },
   returns: v.null(),
   handler: async (ctx, { zoneProfileRules }) => {
@@ -559,7 +559,7 @@ export const updateZoneProfileRules = adminMutation({
 // An orgQuery for the same reason getMethodChecks is one: an admin gate on a
 // read the Godkännande chapter renders throws in render for an editor and takes
 // the chapter down. It carries model-level method content only. The WRITE below
-// stays an adminMutation, and the chapter offers an editor no control.
+// is member-level like every other model write.
 //
 // `locale` is the VIEWER's display language: the criteria are named from the
 // library content, and the change list is read by whoever opens the dialog, not
@@ -634,7 +634,7 @@ function restoreCriterionPatch(criterion: RestorableCriterion, index: number) {
 // become approved: it puts the model back where the checklist is green again
 // and the ordinary one-click approveModel closes the loop, so there stays
 // exactly ONE approval path and one approval provenance.
-export const restoreApprovedModel = adminMutation({
+export const restoreApprovedModel = orgMutation({
   args: {},
   returns: v.null(),
   handler: async (ctx) => {

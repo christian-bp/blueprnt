@@ -7,7 +7,7 @@ import {
   buildCreateChanges,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation, orgQuery } from "../lib/functions"
+import { orgMutation, orgQuery } from "../lib/functions"
 import { deriveResults } from "./compute"
 
 // Anchor roles (ankarroller): 2-5 designated reference roles used to compare
@@ -62,7 +62,7 @@ function validateMotivation(motivation: string): string {
 // role's level is not revealed anywhere, so it cannot anchor anything) with a
 // COMPLETE assessment (a real rating on every criterion, so the anchor has a
 // criteria profile and a computed level to calibrate against).
-export const designateAnchorRole = adminMutation({
+export const designateAnchorRole = orgMutation({
   args: {
     roleId: v.id("roles"),
     expectedLevel: v.number(),
@@ -129,7 +129,7 @@ export const designateAnchorRole = adminMutation({
 // the completeness precondition: the assessment may have become incomplete
 // (e.g. a criterion was added) since it was designated, even while it stays
 // locked.
-export const updateAnchorRole = adminMutation({
+export const updateAnchorRole = orgMutation({
   args: {
     roleId: v.id("roles"),
     expectedLevel: v.optional(v.number()),

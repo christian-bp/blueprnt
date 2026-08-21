@@ -11,7 +11,7 @@ import { repairDraftWeights } from "../ai/weights"
 import { deriveResults } from "../assessment/compute"
 import { AUDIT_EVENTS, buildChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation } from "../lib/functions"
+import { orgMutation } from "../lib/functions"
 import { reopenApprovalIfSet } from "./approval"
 import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
 import { resolveContentLocale } from "./model"
@@ -28,7 +28,7 @@ import { libraryKeyValidator } from "./tables"
 // allocation atomically and validates the exact sum, and deactivateCriterion
 // deterministically redistributes the removed criterion's surplus or deficit
 // across the survivors.
-export const activateCriterion = adminMutation({
+export const activateCriterion = orgMutation({
   args: { libraryKey: libraryKeyValidator },
   returns: v.id("criteria"),
   handler: async (ctx, { libraryKey }) => {
@@ -105,7 +105,7 @@ export const activateCriterion = adminMutation({
 // exactly once), validates each value against the 1-5 scale and the exact
 // point budget, and applies the changes in one transaction. One level-shift
 // diff and one audit row per save, with from/to per changed criterion.
-export const rebalanceWeights = adminMutation({
+export const rebalanceWeights = orgMutation({
   args: {
     allocations: v.array(
       v.object({ criterionId: v.id("criteria"), weightPoints: v.number() })
@@ -240,7 +240,7 @@ const MAX_WEIGHT_MOTIVATION = 2000
 // saveCriterionCompliance): that flag signs off the kriterieurvalsprotokoll,
 // and locking the weight motivation behind it would mean reopening a
 // criterion's protokoll to answer a warning about the weighting.
-export const setCriterionWeightMotivation = adminMutation({
+export const setCriterionWeightMotivation = orgMutation({
   args: { criterionId: v.id("criteria"), motivation: v.string() },
   returns: v.null(),
   handler: async (ctx, { criterionId, motivation }) => {
@@ -290,7 +290,7 @@ export const setCriterionWeightMotivation = adminMutation({
 // No count floor here (unlike the old removeCriterion): a model under
 // construction must be freely editable, and the 6-8 range is a checklist item
 // enforced at approval time, not at every individual deactivation.
-export const deactivateCriterion = adminMutation({
+export const deactivateCriterion = orgMutation({
   args: { criterionId: v.id("criteria") },
   returns: v.null(),
   handler: async (ctx, { criterionId }) => {

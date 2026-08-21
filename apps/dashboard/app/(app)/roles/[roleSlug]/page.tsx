@@ -22,7 +22,7 @@ export default function RolePage(props: {
   const { roleSlug } = use(props.params)
   const t = useTranslations("dashboard.roles.detail")
   const tNav = useTranslations("dashboard.nav")
-  const { orgId, role: orgRole } = useOrganization()
+  const { orgId } = useOrganization()
   const locale = useLocale()
   const role = useQuery(api.assessment.roles.getRoleBySlug, {
     orgId,
@@ -84,7 +84,6 @@ export default function RolePage(props: {
           <RoleProfileCard
             orgId={orgId}
             role={role}
-            isAdmin={orgRole === "admin"}
             tracks={model?.tracks ?? []}
           />
         </div>
@@ -101,7 +100,6 @@ export default function RolePage(props: {
             ratedCount={role.ratedCount}
             totalCriteria={role.totalCriteria}
             anchorRole={role.anchorRole}
-            isAdmin={orgRole === "admin"}
           />
         </div>
       </div>

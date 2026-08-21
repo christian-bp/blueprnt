@@ -11,7 +11,7 @@ import {
   personAuditFields,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
+import { orgMutation, orgQuery } from "../lib/functions"
 import { uniquePersonPublicId } from "../lib/slug"
 import { personImportPatch } from "./importDiff"
 
@@ -466,7 +466,7 @@ export const updatePerson = orgMutation({
   },
 })
 
-export const archivePerson = adminMutation({
+export const archivePerson = orgMutation({
   args: { personId: v.id("people") },
   returns: v.null(),
   handler: async (ctx, { personId }) => {

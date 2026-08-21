@@ -16,7 +16,7 @@ import {
   MODEL_AUDIT_FIELDS,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation, orgQuery } from "../lib/functions"
+import { orgMutation, orgQuery } from "../lib/functions"
 import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
 import { clampLocale, type ProductContentLocale } from "./localize"
 import {
@@ -78,7 +78,7 @@ function defaultZoneProfileRules() {
 // modelName (org-locale), the default level/zone rules, and NO criteria (the
 // library picker is the only way in, ADR-0021 addendum). There is no
 // template-vs-scratch choice to make; every model starts from this one path.
-export const createDefaultModel = adminMutation({
+export const createDefaultModel = orgMutation({
   args: {},
   returns: v.id("models"),
   handler: async (ctx) => {
@@ -115,7 +115,7 @@ export const createDefaultModel = adminMutation({
 
 // Dev/seed-only twin of createDefaultModel that takes an explicit orgId,
 // locale, and actorId instead of an auth context. The dev seed runs in a "use
-// node" action with no identity, so it cannot call the adminMutation above;
+// node" action with no identity, so it cannot call the orgMutation above;
 // the founder authId is passed in as actorId so the model.created audit row
 // is attributed to the seeded account rather than the "system" sentinel.
 // Idempotent (skips when the org already has a model) rather than throwing

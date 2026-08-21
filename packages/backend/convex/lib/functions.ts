@@ -123,7 +123,11 @@ export const orgMutation = customMutation(mutation, {
   },
 })
 
-// Admin-only write (model configuration, member management).
+// Admin-only write. ORG ADMINISTRATION ONLY: the organization's own settings,
+// name, avatar, onboarding completion and its member list. Everything else an
+// organization does (the model, roles, people, the AI actions) is member-level
+// work that both roles perform, so it takes orgMutation. The allowlist is
+// pinned by lib/adminSurface.test.ts.
 export const adminMutation = customMutation(mutation, {
   args: orgArgs,
   input: async (ctx, { orgId }) => {
@@ -134,7 +138,8 @@ export const adminMutation = customMutation(mutation, {
   },
 })
 
-// Admin-only read (org admin). Same gate as adminMutation.
+// Admin-only read: org administration and the audit log. Same gate as
+// adminMutation, same allowlist.
 export const adminQuery = customQuery(query, {
   args: orgArgs,
   input: async (ctx, { orgId }) => {
@@ -144,13 +149,14 @@ export const adminQuery = customQuery(query, {
   },
 })
 
-// Action-context admin gate. Actions cannot use the customMutation org wrappers,
-// so this mirrors resolveOrgContext's identity + membership(role === admin)
-// check for an ActionCtx and returns the caller's Better Auth id (the audit
-// actor). Same error codes as the query/mutation path.
-export async function requireOrgAdminAction(
+// Action-context org gate. Actions cannot use the customMutation org wrappers,
+// so this mirrors resolveOrgContext's identity + membership check for an
+// ActionCtx and returns the caller's Better Auth id (the audit actor). Same
+// error codes as the query/mutation path.
+async function requireOrgAction(
   ctx: ActionCtx,
-  orgId: string
+  orgId: string,
+  adminOnly: boolean
 ): Promise<string> {
   const identity = await ctx.auth.getUserIdentity()
   if (identity === null) throw appError(ERROR_CODES.notAuthenticated)
@@ -173,8 +179,28 @@ export async function requireOrgAdminAction(
     throw appError(ERROR_CODES.membershipConflict)
   }
   if (membership === null) throw appError(ERROR_CODES.notAMember)
-  if (membership.role !== "admin") throw appError(ERROR_CODES.adminRequired)
+  if (adminOnly && membership.role !== "admin") {
+    throw appError(ERROR_CODES.adminRequired)
+  }
   return identity.subject
+}
+
+// Action-context ADMIN gate: org administration only (the org avatar upload).
+export async function requireOrgAdminAction(
+  ctx: ActionCtx,
+  orgId: string
+): Promise<string> {
+  return requireOrgAction(ctx, orgId, true)
+}
+
+// Action-context MEMBER gate: the action mirror of orgMutation, for the work
+// both roles do. One membership resolution behind both, so an action's gate
+// can never resolve identity differently from the mutation next to it.
+export async function requireOrgMemberAction(
+  ctx: ActionCtx,
+  orgId: string
+): Promise<string> {
+  return requireOrgAction(ctx, orgId, false)
 }
 
 // Resolves the caller's Better Auth id from the JWT and asserts they are a

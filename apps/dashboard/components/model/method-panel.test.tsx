@@ -444,23 +444,19 @@ describe("MethodPanel", () => {
     expect(dialog.getByText(m.purpose)).toBeDefined()
   })
 
-  // The method content READS for every member (its query is an orgQuery), but
-  // documenting and approving a criterion are both adminMutations. An editor
-  // reads the cards and the statuses, and is offered neither.
-  it("shows an editor the documentation without offering the writes", () => {
+  // Documenting a criterion is member-level work: admin covers org
+  // administration and the audit log, so an editor gets the same cards and the
+  // same way in.
+  it("gives an editor the documentation and its write", () => {
     orgRole = "editor"
     renderPanel()
-    // The read surface is intact.
     expect(screen.getByText("Scope")).toBeDefined()
     expect(screen.getByText("Risk")).toBeDefined()
     expect(screen.getByText(m.status.approved)).toBeDefined()
     expect(chipIn(library.dimensions.competence.name)?.textContent).toBe(
       chipText(1, 2)
     )
-    // The only entry point to the write dialog is gone, and so is the dialog.
-    expect(screen.queryByRole("button", { name: m.openCta })).toBeNull()
-    expect(screen.queryByRole("dialog")).toBeNull()
-    expect(screen.queryByText(m.dialogTitle)).toBeNull()
+    expect(screen.getByRole("button", { name: m.openCta })).toBeDefined()
   })
 
   // The fourth dimension never vanishes: an empty competence column is a gap

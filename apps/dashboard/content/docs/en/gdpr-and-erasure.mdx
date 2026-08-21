@@ -11,28 +11,29 @@ for two different kinds of person.
 ## Erasing an employee
 
 An employee is a person recorded in your organization's people register,
-not a user of the app. An admin erases one from
+not a user of the app. Any member erases one from
 [Erasing a person](/docs/erasing-a-person): it permanently deletes that
 person's record together with their salary records and role assignments.
 
 ## Erasing your own account
 
 You are a signed-in user of blueprnt, separate from any employee record.
-Deleting your own account, described in
-[Deleting your account](/docs/deleting-your-account), permanently removes
-your sign-in identity, your sessions, your organization memberships, and
-your assistant conversations. It never touches your organization's
-employee data.
+Deleting your own account, described in [Deleting your
+account](/docs/deleting-your-account), permanently removes your sign-in
+identity, your sessions, your organization memberships, and your
+assistant conversations. It never touches your organization's employee
+data.
 
 ## What stays in the audit trail, and why
 
 Either kind of erasure keeps the audit log itself: the record that a
-change happened, and when, has lasting value for accountability, so it is
-not deleted along with the person. What erasure does instead is blank out
-the identifying details inside it. An erased employee's name, gender,
-employee number, birth date, and job title are replaced with an "Erased"
-marker everywhere they appear in earlier log entries; an erased user's
-name on entries they authored becomes a generic "Deleted user" marker.
+change happened, and when, has lasting value for accountability, so it
+is not deleted along with the person. What erasure does instead is blank
+out the identifying details inside it. An erased employee's name,
+gender, employee number, birth date, and job title are replaced with an
+"Erased" marker everywhere they appear in earlier log entries; an erased
+user's name on entries they authored becomes a generic "Deleted user"
+marker.
 
 This is pseudonymization, not the disappearance of every trace. Entries
 about an erased employee still keep structural details that are not

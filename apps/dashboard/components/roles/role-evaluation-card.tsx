@@ -62,7 +62,6 @@ export function RoleEvaluationCard({
   ratedCount,
   totalCriteria,
   anchorRole,
-  isAdmin,
 }: {
   orgId: string
   roleId: Id<"roles">
@@ -72,7 +71,6 @@ export function RoleEvaluationCard({
   ratedCount: number
   totalCriteria: number
   anchorRole: AnchorRoleInfo | null
-  isAdmin: boolean
 }) {
   const t = useTranslations("dashboard.roles.detail")
   const tRoles = useTranslations("dashboard.roles")
@@ -169,7 +167,7 @@ export function RoleEvaluationCard({
                   the backend refuses designate/update on an unlocked role,
                   so the affordance stays hidden for a complete-but-unlocked
                   role rather than opening a dialog whose submit always fails. */}
-              {isAdmin && locked && (
+              {locked && (
                 <DropdownMenuItem onClick={() => setAnchorOpen(true)}>
                   {anchorRole === null
                     ? tAnchor("designateCta")
@@ -288,15 +286,13 @@ export function RoleEvaluationCard({
           </div>
         )}
       </CardContent>
-      {isAdmin && (
-        <AnchorDialog
-          open={anchorOpen}
-          onOpenChange={setAnchorOpen}
-          orgId={orgId}
-          roleId={roleId}
-          anchorRole={anchorRole}
-        />
-      )}
+      <AnchorDialog
+        open={anchorOpen}
+        onOpenChange={setAnchorOpen}
+        orgId={orgId}
+        roleId={roleId}
+        anchorRole={anchorRole}
+      />
       <UnlockAssessmentDialog
         open={unlockOpen}
         onOpenChange={setUnlockOpen}

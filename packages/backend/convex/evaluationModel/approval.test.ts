@@ -227,7 +227,10 @@ describe("approveModel", () => {
     })
   })
 
-  it("rejects same-org editors with errors.adminRequired", async () => {
+  // Approving the model is member-level work (admin covers org administration
+  // and the audit log). A same-org editor approves it and the trail names
+  // them, exactly as it names an admin.
+  it("accepts a same-org editor's approval", async () => {
     const t = initConvexTest()
     const { orgId } = await seedApprovableModel(t)
     const { userId: editorId } = await t.mutation(
@@ -239,11 +242,16 @@ describe("approveModel", () => {
       userId: editorId,
       role: "editor",
     })
-    await expect(
-      t
-        .withIdentity({ subject: editorId })
-        .mutation(api.evaluationModel.approval.approveModel, { orgId })
-    ).rejects.toThrow(/errors.adminRequired/)
+    await t
+      .withIdentity({ subject: editorId })
+      .mutation(api.evaluationModel.approval.approveModel, { orgId })
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(model?.approval?.approvedBy).toBe(editorId)
+    })
   })
 })
 
@@ -344,61 +352,124 @@ describe("getMethodChecks", () => {
   })
 })
 
-// The relax is a READ relax. Every write in this file stays admin-gated, and
-// an editor who can now SEE the checklist must still not be able to act on it.
-describe("the model writes stay admin-only", () => {
-  it("refuses an editor's approveModel, working-conditions decision and rules edits", async () => {
+// Admin means org administration and the audit log; the model is member-level
+// work. An editor builds, weights, documents and approves it exactly as an
+// admin does, and the surface offers them every control.
+describe("the model writes are member-level", () => {
+  it("lets an editor decide materiality, edit the rules and approve", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, model } = await seedApprovableModel(t)
+    const { orgId } = await seedApprovableModel(t)
     const asEditor = await addEditor(t, orgId, "editor2@acme.se")
 
-    await expect(
-      asEditor.mutation(api.evaluationModel.approval.approveModel, { orgId })
-    ).rejects.toThrow(/errors\.adminRequired/)
-    await expect(
-      asEditor.mutation(
-        api.evaluationModel.approval.setWorkingConditionsDecision,
-        { orgId, status: "testedNotMaterial", motivation: "Nope." }
-      )
-    ).rejects.toThrow(/errors\.adminRequired/)
-    await expect(
-      asEditor.mutation(api.evaluationModel.approval.updateLevelRules, {
+    await asEditor.mutation(
+      api.evaluationModel.approval.setWorkingConditionsDecision,
+      {
         orgId,
-        levelRules: [{ level: 1, minScore: 90 }],
-      })
-    ).rejects.toThrow(/errors\.adminRequired/)
-    await expect(
-      asEditor.mutation(api.evaluationModel.approval.updateZoneProfileRules, {
+        status: "testedNotMaterial",
+        motivation: "Inga roller bar sarskilda arbetsforhallanden.",
+      }
+    )
+    await asEditor.mutation(api.evaluationModel.approval.updateLevelRules, {
+      orgId,
+      // Level 1 stays strictly above level 2 (92 by default), so the rules
+      // remain valid while the edit is real.
+      levelRules: (
+        await asEditor.query(api.evaluationModel.model.getModel, { orgId })
+      )?.levelRules.map((rule) =>
+        rule.level === 1 ? { ...rule, minScore: 99 } : rule
+      ) as { level: number; minScore: number }[],
+    })
+    await asEditor.mutation(
+      api.evaluationModel.approval.updateZoneProfileRules,
+      {
         orgId,
-        zoneProfileRules: [{ zone: "A", minStep: 4 }],
-      })
-    ).rejects.toThrow(/errors\.adminRequired/)
+        zoneProfileRules: (
+          await asEditor.query(api.evaluationModel.model.getModel, { orgId })
+        )?.zoneProfileRules as { zone: "A" | "B"; minStep: number }[],
+      }
+    )
+    await asEditor.mutation(api.evaluationModel.approval.approveModel, {
+      orgId,
+    })
 
-    // The criteria writes the chapters offer are gated by the same wrapper.
-    await expect(
-      asEditor.mutation(api.evaluationModel.criteria.activateCriterion, {
-        orgId,
-        libraryKey: "risk-consequence",
-      })
-    ).rejects.toThrow(/errors\.adminRequired/)
-    await expect(
-      asEditor.mutation(api.evaluationModel.criteria.deactivateCriterion, {
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(model?.workingConditions?.status).toBe("testedNotMaterial")
+      expect(model?.approval).toBeDefined()
+      // Attributed to the editor who did it: orgMutation injects the same
+      // audit writer adminMutation did.
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.approved")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      expect(rows[0]?.actorId).toBe(model?.approval?.approvedBy)
+    })
+  })
+
+  it("lets an editor select, weight and remove criteria", async () => {
+    const t = initConvexTest()
+    const { orgId, model } = await seedApprovableModel(t)
+    const asEditor = await addEditor(t, orgId, "editor3@acme.se")
+
+    const addedId = await asEditor.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "risk-consequence" }
+    )
+    const after = await asEditor.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    const allocations = (after?.criteria ?? []).map((criterion, index) => ({
+      criterionId: criterion.criterionId,
+      weightPoints: index === 0 ? 4 : index === 1 ? 2 : criterion.weightPoints,
+    }))
+    await asEditor.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+      orgId,
+      allocations,
+    })
+    await asEditor.mutation(
+      api.evaluationModel.criteria.setCriterionWeightMotivation,
+      {
         orgId,
         criterionId: model.criteria[0]?.criterionId as Id<"criteria">,
-      })
-    ).rejects.toThrow(/errors\.adminRequired/)
-    await expect(
-      asEditor.mutation(api.evaluationModel.criteria.rebalanceWeights, {
-        orgId,
-        allocations: model.criteria.map((criterion) => ({
-          criterionId: criterion.criterionId,
-          weightPoints: 3,
-        })),
-      })
-    ).rejects.toThrow(/errors\.adminRequired/)
+        motivation: "Dimensionen dominerar av ett dokumenterat skal.",
+      }
+    )
+    await asEditor.mutation(api.evaluationModel.criteria.deactivateCriterion, {
+      orgId,
+      criterionId: addedId,
+    })
 
-    // The admin path is unaffected: the gate is the role, not the mutation.
+    const final = await asEditor.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    expect(final?.criteria).toHaveLength(model.criteria.length)
+    expect(
+      final?.criteria.some((criterion) => criterion.weightMotivation !== null)
+    ).toBe(true)
+  })
+
+  it("lets an editor restore the last approved model", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedApprovableModel(t)
     await asAdmin.mutation(api.evaluationModel.approval.approveModel, { orgId })
+    const asEditor = await addEditor(t, orgId, "editor4@acme.se")
+    await asEditor.mutation(api.evaluationModel.criteria.activateCriterion, {
+      orgId,
+      libraryKey: "risk-consequence",
+    })
+    await asEditor.mutation(api.evaluationModel.approval.restoreApprovedModel, {
+      orgId,
+    })
+    const restored = await asEditor.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    expect(restored?.criteria).toHaveLength(HEALTHY_KEYS.length)
   })
 })
 
@@ -1133,22 +1204,27 @@ describe("restoreApprovedModel", () => {
     ).rejects.toThrow(/errors\.notFound/)
   })
 
-  it("refuses an editor, and offers them the preview read", async () => {
+  it("offers an editor both the preview and the restore itself", async () => {
     const t = initConvexTest()
     const { orgId } = await approveThenEdit(t)
     const asEditor = await addEditor(t, orgId, "editor3@acme.se")
-    await expect(
-      asEditor.mutation(api.evaluationModel.approval.restoreApprovedModel, {
-        orgId,
-      })
-    ).rejects.toThrow(/errors\.adminRequired/)
-    // The read stays org-scoped, like getMethodChecks: an editor sees where
-    // the model stands and is offered none of the writes.
     const preview = await asEditor.query(
       api.evaluationModel.approval.getModelRestorePreview,
       { orgId, locale: "en" }
     )
     expect(preview).not.toBeNull()
+    await asEditor.mutation(api.evaluationModel.approval.restoreApprovedModel, {
+      orgId,
+    })
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.restored")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+    })
   })
 
   it("offers no preview while the approval still stands, or with no buffer", async () => {

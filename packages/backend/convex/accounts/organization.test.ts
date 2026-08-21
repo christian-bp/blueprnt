@@ -180,6 +180,40 @@ describe("organization settings", () => {
     ).rejects.toThrow(/errors.adminRequired/)
   })
 
+  // The admin surface is org ADMINISTRATION: the organization's own identity
+  // and its member list. Everything else it does is member-level, so these are
+  // the gates that have to hold, and each of them is asserted here rather than
+  // trusted to the wrapper.
+  it("keeps the whole org-administration surface admin-only", async () => {
+    const { t, orgId, userId } = await setup("editor")
+    const asEditor = t.withIdentity({ subject: userId })
+    await expect(
+      asEditor.mutation(api.accounts.organization.updateOrganizationName, {
+        orgId,
+        name: "Renamed",
+      })
+    ).rejects.toThrow(/errors.adminRequired/)
+    await expect(
+      asEditor.mutation(api.accounts.organization.removeOrgAvatar, { orgId })
+    ).rejects.toThrow(/errors.adminRequired/)
+    await expect(
+      asEditor.query(api.accounts.organization.listOrgMembers, { orgId })
+    ).rejects.toThrow(/errors.adminRequired/)
+    await expect(
+      asEditor.mutation(api.accounts.organization.updateMemberRole, {
+        orgId,
+        userId,
+        role: "admin",
+      })
+    ).rejects.toThrow(/errors.adminRequired/)
+    await expect(
+      asEditor.mutation(api.accounts.organization.removeMember, {
+        orgId,
+        userId,
+      })
+    ).rejects.toThrow(/errors.adminRequired/)
+  })
+
   it("completeOnboarding stamps the timestamp and writes one audit row", async () => {
     const { t, orgId, userId } = await setup("admin")
     const asAdmin = t.withIdentity({ subject: userId })

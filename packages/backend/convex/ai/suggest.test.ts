@@ -762,7 +762,7 @@ describe("AI suggestion lifecycle", () => {
     })
   })
 
-  it("editors cannot dismiss model-configuration suggestions but can dismiss role-profile drafts", async () => {
+  it("editors dismiss both weight reviews and role-profile drafts", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
     // Give the org an editor alongside the seeded admin. seedDuplicateMember
@@ -779,7 +779,9 @@ describe("AI suggestion lifecycle", () => {
     })
     const asEditor = t.withIdentity({ subject: editorId })
 
-    // model.weightReview is admin-configuration: an editor must not dismiss it.
+    // The weight review is member-level end to end now: a member who may
+    // request and confirm one must be able to end the one they walked away
+    // from, or the surface would strand its own suggestion.
     const modelSuggestionId = await asAdmin.mutation(
       api.ai.suggest.requestWeightReview,
       { orgId }
@@ -788,18 +790,17 @@ describe("AI suggestion lifecycle", () => {
       suggestionId: modelSuggestionId,
       moves: [],
     })
-    await expect(
-      asEditor.mutation(api.ai.suggest.rejectSuggestion, {
-        orgId,
-        suggestionId: modelSuggestionId,
-      })
-    ).rejects.toThrow(/errors.adminRequired/)
+    await asEditor.mutation(api.ai.suggest.rejectSuggestion, {
+      orgId,
+      suggestionId: modelSuggestionId,
+    })
     await t.run(async (ctx) => {
       const suggestion = await ctx.db.get(modelSuggestionId)
-      expect(suggestion?.status).toBe("suggested")
+      expect(suggestion?.status).toBe("rejected")
+      expect(suggestion?.rejectedBy).toBe(editorId)
     })
 
-    // role.profile is member scope: the editor CAN dismiss it.
+    // role.profile, the same way.
     // Insert a role.profile suggestion directly (the request/confirm path was
     // removed in Task 3; the scope behaviour under test is rejectSuggestion,
     // not the now-deleted mutation).

@@ -347,10 +347,9 @@ describe("ApprovalCard", () => {
     expect(container.textContent).toBe("")
   })
 
-  // The checks READ for every member (the section's spine needs them), but
-  // every write behind this card is an adminMutation. An editor sees where the
-  // model stands and is offered none of the controls that change it.
-  it("shows an editor the state without offering the writes", () => {
+  // The model is member-level work: admin covers org administration and the
+  // audit log, so an editor both reads this card and acts on it.
+  it("offers an editor the same card an admin gets", () => {
     orgRole = "editor"
     queryResult = {
       checks: ALL_GREEN_CHECKS,
@@ -361,13 +360,11 @@ describe("ApprovalCard", () => {
       dimensionShares: DIMENSION_SHARES,
     }
     renderCard()
-    // The state is readable.
     expect(screen.getByText("Not yet approved")).toBeDefined()
     expect(
       screen.getByText("Weight points balanced to the budget")
     ).toBeDefined()
-    // The card's one write is not on offer.
-    expect(screen.queryByRole("button", { name: "Approve model" })).toBeNull()
+    expect(screen.getByRole("button", { name: "Approve model" })).toBeDefined()
   })
 
   // The materiality DECISION moved to the Metod chapter, where the spine
@@ -491,13 +488,13 @@ describe("ApprovalCard", () => {
       expect(rendered).toBe(withoutIds(noBuffer.innerHTML))
     })
 
-    it("hides it from an editor", () => {
+    it("offers it to an editor too", () => {
       orgRole = "editor"
       queryResult = REOPENED_WITH_BUFFER
       renderCard()
       expect(
-        screen.queryByRole("button", { name: "Restore to last approved" })
-      ).toBeNull()
+        screen.getByRole("button", { name: "Restore to last approved" })
+      ).toBeDefined()
     })
   })
   // Every FAILING row says what to do and where, with the specifics the check

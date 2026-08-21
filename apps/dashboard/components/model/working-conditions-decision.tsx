@@ -31,7 +31,6 @@ import { useFormatter, useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { useOrganization } from "@/components/org-context"
 import { SubmitButton } from "@/components/submit-button"
 import { toast } from "@/lib/toast"
 import {
@@ -322,12 +321,6 @@ export function WorkingConditionsDecision({
   const hasCriterion = criterion !== null
   const t = useTranslations("dashboard.model.criteria.workingConditions")
   const format = useFormatter()
-  // Recording the decision is an adminMutation, so an editor is never offered
-  // an answer button or the form: the same split the approval card draws. An
-  // editor still READS both the question and a recorded decision, which is the
-  // state of their own model.
-  const { role } = useOrganization()
-  const canDecide = role === "admin"
   // Which answer the dialog is open on, or null while it is closed. The
   // answer is chosen in the column; the dialog only takes its motivation.
   const [pending, setPending] = useState<MaterialityStatus | null>(null)
@@ -337,7 +330,7 @@ export function WorkingConditionsDecision({
   // reads as debris. Link variant for the app's link ink, with the button's
   // own height and padding taken off at the call site because a 32px control
   // in the middle of a line of text is a block, not a word.
-  const change = canDecide && (
+  const change = (
     <Button
       type="button"
       variant="link"
@@ -348,7 +341,7 @@ export function WorkingConditionsDecision({
     </Button>
   )
 
-  const dialog = canDecide && (
+  const dialog = (
     <DecisionDialog
       orgId={orgId}
       decision={decision}
@@ -376,29 +369,27 @@ export function WorkingConditionsDecision({
             {t("noCriterionHint")}
           </p>
         )}
-        {canDecide && (
-          // Two equal answers, stacked so both read at the column's width and
-          // neither can be the wider one. Same variant, same size: nothing on
-          // this surface says which answer is expected.
-          <div className="flex flex-col gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setPending("active")}
-            >
-              {t("yesCta")}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setPending("testedNotMaterial")}
-            >
-              {t("noCta")}
-            </Button>
-          </div>
-        )}
+        {/* Two equal answers, stacked so both read at the column's width and
+            neither can be the wider one. Same variant, same size: nothing on
+            this surface says which answer is expected. */}
+        <div className="flex flex-col gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setPending("active")}
+          >
+            {t("yesCta")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setPending("testedNotMaterial")}
+          >
+            {t("noCta")}
+          </Button>
+        </div>
         {dialog}
       </div>
     )

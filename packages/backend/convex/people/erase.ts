@@ -9,7 +9,7 @@ import {
   personAuditFields,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation } from "../lib/functions"
+import { orgMutation } from "../lib/functions"
 import { pseudonymizePersonInSnapshots } from "../payMapping/erasure"
 
 // Shared hard-delete body. Deletes payRecords, then personAssignments, then the
@@ -17,7 +17,7 @@ import { pseudonymizePersonInSnapshots } from "../payMapping/erasure"
 // retained records (the frozen pay-mapping snapshot and the audit trail).
 // Throws notFound when the person is missing or belongs to another org. Returns
 // the identity-free "before" snapshot so the caller (erasePersonAsOrg, an
-// adminMutation) can write the audit row via ctx.audit.
+// orgMutation) can write the audit row via ctx.audit.
 //
 // This is the SINGLE implementation of the delete. erasePersonAsOrg delegates
 // here; there is no duplicate delete logic.
@@ -91,9 +91,11 @@ export async function erasePersonRecords(
 // those values in the person's EARLIER rows, so the surviving trail holds no
 // personal data about the erased individual.
 //
-// This is the org-admin-gated HR entry point. adminMutation enforces org-admin
-// role. Deletion is delegated to erasePersonRecords (the single implementation).
-export const erasePersonAsOrg = adminMutation({
+// This is the HR entry point, member-gated like the rest of the people surface
+// (the ruling: admin covers org administration and the audit log, and an
+// operator who may import and edit an employee's record may erase it).
+// Deletion is delegated to erasePersonRecords (the single implementation).
+export const erasePersonAsOrg = orgMutation({
   args: { personId: v.id("people") },
   returns: v.null(),
   handler: async (ctx, { personId }) => {

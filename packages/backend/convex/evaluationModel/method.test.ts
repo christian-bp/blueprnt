@@ -714,10 +714,10 @@ describe("getMethodModel", () => {
   })
 })
 
-// The relax is a READ relax. Both writes in this file stay admin-gated, so an
-// editor who can now SEE the documentation still cannot write or approve it.
-describe("the method writes stay admin-only", () => {
-  it("refuses an editor's compliance save and criterion approval", async () => {
+// Documenting a criterion and signing it off are member-level work: admin
+// covers org administration and the audit log, not the method.
+describe("the method writes are member-level", () => {
+  it("lets an editor document a criterion and sign it off", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)
     const model = await asAdmin.query(
@@ -728,24 +728,38 @@ describe("the method writes stay admin-only", () => {
     if (criterionId === undefined) throw new Error("seed")
     const asEditor = await addEditor(t, orgId, "method-editor2@acme.se")
 
-    await expect(
-      asEditor.mutation(api.evaluationModel.method.saveCriterionCompliance, {
+    await asEditor.mutation(
+      api.evaluationModel.method.saveCriterionCompliance,
+      {
         orgId,
         criterionId,
-        purpose: "Editor tried.",
-        whyRelevant: "Editor tried.",
-        overlapNotes: "Editor tried.",
+        purpose: "Motiverar varfor kriteriet ingar.",
+        whyRelevant: "Relevant for samtliga roller.",
+        overlapNotes: "",
         biasRisk: "low",
-        biasComment: "Editor tried.",
-        biasAction: "Editor tried.",
-      })
-    ).rejects.toThrow(/errors\.adminRequired/)
-    await expect(
-      asEditor.mutation(api.evaluationModel.method.setCriterionApproval, {
-        orgId,
-        criterionId,
-        approved: true,
-      })
-    ).rejects.toThrow(/errors\.adminRequired/)
+        biasComment: "Konsneutral formulering kontrollerad.",
+        biasAction: "",
+      }
+    )
+    await asEditor.mutation(api.evaluationModel.method.setCriterionApproval, {
+      orgId,
+      criterionId,
+      approved: true,
+    })
+
+    await t.run(async (ctx) => {
+      const criterion = await ctx.db.get(criterionId)
+      expect(criterion?.approved).toBe(true)
+      // The sign-off names the editor who gave it.
+      expect(criterion?.decidedBy).toBeDefined()
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "criterion.approved")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      expect(rows[0]?.actorId).toBe(criterion?.decidedBy)
+    })
   })
 })

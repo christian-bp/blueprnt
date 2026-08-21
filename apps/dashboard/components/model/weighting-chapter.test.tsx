@@ -826,15 +826,15 @@ describe("the Viktning chapter", () => {
       )
     })
 
-    // Writing a motivation is an adminMutation. An editor reads the note (it
-    // explains the balance they are looking at) and is offered no control.
-    it("shows an editor the note without offering the write", () => {
+    // Weighting is member-level work: admin covers org administration and the
+    // audit log, so an editor reads the note AND answers it.
+    it("offers an editor the note and its write", () => {
       orgRole = "editor"
       renderChapter()
       expect(screen.getByText(noteFor("dominanceNote"))).toBeDefined()
       expect(
-        screen.queryByRole("button", { name: weighting.motivateCta })
-      ).toBeNull()
+        screen.getByRole("button", { name: weighting.motivateCta })
+      ).toBeDefined()
     })
   })
 

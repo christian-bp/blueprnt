@@ -104,7 +104,6 @@ function renderCard(
     ratedCount?: number
     totalCriteria?: number
     anchorRole?: AnchorRoleInfo | null
-    isAdmin?: boolean
   } = {}
 ) {
   return render(
@@ -118,7 +117,6 @@ function renderCard(
         ratedCount={props.ratedCount ?? 0}
         totalCriteria={props.totalCriteria ?? 5}
         anchorRole={props.anchorRole ?? null}
-        isAdmin={props.isAdmin ?? false}
       />
     </NextIntlClientProvider>
   )
@@ -209,12 +207,11 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("offers Designate in the menu for an admin with no anchor, and shows no status row", async () => {
+  it("offers Designate in the menu when there is no anchor, and shows no status row", async () => {
     setResult(completeResult)
     renderCard({
       ratedCount: 3,
       totalCriteria: 3,
-      isAdmin: true,
       anchorRole: null,
     })
     expect(screen.queryByText(anchor.heading)).toBeNull()
@@ -229,7 +226,6 @@ describe("RoleEvaluationCard", () => {
     renderCard({
       ratedCount: 3,
       totalCriteria: 3,
-      isAdmin: true,
       anchorRole: designated,
     })
     // The computed level (3) is the headline, not the agreed level (2).
@@ -256,12 +252,11 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("hides Designate from the menu for an admin on a complete-but-unlocked role", async () => {
+  it("hides Designate from the menu on a complete-but-unlocked role", async () => {
     setResult(readyToLockResult)
     renderCard({
       ratedCount: 3,
       totalCriteria: 3,
-      isAdmin: true,
       anchorRole: null,
     })
     // Lock-as-reveal: the backend refuses designation until the role is
@@ -272,12 +267,13 @@ describe("RoleEvaluationCard", () => {
     ).toBeNull()
   })
 
-  it("gives a non-admin only Adjust in the menu for a ready-to-lock anchor role", async () => {
+  // Anchor work needs a locked reference, so a ready-to-lock role offers only
+  // Adjust whoever is looking: the gate is the lock, never the role.
+  it("gives only Adjust in the menu for a ready-to-lock anchor role", async () => {
     setResult(readyToLockResult)
     renderCard({
       ratedCount: 3,
       totalCriteria: 3,
-      isAdmin: false,
       anchorRole: designated,
     })
     // Not yet locked: the level is not revealed (lock-as-reveal), but the

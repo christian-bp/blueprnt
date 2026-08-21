@@ -28,7 +28,7 @@ import { trackKeyValidator } from "../evaluationModel/tables"
 import { TRACK_KEYS, trackName } from "../evaluationModel/trackSchema"
 import { AUDIT_EVENTS } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
+import { orgMutation, orgQuery } from "../lib/functions"
 import { orgSettingsRow } from "../lib/orgSettings"
 import { AI_MODEL_ID, AI_PROVIDER, MAX_PROMPT_IDENTITY_FIELD } from "./config"
 import { isSuggestionClosed } from "./persist"
@@ -68,7 +68,7 @@ async function requireCompleteSettings(
   }
 }
 
-export const requestWeightReview = adminMutation({
+export const requestWeightReview = orgMutation({
   args: { locale: v.optional(v.string()) },
   returns: v.id("suggestions"),
   handler: async (ctx, { locale }) => {
@@ -121,7 +121,7 @@ export const requestWeightReview = adminMutation({
 // cumulatively at apply time: moves stacking on the same criterion can be
 // individually valid but jointly breach the 1-5 scale, and the breaching
 // move is skipped, not clamped.
-export const confirmWeightReview = adminMutation({
+export const confirmWeightReview = orgMutation({
   args: {
     suggestionId: v.id("suggestions"),
     acceptedMoveIndexes: v.array(v.number()),
@@ -549,21 +549,18 @@ export const confirmRoleImport = orgMutation({
   },
 })
 
-// Member scope: dismissing applies nothing, and editors must be able to
-// dismiss their own role-profile drafts. Two guards keep this from becoming a
-// backdoor around the confirm paths' scoping (model.* confirms are
-// adminMutation, role.profile is orgMutation):
-//   1. model.weightReview is an admin-configuration surface, so dismissing it
-//      requires admin, mirroring its confirm path. Editors keep dismiss
-//      rights over role.profile only.
-//   2. Only the open states (generating, suggested, failed) are dismissible.
-//      confirmed and rejected are terminal, so a confirmed suggestion's
-//      human-confirmation provenance can never be flipped to rejected and
-//      reattributed. A still-generating row is dismissible on purpose: a
-//      surface the user walked away from has to be able to end the generation
-//      it abandoned (ADR-0003 wants every lifecycle closed), and the
-//      generation's own terminal write is guarded (patchOpenSuggestion in
-//      ai/persist.ts) so it cannot resurrect the row after this.
+// Member scope, like every confirm path it mirrors: dismissing applies
+// nothing, and a member who may request and confirm a suggestion must be able
+// to end the one they walked away from. One guard keeps it from becoming a
+// backdoor around those paths:
+//   Only the open states (generating, suggested, failed) are dismissible.
+//   confirmed and rejected are terminal, so a confirmed suggestion's
+//   human-confirmation provenance can never be flipped to rejected and
+//   reattributed. A still-generating row is dismissible on purpose: a surface
+//   the user walked away from has to be able to end the generation it
+//   abandoned (ADR-0003 wants every lifecycle closed), and the generation's
+//   own terminal write is guarded (patchOpenSuggestion in ai/persist.ts) so it
+//   cannot resurrect the row after this.
 // The dismisser is recorded in rejectedBy, never confirmedBy, and the
 // transition writes an audit row like every other state-changing mutation.
 export const rejectSuggestion = orgMutation({
@@ -573,11 +570,6 @@ export const rejectSuggestion = orgMutation({
     const suggestion = await ctx.db.get(suggestionId)
     if (suggestion === null || suggestion.orgId !== ctx.orgId) {
       throw appError(ERROR_CODES.notFound)
-    }
-    const isModelTarget =
-      suggestion.target.kind === SUGGESTION_KINDS.weightReview
-    if (isModelTarget && ctx.role !== "admin") {
-      throw appError(ERROR_CODES.adminRequired)
     }
     if (isSuggestionClosed(suggestion.status)) {
       throw appError(ERROR_CODES.invalidTransition)
@@ -816,9 +808,9 @@ export const collectNewRoleDraftContext = internalQuery({
 })
 
 // Resolves ONE criterion's prompt context for the compliance draft action, in a
-// single org-scoped read. Membership + admin role are re-checked here (the
-// action only has the caller's identity). A foreign criterion or incomplete
-// org settings is rejected before any model call (ADR-0003).
+// single org-scoped read. Membership is re-checked here (the action only has
+// the caller's identity). A foreign criterion or incomplete org settings is
+// rejected before any model call (ADR-0003).
 export const collectCriterionComplianceContext = internalQuery({
   args: {
     orgId: v.string(),
@@ -850,9 +842,10 @@ export const collectCriterionComplianceContext = internalQuery({
     } catch {
       throw appError(ERROR_CODES.membershipConflict)
     }
+    // Membership is the whole gate, the same one saveCriterionCompliance
+    // takes: documenting a criterion is member-level work, so drafting that
+    // documentation cannot ask for more than writing it does.
     if (membership === null) throw appError(ERROR_CODES.notAMember)
-    // Compliance is admin-only (same gate as saveCriterionCompliance).
-    if (membership.role !== "admin") throw appError(ERROR_CODES.adminRequired)
 
     const criterion = await ctx.db.get(criterionId)
     if (criterion === null || criterion.orgId !== orgId) {

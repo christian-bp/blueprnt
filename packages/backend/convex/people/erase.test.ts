@@ -466,20 +466,23 @@ describe("erasePersonAsOrg", () => {
     })
   })
 
-  it("is blocked for a non-admin member (adminMutation gate)", async () => {
+  // Erasure is member-level, like the rest of the people surface: admin covers
+  // org administration and the audit log, and an operator who may import and
+  // edit an employee's record may erase it. Membership is still the gate: a
+  // caller outside the org is refused by the tests above.
+  it("is performed by any member of the organization", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
     const personId = await seedPerson(orgId, asAdmin)
 
-    // Seed an editor and attempt erasure as that editor.
     const asEditor = await seedEditor(t, orgId, "editor@acme.se")
-    await expect(
-      asEditor.mutation(api.people.erase.erasePersonAsOrg, { orgId, personId })
-    ).rejects.toThrow(/errors.adminRequired/)
+    await asEditor.mutation(api.people.erase.erasePersonAsOrg, {
+      orgId,
+      personId,
+    })
 
-    // Person must still exist.
     await t.run(async (ctx) => {
-      expect(await ctx.db.get(personId)).not.toBeNull()
+      expect(await ctx.db.get(personId)).toBeNull()
     })
   })
 
@@ -640,9 +643,10 @@ describe("erasePersonAsOrg (org-scoped HR erasure)", () => {
     ).rejects.toThrow()
   })
 
-  it("rejects a non-admin (editor) member", async () => {
+  // Membership is the gate, not the role: an editor erases, a stranger cannot.
+  it("rejects a caller who is not a member at all", async () => {
     const t = initConvexTest()
-    const { orgId } = await seedOrg(t)
+    const { orgId } = await seedOrg(t, "hr@acme.se")
     const personId = await t.run(async (ctx) =>
       ctx.db.insert("people", {
         orgId,
@@ -651,9 +655,10 @@ describe("erasePersonAsOrg (org-scoped HR erasure)", () => {
         gender: "Man" as const,
       })
     )
-    const asEditor = await seedEditor(t, orgId, "editor@acme.se")
+    const { orgId: otherOrgId } = await seedOrg(t, "hr@other.se")
+    const outsider = await seedEditor(t, otherOrgId, "editor@other.se")
     await expect(
-      asEditor.mutation(api.people.erase.erasePersonAsOrg, { orgId, personId })
-    ).rejects.toThrow()
+      outsider.mutation(api.people.erase.erasePersonAsOrg, { orgId, personId })
+    ).rejects.toThrow(/errors\.notAMember/)
   })
 })

@@ -28,7 +28,6 @@ import {
   WorkingConditionsEmptyColumn,
 } from "@/components/model/working-conditions-empty-column"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { useOrganization } from "@/components/org-context"
 import { chapterHref } from "@/lib/model-chapters"
 
 // How many placeholder cards a dimension's column stands up while the model
@@ -59,13 +58,6 @@ export function MethodPanel({ orgId }: { orgId: string }) {
   const t = useTranslations("dashboard.model.method")
   const tHelp = useTranslations("dashboard.help")
   const locale = useLocale()
-  // The method content READS for every member (the chapter's own query is an
-  // orgQuery), but documenting a criterion and approving one are both
-  // adminMutations. An editor therefore reads the cards, the statuses and the
-  // flags, and exports the appendix, without being offered the one control
-  // that would change any of it: the same split the approval card draws.
-  const { role } = useOrganization()
-  const isAdmin = role === "admin"
   const data = useQuery(api.evaluationModel.method.getMethodModel, {
     orgId,
     locale,
@@ -88,8 +80,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
   // skeleton's headings and the loaded chapter's from drifting.
   const content = criteriaLibraryContent(locale)
 
-  if (data === undefined)
-    return <MethodPanelSkeleton orgId={orgId} isAdmin={isAdmin} />
+  if (data === undefined) return <MethodPanelSkeleton orgId={orgId} />
   if (data === null) return null // no model yet; keep layout stable
 
   const target =
@@ -218,15 +209,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
                       documentation={{
                         status: criterion.status,
                         partners: unreviewedPartners(criterion.libraryKey),
-                        // The dialog behind this action is a write surface end to
-                        // end (the protokoll form, the bias review and the
-                        // per-criterion approve), so an editor is not offered its
-                        // entry point at all. The status badge beside it still
-                        // says where the criterion stands, and the appendix
-                        // export above carries the documented text itself.
-                        onDocument: isAdmin
-                          ? () => setTargetId(criterion.criterionId)
-                          : undefined,
+                        onDocument: () => setTargetId(criterion.criterionId),
                       }}
                     />
                   ))}
@@ -236,16 +219,11 @@ export function MethodPanel({ orgId }: { orgId: string }) {
           })}
         </div>
       )}
-      {/* Not mounted at all for an editor: with no way to open it there is
-          nothing for it to do, and a write form on the page is a write form on
-          the page. */}
-      {isAdmin && (
-        <CriterionComplianceDialog
-          orgId={orgId}
-          target={target}
-          onClose={() => setTargetId(null)}
-        />
-      )}
+      <CriterionComplianceDialog
+        orgId={orgId}
+        target={target}
+        onClose={() => setTargetId(null)}
+      />
     </div>
   )
 }
@@ -316,13 +294,7 @@ function DimensionSection({
 // method law (ADR-0021) and their names are locale-keyed library constants, so
 // they never wait on org data; how many criteria each holds, its documentation
 // count, and everything on a card, is exactly what is being waited for.
-function MethodPanelSkeleton({
-  orgId,
-  isAdmin,
-}: {
-  orgId: string
-  isAdmin: boolean
-}) {
+function MethodPanelSkeleton({ orgId }: { orgId: string }) {
   const locale = useLocale()
   const tHelp = useTranslations("dashboard.help")
   const content = criteriaLibraryContent(locale)
@@ -362,7 +334,6 @@ function MethodPanelSkeleton({
               <MethodCardSkeleton
                 // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
                 key={card}
-                isAdmin={isAdmin}
               />
             ))}
           </DimensionSection>
@@ -377,7 +348,7 @@ function MethodPanelSkeleton({
 // differently, and only what is unknown until the data arrives is a bar. The
 // action's label is static i18n text, so it renders as its real button, muted
 // and inert.
-function MethodCardSkeleton({ isAdmin }: { isAdmin: boolean }) {
+function MethodCardSkeleton() {
   const t = useTranslations("dashboard.model.method")
   return (
     <Item variant="outline" render={<li aria-hidden="true" />}>
@@ -402,17 +373,15 @@ function MethodCardSkeleton({ isAdmin }: { isAdmin: boolean }) {
       <ItemFooter>
         {/* The status pill's box: a Badge is h-5 and pill-shaped. */}
         <Skeleton className="h-5 w-24 rounded-4xl" />
-        {isAdmin && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            tabIndex={-1}
-            className="pointer-events-none text-muted-foreground/50"
-          >
-            {t("openCta")}
-          </Button>
-        )}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          tabIndex={-1}
+          className="pointer-events-none text-muted-foreground/50"
+        >
+          {t("openCta")}
+        </Button>
       </ItemFooter>
     </Item>
   )

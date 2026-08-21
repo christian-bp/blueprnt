@@ -40,7 +40,6 @@ import {
 } from "@/components/model/working-conditions-empty-column"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { MorphPopover } from "@/components/morph-popover"
-import { useOrganization } from "@/components/org-context"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import { chapterHref } from "@/lib/model-chapters"
 import { modelErrorKey } from "@/lib/model-errors"
@@ -84,12 +83,6 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
   const tHelp = useTranslations("dashboard.help")
   const locale = useLocale()
   const format = useFormatter()
-  // Writing a motivation is an adminMutation, like saving the weighting itself.
-  // An editor reads the dominance note (it explains the balance they are
-  // looking at) and is offered neither control.
-  const { role } = useOrganization()
-  const isAdmin = role === "admin"
-
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   // True right after a confirmed weight review, until the weighting changes
   // again: the review trigger is hidden while it holds.
@@ -402,18 +395,14 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
                       )}
                     >
                       <p>{note.text}</p>
-                      {isAdmin && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setMotivating(note.target)}
-                        >
-                          {t(
-                            note.flagged ? "motivateCta" : "editMotivationCta"
-                          )}
-                        </Button>
-                      )}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setMotivating(note.target)}
+                      >
+                        {t(note.flagged ? "motivateCta" : "editMotivationCta")}
+                      </Button>
                     </div>
                   ))}
                   {/* Nothing on this chapter adds or removes a criterion (that
@@ -461,15 +450,11 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
           })}
         </div>
       )}
-      {/* Not mounted at all for an editor: with no way to open it there is
-          nothing for it to do. */}
-      {isAdmin && (
-        <WeightMotivationDialog
-          orgId={orgId}
-          target={motivating}
-          onClose={() => setMotivating(null)}
-        />
-      )}
+      <WeightMotivationDialog
+        orgId={orgId}
+        target={motivating}
+        onClose={() => setMotivating(null)}
+      />
       {/* The budget, floating clear of the grid. It renders only with
           something to say (the allocation does not add up) or something to do
           (it adds up and is unsaved); an allocation that adds up and is saved

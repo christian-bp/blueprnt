@@ -211,7 +211,9 @@ describe("activateCriterion", () => {
     })
   })
 
-  it("rejects same-org editors with errors.adminRequired", async () => {
+  // Selecting a criterion is member-level work: admin covers org
+  // administration and the audit log, not the model.
+  it("accepts a same-org editor's selection", async () => {
     const t = initConvexTest()
     const { orgId } = await seedEmptyModel(t)
     const { userId: editorId } = await t.mutation(
@@ -223,14 +225,25 @@ describe("activateCriterion", () => {
       userId: editorId,
       role: "editor",
     })
-    await expect(
-      t
-        .withIdentity({ subject: editorId })
-        .mutation(api.evaluationModel.criteria.activateCriterion, {
-          orgId,
-          libraryKey: "complexity-ambiguity",
-        })
-    ).rejects.toThrow(/errors.adminRequired/)
+    const criterionId = await t
+      .withIdentity({ subject: editorId })
+      .mutation(api.evaluationModel.criteria.activateCriterion, {
+        orgId,
+        libraryKey: "complexity-ambiguity",
+      })
+    await t.run(async (ctx) => {
+      expect(await ctx.db.get(criterionId)).not.toBeNull()
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "criterion.activated")
+        )
+        .collect()
+      // The audit writer rides orgMutation too, so the row is there and it
+      // names the editor who made the change.
+      expect(rows).toHaveLength(1)
+      expect(rows[0]?.actorId).toBe(editorId)
+    })
   })
 })
 
@@ -420,7 +433,7 @@ describe("rebalanceWeights", () => {
     ).rejects.toThrow(/errors.invalidInput/)
   })
 
-  it("rejects same-org editors with errors.adminRequired", async () => {
+  it("accepts a same-org editor's allocation", async () => {
     const t = initConvexTest()
     const { orgId, a, b } = await seedTwoCriteria(t)
     const { userId: editorId } = await t.mutation(
@@ -432,17 +445,19 @@ describe("rebalanceWeights", () => {
       userId: editorId,
       role: "editor",
     })
-    await expect(
-      t
-        .withIdentity({ subject: editorId })
-        .mutation(api.evaluationModel.criteria.rebalanceWeights, {
-          orgId,
-          allocations: [
-            { criterionId: a, weightPoints: 4 },
-            { criterionId: b, weightPoints: 2 },
-          ],
-        })
-    ).rejects.toThrow(/errors.adminRequired/)
+    await t
+      .withIdentity({ subject: editorId })
+      .mutation(api.evaluationModel.criteria.rebalanceWeights, {
+        orgId,
+        allocations: [
+          { criterionId: a, weightPoints: 4 },
+          { criterionId: b, weightPoints: 2 },
+        ],
+      })
+    await t.run(async (ctx) => {
+      expect((await ctx.db.get(a))?.weightPoints).toBe(4)
+      expect((await ctx.db.get(b))?.weightPoints).toBe(2)
+    })
   })
 })
 
@@ -772,7 +787,7 @@ describe("setCriterionWeightMotivation", () => {
     ).rejects.toThrow()
   })
 
-  it("rejects same-org editors with errors.adminRequired", async () => {
+  it("accepts a same-org editor's motivation", async () => {
     const t = initConvexTest()
     const { orgId, scope } = await seedDominantResponsibility(t)
     const { userId: editorId } = await t.mutation(
@@ -784,15 +799,18 @@ describe("setCriterionWeightMotivation", () => {
       userId: editorId,
       role: "editor",
     })
-    await expect(
-      t
-        .withIdentity({ subject: editorId })
-        .mutation(api.evaluationModel.criteria.setCriterionWeightMotivation, {
-          orgId,
-          criterionId: scope,
-          motivation: "Not allowed.",
-        })
-    ).rejects.toThrow(/errors.adminRequired/)
+    await t
+      .withIdentity({ subject: editorId })
+      .mutation(api.evaluationModel.criteria.setCriterionWeightMotivation, {
+        orgId,
+        criterionId: scope,
+        motivation: "Ansvar ar den tyngsta dimensionen har.",
+      })
+    await t.run(async (ctx) => {
+      expect((await ctx.db.get(scope))?.weightMotivation).toBe(
+        "Ansvar ar den tyngsta dimensionen har."
+      )
+    })
   })
 })
 

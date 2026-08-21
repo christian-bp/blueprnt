@@ -18,7 +18,7 @@ import {
 } from "../lib/audit"
 import { familyNames, trackNames } from "./names"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
+import { orgMutation, orgQuery } from "../lib/functions"
 import { uniqueSlug } from "../lib/slug"
 // people/assignments.ts imports requireOwnRole from this module, so this is a
 // benign import cycle: safe only because both bindings are referenced inside
@@ -540,7 +540,7 @@ export const updateRole = orgMutation({
 // Soft archive: role ids are permanent and rows are never deleted
 // (assessment glossary, role-id permanence). Archived roles leave the
 // results set, so the wrap logs level.shift to null for a complete role.
-export const archiveRole = adminMutation({
+export const archiveRole = orgMutation({
   args: { roleId: v.id("roles") },
   returns: v.null(),
   handler: async (ctx, { roleId }) => {

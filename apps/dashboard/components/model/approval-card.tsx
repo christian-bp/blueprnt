@@ -24,7 +24,6 @@ import { type ReactNode, useId, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { CheckRemedy } from "@/components/model/check-remedy"
 import { RestoreApprovedDialog } from "@/components/model/restore-approved-dialog"
-import { useOrganization } from "@/components/org-context"
 import { WARNING_TEXT_CLASS } from "@/lib/alert-tone"
 import { methodErrorMessage } from "@/lib/method-error"
 import { toast } from "@/lib/toast"
@@ -144,12 +143,6 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
   const format = useFormatter()
-  // The checks READ for every member (the chapter's spine needs them), but
-  // every write behind this card is an adminMutation. An editor therefore sees
-  // where the model stands and is offered none of the controls that change it,
-  // the same split the roles surface draws with isAdmin.
-  const { role } = useOrganization()
-  const isAdmin = role === "admin"
   const data = useQuery(api.evaluationModel.approval.getMethodChecks, {
     orgId,
   })
@@ -204,9 +197,8 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
   // has nothing to go back to), so the old lastApprovedAt condition would only
   // repeat what the flag already says. The DATE below still reads
   // lastApprovedAt, because the flag says whether to offer the control and the
-  // date says which state it goes back to. Admin-only, like approve.
-  const canRestore =
-    isAdmin && data.approval === null && data.restoreWouldChange
+  // date says which state it goes back to.
+  const canRestore = data.approval === null && data.restoreWouldChange
 
   async function onApprove() {
     try {
@@ -251,7 +243,7 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
                   {t("restoreCta")}
                 </Button>
               )}
-              {data.approval === null && isAdmin && (
+              {data.approval === null && (
                 <Button
                   type="button"
                   disabled={hasFailingBlocker}

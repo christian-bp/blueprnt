@@ -88,17 +88,18 @@ describe("createDefaultModel", () => {
     ).rejects.toThrow(/errors.modelExists/)
   })
 
-  it("rejects editors with errors.adminRequired", async () => {
+  // Creating the org's model is member-level work: admin covers org
+  // administration and the audit log, not the model.
+  it("accepts an editor", async () => {
     const t = initConvexTest()
     const { orgId, userId } = await t.mutation(
       components.betterAuth.testing.seedMembership,
       { email: "editor@acme.se", name: "Editor Person", role: "editor" }
     )
-    await expect(
-      t
-        .withIdentity({ subject: userId })
-        .mutation(api.evaluationModel.model.createDefaultModel, { orgId })
-    ).rejects.toThrow(/errors.adminRequired/)
+    const modelId = await t
+      .withIdentity({ subject: userId })
+      .mutation(api.evaluationModel.model.createDefaultModel, { orgId })
+    expect(modelId).toBeDefined()
   })
 
   it("uses English library content when organization language is en", async () => {

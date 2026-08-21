@@ -1208,23 +1208,23 @@ describe("the Kriterier chapter", () => {
       expect(within(col).queryByText(wc.materialityQuestion)).toBeNull()
     })
 
-    // Recording the decision is an adminMutation, so an editor is offered
-    // neither answer nor the change. They still READ the question and any
-    // recorded decision: both are the state of their own model.
-    it("gives an editor the state to read and nothing to press", () => {
+    // The materiality decision is member-level work: admin covers org
+    // administration and the audit log, so an editor answers the question and
+    // changes the answer exactly as an admin does.
+    it("gives an editor the same question and the same controls", () => {
       orgRole = "editor"
       renderChapter()
       expect(within(wcColumn()).getByText(wc.materialityQuestion)).toBeDefined()
-      expect(answer(wc.yesCta)).toBeNull()
-      expect(answer(wc.noCta)).toBeNull()
+      expect(answer(wc.yesCta)).not.toBeNull()
+      expect(answer(wc.noCta)).not.toBeNull()
       cleanup()
 
       modelResult = WC_SETTLED
       renderChapter()
       expect(within(wcColumn()).getByText(wc.notMaterialLine)).toBeDefined()
       expect(
-        within(wcColumn()).queryByRole("button", { name: wc.changeCta })
-      ).toBeNull()
+        within(wcColumn()).getByRole("button", { name: wc.changeCta })
+      ).toBeDefined()
     })
 
     // The other three dimensions carry no decision at all: it belongs to this

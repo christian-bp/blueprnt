@@ -67,12 +67,10 @@ export interface RoleProfile {
 export function RoleProfileCard({
   orgId,
   role,
-  isAdmin,
   tracks,
 }: {
   orgId: string
   role: RoleProfile
-  isAdmin: boolean
   tracks: { key: string; name: string }[]
 }) {
   const t = useTranslations("dashboard.roles.detail")
@@ -282,14 +280,12 @@ export function RoleProfileCard({
                   <DropdownMenuItem onClick={() => startEditing()}>
                     {t("editCta")}
                   </DropdownMenuItem>
-                  {isAdmin && (
-                    <DropdownMenuItem
-                      variant="destructive"
-                      onClick={() => setConfirmArchive(true)}
-                    >
-                      {tArchive("cta")}
-                    </DropdownMenuItem>
-                  )}
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => setConfirmArchive(true)}
+                  >
+                    {tArchive("cta")}
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
