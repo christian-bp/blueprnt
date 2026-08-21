@@ -1,0 +1,153 @@
+packages/backend/convex/assessment/anchorRoles.ts
+  s_58dd112dc09435::t_7c7a8f14913fe6 10,65,132
+apps/dashboard/content/docs/fi/members-and-roles.mdx
+  s_58dd112dc09435::t_4380c1f2e4c6d5 12-15,19-24
+apps/dashboard/content/docs/fi/archiving-roles.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 13
+apps/dashboard/content/docs/fi/evaluating-a-role.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 17
+apps/dashboard/content/docs/sv/archiving-roles.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 14
+apps/dashboard/content/docs/sv/evaluating-a-role.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 16,28-29
+apps/dashboard/components/model/working-conditions-decision.tsx
+  s_58dd112dc09435::t_da7209ccbbb00d 333,344,372-392
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_58dd112dc09435::t_c5eac7815a0562 210,255,270-272
+packages/backend/convex/evaluationModel/model.ts
+  s_58dd112dc09435::t_aae360d97b8d96 19,81
+  s_58dd112dc09435::t_2e756fbb5d1222 118
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_58dd112dc09435::t_03fea2b49eb96c 214-216,228-246,436,448-460,790,802-813
+packages/backend/convex/people/people.ts
+  s_58dd112dc09435::t_aae360d97b8d96 14,469
+packages/backend/convex/people/import.ts
+  s_58dd112dc09435::t_d3c5b344e4f7f1 29,486-488,732
+apps/dashboard/components/roles/role-profile-card.test.tsx
+  s_58dd112dc09435::t_c5eac7815a0562 82
+  s_58dd112dc09435::t_fd445ce8607f76 204-208,212-213
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_58dd112dc09435::t_9f770a243e6ac2 283-288
+apps/dashboard/lib/admin-surface.test.ts
+  s_58dd112dc09435::t_0644e6cb677ef6 1-82,87-105
+  s_58dd112dc09435::t_caec7b3984e8be 83-86
+apps/dashboard/components/model/method-panel.tsx
+  s_58dd112dc09435::t_b98fef2a95f38c 83,212,222-226,297,351,376-382
+  s_58dd112dc09435::t_656a43f8677c8f 383-384
+apps/dashboard/content/docs/da/members-and-roles.mdx
+  s_58dd112dc09435::t_4380c1f2e4c6d5 12-15,19-24
+apps/dashboard/content/docs/da/archiving-roles.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 14
+apps/dashboard/content/docs/nb/archiving-roles.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 14
+apps/dashboard/content/docs/sv/anchor-roles.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 22,36
+packages/backend/convex/lib/functions.ts
+  s_58dd112dc09435::t_9b0ccfee87ad25 126-130,141-142,152-156,158-159,182-184,188-204
+  s_58dd112dc09435::t_d61f1574481431 205
+packages/backend/convex/assessment/roles.ts
+  s_58dd112dc09435::t_7c7a8f14913fe6 21,543
+packages/backend/convex/people/erase.ts
+  s_58dd112dc09435::t_2e756fbb5d1222 20
+  s_58dd112dc09435::t_aae360d97b8d96 12,98
+  s_58dd112dc09435::t_7f7310851a2e93 94-97
+packages/backend/convex/evaluationModel/model.test.ts
+  s_58dd112dc09435::t_75cfbad4c35048 91-93,99-102
+packages/backend/convex/ai/suggest.test.ts
+  s_58dd112dc09435::t_94814feaf63e31 765,782-784,793-796,799-800,803
+packages/backend/convex/accounts/organization.test.ts
+  s_58dd112dc09435::t_970daaf8737c0a 183-204,206-211,213-216
+  s_58dd112dc09435::t_252506a854b243 205,212
+apps/dashboard/app/(app)/roles/[roleSlug]/page.tsx
+  s_58dd112dc09435::t_95e36370431efc 25
+apps/dashboard/content/docs/da/evaluating-a-role.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 16
+apps/dashboard/content/docs/nb/anchor-roles.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 22,37,41-45
+apps/dashboard/components/model/weighting-chapter.tsx
+  s_58dd112dc09435::t_338a8eaec950a3 398-405,453-457
+apps/dashboard/content/docs/nb/members-and-roles.mdx
+  s_58dd112dc09435::t_4380c1f2e4c6d5 12-15,19-24
+packages/backend/convex/ai/suggest.ts
+  s_58dd112dc09435::t_db9e0c34800047 552-556
+  s_58dd112dc09435::t_95d151e54b74d9 845-847
+  s_58dd112dc09435::t_37ef6577f9dea3 557-563
+  s_58dd112dc09435::t_7c7a8f14913fe6 31,71,124
+  s_58dd112dc09435::t_f38296ec13d2b4 811-813
+apps/dashboard/components/model/approval-card.tsx
+  s_58dd112dc09435::t_3beaa920ef5085 200-201,246
+apps/dashboard/components/model/approval-card.test.tsx
+  s_58dd112dc09435::t_7d39a4a8247adc 350-352,491,496-497
+  s_58dd112dc09435::t_24494e4258c2cb 367
+apps/dashboard/content/docs/da/anchor-roles.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 22,36
+packages/backend/convex/people/erase.test.ts
+  s_58dd112dc09435::t_2534e224f6b143 646-647,649,658-659,661-662
+  s_58dd112dc09435::t_903731c87c8cc7 469-473,479-482,485
+apps/dashboard/content/docs/en/members-and-roles.mdx
+  s_58dd112dc09435::t_4380c1f2e4c6d5 11-14,18-23
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_58dd112dc09435::t_9f770a243e6ac2 170,289-295
+apps/dashboard/content/docs/en/anchor-roles.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 7-17,21-27,34-36,42-43
+apps/dashboard/content/docs/en/archiving-roles.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 7-9,13-17,21-25
+apps/dashboard/content/docs/en/gdpr-and-erasure.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 14,21-25,30-36
+apps/dashboard/content/docs/sv/members-and-roles.mdx
+  s_58dd112dc09435::t_4380c1f2e4c6d5 12-15,19-24
+packages/backend/convex/evaluationModel/criteria.ts
+  s_58dd112dc09435::t_aae360d97b8d96 14,31,108,243,293
+packages/backend/convex/evaluationModel/method.ts
+  s_58dd112dc09435::t_aae360d97b8d96 6,86,166
+  s_58dd112dc09435::t_2e756fbb5d1222 216-217
+apps/dashboard/content/docs/nb/evaluating-a-role.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 16
+apps/dashboard/content/docs/sv/gdpr-and-erasure.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 14
+packages/backend/convex/evaluationModel/approval.ts
+  s_58dd112dc09435::t_aae360d97b8d96 18,328,408,473,511,637
+  s_58dd112dc09435::t_2e756fbb5d1222 210-211,562
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_46a66457ac300e 829-831,836-837
+packages/backend/convex/assessment/roles.test.ts
+  s_58dd112dc09435::t_903731c87c8cc7 661,676-681
+packages/backend/convex/ai/draft.test.ts
+  s_58dd112dc09435::t_7bb89d595a1e0f 564-574
+  s_58dd112dc09435::t_94814feaf63e31 546-548,576-581
+apps/dashboard/content/docs/en/evaluating-a-role.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 7-10,15-21,26-34,36-42,45-47,51-56
+apps/dashboard/content/docs/da/gdpr-and-erasure.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 14-15
+apps/dashboard/content/docs/fi/anchor-roles.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 23,38
+apps/dashboard/content/docs/fi/gdpr-and-erasure.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 15
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_a2549f45abe6f1 1211-1214,1218-1219,1226-1227
+apps/dashboard/content/docs/nb/gdpr-and-erasure.mdx
+  s_58dd112dc09435::t_89b5716acb5ff6 14
+packages/backend/convex/evaluationModel/approval.test.ts
+  s_58dd112dc09435::t_10e2d8ba75d85c 355-359,361,364-366,368-384,386-393,395-437,440-446,448-459,461-472
+  s_58dd112dc09435::t_71970c1075e38b 230-233,245-254,1207,1216-1227
+packages/backend/convex/evaluationModel/method.test.ts
+  s_58dd112dc09435::t_75cfbad4c35048 717-720,731-733,736-738,740-763
+apps/dashboard/components/model/method-panel.test.tsx
+  s_58dd112dc09435::t_24494e4258c2cb 447-450,459
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "61ca620dd01544ed6d620bc44f137f98f07a48b6",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
