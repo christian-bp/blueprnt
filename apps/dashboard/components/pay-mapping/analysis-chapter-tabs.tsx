@@ -1,12 +1,10 @@
 "use client"
 
-import NumberFlow from "@number-flow/react"
 import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import { ChapterTabs, chapterTabNumber } from "@/components/chapter-tabs"
 import {
   ANALYSIS_CHAPTERS,
-  type AnalysisChapter,
   chapterHref,
   currentChapter,
 } from "./analysis-chapters"
@@ -23,36 +21,11 @@ import {
 // The row itself is the shared ChapterTabs (its underline, overflow and
 // numbering are the same anatomy the model section's row draws); what stays
 // here is the analysis's own registry and its own wording.
-export function AnalysisChapterTabs({
-  chapters,
-}: {
-  // Each chapter's own done/total, in chapter order: the SAME array the spine
-  // above draws its segments from, passed down by the section shell rather
-  // than derived a second time here, so the tab and the segment above it can
-  // never disagree about the chapter they both describe. Absent while the run
-  // is still loading.
-  chapters?: readonly { key: AnalysisChapter; done: number; total: number }[]
-}) {
+export function AnalysisChapterTabs() {
   const t = useTranslations("dashboard.payMapping.review")
   const tAnalysis = useTranslations("dashboard.payMapping.analysis")
-  const tJourney = useTranslations("dashboard.payMapping.journey")
   const pathname = usePathname()
   const active = currentChapter(pathname)
-  const progressFor = new Map(
-    (chapters ?? []).map((chapter) => [chapter.key, chapter])
-  )
-  // The chapter's own figures, as the mapping's own message. Both numbers move
-  // while the reader works inside the chapter, so the message is tag-based and
-  // each carries NumberFlow rather than the pair swapping in place.
-  const countFor = (chapter: AnalysisChapter) => {
-    const progress = progressFor.get(chapter)
-    return progress === undefined
-      ? undefined
-      : tJourney.rich("countRich", {
-          done: () => <NumberFlow value={progress.done} />,
-          total: () => <NumberFlow value={progress.total} />,
-        })
-  }
 
   return (
     <ChapterTabs
@@ -79,7 +52,6 @@ export function AnalysisChapterTabs({
         }),
         href: chapterHref(pathname, chapter),
         current: active === chapter,
-        count: countFor(chapter),
       }))}
     />
   )

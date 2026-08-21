@@ -83,13 +83,14 @@ describe("ModelSectionShell", () => {
     const { container } = renderShell()
     const heading = screen.getByRole("heading", { level: 3 })
     const bar = screen.getByRole("progressbar", { name: m.progressBarLabel })
-    // Same row: the title's own box holds both.
-    expect(heading.closest("div")?.parentElement).toBe(bar.parentElement)
+    // Same row: the title's own box and the instrument's box are siblings.
+    const instrument = bar.parentElement as HTMLElement
+    expect(heading.closest("div")?.parentElement).toBe(instrument.parentElement)
     // The fixture leaves only the approval outstanding: 16 of 17 STEPS, so
     // 94%, not the 75% three closed chapters of four would read as.
     expect(bar.getAttribute("aria-valuenow")).toBe("94")
-    const tokens = bar.className.split(/\s+/)
-    expect(tokens).toContain("w-64")
+    const tokens = instrument.className.split(/\s+/)
+    expect(tokens).toContain("w-72")
     expect(tokens).toContain("shrink-0")
     // One segment per chapter, all the same width whatever each holds, with
     // the open one held up while the rest recede.

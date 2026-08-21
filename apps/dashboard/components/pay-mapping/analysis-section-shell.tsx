@@ -1,5 +1,6 @@
 "use client"
 
+import NumberFlow from "@number-flow/react"
 import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
@@ -32,12 +33,12 @@ import { usePayMappingRun } from "./pay-mapping-run-context"
 export function AnalysisSectionShell({ children }: { children: ReactNode }) {
   const t = useTranslations("dashboard.payMapping.analysis")
   const tHelp = useTranslations("dashboard.help")
+  const tJourney = useTranslations("dashboard.payMapping.journey")
   const pathname = usePathname()
   const { queue } = usePayMappingRun()
   const active = currentChapter(pathname)
-  // Derived ONCE and handed to both the instrument and the tab row, so a
-  // chapter's segment and its tab can never disagree about the chapter they
-  // both describe.
+  // Each chapter's own done/total, in chapter order, for the instrument's
+  // segments and the count under the open one.
   const chapters =
     queue === null
       ? undefined
@@ -65,15 +66,20 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
               activeSegment={active}
               barLabel={t("progressBarLabel")}
               done={queue?.progress.overall.done ?? 0}
+              renderCount={(segment) =>
+                tJourney.rich("countRich", {
+                  done: () => <NumberFlow value={segment.done} />,
+                  total: () => <NumberFlow value={segment.total} />,
+                })
+              }
               segments={chapters ?? []}
               total={queue?.progress.overall.total ?? 0}
             />
           }
         />
-        {/* The journey row: the tabs, the open chapter's own figures, and
-            this chapter's action. The figures are withheld while the run
-            loads, so a tab never shows a zero it is about to replace. */}
-        <AnalysisChapterTabs chapters={chapters} />
+        {/* The journey row: the tabs and this chapter's action. The open
+            chapter's figures sit under the instrument above. */}
+        <AnalysisChapterTabs />
         {children}
       </div>
     </ChapterActionSlotProvider>

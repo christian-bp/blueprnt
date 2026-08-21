@@ -22,6 +22,7 @@ function renderBar(
       barLabel="Overall progress"
       done={12}
       total={31}
+      renderCount={(segment) => `${segment.done} of ${segment.total}`}
       segments={CHAPTERS}
       {...overrides}
     />
@@ -63,21 +64,54 @@ describe("SegmentedProgress", () => {
   // a narrow viewport.
   it("holds a fixed compact width rather than filling its row", () => {
     const { container } = renderBar()
-    const bar = container.querySelector('[role="progressbar"]')
-    const tokens = (bar?.className ?? "").split(/\s+/)
-    expect(tokens).toContain("w-64")
+    const tokens = (container.firstElementChild?.className ?? "").split(/\s+/)
+    expect(tokens).toContain("w-72")
     expect(tokens).toContain("shrink-0")
     expect(tokens).not.toContain("w-full")
+  })
+
+  // The one annotation the instrument carries: the OPEN chapter's own pair,
+  // under its own segment, on a line that is always there.
+  it("counts the open chapter under its own segment", () => {
+    const { container } = renderBar({ activeSegment: "praxis" })
+    const countRow = container.querySelector(
+      '[aria-hidden="true"][class*="h-4"]'
+    )
+    // Reserved height, one slot per segment on the bar's own flex, so the
+    // figure sits beneath the part of the bar it describes.
+    expect(
+      [...(countRow?.children ?? [])].map(
+        (slot) => (slot as HTMLElement).style.flexGrow
+      )
+    ).toEqual(["1", "1", "1", "1"])
+    // Only the open chapter's slot is filled.
+    expect(
+      [...(countRow?.children ?? [])].map((slot) => slot.textContent)
+    ).toEqual(["", "4 of 4", "", ""])
+  })
+
+  // The line holds its height with no chapter open, so a figure sliding in
+  // never pushes the title row up or the journey row below it down.
+  it("reserves the count line whether or not a chapter is open", () => {
+    const { container } = renderBar()
+    const countRow = container.querySelector(
+      '[aria-hidden="true"][class*="h-4"]'
+    )
+    expect(countRow).not.toBeNull()
+    expect(countRow?.textContent).toBe("")
+    expect(countRow?.children).toHaveLength(4)
   })
 
   // Nothing annotates the instrument, in any direction: no name over a
   // segment, no figure under one, and nothing to hover. Everything it could
   // have said is said by the tab row under it, whose open tab prints that
   // chapter's own figures.
-  it("carries no text and nothing to interact with", () => {
+  // The segments themselves stay a shape: the only text the instrument holds
+  // is the count line under it, and nothing in it can be hovered or clicked.
+  it("keeps the bar itself textless and non-interactive", () => {
     const { container } = renderBar({ activeSegment: "praxis" })
-    expect(container.textContent).toBe("")
-    expect(container.querySelector('[aria-hidden="true"]')).toBeNull()
+    const bar = container.querySelector('[role="progressbar"]')
+    expect(bar?.textContent).toBe("")
     expect(container.querySelector('[data-slot="tooltip-trigger"]')).toBeNull()
     expect(container.querySelector("button")).toBeNull()
     expect(container.querySelector("a")).toBeNull()
@@ -166,6 +200,7 @@ describe("SegmentedProgress celebration", () => {
         barLabel="Overall progress"
         done={4}
         total={4}
+        renderCount={(segment) => `${segment.done} of ${segment.total}`}
         segments={oneSegment(4)}
         celebrateOnComplete
       />
@@ -204,6 +239,7 @@ describe("SegmentedProgress celebration", () => {
         barLabel="Overall progress"
         done={2}
         total={4}
+        renderCount={(segment) => `${segment.done} of ${segment.total}`}
         segments={[
           { key: "a", done: 2, total: 2 },
           { key: "b", done: 0, total: 2 },
@@ -220,6 +256,7 @@ describe("SegmentedProgress celebration", () => {
         barLabel="Overall progress"
         done={4}
         total={4}
+        renderCount={(segment) => `${segment.done} of ${segment.total}`}
         segments={[
           { key: "a", done: 2, total: 2 },
           { key: "b", done: 2, total: 2 },
@@ -245,6 +282,7 @@ describe("SegmentedProgress celebration", () => {
         barLabel="Overall progress"
         done={4}
         total={4}
+        renderCount={(segment) => `${segment.done} of ${segment.total}`}
         segments={oneSegment(4)}
       />
     )

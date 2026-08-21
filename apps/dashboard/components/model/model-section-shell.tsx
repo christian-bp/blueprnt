@@ -2,6 +2,7 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { useQuery } from "convex/react"
+import NumberFlow from "@number-flow/react"
 import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
@@ -44,14 +45,12 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
       ? { checks: [], approved: false }
       : { checks: data.checks, approved: data.approval !== null }
   const overall = modelProgress(input)
-  // Derived ONCE and handed to both the instrument and the tab row, so a
-  // chapter's segment and its tab can never disagree about the chapter they
-  // both describe.
+  // Each chapter's own done/total, in chapter order, for the instrument's
+  // segments and the count under the open one.
   const chapters = MODEL_CHAPTERS.map((chapter) => ({
     key: chapter,
     ...modelChapterProgress(input, chapter),
   }))
-  const loading = data === undefined
 
   return (
     // The chapter's own action renders inside the chapter, where its data is,
@@ -76,15 +75,20 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
               // analysis section does not opt in.
               celebrateOnComplete
               done={overall.done}
+              renderCount={(segment) =>
+                t.rich("countRich", {
+                  done: () => <NumberFlow value={segment.done} />,
+                  total: () => <NumberFlow value={segment.total} />,
+                })
+              }
               segments={chapters}
               total={overall.total}
             />
           }
         />
-        {/* The journey row: the tabs, the open chapter's own figures, and
-            this chapter's action. The figures are withheld while the query is
-            in flight, so a tab never shows a zero it is about to replace. */}
-        <ModelChapterTabs chapters={loading ? undefined : chapters} />
+        {/* The journey row: the tabs and this chapter's action. The open
+            chapter's figures sit under the instrument above. */}
+        <ModelChapterTabs />
         {children}
       </div>
     </ChapterActionSlotProvider>
