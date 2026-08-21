@@ -1,6 +1,6 @@
 # V1: live-omräkning av poäng/band utan modellversionering
 
-**Status:** accepted
+**Status:** accepted (kompletterad av ADR-0023, 2026-08-18: godkännandestatus och kartläggningsfrysning ovanpå den levande modellen; beslutet här består)
 
 I V1 har varje arbetsyta **en levande värderingsmodell** utan versioner. Poäng och band lagras inte, utan **härleds** från sparade betyg (0–5) + den aktuella modellen. När HR ändrar modellen (betydelser, kriterier, bandtrösklar) räknas alla rollers poäng/band om direkt. Valt för enkelhet, och passar Convex reaktiva modell väl.
 
