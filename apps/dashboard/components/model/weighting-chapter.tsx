@@ -17,14 +17,20 @@ import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation, useQuery } from "convex/react"
-import { AnimatePresence } from "motion/react"
+import { AnimatePresence, motion } from "motion/react"
 import Link from "next/link"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
-import { CHAPTER_ACTION_BUTTON_SIZE } from "@/components/model/chapter-status-alert"
+import {
+  CHAPTER_ACTION_BUTTON_SIZE,
+  ChapterFraming,
+} from "@/components/model/chapter-framing"
+import {
+  WeightBudgetPill,
+  WeightBudgetReadout,
+} from "@/components/model/weight-budget-pill"
 import { DimensionFrame } from "@/components/model/dimension-frame"
-import { WeightBudgetBar } from "@/components/model/weight-budget-bar"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
 import {
   WeightMotivationDialog,
@@ -35,6 +41,7 @@ import {
   WorkingConditionsColumnSkeleton,
   WorkingConditionsEmptyColumn,
 } from "@/components/model/working-conditions-empty-column"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { MorphPopover } from "@/components/morph-popover"
 import { useOrganization } from "@/components/org-context"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
@@ -57,11 +64,6 @@ interface MotivationNote {
   target: WeightMotivationTarget
 }
 
-// A figure standing inside a line of prose: it sits in the text flow rather
-// than opening a block of its own, and is sized to the one or two digits it
-// stands in for.
-const NUMBER_BAR_CLASS = "inline-block h-3 w-5 align-middle"
-
 // How many placeholder cards a dimension's column stands up while the model
 // loads: two, or the dimension's own cap where that is lower, so the fourth
 // column never promises a second criterion the model may not hold one of.
@@ -82,6 +84,7 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
   const tAi = useTranslations("dashboard.ai")
+  const tHelp = useTranslations("dashboard.help")
   const locale = useLocale()
   const format = useFormatter()
   // Writing a motivation is an adminMutation, like saving the weighting itself.
@@ -182,62 +185,49 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
 
   return (
     <div className="space-y-4">
-      {/* The budget and the one save, at the top: the allocation is a sum
-          over every dimension, so the figure that says whether it adds up
-          belongs where the reader starts rather than under a list they have to
-          reach the end of. */}
-      <WeightBudgetBar
-        readout={
-          // Both figures move while the reader watches (a weight click changes
-          // the sum, removing a criterion changes the budget), so they roll
-          // rather than swap. Tagged inside the message rather than
-          // concatenated around it: the connective and the unit are the
-          // translator's.
-          t.rich("budgetAllocated", {
-            allocated: () => <NumberFlow value={totalPoints} />,
-            budget: () => <NumberFlow value={budget} />,
-          })
-        }
-        balanced={balanced}
-        status={
-          criteria.length === 0
-            ? t("budgetEmpty")
-            : balanced
-              ? t("balanced")
-              : delta < 0
-                ? t("pointsLeft", { count: -delta })
-                : t("pointsOver", { count: delta })
-        }
-        reviewOffered={showReview}
-        review={
-          <MorphPopover
-            triggerLabel={tAi("openReviewCta")}
-            triggerIcon={AiEditingIcon}
-            triggerSize={CHAPTER_ACTION_BUTTON_SIZE}
-            anchor="left"
-            title={tAi("heading")}
-            description={tAi("provenance")}
-            closeLabel={tAi("closeLabel")}
-          >
-            {(close) => (
-              <WeightReviewPanel
-                orgId={orgId}
-                model={model}
-                autoRequest
-                onDone={close}
-              />
-            )}
-          </MorphPopover>
+      {/* The chapter's only chrome above the grid, so its columns begin at the
+          same height as every other chapter's and switching tabs holds them
+          still. The weighting concept's help rides it, next to the sentence
+          that frames the chapter, because the block it used to sit on is gone
+          and help never floats. */}
+      <ChapterFraming
+        chapter="weighting"
+        help={
+          <HelpMorphButton label={tHelp("weightingLabel")}>
+            {tHelp("weightingBody")}
+          </HelpMorphButton>
         }
         action={
-          <Button
-            type="button"
-            size={CHAPTER_ACTION_BUTTON_SIZE}
-            disabled={saving || !balanced || !dirty}
-            onClick={onSave}
+          // The trigger's slot is reserved whether or not the review is on
+          // offer, and only its CONTENT hides: mounting it would change the
+          // row's width, and at a width where the row wraps, its height.
+          // `invisible` is what hides it: visibility:hidden keeps the box
+          // while taking the trigger out of the tab order and out of the
+          // accessibility tree, so a hidden control can be neither reached nor
+          // announced.
+          <span
+            className={cn("flex", !showReview && "invisible")}
+            aria-hidden={!showReview}
           >
-            {t("saveCta")}
-          </Button>
+            <MorphPopover
+              triggerLabel={tAi("openReviewCta")}
+              triggerIcon={AiEditingIcon}
+              triggerSize={CHAPTER_ACTION_BUTTON_SIZE}
+              anchor="right"
+              title={tAi("heading")}
+              description={tAi("provenance")}
+              closeLabel={tAi("closeLabel")}
+            >
+              {(close) => (
+                <WeightReviewPanel
+                  orgId={orgId}
+                  model={model}
+                  autoRequest
+                  onDone={close}
+                />
+              )}
+            </MorphPopover>
+          </span>
         }
       />
       {criteria.length === 0 ? (
@@ -401,10 +391,10 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
                     motivation changes the tone and the wording without moving
                     the cards under it. */}
                   {notes.map((note) => (
-                    // Not a live region: it describes the SAVED allocation, so it
-                    // never changes under the reader's own hands the way the
-                    // budget bar above does, and more polite regions on one
-                    // chapter only make the first one harder to hear.
+                    // Not a live region: it describes the SAVED allocation, so
+                    // it never changes under the reader's own hands the way the
+                    // budget pill does, and more polite regions on one chapter
+                    // only make the first one harder to hear.
                     <div
                       key={note.id}
                       className={cn(
@@ -483,63 +473,98 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
           onClose={() => setMotivating(null)}
         />
       )}
+      {/* The budget, floating clear of the grid. It renders only with
+          something to say (the allocation does not add up) or something to do
+          (it adds up and is unsaved); an allocation that adds up and is saved
+          is this chapter's steady state, and it says nothing. */}
+      <WeightBudgetPill
+        // Under budget is the ordinary way through this chapter, over budget
+        // is a state the model cannot be saved from, and an allocation that
+        // adds up is done: three different things to say, in the status
+        // block's own three tones.
+        tone={balanced ? "ready" : delta < 0 ? "info" : "warning"}
+      >
+        {!balanced ? (
+          // The sentence stays whole: its figure is inside an ICU plural, and
+          // splitting a plural around a component to roll one digit is exactly
+          // the i18n boundary the house rules draw. The readout below, whose
+          // figures ARE tagged, is where the numbers roll.
+          <WeightBudgetReadout>
+            {delta < 0
+              ? t("pointsLeft", { count: -delta })
+              : t("pointsOver", { count: delta })}
+          </WeightBudgetReadout>
+        ) : dirty ? (
+          <>
+            <WeightBudgetReadout>
+              {/* Both figures move while the reader watches (a weight click
+                  changes the sum, removing a criterion changes the budget), so
+                  they roll rather than swap. Tagged inside the message rather
+                  than concatenated around it: the connective and the unit are
+                  the translator's. */}
+              {t.rich("budgetAllocated", {
+                allocated: () => <NumberFlow value={totalPoints} />,
+                budget: () => <NumberFlow value={budget} />,
+              })}
+            </WeightBudgetReadout>
+            {/* A direct child of the pill's layout animation, so Motion
+                counter-transforms its label instead of stretching it while
+                the box springs to the new width (ui-animation.md rule 1).
+                The primary variant is the action colour: it is the one thing
+                in the pill the reader is meant to press. */}
+            <motion.span layout="position" className="flex shrink-0">
+              <Button
+                type="button"
+                disabled={saving || !balanced || !dirty}
+                onClick={onSave}
+              >
+                {t("saveCta")}
+              </Button>
+            </motion.span>
+          </>
+        ) : null}
+      </WeightBudgetPill>
     </div>
   )
 }
 
-// The chapter's loading state: the real budget bar over a placeholder column,
-// so the bar (which the columns scroll under) measures identically in both
-// states. How many criteria there are and which dimensions hold them is
-// entirely the data, so the list above is bars.
+// The chapter's loading state: the real framing row over placeholder columns,
+// so the row the grid begins under measures identically in both states. How
+// many criteria there are and which dimensions hold them is entirely the data,
+// so the columns are bars. No budget pill: what it would say is exactly what
+// is still loading, and it says nothing until it has something to say.
 function WeightingChapterSkeleton() {
-  const t = useTranslations("dashboard.model.weighting")
   const tAi = useTranslations("dashboard.ai")
+  const tHelp = useTranslations("dashboard.help")
   return (
     <div className="space-y-4">
-      <WeightBudgetBar
-        readout={
-          // The sentence is static i18n text and renders for real; only the two
-          // figures are unknown, so only they are bars, sized to the one or two
-          // digits they stand in for.
-          t.rich("budgetAllocated", {
-            allocated: () => <Skeleton className={NUMBER_BAR_CLASS} />,
-            budget: () => <Skeleton className={NUMBER_BAR_CLASS} />,
-          })
-        }
-        // Nothing is out of balance until the data says so, so the block
-        // opens in its neutral state rather than flashing a warning tint.
-        balanced={true}
-        status={
-          // Which of the four sentences is true is entirely the data.
-          <Skeleton className="h-3 w-52 max-w-full" />
-        }
-        // Whether the review is on offer needs the model and the review lock,
-        // so the slot stays reserved and empty, exactly as it does whenever the
-        // loaded bar has nothing to offer.
-        reviewOffered={false}
-        review={
-          <Button
-            type="button"
-            variant="outline"
-            size={CHAPTER_ACTION_BUTTON_SIZE}
-            tabIndex={-1}
-            className="pointer-events-none"
-          >
-            <HugeiconsIcon
-              icon={AiEditingIcon}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
-            {tAi("openReviewCta")}
-          </Button>
+      <ChapterFraming
+        chapter="weighting"
+        help={
+          <HelpMorphButton label={tHelp("weightingLabel")}>
+            {tHelp("weightingBody")}
+          </HelpMorphButton>
         }
         action={
-          // The real save button, disabled: that is the truthful state, not a
-          // loading effect. The loaded bar opens clean (nothing edited), where
-          // the save is disabled too.
-          <Button type="button" size={CHAPTER_ACTION_BUTTON_SIZE} disabled>
-            {t("saveCta")}
-          </Button>
+          // Whether the review is on offer needs the model and the review
+          // lock, so the slot stays reserved and its content hidden, exactly
+          // as it does whenever the loaded row has nothing to offer.
+          <span className="invisible flex" aria-hidden="true">
+            <Button
+              type="button"
+              variant="outline"
+              size={CHAPTER_ACTION_BUTTON_SIZE}
+              tabIndex={-1}
+              className="pointer-events-none"
+            >
+              <HugeiconsIcon
+                icon={AiEditingIcon}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+              {tAi("openReviewCta")}
+            </Button>
+          </span>
         }
       />
       {/* Four columns, one per dimension: the fourth always draws (it explains

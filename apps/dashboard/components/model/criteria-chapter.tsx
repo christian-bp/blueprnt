@@ -23,6 +23,7 @@ import { useState } from "react"
 import { HATCH_CLASS } from "@/components/hatch"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
+import { ChapterFraming } from "@/components/model/chapter-framing"
 import { DimensionColumn } from "@/components/model/dimension-column"
 import { DimensionFrame } from "@/components/model/dimension-frame"
 import { LibraryPickerDialog } from "@/components/model/library-picker-dialog"
@@ -119,69 +120,85 @@ export function CriteriaChapter({ orgId }: { orgId: string }) {
   const slotOpen = decision?.status === "active"
 
   return (
-    <div className={CHAPTER_GRID_CLASS}>
-      {model.dimensions.map((dimension) => {
-        const placed = model.criteria.filter(
-          (criterion) => criterion.dimensionKey === dimension.key
-        )
-        const isWorkingConditions = dimension.key === "workingConditions"
-        const room =
-          hasRoom(dimension.key) && (!isWorkingConditions || slotOpen)
-        return (
-          <DimensionColumn
-            key={dimension.key}
-            title={dimension.name}
-            helpBody={tHelp(DIMENSION_HELP_BODY[dimension.key])}
-            count={placed.length}
-            max={DIMENSION_MAX_ACTIVE[dimension.key]}
-            full={!room}
-            // The hatch IS the empty slot, so it appears exactly when the slot
-            // does: under an active decision with nothing chosen yet. Before
-            // any answer the question stands in its place, and after "not
-            // material" the documented decision does.
-            explained={isWorkingConditions && !slotOpen}
-            // The decision rides in the column it is about, in every one of
-            // its states: the question while nothing is recorded, and the
-            // decision once something is. The other three dimensions carry no
-            // decision at all.
-            note={
-              isWorkingConditions ? (
-                <WorkingConditionsDecision
-                  orgId={orgId}
-                  decision={decision}
-                  // The dimension caps at one, so the first placed criterion
-                  // is the criterion: the decision block needs it by name and
-                  // by id, because answering "not material" is an offer to
-                  // remove it rather than an instruction to go and do it.
-                  criterion={placed[0] ?? null}
-                />
-              ) : undefined
-            }
-            action={
-              room ? (
-                <LibraryPickerDialog
-                  orgId={orgId}
-                  dimensionKey={dimension.key}
-                  dimensionName={dimension.name}
-                  selected={selected}
-                  recommendedKeys={recommendedKeys}
-                />
-              ) : undefined
-            }
-          >
-            {placed.length === 0
-              ? undefined
-              : placed.map((criterion) => (
-                  <PlacedCriterionCard
-                    key={criterion.criterionId}
-                    criterion={criterion}
-                    removing={removing === criterion.criterionId}
-                    onRemove={() => onRemove(criterion.criterionId)}
+    <div className="space-y-4">
+      {/* The chapter's only chrome above the grid, so its columns begin at the
+          same height as every other chapter's and switching tabs holds them
+          still. This chapter offers no action of its own (adding a criterion
+          is a column's work, not the chapter's), and the row keeps the slot's
+          height anyway so the grid does not sit higher here than next door. */}
+      <ChapterFraming
+        chapter="criteria"
+        help={
+          // The chapter that introduces the term explains it, once.
+          <HelpMorphButton label={tHelp("criterionLabel")}>
+            {tHelp("criterionBody")}
+          </HelpMorphButton>
+        }
+      />
+      <div className={CHAPTER_GRID_CLASS}>
+        {model.dimensions.map((dimension) => {
+          const placed = model.criteria.filter(
+            (criterion) => criterion.dimensionKey === dimension.key
+          )
+          const isWorkingConditions = dimension.key === "workingConditions"
+          const room =
+            hasRoom(dimension.key) && (!isWorkingConditions || slotOpen)
+          return (
+            <DimensionColumn
+              key={dimension.key}
+              title={dimension.name}
+              helpBody={tHelp(DIMENSION_HELP_BODY[dimension.key])}
+              count={placed.length}
+              max={DIMENSION_MAX_ACTIVE[dimension.key]}
+              full={!room}
+              // The hatch IS the empty slot, so it appears exactly when the slot
+              // does: under an active decision with nothing chosen yet. Before
+              // any answer the question stands in its place, and after "not
+              // material" the documented decision does.
+              explained={isWorkingConditions && !slotOpen}
+              // The decision rides in the column it is about, in every one of
+              // its states: the question while nothing is recorded, and the
+              // decision once something is. The other three dimensions carry no
+              // decision at all.
+              note={
+                isWorkingConditions ? (
+                  <WorkingConditionsDecision
+                    orgId={orgId}
+                    decision={decision}
+                    // The dimension caps at one, so the first placed criterion
+                    // is the criterion: the decision block needs it by name and
+                    // by id, because answering "not material" is an offer to
+                    // remove it rather than an instruction to go and do it.
+                    criterion={placed[0] ?? null}
                   />
-                ))}
-          </DimensionColumn>
-        )
-      })}
+                ) : undefined
+              }
+              action={
+                room ? (
+                  <LibraryPickerDialog
+                    orgId={orgId}
+                    dimensionKey={dimension.key}
+                    dimensionName={dimension.name}
+                    selected={selected}
+                    recommendedKeys={recommendedKeys}
+                  />
+                ) : undefined
+              }
+            >
+              {placed.length === 0
+                ? undefined
+                : placed.map((criterion) => (
+                    <PlacedCriterionCard
+                      key={criterion.criterionId}
+                      criterion={criterion}
+                      removing={removing === criterion.criterionId}
+                      onRemove={() => onRemove(criterion.criterionId)}
+                    />
+                  ))}
+            </DimensionColumn>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -254,14 +271,26 @@ function CriteriaChapterSkeleton() {
   const tHelp = useTranslations("dashboard.help")
   const content = criteriaLibraryContent(locale)
   return (
-    <div className={CHAPTER_GRID_CLASS}>
-      {DIMENSION_KEYS.map((key) => (
-        <ColumnSkeleton
-          key={key}
-          title={content.dimensions[key].name}
-          helpBody={tHelp(DIMENSION_HELP_BODY[key])}
-        />
-      ))}
+    <div className="space-y-4">
+      {/* Chapter chrome, not data: it renders in full while the model loads,
+          so the columns below never move when it lands. */}
+      <ChapterFraming
+        chapter="criteria"
+        help={
+          <HelpMorphButton label={tHelp("criterionLabel")}>
+            {tHelp("criterionBody")}
+          </HelpMorphButton>
+        }
+      />
+      <div className={CHAPTER_GRID_CLASS}>
+        {DIMENSION_KEYS.map((key) => (
+          <ColumnSkeleton
+            key={key}
+            title={content.dimensions[key].name}
+            helpBody={tHelp(DIMENSION_HELP_BODY[key])}
+          />
+        ))}
+      </div>
     </div>
   )
 }

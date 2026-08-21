@@ -1874,8 +1874,6 @@
       },
       "weighting": {
         "budgetAllocated": "<allocated></allocated> af <budget></budget> vægtpoint fordelt",
-        "budgetEmpty": "Tilføj kriterier for at begynde at fordele vægtpoint.",
-        "balanced": "Alle vægtpoint er fordelt",
         "pointsLeft": "{count} vægtpoint tilbage at fordele",
         "pointsOver": "{count} vægtpoint over budgettet",
         "saveCta": "Gem vægtning",
@@ -1912,8 +1910,7 @@
         "cancel": "Annuller"
       },
       "method": {
-        "documented": "{documented}/{total} dokumenteret",
-        "approved": "{approved}/{total} godkendt",
+        "approved": "{approved} af {total} godkendte",
         "empty": "Ingen kriterier endnu. <link>Vælg dem i kapitlet Kriterier</link>, hvert af dem dokumenteres og godkendes her.",
         "status": {
           "notStarted": "Ikke startet",

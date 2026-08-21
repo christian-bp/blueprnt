@@ -1,8 +1,6 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { HelpMorphButton } from "@/components/help-morph-button"
-import { ChapterFraming } from "@/components/model/chapter-framing"
 import { MethodPanel } from "@/components/model/method-panel"
 import { useOrganization } from "@/components/org-context"
 import { usePageTitle } from "@/hooks/use-page-title"
@@ -15,22 +13,6 @@ import { usePageTitle } from "@/hooks/use-page-title"
 export default function ModelMethodChapterPage() {
   const { orgId } = useOrganization()
   const tChapters = useTranslations("dashboard.model.chapters")
-  const tHelp = useTranslations("dashboard.help")
   usePageTitle(tChapters("method"))
-  return (
-    <div className="space-y-4">
-      <ChapterFraming
-        chapter="method"
-        help={
-          <HelpMorphButton label={tHelp("methodAppendixLabel")}>
-            {tHelp("methodAppendixBody")}
-          </HelpMorphButton>
-        }
-      />
-      {/* No reading cap, unlike the Godkännande chapter next door: this
-          chapter is a grid of dimension columns like its other two
-          neighbours, and a column is already a readable measure. */}
-      <MethodPanel orgId={orgId} />
-    </div>
-  )
+  return <MethodPanel orgId={orgId} />
 }

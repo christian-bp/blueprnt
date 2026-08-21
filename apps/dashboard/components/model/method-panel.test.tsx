@@ -145,6 +145,17 @@ const STAFFED_MODEL = {
   ],
 }
 
+// The same model with every competence criterion signed off, which is what
+// fills a column's chip in.
+const APPROVED_MODEL = {
+  ...METHOD_MODEL,
+  criteria: METHOD_MODEL.criteria.map((criterion) =>
+    criterion.dimensionKey === "competence"
+      ? { ...criterion, status: "approved" }
+      : criterion
+  ),
+}
+
 // The model as a brand-new org has it: a model exists, nothing is chosen for
 // it yet. Reachable in the app, because choosing the criteria is the chapter
 // before this one.
@@ -159,6 +170,7 @@ let loading = false
 let empty = false
 // The recorded materiality decision, and whether the model holds a
 // working-conditions criterion: the fourth column's two inputs.
+let approvedAll = false
 let materiality: { status: "active" | "testedNotMaterial" } | null = null
 let checksLoading = false
 let staffed = false
@@ -195,6 +207,16 @@ function renderPanel(orgId = "org1") {
 const gridOf = (container: HTMLElement) =>
   container.querySelector("section")?.parentElement
 
+// A dimension column's own count chip, and the words it carries.
+const chipIn = (name: string) =>
+  screen
+    .getByRole("heading", { name })
+    .parentElement?.querySelector('[data-slot="badge"]')
+const chipText = (approved: number, total: number) =>
+  m.approved
+    .replace("{approved}", String(approved))
+    .replace("{total}", String(total))
+
 // The column a dimension's name titles, with its cards inside it.
 function column(name: string) {
   const heading = screen.getByRole("heading", { name })
@@ -212,10 +234,12 @@ describe("MethodPanel", () => {
     materiality = null
     checksLoading = false
     staffed = false
+    approvedAll = false
     onQuery((ref) => {
       if (ref === "evaluationModel.method.getMethodModel") {
         if (loading) return undefined
         if (empty) return EMPTY_MODEL
+        if (approvedAll) return APPROVED_MODEL
         return staffed ? STAFFED_MODEL : METHOD_MODEL
       }
       if (ref === "evaluationModel.approval.getMethodChecks") {
@@ -230,10 +254,58 @@ describe("MethodPanel", () => {
     cleanup()
   })
 
-  it("shows the documentation progress", () => {
+  // The progress that used to stand in a block of its own above the grid is in
+  // the columns now, one count per dimension, where the criteria it counts
+  // are. Nothing stands between the framing row and the grid.
+  it("counts each dimension's approved criteria in its own heading chip", () => {
     renderPanel()
-    expect(screen.getByText(/2\/3 documented/)).toBeDefined()
-    expect(screen.getByText(/1\/3 approved/)).toBeDefined()
+    // Competence holds two, one of them approved; responsibility holds one,
+    // documented but not signed off.
+    expect(chipIn(library.dimensions.competence.name)?.textContent).toBe(
+      chipText(1, 2)
+    )
+    expect(chipIn(library.dimensions.responsibility.name)?.textContent).toBe(
+      chipText(0, 1)
+    )
+  })
+
+  // APPROVED, not merely documented: it is the count the spine's own method
+  // segment moves on, so a chip cannot run ahead of the bar above it.
+  it("counts approvals, not filled-in forms", () => {
+    renderPanel()
+    // c3 is "documented" and c2 "approved": a chip counting documentation
+    // would read 1 of 1 on responsibility.
+    expect(
+      chipIn(library.dimensions.responsibility.name)?.textContent
+    ).not.toBe(chipText(1, 1))
+  })
+
+  // A finished column fills its chip in, the way the Kriterier column's does
+  // when its dimension is full: there is nothing left to ask for there.
+  it("fills the chip in once every criterion in the dimension is approved", () => {
+    renderPanel()
+    expect(
+      chipIn(library.dimensions.competence.name)?.getAttribute("data-slot")
+    ).toBe("badge")
+    cleanup()
+    approvedAll = true
+    renderPanel()
+    const chip = chipIn(library.dimensions.competence.name)
+    expect(chip?.textContent).toBe(chipText(2, 2))
+    expect(chip?.className).toContain("bg-secondary")
+  })
+
+  // The aggregate block is gone: its counts said the same thing four column
+  // chips now say, in a block that pushed this chapter's grid below the other
+  // chapters' and made switching tabs a jump.
+  it("stands no block between the framing row and the grid", () => {
+    const { container } = renderPanel()
+    const root = container.firstElementChild as HTMLElement
+    expect(root.children[0]?.textContent).toContain(
+      messages.dashboard.model.chapters.framing.method
+    )
+    expect(root.children[1]?.className).toContain("sm:grid-cols-2")
+    expect(screen.queryByRole("status")).toBeNull()
   })
 
   // The same dimension columns the Kriterier and Viktning chapters draw, on the
@@ -272,12 +344,15 @@ describe("MethodPanel", () => {
       expect(container.querySelector("section")).toBeNull()
     })
 
-    // The status block stays: 0/0 is an honest reading of this state, and it
-    // is where the appendix export lives.
-    it("keeps the status block above it", () => {
+    // The framing row stays: it is the chapter's own sentence, and it is where
+    // the appendix export lives. No column chips, because there are no
+    // columns.
+    it("keeps the framing row above it", () => {
       renderPanel()
-      expect(screen.getByText(/0\/0 documented/)).toBeDefined()
-      expect(screen.getByText(/0\/0 approved/)).toBeDefined()
+      expect(
+        screen.getByText(messages.dashboard.model.chapters.framing.method)
+      ).toBeDefined()
+      expect(screen.queryByRole("heading")).toBeNull()
     })
   })
 
@@ -367,7 +442,9 @@ describe("MethodPanel", () => {
     expect(screen.getByText("Scope")).toBeDefined()
     expect(screen.getByText("Risk")).toBeDefined()
     expect(screen.getByText(m.status.approved)).toBeDefined()
-    expect(screen.getByText(/2\/3 documented/)).toBeDefined()
+    expect(chipIn(library.dimensions.competence.name)?.textContent).toBe(
+      chipText(1, 2)
+    )
     // The only entry point to the write dialog is gone, and so is the dialog.
     expect(screen.queryByRole("button", { name: m.openCta })).toBeNull()
     expect(screen.queryByRole("dialog")).toBeNull()

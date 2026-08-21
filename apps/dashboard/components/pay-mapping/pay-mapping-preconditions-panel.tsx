@@ -28,7 +28,7 @@ export interface PreconditionRole {
 // block on drift, so ready is usually reached first) render the identical
 // wording and styling instead of two copies that could drift apart
 // themselves. Alert has no warning variant; the amber tint is the
-// established call-site override (see chapter-status-alert.tsx,
+// established call-site override (see lib/alert-tone.ts,
 // people/import/review-step.tsx).
 export function PayMappingDriftWarning({ count }: { count: number }) {
   const t = useTranslations("dashboard.payMapping.preconditions")

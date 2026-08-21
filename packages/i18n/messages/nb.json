@@ -1874,8 +1874,6 @@
       },
       "weighting": {
         "budgetAllocated": "<allocated></allocated> av <budget></budget> vektpoeng fordelt",
-        "budgetEmpty": "Legg til kriterier for å begynne å fordele vektpoeng.",
-        "balanced": "Alle vektpoeng er fordelt",
         "pointsLeft": "{count} vektpoeng igjen å fordele",
         "pointsOver": "{count} vektpoeng over budsjettet",
         "saveCta": "Lagre vekting",
@@ -1912,8 +1910,7 @@
         "cancel": "Avbryt"
       },
       "method": {
-        "documented": "{documented}/{total} dokumentert",
-        "approved": "{approved}/{total} godkjent",
+        "approved": "{approved} av {total} godkjente",
         "empty": "Ingen kriterier ennå. <link>Velg dem i kapittelet Kriterier</link>, hvert av dem dokumenteres og godkjennes her.",
         "status": {
           "notStarted": "Ikke startet",

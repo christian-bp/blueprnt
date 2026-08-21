@@ -1874,8 +1874,6 @@
       },
       "weighting": {
         "budgetAllocated": "<allocated></allocated>/<budget></budget> painopistettä jaettu",
-        "budgetEmpty": "Lisää kriteerejä aloittaaksesi painopisteiden jakamisen.",
-        "balanced": "Kaikki painopisteet on jaettu",
         "pointsLeft": "{count, plural, one {# painopiste} other {# painopistettä}} jaettavana",
         "pointsOver": "{count, plural, one {# painopiste} other {# painopistettä}} yli budjetin",
         "saveCta": "Tallenna painotus",
@@ -1912,7 +1910,6 @@
         "cancel": "Peruuta"
       },
       "method": {
-        "documented": "{documented}/{total} dokumentoitu",
         "approved": "{approved}/{total} hyväksytty",
         "empty": "Ei vielä kriteerejä. <link>Valitse ne Kriteerit-luvussa</link>; kukin dokumentoidaan ja hyväksytään täällä.",
         "status": {

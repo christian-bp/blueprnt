@@ -28,7 +28,12 @@ vi.mock("@/components/pdf/method-appendix", () => ({
   MethodAppendix: () => null,
 }))
 
-import { CHAPTER_ACTION_BUTTON_SIZE } from "@/components/model/chapter-status-alert"
+import {
+  CHAPTER_ACTION_BUTTON_SIZE,
+  ChapterFraming,
+} from "@/components/model/chapter-framing"
+import { CriteriaChapter } from "@/components/model/criteria-chapter"
+import { MethodPanel } from "@/components/model/method-panel"
 import { WeightingChapter } from "@/components/model/weighting-chapter"
 import { MethodAppendixDownload } from "@/components/pdf/method-appendix-download"
 import { onQuery } from "@/test/convex-mocks"
@@ -68,6 +73,36 @@ const MODEL = {
   zoneProfileRules: [],
 }
 
+// The same one criterion, as the Metod chapter's own query serves it.
+const METHOD_MODEL = {
+  modelName: "Standard",
+  pointBudget: 3,
+  criteria: [
+    {
+      criterionId: "c1",
+      libraryKey: "complexity-ambiguity",
+      dimensionKey: "effort",
+      name: "Complexity and ambiguity",
+      description: "",
+      weightPoints: 3,
+      share: 100,
+      order: 1,
+      purpose: null,
+      whyRelevant: null,
+      overlapNotes: null,
+      biasRisk: null,
+      biasComment: null,
+      biasAction: null,
+      status: "notStarted",
+      decidedByName: null,
+      decidedAt: null,
+    },
+  ],
+  levelRules: [],
+  progress: { documented: 0, approved: 0, total: 1 },
+  modelApproved: false,
+}
+
 function wrap(node: React.ReactNode) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
@@ -82,21 +117,24 @@ function wrap(node: React.ReactNode) {
 const heightOf = (button: Element) =>
   button.className.split(/\s+/).find((token) => /^h-\d+$/.test(token))
 
-describe("the chapter status block's actions", () => {
+describe("the chapter framing row", () => {
   beforeEach(() => {
     onQuery((ref) => {
       if (ref === "evaluationModel.model.getModel") return MODEL
-      if (ref === "evaluationModel.method.getMethodModel") return null
+      if (ref === "evaluationModel.method.getMethodModel") return METHOD_MODEL
       if (ref === "evaluationModel.approval.getMethodChecks") return null
+      if (ref === "accounts.organization.getOrganizationSettings") {
+        return { industry: null }
+      }
       if (ref === "ai.suggest.getWeightReviewLock") return false
       return undefined
     })
   })
   afterEach(cleanup)
 
-  // One size across the section: the blocks sit at the same place on four
-  // chapters, and a reader moving between them should not meet a row of
-  // controls that changes height as they go.
+  // One size across the section: the rows sit at the same place on four
+  // chapters, and a reader moving between them should not meet a control that
+  // changes height as they go.
   it("is the design system's default size, not a hand-picked one", () => {
     const { container } = wrap(
       <>
@@ -118,22 +156,18 @@ describe("the chapter status block's actions", () => {
     )
   })
 
-  // Viktning's own actions (the AI review trigger and the save) had drifted to
-  // `sm` while Metod's export stayed at the default. Both chapters are read
-  // here, from their real render, because a constant nothing points at is a
-  // constant a new chapter can quietly ignore.
-  it("gives every chapter's status-block action the same size", () => {
+  // Both chapters are read here, from their real render, because a constant
+  // nothing points at is a constant a new chapter can quietly ignore.
+  it("gives every chapter's framing-row action the same size", () => {
     const { container: reference } = wrap(<Button>Reference</Button>)
     const expected = heightOf(reference.querySelector("button") as Element)
 
     const { container: weighting } = wrap(<WeightingChapter orgId="org-1" />)
     const weightingActions = [
-      ...weighting.querySelectorAll(
-        '[data-slot="chapter-status-actions"] button'
-      ),
+      ...weighting.querySelectorAll('[data-slot="chapter-action"] button'),
     ]
-    // The review trigger and the save, both of them.
-    expect(weightingActions).toHaveLength(2)
+    // The AI review trigger, which is this chapter's framing-row action.
+    expect(weightingActions).toHaveLength(1)
     for (const action of weightingActions) {
       expect(heightOf(action)).toBe(expected)
     }
@@ -142,5 +176,38 @@ describe("the chapter status block's actions", () => {
     expect(
       heightOf(screen.getByRole("button", { name: method.downloadPdf }))
     ).toBe(expected)
+  })
+
+  // The whole point of the row: every chapter's grid begins directly under it,
+  // so switching tabs holds the columns still. Anything between the two (the
+  // budget block, the documentation counts) moved one chapter's grid down and
+  // made the switch a jump; the counts live in the columns now and the budget
+  // floats.
+  it("stands nothing between itself and the chapter's grid", () => {
+    const chapters = [
+      { chapter: "criteria", node: <CriteriaChapter orgId="org-1" /> },
+      { chapter: "weighting", node: <WeightingChapter orgId="org-1" /> },
+      { chapter: "method", node: <MethodPanel orgId="org-1" /> },
+    ] as const
+    for (const { chapter, node } of chapters) {
+      const { container } = wrap(node)
+      const root = container.firstElementChild as HTMLElement
+      // First the row, with this chapter's own sentence in it.
+      expect(root.children[0]?.textContent).toContain(
+        messages.dashboard.model.chapters.framing[chapter]
+      )
+      // Then the grid. Nothing in between.
+      expect(root.children[1]?.className).toContain("sm:grid-cols-2")
+      cleanup()
+    }
+  })
+
+  // The row keeps the action slot's height even where a chapter offers none,
+  // so Kriterier's grid does not sit a control higher than the other two.
+  it("keeps its height on a chapter with no action", () => {
+    const { container } = wrap(<ChapterFraming chapter="criteria" />)
+    const row = container.firstElementChild as HTMLElement
+    expect(row.className.split(/\s+/)).toContain("min-h-9")
+    expect(row.querySelector('[data-slot="chapter-action"]')).toBeNull()
   })
 })

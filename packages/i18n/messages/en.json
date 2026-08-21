@@ -1874,8 +1874,6 @@
       },
       "weighting": {
         "budgetAllocated": "<allocated></allocated> of <budget></budget> weight points allocated",
-        "budgetEmpty": "Add criteria to start allocating weight points.",
-        "balanced": "All weight points are distributed",
         "pointsLeft": "{count, plural, one {# weight point} other {# weight points}} left to distribute",
         "pointsOver": "{count, plural, one {# weight point} other {# weight points}} over the budget",
         "saveCta": "Save weighting",
@@ -1912,8 +1910,7 @@
         "cancel": "Cancel"
       },
       "method": {
-        "documented": "{documented}/{total} documented",
-        "approved": "{approved}/{total} approved",
+        "approved": "{approved} of {total} approved",
         "empty": "No criteria yet. <link>Choose them in the Criteria chapter</link>; each one is documented and approved here.",
         "status": {
           "notStarted": "Not started",

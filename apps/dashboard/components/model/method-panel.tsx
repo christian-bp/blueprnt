@@ -8,6 +8,7 @@ import {
   DIMENSION_MAX_ACTIVE,
   type DimensionKey,
 } from "@workspace/core"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Item, ItemContent, ItemFooter } from "@workspace/ui/components/item"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -18,7 +19,7 @@ import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { type ReactNode, useState } from "react"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
-import { ChapterStatusAlert } from "@/components/model/chapter-status-alert"
+import { ChapterFraming } from "@/components/model/chapter-framing"
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
 import { DimensionFrame } from "@/components/model/dimension-frame"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
@@ -26,6 +27,7 @@ import {
   WorkingConditionsColumnSkeleton,
   WorkingConditionsEmptyColumn,
 } from "@/components/model/working-conditions-empty-column"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import { chapterHref } from "@/lib/model-chapters"
 
@@ -55,6 +57,7 @@ const MethodAppendixDownload = dynamic(
 // of one allocation.
 export function MethodPanel({ orgId }: { orgId: string }) {
   const t = useTranslations("dashboard.model.method")
+  const tHelp = useTranslations("dashboard.help")
   const locale = useLocale()
   // The method content READS for every member (the chapter's own query is an
   // orgQuery), but documenting a criterion and approving one are both
@@ -94,12 +97,6 @@ export function MethodPanel({ orgId }: { orgId: string }) {
       ? null
       : (data.criteria.find((c) => c.criterionId === targetId) ?? null)
 
-  // Mirrors the Viktning chapter's budget block through the same
-  // ChapterStatusAlert: a check + neutral tint when the model is fully
-  // approved, an amber heads-up while documentation is still outstanding.
-  const allApproved =
-    data.progress.total > 0 && data.progress.approved === data.progress.total
-
   const unacknowledgedPairs =
     checks?.checks.find((check) => check.key === "overlapPairs")?.pairs ?? []
   // Keyed by plain string, not the strict library union: the pairs come off the
@@ -131,28 +128,25 @@ export function MethodPanel({ orgId }: { orgId: string }) {
 
   return (
     <div className="space-y-4">
-      <ChapterStatusAlert
-        ok={allApproved}
-        title={
-          <>
-            {t("documented", {
-              documented: data.progress.documented,
-              total: data.progress.total,
-            })}
-            {" · "}
-            {t("approved", {
-              approved: data.progress.approved,
-              total: data.progress.total,
-            })}
-          </>
+      {/* The chapter's only chrome above the grid, so its columns begin at the
+          same height as every other chapter's and switching tabs holds them
+          still. The progress that used to stand in a block of its own here is
+          in the columns now, one count per dimension, where the criteria it
+          counts actually are. */}
+      <ChapterFraming
+        chapter="method"
+        help={
+          <HelpMorphButton label={tHelp("methodAppendixLabel")}>
+            {tHelp("methodAppendixBody")}
+          </HelpMorphButton>
         }
-        actions={<MethodAppendixDownload orgId={orgId} />}
+        action={<MethodAppendixDownload orgId={orgId} />}
       />
       {data.criteria.length === 0 ? (
         // Never a bare page: the chapter has nothing to document until the
         // first one has been chosen, and it says so with the way back. The
-        // status block above stays: 0/0 is an honest reading of this state,
-        // and it is where the appendix export lives.
+        // framing row above stays: it is the chapter's own sentence, and it is
+        // where the appendix export lives.
         <p className="text-muted-foreground text-sm">
           {t.rich("empty", {
             link: (chunks) => (
@@ -183,6 +177,17 @@ export function MethodPanel({ orgId }: { orgId: string }) {
               <DimensionSection
                 key={key}
                 title={content.dimensions[key].name}
+                // APPROVED, not merely documented: it is the count the spine's
+                // own method segment moves on (the engine's
+                // documentationComplete check reads a criterion as done only
+                // once it carries an explicit sign-off), and a column chip
+                // that counted filled-in forms would run ahead of the bar
+                // above it.
+                approved={
+                  placed.filter((criterion) => criterion.status === "approved")
+                    .length
+                }
+                total={placed.length}
                 empty={
                   placed.length === 0 ? (
                     // Only ever the fourth column, and the decision rides the
@@ -250,10 +255,16 @@ export function MethodPanel({ orgId }: { orgId: string }) {
 // cards are one decision and the two states cannot measure differently.
 function DimensionSection({
   title,
+  approved,
+  total,
   children,
   empty,
 }: {
   title: string
+  // The dimension's own documentation count, for the heading's chip. Absent
+  // while the model loads, where the count is precisely what is unknown.
+  approved?: number
+  total?: number
   // The dimension's cards, as list ITEMS: the section owns the <ul>, so a card
   // cannot end up an orphan <li> in whichever state mounted it.
   children?: ReactNode
@@ -263,23 +274,48 @@ function DimensionSection({
   // screen reader still announces.
   empty?: ReactNode
 }) {
+  const t = useTranslations("dashboard.model.method")
   return (
     // The same dashed frame every chapter draws its dimensions in. No share
     // figure beside the name, unlike the Viktning heading: this chapter
     // neither sets nor reads the weighting.
     <DimensionFrame
-      heading={<h3 className="truncate font-medium text-sm">{title}</h3>}
+      heading={
+        <>
+          <h3 className="truncate font-medium text-sm">{title}</h3>
+          {/* The count opposite the name, in the slot the Kriterier column
+              puts its own chip in, and filling in the way that one does when
+              its dimension is done: a column whose criteria are all approved
+              has nothing left to ask for. A dimension holding nothing shows no
+              chip at all, because 0 of 0 is not progress, it is the empty
+              state the column below already explains. */}
+          {approved === undefined || total === undefined ? (
+            // The count is the data. A pill-shaped bar holds its box while it
+            // loads, the same stand-in the Kriterier column's own chip uses.
+            <Skeleton className="h-5 w-24 shrink-0 rounded-4xl" />
+          ) : (
+            total > 0 && (
+              <Badge
+                variant={approved === total ? "secondary" : "outline"}
+                className="shrink-0 tabular-nums"
+              >
+                {t("approved", { approved, total })}
+              </Badge>
+            )
+          )}
+        </>
+      }
     >
       {empty ?? <ul className="space-y-2">{children}</ul>}
     </DimensionFrame>
   )
 }
 
-// The chapter's loading state: the real status block over the real dimension
+// The chapter's loading state: the real framing row over the real dimension
 // columns, with placeholder cards inside them. The four dimensions are fixed
 // method law (ADR-0021) and their names are locale-keyed library constants, so
-// they never wait on org data; how many criteria each holds, and everything on
-// a card, is exactly what is being waited for.
+// they never wait on org data; how many criteria each holds, its documentation
+// count, and everything on a card, is exactly what is being waited for.
 function MethodPanelSkeleton({
   orgId,
   isAdmin,
@@ -288,19 +324,22 @@ function MethodPanelSkeleton({
   isAdmin: boolean
 }) {
   const locale = useLocale()
+  const tHelp = useTranslations("dashboard.help")
   const content = criteriaLibraryContent(locale)
   return (
     <div className="space-y-4">
-      {/* Reuse the real status block (with its icon) and skeleton only the
-          not-yet-known counts, so the toolbar height is identical to the
-          loaded state and the columns below do not shift. ok=undefined is the
-          "not yet known" state: the info icon, no tint. */}
-      <ChapterStatusAlert
-        ok={undefined}
-        title={<Skeleton className="h-5 w-52" />}
-        // The real download button (static chrome): it loads its own data and
-        // disables itself until ready.
-        actions={<MethodAppendixDownload orgId={orgId} />}
+      {/* The real framing row: its sentence, its help and its export are all
+          chapter chrome rather than data, so the row renders in full and the
+          columns below it never move when the model lands. The export button
+          loads its own data and disables itself until ready. */}
+      <ChapterFraming
+        chapter="method"
+        help={
+          <HelpMorphButton label={tHelp("methodAppendixLabel")}>
+            {tHelp("methodAppendixBody")}
+          </HelpMorphButton>
+        }
+        action={<MethodAppendixDownload orgId={orgId} />}
       />
       <div className={CHAPTER_GRID_CLASS}>
         {DIMENSION_KEYS.map((key) => (
