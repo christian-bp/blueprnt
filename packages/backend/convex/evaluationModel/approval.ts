@@ -16,6 +16,7 @@ import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
 import type { AuditItem } from "../lib/auditPayloads"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, type AuditWriter, orgQuery } from "../lib/functions"
+import type { ApprovalReopenCause } from "./approvalCauses"
 import { LIBRARY_DIMENSION, LIBRARY_OVERLAP_PAIRS } from "./criteriaLibrary"
 import {
   buildModelEvidence,
@@ -145,26 +146,6 @@ function approvedPayload(
 // (filling in a motivation cannot make either warning MORE unmet), so it can
 // never un-satisfy a check approval depended on, and reopening there would
 // un-approve a model for writing down why it was approved.
-// Every event that can take a model's approval away, as ONE list.
-//
-// It is the type of this helper's `cause` parameter, so a new call site
-// passing an unlisted event does not compile, and the dashboard's coded-value
-// domain (audit-constants.ts) and its drift guard both import THIS rather than
-// mirroring it. The cause used to live in three hand-synced copies; two of them
-// drifted together when the seventh cause arrived, which is a guard comparing
-// two equally-stale lists and passing while the log printed a raw code.
-export const APPROVAL_REOPEN_CAUSES = [
-  AUDIT_EVENTS.criterionActivated,
-  AUDIT_EVENTS.criterionDeactivated,
-  AUDIT_EVENTS.criterionReopened,
-  AUDIT_EVENTS.modelUpdated,
-  AUDIT_EVENTS.modelWorkingConditionsDecided,
-  AUDIT_EVENTS.modelLevelRulesUpdated,
-  AUDIT_EVENTS.modelZoneProfileRulesUpdated,
-] as const
-
-export type ApprovalReopenCause = (typeof APPROVAL_REOPEN_CAUSES)[number]
-
 export async function reopenApprovalIfSet(
   ctx: MutationCtx & { audit: AuditWriter },
   model: Doc<"models">,

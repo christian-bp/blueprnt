@@ -23,7 +23,7 @@ import {
 } from "@workspace/backend/convex/evaluationModel/evidence"
 import { COMPLIANCE_AUDIT_FIELDS } from "@workspace/backend/convex/evaluationModel/method"
 import { WEIGHT_MOTIVATION_AUDIT_FIELDS } from "@workspace/backend/convex/evaluationModel/criteria"
-import { APPROVAL_REOPEN_CAUSES } from "@workspace/backend/convex/evaluationModel/approval"
+import { APPROVAL_REOPEN_CAUSES } from "@workspace/backend/convex/evaluationModel/approvalCauses"
 import { ACTION_TARGET_KINDS } from "@workspace/backend/convex/payMapping/tables"
 import {
   COUNTRY_KEYS,

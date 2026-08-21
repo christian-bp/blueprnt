@@ -1,7 +1,7 @@
 import {
   APPROVAL_REOPEN_CAUSES,
   type ApprovalReopenCause,
-} from "@workspace/backend/convex/evaluationModel/approval"
+} from "@workspace/backend/convex/evaluationModel/approvalCauses"
 import { criteriaLibraryContent } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import type { ActionTargetKind } from "@workspace/backend/convex/payMapping/tables"
 import type {
@@ -310,6 +310,11 @@ export const AI_KIND_VALUE_KEYS: Record<SuggestionKind, string> =
 // locales. The list is the backend's `cause` parameter type now, so a new call
 // site does not compile without joining it, and this domain follows without
 // anyone remembering to.
+//
+// From approvalCauses.ts, a module that registers no Convex functions, never
+// from the mutation module that consumes it: this import is a RUNTIME one, and
+// reaching into a function-defining module drags it (and everything it
+// imports) into the browser bundle. See lib/backend-imports.test.ts.
 //
 // Reuses each cause's own dashboard.auditLog.events.* label (dots->camelCase,
 // the same key derivation org-audit-log-section.tsx's eventKey uses) rather
