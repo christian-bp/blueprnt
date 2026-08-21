@@ -1,0 +1,25 @@
+apps/dashboard/lib/weighting.ts
+  s_58dd112dc09435::t_6e442cd2a3ad76 10-22
+apps/dashboard/components/model/weighting-chapter.tsx
+  s_58dd112dc09435::t_6e442cd2a3ad76 49,293,369
+apps/dashboard/components/model/placed-criterion-card.test.tsx
+  s_58dd112dc09435::t_8262c6c4195f92 217
+apps/dashboard/components/model/check-remedy.tsx
+  s_58dd112dc09435::t_6e442cd2a3ad76 14,76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "88d3779e0a5c74eb738813b5888cab533b808017",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
