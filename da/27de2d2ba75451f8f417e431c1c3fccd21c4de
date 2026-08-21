@@ -1,0 +1,76 @@
+docs/superpowers/plans/2026-08-18-role-evaluation-phase-2-cutover.md
+  s_58dd112dc09435::t_8e28ee6f35e628 1-198
+docs/superpowers/plans/2026-08-18-role-evaluation-phase-1-engine-and-library.md
+  s_58dd112dc09435::t_49b5c04db01c99 1316-1318
+  s_58dd112dc09435::t_fd1cbf76b9ae3b 1269
+  s_58dd112dc09435::t_807c6c9b05f227 996
+  s_58dd112dc09435::t_f8a8326fee7ed6 1396-1399
+  s_58dd112dc09435::t_edb47d4b9ac0e5 1-756,758-942,944,946-955,957,959-995,997-1133,1139-1140,1142,1144-1184,1186-1268,1270-1315,1319-1395,1400-1560,1562-1613,1615-1645
+  s_58dd112dc09435::t_80fc8c84b6cba8 1134-1138,1141,1143
+  s_58dd112dc09435::t_0a40afca8aa89d 1185
+  s_58dd112dc09435::t_6eee1bbac32085 943,945,956,958
+  s_58dd112dc09435::t_544afee18b5218 1561
+  s_58dd112dc09435::t_7ee4ce29fa77e4 757
+  s_58dd112dc09435::t_d748fbe568355c 1614
+docs/superpowers/plans/2026-08-19-role-evaluation-phase-3-builder.md
+  s_58dd112dc09435::t_2a9b9b9818c97c 21
+  s_58dd112dc09435::t_03e362f5dd5ba8 57
+  s_58dd112dc09435::t_30dea9c8485ad6 19
+  s_58dd112dc09435::t_53d15e839fdc30 13,17,23-27
+  s_58dd112dc09435::t_cd243139111d63 82-85,87-91
+  s_58dd112dc09435::t_1d7060aaba37ef 63,66-69,71
+  s_58dd112dc09435::t_5466ff820b01ac 78
+  s_58dd112dc09435::t_404fa78db0ca04 76
+  s_58dd112dc09435::t_bfe5c4e8e9f079 86
+  s_58dd112dc09435::t_bf380664fd47ab 1-4,6,8-12,14,16,18,20,22,28-56,58-62,64-65,70,72-75,77,79-81,92-93,95-100
+  s_58dd112dc09435::t_7e130c0dcfe331 94
+  s_58dd112dc09435::t_02218002b3e888 15
+  s_58dd112dc09435::t_1dce1501c91930 5,7
+docs/superpowers/analysis/lonekartlaggning-progress-tracker.html
+  s_58dd112dc09435::t_c4258b2a9603ea 501-502
+  s_58dd112dc09435::t_378f1733b3271a 283-286,288
+  s_58dd112dc09435::t_584d4087fb8c9a 244,246-253,257-259
+  s_58dd112dc09435::t_29005664a2aad1 209
+  s_58dd112dc09435::t_4afdda5df36367 330-331,333-335,337,339-346
+  s_58dd112dc09435::t_1aafdb7225fdcc 495-496
+  s_58dd112dc09435::t_c8c1b6dd3056e9 473
+  s_58dd112dc09435::t_27373a05f2d4d5 256
+  s_58dd112dc09435::t_b3915d3ffbe534 220
+  s_58dd112dc09435::t_9311dbb6d53852 497-498
+  s_58dd112dc09435::t_e5dfdddcdaa5b0 219
+  s_58dd112dc09435::t_94c6b13cd17ca1 298
+  s_58dd112dc09435::t_e7dabfd8b12850 207,210
+  s_58dd112dc09435::t_0dcaddde52b786 499-500
+  s_58dd112dc09435::t_bc7ac9ad7a2442 254
+  s_58dd112dc09435::t_704a3108aca6f3 255
+docs/superpowers/specs/2026-08-18-adaptable-role-evaluation-design.md
+  s_58dd112dc09435::t_7e9c1009d3ac54 26
+  s_58dd112dc09435::t_d9c1bb2ef2fa64 94
+  s_58dd112dc09435::t_c2f4484bdcca97 24
+  s_58dd112dc09435::t_3a58172178a9b1 187
+  s_58dd112dc09435::t_850498c958c70f 22
+  s_58dd112dc09435::t_fb9b8512944de2 201
+  s_58dd112dc09435::t_df30860de8e2e8 23
+  s_58dd112dc09435::t_d6513839c0fbc9 27
+  s_58dd112dc09435::t_ff547cb40c72c1 28
+  s_58dd112dc09435::t_13b4e4518653ab 104
+  s_58dd112dc09435::t_bd1a67e01ec956 42,44-45,47-49
+  s_58dd112dc09435::t_892489d1d41eea 139
+  s_58dd112dc09435::t_fbeb764c424a6d 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "da27de2d2ba75451f8f417e431c1c3fccd21c4de",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
