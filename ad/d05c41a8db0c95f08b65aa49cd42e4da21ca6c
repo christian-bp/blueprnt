@@ -1,0 +1,43 @@
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_1c3f4ce106dd1f 1964-1967
+apps/dashboard/content/docs/nb/method-documentation.mdx
+  s_58dd112dc09435::t_cbbd61ff8aae23 76-85
+apps/dashboard/content/docs/sv/method-documentation.mdx
+  s_58dd112dc09435::t_cbbd61ff8aae23 76-81,84
+apps/dashboard/content/docs/da/method-documentation.mdx
+  s_58dd112dc09435::t_cbbd61ff8aae23 79-85
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_1c3f4ce106dd1f 1964-1967
+apps/dashboard/components/model/approval-card.test.tsx
+  s_58dd112dc09435::t_a46291e7555c81 1-7,84-189
+  s_58dd112dc09435::t_f2be0b97b99beb 190-191
+apps/dashboard/content/docs/fi/method-documentation.mdx
+  s_58dd112dc09435::t_cbbd61ff8aae23 81-83
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_1c3f4ce106dd1f 1964-1967
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_1c3f4ce106dd1f 1964-1967
+apps/dashboard/components/model/approval-card.tsx
+  s_58dd112dc09435::t_1c3f4ce106dd1f 6,32-49,54,60-63,68,80-84,88,91-94,235-241,246-268,270-274
+  s_58dd112dc09435::t_42129531ed4fd7 242,244-245
+apps/dashboard/content/docs/en/method-documentation.mdx
+  s_58dd112dc09435::t_cbbd61ff8aae23 77-85
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_1c3f4ce106dd1f 1964-1967
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "add05c41a8db0c95f08b65aa49cd42e4da21ca6c",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
