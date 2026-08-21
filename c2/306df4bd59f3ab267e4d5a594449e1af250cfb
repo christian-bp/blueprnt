@@ -1,0 +1,20 @@
+CLAUDE.md
+  s_58dd112dc09435::t_dbf9d9de3175d2 27
+  s_58dd112dc09435::t_f92b18c8d23fcd 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "c2306df4bd59f3ab267e4d5a594449e1af250cfb",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
