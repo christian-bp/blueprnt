@@ -1,0 +1,34 @@
+apps/dashboard/components/model/model-section-shell.tsx
+  s_58dd112dc09435::t_f5ad9a41a6b6ae 71,75-76,89-90
+  s_58dd112dc09435::t_1d5d1c0f2cc13b 84-88,91-105,111
+apps/dashboard/components/floating-stack.tsx
+  s_58dd112dc09435::t_ec1239dbcbd314 3-10,15-23,25-36,39,41-47,51-52,54-59,62-66,68-69,75-77
+apps/dashboard/components/section-title-row.tsx
+  s_58dd112dc09435::t_865127fbae53f7 5-22,25,30,39-40,43-58
+apps/dashboard/components/floating-stack.test.tsx
+  s_58dd112dc09435::t_2c4c319bdcc5c6 16-17,23,27-30,33-36,39,42,51-54
+apps/dashboard/components/pay-mapping/analysis-section-shell.tsx
+  s_58dd112dc09435::t_f5ad9a41a6b6ae 69-70,102
+  s_58dd112dc09435::t_1d5d1c0f2cc13b 78-95,103
+apps/dashboard/components/model/model-section-shell.test.tsx
+  s_58dd112dc09435::t_33f7e29d17fc17 83-85,90-96,125-127,130
+apps/dashboard/components/floating-pill.test.tsx
+  s_58dd112dc09435::t_a5252b39ee9c39 39-41
+  s_58dd112dc09435::t_2c4c319bdcc5c6 26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "24db4c6e3966b0907f1dc25c0d898a59419cba41",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
