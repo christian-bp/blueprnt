@@ -1,0 +1,77 @@
+apps/dashboard/content/docs/nb/navigating-the-app.mdx
+  s_58dd112dc09435::t_7f708930277bd6 35-36
+apps/dashboard/content/docs/da/equivalent-work.mdx
+  s_58dd112dc09435::t_796c4444d19c2b 8-9
+apps/dashboard/content/docs/en/navigating-the-app.mdx
+  s_58dd112dc09435::t_177e08d6400770 34-35
+apps/dashboard/content/docs/fi/model-overview.mdx
+  s_58dd112dc09435::t_3f16e992d8fedc 19-22
+apps/dashboard/content/docs/sv/rules-and-practice.mdx
+  s_58dd112dc09435::t_9ef9ab72436a04 8
+apps/dashboard/content/docs/en/equal-work.mdx
+  s_58dd112dc09435::t_61768909022fc5 8-9
+apps/dashboard/content/docs/nb/equivalent-work.mdx
+  s_58dd112dc09435::t_0a6cd3652a49bc 8-9
+apps/dashboard/content/docs/da/rules-and-practice.mdx
+  s_58dd112dc09435::t_b6c3defdc7ef75 8
+apps/dashboard/content/docs/fi/equivalent-work.mdx
+  s_58dd112dc09435::t_a5cc0a8f2ac3e5 8-9
+apps/dashboard/content/docs/sv/model-overview.mdx
+  s_58dd112dc09435::t_775cc8d81763b3 17-19
+apps/dashboard/content/docs/nb/collaboration.mdx
+  s_58dd112dc09435::t_6054e6643f517f 8-9
+apps/dashboard/content/docs/sv/navigating-the-app.mdx
+  s_58dd112dc09435::t_8d7772ff6a3e7d 34-35
+apps/dashboard/content/docs/fi/rules-and-practice.mdx
+  s_58dd112dc09435::t_13d689245ed3ce 8
+apps/dashboard/content/docs/sv/equivalent-work.mdx
+  s_58dd112dc09435::t_6e53a3abafd896 8-9
+apps/dashboard/content/docs/da/collaboration.mdx
+  s_58dd112dc09435::t_369b44e5cf9191 8-9
+apps/dashboard/content/docs/en/equivalent-work.mdx
+  s_58dd112dc09435::t_9da7e1c7fcfdcd 8-9
+apps/dashboard/content/docs/en/collaboration.mdx
+  s_58dd112dc09435::t_777822efb6673c 8-9
+apps/dashboard/content/docs/fi/collaboration.mdx
+  s_58dd112dc09435::t_cdc538068c3013 8-9
+apps/dashboard/content/docs/sv/equal-work.mdx
+  s_58dd112dc09435::t_9c1b9c6eefe471 7-9
+apps/dashboard/content/docs/da/model-overview.mdx
+  s_58dd112dc09435::t_4395c0ff1a0e36 18-21
+apps/dashboard/content/docs/en/rules-and-practice.mdx
+  s_58dd112dc09435::t_c4e61284108302 8
+apps/dashboard/content/docs/nb/equal-work.mdx
+  s_58dd112dc09435::t_ac887f98fafc68 8-9
+apps/dashboard/content/docs/sv/collaboration.mdx
+  s_58dd112dc09435::t_8382eb4da54cba 8-9
+apps/dashboard/content/docs/nb/model-overview.mdx
+  s_58dd112dc09435::t_d8b545892ca825 17-19
+apps/dashboard/content/docs/da/navigating-the-app.mdx
+  s_58dd112dc09435::t_80a11e4d5a4f53 36-37
+apps/dashboard/content/docs/fi/equal-work.mdx
+  s_58dd112dc09435::t_4a4c59005f192e 8-9
+apps/dashboard/content/docs/en/model-overview.mdx
+  s_58dd112dc09435::t_f608011b2934ec 17-19
+apps/dashboard/content/docs/fi/navigating-the-app.mdx
+  s_58dd112dc09435::t_fc80c1201039ba 37-38
+apps/dashboard/content/docs/da/equal-work.mdx
+  s_58dd112dc09435::t_e4e0697d050f37 8-9
+apps/dashboard/content/docs/nb/rules-and-practice.mdx
+  s_58dd112dc09435::t_4c89d7775636d0 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "12efd63da516bb346e695e96d9b6f147151bfd1b",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
