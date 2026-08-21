@@ -1,0 +1,41 @@
+apps/dashboard/components/pay-mapping/analysis-spine.test.tsx
+  s_58dd112dc09435::t_a0898a89d486e1 83-85,90-105
+apps/dashboard/components/segmented-progress.tsx
+  s_58dd112dc09435::t_6a92b1014b3bfb 144
+  s_58dd112dc09435::t_5298dfa25bfbb8 34
+  s_58dd112dc09435::t_133d1df29fd653 132-133
+  s_58dd112dc09435::t_4378db573b482e 173-177,180
+  s_58dd112dc09435::t_05a7d276ec8e3b 254
+  s_58dd112dc09435::t_cfb726fc800801 78
+  s_58dd112dc09435::t_c04a2c750c5b77 63-69,73-77,79-80
+  s_58dd112dc09435::t_7205b262a325c9 122-129
+  s_58dd112dc09435::t_de94aad6178d36 245
+  s_58dd112dc09435::t_dfcb2c1d3f1ce7 81
+apps/dashboard/components/model/model-spine.tsx
+  s_58dd112dc09435::t_1e48ad53f53543 72-77
+  s_58dd112dc09435::t_7c620dd94092e9 78
+apps/dashboard/components/segmented-progress.test.tsx
+  s_58dd112dc09435::t_81d87ac1eb4e6a 34-49
+  s_58dd112dc09435::t_9e1b13efdca5bc 53-56,73-135
+  s_58dd112dc09435::t_ac338803466b73 136
+apps/dashboard/components/model/model-spine.test.tsx
+  s_58dd112dc09435::t_933c5af05da4af 73-77,83-85,88-91,95-96,104-114
+  s_58dd112dc09435::t_417ae13a998e4c 92-94
+  s_58dd112dc09435::t_6e28fef56012f6 115-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "1720345b6b92dfb1bd108e8d05285292dfdb1d3e",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
