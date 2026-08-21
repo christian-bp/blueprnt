@@ -1,0 +1,61 @@
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_4f238352fc27bd 1848-1849,1852-1858
+  s_58dd112dc09435::t_6928e6713a3749 2000
+  s_58dd112dc09435::t_8294fd72d31a16 2043
+  s_58dd112dc09435::t_e0866cbf7c703f 2080-2081
+  s_58dd112dc09435::t_70d233341a489d 68
+  s_58dd112dc09435::t_2f30de158f1667 1863-1866
+docs/contexts/evaluation-model/CONTEXT.md
+  s_58dd112dc09435::t_48e6bd749a4bf5 61
+  s_58dd112dc09435::t_249e1dc3f84b4d 42
+  s_58dd112dc09435::t_795e2555de09f1 95
+  s_58dd112dc09435::t_d79b3f39d77596 63
+  s_58dd112dc09435::t_38444af6c542c4 108
+apps/dashboard/content/docs/sv/model-overview.mdx
+  s_58dd112dc09435::t_0bf00743f5143f 24
+docs/contexts/assessment/CONTEXT.md
+  s_58dd112dc09435::t_7470b462a3aeca 69
+apps/dashboard/content/docs/sv/glossary.mdx
+  s_58dd112dc09435::t_88fc1327080770 151
+  s_58dd112dc09435::t_8ee484dca5285a 184,186,188
+apps/dashboard/content/docs/sv/criteria-and-scale.mdx
+  s_58dd112dc09435::t_613da82126d53a 43,45,48,50
+apps/dashboard/content/docs/sv/method-documentation.mdx
+  s_58dd112dc09435::t_f4ea3d112480b6 47-49
+apps/dashboard/content/docs/sv/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_179dcc72daee81 73-75
+  s_58dd112dc09435::t_8b661f85b5b57b 49-53
+  s_58dd112dc09435::t_8685bebc90b75b 62-64
+apps/dashboard/content/docs/sv/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_ac75eefbb3f850 59
+packages/backend/convex/evaluationModel/criteriaLibrary.content.sv.ts
+  s_58dd112dc09435::t_63211728301f1a 536
+  s_58dd112dc09435::t_81cb2884d01d65 561
+  s_58dd112dc09435::t_5f37910f6b9337 528
+  s_58dd112dc09435::t_eb355fb46cefd1 454,456,458
+  s_58dd112dc09435::t_4d6e6aa9239e5a 44-45
+  s_58dd112dc09435::t_7a60c71c193c02 413
+  s_58dd112dc09435::t_86e9a3ebc10aa0 38
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_c782d98ed15f91 2000
+  s_58dd112dc09435::t_9b93ad0e05fcab 68
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_65be1157e48250 68
+  s_58dd112dc09435::t_afd0e7269a5e37 2000
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "401dbb5b5b79b582918171210c64ea182f8b5693",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
