@@ -1,0 +1,28 @@
+docs/adr/0002-live-recompute-no-versioning.md
+  s_58dd112dc09435::t_91d69138ed6ff5 3
+docs/adr/0021-konstitution-dimensioner-kriteriebibliotek.md
+  s_58dd112dc09435::t_c3ca84a6fd1ce4 11-12
+  s_58dd112dc09435::t_a74e15136058d3 1-10,13-27
+docs/adr/0023-modellgodkannande-utan-versionering.md
+  s_58dd112dc09435::t_f0cb0e1902c7df 1-26
+  s_58dd112dc09435::t_9b82eeb3463a38 27-30
+docs/adr/0022-zoner-tolv-nivaer-profilkrav.md
+  s_58dd112dc09435::t_a0fcbfd946fe4d 1-13,17-28
+  s_58dd112dc09435::t_d6e4f6135425ce 14-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "df0aad7875a1c5af422c91d4b996ec74f0a2b7fe",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
