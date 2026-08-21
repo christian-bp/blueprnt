@@ -1,0 +1,48 @@
+packages/backend/convex/lib/auditPayloads.ts
+  s_58dd112dc09435::t_290e69dcf66f5a 279-283
+apps/dashboard/lib/audit-labels.test.ts
+  s_58dd112dc09435::t_adc71502e96ba2 26,312-315
+packages/backend/convex/evaluationModel/method.ts
+  s_58dd112dc09435::t_1b3507198f9b00 124-133,145,177-183
+packages/backend/convex/evaluationModel/approval.ts
+  s_58dd112dc09435::t_c53c1939cd81ae 148-167,171
+  s_58dd112dc09435::t_0424058dd311ca 15
+apps/dashboard/lib/audit-constants.ts
+  s_58dd112dc09435::t_716bb7ef68681a 1-4,305-317
+packages/backend/convex/evaluationModel/criteria.ts
+  s_58dd112dc09435::t_290e69dcf66f5a 369-381
+packages/backend/convex/evaluationModel/method.test.ts
+  s_58dd112dc09435::t_8364d09382a950 102-222
+packages/backend/convex/ai/suggest.test.ts
+  s_58dd112dc09435::t_5f2cd01922f1b3 388-390
+  s_58dd112dc09435::t_a0e3cfbe9c3c90 336-387,391-449
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_58dd112dc09435::t_2bdc30a1a615c3 960,967-969,1073-1074
+apps/dashboard/lib/audit-detail.tsx
+  s_58dd112dc09435::t_42556915161f78 893-929
+apps/dashboard/lib/audit-detail.test.tsx
+  s_58dd112dc09435::t_cf80bbb1e26cb9 492,522
+  s_58dd112dc09435::t_f068a4b54077b3 463-491,493-521,523-524
+packages/backend/convex/ai/suggest.ts
+  s_58dd112dc09435::t_24e6038a152ecf 25,260-277
+packages/backend/convex/lib/audit.test.ts
+  s_58dd112dc09435::t_2cdda2ca57651b 300
+apps/dashboard/components/model/criterion-compliance-dialog.tsx
+  s_58dd112dc09435::t_56fab01b9289a1 178-181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "bcedef2eb55cc8b19a75f040d2519d1a70e66ac3",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
