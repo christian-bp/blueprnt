@@ -1,0 +1,61 @@
+apps/dashboard/lib/todo.test.ts
+  s_58dd112dc09435::t_2441b4bf53a42c 558-562,568,587,610,616-665
+  s_58dd112dc09435::t_07f180e5d17786 71-76,80,87-88,93
+  s_58dd112dc09435::t_5f424e01cf2645 431-435
+packages/backend/convex/payMapping/runs.ts
+  s_58dd112dc09435::t_0c66611bd9345a 6,16
+  s_58dd112dc09435::t_47f101e5b02f60 180-181
+  s_58dd112dc09435::t_a91d952b18a3c8 167-179,182,196-197
+  s_58dd112dc09435::t_d326496f26609c 252-270
+apps/dashboard/lib/todo.ts
+  s_58dd112dc09435::t_703dde0287c445 1-2
+  s_58dd112dc09435::t_2990c1c4e516b5 103-113
+  s_58dd112dc09435::t_5ee1f23b334557 284-287,305-315,319-320
+packages/backend/convex/evaluationModel/criteria.ts
+  s_58dd112dc09435::t_8c2c95e550a316 228-237
+packages/backend/convex/evaluationModel/method.ts
+  s_58dd112dc09435::t_832d6fff73fdd0 149-159,175-180
+  s_58dd112dc09435::t_8432aa67cf5e03 7
+  s_58dd112dc09435::t_e8f36c9532bfc6 82-89,129-132
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_2b874b1f373661 1991-1992
+packages/backend/convex/evaluationModel/approval.ts
+  s_58dd112dc09435::t_644069c97f8aa8 130-152
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_8bc13813edf3ea 1991-1992
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_18d823a7667cfa 1991-1992
+apps/dashboard/components/model/check-remedy.tsx
+  s_58dd112dc09435::t_32dae519488863 136-140
+packages/backend/convex/payMapping/runs.test.ts
+  s_58dd112dc09435::t_bd698eb7801c95 90-92,95-101,114-125
+  s_58dd112dc09435::t_5ad6dfd8d68a06 717-720,726-765
+  s_58dd112dc09435::t_2e1f07ad496b80 721-725
+packages/backend/convex/payMapping/erasure.test.ts
+  s_58dd112dc09435::t_0c3f08432b1ddc 53-54,59-66,71-76
+  s_58dd112dc09435::t_b8bbd696ec3101 55-58,79-90
+packages/backend/convex/evaluationModel/method.test.ts
+  s_58dd112dc09435::t_9fd6bc25ae77fa 258-396
+apps/dashboard/lib/list-format.ts
+  s_58dd112dc09435::t_c19f20f2955304 14-32
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_724fda22227bd9 1991-1992
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_86febcf22a6d84 1991-1992
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ecb70cfc5368d9792e6ff286b1e9d8d9caa1cd2a",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
