@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
-import { initConvexTest } from "../testing.helpers"
+import { addEditorMember, initConvexTest } from "../testing.helpers"
 
 const BLANK_GENDER_CSV = readFileSync(
   join(import.meta.dirname, "__fixtures__", "blank-gender.csv"),
@@ -1096,6 +1096,36 @@ describe("previewImport", () => {
     expect(result.peopleUnchanged).toBe(1)
     // Anna's raise appends + Cesar's first salary; Bo's identical row skips.
     expect(result.salariesImported).toBe(2)
+  })
+
+  it("is previewed and run by any member of the organization", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedOrg(t)
+    const { asEditor } = await addEditorMember(t, orgId, "editor@acme.se")
+
+    const preview = await asEditor.action(api.people.import.previewImport, {
+      orgId,
+      csvText: V1_CSV,
+      columnMap: SIMPLE_MAP,
+    })
+    expect(preview.ok).toBe(true)
+
+    const result = await asEditor.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: V1_CSV,
+      columnMap: SIMPLE_MAP,
+    })
+    expect(result.peopleCreated).toBe(2)
+
+    // The rows actually landed: an action gate that answered without writing
+    // would pass a return-shape assertion just as well.
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(people).toHaveLength(2)
+    })
   })
 
   it("flags a different name on an existing employee number", async () => {

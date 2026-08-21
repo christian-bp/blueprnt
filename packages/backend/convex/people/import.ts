@@ -437,7 +437,7 @@ async function prepareImport(
 // confirms the column mapping on the review screen.
 //
 // Args:
-//   orgId     - The org the data belongs to (admin gate enforced).
+//   orgId     - The org the data belongs to (membership gate enforced).
 //   csvText   - The raw CSV text (as uploaded; BOM handled by tokenizeCsv).
 //   columnMap - Array of [sourceHeader, canonicalFieldKey] pairs confirmed by
 //               the wizard (e.g. [["Anstnr","externalRef"],["Månadslön","basicMonthly"]]).

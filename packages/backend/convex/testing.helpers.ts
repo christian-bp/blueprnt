@@ -2,6 +2,7 @@
 import aggregateTest from "@convex-dev/aggregate/test"
 import ragTest from "@convex-dev/rag/test"
 import { convexTest } from "convex-test"
+import { components } from "./_generated/api"
 import authSchema from "./betterAuth/schema"
 import schema from "./schema"
 
@@ -57,6 +58,32 @@ export async function grantModelApproval(
       approval: { approvedBy: actorId, approvedAt: Date.now() },
     })
   })
+}
+
+// Attaches a second member to an existing org as an EDITOR and returns their
+// identity handle. seedMembership always creates a fresh org of its own, so the
+// user it makes is re-attached to the target org with seedDuplicateMember (the
+// component has no "add member to this org" seeder).
+//
+// Shared rather than re-declared per file because the access model needs the
+// same identity in every context: a member-level function is only proven by a
+// non-admin performing it, and a test that reaches for the admin it already has
+// proves the gate is open, not that it is open to the right people.
+export async function addEditorMember(
+  t: ReturnType<typeof initConvexTest>,
+  orgId: string,
+  email: string
+) {
+  const { userId: editorId } = await t.mutation(
+    components.betterAuth.testing.seedMembership,
+    { email, name: "Editor Person", role: "editor" }
+  )
+  await t.mutation(components.betterAuth.testing.seedDuplicateMember, {
+    orgId,
+    userId: editorId,
+    role: "editor",
+  })
+  return { editorId, asEditor: t.withIdentity({ subject: editorId }) }
 }
 
 // Settle any background scheduled functions started during the test so their

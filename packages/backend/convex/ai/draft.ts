@@ -195,9 +195,10 @@ export const draftNewRoleProfile = action({
 
 // The interactive criterion compliance draft: generates the six rationale +
 // bias-review fields from the criterion's context and RETURNS them to the
-// client (no suggestion row, no auto-apply). Admin-only (compliance editing is
-// admin scope). Usage telemetry is recorded per call. Org scope + admin auth
-// are re-checked in collectCriterionComplianceContext before any model call
+// client (no suggestion row, no auto-apply). Member-level, like the compliance
+// write it drafts for: drafting documentation cannot ask for more than writing
+// it does. Usage telemetry is recorded per call. Org scope and membership are
+// re-checked in collectCriterionComplianceContext before any model call
 // (ADR-0003: AI in actions, EU model, criterion/model/org content only).
 export const draftCriterionCompliance = action({
   args: {

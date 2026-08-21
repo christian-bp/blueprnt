@@ -1,7 +1,11 @@
 import { MAX_ROLES } from "@workspace/constants"
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
-import { grantModelApproval, initConvexTest } from "../testing.helpers"
+import {
+  addEditorMember,
+  grantModelApproval,
+  initConvexTest,
+} from "../testing.helpers"
 import { AI_MODEL_ID } from "./config"
 
 async function seedRoleOrganization(t: ReturnType<typeof initConvexTest>) {
@@ -762,22 +766,64 @@ describe("AI suggestion lifecycle", () => {
     })
   })
 
+  it("editors request and confirm a weight review", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    const ownA = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "complexity-ambiguity" }
+    )
+    const ownB = await asAdmin.mutation(
+      api.evaluationModel.criteria.activateCriterion,
+      { orgId, libraryKey: "scope-impact" }
+    )
+    const { editorId, asEditor } = await addEditorMember(
+      t,
+      orgId,
+      "editor-weights@acme.se"
+    )
+
+    const suggestionId = await asEditor.mutation(
+      api.ai.suggest.requestWeightReview,
+      { orgId }
+    )
+    await t.mutation(internal.ai.persist.saveWeightReview, {
+      suggestionId,
+      moves: [
+        {
+          fromCriterionId: ownA,
+          toCriterionId: ownB,
+          points: 1,
+          motivation: "Fits the company profile.",
+        },
+      ],
+    })
+    await asEditor.mutation(api.ai.suggest.confirmWeightReview, {
+      orgId,
+      suggestionId,
+      acceptedMoveIndexes: [0],
+    })
+
+    await t.run(async (ctx) => {
+      // The move landed, so the confirm did the work rather than merely
+      // passing its gate.
+      expect((await ctx.db.get(ownA))?.weightPoints).toBe(2)
+      expect((await ctx.db.get(ownB))?.weightPoints).toBe(4)
+      const suggestion = await ctx.db.get(suggestionId)
+      expect(suggestion?.status).toBe("confirmed")
+      expect(suggestion?.requestedBy).toBe(editorId)
+      expect(suggestion?.confirmedBy).toBe(editorId)
+    })
+  })
+
   it("editors dismiss both weight reviews and role-profile drafts", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
-    // Give the org an editor alongside the seeded admin. seedDuplicateMember
-    // just inserts a member row for an existing org; reused here to add a
-    // distinct editor member (the editor's own seeded org is irrelevant).
-    const { userId: editorId } = await t.mutation(
-      components.betterAuth.testing.seedMembership,
-      { email: "editor-role@acme.se", name: "Editor Person", role: "editor" }
-    )
-    await t.mutation(components.betterAuth.testing.seedDuplicateMember, {
+    const { editorId, asEditor } = await addEditorMember(
+      t,
       orgId,
-      userId: editorId,
-      role: "editor",
-    })
-    const asEditor = t.withIdentity({ subject: editorId })
+      "editor-role@acme.se"
+    )
 
     // The weight review is member-level end to end now: a member who may
     // request and confirm one must be able to end the one they walked away

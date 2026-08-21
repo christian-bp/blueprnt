@@ -28,7 +28,7 @@ import { trackKeyValidator } from "../evaluationModel/tables"
 import { TRACK_KEYS, trackName } from "../evaluationModel/trackSchema"
 import { AUDIT_EVENTS } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { orgMutation, orgQuery } from "../lib/functions"
+import { assertKnownRole, orgMutation, orgQuery } from "../lib/functions"
 import { orgSettingsRow } from "../lib/orgSettings"
 import { AI_MODEL_ID, AI_PROVIDER, MAX_PROMPT_IDENTITY_FIELD } from "./config"
 import { isSuggestionClosed } from "./persist"
@@ -639,6 +639,9 @@ async function requireDraftMembership(
     throw appError(ERROR_CODES.membershipConflict)
   }
   if (membership === null) throw appError(ERROR_CODES.notAMember)
+  // The same known-role denial the wrappers apply: an org gate that accepted
+  // any role string would be the permissive one of the two.
+  assertKnownRole(membership.role, orgId, userId)
 }
 
 // Builds the role-profile prompt input from a role's identity (saved or not).
@@ -844,8 +847,10 @@ export const collectCriterionComplianceContext = internalQuery({
     }
     // Membership is the whole gate, the same one saveCriterionCompliance
     // takes: documenting a criterion is member-level work, so drafting that
-    // documentation cannot ask for more than writing it does.
+    // documentation cannot ask for more than writing it does. Known-role
+    // denial included, so this read is no more permissive than the wrapper.
     if (membership === null) throw appError(ERROR_CODES.notAMember)
+    assertKnownRole(membership.role, orgId, userId)
 
     const criterion = await ctx.db.get(criterionId)
     if (criterion === null || criterion.orgId !== orgId) {

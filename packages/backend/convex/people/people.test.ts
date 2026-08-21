@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { api, internal, components } from "../_generated/api"
-import { initConvexTest } from "../testing.helpers"
+import { addEditorMember, initConvexTest } from "../testing.helpers"
 
 // Seeds a minimal org with one admin member. The organizations row is required
 // by org-scoped functions (resolveOrgContext reads membership via the auth
@@ -814,6 +814,31 @@ describe("archivePerson", () => {
         .collect()
       // Only one audit row despite two calls.
       expect(archived).toHaveLength(1)
+    })
+  })
+
+  it("is performed by any member of the organization", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Ingrid",
+        gender: "Kvinna",
+      }
+    )
+
+    const { asEditor } = await addEditorMember(t, orgId, "editor@acme.se")
+    await asEditor.mutation(api.people.people.archivePerson, {
+      orgId,
+      personId,
+    })
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.archivedAt).toBeTypeOf("number")
     })
   })
 

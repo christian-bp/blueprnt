@@ -15,8 +15,8 @@ import { deriveResults } from "./compute"
 // anchor-role guide, 2026-06-10). The designation is an aggregate on the
 // role document (assessment/tables.ts); these mutations own its lifecycle:
 // designate -> active -> underReview/replaced, never deleted, so the
-// calibration history stays auditable. Admin scope: designating calibration
-// references is model governance.
+// calibration history stays auditable. Member scope, like the rest of the role
+// register: admin covers org administration and the audit log.
 
 const MAX_MOTIVATION = 1000
 

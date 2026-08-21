@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
-import { grantModelApproval, initConvexTest } from "../testing.helpers"
+import {
+  addEditorMember,
+  grantModelApproval,
+  initConvexTest,
+} from "../testing.helpers"
 
 // 7 of the 8 usual demo keys, deliberately leaving the workingConditions
 // dimension's one slot open (safety-exposure unactivated) so a test can
@@ -569,6 +573,43 @@ describe("updateAnchorRole", () => {
         status: "active",
       })
     ).rejects.toThrow(/errors.roleLocked/)
+  })
+
+  it("is designated and updated by any member of the organization", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
+    const roleId = await createRatedRole({
+      orgId,
+      asAdmin,
+      model,
+      title: "Reference",
+      value: 3,
+    })
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
+    })
+    const { asEditor } = await addEditorMember(t, orgId, "editor@anchor.se")
+
+    await asEditor.mutation(api.assessment.anchorRoles.designateAnchorRole, {
+      orgId,
+      roleId,
+      expectedLevel: 3,
+      motivation: "Calibration reference for engineering.",
+    })
+    await asEditor.mutation(api.assessment.anchorRoles.updateAnchorRole, {
+      orgId,
+      roleId,
+      status: "underReview",
+    })
+
+    await t.run(async (ctx) => {
+      const role = await ctx.db.get(roleId)
+      expect(role?.anchorRole).toMatchObject({
+        expectedLevel: 3,
+        status: "underReview",
+      })
+    })
   })
 
   it("rejects updating a role that is not an anchor", async () => {

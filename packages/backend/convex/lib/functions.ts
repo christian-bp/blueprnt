@@ -54,6 +54,27 @@ function makeAuditWriter(
   }
 }
 
+// The only place a membership's role string becomes a role this app trusts.
+//
+// An unknown role is DENIED rather than laundered into member access
+// (defense-in-depth; the write paths pin the role to these two literals). It
+// is one function because every gate has to answer the same way: the query and
+// mutation wrappers, the action gates, and the AI membership re-checks all
+// route through here, so a permissive path cannot drift back in beside a
+// strict one. It did once, on the member action gate, which accepted any
+// non-null membership row while the wrapper beside it refused the same row.
+export function assertKnownRole(
+  role: string,
+  orgId: string,
+  subject: string
+): OrganizationRole {
+  if (role !== "admin" && role !== "editor") {
+    console.error("unknown organization role", { orgId, subject, role })
+    throw appError(ERROR_CODES.membershipConflict)
+  }
+  return role
+}
+
 // Resolves identity from the JWT (subject = Better Auth user id) and checks
 // membership against the auth component's member table. Deliberately avoids
 // authComponent.getAuthUser(): the adapter path does not run under
@@ -84,17 +105,7 @@ async function resolveOrgContext(
     throw appError(ERROR_CODES.membershipConflict)
   }
   if (membership === null) throw appError(ERROR_CODES.notAMember)
-  const { role } = membership
-  if (role !== "admin" && role !== "editor") {
-    // Unknown role string (defense-in-depth; roles are fixed to admin and
-    // editor by the access control config). Deny rather than launder it.
-    console.error("unknown organization role", {
-      orgId,
-      subject: identity.subject,
-      role,
-    })
-    throw appError(ERROR_CODES.membershipConflict)
-  }
+  const role = assertKnownRole(membership.role, orgId, identity.subject)
   return {
     orgId,
     role,
@@ -127,7 +138,9 @@ export const orgMutation = customMutation(mutation, {
 // name, avatar, onboarding completion and its member list. Everything else an
 // organization does (the model, roles, people, the AI actions) is member-level
 // work that both roles perform, so it takes orgMutation. The allowlist is
-// pinned by lib/adminSurface.test.ts.
+// pinned by apps/dashboard/lib/admin-surface.test.ts, which lives in the
+// dashboard suite because the backend suite runs on edge-runtime and the
+// guard scans this source from disk.
 export const adminMutation = customMutation(mutation, {
   args: orgArgs,
   input: async (ctx, { orgId }) => {
@@ -179,7 +192,11 @@ async function requireOrgAction(
     throw appError(ERROR_CODES.membershipConflict)
   }
   if (membership === null) throw appError(ERROR_CODES.notAMember)
-  if (adminOnly && membership.role !== "admin") {
+  // Before the admin branch, never only inside it: an unknown role must be
+  // denied here exactly as the mutation path denies it, or this gate answers
+  // "member" for a row its own wrapper refuses.
+  const role = assertKnownRole(membership.role, orgId, identity.subject)
+  if (adminOnly && role !== "admin") {
     throw appError(ERROR_CODES.adminRequired)
   }
   return identity.subject

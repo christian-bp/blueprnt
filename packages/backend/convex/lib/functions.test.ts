@@ -82,6 +82,46 @@ describe("org-scoping wrappers", () => {
     ).resolves.toBeNull()
   })
 
+  // Defense in depth: the write paths pin a membership's role to the two
+  // literals, so an unknown one means the data is wrong. Both gates must DENY
+  // it rather than launder it into member access, and they must answer the
+  // same way: the action gate accepted any non-null membership row once, while
+  // the wrapper beside it refused the very same row.
+  it("denies an unknown membership role on both the wrapper and the action gate", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seed(t, "viewer")
+    const asUnknownRole = t.withIdentity({ subject: userId })
+    await expect(
+      asUnknownRole.mutation(api.accounts.context.touchOrganizationAsMember, {
+        orgId,
+      })
+    ).rejects.toThrow(/errors.membershipConflict/)
+    await expect(
+      asUnknownRole.action(
+        api.accounts.context.touchOrganizationAsMemberAction,
+        { orgId }
+      )
+    ).rejects.toThrow(/errors.membershipConflict/)
+  })
+
+  // And the same two gates accept a real role, so the denial above is the
+  // role check answering rather than the probes being broken.
+  it("accepts a known role on both the wrapper and the action gate", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seed(t, "editor")
+    const asEditor = t.withIdentity({ subject: userId })
+    await expect(
+      asEditor.mutation(api.accounts.context.touchOrganizationAsMember, {
+        orgId,
+      })
+    ).resolves.toBeNull()
+    await expect(
+      asEditor.action(api.accounts.context.touchOrganizationAsMemberAction, {
+        orgId,
+      })
+    ).resolves.toBeNull()
+  })
+
   it("rejects with errors.membershipConflict on duplicate membership rows", async () => {
     const t = initConvexTest()
     const { orgId, userId } = await seed(t, "editor")

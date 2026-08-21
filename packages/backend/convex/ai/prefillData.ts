@@ -6,6 +6,7 @@ import { PROFILE_TEXT_FIELDS, isProfileComplete } from "../assessment/roles"
 import { clampLocale, promptLocale } from "../evaluationModel/localize"
 import { trackName } from "../evaluationModel/trackSchema"
 import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
+import { assertKnownRole } from "../lib/functions"
 import { appError, ERROR_CODES } from "../lib/errors"
 
 // The DB side of the role-profile prefill (ai/prefill). Split out of the
@@ -93,6 +94,9 @@ export const collectPrefillTargets = internalQuery({
       throw appError(ERROR_CODES.membershipConflict)
     }
     if (membership === null) throw appError(ERROR_CODES.notAMember)
+    // Known-role denial too, so this re-check cannot be the permissive path
+    // beside the wrapper it mirrors.
+    assertKnownRole(membership.role, orgId, userId)
 
     // Company context, the same subset of settings the draft flow reads
     // (currency is never used by the prompts).
