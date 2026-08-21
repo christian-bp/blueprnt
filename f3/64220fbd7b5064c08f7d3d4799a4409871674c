@@ -1,0 +1,89 @@
+apps/dashboard/content/docs/sv/troubleshooting-pay-mapping.mdx
+  s_58dd112dc09435::t_5a4deaf6df9bb1 17-20,27
+apps/dashboard/content/docs/nb/troubleshooting-pay-mapping.mdx
+  s_58dd112dc09435::t_d563f3420624cb 17-20,27
+packages/backend/convex/payMapping/runs.ts
+  s_58dd112dc09435::t_9f3351eef39aa7 40-65,74-91,105-111,142,145-146,157-160,163-164,169-171,177-178,197-199
+  s_58dd112dc09435::t_457021a63be985 232-245
+  s_58dd112dc09435::t_0052434933a615 161-162
+  s_58dd112dc09435::t_c7338aeb1e2c2a 14
+packages/backend/convex/assessment/results.ts
+  s_58dd112dc09435::t_a125edc847862d 30-36
+apps/dashboard/components/pay-mapping/start-pay-mapping-dialog.tsx
+  s_58dd112dc09435::t_10264fe012b31f 150-166
+  s_58dd112dc09435::t_1f6bdf9cd8b1b2 26,32-35
+  s_58dd112dc09435::t_c65ed860105f50 126-127
+  s_58dd112dc09435::t_cf84dac9c92abe 167-169
+  s_58dd112dc09435::t_583fa1c6dd3468 69
+packages/backend/convex/payMapping/erasure.test.ts
+  s_58dd112dc09435::t_0f55e201fbab35 53-63
+apps/dashboard/content/docs/sv/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_f1195b7cc78cf6 187-190
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_2ff53633daad01 1205-1206,1212-1214
+apps/dashboard/content/docs/da/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_c38d087eabae95 185-188
+apps/dashboard/components/pay-mapping/start-pay-mapping-dialog.test.tsx
+  s_58dd112dc09435::t_6c363852a41b9a 184-186,202-204,214-226,228-261,263-265
+  s_58dd112dc09435::t_4856ba9599ad4c 49-51,58-60
+  s_58dd112dc09435::t_0052434933a615 227,262
+  s_58dd112dc09435::t_90a4c2bf048003 88-90
+  s_58dd112dc09435::t_152d4c39dc052c 266
+apps/dashboard/content/docs/sv/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_fe766fbef4474e 23-25,37-38,43,48-54,61-67
+apps/dashboard/content/docs/nb/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_3a5a2142cbb3dc 186-189
+packages/backend/convex/payMapping/runs.test.ts
+  s_58dd112dc09435::t_9c60541d6d777d 876-880
+  s_58dd112dc09435::t_fbe4b945003fdf 666-671,673-680
+  s_58dd112dc09435::t_492ed6bbb5b158 558-560,566-650,655-665,672,681-696
+  s_58dd112dc09435::t_0052434933a615 651-654
+  s_58dd112dc09435::t_e193002aa32b91 697
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_4f0d38281b8c95 1205-1206,1212-1214
+apps/dashboard/content/docs/en/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_e56e40eb601cb1 187-190
+apps/dashboard/content/docs/fi/troubleshooting-pay-mapping.mdx
+  s_58dd112dc09435::t_56b5288bda9e8c 18-20,28
+apps/dashboard/content/docs/nb/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_fe906d003357a1 22-24,37-38,42,47-54,61-67
+apps/dashboard/content/docs/da/troubleshooting-pay-mapping.mdx
+  s_58dd112dc09435::t_d89addf7a3cb15 17-18,27
+apps/dashboard/content/docs/en/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_937bf98a47205f 22-24,35-36,40-41,44-50,57-62
+apps/dashboard/components/pay-mapping/pay-mapping-preconditions-panel.tsx
+  s_58dd112dc09435::t_cae53c1436b870 3,12,21-44,49-52,57-58,63-64,93-98,134-136
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_1b29a67f1c69b8 1205-1206,1212-1214
+apps/dashboard/content/docs/en/troubleshooting-pay-mapping.mdx
+  s_58dd112dc09435::t_93471340736f36 17-18,25
+apps/dashboard/content/docs/fi/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_aedb635fe18c7e 191-194
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_2acdbed1c92c16 1205-1206,1212-1214
+apps/dashboard/content/docs/fi/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_e27aac95df01aa 24-26,39-40,44-45,49-56,63-69
+apps/dashboard/components/pay-mapping/pay-mapping-preconditions-panel.test.tsx
+  s_58dd112dc09435::t_936ef92d3effcc 103-157
+  s_58dd112dc09435::t_cc20779fff8bf9 7-9,11-20,24-28
+apps/dashboard/content/docs/da/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_10ab671b8f1756 22-24,36-37,41-42,46-53,60-66
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_a1a3a1a0c82956 1205-1206,1212-1214
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f364220fbd7b5064c08f7d3d4799a4409871674c",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
