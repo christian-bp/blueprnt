@@ -1,0 +1,66 @@
+apps/dashboard/components/pay-mapping/analysis-spine.tsx
+  s_58dd112dc09435::t_2466b1af259e1a 5,8,11-19,30,34-36,45-47,54-94
+  s_58dd112dc09435::t_c4f110ce0d91ad 9,31-32,44,48-51
+apps/dashboard/content/docs/nb/model-overview.mdx
+  s_58dd112dc09435::t_f07b30e40277e1 36-41
+apps/dashboard/components/model/model-section-shell.tsx
+  s_58dd112dc09435::t_ec101808501ddc 47-55
+apps/dashboard/components/segmented-progress.tsx
+  s_58dd112dc09435::t_f3eb16a5c04bc0 124-131
+  s_58dd112dc09435::t_ebe208ae6fc809 144
+  s_58dd112dc09435::t_8a8d6be1643957 69-72,138-143,145
+  s_58dd112dc09435::t_a3441d383df868 132-137
+  s_58dd112dc09435::t_fd22d4e4c3e14a 209-213
+  s_58dd112dc09435::t_4e60857138bbda 146-163,165-192,194,197-200,202-208,214-233
+  s_58dd112dc09435::t_b6263ae94e6c9a 17-19,25-28,30-33,35-46
+  s_58dd112dc09435::t_48dfa67704fa88 3-8,12-13,16,20
+  s_58dd112dc09435::t_a5e528773316d3 195-196
+apps/dashboard/content/docs/da/model-overview.mdx
+  s_58dd112dc09435::t_f07b30e40277e1 36-43
+apps/dashboard/content/docs/sv/model-overview.mdx
+  s_58dd112dc09435::t_f07b30e40277e1 36-43
+apps/dashboard/components/model/model-spine.tsx
+  s_58dd112dc09435::t_57b9af5573c262 84-87
+  s_58dd112dc09435::t_cdd35e1b0efdf2 7,10-11,13,32,39-40,47-53,57-83,88-91
+  s_58dd112dc09435::t_c4f110ce0d91ad 28-29,38,41-44
+apps/dashboard/components/pay-mapping/analysis-section-shell.tsx
+  s_58dd112dc09435::t_ec101808501ddc 38-46
+apps/dashboard/components/model/model-section-shell.test.tsx
+  s_58dd112dc09435::t_8112b86d854c44 79-81,83-86
+apps/dashboard/content/docs/en/model-overview.mdx
+  s_58dd112dc09435::t_f07b30e40277e1 36-43
+apps/dashboard/components/pay-mapping/analysis-spine.test.tsx
+  s_58dd112dc09435::t_d98e418bdc7ec1 1-7,20,24,30,120-137,141-143
+  s_58dd112dc09435::t_2799e733657bce 11,13-18
+  s_58dd112dc09435::t_c99ade58ecc7fb 60,63-66,82-89,108,110-111,114-117
+  s_58dd112dc09435::t_57b9af5573c262 67-77
+  s_58dd112dc09435::t_a90e8274e4b598 19,118-119
+apps/dashboard/components/model/model-spine.test.tsx
+  s_58dd112dc09435::t_57b9af5573c262 61-62,65-76
+  s_58dd112dc09435::t_19731b1711dc5f 1-7,23-27,125-128,130-139
+  s_58dd112dc09435::t_a3b3f976852039 52-55,57-60,63-64,113-116,118-122
+apps/dashboard/components/spine-header.tsx
+  s_58dd112dc09435::t_54c9202ada1d56 1-50
+apps/dashboard/components/segmented-progress.test.tsx
+  s_58dd112dc09435::t_649b2b97b939d3 57-60
+  s_58dd112dc09435::t_2aa03c2b89d645 63-78,80-81
+  s_58dd112dc09435::t_38fe75fb49a2a2 1,3-6,9,11-15,79,92-95,141-173,184-185,225-227,242-243,259-260
+apps/dashboard/content/docs/fi/model-overview.mdx
+  s_58dd112dc09435::t_f07b30e40277e1 38-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "41fdeea5bc8f4c21c25ff40a7e516b6c888cbf7c",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
