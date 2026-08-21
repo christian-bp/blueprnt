@@ -1,0 +1,48 @@
+apps/dashboard/components/floating-stack.tsx
+  s_58dd112dc09435::t_30fcd82785e3eb 1-56
+apps/dashboard/components/model/model-section-shell.test.tsx
+  s_58dd112dc09435::t_058059ece0035d 83-87,92-101,106
+  s_58dd112dc09435::t_0d1ef2921ab6f3 130-140
+apps/dashboard/components/floating-stack.test.tsx
+  s_58dd112dc09435::t_a5a3323487fb7c 1-91
+apps/dashboard/components/model/model-section-shell.tsx
+  s_58dd112dc09435::t_49c99635d70ce1 10-13,64-66,68-84,90-92,106
+apps/dashboard/components/floating-pill.test.tsx
+  s_58dd112dc09435::t_a8fa897ad1c14e 4-7,17-19,22-27,29-31,39-40
+  s_58dd112dc09435::t_1648ea5cc00ab7 41-54
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_a8fa897ad1c14e 625
+  s_58dd112dc09435::t_6132419eb9f6a2 486-488,490,577-581,586-589
+apps/dashboard/components/segmented-progress.test.tsx
+  s_58dd112dc09435::t_a8fa897ad1c14e 68,71-73
+apps/dashboard/components/floating-pill.tsx
+  s_58dd112dc09435::t_ed3c8b1b518e83 12,67-70,85,138
+apps/dashboard/components/segmented-progress.tsx
+  s_58dd112dc09435::t_68e72795d97150 122-132
+apps/dashboard/components/chapter-action-slot.tsx
+  s_58dd112dc09435::t_f80b19b6ee6f92 3-4,6,14-15,17-18,20-22,24,33,39,41
+apps/dashboard/components/section-title-row.tsx
+  s_58dd112dc09435::t_68e72795d97150 5-8,11,26-34
+apps/dashboard/components/pay-mapping/analysis-section-shell.tsx
+  s_58dd112dc09435::t_49c99635d70ce1 8-11,58-77,94
+apps/dashboard/components/dom-slot.tsx
+  s_58dd112dc09435::t_217b985f3bdaa9 45-52,55
+  s_58dd112dc09435::t_85f1ce022a438f 1-35,37-44,53-54,56-60
+  s_58dd112dc09435::t_f80b19b6ee6f92 36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "247741d3bde40571e616301564a38c37d50ee7e8",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
