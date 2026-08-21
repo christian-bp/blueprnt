@@ -1846,6 +1846,9 @@
         "addLabel": "Lisää kriteeri ulottuvuuteen {dimension}",
         "columnCount": "{count} enintään {max}:sta",
         "columnEmpty": "Tähän ulottuvuuteen ei ole vielä valittu kriteerejä",
+        "remainingCount": "Valitse vielä {count, plural, one {# kriteeri} other {# kriteeriä}}.",
+        "remainingDimension": "Valitse vähintään yksi kriteeri ulottuvuudessa {dimension}.",
+        "remainingMateriality": "Vastatkaa työolosuhteita koskevaan kysymykseen.",
         "recommendedChip": "Suositeltu toimialallenne",
         "overlapChip": "Menee päällekkäin näiden kanssa: {names}",
         "workingConditions": {

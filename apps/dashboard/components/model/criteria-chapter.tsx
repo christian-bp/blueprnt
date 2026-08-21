@@ -14,6 +14,8 @@ import {
   DIMENSION_MAX_ACTIVE,
   type DimensionKey,
   MODEL_MAX_CRITERIA,
+  MODEL_MIN_CRITERIA,
+  type MethodCheckKey,
 } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -22,6 +24,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { HATCH_CLASS } from "@/components/hatch"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { FloatingPill, FloatingPillText } from "@/components/floating-pill"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
 import { ChapterFraming } from "@/components/model/chapter-framing"
 import { DimensionColumn } from "@/components/model/dimension-column"
@@ -29,8 +32,71 @@ import { DimensionFrame } from "@/components/model/dimension-frame"
 import { LibraryPickerDialog } from "@/components/model/library-picker-dialog"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
 import { WorkingConditionsDecision } from "@/components/model/working-conditions-decision"
+import {
+  modelChapterProgress,
+  type ModelProgressCheck,
+  type ModelProgressInput,
+} from "@/lib/model-chapters"
 import { modelErrorKey } from "@/lib/model-errors"
 import { toast } from "@/lib/toast"
+
+// The nearest step still between this chapter and done, or null when there is
+// none. A STEP rather than a sentence, so the rule lives here and the wording
+// stays in the component with the rest of this chapter's copy.
+type RemainingStep =
+  | { kind: "count"; missing: number }
+  | { kind: "dimension"; key: DimensionKey }
+  | { kind: "materiality" }
+
+// The checks this reading needs, structurally: the progress derivation's own
+// slice plus the dimensions a coverage failure names.
+interface SelectionChecks {
+  checks: readonly (ModelProgressCheck & {
+    dimensions?: readonly DimensionKey[]
+  })[]
+  approval: unknown
+}
+
+// Complete is decided by modelChapterProgress, the SAME derivation the section
+// spine draws its Kriterier segment from, so the pill and the bar can never
+// disagree about whether this chapter is finished. WHICH step is nearest is
+// read off the engine's own three blocker checks, in the order the work
+// happens: enough criteria, then every mandatory dimension covered, then the
+// materiality question answered. One step, never a list: a reader with six
+// criteria in three dimensions is not helped by everything the model will
+// eventually need.
+//
+// Null while the checks are still loading too, because a reading taken from an
+// empty check list would tell a finished model to choose six criteria.
+function remainingStep(
+  checks: SelectionChecks | undefined | null
+): RemainingStep | null {
+  if (checks === undefined || checks === null) return null
+  const input: ModelProgressInput = {
+    checks: checks.checks,
+    approved: checks.approval !== null,
+  }
+  const progress = modelChapterProgress(input, "criteria")
+  if (progress.done >= progress.total) return null
+
+  const checkOf = (key: MethodCheckKey) =>
+    checks.checks.find((check) => check.key === key)
+  const selected = checkOf("criterionCount")?.count ?? 0
+  if (selected < MODEL_MIN_CRITERIA) {
+    return { kind: "count", missing: MODEL_MIN_CRITERIA - selected }
+  }
+  // The engine names the uncovered mandatory dimensions itself, in dimension
+  // order; the first is the one to point at.
+  const uncovered = checkOf("dimensionCoverage")?.dimensions?.[0]
+  if (uncovered !== undefined) return { kind: "dimension", key: uncovered }
+  if (checkOf("workingConditionsTested")?.ok === false) {
+    return { kind: "materiality" }
+  }
+  // Over the MAXIMUM is the only way left to be incomplete here, and the
+  // column holding the extra criterion already says so with its own count
+  // chip; the pill would only repeat it.
+  return null
+}
 
 // Each dimension's help body, which says what the dimension COVERS rather than
 // asking the reader a question: a column heading with a question mark behind it
@@ -56,6 +122,7 @@ export function CriteriaChapter({ orgId }: { orgId: string }) {
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
   const tHelp = useTranslations("dashboard.help")
+  const tCriteria = useTranslations("dashboard.model.criteria")
   const locale = useLocale()
 
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
@@ -63,6 +130,15 @@ export function CriteriaChapter({ orgId }: { orgId: string }) {
   // from the library's own combination tables, never a selection (the company
   // still chooses and documents its own criteria).
   const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
+    orgId,
+  })
+  // The ENGINE's verdict on the selection, from the same query the section's
+  // spine already subscribes to (identical query and args, so the client
+  // shares one subscription): what remains on this chapter is derived from the
+  // checks, never re-implemented from the criteria list. A second derivation
+  // would eventually tell the reader something the bar above it disagrees
+  // with.
+  const checks = useQuery(api.evaluationModel.approval.getMethodChecks, {
     orgId,
   })
   const deactivateCriterion = useMutation(
@@ -118,6 +194,25 @@ export function CriteriaChapter({ orgId }: { orgId: string }) {
   // opens at all.
   const decision = model.workingConditions
   const slotOpen = decision?.status === "active"
+
+  // The nearest step still between this chapter and done, in one sentence, or
+  // null when there is none. Which STEPS exist is the engine's (the same three
+  // blocker checks the Godkännande checklist reports); whether the chapter is
+  // done at all is modelChapterProgress, the one derivation the spine draws
+  // its own segment from.
+  const step = remainingStep(checks)
+  const remaining =
+    step === null
+      ? null
+      : step.kind === "count"
+        ? tCriteria("remainingCount", { count: step.missing })
+        : step.kind === "dimension"
+          ? tCriteria("remainingDimension", {
+              dimension:
+                model.dimensions.find((dimension) => dimension.key === step.key)
+                  ?.name ?? step.key,
+            })
+          : tCriteria("remainingMateriality")
 
   return (
     <div className="space-y-4">
@@ -199,6 +294,15 @@ export function CriteriaChapter({ orgId }: { orgId: string }) {
           )
         })}
       </div>
+      {/* What remains, floating clear of the columns. Only while the chapter is
+          incomplete BY ITS OWN RULE, and only the nearest step: a reader who
+          has six criteria in three dimensions is not helped by a list of
+          everything the model will eventually need. */}
+      <FloatingPill tone="info">
+        {remaining === null ? null : (
+          <FloatingPillText alone>{remaining}</FloatingPillText>
+        )}
+      </FloatingPill>
     </div>
   )
 }

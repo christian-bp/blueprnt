@@ -1846,6 +1846,9 @@
         "addLabel": "Legg til et kriterium i {dimension}",
         "columnCount": "{count} av maks {max}",
         "columnEmpty": "Ingen kriterier i denne dimensjonen ennå",
+        "remainingCount": "Velg minst {count, plural, one {# kriterium} other {# kriterier}} til.",
+        "remainingDimension": "Velg minst ett kriterium i {dimension}.",
+        "remainingMateriality": "Svar på spørsmålet om arbeidsforhold.",
         "recommendedChip": "Anbefalt for deres bransje",
         "overlapChip": "Overlapper {names}",
         "workingConditions": {

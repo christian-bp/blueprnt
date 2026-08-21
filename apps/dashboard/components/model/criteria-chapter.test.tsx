@@ -291,6 +291,50 @@ const WC_ACTIVE_UNSTAFFED = makeModel(SELECTION.criteria, {
 let modelResult: unknown = SELECTION
 let industryResult: string | null = "itTelecom"
 
+// The engine's verdict on the selection, as getMethodChecks serves it. Only
+// the three blocker checks this chapter reads are built; the pill's rule is
+// the engine's, so the fixture states check RESULTS rather than a criteria
+// list the test would have to re-derive them from.
+function selectionChecks({
+  count,
+  uncovered = [],
+  materialityDecided = true,
+}: {
+  count: number
+  uncovered?: string[]
+  materialityDecided?: boolean
+}) {
+  return {
+    checks: [
+      {
+        key: "criterionCount",
+        level: "blocker",
+        ok: count >= 6 && count <= 8,
+        count,
+      },
+      {
+        key: "dimensionCoverage",
+        level: "blocker",
+        ok: uncovered.length === 0,
+        ...(uncovered.length > 0 ? { dimensions: uncovered } : {}),
+      },
+      {
+        key: "workingConditionsTested",
+        level: "blocker",
+        ok: materialityDecided,
+      },
+    ],
+    approval: null,
+    lastApprovedAt: null,
+    workingConditions: null,
+    dimensionShares: [],
+  }
+}
+
+// Undefined by default: the chapter's own tests are about the columns, and a
+// pill needs the checks to have landed before it says anything.
+let checksResult: unknown
+
 function renderChapter() {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
@@ -321,11 +365,14 @@ describe("the Kriterier chapter", () => {
     orgRole = "admin"
     modelResult = SELECTION
     industryResult = "itTelecom"
+    checksResult = undefined
     onQuery((ref) => {
       if (ref === "evaluationModel.model.getModel") return modelResult
       if (ref === "accounts.organization.getOrganizationSettings") {
         return { orgId: "org-1", industry: industryResult }
       }
+      if (ref === "evaluationModel.approval.getMethodChecks")
+        return checksResult
       return undefined
     })
   })
@@ -369,6 +416,82 @@ describe("the Kriterier chapter", () => {
 
   // Weighting is the next chapter. A 1-5 weight row beside a criterion the
   // reader is still deciding to include is the confusion the chapters end.
+  // What remains, in one sentence, floating clear of the columns. The rule is
+  // the ENGINE's: the pill reads the same checks the Godkännande checklist
+  // reports and the same modelChapterProgress derivation the spine's own
+  // segment moves on, so the three surfaces can never disagree about whether
+  // this chapter is done.
+  describe("the remaining-step pill", () => {
+    const pill = () =>
+      document.querySelector(
+        '[data-slot="floating-pill"]'
+      ) as HTMLElement | null
+    const sentence = (
+      key: "remainingDimension" | "remainingMateriality",
+      values: Record<string, string> = {}
+    ) => {
+      let text: string = criteria[key]
+      for (const [name, value] of Object.entries(values)) {
+        text = text.replace(`{${name}}`, value)
+      }
+      return text
+    }
+
+    it("says how many criteria are still missing under the minimum", () => {
+      checksResult = selectionChecks({ count: 4 })
+      renderChapter()
+      // Six is the work, so four selected leaves two.
+      expect(pill()?.textContent).toContain("2 more criteria")
+    })
+
+    it("says it in the singular when one is missing", () => {
+      checksResult = selectionChecks({ count: 5 })
+      renderChapter()
+      expect(pill()?.textContent).toContain("1 more criterion")
+    })
+
+    // The count is met and the coverage is not: the pill names the dimension
+    // the engine itself reports as uncovered, never one this test worked out.
+    it("names an uncovered mandatory dimension once the count is met", () => {
+      checksResult = selectionChecks({ count: 6, uncovered: ["effort"] })
+      renderChapter()
+      expect(pill()?.textContent).toBe(
+        sentence("remainingDimension", { dimension: "Effort and complexity" })
+      )
+    })
+
+    it("asks for the materiality decision once count and coverage are met", () => {
+      checksResult = selectionChecks({ count: 6, materialityDecided: false })
+      renderChapter()
+      expect(pill()?.textContent).toBe(sentence("remainingMateriality"))
+    })
+
+    // Complete by its own rule: nothing to say, so nothing on screen.
+    it("says nothing once the chapter is complete", () => {
+      checksResult = selectionChecks({ count: 6 })
+      renderChapter()
+      expect(pill()).toBeNull()
+    })
+
+    // A sentence read from a check list that has not arrived would tell a
+    // finished model to choose six criteria.
+    it("says nothing while the checks are still loading", () => {
+      checksResult = undefined
+      renderChapter()
+      expect(pill()).toBeNull()
+    })
+
+    // Purely informative: adding a criterion is instant and per column, so
+    // there is no batch action for this pill to carry.
+    it("offers no control", () => {
+      checksResult = selectionChecks({ count: 4 })
+      renderChapter()
+      expect(pill()?.querySelector("button")).toBeNull()
+      // The ordinary working state, never a warning.
+      expect(pill()?.getAttribute("data-tone")).toBe("info")
+    })
+  })
+
   it("carries no weight row and no evaluation scale", () => {
     renderChapter()
     expect(screen.queryAllByRole("group")).toHaveLength(0)

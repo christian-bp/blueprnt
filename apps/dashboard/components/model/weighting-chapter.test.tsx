@@ -477,6 +477,10 @@ describe("the Viktning chapter", () => {
       )
       const line = screen.getByText("1 weight point left to distribute")
       expect(pillOf(line)).not.toBeNull()
+      // The one shared shell, the same one the Kriterier chapter's own pill
+      // is built from: a chapter that hand-rolled its own would lose this
+      // marker and fail here.
+      expect(line.closest('[data-slot="floating-pill"]')).not.toBeNull()
       // Informative, not alarming: being mid-allocation is the ordinary state.
       expect(toneOf(line)).toBe("info")
       expect(pillClasses(line).join(" ")).not.toContain("amber")
@@ -516,8 +520,15 @@ describe("the Viktning chapter", () => {
       expect(toneOf(readout)).toBe("ready")
       expect(pillClasses(readout).join(" ")).not.toContain("amber")
       // The save carries the action colour, which is the design system's
-      // primary: it is the one thing in the pill meant to be pressed.
-      expect(save().className).toContain("bg-primary")
+      // primary: it is the one thing in the pill meant to be pressed. It is
+      // sized and shaped to its host rather than to the framing row: a
+      // capsule inside the pill's capsule, at the compact size, because a
+      // default-height block in a floating pill dominates the readout it
+      // serves.
+      const classes = save().className.split(/\s+/)
+      expect(classes).toContain("bg-primary")
+      expect(classes).toContain("h-8")
+      expect(classes).toContain("rounded-full")
       // The figures roll rather than swap: they change while the reader
       // watches. (NumberFlow is mocked here to a plain span carrying its
       // value, so their presence is what is asserted.)

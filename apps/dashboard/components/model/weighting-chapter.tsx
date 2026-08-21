@@ -26,10 +26,7 @@ import {
   CHAPTER_ACTION_BUTTON_SIZE,
   ChapterFraming,
 } from "@/components/model/chapter-framing"
-import {
-  WeightBudgetPill,
-  WeightBudgetReadout,
-} from "@/components/model/weight-budget-pill"
+import { FloatingPill, FloatingPillText } from "@/components/floating-pill"
 import { DimensionFrame } from "@/components/model/dimension-frame"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
 import {
@@ -477,7 +474,7 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
           something to say (the allocation does not add up) or something to do
           (it adds up and is unsaved); an allocation that adds up and is saved
           is this chapter's steady state, and it says nothing. */}
-      <WeightBudgetPill
+      <FloatingPill
         // Under budget is the ordinary way through this chapter, over budget
         // is a state the model cannot be saved from, and an allocation that
         // adds up is done: three different things to say, in the status
@@ -489,14 +486,14 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
           // splitting a plural around a component to roll one digit is exactly
           // the i18n boundary the house rules draw. The readout below, whose
           // figures ARE tagged, is where the numbers roll.
-          <WeightBudgetReadout>
+          <FloatingPillText alone>
             {delta < 0
               ? t("pointsLeft", { count: -delta })
               : t("pointsOver", { count: delta })}
-          </WeightBudgetReadout>
+          </FloatingPillText>
         ) : dirty ? (
           <>
-            <WeightBudgetReadout>
+            <FloatingPillText>
               {/* Both figures move while the reader watches (a weight click
                   changes the sum, removing a criterion changes the budget), so
                   they roll rather than swap. Tagged inside the message rather
@@ -506,15 +503,27 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
                 allocated: () => <NumberFlow value={totalPoints} />,
                 budget: () => <NumberFlow value={budget} />,
               })}
-            </WeightBudgetReadout>
+            </FloatingPillText>
             {/* A direct child of the pill's layout animation, so Motion
                 counter-transforms its label instead of stretching it while
                 the box springs to the new width (ui-animation.md rule 1).
                 The primary variant is the action colour: it is the one thing
-                in the pill the reader is meant to press. */}
+                in the pill the reader is meant to press.
+
+                sm and rounded-full are a deliberate call-site deviation from
+                CHAPTER_ACTION_BUTTON_SIZE, which governs the chapter framing
+                row's actions and not this. A floating capsule has its own
+                density: a default-height block inside it stands taller than
+                the readout it serves and dominates the sentence it belongs
+                to. At sm it sits with an even inset inside the pill's own
+                padding, a capsule inside a capsule, and the pill's right end
+                is the button's height rather than a control bulging out of
+                it. */}
             <motion.span layout="position" className="flex shrink-0">
               <Button
                 type="button"
+                size="sm"
+                className="rounded-full"
                 disabled={saving || !balanced || !dirty}
                 onClick={onSave}
               >
@@ -523,7 +532,7 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
             </motion.span>
           </>
         ) : null}
-      </WeightBudgetPill>
+      </FloatingPill>
     </div>
   )
 }

@@ -1846,6 +1846,9 @@
         "addLabel": "Lägg till ett kriterium i {dimension}",
         "columnCount": "{count} av max {max}",
         "columnEmpty": "Inga kriterier i denna dimension ännu",
+        "remainingCount": "Välj minst {count, plural, one {# kriterium} other {# kriterier}} till.",
+        "remainingDimension": "Välj minst ett kriterium i {dimension}.",
+        "remainingMateriality": "Besvara frågan om arbetsförhållanden.",
         "recommendedChip": "Rekommenderas för er bransch",
         "overlapChip": "Överlappar {names}",
         "workingConditions": {

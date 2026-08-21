@@ -1846,6 +1846,9 @@
         "addLabel": "Add a criterion to {dimension}",
         "columnCount": "{count} of max {max}",
         "columnEmpty": "No criteria in this dimension yet",
+        "remainingCount": "Choose at least {count, plural, one {# more criterion} other {# more criteria}}.",
+        "remainingDimension": "Choose at least one criterion in {dimension}.",
+        "remainingMateriality": "Answer the working-conditions question.",
         "recommendedChip": "Recommended for your industry",
         "overlapChip": "Overlaps {names}",
         "workingConditions": {

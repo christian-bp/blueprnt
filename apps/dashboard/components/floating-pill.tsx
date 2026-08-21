@@ -13,28 +13,27 @@ import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import { SPRING } from "@/lib/motion"
 
 // What the pill is saying, and therefore how it looks. The three tones are the
-// status block's own language, carried over rather than reinvented when the
-// block became a pill: the check when the allocation adds up, the amber when
-// it is over the budget, the neutral information mark while it is simply
+// retired chapter status block's own language, carried over rather than
+// reinvented: the check when the thing it watches is done, the amber when
+// something is wrong, the neutral information mark while work is simply
 // unfinished.
 //
-// Under and over budget are NOT the same state: distributing the last points
-// is the ordinary way through this chapter, while an allocation that exceeds
-// its budget is a thing the model cannot be saved with. One is a readout, the
-// other is a warning, and they must not read alike at a glance.
-export type WeightBudgetTone = "info" | "warning" | "ready"
+// Unfinished and WRONG are not the same state: being part-way through is the
+// ordinary way through a chapter, while a state the model cannot be saved from
+// is a warning. They must not read alike at a glance.
+export type FloatingPillTone = "info" | "warning" | "ready"
 
 const TONE_ICON = {
   info: InformationCircleIcon,
   warning: Alert02Icon,
   ready: Tick02Icon,
-} as const satisfies Record<WeightBudgetTone, unknown>
+} as const satisfies Record<FloatingPillTone, unknown>
 
 // The pill's own surface per tone. Only the warning tints the box: the app has
 // one amber, defined once in lib/alert-tone, and it tints the border AND the
 // text together so the whole pill reads as the warning rather than an ordinary
 // pill with an orange mark in it.
-const TONE_CLASS: Record<WeightBudgetTone, string> = {
+const TONE_CLASS: Record<FloatingPillTone, string> = {
   info: "",
   warning: WARNING_ALERT_CLASS,
   ready: "",
@@ -44,39 +43,42 @@ const TONE_CLASS: Record<WeightBudgetTone, string> = {
 // drift from the border around it; the other two carry their own ink against
 // the card's ordinary foreground, which is what keeps the figures beside them
 // at full contrast instead of tinting a whole readout for one state word.
-const TONE_ICON_CLASS: Record<WeightBudgetTone, string> = {
+const TONE_ICON_CLASS: Record<FloatingPillTone, string> = {
   info: "text-muted-foreground",
   warning: "",
   ready: "text-success",
 }
 
-// The Viktning chapter's budget readout and its one save, as a floating pill
-// rather than a block at the top of the chapter.
+// A chapter's standing readout, floating clear of its content.
 //
-// It floats because the chapter's own content is a grid of dimension columns
-// that has to begin at the same height as the other chapters' grids: any block
-// between the framing row and the grid moves this chapter's columns down and
-// makes switching tabs a jump. Fixed positioning takes the readout out of flow
+// It floats because a chapter's content is a grid of dimension columns that has
+// to begin at the same height as every other chapter's: any block between the
+// framing row and the grid moves that chapter's columns down and makes
+// switching tabs a jump. Fixed positioning takes the readout out of flow
 // entirely, so it cannot push anything, and it cannot collide with the content
 // by construction.
 //
-// It renders only when it has something to SAY or something to DO. An
-// allocation that adds up and is already saved is the steady state of this
-// chapter, and a pill standing there to confirm it is a control the reader has
-// to look past every time they open the page. Nothing to say, nothing on
-// screen.
+// It renders only when it has something to SAY or something to DO. A chapter
+// that is finished and saved is the steady state, and a pill standing there to
+// confirm it is a control the reader has to look past every time they open the
+// page. Nothing to say, nothing on screen.
 //
-// Bottom-CENTER rather than a corner: the allocation is the chapter's whole
-// subject, so its readout belongs on the reader's centre line, and the toasts
-// own the bottom-right on this app. It sits under them in the stack (z-40
-// against their z-50) for the one moment both are on screen, which is the
-// instant after a save, when this pill is on its way out anyway.
-export function WeightBudgetPill({
+// Bottom-CENTER rather than a corner: what it carries is the chapter's whole
+// subject, so it belongs on the reader's centre line, and the toasts own the
+// bottom-right on this app. It sits under them in the stack (z-40 against
+// their z-50) for the one moment both are on screen, which is the instant
+// after a save, when the pill is on its way out anyway.
+//
+// Shared rather than written per chapter: two chapters carry one of these
+// already (the Viktning budget, the Kriterier selection rule), they must read
+// as the same object, and a shell copied per chapter would drift the moment
+// either is touched.
+export function FloatingPill({
   tone,
   children,
 }: {
-  tone: WeightBudgetTone
-  // Null is the fourth state: nothing to say, so nothing renders.
+  tone: FloatingPillTone
+  // Null is the quiet state: nothing to say, so nothing renders.
   children: ReactNode | null
 }) {
   return (
@@ -89,16 +91,16 @@ export function WeightBudgetPill({
         {children !== null && (
           <motion.div
             // A real enter and leave (it genuinely arrives when the reader
-            // starts editing and leaves when the edit lands), so it animates
+            // starts work and leaves when the work lands), so it animates
             // rather than blinking. Reduced motion is respected globally
             // through MotionConfig; never bypassed here.
             //
-            // `layout` because the three states are different widths, and a
-            // pill that jumped from one to the next as the reader clicks
-            // weights would read as three different pills. Its children carry
-            // layout="position" so Motion counter-transforms them: a plain
-            // child of a FLIP-scaled box has its text stretched for the length
-            // of the spring (ui-animation.md rule 1).
+            // `layout` because a pill's states are different widths, and one
+            // that jumped from one to the next as the reader works would read
+            // as several different pills. Its children carry layout="position"
+            // so Motion counter-transforms them: a plain child of a
+            // FLIP-scaled box has its text stretched for the length of the
+            // spring (ui-animation.md rule 1).
             //
             // Opacity and y for the enter and leave, on an element carrying no
             // layout of its own to fight: the box styles sit on this same
@@ -109,6 +111,7 @@ export function WeightBudgetPill({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12, transition: { duration: 0.12 } }}
             transition={SPRING}
+            data-slot="floating-pill"
             data-tone={tone}
             className={cn(
               "pointer-events-auto flex max-w-full items-center gap-2 rounded-full border bg-card py-2 pr-2 pl-4 shadow-lg",
@@ -132,12 +135,26 @@ export function WeightBudgetPill({
 }
 
 // The pill's own text, at the app's reading floor and never smaller: it is the
-// only place this chapter states the budget, so it is read rather than
-// glanced. layout="position" for the same reason the mark beside it carries
-// one: it is a direct child of a box that FLIP-animates its width.
-export function WeightBudgetReadout({ children }: { children: ReactNode }) {
+// only place its chapter states this, so it is read rather than glanced.
+// layout="position" for the same reason the mark beside it carries one: it is
+// a direct child of a box that FLIP-animates its width.
+//
+// A pill with no control in it is padded evenly instead of leaving the
+// button's gap hanging on its right: pr-2 is room for a control, and a
+// sentence alone in it would sit off-centre.
+export function FloatingPillText({
+  children,
+  alone,
+}: {
+  children: ReactNode
+  // Nothing follows this text in the pill.
+  alone?: boolean
+}) {
   return (
-    <motion.span layout="position" className="text-sm tabular-nums">
+    <motion.span
+      layout="position"
+      className={cn("text-sm tabular-nums", alone === true && "pr-2")}
+    >
       {children}
     </motion.span>
   )
