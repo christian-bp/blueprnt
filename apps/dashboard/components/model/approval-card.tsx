@@ -11,6 +11,7 @@ import { METHOD_CHECK_KEYS } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -240,54 +241,61 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
         <CardDescription className={CARD_READING_MEASURE}>
           {t("approvalDescription")}
         </CardDescription>
+        {/* The chapter's actions, level with the card's title and against the
+            card's own right edge: the same anatomy the journey row uses, and
+            the design system's own slot for it rather than a hand-rolled flex
+            row.
+
+            The cluster is what it always was, in the order it always had:
+            restore as the outline option first, approve as the primary last.
+            Both belong to the DRAFT state, and they coexist there, because a
+            reopened model can be approved afresh or put back to what it last
+            was.
+
+            The slot is ALWAYS mounted and keeps the button's height, because
+            an approved model carries neither action. Without the reservation
+            the title row would stand shorter in that state and the header
+            would jump on every approval. */}
+        <CardAction className="flex min-h-9 items-center gap-2">
+          {canRestore && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setRestoreOpen(true)}
+            >
+              {t("restoreCta")}
+            </Button>
+          )}
+          {data.approval === null && (
+            <Button
+              type="button"
+              disabled={hasFailingBlocker}
+              onClick={onApprove}
+            >
+              {t("approveModelCta")}
+            </Button>
+          )}
+        </CardAction>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-1">
-          {/* The status row spans the whole card: its state on the left, its
-              action against the right edge. Not capped, because the row is
-              not reading text and the button riding the card's own edge is
-              the point of the widening. */}
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm">
-              {data.approval
-                ? t("decidedBy", {
-                    name: data.approval.approvedByName ?? "",
-                    date: format.dateTime(new Date(data.approval.approvedAt), {
-                      dateStyle: "medium",
-                    }),
-                  })
-                : t("draftState")}
-            </p>
-            <div className="flex items-center gap-2">
-              {canRestore && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setRestoreOpen(true)}
-                >
-                  {t("restoreCta")}
-                </Button>
-              )}
-              {data.approval === null && (
-                <Button
-                  type="button"
-                  disabled={hasFailingBlocker}
-                  onClick={onApprove}
-                >
-                  {t("approveModelCta")}
-                </Button>
-              )}
-            </div>
-          </div>
-          {/* Which approved state the restore goes back to, on its own line so
-              naming the date never crowds the two buttons. */}
+        {/* The state, and what a restore would go back to. Reading text now
+            that the action has moved up to the title row: with nothing beside
+            them to hold against the card's edge, these are two sentences and
+            they take the card's reading measure like the description above
+            them. */}
+        <div className={cn("space-y-1", CARD_READING_MEASURE)}>
+          <p className="text-sm">
+            {data.approval
+              ? t("decidedBy", {
+                  name: data.approval.approvedByName ?? "",
+                  date: format.dateTime(new Date(data.approval.approvedAt), {
+                    dateStyle: "medium",
+                  }),
+                })
+              : t("draftState")}
+          </p>
           {canRestore && data.lastApprovedAt !== null && (
-            <p
-              className={cn(
-                "text-muted-foreground text-sm",
-                CARD_READING_MEASURE
-              )}
-            >
+            <p className="text-muted-foreground text-sm">
               {t("restoreHint", {
                 date: format.dateTime(new Date(data.lastApprovedAt), {
                   dateStyle: "medium",

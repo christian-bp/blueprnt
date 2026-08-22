@@ -116,38 +116,94 @@ describe("ApprovalCard", () => {
       // constant, so the three cannot drift into three measures.
       const description = screen.getByText(m.approvalDescription)
       expect(description.className).toContain(CARD_READING_MEASURE)
-      // The checklist is capped as one block, so its rows and their remedy
-      // lines share the description's measure.
-      const checklist = card.querySelector(
-        `[data-slot="card-content"] > .${CARD_READING_MEASURE}`
+      // Every reading block in the content is capped, and by the same
+      // constant: the state line, the restore hint and the checklist.
+      const blocks = [
+        ...card.querySelectorAll(
+          `[data-slot="card-content"] > .${CARD_READING_MEASURE}`
+        ),
+      ]
+      expect(blocks.length).toBeGreaterThan(1)
+      expect(
+        blocks.some((block) => block.querySelectorAll("li").length > 0)
+      ).toBe(true)
+      expect(blocks.some((block) => block.textContent === m.draftState)).toBe(
+        true
       )
-      expect(checklist).not.toBeNull()
-      expect(checklist?.querySelectorAll("li").length).toBeGreaterThan(0)
     })
 
-    // The status row spans the whole card so its action can sit against the
-    // card's own right edge, which is what the widening buys.
-    it("spans the status row and ends it with the action", () => {
+    // The action sits LEVEL WITH THE TITLE, in the design system's own slot
+    // for it, and against the card's own right edge, which is what the
+    // widening buys.
+    it("puts the action on the title row, beside the heading", () => {
       renderPending()
-      const row = approveButton().closest(
-        '[class*="justify-between"]'
+      const slot = approveButton().closest(
+        '[data-slot="card-action"]'
       ) as HTMLElement
-      // One row, the state first and the action last, justified apart, and
-      // uncapped so the action reaches the card's own edge.
-      expect(row).not.toBeNull()
-      expect(row.textContent).toContain(m.draftState)
+      expect(slot).not.toBeNull()
+      const header = slot.closest('[data-slot="card-header"]') as HTMLElement
+      expect(header.textContent).toContain(m.approvalHeading)
       // Uncapped all the way up to the card: a measure on any ancestor would
-      // pull the action back off the card's edge just as one on the row
-      // would, and only walking the chain catches that.
-      const card = row.closest('[data-slot="card"]') as HTMLElement
+      // pull the action back off the card's edge, and only walking the chain
+      // catches that.
+      const card = slot.closest('[data-slot="card"]') as HTMLElement
       for (
-        let node: HTMLElement | null = row;
+        let node: HTMLElement | null = slot;
         node !== null && node !== card;
         node = node.parentElement
       ) {
         expect(node.className).not.toMatch(/\bmax-w-/)
       }
-      expect(row.lastElementChild?.contains(approveButton())).toBe(true)
+    })
+
+    // The whole draft cluster travels together, in the order it always had:
+    // restore as the outline option, approve as the primary last.
+    it("keeps both draft actions in that slot, in order", () => {
+      queryResult = {
+        checks: ALL_GREEN_CHECKS,
+        approval: null,
+        lastApprovedAt: 1_700_000_000_000,
+        restoreWouldChange: true,
+        workingConditions: null,
+        dimensionShares: DIMENSION_SHARES,
+      }
+      const { container } = renderCard()
+      const slot = container.querySelector(
+        '[data-slot="card-action"]'
+      ) as HTMLElement
+      expect(
+        [...slot.querySelectorAll("button")].map((button) => button.textContent)
+      ).toEqual([m.restoreCta, m.approveModelCta])
+    })
+
+    // The slot keeps the button's height even where a state carries no
+    // action, so approving never shortens the header under the reader.
+    it("holds the title row's height with no action to offer", () => {
+      queryResult = {
+        checks: ALL_GREEN_CHECKS,
+        approval: { approvedBy: "u1", approvedByName: "Ada", approvedAt: 1 },
+        lastApprovedAt: null,
+        restoreWouldChange: false,
+        workingConditions: null,
+        dimensionShares: DIMENSION_SHARES,
+      }
+      const { container } = renderCard()
+      const slot = container.querySelector(
+        '[data-slot="card-action"]'
+      ) as HTMLElement
+      expect(slot).not.toBeNull()
+      expect(slot.querySelector("button")).toBeNull()
+      expect(slot.className).toContain("min-h-9")
+    })
+
+    // And the status line is left as what it now is: a sentence, capped with
+    // the card's other reading text rather than spanning a row it no longer
+    // shares with a control.
+    it("leaves the status line as reading text", () => {
+      renderPending()
+      const line = screen.getByText(m.draftState)
+      expect(line.closest(`.${CARD_READING_MEASURE}`)).not.toBeNull()
+      expect(line.parentElement?.querySelector("button")).toBeNull()
     })
   })
 
