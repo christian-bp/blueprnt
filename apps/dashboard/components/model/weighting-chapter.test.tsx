@@ -402,14 +402,16 @@ describe("the Viktning chapter", () => {
     expect(querySave()).toBeNull()
     expect(screen.getByText("1 weight point left to distribute")).toBeDefined()
 
-    // Compensating elsewhere balances it: the sentence goes, the save
+    // Compensating elsewhere balances it: the pill goes quiet, the save
     // arrives, and it posts every criterion.
     fireEvent.click(
       within(groupFor("Autonomy and decision mandate")).getByRole("button", {
         name: "3",
       })
     )
-    expect(screen.queryByText("1 weight point left to distribute")).toBeNull()
+    await waitFor(() => {
+      expect(screen.queryByText("1 weight point left to distribute")).toBeNull()
+    })
     expect((save() as HTMLButtonElement).disabled).toBe(false)
     fireEvent.click(save())
     await waitFor(() => {
@@ -461,71 +463,79 @@ describe("the Viktning chapter", () => {
     expect(querySave()).toBeNull()
   })
 
-  // The budget rides the journey row, in line with the review it sits beside.
-  // It floated clear of the grid while it was a pill; on the row it is
-  // PERSISTENT, because a readout that appeared and vanished would move the
-  // review trigger every time the allocation crossed its budget.
-  describe("the budget readout", () => {
-    const readoutOf = (node: Element) =>
-      node.closest('[data-slot="weight-budget"]') as HTMLElement | null
+  // The budget floats clear of the grid, in the section's bottom-centre
+  // stack. Text only: the save it used to carry stays on the journey row with
+  // the review, so the pill appearing and vanishing moves no control.
+  describe("the budget pill", () => {
+    const pillOf = (node: Element) =>
+      node.closest('[data-slot="floating-pill"]') as HTMLElement | null
 
     // Silence is the balanced state: all the points are dealt out, and saying
-    // so is saying nothing.
+    // so is saying nothing. The pill's own native behaviour.
     it("says nothing once every weight point is dealt out", () => {
       const { container } = renderChapter()
-      expect(container.querySelector('[data-slot="weight-budget"]')).toBeNull()
+      expect(container.querySelector('[data-slot="floating-pill"]')).toBeNull()
     })
 
     // And it appears the moment there IS something to say, in both
     // directions, so the two states are pinned against each other.
-    it("appears while the allocation does not add up, and goes again", () => {
+    it("appears while the allocation does not add up, and goes again", async () => {
       const { container } = renderChapter()
-      const budget = () =>
-        container.querySelector('[data-slot="weight-budget"]')
+      const pill = () => container.querySelector('[data-slot="floating-pill"]')
       fireEvent.click(
         within(groupFor(COMPLEXITY)).getByRole("button", { name: "3" })
       )
-      expect(budget()?.getAttribute("data-tone")).toBe("info")
+      expect(pill()?.getAttribute("data-tone")).toBe("info")
       fireEvent.click(
         within(groupFor(COMPLEXITY)).getByRole("button", { name: "5" })
       )
-      expect(budget()?.getAttribute("data-tone")).toBe("warning")
+      expect(pill()?.getAttribute("data-tone")).toBe("warning")
       fireEvent.click(
         within(groupFor(COMPLEXITY)).getByRole("button", { name: "4" })
       )
-      expect(budget()).toBeNull()
+      // waitFor, because the pill LEAVES rather than vanishing: its exit
+      // animation keeps the node mounted for the length of the spring.
+      await waitFor(() => {
+        expect(pill()).toBeNull()
+      })
     })
 
-    // The save is its own element, not the readout's child: a balanced
-    // allocation says nothing while still being savable, so the button cannot
-    // come and go with the sentence.
-    it("keeps the save when the readout has gone quiet", () => {
-      methodChecksResult = checksFor(["responsibility"], true, false)
-      const { container } = renderChapter()
-      // Balanced, so no readout; unrecorded, so still savable.
-      expect(container.querySelector('[data-slot="weight-budget"]')).toBeNull()
-      expect((save() as HTMLButtonElement).disabled).toBe(false)
-      // Sized by the row's own constant: a chapter action among chapter
-      // actions, not the pill's deliberate compact deviation.
-      expect(save().className.split(/\s+/)).toContain("h-9")
-    })
-
-    // Both of this chapter's actions travel to the row together: the budget
-    // with its save, and the review beside them. (The chapter renders them
-    // into the row's slot; the row's own tests pin where the slot sits.)
-    it("carries the budget, its save and the review together", () => {
+    // TEXT ONLY: the save stays on the journey row with the review, so a pill
+    // arriving or leaving moves no control.
+    it("carries text and no control of its own", () => {
       const { container } = renderChapter()
       fireEvent.click(
         within(groupFor(COMPLEXITY)).getByRole("button", { name: "3" })
       )
-      const readout = container.querySelector(
-        '[data-slot="weight-budget"]'
+      const pill = container.querySelector(
+        '[data-slot="floating-pill"]'
       ) as HTMLElement
+      expect(pill.querySelector("button")).toBeNull()
+    })
+
+    // The save has nothing to do with the pill's silence: a balanced
+    // allocation says nothing while still being savable, on a model weighted
+    // before the marker existed.
+    it("keeps the save on the row when the pill has gone quiet", () => {
+      methodChecksResult = checksFor(["responsibility"], true, false)
+      const { container } = renderChapter()
+      expect(container.querySelector('[data-slot="floating-pill"]')).toBeNull()
+      expect((save() as HTMLButtonElement).disabled).toBe(false)
+      // Sized by the row's own constant: a chapter action among chapter
+      // actions, not the pill's old compact deviation.
+      expect(save().className.split(/\s+/)).toContain("h-9")
+    })
+
+    // The save and the review travel to the row together; the budget does
+    // not go with them.
+    it("sends the save and the review to the row, and nothing else", () => {
+      methodChecksResult = checksFor(["responsibility"], true, false)
+      renderChapter()
+      const row = save().parentElement as HTMLElement
       expect(
-        readout.parentElement?.textContent?.includes(
-          messages.dashboard.ai.openReviewCta
-        )
+        row.textContent?.includes(messages.dashboard.ai.openReviewCta)
       ).toBe(true)
+      expect(row.querySelector('[data-slot="floating-pill"]')).toBeNull()
     })
 
     // The three tones are the status block's own language, carried over when
@@ -542,7 +552,7 @@ describe("the Viktning chapter", () => {
         within(groupFor(COMPLEXITY)).getByRole("button", { name: "3" })
       )
       const line = screen.getByText("1 weight point left to distribute")
-      expect(readoutOf(line)).not.toBeNull()
+      expect(pillOf(line)).not.toBeNull()
       // Informative, not alarming: being mid-allocation is the ordinary state.
       expect(toneOf(line)).toBe("info")
       // Nothing to save while it does not add up.
@@ -580,15 +590,18 @@ describe("the Viktning chapter", () => {
 
     // It floats, so it can never sit between the framing row and the grid, and
     // the columns begin where every other chapter's do.
-    // This chapter floats nothing of its own any more: its budget is on the
-    // row, and the section's rail carries only the journey instrument.
-    it("floats nothing of its own", () => {
+    // The pill positions nothing itself: it renders into the section's
+    // FloatingStack, which owns the rail's corner. A chapter that hand-rolled
+    // its own fixed box would be a second corner.
+    it("leaves its placement to the section's floating stack", () => {
       const { container } = renderChapter()
       fireEvent.click(
         within(groupFor(COMPLEXITY)).getByRole("button", { name: "3" })
       )
       expect(container.querySelector('[class*="fixed"]')).toBeNull()
-      expect(container.querySelector('[data-slot="floating-pill"]')).toBeNull()
+      expect(
+        container.querySelector('[data-slot="floating-pill"]')
+      ).not.toBeNull()
     })
   })
 

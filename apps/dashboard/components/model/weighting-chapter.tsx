@@ -26,8 +26,8 @@ import { ChapterAction } from "@/components/chapter-action-slot"
 import { CHAPTER_ACTION_BUTTON_SIZE } from "@/components/chapter-tabs"
 import {
   type FloatingPillTone,
-  TONE_ICON,
-  TONE_ICON_CLASS,
+  FloatingPill,
+  FloatingPillText,
 } from "@/components/floating-pill"
 import { DimensionFrame } from "@/components/model/dimension-frame"
 import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
@@ -157,11 +157,11 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
   // a no-op is worse than one that arrives a moment late.
   const weightsSaved = checks?.weightsSaved ?? true
   const canSave = balanced && (dirty || !weightsSaved)
-  // Two things worth saying, in two of the three tones the pills use: points
-  // still to distribute is the ordinary way through this chapter, and an
-  // allocation over its budget is a state the model cannot be saved from.
-  // There is no third: an allocation that adds up needs no announcement that
-  // it adds up, so the readout is simply not there.
+  // Two things worth saying, in two of the pill's three tones: points still to
+  // distribute is the ordinary way through this chapter, and an allocation
+  // over its budget is a state the model cannot be saved from. There is no
+  // third: an allocation that adds up needs no announcement that it adds up,
+  // so the pill says nothing at all.
   const tone: FloatingPillTone = delta < 0 ? "info" : "warning"
   const showReview =
     reviewLocked === false && !dirty && criteria.length > 0 && !saving
@@ -193,53 +193,9 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
 
   return (
     <div className="space-y-4">
-      {/* The chapter's only chrome above the grid, so its columns begin at the
-          same height as every other chapter's and switching tabs holds them
-          still. The weighting concept's help rides it, next to the sentence
-          that frames the chapter, because the block it used to sit on is gone
-          and help never floats. */}
       {/* The chapter's own actions, rendered here where its model and its
           review lock are, and portalled up into the journey row. */}
       <ChapterAction>
-        {/* The budget, in line with the review it sits beside. It floated
-            clear of the grid while it was a pill; on the row it is PERSISTENT
-            instead, because a readout that appeared and vanished would move
-            the review trigger beside it every time the allocation crossed its
-            budget. Three tones, one box: the same three things the pill said,
-            in the same language (its marks and inks are shared, not
-            re-picked). */}
-        {/* The budget, in line with the review it sits beside. It shows only
-            when it has something to SAY: points still to distribute, or an
-            allocation over its budget. When the points are all dealt out
-            there is nothing to announce, so nothing is announced. Nothing to
-            allocate at all (no criteria yet) is the same silence. */}
-        {criteria.length > 0 && !balanced && (
-          <span
-            className="flex shrink-0 items-center gap-2"
-            data-slot="weight-budget"
-            data-tone={tone}
-          >
-            <HugeiconsIcon
-              icon={TONE_ICON[tone]}
-              strokeWidth={2}
-              aria-hidden="true"
-              className={cn("size-4 shrink-0", TONE_ICON_CLASS[tone])}
-            />
-            {/* A polite live region: these readings change under the reader's
-                OWN weight clicks, and an assertive one would interrupt them
-                with their own edit. It carried this job as a pill and keeps
-                it.
-
-                The sentence stays whole: its figure is inside an ICU plural,
-                and splitting a plural around a component to roll one digit is
-                exactly the i18n boundary the house rules draw. */}
-            <span className="text-sm tabular-nums" role="status">
-              {delta < 0
-                ? t("pointsLeft", { count: -delta })
-                : t("pointsOver", { count: delta })}
-            </span>
-          </span>
-        )}
         {/* Its own element, not the readout's child: a balanced allocation
             says nothing while still being savable (a model weighted before
             the marker existed, or one just edited back into balance), so the
@@ -286,6 +242,27 @@ export function WeightingChapter({ orgId }: { orgId: string }) {
           </MorphPopover>
         </span>
       </ChapterAction>
+      {/* The budget, floating clear of the grid again. It says only what it
+          has to SAY: points still to distribute, or an allocation over its
+          budget. When every point is dealt out there is nothing to announce,
+          which is the pill's own native silence.
+
+          TEXT ONLY, unlike the pill this replaced: the save it used to carry
+          stays on the journey row with the review, where a chapter's actions
+          belong. That leaves a simpler pill than the original, and one whose
+          appearing and vanishing moves no control. */}
+      <FloatingPill tone={tone}>
+        {criteria.length > 0 && !balanced ? (
+          // The sentence stays whole: its figure is inside an ICU plural, and
+          // splitting a plural around a component to roll one digit is
+          // exactly the i18n boundary the house rules draw.
+          <FloatingPillText alone>
+            {delta < 0
+              ? t("pointsLeft", { count: -delta })
+              : t("pointsOver", { count: delta })}
+          </FloatingPillText>
+        ) : null}
+      </FloatingPill>
       {criteria.length === 0 ? (
         // Never a bare page: the chapter has nothing to weight until the
         // previous one has been done, and it says so with the way back.
