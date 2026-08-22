@@ -1,0 +1,66 @@
+apps/dashboard/content/docs/en/members-and-roles.mdx
+  s_58dd112dc09435::t_c2e7da1f6cf268 23
+  s_58dd112dc09435::t_8b61d5c6a1f51e 14-15
+apps/dashboard/components/people/person-actions-menu.tsx
+  s_58dd112dc09435::t_9bea939806a554 20,37-45,69-76,88-96
+apps/dashboard/lib/admin-surface.test.ts
+  s_58dd112dc09435::t_de49356f74afa2 9-14,58-64
+apps/dashboard/content/docs/en/gdpr-and-erasure.mdx
+  s_58dd112dc09435::t_a7fd4f77326e7b 14,17-19
+apps/dashboard/content/docs/fi/gdpr-and-erasure.mdx
+  s_58dd112dc09435::t_a7fd4f77326e7b 15-20
+apps/dashboard/content/docs/da/members-and-roles.mdx
+  s_58dd112dc09435::t_c2e7da1f6cf268 15-16,23-24
+apps/dashboard/content/docs/nb/members-and-roles.mdx
+  s_58dd112dc09435::t_c2e7da1f6cf268 15-16,23-24
+apps/dashboard/content/docs/fi/erasing-a-person.mdx
+  s_58dd112dc09435::t_57a44b2a4449a2 21-24
+apps/dashboard/components/people/people-section.tsx
+  s_58dd112dc09435::t_9bea939806a554 195-200,547,710-717
+apps/dashboard/components/people/people-section.test.tsx
+  s_58dd112dc09435::t_dce493fb580c37 503,530-539
+  s_58dd112dc09435::t_d3e015bea67d99 26
+  s_58dd112dc09435::t_8eee77c7b6b283 28
+  s_58dd112dc09435::t_6169e2db9a7c98 540-541
+apps/dashboard/content/docs/da/erasing-a-person.mdx
+  s_58dd112dc09435::t_57a44b2a4449a2 21-24
+apps/dashboard/content/docs/nb/gdpr-and-erasure.mdx
+  s_58dd112dc09435::t_a7fd4f77326e7b 14,17-19
+apps/dashboard/content/docs/nb/erasing-a-person.mdx
+  s_58dd112dc09435::t_57a44b2a4449a2 20-23
+apps/dashboard/content/docs/da/gdpr-and-erasure.mdx
+  s_58dd112dc09435::t_a7fd4f77326e7b 14,17-19
+apps/dashboard/content/docs/fi/members-and-roles.mdx
+  s_58dd112dc09435::t_c2e7da1f6cf268 15-16,23-24
+apps/dashboard/components/people/person-actions-menu.test.tsx
+  s_58dd112dc09435::t_8eee77c7b6b283 41,43,87,101-112
+  s_58dd112dc09435::t_ddf8ed7048a040 113-114
+apps/dashboard/content/docs/sv/members-and-roles.mdx
+  s_58dd112dc09435::t_c2e7da1f6cf268 15-16,23-24
+apps/dashboard/content/docs/sv/gdpr-and-erasure.mdx
+  s_58dd112dc09435::t_a7fd4f77326e7b 14,17-19
+apps/dashboard/content/docs/en/erasing-a-person.mdx
+  s_58dd112dc09435::t_57a44b2a4449a2 20-23
+packages/backend/convex/people/erase.test.ts
+  s_58dd112dc09435::t_d5ad8ce469d49d 469-473,479-500,506
+apps/dashboard/content/docs/sv/erasing-a-person.mdx
+  s_58dd112dc09435::t_57a44b2a4449a2 21-24
+packages/backend/convex/people/erase.ts
+  s_58dd112dc09435::t_34f2f4b6d07099 12,94-100,102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "c195614bc9ccbc097a70036fe4be9811a4fbf1ec",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
