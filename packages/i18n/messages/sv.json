@@ -1847,7 +1847,7 @@
           "testHeading": "Väsentlighetsprövning",
           "description": "Avgör om särskilda arbetsförhållanden är en återkommande, väsentlig del av någon roll, eller om ni har testat detta och funnit det inte väsentligt. Båda svaren avgör dimensionen.",
           "statusLabel": "Status",
-          "activeOption": "Aktivt",
+          "activeOption": "Väsentligt",
           "materialSlotLine": "Ni har bedömt att särskilda arbetsförhållanden är väsentliga. Välj kriteriet som bedömer dem.",
           "materialFootnote": "Bedömda som väsentliga",
           "notMaterialLine": "Ni har prövat arbetsförhållanden och funnit dem inte väsentliga.",

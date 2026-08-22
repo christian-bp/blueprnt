@@ -96,6 +96,39 @@ describe("en.json language purity", () => {
 // collapsed into one meaningless run-on line). Guard every locale's phrase for
 // both placeholder families that feed the component, so a future phrase can't
 // reintroduce the bug silently.
+// The working-conditions materiality decision is asked in two places, the
+// Kriterier column's yes/no question and the dialog's status toggle, and they
+// must answer in the SAME words. The dialog's positive option said "Active"
+// (a schema word) in every locale while the column beside it said "material",
+// which left one decision with two vocabularies.
+//
+// The stem is taken from each locale's own negative option, which has carried
+// the standardized term since the terminology pass: whatever "tested, not
+// X" says, the positive option and the column's two answers must say X too.
+// Deriving it rather than listing five words per locale means a locale that
+// changes its term stays consistent by construction.
+const MATERIAL_STEM_LENGTH = 6
+
+describe("the materiality decision speaks one vocabulary", () => {
+  for (const [locale, messages] of Object.entries({ en, ...locales })) {
+    it(`${locale}.json says the same thing in the dialog and the column`, () => {
+      const wc = messages.dashboard.model.criteria.workingConditions
+      // "Tested, not material" -> the locale's own term, stemmed so its
+      // inflections (väsentlig/väsentligt, olennainen/olennaiseksi) all match.
+      const term = wc.testedNotMaterialOption
+        .split(/[\s,]+/)
+        .filter((word) => word.length > 0)
+        .at(-1)
+      expect(term).toBeDefined()
+      const stem = (term ?? "").toLowerCase().slice(0, MATERIAL_STEM_LENGTH)
+      expect(stem.length).toBe(MATERIAL_STEM_LENGTH)
+      for (const label of [wc.activeOption, wc.yesCta, wc.noCta]) {
+        expect(label.toLowerCase()).toContain(stem)
+      }
+    })
+  }
+})
+
 const PLACEHOLDER_PHRASE_PREFIXES = [
   "dashboard.roles.import.paste.placeholder",
   "dashboard.onboarding.families.placeholderPhrase",

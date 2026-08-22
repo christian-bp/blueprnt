@@ -1847,7 +1847,7 @@
           "testHeading": "Olennaisuustesti",
           "description": "Päätä, ovatko erityiset työolosuhteet toistuva ja olennainen osa jotakin roolia, vai onko tämä testattu ja todettu ei-olennaiseksi. Kumpikin vastaus ratkaisee ulottuvuuden.",
           "statusLabel": "Tila",
-          "activeOption": "Aktiivinen",
+          "activeOption": "Olennainen",
           "materialSlotLine": "Olette arvioineet erityiset työolosuhteet olennaisiksi. Valitse kriteeri, joka arvioi ne.",
           "materialFootnote": "Arvioitu olennaisiksi",
           "notMaterialLine": "Olette testanneet työolosuhteet ja todenneet ne ei-olennaisiksi.",

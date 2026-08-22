@@ -1847,7 +1847,7 @@
           "testHeading": "Væsentlighedstest",
           "description": "Afgør, om særlige arbejdsforhold er en tilbagevendende, væsentlig del af en rolle, eller om I har testet dette og fundet det ikke væsentligt. Begge svar afgør dimensionen.",
           "statusLabel": "Status",
-          "activeOption": "Aktiv",
+          "activeOption": "Væsentligt",
           "materialSlotLine": "I har vurderet, at særlige arbejdsforhold er væsentlige. Vælg det kriterium, der vurderer dem.",
           "materialFootnote": "Vurderet som væsentlige",
           "notMaterialLine": "I har testet arbejdsforhold og fundet dem ikke væsentlige.",

@@ -1847,7 +1847,7 @@
           "testHeading": "Materiality test",
           "description": "Decide whether special working conditions are a recurring, material part of any role, or whether you have tested this and found it not material. Either answer completes the dimension.",
           "statusLabel": "Status",
-          "activeOption": "Active",
+          "activeOption": "Material",
           "materialSlotLine": "You have judged special working conditions to be material. Choose the criterion that assesses them.",
           "materialFootnote": "Judged material",
           "notMaterialLine": "You have tested working conditions and found them not material.",
