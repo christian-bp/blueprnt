@@ -1,0 +1,28 @@
+apps/dashboard/components/model/approval-card.test.tsx
+  s_58dd112dc09435::t_bb980ca992ee34 97-107,110,131
+  s_58dd112dc09435::t_982464a6cfd44a 139-149
+  s_58dd112dc09435::t_6aba5437ababb0 94
+  s_58dd112dc09435::t_6be4b726d1e82e 63-66,90-93,95-96,108-109,111-118,124,126-130,150-153
+  s_58dd112dc09435::t_096bf1037972b1 119-123,125,132-138
+apps/dashboard/components/model/approval-card.tsx
+  s_58dd112dc09435::t_43d5b7143ff2a7 176-178,237-242,246-249,312-313,336-339
+  s_58dd112dc09435::t_5ab12799ecc17e 140-150,179-181,285-290,314-335
+apps/dashboard/app/(app)/model/approval/page.tsx
+  s_58dd112dc09435::t_43d5b7143ff2a7 22-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "6328b47e7398907baae7e61b0304457d380bb249",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
