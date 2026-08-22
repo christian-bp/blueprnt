@@ -1,0 +1,23 @@
+apps/dashboard/components/model/approval-card.test.tsx
+  s_58dd112dc09435::t_c5bc1706e2eade 119-120,126-127,129,174
+  s_58dd112dc09435::t_fffcf83f5675e2 121-125,128,130-131,135-138,140-141,143-145,147-149,151,157-173,175-206
+apps/dashboard/components/model/approval-card.tsx
+  s_58dd112dc09435::t_3e0bb9df936077 14,245,248,255,259,270-278,281-296,298
+  s_58dd112dc09435::t_f3694ecfef58ea 244,246-247,249-254,256-258,260-269
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "3728760396b590b13225acc430181867198ca75c",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
