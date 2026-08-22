@@ -66,7 +66,7 @@ describe("SegmentedProgress", () => {
   it("holds a fixed compact width rather than filling its row", () => {
     const { container } = renderBar()
     const tokens = (container.firstElementChild?.className ?? "").split(/\s+/)
-    expect(tokens).toContain("w-96")
+    expect(tokens).toContain("w-[28rem]")
     expect(tokens).toContain("shrink-0")
     expect(tokens).not.toContain("w-full")
     // It floats over the page, so anything it covers stays clickable through

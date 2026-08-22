@@ -91,14 +91,14 @@ describe("ModelSectionShell", () => {
     // after it.
     const row = heading.closest("div")?.parentElement as HTMLElement
     expect(row.contains(instrument)).toBe(true)
-    expect(row.className.split(/\s+/)).toContain("relative")
-    expect(instrument.parentElement?.className).toContain("md:left-1/2")
+    expect(row.className).toContain("md:grid-cols-[1fr_auto_1fr]")
+    expect(instrument.parentElement?.className).toContain("justify-center")
     expect(container.querySelector('[class*="fixed"]')).toBeNull()
     // The fixture leaves only the approval outstanding: 16 of 17 STEPS, so
     // 94%, not the 75% three closed chapters of four would read as.
     expect(bar.getAttribute("aria-valuenow")).toBe("94")
     const tokens = instrument.className.split(/\s+/)
-    expect(tokens).toContain("w-96")
+    expect(tokens).toContain("w-[28rem]")
     expect(tokens).toContain("shrink-0")
     // One segment per chapter, all the same width whatever each holds, with
     // the open one held up while the rest recede.

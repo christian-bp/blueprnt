@@ -9,17 +9,21 @@ import type { ReactNode, RefObject } from "react"
 // Centred on the page's own axis, not laid out against the title: the
 // instrument is the section's whole state, so it belongs on the reader's
 // centre line rather than wherever a title of that length happens to leave
-// room. That means absolute positioning against this row, so a long title in
-// one locale and a short one in another put the instrument in the same place.
+// room. A locale whose title is four characters longer must not move it.
+//
+// A three-column grid (1fr auto 1fr) rather than absolute positioning, which
+// is what this row used to do and what could not be made safe. Absolute
+// centring overlaps the title whenever half the row minus half the instrument
+// is narrower than the title, and with the sidebar taking 240px that is TRUE
+// at every width below 2xl: at lg the row is 736px, which leaves 144px beside
+// a 448px instrument against a title that needs about 273. The grid centres
+// the instrument exactly while the title fits its own column, and slides it
+// right rather than under the title when it does not. Off-centre is a
+// compromise; overlapping text is a defect.
 //
 // Below md the row wraps instead: the instrument takes its own full-width line
-// under the title and centres there, because an absolutely centred 384px box
-// and a title would overlap on a phone.
-//
-// The row reserves the instrument's height (its name line, its bar and its
-// count line) rather than measuring the title alone, so an absolutely
-// positioned instrument has its own room and nothing below the row is
-// overlapped.
+// under the title and centres there, because at 496px of row there is no
+// arrangement that puts both on one line.
 //
 // Shared rather than hand-rolled per section so the two title rows cannot
 // drift into different type, spacing, help placement or instrument position.
@@ -40,7 +44,7 @@ export function SectionTitleRow({
   instrument?: ReactNode
 }) {
   return (
-    <div className="relative flex flex-wrap items-center gap-x-4 gap-y-2 md:min-h-12">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 md:grid md:grid-cols-[1fr_auto_1fr]">
       <div className="flex items-center gap-2">
         <h3
           className="font-semibold text-base outline-none"
@@ -52,9 +56,7 @@ export function SectionTitleRow({
         {help}
       </div>
       {instrument !== undefined && (
-        <div className="flex w-full justify-center md:absolute md:left-1/2 md:w-auto md:-translate-x-1/2">
-          {instrument}
-        </div>
+        <div className="flex w-full justify-center md:w-auto">{instrument}</div>
       )}
     </div>
   )

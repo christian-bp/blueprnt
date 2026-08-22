@@ -125,10 +125,10 @@ export function SegmentedProgress({
     // so a section whose chapters hold 21 and 1 steps can never read as
     // halfway on two of four.
     //
-    // A FIXED width, now that it floats rather than sharing a row: w-96
-    // leaves a quarter segment about 94px wide, which is what the NAME line
-    // above wants (the count below needs eight characters at most, "12 av
-    // 21"). The longest chapter name any locale prints is nineteen characters
+    // A FIXED width: 28rem leaves a quarter segment about 110px wide, which is
+    // what the NAME line above wants (the count below needs eight characters
+    // at most, "12 av 21"). The longest chapter name any locale prints is
+    // nineteen characters
     // ("Ligeværdigt arbejde", "Samanarvoista työtä") and still overruns that,
     // which is why the name is nowrap and allowed to overflow its own slot
     // rather than wrapping: a name that wrapped would change the reserved
@@ -139,7 +139,7 @@ export function SegmentedProgress({
     // Transparent to the pointer: the instrument is a shape, not a control,
     // and it floats over the page, so anything it happens to cover has to stay
     // clickable through it.
-    <div className="pointer-events-none w-96 max-w-[calc(100vw-2rem)] shrink-0 space-y-1">
+    <div className="pointer-events-none w-[28rem] max-w-[calc(100vw-2rem)] shrink-0 space-y-1">
       {/* The open chapter's own name, over its own segment, and the mirror of
           the count line below the bar: same equal flex, same reserved height,
           and the enter and exit mirrored around the bar. This one RISES into
