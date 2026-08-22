@@ -38,8 +38,9 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
   },
 }))
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }))
+let orgRole = "admin"
 vi.mock("@/components/org-context", () => ({
-  useOrganization: () => ({ orgId: "org-1", name: "Acme", role: "admin" }),
+  useOrganization: () => ({ orgId: "org-1", name: "Acme", role: orgRole }),
 }))
 
 import { PersonActionsMenu } from "@/components/people/person-actions-menu"
@@ -83,6 +84,7 @@ function openActionsMenu() {
 
 describe("PersonActionsMenu", () => {
   beforeEach(() => {
+    orgRole = "admin"
     assignMock.mockReset().mockResolvedValue("a1")
     eraseMock.mockReset()
     vi.mocked(toast.success).mockReset()
@@ -94,6 +96,20 @@ describe("PersonActionsMenu", () => {
     await openActionsMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: m.erase.trigger }))
     expect(screen.getByRole("alertdialog")).toBeDefined()
+  })
+
+  // Erasing a person is irreversible and admin-only. Hidden rather than shown
+  // disabled: absence is how this app treats an admin-only thing everywhere
+  // else, and a destructive item standing permanently dead in every person's
+  // menu would be noise on the common case.
+  it("offers no erasure to an editor, and still offers the edit", async () => {
+    orgRole = "editor"
+    renderMenu()
+    await openActionsMenu()
+    expect(screen.queryByRole("menuitem", { name: m.erase.trigger })).toBeNull()
+    expect(
+      screen.getByRole("menuitem", { name: m.editPerson.title })
+    ).toBeDefined()
   })
 
   it("edits the role: a track swap resets the seniority and saves a confirmed assignment", async () => {

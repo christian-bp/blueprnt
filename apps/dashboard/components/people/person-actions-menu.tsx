@@ -17,6 +17,7 @@ import {
   EditPersonDialog,
 } from "@/components/people/edit-person-dialog"
 import { ErasePersonControl } from "@/components/people/erase-person-control"
+import { useOrganization } from "@/components/org-context"
 
 // The person page's unified actions menu: a single "..." trigger in the
 // employee card's header (same anatomy as FamilyActionsMenu) holding the
@@ -33,6 +34,15 @@ export function PersonActionsMenu({
   currentAssignment: { roleId: string; seniority: string } | null
 }) {
   const t = useTranslations("dashboard.people")
+  const { role } = useOrganization()
+  // Erasing a person is irreversible and admin-only (people/erase.ts). Hidden
+  // rather than shown disabled: absence is how this app treats an admin-only
+  // thing everywhere else (the nav hides /organization and /audit-log from an
+  // editor outright), and a destructive item standing permanently dead in
+  // every person's menu would be noise on the common case. An editor who
+  // needs an erasure asks an administrator, which is what the organization
+  // page already explains about the two roles.
+  const canErase = role === "admin"
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [eraseOpen, setEraseOpen] = useState(false)
 
@@ -56,12 +66,14 @@ export function PersonActionsMenu({
           <DropdownMenuItem onClick={() => setDetailsOpen(true)}>
             {t("editPerson.title")}
           </DropdownMenuItem>
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => setEraseOpen(true)}
-          >
-            {t("erase.trigger")}
-          </DropdownMenuItem>
+          {canErase && (
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => setEraseOpen(true)}
+            >
+              {t("erase.trigger")}
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -73,13 +85,15 @@ export function PersonActionsMenu({
         currentAssignment={currentAssignment}
       />
 
-      <ErasePersonControl
-        open={eraseOpen}
-        onOpenChange={setEraseOpen}
-        personId={person.personId}
-        displayName={person.displayName}
-        externalRef={person.externalRef}
-      />
+      {canErase && (
+        <ErasePersonControl
+          open={eraseOpen}
+          onOpenChange={setEraseOpen}
+          personId={person.personId}
+          displayName={person.displayName}
+          externalRef={person.externalRef}
+        />
+      )}
     </>
   )
 }

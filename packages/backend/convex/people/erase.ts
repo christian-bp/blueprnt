@@ -9,7 +9,7 @@ import {
   personAuditFields,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { orgMutation } from "../lib/functions"
+import { adminMutation } from "../lib/functions"
 import { pseudonymizePersonInSnapshots } from "../payMapping/erasure"
 
 // Shared hard-delete body. Deletes payRecords, then personAssignments, then the
@@ -91,11 +91,15 @@ export async function erasePersonRecords(
 // those values in the person's EARLIER rows, so the surviving trail holds no
 // personal data about the erased individual.
 //
-// This is the HR entry point, member-gated like the rest of the people surface
-// (the ruling: admin covers org administration and the audit log, and an
-// operator who may import and edit an employee's record may erase it).
+// ADMIN-ONLY, and the one exception to the people surface being member-level.
+// Least privilege for irreversible destruction: importing, editing and
+// archiving a person is everyday work and stays open to every member, but an
+// erasure cannot be undone by anyone, so the org's administrators own it. That
+// is a deliberate carve-out from the access ruling (admin covers org
+// administration and the audit log), not a drift back toward it, and the
+// admin-surface allowlist names this function for exactly that reason.
 // Deletion is delegated to erasePersonRecords (the single implementation).
-export const erasePersonAsOrg = orgMutation({
+export const erasePersonAsOrg = adminMutation({
   args: { personId: v.id("people") },
   returns: v.null(),
   handler: async (ctx, { personId }) => {

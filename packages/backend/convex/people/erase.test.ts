@@ -466,23 +466,44 @@ describe("erasePersonAsOrg", () => {
     })
   })
 
-  // Erasure is member-level, like the rest of the people surface: admin covers
-  // org administration and the audit log, and an operator who may import and
-  // edit an employee's record may erase it. Membership is still the gate: a
-  // caller outside the org is refused by the tests above.
-  it("is performed by any member of the organization", async () => {
+  // ADMIN-ONLY, the one product function outside org administration that is:
+  // least privilege for irreversible destruction. An editor is refused, and
+  // the person is still there afterwards, so the refusal is the gate answering
+  // rather than the call failing somewhere inside.
+  it("refuses an editor, and leaves the person untouched", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
     const personId = await seedPerson(orgId, asAdmin)
 
     const asEditor = await seedEditor(t, orgId, "editor@acme.se")
-    await asEditor.mutation(api.people.erase.erasePersonAsOrg, {
+    await expect(
+      asEditor.mutation(api.people.erase.erasePersonAsOrg, {
+        orgId,
+        personId,
+      })
+    ).rejects.toThrow(/errors.adminRequired/)
+
+    await t.run(async (ctx) => {
+      expect(await ctx.db.get(personId)).not.toBeNull()
+    })
+  })
+
+  // The boundary from the other side. Everything AROUND the erasure is
+  // everyday person work and stays member-level, so an editor archiving
+  // someone who has left is not blocked by the gate on destroying them.
+  it("leaves the everyday person work open to an editor", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    const asEditor = await seedEditor(t, orgId, "editor2@acme.se")
+
+    await asEditor.mutation(api.people.people.archivePerson, {
       orgId,
       personId,
     })
 
     await t.run(async (ctx) => {
-      expect(await ctx.db.get(personId)).toBeNull()
+      expect((await ctx.db.get(personId))?.archivedAt).toBeTypeOf("number")
     })
   })
 

@@ -6,8 +6,12 @@ import { describe, expect, it } from "vitest"
 // organization's own settings, name, avatar, onboarding completion and member
 // list, plus reading the trail. Everything else an organization does, the
 // evaluation model (including approving and restoring it), roles, people
-// (including the import and the erasure), and the AI actions, is member-level
-// work that both roles perform.
+// (including the payroll import and archiving) and the AI actions, is
+// member-level work that both roles perform.
+//
+// ONE product function is carved out of that: erasing a person. It is the only
+// irreversible destruction the app offers, and least privilege puts it with
+// the administrators rather than with everyday work.
 //
 // This pins the whole admin surface as one list. A new admin gate becomes a
 // deliberate edit here, with a reviewer looking at it, rather than a wrapper
@@ -51,6 +55,13 @@ const ADMIN_SURFACE: Record<string, string[]> = {
   // can assert it still refuses an editor without depending on a product
   // surface whose role may change.
   "accounts/context.ts": ["touchOrganization"],
+  // The ONE product function outside org administration that is admin-gated,
+  // by owner decision: least privilege for irreversible destruction. Erasing a
+  // person cannot be undone by anyone, so the org's administrators own it,
+  // while the everyday person work around it (the payroll import, editing a
+  // record, archiving someone who has left) stays member-level like the rest
+  // of the people surface.
+  "people/erase.ts": ["erasePersonAsOrg"],
 }
 
 // file -> the exports that may call the ACTION gate. Named, not merely

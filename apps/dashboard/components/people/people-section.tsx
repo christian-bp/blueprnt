@@ -192,7 +192,12 @@ export function PeopleSection() {
   const tToolbar = useTranslations("dashboard.people.toolbar")
   const tGender = useTranslations("dashboard.people.gender")
   const tBulk = useTranslations("dashboard.people.bulk")
-  const { orgId } = useOrganization()
+  const { orgId, role } = useOrganization()
+  // Erasing people is irreversible and admin-only (people/erase.ts), so the
+  // bulk control is hidden from an editor for the same reason the per-person
+  // one is: absence is this app's treatment for an admin-only thing, and a
+  // destructive button that would 403 is worse than no button.
+  const canErase = role === "admin"
   const locale = useLocale()
 
   const people = useQuery(api.people.people.listPeople, { orgId })
@@ -539,7 +544,7 @@ export function PeopleSection() {
             Button size so it matches the height of the search field and the
             filter selects beside it (never a hand-picked size). Its label
             carries the count, so no separate counter text is needed. */}
-        {selectedCount > 0 && (
+        {selectedCount > 0 && canErase && (
           <Button
             type="button"
             variant="destructive"
@@ -702,12 +707,14 @@ export function PeopleSection() {
         </>
       )}
 
-      <BulkDeletePeopleDialog
-        open={bulkOpen}
-        onOpenChange={setBulkOpen}
-        personIds={[...selection.effective]}
-        onDeleted={() => setSelected(new Set())}
-      />
+      {canErase && (
+        <BulkDeletePeopleDialog
+          open={bulkOpen}
+          onOpenChange={setBulkOpen}
+          personIds={[...selection.effective]}
+          onDeleted={() => setSelected(new Set())}
+        />
+      )}
     </div>
   )
 }

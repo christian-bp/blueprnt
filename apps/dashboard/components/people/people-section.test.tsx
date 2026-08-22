@@ -23,8 +23,9 @@ vi.mock(
   "@workspace/backend/convex/_generated/api",
   async () => (await import("@/test/convex-mocks")).apiModule
 )
+let orgRole = "admin"
 vi.mock("@/components/org-context", () => ({
-  useOrganization: () => ({ orgId: "org1", name: "Acme", role: "admin" }),
+  useOrganization: () => ({ orgId: "org1", name: "Acme", role: orgRole }),
 }))
 // The AddPersonDialog in the header navigates after a create: give it a
 // no-op router (these tests never submit it).
@@ -499,6 +500,7 @@ describe("PeopleSection", () => {
 
   describe("selection", () => {
     beforeEach(() => {
+      orgRole = "admin"
       eraseMock.mockReset()
       eraseMock.mockResolvedValue(null)
       vi.mocked(toast.success).mockReset()
@@ -523,6 +525,18 @@ describe("PeopleSection", () => {
       renderSection()
       expect(screen.queryByRole("button", { name: CTA })).toBeNull()
       expect(screen.queryByText(/employees? selected/)).toBeNull()
+    })
+
+    // Erasing people is irreversible and admin-only, so an editor never gets
+    // the bulk control. Selection itself stays: it is what the register's own
+    // rows offer, and nothing else about the page is admin's.
+    it("offers no bulk delete to an editor, however many rows are selected", () => {
+      orgRole = "editor"
+      onQuery((ref) => queryRouter(ref))
+      renderSection()
+      selectRow("Alice Svensson")
+      selectRow("Bob Larsson")
+      expect(screen.queryByRole("button", { name: CTA })).toBeNull()
     })
 
     it("selects a single row and puts the count in the button label", () => {
