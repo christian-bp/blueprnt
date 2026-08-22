@@ -3,8 +3,8 @@
     "organization": "Organisasjon",
     "member": "Medlem",
     "role": {
-      "admin": "Admin",
-      "editor": "Editor"
+      "admin": "Administrator",
+      "editor": "Redaktør"
     }
   },
   "email": {

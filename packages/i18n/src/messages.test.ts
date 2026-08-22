@@ -129,6 +129,26 @@ describe("the materiality decision speaks one vocabulary", () => {
   }
 })
 
+// The two roles are named on two surfaces: the organization's own member list
+// and the platform admin's user dialog. They must name them with the SAME
+// word, and the organization surface is the source, because that is where a
+// member of an org reads their own role.
+//
+// They had split: every non-English locale left the account surface on the
+// untranslated "Admin"/"Editor" while the org surface beside it said
+// Administratör/Redigerare, Administrator/Redaktør, Muokkaaja. Derived from
+// the org key rather than listed per locale, so a locale that changes its
+// term stays consistent by construction.
+describe("both surfaces name a role the same way", () => {
+  for (const [locale, messages] of Object.entries({ en, ...locales })) {
+    it(`${locale}.json uses one word per role`, () => {
+      const org = messages.dashboard.organization.members
+      expect(messages.accounts.role.admin).toBe(org.roleAdmin)
+      expect(messages.accounts.role.editor).toBe(org.roleEditor)
+    })
+  }
+})
+
 const PLACEHOLDER_PHRASE_PREFIXES = [
   "dashboard.roles.import.paste.placeholder",
   "dashboard.onboarding.families.placeholderPhrase",

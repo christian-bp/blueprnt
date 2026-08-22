@@ -4,7 +4,7 @@
     "member": "Medlem",
     "role": {
       "admin": "Admin",
-      "editor": "Editor"
+      "editor": "Redaktør"
     }
   },
   "email": {
