@@ -124,6 +124,14 @@ export const seedRatedRoles = internalMutation({
       // a company that finished its method work, like its weighting already
       // does.
       await ctx.db.patch(model._id, {
+        // The demo org WEIGHTED its model, and the marker is the only trace
+        // that act leaves: criteria enter at 3 points and the budget is the
+        // criteria count times 3, so DEMO_WEIGHT_POINTS above is
+        // indistinguishable from an untouched selection without it. A seed
+        // that writes the data of an act must write the act's own trace too,
+        // or the Viktning chapter reads "0 of 3" against seeded weights and a
+        // seeded motivation.
+        weightsSavedAt: Date.now(),
         workingConditions: {
           status: "active",
           motivation:

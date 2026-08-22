@@ -325,6 +325,63 @@ describe("assessment/seed.seedRatedRoles", () => {
     })
   })
 
+  // A seed that simulates completed work has to materialise every trace that
+  // work would have left, not only its data. The weighting is the case that
+  // caught it: DEMO_WEIGHT_POINTS is indistinguishable from an untouched
+  // selection, because criteria enter at 3 points and the budget is the
+  // criteria count times 3, so without the marker the Viktning chapter reads
+  // zero against seeded weights and a seeded motivation.
+  it("stamps the acts the seeded state pretends, so no chapter reads zero", async () => {
+    const t = initConvexTest()
+    const orgId = "org_seed_markers"
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: FOUNDER_AUTH_ID,
+        email: "founder@blueprnt.se",
+        name: FOUNDER_NAME,
+      })
+    })
+    await t.mutation(internal.evaluationModel.model.seedDefaultModel, {
+      orgId,
+      locale: "sv",
+      actorId: FOUNDER_AUTH_ID,
+    })
+    await t.mutation(internal.assessment.seed.seedRatedRoles, {
+      orgId,
+      actorId: FOUNDER_AUTH_ID,
+    })
+
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (model === null) throw new Error("seed")
+      // The weighting act.
+      expect(model.weightsSavedAt).toBeGreaterThan(0)
+      // The approval act, and the buffer that approval writes.
+      expect(model.approval?.approvedBy).toBe(FOUNDER_AUTH_ID)
+      expect(model.lastApprovedModel).toBeDefined()
+      // The materiality decision.
+      expect(model.workingConditions?.status).toBe("active")
+      expect(model.workingConditions?.decidedBy).toBe(FOUNDER_AUTH_ID)
+      // Every criterion's own compliance sign-off.
+      const criteria = await ctx.db
+        .query("criteria")
+        .withIndex("by_model", (q) => q.eq("modelId", model._id))
+        .collect()
+      expect(criteria.length).toBeGreaterThan(0)
+      for (const criterion of criteria) {
+        expect(criterion.approved).toBe(true)
+        expect(criterion.decidedBy).toBe(FOUNDER_AUTH_ID)
+      }
+    })
+    // The reading the dashboard takes from the marker (getMethodChecks
+    // reporting weightsSaved) is pinned where that query lives
+    // (evaluationModel/criteria.test.ts): it is an org query and needs a
+    // signed-in caller, which this seed harness has no identity for.
+  })
+
   it("locks every role so getResults exposes a level for all of them", async () => {
     // A real membership (not the bare users-mirror row the other tests use)
     // so the org-scoped getResults query actually authorizes; the founder
