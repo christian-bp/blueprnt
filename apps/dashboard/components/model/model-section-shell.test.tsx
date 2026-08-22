@@ -80,9 +80,10 @@ describe("ModelSectionShell", () => {
   })
   afterEach(() => cleanup())
 
-  // The instrument is centred on the page at title level, and floats
-  // nowhere: over the reader's data was the cost the float carried.
-  it("centres the instrument on the title row", () => {
+  // The instrument rides the title row and floats nowhere: over the reader's
+  // data was the cost the float carried. Where on the row is the ladder's
+  // business (see floating-stack.test.tsx).
+  it("places the instrument on the title row", () => {
     const { container } = renderShell()
     const heading = screen.getByRole("heading", { level: 3 })
     const bar = screen.getByRole("progressbar", { name: m.progressBarLabel })
@@ -91,8 +92,8 @@ describe("ModelSectionShell", () => {
     // after it.
     const row = heading.closest("div")?.parentElement as HTMLElement
     expect(row.contains(instrument)).toBe(true)
-    expect(row.className).toContain("md:grid-cols-[1fr_auto_1fr]")
-    expect(instrument.parentElement?.className).toContain("justify-center")
+    expect(row.className).toContain("2xl:grid-cols-[1fr_auto_1fr]")
+    expect(instrument.parentElement?.className).toContain("md:ms-auto")
     expect(container.querySelector('[class*="fixed"]')).toBeNull()
     // The fixture leaves only the approval outstanding: 16 of 17 STEPS, so
     // 94%, not the 75% three closed chapters of four would read as.
