@@ -70,9 +70,46 @@ describe("FloatingStack", () => {
 })
 
 describe("SectionTitleRow", () => {
-  // Drift pin: the reading floats now. A title row that grew an instrument
-  // slot back would put the section's state at a scroll position again.
-  it("carries the title and its help, and no reading of its own", () => {
+  // Right-aligned opposite the title, at every width the two fit on one line,
+  // and on its own right-aligned line below md. The class set IS the
+  // arrangement, so it is what gets pinned: jsdom cannot measure the boxes
+  // these rules produce.
+  it("right-aligns the instrument opposite the title", () => {
+    const { container } = render(
+      <SectionTitleRow
+        heading="Model"
+        help={<button type="button">?</button>}
+        instrument={<div data-testid="instrument" />}
+      />
+    )
+    const rowTokens = (
+      container.firstElementChild as HTMLElement
+    ).className.split(/\s+/)
+    const tokens = (
+      screen.getByTestId("instrument").parentElement as HTMLElement
+    ).className.split(/\s+/)
+
+    // One line while they fit: the title owns the start, the instrument the
+    // end, so neither can land on the other whatever the locale or the
+    // sidebar does to the row's width.
+    expect(tokens).toContain("md:ms-auto")
+    expect(tokens).toContain("md:w-auto")
+
+    // Below md it wraps to its own line, right-aligned there too.
+    expect(rowTokens).toContain("flex-wrap")
+    expect(tokens).toContain("w-full")
+    expect(tokens).toContain("justify-end")
+
+    // Never centred and never absolute: page-centring is what put the
+    // instrument over the title at every width below 2xl.
+    expect(tokens).not.toContain("justify-center")
+    expect(rowTokens.some((token) => token.endsWith("grid"))).toBe(false)
+    expect(tokens.some((token) => token.endsWith("absolute"))).toBe(false)
+  })
+
+  // Drift pin: the instrument is NOT in the floating stack. It passed over the
+  // reader's data there, which is what brought it back up.
+  it("carries the title and its help, and floats nothing", () => {
     const { container } = render(
       <SectionTitleRow
         heading="Model"
