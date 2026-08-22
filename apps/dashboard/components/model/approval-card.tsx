@@ -137,6 +137,17 @@ function CheckRow({
   )
 }
 
+// The reading measure inside the card. The card's FRAME takes the page like
+// every other chapter's content; what must not run the width of a monitor is
+// the text, which is twelve check lines each with a remedy under it.
+//
+// Capped here rather than around the card, so the status row can span the
+// whole width and put its action against the card's own right edge. One
+// constant, used by every block a reader reads as sentences, so the
+// description, the restore hint and the checklist can never drift into three
+// different measures.
+export const CARD_READING_MEASURE = "max-w-3xl"
+
 export function ApprovalCard({ orgId }: { orgId: string }) {
   const t = useTranslations("dashboard.model.method")
   const tHelp = useTranslations("dashboard.help")
@@ -162,7 +173,12 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
               {tHelp("modelApprovalBody")}
             </HelpMorphButton>
           </CardTitle>
-          <CardDescription>{t("approvalDescription")}</CardDescription>
+          {/* Reading text, so it keeps its measure while the card around it
+            takes the page. CARD_READING_MEASURE is the one cap this card
+            uses, on every block a reader reads as sentences. */}
+          <CardDescription className={CARD_READING_MEASURE}>
+            {t("approvalDescription")}
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Skeleton className="h-4 w-40" />
@@ -218,10 +234,19 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
             {tHelp("modelApprovalBody")}
           </HelpMorphButton>
         </CardTitle>
-        <CardDescription>{t("approvalDescription")}</CardDescription>
+        {/* Reading text, so it keeps its measure while the card around it
+            takes the page. CARD_READING_MEASURE is the one cap this card
+            uses, on every block a reader reads as sentences. */}
+        <CardDescription className={CARD_READING_MEASURE}>
+          {t("approvalDescription")}
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-1">
+          {/* The status row spans the whole card: its state on the left, its
+              action against the right edge. Not capped, because the row is
+              not reading text and the button riding the card's own edge is
+              the point of the widening. */}
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm">
               {data.approval
@@ -257,7 +282,12 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
           {/* Which approved state the restore goes back to, on its own line so
               naming the date never crowds the two buttons. */}
           {canRestore && data.lastApprovedAt !== null && (
-            <p className="text-muted-foreground text-sm">
+            <p
+              className={cn(
+                "text-muted-foreground text-sm",
+                CARD_READING_MEASURE
+              )}
+            >
               {t("restoreHint", {
                 date: format.dateTime(new Date(data.lastApprovedAt), {
                   dateStyle: "medium",
@@ -279,32 +309,34 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
             twelve times on one card and still left the reader to sort them;
             the group says it once, and the rows underneath are then only
             themselves. */}
-        {CHECK_GROUPS.map(({ level, labelKey }) => {
-          const checks = METHOD_CHECK_KEYS.flatMap((key) => {
-            const check = checksByKey.get(key)
-            return check !== undefined && check.level === level ? [check] : []
-          })
-          if (checks.length === 0) return null
-          return (
-            <CheckGroup key={level} label={t(labelKey)}>
-              {checks.map((check) => (
-                <CheckRow
-                  key={check.key}
-                  ok={check.ok}
-                  level={check.level}
-                  label={t(`checks.${check.key}`)}
-                  stateLabel={t(check.ok ? "checkMet" : "checkNotMet")}
-                  remedy={
-                    <CheckRemedy
-                      check={check}
-                      dimensionShares={data.dimensionShares}
-                    />
-                  }
-                />
-              ))}
-            </CheckGroup>
-          )
-        })}
+        <div className={cn("space-y-4", CARD_READING_MEASURE)}>
+          {CHECK_GROUPS.map(({ level, labelKey }) => {
+            const checks = METHOD_CHECK_KEYS.flatMap((key) => {
+              const check = checksByKey.get(key)
+              return check !== undefined && check.level === level ? [check] : []
+            })
+            if (checks.length === 0) return null
+            return (
+              <CheckGroup key={level} label={t(labelKey)}>
+                {checks.map((check) => (
+                  <CheckRow
+                    key={check.key}
+                    ok={check.ok}
+                    level={check.level}
+                    label={t(`checks.${check.key}`)}
+                    stateLabel={t(check.ok ? "checkMet" : "checkNotMet")}
+                    remedy={
+                      <CheckRemedy
+                        check={check}
+                        dimensionShares={data.dimensionShares}
+                      />
+                    }
+                  />
+                ))}
+              </CheckGroup>
+            )
+          })}
+        </div>
       </CardContent>
     </Card>
   )

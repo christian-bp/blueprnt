@@ -60,7 +60,10 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org1", name: "Acme", role: orgRole }),
 }))
 
-import { ApprovalCard } from "@/components/model/approval-card"
+import {
+  ApprovalCard,
+  CARD_READING_MEASURE,
+} from "@/components/model/approval-card"
 
 function renderCard(orgId = "org1") {
   return render(
@@ -84,6 +87,70 @@ describe("ApprovalCard", () => {
   // The gate reads as two groups now: what blocks approval, and what is merely
   // recommended. The distinction used to ride every row as a parenthetical,
   // twelve times on one card.
+  // The card's FRAME takes the page like every other chapter's content; what
+  // keeps its measure is the TEXT inside it. A frame stopping halfway across
+  // left the right half of the chapter empty for no reason.
+  describe("the card's width", () => {
+    const m = messages.dashboard.model.method
+    const approveButton = () =>
+      screen.getByRole("button", { name: m.approveModelCta })
+    const renderPending = () => {
+      queryResult = {
+        checks: ALL_GREEN_CHECKS,
+        approval: null,
+        lastApprovedAt: null,
+        restoreWouldChange: false,
+        workingConditions: null,
+        dimensionShares: DIMENSION_SHARES,
+      }
+      return renderCard()
+    }
+
+    it("caps the reading blocks and nothing else", () => {
+      const { container } = renderPending()
+      // The card itself carries no cap: it fills whatever the page gives it.
+      const card = container.querySelector('[data-slot="card"]') as HTMLElement
+      expect(card.className).not.toMatch(/\bmax-w-/)
+
+      // Every block a reader reads as sentences is capped, and by the SAME
+      // constant, so the three cannot drift into three measures.
+      const description = screen.getByText(m.approvalDescription)
+      expect(description.className).toContain(CARD_READING_MEASURE)
+      // The checklist is capped as one block, so its rows and their remedy
+      // lines share the description's measure.
+      const checklist = card.querySelector(
+        `[data-slot="card-content"] > .${CARD_READING_MEASURE}`
+      )
+      expect(checklist).not.toBeNull()
+      expect(checklist?.querySelectorAll("li").length).toBeGreaterThan(0)
+    })
+
+    // The status row spans the whole card so its action can sit against the
+    // card's own right edge, which is what the widening buys.
+    it("spans the status row and ends it with the action", () => {
+      renderPending()
+      const row = approveButton().closest(
+        '[class*="justify-between"]'
+      ) as HTMLElement
+      // One row, the state first and the action last, justified apart, and
+      // uncapped so the action reaches the card's own edge.
+      expect(row).not.toBeNull()
+      expect(row.textContent).toContain(m.draftState)
+      // Uncapped all the way up to the card: a measure on any ancestor would
+      // pull the action back off the card's edge just as one on the row
+      // would, and only walking the chain catches that.
+      const card = row.closest('[data-slot="card"]') as HTMLElement
+      for (
+        let node: HTMLElement | null = row;
+        node !== null && node !== card;
+        node = node.parentElement
+      ) {
+        expect(node.className).not.toMatch(/\bmax-w-/)
+      }
+      expect(row.lastElementChild?.contains(approveButton())).toBe(true)
+    })
+  })
+
   describe("the checklist's shape", () => {
     const m = messages.dashboard.model.method
 
