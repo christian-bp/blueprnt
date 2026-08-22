@@ -1,0 +1,25 @@
+apps/dashboard/components/segmented-progress.tsx
+  s_58dd112dc09435::t_521059229b58cc 128-131,142
+apps/dashboard/components/section-title-row.tsx
+  s_58dd112dc09435::t_521059229b58cc 12,14-22,24-26,47,59
+apps/dashboard/components/model/model-section-shell.test.tsx
+  s_58dd112dc09435::t_e5dbb4d4aa5539 94-95,101
+apps/dashboard/components/segmented-progress.test.tsx
+  s_58dd112dc09435::t_e5dbb4d4aa5539 69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "e3a4dd7d8da304a8e27b56d63e939c7d1de7a095",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
