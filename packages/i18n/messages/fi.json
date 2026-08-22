@@ -1333,7 +1333,6 @@
         "actions": "Toimenpiteet"
       },
       "analysis": {
-        "progressLabel": "Dokumentoitu",
         "filterAll": "Kaikki",
         "filterRemaining": "Jäljellä",
         "filterLabel": "Näytä",

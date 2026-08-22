@@ -23,7 +23,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
-import { Progress } from "@workspace/ui/components/progress"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { Alert02Icon } from "@hugeicons/core-free-icons"
@@ -251,20 +250,13 @@ export function PayMappingAnalysis({
     analyses === undefined ||
     queue === null
   ) {
-    // Content-shaped: the real spine chrome (its heading, its label and its
-    // bar) with only the unknown count standing in as a bar, then the two
-    // columns in their real proportions, so nothing reflows on arrival.
+    // Content-shaped: the two columns in their real proportions, so nothing
+    // reflows on arrival. No progress chrome of its own: the section shell
+    // above owns the journey's whole reading (the page title's instrument and
+    // the chapter row), and a second bar here was a leftover from before it
+    // did.
     return (
       <div className="space-y-4">
-        <section className="space-y-3">
-          <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-base">
-              {tAnalysis("progressLabel")}
-            </h3>
-            <Skeleton className="h-4 w-12" />
-          </div>
-          <Progress value={0} aria-label={tAnalysis("progressLabel")} />
-        </section>
         <div className="grid gap-4 lg:grid-cols-[320px_1fr] lg:items-start">
           <Card>
             <CardContent className="space-y-4">

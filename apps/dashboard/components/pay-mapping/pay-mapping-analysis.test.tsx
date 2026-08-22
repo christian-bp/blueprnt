@@ -321,9 +321,10 @@ describe("PayMappingAnalysis", () => {
         </PayMappingRunProvider>
       </NextIntlClientProvider>
     )
-    // The spine's own chrome is real while loading (its heading and its lead
-    // are static i18n text); only the unknown count is a bar.
-    expect(screen.getByText(tAnalysis.progressLabel)).toBeDefined()
+    // No progress chrome of its own while loading: the section shell above
+    // owns the journey's whole reading, and a second bar here was a leftover
+    // from before it did.
+    expect(document.querySelector('[role="progressbar"]')).toBeNull()
     expect(
       document.querySelectorAll('[data-slot="skeleton"]').length
     ).toBeGreaterThan(0)

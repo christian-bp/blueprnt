@@ -10,7 +10,10 @@ import {
   FloatingStackProvider,
 } from "@/components/floating-stack"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { SectionTitleRow } from "@/components/section-title-row"
+import {
+  PageHeaderAdornment,
+  PageHeaderAside,
+} from "@/components/page-header-slot"
 import { SegmentedProgress } from "@/components/segmented-progress"
 import { AnalysisChapterTabs } from "./analysis-chapter-tabs"
 import {
@@ -66,34 +69,32 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
     <ChapterActionSlotProvider>
       <FloatingStackProvider>
         <div className="space-y-4">
-          {/* The section's title and its one explainer, with the whole
-              mapping's instrument centred on the page beside them. */}
-          <SectionTitleRow
-            heading={t("progressLabel")}
-            help={
-              <HelpMorphButton label={tHelp("analysisProgressLabel")}>
-                {tHelp("analysisProgressBody")}
-              </HelpMorphButton>
-            }
-            instrument={
-              <SegmentedProgress
-                activeSegment={active}
-                barLabel={t("progressBarLabel")}
-                done={queue?.progress.overall.done ?? 0}
-                renderTitle={(segment) =>
-                  nameFor.get(segment.key) ?? segment.key
-                }
-                renderCount={(segment) =>
-                  tJourney.rich("countRich", {
-                    done: () => <NumberFlow value={segment.done} />,
-                    total: () => <NumberFlow value={segment.total} />,
-                  })
-                }
-                segments={chapters ?? []}
-                total={queue?.progress.overall.total ?? 0}
-              />
-            }
-          />
+          {/* The section has no title of its own any more. It had one, and
+              it said "Documented", which named the section's SUBJECT beside a
+              page already titled Analysis and left the reader two headings
+              for one thing. Its concept help and its instrument move up to
+              that page title, which is what they were always about. */}
+          <PageHeaderAdornment>
+            <HelpMorphButton label={tHelp("analysisProgressLabel")}>
+              {tHelp("analysisProgressBody")}
+            </HelpMorphButton>
+          </PageHeaderAdornment>
+          <PageHeaderAside>
+            <SegmentedProgress
+              activeSegment={active}
+              barLabel={t("progressBarLabel")}
+              done={queue?.progress.overall.done ?? 0}
+              renderTitle={(segment) => nameFor.get(segment.key) ?? segment.key}
+              renderCount={(segment) =>
+                tJourney.rich("countRich", {
+                  done: () => <NumberFlow value={segment.done} />,
+                  total: () => <NumberFlow value={segment.total} />,
+                })
+              }
+              segments={chapters ?? []}
+              total={queue?.progress.overall.total ?? 0}
+            />
+          </PageHeaderAside>
           {/* The journey row: the tabs and this chapter's action. */}
           <AnalysisChapterTabs />
           {children}

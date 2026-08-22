@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
+import { PageHeaderSlotProvider } from "@/components/page-header-slot"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { PayMappingRunProvider } from "./pay-mapping-run-context"
 import { payMappingSubPageKey } from "./pay-mapping-tabs"
@@ -98,12 +99,17 @@ export function PayMappingRunShell({
           run's name, status, and the way back to the list), so the page
           carries only the sub-page's name as its title. Static i18n, real
           from the first paint. */}
-      <PageHeader title={t(`tabs.${payMappingSubPageKey(sub)}`)} />
-      <PayMappingRunProvider
-        value={{ run, gap, analyses, actions, notes, runsList }}
-      >
-        {children}
-      </PayMappingRunProvider>
+      {/* The analysis section fills this header's slots from its own
+          subtree: its concept help beside the title, its journey instrument
+          opposite it. The queue both are drawn from lives down there. */}
+      <PageHeaderSlotProvider>
+        <PageHeader title={t(`tabs.${payMappingSubPageKey(sub)}`)} />
+        <PayMappingRunProvider
+          value={{ run, gap, analyses, actions, notes, runsList }}
+        >
+          {children}
+        </PayMappingRunProvider>
+      </PageHeaderSlotProvider>
     </div>
   )
 }

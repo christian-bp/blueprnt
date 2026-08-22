@@ -1333,7 +1333,6 @@
         "actions": "Actions"
       },
       "analysis": {
-        "progressLabel": "Documented",
         "filterAll": "All",
         "filterRemaining": "Remaining",
         "filterLabel": "Show",

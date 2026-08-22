@@ -1333,7 +1333,6 @@
         "actions": "Åtgärder"
       },
       "analysis": {
-        "progressLabel": "Dokumenterat",
         "filterAll": "Alla",
         "filterRemaining": "Kvarvarande",
         "filterLabel": "Visa",

@@ -1333,7 +1333,6 @@
         "actions": "Tiltag"
       },
       "analysis": {
-        "progressLabel": "Dokumenteret",
         "filterAll": "Alle",
         "filterRemaining": "Resterende",
         "filterLabel": "Vis",

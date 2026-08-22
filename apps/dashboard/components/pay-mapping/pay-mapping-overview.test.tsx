@@ -159,7 +159,6 @@ describe("PayMappingOverview", () => {
     // tab row; repeating it here was what made this page a second process
     // surface.
     expect(screen.queryByText(m.review.chapters.equalWork)).toBeNull()
-    expect(screen.queryByText(m.analysis.progressLabel)).toBeNull()
   })
 
   it("states the org-level finding as a sentence, unsigned percent with the direction in the word, above the mean bars", () => {
