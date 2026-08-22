@@ -1823,7 +1823,7 @@
         "approval": "Godkendelse",
         "tab": "<num>{position}.</num> {chapter}",
         "nav": "Modellens kapitler",
-        "heading": "Virksomhedens blueprnt-model",
+        "heading": "Virksomhedens model",
         "progressBarLabel": "Hele modellens fremdrift",
         "countRich": "<done></done> af <total></total>"
       },

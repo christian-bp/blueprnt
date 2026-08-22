@@ -1823,7 +1823,7 @@
         "approval": "Godkjenning",
         "tab": "<num>{position}.</num> {chapter}",
         "nav": "Modellens kapitler",
-        "heading": "Selskapets blueprnt-modell",
+        "heading": "Selskapets modell",
         "progressBarLabel": "Hele modellens framdrift",
         "countRich": "<done></done> av <total></total>"
       },

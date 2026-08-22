@@ -1823,7 +1823,7 @@
         "approval": "Hyväksyntä",
         "tab": "<num>{position}.</num> {chapter}",
         "nav": "Mallin luvut",
-        "heading": "Yrityksenne blueprnt-malli",
+        "heading": "Yrityksenne malli",
         "progressBarLabel": "Koko mallin edistyminen",
         "countRich": "<done></done> / <total></total>"
       },
