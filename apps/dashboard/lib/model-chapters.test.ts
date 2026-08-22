@@ -26,7 +26,9 @@ function checks(
     { key: "levelRulesValid", ok: true },
     { key: "zoneProfileMonotonic", ok: true },
     { key: "dimensionWeightBalance", ok: true },
-    { key: "peopleLeadershipWeight", ok: true },
+    // The owner's own model: no people-leadership criterion selected, so the
+    // engine reports that obligation as not applying at all.
+    { key: "peopleLeadershipWeight", ok: true, applies: false },
     { key: "overlapPairs", ok: true },
   ]
   return base.map((check) => ({ ...check, ...overrides[check.key] }))
@@ -169,46 +171,70 @@ describe("chapter progress", () => {
   // exact: the chapter is allowed to open done, but only once Kriterier
   // itself is complete (the default fixture's six criteria pass every
   // station check).
-  // ONE unit, and it is the act. Criteria enter at 3 points and the budget is
-  // the criteria count times 3, so a selection is exact from birth and every
-  // validation of it passes on a model nobody has opened; the motivation
-  // obligations were no better, and one of them could not even apply to a
-  // model without a people-leadership criterion. What is left is whether the
-  // weighting was deliberately done.
+  // The chapter counts OBLIGATIONS, like Kriterier does: the save act, plus
+  // one unit per motivation obligation this model actually carries. The
+  // fixture's model has no people-leadership criterion, so that obligation
+  // does not exist for it and is not counted.
   it("counts nothing on a selection nobody has weighed", () => {
     expect(modelChapterProgress(input(), "weighting")).toEqual({
       done: 0,
-      total: 1,
+      total: 2,
     })
   })
 
-  it("counts the save once a human has performed it", () => {
+  it("counts the save and the obligations it has met", () => {
     expect(
       modelChapterProgress(input({ weightsSaved: true }), "weighting")
-    ).toEqual({ done: 1, total: 1 })
+    ).toEqual({ done: 2, total: 2 })
   })
 
-  // The total never moves: not with the model's composition, not with which
-  // warnings happen to be pending. A reader who asks what the number counts
-  // gets one answer.
-  it("holds its total at one whatever the model is made of", () => {
-    for (const overrides of [
-      { checks: [] },
-      { checks: checks({ criterionCount: { count: 0, ok: false } }) },
-      {
-        checks: checks({
-          dimensionWeightBalance: { ok: false },
-          peopleLeadershipWeight: { ok: false },
+  // A model that DID select a people-leadership criterion carries that
+  // obligation too, so its total is one higher. Applicability comes from the
+  // engine, which is the only thing that knows the selection.
+  it("counts the people-leadership obligation only where it exists", () => {
+    const withLeadership = input({
+      weightsSaved: true,
+      checks: checks({
+        peopleLeadershipWeight: { ok: false, applies: true },
+      }),
+    })
+    expect(modelChapterProgress(withLeadership, "weighting")).toEqual({
+      done: 2,
+      total: 3,
+    })
+  })
+
+  // THE ASYMMETRY. dimensionWeightBalance is unconditional: every weighted
+  // model can have a dimension run away with the allocation, so the
+  // obligation is live from the moment there is a weighting. Dragging weights
+  // must therefore move FULFILMENT and never the total, or the chapter's
+  // denominator would jitter under the reader's own hand.
+  it("holds its total still while a dominance warning comes and goes", () => {
+    const totals = [true, false, true].map(
+      (ok) =>
+        modelChapterProgress(
+          input({
+            weightsSaved: true,
+            checks: checks({ dimensionWeightBalance: { ok } }),
+          }),
+          "weighting"
+        ).total
+    )
+    expect(totals).toEqual([2, 2, 2])
+    // And the fulfilment is what moves.
+    expect(
+      modelChapterProgress(
+        input({
+          weightsSaved: true,
+          checks: checks({ dimensionWeightBalance: { ok: false } }),
         }),
-      },
-      { checks: checks({ overlapPairs: { ok: false } }) },
-    ]) {
-      expect(modelChapterProgress(input(overrides), "weighting").total).toBe(1)
-    }
+        "weighting"
+      ).done
+    ).toBe(1)
   })
 
   // An untouched model must not read as begun, whatever its checks say
-  // vacuously.
+  // vacuously: both warnings report ok when they simply do not fire.
   it("shows an untouched model as zero", () => {
     expect(modelChapterProgress(input({ checks: [] }), "weighting")).toEqual({
       done: 0,
@@ -225,14 +251,14 @@ describe("chapter progress", () => {
       weightsSaved: true,
       checks: checks({
         criterionCount: { count: 5, ok: false },
-        peopleLeadershipWeight: { ok: false },
+        dimensionWeightBalance: { ok: false },
       }),
     })
     const criteria = modelChapterProgress(fiveCriteria, "criteria")
     expect(criteria.done).toBeLessThan(criteria.total)
     expect(modelChapterProgress(fiveCriteria, "weighting")).toEqual({
       done: 1,
-      total: 1,
+      total: 2,
     })
   })
 

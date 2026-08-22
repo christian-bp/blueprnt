@@ -365,6 +365,21 @@ describe("assessment/seed.seedRatedRoles", () => {
       // The materiality decision.
       expect(model.workingConditions?.status).toBe("active")
       expect(model.workingConditions?.decidedBy).toBe(FOUNDER_AUTH_ID)
+      // The obligations the Viktning chapter counts on this model: the
+      // dominance guard, which every weighted model carries, and NOT the
+      // people-leadership one, which the demo selection has no criterion for.
+      // With the save above that makes the seeded org read two of two.
+      const input = await buildMethodCheckInput(ctx, model)
+      const weightChecks = validateMethod(input)
+      const dominance = weightChecks.find(
+        (check) => check.key === "dimensionWeightBalance"
+      )
+      const leadership = weightChecks.find(
+        (check) => check.key === "peopleLeadershipWeight"
+      )
+      expect(dominance?.ok).toBe(true)
+      expect(leadership?.applies).toBe(false)
+
       // Every criterion's own compliance sign-off.
       const criteria = await ctx.db
         .query("criteria")

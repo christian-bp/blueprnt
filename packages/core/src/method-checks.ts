@@ -76,6 +76,13 @@ export interface MethodCheck {
   dimensions?: DimensionKey[]
   pairs?: [string, string][]
   count?: number
+  // Whether this check's obligation EXISTS for this model at all, as opposed
+  // to being satisfied. Only a check whose subject can be absent carries it:
+  // peopleLeadershipWeight has nothing to ask of a model that selected no
+  // people-leadership criterion, and reports ok there for the same reason it
+  // reports ok when the obligation is met. A surface counting obligations
+  // needs the two told apart, and the engine is the only place that knows.
+  applies?: boolean
 }
 
 export const PEOPLE_LEADERSHIP_LIBRARY_KEY = "people-leadership"
@@ -277,6 +284,7 @@ export function validateMethod(input: MethodCheckInput): MethodCheck[] {
       key: "peopleLeadershipWeight",
       level: "warning",
       ok: peopleLeadershipOk,
+      applies: peopleLeadership !== undefined,
     },
     {
       key: "overlapPairs",

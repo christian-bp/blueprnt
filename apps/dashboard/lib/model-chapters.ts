@@ -93,6 +93,41 @@ export const CHECK_CHAPTER: Record<MethodCheckKey, ModelChapter | null> = {
   overlapPairs: "method",
 }
 
+// The two warning checks whose satisfaction IS a weight motivation, and so
+// belong to the Viktning chapter's own work. The third warning (overlapPairs)
+// is satisfied by the overlap protokoll, which is Metod's.
+//
+// They differ in whether the obligation always EXISTS, and the difference is
+// the point of the list rather than an accident of it:
+//
+// dimensionWeightBalance is unconditional. Every weighted model can have a
+// dimension run away with the allocation, so "dominance is motivated where
+// there is dominance" is live from the moment there is a weighting. It is a
+// unit whether or not any dimension is currently over its share, which is
+// what keeps the chapter's TOTAL still while the reader drags weights: only
+// the fulfilment moves.
+//
+// peopleLeadershipWeight is conditional. A model that selected no
+// people-leadership criterion has nothing to ask, and counting a unit for
+// work that cannot be started is exactly the born-done dishonesty the
+// chapter had to unlearn. The engine reports its own applicability rather
+// than this file re-deriving it from a library key.
+const WEIGHT_MOTIVATION_CHECKS: readonly MethodCheckKey[] = [
+  "dimensionWeightBalance",
+  "peopleLeadershipWeight",
+]
+
+// The obligations a weighting carries on THIS model: every one the engine
+// reports, minus any whose subject the model does not contain.
+function weightObligations(
+  input: ModelProgressInput
+): readonly ModelProgressCheck[] {
+  return WEIGHT_MOTIVATION_CHECKS.flatMap((key) => {
+    const check = checkOf(input, key)
+    return check === undefined || check.applies === false ? [] : [check]
+  })
+}
+
 // The checks that decide whether the criteria selection itself is finished:
 // the right number of criteria, no dimension over its cap, and the three
 // mandatory dimensions covered. Weighting and documentation are other
@@ -122,6 +157,11 @@ const CRITERIA_MATERIALITY_CHECK: MethodCheckKey = "workingConditionsTested"
 export interface ModelProgressCheck {
   key: MethodCheckKey
   ok: boolean
+  // Whether the check's obligation EXISTS for this model at all, as opposed
+  // to being satisfied. Only the checks whose subject can be absent carry it
+  // (packages/core MethodCheck.applies); absent means the obligation is
+  // unconditional.
+  applies?: boolean
   // The criteria a check names as failing it (documentationComplete lists the
   // ones not yet documented and approved).
   criterionIds?: readonly string[]
@@ -192,24 +232,34 @@ export function modelChapterProgress(
       }
     }
     case "weighting": {
-      // ONE unit: whether the weighting was deliberately done.
+      // The save act, plus one unit per motivation obligation this model
+      // actually carries. Every unit is an ACT the user performed, which is
+      // the rule this chapter had to learn twice.
       //
-      // The chapter is never empty and never partial, which is what leaves
-      // nothing else here to count. Criteria enter at 3 points and the budget
-      // is the criteria count times 3, so an allocation is exact from birth
-      // and every validation of it passes on a model nobody has opened. The
-      // motivation obligations are no better: both weight warnings report ok
-      // when they simply do not apply, and one of them (people leadership)
-      // cannot apply at all to a model without that criterion, so it was a
-      // unit for work that could not exist.
+      // The first unit is the SAVE, not the budget check. Criteria enter at 3
+      // points and the budget is the criteria count times 3, so a selection is
+      // already balanced the moment it exists: the check passes on a model
+      // nobody has opened, and on an empty one it passes vacuously (0 = 0).
+      // models.weightsSavedAt records the act instead.
       //
-      // So the only honest signal is the act. models.weightsSavedAt records
-      // it, and this reads 0 of 1 before it and 1 of 1 after.
-      //
-      // The obligations lose nothing by leaving: they are the approval
-      // chapter's checklist warnings, each with its own remedy line pointing
-      // back here, which is where a model is actually held to them.
-      return { done: input.weightsSaved ? 1 : 0, total: 1 }
+      // And no neighbour zeroes it. This chapter used to return 0 whenever
+      // Kriterier was incomplete, which meant deactivating a criterion after a
+      // real save reported nothing done against a saved weighting and a
+      // written motivation still on screen. A unit is the user's own act;
+      // another chapter's state cannot un-perform it.
+      const obligations = weightObligations(input)
+      // Gated on the save, all of them: both warnings report ok when they
+      // simply do not FIRE, so on an untouched selection they would be born
+      // true and the chapter would open most of the way done. Once the
+      // weighting has been saved the chapter has been used, and from then on
+      // each unit reads its own real state, including falling back to false
+      // if a later edit reopens the warning.
+      return {
+        done: input.weightsSaved
+          ? 1 + obligations.filter((check) => check.ok).length
+          : 0,
+        total: 1 + obligations.length,
+      }
     }
     case "method": {
       // One protokoll per criterion, and nothing else: the materiality

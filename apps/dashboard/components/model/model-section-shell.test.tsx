@@ -39,7 +39,10 @@ const CHECKS = [
   { key: "levelRulesValid", level: "blocker", ok: true },
   { key: "zoneProfileMonotonic", level: "blocker", ok: true },
   { key: "dimensionWeightBalance", level: "warning", ok: true },
-  { key: "peopleLeadershipWeight", level: "warning", ok: true },
+  // No people-leadership criterion in this fixture, so the engine reports
+  // that obligation as not applying and the weighting chapter does not count
+  // a unit for it.
+  { key: "peopleLeadershipWeight", level: "warning", ok: true, applies: false },
   { key: "overlapPairs", level: "warning", ok: true },
 ]
 
@@ -95,9 +98,9 @@ describe("ModelSectionShell", () => {
     expect(row.className).toContain("flex-wrap")
     expect(instrument.parentElement?.className).toContain("md:ms-auto")
     expect(container.querySelector('[class*="fixed"]')).toBeNull()
-    // The fixture leaves only the approval outstanding: 14 of 15 STEPS, so
-    // 93%, not the 75% three closed chapters of four would read as.
-    expect(bar.getAttribute("aria-valuenow")).toBe("93")
+    // The fixture leaves only the approval outstanding: 15 of 16 STEPS, so
+    // 94%, not the 75% three closed chapters of four would read as.
+    expect(bar.getAttribute("aria-valuenow")).toBe("94")
     const tokens = instrument.className.split(/\s+/)
     expect(tokens).toContain("w-[28rem]")
     expect(tokens).toContain("shrink-0")

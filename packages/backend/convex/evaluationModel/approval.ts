@@ -223,6 +223,11 @@ export const getMethodChecks = orgQuery({
           dimensions: v.optional(v.array(dimensionKeyValidator)),
           pairs: v.optional(v.array(v.array(v.string()))),
           count: v.optional(v.number()),
+          // Whether the check's obligation EXISTS for this model, as opposed
+          // to being satisfied (packages/core MethodCheck.applies). The
+          // Viktning chapter counts obligations, so it needs "nothing to ask"
+          // told apart from "asked and answered".
+          applies: v.optional(v.boolean()),
         })
       ),
       approval: v.union(
@@ -302,6 +307,7 @@ export const getMethodChecks = orgQuery({
         dimensions: check.dimensions,
         pairs: check.pairs,
         count: check.count,
+        applies: check.applies,
       })),
       approval:
         model.approval === undefined
