@@ -93,14 +93,6 @@ export const CHECK_CHAPTER: Record<MethodCheckKey, ModelChapter | null> = {
   overlapPairs: "method",
 }
 
-// The two warning checks whose satisfaction IS a weight motivation, and so
-// belong to the Viktning chapter's own work. The third warning (overlapPairs)
-// is satisfied by the overlap protokoll, which is Metod's.
-const WEIGHT_MOTIVATION_CHECKS: readonly MethodCheckKey[] = [
-  "dimensionWeightBalance",
-  "peopleLeadershipWeight",
-]
-
 // The checks that decide whether the criteria selection itself is finished:
 // the right number of criteria, no dimension over its cap, and the three
 // mandatory dimensions covered. Weighting and documentation are other
@@ -200,43 +192,24 @@ export function modelChapterProgress(
       }
     }
     case "weighting": {
-      // The save, plus one step per warning that asks for a motivation. Every
-      // unit here is an ACT the user performed, which is the rule this chapter
-      // had to learn twice.
+      // ONE unit: whether the weighting was deliberately done.
       //
-      // The first unit is the SAVE, not the budget check. Criteria enter at 3
-      // points and the budget is the criteria count times 3, so a selection is
-      // already balanced the moment it exists: the check passes on a model
-      // nobody has opened, and on an empty one it passes vacuously (0 = 0).
-      // models.weightsSavedAt records the act instead, so this unit is true
-      // when someone has weighed the model and false otherwise.
+      // The chapter is never empty and never partial, which is what leaves
+      // nothing else here to count. Criteria enter at 3 points and the budget
+      // is the criteria count times 3, so an allocation is exact from birth
+      // and every validation of it passes on a model nobody has opened. The
+      // motivation obligations are no better: both weight warnings report ok
+      // when they simply do not apply, and one of them (people leadership)
+      // cannot apply at all to a model without that criterion, so it was a
+      // unit for work that could not exist.
       //
-      // And no neighbour zeroes it. This chapter used to return 0 whenever
-      // Kriterier was incomplete, which meant deactivating a criterion after a
-      // real save reported "0 of 3" against a saved weighting and a written
-      // motivation still on screen. A unit is the user's own act; another
-      // chapter's state cannot un-perform it.
-      const motivations = WEIGHT_MOTIVATION_CHECKS.map((key) =>
-        checkOf(input, key)
-      ).filter((check) => check !== undefined)
-      // The warnings are the ENGINE's, so they only exist once there are
-      // criteria to warn about, and a model with none has nothing to motivate.
-      // Its total is the save alone, which keeps done at 0 of 1 rather than
-      // inventing units for work that cannot be started.
+      // So the only honest signal is the act. models.weightsSavedAt records
+      // it, and this reads 0 of 1 before it and 1 of 1 after.
       //
-      // The motivation units are gated on the save for the same reason the
-      // first unit is the save: both warnings report ok when they simply do
-      // not APPLY (no dimension over its share, no people-leadership criterion
-      // above the floor), so on an untouched selection they are born true and
-      // the chapter would open two thirds done. Once the weighting has been
-      // saved the chapter has been used, and from then on each unit reads its
-      // own real state, including falling back to false if a later edit
-      // reopens the warning.
-      const used = input.weightsSaved
-      return {
-        done: used ? 1 + motivations.filter((check) => check.ok).length : 0,
-        total: 1 + motivations.length,
-      }
+      // The obligations lose nothing by leaving: they are the approval
+      // chapter's checklist warnings, each with its own remedy line pointing
+      // back here, which is where a model is actually held to them.
+      return { done: input.weightsSaved ? 1 : 0, total: 1 }
     }
     case "method": {
       // One protokoll per criterion, and nothing else: the materiality

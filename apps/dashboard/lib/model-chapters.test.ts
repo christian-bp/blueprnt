@@ -169,67 +169,57 @@ describe("chapter progress", () => {
   // exact: the chapter is allowed to open done, but only once Kriterier
   // itself is complete (the default fixture's six criteria pass every
   // station check).
-  // Born-done was the first dishonesty. Criteria enter at 3 points and the
-  // budget is the criteria count times 3, so a selection is already balanced
-  // the moment it exists and the budget check passes on a model nobody has
-  // opened. The unit is the SAVE now, so a fresh six-criteria selection with
-  // no save reads zero for it.
-  it("opens the weighting chapter at zero on a selection nobody has weighed", () => {
+  // ONE unit, and it is the act. Criteria enter at 3 points and the budget is
+  // the criteria count times 3, so a selection is exact from birth and every
+  // validation of it passes on a model nobody has opened; the motivation
+  // obligations were no better, and one of them could not even apply to a
+  // model without a people-leadership criterion. What is left is whether the
+  // weighting was deliberately done.
+  it("counts nothing on a selection nobody has weighed", () => {
     expect(modelChapterProgress(input(), "weighting")).toEqual({
       done: 0,
-      total: 3,
+      total: 1,
     })
   })
 
   it("counts the save once a human has performed it", () => {
     expect(
       modelChapterProgress(input({ weightsSaved: true }), "weighting")
-    ).toEqual({ done: 3, total: 3 })
+    ).toEqual({ done: 1, total: 1 })
   })
 
-  // A fresh org with no criteria yet must not read as begun. The motivation
-  // warnings are the engine's, so they do not exist on an empty model, and the
-  // save has not happened: 0 of 1, with nothing invented for work that cannot
-  // be started.
-  it("shows an untouched model as zero, with no units it cannot have", () => {
-    const freshOrg = input({
-      checks: [],
-    })
-    expect(modelChapterProgress(freshOrg, "weighting")).toEqual({
+  // The total never moves: not with the model's composition, not with which
+  // warnings happen to be pending. A reader who asks what the number counts
+  // gets one answer.
+  it("holds its total at one whatever the model is made of", () => {
+    for (const overrides of [
+      { checks: [] },
+      { checks: checks({ criterionCount: { count: 0, ok: false } }) },
+      {
+        checks: checks({
+          dimensionWeightBalance: { ok: false },
+          peopleLeadershipWeight: { ok: false },
+        }),
+      },
+      { checks: checks({ overlapPairs: { ok: false } }) },
+    ]) {
+      expect(modelChapterProgress(input(overrides), "weighting").total).toBe(1)
+    }
+  })
+
+  // An untouched model must not read as begun, whatever its checks say
+  // vacuously.
+  it("shows an untouched model as zero", () => {
+    expect(modelChapterProgress(input({ checks: [] }), "weighting")).toEqual({
       done: 0,
       total: 1,
     })
   })
 
-  it("counts the save and each motivation the warnings ask for", () => {
-    expect(
-      modelChapterProgress(
-        input({
-          weightsSaved: true,
-          checks: checks({ weightBudget: { ok: false } }),
-        }),
-        "weighting"
-      )
-    ).toEqual({ done: 3, total: 3 })
-    expect(
-      modelChapterProgress(
-        input({
-          weightsSaved: true,
-          checks: checks({
-            dimensionWeightBalance: { ok: false },
-            peopleLeadershipWeight: { ok: false },
-          }),
-        }),
-        "weighting"
-      )
-    ).toEqual({ done: 1, total: 3 })
-  })
-
-  // THE OWNER'S CASE. Five active criteria (one under the minimum), a real
-  // save, and one of the two motivations written: the chapter reported "0 of
-  // 3" against work visibly on screen, because it zeroed itself whenever
-  // Kriterier was incomplete. A unit is the user's own act, and a neighbouring
-  // chapter cannot un-perform it.
+  // THE OWNER'S CASE. Five active criteria (one under the minimum) and a real
+  // save: the chapter reported zero against work visibly on screen, because it
+  // zeroed itself whenever Kriterier was incomplete. A unit is the user's own
+  // act, and a neighbouring chapter cannot un-perform it.
   it("keeps a saved weighting counted when the selection drops below the minimum", () => {
     const fiveCriteria = input({
       weightsSaved: true,
@@ -241,23 +231,9 @@ describe("chapter progress", () => {
     const criteria = modelChapterProgress(fiveCriteria, "criteria")
     expect(criteria.done).toBeLessThan(criteria.total)
     expect(modelChapterProgress(fiveCriteria, "weighting")).toEqual({
-      done: 2,
-      total: 3,
+      done: 1,
+      total: 1,
     })
-  })
-
-  // The overlap warning is satisfied by the overlap protokoll, which is
-  // Metod's work, so it is not one of Viktning's motivations.
-  it("leaves the overlap warning out of the weighting chapter", () => {
-    expect(
-      modelChapterProgress(
-        input({
-          weightsSaved: true,
-          checks: checks({ overlapPairs: { ok: false } }),
-        }),
-        "weighting"
-      )
-    ).toEqual({ done: 3, total: 3 })
   })
 
   // One protokoll per criterion and nothing else, which is what makes Metod

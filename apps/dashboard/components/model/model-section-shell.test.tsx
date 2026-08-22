@@ -95,9 +95,9 @@ describe("ModelSectionShell", () => {
     expect(row.className).toContain("flex-wrap")
     expect(instrument.parentElement?.className).toContain("md:ms-auto")
     expect(container.querySelector('[class*="fixed"]')).toBeNull()
-    // The fixture leaves only the approval outstanding: 16 of 17 STEPS, so
-    // 94%, not the 75% three closed chapters of four would read as.
-    expect(bar.getAttribute("aria-valuenow")).toBe("94")
+    // The fixture leaves only the approval outstanding: 14 of 15 STEPS, so
+    // 93%, not the 75% three closed chapters of four would read as.
+    expect(bar.getAttribute("aria-valuenow")).toBe("93")
     const tokens = instrument.className.split(/\s+/)
     expect(tokens).toContain("w-[28rem]")
     expect(tokens).toContain("shrink-0")
