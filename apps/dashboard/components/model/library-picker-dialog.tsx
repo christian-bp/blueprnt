@@ -1,6 +1,6 @@
 "use client"
 
-import { PlusSignIcon } from "@hugeicons/core-free-icons"
+import { ArrowDown01Icon, PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
@@ -10,7 +10,7 @@ import {
   LIBRARY_DIMENSION,
   LIBRARY_OVERLAP_PAIRS,
 } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
-import type { DimensionKey } from "@workspace/core"
+import { DIMENSION_MAX_ACTIVE, type DimensionKey } from "@workspace/core"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -30,12 +30,14 @@ import {
   ItemTitle,
 } from "@workspace/ui/components/item"
 import { useMutation } from "convex/react"
+import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
-import { useRef, useState } from "react"
+import { useId, useRef, useState } from "react"
 import { cn } from "@workspace/ui/lib/utils"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import { formatNames } from "@/lib/list-format"
 import { modelErrorKey } from "@/lib/model-errors"
+import { SPRING } from "@/lib/motion"
 import { toast } from "@/lib/toast"
 
 // A criterion the org has already chosen, as this dialog needs to know it:
@@ -86,6 +88,11 @@ export function LibraryPickerDialog({
   // state value read from a render closure is a tick behind exactly then.
   const addingRef = useRef<Set<string>>(new Set())
   const [addingKeys, setAddingKeys] = useState<readonly string[]>([])
+  // One card's depth at a time. The list is a comparison, and four cards open
+  // at once turns it back into the wall of prose the collapsed face exists to
+  // prevent.
+  const [detailKey, setDetailKey] = useState<string | null>(null)
+  const detailBaseId = useId()
 
   const content = criteriaLibraryContent(locale)
   const selectedKeys = new Set(
@@ -97,6 +104,15 @@ export function LibraryPickerDialog({
   const entries = CRITERIA_LIBRARY_KEYS.filter(
     (key) => LIBRARY_DIMENSION[key] === dimensionKey && !selectedKeys.has(key)
   )
+
+  // How much room the dimension has left, in the chapter's own words: the
+  // column behind the dialog carries the same chip from the same key, and a
+  // reader deciding inside the dialog should not have to close it to see how
+  // many slots are left. Derived from `selected`, so the two can never
+  // disagree about what is chosen.
+  const placedInDimension = CRITERIA_LIBRARY_KEYS.filter(
+    (key) => LIBRARY_DIMENSION[key] === dimensionKey && selectedKeys.has(key)
+  ).length
 
   // The already-chosen criteria this one overlaps, by name. Named rather than
   // counted: "overlaps something" is a warning nobody can act on.
@@ -166,7 +182,15 @@ export function LibraryPickerDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("title", { dimension: dimensionName })}</DialogTitle>
+          <DialogTitle className="flex flex-wrap items-center gap-2">
+            {t("title", { dimension: dimensionName })}
+            <Badge variant="secondary">
+              {tCriteria("columnCount", {
+                count: placedInDimension,
+                max: DIMENSION_MAX_ACTIVE[dimensionKey],
+              })}
+            </Badge>
+          </DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
         {entries.length === 0 ? (
@@ -176,6 +200,9 @@ export function LibraryPickerDialog({
             {entries.map((key) => {
               const overlaps = overlapsSelected(key)
               const recommended = recommendedKeys.includes(key)
+              const entry = content.criteria[key]
+              const detailOpen = detailKey === key
+              const detailPanelId = `${detailBaseId}-${key}`
               return (
                 <Item
                   key={key}
@@ -196,16 +223,18 @@ export function LibraryPickerDialog({
                         thing a picker must never show, and the longest library
                         names run past one line in fi. */}
                     <ItemTitle className="line-clamp-none">
-                      {content.criteria[key].name}
+                      {entry.name}
                     </ItemTitle>
-                    {/* The full definition, not the one-line shortUiText: the
-                        picker is where the reader decides whether to add a
-                        criterion, so the whole description has to be
-                        readable here, not a teaser. line-clamp-none overrides
-                        ItemDescription's default two-line clamp; the list
-                        already scrolls, so a taller row costs nothing. */}
+                    {/* The one-liner, with the depth one press away. The list
+                        is a COMPARISON: four full definitions stacked make it
+                        a wall of prose nobody reads to the end, so the
+                        collapsed face stays scannable (name, one line, chips)
+                        and the expanded face carries what the decision
+                        actually needs. line-clamp-none overrides
+                        ItemDescription's default two-line clamp; the one-liner
+                        runs past two lines in fi and must not clip. */}
                     <ItemDescription className="line-clamp-none">
-                      {content.criteria[key].fullDefinition}
+                      {entry.shortUiText}
                     </ItemDescription>
                     {(recommended || overlaps.length > 0) && (
                       <span className="flex flex-wrap gap-1">
@@ -242,6 +271,78 @@ export function LibraryPickerDialog({
                         )}
                       </span>
                     )}
+                    {/* The decision material (masterdokument 11): the full
+                        definition, where the criterion fits and where it does
+                        not, and the control question. Behind a press, always
+                        present so no row changes height on hover. */}
+                    <button
+                      type="button"
+                      aria-expanded={detailOpen}
+                      aria-controls={detailPanelId}
+                      className="flex items-center gap-1 self-start text-muted-foreground text-xs hover:text-foreground"
+                      onClick={() =>
+                        setDetailKey((openKey) =>
+                          openKey === key ? null : key
+                        )
+                      }
+                    >
+                      {t("detailToggle")}
+                      <HugeiconsIcon
+                        icon={ArrowDown01Icon}
+                        strokeWidth={2}
+                        aria-hidden="true"
+                        className={cn(
+                          "size-3.5 transition-transform motion-reduce:transition-none",
+                          detailOpen && "rotate-180"
+                        )}
+                      />
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {detailOpen ? (
+                        <motion.div
+                          id={detailPanelId}
+                          key="detail"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={SPRING}
+                          className="overflow-hidden"
+                        >
+                          <div className="space-y-2 pt-1 text-sm leading-relaxed">
+                            <p>{entry.fullDefinition}</p>
+                            <p>
+                              <span className="font-medium">
+                                {`${t("suitableLabel")}: `}
+                              </span>
+                              <span className="text-muted-foreground">
+                                {entry.whenSuitable}
+                              </span>
+                            </p>
+                            <p>
+                              <span className="font-medium">
+                                {`${t("notSuitableLabel")}: `}
+                              </span>
+                              <span className="text-muted-foreground">
+                                {entry.whenNotSuitable}
+                              </span>
+                            </p>
+                            {/* A question the reader answers in their own
+                                head. Deliberately not a field and not a gate
+                                (deviation 6: activation stays one press): a
+                                checkbox here would turn a moment of thought
+                                into a click people learn to make without
+                                thinking. Boxed so it reads as the self-test
+                                rather than a fourth paragraph. */}
+                            <p className="rounded-md border bg-muted/40 p-2">
+                              <span className="font-medium">
+                                {`${t("controlQuestionLabel")}: `}
+                              </span>
+                              {entry.controlQuestion}
+                            </p>
+                          </div>
+                        </motion.div>
+                      ) : null}
+                    </AnimatePresence>
                   </ItemContent>
                   {/* self-start because Item centres its slots and a row with
                       chips runs several lines tall: the add control belongs on
@@ -254,7 +355,7 @@ export function LibraryPickerDialog({
                       // leave a screen reader with a column of identical
                       // buttons.
                       aria-label={t("addRowLabel", {
-                        name: content.criteria[key].name,
+                        name: entry.name,
                       })}
                       disabled={addingKeys.includes(key)}
                       onClick={() => beginAdd(key)}

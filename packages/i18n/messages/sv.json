@@ -1929,6 +1929,10 @@
       "picker": {
         "title": "Kriterier för {dimension}",
         "description": "Välj ur biblioteket. Kriteriet läggs till med vikt 3, och du bestämmer dess vikt i kapitlet Viktning.",
+        "detailToggle": "Mer om kriteriet",
+        "suitableLabel": "När det passar",
+        "notSuitableLabel": "När det inte passar",
+        "controlQuestionLabel": "Kontrollfråga",
         "addRowCta": "Lägg till",
         "addRowLabel": "Lägg till {name} i modellen",
         "empty": "Alla kriterier i denna dimension är valda.",

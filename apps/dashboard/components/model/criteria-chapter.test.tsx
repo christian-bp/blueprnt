@@ -74,8 +74,12 @@ const DIMENSIONS = [
 const KNOWLEDGE_DEPTH = "Knowledge depth and specialist level"
 const KNOWLEDGE_BREADTH =
   "Knowledge breadth and cross-disciplinary understanding"
-// The library's own full definition for knowledge-breadth, so the assertion
-// reads the same string the picker renders from the library module.
+// The library's own one-liner and full definition for knowledge-breadth, so
+// the assertions read the same strings the picker renders from the library
+// module: the one-liner on the collapsed face, the definition behind the
+// press.
+const KNOWLEDGE_BREADTH_SHORT =
+  criteriaLibraryContent("en").criteria["knowledge-breadth"].shortUiText
 const KNOWLEDGE_BREADTH_FULL =
   "Captures the role's requirement to combine and integrate several competence areas, such as product, data, business and technology, and to understand how they connect. It measures breadth of integration, not the number of people the role works with."
 const ANALYTICAL = "Analytical and problem-solving effort"
@@ -602,29 +606,115 @@ describe("the Kriterier chapter", () => {
     )
   })
 
-  // The picker is where the reader decides whether to add a criterion, so a
-  // row has to carry its whole definition, not the one-line summary the card
-  // uses once something is chosen.
-  it("shows a picker row's full definition, not the one-line summary", async () => {
+  // A warning about nothing is noise. physical-sensory declares an overlap
+  // (with safety-exposure), but that criterion is not in this model, so the
+  // row carries no overlap chip at all while analytical-effort, whose
+  // counterpart IS chosen, does.
+  it("warns only about overlaps with criteria the model already has", async () => {
+    renderChapter()
+    await openPicker("Effort and complexity")
+    const dialog = screen.getByRole("dialog")
+    const quiet = within(dialog)
+      .getByText("Physical or sensory effort")
+      .closest("li") as HTMLElement
+    expect(quiet.textContent).not.toContain(
+      criteria.overlapChip.replace("{names}", "")
+    )
+    const warned = within(dialog)
+      .getByText(ANALYTICAL)
+      .closest("li") as HTMLElement
+    expect(warned.textContent).toContain(
+      criteria.overlapChip.replace("{names}", COMPLEXITY)
+    )
+  })
+
+  // The list is a comparison, so the collapsed face stays scannable: name,
+  // one line, chips. Everything the decision needs is one press away, which
+  // the next tests cover.
+  it("leads a picker row with the one-liner, not the full definition", async () => {
     renderChapter()
     await openPicker("Competence")
     const row = within(screen.getByRole("dialog"))
       .getByText(KNOWLEDGE_BREADTH)
       .closest("li") as HTMLElement
-    expect(within(row).getByText(KNOWLEDGE_BREADTH_FULL)).toBeDefined()
+    expect(within(row).getByText(KNOWLEDGE_BREADTH_SHORT)).toBeDefined()
+    expect(within(row).queryByText(KNOWLEDGE_BREADTH_FULL)).toBeNull()
   })
 
-  // The definition must never clip: line-clamp-none overrides
+  // The one-liner must never clip: line-clamp-none overrides
   // ItemDescription's own two-line clamp, asserted against the vendor base
   // the same way the title's is, below.
-  it("lets a picker row's full definition wrap rather than clamping it", async () => {
+  it("lets a picker row's one-liner wrap rather than clamping it", async () => {
     renderChapter()
     await openPicker("Competence")
     const description = within(screen.getByRole("dialog")).getByText(
-      KNOWLEDGE_BREADTH_FULL
+      KNOWLEDGE_BREADTH_SHORT
     )
     expect(description.className).toContain("line-clamp-none")
     expect(description.className).not.toContain("line-clamp-2")
+  })
+
+  // Masterdokument 11: the decision material is the full definition, where the
+  // criterion fits and where it does not, and the control question. All of it
+  // is reachable from the picker, one press per row.
+  it("opens a picker row's decision material: definition, fit, and the control question", async () => {
+    renderChapter()
+    await openPicker("Competence")
+    const dialog = screen.getByRole("dialog")
+    const row = within(dialog)
+      .getByText(KNOWLEDGE_BREADTH)
+      .closest("li") as HTMLElement
+    const entry = criteriaLibraryContent("en").criteria["knowledge-breadth"]
+
+    fireEvent.click(within(row).getByText(picker.detailToggle))
+
+    expect(within(row).getByText(entry.fullDefinition)).toBeDefined()
+    expect(within(row).getByText(entry.whenSuitable)).toBeDefined()
+    expect(within(row).getByText(entry.whenNotSuitable)).toBeDefined()
+    expect(row.textContent).toContain(entry.controlQuestion)
+    expect(row.textContent).toContain(picker.suitableLabel)
+    expect(row.textContent).toContain(picker.notSuitableLabel)
+    expect(row.textContent).toContain(picker.controlQuestionLabel)
+  })
+
+  // Deviation 6 stands: the control question is answered in the reader's own
+  // head, so it brings no field and no gate with it. Activation is one press,
+  // before and after opening the detail.
+  it("asks the control question without gating the add behind it", async () => {
+    renderChapter()
+    await openPicker("Competence")
+    const row = within(screen.getByRole("dialog"))
+      .getByText(KNOWLEDGE_BREADTH)
+      .closest("li") as HTMLElement
+    const add = within(row).getByRole("button", {
+      name: picker.addRowLabel.replace("{name}", KNOWLEDGE_BREADTH),
+    })
+    // Enabled before the question has even been read: reading it is the
+    // reader's own business, not a step the surface makes them complete.
+    expect(add.hasAttribute("disabled")).toBe(false)
+
+    fireEvent.click(within(row).getByText(picker.detailToggle))
+    expect(within(row).queryByRole("checkbox")).toBeNull()
+    expect(within(row).queryByRole("textbox")).toBeNull()
+    expect(add.hasAttribute("disabled")).toBe(false)
+    fireEvent.click(add)
+    await waitFor(() => {
+      expect(activateCriterion).toHaveBeenCalledWith({
+        orgId: "org-1",
+        libraryKey: "knowledge-breadth",
+      })
+    })
+  })
+
+  it("states the dimension's cap in the picker, in the column's own words", async () => {
+    renderChapter()
+    await openPicker("Competence")
+    // One competence criterion is already chosen in the fixture, of a cap of 2.
+    expect(
+      within(screen.getByRole("dialog")).getByText(
+        criteria.columnCount.replace("{count}", "1").replace("{max}", "2")
+      )
+    ).toBeDefined()
   })
 
   // Same rule as the card: a clipped criterion NAME is the one thing a picker

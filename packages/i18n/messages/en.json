@@ -1929,6 +1929,10 @@
       "picker": {
         "title": "Criteria for {dimension}",
         "description": "Choose from the library. The criterion enters the model at weight 3; you set its weight in the Weighting chapter.",
+        "detailToggle": "More about this criterion",
+        "suitableLabel": "When it fits",
+        "notSuitableLabel": "When it does not",
+        "controlQuestionLabel": "Control question",
         "addRowCta": "Add",
         "addRowLabel": "Add {name} to the model",
         "empty": "Every criterion in this dimension is selected.",

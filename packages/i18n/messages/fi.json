@@ -1929,6 +1929,10 @@
       "picker": {
         "title": "Kriteerit: {dimension}",
         "description": "Valitse kirjastosta. Kriteeri lisätään painolla 3, ja määrität sen painon Painotus-luvussa.",
+        "detailToggle": "Lisää kriteeristä",
+        "suitableLabel": "Milloin se sopii",
+        "notSuitableLabel": "Milloin se ei sovi",
+        "controlQuestionLabel": "Tarkistuskysymys",
         "addRowCta": "Lisää",
         "addRowLabel": "Lisää {name} malliin",
         "empty": "Kaikki tämän ulottuvuuden kriteerit on valittu.",
