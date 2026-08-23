@@ -1,0 +1,66 @@
+apps/dashboard/components/stage-eyebrow.tsx
+  s_58dd112dc09435::t_4c4deb1ff254d5 17-29,32
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_c5af1c9ac1f4b9 2062
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.test.tsx
+  s_58dd112dc09435::t_0bec4c88ab20c8 284-293,295
+  s_58dd112dc09435::t_e40572691ab8db 255-266,270-283,294,296-314
+  s_58dd112dc09435::t_0a55685af5958e 369-382
+  s_58dd112dc09435::t_a44fcbd2ef6112 32,267-269
+apps/dashboard/lib/rate-column.ts
+  s_58dd112dc09435::t_6b383ab782f7ae 1-16
+packages/backend/convex/ai/promptGuard.test.ts
+  s_58dd112dc09435::t_cb9c8915d2ee6a 143-235
+packages/backend/convex/evaluationModel/criteriaLibrary.ts
+  s_58dd112dc09435::t_bdd4c337fd35ca 205-212
+apps/dashboard/components/page-breadcrumb-row.tsx
+  s_58dd112dc09435::t_a44fcbd2ef6112 42-45
+apps/dashboard/components/rating/rating-result.tsx
+  s_58dd112dc09435::t_dff2901602b5e6 78,98
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_c5af1c9ac1f4b9 1626,2154
+  s_58dd112dc09435::t_920453b390d695 1625
+apps/dashboard/components/rating/rating-stepper.test.tsx
+  s_58dd112dc09435::t_949dcd2e24786d 161,415
+  s_58dd112dc09435::t_d82a3e152d563d 197
+  s_58dd112dc09435::t_9d662cc8e358e1 182
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_58dd112dc09435::t_546c4fe9b1b085 23,84,95,138,166,200,236,250,265,301,316
+  s_58dd112dc09435::t_a8d10247c36fc2 310
+apps/dashboard/components/disclosure-toggle.tsx
+  s_58dd112dc09435::t_973bce54f7a576 1-63
+apps/dashboard/components/org-audit-log-section.test.tsx
+  s_58dd112dc09435::t_39f4359adf8f0d 94-95,99,145,281-291
+  s_58dd112dc09435::t_c5af970d938cb9 292-293
+packages/backend/convex/ai/promptGuard.ts
+  s_58dd112dc09435::t_5c734ab5a9adf3 170-172,178
+  s_58dd112dc09435::t_a73124bf6030ec 49,53-59,92-96,148-169
+packages/backend/convex/ai/suggest.test.ts
+  s_58dd112dc09435::t_c2437eddacda1c 1988-1997
+apps/dashboard/components/org-audit-log-section.tsx
+  s_58dd112dc09435::t_0133b057f32a32 495-507
+  s_58dd112dc09435::t_ac460a2a012894 59
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_58dd112dc09435::t_bdd4c337fd35ca 5
+  s_58dd112dc09435::t_dff2901602b5e6 290
+  s_58dd112dc09435::t_d82a3e152d563d 84,86-88,378-379,406,408,412,415,417,419,440,487,494
+  s_58dd112dc09435::t_5b283b0a106389 24,488-493
+  s_58dd112dc09435::t_d99345b74536c6 23,335-339,346,386-392
+  s_58dd112dc09435::t_bc09c15609712c 482-486
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "ac68b02b36ce1ed7d05df2784c48ff6ded2aecf3",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": null
+    }
+  }
+}
