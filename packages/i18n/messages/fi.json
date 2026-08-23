@@ -586,7 +586,8 @@
         "cancel": "Peruuta",
         "cta": "Luo ja määritä",
         "error": "Roolia ei voitu luoda. Yritä uudelleen."
-      }
+      },
+      "statusHeading": "Luokittelu"
     },
     "auditLog": {
       "empty": "Toimintaa ei ole vielä kirjattu.",
@@ -1567,7 +1568,8 @@
         },
         "noNotesYet": "Ei vielä merkintöjä."
       },
-      "runNav": "Palkkakartoitus"
+      "runNav": "Palkkakartoitus",
+      "runFacts": "Tunnusluvut"
     },
     "rating": {
       "title": "Arvioi rooli",

@@ -586,7 +586,8 @@
         "cancel": "Avbryt",
         "cta": "Opprett og tildel",
         "error": "Rollen kunne ikke opprettes. Prøv igjen."
-      }
+      },
+      "statusHeading": "Klassifisering"
     },
     "auditLog": {
       "empty": "Ingen aktivitet er registrert ennå.",
@@ -1567,7 +1568,8 @@
         },
         "noNotesYet": "Ingen notater ennå."
       },
-      "runNav": "Lønnskartlegging"
+      "runNav": "Lønnskartlegging",
+      "runFacts": "Nøkkeltall"
     },
     "rating": {
       "title": "Vurder rolle",

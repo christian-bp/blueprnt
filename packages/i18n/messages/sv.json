@@ -586,7 +586,8 @@
         "cancel": "Avbryt",
         "cta": "Skapa och tilldela",
         "error": "Rollen kunde inte skapas. Försök igen."
-      }
+      },
+      "statusHeading": "Klassificering"
     },
     "auditLog": {
       "empty": "Ingen aktivitet har registrerats ännu.",
@@ -1567,7 +1568,8 @@
         },
         "noNotesYet": "Inga noteringar ännu."
       },
-      "runNav": "Lönekartläggning"
+      "runNav": "Lönekartläggning",
+      "runFacts": "Nyckeltal"
     },
     "rating": {
       "title": "Betygsätt roll",

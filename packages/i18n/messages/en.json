@@ -586,7 +586,8 @@
         "cancel": "Cancel",
         "cta": "Create and assign",
         "error": "The role could not be created. Try again."
-      }
+      },
+      "statusHeading": "Classification"
     },
     "auditLog": {
       "empty": "No activity recorded yet.",
@@ -1567,7 +1568,8 @@
         },
         "noNotesYet": "No notes yet."
       },
-      "runNav": "Pay mapping"
+      "runNav": "Pay mapping",
+      "runFacts": "Key figures"
     },
     "rating": {
       "title": "Rate role",
