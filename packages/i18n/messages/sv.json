@@ -209,15 +209,20 @@
       "goToPage": "Gå till sidan",
       "empty": "Inget matchar din sökning."
     },
+    "shell": {
+      "create": "Lägg till",
+      "collapseNav": "Minimera navigeringen",
+      "expandNav": "Expandera navigeringen",
+      "areaNav": "Sektionsnavigering"
+    },
+    "table": {
+      "range": "{from}-{to} av {total}",
+      "rowsPerPage": "Rader per sida"
+    },
     "nav": {
-      "groups": {
-        "status": "Nuläge",
-        "evaluation": "Arbetsvärdering",
-        "peoplePay": "Medarbetare & lön",
-        "administration": "Administration"
-      },
       "home": "Översikt",
       "overview": "Nivåer",
+      "settings": "Inställningar",
       "work": "Jobbarkitektur",
       "roles": "Roller",
       "rolesRemainingLabel": "{count, plural, one {# roll kvar att utvärdera} other {# roller kvar att utvärdera}}",
@@ -233,7 +238,6 @@
       "docs": "Dokumentation"
     },
     "people": {
-      "description": "Medarbetare importerade från ert lönesystem.",
       "empty": "Inga medarbetare importerade än.",
       "suggestedBadge": "Föreslagen",
       "suggestedBadgeTooltip": "Rollen är inte bekräftad än. Bekräfta den på sidan Klassificera.",
@@ -535,7 +539,6 @@
       }
     },
     "classify": {
-      "description": "Tilldela varje anställd en roll och senioritet i er jobbarkitektur.",
       "columns": {
         "title": "Importerad befattning",
         "people": "Anställda",
@@ -585,7 +588,6 @@
       }
     },
     "auditLog": {
-      "description": "Varje ändring i din organisation, vem som gjorde den och när.",
       "empty": "Ingen aktivitet har registrerats ännu.",
       "notAuthorized": "Endast organisationsadministratörer kan se händelseloggen.",
       "categories": {
@@ -984,7 +986,6 @@
       "progress": "{rated} / {total} kriterier bedömda"
     },
     "roles": {
-      "description": "Jobbprofiler som värderas mot er modell. Roller, aldrig personer.",
       "newCta": "Skapa roll",
       "empty": "Inga roller ännu. Skapa din första roll för att börja värdera.",
       "import": {
@@ -1083,7 +1084,9 @@
         "renameDialogTitle": "Byt namn på familjen",
         "renameDialogDescription": "Ge familjen ett nytt namn.",
         "removeDialogTitle": "Ta bort familjen?",
-        "removeListLabel": "Roller som lämnar familjen:"
+        "removeListLabel": "Roller som lämnar familjen:",
+        "showRoles": "Visa roller i {name}",
+        "hideRoles": "Dölj roller i {name}"
       },
       "detail": {
         "profileHeading": "Jobbprofil",
@@ -1151,10 +1154,10 @@
         "resultCount": "{shown} av {total} roller",
         "noMatches": "Inga roller matchar sökningen eller filtren.",
         "clearFilters": "Rensa filtren"
-      }
+      },
+      "familySummary": "{roles, plural, =1 {1 roll} other {# roller}} i {families, plural, =1 {1 familj} other {# familjer}}"
     },
     "payMapping": {
-      "description": "Frysta ögonblicksbilder av er lönedata för lönekartläggning. Var och en fångar en tidpunkt.",
       "startCta": "Starta lönekartläggning",
       "empty": "Inga lönekartläggningar än. Starta en för att frysa dagens lönedata för analys.",
       "table": {
@@ -1194,8 +1197,7 @@
         "completed": "Avslutad"
       },
       "switcher": {
-        "label": "Byt lönekartläggning",
-        "all": "Alla lönekartläggningar"
+        "label": "Byt lönekartläggning"
       },
       "start": {
         "title": "Starta en lönekartläggning",
@@ -2121,7 +2123,6 @@
       "notAuthorized": "Du har inte åtkomst till den här sidan.",
       "users": {
         "heading": "Användare",
-        "description": "Alla med ett konto, i alla organisationer.",
         "empty": "Inga användare än.",
         "searchPlaceholder": "Sök på namn eller e-post",
         "table": {
@@ -2175,7 +2176,6 @@
       },
       "orgs": {
         "heading": "Organisationer",
-        "description": "Alla organisationer i installationen.",
         "empty": "Inga organisationer än.",
         "searchPlaceholder": "Sök på namn eller slug",
         "table": {
@@ -2223,7 +2223,6 @@
       },
       "auditLog": {
         "heading": "Händelselogg",
-        "description": "Varje plattformsadministratörsåtgärd i hela installationen.",
         "empty": "Inga administratörsåtgärder har registrerats ännu.",
         "systemActor": "System",
         "deletedUser": "Borttagen användare",
@@ -2286,7 +2285,6 @@
       },
       "emailLog": {
         "heading": "E-postlogg",
-        "description": "Alla e-postmeddelanden som skickats via plattformen.",
         "empty": "Inga e-postmeddelanden har skickats ännu.",
         "statusFilterLabel": "Filtrera efter status",
         "statuses": {
@@ -2361,7 +2359,6 @@
       },
       "aiUsage": {
         "heading": "AI-användning",
-        "description": "AI-kostnader och anrop för alla organisationer, per period.",
         "periodLabel": "Period",
         "empty": "Ingen AI-användning registrerad för denna period.",
         "kpi": {
@@ -2498,7 +2495,6 @@
       "notAuthorized": "Endast organisationens administratörer kan hantera de här inställningarna.",
       "general": {
         "title": "Organisationsprofil",
-        "description": "Uppdatera organisationens namn, logotyp och regionala inställningar.",
         "nameLabel": "Organisationens namn",
         "countryLabel": "Land",
         "countryPlaceholder": "Välj ett land",
@@ -2521,7 +2517,6 @@
         "error": "Det gick inte att uppdatera logotypen. Försök igen."
       },
       "members": {
-        "description": "Personer med åtkomst till den här organisationen.",
         "table": {
           "name": "Namn",
           "email": "E-post",

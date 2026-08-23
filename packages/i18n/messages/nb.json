@@ -209,15 +209,20 @@
       "goToPage": "Gå til siden",
       "empty": "Ingenting samsvarer med søket ditt."
     },
+    "shell": {
+      "create": "Legg til",
+      "collapseNav": "Skjul navigasjonen",
+      "expandNav": "Utvid navigasjonen",
+      "areaNav": "Seksjonsnavigasjon"
+    },
+    "table": {
+      "range": "{from}-{to} av {total}",
+      "rowsPerPage": "Rader per side"
+    },
     "nav": {
-      "groups": {
-        "status": "Status",
-        "evaluation": "Arbeidsvurdering",
-        "peoplePay": "Medarbeidere & lønn",
-        "administration": "Administrasjon"
-      },
       "home": "Oversikt",
       "overview": "Nivåer",
+      "settings": "Innstillinger",
       "work": "Jobbarkitektur",
       "roles": "Roller",
       "rolesRemainingLabel": "{count, plural, one {# rolle igjen å vurdere} other {# roller igjen å vurdere}}",
@@ -233,7 +238,6 @@
       "docs": "Dokumentasjon"
     },
     "people": {
-      "description": "Ansatte importert fra lønnssystemet.",
       "empty": "Ingen ansatte importert ennå.",
       "suggestedBadge": "Foreslått",
       "suggestedBadgeTooltip": "Rollen er ikke bekreftet ennå. Bekreft den på Klassifiser-siden.",
@@ -535,7 +539,6 @@
       }
     },
     "classify": {
-      "description": "Tildel hver ansatt en rolle og senioritet i jobbarkitekturen.",
       "columns": {
         "title": "Importert stillingstittel",
         "people": "Ansatte",
@@ -585,7 +588,6 @@
       }
     },
     "auditLog": {
-      "description": "Hver endring i organisasjonen din, hvem som gjorde den og når.",
       "empty": "Ingen aktivitet er registrert ennå.",
       "notAuthorized": "Bare organisasjonsadministratorer kan se hendelsesloggen.",
       "categories": {
@@ -984,7 +986,6 @@
       "progress": "{rated} / {total} kriterier vurdert"
     },
     "roles": {
-      "description": "Jobbprofiler som vurderes mot modellen deres. Roller, aldri personer.",
       "newCta": "Opprett rolle",
       "empty": "Ingen roller ennå. Opprett den første rollen for å begynne å vurdere.",
       "import": {
@@ -1083,7 +1084,9 @@
         "renameDialogTitle": "Gi familien nytt navn",
         "renameDialogDescription": "Gi familien et nytt navn.",
         "removeDialogTitle": "Slette familien?",
-        "removeListLabel": "Roller som forlater familien:"
+        "removeListLabel": "Roller som forlater familien:",
+        "showRoles": "Vis roller i {name}",
+        "hideRoles": "Skjul roller i {name}"
       },
       "detail": {
         "profileHeading": "Jobbprofil",
@@ -1151,10 +1154,10 @@
         "resultCount": "{shown} av {total} roller",
         "noMatches": "Ingen roller matcher søket eller filtrene.",
         "clearFilters": "Nullstill filtrene"
-      }
+      },
+      "familySummary": "{roles, plural, =1 {1 rolle} other {# roller}} i {families, plural, =1 {1 familie} other {# familier}}"
     },
     "payMapping": {
-      "description": "Fryste øyeblikksbilder av lønnsdataene for likelønnsanalyse. Hver av dem fanger et tidspunkt.",
       "startCta": "Start lønnskartlegging",
       "empty": "Ingen lønnskartlegginger ennå. Start en for å fryse dagens lønnsdata for analyse.",
       "table": {
@@ -1194,8 +1197,7 @@
         "completed": "Fullført"
       },
       "switcher": {
-        "label": "Bytt lønnskartlegging",
-        "all": "Alle lønnskartlegginger"
+        "label": "Bytt lønnskartlegging"
       },
       "start": {
         "title": "Start en lønnskartlegging",
@@ -2121,7 +2123,6 @@
       "notAuthorized": "Du har ikke tilgang til denne siden.",
       "users": {
         "heading": "Brukere",
-        "description": "Alle med en konto, i alle organisasjoner.",
         "empty": "Ingen brukere ennå.",
         "searchPlaceholder": "Søk på navn eller e-post",
         "table": {
@@ -2175,7 +2176,6 @@
       },
       "orgs": {
         "heading": "Organisasjoner",
-        "description": "Alle organisasjoner i installasjonen.",
         "empty": "Ingen organisasjoner ennå.",
         "searchPlaceholder": "Søk på navn eller slug",
         "table": {
@@ -2223,7 +2223,6 @@
       },
       "auditLog": {
         "heading": "Hendelseslogg",
-        "description": "Hver plattformadministratorhandling i hele installasjonen.",
         "empty": "Ingen administratorhandlinger er registrert ennå.",
         "systemActor": "System",
         "deletedUser": "Slettet bruker",
@@ -2286,7 +2285,6 @@
       },
       "emailLog": {
         "heading": "E-postlogg",
-        "description": "Alle e-poster som er sendt via plattformen.",
         "empty": "Ingen e-poster er sendt ennå.",
         "statusFilterLabel": "Filtrer etter status",
         "statuses": {
@@ -2361,7 +2359,6 @@
       },
       "aiUsage": {
         "heading": "AI-bruk",
-        "description": "AI-kostnader og forespørsler for alle organisasjoner, per periode.",
         "periodLabel": "Periode",
         "empty": "Ingen AI-bruk registrert for denne perioden.",
         "kpi": {
@@ -2498,7 +2495,6 @@
       "notAuthorized": "Bare organisasjonsadministratorer kan administrere disse innstillingene.",
       "general": {
         "title": "Organisasjonsprofil",
-        "description": "Oppdater organisasjonens navn, logo og regionale innstillinger.",
         "nameLabel": "Organisasjonsnavn",
         "countryLabel": "Land",
         "countryPlaceholder": "Velg et land",
@@ -2521,7 +2517,6 @@
         "error": "Kunne ikke oppdatere logoen. Prøv igjen."
       },
       "members": {
-        "description": "Personer med tilgang til denne organisasjonen.",
         "table": {
           "name": "Navn",
           "email": "E-post",

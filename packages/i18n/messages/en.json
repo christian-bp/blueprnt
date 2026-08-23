@@ -209,15 +209,20 @@
       "goToPage": "Go to page",
       "empty": "Nothing matches your search."
     },
+    "shell": {
+      "create": "Add",
+      "collapseNav": "Collapse navigation",
+      "expandNav": "Expand navigation",
+      "areaNav": "Section navigation"
+    },
+    "table": {
+      "range": "{from}-{to} of {total}",
+      "rowsPerPage": "Rows per page"
+    },
     "nav": {
-      "groups": {
-        "status": "Status",
-        "evaluation": "Job evaluation",
-        "peoplePay": "People & pay",
-        "administration": "Administration"
-      },
       "home": "Overview",
       "overview": "Levels",
+      "settings": "Settings",
       "work": "Job architecture",
       "roles": "Roles",
       "rolesRemainingLabel": "{count, plural, one {# role left to evaluate} other {# roles left to evaluate}}",
@@ -233,7 +238,6 @@
       "docs": "Documentation"
     },
     "people": {
-      "description": "Employees imported from your payroll system.",
       "empty": "No employees imported yet.",
       "suggestedBadge": "Suggested",
       "suggestedBadgeTooltip": "This role is not confirmed yet. Confirm it on the Classify page.",
@@ -535,7 +539,6 @@
       }
     },
     "classify": {
-      "description": "Assign each employee to a role and seniority in your job architecture.",
       "columns": {
         "title": "Imported job title",
         "people": "Employees",
@@ -585,7 +588,6 @@
       }
     },
     "auditLog": {
-      "description": "Every change in your organization, who made it and when.",
       "empty": "No activity recorded yet.",
       "notAuthorized": "Only organization admins can view the audit log.",
       "categories": {
@@ -984,7 +986,6 @@
       "progress": "{rated} / {total} criteria assessed"
     },
     "roles": {
-      "description": "Job profiles evaluated against your model. Roles, never persons.",
       "newCta": "Create role",
       "empty": "No roles yet. Create your first role to start evaluating.",
       "import": {
@@ -1083,7 +1084,9 @@
         "renameDialogTitle": "Rename family",
         "renameDialogDescription": "Give the family a new name.",
         "removeDialogTitle": "Delete this family?",
-        "removeListLabel": "Roles that will be unfiled:"
+        "removeListLabel": "Roles that will be unfiled:",
+        "showRoles": "Show roles in {name}",
+        "hideRoles": "Hide roles in {name}"
       },
       "detail": {
         "profileHeading": "Job profile",
@@ -1151,10 +1154,10 @@
         "resultCount": "{shown} of {total} roles",
         "noMatches": "No roles match the search or filters.",
         "clearFilters": "Clear filters"
-      }
+      },
+      "familySummary": "{roles, plural, =1 {1 role} other {# roles}} in {families, plural, =1 {1 family} other {# families}}"
     },
     "payMapping": {
-      "description": "Frozen snapshots of your pay data for equal-pay analysis. Each one captures a point in time.",
       "startCta": "Start pay mapping",
       "empty": "No pay mappings yet. Start one to freeze today's pay data for analysis.",
       "table": {
@@ -1194,8 +1197,7 @@
         "completed": "Completed"
       },
       "switcher": {
-        "label": "Switch pay mapping",
-        "all": "All pay mappings"
+        "label": "Switch pay mapping"
       },
       "start": {
         "title": "Start a pay mapping",
@@ -2121,7 +2123,6 @@
       "notAuthorized": "You do not have access to this page.",
       "users": {
         "heading": "Users",
-        "description": "Everyone with an account, across all organizations.",
         "empty": "No users yet.",
         "searchPlaceholder": "Search by name or email",
         "table": {
@@ -2175,7 +2176,6 @@
       },
       "orgs": {
         "heading": "Organizations",
-        "description": "Every tenant in the installation.",
         "empty": "No organizations yet.",
         "searchPlaceholder": "Search by name or slug",
         "table": {
@@ -2223,7 +2223,6 @@
       },
       "auditLog": {
         "heading": "Audit log",
-        "description": "Every platform-admin action across the installation.",
         "empty": "No admin actions recorded yet.",
         "systemActor": "System",
         "deletedUser": "Deleted user",
@@ -2286,7 +2285,6 @@
       },
       "emailLog": {
         "heading": "Email log",
-        "description": "Every email sent through the platform.",
         "empty": "No emails sent yet.",
         "statusFilterLabel": "Filter by status",
         "statuses": {
@@ -2361,7 +2359,6 @@
       },
       "aiUsage": {
         "heading": "AI usage",
-        "description": "AI spend and calls across every organization, by period.",
         "periodLabel": "Period",
         "empty": "No AI usage recorded for this period.",
         "kpi": {
@@ -2498,7 +2495,6 @@
       "notAuthorized": "Only organization admins can manage these settings.",
       "general": {
         "title": "Organization profile",
-        "description": "Update your organization's name, logo, and regional settings.",
         "nameLabel": "Organization name",
         "countryLabel": "Country",
         "countryPlaceholder": "Select a country",
@@ -2521,7 +2517,6 @@
         "error": "Could not update the logo. Try again."
       },
       "members": {
-        "description": "People with access to this organization.",
         "table": {
           "name": "Name",
           "email": "Email",

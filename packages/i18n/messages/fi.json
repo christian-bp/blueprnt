@@ -209,15 +209,20 @@
       "goToPage": "Siirry sivulle",
       "empty": "Mikään ei vastaa hakuasi."
     },
+    "shell": {
+      "create": "Lisää",
+      "collapseNav": "Piilota navigointi",
+      "expandNav": "Laajenna navigointi",
+      "areaNav": "Osion navigointi"
+    },
+    "table": {
+      "range": "{from}-{to} / {total}",
+      "rowsPerPage": "Riviä sivulla"
+    },
     "nav": {
-      "groups": {
-        "status": "Tilanne",
-        "evaluation": "Työn arviointi",
-        "peoplePay": "Työntekijät & palkka",
-        "administration": "Hallinto"
-      },
       "home": "Yleiskatsaus",
       "overview": "Tasot",
+      "settings": "Asetukset",
       "work": "Työarkkitehtuuri",
       "roles": "Roolit",
       "rolesRemainingLabel": "{count, plural, one {# rooli arvioimatta} other {# roolia arvioimatta}}",
@@ -233,7 +238,6 @@
       "docs": "Dokumentaatio"
     },
     "people": {
-      "description": "Palkanlaskentajärjestelmästä tuodut työntekijät.",
       "empty": "Ei tuotuja työntekijöitä vielä.",
       "suggestedBadge": "Ehdotettu",
       "suggestedBadgeTooltip": "Roolia ei ole vielä vahvistettu. Vahvista se Luokittele-sivulla.",
@@ -535,7 +539,6 @@
       }
     },
     "classify": {
-      "description": "Määritä jokaiselle työntekijälle rooli ja senioriteetti työrooliarkkitehtuurissa.",
       "columns": {
         "title": "Tuotu tehtävänimike",
         "people": "Työntekijät",
@@ -585,7 +588,6 @@
       }
     },
     "auditLog": {
-      "description": "Jokainen muutos organisaatiossasi, kuka sen teki ja milloin.",
       "empty": "Toimintaa ei ole vielä kirjattu.",
       "notAuthorized": "Vain organisaation järjestelmänvalvojat voivat nähdä tapahtumalokin.",
       "categories": {
@@ -984,7 +986,6 @@
       "progress": "{rated} / {total} kriteeriä arvioitu"
     },
     "roles": {
-      "description": "Tehtäväprofiilit, joita arvioidaan mallinne perusteella. Roolit, ei koskaan henkilöt.",
       "newCta": "Luo rooli",
       "empty": "Ei vielä rooleja. Luo ensimmäinen rooli aloittaaksesi arvioinnin.",
       "import": {
@@ -1083,7 +1084,9 @@
         "renameDialogTitle": "Nimeä perhe uudelleen",
         "renameDialogDescription": "Anna perheelle uusi nimi.",
         "removeDialogTitle": "Poistetaanko perhe?",
-        "removeListLabel": "Roolit, jotka poistuvat perheestä:"
+        "removeListLabel": "Roolit, jotka poistuvat perheestä:",
+        "showRoles": "Näytä perheen {name} roolit",
+        "hideRoles": "Piilota perheen {name} roolit"
       },
       "detail": {
         "profileHeading": "Tehtäväprofiili",
@@ -1151,10 +1154,10 @@
         "resultCount": "{shown}/{total} roolia",
         "noMatches": "Yksikään rooli ei vastaa hakua tai suodattimia.",
         "clearFilters": "Tyhjennä suodattimet"
-      }
+      },
+      "familySummary": "{roles, plural, =1 {1 rooli} other {# roolia}} {families, plural, =1 {1 perheessä} other {# perheessä}}"
     },
     "payMapping": {
-      "description": "Jäädytettyjä tilannekuvia palkkatiedoistanne tasa-arvoanalyysiä varten. Jokainen niistä tallentaa yhden ajankohdan.",
       "startCta": "Aloita palkkakartoitus",
       "empty": "Ei palkkakartoituksia vielä. Aloita yksi jäädyttääksesi tämän päivän palkkatiedot analyysiä varten.",
       "table": {
@@ -1194,8 +1197,7 @@
         "completed": "Valmis"
       },
       "switcher": {
-        "label": "Vaihda palkkakartoitusta",
-        "all": "Kaikki palkkakartoitukset"
+        "label": "Vaihda palkkakartoitusta"
       },
       "start": {
         "title": "Aloita palkkakartoitus",
@@ -2121,7 +2123,6 @@
       "notAuthorized": "Sinulla ei ole pääsyä tälle sivulle.",
       "users": {
         "heading": "Käyttäjät",
-        "description": "Kaikki, joilla on tili, kaikissa organisaatioissa.",
         "empty": "Ei käyttäjiä vielä.",
         "searchPlaceholder": "Hae nimellä tai sähköpostilla",
         "table": {
@@ -2175,7 +2176,6 @@
       },
       "orgs": {
         "heading": "Organisaatiot",
-        "description": "Kaikki organisaatiot asennuksessa.",
         "empty": "Ei organisaatioita vielä.",
         "searchPlaceholder": "Hae nimellä tai slugilla",
         "table": {
@@ -2223,7 +2223,6 @@
       },
       "auditLog": {
         "heading": "Tapahtumaloki",
-        "description": "Jokainen alustan järjestelmänvalvojan toimi koko asennuksessa.",
         "empty": "Järjestelmänvalvojan toimia ei ole vielä kirjattu.",
         "systemActor": "Järjestelmä",
         "deletedUser": "Poistettu käyttäjä",
@@ -2286,7 +2285,6 @@
       },
       "emailLog": {
         "heading": "Sähköpostiloki",
-        "description": "Kaikki alustan kautta lähetetyt sähköpostit.",
         "empty": "Sähköposteja ei ole vielä lähetetty.",
         "statusFilterLabel": "Suodata tilan mukaan",
         "statuses": {
@@ -2361,7 +2359,6 @@
       },
       "aiUsage": {
         "heading": "Tekoälyn käyttö",
-        "description": "Tekoälyn kustannukset ja kutsut kaikissa organisaatioissa jaksoittain.",
         "periodLabel": "Jakso",
         "empty": "Tälle jaksolle ei ole rekisteröity tekoälyn käyttöä.",
         "kpi": {
@@ -2498,7 +2495,6 @@
       "notAuthorized": "Vain organisaation järjestelmänvalvojat voivat hallita näitä asetuksia.",
       "general": {
         "title": "Organisaation profiili",
-        "description": "Päivitä organisaationne nimi, logo ja alueelliset asetukset.",
         "nameLabel": "Organisaation nimi",
         "countryLabel": "Maa",
         "countryPlaceholder": "Valitse maa",
@@ -2521,7 +2517,6 @@
         "error": "Logon päivittäminen epäonnistui. Yritä uudelleen."
       },
       "members": {
-        "description": "Henkilöt, joilla on pääsy tähän organisaatioon.",
         "table": {
           "name": "Nimi",
           "email": "Sähköposti",
