@@ -185,6 +185,9 @@ House rules apply: wizard/morph animation patterns, content-shaped skeletons per
 6. **Activation motivation at add time** (§11.1.5) becomes control-question confirm + documentation-before-approval via the existing protokoll.
 7. **6-8 hard bounds**; the ">8 med sarskilt beslut" escape deferred.
 8. **No custom criteria at all** (decision 8): the masterdokument contemplates new criteria entering with a declared dimension and overlap control (§6.2, §17.6); we go stricter, library-only with fixed texts, so those rules apply to nothing. Revisit only if a customer's material difference genuinely has no library criterion.
+9. **§4.1 standard text lives in the help layer, not as standing prose** (decision 13, 2026-08-23): the masterdokument asks every step to open with VARFOR/VAD/VAD HANDER blocks; the framing-prose law (CLAUDE.md, 2026-08-21) rules standing explainer sentences a defect. The §4.1 content is carried by titles, HelpMorphButton bodies, preconditions-in-words, and the stage eyebrows (deviation 10) instead. The pedagogy is kept; the prose form is not.
+10. **Stage visibility as eyebrows, not blocking modes** (§4.2.2, §17.5): METODBYGGNAD/ROLLBEDOMNING render as scanned stage labels on their surfaces, and the assessment route links to no builder or results surface; we do not hard-block navigation for the HR-only audience (extends deviation 2).
+11. **Zone and level descriptions ship as seeded library content** (§14.7 steps 1, 5): the five-locale texts are authored in the repo and rendered read-only; org-authored descriptions and the full six-step anchoring process are deferred. Calibration is the queue + confirm-placement act (deviation 4); level rules stay editable through the existing validated mutations with a minimal surface.
 
 ## 9. Testing
 
@@ -203,5 +206,35 @@ Each phase lands uncommitted for review, then focused commits on approval. Tests
 4. **Assessment UI:** stepper scale, motivation, lock/reveal, gates, role-page states.
 5. **Results:** 12-level ladder/matrix with zones, calibration queue, anchor deviations, pay-mapping touchpoints.
 6. **Content closure:** docs MDX + `docs:sync` + `docs:eval`, metodbilaga, help texts, assistant pass, ADR finalization, full browser verification.
+
+### 10.1 Fasning v2 (decision 13, 2026-08-23; replans phases 4-6 after the phase-3 closing review and the Verve shell migration)
+
+Ground truths the replan builds on: much of the original phase 4 shipped early (the stepper with 1/3/5 anchors + midpoints, "omfattas inte", motivation machinery, lock-as-reveal, unlock audit, drift chip, and a wire-level weight firewall via `getRatingModel`); the levels surfaces still render the pre-zone flat world and no calibration UI exists; every new surface composes the Verve anatomy (`FrameTable`/`GroupedFrameTable`/`SettingsFrame`, `NAV_AREAS`); the translation-ownership policy (2026-08-21) retires every "native review" go-live item in favour of owned cross-locale QA passes.
+
+**Fas 4 - bedomningen berattar (assessment pedagogy and trust; existing surfaces):**
+- Stage eyebrows METODBYGGNAD/ROLLBEDOMNING on the model section and the rate surface (deviation 10), plus a verified absence of builder/results links from the rate route.
+- The shared 1-5 scale (§13.3: the five named grades) rendered as the stepper's constant frame, with the criterion anchors as the criterion's own voice and the midpoint rule explained; the WC 0 step keeps its explanation.
+- Motivation trued to §17.3: required at 1, 4, 5 (verify the current gate empirically and pin it).
+- Role-page states pass: klar-att-lasa / last / kalibrerad and the drift chip against §6's wordings.
+- The §11 decision-support picker: every card surfaces short text, suitability ("nar det ar lampligt" / "nar det inte bor anvandas"), the control question, overlap warnings against already-selected criteria, and the dimension cap; activation stays one click (deviation 6 stands).
+- Audit batchId correlation: multi-row acts stamp a shared id; the log renders them as one story with sub-rows (PROVENANCE_KEYS idiom).
+- AI weight-review enrichment: org's roles (family-aggregated, no PII) into the prompt, protokoll and materiality coherence, the never-feed-outcomes rule as a hard prompt invariant; the confirm-save audit row gets its own labeled variant.
+
+**Fas 5 - resultatet forsvarar sig (zones, levels, calibration, consequence):**
+- Zone + level description content: seeded five-locale texts for the four zones (§14.5) and twelve levels (§14.6 entry/established/upper functions), rendered read-only (deviation 11).
+- The ladder and matrix rebuilt zone-grouped on the Verve anatomy: zones A-D as collapsible bands with descriptions, levels 1-12 inside, pending list intact, assessor surfaces untouched (§14.5.1's firewall).
+- The calibration queue: profileLimited roles ("kalibrering kravs"), anchor roles whose computed level deviates from expectation, stale locks after method changes; per role confirm placement (new audited act + toast) or jump to the builder.
+- §18 consequence analysis on the approval chapter: level/zone distribution current-model vs last-approved (both derivable; the evidence buffer exists), the roles that move, aggregated per role family and per gender-dominance group (aggregates only, no individuals).
+- The minimal level-rules surface over the existing validated mutations (thresholds visible and correctable in-app).
+- Pay-mapping touchpoints verified: level as grouping key for new runs, the locked-assessment exclusion seam.
+
+**Fas 6 - appen lar ut (content closure):**
+- Docs corpus alignment to phases 4-5 (new + changed pages, five locales), `docs:sync`, `docs:eval` against ADR-0020's recall numbers.
+- Metodbilaga PDF growth: dimension coverage, materiality decision, zone/level architecture with profile rules, approval metadata.
+- Help-text sweep for every concept phases 4-5 introduced (zone, level description, calibration, consequence analysis), per the help laws.
+- ONE corpus-wide cross-locale QA pass (nb/da/fi against sv/en) covering everything the program-range pass did not reach, retiring every "native review" go-live entry under the ownership policy.
+- Assistant pass (prompt + knowledge alignment), ADR finalization, tracker update, full browser verification of the whole program.
+
+Execution: on the feature branch `feat/role-evaluation-phase-4-6` (owner instruction 2026-08-23, overriding the no-branches convention for this arc); one plan document per phase at phase start; SDD with per-task review; merge to main only on the owner's word after review.
 
 ADRs and the tracker-artifact update (Rollvardering program section: conformance matrix + phase board, same URL) land with this spec as phase 0.
