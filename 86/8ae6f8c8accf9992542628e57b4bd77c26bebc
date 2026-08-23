@@ -1,0 +1,23 @@
+apps/dashboard/components/onboarding/onboarding-gate.tsx
+  s_11a5c14eb07397::t_b03df65cfcfdf8 74-77
+  s_11a5c14eb07397::t_47a3b59ee4e38b 8
+  s_11a5c14eb07397::t_bbc4b4b6aab2e0 32-48
+apps/dashboard/components/onboarding/onboarding-gate.test.tsx
+  s_11a5c14eb07397::t_cab2808ceb2f52 198-246
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "868ae6f8c8accf9992542628e57b4bd77c26bebc",
+  "prompts": {},
+  "sessions": {
+    "s_11a5c14eb07397": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "681d98c8-bae9-4f4e-91fc-13245dc521c6",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
