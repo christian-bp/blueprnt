@@ -1,0 +1,44 @@
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_58dd112dc09435::t_d82a3e152d563d 88,90-92,394-395,433,435,439,442,444,446,467,509,511
+packages/backend/convex/ai/promptGuard.test.ts
+  s_58dd112dc09435::t_cb9c8915d2ee6a 143-235
+packages/backend/convex/ai/suggest.test.ts
+  s_58dd112dc09435::t_c2437eddacda1c 1988-1997
+packages/backend/convex/ai/promptGuard.ts
+  s_58dd112dc09435::t_a73124bf6030ec 49,53-59,92-96,148-172,178
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_c5af1c9ac1f4b9 2062
+apps/dashboard/components/org-audit-log-section.test.tsx
+  s_58dd112dc09435::t_39f4359adf8f0d 94-95,99,145,281-291
+  s_58dd112dc09435::t_c5af970d938cb9 292-293
+apps/dashboard/components/stage-eyebrow.tsx
+  s_58dd112dc09435::t_4c4deb1ff254d5 17-29,32
+apps/dashboard/components/rating/rating-stepper.test.tsx
+  s_58dd112dc09435::t_949dcd2e24786d 161,415
+  s_58dd112dc09435::t_9d662cc8e358e1 182
+  s_58dd112dc09435::t_d82a3e152d563d 197
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.test.tsx
+  s_58dd112dc09435::t_0a55685af5958e 308-321
+apps/dashboard/components/org-audit-log-section.tsx
+  s_58dd112dc09435::t_ac460a2a012894 59
+  s_58dd112dc09435::t_0133b057f32a32 495-507
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_920453b390d695 1625
+  s_58dd112dc09435::t_c5af1c9ac1f4b9 1626,2154
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "ad41afc95860099fa26adec5042518620ba65c74",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
