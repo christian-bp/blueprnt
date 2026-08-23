@@ -14,10 +14,16 @@ import {
 // reserves the height whether or not actions are present, so pages with and
 // without them start their content at the same y.
 export function PageBreadcrumbRow({
+  eyebrow,
   segments,
   adornment,
   actions,
 }: {
+  // A stage label leading the trail, on the row the page already has. It sits
+  // before the trail rather than above it because this row IS the page's
+  // heading: a second line would be a second heading row on every page that
+  // carries one.
+  eyebrow?: ReactNode
   // WITHOUT the Home crumb; the row prepends it (Hem -> "/") except on the
   // home page itself, where the single segment already is the front door.
   segments: Crumb[]
@@ -40,6 +46,7 @@ export function PageBreadcrumbRow({
           how a layout-rendered row receives its page's own instrument (the
           analysis journey's progress). Both are empty spans when unfilled. */}
       <div className="flex min-w-0 items-center gap-1.5">
+        {eyebrow}
         <PageBreadcrumb segments={trail} />
         {adornment}
         <BreadcrumbAdornmentSlot />

@@ -1611,7 +1611,8 @@
       "unlockDialogTitle": "Lås upp den här bedömningen?",
       "unlockDialogDescription": "Att låsa upp döljer viktning och nivå igen tills bedömningen låses på nytt. Bedömningarna kan då ändras.",
       "unlockConfirm": "Ja, lås upp",
-      "unlockCancel": "Avbryt"
+      "unlockCancel": "Avbryt",
+      "stageEyebrow": "Rollbedömning"
     },
     "levels": {
       "description": "Nivåerna och rollerna i varje nivå, härledda live från aktuell modell och bedömningar.",
@@ -2021,7 +2022,8 @@
         "notApproved": "Inte godkänd ännu",
         "notDocumented": "Inte dokumenterad",
         "pointBudget": "Poängbudget: {points}"
-      }
+      },
+      "stageEyebrow": "Metodbyggnad"
     },
     "ai": {
       "heading": "AI-assistans",

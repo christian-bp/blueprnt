@@ -248,6 +248,132 @@ describe("RatePage (lock-as-reveal)", () => {
     })
   })
 
+  // Deviation 10: the assessment route names its stage rather than blocking
+  // navigation, and it names it in EVERY state, including the two where an
+  // assessor is deepest in the work.
+  describe("the stage names itself", () => {
+    const eyebrow = () =>
+      document.querySelector(
+        '[data-slot="stage-eyebrow"]'
+      ) as HTMLElement | null
+
+    it("labels the stepper, the completion panel and the reveal", async () => {
+      // Rating.
+      await renderPage()
+      expect(eyebrow()?.textContent).toBe(t.stageEyebrow)
+      cleanup()
+
+      // Every criterion answered, waiting to lock.
+      resultFixture = result({ complete: true, ratedCount: 1 })
+      roleFixture = role({
+        ratedCount: 1,
+        ratings: [{ criterionId: "c-scope", value: 3, motivation: null }],
+      })
+      install()
+      await renderPage()
+      expect(eyebrow()?.textContent).toBe(t.stageEyebrow)
+      cleanup()
+
+      // Locked: the reveal.
+      resultFixture = result({
+        complete: true,
+        locked: true,
+        ratedCount: 1,
+        score: 74,
+        level: 2,
+        criteria: [
+          {
+            criterionId: "c-scope",
+            name: "Scope",
+            weightPoints: 3,
+            value: 3,
+            motivation: null,
+          },
+        ],
+      })
+      install()
+      await renderPage()
+      expect(eyebrow()?.textContent).toBe(t.stageEyebrow)
+    })
+
+    // A SCANNED label, not a sentence: the reading floor's own eyebrow
+    // exception, and the class string this app already uses for its scanned
+    // section labels.
+    it("reads as a scanned label", async () => {
+      await renderPage()
+      const tokens = (eyebrow()?.className ?? "").split(/\s+/)
+      expect(tokens).toContain("uppercase")
+      expect(tokens).toContain("text-xs")
+      expect(tokens).toContain("tracking-wide")
+      // Chrome, not content: the surface's own title already says what the
+      // page is, so the label is not announced on top of it.
+      expect(eyebrow()?.getAttribute("aria-hidden")).toBe("true")
+    })
+  })
+
+  // Deviation 10's other half: an assessor mid-assessment is offered no route
+  // into the builder (which carries the weighting they must not see) or into
+  // the results surfaces. Enforced as an ABSENCE OF LINKS rather than a hard
+  // block, so this walks what the route actually renders.
+  describe("the route offers no builder and no results", () => {
+    const hrefs = () =>
+      [...document.querySelectorAll("a")].map(
+        (a) => a.getAttribute("href") ?? ""
+      )
+
+    const FORBIDDEN = /^\/model(\/|$)|^\/work(\/|$)/
+
+    it("links to neither from the stepper", async () => {
+      await renderPage()
+      expect(hrefs().length).toBeGreaterThan(0)
+      expect(hrefs().filter((href) => FORBIDDEN.test(href))).toEqual([])
+    })
+
+    it("links to neither from the reveal", async () => {
+      resultFixture = result({
+        complete: true,
+        locked: true,
+        ratedCount: 1,
+        score: 74,
+        level: 2,
+        criteria: [
+          {
+            criterionId: "c-scope",
+            name: "Scope",
+            weightPoints: 3,
+            value: 3,
+            motivation: null,
+          },
+        ],
+      })
+      install()
+      await renderPage()
+      expect(hrefs().length).toBeGreaterThan(0)
+      expect(hrefs().filter((href) => FORBIDDEN.test(href))).toEqual([])
+    })
+
+    // The trail is where the results surface used to get in: /work is the
+    // level matrix, and it was an ancestor crumb on every state of this
+    // route.
+    it("keeps the level matrix out of its own breadcrumb trail", async () => {
+      await renderPage()
+      expect(hrefs()).toContain("/roles")
+      expect(hrefs()).not.toContain("/work")
+    })
+
+    // The ONE exception, pinned rather than allowed silently: a model that is
+    // not approved yet is a blocked state with no assessment in it, and its
+    // only purpose is to send an admin to the chapter that unblocks it.
+    it("makes its one builder link the unapproved-model way out", async () => {
+      modelFixture = { ...MODEL, approved: false }
+      install()
+      await renderPage()
+      expect(hrefs().filter((href) => FORBIDDEN.test(href))).toEqual([
+        "/model/approval",
+      ])
+    })
+  })
+
   it("states the precondition in words when the role is archived, without the stepper", async () => {
     roleFixture = role({ archived: true })
     install()

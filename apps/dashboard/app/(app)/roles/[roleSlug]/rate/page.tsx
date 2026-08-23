@@ -19,6 +19,7 @@ import Link from "next/link"
 import { use, useState } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
+import { StageEyebrow } from "@/components/stage-eyebrow"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { LockAssessmentPanel } from "@/components/rating/lock-assessment-panel"
 import { RatingResult } from "@/components/rating/rating-result"
@@ -83,8 +84,8 @@ export default function RatePage(props: {
         {/* The ancestor crumbs are static i18n text; only the role title is
             data, so only it gets a skeleton crumb. */}
         <PageBreadcrumbRow
+          eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
-            { label: tNav("work"), href: "/work" },
             { label: tNav("roles"), href: "/roles" },
             { skeleton: true },
             { label: t("title") },
@@ -135,8 +136,8 @@ export default function RatePage(props: {
     return (
       <div className="space-y-4">
         <PageBreadcrumbRow
+          eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
-            { label: tNav("work"), href: "/work" },
             { label: tNav("roles"), href: "/roles" },
             { label: t("title") },
           ]}
@@ -163,8 +164,8 @@ export default function RatePage(props: {
     return (
       <div className="space-y-4">
         <PageBreadcrumbRow
+          eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
-            { label: tNav("work"), href: "/work" },
             { label: tNav("roles"), href: "/roles" },
             { label: role.title, href: `/roles/${role.slug}` },
             { label: t("title") },
@@ -197,8 +198,8 @@ export default function RatePage(props: {
     return (
       <div className="space-y-4">
         <PageBreadcrumbRow
+          eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
-            { label: tNav("work"), href: "/work" },
             { label: tNav("roles"), href: "/roles" },
             { label: role.title, href: `/roles/${role.slug}` },
             { label: t("title") },
@@ -245,32 +246,48 @@ export default function RatePage(props: {
   // back-to-your-roles button instead).
   if (result.locked) {
     return (
-      <div className="w-full max-w-2xl space-y-4">
-        <p className="text-muted-foreground text-sm">
-          {t("alreadyLockedExplanation")}
-        </p>
-        <RatingResult orgId={orgId} roleId={role.roleId} />
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setUnlockOpen(true)}
-          >
-            {t("unlockCta")}
-          </Button>
-          <Link
-            href={`/roles/${role.slug}`}
-            className={cn(buttonVariants({ variant: "outline" }))}
-          >
-            {t("result.backToRole")}
-          </Link>
-        </div>
-        <UnlockAssessmentDialog
-          open={unlockOpen}
-          onOpenChange={setUnlockOpen}
-          orgId={orgId}
-          roleId={role.roleId}
+      <div className="space-y-4">
+        {/* Every state of this route carries the same trail and the same stage
+          label: the two that did not (the reveal and the completion panel)
+          were the two where an assessor is deepest in the work and most in
+          need of knowing which stage they are in. The trail names no results
+          surface: /work is the level matrix, so its crumb comes off this
+          route entirely (deviation 10). */}
+        <PageBreadcrumbRow
+          eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
+          segments={[
+            { label: tNav("roles"), href: "/roles" },
+            { label: role.title, href: `/roles/${role.slug}` },
+            { label: t("title") },
+          ]}
         />
+        <div className="w-full max-w-2xl space-y-4">
+          <p className="text-muted-foreground text-sm">
+            {t("alreadyLockedExplanation")}
+          </p>
+          <RatingResult orgId={orgId} roleId={role.roleId} />
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setUnlockOpen(true)}
+            >
+              {t("unlockCta")}
+            </Button>
+            <Link
+              href={`/roles/${role.slug}`}
+              className={cn(buttonVariants({ variant: "outline" }))}
+            >
+              {t("result.backToRole")}
+            </Link>
+          </div>
+          <UnlockAssessmentDialog
+            open={unlockOpen}
+            onOpenChange={setUnlockOpen}
+            orgId={orgId}
+            roleId={role.roleId}
+          />
+        </div>
       </div>
     )
   }
@@ -280,8 +297,24 @@ export default function RatePage(props: {
   // it succeeds (result.locked flips reactively).
   if (finished) {
     return (
-      <div className="w-full max-w-2xl">
-        <LockAssessmentPanel orgId={orgId} roleId={role.roleId} />
+      <div className="space-y-4">
+        {/* Every state of this route carries the same trail and the same stage
+          label: the two that did not (the reveal and the completion panel)
+          were the two where an assessor is deepest in the work and most in
+          need of knowing which stage they are in. The trail names no results
+          surface: /work is the level matrix, so its crumb comes off this
+          route entirely (deviation 10). */}
+        <PageBreadcrumbRow
+          eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
+          segments={[
+            { label: tNav("roles"), href: "/roles" },
+            { label: role.title, href: `/roles/${role.slug}` },
+            { label: t("title") },
+          ]}
+        />
+        <div className="w-full max-w-2xl">
+          <LockAssessmentPanel orgId={orgId} roleId={role.roleId} />
+        </div>
       </div>
     )
   }
@@ -289,8 +322,8 @@ export default function RatePage(props: {
   return (
     <div className="space-y-4">
       <PageBreadcrumbRow
+        eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
         segments={[
-          { label: tNav("work"), href: "/work" },
           { label: tNav("roles"), href: "/roles" },
           { label: role.title, href: `/roles/${role.slug}` },
           { label: t("title") },

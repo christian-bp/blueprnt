@@ -1611,7 +1611,8 @@
       "unlockDialogTitle": "Lås denne vurdering op?",
       "unlockDialogDescription": "At låse op skjuler vægtning og niveau igen, indtil vurderingen låses på ny. Vurderinger kan derefter ændres.",
       "unlockConfirm": "Ja, lås op",
-      "unlockCancel": "Annuller"
+      "unlockCancel": "Annuller",
+      "stageEyebrow": "Rollevurdering"
     },
     "levels": {
       "description": "Niveauerne og rollerne i hvert niveau, udledt live fra den aktuelle model og vurderinger.",
@@ -2021,7 +2022,8 @@
         "notApproved": "Ikke godkendt endnu",
         "notDocumented": "Ikke dokumenteret",
         "pointBudget": "Pointbudget: {points}"
-      }
+      },
+      "stageEyebrow": "Metodeopbygning"
     },
     "ai": {
       "heading": "AI-assistance",

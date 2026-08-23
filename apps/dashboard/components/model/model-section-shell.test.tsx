@@ -134,6 +134,27 @@ describe("ModelSectionShell", () => {
     expect(container.querySelector('[data-slot="floating-stack"]')).toBeNull()
   })
 
+  // Deviation 10: the model area names its stage, so a reader who arrives
+  // here knows they are building the method rather than assessing against it.
+  // A scanned label leading the section's own title, on the row it already
+  // has.
+  it("names its stage beside the section title", () => {
+    const { container } = renderShell()
+    const eyebrow = container.querySelector(
+      '[data-slot="stage-eyebrow"]'
+    ) as HTMLElement
+    expect(eyebrow.textContent).toBe(messages.dashboard.model.stageEyebrow)
+    const tokens = eyebrow.className.split(/\s+/)
+    expect(tokens).toContain("uppercase")
+    expect(tokens).toContain("text-xs")
+    expect(tokens).toContain("tracking-wide")
+    // Same row as the title, leading it: a second line would move every
+    // chapter's content down.
+    const heading = screen.getByRole("heading", { level: 3 })
+    expect(eyebrow.parentElement).toBe(heading.parentElement)
+    expect(eyebrow.nextElementSibling).toBe(heading)
+  })
+
   it("mounts the spine and the chapter row above the chapter's own body", () => {
     const { container } = renderShell()
     // The title names the model; the instrument opposite it on the same row

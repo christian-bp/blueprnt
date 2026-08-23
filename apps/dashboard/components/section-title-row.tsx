@@ -19,11 +19,16 @@ import type { ReactNode, RefObject } from "react"
 // Shared rather than hand-rolled per section so the two title rows cannot
 // drift into different type, spacing, help placement or instrument position.
 export function SectionTitleRow({
+  eyebrow,
   heading,
   headingRef,
   help,
   instrument,
 }: {
+  // The section's stage label, leading the title on the same line rather than
+  // stacked above it: this row's height is the thing every chapter's content
+  // begins under, and a second line would move all four of them.
+  eyebrow?: ReactNode
   heading: ReactNode
   // An optional programmatic focus target. Never reachable by Tab, so the
   // heading carries outline-none: the browser's default ring would draw
@@ -37,6 +42,7 @@ export function SectionTitleRow({
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
       <div className="flex items-center gap-2">
+        {eyebrow}
         <h3
           className="font-semibold text-base outline-none"
           ref={headingRef}

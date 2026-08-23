@@ -1611,7 +1611,8 @@
       "unlockDialogTitle": "Avataanko tämän arvioinnin lukitus?",
       "unlockDialogDescription": "Lukituksen avaaminen piilottaa painotuksen ja vaativuustason jälleen, kunnes arviointi lukitaan uudelleen. Arvioita voi tämän jälkeen muuttaa.",
       "unlockConfirm": "Kyllä, avaa lukitus",
-      "unlockCancel": "Peruuta"
+      "unlockCancel": "Peruuta",
+      "stageEyebrow": "Roolin arviointi"
     },
     "levels": {
       "description": "Vaativuustasot ja kunkin tason roolit, johdettu reaaliaikaisesti nykyisestä mallista ja arvioinneista.",
@@ -2021,7 +2022,8 @@
         "notApproved": "Ei vielä hyväksytty",
         "notDocumented": "Ei dokumentoitu",
         "pointBudget": "Pistebudjetti: {points}"
-      }
+      },
+      "stageEyebrow": "Menetelmän rakentaminen"
     },
     "ai": {
       "heading": "Tekoälyapu",

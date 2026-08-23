@@ -1611,7 +1611,8 @@
       },
       "lockedExplanation": "The rating is locked because the role is archived. Archiving cannot be undone, so create a new role if this work needs to be rated again.",
       "modelUnapprovedExplanation": "The evaluation model needs to be approved before roles can be rated.",
-      "modelUnapprovedCta": "Go to the Approval chapter"
+      "modelUnapprovedCta": "Go to the Approval chapter",
+      "stageEyebrow": "Role assessment"
     },
     "levels": {
       "description": "The levels and the roles in each, derived live from the current model and ratings.",
@@ -2021,7 +2022,8 @@
         "notApproved": "Not yet approved",
         "notDocumented": "Not documented",
         "pointBudget": "Point budget: {points}"
-      }
+      },
+      "stageEyebrow": "Method building"
     },
     "ai": {
       "heading": "AI assistance",
