@@ -1612,7 +1612,32 @@
       "lockedExplanation": "The rating is locked because the role is archived. Archiving cannot be undone, so create a new role if this work needs to be rated again.",
       "modelUnapprovedExplanation": "The evaluation model needs to be approved before roles can be rated.",
       "modelUnapprovedCta": "Go to the Approval chapter",
-      "stageEyebrow": "Role assessment"
+      "stageEyebrow": "Role assessment",
+      "scale": {
+        "title": "Shared assessment scale",
+        "meaningsToggle": "What the grades mean",
+        "midpointExplanation": "A considered midpoint: the requirement sits between the two grades around it.",
+        "step1": {
+          "name": "Defined requirement",
+          "meaning": "The requirement is clearly defined, local or limited in scope. The role works mainly within established frameworks."
+        },
+        "step2": {
+          "name": "Basic to moderate requirement",
+          "meaning": "The requirement recurs, but within a clearly bounded area. The role handles variation and straightforward exceptions."
+        },
+        "step3": {
+          "name": "Independent and established requirement",
+          "meaning": "The requirement is a clear and recurring part of the role. The role makes professional judgements within its own area."
+        },
+        "step4": {
+          "name": "Advanced or broad requirement",
+          "meaning": "The requirement is advanced, reaches wider, or calls for independent trade-offs where established practice is not always enough."
+        },
+        "step5": {
+          "name": "Highly advanced, extensive or business-critical requirement",
+          "meaning": "The requirement carries great scope, difficulty, consequence or strategic importance. The role often shapes direction, standards, solutions or outcomes beyond its own immediate area."
+        }
+      }
     },
     "levels": {
       "description": "The levels and the roles in each, derived live from the current model and ratings.",
@@ -2113,7 +2138,9 @@
       "modelProgressBody": "The decisions the model needs before approval: which criteria roles are evaluated against, how much each one counts, its documentation, and the approval itself.",
       "payGapScatterMeansBody": "The dashed lines are each gender's average pay in the group, so you can see who sits above and below their own average.",
       "weightMotivationLabel": "What is a weight motivation?",
-      "weightMotivationBody": "The recorded reason a dimension may weigh as much as it does. It motivates the weighting, not the 0-5 scale: say what about the work weighs more, never who does it."
+      "weightMotivationBody": "The recorded reason a dimension may weigh as much as it does. It motivates the weighting, not the 0-5 scale: say what about the work weighs more, never who does it.",
+      "sharedScaleLabel": "What is the shared scale?",
+      "sharedScaleBody": "The 1 to 5 grades describe how demanding a requirement is, the same way on every criterion. A four on one criterion is not a four on another: the criterion's own anchors decide what it means."
     },
     "widgetCard": {
       "expand": "Expand"

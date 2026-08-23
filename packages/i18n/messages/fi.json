@@ -1612,7 +1612,32 @@
       "unlockDialogDescription": "Lukituksen avaaminen piilottaa painotuksen ja vaativuustason jälleen, kunnes arviointi lukitaan uudelleen. Arvioita voi tämän jälkeen muuttaa.",
       "unlockConfirm": "Kyllä, avaa lukitus",
       "unlockCancel": "Peruuta",
-      "stageEyebrow": "Roolin arviointi"
+      "stageEyebrow": "Roolin arviointi",
+      "scale": {
+        "title": "Yhteinen arviointiasteikko",
+        "meaningsToggle": "Mitä portaat tarkoittavat",
+        "midpointExplanation": "Harkittu välivaihe: vaatimus asettuu sen ympärillä olevien kahden portaan väliin.",
+        "step1": {
+          "name": "Rajattu vaatimus",
+          "meaning": "Vaatimus on selkeästi määritelty, paikallinen tai laajuudeltaan rajattu. Rooli toimii pääosin vakiintuneissa puitteissa."
+        },
+        "step2": {
+          "name": "Perustason tai kohtalainen vaatimus",
+          "meaning": "Vaatimus toistuu, mutta selkeästi rajatulla alueella. Rooli käsittelee vaihtelua ja yksinkertaisempia poikkeamia."
+        },
+        "step3": {
+          "name": "Itsenäinen ja vakiintunut vaatimus",
+          "meaning": "Vaatimus on selkeä ja toistuva osa roolia. Rooli tekee ammatillisia arvioita omalla alueellaan."
+        },
+        "step4": {
+          "name": "Vaativa tai laaja vaatimus",
+          "meaning": "Vaatimus on vaativa, ulottuu laajemmalle tai edellyttää itsenäisiä punnintoja, joihin vakiintuneet toimintatavat eivät aina riitä."
+        },
+        "step5": {
+          "name": "Erittäin vaativa, laaja tai liiketoimintakriittinen vaatimus",
+          "meaning": "Vaatimuksella on erittäin suuri laajuus, vaikeusaste, seuraus tai strateginen merkitys. Rooli muovaa usein suuntaa, standardeja, ratkaisuja tai tuloksia oman lähialueensa ulkopuolella."
+        }
+      }
     },
     "levels": {
       "description": "Vaativuustasot ja kunkin tason roolit, johdettu reaaliaikaisesti nykyisestä mallista ja arvioinneista.",
@@ -2113,7 +2138,9 @@
       "modelProgressBody": "Päätökset, jotka malli tarvitsee ennen hyväksyntää: mitä kriteerejä vasten rooleja arvioidaan, kuinka paljon kukin painaa, dokumentaatio ja itse hyväksyntä.",
       "payGapScatterMeansBody": "Katkoviivat ovat kummankin sukupuolen keskipalkka ryhmässä, joten näet ketkä ovat oman keskiarvonsa ylä- ja alapuolella.",
       "weightMotivationLabel": "Mikä on painotuksen perustelu?",
-      "weightMotivationBody": "Kirjattu syy sille, miksi ulottuvuus saa painaa näin paljon. Se perustelee painotuksen, ei 0-5-asteikkoa: kerro, mikä työssä painaa enemmän, älä koskaan kuka sen tekee."
+      "weightMotivationBody": "Kirjattu syy sille, miksi ulottuvuus saa painaa näin paljon. Se perustelee painotuksen, ei 0-5-asteikkoa: kerro, mikä työssä painaa enemmän, älä koskaan kuka sen tekee.",
+      "sharedScaleLabel": "Mikä yhteinen asteikko on?",
+      "sharedScaleBody": "Asteikko 1-5 kuvaa, kuinka vaativa vaatimus on, samalla tavalla jokaisessa kriteerissä. Nelonen yhdessä kriteerissä ei ole nelonen toisessa: kriteerin omat ankkurit ratkaisevat sen merkityksen."
     },
     "widgetCard": {
       "expand": "Suurenna"

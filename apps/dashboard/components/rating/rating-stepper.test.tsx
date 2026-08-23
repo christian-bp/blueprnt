@@ -158,6 +158,76 @@ describe("RatingStepper", () => {
     expect(screen.queryByText(labels.result.levelLabel)).toBeNull()
   })
 
+  it("names the shared grade on every graded step", () => {
+    renderStepper()
+    for (const step of [1, 2, 3, 4, 5] as const) {
+      const name = labels.scale[`step${step}`].name
+      const option = screen.getByText(`Scope anchor ${step}`).closest("button")
+      expect(option?.textContent).toContain(name)
+    }
+  })
+
+  it("leaves the not-covered option ungraded", () => {
+    renderStepper({ criteria: WC_CRITERIA })
+    const notCovered = screen
+      .getByText(labels.notCoveredOption)
+      .closest("button")
+    for (const step of [1, 2, 3, 4, 5] as const) {
+      expect(notCovered?.textContent).not.toContain(
+        labels.scale[`step${step}`].name
+      )
+    }
+  })
+
+  it("makes every grade's meaning reachable from the stepper", () => {
+    renderStepper()
+    for (const step of [1, 2, 3, 4, 5] as const) {
+      expect(screen.queryByText(labels.scale[`step${step}`].meaning)).toBeNull()
+    }
+    fireEvent.click(
+      screen.getByRole("button", { name: labels.scale.meaningsToggle })
+    )
+    for (const step of [1, 2, 3, 4, 5] as const) {
+      expect(
+        screen.getByText(labels.scale[`step${step}`].meaning)
+      ).toBeDefined()
+    }
+  })
+
+  it("explains the midpoints on grades 2 and 4 only", () => {
+    renderStepper()
+    fireEvent.click(
+      screen.getByRole("button", { name: labels.scale.meaningsToggle })
+    )
+    const explained = screen
+      .getAllByText(labels.scale.midpointExplanation)
+      .map((node) => {
+        const entry = node.closest("dd")
+        return entry?.parentElement?.querySelector("dt")?.textContent
+      })
+    expect(explained).toEqual(["2", "4"])
+  })
+
+  it("keeps the weighting vocabulary out of the rating view (firewall)", () => {
+    const { container } = renderStepper()
+    fireEvent.click(
+      screen.getByRole("button", { name: labels.scale.meaningsToggle })
+    )
+    const rendered = container.textContent ?? ""
+    // The assessor grades requirements, never their consequences: the model's
+    // weighting, its budget, the resulting weighting/level and the level's
+    // zone all belong to the reveal after the assessment is locked.
+    for (const term of [
+      messages.model.weightPoints,
+      messages.assessment.score,
+      messages.assessment.level,
+      messages.dashboard.model.methodAppendix.colWeight,
+    ]) {
+      expect(rendered).not.toContain(term)
+    }
+    expect(rendered).not.toMatch(/\b(weight|weighting|weighted|zone|band)\b/i)
+  })
+
   it("selects an anchor by its number key and advances on Enter", async () => {
     renderStepper()
     fireEvent.keyDown(document.body, { key: "3" })

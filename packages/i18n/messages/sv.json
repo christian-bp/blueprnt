@@ -1612,7 +1612,32 @@
       "unlockDialogDescription": "Att låsa upp döljer viktning och nivå igen tills bedömningen låses på nytt. Bedömningarna kan då ändras.",
       "unlockConfirm": "Ja, lås upp",
       "unlockCancel": "Avbryt",
-      "stageEyebrow": "Rollbedömning"
+      "stageEyebrow": "Rollbedömning",
+      "scale": {
+        "title": "Gemensam bedömningsskala",
+        "meaningsToggle": "Vad stegen betyder",
+        "midpointExplanation": "Ett genomtänkt mellanläge: kravet ligger mellan de två stegen omkring det.",
+        "step1": {
+          "name": "Avgränsat krav",
+          "meaning": "Kravet är tydligt definierat, lokalt eller begränsat i omfattning. Rollen arbetar huvudsakligen inom etablerade ramar."
+        },
+        "step2": {
+          "name": "Grundläggande till måttligt krav",
+          "meaning": "Kravet förekommer återkommande men inom ett tydligt avgränsat område. Rollen hanterar variationer och enklare avvikelser."
+        },
+        "step3": {
+          "name": "Självständigt och etablerat krav",
+          "meaning": "Kravet är en tydlig och återkommande del av rollen. Rollen gör professionella bedömningar inom sitt område."
+        },
+        "step4": {
+          "name": "Avancerat eller brett krav",
+          "meaning": "Kravet är avancerat, har bredare räckvidd eller kräver självständiga avvägningar där etablerade arbetssätt inte alltid räcker."
+        },
+        "step5": {
+          "name": "Mycket avancerat, omfattande eller verksamhetskritiskt krav",
+          "meaning": "Kravet har mycket stor omfattning, svårighetsgrad, konsekvens eller strategisk betydelse. Rollen formar ofta riktning, standarder, lösningar eller resultat utanför det egna närmaste området."
+        }
+      }
     },
     "levels": {
       "description": "Nivåerna och rollerna i varje nivå, härledda live från aktuell modell och bedömningar.",
@@ -2113,7 +2138,9 @@
       "modelProgressBody": "Besluten som modellen behöver före godkännande: vilka kriterier roller värderas mot, hur mycket vart och ett väger, dess dokumentation och själva godkännandet.",
       "payGapScatterMeansBody": "De streckade linjerna är respektive köns medellön i gruppen, så du ser vilka som ligger över och under sitt eget medel.",
       "weightMotivationLabel": "Vad är en viktmotivering?",
-      "weightMotivationBody": "Det dokumenterade skälet till att en dimension får väga så mycket som den gör. Den motiverar viktningen, inte 0-5-skalan: säg vad i arbetet som väger mer, aldrig vem som utför det."
+      "weightMotivationBody": "Det dokumenterade skälet till att en dimension får väga så mycket som den gör. Den motiverar viktningen, inte 0-5-skalan: säg vad i arbetet som väger mer, aldrig vem som utför det.",
+      "sharedScaleLabel": "Vad är den gemensamma skalan?",
+      "sharedScaleBody": "Skalan 1 till 5 beskriver hur krävande ett krav är, på samma sätt för varje kriterium. En fyra på ett kriterium är inte en fyra på ett annat: kriteriets egna ankare avgör vad den betyder."
     },
     "widgetCard": {
       "expand": "Förstora"

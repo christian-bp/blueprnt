@@ -1612,7 +1612,32 @@
       "unlockDialogDescription": "Å låse opp skjuler vekting og nivå igjen til vurderingen låses på nytt. Vurderinger kan da endres.",
       "unlockConfirm": "Ja, lås opp",
       "unlockCancel": "Avbryt",
-      "stageEyebrow": "Rollevurdering"
+      "stageEyebrow": "Rollevurdering",
+      "scale": {
+        "title": "Felles vurderingsskala",
+        "meaningsToggle": "Hva trinnene betyr",
+        "midpointExplanation": "Et gjennomtenkt mellomtrinn: kravet ligger mellom de to trinnene rundt det.",
+        "step1": {
+          "name": "Avgrenset krav",
+          "meaning": "Kravet er tydelig definert, lokalt eller begrenset i omfang. Rollen arbeider hovedsakelig innenfor etablerte rammer."
+        },
+        "step2": {
+          "name": "Grunnleggende til moderat krav",
+          "meaning": "Kravet forekommer gjentatte ganger, men innenfor et tydelig avgrenset område. Rollen håndterer variasjoner og enklere avvik."
+        },
+        "step3": {
+          "name": "Selvstendig og etablert krav",
+          "meaning": "Kravet er en tydelig og gjentakende del av rollen. Rollen gjør profesjonelle vurderinger innenfor sitt eget område."
+        },
+        "step4": {
+          "name": "Avansert eller bredt krav",
+          "meaning": "Kravet er avansert, har bredere rekkevidde eller krever selvstendige avveininger der etablerte arbeidsmåter ikke alltid strekker til."
+        },
+        "step5": {
+          "name": "Svært avansert, omfattende eller virksomhetskritisk krav",
+          "meaning": "Kravet har svært stort omfang, vanskelighetsgrad, konsekvens eller strategisk betydning. Rollen former ofte retning, standarder, løsninger eller resultater utenfor sitt eget nærmeste område."
+        }
+      }
     },
     "levels": {
       "description": "Nivåene og rollene i hvert nivå, utledet live fra gjeldende modell og vurderinger.",
@@ -2113,7 +2138,9 @@
       "modelProgressBody": "Beslutningene modellen trenger før godkjenning: hvilke kriterier roller vurderes mot, hvor mye hvert av dem teller, dokumentasjonen og selve godkjenningen.",
       "payGapScatterMeansBody": "De stiplede linjene er hvert kjønns gjennomsnittslønn i gruppen, så du ser hvem som ligger over og under sitt eget gjennomsnitt.",
       "weightMotivationLabel": "Hva er en vektbegrunnelse?",
-      "weightMotivationBody": "Den dokumenterte grunnen til at en dimensjon kan veie så mye som den gjør. Den begrunner vektingen, ikke 0-5-skalaen: si hva ved arbeidet som veier mer, aldri hvem som utfører det."
+      "weightMotivationBody": "Den dokumenterte grunnen til at en dimensjon kan veie så mye som den gjør. Den begrunner vektingen, ikke 0-5-skalaen: si hva ved arbeidet som veier mer, aldri hvem som utfører det.",
+      "sharedScaleLabel": "Hva er den felles skalaen?",
+      "sharedScaleBody": "Skalaen 1 til 5 beskriver hvor krevende et krav er, på samme måte for hvert kriterium. En firer på ett kriterium er ikke en firer på et annet: kriteriets egne ankere avgjør hva den betyr."
     },
     "widgetCard": {
       "expand": "Forstørr"

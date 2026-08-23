@@ -29,6 +29,11 @@ import { SPRING } from "@/lib/motion"
 // never one of the five graded anchor steps.
 const NOT_COVERED_STEP = 0
 
+// Steps 2 and 4 carry no anchor of their own in the library: they are the
+// considered space between the steps around them, and the model's shared
+// midpoint copy is what fills them.
+const MIDPOINT_STEPS = [2, 4]
+
 export interface StepperCriterion {
   criterionId: Id<"criteria">
   name: string
@@ -78,6 +83,38 @@ export function RatingStepper({
   const contextPanelId = useId()
   const notCoveredExplanationId = useId()
   const motivationErrorId = useId()
+  const scalePanelId = useId()
+
+  // The 1-5 grades mean the same thing on every criterion, so the table is
+  // built once here and read both by the option rows (the name) and by the
+  // panel (the meaning).
+  const grades = [
+    {
+      step: 1,
+      name: t("scale.step1.name"),
+      meaning: t("scale.step1.meaning"),
+    },
+    {
+      step: 2,
+      name: t("scale.step2.name"),
+      meaning: t("scale.step2.meaning"),
+    },
+    {
+      step: 3,
+      name: t("scale.step3.name"),
+      meaning: t("scale.step3.meaning"),
+    },
+    {
+      step: 4,
+      name: t("scale.step4.name"),
+      meaning: t("scale.step4.meaning"),
+    },
+    {
+      step: 5,
+      name: t("scale.step5.name"),
+      meaning: t("scale.step5.meaning"),
+    },
+  ]
 
   const firstUnrated = criteria.findIndex(
     (criterion) =>
@@ -103,6 +140,9 @@ export function RatingStepper({
   // never match the remembered one, so both start closed automatically on
   // every step change, including Back.
   const [contextOpenFor, setContextOpenFor] = useState<string | null>(null)
+  // The scale is the same on every criterion, so its panel is not reset per
+  // step: a reader who opened it keeps it open all the way through.
+  const [scaleOpen, setScaleOpen] = useState(false)
   const [motivationErrorFor, setMotivationErrorFor] = useState<string | null>(
     null
   )
@@ -349,64 +389,141 @@ export function RatingStepper({
                 </AnimatePresence>
               </div>
 
-              <div
-                role="radiogroup"
-                aria-label={t("anchorGroupLabel", { name: current.name })}
-                className="space-y-2"
-              >
-                {displayAnchors.map((anchor) => {
-                  const isSelected = selected === anchor.step
-                  const isNotCovered = anchor.step === NOT_COVERED_STEP
-                  return (
-                    // biome-ignore lint/a11y/useSemanticElements: the anchor text is the option label; full-width styled cards with rich text use the radiogroup/radio ARIA pattern, not a native radio input
-                    <button
-                      key={anchor.step}
-                      type="button"
-                      role="radio"
-                      aria-checked={isSelected}
-                      aria-describedby={
-                        isNotCovered ? notCoveredExplanationId : undefined
-                      }
-                      // Frozen while the step is saving, so a click cannot
-                      // change the selection out from under the in-flight
-                      // write. Deliberately no disabled styling: the save is
-                      // brief, and greying every anchor for it would flash.
-                      // enabled: keeps the hover cue off while locked, so a
-                      // locked anchor never looks clickable.
-                      disabled={pending}
-                      className={cn(
-                        "flex w-full items-baseline gap-3 rounded-md border p-3 text-left text-sm transition-colors",
-                        isSelected
-                          ? "border-brand bg-brand/5"
-                          : "enabled:hover:bg-muted/50"
-                      )}
-                      onClick={() =>
-                        setValues((currentValues) => ({
-                          ...currentValues,
-                          [current.criterionId]: anchor.step,
-                        }))
-                      }
-                    >
-                      <span
-                        className={cn(
-                          "font-medium tabular-nums",
-                          isSelected ? "text-brand" : "text-muted-foreground"
-                        )}
-                      >
-                        {anchor.step}
-                      </span>
-                      <span className="min-w-0 flex-1">{anchor.text}</span>
-                    </button>
-                  )
-                })}
-                {isWorkingConditions && (
-                  <p
-                    id={notCoveredExplanationId}
-                    className="text-muted-foreground text-sm"
+              {/* The shared scale names itself before its steps: the same
+                  1-5 grades frame every criterion, and the criterion's own
+                  anchors say what each grade means here. */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <h3 className="font-medium text-sm">{t("scale.title")}</h3>
+                  <HelpMorphButton label={tHelp("sharedScaleLabel")}>
+                    {tHelp("sharedScaleBody")}
+                  </HelpMorphButton>
+                  <button
+                    type="button"
+                    aria-expanded={scaleOpen}
+                    aria-controls={scalePanelId}
+                    className="ms-auto flex items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
+                    onClick={() => setScaleOpen((open) => !open)}
                   >
-                    {t("notCoveredExplanation")}
-                  </p>
-                )}
+                    {t("scale.meaningsToggle")}
+                    <HugeiconsIcon
+                      icon={ArrowDown01Icon}
+                      strokeWidth={2}
+                      aria-hidden="true"
+                      className={cn(
+                        "size-3.5 transition-transform motion-reduce:transition-none",
+                        scaleOpen && "rotate-180"
+                      )}
+                    />
+                  </button>
+                </div>
+                <AnimatePresence initial={false}>
+                  {scaleOpen ? (
+                    <motion.div
+                      id={scalePanelId}
+                      key="scale"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={SPRING}
+                      className="overflow-hidden"
+                    >
+                      <dl className="space-y-2 pb-1">
+                        {grades.map((grade) => (
+                          <div
+                            key={grade.step}
+                            className="flex gap-3 text-sm leading-relaxed"
+                          >
+                            <dt className="w-3 shrink-0 font-medium text-muted-foreground tabular-nums">
+                              {grade.step}
+                            </dt>
+                            <dd className="min-w-0 flex-1">
+                              <span className="font-medium">{grade.name}</span>{" "}
+                              <span className="text-muted-foreground">
+                                {grade.meaning}
+                              </span>
+                              {MIDPOINT_STEPS.includes(grade.step) ? (
+                                <span className="block text-muted-foreground">
+                                  {t("scale.midpointExplanation")}
+                                </span>
+                              ) : null}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+
+                <div
+                  role="radiogroup"
+                  aria-label={t("anchorGroupLabel", { name: current.name })}
+                  className="space-y-2"
+                >
+                  {displayAnchors.map((anchor) => {
+                    const isSelected = selected === anchor.step
+                    const isNotCovered = anchor.step === NOT_COVERED_STEP
+                    const grade = grades.find(
+                      (entry) => entry.step === anchor.step
+                    )
+                    return (
+                      // biome-ignore lint/a11y/useSemanticElements: the anchor text is the option label; full-width styled cards with rich text use the radiogroup/radio ARIA pattern, not a native radio input
+                      <button
+                        key={anchor.step}
+                        type="button"
+                        role="radio"
+                        aria-checked={isSelected}
+                        aria-describedby={
+                          isNotCovered ? notCoveredExplanationId : undefined
+                        }
+                        // Frozen while the step is saving, so a click cannot
+                        // change the selection out from under the in-flight
+                        // write. Deliberately no disabled styling: the save is
+                        // brief, and greying every anchor for it would flash.
+                        // enabled: keeps the hover cue off while locked, so a
+                        // locked anchor never looks clickable.
+                        disabled={pending}
+                        className={cn(
+                          "flex w-full items-baseline gap-3 rounded-md border p-3 text-left text-sm transition-colors",
+                          isSelected
+                            ? "border-brand bg-brand/5"
+                            : "enabled:hover:bg-muted/50"
+                        )}
+                        onClick={() =>
+                          setValues((currentValues) => ({
+                            ...currentValues,
+                            [current.criterionId]: anchor.step,
+                          }))
+                        }
+                      >
+                        <span
+                          className={cn(
+                            "font-medium tabular-nums",
+                            isSelected ? "text-brand" : "text-muted-foreground"
+                          )}
+                        >
+                          {anchor.step}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          {grade === undefined ? null : (
+                            <span className="mb-0.5 block font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                              {grade.name}
+                            </span>
+                          )}
+                          <span className="block">{anchor.text}</span>
+                        </span>
+                      </button>
+                    )
+                  })}
+                  {isWorkingConditions ? (
+                    <p
+                      id={notCoveredExplanationId}
+                      className="text-muted-foreground text-sm"
+                    >
+                      {t("notCoveredExplanation")}
+                    </p>
+                  ) : null}
+                </div>
               </div>
 
               <div className="space-y-2">
