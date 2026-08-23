@@ -1,0 +1,176 @@
+apps/dashboard/content/docs/fi/members-and-roles.mdx
+  s_cc28b0c83ccbad::t_2d3db5433436fe 25-26,30
+apps/dashboard/content/docs/en/people-register.mdx
+  s_cc28b0c83ccbad::t_d3774c3f9b6c6e 3,9-10,19
+apps/dashboard/content/docs/sv/invitations.mdx
+  s_cc28b0c83ccbad::t_0e53e70de9a656 8
+apps/dashboard/content/docs/fi/classifying-people.mdx
+  s_cc28b0c83ccbad::t_2d3db5433436fe 9,23
+apps/dashboard/content/docs/sv/roles-register.mdx
+  s_cc28b0c83ccbad::t_caf6eb90bc33ec 14-18
+apps/dashboard/content/docs/fi/invitations.mdx
+  s_cc28b0c83ccbad::t_2d3db5433436fe 8
+apps/dashboard/content/docs/sv/members-and-roles.mdx
+  s_cc28b0c83ccbad::t_0e53e70de9a656 25-26,30
+apps/dashboard/content/docs/nb/pay-mapping-overview.mdx
+  s_cc28b0c83ccbad::t_c5e65f0ca7727f 8-9
+apps/dashboard/content/docs/sv/pay-mapping-overview.mdx
+  s_cc28b0c83ccbad::t_0e53e70de9a656 8-9
+apps/dashboard/content/docs/nb/actions-and-notes.mdx
+  s_cc28b0c83ccbad::t_c5e65f0ca7727f 40,50
+apps/dashboard/content/docs/en/classifying-people.mdx
+  s_cc28b0c83ccbad::t_d3774c3f9b6c6e 9-10
+apps/dashboard/content/docs/sv/adding-people.mdx
+  s_cc28b0c83ccbad::t_0e53e70de9a656 43
+apps/dashboard/content/docs/nb/organization-settings.mdx
+  s_cc28b0c83ccbad::t_c5e65f0ca7727f 3,7-10,16
+docs/superpowers/plans/2026-08-22-design-system-refactor.md
+  s_cc28b0c83ccbad::t_dd5be4b46bbc45 1-12,15-44,46-54,56-58,60-62,64-78,80,82-96,98,100,102,104-106,108-118,120,122,124,126-130,134-391,393-1006
+  s_cc28b0c83ccbad::t_251b5ae15df128 392
+  s_cc28b0c83ccbad::t_1d8db6eac84109 45,55,59,63,79,81,97,99,101,103,107,119,121,123,125,131-133
+  s_cc28b0c83ccbad::t_91b8530ba325f2 13-14
+apps/dashboard/content/docs/nb/changing-your-email.mdx
+  s_cc28b0c83ccbad::t_c5e65f0ca7727f 13
+apps/dashboard/content/docs/da/adding-people.mdx
+  s_cc28b0c83ccbad::t_aedfbf7a6964f8 43
+apps/dashboard/content/docs/sv/navigating-the-app.mdx
+  s_cc28b0c83ccbad::t_be52dec67590eb 9-10
+  s_cc28b0c83ccbad::t_d72cf9cfc34904 3,7-8,12,14-21,23,25-30,33,35-37,42,44-47,49-52,54,56,58-62,64,66-99
+  s_cc28b0c83ccbad::t_606b531814126d 31,38-40
+apps/dashboard/content/docs/nb/people-register.mdx
+  s_cc28b0c83ccbad::t_c5e65f0ca7727f 3,9-10,20
+apps/dashboard/content/docs/nb/roles-register.mdx
+  s_cc28b0c83ccbad::t_caf6eb90bc33ec 14-18
+apps/dashboard/content/docs/da/navigating-the-app.mdx
+  s_cc28b0c83ccbad::t_606b531814126d 31,38-40
+  s_cc28b0c83ccbad::t_f57b13cb72edb3 3,7-10,12,14-30,32-37,41-47,50-51,54-101
+apps/dashboard/content/docs/en/organization-settings.mdx
+  s_cc28b0c83ccbad::t_d3774c3f9b6c6e 3,7-9,15
+apps/dashboard/content/docs/fi/adding-people.mdx
+  s_cc28b0c83ccbad::t_2d3db5433436fe 45
+apps/dashboard/content/docs/fi/pay-mapping-overview.mdx
+  s_cc28b0c83ccbad::t_2d3db5433436fe 9-10
+apps/dashboard/content/docs/sv/people-register.mdx
+  s_cc28b0c83ccbad::t_0e53e70de9a656 3,9-10,20
+apps/dashboard/content/docs/fi/run-lifecycle.mdx
+  s_cc28b0c83ccbad::t_2d3db5433436fe 16
+apps/dashboard/content/docs/en/adding-people.mdx
+  s_cc28b0c83ccbad::t_d3774c3f9b6c6e 39
+apps/dashboard/content/docs/fi/changing-your-email.mdx
+  s_cc28b0c83ccbad::t_2d3db5433436fe 13
+apps/dashboard/content/docs/da/roles-register.mdx
+  s_cc28b0c83ccbad::t_caf6eb90bc33ec 14-18
+apps/dashboard/content/docs/da/organization-settings.mdx
+  s_cc28b0c83ccbad::t_aedfbf7a6964f8 3,7-9,15
+apps/dashboard/content/docs/nb/adding-people.mdx
+  s_cc28b0c83ccbad::t_c5e65f0ca7727f 42
+apps/dashboard/content/docs/en/changing-your-email.mdx
+  s_cc28b0c83ccbad::t_d3774c3f9b6c6e 13
+apps/dashboard/content/docs/da/people-register.mdx
+  s_cc28b0c83ccbad::t_aedfbf7a6964f8 3,10,20
+apps/dashboard/content/docs/en/invitations.mdx
+  s_cc28b0c83ccbad::t_d3774c3f9b6c6e 8
+apps/dashboard/content/docs/da/run-lifecycle.mdx
+  s_cc28b0c83ccbad::t_aedfbf7a6964f8 16
+apps/dashboard/content/docs/en/roles-register.mdx
+  s_cc28b0c83ccbad::t_826887bb3b5145 13-17
+apps/dashboard/content/docs/fi/profile-and-language.mdx
+  s_cc28b0c83ccbad::t_2d3db5433436fe 3,8
+apps/dashboard/content/docs/nb/using-the-assistant.mdx
+  s_cc28b0c83ccbad::t_c5e65f0ca7727f 21
+apps/dashboard/content/docs/sv/using-the-assistant.mdx
+  s_cc28b0c83ccbad::t_0e53e70de9a656 21
+apps/dashboard/content/docs/en/run-lifecycle.mdx
+  s_cc28b0c83ccbad::t_d3774c3f9b6c6e 14
+apps/dashboard/content/docs/en/actions-and-notes.mdx
+  s_cc28b0c83ccbad::t_d3774c3f9b6c6e 38,47
+apps/dashboard/content/docs/da/using-the-assistant.mdx
+  s_cc28b0c83ccbad::t_aedfbf7a6964f8 21
+apps/dashboard/content/docs/fi/people-register.mdx
+  s_cc28b0c83ccbad::t_2d3db5433436fe 3,9-10,21
+apps/dashboard/content/docs/en/pay-mapping-overview.mdx
+  s_cc28b0c83ccbad::t_d3774c3f9b6c6e 8-9
+apps/dashboard/content/docs/da/members-and-roles.mdx
+  s_cc28b0c83ccbad::t_aedfbf7a6964f8 25-26,30
+apps/dashboard/content/docs/fi/roles-register.mdx
+  s_cc28b0c83ccbad::t_caf6eb90bc33ec 14-18
+apps/dashboard/content/docs/nb/classifying-people.mdx
+  s_cc28b0c83ccbad::t_c5e65f0ca7727f 9
+apps/dashboard/content/docs/en/navigating-the-app.mdx
+  s_cc28b0c83ccbad::t_606b531814126d 30,37-39
+  s_cc28b0c83ccbad::t_1cb7b09d908a67 3,7-29,31-36,40-45,55,58,60,63-64,74-97
+apps/dashboard/content/docs/nb/navigating-the-app.mdx
+  s_cc28b0c83ccbad::t_2fabfb7fb95555 83
+  s_cc28b0c83ccbad::t_606b531814126d 31,39-40
+  s_cc28b0c83ccbad::t_ec3b8a65dffa3e 3,7-10,12,14-20,23-30,33,35-38,41-82,84-99
+  s_cc28b0c83ccbad::t_df2f74cc33e6a6 32
+apps/dashboard/content/docs/en/members-and-roles.mdx
+  s_cc28b0c83ccbad::t_d3774c3f9b6c6e 24-25,29
+apps/dashboard/content/docs/nb/members-and-roles.mdx
+  s_cc28b0c83ccbad::t_c5e65f0ca7727f 25-26,30
+apps/dashboard/content/docs/nb/invitations.mdx
+  s_cc28b0c83ccbad::t_c5e65f0ca7727f 8
+apps/dashboard/content/docs/da/pay-mapping-overview.mdx
+  s_cc28b0c83ccbad::t_aedfbf7a6964f8 9
+apps/dashboard/content/docs/sv/run-lifecycle.mdx
+  s_cc28b0c83ccbad::t_0e53e70de9a656 15
+apps/dashboard/content/docs/da/classifying-people.mdx
+  s_cc28b0c83ccbad::t_aedfbf7a6964f8 9
+apps/dashboard/content/docs/fi/organization-settings.mdx
+  s_cc28b0c83ccbad::t_2d3db5433436fe 3,7-9,15
+apps/dashboard/content/docs/nb/run-lifecycle.mdx
+  s_cc28b0c83ccbad::t_c5e65f0ca7727f 15
+apps/dashboard/content/docs/da/invitations.mdx
+  s_cc28b0c83ccbad::t_aedfbf7a6964f8 8
+apps/dashboard/content/docs/fi/actions-and-notes.mdx
+  s_cc28b0c83ccbad::t_2d3db5433436fe 41,52
+docs/superpowers/specs/2026-08-22-design-system-refactor-design.md
+  s_cc28b0c83ccbad::t_91b8530ba325f2 88-91
+  s_cc28b0c83ccbad::t_949ca4fb1484c6 44
+  s_cc28b0c83ccbad::t_8888921620e9ee 1-43,45-87,92-131
+apps/dashboard/content/docs/en/using-the-assistant.mdx
+  s_cc28b0c83ccbad::t_d3774c3f9b6c6e 20
+apps/dashboard/content/docs/fi/navigating-the-app.mdx
+  s_cc28b0c83ccbad::t_428255e0598471 3,7-30,32-38,41-51,54-56,58-63,65,67-69,71-102
+  s_cc28b0c83ccbad::t_606b531814126d 31,39-40
+apps/dashboard/content/docs/fi/using-the-assistant.mdx
+  s_cc28b0c83ccbad::t_2d3db5433436fe 22-23
+apps/dashboard/content/docs/sv/actions-and-notes.mdx
+  s_cc28b0c83ccbad::t_0e53e70de9a656 39,49
+apps/dashboard/content/docs/sv/profile-and-language.mdx
+  s_cc28b0c83ccbad::t_0e53e70de9a656 3,7
+apps/dashboard/content/docs/nb/profile-and-language.mdx
+  s_cc28b0c83ccbad::t_ffb2387b164178 3
+  s_cc28b0c83ccbad::t_c5e65f0ca7727f 7
+apps/dashboard/content/docs/sv/classifying-people.mdx
+  s_cc28b0c83ccbad::t_0e53e70de9a656 9
+apps/dashboard/content/docs/da/actions-and-notes.mdx
+  s_cc28b0c83ccbad::t_aedfbf7a6964f8 40
+  s_cc28b0c83ccbad::t_dfc237119ac882 51
+apps/dashboard/content/docs/da/profile-and-language.mdx
+  s_cc28b0c83ccbad::t_aedfbf7a6964f8 3,7
+apps/dashboard/content/docs/en/profile-and-language.mdx
+  s_cc28b0c83ccbad::t_d3774c3f9b6c6e 3,7
+apps/dashboard/content/docs/da/changing-your-email.mdx
+  s_cc28b0c83ccbad::t_aedfbf7a6964f8 13
+apps/dashboard/content/docs/sv/organization-settings.mdx
+  s_cc28b0c83ccbad::t_0e53e70de9a656 3,7-8,16
+apps/dashboard/content/docs/sv/changing-your-email.mdx
+  s_cc28b0c83ccbad::t_0e53e70de9a656 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "d69c6f4a996ec9d9e25ad30283503a8ac3079bdf",
+  "prompts": {},
+  "sessions": {
+    "s_cc28b0c83ccbad": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a9b05540-f272-439e-a6f9-eba12a06fd6b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
