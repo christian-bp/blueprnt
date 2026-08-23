@@ -1,77 +1,105 @@
 ---
 title: Sovelluksessa liikkuminen
-description: Mitä kunkin sivupalkin kohteen takana on.
+description: Kuvakepalkki, osionavigointi ja yläpalkki, ja mitä jokaisen kohteen takana on.
 section: getting-started
 ---
 
-Vasemmanpuoleinen sivupalkki on ryhmitelty neljään osaan: Tilanne,
-Työn arviointi, Työntekijät & palkka, sekä, vain ylläpitäjille,
-Hallinto. Tämä sivu käy läpi jokaisen kohteen järjestyksessä.
+Sovelluksen kehyksessä on kolme osaa: kapea kuvakepalkki vasemmassa
+reunassa, sen vieressä osionavigointi alueilla, joilla on useita sivuja,
+ja yläpalkki. Jokainen sivu alkaa murupolulla, joka näyttää missä olet,
+ja jokainen muru vie takaisin tason ylöspäin.
 
-## Tilanne
+## Kuvakepalkki
 
-**[Yleiskatsaus](/)** on kojelaudan aloitussivu. Se tervehtii teitä,
-näyttää lyhyen tilarivin siitä, mitä on jäljellä, ja antaa rivin
-toimintokorttia: ensin keskeneräiset työt, sitten vakiopikakuvakkeet
-kuten työntekijöiden tuonti tai palkkakartoituksen aloittaminen, niin
-rivi ei ole koskaan tyhjä.
+Palkki näyttää sovelluksen alueet kuvakkeina; vie osoitin kuvakkeen
+päälle nähdäksesi nimen. Ylhäältä alas: **[Yleiskatsaus](/)**,
+**[Assistentti](/assistant)**, **[Työarkkitehtuuri](/work)**,
+**[Malli](/model)**, **[Henkilöstö](/people)** ja
+**[Palkkakartoitukset](/pay-mappings)**. Alimpana ovat
+**[Dokumentaatio](/docs)**, **Asetukset** ja avatarisi, joka avaa
+tilivalikon. Alueet, joita ylläpitäjä hallinnoi (organisaatiosivut,
+tapahtumaloki), näkyvät Asetuksissa vain ylläpitäjille.
 
-**[Assistentti](/assistant)** avaa blueprnt AI -keskustelun. Se voi
-auttaa käsitteissä, organisaationne omissa luvuissa, ja siinä missä
-asioita tehdään sovelluksessa, mutta se ei koskaan hyväksy
+## Osionavigointi
+
+Alue, jolla on useita sivuja, avautuu toisen navigointisarakkeen kanssa
+palkin vieressä, sivut ryhmiteltyinä pienten otsikoiden alle. Sarakkeen
+oikeassa reunassa oleva kahva supistaa sen, kun tarvitset tilaa, ja tuo
+sen takaisin samalla tavalla. Kolme aluetta täyttää sarakkeen omalla
+sisällöllään: Assistentti näyttää keskustelulistasi, Dokumentaatio
+näyttää oppaan luvut, ja avattu palkkakartoitus näyttää kartoituksen
+omat sivut ja vaihtimen kartoitustenne välillä.
+
+## Yläpalkki
+
+Organisaatiovaihdin on vasemmalla; jos kuulut useaan organisaatioon,
+vaihdat niiden välillä täältä. Keskellä oleva hakukenttä avaa
+komentopaletin (myös Cmd+K tai Ctrl+K), joka siirtyy mille tahansa
+sivulle ja löytää roolit ja henkilöt nimellä. Oikealla oleva
+Lisää-painike aloittaa tavallisimmat lisäykset mistä tahansa: uuden
+roolin, roolien tai henkilöstön tuonnin, kutsun.
+
+## Yleiskatsaus, Assistentti ja Dokumentaatio
+
+**[Yleiskatsaus](/)** on aloitussivu. Se tervehtii, näyttää lyhyen
+tilarivin siitä, mitä on jäljellä, ja antaa rivin toimintakortteja:
+ensin avoin työ, sitten pysyvät oikopolut kuten henkilöstön tuonti tai
+palkkakartoituksen aloittaminen, joten rivi ei ole koskaan tyhjä.
+
+**[Assistentti](/assistant)** avaa blueprntin tekoälykeskustelun. Se
+auttaa käsitteissä, organisaatiosi omissa luvuissa ja siinä, missä
+asiat tehdään sovelluksessa, mutta se ei koskaan ota vastaan
 henkilötietoja, kuten nimiä tai palkkoja, kysymyksessä.
 
-**[Dokumentaatio](/docs)** on tämä osio: opas, jota luette juuri nyt.
+**[Dokumentaatio](/docs)** on tämä osio: opas, jota luet parhaillaan.
 
-## Työn arviointi
+## Työarkkitehtuuri
 
-**Työarkkitehtuuri** kattaa, miten roolinne vertautuvat
-toisiinsa. Sen **[Tasot](/work)**-näkymä listaa roolit
-lasketun vaativuustason mukaan, matriisinäkymällä, joka risteyttää
-vaativuustason trackin kanssa, ja perheiden näkymällä, joka
-ryhmittää samat tiedot rooliperheittäin. Sen **[Roolit](/roles)**-
-näkymä on roolirekisteri: kunkin roolin tehtäväprofiili, track ja
-arvioinnin tila.
+**Työarkkitehtuuri** käsittelee sitä, miten roolisi suhtautuvat
+toisiinsa. Sivu **[Tasot](/work)** listaa roolit lasketun tason mukaan,
+matriisinäkymällä, joka ristii tason ja uran, sekä perhenäkymällä, joka
+ryhmittelee samat tiedot rooliperheittäin. Sivu **[Roolit](/roles)** on
+roolirekisteri: jokaisen roolin tehtäväprofiili, ura ja arvioinnin
+tila.
 
-**[Malli](/model)** on paikka, jossa arviointimallinne on, ohjattuna
-matkana neljässä luvussa, joita otsikkorivin nelisegmenttinen mittari
-seuraa:
-**[Kriteerit](/model/criteria)** (valitkaa, mitä vasten kaikkia rooleja
+## Malli
+
+**[Malli](/model)** on arviointimallisi koti, neljän luvun ohjattuna
+matkana, jota seuraa neliosainen mittari otsikkorivillä:
+**[Kriteerit](/model/criteria)** (valitse, mitä vasten jokainen rooli
 arvioidaan, blueprntin kirjastosta), **[Painotus](/model/weighting)**
-(määrittäkää, kuinka paljon kukin niistä painaa),
-**[Menetelmä](/model/method)** (dokumentoikaa, miksi kukin niistä
-kuuluu malliin) ja **[Hyväksyntä](/model/approval)** (tarkistakaa ja
-hyväksykää malli). Alueen avaaminen vie teidät ensimmäiseen lukuun.
+(määritä, kuinka paljon kukin painaa), **[Menetelmä](/model/method)**
+(dokumentoi, miksi kukin kuuluu mukaan) ja
+**[Hyväksyntä](/model/approval)** (tarkista ja hyväksy malli). Alueen
+avaaminen vie ensimmäiseen lukuun.
 
-## Työntekijät & palkka
+## Henkilöstö ja palkka
 
-**[Henkilöstö](/people)** on työntekijärekisteri, kahdella
-välilehdellä: Rekisteri (kaikki tuodut henkilöt, heidän palkkansa ja
-nykyinen roolinsa) ja **[Luokittele](/people/classify)** (määrittäkää
-tai vahvistakaa, missä roolissa ja millä senioriteetilla kukin
-henkilö on).
+**[Henkilöstö](/people)** on henkilöstöalue. Sivu **Rekisteri** on
+luettelo jokaisesta tuodusta henkilöstä, heidän palkastaan ja
+nykyisestä roolistaan; sivulla **[Luokittele](/people/classify)**
+osoitat tai vahvistat, mikä rooli ja senioriteetti kullakin henkilöllä
+on.
 
-**[Palkkakartoitukset](/pay-mappings)** listaa jokaisen
-palkkakartoituksen, jonka olette aloittaneet, ja on paikka, josta
-aloitatte uuden. Kun kartoitus on avattu, sillä on omat välilehtensä:
-**Yleiskatsaus** (jäädytetty data, josta kartoitus aloitettiin),
-**Analyysi** (lakisääteinen analyysi, joka avautuu yhteistoiminnan
-vaiheella), **Toimenpiteet** (toimenpidesuunnitelma) ja **Raportti**,
-johon allekirjoitettava yhteenveto ja viennit tulevat.
+**[Palkkakartoitukset](/pay-mappings)** listaa jokaisen aloittamasi
+palkkakartoituksen, ja sieltä aloitat uuden. Kun kartoitus on avattu,
+sen navigointi kantaa kartoituksen omat sivut: **Yleiskatsaus**
+(jäädytetyt tiedot, joista kartoitus aloitettiin), **Analyysi**
+(lakisääteinen analyysi, joka alkaa yhteistoimintavaiheella),
+**Toimenpiteet** (toimenpidesuunnitelma) ja **Raportti**, johon
+allekirjoitettava yhteenveto ja viennit tulevat.
 
-## Hallinto
+## Asetukset
 
-Näitä kohteita näytetään sivupalkissa vain organisaation
-ylläpitäjille.
-
-**[Organisaatio](/organization)** kattaa organisaationne omat
-asetukset, kahdella välilehdellä: **[Yleiset](/organization/general)**
-(nimi, maa, valuutta, kieli, toimiala, logo) ja
-**[Jäsenet](/organization/members)** (kenellä on pääsy, heidän
-roolinsa, ja odottavat kutsut).
-
-**[Tapahtumaloki](/audit-log)** listaa jokaisen muutoksen
-organisaatiossanne, kuka sen teki ja milloin.
+Palkin alaosan ratas kokoaa kaiken tiliin ja organisaatioon liittyvän.
+Ylläpitäjät näkevät ryhmän **Organisaatio**:
+**[Yleiset](/organization/general)** (nimi, maa, valuutta, kieli,
+toimiala, logo) ja **[Jäsenet](/organization/members)** (kenellä on
+pääsy, heidän roolinsa ja avoimet kutsut). Kaikki näkevät
+**Tiliasetukset**: **[Profiili](/account/profile)** ja
+**[Turvallisuus](/account/security)**. **[Tapahtumaloki](/audit-log)**,
+vain ylläpitäjille, listaa jokaisen organisaation muutoksen, tekijän ja
+ajankohdan.
 
 ## Aiheeseen liittyvää
 

@@ -1,73 +1,102 @@
 ---
 title: Naviger i appen
-description: Hva som finnes bak hver destinasjon i sidemenyen.
+description: Ikonlisten, seksjonsmenyen og topplinjen, og hva som ligger bak hver destinasjon.
 section: getting-started
 ---
 
-Sidemenyen til venstre er delt inn i fire deler: Status,
-Arbeidsvurdering, Medarbeidere & lønn, og, bare for administratorer,
-Administrasjon. Denne siden går gjennom hver destinasjon i tur og orden.
+Appens ramme har tre deler: en smal ikonlist langs venstre kant, en
+seksjonsmeny ved siden av den på flater som rommer flere sider, og en
+topplinje. Hver side begynner med brødsmuler som viser hvor du er, og
+hver smule lenker tilbake ett nivå opp.
 
-## Status
+## Ikonlisten
 
-**[Oversikt](/)** er dashbordets startside. Den hilser dere velkommen,
-viser en kort statuslinje over hva som er igjen å gjøre, og gir dere en
-rad med handlingskort: utestående arbeid først, deretter faste
-snarveier som å importere ansatte eller starte en lønnskartlegging, så
-raden aldri er tom.
-
-**[Assistent](/assistant)** åpner blueprnts AI-chat. Den kan hjelpe med
-begreper, organisasjonens egne tall, og hvor dere gjør ting i appen, men
-den tar aldri imot persondata som navn eller lønn i et spørsmål.
-
-**[Dokumentasjon](/docs)** er denne delen: veiledningen dere leser nå.
-
-## Arbeidsvurdering
-
-**Jobbarkitektur** dekker hvordan rollene deres forholder seg til
-hverandre. Dens **[Nivåer](/work)**-visning lister roller etter deres
-beregnede nivå, med en matrisevisning som krysser nivå mot track, og en
-familievisning som grupperer samme data etter rollefamilie. Dens
-**[Roller](/roles)**-visning er rolleregisteret: hver rolles jobbprofil,
-track og vurderingsstatus.
-
-**[Modell](/model)** er der vurderingsmodellen deres finnes, som én
-veiledet reise i fire kapitler, fulgt av én måler med fire segmenter på
-tittelraden:
-**[Kriterier](/model/criteria)** (velg hva hver rolle bedømmes mot, fra
-blueprnts bibliotek), **[Vekting](/model/weighting)** (angi hvor mye
-hvert av dem skal telle), **[Metode](/model/method)** (dokumenter
-hvorfor hvert av dem hører hjemme) og
-**[Godkjenning](/model/approval)** (kontroller og godkjenn modellen). Å
-åpne området tar dere til det første kapittelet.
-
-## Medarbeidere & lønn
-
-**[Ansatte](/people)** er medarbeiderregisteret, over to faner:
-Register (hver importerte person, lønnen deres og deres nåværende
-rolle) og **[Klassifiser](/people/classify)** (tildel eller bekreft
-hvilken rolle og senioritet hver person har).
-
-**[Lønnskartlegginger](/pay-mappings)** lister hver lønnskartlegging
-dere har startet, og er der dere starter en ny. Når en kartlegging er
-åpen, har den egne faner: **Oversikt** (de frosne dataene
-kartleggingen ble startet fra), **Analyse** (den lovpålagte analysen,
-som åpner med samarbeidssteget), **Tiltak** (tiltaksplanen) og
-**Rapport**, der den signerbare oppsummeringen og eksportene vil komme.
-
-## Administrasjon
-
-Disse destinasjonene vises bare i sidemenyen for organisasjonens
+Listen viser appens områder som ikoner; hold pekeren over ett for å se
+navnet. Ovenfra: **[Oversikt](/)**, **[Assistent](/assistant)**,
+**[Jobbarkitektur](/work)**, **[Modell](/model)**,
+**[Ansatte](/people)** og **[Lønnskartlegginger](/pay-mappings)**.
+Nederst sitter **[Dokumentasjon](/docs)**, **Innstillinger** og avataren
+din, som åpner kontomenyen. Områder en administrator forvalter
+(organisasjonssidene, hendelsesloggen) vises i Innstillinger bare for
 administratorer.
 
-**[Organisasjon](/organization)** dekker organisasjonens egne
-innstillinger, over to faner: **[Generelt](/organization/general)**
-(navn, land, valuta, språk, bransje, logo) og
-**[Medlemmer](/organization/members)** (hvem som har tilgang, deres
-rolle, og ventende invitasjoner).
+## Seksjonsmenyen
 
-**[Hendelseslogg](/audit-log)** lister hver endring i organisasjonen
-deres, hvem som gjorde den, og når.
+Et område med flere sider åpnes med en andre navigasjonskolonne ved
+siden av listen, med sidene gruppert under små overskrifter. Håndtaket
+på kolonnens høyre kant slår den sammen når du vil ha plassen, og henter
+den fram igjen på samme måte. Tre flater fyller kolonnen med eget
+innhold i stedet: Assistenten viser samtalelisten din, Dokumentasjonen
+viser guidens kapitler, og en åpnet lønnskartlegging viser
+kartleggingens egne sider med en veksler mellom kartleggingene deres.
+
+## Topplinjen
+
+Organisasjonsveksleren sitter til venstre; tilhører du flere
+organisasjoner, er det her du bytter mellom dem. Søkefeltet i midten
+åpner kommandopaletten (også Cmd+K eller Ctrl+K), som hopper til en
+hvilken som helst side og finner roller og personer på navn.
+Legg til-knappen til høyre starter de vanligste tilleggene fra hvor
+som helst: en ny rolle, en rolle- eller ansattimport, en invitasjon.
+
+## Oversikt, Assistent og Dokumentasjon
+
+**[Oversikt](/)** er landingssiden. Den hilser, viser en kort statuslinje
+over hva som gjenstår, og gir deg en rad handlingskort: utestående
+arbeid først, deretter faste snarveier som å importere ansatte eller
+starte en lønnskartlegging, slik at raden aldri er tom.
+
+**[Assistent](/assistant)** åpner blueprnts AI-chat. Den kan hjelpe med
+begreper, organisasjonens egne tall og hvor ting gjøres i appen, men den
+tar aldri imot personopplysninger som navn eller lønn i et spørsmål.
+
+**[Dokumentasjon](/docs)** er denne delen: guiden du leser nå.
+
+## Jobbarkitektur
+
+**Jobbarkitektur** handler om hvordan rollene dine forholder seg til
+hverandre. Siden **[Nivåer](/work)** lister roller etter beregnet nivå,
+med en matrisevisning som krysser nivå mot spor, og en familievisning
+som grupperer de samme dataene per rollefamilie. Siden
+**[Roller](/roles)** er rolleregisteret: hver rolles jobbprofil, spor og
+vurderingsstatus.
+
+## Modell
+
+**[Modell](/model)** er der vurderingsmodellen din bor, som en guidet
+reise i fire kapitler, fulgt av ett firedelt instrument på tittelraden:
+**[Kriterier](/model/criteria)** (velg hva hver rolle vurderes mot, fra
+blueprnts bibliotek), **[Vekting](/model/weighting)** (bestem hvor mye
+hvert av dem teller), **[Metode](/model/method)** (dokumenter hvorfor
+hvert hører hjemme) og **[Godkjenning](/model/approval)** (kontroller og
+godkjenn modellen). Åpner du området, lander du på første kapittel.
+
+## Ansatte og lønn
+
+**[Ansatte](/people)** er ansattområdet. Siden **Register** er
+fortegnelsen over hver importert person, lønnen deres og nåværende
+rolle; siden **[Klassifiser](/people/classify)** er der du tildeler
+eller bekrefter hvilken rolle og senioritet hver person har.
+
+**[Lønnskartlegginger](/pay-mappings)** lister hver lønnskartlegging du
+har startet, og er der du starter en ny. Når en kartlegging er åpnet,
+bærer menyen kartleggingens egne sider: **Oversikt** (de fryste
+dataene kartleggingen ble startet fra), **Analyse** (den lovpålagte
+analysen, som begynner med samarbeidssteget), **Tiltak** (tiltaksplanen)
+og **Rapport**, der den signerbare oppsummeringen og eksportene vil
+ligge.
+
+## Innstillinger
+
+Tannhjulet nederst i listen samler alt som gjelder kontoen og
+organisasjonen. Administratorer ser gruppen **Organisasjon**:
+**[Generelt](/organization/general)** (navn, land, valuta, språk,
+bransje, logo) og **[Medlemmer](/organization/members)** (hvem som har
+tilgang, rollen deres og ventende invitasjoner). Alle ser
+**Kontoinnstillinger**: **[Profil](/account/profile)** og
+**[Sikkerhet](/account/security)**. **[Hendelseslogg](/audit-log)**,
+bare for administratorer, lister hver endring i organisasjonen, hvem som
+gjorde den og når.
 
 ## Relatert
 
