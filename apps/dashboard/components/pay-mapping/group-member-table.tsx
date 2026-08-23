@@ -332,7 +332,7 @@ export function GroupMemberTable({
                         must never reflow its neighbours (layout-shift rule),
                         and an inline-flex control directly in a cell would
                         inflate the line box (skeleton-parity rule). */}
-                      <div className="flex h-9 items-center justify-between gap-1">
+                      <div className="flex h-7 items-center justify-between gap-1">
                         {(() => {
                           const target: ActionTargetWire = {
                             kind: "person",

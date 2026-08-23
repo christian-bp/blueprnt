@@ -1,9 +1,12 @@
 "use client"
 
+import { Medallion } from "@/components/medallion"
 import { Briefcase01Icon, MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Button } from "@workspace/ui/components/button"
+import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Button, buttonVariants } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
 import {
   Empty,
   EmptyDescription,
@@ -11,7 +14,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
-import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Table,
   TableBody,
@@ -23,9 +25,10 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { use, useState } from "react"
 import { useOrganization } from "@/components/org-context"
-import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
+import type { Crumb } from "@/components/page-breadcrumb"
+import { FrameTable } from "@/components/frame-table"
 import { NoMatchesEmpty } from "@/components/no-matches-empty"
-import { PageHeader } from "@/components/page-header"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
 import { FamilyActionsMenu } from "@/components/roles/family-actions-menu"
 import {
@@ -104,18 +107,21 @@ export default function FamilyPage(props: {
     // their real buttons (enabled no-ops: the load is brief and disabling
     // would just flash gray).
     return (
-      <div className="space-y-6">
-        <PageHeader
-          // The Roles crumb is static; the family crumb joins it with the
-          // data.
-          breadcrumb={
-            <PageBreadcrumb
-              segments={[{ label: tNav("roles"), href: "/roles" }]}
-            />
-          }
-          title={<Skeleton className="h-7 w-48 max-w-full" />}
-          action={
-            <div className="flex items-center gap-2">
+      <div className="space-y-4">
+        <PageBreadcrumbRow
+          // The ancestor crumbs are static; the family name arrives with the
+          // data, so a skeleton crumb holds its place.
+          segments={[
+            { label: tNav("work"), href: "/work" },
+            { label: tNav("roles"), href: "/roles" },
+            { skeleton: true },
+          ]}
+        />
+        <FrameTable
+          size="sm"
+          title={<Skeleton className="h-5 w-40" />}
+          toolbar={
+            <>
               <Button type="button">{t("newCta")}</Button>
               <Button
                 type="button"
@@ -126,35 +132,48 @@ export default function FamilyPage(props: {
               >
                 <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
               </Button>
-            </div>
+            </>
           }
-        />
-        <div className="space-y-4">
-          {/* The toolbar is static chrome too: real controls, the track
-              filter showing its all-option until the tracks arrive. */}
-          <RoleTableToolbar
-            tracks={[]}
-            query={query}
-            onQueryChange={setQuery}
-            track={track}
-            onTrackChange={setTrack}
-          />
+          filters={
+            <RoleTableToolbar
+              tracks={[]}
+              query={query}
+              onQueryChange={setQuery}
+              track={track}
+              onTrackChange={setTrack}
+            />
+          }
+        >
           <Table className="table-fixed">
             <RoleTableHeadings />
             <TableSkeleton rows={5} columns={ROLE_SKELETON_COLUMNS} />
           </Table>
-        </div>
+        </FrameTable>
       </div>
     )
   }
 
   if (family === undefined) {
     return (
-      <div className="space-y-2">
-        <p className="text-muted-foreground text-sm">{tFamily("notFound")}</p>
-        <Link className="text-sm underline underline-offset-4" href="/roles">
-          {t("detail.backToRoles")}
-        </Link>
+      <div className="space-y-4">
+        <PageBreadcrumbRow
+          segments={[
+            { label: tNav("work"), href: "/work" },
+            { label: tNav("roles"), href: "/roles" },
+          ]}
+        />
+        <Empty>
+          <EmptyHeader>
+            <EmptyTitle>{tNav("roles")}</EmptyTitle>
+            <EmptyDescription>{tFamily("notFound")}</EmptyDescription>
+          </EmptyHeader>
+          <Link
+            href="/roles"
+            className={cn(buttonVariants({ variant: "outline" }))}
+          >
+            {t("detail.backToRoles")}
+          </Link>
+        </Empty>
       </div>
     )
   }
@@ -183,103 +202,105 @@ export default function FamilyPage(props: {
   }
 
   const familyCrumbs: Crumb[] = [
+    { label: tNav("work"), href: "/work" },
     { label: tNav("roles"), href: "/roles" },
     { label: family.name },
   ]
 
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        breadcrumb={<PageBreadcrumb segments={familyCrumbs} />}
-        title={family.name}
-        action={
-          <div className="flex items-center gap-2">
-            <CreateRoleDialog
-              orgId={orgId}
-              tracks={model.tracks}
-              triggerLabel={t("newCta")}
-              existing={roles}
-              defaultFamilyId={family.familyId}
-            />
-            <FamilyActionsMenu
-              orgId={orgId}
-              familyId={family.familyId}
-              name={family.name}
-              roleTitles={familyRoles.map((role) => role.title)}
-            />
-          </div>
-        }
+  const familyActions = (
+    <>
+      <CreateRoleDialog
+        orgId={orgId}
+        tracks={model.tracks}
+        triggerLabel={t("newCta")}
+        existing={roles}
+        defaultFamilyId={family.familyId}
       />
-      {familyRoles.length === 0 ? (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <HugeiconsIcon
-                icon={Briefcase01Icon}
-                strokeWidth={2}
-                aria-hidden="true"
-              />
-            </EmptyMedia>
-            <EmptyTitle>{family.name}</EmptyTitle>
-            <EmptyDescription>{tFamily("rolesEmpty")}</EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : (
-        <div className="space-y-4">
-          <RoleTableToolbar
-            tracks={model.tracks}
-            query={query}
-            onQueryChange={setQuery}
-            track={track}
-            onTrackChange={setTrack}
-            shown={shownRoles.length}
-            total={familyRoles.length}
-          />
-          {shownRoles.length === 0 ? (
-            <NoMatchesEmpty
-              title={family.name}
-              description={tToolbar("noMatches")}
-              clearLabel={tToolbar("clearFilters")}
-              onClear={clearFilters}
+      <FamilyActionsMenu
+        orgId={orgId}
+        familyId={family.familyId}
+        name={family.name}
+        roleTitles={familyRoles.map((role) => role.title)}
+      />
+    </>
+  )
+
+  return (
+    <div className="space-y-4">
+      <PageBreadcrumbRow segments={familyCrumbs} />
+      <FrameTable
+        size="sm"
+        title={family.name}
+        description={tFamily("roleCount", { count: familyRoles.length })}
+        toolbar={familyActions}
+        filters={
+          familyRoles.length > 0 ? (
+            <RoleTableToolbar
+              tracks={model.tracks}
+              query={query}
+              onQueryChange={setQuery}
+              track={track}
+              onTrackChange={setTrack}
+              shown={shownRoles.length}
+              total={familyRoles.length}
             />
-          ) : (
-            <Table className="table-fixed">
-              <RoleTableHeadings />
-              <TableBody>
-                {shownRoles.map((role) => {
-                  const result = levelByRole.get(role.roleId as string)
-                  return (
-                    <TableRow key={role.roleId}>
-                      {/* Every cell comes from the shared role row, so this
+          ) : undefined
+        }
+      >
+        {familyRoles.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia>
+                <Medallion icon={Briefcase01Icon} size="lg" />
+              </EmptyMedia>
+              <EmptyTitle>{family.name}</EmptyTitle>
+              <EmptyDescription>{tFamily("rolesEmpty")}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : shownRoles.length === 0 ? (
+          <NoMatchesEmpty
+            title={family.name}
+            description={tToolbar("noMatches")}
+            clearLabel={tToolbar("clearFilters")}
+            onClear={clearFilters}
+          />
+        ) : (
+          <Table className="table-fixed">
+            <RoleTableHeadings />
+            <TableBody>
+              {shownRoles.map((role) => {
+                const result = levelByRole.get(role.roleId as string)
+                return (
+                  <TableRow key={role.roleId}>
+                    {/* Every cell comes from the shared role row, so this
                           table and the register cannot drift apart. One cell
                           per heading, always: table-fixed slides a short row's
                           later values left under the wrong headings. */}
-                      <TableCell>
-                        <RoleTitleCell slug={role.slug} title={role.title} />
-                      </TableCell>
-                      <TableCell>
-                        <RoleTrackCell
-                          trackKey={role.trackKey}
-                          name={role.trackName}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <RoleTeamCell team={role.team} />
-                      </TableCell>
-                      <TableCell>
-                        <RoleEmployeesCell count={role.employeeCount} />
-                      </TableCell>
-                      <TableCell>
-                        <RoleLevelCell level={result?.level ?? null} />
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          )}
-        </div>
-      )}
+                    <TableCell>
+                      <RoleTitleCell slug={role.slug} title={role.title} />
+                    </TableCell>
+                    <TableCell>
+                      <RoleTrackCell
+                        trackKey={role.trackKey}
+                        name={role.trackName}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <RoleTeamCell team={role.team} />
+                    </TableCell>
+                    <TableCell>
+                      <RoleEmployeesCell count={role.employeeCount} />
+                    </TableCell>
+                    <TableCell>
+                      <RoleLevelCell level={result?.level ?? null} />
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        )}
+      </FrameTable>
     </div>
   )
 }

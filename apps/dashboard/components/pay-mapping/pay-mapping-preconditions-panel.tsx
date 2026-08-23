@@ -1,3 +1,4 @@
+import { Medallion } from "@/components/medallion"
 import { Alert02Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Alert, AlertTitle } from "@workspace/ui/components/alert"
@@ -78,12 +79,8 @@ export function PayMappingPreconditionsPanel({
   return (
     <Empty className="gap-4">
       <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <HugeiconsIcon
-            icon={Alert02Icon}
-            strokeWidth={2}
-            aria-hidden="true"
-          />
+        <EmptyMedia>
+          <Medallion icon={Alert02Icon} size="lg" />
         </EmptyMedia>
         <EmptyTitle>{t("title")}</EmptyTitle>
       </EmptyHeader>

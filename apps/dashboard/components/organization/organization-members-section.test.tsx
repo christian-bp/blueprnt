@@ -16,6 +16,12 @@ const { toastSuccess, toastError } = vi.hoisted(() => ({
   toastError: vi.fn(),
 }))
 
+// NumberFlow's custom element does not exist in jsdom; the count chip only
+// needs to render its value.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}))
+
 vi.mock("@/lib/toast", () => ({
   toast: { success: toastSuccess, error: toastError },
 }))
@@ -115,10 +121,11 @@ describe("OrganizationMembersSection", () => {
     listInvitations.mockResolvedValueOnce({ data: [], error: null })
     renderSection()
     expect(await screen.findByText(t.empty)).toBeDefined()
-    // The empty state's title is the page's nav label (organization.tabs.members).
+    // The nav label appears twice by design: the frame's own title h2 and
+    // the empty state's title inside the panel.
     expect(
-      screen.getByText(en.dashboard.organization.tabs.members)
-    ).toBeDefined()
+      screen.getAllByText(en.dashboard.organization.tabs.members).length
+    ).toBeGreaterThanOrEqual(2)
     expect(screen.queryByRole("table")).toBeNull()
     expect(
       document.querySelector('[data-slot="empty-icon"] svg')

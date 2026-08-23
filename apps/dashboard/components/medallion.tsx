@@ -11,6 +11,7 @@ import { cn } from "@workspace/ui/lib/utils"
 const SIZES = {
   sm: "size-8 [&_svg]:size-4",
   md: "size-9 [&_svg]:size-5",
+  lg: "size-10 [&_svg]:size-6",
 } as const
 
 // Brand is the default and means "this concerns you". Muted is for a card
@@ -25,13 +26,18 @@ export function Medallion({
   icon,
   size = "md",
   tone = "brand",
+  ring = true,
 }: {
   icon: IconSvgElement
   size?: keyof typeof SIZES
   tone?: keyof typeof TONES
+  // The outer ring earns its keep on white ground (empty states, widget
+  // headers). On an already-tinted surface (the action cards) it crowds the
+  // chip, so those opt out.
+  ring?: boolean
 }) {
   return (
-    <span aria-hidden="true" className={medallionClass(size, tone)}>
+    <span aria-hidden="true" className={medallionClass(size, tone, ring)}>
       <HugeiconsIcon icon={icon} strokeWidth={2} />
     </span>
   )
@@ -42,10 +48,15 @@ export function Medallion({
 // measure identically in both states.
 export function medallionClass(
   size: keyof typeof SIZES = "md",
-  tone: keyof typeof TONES = "brand"
+  tone: keyof typeof TONES = "brand",
+  ring = true
 ) {
   return cn(
     "flex shrink-0 items-center justify-center rounded-lg",
+    // The reference's outer ring: a background-colored border with the shadow
+    // cast OUTSIDE it, so the chip reads tile / light ring / soft contour.
+    ring &&
+      "border-2 border-background shadow-[0_1px_3px_0_rgba(0,0,0,0.14)] dark:border",
     TONES[tone],
     SIZES[size]
   )

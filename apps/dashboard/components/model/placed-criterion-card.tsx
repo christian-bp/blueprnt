@@ -97,6 +97,13 @@ interface MethodCard {
 
 // A criterion the org has chosen, in its dimension's column.
 //
+// The kanban-card surface inside the muted dimension column: white, softly
+// shadowed, brightening its border on hover exactly like the deal cards this
+// pattern mirrors. Shared with the method panel's placeholder so the loading
+// card can never drift from the loaded one.
+export const CRITERION_CARD_SURFACE =
+  "bg-card shadow-xs transition-[border-color,box-shadow] hover:border-foreground/20 hover:shadow-sm"
+
 // Built on the design system's Item, so a criterion reads the same wherever it
 // is listed: its name is the ItemTitle, the library's one-liner is the
 // ItemDescription, and whatever the chapter decides about it goes in the
@@ -143,6 +150,7 @@ export function PlacedCriterionCard(
     // reads the same in both places. Both card variants take it together.
     <Item
       variant="outline"
+      className={CRITERION_CARD_SURFACE}
       // The card is a real list item inside the column's own <ul>; Item's
       // default div would leave an orphan in a list.
       render={

@@ -15,8 +15,7 @@ import sv from "@workspace/i18n/messages/sv.json"
 import { routing } from "@workspace/i18n/routing"
 import { describe, expect, it } from "vitest"
 import { headingAnchor, headingTexts } from "@/lib/docs/anchors"
-import { NAV_DOCS, NAV_GROUPS } from "@/lib/navigation"
-import { SECTION_PAGES } from "@/lib/section-pages"
+import { NAV_AREAS } from "@/lib/navigation"
 import { collectStaticAppRoutes } from "@/test/app-routes"
 import {
   allDocSlugs,
@@ -229,20 +228,20 @@ describe("guard 5: assistant prompt routes", () => {
         (MESSAGES[locale] as { dashboard: unknown }).dashboard
       )
 
-  // Every label key the app itself uses for a destination: the sidebar and
-  // command palette render NAV_GROUPS/NAV_DOCS, the header tab strips render
-  // SECTION_PAGES, and a path can appear in both (/work is "Job architecture"
-  // in the sidebar and "Levels" as its section's first tab). Pages outside
-  // both registries (the import wizards, the account tabs) have no entry
-  // here, so their declared key is only checked for resolving.
+  // Every label key the app itself uses for a destination: the rail, the
+  // inner sidebars and the command palette all render NAV_AREAS, and a path
+  // can appear both as an area and as one of its inner rows (/work is "Job
+  // architecture" as the area and "Levels" as its first row). Pages outside
+  // the registry (the import wizards) have no entry here, so their declared
+  // key is only checked for resolving.
   const appLabelKeys = (href: string): Set<string> => {
     const keys = new Set<string>()
-    for (const entry of [...NAV_GROUPS.flatMap((g) => g.entries), NAV_DOCS]) {
-      if (entry.href === href) keys.add(entry.labelKey)
-    }
-    for (const pages of Object.values(SECTION_PAGES)) {
-      for (const page of pages) {
-        if (page.href === href) keys.add(page.labelKey)
+    for (const area of NAV_AREAS) {
+      if (area.href === href) keys.add(area.labelKey)
+      for (const group of area.innerNav) {
+        for (const entry of group.entries) {
+          if (entry.href === href) keys.add(entry.labelKey)
+        }
       }
     }
     return keys
@@ -266,24 +265,28 @@ describe("guard 5: assistant prompt routes", () => {
   // shipped twice: a real destination missing from the list, which the model
   // answers by substituting the nearest one it was given (it sent users to
   // /organization for account security, and to /model for weighting).
-  it("every section sub-page in the app's own registry is a destination the prompt knows", () => {
+  it("every inner-nav destination in the app's own registry is one the prompt knows", () => {
     const listed = listedPathsIn(assistantSystemPrompt({ locale: "en" }))
-    for (const pages of Object.values(SECTION_PAGES)) {
-      for (const page of pages) {
-        expect(
-          listed.has(page.href),
-          `SECTION_PAGES has ${page.href} but the assistant prompt does not list it, so the model will send users to a neighbouring page instead`
-        ).toBe(true)
+    // The platform console is a staff surface the assistant never routes
+    // users to, exactly as it stayed out of the old registries.
+    for (const area of NAV_AREAS.filter((a) => !a.platformOnly)) {
+      for (const group of area.innerNav) {
+        for (const entry of group.entries) {
+          expect(
+            listed.has(entry.href),
+            `the registry has ${entry.href} but the assistant prompt does not list it, so the model will send users to a neighbouring page instead`
+          ).toBe(true)
+        }
       }
     }
   })
 
-  it("every top-level nav destination is one the prompt knows", () => {
+  it("every area destination is one the prompt knows", () => {
     const listed = listedPathsIn(assistantSystemPrompt({ locale: "en" }))
-    for (const entry of [...NAV_GROUPS.flatMap((g) => g.entries), NAV_DOCS]) {
+    for (const area of NAV_AREAS.filter((a) => !a.platformOnly)) {
       expect(
-        listed.has(entry.href),
-        `the sidebar has ${entry.href} but the assistant prompt does not list it`
+        listed.has(area.href),
+        `the rail has ${area.href} but the assistant prompt does not list it`
       ).toBe(true)
     }
   })

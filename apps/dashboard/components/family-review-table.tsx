@@ -500,7 +500,7 @@ function FamilyGroup({
                 // name, with no way to point at the offending family, so
                 // the field cannot accept more than the write will take.
                 maxLength={MAX_FAMILY_NAME}
-                // h-7 against the h-9 default: the field sets the header's
+                // h-7 against the h-8 default: the field sets the header's
                 // height, and at the default this one row outgrew every
                 // role row beneath it.
                 className="h-7 max-w-xs font-medium"

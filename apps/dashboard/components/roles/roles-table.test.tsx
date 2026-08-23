@@ -13,6 +13,12 @@ import { ROLE_SKELETON_COLUMNS } from "@/components/roles/role-table-row"
 import { RolesTable, type RolesTableRow } from "@/components/roles/roles-table"
 
 const pushMock = vi.fn()
+// NumberFlow's custom element does not exist in jsdom; the count chip only
+// needs to render its value.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}))
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: pushMock }),
 }))

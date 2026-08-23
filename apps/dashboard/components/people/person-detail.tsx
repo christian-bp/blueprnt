@@ -1,5 +1,6 @@
 "use client"
 
+import { Medallion } from "@/components/medallion"
 import {
   Coins01Icon,
   InformationCircleIcon,
@@ -9,7 +10,8 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { SeniorityBadge } from "@/components/track-badge"
-import { Button } from "@workspace/ui/components/button"
+import { Button, buttonVariants } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
 import {
   Card,
   CardContent,
@@ -35,8 +37,8 @@ import {
 import { PersonActionsMenu } from "@/components/people/person-actions-menu"
 import { SalaryRowActions } from "@/components/people/salary-row-actions"
 import { useOrganization } from "@/components/org-context"
-import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
-import { PageHeader } from "@/components/page-header"
+import type { Crumb } from "@/components/page-breadcrumb"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { useMoney } from "@/hooks/use-money"
 import { usePageTitle } from "@/hooks/use-page-title"
 
@@ -121,10 +123,7 @@ export function PersonDetail({ publicId }: { publicId: string }) {
 
   usePageTitle(person?.displayName ?? undefined)
 
-  const crumbs: Crumb[] = [
-    { label: tNav("people"), href: "/people" },
-    { label: person?.displayName ?? "" },
-  ]
+  const crumbs: Crumb[] = [{ label: tNav("people"), href: "/people" }]
 
   // Loading: hold the skeleton until every query has resolved. assignment and
   // roles being undefined (still loading) would cause the classification block
@@ -134,12 +133,7 @@ export function PersonDetail({ publicId }: { publicId: string }) {
   // Mirror the loaded two-card layout so nothing reflows when data arrives.
   const skeleton = (
     <div className="space-y-6">
-      <PageHeader
-        breadcrumb={<PageBreadcrumb segments={crumbs} />}
-        // h-7 = the PageHeading's text-lg line box (28px); a shorter bar let
-        // everything below shift up 4px until the title loaded.
-        title={<Skeleton className="h-7 w-48" />}
-      />
+      <PageBreadcrumbRow segments={[...crumbs, { skeleton: true }]} />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <Card>
@@ -213,11 +207,22 @@ export function PersonDetail({ publicId }: { publicId: string }) {
 
   if (person === null) {
     return (
-      <div className="space-y-2">
-        <p className="text-muted-foreground text-sm">{t("notFound")}</p>
-        <Link className="text-sm underline underline-offset-4" href="/people">
-          {t("backToPeople")}
-        </Link>
+      <div className="space-y-4">
+        <PageBreadcrumbRow
+          segments={[{ label: tNav("people"), href: "/people" }]}
+        />
+        <Empty>
+          <EmptyHeader>
+            <EmptyTitle>{tNav("people")}</EmptyTitle>
+            <EmptyDescription>{t("notFound")}</EmptyDescription>
+          </EmptyHeader>
+          <Link
+            href="/people"
+            className={cn(buttonVariants({ variant: "outline" }))}
+          >
+            {t("backToPeople")}
+          </Link>
+        </Empty>
       </div>
     )
   }
@@ -239,9 +244,8 @@ export function PersonDetail({ publicId }: { publicId: string }) {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        breadcrumb={<PageBreadcrumb segments={crumbs} />}
-        title={person.displayName}
+      <PageBreadcrumbRow
+        segments={[...crumbs, { label: person.displayName }]}
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -361,12 +365,8 @@ export function PersonDetail({ publicId }: { publicId: string }) {
               {salary.length === 0 ? (
                 <Empty>
                   <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <HugeiconsIcon
-                        icon={Coins01Icon}
-                        strokeWidth={2}
-                        aria-hidden="true"
-                      />
+                    <EmptyMedia>
+                      <Medallion icon={Coins01Icon} size="lg" />
                     </EmptyMedia>
                     <EmptyTitle>{t("salaryHeading")}</EmptyTitle>
                     <EmptyDescription>{t("salaryEmpty")}</EmptyDescription>

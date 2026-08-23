@@ -8,7 +8,7 @@ import { DOCS_NAV, POPULAR_DOCS, SECTION_LABEL_KEYS } from "@/lib/docs/docs-nav"
 // The small uppercase label that opens each band of this page. Editorial
 // vocabulary the rest of the app does not use, deliberately: the guide is a
 // publication, and its bands are named quietly above the content rather than
-// titled with the app's own PageHeading. One constant, used by all three.
+// titled like the rest of the app. One constant, used by all three.
 const EYEBROW = "text-muted-foreground text-xs uppercase tracking-widest"
 
 // The hero band. It reserves most of the first screen and centres its content
@@ -44,7 +44,7 @@ export default async function DocsIndexPage() {
       <div className={HERO}>
         <div className="mx-auto max-w-2xl text-center">
           <p className={EYEBROW}>{t("index.title")}</p>
-          {/* Deliberate deviation from PageHeading: the guide is a reading
+          {/* Deliberate deviation from the breadcrumb-title norm: the guide is a reading
               surface, so its front door opens in the app's display serif at
               hero scale, the same voice the overview's greeting uses. The
               serif is a single-weight family; never add a bold utility here,

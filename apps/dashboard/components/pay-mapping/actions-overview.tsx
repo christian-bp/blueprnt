@@ -1,5 +1,6 @@
 "use client"
 
+import { Medallion } from "@/components/medallion"
 import NumberFlow from "@number-flow/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
@@ -34,6 +35,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useMemo, useState } from "react"
 import { useOrganization } from "@/components/org-context"
+import { FrameTable, FrameTableFooter } from "@/components/frame-table"
 import { TablePagination } from "@/components/table-pagination"
 import {
   TableSkeleton,
@@ -119,7 +121,7 @@ const MENU_PLACEHOLDER = (
 )
 
 const ACTION_SKELETON_COLUMNS: TableSkeletonColumn[] = [
-  { className: "h-9" },
+  { className: "h-8" },
   { className: "h-5 w-16 rounded-full" },
   { className: "w-24" },
   {},
@@ -333,12 +335,8 @@ export function PayMappingActionsOverview() {
       {empty ? (
         <Empty>
           <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <HugeiconsIcon
-                icon={CheckListIcon}
-                strokeWidth={2}
-                aria-hidden="true"
-              />
+            <EmptyMedia>
+              <Medallion icon={CheckListIcon} size="lg" />
             </EmptyMedia>
             <EmptyTitle>{tOverview("emptyTitle")}</EmptyTitle>
             <EmptyDescription>{tOverview("emptyBody")}</EmptyDescription>
@@ -469,12 +467,35 @@ export function PayMappingActionsOverview() {
             </Select>
           </div>
 
-          <section className="space-y-2">
-            <h3 className="font-semibold text-base">
-              {tOverview("actionsHeading")}
-            </h3>
+          <FrameTable
+            title={tOverview("actionsHeading")}
+            count={loading ? undefined : visibleActions.length}
+            footer={
+              visibleActions.length > PAGE_SIZE ? (
+                <FrameTableFooter
+                  page={actionsPage0}
+                  pageSize={PAGE_SIZE}
+                  total={visibleActions.length}
+                  pager={
+                    <TablePagination
+                      page={actionsPage0}
+                      pageCount={actionsPageCount}
+                      hasMore={false}
+                      canPrev={actionsPage0 > 0}
+                      canNext={actionsPage0 < actionsPageCount - 1}
+                      onPrev={() => setActionsPage(actionsPage0 - 1)}
+                      onNext={() => setActionsPage(actionsPage0 + 1)}
+                      onSelect={setActionsPage}
+                      previousLabel={tToolbar("previous")}
+                      nextLabel={tToolbar("next")}
+                    />
+                  }
+                />
+              ) : undefined
+            }
+          >
             {!loading && visibleActions.length === 0 ? (
-              <p className="text-muted-foreground text-sm">
+              <p className="px-(--frame-panel-px) py-6 text-muted-foreground text-sm">
                 {tOverview("noMatches")}
               </p>
             ) : (
@@ -613,35 +634,46 @@ export function PayMappingActionsOverview() {
                 </Table>
               </div>
             )}
-            {visibleActions.length > PAGE_SIZE && (
-              <TablePagination
-                page={actionsPage0}
-                pageCount={actionsPageCount}
-                hasMore={false}
-                canPrev={actionsPage0 > 0}
-                canNext={actionsPage0 < actionsPageCount - 1}
-                onPrev={() => setActionsPage(actionsPage0 - 1)}
-                onNext={() => setActionsPage(actionsPage0 + 1)}
-                onSelect={setActionsPage}
-                previousLabel={tToolbar("previous")}
-                nextLabel={tToolbar("next")}
-              />
-            )}
-          </section>
+          </FrameTable>
 
-          <section className="space-y-2">
-            <h3 className="font-semibold text-base">
-              {tOverview("notesHeading")}
-              {totals !== undefined && totals.discussion > 0 && (
-                <span className="ml-2 font-normal text-muted-foreground text-sm">
+          <FrameTable
+            title={tOverview("notesHeading")}
+            count={loading ? undefined : visibleNotes.length}
+            toolbar={
+              totals !== undefined && totals.discussion > 0 ? (
+                <span className="text-muted-foreground text-sm">
                   {tOverview("discussionCount", { count: totals.discussion })}
                 </span>
-              )}
-            </h3>
+              ) : undefined
+            }
+            footer={
+              visibleNotes.length > PAGE_SIZE ? (
+                <FrameTableFooter
+                  page={notesPage0}
+                  pageSize={PAGE_SIZE}
+                  total={visibleNotes.length}
+                  pager={
+                    <TablePagination
+                      page={notesPage0}
+                      pageCount={notesPageCount}
+                      hasMore={false}
+                      canPrev={notesPage0 > 0}
+                      canNext={notesPage0 < notesPageCount - 1}
+                      onPrev={() => setNotesPage(notesPage0 - 1)}
+                      onNext={() => setNotesPage(notesPage0 + 1)}
+                      onSelect={setNotesPage}
+                      previousLabel={tToolbar("previous")}
+                      nextLabel={tToolbar("next")}
+                    />
+                  }
+                />
+              ) : undefined
+            }
+          >
             {!loading && visibleNotes.length === 0 ? (
               // "No matches" only when a filter actually hid something;
               // with no notes at all the honest line is that none exist.
-              <p className="text-muted-foreground text-sm">
+              <p className="px-(--frame-panel-px) py-6 text-muted-foreground text-sm">
                 {totals?.notes === 0
                   ? tOverview("noNotesYet")
                   : tOverview("noNotes")}
@@ -709,21 +741,7 @@ export function PayMappingActionsOverview() {
                 </Table>
               </div>
             )}
-            {visibleNotes.length > PAGE_SIZE && (
-              <TablePagination
-                page={notesPage0}
-                pageCount={notesPageCount}
-                hasMore={false}
-                canPrev={notesPage0 > 0}
-                canNext={notesPage0 < notesPageCount - 1}
-                onPrev={() => setNotesPage(notesPage0 - 1)}
-                onNext={() => setNotesPage(notesPage0 + 1)}
-                onSelect={setNotesPage}
-                previousLabel={tToolbar("previous")}
-                nextLabel={tToolbar("next")}
-              />
-            )}
-          </section>
+          </FrameTable>
         </>
       )}
     </div>

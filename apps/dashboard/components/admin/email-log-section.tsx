@@ -1,7 +1,7 @@
 "use client"
 
-import { Mail01Icon, Search01Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { Medallion } from "@/components/medallion"
+import { Mail01Icon } from "@hugeicons/core-free-icons"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
   EMAIL_TEMPLATE_KEYS,
@@ -16,7 +16,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
-import { Input } from "@workspace/ui/components/input"
 import {
   Select,
   SelectContent,
@@ -50,9 +49,11 @@ import {
   DeliveryStatusBadge,
   EmailStatusBadge,
 } from "@/components/admin/email-status-badge"
+import { TableSearchField } from "@/components/table-search-field"
+import { FrameTable, FrameTableFooter } from "@/components/frame-table"
 import { TablePagination } from "@/components/table-pagination"
 import { DateRangePicker } from "@/components/date-range-picker"
-import { PageHeading } from "@/components/page-heading"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { useAuditPagination } from "@/hooks/use-audit-pagination"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
@@ -91,6 +92,8 @@ function templateLabel(t: EmailT, tag: string | undefined): string | null {
 
 export function EmailLogSection() {
   const t = useTranslations("dashboard.admin.emailLog")
+  const tTabs = useTranslations("dashboard.admin.tabs")
+  const tNav = useTranslations("dashboard.nav")
   const format = useFormatter()
 
   // Toolbar state. The visible input is immediate; the debounced value drives
@@ -161,184 +164,188 @@ export function EmailLogSection() {
 
   return (
     <section className="space-y-4">
-      <div>
-        <PageHeading>{t("heading")}</PageHeading>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
-      </div>
+      <PageBreadcrumbRow
+        segments={[
+          { label: tNav("admin"), href: "/admin" },
+          { label: tTabs("emailLog") },
+        ]}
+      />
 
-      {/* Toolbar: search, status, type, date range. */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative">
-          <HugeiconsIcon
-            icon={Search01Icon}
-            size={16}
-            strokeWidth={2}
-            aria-hidden="true"
-            className="absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            type="search"
-            value={search}
-            placeholder={t("search.placeholder")}
-            aria-label={t("search.placeholder")}
-            onChange={(event) => setSearch(event.target.value)}
-            className="w-64 pl-8"
-          />
-        </div>
-        <Select
-          items={{
-            all: t("statuses.all"),
-            ...Object.fromEntries(
-              STATUSES.map((s) => [s, dyn(t, `statuses.${s}`)])
-            ),
-          }}
-          value={status}
-          onValueChange={(value) => setStatus(value as Status | "all")}
-        >
-          <SelectTrigger className="w-40" aria-label={t("statusFilterLabel")}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("statuses.all")}</SelectItem>
-            {STATUSES.map((s) => (
-              <SelectItem key={s} value={s}>
-                {dyn(t, `statuses.${s}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          items={{
-            all: t("templates.all"),
-            ...Object.fromEntries(
-              TEMPLATES.map((tpl) => [tpl, dyn(t, `templates.${tpl}`)])
-            ),
-          }}
-          value={type}
-          onValueChange={(value) => setType(value as Template | "all")}
-        >
-          <SelectTrigger className="w-40" aria-label={t("typeFilterLabel")}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("templates.all")}</SelectItem>
-            {TEMPLATES.map((tpl) => (
-              <SelectItem key={tpl} value={tpl}>
-                {dyn(t, `templates.${tpl}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <DateRangePicker
-          value={dateRange}
-          onChange={setDateRange}
-          placeholder={t("dateRange.placeholder")}
-          clearLabel={t("dateRange.clear")}
-          todayLabel={t("dateRange.today")}
-          ariaLabel={t("dateRange.label")}
-        />
-      </div>
-
-      {loadingFirst ? (
-        <Table className="table-fixed">
-          {tableHeader}
-          <TableSkeleton
-            rows={PAGE_SIZE}
-            columns={[
-              { className: "w-28" },
-              { className: "w-40" },
-              {},
-              { className: "w-24" },
-              { className: "h-5 w-16 rounded-full" },
-            ]}
-          />
-        </Table>
-      ) : rows.length === 0 ? (
-        <Empty>
-          <EmptyHeader>
-            {!isSearching && (
-              <EmptyMedia variant="icon">
-                <HugeiconsIcon
-                  icon={Mail01Icon}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-              </EmptyMedia>
-            )}
-            <EmptyTitle>{t("heading")}</EmptyTitle>
-            <EmptyDescription>
-              {isSearching ? t("search.empty") : t("empty")}
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : (
-        <Table className="table-fixed">
-          {tableHeader}
-          <TableBody>
-            {pager.pageRows.map((row) => (
-              <TableRow
-                key={row.messageId}
-                role="button"
-                tabIndex={0}
-                aria-label={t("detail.viewDetailsFor", {
-                  subject: row.subject ?? t("noSubject"),
-                })}
-                className="cursor-pointer hover:bg-muted/50"
-                onClick={() => setSelectedId(row.messageId)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault()
-                    setSelectedId(row.messageId)
-                  }
-                }}
+      <FrameTable
+        title={tTabs("emailLog")}
+        count={loadingFirst ? undefined : rows.length}
+        filters={
+          <div className="flex flex-wrap items-center gap-2">
+            <TableSearchField
+              type="search"
+              value={search}
+              placeholder={t("search.placeholder")}
+              onChange={setSearch}
+            />
+            <Select
+              items={{
+                all: t("statuses.all"),
+                ...Object.fromEntries(
+                  STATUSES.map((s) => [s, dyn(t, `statuses.${s}`)])
+                ),
+              }}
+              value={status}
+              onValueChange={(value) => setStatus(value as Status | "all")}
+            >
+              <SelectTrigger
+                className="w-40"
+                aria-label={t("statusFilterLabel")}
               >
-                <TableCell className="truncate text-muted-foreground">
-                  {format.dateTime(new Date(row.createdAt), {
-                    dateStyle: "medium",
-                    timeStyle: "short",
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("statuses.all")}</SelectItem>
+                {STATUSES.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {dyn(t, `statuses.${s}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              items={{
+                all: t("templates.all"),
+                ...Object.fromEntries(
+                  TEMPLATES.map((tpl) => [tpl, dyn(t, `templates.${tpl}`)])
+                ),
+              }}
+              value={type}
+              onValueChange={(value) => setType(value as Template | "all")}
+            >
+              <SelectTrigger className="w-40" aria-label={t("typeFilterLabel")}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("templates.all")}</SelectItem>
+                {TEMPLATES.map((tpl) => (
+                  <SelectItem key={tpl} value={tpl}>
+                    {dyn(t, `templates.${tpl}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <DateRangePicker
+              value={dateRange}
+              onChange={setDateRange}
+              placeholder={t("dateRange.placeholder")}
+              clearLabel={t("dateRange.clear")}
+              todayLabel={t("dateRange.today")}
+              ariaLabel={t("dateRange.label")}
+            />
+          </div>
+        }
+        footer={
+          rows.length > 0 || (isSearching && rows.length === SEARCH_CAP) ? (
+            <div className="flex flex-col gap-1.5">
+              {rows.length > 0 && (
+                <FrameTableFooter
+                  page={pager.page}
+                  pageSize={PAGE_SIZE}
+                  total={undefined}
+                  pager={
+                    <TablePagination
+                      page={pager.page}
+                      pageCount={pager.pageCount}
+                      hasMore={pager.hasMore}
+                      canPrev={pager.canPrev}
+                      canNext={pager.canNext}
+                      onPrev={pager.goPrev}
+                      onNext={pager.goNext}
+                      onSelect={pager.goTo}
+                      previousLabel={t("previous")}
+                      nextLabel={t("next")}
+                    />
+                  }
+                />
+              )}
+              {/* Search is capped, not paginated; say so under the pager. */}
+              {isSearching && rows.length === SEARCH_CAP && (
+                <p className="text-muted-foreground text-sm">
+                  {t("search.capped", { count: SEARCH_CAP })}
+                </p>
+              )}
+            </div>
+          ) : undefined
+        }
+      >
+        {loadingFirst ? (
+          <Table className="table-fixed">
+            {tableHeader}
+            <TableSkeleton
+              rows={PAGE_SIZE}
+              columns={[
+                { className: "w-28" },
+                { className: "w-40" },
+                {},
+                { className: "w-24" },
+                { className: "h-5 w-16 rounded-full" },
+              ]}
+            />
+          </Table>
+        ) : rows.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              {!isSearching && (
+                <EmptyMedia>
+                  <Medallion icon={Mail01Icon} size="lg" />
+                </EmptyMedia>
+              )}
+              <EmptyTitle>{t("heading")}</EmptyTitle>
+              <EmptyDescription>
+                {isSearching ? t("search.empty") : t("empty")}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <Table className="table-fixed">
+            {tableHeader}
+            <TableBody>
+              {pager.pageRows.map((row) => (
+                <TableRow
+                  key={row.messageId}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={t("detail.viewDetailsFor", {
+                    subject: row.subject ?? t("noSubject"),
                   })}
-                </TableCell>
-                <TableCell className="truncate text-muted-foreground">
-                  {row.recipients.join(", ")}
-                </TableCell>
-                <TableCell className="truncate font-medium">
-                  {row.subject ?? t("noSubject")}
-                </TableCell>
-                <TableCell className="truncate text-muted-foreground">
-                  {templateLabel(t, row.campaignTags[0])}
-                </TableCell>
-                <TableCell>
-                  <EmailStatusBadge status={row.status} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
-
-      {/* Pagination slot: stable container so toggling browse/search does not
-          reflow the table; a truncation note while searching (search is capped). */}
-      <div className="flex flex-col items-center gap-1.5">
-        {rows.length > 0 ? (
-          <TablePagination
-            page={pager.page}
-            pageCount={pager.pageCount}
-            hasMore={pager.hasMore}
-            canPrev={pager.canPrev}
-            canNext={pager.canNext}
-            onPrev={pager.goPrev}
-            onNext={pager.goNext}
-            onSelect={pager.goTo}
-            previousLabel={t("previous")}
-            nextLabel={t("next")}
-          />
-        ) : null}
-        {isSearching && rows.length === SEARCH_CAP ? (
-          <p className="text-muted-foreground text-sm">
-            {t("search.capped", { count: SEARCH_CAP })}
-          </p>
-        ) : null}
-      </div>
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => setSelectedId(row.messageId)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault()
+                      setSelectedId(row.messageId)
+                    }
+                  }}
+                >
+                  <TableCell className="truncate text-muted-foreground">
+                    {format.dateTime(new Date(row.createdAt), {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
+                  </TableCell>
+                  <TableCell className="truncate text-muted-foreground">
+                    {row.recipients.join(", ")}
+                  </TableCell>
+                  <TableCell className="truncate font-medium">
+                    {row.subject ?? t("noSubject")}
+                  </TableCell>
+                  <TableCell className="truncate text-muted-foreground">
+                    {templateLabel(t, row.campaignTags[0])}
+                  </TableCell>
+                  <TableCell>
+                    <EmailStatusBadge status={row.status} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </FrameTable>
 
       <Sheet
         open={selectedId !== null}

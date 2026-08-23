@@ -2,15 +2,9 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import { useAction, useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
+import { SettingsFrame, SettingsRow } from "@/components/settings-frame"
 import { toast } from "@/lib/toast"
 import { AvatarUpload } from "@/components/avatar-upload"
 import { useImageUpload } from "@/hooks/use-image-upload"
@@ -55,30 +49,25 @@ export function AvatarSection() {
   const initials = initialsOf(name, session?.user?.email ?? "")
 
   return (
-    <Card>
-      <div className="flex items-start justify-between gap-8">
-        <CardHeader className="flex-1">
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
-        </CardHeader>
-        <div className="pt-6 pr-6">
-          <AvatarUpload
-            imageUrl={session?.user?.image ?? null}
-            fallback={initials}
-            alt={name}
-            previewUrl={upload.previewUrl}
-            isUploading={upload.isUploading}
-            isRemoving={upload.isRemoving}
-            error={upload.error}
-            onSelectFile={upload.selectFile}
-            onRemove={upload.remove}
-            removeLabel={t("remove")}
-          />
-        </div>
-      </div>
-      <CardFooter className="text-muted-foreground text-sm">
-        {t("helper")}
-      </CardFooter>
-    </Card>
+    <SettingsFrame title={t("title")}>
+      <SettingsRow
+        align="center"
+        label={t("description")}
+        description={t("helper")}
+      >
+        <AvatarUpload
+          imageUrl={session?.user?.image ?? null}
+          fallback={initials}
+          alt={name}
+          previewUrl={upload.previewUrl}
+          isUploading={upload.isUploading}
+          isRemoving={upload.isRemoving}
+          error={upload.error}
+          onSelectFile={upload.selectFile}
+          onRemove={upload.remove}
+          removeLabel={t("remove")}
+        />
+      </SettingsRow>
+    </SettingsFrame>
   )
 }

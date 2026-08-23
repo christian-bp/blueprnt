@@ -1,14 +1,7 @@
 "use client"
 
+import { SettingsFrame, SettingsRow } from "@/components/settings-frame"
 import { zodResolver } from "@hookform/resolvers/zod"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import {
   Form,
   FormControl,
@@ -76,72 +69,22 @@ export function ChangeEmailForm() {
 
   if (confirmed) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-1">
+      <SettingsFrame title={t("title")} description={t("description")}>
+        <div className="space-y-1 px-5 py-4">
           <p className="font-medium text-sm">{t("confirmationTitle")}</p>
           <p className="text-muted-foreground text-sm">
             {t("confirmationBody")}
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </SettingsFrame>
     )
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <p className="text-muted-foreground text-sm">{t("currentLabel")}</p>
-            <p className="text-sm">{currentEmail}</p>
-          </div>
-          <Form {...form}>
-            <form
-              id="change-email-form"
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4"
-            >
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex items-center gap-1.5">
-                      <FormLabel>{t("newLabel")}</FormLabel>
-                      <HelpMorphButton label={tHelp("changeEmailLabel")}>
-                        {tHelp("changeEmailBody")}
-                      </HelpMorphButton>
-                    </div>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        autoComplete="email"
-                        className="max-w-sm"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {error && (
-                <p role="alert" className="text-destructive text-sm">
-                  {t("error")}
-                </p>
-              )}
-            </form>
-          </Form>
-        </div>
-      </CardContent>
-      <CardFooter className="flex justify-end">
+    <SettingsFrame
+      title={t("title")}
+      description={t("description")}
+      footer={
         <SubmitButton
           type="submit"
           form="change-email-form"
@@ -150,7 +93,43 @@ export function ChangeEmailForm() {
         >
           {t("change")}
         </SubmitButton>
-      </CardFooter>
-    </Card>
+      }
+    >
+      <SettingsRow label={t("currentLabel")} align="center">
+        <p className="text-sm">{currentEmail}</p>
+      </SettingsRow>
+      <Form {...form}>
+        <form id="change-email-form" onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <SettingsRow
+                  label={
+                    <span className="flex items-center gap-1.5">
+                      <FormLabel>{t("newLabel")}</FormLabel>
+                      <HelpMorphButton label={tHelp("changeEmailLabel")}>
+                        {tHelp("changeEmailBody")}
+                      </HelpMorphButton>
+                    </span>
+                  }
+                >
+                  <FormControl>
+                    <Input type="email" autoComplete="email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </SettingsRow>
+              </FormItem>
+            )}
+          />
+          {error && (
+            <p role="alert" className="px-5 pb-3 text-destructive text-sm">
+              {t("error")}
+            </p>
+          )}
+        </form>
+      </Form>
+    </SettingsFrame>
   )
 }

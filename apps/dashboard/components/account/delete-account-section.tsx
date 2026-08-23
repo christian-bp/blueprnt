@@ -1,5 +1,6 @@
 "use client"
 
+import { SettingsFrame } from "@/components/settings-frame"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
@@ -12,13 +13,6 @@ import {
   AlertDialogTitle,
 } from "@workspace/ui/components/alert-dialog"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import {
   Form,
   FormControl,
@@ -111,17 +105,15 @@ export function DeleteAccountSection() {
   if (lastAdminOrgs.length > 0) {
     const orgNames = lastAdminOrgs.map((o) => o.name).join(", ")
     return (
-      <Card className="border-destructive">
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">
-            {t("lastAdmin", { orgs: orgNames })}
-          </p>
-        </CardContent>
-      </Card>
+      <SettingsFrame
+        title={t("title")}
+        description={t("description")}
+        className="border-destructive/40"
+      >
+        <p className="px-5 py-4 text-muted-foreground text-sm">
+          {t("lastAdmin", { orgs: orgNames })}
+        </p>
+      </SettingsFrame>
     )
   }
 
@@ -153,35 +145,33 @@ export function DeleteAccountSection() {
   if (errorState === "lastAdmin") {
     const orgNames = lastAdminOrgs.map((o) => o.name).join(", ")
     return (
-      <Card className="border-destructive">
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">
-            {orgNames
-              ? t("lastAdmin", { orgs: orgNames })
-              : t("lastAdminUnknown")}
-          </p>
-        </CardContent>
-      </Card>
+      <SettingsFrame
+        title={t("title")}
+        description={t("description")}
+        className="border-destructive/40"
+      >
+        <p className="px-5 py-4 text-muted-foreground text-sm">
+          {orgNames
+            ? t("lastAdmin", { orgs: orgNames })
+            : t("lastAdminUnknown")}
+        </p>
+      </SettingsFrame>
     )
   }
 
   return (
     <>
-      <Card className="border-destructive">
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <SettingsFrame
+        title={t("title")}
+        description={t("description")}
+        className="border-destructive/40"
+      >
+        <div className="px-5 py-4">
           <Button variant="destructive" onClick={() => setOpen(true)}>
             {t("cta")}
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </SettingsFrame>
 
       <AlertDialog open={open} onOpenChange={handleOpenChange}>
         <AlertDialogContent>

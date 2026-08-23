@@ -33,8 +33,12 @@ export function FamilyLevelMatrix({
   const t = useTranslations("dashboard.levels")
   const tFamily = useTranslations("dashboard.roles.family")
   const ranges = levelRanges(levels)
-  const placed = rows.filter((row) => row.level !== null)
-  const families = groupByFamily(placed)
+  // Sections come from ALL the rows' families, not only evaluated ones: a
+  // family whose roles are still unevaluated shows as a fully hatched band
+  // (the ladder's empty look) instead of vanishing from the view. The cells
+  // below filter on level themselves, so unevaluated roles never render a
+  // chip.
+  const families = groupByFamily(rows)
 
   const renderChip = (role: LevelRoleRow) => (
     <motion.div

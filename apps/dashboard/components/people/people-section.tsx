@@ -1,5 +1,6 @@
 "use client"
 
+import { Medallion } from "@/components/medallion"
 import { UserMultiple02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -49,11 +50,16 @@ import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { NoMatchesEmpty } from "@/components/no-matches-empty"
 import { useOrganization } from "@/components/org-context"
-import { PageHeader } from "@/components/page-header"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { AddPersonDialog } from "@/components/people/add-person-dialog"
 import { BulkDeletePeopleDialog } from "@/components/people/bulk-delete-people-dialog"
 import { SuggestedRoleBadge } from "@/components/suggested-role-badge"
-import { TablePagination } from "@/components/table-pagination"
+import {
+  FrameTable,
+  FrameTableFooter,
+  FrameTablePageSize,
+  TablePagination,
+} from "@/components/frame-table"
 import { TableSearchField } from "@/components/table-search-field"
 import { ariaSort, TableSortButton } from "@/components/table-sort-button"
 import {
@@ -585,109 +591,28 @@ export function PeopleSection() {
 
   return (
     <div className="space-y-4">
-      <PageHeader
+      <PageBreadcrumbRow segments={[{ label: tTabs("people") }]} />
+
+      <FrameTable
         title={tTabs("people")}
-        description={t("description")}
-        action={headerActions}
-      />
-
-      {loading ? (
-        // Loading: the live toolbar over a content-shaped table skeleton.
-        <>
-          {toolbar}
-          <Table className="table-fixed">
-            {tableHeader}
-            <TableSkeleton rows={PAGE_SIZE} columns={PEOPLE_SKELETON_COLUMNS} />
-          </Table>
-        </>
-      ) : people.length === 0 ? (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <HugeiconsIcon
-                icon={UserMultiple02Icon}
-                strokeWidth={2}
-                aria-hidden="true"
-              />
-            </EmptyMedia>
-            <EmptyTitle>{tTabs("people")}</EmptyTitle>
-            <EmptyDescription>{t("empty")}</EmptyDescription>
-          </EmptyHeader>
-          <Link
-            href="/people/import"
-            className={cn(buttonVariants({ variant: "outline" }))}
-          >
-            {t("import.title")}
-          </Link>
-        </Empty>
-      ) : (
-        <>
-          {toolbar}
-
-          {shown === 0 ? (
-            <NoMatchesEmpty
-              title={tTabs("people")}
-              description={tToolbar("noMatches")}
-              clearLabel={tToolbar("clearFilters")}
-              onClear={clearFilters}
-            />
-          ) : (
-            <>
-              <Table className="table-fixed">
-                {tableHeader}
-                <TableBody>
-                  {pageRows.map((row) => {
-                    return (
-                      <TableRow key={row.personId}>
-                        <TableCell className="w-10">
-                          {/* Block flex wrapper: an inline-flex control sitting
-                              directly on a cell's text baseline inflates the
-                              line box, which would desync data rows from the
-                              skeleton's row height. */}
-                          <div className="flex items-center">
-                            <Checkbox
-                              aria-label={tBulk("selectRow", {
-                                name: row.name,
-                              })}
-                              checked={selection.effective.has(row.personId)}
-                              onCheckedChange={(checked) =>
-                                toggleSelected(row.personId, checked === true)
-                              }
-                            />
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {/* Name truncates; the suggested badge (shown only
-                              while narrowing by role) stays visible beside it. */}
-                          <div className="flex items-center gap-2">
-                            <Link
-                              className="truncate underline-offset-4 hover:underline"
-                              href={`/people/${row.publicId}`}
-                            >
-                              {row.name}
-                            </Link>
-                            {roleFilterActive &&
-                              row.senioritySource === "suggested" && (
-                                <SuggestedRoleBadge />
-                              )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {row.gender != null ? t(`gender.${row.gender}`) : ""}
-                        </TableCell>
-                        <TableCell className="truncate text-muted-foreground">
-                          {row.department ?? ""}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {row.ftePercent != null ? `${row.ftePercent}%` : ""}
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-              {pageCount > 1 && (
-                <div className="flex justify-center">
+        count={loading ? undefined : shown}
+        toolbar={headerActions}
+        filters={toolbar}
+        footer={
+          loading || people.length === 0 || shown === 0 ? undefined : (
+            <FrameTableFooter
+              page={pagination.pageIndex}
+              pageSize={pagination.pageSize}
+              total={shown}
+              pageSizeControl={
+                <FrameTablePageSize
+                  value={pagination.pageSize}
+                  options={[25, 50, 100]}
+                  onChange={(size) => table.setPageSize(size)}
+                />
+              }
+              pager={
+                pageCount > 1 ? (
                   <TablePagination
                     page={pagination.pageIndex}
                     pageCount={pageCount}
@@ -700,12 +625,97 @@ export function PeopleSection() {
                     previousLabel={tToolbar("previous")}
                     nextLabel={tToolbar("next")}
                   />
-                </div>
-              )}
-            </>
-          )}
-        </>
-      )}
+                ) : null
+              }
+            />
+          )
+        }
+      >
+        {loading ? (
+          // Loading: a content-shaped table skeleton under the live toolbar.
+          <Table className="table-fixed">
+            {tableHeader}
+            <TableSkeleton rows={PAGE_SIZE} columns={PEOPLE_SKELETON_COLUMNS} />
+          </Table>
+        ) : people.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia>
+                <Medallion icon={UserMultiple02Icon} size="lg" />
+              </EmptyMedia>
+              <EmptyTitle>{tTabs("people")}</EmptyTitle>
+              <EmptyDescription>{t("empty")}</EmptyDescription>
+            </EmptyHeader>
+            <Link
+              href="/people/import"
+              className={cn(buttonVariants({ variant: "outline" }))}
+            >
+              {t("import.title")}
+            </Link>
+          </Empty>
+        ) : shown === 0 ? (
+          <NoMatchesEmpty
+            title={tTabs("people")}
+            description={tToolbar("noMatches")}
+            clearLabel={tToolbar("clearFilters")}
+            onClear={clearFilters}
+          />
+        ) : (
+          <Table className="table-fixed">
+            {tableHeader}
+            <TableBody>
+              {pageRows.map((row) => {
+                return (
+                  <TableRow key={row.personId}>
+                    <TableCell className="w-10">
+                      {/* Block flex wrapper: an inline-flex control sitting
+                              directly on a cell's text baseline inflates the
+                              line box, which would desync data rows from the
+                              skeleton's row height. */}
+                      <div className="flex items-center">
+                        <Checkbox
+                          aria-label={tBulk("selectRow", {
+                            name: row.name,
+                          })}
+                          checked={selection.effective.has(row.personId)}
+                          onCheckedChange={(checked) =>
+                            toggleSelected(row.personId, checked === true)
+                          }
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {/* Name truncates; the suggested badge (shown only
+                              while narrowing by role) stays visible beside it. */}
+                      <div className="flex items-center gap-2">
+                        <Link
+                          className="truncate underline-offset-4 hover:underline"
+                          href={`/people/${row.publicId}`}
+                        >
+                          {row.name}
+                        </Link>
+                        {roleFilterActive &&
+                          row.senioritySource === "suggested" && (
+                            <SuggestedRoleBadge />
+                          )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {row.gender != null ? t(`gender.${row.gender}`) : ""}
+                    </TableCell>
+                    <TableCell className="truncate text-muted-foreground">
+                      {row.department ?? ""}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {row.ftePercent != null ? `${row.ftePercent}%` : ""}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        )}
+      </FrameTable>
 
       {canErase && (
         <BulkDeletePeopleDialog

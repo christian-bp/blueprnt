@@ -4,7 +4,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 // The overview reads the current path to build its in-run links, same as
-// pay-mapping-run-indicator.tsx.
+// the run sidebar (run-sidebar.tsx).
 vi.mock("next/navigation", () => ({
   usePathname: () => "/pay-mappings/pay-2026",
 }))

@@ -3,6 +3,12 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@workspace/ui/components/empty"
 import { Kbd } from "@workspace/ui/components/kbd"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Spinner } from "@workspace/ui/components/spinner"
@@ -12,7 +18,7 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { use, useState } from "react"
 import { useOrganization } from "@/components/org-context"
-import { PageHeading } from "@/components/page-heading"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { LockAssessmentPanel } from "@/components/rating/lock-assessment-panel"
 import { RatingResult } from "@/components/rating/rating-result"
@@ -42,6 +48,7 @@ export default function RatePage(props: {
 }) {
   const { roleSlug } = use(props.params)
   const t = useTranslations("dashboard.rating")
+  const tNav = useTranslations("dashboard.nav")
   const tDetail = useTranslations("dashboard.roles.detail")
   const { orgId } = useOrganization()
   const locale = useLocale()
@@ -73,14 +80,16 @@ export default function RatePage(props: {
     // options and the nav row, so nothing reflows when the data arrives.
     return (
       <div className="space-y-4">
-        {/* The heading's prefix is static i18n text; only the role title is
-            data, so only it gets a bar. */}
-        <PageHeading>
-          <span className="flex items-center gap-2">
-            {t("title")}:
-            <Skeleton className="h-5 w-48 max-w-full" />
-          </span>
-        </PageHeading>
+        {/* The ancestor crumbs are static i18n text; only the role title is
+            data, so only it gets a skeleton crumb. */}
+        <PageBreadcrumbRow
+          segments={[
+            { label: tNav("work"), href: "/work" },
+            { label: tNav("roles"), href: "/roles" },
+            { skeleton: true },
+            { label: t("title") },
+          ]}
+        />
         <div className="w-full max-w-2xl space-y-4">
           <div className="flex items-center justify-between">
             <Skeleton className="h-4 w-28" />
@@ -124,11 +133,26 @@ export default function RatePage(props: {
   }
   if (role === null || model === null) {
     return (
-      <div className="space-y-2">
-        <p className="text-muted-foreground text-sm">{tDetail("notFound")}</p>
-        <Link href="/roles" className="text-sm underline underline-offset-4">
-          {tDetail("backToRoles")}
-        </Link>
+      <div className="space-y-4">
+        <PageBreadcrumbRow
+          segments={[
+            { label: tNav("work"), href: "/work" },
+            { label: tNav("roles"), href: "/roles" },
+            { label: t("title") },
+          ]}
+        />
+        <Empty>
+          <EmptyHeader>
+            <EmptyTitle>{t("title")}</EmptyTitle>
+            <EmptyDescription>{tDetail("notFound")}</EmptyDescription>
+          </EmptyHeader>
+          <Link
+            href="/roles"
+            className={cn(buttonVariants({ variant: "outline" }))}
+          >
+            {tDetail("backToRoles")}
+          </Link>
+        </Empty>
       </div>
     )
   }
@@ -137,19 +161,33 @@ export default function RatePage(props: {
   // rather than letting setRating fail silently on the first save attempt.
   if (!model.approved) {
     return (
-      <div className="space-y-2">
-        <p className="text-muted-foreground text-sm">
-          {t("modelUnapprovedExplanation")}
-        </p>
-        {/* Resolved through the chapter registry rather than written out: the
-            approve control lives in one chapter at a time, and a hardcoded
-            path here is what made this link a dead end when it moved. */}
-        <Link
-          href={chapterHref("approval")}
-          className="text-sm underline underline-offset-4"
-        >
-          {t("modelUnapprovedCta")}
-        </Link>
+      <div className="space-y-4">
+        <PageBreadcrumbRow
+          segments={[
+            { label: tNav("work"), href: "/work" },
+            { label: tNav("roles"), href: "/roles" },
+            { label: role.title, href: `/roles/${role.slug}` },
+            { label: t("title") },
+          ]}
+        />
+        <Empty>
+          <EmptyHeader>
+            <EmptyTitle>{t("title")}</EmptyTitle>
+            <EmptyDescription>
+              {t("modelUnapprovedExplanation")}
+            </EmptyDescription>
+          </EmptyHeader>
+          {/* Resolved through the chapter registry rather than written out:
+              the approve control lives in one chapter at a time, and a
+              hardcoded path here is what made this link a dead end when it
+              moved. */}
+          <Link
+            href={chapterHref("approval")}
+            className={cn(buttonVariants({ variant: "outline" }))}
+          >
+            {t("modelUnapprovedCta")}
+          </Link>
+        </Empty>
       </div>
     )
   }
@@ -157,18 +195,31 @@ export default function RatePage(props: {
   // user back to the role page where the controls live.
   if (role.archived || !role.profileComplete) {
     return (
-      <div className="space-y-2">
-        <p className="text-muted-foreground text-sm">
-          {role.profileComplete
-            ? t("lockedExplanation")
-            : tDetail("profileIncomplete")}
-        </p>
-        <Link
-          href={`/roles/${role.slug}`}
-          className="text-sm underline underline-offset-4"
-        >
-          {t("result.backToRole")}
-        </Link>
+      <div className="space-y-4">
+        <PageBreadcrumbRow
+          segments={[
+            { label: tNav("work"), href: "/work" },
+            { label: tNav("roles"), href: "/roles" },
+            { label: role.title, href: `/roles/${role.slug}` },
+            { label: t("title") },
+          ]}
+        />
+        <Empty>
+          <EmptyHeader>
+            <EmptyTitle>{t("title")}</EmptyTitle>
+            <EmptyDescription>
+              {role.profileComplete
+                ? t("lockedExplanation")
+                : tDetail("profileIncomplete")}
+            </EmptyDescription>
+          </EmptyHeader>
+          <Link
+            href={`/roles/${role.slug}`}
+            className={cn(buttonVariants({ variant: "outline" }))}
+          >
+            {t("result.backToRole")}
+          </Link>
+        </Empty>
       </div>
     )
   }
@@ -237,9 +288,14 @@ export default function RatePage(props: {
 
   return (
     <div className="space-y-4">
-      <PageHeading>
-        {t("title")}: {role.title}
-      </PageHeading>
+      <PageBreadcrumbRow
+        segments={[
+          { label: tNav("work"), href: "/work" },
+          { label: tNav("roles"), href: "/roles" },
+          { label: role.title, href: `/roles/${role.slug}` },
+          { label: t("title") },
+        ]}
+      />
       <RatingStepper
         orgId={orgId}
         roleId={role.roleId}

@@ -11,6 +11,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 import { pickSelectOption } from "@/test/select"
 
+// NumberFlow's custom element does not exist in jsdom; the count chip only
+// needs to render its value.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}))
+
 vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
@@ -578,9 +584,10 @@ describe("PeopleSection", () => {
       expect(toolbar).not.toBeNull()
       expect(toolbar?.contains(button)).toBe(true)
       // It takes the default Button size, so it is exactly as tall as the
-      // search field beside it (size="sm" made it a notch shorter).
-      expect(search.className).toContain("h-9")
-      expect(button.className).toContain("h-9")
+      // search field beside it (both ride nova's h-8 control scale; neither
+      // pins its own height).
+      expect(search.className).toContain("h-8")
+      expect(button.className).toContain("h-8")
     })
 
     it("puts the delete button last, hard against the right edge", () => {

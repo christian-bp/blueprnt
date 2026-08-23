@@ -23,8 +23,8 @@ vi.mock("@/components/pay-mapping/pay-mapping-run-context", () => ({
   usePayMappingRun: () => ({ queue }),
 }))
 
-import { PageHeader } from "@/components/page-header"
-import { PageHeaderSlotProvider } from "@/components/page-header-slot"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
+import { BreadcrumbSlotProvider } from "@/components/page-breadcrumb-slots"
 import { AnalysisSectionShell } from "@/components/pay-mapping/analysis-section-shell"
 
 const m = messages.dashboard.payMapping
@@ -32,12 +32,12 @@ const m = messages.dashboard.payMapping
 function renderShell() {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <PageHeaderSlotProvider>
-        <PageHeader title={m.tabs.analysis} />
+      <BreadcrumbSlotProvider>
+        <PageBreadcrumbRow segments={[{ label: m.tabs.analysis }]} />
         <AnalysisSectionShell>
           <p>chapter body</p>
         </AnalysisSectionShell>
-      </PageHeaderSlotProvider>
+      </BreadcrumbSlotProvider>
     </NextIntlClientProvider>
   )
 }
@@ -50,7 +50,7 @@ describe("AnalysisSectionShell", () => {
   // it carried moved to the page title it was always about.
   it("puts its help and its instrument on the page's own Analysis title", () => {
     const { container } = renderShell()
-    const header = container.firstElementChild as HTMLElement
+    const header = container.querySelector("header") as HTMLElement
     const heading = screen.getByRole("heading", { name: m.tabs.analysis })
     expect(header.contains(heading)).toBe(true)
     // The instrument, announcing the whole mapping's WORK: 12 of 31 steps.

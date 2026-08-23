@@ -14,7 +14,7 @@ import { useMemo, useState } from "react"
 import { AiUsageChart } from "@/components/admin/ai-usage-chart"
 import { AiUsageKpis } from "@/components/admin/ai-usage-kpis"
 import { AiUsageTable } from "@/components/admin/ai-usage-table"
-import { PageHeading } from "@/components/page-heading"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import {
   computeOutlierOrgIds,
   computeTotals,
@@ -34,6 +34,8 @@ import { onSelectValue } from "@/lib/select"
 // skeletons before the query resolves, same as every other admin page.
 export function AiUsageSection() {
   const t = useTranslations("dashboard.admin.aiUsage")
+  const tTabs = useTranslations("dashboard.admin.tabs")
+  const tNav = useTranslations("dashboard.nav")
   const format = useFormatter()
 
   // Generated once per mount (not on every render), newest first; the
@@ -73,28 +75,30 @@ export function AiUsageSection() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <PageHeading>{t("heading")}</PageHeading>
-          <p className="text-muted-foreground text-sm">{t("description")}</p>
-        </div>
-        <Select
-          items={periodLabels}
-          value={period}
-          onValueChange={onSelectValue(setPeriod)}
-        >
-          <SelectTrigger className="w-48" aria-label={t("periodLabel")}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {periods.map((p) => (
-              <SelectItem key={p} value={p}>
-                {periodLabels[p]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <PageBreadcrumbRow
+        segments={[
+          { label: tNav("admin"), href: "/admin" },
+          { label: tTabs("aiUsage") },
+        ]}
+        actions={
+          <Select
+            items={periodLabels}
+            value={period}
+            onValueChange={onSelectValue(setPeriod)}
+          >
+            <SelectTrigger className="w-48" aria-label={t("periodLabel")}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {periods.map((p) => (
+                <SelectItem key={p} value={p}>
+                  {periodLabels[p]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        }
+      />
 
       <AiUsageKpis totals={totals} />
 

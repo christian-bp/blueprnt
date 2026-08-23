@@ -73,15 +73,18 @@ afterEach(() => {
 })
 
 describe("PayMappingRunShell", () => {
-  it("renders the sub-page title and the content, with no breadcrumb chrome", () => {
+  it("renders the breadcrumb trail: list, run label, sub-page", () => {
     renderShell()
-    // The workspace chrome (back arrow, tabs, the run's name and status)
-    // lives in the site header; the page titles itself after the SUB-PAGE
-    // (the run index is the Overview) and carries nothing else.
+    // The run sidebar owns the workspace's navigation; this row names where
+    // the visitor stands: Pay mappings (a link back) / the run / the
+    // sub-page (the run index is the Overview).
     expect(screen.getByRole("heading", { name: m.tabs.overview })).toBeDefined()
     expect(screen.getByText("probe-child")).toBeDefined()
-    expect(screen.queryByText(RUN.label)).toBeNull()
-    expect(screen.queryByRole("link")).toBeNull()
+    expect(screen.getByText(RUN.label)).toBeDefined()
+    const back = screen
+      .getAllByRole("link")
+      .find((link) => link.getAttribute("href") === "/pay-mappings")
+    expect(back).toBeDefined()
   })
 
   it("titles the page after the active sub-page", () => {
@@ -91,7 +94,7 @@ describe("PayMappingRunShell", () => {
     expect(screen.queryByRole("heading", { name: m.tabs.overview })).toBeNull()
   })
 
-  it("renders the PageHeader chrome on every sub-page", () => {
+  it("renders the breadcrumb-row chrome on every sub-page", () => {
     pathState.current = "/pay-mappings/pay-2026/analysis"
     renderShell()
     expect(screen.getByRole("heading", { name: m.tabs.analysis })).toBeDefined()

@@ -31,6 +31,7 @@ import {
 import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { useEffect, useMemo, useState } from "react"
 import { NoMatchesEmpty } from "@/components/no-matches-empty"
+import { FrameTable, FrameTableFooter } from "@/components/frame-table"
 import { TablePagination } from "@/components/table-pagination"
 import { TableSearchField } from "@/components/table-search-field"
 import { ariaSort, TableSortButton } from "@/components/table-sort-button"
@@ -281,13 +282,12 @@ export function AiUsageTable({
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        {toolbar}
+      <FrameTable title={tPage("heading")} filters={toolbar}>
         <Table className="table-fixed">
           <AiUsageTableHeadings sorting={sorting} onToggle={toggleSort} />
           <TableSkeleton rows={PAGE_SIZE} columns={AI_USAGE_SKELETON_COLUMNS} />
         </Table>
-      </div>
+      </FrameTable>
     )
   }
 
@@ -304,16 +304,44 @@ export function AiUsageTable({
 
   return (
     <div className="space-y-4">
-      {toolbar}
-      {shown === 0 ? (
-        <NoMatchesEmpty
-          title={tPage("heading")}
-          description={t("noMatches")}
-          clearLabel={t("clearFilters")}
-          onClear={clearFilters}
-        />
-      ) : (
-        <>
+      <FrameTable
+        title={tPage("heading")}
+        count={shown}
+        filters={toolbar}
+        footer={
+          shown > 0 && pageCount > 1 ? (
+            <FrameTableFooter
+              page={pagination.pageIndex}
+              pageSize={PAGE_SIZE}
+              total={shown}
+              pager={
+                <TablePagination
+                  page={pagination.pageIndex}
+                  pageCount={pageCount}
+                  hasMore={false}
+                  canPrev={table.getCanPreviousPage()}
+                  canNext={table.getCanNextPage()}
+                  onPrev={() => table.previousPage()}
+                  onNext={() => table.nextPage()}
+                  onSelect={(page0) => table.setPageIndex(page0)}
+                  previousLabel={t("previous")}
+                  nextLabel={t("next")}
+                />
+              }
+            />
+          ) : undefined
+        }
+      >
+        {shown === 0 ? (
+          // Inside the panel so the search above stays usable to widen an
+          // over-narrowed filter back out.
+          <NoMatchesEmpty
+            title={tPage("heading")}
+            description={t("noMatches")}
+            clearLabel={t("clearFilters")}
+            onClear={clearFilters}
+          />
+        ) : (
           <Table className="table-fixed">
             <AiUsageTableHeadings sorting={sorting} onToggle={toggleSort} />
             <TableBody>
@@ -373,28 +401,14 @@ export function AiUsageTable({
               })}
             </TableBody>
           </Table>
-          {pageCount > 1 && (
-            <div className="flex justify-center">
-              <TablePagination
-                page={pagination.pageIndex}
-                pageCount={pageCount}
-                hasMore={false}
-                canPrev={table.getCanPreviousPage()}
-                canNext={table.getCanNextPage()}
-                onPrev={() => table.previousPage()}
-                onNext={() => table.nextPage()}
-                onSelect={(page0) => table.setPageIndex(page0)}
-                previousLabel={t("previous")}
-                nextLabel={t("next")}
-              />
-            </div>
-          )}
-          {/* The outlier rule, in words, so the flagged badge is never a
-              mystery. Sits with the table rather than the chart above it
-              (the flags live here): the chart no longer colors by outlier
-              status, it carries period context only. */}
-          <p className="text-muted-foreground text-sm">{t("flaggedCaption")}</p>
-        </>
+        )}
+      </FrameTable>
+      {/* The outlier rule, in words, so the flagged badge is never a
+          mystery. Sits with the table rather than the chart above it
+          (the flags live here): the chart no longer colors by outlier
+          status, it carries period context only. */}
+      {shown > 0 && (
+        <p className="text-muted-foreground text-sm">{t("flaggedCaption")}</p>
       )}
     </div>
   )

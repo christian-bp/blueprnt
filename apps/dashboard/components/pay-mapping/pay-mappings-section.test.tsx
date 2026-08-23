@@ -14,6 +14,12 @@ const queryMock = vi.fn()
 // Components are cached per tag: a fresh function per `motion.tr` access
 // would change the element type every render and force React to remount the
 // subtree (same rationale as check-step.test.tsx's mock).
+// NumberFlow's custom element does not exist in jsdom; the count chip only
+// needs to render its value.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}))
+
 vi.mock("motion/react", () => {
   const cache = new Map<string, React.ComponentType<Record<string, unknown>>>()
   return {

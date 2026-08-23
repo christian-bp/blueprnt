@@ -1,5 +1,6 @@
 "use client"
 
+import { Medallion } from "@/components/medallion"
 import { MoreVerticalIcon, UserMultipleIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
@@ -42,7 +43,9 @@ import {
 } from "@workspace/ui/components/table"
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
-import { useCallback, useEffect, useState } from "react"
+import { type ReactNode, useCallback, useEffect, useState } from "react"
+import { FrameTable } from "@/components/frame-table"
+import { TableSkeleton } from "@/components/table-skeleton"
 import { toast } from "@/lib/toast"
 import { useOrganization } from "@/components/org-context"
 import { authClient } from "@/lib/auth-client"
@@ -61,7 +64,12 @@ type InvitationItem = NonNullable<ListResult["data"]>[number]
 // Convex mutations (last-admin guard + explicit audit); revoking fires the
 // wired invitation.revoked audit trigger. The sole admin's destructive actions
 // are disabled and a footnote explains why; the backend re-checks regardless.
-export function OrganizationMembersSection(props: { refreshKey: number }) {
+export function OrganizationMembersSection(props: {
+  refreshKey: number
+  // The section's primary action (the invite dialog), owned by the page
+  // because the refresh nonce lives there; rendered in the frame's header.
+  toolbar?: ReactNode
+}) {
   const t = useTranslations("dashboard.organization.members")
   // The empty state's title is the page's nav label (organization.tabs.members),
   // matching the page heading and the sidebar sub-page.
@@ -159,67 +167,163 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
     void refreshInvitations()
   }
 
+  const tableHeader = (
+    <TableHeader>
+      <TableRow>
+        <TableHead>{t("table.name")}</TableHead>
+        <TableHead className="w-[32%]">{t("table.email")}</TableHead>
+        <TableHead className="w-28">{t("table.role")}</TableHead>
+        <TableHead className="w-14 text-right">
+          {/* Row actions need no visible heading; the label stays for
+              screen readers. */}
+          <span className="sr-only">{t("table.actions")}</span>
+        </TableHead>
+      </TableRow>
+    </TableHeader>
+  )
+
   return (
     <div className="space-y-3">
-      {isEmpty ? (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <HugeiconsIcon
-                icon={UserMultipleIcon}
-                strokeWidth={2}
-                aria-hidden="true"
-              />
-            </EmptyMedia>
-            <EmptyTitle>{tTabs("members")}</EmptyTitle>
-            <EmptyDescription>{t("empty")}</EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t("table.name")}</TableHead>
-              <TableHead>{t("table.email")}</TableHead>
-              <TableHead>{t("table.role")}</TableHead>
-              <TableHead className="text-right">
-                {/* Row actions need no visible heading; the label stays for
-                    screen readers. */}
-                <span className="sr-only">{t("table.actions")}</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {list.map((m) => {
-              const isSoleAdmin = m.role === "admin" && adminCount === 1
-              return (
-                <TableRow key={m.userId}>
-                  <TableCell className="font-medium">
+      <FrameTable
+        title={tTabs("members")}
+        count={members === undefined ? undefined : list.length + pending.length}
+        toolbar={props.toolbar}
+      >
+        {members === undefined ? (
+          <Table className="table-fixed">
+            {tableHeader}
+            <TableSkeleton
+              rows={3}
+              columns={[
+                { className: "w-40 max-w-full" },
+                { className: "w-48 max-w-full" },
+                { className: "h-5 w-16 rounded-full" },
+                { className: "w-6" },
+              ]}
+            />
+          </Table>
+        ) : isEmpty ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia>
+                <Medallion icon={UserMultipleIcon} size="lg" />
+              </EmptyMedia>
+              <EmptyTitle>{tTabs("members")}</EmptyTitle>
+              <EmptyDescription>{t("empty")}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <Table className="table-fixed">
+            {tableHeader}
+            <TableBody>
+              {list.map((m) => {
+                const isSoleAdmin = m.role === "admin" && adminCount === 1
+                return (
+                  <TableRow key={m.userId}>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <Avatar
+                          key={m.image ?? "no-avatar"}
+                          className="shrink-0"
+                        >
+                          {m.image ? (
+                            <AvatarImage src={m.image} alt={m.name} />
+                          ) : null}
+                          <AvatarFallback>
+                            {initialsOf(m.name, m.email)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span>
+                          {m.name}
+                          {m.userId === myId ? (
+                            <span className="text-muted-foreground">
+                              {" "}
+                              ({t("you")})
+                            </span>
+                          ) : null}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {m.email}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{roleLabel(m.role)}</Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            render={
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                aria-label={t("memberActions", {
+                                  name: m.name,
+                                })}
+                                className="shrink-0 text-muted-foreground hover:text-foreground"
+                              />
+                            }
+                          >
+                            <HugeiconsIcon
+                              icon={MoreVerticalIcon}
+                              strokeWidth={2}
+                            />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {m.role === "editor" ? (
+                              <DropdownMenuItem
+                                onClick={() => handleRole(m.userId, "admin")}
+                              >
+                                {t("changeRoleAdmin")}
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem
+                                disabled={isSoleAdmin}
+                                onClick={() => handleRole(m.userId, "editor")}
+                              >
+                                {t("changeRoleEditor")}
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem
+                              variant="destructive"
+                              disabled={isSoleAdmin}
+                              onClick={() =>
+                                setRemoveTarget({
+                                  userId: m.userId,
+                                  name: m.name,
+                                })
+                              }
+                            >
+                              {t("remove")}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+              {pending.map((inv) => (
+                <TableRow key={inv.id}>
+                  <TableCell>
                     <div className="flex items-center gap-2">
-                      <Avatar key={m.image ?? "no-avatar"} className="shrink-0">
-                        {m.image ? (
-                          <AvatarImage src={m.image} alt={m.name} />
-                        ) : null}
+                      {/* No account yet: the invitee's avatar falls back to the
+                        email's first letter. */}
+                      <Avatar className="shrink-0">
                         <AvatarFallback>
-                          {initialsOf(m.name, m.email)}
+                          {initialsOf("", inv.email)}
                         </AvatarFallback>
                       </Avatar>
-                      <span>
-                        {m.name}
-                        {m.userId === myId ? (
-                          <span className="text-muted-foreground">
-                            {" "}
-                            ({t("you")})
-                          </span>
-                        ) : null}
-                      </span>
+                      <Badge variant="outline">{t("pending")}</Badge>
                     </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {m.email}
+                    {inv.email}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{roleLabel(m.role)}</Badge>
+                    <Badge variant="secondary">{roleLabel(inv.role)}</Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end">
@@ -230,7 +334,9 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
                               type="button"
                               variant="ghost"
                               size="icon"
-                              aria-label={t("memberActions", { name: m.name })}
+                              aria-label={ti("invitationActions", {
+                                email: inv.email,
+                              })}
                               className="shrink-0 text-muted-foreground hover:text-foreground"
                             />
                           }
@@ -241,98 +347,24 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
                           />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          {m.role === "editor" ? (
-                            <DropdownMenuItem
-                              onClick={() => handleRole(m.userId, "admin")}
-                            >
-                              {t("changeRoleAdmin")}
-                            </DropdownMenuItem>
-                          ) : (
-                            <DropdownMenuItem
-                              disabled={isSoleAdmin}
-                              onClick={() => handleRole(m.userId, "editor")}
-                            >
-                              {t("changeRoleEditor")}
-                            </DropdownMenuItem>
-                          )}
                           <DropdownMenuItem
                             variant="destructive"
-                            disabled={isSoleAdmin}
                             onClick={() =>
-                              setRemoveTarget({
-                                userId: m.userId,
-                                name: m.name,
-                              })
+                              setRevokeTarget({ id: inv.id, email: inv.email })
                             }
                           >
-                            {t("remove")}
+                            {ti("revoke")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
                   </TableCell>
                 </TableRow>
-              )
-            })}
-            {pending.map((inv) => (
-              <TableRow key={inv.id}>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    {/* No account yet: the invitee's avatar falls back to the
-                        email's first letter. */}
-                    <Avatar className="shrink-0">
-                      <AvatarFallback>
-                        {initialsOf("", inv.email)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <Badge variant="outline">{t("pending")}</Badge>
-                  </div>
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {inv.email}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="secondary">{roleLabel(inv.role)}</Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            aria-label={ti("invitationActions", {
-                              email: inv.email,
-                            })}
-                            className="shrink-0 text-muted-foreground hover:text-foreground"
-                          />
-                        }
-                      >
-                        <HugeiconsIcon
-                          icon={MoreVerticalIcon}
-                          strokeWidth={2}
-                        />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          variant="destructive"
-                          onClick={() =>
-                            setRevokeTarget({ id: inv.id, email: inv.email })
-                          }
-                        >
-                          {ti("revoke")}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </FrameTable>
       {adminCount === 1 ? (
         <p className="text-muted-foreground text-sm">{t("soleAdminNote")}</p>
       ) : null}

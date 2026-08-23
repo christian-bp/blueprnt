@@ -1,5 +1,7 @@
 "use client"
 
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
   columnFilteringFeature,
   type ColumnFiltersState,
@@ -9,12 +11,14 @@ import {
   createExpandedRowModel,
   createFilteredRowModel,
   createGroupedRowModel,
+  type ExpandedState,
   globalFilteringFeature,
   type Row,
   rowExpandingFeature,
   tableFeatures,
   useTable,
 } from "@tanstack/react-table"
+import { Button } from "@workspace/ui/components/button"
 import {
   Table,
   TableBody,
@@ -25,7 +29,8 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
+import { type ReactNode, useEffect, useMemo, useState } from "react"
+import { FrameTable } from "@/components/frame-table"
 import { NoMatchesEmpty } from "@/components/no-matches-empty"
 import {
   ALL_TRACKS,
@@ -51,12 +56,13 @@ import {
 import { groupByFamily } from "@/lib/role-groups"
 
 // The role register as ONE grouped data table (shadcn data table recipe on
-// @tanstack/react-table), per the 2026-06-12 design spec: a hidden family
-// column carries the grouping, the pipeline filters BEFORE grouping so
-// families without matches disappear, and expansion is pinned open (the
-// groups are organization, not disclosure). Search and the track filter come
-// from the shared toolbar module: its matcher runs as globalFilterFn, its
-// track value drives a column filter.
+// @tanstack/react-table): a hidden family column carries the grouping, the
+// pipeline filters BEFORE grouping so families without matches disappear, and
+// each family band collapses and expands like the reference's segment rows
+// (default open; changing a filter re-opens everything so a match can never
+// hide inside a closed group). Search and the track filter come from the
+// shared toolbar module: its matcher runs as globalFilterFn, its track value
+// drives a column filter.
 
 // Structural subset of listRoles rows (same precedent as CreateRoleDialog's
 // TrackOption): the table needs no convex types of its own.
@@ -169,33 +175,49 @@ const columns = columnHelper.columns([
 // and they stay enabled: the load is brief, interacting is a harmless no-op,
 // and a grayed control would just flash. The track filter shows its
 // all-option; the real options arrive with the data.
-export function RolesTableSkeleton() {
+export function RolesTableSkeleton({ actions }: { actions?: ReactNode }) {
+  const tNav = useTranslations("dashboard.nav")
   return (
-    <div className="space-y-4">
-      <RoleTableToolbar tracks={[]} />
+    <FrameTable
+      size="sm"
+      title={tNav("roles")}
+      toolbar={actions}
+      filters={<RoleTableToolbar tracks={[]} />}
+    >
       <Table className="table-fixed">
         <RoleTableHeadings />
         <TableSkeleton rows={8} columns={ROLE_SKELETON_COLUMNS} />
       </Table>
-    </div>
+    </FrameTable>
   )
 }
 
 export function RolesTable({
   roles,
   tracks,
+  actions,
 }: {
   roles: RolesTableRow[]
   tracks: RolesTableTrack[]
+  actions?: ReactNode
 }) {
   // The no-matches title is the page's nav label, matching the page heading.
   const tNav = useTranslations("dashboard.nav")
+  const tRoles = useTranslations("dashboard.roles")
   const tToolbar = useTranslations("dashboard.roles.toolbar")
   const tFamily = useTranslations("dashboard.roles.family")
   const router = useRouter()
 
   const [globalFilter, setGlobalFilter] = useState("")
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  // Which family bands are open. Default all open; a filter change re-opens
+  // everything, because a row matching a search must never sit inside a
+  // closed group where the count says it exists and the eye cannot find it.
+  const [expanded, setExpanded] = useState<ExpandedState>(true)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the filter values are the re-open signal, not a read dependency
+  useEffect(() => {
+    setExpanded(true)
+  }, [globalFilter, columnFilters])
 
   // Family adjacency and order (name order, family-less last) come from the
   // shared grouping helper, flattened: TanStack groups by first appearance,
@@ -210,20 +232,19 @@ export function RolesTable({
     data,
     columns,
     state: {
-      // Grouping and expansion are pinned: the family grouping is the
-      // page's organization, never user state, so groups cannot collapse
-      // (and autoReset on filter changes cannot close them either).
+      // Grouping is pinned (the family grouping is the page's organization,
+      // never user state); expansion is the user's, per family band.
       grouping: GROUPING,
-      expanded: true,
+      expanded,
       globalFilter,
       columnFilters,
     },
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
-    onExpandedChange: () => {},
+    onExpandedChange: setExpanded,
     onGroupingChange: () => {},
-    // Expansion is pinned, so its auto-reset must not queue a setState (see
-    // the GROUPING note above).
+    // The filter effect above owns re-opening; TanStack's own auto-reset
+    // must not queue a second setState (see the GROUPING note above).
     autoResetExpanded: false,
     groupedColumnMode: "remove",
     // The matcher reads the whole row, so it runs on the title column only
@@ -234,6 +255,12 @@ export function RolesTable({
 
   const shown = table.getFilteredRowModel().rows.length
   const visibleColumnCount = table.getVisibleLeafColumns().length
+  const familyCount = useMemo(
+    () =>
+      new Set(roles.filter((r) => r.familyId !== null).map((r) => r.familyId))
+        .size,
+    [roles]
+  )
 
   function clearFilters() {
     setGlobalFilter("")
@@ -245,21 +272,34 @@ export function RolesTable({
     ALL_TRACKS
 
   return (
-    <div className="space-y-4">
-      <RoleTableToolbar
-        tracks={tracks}
-        query={globalFilter}
-        onQueryChange={setGlobalFilter}
-        track={trackFilter}
-        onTrackChange={(value) =>
-          table
-            .getColumn("track")
-            ?.setFilterValue(value === ALL_TRACKS ? undefined : value)
-        }
-        shown={shown}
-        total={roles.length}
-      />
-
+    <FrameTable
+      size="sm"
+      title={tNav("roles")}
+      description={
+        familyCount > 0
+          ? tRoles("familySummary", {
+              roles: roles.length,
+              families: familyCount,
+            })
+          : tFamily("roleCount", { count: roles.length })
+      }
+      toolbar={actions}
+      filters={
+        <RoleTableToolbar
+          tracks={tracks}
+          query={globalFilter}
+          onQueryChange={setGlobalFilter}
+          track={trackFilter}
+          onTrackChange={(value) =>
+            table
+              .getColumn("track")
+              ?.setFilterValue(value === ALL_TRACKS ? undefined : value)
+          }
+          shown={shown}
+          total={roles.length}
+        />
+      }
+    >
       {shown === 0 ? (
         <NoMatchesEmpty
           title={tNav("roles")}
@@ -276,17 +316,41 @@ export function RolesTable({
                 // The group's identity comes from its leaf rows (the family
                 // column itself is removed via groupedColumnMode).
                 const firstLeaf = row.subRows[0]?.original
+                const familyName = firstLeaf?.familyName ?? tFamily("none")
+                const open = row.getIsExpanded()
                 return (
                   <TableRow key={row.id} className={FAMILY_ROW_CLASS}>
                     <TableCell colSpan={visibleColumnCount}>
-                      <span className="flex items-baseline gap-2">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-expanded={open}
+                          aria-label={tFamily(
+                            open ? "hideRoles" : "showRoles",
+                            { name: familyName }
+                          )}
+                          onClick={row.getToggleExpandedHandler()}
+                          className="shrink-0 text-muted-foreground hover:text-foreground"
+                        >
+                          <HugeiconsIcon
+                            icon={ArrowRight01Icon}
+                            strokeWidth={2}
+                            aria-hidden="true"
+                            className={cn(
+                              "transition-transform duration-150",
+                              open && "rotate-90"
+                            )}
+                          />
+                        </Button>
                         {firstLeaf !== undefined &&
                         firstLeaf.familySlug !== null ? (
                           <Link
                             href={`/roles/families/${firstLeaf.familySlug}`}
                             className={cn(
                               FAMILY_NAME_CLASS,
-                              "underline-offset-4 hover:underline"
+                              "truncate underline-offset-4 hover:underline"
                             )}
                           >
                             {firstLeaf.familyName}
@@ -300,16 +364,18 @@ export function RolesTable({
                           <span
                             className={cn(
                               FAMILY_NAME_CLASS,
-                              "font-normal text-muted-foreground"
+                              "truncate font-normal text-muted-foreground"
                             )}
                           >
                             {tFamily("none")}
                           </span>
                         )}
-                        <span className={FAMILY_COUNT_CLASS}>
+                        <span
+                          className={cn(FAMILY_COUNT_CLASS, "ml-auto shrink-0")}
+                        >
                           {tFamily("roleCount", { count: row.subRows.length })}
                         </span>
-                      </span>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )
@@ -330,9 +396,24 @@ export function RolesTable({
                     router.push(`/roles/${row.original.slug}`)
                   }}
                 >
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getVisibleCells().map((cell, index) => (
                     <TableCell key={cell.id}>
-                      <table.FlexRender cell={cell} />
+                      {index === 0 ? (
+                        // The reference's indent: an empty box the size of the
+                        // band's chevron, so role titles align under their
+                        // family's name rather than under its control.
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span
+                            aria-hidden="true"
+                            className="size-7 shrink-0"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <table.FlexRender cell={cell} />
+                          </div>
+                        </div>
+                      ) : (
+                        <table.FlexRender cell={cell} />
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -341,6 +422,6 @@ export function RolesTable({
           </TableBody>
         </Table>
       )}
-    </div>
+    </FrameTable>
   )
 }

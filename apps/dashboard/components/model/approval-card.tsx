@@ -256,7 +256,7 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
             an approved model carries neither action. Without the reservation
             the title row would stand shorter in that state and the header
             would jump on every approval. */}
-        <CardAction className="flex min-h-9 items-center gap-2">
+        <CardAction className="flex min-h-7 items-center gap-2">
           {canRestore && (
             <Button
               type="button"

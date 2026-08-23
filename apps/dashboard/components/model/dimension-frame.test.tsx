@@ -11,7 +11,7 @@ describe("DimensionFrame", () => {
   // The dashed box is the app's "this container takes something" language, and
   // it is declared once here so a later tweak cannot land on two chapters and
   // miss the third.
-  it("draws the dashed dimension box", () => {
+  it("draws the muted column frame", () => {
     const { container } = render(
       <DimensionFrame heading={<h3>Effort</h3>}>
         <p>body</p>
@@ -19,8 +19,9 @@ describe("DimensionFrame", () => {
     )
     expect(frame(container).tagName).toBe("SECTION")
     const tokens = frame(container).className.split(/\s+/)
-    expect(tokens).toContain("border-dashed")
+    expect(tokens).toContain("bg-muted/50")
     expect(tokens).toContain("rounded-xl")
+    expect(tokens).toContain("border")
   })
 
   // A named region: on a four-column surface, jumping straight to a dimension

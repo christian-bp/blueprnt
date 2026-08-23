@@ -1,5 +1,6 @@
 "use client"
 
+import { Medallion } from "@/components/medallion"
 import { MoreVerticalIcon, UserMultipleIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
@@ -23,7 +24,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
-import { Input } from "@workspace/ui/components/input"
 import {
   Table,
   TableBody,
@@ -38,12 +38,16 @@ import { useMemo, useState } from "react"
 import { CreateUserDialog } from "@/components/admin/create-user-dialog"
 import { DeleteUserDialog } from "@/components/admin/delete-user-dialog"
 import { ManageUserOrganizationsDialog } from "@/components/admin/manage-user-organizations-dialog"
-import { PageHeading } from "@/components/page-heading"
+import { TableSearchField } from "@/components/table-search-field"
+import { FrameTable } from "@/components/frame-table"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { authClient } from "@/lib/auth-client"
 import { initialsOf } from "@/lib/initials"
 
 export function UsersSection() {
   const t = useTranslations("dashboard.admin.users")
+  const tTabs = useTranslations("dashboard.admin.tabs")
+  const tNav = useTranslations("dashboard.nav")
   const users = useQuery(api.platform.admin.listUsers, {})
   const [query, setQuery] = useState("")
   const [resendFeedback, setResendFeedback] = useState<{
@@ -86,142 +90,143 @@ export function UsersSection() {
 
   return (
     <section className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <PageHeading>{t("heading")}</PageHeading>
-          <p className="text-muted-foreground text-sm">{t("description")}</p>
-        </div>
-        <CreateUserDialog />
-      </div>
-      <Input
-        value={query}
-        placeholder={t("searchPlaceholder")}
-        aria-label={t("searchPlaceholder")}
-        onChange={(event) => setQuery(event.target.value)}
-        className="w-72"
+      <PageBreadcrumbRow
+        segments={[{ label: tNav("admin") }, { label: tTabs("users") }]}
       />
-      {resendFeedback !== null &&
-        (resendFeedback.ok ? (
-          <p role="status" className="text-muted-foreground text-sm">
-            {t("resendDone")}
-          </p>
+      <FrameTable
+        title={tTabs("users")}
+        count={users === undefined ? undefined : filtered.length}
+        toolbar={<CreateUserDialog />}
+        filters={
+          <TableSearchField
+            value={query}
+            placeholder={t("searchPlaceholder")}
+            onChange={setQuery}
+            className="w-72"
+          />
+        }
+      >
+        {resendFeedback !== null &&
+          (resendFeedback.ok ? (
+            <p role="status" className="text-muted-foreground text-sm">
+              {t("resendDone")}
+            </p>
+          ) : (
+            <p role="alert" className="text-destructive text-sm">
+              {t("resendError")}
+            </p>
+          ))}
+        {users !== undefined && filtered.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              {query.trim() === "" && (
+                <EmptyMedia>
+                  <Medallion icon={UserMultipleIcon} size="lg" />
+                </EmptyMedia>
+              )}
+              <EmptyTitle>{t("heading")}</EmptyTitle>
+              <EmptyDescription>{t("empty")}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
-          <p role="alert" className="text-destructive text-sm">
-            {t("resendError")}
-          </p>
-        ))}
-      {users !== undefined && filtered.length === 0 ? (
-        <Empty>
-          <EmptyHeader>
-            {query.trim() === "" && (
-              <EmptyMedia variant="icon">
-                <HugeiconsIcon
-                  icon={UserMultipleIcon}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-              </EmptyMedia>
-            )}
-            <EmptyTitle>{t("heading")}</EmptyTitle>
-            <EmptyDescription>{t("empty")}</EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t("table.name")}</TableHead>
-              <TableHead>{t("table.email")}</TableHead>
-              <TableHead>{t("table.platformAdmin")}</TableHead>
-              <TableHead className="text-right">
-                {/* Row actions need no visible heading; the label stays for
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("table.name")}</TableHead>
+                <TableHead>{t("table.email")}</TableHead>
+                <TableHead>{t("table.platformAdmin")}</TableHead>
+                <TableHead className="text-right">
+                  {/* Row actions need no visible heading; the label stays for
                     screen readers. */}
-                <span className="sr-only">{t("table.actions")}</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered.map((user) => (
-              <TableRow key={user.authId}>
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    <Avatar
-                      key={user.image ?? "no-avatar"}
-                      className="shrink-0"
-                    >
-                      {user.image ? (
-                        <AvatarImage src={user.image} alt={user.name} />
-                      ) : null}
-                      <AvatarFallback>
-                        {initialsOf(user.name, user.email)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>{user.name}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {user.email}
-                </TableCell>
-                <TableCell>
-                  {user.isPlatformAdmin && (
-                    <Badge variant="secondary">{t("platformAdminBadge")}</Badge>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            aria-label={t("rowActions", { name: user.name })}
-                            className="shrink-0 text-muted-foreground hover:text-foreground"
-                          />
-                        }
-                      >
-                        <HugeiconsIcon
-                          icon={MoreVerticalIcon}
-                          strokeWidth={2}
-                        />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => resend(user.email)}>
-                          {t("resendInvite")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            setOrgTarget({
-                              authId: user.authId,
-                              name: user.name,
-                              email: user.email,
-                            })
-                          }
-                        >
-                          {t("organizationsCta")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          variant="destructive"
-                          onClick={() =>
-                            setDeleteTarget({
-                              authId: user.authId,
-                              name: user.name,
-                              email: user.email,
-                            })
-                          }
-                        >
-                          {t("deleteCta")}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </TableCell>
+                  <span className="sr-only">{t("table.actions")}</span>
+                </TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+            </TableHeader>
+            <TableBody>
+              {filtered.map((user) => (
+                <TableRow key={user.authId}>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      <Avatar
+                        key={user.image ?? "no-avatar"}
+                        className="shrink-0"
+                      >
+                        {user.image ? (
+                          <AvatarImage src={user.image} alt={user.name} />
+                        ) : null}
+                        <AvatarFallback>
+                          {initialsOf(user.name, user.email)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span>{user.name}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {user.email}
+                  </TableCell>
+                  <TableCell>
+                    {user.isPlatformAdmin && (
+                      <Badge variant="secondary">
+                        {t("platformAdminBadge")}
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          render={
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              aria-label={t("rowActions", { name: user.name })}
+                              className="shrink-0 text-muted-foreground hover:text-foreground"
+                            />
+                          }
+                        >
+                          <HugeiconsIcon
+                            icon={MoreVerticalIcon}
+                            strokeWidth={2}
+                          />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => resend(user.email)}>
+                            {t("resendInvite")}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setOrgTarget({
+                                authId: user.authId,
+                                name: user.name,
+                                email: user.email,
+                              })
+                            }
+                          >
+                            {t("organizationsCta")}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={() =>
+                              setDeleteTarget({
+                                authId: user.authId,
+                                name: user.name,
+                                email: user.email,
+                              })
+                            }
+                          >
+                            {t("deleteCta")}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </FrameTable>
       <DeleteUserDialog
         open={deleteTarget !== null}
         onOpenChange={(o) => {

@@ -590,8 +590,10 @@ describe("FamilyReviewTable structure", () => {
     expect(trigger.className).toContain("size-6")
     expect(trigger.className).not.toContain("size-9")
     for (const cell of rowOf(trigger).querySelectorAll("td")) {
-      // The vendor default is p-2, which is not a py- override.
-      expect(cell.className).not.toMatch(/\bpy-/)
+      // The vendor default carries p-2 of its own (no separate py- token);
+      // the guard is that no cell ADDS a py- override on top of it.
+      const pys = cell.className.split(/\s+/).filter((c) => /^py-/.test(c))
+      expect(pys).toEqual([])
     }
   })
 

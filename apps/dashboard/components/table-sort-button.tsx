@@ -4,11 +4,11 @@ import { ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
 // The sortable column heading's clickable content, shared by every sortable
-// table (people, classify): plain heading text (no button chrome) that
-// underlines on hover like the table's links, with an up/down chevron only on
-// the actively sorted column. The chevron renders inside a pre-reserved
-// fixed-width slot so its appearance never shifts the label or the column
-// widths (layout-shift rule). The wrapping TableHead carries aria-sort.
+// table (people, classify): a quiet heading pill (muted text that gains the
+// secondary wash on hover), with an up/down chevron only on the actively
+// sorted column. The chevron renders inside a pre-reserved fixed-width slot
+// so its appearance never shifts the label or the column widths
+// (layout-shift rule). The wrapping TableHead carries aria-sort.
 export function TableSortButton({
   label,
   sorted,
@@ -22,7 +22,7 @@ export function TableSortButton({
   return (
     <button
       type="button"
-      className="inline-flex items-center gap-1 underline-offset-4 hover:underline"
+      className="-ms-2 inline-flex h-6 items-center gap-1 rounded-lg px-2 font-normal text-secondary-foreground/80 transition-colors hover:bg-secondary hover:text-foreground"
       onClick={onToggle}
     >
       {label}

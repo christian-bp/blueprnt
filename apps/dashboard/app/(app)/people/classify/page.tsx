@@ -5,7 +5,8 @@ import { Table } from "@workspace/ui/components/table"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useRef } from "react"
-import { PageHeader } from "@/components/page-header"
+import { FrameTable } from "@/components/frame-table"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { useOrganization } from "@/components/org-context"
 import {
   CLASSIFY_SKELETON_COLUMNS,
@@ -26,10 +27,10 @@ import { usePageTitle } from "@/hooks/use-page-title"
 // re-runs reactively after the mutation writes, so the table populates without
 // a separate refresh.
 export default function ClassifyPage() {
-  const t = useTranslations("dashboard.classify")
   // Title and heading are the page's nav label (people.tabs.classify), so the
   // browser tab, the header tab, the sidebar sub-page, and the h1 agree.
   const tTabs = useTranslations("dashboard.people.tabs")
+  const tNav = useTranslations("dashboard.nav")
   usePageTitle(tTabs("classify"))
 
   const { orgId } = useOrganization()
@@ -65,12 +66,18 @@ export default function ClassifyPage() {
   if (groups === undefined || roles === undefined || model === undefined) {
     return (
       <div className="space-y-4">
-        <PageHeader title={tTabs("classify")} description={t("description")} />
-        <ClassifyBulkToolbar />
-        <Table className="table-fixed">
-          <ClassifyTableHeader />
-          <TableSkeleton columns={CLASSIFY_SKELETON_COLUMNS} rows={5} />
-        </Table>
+        <PageBreadcrumbRow
+          segments={[
+            { label: tNav("people"), href: "/people" },
+            { label: tTabs("classify") },
+          ]}
+        />
+        <FrameTable title={tTabs("classify")} toolbar={<ClassifyBulkToolbar />}>
+          <Table className="table-fixed">
+            <ClassifyTableHeader />
+            <TableSkeleton columns={CLASSIFY_SKELETON_COLUMNS} rows={5} />
+          </Table>
+        </FrameTable>
       </div>
     )
   }
@@ -82,7 +89,12 @@ export default function ClassifyPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader title={tTabs("classify")} description={t("description")} />
+      <PageBreadcrumbRow
+        segments={[
+          { label: tNav("people"), href: "/people" },
+          { label: tTabs("classify") },
+        ]}
+      />
       <ClassifyTitleTable
         orgId={orgId}
         groups={groups}

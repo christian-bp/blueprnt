@@ -14,10 +14,11 @@
 // only on its way to a role below.
 export const FAMILY_ROW_CLASS = "bg-muted/50 hover:bg-muted/50"
 
-// The family name. A step up from the role titles it heads (base/semibold over
-// sm/normal) so the grouping is legible while scanning without the band needing
-// colour to carry it.
-export const FAMILY_NAME_CLASS = "font-semibold text-base"
+// The family name. A weight step up from the role titles it heads (semibold
+// over normal, at the register's shared text-sm) so the grouping is legible
+// while scanning without the band needing colour or size to carry it (the
+// reference's segment rows do the same).
+export const FAMILY_NAME_CLASS = "font-semibold text-sm"
 
 // The role count beside the name, and the placeholder that stands in for a name
 // (an unnamed new family in the review, the family-less group in the register).

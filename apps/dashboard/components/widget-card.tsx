@@ -237,8 +237,13 @@ export function WidgetCard({
           written to fit, so the ellipsis is the guard rather than the normal
           state. Same decision as ActionCard, which truncates both its lines
           for the same reason. */}
+      {/* The qualifier under the figure, not a zone: the nova footer ships
+          border-t + bg-muted/50 chrome for footers that ARE a distinct band
+          (a frame's pagination foot), which read as a broken seam under a
+          stat figure. Neutralized here, and pt-0 restores the column rhythm
+          the card had before the footer slot went tonal. */}
       {(footer !== undefined || note !== undefined) && (
-        <CardFooter className="flex-col items-start gap-0.5 text-sm">
+        <CardFooter className="flex-col items-start gap-0.5 border-t-0 bg-transparent pt-0 text-sm">
           {footer !== undefined && (
             <div className="flex w-full min-w-0 items-center gap-1.5 font-medium">
               <span className="truncate">{footer}</span>

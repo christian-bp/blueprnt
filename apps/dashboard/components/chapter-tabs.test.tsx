@@ -28,7 +28,7 @@ function renderRow(
 
 // The row's own box, which is what holds the section's content at a constant Y.
 const rowOf = (container: HTMLElement) =>
-  container.querySelector('[class*="min-h-9"]') as HTMLElement | null
+  container.querySelector('[class*="min-h-7"]') as HTMLElement | null
 
 describe("ChapterTabs", () => {
   afterEach(cleanup)
@@ -61,12 +61,12 @@ describe("ChapterTabs", () => {
   // offers one, so the content below starts at the same Y on every chapter.
   it("holds one height with an action and without one", () => {
     const { container: bare } = renderRow()
-    expect(rowOf(bare)?.className).toContain("min-h-9")
+    expect(rowOf(bare)?.className).toContain("min-h-7")
     cleanup()
     const { container: full } = renderRow("x-underline", {
       action: <button type="button">Export</button>,
     })
-    expect(rowOf(full)?.className).toContain("min-h-9")
+    expect(rowOf(full)?.className).toContain("min-h-7")
     // Wrapping, not squeezing: at a narrow width the action drops to its own
     // right-aligned line rather than the tabs truncating. That is the only
     // wrap this row has.

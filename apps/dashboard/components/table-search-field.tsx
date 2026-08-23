@@ -18,11 +18,15 @@ export function TableSearchField({
   value,
   onChange,
   className,
+  type = "text",
 }: {
   placeholder: string
   value?: string
   onChange?: (value: string) => void
   className?: string
+  // The log surfaces use the native search type (a clear affordance in
+  // browsers that draw one); the registers keep plain text.
+  type?: "text" | "search"
 }) {
   return (
     <div className="relative">
@@ -34,6 +38,7 @@ export function TableSearchField({
         className="absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground"
       />
       <Input
+        type={type}
         value={value}
         placeholder={placeholder}
         aria-label={placeholder}

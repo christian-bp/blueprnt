@@ -19,6 +19,7 @@ vi.mock(
 import AdminAiUsagePage from "@/app/(app)/admin/ai-usage/page"
 
 const t = messages.dashboard.admin.aiUsage
+const tTabs = messages.dashboard.admin.tabs
 const tKpi = t.kpi
 
 function renderPage() {
@@ -43,7 +44,9 @@ describe("AdminAiUsagePage", () => {
 
   it("renders the AI usage heading and period selector before the query resolves", () => {
     renderPage()
-    expect(screen.getByText(t.heading)).toBeTruthy()
+    expect(
+      screen.getByRole("heading", { level: 1, name: tTabs.aiUsage })
+    ).toBeTruthy()
     expect(screen.getByRole("combobox", { name: t.periodLabel })).toBeTruthy()
   })
 

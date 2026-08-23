@@ -1,5 +1,13 @@
 "use client"
 
+import { buttonVariants } from "@workspace/ui/components/button"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@workspace/ui/components/empty"
+import { cn } from "@workspace/ui/lib/utils"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
@@ -7,11 +15,11 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { useOrganization } from "@/components/org-context"
-import { PageHeader } from "@/components/page-header"
-import { PageHeaderSlotProvider } from "@/components/page-header-slot"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
+import { BreadcrumbSlotProvider } from "@/components/page-breadcrumb-slots"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { PayMappingRunProvider } from "./pay-mapping-run-context"
-import { payMappingSubPageKey } from "./pay-mapping-tabs"
+import { payMappingSubPageKey } from "./run-sidebar"
 
 // Shared chrome + data for one kartläggning's sub-pages (Overview / Analysis /
 // Report, switched via the header tabs). Mounted from the [slug] route layout,
@@ -29,6 +37,7 @@ export function PayMappingRunShell({
   children: ReactNode
 }) {
   const t = useTranslations("dashboard.payMapping")
+  const tNav = useTranslations("dashboard.nav")
   const pathname = usePathname()
   const { orgId } = useOrganization()
 
@@ -74,42 +83,54 @@ export function PayMappingRunShell({
 
   // /pay-mappings/<slug>[/<sub>...] -> the sub-page's tab key. Deriving it
   // from the pathname (the shell lives in the persistent [slug] layout, so
-  // no page can pass it) keeps the title in the standard PageHeader slot.
+  // no page can pass it) keeps the name in the breadcrumb row.
   const [, , sub] = pathname.split("/").filter(Boolean)
   if (run === null) {
-    // Match the roles detail precedent: a plain message + back link, no
-    // breadcrumb (the error string does not read as a page name in a crumb).
+    // Match the roles detail precedent: the register crumb above an Empty
+    // stating the miss, with the way back as its action.
     return (
-      <div className="space-y-2">
-        <p className="text-muted-foreground text-sm">{t("detail.notFound")}</p>
-        <Link
-          href="/pay-mappings"
-          className="text-sm underline underline-offset-4"
-        >
-          {t("detail.back")}
-        </Link>
+      <div className="space-y-4">
+        <PageBreadcrumbRow
+          segments={[{ label: tNav("payMapping"), href: "/pay-mappings" }]}
+        />
+        <Empty>
+          <EmptyHeader>
+            <EmptyTitle>{tNav("payMapping")}</EmptyTitle>
+            <EmptyDescription>{t("detail.notFound")}</EmptyDescription>
+          </EmptyHeader>
+          <Link
+            href="/pay-mappings"
+            className={cn(buttonVariants({ variant: "outline" }))}
+          >
+            {t("detail.back")}
+          </Link>
+        </Empty>
       </div>
     )
   }
 
   return (
     <div className="space-y-6">
-      {/* No breadcrumb: the site header owns the workspace chrome (the
-          sub-page tabs, and the run switcher in the corner carrying the
-          run's name, status, and the way back to the list), so the page
-          carries only the sub-page's name as its title. Static i18n, real
-          from the first paint. */}
-      {/* The analysis section fills this header's slots from its own
-          subtree: its concept help beside the title, its journey instrument
-          opposite it. The queue both are drawn from lives down there. */}
-      <PageHeaderSlotProvider>
-        <PageHeader title={t(`tabs.${payMappingSubPageKey(sub)}`)} />
+      {/* The run sidebar owns the workspace's navigation (the sub-pages and
+          the run switcher); this row names where the visitor stands. The run
+          label is data, so a skeleton crumb holds its place on first paint. */}
+      {/* The analysis section fills this row's slots from its own subtree:
+          its concept help after the trail, its journey instrument opposite
+          it. The queue both are drawn from lives down there. */}
+      <BreadcrumbSlotProvider>
+        <PageBreadcrumbRow
+          segments={[
+            { label: tNav("payMapping"), href: "/pay-mappings" },
+            run === undefined ? { skeleton: true } : { label: run.label },
+            { label: t(`tabs.${payMappingSubPageKey(sub)}`) },
+          ]}
+        />
         <PayMappingRunProvider
           value={{ run, gap, analyses, actions, notes, runsList }}
         >
           {children}
         </PayMappingRunProvider>
-      </PageHeaderSlotProvider>
+      </BreadcrumbSlotProvider>
     </div>
   )
 }

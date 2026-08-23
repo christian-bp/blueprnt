@@ -8,7 +8,7 @@ import { authClient } from "@/lib/auth-client"
 import { greetingBucket } from "@/lib/greeting"
 
 // The greeting is the overview's hero heading: larger than a standard page
-// title (PageHeading is text-lg), in the same regular ink as every other
+// title, in the same regular ink as every other
 // heading. Brand rose is a data-viz colour too, so it stays off headings
 // and lands on the accents instead (links, CTAs, the widget icon chips).
 // The one serif surface in the app: the display serif carries the hero's

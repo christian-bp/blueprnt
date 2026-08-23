@@ -12,8 +12,7 @@ import {
 import { Label } from "@workspace/ui/components/label"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useTranslations } from "next-intl"
-import { PageBreadcrumb } from "@/components/page-breadcrumb"
-import { PageHeader } from "@/components/page-header"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { RolePeopleCardSkeleton } from "@/components/roles/role-people-card"
 
 // Content-shaped loading state for the role page: the real layout (header,
@@ -44,16 +43,15 @@ export function RoleDetailSkeleton() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        // The Roles crumb is static; the family/title crumbs join it with
-        // the data.
-        breadcrumb={
-          <PageBreadcrumb
-            segments={[{ label: tNav("roles"), href: "/roles" }]}
-          />
-        }
-        title={<Skeleton className="h-7 w-56 max-w-full" />}
-        titleAdornment={<Skeleton className="h-5 w-20 rounded-full" />}
+      <PageBreadcrumbRow
+        // The ancestor crumbs are static; the title crumb joins with the
+        // data, so a skeleton crumb holds its place.
+        segments={[
+          { label: tNav("work"), href: "/work" },
+          { label: tNav("roles"), href: "/roles" },
+          { skeleton: true },
+        ]}
+        actions={<Skeleton className="h-5 w-20 rounded-full" />}
       />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
@@ -104,7 +102,7 @@ export function RoleDetailSkeleton() {
             </CardContent>
           </Card>
         </div>
-        <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
+        <div className="space-y-6 lg:sticky lg:top-4 lg:self-start">
           <Card>
             <CardHeader>
               <CardTitle>{t("evaluationHeading")}</CardTitle>
@@ -112,7 +110,7 @@ export function RoleDetailSkeleton() {
             <CardContent>
               <div className="space-y-3">
                 <Skeleton className="h-4 w-40 max-w-full" />
-                <Skeleton className="h-9 w-32 rounded-md" />
+                <Skeleton className="h-7 w-32 rounded-md" />
               </div>
             </CardContent>
           </Card>

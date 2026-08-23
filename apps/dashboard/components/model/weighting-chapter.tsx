@@ -566,10 +566,10 @@ function WeightingChapterSkeleton() {
                   >
                     {/* The name line, the weight row's own height, and the share
                       line, so a placeholder card measures like a real one. */}
-                    <div className="flex h-9 items-center">
+                    <div className="flex h-5 items-center">
                       <Skeleton className="h-4 w-36 max-w-full" />
                     </div>
-                    <Skeleton className="mt-2 h-8 w-full" />
+                    <Skeleton className="mt-2 h-6 w-full" />
                     <div className="mt-1.5 flex h-4 items-center">
                       <Skeleton className="h-3 w-28" />
                     </div>

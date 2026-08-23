@@ -9,10 +9,10 @@ import { SPRING } from "@/lib/motion"
 // The size EVERY chapter action takes. One size across a section, owned by the
 // row they all sit in rather than chosen per chapter: the actions sit at the
 // same place on every chapter, and a reader moving between them should not
-// meet a control that changes height as they go. It is the design system's
-// DEFAULT, because nothing about this row is a reason to deviate from it (the
-// house rule: never hand-pick a size per call site).
-export const CHAPTER_ACTION_BUTTON_SIZE = "default" as const
+// meet a control that changes height as they go. Nova's sm, deliberately:
+// these are compact in-row controls beside h-5 pills and tab triggers, the
+// surface the style's sm size exists for.
+export const CHAPTER_ACTION_BUTTON_SIZE = "sm" as const
 
 // One tab in a chapter row: its identity, what it reads as, where it goes, and
 // whether its page is the one open.
@@ -77,14 +77,14 @@ export function ChapterTabs({
     // much further down. The journey's own instrument sits on the title row
     // above, with the section's name.
     //
-    // min-h-9 is the action button's height, held whether or not a chapter
+    // min-h-7 is the action button's height, held whether or not a chapter
     // offers one, so the content below starts at the same Y on every chapter
     // and switching chapters holds the columns still.
     //
     // The tabs never truncate: they are the navigation. At a narrow width the
     // action drops to its own right-aligned line, which is the only wrap this
     // row has.
-    <div className="flex min-h-9 flex-wrap items-center gap-x-4 gap-y-1">
+    <div className="flex min-h-7 flex-wrap items-center gap-x-4 gap-y-1">
       <nav
         aria-label={navLabel}
         className="-mx-1 flex items-stretch gap-1 overflow-x-auto"

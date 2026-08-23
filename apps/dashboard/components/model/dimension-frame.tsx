@@ -54,19 +54,24 @@ export function DimensionFrame({
       // without repeating the frame's classes in a third file.
       data-slot="dimension-frame"
       aria-labelledby={nameId}
-      className={cn("rounded-xl border border-dashed p-3", className)}
+      // The kanban-column frame (the register frames one level down): a muted
+      // outer wrap whose white cards are the criteria.
+      className={cn(
+        "flex flex-col rounded-xl border bg-muted/50 bg-clip-padding p-1",
+        className
+      )}
     >
       <div
         id={headingId === undefined ? nameId : undefined}
-        className="flex items-center justify-between gap-2"
+        className="flex min-h-9 items-center justify-between gap-2 px-2 py-1.5"
       >
         {heading}
       </div>
       {/* relative: a column whose content leaves through AnimatePresence's
           popLayout needs a positioned ancestor to take it out of flow
           against. */}
-      <div className="relative mt-3">{children}</div>
-      {footer !== undefined && <div className="mt-2">{footer}</div>}
+      <div className="relative p-0.5">{children}</div>
+      {footer !== undefined && <div className="p-0.5 pt-1.5">{footer}</div>}
     </section>
   )
 }

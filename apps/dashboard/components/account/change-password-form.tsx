@@ -1,14 +1,7 @@
 "use client"
 
+import { SettingsFrame, SettingsRow } from "@/components/settings-frame"
 import { zodResolver } from "@hookform/resolvers/zod"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import {
   Form,
   FormControl,
@@ -83,80 +76,82 @@ export function ChangePasswordForm() {
   const { isValid, isSubmitting } = form.formState
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form
-            id="change-password-form"
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
+    <SettingsFrame
+      title={t("title")}
+      description={t("description")}
+      footer={
+        <>
+          <div className="me-auto self-center">
+            {saved && (
+              <p className="text-muted-foreground text-sm">{t("saved")}</p>
+            )}
+            {errorState && (
+              <p role="alert" className="text-destructive text-sm">
+                {t(errorState === "wrongPassword" ? "wrongPassword" : "error")}
+              </p>
+            )}
+          </div>
+          <SubmitButton
+            type="submit"
+            form="change-password-form"
+            isSubmitting={isSubmitting}
+            disabled={!isValid}
           >
-            <FormField
-              control={form.control}
-              name="currentPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("currentLabel")}</FormLabel>
+            {t("cta")}
+          </SubmitButton>
+        </>
+      }
+    >
+      <Form {...form}>
+        <form
+          id="change-password-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col divide-y divide-border"
+        >
+          <FormField
+            control={form.control}
+            name="currentPassword"
+            render={({ field }) => (
+              <FormItem>
+                <SettingsRow label={<FormLabel>{t("currentLabel")}</FormLabel>}>
                   <FormControl>
                     <PasswordInput autoComplete="current-password" {...field} />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="newPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("newLabel")}</FormLabel>
+                </SettingsRow>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="newPassword"
+            render={({ field }) => (
+              <FormItem>
+                <SettingsRow label={<FormLabel>{t("newLabel")}</FormLabel>}>
                   <FormControl>
                     <PasswordInput autoComplete="new-password" {...field} />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("confirmLabel")}</FormLabel>
+                </SettingsRow>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <SettingsRow label={<FormLabel>{t("confirmLabel")}</FormLabel>}>
                   <FormControl>
                     <PasswordInput autoComplete="new-password" {...field} />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
-      </CardContent>
-      <CardFooter className="flex items-center justify-between">
-        <div>
-          {saved && (
-            <p className="text-muted-foreground text-sm">{t("saved")}</p>
-          )}
-          {errorState && (
-            <p role="alert" className="text-destructive text-sm">
-              {t(errorState === "wrongPassword" ? "wrongPassword" : "error")}
-            </p>
-          )}
-        </div>
-        <SubmitButton
-          type="submit"
-          form="change-password-form"
-          isSubmitting={isSubmitting}
-          disabled={!isValid}
-        >
-          {t("cta")}
-        </SubmitButton>
-      </CardFooter>
-    </Card>
+                </SettingsRow>
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+    </SettingsFrame>
   )
 }

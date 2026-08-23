@@ -7,7 +7,7 @@ import { MorphConfirmButton } from "@/components/morph-confirm-button"
 // The shared inline remove affordance for list rows (family roles, criteria):
 // a ghost trashcan in a fixed-size slot with the armed pill absolutely
 // anchored right, so arming overlays the row leftwards and never reflows it.
-// h-9 + min-w-9 square the pill up to the row's field height (the inner icon
+// h-8 + min-w-8 square the pill up to the row's field height (the inner icon
 // button centers inside the border).
 export function RemoveConfirm({
   triggerLabel,
@@ -32,7 +32,7 @@ export function RemoveConfirm({
         triggerLabel={triggerLabel}
         confirmLabel={confirmLabel}
         cancelLabel={cancelLabel}
-        className="absolute top-1/2 right-0 z-10 h-9 min-w-9 -translate-y-1/2 justify-center"
+        className="absolute top-1/2 right-0 z-10 h-8 min-w-8 -translate-y-1/2 justify-center"
         onConfirm={onConfirm}
         disabled={disabled}
       />

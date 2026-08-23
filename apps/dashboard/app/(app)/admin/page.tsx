@@ -5,8 +5,7 @@ import { UsersSection } from "@/components/admin/users-section"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 export default function AdminUsersPage() {
-  const tNav = useTranslations("dashboard.nav")
   const tTabs = useTranslations("dashboard.admin.tabs")
-  usePageTitle([tNav("admin"), tTabs("users")])
+  usePageTitle(tTabs("users"))
   return <UsersSection />
 }

@@ -10,6 +10,23 @@ import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+// NumberFlow's custom element does not exist in jsdom. The summary strip
+// formats its cost roll-up through NumberFlow's format prop, so the stand-in
+// formats too instead of dumping the raw number.
+vi.mock("@number-flow/react", () => ({
+  default: ({
+    value,
+    format,
+    locales,
+  }: {
+    value: number
+    format?: Intl.NumberFormatOptions
+    locales?: string | string[]
+  }) => (
+    <span>{new Intl.NumberFormat(locales ?? "en", format).format(value)}</span>
+  ),
+}))
+
 vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))

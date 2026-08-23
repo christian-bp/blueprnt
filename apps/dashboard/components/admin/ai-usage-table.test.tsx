@@ -7,11 +7,17 @@ import {
 } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
-import { afterEach, describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import {
   AiUsageTable,
   matchesOrgUsageQuery,
 } from "@/components/admin/ai-usage-table"
+
+// NumberFlow's custom element does not exist in jsdom; the count chip only
+// needs to render its value.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}))
 import type { AiUsageOrgRow } from "@/lib/admin-ai-usage"
 
 const t = messages.dashboard.admin.aiUsage
@@ -152,7 +158,9 @@ describe("AiUsageTable", () => {
       { target: { value: "nope" } }
     )
     expect(screen.getByText(tTable.noMatches)).toBeTruthy()
-    expect(screen.getByText(t.heading)).toBeTruthy()
+    // The heading appears twice by design: the frame's own title h2 and the
+    // no-matches state's title inside the panel.
+    expect(screen.getAllByText(t.heading).length).toBeGreaterThanOrEqual(2)
   })
 
   it("states the flagging rule in a caption once rows resolve", () => {

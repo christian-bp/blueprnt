@@ -193,7 +193,7 @@ describe("ApprovalCard", () => {
       ) as HTMLElement
       expect(slot).not.toBeNull()
       expect(slot.querySelector("button")).toBeNull()
-      expect(slot.className).toContain("min-h-9")
+      expect(slot.className).toContain("min-h-7")
     })
 
     // And the status line is left as what it now is: a sentence, capped with

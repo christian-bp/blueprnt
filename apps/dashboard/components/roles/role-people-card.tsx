@@ -1,7 +1,7 @@
 "use client"
 
+import { Medallion } from "@/components/medallion"
 import { UserMultiple02Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import NumberFlow from "@number-flow/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
@@ -176,12 +176,8 @@ export function RolePeopleCard({
       {total === 0 ? (
         <Empty>
           <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <HugeiconsIcon
-                icon={UserMultiple02Icon}
-                strokeWidth={2}
-                aria-hidden="true"
-              />
+            <EmptyMedia>
+              <Medallion icon={UserMultiple02Icon} size="lg" />
             </EmptyMedia>
             <EmptyTitle>{t("heading")}</EmptyTitle>
             {/* State the precondition in words: employees reach a role by

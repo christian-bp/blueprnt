@@ -1,5 +1,6 @@
 "use client"
 
+import { Medallion } from "@/components/medallion"
 import {
   equalWorkGroupRequiresDocumentation,
   womenDominatedGroupRequiresDocumentation,
@@ -26,7 +27,6 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { Alert02Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
@@ -273,7 +273,7 @@ export function PayMappingAnalysis({
               <Skeleton className="h-4 w-40" />
               <Skeleton className="h-5 w-64 max-w-full" />
               <Skeleton className="h-4 w-full max-w-md" />
-              <Skeleton className="h-9 w-32 rounded-md" />
+              <Skeleton className="h-8 w-32 rounded-md" />
             </CardContent>
           </Card>
         </div>
@@ -288,12 +288,8 @@ export function PayMappingAnalysis({
     return (
       <Empty className="gap-4">
         <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <HugeiconsIcon
-              icon={Alert02Icon}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
+          <EmptyMedia>
+            <Medallion icon={Alert02Icon} size="lg" />
           </EmptyMedia>
           <EmptyTitle>{tGap("empty")}</EmptyTitle>
         </EmptyHeader>
@@ -825,7 +821,7 @@ export function PayMappingAnalysis({
         {showChapterList && (
           <div
             className={cn(
-              "lg:sticky lg:top-6 lg:self-start",
+              "lg:sticky lg:top-4 lg:self-start",
               explicitCardOpen && "hidden lg:block"
             )}
           >

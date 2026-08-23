@@ -2,12 +2,20 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
+import { buttonVariants } from "@workspace/ui/components/button"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@workspace/ui/components/empty"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { use } from "react"
-import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
-import { PageHeader } from "@/components/page-header"
+import type { Crumb } from "@/components/page-breadcrumb"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { useOrganization } from "@/components/org-context"
 import { TrackBadge } from "@/components/track-badge"
 import { RoleDetailSkeleton } from "@/components/roles/role-detail-skeleton"
@@ -39,16 +47,33 @@ export default function RolePage(props: {
   }
   if (role === null) {
     return (
-      <div className="space-y-2">
-        <p className="text-muted-foreground text-sm">{t("notFound")}</p>
-        <Link href="/roles" className="text-sm underline underline-offset-4">
-          {t("backToRoles")}
-        </Link>
+      <div className="space-y-4">
+        <PageBreadcrumbRow
+          segments={[
+            { label: tNav("work"), href: "/work" },
+            { label: tNav("roles"), href: "/roles" },
+          ]}
+        />
+        <Empty>
+          <EmptyHeader>
+            <EmptyTitle>{tNav("roles")}</EmptyTitle>
+            <EmptyDescription>{t("notFound")}</EmptyDescription>
+          </EmptyHeader>
+          <Link
+            href="/roles"
+            className={cn(buttonVariants({ variant: "outline" }))}
+          >
+            {t("backToRoles")}
+          </Link>
+        </Empty>
       </div>
     )
   }
 
-  const roleCrumbs: Crumb[] = [{ label: tNav("roles"), href: "/roles" }]
+  const roleCrumbs: Crumb[] = [
+    { label: tNav("work"), href: "/work" },
+    { label: tNav("roles"), href: "/roles" },
+  ]
   if (role.familyName !== null && role.familySlug !== null) {
     roleCrumbs.push({
       label: role.familyName,
@@ -59,10 +84,9 @@ export default function RolePage(props: {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        breadcrumb={<PageBreadcrumb segments={roleCrumbs} />}
-        title={role.title}
-        titleAdornment={
+      <PageBreadcrumbRow
+        segments={roleCrumbs}
+        actions={
           <>
             <TrackBadge trackKey={role.trackKey} name={role.trackName} />
             {role.archived && (
@@ -90,7 +114,7 @@ export default function RolePage(props: {
         {/* The evaluation rail sticks in view while the taller profile
             scrolls; self-start keeps it from stretching to the row height so
             the sticky offset can take effect. */}
-        <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
+        <div className="space-y-6 lg:sticky lg:top-4 lg:self-start">
           <RoleEvaluationCard
             orgId={orgId}
             roleId={role.roleId}

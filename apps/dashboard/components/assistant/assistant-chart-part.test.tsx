@@ -100,7 +100,7 @@ describe("AssistantChartPart (headcountTrend)", () => {
     expect(card?.className).toMatch(/(^|\s)border(\s|$)/)
     expect(card?.className).toContain("ring-0")
     expect(card?.className).toContain("shadow-none")
-    expect(card?.className).not.toContain("pb-0")
+    expect(card?.className.split(/\s+/)).not.toContain("pb-0")
   })
 })
 

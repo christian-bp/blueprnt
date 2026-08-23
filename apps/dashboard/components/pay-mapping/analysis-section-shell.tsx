@@ -11,9 +11,9 @@ import {
 } from "@/components/floating-stack"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import {
-  PageHeaderAdornment,
-  PageHeaderAside,
-} from "@/components/page-header-slot"
+  BreadcrumbAdornment,
+  BreadcrumbAside,
+} from "@/components/page-breadcrumb-slots"
 import { SegmentedProgress } from "@/components/segmented-progress"
 import { AnalysisChapterTabs } from "./analysis-chapter-tabs"
 import {
@@ -74,12 +74,12 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
               page already titled Analysis and left the reader two headings
               for one thing. Its concept help and its instrument move up to
               that page title, which is what they were always about. */}
-          <PageHeaderAdornment>
+          <BreadcrumbAdornment>
             <HelpMorphButton label={tHelp("analysisProgressLabel")}>
               {tHelp("analysisProgressBody")}
             </HelpMorphButton>
-          </PageHeaderAdornment>
-          <PageHeaderAside>
+          </BreadcrumbAdornment>
+          <BreadcrumbAside>
             <SegmentedProgress
               activeSegment={active}
               barLabel={t("progressBarLabel")}
@@ -94,7 +94,7 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
               segments={chapters ?? []}
               total={queue?.progress.overall.total ?? 0}
             />
-          </PageHeaderAside>
+          </BreadcrumbAside>
           {/* The journey row: the tabs and this chapter's action. */}
           <AnalysisChapterTabs />
           {children}

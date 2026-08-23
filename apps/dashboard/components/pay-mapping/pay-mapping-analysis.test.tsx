@@ -781,7 +781,9 @@ describe("sticky checklist gutter", () => {
   const read = (path: string) => readFileSync(join(process.cwd(), path), "utf8")
 
   it("pins the checklist at the same offset as the page's own gutter", () => {
-    const gutter = read("components/app-shell.tsx").match(/lg:px-(\d+)/)
+    const gutter = read("components/app-shell.tsx").match(
+      /PAGE_PADDING = "p-(\d+)"/
+    )
     const stickyTop = read(
       "components/pay-mapping/pay-mapping-analysis.tsx"
     ).match(/lg:sticky lg:top-(\d+)/)

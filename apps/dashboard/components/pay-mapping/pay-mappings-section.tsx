@@ -1,5 +1,6 @@
 "use client"
 
+import { Medallion } from "@/components/medallion"
 import { ChartColumnIcon, MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -47,10 +48,14 @@ import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
-import { PageHeader } from "@/components/page-header"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { PayMappingRunActions } from "@/components/pay-mapping/pay-mapping-run-actions"
 import { StartPayMappingDialog } from "@/components/pay-mapping/start-pay-mapping-dialog"
-import { TablePagination } from "@/components/table-pagination"
+import {
+  FrameTable,
+  FrameTableFooter,
+  TablePagination,
+} from "@/components/frame-table"
 import { TableSearchField } from "@/components/table-search-field"
 import {
   TableSkeleton,
@@ -317,18 +322,18 @@ export function PayMappingsSection() {
 
   return (
     <div className="space-y-4">
-      <PageHeader
-        title={tNav("payMapping")}
-        description={t("description")}
-        action={startDialog}
-      />
+      <PageBreadcrumbRow segments={[{ label: tNav("payMapping") }]} />
 
-      {loading ? (
-        // Loading: the live toolbar over a content-shaped table skeleton,
-        // sized to one full page (PAGE_SIZE) so the table does not grow
-        // when the first page of data arrives.
-        <>
-          {toolbar}
+      <FrameTable
+        title={tNav("payMapping")}
+        count={loading ? undefined : shown}
+        toolbar={startDialog}
+        filters={toolbar}
+      >
+        {loading ? (
+          // Loading: a content-shaped table skeleton under the live toolbar,
+          // sized to one full page (PAGE_SIZE) so the table does not grow
+          // when the first page of data arrives.
           <Table className="table-fixed">
             {tableHeader}
             <TableSkeleton
@@ -336,127 +341,124 @@ export function PayMappingsSection() {
               columns={PAY_MAPPING_SKELETON_COLUMNS}
             />
           </Table>
-        </>
-      ) : runs.length === 0 ? (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <HugeiconsIcon
-                icon={ChartColumnIcon}
-                strokeWidth={2}
-                aria-hidden="true"
-              />
-            </EmptyMedia>
-            <div className="flex items-center gap-1.5">
-              <EmptyTitle>{tNav("payMapping")}</EmptyTitle>
-              <HelpMorphButton label={tHelp("payMappingLabel")}>
-                {tHelp("payMappingBody")}
-              </HelpMorphButton>
-            </div>
-            <EmptyDescription>{t("empty")}</EmptyDescription>
-          </EmptyHeader>
-          <StartPayMappingDialog
-            orgId={orgId}
-            triggerLabel={t("startCta")}
-            variant="outline"
-          />
-        </Empty>
-      ) : (
-        <>
-          {toolbar}
-
-          {shown === 0 ? (
-            <Empty>
-              <EmptyHeader>
+        ) : runs.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia>
+                <Medallion icon={ChartColumnIcon} size="lg" />
+              </EmptyMedia>
+              <div className="flex items-center gap-1.5">
                 <EmptyTitle>{tNav("payMapping")}</EmptyTitle>
-                <EmptyDescription>{tToolbar("noMatches")}</EmptyDescription>
-              </EmptyHeader>
-              <Button type="button" variant="outline" onClick={clearFilters}>
-                {tToolbar("clearFilters")}
-              </Button>
-            </Empty>
-          ) : (
-            <>
-              <Table className="table-fixed">
-                {tableHeader}
-                <TableBody>
-                  <AnimatePresence initial={false}>
-                    {pageRows.map((run) => (
-                      <motion.tr
-                        key={run.runId}
-                        layout="position"
-                        transition={SPRING}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                      >
-                        <TableCell className="font-medium">
-                          <Link
-                            className="truncate underline-offset-4 hover:underline"
-                            href={`/pay-mappings/${run.slug}`}
-                          >
-                            {run.label}
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {format.dateTime(new Date(run.referenceDate), {
-                            dateStyle: "medium",
-                          })}
-                        </TableCell>
-                        <TableCell>
-                          {/* Block flex wrapper: an inline-flex Badge on the
+                <HelpMorphButton label={tHelp("payMappingLabel")}>
+                  {tHelp("payMappingBody")}
+                </HelpMorphButton>
+              </div>
+              <EmptyDescription>{t("empty")}</EmptyDescription>
+            </EmptyHeader>
+            <StartPayMappingDialog
+              orgId={orgId}
+              triggerLabel={t("startCta")}
+              variant="outline"
+            />
+          </Empty>
+        ) : shown === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyTitle>{tNav("payMapping")}</EmptyTitle>
+              <EmptyDescription>{tToolbar("noMatches")}</EmptyDescription>
+            </EmptyHeader>
+            <Button type="button" variant="outline" onClick={clearFilters}>
+              {tToolbar("clearFilters")}
+            </Button>
+          </Empty>
+        ) : (
+          <>
+            <Table className="table-fixed">
+              {tableHeader}
+              <TableBody>
+                <AnimatePresence initial={false}>
+                  {pageRows.map((run) => (
+                    <motion.tr
+                      key={run.runId}
+                      layout="position"
+                      transition={SPRING}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                    >
+                      <TableCell className="font-medium">
+                        <Link
+                          className="truncate underline-offset-4 hover:underline"
+                          href={`/pay-mappings/${run.slug}`}
+                        >
+                          {run.label}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {format.dateTime(new Date(run.referenceDate), {
+                          dateStyle: "medium",
+                        })}
+                      </TableCell>
+                      <TableCell>
+                        {/* Block flex wrapper: an inline-flex Badge on the
                               text baseline would inflate the line box (see
                               the people table's badge cell), desyncing this
                               row's height from the skeleton's. */}
-                          <div className="flex min-h-5 items-center">
-                            <Badge variant="outline">
-                              {t(`status.${run.status}`)}
-                            </Badge>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground tabular-nums">
-                          {run.populationCount}
-                        </TableCell>
-                        <TableCell className="truncate text-muted-foreground">
-                          {run.initiatedByName}
-                        </TableCell>
-                        <TableCell>
-                          {/* Block flex wrapper: the trigger never sits bare
+                        <div className="flex min-h-5 items-center">
+                          <Badge variant="outline">
+                            {t(`status.${run.status}`)}
+                          </Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground tabular-nums">
+                        {run.populationCount}
+                      </TableCell>
+                      <TableCell className="truncate text-muted-foreground">
+                        {run.initiatedByName}
+                      </TableCell>
+                      <TableCell>
+                        {/* Block flex wrapper: the trigger never sits bare
                               in the cell (see the status badge above). */}
-                          <div className="flex justify-end">
-                            <PayMappingRunActions
-                              orgId={orgId}
-                              runId={run.runId as Id<"payMappingRuns">}
-                              label={run.label}
-                            />
-                          </div>
-                        </TableCell>
-                      </motion.tr>
-                    ))}
-                  </AnimatePresence>
-                </TableBody>
-              </Table>
-              {pageCount > 1 && (
-                <div className="flex justify-center">
-                  <TablePagination
-                    page={pagination.pageIndex}
-                    pageCount={pageCount}
-                    hasMore={false}
-                    canPrev={table.getCanPreviousPage()}
-                    canNext={table.getCanNextPage()}
-                    onPrev={() => table.previousPage()}
-                    onNext={() => table.nextPage()}
-                    onSelect={(page0) => table.setPageIndex(page0)}
-                    previousLabel={tToolbar("previous")}
-                    nextLabel={tToolbar("next")}
-                  />
-                </div>
-              )}
-            </>
-          )}
-        </>
-      )}
+                        <div className="flex justify-end">
+                          <PayMappingRunActions
+                            orgId={orgId}
+                            runId={run.runId as Id<"payMappingRuns">}
+                            label={run.label}
+                          />
+                        </div>
+                      </TableCell>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              </TableBody>
+            </Table>
+            {pageCount > 1 && (
+              <div className="px-(--frame-panel-px) py-3">
+                <FrameTableFooter
+                  page={pagination.pageIndex}
+                  pageSize={pagination.pageSize}
+                  total={shown}
+                  pager={
+                    <TablePagination
+                      page={pagination.pageIndex}
+                      pageCount={pageCount}
+                      hasMore={false}
+                      canPrev={table.getCanPreviousPage()}
+                      canNext={table.getCanNextPage()}
+                      onPrev={() => table.previousPage()}
+                      onNext={() => table.nextPage()}
+                      onSelect={(page0) => table.setPageIndex(page0)}
+                      previousLabel={tToolbar("previous")}
+                      nextLabel={tToolbar("next")}
+                    />
+                  }
+                />
+              </div>
+            )}
+          </>
+        )}
+      </FrameTable>
     </div>
   )
 }

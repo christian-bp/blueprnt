@@ -1,5 +1,6 @@
 "use client"
 
+import { SettingsFrame } from "@/components/settings-frame"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
@@ -12,13 +13,6 @@ import {
   AlertDialogTitle,
 } from "@workspace/ui/components/alert-dialog"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import {
   Form,
   FormControl,
@@ -95,12 +89,8 @@ export function TwoFactorSection() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <SettingsFrame title={t("title")} description={t("description")}>
+      <div className="space-y-4 px-5 py-4">
         {/* Current method row */}
         {/* Label with its concept help, and the value stacked directly under it
             so they read as one pair (not split to opposite edges). */}
@@ -273,7 +263,7 @@ export function TwoFactorSection() {
             </ul>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </SettingsFrame>
   )
 }

@@ -1,5 +1,6 @@
 "use client"
 
+import { Medallion } from "@/components/medallion"
 import { Briefcase01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
@@ -15,7 +16,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
-import { PageHeader } from "@/components/page-header"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { useOrganization } from "@/components/org-context"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
 import { RolesTable, RolesTableSkeleton } from "@/components/roles/roles-table"
@@ -46,10 +47,14 @@ export default function RolesPage() {
   ) {
     return (
       <div className="space-y-4">
-        <PageHeader
-          title={tNav("roles")}
-          description={t("description")}
-          action={
+        <PageBreadcrumbRow
+          segments={[
+            { label: tNav("work"), href: "/work" },
+            { label: tNav("roles") },
+          ]}
+        />
+        <RolesTableSkeleton
+          actions={
             <div className="flex items-center gap-2">
               <Button type="button" variant="outline">
                 {t("newCta")}
@@ -66,7 +71,6 @@ export default function RolesPage() {
             </div>
           }
         />
-        <RolesTableSkeleton />
       </div>
     )
   }
@@ -86,41 +90,17 @@ export default function RolesPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader
-        title={tNav("roles")}
-        description={t("description")}
-        action={
-          // Import is the primary: a register is built fastest in bulk, and
-          // this matches the people header, where the bulk path also leads.
-          <div className="flex items-center gap-2">
-            <CreateRoleDialog
-              orgId={orgId}
-              tracks={model.tracks}
-              triggerLabel={t("newCta")}
-              existing={roles}
-              triggerVariant="outline"
-            />
-            <Link href="/roles/import" className={cn(buttonVariants())}>
-              <HugeiconsIcon
-                icon={Briefcase01Icon}
-                size={16}
-                strokeWidth={2}
-                aria-hidden="true"
-              />
-              {t("import.cta")}
-            </Link>
-          </div>
-        }
+      <PageBreadcrumbRow
+        segments={[
+          { label: tNav("work"), href: "/work" },
+          { label: tNav("roles") },
+        ]}
       />
       {roles.length === 0 ? (
         <Empty>
           <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <HugeiconsIcon
-                icon={Briefcase01Icon}
-                strokeWidth={2}
-                aria-hidden="true"
-              />
+            <EmptyMedia>
+              <Medallion icon={Briefcase01Icon} size="lg" />
             </EmptyMedia>
             <EmptyTitle>{tNav("roles")}</EmptyTitle>
             <EmptyDescription>{t("empty")}</EmptyDescription>
@@ -133,7 +113,32 @@ export default function RolesPage() {
           </Link>
         </Empty>
       ) : (
-        <RolesTable roles={rows} tracks={model.tracks} />
+        <RolesTable
+          roles={rows}
+          tracks={model.tracks}
+          actions={
+            // Import is the primary: a register is built fastest in bulk, and
+            // this matches the people header, where the bulk path also leads.
+            <div className="flex items-center gap-2">
+              <CreateRoleDialog
+                orgId={orgId}
+                tracks={model.tracks}
+                triggerLabel={t("newCta")}
+                existing={roles}
+                triggerVariant="outline"
+              />
+              <Link href="/roles/import" className={cn(buttonVariants())}>
+                <HugeiconsIcon
+                  icon={Briefcase01Icon}
+                  size={16}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
+                {t("import.cta")}
+              </Link>
+            </div>
+          }
+        />
       )}
     </div>
   )

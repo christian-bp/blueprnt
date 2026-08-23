@@ -22,7 +22,10 @@ import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
 import { ChapterAction } from "@/components/chapter-action-slot"
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
 import { DimensionFrame } from "@/components/model/dimension-frame"
-import { PlacedCriterionCard } from "@/components/model/placed-criterion-card"
+import {
+  PlacedCriterionCard,
+  CRITERION_CARD_SURFACE,
+} from "@/components/model/placed-criterion-card"
 import {
   WorkingConditionsColumnSkeleton,
   WorkingConditionsEmptyColumn,
@@ -340,7 +343,11 @@ function MethodPanelSkeleton({ orgId }: { orgId: string }) {
 function MethodCardSkeleton() {
   const t = useTranslations("dashboard.model.method")
   return (
-    <Item variant="outline" render={<li aria-hidden="true" />}>
+    <Item
+      variant="outline"
+      className={CRITERION_CARD_SURFACE}
+      render={<li aria-hidden="true" />}
+    >
       <ItemContent>
         {/* Line boxes rather than bare bars: ItemTitle and ItemDescription are
             both text-sm (a 20px line), and a bar centred in its own line box is

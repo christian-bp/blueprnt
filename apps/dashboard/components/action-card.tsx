@@ -63,7 +63,7 @@ export function ActionCard({
           : "hover:bg-accent/40"
       )}
     >
-      <Medallion icon={icon} tone={tone} />
+      <Medallion icon={icon} tone={tone} ring={false} />
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium text-sm">{title}</p>
         <p
@@ -103,7 +103,10 @@ export function ActionCard({
 export function ActionCardSkeleton() {
   return (
     <Card size="sm" className="flex-row items-center gap-3 px-(--card-spacing)">
-      <span aria-hidden="true" className={medallionClass("md", "muted")} />
+      <span
+        aria-hidden="true"
+        className={medallionClass("md", "muted", false)}
+      />
       <div className="min-w-0 flex-1">
         <span className="flex h-5 items-center">
           <Skeleton className="h-4 w-28" />

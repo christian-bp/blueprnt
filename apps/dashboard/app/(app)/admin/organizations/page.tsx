@@ -5,8 +5,7 @@ import { OrganizationsSection } from "@/components/admin/organizations-section"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 export default function AdminOrganizationsPage() {
-  const tNav = useTranslations("dashboard.nav")
   const tTabs = useTranslations("dashboard.admin.tabs")
-  usePageTitle([tNav("admin"), tTabs("organizations")])
+  usePageTitle(tTabs("organizations"))
   return <OrganizationsSection />
 }

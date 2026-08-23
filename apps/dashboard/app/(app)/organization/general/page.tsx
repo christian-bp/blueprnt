@@ -6,12 +6,12 @@ import { useTranslations } from "next-intl"
 import { useOrganization } from "@/components/org-context"
 import { OrganizationLogoSection } from "@/components/organization/organization-logo-section"
 import { OrganizationProfileForm } from "@/components/organization/organization-profile-form"
-import { PageHeader } from "@/components/page-header"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 export default function OrganizationGeneralPage() {
   const tTabs = useTranslations("dashboard.organization.tabs")
-  const t = useTranslations("dashboard.organization.general")
+  const tNav = useTranslations("dashboard.nav")
   usePageTitle(tTabs("general"))
   const { orgId } = useOrganization()
   const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
@@ -20,7 +20,9 @@ export default function OrganizationGeneralPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={tTabs("general")} description={t("description")} />
+      <PageBreadcrumbRow
+        segments={[{ label: tNav("settings") }, { label: tTabs("general") }]}
+      />
       <OrganizationLogoSection imageUrl={settings?.imageUrl ?? null} />
       {settings !== undefined && (
         <OrganizationProfileForm

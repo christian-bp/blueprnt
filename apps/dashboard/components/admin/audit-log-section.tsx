@@ -1,7 +1,7 @@
 "use client"
 
-import { Audit02Icon, Search01Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { Medallion } from "@/components/medallion"
+import { Audit02Icon } from "@hugeicons/core-free-icons"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -12,7 +12,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
-import { Input } from "@workspace/ui/components/input"
 import {
   Select,
   SelectContent,
@@ -41,6 +40,8 @@ import { usePaginatedQuery, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { type ReactNode, useState } from "react"
 import type { DateRange } from "react-day-picker"
+import { TableSearchField } from "@/components/table-search-field"
+import { FrameTable, FrameTableFooter } from "@/components/frame-table"
 import { TablePagination } from "@/components/table-pagination"
 import {
   ChangeEntryRow,
@@ -48,7 +49,7 @@ import {
   StatList,
 } from "@/components/audit/change-entry-row"
 import { DateRangePicker } from "@/components/date-range-picker"
-import { PageHeading } from "@/components/page-heading"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { useAuditPagination } from "@/hooks/use-audit-pagination"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
@@ -115,6 +116,8 @@ function composeTarget(
 
 export function AuditLogSection() {
   const t = useTranslations("dashboard.admin.auditLog")
+  const tTabs = useTranslations("dashboard.admin.tabs")
+  const tNav = useTranslations("dashboard.nav")
   // Change-field labels reuse the org namespace: the same domain fields appear
   // in platform payload diffs (e.g. platform.orgUpdated changes).
   const tFields = useTranslations("dashboard.auditLog")
@@ -271,171 +274,177 @@ export function AuditLogSection() {
 
   return (
     <section className="space-y-4">
-      <div>
-        <PageHeading>{t("heading")}</PageHeading>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
-      </div>
+      <PageBreadcrumbRow
+        segments={[
+          { label: tNav("admin"), href: "/admin" },
+          { label: tTabs("auditLog") },
+        ]}
+      />
 
-      {/* Toolbar: search on the left, category filter dropdown to its right. */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative">
-          <HugeiconsIcon
-            icon={Search01Icon}
-            size={16}
-            strokeWidth={2}
-            aria-hidden="true"
-            className="absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            type="search"
-            value={search}
-            placeholder={t("search.placeholder")}
-            aria-label={t("search.placeholder")}
-            onChange={(event) => setSearch(event.target.value)}
-            className="w-64 pl-8"
-          />
-        </div>
-        <Select
-          items={{
-            all: t("categories.all"),
-            ...Object.fromEntries(
-              CATEGORIES.map((category) => [category, categoryLabel(category)])
-            ),
-          }}
-          value={selectedCategory}
-          onValueChange={(value) =>
-            setSelectedCategory(value as Category | "all")
-          }
-        >
-          <SelectTrigger className="w-44" aria-label={t("categoryFilterLabel")}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("categories.all")}</SelectItem>
-            {CATEGORIES.map((category) => (
-              <SelectItem key={category} value={category}>
-                {categoryLabel(category)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <DateRangePicker
-          value={dateRange}
-          onChange={setDateRange}
-          placeholder={t("dateRange.placeholder")}
-          clearLabel={t("dateRange.clear")}
-          todayLabel={t("dateRange.today")}
-          ariaLabel={t("dateRange.label")}
-        />
-      </div>
-
-      {loadingFirst ? (
-        <Table className="table-fixed">
-          {auditTableHeader}
-          <TableSkeleton
-            rows={PAGE_SIZE}
-            columns={[
-              { className: "w-28" },
-              { className: "w-24" },
-              { className: "h-5 w-16 rounded-full" },
-              { className: "w-28" },
-              { className: "w-28" },
-              {},
-            ]}
-          />
-        </Table>
-      ) : rows.length === 0 ? (
-        <Empty>
-          <EmptyHeader>
-            {!isSearching && (
-              <EmptyMedia variant="icon">
-                <HugeiconsIcon
-                  icon={Audit02Icon}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-              </EmptyMedia>
-            )}
-            <EmptyTitle>{t("heading")}</EmptyTitle>
-            <EmptyDescription>
-              {isSearching ? t("search.empty") : t("empty")}
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : (
-        <Table className="table-fixed">
-          {auditTableHeader}
-          <TableBody>
-            {pager.pageRows.map((row) => (
-              <TableRow
-                key={row.id}
-                role="button"
-                tabIndex={0}
-                aria-label={t("detail.viewDetails")}
-                className="cursor-pointer hover:bg-muted/50"
-                onClick={() => setSelectedRow(row)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault()
-                    setSelectedRow(row)
-                  }
-                }}
+      <FrameTable
+        title={tTabs("auditLog")}
+        count={loadingFirst ? undefined : rows.length}
+        filters={
+          <div className="flex flex-wrap items-center gap-2">
+            <TableSearchField
+              type="search"
+              value={search}
+              placeholder={t("search.placeholder")}
+              onChange={setSearch}
+            />
+            <Select
+              items={{
+                all: t("categories.all"),
+                ...Object.fromEntries(
+                  CATEGORIES.map((category) => [
+                    category,
+                    categoryLabel(category),
+                  ])
+                ),
+              }}
+              value={selectedCategory}
+              onValueChange={(value) =>
+                setSelectedCategory(value as Category | "all")
+              }
+            >
+              <SelectTrigger
+                className="w-44"
+                aria-label={t("categoryFilterLabel")}
               >
-                <TableCell className="truncate text-muted-foreground">
-                  {format.dateTime(new Date(row.at), {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
-                </TableCell>
-                <TableCell className="truncate font-medium">
-                  {operatorLabel(row.actorId, row.actorName)}
-                </TableCell>
-                <TableCell>
-                  {row.category ? (
-                    <Badge variant="secondary">
-                      {categoryLabel(row.category)}
-                    </Badge>
-                  ) : null}
-                </TableCell>
-                <TableCell className="truncate">
-                  {actionLabel(row.type)}
-                </TableCell>
-                <TableCell className="truncate text-muted-foreground">
-                  {composeTarget(row, t("deletedUser"), t("deletedOrg"))}
-                </TableCell>
-                <TableCell className="truncate text-muted-foreground">
-                  {detail(row.payload)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
-
-      {/* Pagination slot: stable container so toggling browse/search does not
-          reflow the table. Previous/Next page control plus a truncation note
-          while searching (search is capped, not paginated). */}
-      <div className="flex flex-col items-center gap-1.5">
-        {rows.length > 0 ? (
-          <TablePagination
-            page={pager.page}
-            pageCount={pager.pageCount}
-            hasMore={pager.hasMore}
-            canPrev={pager.canPrev}
-            canNext={pager.canNext}
-            onPrev={pager.goPrev}
-            onNext={pager.goNext}
-            onSelect={pager.goTo}
-            previousLabel={t("previous")}
-            nextLabel={t("next")}
-          />
-        ) : null}
-        {isSearching && rows.length === 50 ? (
-          <p className="text-muted-foreground text-sm">
-            {t("search.capped", { count: 50 })}
-          </p>
-        ) : null}
-      </div>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("categories.all")}</SelectItem>
+                {CATEGORIES.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {categoryLabel(category)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <DateRangePicker
+              value={dateRange}
+              onChange={setDateRange}
+              placeholder={t("dateRange.placeholder")}
+              clearLabel={t("dateRange.clear")}
+              todayLabel={t("dateRange.today")}
+              ariaLabel={t("dateRange.label")}
+            />
+          </div>
+        }
+        footer={
+          rows.length > 0 || (isSearching && rows.length === 50) ? (
+            <div className="flex flex-col gap-1.5">
+              {rows.length > 0 && (
+                <FrameTableFooter
+                  page={pager.page}
+                  pageSize={PAGE_SIZE}
+                  total={undefined}
+                  pager={
+                    <TablePagination
+                      page={pager.page}
+                      pageCount={pager.pageCount}
+                      hasMore={pager.hasMore}
+                      canPrev={pager.canPrev}
+                      canNext={pager.canNext}
+                      onPrev={pager.goPrev}
+                      onNext={pager.goNext}
+                      onSelect={pager.goTo}
+                      previousLabel={t("previous")}
+                      nextLabel={t("next")}
+                    />
+                  }
+                />
+              )}
+              {/* Search is capped, not paginated; say so under the pager. */}
+              {isSearching && rows.length === 50 && (
+                <p className="text-muted-foreground text-sm">
+                  {t("search.capped", { count: 50 })}
+                </p>
+              )}
+            </div>
+          ) : undefined
+        }
+      >
+        {loadingFirst ? (
+          <Table className="table-fixed">
+            {auditTableHeader}
+            <TableSkeleton
+              rows={PAGE_SIZE}
+              columns={[
+                { className: "w-28" },
+                { className: "w-24" },
+                { className: "h-5 w-16 rounded-full" },
+                { className: "w-28" },
+                { className: "w-28" },
+                {},
+              ]}
+            />
+          </Table>
+        ) : rows.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              {!isSearching && (
+                <EmptyMedia>
+                  <Medallion icon={Audit02Icon} size="lg" />
+                </EmptyMedia>
+              )}
+              <EmptyTitle>{t("heading")}</EmptyTitle>
+              <EmptyDescription>
+                {isSearching ? t("search.empty") : t("empty")}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <Table className="table-fixed">
+            {auditTableHeader}
+            <TableBody>
+              {pager.pageRows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={t("detail.viewDetails")}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => setSelectedRow(row)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault()
+                      setSelectedRow(row)
+                    }
+                  }}
+                >
+                  <TableCell className="truncate text-muted-foreground">
+                    {format.dateTime(new Date(row.at), {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
+                  </TableCell>
+                  <TableCell className="truncate font-medium">
+                    {operatorLabel(row.actorId, row.actorName)}
+                  </TableCell>
+                  <TableCell>
+                    {row.category ? (
+                      <Badge variant="secondary">
+                        {categoryLabel(row.category)}
+                      </Badge>
+                    ) : null}
+                  </TableCell>
+                  <TableCell className="truncate">
+                    {actionLabel(row.type)}
+                  </TableCell>
+                  <TableCell className="truncate text-muted-foreground">
+                    {composeTarget(row, t("deletedUser"), t("deletedOrg"))}
+                  </TableCell>
+                  <TableCell className="truncate text-muted-foreground">
+                    {detail(row.payload)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </FrameTable>
 
       <Sheet
         open={selectedRow !== null}

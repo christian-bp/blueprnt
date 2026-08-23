@@ -9,6 +9,12 @@ import { onQuery } from "@/test/convex-mocks"
 const useQueryMock = vi.fn()
 onQuery((ref, args) => useQueryMock(ref, args))
 
+// NumberFlow's custom element does not exist in jsdom; the count chip only
+// needs to render its value.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}))
+
 vi.mock(
   "convex/react",
   async () => (await import("@/test/convex-mocks")).convexReactModule
@@ -162,7 +168,12 @@ describe("RolesPage", () => {
 
     // The heading and the table's own toolbar are real too, not gray bars.
     // The heading is the page's nav label (shared with the sidebar entry).
-    expect(screen.getByText(messages.dashboard.nav.roles)).toBeTruthy()
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: messages.dashboard.nav.roles,
+      })
+    ).toBeTruthy()
     expect(
       screen.getByRole("textbox", { name: t.toolbar.searchPlaceholder })
     ).toBeTruthy()
@@ -180,14 +191,12 @@ describe("RolesPage", () => {
     currentRoles = []
     renderPage()
     expect(screen.getByText(t.empty)).toBeTruthy()
-    // Two now: the header's primary and the empty state's outline call to
-    // action, which is the one a brand-new org actually lands on.
+    // One: the empty state's own outline call to action (the register frame
+    // and its toolbar only mount once there are roles to show).
     const links = importLinks()
-    expect(links).toHaveLength(2)
-    for (const link of links) {
-      expect(link.getAttribute("href")).toBe(IMPORT_HREF)
-    }
-    expectVariant(links[1] as Element, "outline")
+    expect(links).toHaveLength(1)
+    expect(links[0]?.getAttribute("href")).toBe(IMPORT_HREF)
+    expectVariant(links[0] as Element, "outline")
   })
 
   it("shows the table instead of the empty state once roles exist", () => {

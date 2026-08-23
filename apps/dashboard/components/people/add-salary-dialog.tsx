@@ -251,7 +251,7 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                   />
                   {/* Removing an unsaved row needs no confirm: a quiet ghost
                       trashcan (RemoveConfirm's iconography without its armed
-                      step) sized to the h-9 field row. */}
+                      step) sized to the h-8 field row. */}
                   <Button
                     type="button"
                     variant="ghost"
