@@ -1,0 +1,54 @@
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_8028367fdf2fee 1932-1935
+apps/dashboard/content/docs/en/criteria-and-scale.mdx
+  s_58dd112dc09435::t_d5b958a205f887 34-37
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_8028367fdf2fee 1932-1935
+apps/dashboard/components/model/library-picker-dialog.tsx
+  s_58dd112dc09435::t_fd4ea8f9366d48 13
+  s_58dd112dc09435::t_7da890a44698b7 91-95
+  s_58dd112dc09435::t_36908f9ac825d2 274-345
+  s_58dd112dc09435::t_05cbc4c2c6eed6 358
+  s_58dd112dc09435::t_4b7fa731fcad6b 3
+  s_58dd112dc09435::t_55fe029e360cdc 33,35,40
+  s_58dd112dc09435::t_3157f93bcf5805 185-193
+  s_58dd112dc09435::t_261d45929479b2 108-116
+  s_58dd112dc09435::t_d63c3b44d09109 203-205
+  s_58dd112dc09435::t_138f54bf93018c 226,228-235,237
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_8028367fdf2fee 1932-1935
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_8028367fdf2fee 1932-1935
+apps/dashboard/content/docs/sv/criteria-and-scale.mdx
+  s_58dd112dc09435::t_d5b958a205f887 33-36
+apps/dashboard/content/docs/fi/criteria-and-scale.mdx
+  s_58dd112dc09435::t_d5b958a205f887 34-38
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_ac2778de9db32f 609-630
+  s_58dd112dc09435::t_946e43201ae0fe 631-634,640-641,644,647,651,657-691,699-718
+  s_58dd112dc09435::t_dbbc877a12250a 692-698
+  s_58dd112dc09435::t_7c4942f3d09e3e 77-82
+  s_58dd112dc09435::t_f5f8b937f426fa 719
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_8028367fdf2fee 1932-1935
+apps/dashboard/content/docs/da/criteria-and-scale.mdx
+  s_58dd112dc09435::t_d5b958a205f887 33-36
+apps/dashboard/content/docs/nb/criteria-and-scale.mdx
+  s_58dd112dc09435::t_d5b958a205f887 33-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "116a09bb530ddd5d520ffd15198fa6645abfeebb",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
