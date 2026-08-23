@@ -1,0 +1,39 @@
+apps/dashboard/components/rating/rating-stepper.test.tsx
+  s_58dd112dc09435::t_f1fbca3c943f08 161-230
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_9009f844faecd6 1615-1640,2141-2143
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_9009f844faecd6 1615-1640,2141-2143
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_5cc5432ba5320c 1638
+  s_58dd112dc09435::t_0b79586bb0ad8f 2143
+  s_58dd112dc09435::t_9009f844faecd6 1615-1637,1639-1640,2141-2142
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_9009f844faecd6 1615-1640,2141-2143
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_58dd112dc09435::t_edfa76b84a1bc4 516-526
+  s_58dd112dc09435::t_8aa79efa4d088b 32-36
+  s_58dd112dc09435::t_d850df8b6a7005 86-117
+  s_58dd112dc09435::t_50c20868a51c72 143-145
+  s_58dd112dc09435::t_2c9320e80864b4 392-412,414-415,417-429,431-462
+  s_58dd112dc09435::t_ef150fcc8c9c84 463-469
+  s_58dd112dc09435::t_d45264c9acabe6 470-485,487-490,492-497,499-515
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_9009f844faecd6 1615-1640,2141-2143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "05a0df44c38bd03163798a4a503adac265ef0ad4",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
