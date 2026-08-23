@@ -19,7 +19,7 @@ export function AssistantPanel() {
   const locale = useLocale()
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
-  const { messages, loading, busy, last } = useAssistantChat(orgId)
+  const { messages, phase, busy, last } = useAssistantChat(orgId)
   const sendMessage = useMutation(api.assistant.chat.sendMessage)
   const stopGeneration = useMutation(api.assistant.chat.stopGeneration)
   const [sendError, setSendError] = useState<string | undefined>(undefined)
@@ -45,7 +45,7 @@ export function AssistantPanel() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <AssistantThread
-        loading={loading}
+        phase={phase}
         messages={messages}
         onSuggestion={handleSend}
       />

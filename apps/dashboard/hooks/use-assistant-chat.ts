@@ -23,20 +23,34 @@ import { useQuery } from "convex/react"
 // thread-list node (AssistantHistoryPanel), via its own useAssistantThreads
 // hook, so this hook (read by every chat render) never pays for that extra
 // subscription.
+// The thread area's three visual states. resolving: nobody knows yet whether
+// a conversation exists, so the surface mirrors its DEFAULT view (the empty
+// hero) rather than promising messages; loadingMessages: a conversation
+// exists and its list is in flight, so message-shaped loading is honest;
+// ready: empty state or messages. Derived in the hook so AssistantPanel and
+// the page can never read the boundary differently.
+export type AssistantChatPhase = "resolving" | "loadingMessages" | "ready"
+
 export function useAssistantChat(orgId: string) {
   const thread = useQuery(api.assistant.chat.getActiveThread, { orgId })
   const messages = useQuery(
     api.assistant.chat.listMessages,
     thread ? { orgId, threadId: thread._id } : "skip"
   )
-  const loading =
-    thread === undefined || (thread !== null && messages === undefined)
+  const phase: AssistantChatPhase =
+    thread === undefined
+      ? "resolving"
+      : thread !== null && messages === undefined
+        ? "loadingMessages"
+        : "ready"
+  const loading = phase !== "ready"
   const resolvedMessages = thread === null ? [] : (messages ?? [])
   const last = resolvedMessages.at(-1)
   const busy = last?.status === "streaming"
   return {
     thread,
     messages: resolvedMessages,
+    phase,
     loading,
     busy,
     last,

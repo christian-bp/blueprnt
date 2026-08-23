@@ -29,13 +29,13 @@ vi.mock("@/components/org-context", () => ({
 // assistant-composer.test.tsx.
 vi.mock("@/components/assistant/assistant-thread", () => ({
   AssistantThread: (props: {
-    loading: boolean
+    phase: string
     messages: AssistantChatMessage[]
     onSuggestion: (text: string) => void
   }) => (
     <div
       data-testid="thread"
-      data-loading={String(props.loading)}
+      data-phase={props.phase}
       data-count={props.messages.length}
     >
       <button type="button" onClick={() => props.onSuggestion("Suggested")}>
@@ -86,11 +86,11 @@ describe("AssistantPanel", () => {
   })
   afterEach(() => cleanup())
 
-  it("reports loading with no messages while the active-thread query has not resolved", () => {
+  it("reports the resolving phase with no messages while the active-thread query has not resolved", () => {
     onQuery(() => undefined)
     renderPanel()
     const thread = screen.getByTestId("thread")
-    expect(thread.dataset.loading).toBe("true")
+    expect(thread.dataset.phase).toBe("resolving")
     expect(thread.dataset.count).toBe("0")
   })
 
@@ -119,13 +119,13 @@ describe("AssistantPanel", () => {
     expect(classes).toContain("max-w-3xl")
   })
 
-  it("resolves to the empty thread (not loading) when there is no active conversation", () => {
+  it("resolves to the ready empty thread when there is no active conversation", () => {
     onQuery((ref) =>
       ref === "assistant.chat.getActiveThread" ? null : undefined
     )
     renderPanel()
     const thread = screen.getByTestId("thread")
-    expect(thread.dataset.loading).toBe("false")
+    expect(thread.dataset.phase).toBe("ready")
     expect(thread.dataset.count).toBe("0")
   })
 
@@ -149,7 +149,7 @@ describe("AssistantPanel", () => {
     })
     renderPanel()
     const thread = screen.getByTestId("thread")
-    expect(thread.dataset.loading).toBe("false")
+    expect(thread.dataset.phase).toBe("ready")
     expect(thread.dataset.count).toBe("2")
     expect(screen.getByTestId("composer").dataset.busy).toBe("true")
   })
