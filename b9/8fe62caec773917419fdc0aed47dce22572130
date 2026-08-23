@@ -1,0 +1,76 @@
+packages/backend/convex/ai/suggest.ts
+  s_58dd112dc09435::t_bc452123079a05 71-131,173-176,178-188
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_fcf92742f3c865 679
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_fcf92742f3c865 679
+apps/dashboard/content/docs/fi/ai-weighting-review.mdx
+  s_58dd112dc09435::t_c1493d093b6546 35-49
+apps/dashboard/components/org-audit-log-section.tsx
+  s_58dd112dc09435::t_fcf92742f3c865 333
+packages/backend/convex/ai/promptGuard.ts
+  s_58dd112dc09435::t_5c734ab5a9adf3 1-149
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_fcf92742f3c865 679
+packages/backend/convex/ai/generate.ts
+  s_58dd112dc09435::t_718261a1247ead 354-355,368-370
+  s_58dd112dc09435::t_463fe7c4bb4b94 36
+  s_58dd112dc09435::t_e6315b3f7dc34f 484-497,500-504,521-550
+  s_58dd112dc09435::t_1747b45715c3c0 425
+  s_58dd112dc09435::t_67d317754a104d 264-265,272-274
+  s_58dd112dc09435::t_4dc1635be79ba0 131-149,266-271,356-367,426-440
+packages/backend/convex/ai/suggest.test.ts
+  s_58dd112dc09435::t_22fca0ca2d9e9d 1979
+  s_58dd112dc09435::t_848e6fc449fd08 1848-1864,1866-1867,1869-1903,1905-1914,1916-1917,1928-1953,1963-1978,1980-1992
+  s_58dd112dc09435::t_619a8a90b872a7 1868,1955-1962
+  s_58dd112dc09435::t_8f24a4e075cde1 1865,1904,1915,1954
+  s_58dd112dc09435::t_18d384ebc1f34d 1918-1927
+  s_58dd112dc09435::t_aad85331d0f552 10
+apps/dashboard/lib/audit-detail.test.tsx
+  s_58dd112dc09435::t_5faef2c2f6c495 91
+  s_58dd112dc09435::t_06147083ed8bf0 914-960
+apps/dashboard/content/docs/nb/ai-weighting-review.mdx
+  s_58dd112dc09435::t_c1493d093b6546 34-48
+apps/dashboard/content/docs/sv/ai-weighting-review.mdx
+  s_58dd112dc09435::t_c1493d093b6546 34-48
+apps/dashboard/content/docs/en/ai-weighting-review.mdx
+  s_58dd112dc09435::t_c1493d093b6546 33-48
+packages/backend/convex/assistant/title.ts
+  s_58dd112dc09435::t_4dc1635be79ba0 19,116-124
+packages/backend/convex/ai/promptGuard.test.ts
+  s_58dd112dc09435::t_c87b1d3976bbe8 1-198
+apps/dashboard/lib/audit-detail.tsx
+  s_58dd112dc09435::t_fcf92742f3c865 720-722,934-941
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_fcf92742f3c865 679
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_fcf92742f3c865 679
+apps/dashboard/content/docs/da/ai-weighting-review.mdx
+  s_58dd112dc09435::t_c1493d093b6546 34-49
+packages/backend/convex/_generated/api.d.ts
+  s_31d9dc88f4da19::t_af90321fc619fd 27,140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "b98fe62caec773917419fdc0aed47dce22572130",
+  "prompts": {},
+  "sessions": {
+    "s_31d9dc88f4da19": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a321d8cb70fcdf3fa",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
