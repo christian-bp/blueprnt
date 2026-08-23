@@ -12,11 +12,11 @@ function Avatar({
   ...props
 }: AvatarPrimitive.Root.Props & {
   size?: "default" | "sm" | "lg"
-  // Local deviation from upstream shadcn: the "brand" variant tints the avatar
-  // with the brand color (ring + initials fallback) for branded identity
-  // avatars such as the organization/company; "default" keeps the neutral
-  // theme treatment. The variant lives on the root and drives the fallback via
-  // the group/avatar selector below, so a single prop styles the whole avatar.
+  // Local deviation from upstream shadcn: the "brand" variant tints the
+  // initials fallback with the brand color for branded identity avatars such
+  // as the organization/company; "default" keeps the neutral theme treatment.
+  // The variant lives on the root and drives the fallback via the
+  // group/avatar selector below, so a single prop styles the whole avatar.
   variant?: "default" | "brand"
 }) {
   return (
@@ -24,11 +24,8 @@ function Avatar({
       data-slot="avatar"
       data-size={size}
       data-variant={variant}
-      // Local deviation from upstream shadcn: the "brand" variant colors the
-      // after: ring with the brand color so branded identity avatars read as
-      // branded even over an uploaded image.
       className={cn(
-        "group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[variant=brand]:after:border-brand data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
+        "group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
         className
       )}
       {...props}

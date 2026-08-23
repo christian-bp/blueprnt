@@ -1,7 +1,7 @@
 import { cn } from "@workspace/ui/lib/utils"
+
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Loading03Icon } from "@hugeicons/core-free-icons"
-
 // Local fix: HugeiconsIcon types strokeWidth as number; the plain svg props
 // type would let a string strokeWidth through and fail tsc.
 function Spinner({

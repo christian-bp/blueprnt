@@ -13,6 +13,7 @@
       "!**/dist",
       "!**/*.css",
       "!**/*.svg",
+      "!packages/ui/.vendor",
       "!packages/ui/src/components",
       "!packages/ui/src/hooks",
       "!packages/ui/src/lib",

@@ -32,17 +32,17 @@ const PATCHES = path.join(PKG, "patches")
 // One line per patch, written as the patch's header. A component that differs
 // from upstream without an entry here fails `refresh`, so a deviation cannot
 // enter the set without a stated reason.
+// frame.tsx is vendored from ReUI (https://reui.io/r/frame.json), not from the
+// shadcn registry, so the update cycle never touches it and it needs no patch.
 const DEVIATIONS: Record<string, string> = {
-  avatar:
-    "A brand variant for identity avatars (brand ring + tinted initials fallback).",
-  badge: "A success variant; the email log maps delivered and sent onto it.",
+  avatar: "A brand variant for identity avatars (tinted initials fallback).",
+  badge: "A success variant (the email log maps delivered and sent onto it).",
   checkbox:
     "Base UI omits data-checked while indeterminate, so the mixed state needs its own fill and a minus glyph.",
   command:
     "Dialog.Root renders its children open or not, so the accessible header must sit inside DialogContent; beside it, it leaves an sr-only heading in the page on every render.",
   "dropdown-menu":
     "Popup sized to its content; upstream pins it to the trigger width and clips labels.",
-  empty: "Brand-tinted icon media instead of neutral.",
   select:
     "Trigger may shrink inside form grids; popup sized to its content for the same clipping reason as the dropdown.",
   spinner:
@@ -122,6 +122,27 @@ async function applyPatches(): Promise<string[]> {
   return failed
 }
 
+// Registry template artifacts that must never survive into vendored sources:
+// the CLI (or a hand-applied transform) maps these to real imports; a leftover
+// means the transform silently failed for that file.
+async function assertNoTemplateArtifacts(): Promise<void> {
+  const offenders: string[] = []
+  for (const entry of await readdir(SRC)) {
+    if (!entry.endsWith(".tsx")) continue
+    const content = await readFile(path.join(SRC, entry), "utf8")
+    if (
+      content.includes("IconPlaceholder") ||
+      content.includes("@/registry/")
+    ) {
+      offenders.push(entry)
+    }
+  }
+  if (offenders.length === 0) return
+  console.error("Registry template artifacts left in vendored sources:")
+  console.error(offenders.map((f) => `  ${f}`).join("\n"))
+  process.exit(1)
+}
+
 async function update(): Promise<void> {
   await assertCleanSources()
 
@@ -130,6 +151,8 @@ async function update(): Promise<void> {
 
   console.log(`2/6  snapshotting pristine upstream into ${VENDOR_REL}`)
   await snapshotUpstream()
+
+  await assertNoTemplateArtifacts()
 
   console.log("3/6  replaying local patches")
   const failed = await applyPatches()

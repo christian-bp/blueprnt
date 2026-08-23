@@ -39,7 +39,7 @@ describe("vendored shadcn deviations", () => {
     cleanup()
   })
 
-  it("avatar exposes a brand variant that tints the ring and the fallback", () => {
+  it("avatar's brand variant tints the fallback only, never the ring", () => {
     const { container } = render(
       <Avatar variant="brand">
         <AvatarFallback>BP</AvatarFallback>
@@ -47,7 +47,9 @@ describe("vendored shadcn deviations", () => {
     )
     const root = container.querySelector("[data-slot=avatar]")
     expect(root?.getAttribute("data-variant")).toBe("brand")
-    expect(root?.className).toContain("data-[variant=brand]:after:border-brand")
+    // The brand ring was removed by decision (2026-08-23): a branded avatar
+    // keeps the neutral hairline every avatar wears.
+    expect(root?.className).not.toContain("after:border-brand")
 
     const fallback = container.querySelector("[data-slot=avatar-fallback]")
     expect(fallback?.className).toContain(
@@ -61,15 +63,17 @@ describe("vendored shadcn deviations", () => {
     expect(badge?.className).toContain("text-success")
   })
 
-  it("the empty state's icon media is brand-tinted, not neutral", () => {
+  it("the empty state's icon media is pristine upstream again", () => {
+    // The brand tint moved to the app layer (the dashboard's Medallion sits
+    // inside EmptyMedia now), so the vendored variant carries no deviation.
     const { container } = render(
       <EmptyMedia variant="icon">
         <span>icon</span>
       </EmptyMedia>
     )
     const media = container.querySelector("[data-slot=empty-icon]")
-    expect(media?.className).toContain("bg-brand/10")
-    expect(media?.className).not.toContain("bg-muted")
+    expect(media?.className).toContain("bg-muted")
+    expect(media?.className).not.toContain("bg-brand/10")
   })
 
   it("checkbox fills the box in the indeterminate state", () => {
