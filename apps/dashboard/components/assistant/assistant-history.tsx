@@ -16,6 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { useMutation } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { useState } from "react"
@@ -45,12 +50,10 @@ const HISTORY_SKELETON_ROW_KEYS = ["s1", "s2", "s3"] as const
 export function AssistantHistoryPanel({
   open,
   busy,
-  onCollapse,
   onNewConversation,
 }: {
   open: boolean
   busy: boolean
-  onCollapse: () => void
   onNewConversation: () => void
 }) {
   const t = useTranslations("dashboard.assistant")
@@ -59,32 +62,48 @@ export function AssistantHistoryPanel({
     <InnerSidebar
       open={open}
       label={t("history")}
-      collapseLabel={t("history")}
       // The route is height-locked by AppShell, so the sidebar fills it.
       height="fill"
-      // The collapse control the frame renders is deliberately NOT busy-gated,
-      // unlike the rows and New conversation: collapsing touches no thread, so
-      // it carries none of the orphan hazard that gates them.
-      onCollapse={onCollapse}
+      // Below md the chat needs the whole pane; the conversation list has no
+      // mobile surface yet, matching the shell's own inner sidebar.
+      className="hidden md:flex"
+      // The same header anatomy as a registry nav group: the uppercase panel
+      // label on the left, the panel's one action as a plain icon in the top
+      // right corner.
       actions={
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={busy}
-          onClick={onNewConversation}
-        >
-          <HugeiconsIcon
-            icon={PlusSignIcon}
-            size={16}
-            strokeWidth={2}
-            aria-hidden="true"
-          />
-          {t("newConversation")}
-        </Button>
+        <>
+          <p className="px-1 font-medium text-[11px] text-foreground/70 uppercase">
+            {t("history")}
+          </p>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  disabled={busy}
+                  aria-label={t("newConversation")}
+                  onClick={onNewConversation}
+                />
+              }
+            >
+              <HugeiconsIcon
+                icon={PlusSignIcon}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              {t("newConversation")}
+            </TooltipContent>
+          </Tooltip>
+        </>
       }
     >
-      <AssistantHistoryThreadList busy={busy} />
+      <div className="px-2">
+        <AssistantHistoryThreadList busy={busy} />
+      </div>
     </InnerSidebar>
   )
 }

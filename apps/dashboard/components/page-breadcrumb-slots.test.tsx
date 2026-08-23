@@ -1,11 +1,13 @@
+import messages from "@workspace/i18n/messages/en.json"
 import { cleanup, render, screen } from "@testing-library/react"
+import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
-import { PageHeader } from "@/components/page-header"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import {
-  PageHeaderAdornment,
-  PageHeaderAside,
-  PageHeaderSlotProvider,
-} from "@/components/page-header-slot"
+  BreadcrumbAdornment,
+  BreadcrumbAside,
+  BreadcrumbSlotProvider,
+} from "@/components/page-breadcrumb-slots"
 
 afterEach(cleanup)
 
@@ -16,33 +18,46 @@ describe("the page header's slots", () => {
   // down.
   it("lets a page fill the title's adornment and its aside from below", () => {
     const { container } = render(
-      <PageHeaderSlotProvider>
-        <PageHeader title="Analysis" />
-        <div>
-          <PageHeaderAdornment>
-            <button type="button">?</button>
-          </PageHeaderAdornment>
-          <PageHeaderAside>
-            <div data-testid="instrument" />
-          </PageHeaderAside>
-        </div>
-      </PageHeaderSlotProvider>
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <BreadcrumbSlotProvider>
+          <PageBreadcrumbRow segments={[{ label: "Analysis" }]} />
+          <div>
+            <BreadcrumbAdornment>
+              <button type="button">?</button>
+            </BreadcrumbAdornment>
+            <BreadcrumbAside>
+              <div data-testid="instrument" />
+            </BreadcrumbAside>
+          </div>
+        </BreadcrumbSlotProvider>
+      </NextIntlClientProvider>
     )
-    const heading = screen.getByRole("heading")
+    const _heading = screen.getByRole("heading")
     // The adornment sits with the title; the aside opposite it, both inside
     // the header rather than in the subtree that rendered them.
-    const header = container.firstElementChild as HTMLElement
+    const header = container.querySelector("header") as HTMLElement
     expect(header.contains(screen.getByRole("button", { name: "?" }))).toBe(
       true
     )
     expect(header.contains(screen.getByTestId("instrument"))).toBe(true)
-    expect(heading.parentElement?.textContent).toBe("Analysis?")
+    // The adornment slot renders right after the trail inside the same
+    // left-hand group as the crumb naming the page.
+    expect(
+      screen
+        .getByRole("button", { name: "?" })
+        .closest("header")
+        ?.textContent?.includes("Analysis")
+    ).toBe(true)
   })
 
   // A page that fills neither renders exactly what it always did: the slots
   // are empty spans that take no layout of their own.
-  it("changes nothing for a header that fills neither", () => {
-    const { container } = render(<PageHeader title="Roles" />)
-    expect(container.textContent).toBe("Roles")
+  it("changes nothing for a row that fills neither", () => {
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <PageBreadcrumbRow segments={[{ label: "Roles" }]} />
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Roles")
   })
 })

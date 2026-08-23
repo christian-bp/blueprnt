@@ -220,13 +220,14 @@ export function DocsNavPanel({
   const atIndex = pathname === "/docs"
 
   return (
-    <div className="flex w-full flex-1">
+    <div className="flex min-h-0 w-full flex-1">
       <InnerSidebar
         open={!atIndex}
         label={t("nav.label")}
-        // The docs route is NOT height-locked: the page scrolls, so the column
-        // pins itself instead of filling a locked parent.
-        height="sticky"
+        // The shell's content pane is height-locked and the ARTICLE column
+        // beside this one is the scroller, so the nav simply fills the row
+        // and keeps its own overflow.
+        height="fill"
         // Today's `hidden lg:block` treatment, preserved deliberately: a
         // permanent 280px column on a 375px viewport is worse than no column,
         // and small screens still reach every guide through the /docs index's
@@ -248,11 +249,19 @@ export function DocsNavPanel({
           </Link>
         }
       >
-        <DocsNav sections={sections} />
+        <div className="px-2">
+          <DocsNav sections={sections} />
+        </div>
       </InnerSidebar>
-      {/* The page padding the shell does not apply on this route (app-shell.tsx:
-          hasInnerSidebar), so the nav column beside this one stays flush. */}
-      <div className={cn("min-w-0 flex-1", PAGE_PADDING)}>{children}</div>
+      {/* The article column is the route's scroller (the shell's pane is
+          height-locked on self-managed routes); it carries the page padding
+          the shell does not apply here, so the nav column stays flush. */}
+      <div
+        data-slot="docs-scroll"
+        className={cn("min-w-0 flex-1 overflow-y-auto", PAGE_PADDING)}
+      >
+        {children}
+      </div>
     </div>
   )
 }

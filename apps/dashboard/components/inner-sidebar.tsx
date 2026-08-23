@@ -1,21 +1,18 @@
 "use client"
 
-import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react"
-import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
-import { AnimatePresence, motion, type Variants } from "motion/react"
+import { AnimatePresence, motion } from "motion/react"
 import type { ReactNode } from "react"
 import { SPRING } from "@/lib/motion"
 
-// The open width and the gap the sidebar carries to the content column, both
-// carried by the sidebar's OWN animated geometry rather than a flex `gap` on
-// the row: a container gap does not collapse with a shrinking flex item
-// (docs/ui-animation.md #3), so a `gap-*` on the row would still reserve dead
-// space once the width reached 0. Animating both together means collapsed
-// truly means zero footprint, no gap artifact left behind.
-const INNER_SIDEBAR_WIDTH = 280
-const INNER_SIDEBAR_GAP = 16
+// The one open width: every surface (area navs, the run sidebar, the
+// assistant's conversation list) shares it, per the uniform-sidebar
+// direction; the prop exists for a future surface with a real reason to
+// differ. The width is carried by the sidebar's OWN animated geometry
+// rather than a flex `gap` on the row: a container gap does not collapse
+// with a shrinking flex item (docs/ui-animation.md #3), so collapsed truly
+// means zero footprint.
+const DEFAULT_WIDTH = 240
 
 // The content's own exit-fade duration. The CLOSE-direction width collapse
 // delays by roughly this long (rule 4's staged-exit pattern: fade first, then
@@ -24,40 +21,28 @@ const INNER_SIDEBAR_GAP = 16
 // immediately and the content fades in after.
 const CONTENT_FADE_OUT = 0.1
 
-// A collapse control's two halves travel together: a surface either takes both
-// the handler and the label for the control's accessible name, or neither and
-// renders no control. As two independent optional props, a handler without a
-// label would compile and ship a button no screen reader can name.
-type InnerSidebarCollapse =
-  | { onCollapse: () => void; collapseLabel: string }
-  | { onCollapse?: never; collapseLabel?: never }
-
-// Variants (not a single inline `animate` object) so the CLOSE direction can
-// carry its own delayed transition without affecting the OPEN direction.
-const panelVariants: Variants = {
-  open: {
-    width: INNER_SIDEBAR_WIDTH,
-    marginRight: INNER_SIDEBAR_GAP,
-    transition: SPRING,
-  },
-  closed: {
-    width: 0,
-    marginRight: 0,
-    transition: { ...SPRING, delay: CONTENT_FADE_OUT },
-  },
+// The two directions carry different transitions (the CLOSE side delays by
+// the content fade), expressed as per-render animate objects rather than
+// named variants: dynamic variants resolved through `custom` proved brittle
+// across re-renders, and a conditional object says the same thing plainly.
+function panelAnimate(open: boolean, width: number) {
+  return open
+    ? { width, transition: SPRING }
+    : { width: 0, transition: { ...SPRING, delay: CONTENT_FADE_OUT } }
 }
 
 // The app's inner sidebar: the secondary navigation column that sits between
-// the app sidebar and a page's content (the docs nav, the assistant's
-// conversations panel). A flush column with a single border on its right, no
-// radius and no fill of its own, so the nav and the content beside it read as
-// two regions of ONE surface, continuing the app sidebar's own border rather
-// than nesting a second object inside the page.
+// the app rail and a page's content (an area's nav rows, the docs nav, the
+// assistant's conversations panel). A flush column with a single border on its
+// right, no radius and no fill of its own, so the nav and the content beside
+// it read as two regions of ONE surface.
 //
-// `open` is owned by the CALLER, never by this component: the page renders
-// both this sidebar's own collapse button and the expand button that stands in
-// for it while collapsed, and shared ownership is what stops the two from ever
-// disagreeing.
+// `open` is owned by the CALLER, never by this component: the surface renders
+// the InnerSidebarHandle (or another control) beside it, and shared ownership
+// is what stops the two from ever disagreeing. Collapse/expand controls are
+// NOT part of this component: the shell's handle sits at the seam between nav
+// and content (inner-sidebar-handle.tsx), which no element inside a
+// width-animated, overflow-hidden box could survive collapsing.
 //
 // Split per docs/ui-animation.md #2 (width/height vs the CSS box model): the
 // OUTER motion.div carries ONLY animated geometry (width, marginRight) and no
@@ -70,42 +55,44 @@ const panelVariants: Variants = {
 // 4's staged-exit guidance) so a collapsed sidebar carries no links in the tab
 // order at all, not merely a clipped one.
 //
-// Two height modes, because the two surfaces scroll differently:
-//   fill   - the parent is height-locked and this fills it (the assistant).
+// Two height modes, because the two kinds of surface scroll differently:
+//   fill   - the parent is height-locked and this fills it (the shell's
+//            content row, the assistant).
 //   sticky - the page scrolls and this pins to the viewport, so its border
-//            spans top to bottom at every scroll position (the docs).
-//
-// Collapsing is opt-in: the assistant's panel collapses, the docs nav does not,
-// because a guide nav is the only navigation its surface has. A sidebar with
-// neither a collapse control nor actions renders no header row at all, so its
-// content starts at the top of the column instead of below an empty strip.
+//            spans top to bottom at every scroll position.
 export function InnerSidebar({
   open,
   label,
+  width = DEFAULT_WIDTH,
   height = "fill",
   actions,
   className,
-  onCollapse,
-  collapseLabel,
   children,
 }: {
   open: boolean
   // Names the landmark for assistive technology.
   label: string
+  width?: number
   height?: "fill" | "sticky"
-  // The surface's own header content, left of the collapse control.
+  // The surface's own header content (e.g. the assistant's new-conversation
+  // button). A sidebar without actions renders no header row at all, so its
+  // content starts at the top of the column instead of below an empty strip.
   actions?: ReactNode
   // Responsive visibility only (e.g. `hidden lg:flex`). Never box styles: the
   // outer element is the animated one, and a border or padding here would
   // survive the collapse (see the class invariant in the tests).
   className?: string
   children: ReactNode
-} & InnerSidebarCollapse) {
+}) {
   return (
-    <motion.div
+    // An aside, as in the Verve reference: the column is a complementary
+    // landmark beside the page, and the nav element (when the content is
+    // registry rows) lives inside it (InnerSidebarNav).
+    <motion.aside
       initial={false}
-      variants={panelVariants}
-      animate={open ? "open" : "closed"}
+      aria-label={label}
+      data-state={open ? "open" : "closed"}
+      animate={panelAnimate(open, width)}
       className={cn(
         "shrink-0 overflow-hidden",
         height === "fill" && "min-h-0",
@@ -120,90 +107,29 @@ export function InnerSidebar({
           sidebar already open. */}
       <AnimatePresence initial={false}>
         {open && (
-          <motion.nav
+          <motion.div
             key="inner-sidebar-content"
-            aria-label={label}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { delay: 0.08 } }}
             exit={{ opacity: 0, transition: { duration: CONTENT_FADE_OUT } }}
             // pt-2 matches the px-2/pb-2 the rows below already carry, so the
-            // column is inset by the same 8px on all four edges (the same
-            // rhythm SidebarHeader gives the app sidebar's first row). Without
-            // it the first control (the docs index link, the assistant's New
-            // conversation button) sits against the site header's bottom
-            // border, since the column now starts flush at the header.
+            // column is inset by the same 8px on all four edges. Without it
+            // the first control sits against the header's bottom border,
+            // since the column starts flush at the header.
             className="flex h-full min-h-0 flex-col border-border border-r pt-2"
-            style={{ width: INNER_SIDEBAR_WIDTH }}
+            style={{ width }}
           >
-            {(actions !== undefined || onCollapse !== undefined) && (
+            {actions !== undefined && (
               <div className="flex h-10 shrink-0 items-center justify-between gap-1 px-2">
-                {/* An empty span keeps a lone collapse control right-aligned
-                    without the row's justify-between changing per surface. */}
-                {actions ?? <span />}
-                {onCollapse !== undefined && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    aria-label={collapseLabel}
-                    onClick={onCollapse}
-                  >
-                    {/* The app's standard chevron, pointing the way the
-                        sidebar folds. */}
-                    <HugeiconsIcon
-                      icon={ArrowLeft01Icon}
-                      strokeWidth={2}
-                      aria-hidden="true"
-                    />
-                  </Button>
-                )}
+                {actions}
               </div>
             )}
-            <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
+            <div className="min-h-0 flex-1 overflow-y-auto pb-2">
               {children}
             </div>
-          </motion.nav>
+          </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
-  )
-}
-
-// The collapsed sidebar's stand-in slot, pinned to the top-left of the content
-// column (which must therefore be `relative`).
-export function InnerSidebarPinnedActions({
-  children,
-}: {
-  children: ReactNode
-}) {
-  return (
-    <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
-      {children}
-    </div>
-  )
-}
-
-// The control that brings a collapsed sidebar back. A surface passes its own
-// icon, one that can NAME what comes back better than a direction can (the
-// assistant passes HistoryIcon for its conversations).
-export function InnerSidebarExpandButton({
-  label,
-  icon,
-  onExpand,
-}: {
-  label: string
-  icon: IconSvgElement
-  onExpand: () => void
-}) {
-  return (
-    <Button
-      type="button"
-      variant="ghost"
-      size="icon"
-      aria-label={label}
-      onClick={onExpand}
-    >
-      <HugeiconsIcon icon={icon} strokeWidth={2} aria-hidden="true" />
-    </Button>
+    </motion.aside>
   )
 }

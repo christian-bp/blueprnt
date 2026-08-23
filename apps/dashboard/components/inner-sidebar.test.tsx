@@ -1,75 +1,50 @@
-import { HistoryIcon } from "@hugeicons/core-free-icons"
+import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import {
-  InnerSidebar,
-  InnerSidebarExpandButton,
-  InnerSidebarPinnedActions,
-} from "@/components/inner-sidebar"
+import { InnerSidebarHandle } from "@/components/inner-sidebar-handle"
+import { InnerSidebar } from "@/components/inner-sidebar"
 
 afterEach(cleanup)
 
-function renderSidebar(open: boolean) {
+function renderSidebar(open: boolean, extra?: { width?: number }) {
   return render(
-    <InnerSidebar
-      open={open}
-      label="Guide navigation"
-      collapseLabel="Hide guide navigation"
-      onCollapse={() => {}}
-    >
+    <InnerSidebar open={open} label="Guide navigation" width={extra?.width}>
       <p>tree</p>
     </InnerSidebar>
   )
 }
 
+// The labeled landmark is the OUTER aside (Verve semantics); the inner box
+// (border, fixed width) is its content child, reached structurally.
+function innerBox(): HTMLElement {
+  const aside = screen.getByRole("complementary", { name: "Guide navigation" })
+  return aside.firstElementChild as HTMLElement
+}
+
 describe("InnerSidebar", () => {
-  it("renders its content and collapse control while open", () => {
+  it("is an aside landmark and renders its content while open", () => {
     renderSidebar(true)
     expect(
-      screen.getByRole("navigation", { name: "Guide navigation" })
+      screen.getByRole("complementary", { name: "Guide navigation" })
     ).toBeTruthy()
     expect(screen.getByText("tree")).toBeTruthy()
-    expect(
-      screen.getByRole("button", { name: "Hide guide navigation" })
-    ).toBeTruthy()
   })
 
-  // Collapsed must mean UNMOUNTED, not merely clipped: a closed panel that
-  // still holds its tree keeps every link in the tab order and every
-  // subscription alive behind a zero-width box.
-  it("mounts nothing while collapsed", () => {
+  it("mounts no content while collapsed", () => {
     renderSidebar(false)
+    // Not merely visually hidden: a collapsed sidebar carries no links in
+    // the tab order at all.
     expect(screen.queryByText("tree")).toBeNull()
-    expect(
-      screen.queryByRole("button", { name: "Hide guide navigation" })
-    ).toBeNull()
+    const aside = screen.getByRole("complementary", {
+      name: "Guide navigation",
+    })
+    expect(aside.children).toHaveLength(0)
   })
 
-  it("calls onCollapse when the collapse control is pressed", async () => {
-    const onCollapse = vi.fn()
-    const { getByRole } = render(
-      <InnerSidebar
-        open
-        label="Guide navigation"
-        collapseLabel="Hide guide navigation"
-        onCollapse={onCollapse}
-      >
-        <p>tree</p>
-      </InnerSidebar>
-    )
-    fireEvent.click(getByRole("button", { name: "Hide guide navigation" }))
-    expect(onCollapse).toHaveBeenCalledTimes(1)
-  })
-
-  // docs/ui-animation.md rule 2: the animated element carries ONLY geometry.
-  // A border or padding on it would survive the collapse as a stranded
-  // hairline at width 0, because a border-box element at width 0 still paints
-  // its border. This is the invariant a future edit is most likely to break,
-  // and it is invisible in a unit test unless asserted directly.
   it("keeps the border on the inner box, never on the animated outer box", () => {
     const { container } = renderSidebar(true)
     const outer = container.firstElementChild as HTMLElement
-    const inner = screen.getByRole("navigation", { name: "Guide navigation" })
+    const inner = innerBox()
 
     // Anchored at a class boundary so `px-2`/`py-2`/`pt-2` are caught too: a
     // plain substring check for "p-" misses every directional padding class,
@@ -83,6 +58,12 @@ describe("InnerSidebar", () => {
     expect(inner.className).toContain("pt-2")
   })
 
+  it("sizes the inner box from the width prop so text never rewraps mid-slide", () => {
+    renderSidebar(true, { width: 280 })
+    const inner = innerBox()
+    expect(inner.style.width).toBe("280px")
+  })
+
   it("takes its height from the parent by default and pins itself when sticky", () => {
     const { container: filled } = renderSidebar(true)
     expect((filled.firstElementChild as HTMLElement).className).toContain(
@@ -90,13 +71,7 @@ describe("InnerSidebar", () => {
     )
 
     const { container: stuck } = render(
-      <InnerSidebar
-        open
-        height="sticky"
-        label="Guide navigation"
-        collapseLabel="Hide guide navigation"
-        onCollapse={() => {}}
-      >
+      <InnerSidebar open height="sticky" label="Guide navigation">
         <p>tree</p>
       </InnerSidebar>
     )
@@ -111,71 +86,79 @@ describe("InnerSidebar", () => {
   // not the inner nav.
   it("passes a caller class through to the outer element", () => {
     const { container } = render(
+      <InnerSidebar open label="Guide navigation" className="hidden lg:flex">
+        <p>tree</p>
+      </InnerSidebar>
+    )
+    const outer = container.firstElementChild as HTMLElement
+    expect(outer.className).toContain("hidden")
+    expect(outer.className).toContain("lg:flex")
+  })
+
+  it("renders no header row when there is nothing to put in it", () => {
+    renderSidebar(true)
+    const inner = innerBox()
+    // Content starts at the top of the column: exactly one child, the
+    // scrollable content box.
+    expect(inner.children).toHaveLength(1)
+  })
+
+  it("renders the actions row when the surface provides one", () => {
+    render(
       <InnerSidebar
         open
-        className="hidden lg:flex"
         label="Guide navigation"
-        collapseLabel="Hide guide navigation"
-        onCollapse={() => {}}
+        actions={<button type="button">New</button>}
       >
         <p>tree</p>
       </InnerSidebar>
     )
-    expect((container.firstElementChild as HTMLElement).className).toContain(
-      "hidden lg:flex"
-    )
-  })
-
-  it("renders no collapse control when the surface does not collapse", () => {
-    render(
-      <InnerSidebar open label="Guide navigation" actions={<span>top</span>}>
-        <p>tree</p>
-      </InnerSidebar>
-    )
-    expect(screen.getByText("top")).toBeTruthy()
-    expect(screen.getByText("tree")).toBeTruthy()
-    expect(screen.queryByRole("button")).toBeNull()
-  })
-
-  // A surface with neither actions nor a collapse control would otherwise
-  // render an empty 40px strip above its content.
-  it("renders no header row when there is nothing to put in it", () => {
-    render(
-      <InnerSidebar open label="Guide navigation">
-        <p>tree</p>
-      </InnerSidebar>
-    )
-    const nav = screen.getByRole("navigation", { name: "Guide navigation" })
-    expect(nav.querySelector(".h-10")).toBeNull()
-    expect(screen.getByText("tree")).toBeTruthy()
+    expect(screen.getByRole("button", { name: "New" })).toBeTruthy()
   })
 })
 
-describe("InnerSidebarExpandButton", () => {
-  it("exposes its label and calls onExpand", () => {
-    const onExpand = vi.fn()
+describe("InnerSidebarHandle", () => {
+  function renderHandle(open: boolean, onToggle = vi.fn()) {
     render(
-      <InnerSidebarExpandButton
-        label="Show guide navigation"
-        icon={HistoryIcon}
-        onExpand={onExpand}
-      />
+      <TooltipProvider>
+        <InnerSidebarHandle
+          open={open}
+          onToggle={onToggle}
+          collapseLabel="Collapse navigation"
+          expandLabel="Expand navigation"
+        />
+      </TooltipProvider>
     )
-    const button = screen.getByRole("button", { name: "Show guide navigation" })
-    fireEvent.click(button)
-    expect(onExpand).toHaveBeenCalledTimes(1)
-  })
-})
+    return onToggle
+  }
 
-describe("InnerSidebarPinnedActions", () => {
-  it("renders its children in the pinned slot", () => {
-    const { container } = render(
-      <InnerSidebarPinnedActions>
-        <button type="button">stand-in</button>
-      </InnerSidebarPinnedActions>
-    )
-    const slot = container.firstElementChild as HTMLElement
-    expect(slot.className).toContain("absolute")
-    expect(screen.getByRole("button", { name: "stand-in" })).toBeTruthy()
+  it("names itself by direction and reports the expanded state", () => {
+    renderHandle(true)
+    const collapse = screen.getByRole("button", {
+      name: "Collapse navigation",
+    })
+    expect(collapse.getAttribute("aria-expanded")).toBe("true")
+    cleanup()
+    renderHandle(false)
+    const expand = screen.getByRole("button", { name: "Expand navigation" })
+    expect(expand.getAttribute("aria-expanded")).toBe("false")
+  })
+
+  it("toggles on click", () => {
+    const onToggle = renderHandle(true)
+    fireEvent.click(screen.getByRole("button", { name: "Collapse navigation" }))
+    expect(onToggle).toHaveBeenCalledTimes(1)
+  })
+
+  it("stands in the gutter: anchored at the seam, bars offset off the border", () => {
+    renderHandle(true)
+    const button = screen.getByRole("button", { name: "Collapse navigation" })
+    // Anchored at the parent's left edge (the seam) and padded inward (pl-2),
+    // so the pill stands clear of the border instead of straddling it (the
+    // Verve geometry). A -translate-x would put it back on the line.
+    for (const cls of ["absolute", "left-0", "pl-2", "top-1/2"]) {
+      expect(button.className).toContain(cls)
+    }
+    expect(button.className).not.toContain("-translate-x")
   })
 })

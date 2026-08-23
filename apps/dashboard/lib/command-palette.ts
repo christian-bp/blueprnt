@@ -12,8 +12,14 @@ import { headingAnchor } from "@/lib/docs/anchors"
 // Type only: docs-index reads the filesystem, and this module runs in the
 // browser. `import type` erases, so nothing of it reaches the client bundle.
 import type { DocsIndex } from "@/lib/docs/docs-index"
-import { type NavEntryLabelKey, navEntriesFor } from "@/lib/navigation"
-import { SECTION_PAGES } from "@/lib/section-pages"
+import {
+  areasFor,
+  type InnerNavEntryLabelKey,
+  type InnerNavGroupLabelKey,
+  innerNavFor,
+  type NavAreaLabelKey,
+  settingsHrefFor,
+} from "@/lib/navigation"
 
 // One row in the command palette. `key` is the row's identity for cmdk (which
 // tracks selection by value, so two rows sharing one break keyboard
@@ -88,72 +94,65 @@ const EXTRA_PAGES = [
   },
   // /account redirects to /account/profile, and is listed for the same reason
   // /work is listed twice: "Account settings" is a real name for that
-  // destination, and the query that uses it has to find something.
+  // destination, and the query that uses it has to find something. The
+  // profile and security rows themselves come from the settings area's inner
+  // nav, so they are not repeated here.
   { href: "/account", labelKey: "nav.accountSettings", icon: Settings01Icon },
-  {
-    href: "/account/profile",
-    labelKey: "account.tabs.profile",
-    detailKey: "nav.accountSettings",
-    icon: Settings01Icon,
-  },
-  {
-    href: "/account/security",
-    labelKey: "account.tabs.security",
-    detailKey: "nav.accountSettings",
-    icon: Settings01Icon,
-  },
 ] as const
 
 type ExtraPage = (typeof EXTRA_PAGES)[number]
 
-// The label keys the palette resolves: a top-level destination's, one of its
-// section sub-pages', or one of the sidebar-less pages above. Kept as the
-// literal union so a caller passing useTranslations' `t` keeps compile-time
-// key checking.
-type SectionPageLabelKey =
-  (typeof SECTION_PAGES)[keyof typeof SECTION_PAGES][number]["labelKey"]
+// The label keys the palette resolves: an area's, one of its inner-nav
+// rows', or one of the sidebar-less pages above. Kept as the literal union so
+// a caller passing useTranslations' `t` keeps compile-time key checking.
 export type PageLabelKey =
-  | NavEntryLabelKey
-  | SectionPageLabelKey
+  | NavAreaLabelKey
+  | InnerNavEntryLabelKey
+  | InnerNavGroupLabelKey
   | ExtraPage["labelKey"]
   | Extract<ExtraPage, { detailKey: string }>["detailKey"]
 
-// Every destination in the app, in sidebar order: the registry's top-level
-// entries, each followed by its section's sub-pages, then the pages that have
-// no sidebar row at all. The admin filter is navEntriesFor's, the same one the
-// sidebar renders through, so a member who cannot see a page in the nav cannot
-// find it here either. Hiding a destination is not the permission boundary
-// (the backend is), but the two surfaces must never disagree about what
-// exists.
+// Every destination in the app, in rail order: each area, followed by its
+// inner-sidebar rows, then the pages that have no nav row at all. The role
+// filter is areasFor/innerNavFor's, the same one the rail renders through, so
+// a member who cannot see a page in the nav cannot find it here either.
+// Hiding a destination is not the permission boundary (the backend is), but
+// the two surfaces must never disagree about what exists.
 //
-// A section's index sub-page repeats its parent's href under a different name
-// (/work is both "Job architecture" and "Levels"), exactly as the sidebar
+// An area's index row repeats the area's href under a different name (/work
+// is both "Job architecture" and "Levels"), exactly as the inner sidebar
 // shows it: both names are real names for that page, and dropping one would
 // make the query that uses it find nothing.
 export function pageItems(
   role: string,
   label: (key: PageLabelKey) => string
 ): PaletteItem[] {
-  const nav = navEntriesFor(role).flatMap((entry) => {
-    const parent = label(entry.labelKey)
+  const nav = areasFor(role).flatMap((area) => {
+    const parent = label(area.labelKey)
     const item: PaletteItem = {
-      key: `page:${entry.href}`,
-      href: entry.href,
+      key: `page:${area.href}`,
+      // The settings area's landing differs by role (an editor cannot open
+      // the organization pages), same resolution the rail uses.
+      href: area.id === "settings" ? settingsHrefFor(role) : area.href,
       label: parent,
-      icon: entry.icon,
+      icon: area.icon,
     }
-    if (entry.section === undefined) return [item]
-    // A sub-page carries its section's icon: it is the same destination one
+    // An inner row carries its area's icon: it is the same destination one
     // level down, and a row with no glyph beside rows that have one reads as
-    // a different kind of thing.
-    const subs = SECTION_PAGES[entry.section].map(
-      (page): PaletteItem => ({
-        key: `page:${entry.labelKey}:${page.labelKey}`,
-        href: page.href,
-        label: label(page.labelKey),
-        icon: entry.icon,
-        detail: parent,
-      })
+    // a different kind of thing. Its detail is its GROUP's heading where one
+    // exists ("Organization", "Account settings"), the area's name otherwise:
+    // the heading is the word a user actually searches by ("organization"
+    // must find General and Members).
+    const subs = innerNavFor(area, role).flatMap((group) =>
+      group.entries.map(
+        (entry): PaletteItem => ({
+          key: `page:${area.labelKey}:${entry.labelKey}`,
+          href: entry.href,
+          label: label(entry.labelKey),
+          icon: area.icon,
+          detail: group.labelKey === undefined ? parent : label(group.labelKey),
+        })
+      )
     )
     return [item, ...subs]
   })

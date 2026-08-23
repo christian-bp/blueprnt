@@ -1,9 +1,6 @@
 "use client"
 
-import { HistoryIcon, PlusSignIcon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
@@ -12,10 +9,7 @@ import { PAGE_PADDING } from "@/components/app-shell"
 import { AssistantHistoryPanel } from "@/components/assistant/assistant-history"
 import { AssistantPanel } from "@/components/assistant/assistant-panel"
 import { AssistantTitle } from "@/components/assistant/assistant-title"
-import {
-  InnerSidebarExpandButton,
-  InnerSidebarPinnedActions,
-} from "@/components/inner-sidebar"
+import { InnerSidebarHandle } from "@/components/inner-sidebar-handle"
 import { useOrganization } from "@/components/org-context"
 import { useAssistantChat } from "@/hooks/use-assistant-chat"
 import { usePageTitle } from "@/hooks/use-page-title"
@@ -28,6 +22,7 @@ import { toast } from "@/lib/toast"
 
 export default function AssistantPage() {
   const t = useTranslations("dashboard.assistant")
+  const tShell = useTranslations("dashboard.shell")
   const tToast = useTranslations("dashboard.toast")
   usePageTitle(t("title"))
   const { orgId } = useOrganization()
@@ -79,7 +74,6 @@ export default function AssistantPage() {
       <AssistantHistoryPanel
         open={panelOpen}
         busy={busy}
-        onCollapse={() => togglePanel(false)}
         onNewConversation={() => void handleNewConversation()}
       />
       {/* relative: anchors the expand button that appears at this column's
@@ -93,39 +87,16 @@ export default function AssistantPage() {
           PAGE_PADDING
         )}
       >
-        {/* The collapsed panel's compact stand-in: the two actions its header
-            carried, as small stacked icon buttons. */}
-        {!panelOpen && (
-          <InnerSidebarPinnedActions>
-            {/* Busy-gated exactly like the panel's own New conversation
-                button: archiving the active thread mid-stream would silently
-                orphan it. */}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label={t("newConversation")}
-              disabled={busy}
-              onClick={() => void handleNewConversation()}
-            >
-              <HugeiconsIcon
-                icon={PlusSignIcon}
-                strokeWidth={2}
-                aria-hidden="true"
-              />
-            </Button>
-            {/* Never busy-gated, unlike the new-chat button above: expanding
-                touches no thread. HistoryIcon rather than the primitive's
-                default chevron, because here the icon can name what comes back,
-                and the header's app-sidebar trigger already wears a sidebar
-                glyph. */}
-            <InnerSidebarExpandButton
-              label={t("history")}
-              icon={HistoryIcon}
-              onExpand={() => togglePanel(true)}
-            />
-          </InnerSidebarPinnedActions>
-        )}
+        {/* The collapse control stands at the seam between the panel and this
+            column (this column's left edge IS that seam at every animation
+            frame, so the handle needs no position syncing). Never busy-gated:
+            collapsing or expanding touches no thread. */}
+        <InnerSidebarHandle
+          open={panelOpen}
+          onToggle={() => togglePanel(!panelOpen)}
+          collapseLabel={tShell("collapseNav")}
+          expandLabel={tShell("expandNav")}
+        />
         {/* Only the animated title lives in the header. The two flex-1
             spacers stay so the title animates its own width from 0 to auto
             without shifting either edge of the row; without them the title,

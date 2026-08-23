@@ -1,15 +1,19 @@
 import messages from "@workspace/i18n/messages/en.json"
 import { describe, expect, it } from "vitest"
 import {
-  canSeeNavEntry,
-  isNavActive,
-  NAV_DOCS,
-  NAV_GROUPS,
-  navEntriesFor,
-  navGroupsFor,
+  areaForPathname,
+  areasFor,
+  deepestMatch,
+  innerNavFor,
+  NAV_AREAS,
+  settingsHrefFor,
 } from "@/lib/navigation"
 
-const ALL_ENTRIES = [...NAV_GROUPS.flatMap((group) => group.entries), NAV_DOCS]
+const area = (id: string) => {
+  const found = NAV_AREAS.find((candidate) => candidate.id === id)
+  if (found === undefined) throw new Error(`no area ${id}`)
+  return found
+}
 
 // The label keys are relative to the `dashboard` namespace, so resolve them
 // against that subtree the way t() does.
@@ -25,100 +29,127 @@ function resolve(key: string): unknown {
     )
 }
 
-describe("navigation registry", () => {
-  it("keeps every destination and label key unique", () => {
-    const hrefs = ALL_ENTRIES.map((entry) => entry.href)
+describe("registry invariants", () => {
+  it("keeps area ids, hrefs and label keys unique", () => {
+    const ids = NAV_AREAS.map((candidate) => candidate.id)
+    expect(new Set(ids).size).toBe(ids.length)
+    const hrefs = NAV_AREAS.map((candidate) => candidate.href)
     expect(new Set(hrefs).size).toBe(hrefs.length)
-    const labelKeys = ALL_ENTRIES.map((entry) => entry.labelKey)
-    expect(new Set(labelKeys).size).toBe(labelKeys.length)
-    const groupKeys = NAV_GROUPS.map((group) => group.labelKey)
-    expect(new Set(groupKeys).size).toBe(groupKeys.length)
+    const labels = NAV_AREAS.map((candidate) => candidate.labelKey)
+    expect(new Set(labels).size).toBe(labels.length)
+    // Within one area the inner hrefs are unique too (an inner row may repeat
+    // the AREA's href, the way Overview repeats /work, but never a sibling's).
+    for (const candidate of NAV_AREAS) {
+      const inner = candidate.innerNav.flatMap((group) =>
+        group.entries.map((entry) => entry.href)
+      )
+      expect(new Set(inner).size, candidate.id).toBe(inner.length)
+    }
   })
 
-  it("names an existing message for every entry and group", () => {
-    for (const entry of ALL_ENTRIES) {
-      expect(typeof resolve(entry.labelKey), entry.labelKey).toBe("string")
-    }
-    for (const group of NAV_GROUPS) {
-      expect(typeof resolve(group.labelKey), group.labelKey).toBe("string")
+  it("names an existing message for every area, group and entry", () => {
+    for (const candidate of NAV_AREAS) {
+      expect(typeof resolve(candidate.labelKey), candidate.labelKey).toBe(
+        "string"
+      )
+      for (const group of candidate.innerNav) {
+        if (group.labelKey !== undefined) {
+          expect(typeof resolve(group.labelKey), group.labelKey).toBe("string")
+        }
+        for (const entry of group.entries) {
+          expect(typeof resolve(entry.labelKey), entry.labelKey).toBe("string")
+        }
+      }
     }
   })
 
   it("carries icon data rather than a rendered element", () => {
     // Icon data keeps the registry framework free: a rendered element would
     // make every consumer, including a server one, pull in React.
-    for (const entry of ALL_ENTRIES) {
-      expect(Array.isArray(entry.icon), entry.labelKey).toBe(true)
+    for (const candidate of NAV_AREAS) {
+      expect(Array.isArray(candidate.icon), candidate.labelKey).toBe(true)
+    }
+  })
+})
+
+describe("areaForPathname", () => {
+  it("maps the root to home and only the root", () => {
+    expect(areaForPathname("/")?.id).toBe("home")
+    expect(areaForPathname("/roles")?.id).not.toBe("home")
+  })
+
+  it("maps /work and /roles to the work area", () => {
+    expect(areaForPathname("/work")?.id).toBe("work")
+    expect(areaForPathname("/roles")?.id).toBe("work")
+    expect(areaForPathname("/roles/senior-engineer")?.id).toBe("work")
+  })
+
+  it("does not swallow sibling routes that share a prefix", () => {
+    expect(areaForPathname("/workspace")).toBeUndefined()
+  })
+
+  it("maps the settings constellation to settings", () => {
+    for (const path of [
+      "/organization/general",
+      "/organization/members",
+      "/account/profile",
+      "/account/security",
+      "/audit-log",
+    ]) {
+      expect(areaForPathname(path)?.id).toBe("settings")
     }
   })
 
-  it("keeps the guide in the footer, out of the groups", () => {
+  it("maps a run path to payMappings and admin paths to admin", () => {
     expect(
-      NAV_GROUPS.some((group) =>
-        group.entries.some((entry) => entry.href === NAV_DOCS.href)
-      )
-    ).toBe(false)
-    expect(NAV_DOCS.href).toBe("/docs")
+      areaForPathname("/pay-mappings/run-2026/analysis/equal-work")?.id
+    ).toBe("payMappings")
+    expect(areaForPathname("/admin/email-log")?.id).toBe("admin")
   })
 })
 
-describe("role filtering", () => {
-  it("hides an admin-only entry from an editor", () => {
-    const auditLog = ALL_ENTRIES.find((entry) => entry.href === "/audit-log")
-    if (auditLog === undefined) throw new Error("no /audit-log entry")
-    expect(auditLog.adminOnly).toBe(true)
-    expect(canSeeNavEntry(auditLog, "editor")).toBe(false)
-    expect(canSeeNavEntry(auditLog, "admin")).toBe(true)
-  })
-
-  it("drops a group an editor may not see any entry of", () => {
-    const editorGroups = navGroupsFor("editor").map((g) => g.labelKey)
-    expect(editorGroups).not.toContain("nav.groups.administration")
-    const adminGroups = navGroupsFor("admin").map((g) => g.labelKey)
-    expect(adminGroups).toContain("nav.groups.administration")
-  })
-
-  it("keeps the non-admin groups identical for both roles", () => {
-    const hrefsOf = (role: string) =>
-      navGroupsFor(role).flatMap((group) =>
-        group.entries.map((entry) => entry.href)
-      )
-    const editor = hrefsOf("editor")
-    expect(hrefsOf("admin")).toEqual([...editor, "/organization", "/audit-log"])
-  })
-
-  it("flattens to every visible destination, the guide last", () => {
-    const editor = navEntriesFor("editor")
-    expect(editor.every((entry) => !entry.adminOnly)).toBe(true)
-    expect(editor.at(-1)?.href).toBe("/docs")
-    expect(navEntriesFor("admin").length).toBe(editor.length + 2)
-  })
-})
-
-describe("isNavActive", () => {
-  it("marks the root only on the root", () => {
-    expect(isNavActive("/", "/")).toBe(true)
-    expect(isNavActive("/model", "/")).toBe(false)
-  })
-
-  it("marks a section on its own path and below it", () => {
-    expect(isNavActive("/model", "/model")).toBe(true)
-    expect(isNavActive("/model/weighting", "/model")).toBe(true)
-  })
-
-  it("matches whole path segments, not string prefixes", () => {
-    expect(isNavActive("/workspace", "/work")).toBe(false)
-  })
-
-  it("extends the match with the entry's extra prefixes", () => {
-    expect(isNavActive("/roles/r1", "/work", ["/roles"])).toBe(true)
-    expect(isNavActive("/people", "/work", ["/roles"])).toBe(false)
-  })
-
-  it("keeps the registry's own match prefixes working", () => {
-    const work = NAV_GROUPS.flatMap((group) => group.entries).find(
-      (entry) => entry.href === "/work"
+describe("gating", () => {
+  it("hides the admin-gated settings rows from editors but keeps the area", () => {
+    const groups = innerNavFor(area("settings"), "editor")
+    const hrefs = groups.flatMap((group) =>
+      group.entries.map((entry) => entry.href)
     )
-    expect(isNavActive("/roles", work?.href ?? "", work?.match)).toBe(true)
+    expect(hrefs).toEqual(["/account/profile", "/account/security"])
+    // The emptied organization group dropped its heading with it.
+    expect(groups).toHaveLength(1)
+  })
+
+  it("gives admins the full settings nav including the audit log", () => {
+    const hrefs = innerNavFor(area("settings"), "admin").flatMap((group) =>
+      group.entries.map((entry) => entry.href)
+    )
+    expect(hrefs).toContain("/organization/general")
+    expect(hrefs).toContain("/audit-log")
+  })
+
+  it("keeps the platform admin area out of areasFor entirely", () => {
+    expect(
+      areasFor("admin").some((candidate) => candidate.id === "admin")
+    ).toBe(false)
+    expect(
+      areasFor("editor").some((candidate) => candidate.id === "admin")
+    ).toBe(false)
+  })
+
+  it("lands admins on the organization and editors on their account", () => {
+    expect(settingsHrefFor("admin")).toBe("/organization/general")
+    expect(settingsHrefFor("editor")).toBe("/account/profile")
+  })
+})
+
+describe("deepestMatch", () => {
+  const hrefs = ["/people", "/people/classify"]
+
+  it("prefers the deeper sibling", () => {
+    expect(deepestMatch(hrefs, "/people/classify")).toBe("/people/classify")
+  })
+
+  it("keeps a detail page on its register", () => {
+    expect(deepestMatch(hrefs, "/people/abc123")).toBe("/people")
   })
 })

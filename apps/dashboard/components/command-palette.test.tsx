@@ -167,8 +167,10 @@ describe("CommandPalette", () => {
     cleanup()
     renderPalette("admin")
     type("organization")
+    // The organization pages surface through their group heading ("the word a
+    // user searches by"); the settings AREA row itself is named Settings and
+    // does not match this query.
     expect(groupRows(palette.groups.pages)).toEqual([
-      messages.dashboard.nav.organization,
       `${messages.dashboard.organization.tabs.general}${messages.dashboard.nav.organization}`,
       `${messages.dashboard.organization.tabs.members}${messages.dashboard.nav.organization}`,
     ])

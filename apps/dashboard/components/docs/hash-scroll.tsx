@@ -12,7 +12,10 @@ import { useEffect } from "react"
 export function DocsHashScroll() {
   useEffect(() => {
     const id = decodeURIComponent(window.location.hash.slice(1))
-    if (id === "" || window.scrollY > 0) return
+    // The article column is the route's scroller (the window never scrolls
+    // inside the app frame), so the already-scrolled check reads it.
+    const scroller = document.querySelector('[data-slot="docs-scroll"]')
+    if (id === "" || (scroller?.scrollTop ?? 0) > 0) return
     document.getElementById(id)?.scrollIntoView()
   }, [])
   return null

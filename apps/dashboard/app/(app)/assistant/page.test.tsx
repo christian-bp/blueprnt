@@ -32,6 +32,7 @@ import * as innerSidebarState from "@/lib/inner-sidebar-state"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 
 const t = messages.dashboard.assistant
+const tShell = messages.dashboard.shell
 const newConversationMock = mockMutation("assistant.chat.newConversation")
 const switchConversationMock = mockMutation("assistant.chat.switchConversation")
 
@@ -78,14 +79,25 @@ describe("AssistantPage", () => {
 
   it("keeps the conversations panel open by default", () => {
     renderPage()
-    // Open: the panel's own header carries New conversation, in normal flow
-    // (the absolutely positioned compact stand-in exists only collapsed).
-    const newButton = screen.getByRole("button", { name: t.newConversation })
-    expect(newButton.closest("div.absolute")).toBeNull()
-    // Exactly one control carries this accessible name: the panel's own
-    // collapse button (open and closed share the same name, the same idiom
-    // as the vendor sidebar's single "Toggle Sidebar" trigger), never two.
-    expect(screen.getAllByRole("button", { name: t.history })).toHaveLength(1)
+    // Open: the panel's header carries New conversation, and the seam handle
+    // names the collapse direction.
+    expect(
+      screen.getByRole("button", { name: t.newConversation })
+    ).toBeDefined()
+    expect(
+      screen.getByRole("button", { name: tShell.collapseNav })
+    ).toBeDefined()
+  })
+
+  it("hides the panel below md, where the chat needs the whole pane", () => {
+    renderPage()
+    // The regression this pins: the collapse handle is md-hidden, so a column
+    // that stayed visible below md would be permanently open and uncloseable,
+    // squeezing the conversation to a sliver on a phone.
+    const aside = screen.getByRole("complementary", { name: t.history })
+    for (const cls of ["hidden", "md:flex"]) {
+      expect(aside.className.split(/\s+/)).toContain(cls)
+    }
   })
 
   it("starts collapsed when the persisted choice is closed (mocking the storage read)", () => {
@@ -93,12 +105,10 @@ describe("AssistantPage", () => {
       false
     )
     renderPage()
-    // Collapsed: the compact stand-in carries BOTH of the header's actions
-    // as stacked icon buttons (new chat + expand), absolutely positioned at
-    // the column's top-left.
-    const newButton = screen.getByRole("button", { name: t.newConversation })
-    expect(newButton.closest("div.absolute")).not.toBeNull()
-    expect(screen.getByRole("button", { name: t.history })).toBeDefined()
+    // Collapsed: the panel is unmounted (its actions with it) and the seam
+    // handle names the expand direction.
+    expect(screen.queryByRole("button", { name: t.newConversation })).toBeNull()
+    expect(screen.getByRole("button", { name: tShell.expandNav })).toBeDefined()
   })
 
   it("collapsing the panel hides it and shows the expand button; expanding restores it", async () => {
@@ -119,11 +129,13 @@ describe("AssistantPage", () => {
     renderPage()
     expect(screen.getByText("Pay gap trend")).toBeDefined()
 
-    fireEvent.click(screen.getByRole("button", { name: t.history }))
+    fireEvent.click(screen.getByRole("button", { name: tShell.collapseNav }))
     await waitFor(() => {
       expect(screen.queryByText("Pay gap trend")).toBeNull()
     })
-    const expandButton = screen.getByRole("button", { name: t.history })
+    const expandButton = screen.getByRole("button", {
+      name: tShell.expandNav,
+    })
     expect(expandButton).toBeDefined()
 
     fireEvent.click(expandButton)
@@ -160,7 +172,7 @@ describe("AssistantPage", () => {
     expect(button.disabled).toBe(true)
   })
 
-  it("disables the collapsed stand-in's new-chat button while a reply streams", () => {
+  it("keeps the seam handle clickable while a reply streams", () => {
     vi.spyOn(innerSidebarState, "initialInnerSidebarOpen").mockReturnValue(
       false
     )
@@ -177,15 +189,9 @@ describe("AssistantPage", () => {
       return undefined
     })
     renderPage()
-    // The compact plus carries the same orphan-hazard gate as the panel's
-    // own button; the expand button beside it stays clickable.
-    const newButton = screen.getByRole("button", {
-      name: t.newConversation,
-    }) as HTMLButtonElement
-    expect(newButton.closest("div.absolute")).not.toBeNull()
-    expect(newButton.disabled).toBe(true)
+    // Expanding touches no thread, so the handle carries no busy gate.
     const expandButton = screen.getByRole("button", {
-      name: t.history,
+      name: tShell.expandNav,
     }) as HTMLButtonElement
     expect(expandButton.disabled).toBe(false)
   })

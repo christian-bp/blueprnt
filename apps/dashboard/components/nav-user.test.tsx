@@ -81,7 +81,8 @@ function renderNavUser() {
 }
 
 function openUserMenu() {
-  const trigger = screen.getByText("HR Person").closest("button")
+  // The rail trigger is avatar-only; the name lives in the menu header now.
+  const trigger = screen.getByRole("button", { name: "Account menu" })
   if (!trigger) throw new Error("trigger not found")
   return openMenu(trigger)
 }

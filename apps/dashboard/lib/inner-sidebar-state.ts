@@ -8,6 +8,13 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 
 export const ASSISTANT_HISTORY_COOKIE = "assistant_history_state"
 
+// One cookie per rail area, so collapsing the settings nav does not collapse
+// the people nav: the choice is about THAT area's sidebar, not about inner
+// sidebars in general.
+export function areaSidebarCookie(areaId: string): string {
+  return `inner_sidebar_${areaId}`
+}
+
 // Parses one sidebar's persisted open state out of a document.cookie string.
 // No cookie (first visit) defaults to OPEN: the nav is the surface's default
 // view, not a returning user's opt-in.

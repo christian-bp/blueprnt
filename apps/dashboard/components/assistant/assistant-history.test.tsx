@@ -38,7 +38,7 @@ const renameConversationMock = mockMutation("assistant.chat.renameConversation")
 function renderPanel(
   open: boolean,
   busy = false,
-  overrides: { onCollapse?: () => void; onNewConversation?: () => void } = {}
+  overrides: { onNewConversation?: () => void } = {}
 ) {
   return render(
     // Explicit timeZone: the row's time label formats a clock time, and
@@ -52,7 +52,6 @@ function renderPanel(
       <AssistantHistoryPanel
         open={open}
         busy={busy}
-        onCollapse={overrides.onCollapse ?? vi.fn()}
         onNewConversation={overrides.onNewConversation ?? vi.fn()}
       />
     </NextIntlClientProvider>
@@ -99,13 +98,12 @@ describe("AssistantHistoryPanel", () => {
     expect(screen.queryByRole("button")).toBeNull()
   })
 
-  it("shows the New conversation and collapse controls as real components while the thread list loads", () => {
+  it("shows the New conversation control as a real component while the thread list loads", () => {
     onQuery(() => undefined)
     const { container } = renderPanel(true)
     expect(
       screen.getByRole("button", { name: t.newConversation })
     ).toBeDefined()
-    expect(screen.getByRole("button", { name: t.history })).toBeDefined()
     expect(
       container.querySelectorAll('[data-slot="skeleton"]').length
     ).toBeGreaterThan(0)
@@ -133,13 +131,6 @@ describe("AssistantHistoryPanel", () => {
       name: t.newConversation,
     }) as HTMLButtonElement
     expect(button.disabled).toBe(true)
-  })
-
-  it("calls onCollapse when its button is clicked", () => {
-    const onCollapse = vi.fn()
-    renderPanel(true, false, { onCollapse })
-    fireEvent.click(screen.getByRole("button", { name: t.history }))
-    expect(onCollapse).toHaveBeenCalledOnce()
   })
 
   it("lists each thread's AI-generated title with its date while open", () => {

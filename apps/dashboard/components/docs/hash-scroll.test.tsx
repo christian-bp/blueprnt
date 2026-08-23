@@ -5,14 +5,22 @@ import { DocsHashScroll } from "./hash-scroll"
 // Reproduces the live defect: opening /docs/<slug>#<anchor> cold left the
 // reader at the top of the page because the article streams in after the
 // browser has already tried its hash jump.
-function renderWithHash(hash: string, scrollY = 0) {
+function renderWithHash(hash: string, scrollTop = 0) {
+  // The article column is the route's scroller; the component reads ITS
+  // scroll position, never the window's.
+  const scroller = document.createElement("div")
+  scroller.setAttribute("data-slot", "docs-scroll")
+  Object.defineProperty(scroller, "scrollTop", {
+    value: scrollTop,
+    writable: true,
+  })
   const target = document.createElement("h2")
   target.id = "lika-arbete"
   const scrollIntoView = vi.fn()
   target.scrollIntoView = scrollIntoView
-  document.body.append(target)
+  scroller.append(target)
+  document.body.append(scroller)
   window.location.hash = hash
-  Object.defineProperty(window, "scrollY", { value: scrollY, writable: true })
   render(<DocsHashScroll />)
   return scrollIntoView
 }
