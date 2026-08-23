@@ -99,27 +99,23 @@ describe("TodoFooter", () => {
     ).toBeNull()
   })
 
-  it("carries its own bordered block, split from the animated geometry", () => {
+  it("renders the block statically, with no clip on the animated row wrappers", () => {
     todoState = { groups: [evaluate], total: 3 }
     const { container } = renderFooter()
-    // Outer motion element: geometry only, no box styles, so height 0 truly
-    // means empty (docs/ui-animation.md #2). Deliberately no overflow clip
-    // on any ANIMATED wrapper (block, rise, row): exits are staged (fade,
-    // then collapse), and a clip on any of these ancestors would eat a
-    // celebrating row's confetti. Vendor internals may clip themselves.
-    const outer = container.firstElementChild as HTMLElement
-    expect(outer.className).not.toMatch(/(^|\s)border/)
-    expect(outer.className).not.toMatch(/(^|\s)p[xytrbl]?-/)
-    const rise = outer.firstElementChild as HTMLElement
+    // The block itself is static (a page switch remounts it, so a block
+    // enter animation replayed on every navigation); it renders straight as
+    // its bordered footer section.
+    const block = container.firstElementChild as HTMLElement
+    expect(block.className).toContain("border-t")
     const row = screen.getByRole("button", {
       name: new RegExp(messages.dashboard.overview.todo.groups.evaluateRoles),
     })
-    // button -> CelebrationBurst's positioned div -> the row's motion wrapper.
+    // button -> CelebrationBurst's positioned div -> the row's motion
+    // wrapper. Rows still animate (celebration exits), and their exits are
+    // staged rather than clipped: an overflow-hidden here would eat a
+    // celebrating row's confetti.
     const rowWrapper = row.parentElement?.parentElement as HTMLElement
-    for (const wrapper of [outer, rise, rowWrapper]) {
-      expect(wrapper.className).not.toContain("overflow-hidden")
-    }
-    expect(container.querySelector(".border-t")).not.toBeNull()
+    expect(rowWrapper.className).not.toContain("overflow-hidden")
   })
 
   it("keeps a finished group's row on screen, celebrating, before it leaves", () => {
