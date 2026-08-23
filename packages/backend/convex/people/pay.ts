@@ -1,7 +1,7 @@
 import { v } from "convex/values"
 import { fteTotalMonthlyComp, totalMonthlyComp } from "@workspace/constants"
 import type { Doc, Id } from "../_generated/dataModel"
-import type { QueryCtx } from "../_generated/server"
+import type { MutationCtx, QueryCtx } from "../_generated/server"
 import { internalMutation } from "../_generated/server"
 import {
   AUDIT_EVENTS,
@@ -66,8 +66,9 @@ async function requireOrgCurrency(
   return org.currency
 }
 
-// Validator for a single compensation component.
-const payComponentValidator = v.object({
+// Validator for a single compensation component. Exported for the import
+// chunk mutation's row validator (importHelpers.importChunk).
+export const payComponentValidator = v.object({
   kind: v.string(),
   monthlyAmount: v.number(),
 })
@@ -224,9 +225,96 @@ export const deleteSalary = orgMutation({
   },
 })
 
-// Internal mutation for the payroll-import path. Inserts a pay record row
-// with source "import". Uses the free-function logAudit (internal mutations
-// have no ctx.audit). Amount-free audit payload (same GDPR rule as setSalary).
+// Core of the payroll-import salary append, shared by the single-row
+// internal mutation below and the import chunk mutation
+// (importHelpers.importChunk), which runs it for a whole chunk of rows
+// inside ONE transaction. Takes the bare MutationCtx: the caller owns the
+// auth/org gate. Inserts a pay record row with source "import"; amount-free
+// audit payload (same GDPR rule as setSalary).
+export async function appendSalaryCore(
+  ctx: MutationCtx,
+  args: {
+    orgId: string
+    actorId: string
+    personId: Id<"people">
+    payYear: number
+    basicMonthly: number
+    currency: string
+    components: { kind: string; monthlyAmount: number }[]
+    effectiveAt?: number
+  }
+): Promise<{ payRecordId: Id<"payRecords">; created: boolean }> {
+  // Verify person exists in the given org before inserting.
+  const person = await ctx.db.get(args.personId)
+  if (person === null || person.orgId !== args.orgId) {
+    throw appError(ERROR_CODES.notFound)
+  }
+
+  // Amounts are non-negative (the import validator already blocks negatives
+  // upstream; this is the write-path backstop so a payRecord's derived
+  // basic/variable split can never go negative).
+  if (
+    args.basicMonthly < 0 ||
+    args.components.some((component) => component.monthlyAmount < 0)
+  ) {
+    throw appError(ERROR_CODES.invalidInput)
+  }
+
+  // Idempotency: when the person's NEWEST pay record already carries the
+  // same payYear and values, re-importing the same file must not append a
+  // duplicate row (e.g. an abandoned import that completed server-side,
+  // followed by a retry). Only the latest record is compared, so a value
+  // that changed and changed back still records real history.
+  const latest = await ctx.db
+    .query("payRecords")
+    .withIndex("by_person", (q) =>
+      q.eq("orgId", args.orgId).eq("personId", args.personId)
+    )
+    .order("desc")
+    .first()
+  // Shared with previewImport so the review preview applies exactly this rule.
+  if (latest !== null && sameSalaryValues(args, latest)) {
+    return { payRecordId: latest._id, created: false }
+  }
+
+  const effectiveAt = args.effectiveAt ?? Date.now()
+  const createdAt = Date.now()
+
+  const payRecordId = await ctx.db.insert("payRecords", {
+    orgId: args.orgId,
+    personId: args.personId,
+    payYear: args.payYear,
+    source: "import",
+    basicMonthly: args.basicMonthly,
+    currency: args.currency,
+    components: args.components,
+    effectiveAt,
+    createdAt,
+  })
+
+  // GDPR: amount-free audit payload.
+  const snapshot: Record<string, unknown> = {
+    payYear: args.payYear,
+    source: "import",
+    currency: args.currency,
+  }
+
+  await logAudit(ctx, {
+    orgId: args.orgId,
+    type: AUDIT_EVENTS.salarySet,
+    actorId: args.actorId,
+    payload: {
+      personId: args.personId,
+      changes: buildCreateChanges(snapshot, PAY_AUDIT_FIELDS),
+    },
+  })
+
+  return { payRecordId, created: true }
+}
+
+// Internal mutation for the payroll-import path (single row; the chunked
+// path calls appendSalaryCore directly). Uses the free-function logAudit
+// (internal mutations have no ctx.audit).
 export const appendSalary = internalMutation({
   args: {
     orgId: v.string(),
@@ -243,74 +331,7 @@ export const appendSalary = internalMutation({
     payRecordId: v.id("payRecords"),
     created: v.boolean(),
   }),
-  handler: async (ctx, args) => {
-    // Verify person exists in the given org before inserting.
-    const person = await ctx.db.get(args.personId)
-    if (person === null || person.orgId !== args.orgId) {
-      throw appError(ERROR_CODES.notFound)
-    }
-
-    // Amounts are non-negative (the import validator already blocks negatives
-    // upstream; this is the write-path backstop so a payRecord's derived
-    // basic/variable split can never go negative).
-    if (
-      args.basicMonthly < 0 ||
-      args.components.some((component) => component.monthlyAmount < 0)
-    ) {
-      throw appError(ERROR_CODES.invalidInput)
-    }
-
-    // Idempotency: when the person's NEWEST pay record already carries the
-    // same payYear and values, re-importing the same file must not append a
-    // duplicate row (e.g. an abandoned import that completed server-side,
-    // followed by a retry). Only the latest record is compared, so a value
-    // that changed and changed back still records real history.
-    const latest = await ctx.db
-      .query("payRecords")
-      .withIndex("by_person", (q) =>
-        q.eq("orgId", args.orgId).eq("personId", args.personId)
-      )
-      .order("desc")
-      .first()
-    // Shared with previewImport so the review preview applies exactly this rule.
-    if (latest !== null && sameSalaryValues(args, latest)) {
-      return { payRecordId: latest._id, created: false }
-    }
-
-    const effectiveAt = args.effectiveAt ?? Date.now()
-    const createdAt = Date.now()
-
-    const payRecordId = await ctx.db.insert("payRecords", {
-      orgId: args.orgId,
-      personId: args.personId,
-      payYear: args.payYear,
-      source: "import",
-      basicMonthly: args.basicMonthly,
-      currency: args.currency,
-      components: args.components,
-      effectiveAt,
-      createdAt,
-    })
-
-    // GDPR: amount-free audit payload.
-    const snapshot: Record<string, unknown> = {
-      payYear: args.payYear,
-      source: "import",
-      currency: args.currency,
-    }
-
-    await logAudit(ctx, {
-      orgId: args.orgId,
-      type: AUDIT_EVENTS.salarySet,
-      actorId: args.actorId,
-      payload: {
-        personId: args.personId,
-        changes: buildCreateChanges(snapshot, PAY_AUDIT_FIELDS),
-      },
-    })
-
-    return { payRecordId, created: true }
-  },
+  handler: (ctx, args) => appendSalaryCore(ctx, args),
 })
 
 // Returns all pay records for a person ordered by effectiveAt descending

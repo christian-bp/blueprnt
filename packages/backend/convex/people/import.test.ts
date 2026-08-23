@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
+import { IMPORT_CHUNK_SIZE } from "./importDiff"
 import { addEditorMember, initConvexTest } from "../testing.helpers"
 
 const BLANK_GENDER_CSV = readFileSync(
@@ -119,6 +120,64 @@ async function seedOrg(
 // ---------------------------------------------------------------------------
 // Happy-path: full import with the real fixture CSV
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Chunked commits: the action imports rows in IMPORT_CHUNK_SIZE transactions
+// ---------------------------------------------------------------------------
+
+describe("importPayroll (chunked commits)", () => {
+  // One row past the boundary forces a second chunk, whatever the constant
+  // becomes; the fixture-based tests above exercise three chunks with real
+  // data. Pins that counts aggregate across chunks, that a re-import stays
+  // idempotent across the same boundaries, and that the ephemeral progress
+  // row is gone when the action returns.
+  it("imports across the chunk boundary and cleans up its progress row", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const rowCount = IMPORT_CHUNK_SIZE + 1
+    const lines = ["Id;Fornamn;Kon;Manadslon;Befattning;Fodelsedatum"]
+    for (let i = 1; i <= rowCount; i++) {
+      lines.push(`E${i};Person${i};Man;3${i};Utvecklare;1990-01-01`)
+    }
+    const csvText = lines.join("\n")
+
+    const first = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText,
+      columnMap: DATE_FORMS_MAP,
+      payYear: 2026,
+      effectiveAt: Date.now(),
+    })
+    expect(first.ok).toBe(true)
+    expect(first.peopleCreated).toBe(rowCount)
+    expect(first.salariesImported).toBe(rowCount)
+
+    const again = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText,
+      columnMap: DATE_FORMS_MAP,
+      payYear: 2026,
+      effectiveAt: Date.now(),
+    })
+    expect(again.peopleCreated).toBe(0)
+    expect(again.peopleUnchanged).toBe(rowCount)
+    expect(again.salariesImported).toBe(0)
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(people).toHaveLength(rowCount)
+      const progress = await ctx.db
+        .query("importProgress")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(progress).toBeNull()
+    })
+  })
+})
 
 describe("importPayroll (happy path)", () => {
   it("imports good rows, skips the two Anstnr=114 rows, sets employeeCount, saves mapping profile, and audits with counts only", async () => {

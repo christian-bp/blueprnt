@@ -30,6 +30,7 @@ import { requireOrgMemberAction } from "../lib/functions"
 import {
   type BaselinePerson,
   diffImport,
+  IMPORT_CHUNK_SIZE,
   type ImportPreviewDiff,
   type NormalizedImportRow,
 } from "./importDiff"
@@ -512,10 +513,9 @@ export const importPayroll = action({
     let peopleUnchanged = 0
     let salariesImported = 0
 
-    // Live progress for the importing screen: one row per org, updated every
-    // PROGRESS_FLUSH_EVERY rows (a per-row write would double the mutation
-    // count for no visible gain) and removed again after the loop.
-    const PROGRESS_FLUSH_EVERY = 10
+    // Live progress for the importing screen: 0/total up front (the setup
+    // state), then each chunk writes its own committed count in the same
+    // transaction as its rows.
     await ctx.runMutation(internal.people.importHelpers.setImportProgress, {
       orgId: args.orgId,
       importId,
@@ -523,52 +523,32 @@ export const importPayroll = action({
       total: rows.length,
     })
 
-    for (let rowIdx = 0; rowIdx < rows.length; rowIdx++) {
-      if (rowIdx > 0 && rowIdx % PROGRESS_FLUSH_EVERY === 0) {
-        await ctx.runMutation(internal.people.importHelpers.setImportProgress, {
+    // One shared stamp for the whole run, so every chunk's salaries carry
+    // the same effective time.
+    const effectiveAt = args.effectiveAt ?? Date.now()
+
+    // Sequential chunks of IMPORT_CHUNK_SIZE rows, each ONE transaction
+    // (person upserts, salary appends, progress). Sequential rather than
+    // parallel on purpose: chunks cannot OCC-conflict with each other, the
+    // progress row stays monotonic, and a failure leaves whole committed
+    // chunks a re-run finishes idempotently.
+    for (let start = 0; start < rows.length; start += IMPORT_CHUNK_SIZE) {
+      const chunk = await ctx.runMutation(
+        internal.people.importHelpers.importChunk,
+        {
           orgId: args.orgId,
+          actorId,
           importId,
-          processed: rowIdx,
+          effectiveAt,
+          processedBefore: start,
           total: rows.length,
-        })
-      }
-      const row = rows[rowIdx]
-      if (row === undefined) continue
-
-      // Upsert the person.
-      const { personId, outcome } = await ctx.runMutation(
-        internal.people.people.upsertPersonByExternalRef,
-        {
-          orgId: args.orgId,
-          actorId,
-          externalRef: row.externalRef,
-          ...row.person,
+          rows: rows.slice(start, start + IMPORT_CHUNK_SIZE),
         }
       )
-      if (outcome === "created") {
-        peopleCreated += 1
-      } else if (outcome === "updated") {
-        peopleUpdated += 1
-      } else {
-        peopleUnchanged += 1
-      }
-
-      if (row.salary === null) continue
-
-      const { created: salaryCreated } = await ctx.runMutation(
-        internal.people.pay.appendSalary,
-        {
-          orgId: args.orgId,
-          actorId,
-          personId,
-          ...row.salary,
-          effectiveAt: args.effectiveAt ?? Date.now(),
-        }
-      )
-      // Identical re-imports skip the append; count only real inserts.
-      if (salaryCreated) {
-        salariesImported += 1
-      }
+      peopleCreated += chunk.peopleCreated
+      peopleUpdated += chunk.peopleUpdated
+      peopleUnchanged += chunk.peopleUnchanged
+      salariesImported += chunk.salariesImported
     }
 
     // All rows processed: show the final count while the post-loop steps

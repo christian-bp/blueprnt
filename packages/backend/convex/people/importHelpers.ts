@@ -1,8 +1,14 @@
 import { v } from "convex/values"
+import type { MutationCtx } from "../_generated/server"
 import { internalMutation, internalQuery } from "../_generated/server"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import type { AuditPayloads } from "../lib/auditPayloads"
 import { orgQuery } from "../lib/functions"
+import {
+  personImportOptionalArgs,
+  upsertPersonByExternalRefCore,
+} from "./people"
+import { appendSalaryCore, payComponentValidator } from "./pay"
 
 // Returns the org's configured currency, or "SEK" as a safe default.
 // Called by the importPayroll action via ctx.runQuery.
@@ -151,8 +157,131 @@ export const logImportCompleted = internalMutation({
   },
 })
 
+// Core of the progress upsert, shared by the standalone mutation below and
+// the chunk mutation, which writes its progress in the SAME transaction as
+// the chunk's rows, so the bar can only ever show committed counts.
+async function setImportProgressCore(
+  ctx: MutationCtx,
+  args: { orgId: string; importId: string; processed: number; total: number }
+): Promise<void> {
+  const existing = await ctx.db
+    .query("importProgress")
+    .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+    .unique()
+  if (existing === null) {
+    await ctx.db.insert("importProgress", {
+      orgId: args.orgId,
+      importId: args.importId,
+      processed: args.processed,
+      total: args.total,
+    })
+  } else {
+    await ctx.db.patch(existing._id, {
+      importId: args.importId,
+      processed: args.processed,
+      total: args.total,
+    })
+  }
+}
+
+// One normalized import row, mirroring importDiff's NormalizedImportRow (the
+// action passes its normalized rows straight through, so a drift here is a
+// compile error at that call site). The person fields reuse the same
+// validators the single-row upsert takes.
+const importRowValidator = v.object({
+  externalRef: v.string(),
+  person: v.object({
+    displayName: v.string(),
+    gender: v.union(v.literal("Man"), v.literal("Kvinna")),
+    ...personImportOptionalArgs,
+  }),
+  salary: v.union(
+    v.null(),
+    v.object({
+      payYear: v.number(),
+      basicMonthly: v.number(),
+      currency: v.string(),
+      components: v.array(payComponentValidator),
+    })
+  ),
+})
+
+// One chunk of the payroll import, committed as ONE transaction: every row's
+// person upsert and salary append, plus the progress row, land together. The
+// old shape ran two mutations PER ROW from the action, which made a large
+// import mostly transaction round trips; the chunk brings a thousand-person
+// import from ~2000 mutations to ~20. The action owns the chunk size
+// (IMPORT_CHUNK_SIZE in importDiff.ts) and drives chunks sequentially, so a
+// failure mid-import leaves whole committed chunks behind and a re-run
+// finishes the rest (both cores are idempotent re-appliers).
+export const importChunk = internalMutation({
+  args: {
+    orgId: v.string(),
+    actorId: v.string(),
+    importId: v.string(),
+    // One shared stamp for the whole run, so every chunk's salaries carry
+    // the same effective time.
+    effectiveAt: v.number(),
+    // Rows committed by earlier chunks, for the progress row.
+    processedBefore: v.number(),
+    total: v.number(),
+    rows: v.array(importRowValidator),
+  },
+  returns: v.object({
+    peopleCreated: v.number(),
+    peopleUpdated: v.number(),
+    peopleUnchanged: v.number(),
+    salariesImported: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    let peopleCreated = 0
+    let peopleUpdated = 0
+    let peopleUnchanged = 0
+    let salariesImported = 0
+
+    for (const row of args.rows) {
+      const { personId, outcome } = await upsertPersonByExternalRefCore(ctx, {
+        orgId: args.orgId,
+        actorId: args.actorId,
+        externalRef: row.externalRef,
+        ...row.person,
+      })
+      if (outcome === "created") {
+        peopleCreated += 1
+      } else if (outcome === "updated") {
+        peopleUpdated += 1
+      } else {
+        peopleUnchanged += 1
+      }
+
+      if (row.salary === null) continue
+      const { created } = await appendSalaryCore(ctx, {
+        orgId: args.orgId,
+        actorId: args.actorId,
+        personId,
+        ...row.salary,
+        effectiveAt: args.effectiveAt,
+      })
+      // Identical re-imports skip the append; count only real inserts.
+      if (created) {
+        salariesImported += 1
+      }
+    }
+
+    await setImportProgressCore(ctx, {
+      orgId: args.orgId,
+      importId: args.importId,
+      processed: args.processedBefore + args.rows.length,
+      total: args.total,
+    })
+
+    return { peopleCreated, peopleUpdated, peopleUnchanged, salariesImported }
+  },
+})
+
 // Upserts the org's live import-progress row. Called by the importPayroll
-// action as it processes rows so the importing screen can show real counts.
+// action before the first chunk (the 0/total setup state); the chunks
+// themselves write progress through the shared core above.
 export const setImportProgress = internalMutation({
   args: {
     orgId: v.string(),
@@ -162,24 +291,7 @@ export const setImportProgress = internalMutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("importProgress")
-      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
-      .unique()
-    if (existing === null) {
-      await ctx.db.insert("importProgress", {
-        orgId: args.orgId,
-        importId: args.importId,
-        processed: args.processed,
-        total: args.total,
-      })
-    } else {
-      await ctx.db.patch(existing._id, {
-        importId: args.importId,
-        processed: args.processed,
-        total: args.total,
-      })
-    }
+    await setImportProgressCore(ctx, args)
     return null
   },
 })

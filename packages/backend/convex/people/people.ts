@@ -1,6 +1,6 @@
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
-import type { QueryCtx } from "../_generated/server"
+import type { MutationCtx, QueryCtx } from "../_generated/server"
 import { internalMutation } from "../_generated/server"
 import {
   AUDIT_EVENTS,
@@ -13,11 +13,12 @@ import {
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { uniquePersonPublicId } from "../lib/slug"
-import { personImportPatch } from "./importDiff"
+import { type PersonImportValues, personImportPatch } from "./importDiff"
 
-// The optional person fields shared by createPerson and upsertPersonByExternalRef.
-const optionalPersonArgs = {
-  externalRef: v.optional(v.string()),
+// The optional person fields an import row can carry, exported for the
+// import chunk mutation's row validator (importHelpers.importChunk) so the
+// two argument shapes cannot drift.
+export const personImportOptionalArgs = {
   birthDate: v.optional(v.string()),
   employmentStartDate: v.optional(v.string()),
   ftePercent: v.optional(v.number()),
@@ -35,6 +36,12 @@ const optionalPersonArgs = {
       v.literal("hourly")
     )
   ),
+}
+
+// The optional person fields shared by createPerson and upsertPersonByExternalRef.
+const optionalPersonArgs = {
+  externalRef: v.optional(v.string()),
+  ...personImportOptionalArgs,
 }
 
 // Tenant-isolation assert for a point-read: throws notFound when the person
@@ -122,9 +129,119 @@ export const createPerson = orgMutation({
   },
 })
 
-// Internal upsert used by the payroll-import path. Looks up by the compound
-// (orgId, externalRef) index; inserts on miss, patches changed fields on hit.
-// No-op when nothing changed: no write, no audit row. Uses the free-function
+// Core of the payroll-import upsert, shared by the single-row internal
+// mutation below and the import chunk mutation (importHelpers.importChunk),
+// which runs it for a whole chunk of rows inside ONE transaction. Takes the
+// bare MutationCtx: the caller owns the auth/org gate. Looks up by the
+// compound (orgId, externalRef) index; inserts on miss, patches changed
+// fields on hit. No-op when nothing changed: no write, no audit row.
+export async function upsertPersonByExternalRefCore(
+  ctx: MutationCtx,
+  args: {
+    orgId: string
+    actorId: string
+    externalRef: string
+  } & PersonImportValues
+): Promise<{
+  personId: Id<"people">
+  outcome: "created" | "updated" | "unchanged"
+}> {
+  const existing = await ctx.db
+    .query("people")
+    .withIndex("by_org_externalRef", (q) =>
+      q.eq("orgId", args.orgId).eq("externalRef", args.externalRef)
+    )
+    .first()
+
+  if (existing === null) {
+    // Insert path.
+    const personId = await ctx.db.insert("people", {
+      orgId: args.orgId,
+      publicId: await uniquePersonPublicId(ctx, args.orgId),
+      externalRef: args.externalRef,
+      displayName: args.displayName,
+      gender: args.gender,
+      ...(args.birthDate !== undefined ? { birthDate: args.birthDate } : {}),
+      ...(args.employmentStartDate !== undefined
+        ? { employmentStartDate: args.employmentStartDate }
+        : {}),
+      ...(args.ftePercent !== undefined ? { ftePercent: args.ftePercent } : {}),
+      ...(args.country !== undefined ? { country: args.country } : {}),
+      ...(args.isManager !== undefined ? { isManager: args.isManager } : {}),
+      ...(args.statisticalCode !== undefined
+        ? { statisticalCode: args.statisticalCode }
+        : {}),
+      ...(args.department !== undefined ? { department: args.department } : {}),
+      ...(args.title !== undefined ? { title: args.title } : {}),
+      ...(args.employmentType !== undefined
+        ? { employmentType: args.employmentType }
+        : {}),
+    })
+
+    const snapshot = personAuditFields(args)
+
+    await logAudit(ctx, {
+      orgId: args.orgId,
+      type: AUDIT_EVENTS.personCreated,
+      actorId: args.actorId,
+      payload: {
+        personId,
+        changes: buildCreateChanges(snapshot, PERSON_AUDIT_FIELDS),
+      },
+    })
+
+    return { personId, outcome: "created" as const }
+  }
+
+  // Update path: compute the patch via the shared import-diff rule (also
+  // used by previewImport, so the review preview cannot disagree with the
+  // import). A field ABSENT from the file is left untouched, never cleared.
+  // Every changed field reaches the audit diff, identity included (ADR-0013).
+  const patch: Record<string, unknown> = personImportPatch(existing, {
+    displayName: args.displayName,
+    gender: args.gender,
+    birthDate: args.birthDate,
+    employmentStartDate: args.employmentStartDate,
+    ftePercent: args.ftePercent,
+    country: args.country,
+    isManager: args.isManager,
+    statisticalCode: args.statisticalCode,
+    department: args.department,
+    title: args.title,
+    employmentType: args.employmentType,
+  })
+
+  // No changes: no write, no audit row.
+  if (Object.keys(patch).length === 0) {
+    return { personId: existing._id, outcome: "unchanged" as const }
+  }
+
+  await ctx.db.patch(existing._id, patch)
+
+  // Diff every audited field, identity included (ADR-0013): an import that
+  // only corrects a name or an employee number is a real change to a person's
+  // record and must read as one in the trail. Erasure tombstones those values
+  // later (anonymizePersonAuditRows).
+  const before = personAuditFields(existing)
+  const changes = buildChanges(before, { ...before, ...patch }, [
+    ...PERSON_AUDIT_FIELDS,
+  ])
+
+  await logAudit(ctx, {
+    orgId: args.orgId,
+    type: AUDIT_EVENTS.personUpdated,
+    actorId: args.actorId,
+    payload: {
+      personId: existing._id,
+      changes,
+    },
+  })
+
+  return { personId: existing._id, outcome: "updated" as const }
+}
+
+// Internal upsert used by the payroll-import path (single row; the chunked
+// path calls upsertPersonByExternalRefCore directly). Uses the free-function
 // logAudit (internal mutations have no ctx.audit).
 export const upsertPersonByExternalRef = internalMutation({
   args: {
@@ -163,104 +280,7 @@ export const upsertPersonByExternalRef = internalMutation({
       v.literal("unchanged")
     ),
   }),
-  handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("people")
-      .withIndex("by_org_externalRef", (q) =>
-        q.eq("orgId", args.orgId).eq("externalRef", args.externalRef)
-      )
-      .first()
-
-    if (existing === null) {
-      // Insert path.
-      const personId = await ctx.db.insert("people", {
-        orgId: args.orgId,
-        publicId: await uniquePersonPublicId(ctx, args.orgId),
-        externalRef: args.externalRef,
-        displayName: args.displayName,
-        gender: args.gender,
-        ...(args.birthDate !== undefined ? { birthDate: args.birthDate } : {}),
-        ...(args.employmentStartDate !== undefined
-          ? { employmentStartDate: args.employmentStartDate }
-          : {}),
-        ...(args.ftePercent !== undefined
-          ? { ftePercent: args.ftePercent }
-          : {}),
-        ...(args.country !== undefined ? { country: args.country } : {}),
-        ...(args.isManager !== undefined ? { isManager: args.isManager } : {}),
-        ...(args.statisticalCode !== undefined
-          ? { statisticalCode: args.statisticalCode }
-          : {}),
-        ...(args.department !== undefined
-          ? { department: args.department }
-          : {}),
-        ...(args.title !== undefined ? { title: args.title } : {}),
-        ...(args.employmentType !== undefined
-          ? { employmentType: args.employmentType }
-          : {}),
-      })
-
-      const snapshot = personAuditFields(args)
-
-      await logAudit(ctx, {
-        orgId: args.orgId,
-        type: AUDIT_EVENTS.personCreated,
-        actorId: args.actorId,
-        payload: {
-          personId,
-          changes: buildCreateChanges(snapshot, PERSON_AUDIT_FIELDS),
-        },
-      })
-
-      return { personId, outcome: "created" as const }
-    }
-
-    // Update path: compute the patch via the shared import-diff rule (also
-    // used by previewImport, so the review preview cannot disagree with the
-    // import). A field ABSENT from the file is left untouched, never cleared.
-    // Every changed field reaches the audit diff, identity included (ADR-0013).
-    const patch: Record<string, unknown> = personImportPatch(existing, {
-      displayName: args.displayName,
-      gender: args.gender,
-      birthDate: args.birthDate,
-      employmentStartDate: args.employmentStartDate,
-      ftePercent: args.ftePercent,
-      country: args.country,
-      isManager: args.isManager,
-      statisticalCode: args.statisticalCode,
-      department: args.department,
-      title: args.title,
-      employmentType: args.employmentType,
-    })
-
-    // No changes: no write, no audit row.
-    if (Object.keys(patch).length === 0) {
-      return { personId: existing._id, outcome: "unchanged" as const }
-    }
-
-    await ctx.db.patch(existing._id, patch)
-
-    // Diff every audited field, identity included (ADR-0013): an import that
-    // only corrects a name or an employee number is a real change to a person's
-    // record and must read as one in the trail. Erasure tombstones those values
-    // later (anonymizePersonAuditRows).
-    const before = personAuditFields(existing)
-    const changes = buildChanges(before, { ...before, ...patch }, [
-      ...PERSON_AUDIT_FIELDS,
-    ])
-
-    await logAudit(ctx, {
-      orgId: args.orgId,
-      type: AUDIT_EVENTS.personUpdated,
-      actorId: args.actorId,
-      payload: {
-        personId: existing._id,
-        changes,
-      },
-    })
-
-    return { personId: existing._id, outcome: "updated" as const }
-  },
+  handler: (ctx, args) => upsertPersonByExternalRefCore(ctx, args),
 })
 
 // Person shape returned by getPersonByPublicId; listPeople extends it below.

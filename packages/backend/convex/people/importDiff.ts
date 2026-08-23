@@ -92,6 +92,17 @@ export function sameSalaryValues(a: SalaryValues, b: SalaryValues): boolean {
 // The dry-run diff for the review step
 // ---------------------------------------------------------------------------
 
+// Rows per import-chunk transaction (importHelpers.importChunk). Sized by
+// write cost: a worst-case row is a person patch + person audit row + salary
+// insert + salary audit row, and each audit write also touches the two audit
+// aggregates' tree nodes, call it low tens of document writes per row; fifty
+// rows stays far under Convex's per-transaction caps (8192 writes / 16 MiB)
+// with execution-time headroom, while cutting a large import's mutation
+// count by two orders of magnitude versus the old two-mutations-per-row
+// loop. Lives in this pure module because the Node action (import.ts) may
+// not import the mutation module that consumes it.
+export const IMPORT_CHUNK_SIZE = 50
+
 export interface NormalizedImportRow {
   externalRef: string
   person: PersonImportValues
