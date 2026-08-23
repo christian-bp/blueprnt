@@ -1,3 +1,13 @@
+import {
+  Briefcase01Icon,
+  ChartColumnIcon,
+  Layers01Icon,
+  Structure01Icon,
+  Tag01Icon,
+  Tick02Icon,
+  UserGroup03Icon,
+} from "@hugeicons/core-free-icons"
+import type { IconSvgElement } from "@hugeicons/react"
 import { type MethodCheck, methodBlockersPass } from "@workspace/core"
 import { chapterHref, modelChapterProgress } from "@/lib/model-chapters"
 
@@ -438,4 +448,63 @@ export function buildOverviewStats(input: BuildTodoInput): OverviewStats {
     documentCount: c.documentItems.length,
     approveCount: c.approveItems.length,
   }
+}
+
+// Where each kind of outstanding work is done, for every group EXCEPT
+// buildModel: its destination is state-dependent (the criteria-incomplete
+// state redirects through /model, the approve state through the Godkännande
+// chapter), so it carries its own href on its single item instead (see
+// groupHref below). Still total over the rest of the group keys, so a new
+// to-do group cannot ship without a destination. Lives here with the rest of
+// the to-do model because two surfaces render these groups (the front page's
+// To do band and the sidebar's to-do block) and they must never disagree on
+// where a group leads or which glyph it wears.
+const GROUP_HREF: Record<Exclude<TodoGroupKey, "buildModel">, string> = {
+  importPeople: "/people/import",
+  classifyPeople: "/people/classify",
+  describeRoles: "/roles",
+  evaluateRoles: "/roles",
+  documentCriteria: "/model/method",
+  approveCriteria: "/model/method",
+  startPayMapping: "/pay-mappings",
+}
+
+// buildModel reads its own item's href (state-dependent, derived above);
+// every other group resolves through the static map. buildTodo always
+// populates exactly one item for that key; the fallback only satisfies
+// noUncheckedIndexedAccess, never a real render path.
+export function groupHref(group: TodoGroup): string {
+  if (group.key === "buildModel") return group.items[0]?.href ?? "/model"
+  return GROUP_HREF[group.key]
+}
+
+// Icon DATA, not rendered elements (the lib/navigation.ts convention), so
+// this module stays framework free.
+export const GROUP_ICONS: Record<TodoGroupKey, IconSvgElement> = {
+  buildModel: Structure01Icon,
+  importPeople: UserGroup03Icon,
+  classifyPeople: Tag01Icon,
+  describeRoles: Briefcase01Icon,
+  evaluateRoles: Briefcase01Icon,
+  documentCriteria: Layers01Icon,
+  approveCriteria: Tick02Icon,
+  startPayMapping: ChartColumnIcon,
+}
+
+// Whether a group's count is a real QUANTITY of waiting items, or the group
+// is a single act (build the model, import your employees, start the
+// mapping) whose count is structurally 1. A "1" beside an act reads as
+// noise, so the sidebar's to-do rows badge only the quantity groups, the
+// same boundary the overview's groupDetail draws when it names the act
+// instead of counting to one. Total over the keys, so a new group cannot
+// ship without deciding which kind it is.
+export const GROUP_COUNT_IS_QUANTITY: Record<TodoGroupKey, boolean> = {
+  buildModel: false,
+  importPeople: false,
+  classifyPeople: true,
+  describeRoles: true,
+  evaluateRoles: true,
+  documentCriteria: true,
+  approveCriteria: true,
+  startPayMapping: false,
 }

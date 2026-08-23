@@ -45,6 +45,11 @@ const INTENSITY = {
   soft: { keepEvery: 2, sizeScale: 0.7, peakOpacity: 0.7, duration: 1.2 },
 } as const
 
+// The soft burst's play time, exported for surfaces that hold something on
+// screen exactly until its celebration finishes (the sidebar's to-do rows),
+// so a tuning pass here can never leave a hold shorter than its burst.
+export const SOFT_BURST_DURATION_S = INTENSITY.soft.duration
+
 type ConfettiPiece = {
   id: string
   color: string

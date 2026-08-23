@@ -3,10 +3,7 @@
 import {
   Briefcase01Icon,
   ChartColumnIcon,
-  Layers01Icon,
-  Structure01Icon,
   Tag01Icon,
-  Tick02Icon,
   UserGroup03Icon,
 } from "@hugeicons/core-free-icons"
 import type { IconSvgElement } from "@hugeicons/react"
@@ -18,43 +15,7 @@ import { ActionCard, ActionCardSkeleton } from "@/components/action-card"
 import { CelebrationBurst } from "@/components/celebration-burst"
 import { useOrganization } from "@/components/org-context"
 import { usePageSettled } from "@/hooks/use-page-settled"
-import type { Todo, TodoGroup, TodoGroupKey } from "@/lib/todo"
-
-// Where each kind of outstanding work is done, for every group EXCEPT
-// buildModel: its destination is state-dependent (the criteria-incomplete
-// state redirects through /model, the approve state through the Godkännande
-// chapter), so it carries its own href on its single item instead (see
-// groupHref below). Still total over the rest of the group keys, so a new
-// to-do group cannot ship without a destination.
-const GROUP_HREF: Record<Exclude<TodoGroupKey, "buildModel">, string> = {
-  importPeople: "/people/import",
-  classifyPeople: "/people/classify",
-  describeRoles: "/roles",
-  evaluateRoles: "/roles",
-  documentCriteria: "/model/method",
-  approveCriteria: "/model/method",
-  startPayMapping: "/pay-mappings",
-}
-
-// buildModel reads its own item's href (state-dependent, derived once in
-// lib/todo.ts); every other group resolves through the static map above.
-// buildTodo always populates exactly one item for this key; the fallback
-// below only satisfies noUncheckedIndexedAccess, never a real render path.
-function groupHref(group: TodoGroup): string {
-  if (group.key === "buildModel") return group.items[0]?.href ?? "/model"
-  return GROUP_HREF[group.key]
-}
-
-const GROUP_ICONS: Record<TodoGroupKey, IconSvgElement> = {
-  buildModel: Structure01Icon,
-  importPeople: UserGroup03Icon,
-  classifyPeople: Tag01Icon,
-  describeRoles: Briefcase01Icon,
-  evaluateRoles: Briefcase01Icon,
-  documentCriteria: Layers01Icon,
-  approveCriteria: Tick02Icon,
-  startPayMapping: ChartColumnIcon,
-}
+import { GROUP_ICONS, groupHref, type Todo, type TodoGroup } from "@/lib/todo"
 
 // The row holds one line of cards. buildTodo already emits its groups in
 // priority order (build the model, import, classify, describe, evaluate,
