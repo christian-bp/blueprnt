@@ -195,4 +195,53 @@ describe("OnboardingGate", () => {
     renderGate()
     expect(setActiveMock).toHaveBeenCalledWith({ organizationId: "o1" })
   })
+
+  // The bug this guards: a fresh login starts a session with no active
+  // company, so the gate settles on the first membership and shows the app
+  // while the effect persists that default. Better Auth answers set-active by
+  // refetching the active-organization query, and because its data is still
+  // null the store reports isPending: true again for that beat. Deciding on
+  // the live isPending swapped the whole app for the loading screen, a
+  // visible split-second "reload" right after the overview appeared. Once
+  // settled, an in-flight refetch must never blank the app.
+  it("keeps the app mounted through the refetch after persisting the default company", () => {
+    useQueryMock.mockReturnValue({
+      organization: { orgId: "o1", name: "Acme", role: "admin" },
+      settingsComplete: true,
+      hasModel: true,
+      completed: true,
+    })
+    activePending = false
+    activeData = null
+    orgsData = [{ id: "o1", name: "Acme" }]
+    const { rerender } = renderGate()
+    expect(screen.getByTestId("shell")).toBeDefined()
+    expect(setActiveMock).toHaveBeenCalledWith({ organizationId: "o1" })
+
+    // The set-active response triggers the refetch: pending again, data
+    // still null.
+    activePending = true
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <OnboardingGate>
+          <div data-testid="page" />
+        </OnboardingGate>
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByTestId("shell")).toBeDefined()
+    expect(screen.getByTestId("page")).toBeDefined()
+
+    // The refetch lands with the persisted company: still the same app.
+    activePending = false
+    activeData = { id: "o1", name: "Acme" }
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <OnboardingGate>
+          <div data-testid="page" />
+        </OnboardingGate>
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByTestId("shell")).toBeDefined()
+    expect(screen.getByTestId("page")).toBeDefined()
+  })
 })

@@ -5,7 +5,7 @@ import type { FunctionReturnType } from "convex/server"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
-import { type ReactNode, useEffect, useState } from "react"
+import { type ReactNode, useEffect, useRef, useState } from "react"
 import { AppShell } from "@/components/app-shell"
 import { LoadingScreen } from "@/components/loading-screen"
 import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard"
@@ -29,9 +29,23 @@ export function OnboardingGate(props: { children: ReactNode }) {
   // is in flight its data is null, and resolving that would fall back to the
   // first membership and scope the whole shell to the wrong company for a
   // beat.
-  const activeId = active.isPending
-    ? null
-    : resolveActiveOrgId(active.data?.id, orgList)
+  //
+  // The resolution is LATCHED on the last settled (non-pending) answer, like
+  // AuthGate: a fresh login starts a session with no active company, so the
+  // gate settles on the first membership and shows the app while the effect
+  // below persists that default. Better Auth answers set-active by refetching
+  // the active-organization query, and because its data is still null the
+  // store reports isPending: true again for that beat. Deciding on the live
+  // isPending swapped the whole app for the loading screen, a visible
+  // split-second "reload" right after the overview appeared. Holding the last
+  // settled value keeps the app mounted; only a newly settled resolution (a
+  // real company switch) may change it. Written during render (an idempotent
+  // write), mirroring AuthGate.
+  const settled = useRef<{ activeId: string | null } | null>(null)
+  if (!active.isPending && orgList !== null) {
+    settled.current = { activeId: resolveActiveOrgId(active.data?.id, orgList) }
+  }
+  const activeId = settled.current === null ? null : settled.current.activeId
 
   // Persist a default active company when none is set, so
   // session.activeOrganizationId is always populated on the next load.
@@ -57,8 +71,10 @@ export function OnboardingGate(props: { children: ReactNode }) {
     activeId !== null ? { orgId: activeId } : "skip"
   )
 
-  // Memberships, or which of them is active, still loading.
-  if (orgList === null || active.isPending) {
+  // Memberships, or the first settle of which of them is active, still
+  // loading. After the first settle a transient refetch never lands here: the
+  // latched resolution keeps the app mounted.
+  if (orgList === null || settled.current === null) {
     return <LoadingScreen label={t("loading")} />
   }
   // Signed in but provisioned into no company yet (rare: provisioning is
