@@ -1,0 +1,22 @@
+packages/backend/convex/assessment/ratings.ts
+  s_58dd112dc09435::t_73b8e2111b80a4 91,95-98
+apps/dashboard/components/rating/rating-stepper.test.tsx
+  s_58dd112dc09435::t_8e4adfedd6fc7b 415-418
+  s_58dd112dc09435::t_a17db22993c58d 283-312,315-322,324-334
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "db0aabf5a07feed7a68a9c6acac3bb5bd9b844f1",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
