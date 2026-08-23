@@ -280,28 +280,58 @@ describe("RatingStepper", () => {
   // The motivation-required law (1, 4, 5)
   // ---------------------------------------------------------------------------
 
-  it("blocks advancing at 1, 4, or 5 without a motivation and shows an inline message", () => {
-    renderStepper()
-    fireEvent.click(screen.getByText("Scope anchor 5"))
-    fireEvent.click(screen.getByRole("button", { name: labels.nextCta }))
-    expect(setRatingMock).not.toHaveBeenCalled()
-    expect(screen.getByText(labels.motivationRequiredError)).toBeTruthy()
-    // Still on the same step: the save never fired.
-    expect(screen.getByText("Scope")).toBeDefined()
+  // Method 17.3.3: the motivation is required at 1, 4 or 5, and at no other
+  // value. Declared once and walked across the whole graded domain, so both
+  // widening and narrowing the set fail the rule's own test rather than
+  // surfacing by accident in a test about something else.
+  const MOTIVATION_REQUIRED_VALUES = [1, 4, 5]
+
+  it("requires a motivation at exactly 1, 4 and 5, and nowhere else", async () => {
+    for (const value of [1, 2, 3, 4, 5]) {
+      cleanup()
+      setRatingMock.mockClear()
+      renderStepper()
+      fireEvent.click(screen.getByText(`Scope anchor ${value}`))
+      fireEvent.click(screen.getByRole("button", { name: labels.nextCta }))
+      if (MOTIVATION_REQUIRED_VALUES.includes(value)) {
+        expect(setRatingMock).not.toHaveBeenCalled()
+        expect(screen.getByText(labels.motivationRequiredError)).toBeTruthy()
+        // Still on the same step: the save never fired.
+        expect(screen.getByText("Scope")).toBeDefined()
+      } else {
+        await waitFor(() => {
+          expect(setRatingMock).toHaveBeenCalledWith({
+            orgId: "org-1",
+            roleId: "role-1",
+            criterionId: "c-scope",
+            value,
+          })
+        })
+        expect(screen.queryByText(labels.motivationRequiredError)).toBeNull()
+      }
+    }
   })
 
-  it("lets 2 or 3 advance without a motivation", async () => {
-    renderStepper()
-    fireEvent.click(screen.getByText("Scope anchor 2"))
-    fireEvent.click(screen.getByRole("button", { name: labels.nextCta }))
-    await waitFor(() => {
-      expect(setRatingMock).toHaveBeenCalledWith({
-        orgId: "org-1",
-        roleId: "role-1",
-        criterionId: "c-scope",
-        value: 2,
+  it("lets 1, 4 and 5 advance once a motivation is given", async () => {
+    for (const value of MOTIVATION_REQUIRED_VALUES) {
+      cleanup()
+      setRatingMock.mockClear()
+      renderStepper()
+      fireEvent.click(screen.getByText(`Scope anchor ${value}`))
+      fireEvent.change(screen.getByLabelText(labels.motivationLabel), {
+        target: { value: "The role carries this to a marked degree." },
       })
-    })
+      fireEvent.click(screen.getByRole("button", { name: labels.nextCta }))
+      await waitFor(() => {
+        expect(setRatingMock).toHaveBeenCalledWith({
+          orgId: "org-1",
+          roleId: "role-1",
+          criterionId: "c-scope",
+          value,
+          motivation: "The role carries this to a marked degree.",
+        })
+      })
+    }
   })
 
   it("clears the motivation-required message once a motivation is typed", () => {
@@ -382,6 +412,10 @@ describe("RatingStepper", () => {
         value: 0,
       })
     })
+    // 0 is not a sixth grade, so the 1/4/5 motivation rule does not reach it:
+    // "omfattas inte" is explained by the option's own standing explanation.
+    expect(screen.queryByText(labels.motivationRequiredError)).toBeNull()
+    expect(screen.getByText(labels.notCoveredExplanation)).toBeDefined()
   })
 
   // ---------------------------------------------------------------------------

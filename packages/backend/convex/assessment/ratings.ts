@@ -88,10 +88,14 @@ export const setRating = orgMutation({
     }
 
     // Motivation becomes required once the NEW value lands on 1, 4, or 5
-    // (spec 2.5/17.3): the field the write actually leaves behind is what
+    // (spec 2.5/17.3.3): the field the write actually leaves behind is what
     // counts, so an untouched motivation (motivation === undefined) falls
     // back to whatever is already stored, and only a genuinely empty result
     // is refused. A working-conditions 0 never reaches this branch.
+    // 17.3.3's second clause, a motivation demanded when the available role
+    // documentation contradicts the rating, is deferred: nothing ingests role
+    // documentation yet, so there is no source to contradict against. It is
+    // not a relaxation of the rule, it is a rule with no input.
     const effectiveMotivation =
       motivation !== undefined ? nextMotivation : existing?.motivation
     if (
