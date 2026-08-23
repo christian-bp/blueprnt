@@ -268,19 +268,17 @@ describe("DocsNavPanel", () => {
     expect(screen.getByText("article")).toBeTruthy()
   })
 
-  // The index page is itself the navigation (a hero, the popular guides, every
-  // section listed), so the column beside it would repeat those links and push
-  // the page's centred hero off centre. The page still renders; the nav stays
-  // mounted for the route-transition slide but is inert, so none of its links
-  // are in the tab order or the accessibility tree.
-  it("keeps the nav column inert on the index route", () => {
+  // The whole table of contents is on screen from the guide's first page,
+  // not only inside a chapter; the index link marks itself current there
+  // with the same accent treatment the rows use.
+  it("keeps the nav open on the index route and marks the index link current", () => {
     pathState.current = "/docs"
     renderPanel()
-    expect(
-      screen.getByRole("link", { name: INDEX_TITLE }).closest("[inert]")
-    ).not.toBeNull()
+    const home = screen.getByRole("link", { name: INDEX_TITLE })
+    expect(home.closest("[inert]")).toBeNull()
+    expect(home.getAttribute("aria-current")).toBe("page")
     for (const button of screen.getAllByRole("button")) {
-      expect(button.closest("[inert]")).not.toBeNull()
+      expect(button.closest("[inert]")).toBeNull()
     }
     expect(screen.getByText("article")).toBeTruthy()
   })

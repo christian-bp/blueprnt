@@ -193,19 +193,14 @@ export function DocsNav({ sections }: { sections: DocsNavSection[] }) {
   )
 }
 
-// The docs surface's frame: the nav column beside the guide. Its open state is
-// derived from the ROUTE, never from the reader: closed on the guide's index,
-// open inside a guide.
-//
-// Closed on the index because that page IS the navigation (a hero that answers
-// questions directly, the popular guides, then every section listed); the
-// column beside it would be the same links a second time, and it would push
-// the page's centred hero off the pane's centre. Inside a guide the column is
-// the only navigation on screen, so it opens and stays open: unlike the
-// assistant's conversations panel this one carries no collapse control, since
-// hiding it would buy a reader nothing (the article is capped at max-w-3xl and
-// would not use the reclaimed width). Hence no persistence and no expand
-// affordance either, only the route.
+// The docs surface's frame: the nav column beside the guide, open on every
+// docs route including the index, so the guide's whole table of contents is
+// on screen from the first page (the index's own grid still answers "what is
+// here" at a glance; the column is how you jump straight to a chapter).
+// Unlike the assistant's conversations panel this one carries no collapse
+// control, since hiding it would buy a reader nothing (the article is capped
+// at max-w-3xl and would not use the reclaimed width). Hence no persistence
+// and no expand affordance either.
 //
 // `children` is the server-rendered page, passed straight through as a slot.
 export function DocsNavPanel({
@@ -222,7 +217,7 @@ export function DocsNavPanel({
   return (
     <div className="flex min-h-0 w-full flex-1">
       <InnerSidebar
-        open={!atIndex}
+        open
         label={t("nav.label")}
         // The shell's content pane is height-locked and the ARTICLE column
         // beside this one is the scroller, so the nav simply fills the row
@@ -238,12 +233,18 @@ export function DocsNavPanel({
         // the index's own title rather than introducing a key, since that
         // string already names this destination in every locale.
         actions={
-          // No current-page treatment: this link's own destination is the one
-          // route where the column does not render at all, so it can never be
-          // the current page while it is on screen.
+          // The column now renders on the index too, so this link marks
+          // itself current there, the same accent treatment the nav rows
+          // below use for the open guide.
           <Link
             href="/docs"
-            className="flex min-w-0 flex-1 items-center rounded-md px-2 py-1.5 font-medium text-foreground text-sm hover:bg-accent hover:text-accent-foreground"
+            aria-current={atIndex ? "page" : undefined}
+            className={cn(
+              "flex min-w-0 flex-1 items-center rounded-md px-2 py-1.5 font-medium text-sm",
+              atIndex
+                ? "bg-accent text-accent-foreground"
+                : "text-foreground hover:bg-accent hover:text-accent-foreground"
+            )}
           >
             <span className="truncate">{t("index.title")}</span>
           </Link>
