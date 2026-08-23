@@ -1,0 +1,26 @@
+apps/dashboard/components/todo-footer.tsx
+  s_11a5c14eb07397::t_3619b3746a7a55 122-124
+  s_11a5c14eb07397::t_6804cd3ae582ec 125-160,165-176
+  s_11a5c14eb07397::t_d2d5550df40367 177-179
+  s_11a5c14eb07397::t_b1e4644feff357 33-34,49-59
+  s_11a5c14eb07397::t_28f577a03474cf 118,120-121
+  s_11a5c14eb07397::t_2887eaa4431c5b 161-164
+apps/dashboard/components/todo-footer.test.tsx
+  s_11a5c14eb07397::t_4118f5849cfab3 102,105-109,113-116,118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "e6b386c448d7c7947aedc5d9733dbe8eca020d21",
+  "prompts": {},
+  "sessions": {
+    "s_11a5c14eb07397": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "681d98c8-bae9-4f4e-91fc-13245dc521c6",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
