@@ -120,9 +120,11 @@ describe("CommandPalette", () => {
     type("people")
     expect(groupRows(palette.groups.pages)).toEqual([
       messages.dashboard.nav.people,
+      // The import row's own LABEL contains the query, so cmdk ranks it above
+      // the rows that match only through their detail.
+      `${messages.dashboard.people.import.title}${messages.dashboard.nav.people}`,
       `${messages.dashboard.people.tabs.people}${messages.dashboard.nav.people}`,
       `${messages.dashboard.people.tabs.classify}${messages.dashboard.nav.people}`,
-      `${messages.dashboard.people.import.title}${messages.dashboard.nav.people}`,
     ])
     expect(groupRows(palette.groups.guides)).toEqual([
       `Importing people${INDEX[1]?.description}`,
@@ -169,10 +171,12 @@ describe("CommandPalette", () => {
     type("organization")
     // The organization pages surface through their group heading ("the word a
     // user searches by"); the settings AREA row itself is named Settings and
-    // does not match this query.
+    // does not match this query. The audit log sits in the Organization
+    // category, so the same query finds it too.
     expect(groupRows(palette.groups.pages)).toEqual([
       `${messages.dashboard.organization.tabs.general}${messages.dashboard.nav.organization}`,
       `${messages.dashboard.organization.tabs.members}${messages.dashboard.nav.organization}`,
+      `${messages.dashboard.nav.auditLog}${messages.dashboard.nav.organization}`,
     ])
   })
 

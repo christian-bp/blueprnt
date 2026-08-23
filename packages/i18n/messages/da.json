@@ -220,7 +220,7 @@
       "rowsPerPage": "Rækker pr. side"
     },
     "nav": {
-      "home": "Oversigt",
+      "home": "Hjem",
       "overview": "Niveauer",
       "settings": "Indstillinger",
       "work": "Jobarkitektur",
@@ -273,7 +273,7 @@
         "Kvinna": "Kvinde"
       },
       "import": {
-        "title": "Importér løn",
+        "title": "Importér medarbejdere",
         "next": "Næste",
         "back": "Tilbage",
         "steps": {
@@ -432,7 +432,8 @@
         "gender": {
           "Man": "Mand",
           "Kvinna": "Kvinde"
-        }
+        },
+        "cta": "Importér"
       },
       "addPerson": {
         "title": "Tilføj medarbejder",
@@ -1565,7 +1566,8 @@
           "created": "Tilføjet"
         },
         "noNotesYet": "Ingen notater endnu."
-      }
+      },
+      "runNav": "Lønkortlægning"
     },
     "rating": {
       "title": "Vurder rolle",
@@ -2606,7 +2608,7 @@
     "notFound": {
       "title": "Siden blev ikke fundet",
       "body": "Linket kan være forældet eller fejlskrevet.",
-      "backHome": "Tilbage til oversigten"
+      "backHome": "Tilbage til startsiden"
     },
     "docs": {
       "headingLink": "Link til {heading}",

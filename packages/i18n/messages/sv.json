@@ -220,7 +220,7 @@
       "rowsPerPage": "Rader per sida"
     },
     "nav": {
-      "home": "Översikt",
+      "home": "Hem",
       "overview": "Nivåer",
       "settings": "Inställningar",
       "work": "Jobbarkitektur",
@@ -273,7 +273,7 @@
         "Kvinna": "Kvinna"
       },
       "import": {
-        "title": "Importera löner",
+        "title": "Importera medarbetare",
         "next": "Nästa",
         "back": "Tillbaka",
         "steps": {
@@ -432,7 +432,8 @@
         "gender": {
           "Man": "Man",
           "Kvinna": "Kvinna"
-        }
+        },
+        "cta": "Importera"
       },
       "addPerson": {
         "title": "Lägg till anställd",
@@ -1565,7 +1566,8 @@
           "created": "Tillagd"
         },
         "noNotesYet": "Inga noteringar ännu."
-      }
+      },
+      "runNav": "Lönekartläggning"
     },
     "rating": {
       "title": "Betygsätt roll",
@@ -2606,7 +2608,7 @@
     "notFound": {
       "title": "Sidan hittades inte",
       "body": "Länken kan vara inaktuell eller felstavad.",
-      "backHome": "Tillbaka till översikten"
+      "backHome": "Tillbaka till startsidan"
     },
     "docs": {
       "headingLink": "Länk till {heading}",

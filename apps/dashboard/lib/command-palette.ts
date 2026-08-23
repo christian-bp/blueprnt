@@ -139,20 +139,28 @@ export function pageItems(
     }
     // An inner row carries its area's icon: it is the same destination one
     // level down, and a row with no glyph beside rows that have one reads as
-    // a different kind of thing. Its detail is its GROUP's heading where one
-    // exists ("Organization", "Account settings"), the area's name otherwise:
-    // the heading is the word a user actually searches by ("organization"
-    // must find General and Members).
+    // a different kind of thing. Its detail is its GROUP's heading
+    // ("Organization", "Account settings"): the heading is the word a user
+    // actually searches by ("organization" must find General and Members).
     const subs = innerNavFor(area, role).flatMap((group) =>
-      group.entries.map(
-        (entry): PaletteItem => ({
-          key: `page:${area.labelKey}:${entry.labelKey}`,
-          href: entry.href,
-          label: label(entry.labelKey),
-          icon: area.icon,
-          detail: group.labelKey === undefined ? parent : label(group.labelKey),
-        })
-      )
+      group.entries
+        // A single-page area's row repeats the area itself under the SAME
+        // name (Home, Model, Pay mappings); the area row above already lists
+        // that destination, and a literal duplicate would be noise. /work's
+        // repeat stays: "Levels" is a different real name for that page.
+        .filter(
+          (entry) =>
+            entry.href !== area.href || entry.labelKey !== area.labelKey
+        )
+        .map(
+          (entry): PaletteItem => ({
+            key: `page:${area.labelKey}:${entry.labelKey}`,
+            href: entry.href,
+            label: label(entry.labelKey),
+            icon: area.icon,
+            detail: label(group.labelKey),
+          })
+        )
     )
     return [item, ...subs]
   })

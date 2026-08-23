@@ -220,7 +220,7 @@
       "rowsPerPage": "Rows per page"
     },
     "nav": {
-      "home": "Overview",
+      "home": "Home",
       "overview": "Levels",
       "settings": "Settings",
       "work": "Job architecture",
@@ -273,7 +273,7 @@
         "Kvinna": "Woman"
       },
       "import": {
-        "title": "Import salaries",
+        "title": "Import people",
         "next": "Next",
         "back": "Back",
         "steps": {
@@ -432,7 +432,8 @@
           "description": "Your uploaded file and column mapping will be lost.",
           "keep": "Keep editing",
           "discard": "Discard"
-        }
+        },
+        "cta": "Import"
       },
       "addPerson": {
         "title": "Add employee",
@@ -1565,7 +1566,8 @@
           "created": "Added"
         },
         "noNotesYet": "No notes yet."
-      }
+      },
+      "runNav": "Pay mapping"
     },
     "rating": {
       "title": "Rate role",
@@ -2606,7 +2608,7 @@
     "notFound": {
       "title": "Page not found",
       "body": "The link may be outdated or mistyped.",
-      "backHome": "Back to overview"
+      "backHome": "Back to home"
     },
     "docs": {
       "headingLink": "Link to {heading}",

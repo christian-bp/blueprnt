@@ -141,11 +141,15 @@ function ShellContent({ children }: { children: ReactNode }) {
   const area = areaForPathname(pathname)
   const run = inPayMappingRun(pathname)
   const groups = area === undefined ? [] : innerNavFor(area, role)
-  const sidebar = run ? (
-    <RunSidebar />
-  ) : groups.length > 0 ? (
-    <InnerSidebarNav groups={groups} />
-  ) : null
+  // The assistant belongs to the Home area but owns its whole pane: its
+  // conversations panel is the sidebar there, and the area nav beside it
+  // would stack a second 240px column against the chat.
+  const sidebar =
+    pathname === "/assistant" ? null : run ? (
+      <RunSidebar />
+    ) : groups.length > 0 ? (
+      <InnerSidebarNav groups={groups} />
+    ) : null
   // The run sidebar remembers its own collapse choice apart from the list's.
   const areaId = run ? "payMappingRun" : (area?.id ?? "none")
   return (
@@ -179,7 +183,10 @@ export function AppShell(props: {
           className="h-screen [--sidebar-accent-foreground:var(--color-primary)] [--sidebar-accent:color-mix(in_oklab,var(--color-primary)_6%,transparent)]"
           style={
             {
-              "--sidebar-width": "3.5rem",
+              // The Verve reference rail width: the size-8 rail buttons plus
+              // the container's and the icon column's own p-2 need the full
+              // 63px; at 3.5rem the button column overflowed its gutter.
+              "--sidebar-width": "63px",
               "--header-height": "50px",
               "--sidebar-width-inner": "240px",
             } as CSSProperties

@@ -7,11 +7,23 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import type { ReactNode } from "react"
 import { InnerNavCount } from "@/components/inner-nav-count"
 import { deepestMatch, type InnerNavGroup } from "@/lib/navigation"
 
-// The registry-driven rows of an area's inner sidebar: optional uppercase
-// group headings, ghost-button rows, active row on the accent. Purely
+// The uppercase category title every sidebar group renders above its rows.
+// One component so the registry nav and the page-owned sidebars (the run
+// sidebar) can never drift in pitch.
+export function InnerNavHeading({ children }: { children: ReactNode }) {
+  return (
+    <p className="px-3 pt-2 pb-1 font-medium text-[11px] text-foreground/70 uppercase">
+      {children}
+    </p>
+  )
+}
+
+// The registry-driven rows of an area's inner sidebar: an uppercase category
+// heading per group, ghost-button rows, active row on the accent. Purely
 // presentational; which groups exist and who sees them is the registry's
 // business (innerNavFor).
 export function InnerSidebarNav({
@@ -31,13 +43,9 @@ export function InnerSidebarNav({
   return (
     <nav className="flex flex-col py-1">
       {groups.map((group, index) => (
-        <div key={group.labelKey ?? group.entries[0]?.href}>
+        <div key={group.labelKey}>
           {index > 0 && <Separator className="my-2" />}
-          {group.labelKey !== undefined && (
-            <p className="px-3 pt-2 pb-1 font-medium text-[11px] text-foreground/70 uppercase">
-              {t(group.labelKey)}
-            </p>
-          )}
+          <InnerNavHeading>{t(group.labelKey)}</InnerNavHeading>
           <div className="flex flex-col gap-0.5 px-2">
             {group.entries.map((entry) => {
               const active = entry.href === current

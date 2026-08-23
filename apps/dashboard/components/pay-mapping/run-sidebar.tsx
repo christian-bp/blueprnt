@@ -26,6 +26,7 @@ import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { InnerNavHeading } from "@/components/inner-sidebar-nav"
 import { useOrganization } from "@/components/org-context"
 import { UpDownChevrons } from "@/components/updown-chevrons"
 import { chapterSegment } from "./analysis-chapters"
@@ -139,6 +140,7 @@ export function RunSidebar() {
         )}
       </div>
       <Separator className="my-2" />
+      <InnerNavHeading>{t("runNav")}</InnerNavHeading>
       <div className="flex flex-col gap-0.5 px-2">
         {TABS.map((tab) => {
           const target = "landing" in tab ? tab.landing : tab.sub

@@ -220,7 +220,7 @@
       "rowsPerPage": "Rader per side"
     },
     "nav": {
-      "home": "Oversikt",
+      "home": "Hjem",
       "overview": "Nivåer",
       "settings": "Innstillinger",
       "work": "Jobbarkitektur",
@@ -273,7 +273,7 @@
         "Kvinna": "Kvinne"
       },
       "import": {
-        "title": "Importer lønninger",
+        "title": "Importer ansatte",
         "next": "Neste",
         "back": "Tilbake",
         "steps": {
@@ -432,7 +432,8 @@
         "gender": {
           "Man": "Mann",
           "Kvinna": "Kvinne"
-        }
+        },
+        "cta": "Importer"
       },
       "addPerson": {
         "title": "Legg til ansatt",
@@ -1565,7 +1566,8 @@
           "created": "Lagt til"
         },
         "noNotesYet": "Ingen notater ennå."
-      }
+      },
+      "runNav": "Lønnskartlegging"
     },
     "rating": {
       "title": "Vurder rolle",
@@ -2606,7 +2608,7 @@
     "notFound": {
       "title": "Siden ble ikke funnet",
       "body": "Lenken kan være utdatert eller feilskrevet.",
-      "backHome": "Tilbake til oversikten"
+      "backHome": "Tilbake til startsiden"
     },
     "docs": {
       "headingLink": "Lenke til {heading}",

@@ -5,7 +5,7 @@ import {
   Briefcase01Icon,
   Building01Icon,
   ChartColumnIcon,
-  DashboardSquare02Icon,
+  Home07Icon,
   Layers01Icon,
   Mail01Icon,
   RankingIcon,
@@ -38,25 +38,32 @@ const NAV_AREAS_SOURCE = [
     id: "home",
     labelKey: "nav.home",
     href: "/",
-    icon: DashboardSquare02Icon,
-    match: [],
+    icon: Home07Icon,
+    // The assistant lives under Home: its rail icon is gone and its
+    // destination is a Home inner row, so the Home icon stays lit there.
+    match: ["/assistant"],
     adminOnly: false,
     platformOnly: false,
     placement: "main",
-    innerNav: [],
-  },
-  {
-    id: "assistant",
-    labelKey: "nav.assistant",
-    href: "/assistant",
-    icon: AiChat02Icon,
-    match: [],
-    adminOnly: false,
-    platformOnly: false,
-    placement: "main",
-    // The assistant's inner sidebar is its conversations panel, owned by the
-    // page (it is stateful content, not registry rows).
-    innerNav: [],
+    innerNav: [
+      {
+        labelKey: "nav.home",
+        entries: [
+          {
+            labelKey: "nav.home",
+            href: "/",
+            icon: Home07Icon,
+            adminOnly: false,
+          },
+          {
+            labelKey: "nav.assistant",
+            href: "/assistant",
+            icon: AiChat02Icon,
+            adminOnly: false,
+          },
+        ],
+      },
+    ],
   },
   {
     id: "work",
@@ -98,9 +105,22 @@ const NAV_AREAS_SOURCE = [
     adminOnly: false,
     platformOnly: false,
     placement: "main",
-    // No inner sidebar: the model's four chapters are one guided journey with
-    // its own in-page tab row under the section's progress spine.
-    innerNav: [],
+    // A single row: the model's four chapters stay one guided journey with
+    // its own in-page tab row, so the sidebar carries only the area itself
+    // (every area keeps the inner-sidebar frame).
+    innerNav: [
+      {
+        labelKey: "nav.model",
+        entries: [
+          {
+            labelKey: "nav.model",
+            href: "/model",
+            icon: Layers01Icon,
+            adminOnly: false,
+          },
+        ],
+      },
+    ],
   },
   {
     id: "people",
@@ -142,9 +162,21 @@ const NAV_AREAS_SOURCE = [
     adminOnly: false,
     platformOnly: false,
     placement: "main",
-    // The list page has no inner sidebar; inside one run the page-owned run
+    // A single row for the register; inside one run the page-owned run
     // sidebar (run switcher, the run's destinations) takes over.
-    innerNav: [],
+    innerNav: [
+      {
+        labelKey: "nav.payMapping",
+        entries: [
+          {
+            labelKey: "nav.payMapping",
+            href: "/pay-mappings",
+            icon: ChartColumnIcon,
+            adminOnly: false,
+          },
+        ],
+      },
+    ],
   },
   {
     id: "docs",
@@ -186,6 +218,12 @@ const NAV_AREAS_SOURCE = [
             icon: UserMultipleIcon,
             adminOnly: true,
           },
+          {
+            labelKey: "nav.auditLog",
+            href: "/audit-log",
+            icon: Audit02Icon,
+            adminOnly: true,
+          },
         ],
       },
       {
@@ -202,16 +240,6 @@ const NAV_AREAS_SOURCE = [
             href: "/account/security",
             icon: SquareLock02Icon,
             adminOnly: false,
-          },
-        ],
-      },
-      {
-        entries: [
-          {
-            labelKey: "nav.auditLog",
-            href: "/audit-log",
-            icon: Audit02Icon,
-            adminOnly: true,
           },
         ],
       },
@@ -275,10 +303,7 @@ type InnerNavEntrySource = InnerNavGroupSource["entries"][number]
 
 export type AreaId = NavAreaSource["id"]
 export type NavAreaLabelKey = NavAreaSource["labelKey"]
-export type InnerNavGroupLabelKey = Extract<
-  InnerNavGroupSource,
-  { labelKey: string }
->["labelKey"]
+export type InnerNavGroupLabelKey = InnerNavGroupSource["labelKey"]
 export type InnerNavEntryLabelKey = InnerNavEntrySource["labelKey"]
 
 // The live todo counters an inner-nav row can carry (the notification badge
@@ -297,9 +322,11 @@ export type InnerNavEntry = {
   readonly count?: InnerNavCountId
 }
 
-// A group of inner rows under an optional uppercase heading.
+// A group of inner rows under its uppercase category heading. The heading is
+// required: every sidebar group names its category, so a group cannot ship
+// without one.
 export type InnerNavGroup = {
-  readonly labelKey?: InnerNavGroupLabelKey
+  readonly labelKey: InnerNavGroupLabelKey
   readonly entries: readonly InnerNavEntry[]
 }
 

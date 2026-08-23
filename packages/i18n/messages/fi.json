@@ -220,7 +220,7 @@
       "rowsPerPage": "Riviä sivulla"
     },
     "nav": {
-      "home": "Yleiskatsaus",
+      "home": "Etusivu",
       "overview": "Tasot",
       "settings": "Asetukset",
       "work": "Työarkkitehtuuri",
@@ -273,7 +273,7 @@
         "Kvinna": "Nainen"
       },
       "import": {
-        "title": "Tuo palkat",
+        "title": "Tuo henkilöstö",
         "next": "Seuraava",
         "back": "Takaisin",
         "steps": {
@@ -432,7 +432,8 @@
         "gender": {
           "Man": "Mies",
           "Kvinna": "Nainen"
-        }
+        },
+        "cta": "Tuo"
       },
       "addPerson": {
         "title": "Lisää työntekijä",
@@ -1565,7 +1566,8 @@
           "created": "Lisätty"
         },
         "noNotesYet": "Ei vielä merkintöjä."
-      }
+      },
+      "runNav": "Palkkakartoitus"
     },
     "rating": {
       "title": "Arvioi rooli",
@@ -2606,7 +2608,7 @@
     "notFound": {
       "title": "Sivua ei löytynyt",
       "body": "Linkki voi olla vanhentunut tai kirjoitettu väärin.",
-      "backHome": "Takaisin yleiskatsaukseen"
+      "backHome": "Takaisin etusivulle"
     },
     "docs": {
       "headingLink": "Linkki kohteeseen {heading}",

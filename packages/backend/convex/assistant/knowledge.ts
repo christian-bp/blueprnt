@@ -42,11 +42,11 @@ export const ASSISTANT_PAGES = {
   "/": {
     labelKey: "nav.home",
     name: {
-      en: "Overview",
-      sv: "Översikt",
-      nb: "Oversikt",
-      da: "Oversigt",
-      fi: "Yleiskatsaus",
+      en: "Home",
+      sv: "Hem",
+      nb: "Hjem",
+      da: "Hjem",
+      fi: "Etusivu",
     },
     description: "the landing dashboard with organization-wide widgets.",
   },
@@ -181,11 +181,11 @@ export const ASSISTANT_PAGES = {
   "/people/import": {
     labelKey: "people.import.title",
     name: {
-      en: "Import salaries",
-      sv: "Importera löner",
-      nb: "Importer lønninger",
-      da: "Importér løn",
-      fi: "Tuo palkat",
+      en: "Import people",
+      sv: "Importera medarbetare",
+      nb: "Importer ansatte",
+      da: "Importér medarbejdere",
+      fi: "Tuo henkilöstö",
     },
     description: "the payroll-file import wizard.",
   },
