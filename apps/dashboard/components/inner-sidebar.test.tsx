@@ -30,18 +30,22 @@ describe("InnerSidebar", () => {
     expect(screen.getByText("tree")).toBeTruthy()
   })
 
-  it("mounts no content while collapsed", () => {
+  it("keeps the content mounted but inert while collapsed", () => {
     renderSidebar(false)
-    // Not merely visually hidden: a collapsed sidebar carries no links in
-    // the tab order at all.
-    expect(screen.queryByText("tree")).toBeNull()
-    const aside = screen.getByRole("complementary", {
-      name: "Guide navigation",
-    })
-    expect(aside.children).toHaveLength(0)
+    // The collapse is a width slide that clips the content (the seam line
+    // sweeps across it), so the content stays mounted at full opacity; inert
+    // is what keeps a collapsed sidebar's links out of the tab order and the
+    // accessibility tree.
+    expect(screen.getByText("tree")).toBeTruthy()
+    expect(innerBox().hasAttribute("inert")).toBe(true)
   })
 
-  it("keeps the border on the inner box, never on the animated outer box", () => {
+  it("lifts inert while open", () => {
+    renderSidebar(true)
+    expect(innerBox().hasAttribute("inert")).toBe(false)
+  })
+
+  it("draws the seam line on the clip edge, never as a border on either box", () => {
     const { container } = renderSidebar(true)
     const outer = container.firstElementChild as HTMLElement
     const inner = innerBox()
@@ -51,10 +55,22 @@ describe("InnerSidebar", () => {
     // which is the form a future edit is most likely to add.
     expect(outer.className).not.toMatch(/(^|\s)border/)
     expect(outer.className).not.toMatch(/(^|\s)p[xytrbl]?-/)
-    expect(inner.className).toContain("border-r")
+    // A border on the fixed-width content column would sit at the far edge
+    // and be clipped away the moment the slide starts; the line must ride
+    // the OUTER box's animated right edge to sweep across the content.
+    expect(inner.className).not.toContain("border-r")
+    const seam = outer.lastElementChild as HTMLElement
+    for (const cls of [
+      "absolute",
+      "inset-y-0",
+      "right-0",
+      "w-px",
+      "bg-border",
+    ]) {
+      expect(seam.className).toContain(cls)
+    }
     // The column starts flush at the site header's bottom border, so the top
-    // inset is the only thing keeping the first control off that border. It
-    // belongs on the inner box for the same reason the border does.
+    // inset is the only thing keeping the first control off that border.
     expect(inner.className).toContain("pt-2")
   })
 

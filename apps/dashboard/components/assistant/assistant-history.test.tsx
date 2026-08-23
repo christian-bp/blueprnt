@@ -80,7 +80,7 @@ describe("AssistantHistoryPanel", () => {
   })
   afterEach(() => cleanup())
 
-  it("renders nothing while closed", () => {
+  it("keeps the list mounted but inert while closed, so the collapse slide covers real rows", () => {
     onQuery((ref) =>
       ref === "assistant.chat.listThreads"
         ? [
@@ -94,8 +94,13 @@ describe("AssistantHistoryPanel", () => {
         : undefined
     )
     renderPanel(false)
-    expect(screen.queryByText("Pay gap trend")).toBeNull()
-    expect(screen.queryByRole("button")).toBeNull()
+    // The width slide clips the content instead of unmounting it; inert is
+    // what keeps the closed panel's controls out of the tab order and the
+    // accessibility tree.
+    expect(screen.getByText("Pay gap trend").closest("[inert]")).not.toBeNull()
+    expect(
+      screen.getByRole("button", { name: t.newConversation }).closest("[inert]")
+    ).not.toBeNull()
   })
 
   it("shows the New conversation control as a real component while the thread list loads", () => {
@@ -107,15 +112,6 @@ describe("AssistantHistoryPanel", () => {
     expect(
       container.querySelectorAll('[data-slot="skeleton"]').length
     ).toBeGreaterThan(0)
-  })
-
-  it("does not subscribe to the thread list while closed, only while open", () => {
-    const listThreadsQuery = vi.fn(() => [])
-    onQuery((ref) =>
-      ref === "assistant.chat.listThreads" ? listThreadsQuery() : undefined
-    )
-    renderPanel(false)
-    expect(listThreadsQuery).not.toHaveBeenCalled()
   })
 
   it("calls onNewConversation when its button is clicked", () => {

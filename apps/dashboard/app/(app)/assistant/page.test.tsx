@@ -105,9 +105,11 @@ describe("AssistantPage", () => {
       false
     )
     renderPage()
-    // Collapsed: the panel is unmounted (its actions with it) and the seam
-    // handle names the expand direction.
-    expect(screen.queryByRole("button", { name: t.newConversation })).toBeNull()
+    // Collapsed: the panel content is inert (clipped by the width slide,
+    // out of the tab order) and the seam handle names the expand direction.
+    expect(
+      screen.getByRole("button", { name: t.newConversation }).closest("[inert]")
+    ).not.toBeNull()
     expect(screen.getByRole("button", { name: tShell.expandNav })).toBeDefined()
   })
 
@@ -127,11 +129,13 @@ describe("AssistantPage", () => {
       return undefined
     })
     renderPage()
-    expect(screen.getByText("Pay gap trend")).toBeDefined()
+    expect(screen.getByText("Pay gap trend").closest("[inert]")).toBeNull()
 
     fireEvent.click(screen.getByRole("button", { name: tShell.collapseNav }))
     await waitFor(() => {
-      expect(screen.queryByText("Pay gap trend")).toBeNull()
+      expect(
+        screen.getByText("Pay gap trend").closest("[inert]")
+      ).not.toBeNull()
     })
     const expandButton = screen.getByRole("button", {
       name: tShell.expandNav,
@@ -140,7 +144,7 @@ describe("AssistantPage", () => {
 
     fireEvent.click(expandButton)
     await waitFor(() => {
-      expect(screen.getByText("Pay gap trend")).toBeDefined()
+      expect(screen.getByText("Pay gap trend").closest("[inert]")).toBeNull()
     })
   })
 

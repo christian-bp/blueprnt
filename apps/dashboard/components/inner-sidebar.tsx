@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@workspace/ui/lib/utils"
-import { AnimatePresence, motion } from "motion/react"
+import { motion } from "motion/react"
 import type { ReactNode } from "react"
 import { SPRING } from "@/lib/motion"
 
@@ -13,23 +13,6 @@ import { SPRING } from "@/lib/motion"
 // with a shrinking flex item (docs/ui-animation.md #3), so collapsed truly
 // means zero footprint.
 const DEFAULT_WIDTH = 240
-
-// The content's own exit-fade duration. The CLOSE-direction width collapse
-// delays by roughly this long (rule 4's staged-exit pattern: fade first, then
-// collapse the now-invisible box) so the sidebar does not visibly retract text
-// mid-fade. Opening carries no such delay on the box itself: it widens
-// immediately and the content fades in after.
-const CONTENT_FADE_OUT = 0.1
-
-// The two directions carry different transitions (the CLOSE side delays by
-// the content fade), expressed as per-render animate objects rather than
-// named variants: dynamic variants resolved through `custom` proved brittle
-// across re-renders, and a conditional object says the same thing plainly.
-function panelAnimate(open: boolean, width: number) {
-  return open
-    ? { width, transition: SPRING }
-    : { width: 0, transition: { ...SPRING, delay: CONTENT_FADE_OUT } }
-}
 
 // The app's inner sidebar: the secondary navigation column that sits between
 // the app rail and a page's content (an area's nav rows, the docs nav, the
@@ -44,16 +27,26 @@ function panelAnimate(open: boolean, width: number) {
 // and content (inner-sidebar-handle.tsx), which no element inside a
 // width-animated, overflow-hidden box could survive collapsing.
 //
-// Split per docs/ui-animation.md #2 (width/height vs the CSS box model): the
-// OUTER motion.div carries ONLY animated geometry (width, marginRight) and no
-// visual box styles, so `width: 0` truly means zero and no hairline survives
-// the collapse; the INNER nav carries the border, the fixed width (so text
-// never rewraps mid-slide) and the flex-col + min-h-0 + overflow-y-auto chain
-// that lets the content scroll on its own.
+// The collapse is a pure width slide (the Verve pattern): the content column
+// keeps its full width and full opacity while the box narrows, so the seam
+// line sweeps left ACROSS the content and covers it, instead of the content
+// fading out first. The seam line is therefore an absolutely anchored child
+// riding the OUTER box's right edge (right-0 inside the clipping box), never
+// a border on the fixed-width content column, where it would sit at the far
+// edge and be clipped away the moment the slide starts.
 //
-// The content mounts only while open (AnimatePresence, a fast fade per rule
-// 4's staged-exit guidance) so a collapsed sidebar carries no links in the tab
-// order at all, not merely a clipped one.
+// Split per docs/ui-animation.md #2 (width/height vs the CSS box model): the
+// OUTER motion.aside carries ONLY animated geometry (width) and no visual box
+// styles, so `width: 0` truly means zero; the content column carries the
+// padding, the fixed width (so text never rewraps mid-slide) and the flex-col
+// + min-h-0 + overflow-y-auto chain that lets the content scroll on its own.
+// The outer IS the positioning context here, deliberately: the seam line must
+// track the animated edge, and at width 0 the overflow clip removes it, so no
+// hairline survives the collapse (the invariant rule #2 exists for).
+//
+// The content stays mounted while collapsed (unmounting is what forced the
+// old fade) and is made `inert` instead, so a collapsed sidebar still carries
+// no links in the tab order and nothing in the accessibility tree.
 //
 // Two height modes, because the two kinds of surface scroll differently:
 //   fill   - the parent is height-locked and this fills it (the shell's
@@ -92,9 +85,10 @@ export function InnerSidebar({
       initial={false}
       aria-label={label}
       data-state={open ? "open" : "closed"}
-      animate={panelAnimate(open, width)}
+      animate={{ width: open ? width : 0 }}
+      transition={SPRING}
       className={cn(
-        "shrink-0 overflow-hidden",
+        "relative shrink-0 overflow-hidden",
         height === "fill" && "min-h-0",
         // self-start gives the flex item a definite height to stick within;
         // without it the item stretches to the row and never sticks.
@@ -102,34 +96,29 @@ export function InnerSidebar({
         className
       )}
     >
-      {/* initial={false}: a first paint is not a transition. Without it the
-          content fades in on every mount, even when a page renders the
-          sidebar already open. */}
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            key="inner-sidebar-content"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { delay: 0.08 } }}
-            exit={{ opacity: 0, transition: { duration: CONTENT_FADE_OUT } }}
-            // pt-2 matches the px-2/pb-2 the rows below already carry, so the
-            // column is inset by the same 8px on all four edges. Without it
-            // the first control sits against the header's bottom border,
-            // since the column starts flush at the header.
-            className="flex h-full min-h-0 flex-col border-border border-r pt-2"
-            style={{ width }}
-          >
-            {actions !== undefined && (
-              <div className="flex h-10 shrink-0 items-center justify-between gap-1 px-2">
-                {actions}
-              </div>
-            )}
-            <div className="min-h-0 flex-1 overflow-y-auto pb-2">
-              {children}
-            </div>
-          </motion.div>
+      {/* pt-2 matches the px-2/pb-2 the rows below already carry, so the
+          column is inset by the same 8px on all four edges. Without it the
+          first control sits against the header's bottom border, since the
+          column starts flush at the header. */}
+      <div
+        inert={!open}
+        className="flex h-full min-h-0 flex-col pt-2"
+        style={{ width }}
+      >
+        {actions !== undefined && (
+          <div className="flex h-10 shrink-0 items-center justify-between gap-1 px-2">
+            {actions}
+          </div>
         )}
-      </AnimatePresence>
+        <div className="min-h-0 flex-1 overflow-y-auto pb-2">{children}</div>
+      </div>
+      {/* The seam line, riding the clipping box's own right edge so the
+          collapse sweeps it across the content; clipped away entirely at
+          width 0. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-y-0 right-0 w-px bg-border"
+      />
     </motion.aside>
   )
 }
