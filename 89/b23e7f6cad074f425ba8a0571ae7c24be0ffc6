@@ -1,0 +1,79 @@
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_30578bd126adde 1118-1119,1609,1663
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_30578bd126adde 1118-1119,1609,1663
+apps/dashboard/content/docs/sv/levels-views.mdx
+  s_58dd112dc09435::t_18c1c23367f868 43
+apps/dashboard/components/rating/lock-assessment-panel.tsx
+  s_58dd112dc09435::t_6629eb073346a2 74
+apps/dashboard/components/rating/rating-result.tsx
+  s_58dd112dc09435::t_014e9f08fea986 52-55,60,69-79
+  s_58dd112dc09435::t_7374f7da15461c 106,108-113
+  s_58dd112dc09435::t_ab94377ae426aa 15-20
+  s_58dd112dc09435::t_84fdddb5eb24cc 80-83
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_58dd112dc09435::t_5184ce0851f70f 30
+  s_58dd112dc09435::t_7858135eaeb191 182-216
+  s_58dd112dc09435::t_243b1226e27dd4 167
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_30578bd126adde 1112-1113,1593,1658
+apps/dashboard/components/rating/lock-assessment-panel.test.tsx
+  s_58dd112dc09435::t_243b1226e27dd4 54
+apps/dashboard/components/assessment-status.tsx
+  s_58dd112dc09435::t_adbb6ad4346093 6-54
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_30578bd126adde 1118-1119,1609,1663
+apps/dashboard/components/assessment-status.test.tsx
+  s_58dd112dc09435::t_97a4b23c7d95f4 1-46
+apps/dashboard/content/docs/en/levels-views.mdx
+  s_58dd112dc09435::t_18c1c23367f868 40
+apps/dashboard/components/levels/pending-roles.test.tsx
+  s_58dd112dc09435::t_efb5289390655a 50
+  s_58dd112dc09435::t_243b1226e27dd4 55,61
+apps/dashboard/content/docs/da/levels-views.mdx
+  s_58dd112dc09435::t_18c1c23367f868 43
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_30578bd126adde 1118-1119,1609,1663
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.test.tsx
+  s_58dd112dc09435::t_243b1226e27dd4 88,196
+apps/dashboard/content/docs/fi/levels-views.mdx
+  s_58dd112dc09435::t_18c1c23367f868 43
+apps/dashboard/components/role-sheet.tsx
+  s_58dd112dc09435::t_2a0fcdf49f9b6f 239-243,248
+  s_58dd112dc09435::t_82895d0b1b5d1b 28,30
+  s_58dd112dc09435::t_df2f612ec161fc 146,148-155,157-158,160
+  s_58dd112dc09435::t_4a714c3ff87c85 32
+apps/dashboard/components/levels/pending-roles.tsx
+  s_58dd112dc09435::t_6629eb073346a2 44
+apps/dashboard/components/rating/rating-result.test.tsx
+  s_58dd112dc09435::t_a992b3f266fb5c 130-153
+  s_58dd112dc09435::t_b5e00aae2da98a 112-117
+apps/dashboard/components/role-sheet.test.tsx
+  s_58dd112dc09435::t_a009d7121139e9 213
+  s_58dd112dc09435::t_632fe648231ba2 48
+  s_58dd112dc09435::t_18f7b4dceb0989 157-176
+  s_58dd112dc09435::t_85e005803de25b 193-200,203
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_58dd112dc09435::t_340a10483604bd 260
+  s_58dd112dc09435::t_4a714c3ff87c85 40
+  s_58dd112dc09435::t_56bed1328571e6 36,38
+  s_58dd112dc09435::t_414de6d105b2aa 126-128
+apps/dashboard/content/docs/nb/levels-views.mdx
+  s_58dd112dc09435::t_18c1c23367f868 43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "89b23e7f6cad074f425ba8a0571ae7c24be0ffc6",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
