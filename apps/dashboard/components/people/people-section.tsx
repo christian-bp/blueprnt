@@ -584,7 +584,7 @@ export function PeopleSection() {
           strokeWidth={2}
           aria-hidden="true"
         />
-        {t("import.title")}
+        {t("import.cta")}
       </Link>
     </div>
   )
@@ -650,7 +650,7 @@ export function PeopleSection() {
               href="/people/import"
               className={cn(buttonVariants({ variant: "outline" }))}
             >
-              {t("import.title")}
+              {t("import.cta")}
             </Link>
           </Empty>
         ) : shown === 0 ? (
