@@ -11,16 +11,18 @@ model on its own.
 
 ## When the review is available
 
-The "Let AI review the weighting" button only appears once your weighting
-is already balanced (every weight point distributed, no points left over or
-missing) and you have no unsaved weight changes. If you have just
-applied a review and have not changed the weighting since, the button
-stays hidden until you make a new change, so a review is never requested
+The "Review" button sits on the chapter's top row, beside "Save
+weighting" when there is something to save. It is only offered while
+your saved weighting is what the AI would see: with unsaved weight
+changes it goes away until you save or undo them. If you have just
+applied a review and have not changed the weighting since, it also
+stays away until you make a new change, so a review is never requested
 against a weighting it has already reviewed.
 
 ## What the AI proposes
 
-Opening the review requests a set of balanced moves, each one written as
+Choosing "Review" opens a panel that requests a set of balanced moves
+straight away, each one written as
 moving a number of weight points from one criterion to another, together
 with a short motivation for why. Every individual move is itself
 zero-sum (points removed from one criterion always land on another), so
