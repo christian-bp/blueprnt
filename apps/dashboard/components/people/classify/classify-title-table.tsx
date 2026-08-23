@@ -323,7 +323,9 @@ export function ClassifyTableHeader({
       <TableRow>
         {/* Fixed-width selection slot, before the expand chevron slot. */}
         <TableHead className="w-10">
-          {selectAll !== undefined ? (
+          {/* No selectable rows means no select-all: an unclickable
+              checkbox is noise. The fixed-width head keeps the slot. */}
+          {selectAll !== undefined && (
             <Checkbox
               aria-label={t("bulk.selectAll")}
               checked={selectAll.checked}
@@ -332,8 +334,6 @@ export function ClassifyTableHeader({
                 selectAll.onChange(checked === true)
               }
             />
-          ) : (
-            <Checkbox aria-label={t("bulk.selectAll")} />
           )}
         </TableHead>
         {/* Reserved slot for the expand/collapse control (fixed width avoids layout shift) */}
@@ -775,12 +775,18 @@ export function ClassifyTitleTable({
           <ClassifyTableHeader
             sort={sort}
             onSort={toggleSort}
-            selectAll={{
-              checked: sel.all,
-              indeterminate: sel.some,
-              onChange: (checked) =>
-                setSelected(checked ? new Set(actionableKeys) : new Set()),
-            }}
+            selectAll={
+              actionableKeys.length === 0
+                ? undefined
+                : {
+                    checked: sel.all,
+                    indeterminate: sel.some,
+                    onChange: (checked) =>
+                      setSelected(
+                        checked ? new Set(actionableKeys) : new Set()
+                      ),
+                  }
+            }
           />
           <TableBody>
             {sortedGroups.map((group) => {
@@ -826,18 +832,23 @@ export function ClassifyTitleTable({
                     }}
                   >
                     <TableCell className="w-10">
-                      <div className="flex items-center">
-                        <Checkbox
-                          aria-label={t("bulk.selectRow", {
-                            title: group.title ?? t("noTitle"),
-                          })}
-                          disabled={!actionable}
-                          checked={sel.effective.has(key)}
-                          onCheckedChange={(checked) =>
-                            toggleSelected(key, checked === true)
-                          }
-                        />
-                      </div>
+                      {/* A group with nothing to confirm gets no checkbox at
+                          all rather than a disabled one; the fixed-width cell
+                          keeps the slot, so the box appearing when the group
+                          becomes actionable shifts nothing. */}
+                      {actionable && (
+                        <div className="flex items-center">
+                          <Checkbox
+                            aria-label={t("bulk.selectRow", {
+                              title: group.title ?? t("noTitle"),
+                            })}
+                            checked={sel.effective.has(key)}
+                            onCheckedChange={(checked) =>
+                              toggleSelected(key, checked === true)
+                            }
+                          />
+                        </div>
+                      )}
                     </TableCell>
                     {/* Expand/collapse control in a pre-reserved slot so toggling
                     never causes the other cells to reflow. */}

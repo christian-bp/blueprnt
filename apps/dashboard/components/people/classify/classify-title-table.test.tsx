@@ -657,23 +657,28 @@ describe("ClassifyTitleTable", () => {
   // Bulk selection: checkboxes + toolbar
   // ---------------------------------------------------------------------------
 
-  it("renders a checkbox per row, disabled when the group is not actionable", () => {
+  it("renders a checkbox only on actionable groups, never a disabled one", () => {
     renderTable([HIGH_GROUP, NO_TITLE_GROUP])
-    // Header select-all + one per row.
+    // Header select-all + one for the actionable row; the unmatched group
+    // (nothing to confirm) shows no checkbox at all rather than a disabled
+    // one.
     const boxes = screen.getAllByRole("checkbox")
-    expect(boxes).toHaveLength(3)
-    const rowBox = screen.getByRole("checkbox", {
-      name: m.bulk.selectRow.replace("{title}", "Senior Engineer"),
-    })
-    // The Checkbox is a Base UI (non-native) control: it surfaces disabled
-    // state via aria-disabled, not the native `disabled` IDL property (see
-    // organization-members-section.test.tsx / pay-mappings-section.test.tsx
-    // for the same pattern with other Base UI primitives).
-    expect(rowBox.getAttribute("aria-disabled")).toBeNull()
-    const unmatchedBox = screen.getByRole("checkbox", {
-      name: m.bulk.selectRow.replace("{title}", m.noTitle),
-    })
-    expect(unmatchedBox.getAttribute("aria-disabled")).toBe("true")
+    expect(boxes).toHaveLength(2)
+    expect(
+      screen.getByRole("checkbox", {
+        name: m.bulk.selectRow.replace("{title}", "Senior Engineer"),
+      })
+    ).toBeDefined()
+    expect(
+      screen.queryByRole("checkbox", {
+        name: m.bulk.selectRow.replace("{title}", m.noTitle),
+      })
+    ).toBeNull()
+  })
+
+  it("hides the select-all when no group is selectable", () => {
+    renderTable([NO_TITLE_GROUP])
+    expect(screen.queryAllByRole("checkbox")).toHaveLength(0)
   })
 
   it("select-all selects only actionable groups and enables the CTA with counts", async () => {
