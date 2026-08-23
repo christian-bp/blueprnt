@@ -1,0 +1,351 @@
+apps/dashboard/components/settings-frame.tsx
+  s_cc28b0c83ccbad::t_8b1680480a002a 41-47
+  s_cc28b0c83ccbad::t_ed046e14be40b2 1-40,48-90
+apps/dashboard/components/remove-confirm.tsx
+  s_cc28b0c83ccbad::t_42cee76f7c819b 10
+  s_cc28b0c83ccbad::t_0db25d2f95ec61 35
+apps/dashboard/components/admin/ai-usage-table.test.tsx
+  s_cc28b0c83ccbad::t_39f14a6c760964 10,15-20
+  s_cc28b0c83ccbad::t_ab46cbdc1d4383 161-163
+apps/dashboard/components/levels/family-level-matrix.tsx
+  s_cc28b0c83ccbad::t_e429b2b4ab5c79 36-41
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_cc28b0c83ccbad::t_bc889ed5e90b78 51
+  s_cc28b0c83ccbad::t_9c1e349562aed9 6-11
+  s_cc28b0c83ccbad::t_4b264baceb2162 21,83-92,291-298
+  s_cc28b0c83ccbad::t_eadab2c159069d 136-155,164-190,198-222
+apps/dashboard/components/model/placed-criterion-card.tsx
+  s_cc28b0c83ccbad::t_700e47d7cce833 100-106,153
+apps/dashboard/components/table-sort-button.tsx
+  s_cc28b0c83ccbad::t_3f0bd93a00923e 7-11,25
+apps/dashboard/app/(app)/organization/general/page.tsx
+  s_cc28b0c83ccbad::t_5e941f6ccc50dd 24
+  s_cc28b0c83ccbad::t_491c2636f5c0ca 14
+  s_cc28b0c83ccbad::t_e78669c837ed19 9,23,25
+apps/dashboard/components/model/approval-card.test.tsx
+  s_cc28b0c83ccbad::t_c70887e6376584 196
+apps/dashboard/components/pay-mapping/pay-mapping-run-shell.tsx
+  s_cc28b0c83ccbad::t_e1f82e13815930 92
+  s_cc28b0c83ccbad::t_f303bb36cd79b1 3-10
+  s_cc28b0c83ccbad::t_f8c6a3e161a468 89-90,93-107
+  s_cc28b0c83ccbad::t_66dc6fb91a91c7 19,120,133
+  s_cc28b0c83ccbad::t_cb791f8f5e4158 18,114-119,121-127
+  s_cc28b0c83ccbad::t_bc889ed5e90b78 86
+  s_cc28b0c83ccbad::t_d5a5535c67101c 40
+  s_cc28b0c83ccbad::t_9729abb93efe38 22
+apps/dashboard/components/frame-table.tsx
+  s_cc28b0c83ccbad::t_06c151e4446607 1-3,12-25,43-45,47,49,51-52,56-58,63,66,68-70,74,80-85,90-91,104,108-166,168-184
+  s_cc28b0c83ccbad::t_9a3fe0d2fa9299 103
+  s_cc28b0c83ccbad::t_996b75e3ff1e7e 48,62,65,99,101
+  s_cc28b0c83ccbad::t_fb15f27a7e144b 167
+  s_cc28b0c83ccbad::t_81c185c2a1e158 4-6,8-11
+  s_cc28b0c83ccbad::t_b27043f5f05e7f 26-31
+  s_cc28b0c83ccbad::t_f9664953a06d8c 7,32-37,46,59-61,64,71-73,86-89,92-98,100,102,105-107
+  s_cc28b0c83ccbad::t_219cb82996b960 38-42,50,53-55,67,75-79
+apps/dashboard/components/organization/organization-members-section.tsx
+  s_cc28b0c83ccbad::t_d838ce3a1db788 67-72,170-184,187-205,216-218,364-367
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 209-210
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,208
+  s_cc28b0c83ccbad::t_4c20738f8f939c 46-48,206-207,211-215,219-310,312-314,316,319,323,326,337-339,353,356,363
+apps/dashboard/components/language-select.tsx
+  s_cc28b0c83ccbad::t_d722130c22fd2a 12
+  s_cc28b0c83ccbad::t_ecf1e7e2acac19 1-11,13-63
+apps/dashboard/app/(app)/roles/[roleSlug]/page.tsx
+  s_cc28b0c83ccbad::t_b569bf226fbc02 5-12,51-56
+  s_cc28b0c83ccbad::t_1d648807556bdf 50,57-68
+  s_cc28b0c83ccbad::t_057617cac5863c 17-18,73-76,87-89,117
+apps/dashboard/components/pay-mapping/actions-overview.tsx
+  s_cc28b0c83ccbad::t_9abd5e2a47314b 124
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,338
+  s_cc28b0c83ccbad::t_a245232b3f5228 38,470-496,498,637,639-644,647-672,676,744
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 339
+apps/dashboard/components/chapter-tabs.tsx
+  s_cc28b0c83ccbad::t_91261d7ea1794f 80
+  s_cc28b0c83ccbad::t_1c42371ccaf64e 15
+  s_cc28b0c83ccbad::t_ef3038afd02bf8 87
+  s_cc28b0c83ccbad::t_d8f800a72d9ff8 12-14
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_cc28b0c83ccbad::t_10ce2e8a6df9fc 43,289-294
+  s_cc28b0c83ccbad::t_5afcf189d6e3e1 44,284-288,331-369,446-447
+  s_cc28b0c83ccbad::t_16888a8df9234e 4
+  s_cc28b0c83ccbad::t_20ebfc2559db89 295-312,314-330,370-387,391-445
+  s_cc28b0c83ccbad::t_4e1def7bb92e38 52,277-282
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,388
+  s_cc28b0c83ccbad::t_613ea464abdb1f 119-120
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 389-390
+apps/dashboard/components/pay-mapping/analysis-section-shell.test.tsx
+  s_cc28b0c83ccbad::t_de68eca0353c2f 26,36,53
+  s_cc28b0c83ccbad::t_66dc6fb91a91c7 27,35,40
+apps/dashboard/lib/role-family-row.ts
+  s_cc28b0c83ccbad::t_c352f47e68b516 17-21
+apps/dashboard/components/model/dimension-frame.tsx
+  s_cc28b0c83ccbad::t_ce345222127e80 57-62,66,73-74
+apps/dashboard/components/account/two-factor-section.tsx
+  s_cc28b0c83ccbad::t_8adac6d459e7d2 3,92-93,266-267
+apps/dashboard/components/action-card.tsx
+  s_cc28b0c83ccbad::t_108d4d687b09a0 66,106-109
+apps/dashboard/components/roles/role-detail-skeleton.tsx
+  s_cc28b0c83ccbad::t_2e8aae044fa046 113
+  s_cc28b0c83ccbad::t_e6113fd86aa725 15,46-54
+  s_cc28b0c83ccbad::t_e22b1cb5cb8cf3 105
+apps/dashboard/app/(app)/docs/[slug]/page.tsx
+  s_cc28b0c83ccbad::t_bc889ed5e90b78 32,37
+apps/dashboard/app/(app)/admin/organizations/page.tsx
+  s_cc28b0c83ccbad::t_042f9707cb23f6 9
+apps/dashboard/components/organization/organization-logo-section.tsx
+  s_cc28b0c83ccbad::t_82c21dc7d35e8e 5,52-71
+apps/dashboard/components/overview/welcome-greeting.tsx
+  s_cc28b0c83ccbad::t_bc889ed5e90b78 11
+apps/dashboard/app/(app)/admin/audit-log/page.tsx
+  s_cc28b0c83ccbad::t_042f9707cb23f6 9
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_cc28b0c83ccbad::t_4a249ba697b886 526
+apps/dashboard/components/account/change-password-form.tsx
+  s_cc28b0c83ccbad::t_efa5e5931da1ca 3,79-98,100-116,121-130,135-144,149-155
+apps/dashboard/components/people/people-section.tsx
+  s_cc28b0c83ccbad::t_4e1def7bb92e38 53
+  s_cc28b0c83ccbad::t_8b9174535dd31c 634-642,646-655,663,717
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 644-645
+  s_cc28b0c83ccbad::t_996b75e3ff1e7e 57-62,594,596-615,628-633,718
+  s_cc28b0c83ccbad::t_87f3e6a4bae544 656-662,664-716
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,643
+apps/dashboard/components/medallion.tsx
+  s_cc28b0c83ccbad::t_108d4d687b09a0 29,34-37,40,51-52,57-59
+  s_cc28b0c83ccbad::t_a97c2595d399fc 14,56
+apps/dashboard/app/(app)/roles/page.tsx
+  s_cc28b0c83ccbad::t_bc770b8179aae1 55-56
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 103
+  s_cc28b0c83ccbad::t_6b131b52a532d7 19,50-54,57,93-97
+  s_cc28b0c83ccbad::t_8b9174535dd31c 116-141
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,102
+apps/dashboard/components/pay-mapping/pay-mapping-preconditions-panel.tsx
+  s_cc28b0c83ccbad::t_a97c2595d399fc 1,82
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 83
+apps/dashboard/components/organization/organization-members-section.test.tsx
+  s_cc28b0c83ccbad::t_ca8a5e0b9d3d33 19-24
+  s_cc28b0c83ccbad::t_409b25f3e67918 124-125,127-128
+apps/dashboard/components/pay-mapping/pay-mappings-section.test.tsx
+  s_cc28b0c83ccbad::t_34b39ce36399ae 17-22
+apps/dashboard/components/account/profile-name-form.tsx
+  s_cc28b0c83ccbad::t_3295bfb362139c 3,61-75,77-89,91,94-95,97-105
+apps/dashboard/components/widget-card.tsx
+  s_cc28b0c83ccbad::t_108d4d687b09a0 240-244
+  s_cc28b0c83ccbad::t_c44ffe71ef9948 246
+apps/dashboard/components/table-search-field.tsx
+  s_cc28b0c83ccbad::t_10ce2e8a6df9fc 21,27-29,41
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.tsx
+  s_cc28b0c83ccbad::t_3455193398d914 824
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,291
+  s_cc28b0c83ccbad::t_cf88ca0251f79b 276
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 292
+apps/dashboard/components/assistant/assistant-chart-part.test.tsx
+  s_cc28b0c83ccbad::t_1c42371ccaf64e 103
+apps/dashboard/components/admin/email-log-section.tsx
+  s_cc28b0c83ccbad::t_16888a8df9234e 4
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 295-296
+  s_cc28b0c83ccbad::t_10ce2e8a6df9fc 52,179-184
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,294
+  s_cc28b0c83ccbad::t_4e1def7bb92e38 56,167-172
+  s_cc28b0c83ccbad::t_20ebfc2559db89 53,174-178,185-197,199-293,297-314,316-348
+  s_cc28b0c83ccbad::t_613ea464abdb1f 95-96
+apps/dashboard/components/org-audit-log-section.tsx
+  s_cc28b0c83ccbad::t_06141b5ada04e1 45
+  s_cc28b0c83ccbad::t_6fdc9918c25c97 55,331-336,368-373
+  s_cc28b0c83ccbad::t_4ed7d92ff3ec52 467-479,497-540
+  s_cc28b0c83ccbad::t_d485df478dd3bd 541-542
+  s_cc28b0c83ccbad::t_10ce2e8a6df9fc 44,382-387
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 487-488
+  s_cc28b0c83ccbad::t_558aea1fa257ec 375-381,388-405,407-466
+  s_cc28b0c83ccbad::t_de743fc4b92953 480-485,489-496
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,486
+  s_cc28b0c83ccbad::t_16888a8df9234e 4
+apps/dashboard/app/(app)/admin/page.tsx
+  s_cc28b0c83ccbad::t_042f9707cb23f6 9
+apps/dashboard/app/(app)/admin/email-log/page.tsx
+  s_cc28b0c83ccbad::t_042f9707cb23f6 9
+apps/dashboard/app/(app)/people/classify/page.tsx
+  s_cc28b0c83ccbad::t_491c2636f5c0ca 33
+  s_cc28b0c83ccbad::t_62a02c83f8a786 75
+  s_cc28b0c83ccbad::t_1a0c55eaafccbd 8
+  s_cc28b0c83ccbad::t_2d1ccc6710a8aa 76-80
+  s_cc28b0c83ccbad::t_e78669c837ed19 9,69-74,92-97
+apps/dashboard/components/admin/organizations-section.tsx
+  s_cc28b0c83ccbad::t_5f452891939b44 48-49
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,91
+  s_cc28b0c83ccbad::t_8b9174535dd31c 87-90,94-108,110-122,124-155,157-176
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 92-93
+  s_cc28b0c83ccbad::t_0ce0ef88bd1053 41,79,82-83
+  s_cc28b0c83ccbad::t_4e1def7bb92e38 43,68-72
+  s_cc28b0c83ccbad::t_f552cfff106702 81,84-86,177
+  s_cc28b0c83ccbad::t_d490b15b00da23 42,74-78,80
+apps/dashboard/lib/docs/docs-guards.test.ts
+  s_cc28b0c83ccbad::t_8205abed6c43b4 268,270-279,284,286,288-289
+  s_cc28b0c83ccbad::t_ff4f02086ab704 18
+  s_cc28b0c83ccbad::t_30dc73aac21302 231-236,239-244
+apps/dashboard/components/organization/organization-profile-form.tsx
+  s_cc28b0c83ccbad::t_de7dff61973b22 26,215-217,219
+  s_cc28b0c83ccbad::t_c389919f21754e 5
+  s_cc28b0c83ccbad::t_964496c4f68645 220
+  s_cc28b0c83ccbad::t_2940e7aecee53d 27,104-128,130,133-178,183-206,211-214,218,221-224,226-255
+apps/dashboard/components/account/avatar-section.tsx
+  s_cc28b0c83ccbad::t_3295bfb362139c 7,52-71
+apps/dashboard/components/model/approval-card.tsx
+  s_cc28b0c83ccbad::t_9f38eb01826d0f 259
+apps/dashboard/components/pay-mapping/group-member-table.tsx
+  s_cc28b0c83ccbad::t_d769dd738dccae 335
+apps/dashboard/components/account/language-section.tsx
+  s_cc28b0c83ccbad::t_6b0d960fafdcf1 3,39-44,51-52
+  s_cc28b0c83ccbad::t_de7dff61973b22 9
+  s_cc28b0c83ccbad::t_d722130c22fd2a 45,47-48,50
+  s_cc28b0c83ccbad::t_b432c34bd107e7 5
+  s_cc28b0c83ccbad::t_12e72b358145cf 49
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.test.tsx
+  s_cc28b0c83ccbad::t_29056edac2192d 784-786
+apps/dashboard/app/(app)/work/page.tsx
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 197-198
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,196
+  s_cc28b0c83ccbad::t_4b264baceb2162 36,78-80,84-85
+  s_cc28b0c83ccbad::t_402541cc293f39 180
+  s_cc28b0c83ccbad::t_9acd69f271113c 249-252,255,257-261
+  s_cc28b0c83ccbad::t_9490dd4045cec7 102-107,109-122,127-133,135-142,145-149,193-195,199-215,217-230,233-248,253-254,256,264-266,271-292
+  s_cc28b0c83ccbad::t_e429b2b4ab5c79 183
+  s_cc28b0c83ccbad::t_cc70d3613b7b8b 94,185
+  s_cc28b0c83ccbad::t_006d9453cd29d0 95-99,101,186-192
+apps/dashboard/components/pay-mapping/pay-mappings-section.tsx
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 348-349
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,347
+  s_cc28b0c83ccbad::t_4e1def7bb92e38 51
+  s_cc28b0c83ccbad::t_0653aa136782a5 444,454,461
+  s_cc28b0c83ccbad::t_d71242a42e9730 54-58,325,327-332
+  s_cc28b0c83ccbad::t_8b9174535dd31c 333-336,344-346,350,352-363,374-375,394,458-460
+  s_cc28b0c83ccbad::t_87f3e6a4bae544 364-373,376-393,395-404,408-421,423-443,445-453,455-457
+apps/dashboard/components/family-review-table.test.tsx
+  s_cc28b0c83ccbad::t_1c42371ccaf64e 593-594,596
+  s_cc28b0c83ccbad::t_5f33f925147e03 595
+apps/dashboard/components/people/people-section.test.tsx
+  s_cc28b0c83ccbad::t_cf88ca0251f79b 587-590
+  s_cc28b0c83ccbad::t_92e8ea47a78549 14-19
+apps/dashboard/components/pay-mapping/actions-overview.test.tsx
+  s_cc28b0c83ccbad::t_e00e1ac3b1ab54 13-15,17-24
+  s_cc28b0c83ccbad::t_9f80ca6722620c 16,28-29
+  s_cc28b0c83ccbad::t_762fd55e0c4d22 25-27
+apps/dashboard/app/(app)/account/security/page.tsx
+  s_cc28b0c83ccbad::t_47dc77e802742b 7,12,17,19
+  s_cc28b0c83ccbad::t_8b9174535dd31c 18
+apps/dashboard/app/(app)/admin/ai-usage/page.test.tsx
+  s_cc28b0c83ccbad::t_a61f8df0a0f919 22,47-49
+apps/dashboard/components/account/delete-account-section.tsx
+  s_cc28b0c83ccbad::t_07a804d1655ba3 3,108-116,148-158,164-169,173-174
+apps/dashboard/components/pay-mapping/analysis-section-shell.tsx
+  s_cc28b0c83ccbad::t_66dc6fb91a91c7 14-16,77,81-82,97
+apps/dashboard/app/(app)/admin/ai-usage/page.tsx
+  s_cc28b0c83ccbad::t_042f9707cb23f6 9
+apps/dashboard/components/account/change-email-form.tsx
+  s_cc28b0c83ccbad::t_6b0d960fafdcf1 96-133
+  s_cc28b0c83ccbad::t_d126a28f8944f7 3,72-73,78-79,84-87
+apps/dashboard/components/admin/ai-usage-table.tsx
+  s_cc28b0c83ccbad::t_468aaf246989d2 34,285,290,307-344,404-411
+apps/dashboard/components/model/weighting-chapter.tsx
+  s_cc28b0c83ccbad::t_bc0d841c426463 569,572
+apps/dashboard/components/family-review-table.tsx
+  s_cc28b0c83ccbad::t_e074ca8ae00092 503
+apps/dashboard/components/roles/roles-table.tsx
+  s_cc28b0c83ccbad::t_e94bc9b0185dc1 213-220,235-236,238,244,246-247
+  s_cc28b0c83ccbad::t_402541cc293f39 408
+  s_cc28b0c83ccbad::t_6af24d8e7ec0f8 3-4,14,21,32,59-65
+  s_cc28b0c83ccbad::t_2ad97fb8e163dd 178-179,183-186,198,202,277,286-302
+  s_cc28b0c83ccbad::t_ce5915ec21be06 259-261,373-375,406-407,409
+  s_cc28b0c83ccbad::t_d2ab7df2495a7e 330-331,399,401-405,410-416
+  s_cc28b0c83ccbad::t_e21a5e92c174fa 206,258,262-263,278-285,319-320,324-329,332-346,353,367,378
+  s_cc28b0c83ccbad::t_23f7c75fd7eb3d 33,181-182,191,275-276,425
+apps/dashboard/app/(app)/docs/page.tsx
+  s_cc28b0c83ccbad::t_bc889ed5e90b78 11,47
+apps/dashboard/components/people/add-salary-dialog.tsx
+  s_cc28b0c83ccbad::t_cea25b67edd9a2 254
+apps/dashboard/components/pay-mapping/pay-mapping-overview.test.tsx
+  s_cc28b0c83ccbad::t_bc889ed5e90b78 7
+apps/dashboard/app/(app)/organization/members/page.tsx
+  s_cc28b0c83ccbad::t_5e941f6ccc50dd 22
+  s_cc28b0c83ccbad::t_e78669c837ed19 8,21
+  s_cc28b0c83ccbad::t_4c20738f8f939c 23-26
+  s_cc28b0c83ccbad::t_491c2636f5c0ca 13
+apps/dashboard/app/(app)/roles/families/[familySlug]/page.tsx
+  s_cc28b0c83ccbad::t_057617cac5863c 28,31,111-118,205
+  s_cc28b0c83ccbad::t_33fa333aa05314 110,119,122-124,135,137-146
+  s_cc28b0c83ccbad::t_23f7c75fd7eb3d 29,120-121,151,231-232,303
+  s_cc28b0c83ccbad::t_f8fe0f99ba5c94 8-9
+  s_cc28b0c83ccbad::t_e2df6fd462221e 7,210-227,229-230,234-238,240-245,247,249-252,256-265,267-275,279-302
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,253
+  s_cc28b0c83ccbad::t_b569bf226fbc02 159-164
+  s_cc28b0c83ccbad::t_1d648807556bdf 158,165-176
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 254-255
+apps/dashboard/components/pay-mapping/pay-mapping-run-shell.test.tsx
+  s_cc28b0c83ccbad::t_a61f8df0a0f919 76,78-80,83-87
+  s_cc28b0c83ccbad::t_192d07957b9756 97
+apps/dashboard/components/admin/ai-usage-section.tsx
+  s_cc28b0c83ccbad::t_5f452891939b44 37-38,85-101
+  s_cc28b0c83ccbad::t_4e1def7bb92e38 17,78-84
+apps/dashboard/components/roles/roles-table.test.tsx
+  s_cc28b0c83ccbad::t_34b39ce36399ae 16-21
+apps/dashboard/components/chapter-tabs.test.tsx
+  s_cc28b0c83ccbad::t_c70887e6376584 31,64,69
+apps/dashboard/components/people/classify/unmatched-title-actions.tsx
+  s_cc28b0c83ccbad::t_f8492addf2acd6 131
+apps/dashboard/components/model/method-panel.tsx
+  s_cc28b0c83ccbad::t_4ed7d92ff3ec52 26
+  s_cc28b0c83ccbad::t_700e47d7cce833 27-28,346-350
+  s_cc28b0c83ccbad::t_9c379ce0ec30c9 25
+apps/dashboard/components/roles/role-people-card.tsx
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,179
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 180
+apps/dashboard/app/(app)/roles/page.test.tsx
+  s_cc28b0c83ccbad::t_5e941f6ccc50dd 172-175
+  s_cc28b0c83ccbad::t_34b39ce36399ae 12-17
+  s_cc28b0c83ccbad::t_a61f8df0a0f919 171,176
+  s_cc28b0c83ccbad::t_f3fd200ffe8a29 194-195,197-199
+apps/dashboard/app/(app)/account/profile/page.tsx
+  s_cc28b0c83ccbad::t_47dc77e802742b 8,13,18,20
+  s_cc28b0c83ccbad::t_8b9174535dd31c 19
+apps/dashboard/components/people/person-detail.tsx
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 369
+  s_cc28b0c83ccbad::t_f303bb36cd79b1 13-14,211-213
+  s_cc28b0c83ccbad::t_e22b1cb5cb8cf3 126
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,368
+  s_cc28b0c83ccbad::t_e0db43a6ef452f 40
+  s_cc28b0c83ccbad::t_e6113fd86aa725 41,136,247-248
+  s_cc28b0c83ccbad::t_6fb741bec345e4 210,214-225
+apps/dashboard/components/admin/users-section.tsx
+  s_cc28b0c83ccbad::t_d490b15b00da23 229
+  s_cc28b0c83ccbad::t_51580930dd2d1b 42,96-100,102-103,106-108
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3,123
+  s_cc28b0c83ccbad::t_83aa87d3fbbc11 124-125
+  s_cc28b0c83ccbad::t_0ce0ef88bd1053 41,101,104-105
+  s_cc28b0c83ccbad::t_4e1def7bb92e38 43,93-94
+  s_cc28b0c83ccbad::t_8b9174535dd31c 109-122,126-130,132-139,141-152,154-185,188-228
+  s_cc28b0c83ccbad::t_5f452891939b44 49-50
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_cc28b0c83ccbad::t_d92ae38fb5a849 737-739,741-755
+  s_cc28b0c83ccbad::t_b38b1ca2689f3f 761-774
+  s_cc28b0c83ccbad::t_62a02c83f8a786 775-796,798-803,809-821,823-842,844-880,884-890,892,901-906,908-936,939-940,945-959,961-994,996-997,1000-1011,1013,1017-1019,1022-1042
+  s_cc28b0c83ccbad::t_30763fe43a9077 56
+  s_cc28b0c83ccbad::t_644c27fa533568 1043
+  s_cc28b0c83ccbad::t_a97c2595d399fc 3
+apps/dashboard/components/model/dimension-frame.test.tsx
+  s_cc28b0c83ccbad::t_a9a24e3277186e 14,22,24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "def51243ac5fbc93e32b3e6e00ae398e81d171d2",
+  "prompts": {},
+  "sessions": {
+    "s_cc28b0c83ccbad": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a9b05540-f272-439e-a6f9-eba12a06fd6b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
