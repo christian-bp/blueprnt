@@ -1,0 +1,36 @@
+apps/dashboard/components/todo-footer.tsx
+  s_11a5c14eb07397::t_ac9459f6f0073f 170-181
+  s_11a5c14eb07397::t_99843812f3281a 17-22
+  s_11a5c14eb07397::t_bd89099cfda679 1-7,11-16,23-27,45-50,57-61,115-116,118-120,123-125,128-130,187-194
+  s_11a5c14eb07397::t_481fc96ab39fa5 8-10,28-44,51-56,62-114,117,121-122,126-127,131-169,182-186
+apps/dashboard/lib/todo.ts
+  s_11a5c14eb07397::t_720c98a9068f60 493-509
+  s_11a5c14eb07397::t_c8d04902a59320 1-10
+  s_11a5c14eb07397::t_22c6b4de24c575 452-492,510
+apps/dashboard/components/overview/todo-actions.tsx
+  s_11a5c14eb07397::t_b84c81adfbffdc 18
+apps/dashboard/components/todo-footer.test.tsx
+  s_11a5c14eb07397::t_83d2387b9d9a22 1-21,24-27,32-104,110-111,122,181-182
+  s_11a5c14eb07397::t_6c413f8a1fdb52 105-106,112,123-157,173-180
+  s_11a5c14eb07397::t_e9472d211f87ae 158-172
+  s_11a5c14eb07397::t_33aa26397fd655 107-109,113-121
+  s_11a5c14eb07397::t_04c5014b33e37e 22-23,28-31
+apps/dashboard/components/confetti-burst.tsx
+  s_11a5c14eb07397::t_70ab35e7a53ee6 48-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "9b2b70a6346d378fe7a32c5547dca0b0432822ac",
+  "prompts": {},
+  "sessions": {
+    "s_11a5c14eb07397": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "681d98c8-bae9-4f4e-91fc-13245dc521c6",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
