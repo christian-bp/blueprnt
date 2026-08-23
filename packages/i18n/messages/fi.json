@@ -593,7 +593,7 @@
       "empty": "Toimintaa ei ole vielä kirjattu.",
       "story": {
         "count": "{count} muutosta",
-        "toggle": "Näytä tämän toiminnon muutokset"
+        "toggleNamed": "Näytä {count} muutosta kohteessa {action}"
       },
       "notAuthorized": "Vain organisaation järjestelmänvalvojat voivat nähdä tapahtumalokin.",
       "categories": {

@@ -13,7 +13,7 @@ import {
   type QueryCtx,
 } from "../_generated/server"
 import { logLevelShifts } from "../assessment/compute"
-import { logAudit, normalizeBatchId } from "./audit"
+import { logAudit, normalizeGestureId } from "./audit"
 import type { AuditPayloads, LevelCause } from "./auditPayloads"
 import { appError, ERROR_CODES } from "./errors"
 
@@ -43,7 +43,7 @@ export interface AuditWriter {
 
 // Builds the ctx-bound audit writer for an org-scoped mutation ctx.
 //
-// batchId is passed explicitly rather than read off ctx, because the writer is
+// gestureId is passed explicitly rather than read off ctx, because the writer is
 // built INSIDE the wrapper's input step, before the custom ctx that carries the
 // id exists. Every other audit writer takes the handler's own ctx and inherits
 // the id from it.
@@ -51,13 +51,13 @@ function makeAuditWriter(
   ctx: MutationCtx,
   orgId: string,
   authUserId: string,
-  batchId: string | undefined
+  gestureId: string | undefined
 ): AuditWriter {
   return {
     log: (entry) =>
-      logAudit(ctx, { orgId, actorId: authUserId, batchId, ...entry }),
+      logAudit(ctx, { orgId, actorId: authUserId, gestureId, ...entry }),
     levelShifts: (entry) =>
-      logLevelShifts(ctx, { orgId, actorId: authUserId, batchId, ...entry }),
+      logLevelShifts(ctx, { orgId, actorId: authUserId, gestureId, ...entry }),
   }
 }
 
@@ -132,7 +132,7 @@ const orgArgs = { orgId: v.string() }
 //
 // Never server-generated: a server id could only ever span ONE transaction,
 // which is the opposite of what a gesture id is for.
-const orgMutationArgs = { ...orgArgs, batchId: v.optional(v.string()) }
+const orgMutationArgs = { ...orgArgs, gestureId: v.optional(v.string()) }
 
 // Org-scoped read: injects ctx.orgId / ctx.role / ctx.authUserId.
 export const orgQuery = customQuery(query, {
@@ -146,18 +146,14 @@ export const orgQuery = customQuery(query, {
 // Org-scoped write (any member role).
 export const orgMutation = customMutation(mutation, {
   args: orgMutationArgs,
-  input: async (ctx, { orgId, batchId }) => {
+  input: async (ctx, { orgId, gestureId: rawGestureId }) => {
     const org = await resolveOrgContext(ctx, orgId)
     // Bound and normalize once, at the edge: a malformed id is dropped, never
     // thrown on, because it can only cost grouping and must not fail a write.
-    const gestureId = normalizeBatchId(batchId)
+    const gestureId = normalizeGestureId(rawGestureId)
     const audit = makeAuditWriter(ctx, org.orgId, org.authUserId, gestureId)
     return {
-      ctx: {
-        ...org,
-        audit,
-        ...(gestureId !== undefined ? { batchId: gestureId } : {}),
-      },
+      ctx: { ...org, audit, ...(gestureId !== undefined ? { gestureId } : {}) },
       args: {},
     }
   },
@@ -172,17 +168,13 @@ export const orgMutation = customMutation(mutation, {
 // guard scans this source from disk.
 export const adminMutation = customMutation(mutation, {
   args: orgMutationArgs,
-  input: async (ctx, { orgId, batchId }) => {
+  input: async (ctx, { orgId, gestureId: rawGestureId }) => {
     const org = await resolveOrgContext(ctx, orgId)
     if (org.role !== "admin") throw appError(ERROR_CODES.adminRequired)
-    const gestureId = normalizeBatchId(batchId)
+    const gestureId = normalizeGestureId(rawGestureId)
     const audit = makeAuditWriter(ctx, org.orgId, org.authUserId, gestureId)
     return {
-      ctx: {
-        ...org,
-        audit,
-        ...(gestureId !== undefined ? { batchId: gestureId } : {}),
-      },
+      ctx: { ...org, audit, ...(gestureId !== undefined ? { gestureId } : {}) },
       args: {},
     }
   },

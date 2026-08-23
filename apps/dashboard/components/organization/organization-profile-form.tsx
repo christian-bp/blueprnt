@@ -78,10 +78,10 @@ export function OrganizationProfileForm(props: {
     setError(false)
     // One Save can change the name and the settings, which are two mutations
     // and therefore two audit rows; one gesture id keeps them one story.
-    const batchId = newGestureId()
+    const gestureId = newGestureId()
     try {
       if (values.name !== name) {
-        await updateName({ orgId, batchId, name: values.name })
+        await updateName({ orgId, gestureId, name: values.name })
       }
       const settingsChanged =
         (values.country ?? "") !== (props.initial.country ?? "") ||
@@ -91,7 +91,7 @@ export function OrganizationProfileForm(props: {
       if (settingsChanged) {
         await updateSettings({
           orgId,
-          batchId,
+          gestureId,
           country: values.country || undefined,
           currency: values.currency || undefined,
           language: values.language || undefined,

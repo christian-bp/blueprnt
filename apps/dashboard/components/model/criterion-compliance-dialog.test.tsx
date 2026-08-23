@@ -241,13 +241,12 @@ describe("CriterionComplianceDialog", () => {
     fireEvent.click(approveBox())
     fireEvent.click(saveButton())
     await waitFor(() => {
-      expect(setApproval).toHaveBeenCalledWith(
-        expect.objectContaining({
-          orgId: "org1",
-          criterionId: "c2",
-          approved: true,
-        })
-      )
+      expect(setApproval).toHaveBeenCalledWith({
+        orgId: "org1",
+        criterionId: "c2",
+        approved: true,
+        gestureId: expect.any(String),
+      })
     })
     expect(save).toHaveBeenCalledTimes(1)
     expect(setApproval).toHaveBeenCalledTimes(1)
@@ -291,8 +290,8 @@ describe("CriterionComplianceDialog", () => {
     // the three audit rows they write group into one line in the log instead
     // of scattering as three unrelated-looking changes.
     const ids = [
-      ...setApproval.mock.calls.map(([args]) => args.batchId),
-      ...save.mock.calls.map(([args]) => args.batchId),
+      ...setApproval.mock.calls.map(([args]) => args.gestureId),
+      ...save.mock.calls.map(([args]) => args.gestureId),
     ]
     expect(ids).toHaveLength(3)
     expect(new Set(ids).size).toBe(1)
@@ -340,13 +339,12 @@ describe("CriterionComplianceDialog", () => {
     fireEvent.click(approveBox())
     fireEvent.click(saveButton())
     await waitFor(() => {
-      expect(setApproval).toHaveBeenCalledWith(
-        expect.objectContaining({
-          orgId: "org1",
-          criterionId: "c3",
-          approved: false,
-        })
-      )
+      expect(setApproval).toHaveBeenCalledWith({
+        orgId: "org1",
+        criterionId: "c3",
+        approved: false,
+        gestureId: expect.any(String),
+      })
     })
     // Nothing else: the text was never touched, so there is nothing to write
     // and no second approval call to make.

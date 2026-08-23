@@ -41,7 +41,7 @@ type Row = {
   actorName: string
   type: string
   category?: string
-  batchId?: string
+  gestureId?: string
   payload: unknown
   names: Record<string, string>
 }
@@ -62,9 +62,9 @@ function row(overrides: Partial<Row> & { id: string; type: string }): Row {
 // it: the re-approval finished the act, the write is in the middle, the
 // reopening started it.
 const GESTURE_ROWS = [
-  row({ id: "r1", type: "criterion.approved", batchId: "g1" }),
-  row({ id: "r2", type: "model.updated", batchId: "g1" }),
-  row({ id: "r3", type: "criterion.reopened", batchId: "g1" }),
+  row({ id: "r1", type: "criterion.approved", gestureId: "g1" }),
+  row({ id: "r2", type: "model.updated", gestureId: "g1" }),
+  row({ id: "r3", type: "criterion.reopened", gestureId: "g1" }),
 ]
 const LONE_ROW = row({ id: "r4", type: "role.created", category: "role" })
 
@@ -93,8 +93,18 @@ function renderLog() {
   return result
 }
 
+// The one story on a page. Each story's toggle names its OWN gesture, so the
+// label is composed from the lead's action and the count rather than shared.
+function storyLabel(action: string, count: number) {
+  return log.story.toggleNamed
+    .replace("{count}", String(count))
+    .replace("{action}", action)
+}
+
 function storyRow() {
-  return screen.getByRole("button", { name: log.story.toggle })
+  return screen.getByRole("button", {
+    name: storyLabel(log.events.criterionApproved, 3),
+  })
 }
 
 // Every clickable line of the log. Queried by attribute rather than by the
@@ -142,7 +152,11 @@ describe("OrgAuditLogSection stories", () => {
   it("leaves a single-mutation act as an ordinary row", () => {
     browseRows = [LONE_ROW]
     renderLog()
-    expect(screen.queryByRole("button", { name: log.story.toggle })).toBeNull()
+    expect(
+      screen.queryByRole("button", {
+        name: storyLabel(log.events.roleCreated, 1),
+      })
+    ).toBeNull()
     const [only] = dataRows()
     expect(only?.getAttribute("aria-label")).toBe(log.detail.viewDetails)
     expect(only?.textContent).toContain(log.events.roleCreated)
@@ -161,6 +175,50 @@ describe("OrgAuditLogSection stories", () => {
     expect(dataRows()).toHaveLength(2)
   })
 
+  // THE BULK CASE. assignPeopleToRole writes one assignment.set row PER
+  // PERSON, so a 25-person classify confirm is 25 rows of one type sharing one
+  // gesture id. Every row ties on specificity, so the "lead" is just the first
+  // row, and its own detail is ONE employee's role change with their name
+  // resolved. Rendering that as the story's face reads as a claim about that
+  // person on behalf of the other twenty-four. The event label and the count
+  // carry the summary instead, and no employee's name appears on it.
+  it("headlines a bulk story by its event and count, never by one person's name", () => {
+    browseRows = Array.from({ length: 25 }, (_, index) =>
+      row({
+        id: `p${index}`,
+        type: "assignment.set",
+        category: "people",
+        gestureId: "bulk-1",
+        payload: { personId: `person-${index}`, roleId: "role-1" },
+        names: {
+          [`person-${index}`]: `Employee ${index}`,
+          "role-1": "Analyst",
+        },
+      })
+    )
+    renderLog()
+    const summary = screen.getByRole("button", {
+      name: storyLabel(log.events.assignmentSet, 25),
+    })
+    expect(summary.textContent).toContain(log.events.assignmentSet)
+    expect(summary.textContent).toContain(
+      log.story.count.replace("{count}", "25")
+    )
+    // Not one employee, and not one role either: nothing from a single row's
+    // own detail is on the story's face.
+    for (let index = 0; index < 25; index++) {
+      expect(summary.textContent).not.toContain(`Employee ${index}`)
+    }
+    expect(summary.textContent).not.toContain("Analyst")
+  })
+
+  // The mixed story keeps its lead's detail: there the lead really is the row
+  // that names the act, so suppressing it would lose the summary.
+  it("keeps the lead's detail on a story whose rows differ", () => {
+    renderLog()
+    expect(storyRow().textContent).toContain(log.events.criterionApproved)
+  })
+
   // A search shows the rows that MATCHED; folding one into a story would hide
   // the hit inside a collapsed summary, or imply that its unmatched siblings
   // matched too. The search input debounces, so this waits it out.
@@ -175,7 +233,11 @@ describe("OrgAuditLogSection stories", () => {
     await waitFor(() => {
       expect(screen.getByText(log.events.modelUpdated)).toBeTruthy()
     })
-    expect(screen.queryByRole("button", { name: log.story.toggle })).toBeNull()
+    expect(
+      screen.queryByRole("button", {
+        name: storyLabel(log.events.criterionApproved, 3),
+      })
+    ).toBeNull()
     expect(dataRows()).toHaveLength(3)
   })
 })

@@ -185,12 +185,12 @@ function CriterionComplianceForm({
     // One press, up to three mutations: reopen, save, sign off again. They are
     // one act to the reader, so they share one gesture id and the audit log
     // shows them as one story instead of three unrelated-looking rows.
-    const batchId = newGestureId()
+    const gestureId = newGestureId()
     try {
       if (wasApproved && (!approved || isDirty)) {
         await setApproval({
           orgId,
-          batchId,
+          gestureId,
           criterionId: target.criterionId,
           approved: false,
         })
@@ -198,7 +198,7 @@ function CriterionComplianceForm({
       if (isDirty) {
         await save({
           orgId,
-          batchId,
+          gestureId,
           criterionId: target.criterionId,
           ...formValues,
         })
@@ -206,7 +206,7 @@ function CriterionComplianceForm({
       if (approved && (!wasApproved || isDirty)) {
         await setApproval({
           orgId,
-          batchId,
+          gestureId,
           criterionId: target.criterionId,
           approved: true,
         })

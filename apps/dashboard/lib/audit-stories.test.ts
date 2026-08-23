@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 import { auditStories, type StoryRow } from "@/lib/audit-stories"
 
-function row(id: string, type: string, batchId?: string): StoryRow {
-  return { id, type, ...(batchId !== undefined ? { batchId } : {}) }
+function row(id: string, type: string, gestureId?: string): StoryRow {
+  return { id, type, ...(gestureId !== undefined ? { gestureId } : {}) }
 }
 
 describe("auditStories", () => {
@@ -17,7 +17,7 @@ describe("auditStories", () => {
   it("folds consecutive rows sharing a gesture id into one story", () => {
     const stories = auditStories([
       row("a", "criterion.approved", "g1"),
-      row("b", "criterion.complianceUpdated", "g1"),
+      row("b", "model.updated", "g1"),
       row("c", "criterion.reopened", "g1"),
       row("d", "role.created"),
     ])
@@ -32,23 +32,52 @@ describe("auditStories", () => {
     const stories = auditStories([
       row("a", "assignment.set", "g1"),
       row("b", "assignment.set", "g1"),
-      row("c", "classification.confirmed", "g1"),
+      row("c", "person.created", "g1"),
     ])
     expect(stories[0]?.key).toBe("a")
     expect(stories[0]?.lead.id).toBe("c")
   })
 
-  // The gesture's least repeated event names it: a bulk confirm is about the
-  // confirmation, not about the fortieth identical assignment it wrote.
+  // The gesture's least repeated event names it. Real pair: add-person writes
+  // one person.created and one assignment.set, and the story is about the
+  // person being added.
   it("leads with the gesture's most specific event", () => {
     const stories = auditStories([
       row("a", "assignment.set", "g1"),
       row("b", "assignment.set", "g1"),
       row("c", "assignment.set", "g1"),
-      row("d", "classification.confirmed", "g1"),
+      row("d", "person.created", "g1"),
     ])
-    expect(stories[0]?.lead.type).toBe("classification.confirmed")
+    expect(stories[0]?.lead.type).toBe("person.created")
     expect(stories[0]?.rows).toHaveLength(4)
+    expect(stories[0]?.uniform).toBe(false)
+  })
+
+  // THE BULK CASE, which is what a classify confirm actually writes:
+  // assignPeopleToRole writes one assignment.set PER PERSON, so every row in
+  // the story carries the same type and there is no most-specific row to lead
+  // with. The fold has to SAY so, because the caller must not render the
+  // lead's own per-row detail as the story's face: that detail names one
+  // employee and their role change.
+  it("marks an all-one-type story as uniform, with no meaningful lead", () => {
+    const stories = auditStories(
+      Array.from({ length: 25 }, (_, index) =>
+        row(`p${index}`, "assignment.set", "g1")
+      )
+    )
+    expect(stories).toHaveLength(1)
+    expect(stories[0]?.rows).toHaveLength(25)
+    expect(stories[0]?.uniform).toBe(true)
+  })
+
+  it("carries the gesture id on the story itself, not only on its rows", () => {
+    const stories = auditStories([
+      row("a", "assignment.set", "g1"),
+      row("b", "person.created", "g1"),
+      row("c", "role.created"),
+    ])
+    expect(stories[0]?.gestureId).toBe("g1")
+    expect(stories[1]?.gestureId).toBeUndefined()
   })
 
   // Every event distinct: the first row wins, which under newest-first
@@ -56,7 +85,7 @@ describe("auditStories", () => {
   it("leads with the first row when nothing is more specific", () => {
     const stories = auditStories([
       row("a", "criterion.approved", "g1"),
-      row("b", "criterion.complianceUpdated", "g1"),
+      row("b", "model.updated", "g1"),
     ])
     expect(stories[0]?.lead.id).toBe("a")
   })
@@ -103,7 +132,7 @@ describe("auditStories", () => {
   it("groups nothing when grouping is off", () => {
     const rows = [
       row("a", "criterion.approved", "g1"),
-      row("b", "criterion.complianceUpdated", "g1"),
+      row("b", "model.updated", "g1"),
     ]
     const stories = auditStories(rows, { grouped: false })
     expect(stories).toHaveLength(2)

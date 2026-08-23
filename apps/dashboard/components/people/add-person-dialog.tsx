@@ -173,12 +173,12 @@ export function AddPersonDialog() {
     setFailure(false)
     // Creating the person and classifying them are one form submit, so the
     // two audit rows they write read as one story.
-    const batchId = newGestureId()
+    const gestureId = newGestureId()
     let created: Awaited<ReturnType<typeof createPerson>>
     try {
       created = await createPerson({
         orgId,
-        batchId,
+        gestureId,
         displayName: values.displayName,
         gender: values.gender,
         ...(values.externalRef !== ""
@@ -209,7 +209,7 @@ export function AddPersonDialog() {
       try {
         await assignPerson({
           orgId,
-          batchId,
+          gestureId,
           personId: created.personId,
           roleId: values.roleId as Id<"roles">,
           seniority: values.seniority,

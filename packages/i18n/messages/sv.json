@@ -593,7 +593,7 @@
       "empty": "Ingen aktivitet har registrerats ännu.",
       "story": {
         "count": "{count} ändringar",
-        "toggle": "Visa ändringarna i den här åtgärden"
+        "toggleNamed": "Visa de {count} ändringarna i {action}"
       },
       "notAuthorized": "Endast organisationsadministratörer kan se händelseloggen.",
       "categories": {

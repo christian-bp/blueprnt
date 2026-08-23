@@ -108,7 +108,7 @@ type AuditRow = {
   category?: string
   // Set only on a row written as part of a multi-mutation gesture; the log
   // folds consecutive rows sharing one into a single story (lib/audit-stories).
-  batchId?: string
+  gestureId?: string
   payload: unknown
   names: Record<string, string>
 }
@@ -534,6 +534,7 @@ export function OrgAuditLogSection() {
                       categoryLabel={categoryLabel}
                       detailText={detailText}
                       storyCount={isStory ? story.rows.length : null}
+                      uniform={story.uniform}
                       expanded={isStory ? open : null}
                       onActivate={() => {
                         if (!isStory) {
@@ -617,6 +618,7 @@ function AuditLogRow({
   categoryLabel,
   detailText,
   storyCount,
+  uniform,
   expanded,
   nested,
   onActivate,
@@ -633,16 +635,30 @@ function AuditLogRow({
     names: Record<string, string>
   ) => ReactNode
   storyCount: number | null
+  // A uniform story is every-row-one-type, which is what a bulk gesture looks
+  // like. Its summary must NOT show the lead's own per-row detail: that detail
+  // names one employee and their change, so a 25-person confirm would headline
+  // one person's diff on behalf of the other twenty-four. The event label and
+  // the count carry it instead. Meaningless for a non-summary row.
+  uniform?: boolean
   expanded: boolean | null
   nested?: boolean
   onActivate: () => void
 }) {
   const isSummary = storyCount !== null
+  const action = actionLabel(row.type)
   return (
     <TableRow
       role="button"
       tabIndex={0}
-      aria-label={isSummary ? t("story.toggle") : t("detail.viewDetails")}
+      // Every story on the page names its OWN gesture: a page with several
+      // stories otherwise gives a screen-reader user N identically named
+      // buttons and no way to tell which act each one opens.
+      aria-label={
+        isSummary
+          ? t("story.toggleNamed", { action, count: storyCount })
+          : t("detail.viewDetails")
+      }
       {...(expanded !== null ? { "aria-expanded": expanded } : {})}
       className={cn(
         "cursor-pointer hover:bg-muted/50",
@@ -688,7 +704,7 @@ function AuditLogRow({
               />
             ) : null}
           </span>
-          <span className="truncate">{actionLabel(row.type)}</span>
+          <span className="truncate">{action}</span>
           {isSummary ? (
             <Badge variant="secondary" className="shrink-0">
               {t("story.count", { count: storyCount })}
@@ -697,7 +713,9 @@ function AuditLogRow({
         </span>
       </TableCell>
       <TableCell className="truncate text-muted-foreground">
-        {detailText(row.type, row.payload, row.names)}
+        {isSummary && uniform === true
+          ? null
+          : detailText(row.type, row.payload, row.names)}
       </TableCell>
     </TableRow>
   )

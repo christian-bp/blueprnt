@@ -618,14 +618,14 @@ export function ClassifyTitleTable({
     // as however many transactions it happened to take. This is the strongest
     // case for batching in the app, since one press can otherwise scatter
     // hundreds of assignment.set rows down the log.
-    const batchId = newGestureId()
+    const gestureId = newGestureId()
     for (const chunk of packAssignmentChunks(
       groups,
       MAX_ASSIGNMENTS_PER_MUTATION
     )) {
       await assignPeople({
         orgId,
-        batchId,
+        gestureId,
         assignments: chunk as Parameters<typeof assignPeople>[0]["assignments"],
         senioritySource: "confirmed",
       })

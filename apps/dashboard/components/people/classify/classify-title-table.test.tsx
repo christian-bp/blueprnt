@@ -900,12 +900,12 @@ describe("ClassifyTitleTable", () => {
     // The gesture id spans the CHUNKS. Chunking is a transaction-size decision,
     // not something the reader did, so one confirm has to read as one story in
     // the audit log however many transactions it happened to take.
-    const batchIds = (
-      assignMock.mock.calls as Array<[{ batchId?: string }]>
-    ).map(([payload]) => payload.batchId)
-    expect(batchIds).toHaveLength(2)
-    expect(typeof batchIds[0]).toBe("string")
-    expect(new Set(batchIds).size).toBe(1)
+    const gestureIds = (
+      assignMock.mock.calls as Array<[{ gestureId?: string }]>
+    ).map(([payload]) => payload.gestureId)
+    expect(gestureIds).toHaveLength(2)
+    expect(typeof gestureIds[0]).toBe("string")
+    expect(new Set(gestureIds).size).toBe(1)
   })
 
   // Two separate confirms are two gestures, so they must NOT share an id: one
@@ -932,8 +932,8 @@ describe("ClassifyTitleTable", () => {
     await waitFor(() => expect(assignMock).toHaveBeenCalledTimes(1))
     fireEvent.click(confirms[1] as HTMLElement)
     await waitFor(() => expect(assignMock).toHaveBeenCalledTimes(2))
-    const ids = (assignMock.mock.calls as Array<[{ batchId?: string }]>).map(
-      ([payload]) => payload.batchId
+    const ids = (assignMock.mock.calls as Array<[{ gestureId?: string }]>).map(
+      ([payload]) => payload.gestureId
     )
     expect(typeof ids[0]).toBe("string")
     expect(ids[0]).not.toBe(ids[1])

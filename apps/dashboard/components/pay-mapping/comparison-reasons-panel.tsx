@@ -10,6 +10,7 @@ import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useEffect, useId, useRef, useState } from "react"
 import { useOrganization } from "@/components/org-context"
+import { newGestureId } from "@/lib/gesture"
 import { toast } from "@/lib/toast"
 import { PayGapReasonChips } from "./pay-gap-reason-chips"
 import { REVIEW_NOTE_FIELD_CLASS } from "./review-step-actions"
@@ -116,10 +117,18 @@ export function ComparisonReasonsPanel({
   // A done group whose comparison loses or gains an explanation is no longer
   // the group that was adjudicated, so the edit reopens it in the same call
   // rather than letting the next klarmarkering attempt fail server-side.
-  async function reopenGroupIfNeeded() {
+  //
+  // Takes the caller's gesture id: the reopen is an automatic CONSEQUENCE of
+  // the edit above it, and both write the same event type, so without a shared
+  // id the log shows one chip click as two identical-looking pay-mapping edits
+  // a millisecond apart with nothing saying the second followed from the first.
+  // In a statutory kartlaggning trail that is the place a reader most needs
+  // one act to read as one story.
+  async function reopenGroupIfNeeded(gestureId: string) {
     if (!groupDone) return
     await upsertGroupAnalysis({
       orgId,
+      gestureId,
       runId,
       scope: "equivalentWork",
       groupKey,
@@ -136,9 +145,11 @@ export function ComparisonReasonsPanel({
       ? reasons.filter((candidate) => candidate !== reason)
       : [...reasons, reason]
     setReasons(next)
+    const gestureId = newGestureId()
     try {
       await upsertGroupAnalysis({
         orgId,
+        gestureId,
         runId,
         scope: "equivalentWork",
         groupKey,
@@ -146,7 +157,7 @@ export function ComparisonReasonsPanel({
         reasons: next,
         done: false,
       })
-      await reopenGroupIfNeeded()
+      await reopenGroupIfNeeded(gestureId)
     } catch {
       setReasons(reasons)
       toast.error(tToast("error"))
@@ -158,9 +169,11 @@ export function ComparisonReasonsPanel({
     // Nothing changed since the last save: skip the no-op mutation, which
     // would still write an audit row.
     if (trimmed === lastSavedNoteRef.current) return
+    const gestureId = newGestureId()
     try {
       await upsertGroupAnalysis({
         orgId,
+        gestureId,
         runId,
         scope: "equivalentWork",
         groupKey,
@@ -170,7 +183,7 @@ export function ComparisonReasonsPanel({
         done: false,
       })
       lastSavedNoteRef.current = trimmed
-      await reopenGroupIfNeeded()
+      await reopenGroupIfNeeded(gestureId)
     } catch {
       toast.error(tToast("error"))
     }
@@ -198,9 +211,10 @@ export function ComparisonReasonsPanel({
 
   async function handleApplyToRemaining() {
     if (locked || reasons.length === 0) return
+    const gestureId = newGestureId()
     try {
-      await applyToRemaining({ orgId, runId, groupKey, reasons })
-      await reopenGroupIfNeeded()
+      await applyToRemaining({ orgId, gestureId, runId, groupKey, reasons })
+      await reopenGroupIfNeeded(gestureId)
       toast.success(tToast("payMappingReasonsApplied"))
     } catch {
       toast.error(tToast("error"))

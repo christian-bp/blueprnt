@@ -756,17 +756,17 @@ describe("accounts.audit.searchAuditLog", () => {
 // A batchId is passed by the CLIENT, once per gesture, to every mutation the
 // gesture fires. The mutation wrappers put it on ctx and logAudit stamps every
 // row the transaction writes, without any individual mutation declaring it.
-describe("accounts.audit batchId correlation", () => {
+describe("accounts.audit gestureId correlation", () => {
   it("stamps every row a batched gesture writes, and projects it to the log", async () => {
     const t = initConvexTest()
     const { orgId, adminId } = await setup(t)
     const asAdmin = t.withIdentity({ subject: adminId })
-    const batchId = "11111111-2222-3333-4444-555555555555"
+    const gestureId = "11111111-2222-4333-8444-555555555555"
 
     // Two mutations, one gesture id, exactly as a client sequence sends it.
     await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
-      batchId,
+      gestureId,
       title: "Batched One",
       function: "engineering",
       team: "Platform",
@@ -774,7 +774,7 @@ describe("accounts.audit batchId correlation", () => {
     })
     await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
-      batchId,
+      gestureId,
       title: "Batched Two",
       function: "engineering",
       team: "Platform",
@@ -785,7 +785,7 @@ describe("accounts.audit batchId correlation", () => {
       orgId,
       page: 0,
     })
-    const batched = page.rows.filter((row) => row.batchId === batchId)
+    const batched = page.rows.filter((row) => row.gestureId === gestureId)
     expect(batched).toHaveLength(2)
   })
 
@@ -796,27 +796,30 @@ describe("accounts.audit batchId correlation", () => {
     const page = await t
       .withIdentity({ subject: adminId })
       .query(api.accounts.audit.getAuditLogPage, { orgId, page: 0 })
-    expect(page.rows.every((row) => row.batchId === undefined)).toBe(true)
+    expect(page.rows.every((row) => row.gestureId === undefined)).toBe(true)
   })
 
-  // A malformed id can only ever cost grouping, so it is dropped rather than
-  // thrown on: the write it decorates must never fail because of it.
-  it("drops a malformed gesture id instead of failing the write", async () => {
+  // The schema claims a gesture id carries no PII, and only the SHAPE check
+  // makes that claim true: without it, 64 characters of arbitrary caller text
+  // would land on every row a transaction writes, permanently. Each case below
+  // is a way an id can be wrong, and none of them may reach a row, or fail the
+  // write it decorates. The 64-character non-UUID is the one a length bound
+  // alone would have accepted.
+  it.each([
+    ["overlong", "x".repeat(200)],
+    ["blank", "   "],
+    ["a 64-character non-UUID", "a".repeat(64)],
+    ["free text a person could hide in", "Anna Andersson, HR Manager"],
+    ["a UUID with a wrong-length group", "1111111-2222-3333-4444-555555555555"],
+    ["a UUID with a non-hex character", "z1111111-2222-3333-4444-555555555555"],
+  ])("drops %s instead of failing the write", async (_name, gestureId) => {
     const t = initConvexTest()
     const { orgId, adminId } = await setup(t)
     const asAdmin = t.withIdentity({ subject: adminId })
     await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
-      batchId: "x".repeat(200),
-      title: "Overlong Id",
-      function: "engineering",
-      team: "Platform",
-      trackKey: "IC",
-    })
-    await asAdmin.mutation(api.assessment.roles.createRole, {
-      orgId,
-      batchId: "   ",
-      title: "Blank Id",
+      gestureId,
+      title: "Malformed Id",
       function: "engineering",
       team: "Platform",
       trackKey: "IC",
@@ -825,8 +828,31 @@ describe("accounts.audit batchId correlation", () => {
       orgId,
       page: 0,
     })
-    expect(page.rows).toHaveLength(2)
-    expect(page.rows.every((row) => row.batchId === undefined)).toBe(true)
+    expect(page.rows).toHaveLength(1)
+    expect(page.rows[0]?.gestureId).toBeUndefined()
+  })
+
+  // The real client's own ids must of course pass, or the guard above would be
+  // refusing everything and the grouping tests would be the only thing saying
+  // otherwise.
+  it("accepts the id the client actually mints", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const gestureId = crypto.randomUUID()
+    await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      gestureId,
+      title: "Real Id",
+      function: "engineering",
+      team: "Platform",
+      trackKey: "IC",
+    })
+    const page = await asAdmin.query(api.accounts.audit.getAuditLogPage, {
+      orgId,
+      page: 0,
+    })
+    expect(page.rows[0]?.gestureId).toBe(gestureId)
   })
 
   // The aggregates count ROWS. Grouping is a render fold over a fetched page,
@@ -835,11 +861,11 @@ describe("accounts.audit batchId correlation", () => {
     const t = initConvexTest()
     const { orgId, adminId } = await setup(t)
     const asAdmin = t.withIdentity({ subject: adminId })
-    const batchId = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+    const gestureId = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
     for (const title of ["A", "B", "C"]) {
       await asAdmin.mutation(api.assessment.roles.createRole, {
         orgId,
-        batchId,
+        gestureId,
         title,
         function: "engineering",
         team: "Platform",

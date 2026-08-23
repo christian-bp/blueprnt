@@ -20,8 +20,8 @@ vi.mock("@/lib/toast", () => ({
 
 // Typed by their argument shape so tests can read the gesture id back off a
 // recorded call.
-const updateName = vi.fn(async (_args: { batchId?: string }) => null)
-const updateSettings = vi.fn(async (_args: { batchId?: string }) => null)
+const updateName = vi.fn(async (_args: { gestureId?: string }) => null)
+const updateSettings = vi.fn(async (_args: { gestureId?: string }) => null)
 
 // Mock the generated api to PLAIN STRING refs: a real FunctionReference is a
 // proxy that throws on String()/coercion, so route useMutation by identity.
@@ -89,12 +89,11 @@ describe("OrganizationProfileForm", () => {
     )
     fireEvent.click(save)
     await waitFor(() =>
-      expect(updateName).toHaveBeenCalledWith(
-        expect.objectContaining({
-          orgId: "o1",
-          name: "Renamed AB",
-        })
-      )
+      expect(updateName).toHaveBeenCalledWith({
+        orgId: "o1",
+        name: "Renamed AB",
+        gestureId: expect.any(String),
+      })
     )
     // Name-only change must not fire a settings write.
     expect(updateSettings).not.toHaveBeenCalled()
@@ -118,9 +117,9 @@ describe("OrganizationProfileForm", () => {
     )
     fireEvent.click(save)
     await waitFor(() => expect(updateSettings).toHaveBeenCalled())
-    const nameId = updateName.mock.calls[0]?.[0]?.batchId
+    const nameId = updateName.mock.calls[0]?.[0]?.gestureId
     expect(typeof nameId).toBe("string")
-    expect(updateSettings.mock.calls[0]?.[0]?.batchId).toBe(nameId)
+    expect(updateSettings.mock.calls[0]?.[0]?.gestureId).toBe(nameId)
   })
 
   it("fires toast.success(orgSaved) after a successful save", async () => {

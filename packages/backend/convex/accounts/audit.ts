@@ -22,7 +22,7 @@ const auditRow = v.object({
   // The gesture that wrote this row, when it was part of one (lib/audit.ts).
   // Projected so the log can render consecutive same-gesture rows as one
   // story; it is an opaque client-minted id, never rendered as text.
-  batchId: v.optional(v.string()),
+  gestureId: v.optional(v.string()),
   payload: v.any(),
   names: v.record(v.string(), v.string()),
 })
@@ -34,7 +34,7 @@ type AuditRowDoc = {
   actorName: string
   type: string
   category?: string
-  batchId?: string
+  gestureId?: string
   payload: unknown
 }
 
@@ -186,7 +186,7 @@ async function enrichRows(
       actorName: row.actorName,
       type: row.type,
       ...(row.category !== undefined ? { category: row.category } : {}),
-      ...(row.batchId !== undefined ? { batchId: row.batchId } : {}),
+      ...(row.gestureId !== undefined ? { gestureId: row.gestureId } : {}),
       payload: row.payload,
       names,
     }

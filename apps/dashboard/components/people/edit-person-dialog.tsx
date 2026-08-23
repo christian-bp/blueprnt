@@ -196,11 +196,11 @@ export function EditPersonDialog({
     setFailure(false)
     // The person's own fields and their classification can both change in one
     // submit, which is two mutations and one story.
-    const batchId = newGestureId()
+    const gestureId = newGestureId()
     try {
       await updatePerson({
         orgId,
-        batchId,
+        gestureId,
         personId: person.personId,
         displayName: values.displayName,
         gender: values.gender,
@@ -229,7 +229,7 @@ export function EditPersonDialog({
       try {
         await assignPerson({
           orgId,
-          batchId,
+          gestureId,
           personId: person.personId,
           roleId: values.roleId as Id<"roles">,
           seniority: values.seniority,

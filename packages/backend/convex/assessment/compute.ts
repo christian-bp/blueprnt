@@ -113,7 +113,7 @@ export async function logLevelShifts(
     after: RoleResult[]
     cause: LevelCause
     // Only the ctx-bound writer passes this; see logAudit's own note.
-    batchId?: string
+    gestureId?: string
   }
 ) {
   const beforeByRole = new Map(args.before.map((r) => [r.roleId, r]))
@@ -140,7 +140,7 @@ export async function logLevelShifts(
       orgId: args.orgId,
       type: AUDIT_EVENTS.levelShift,
       actorId: args.actorId,
-      batchId: args.batchId,
+      gestureId: args.gestureId,
       payload: {
         roleId,
         cause: args.cause,

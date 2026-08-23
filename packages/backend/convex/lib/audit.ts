@@ -764,12 +764,15 @@ export async function resolveActorName(
   return "unknown"
 }
 
-// A gesture correlation id is at most this long. A batchId only affects how
-// the log GROUPS rows, so a malformed one is dropped rather than thrown on: a
-// client bug in an id must never be able to fail the write it decorates, and a
-// row with no batchId simply reads as its own story. The bound exists so a
-// hostile or broken caller cannot store arbitrary text on every audit row.
-const MAX_BATCH_ID = 64
+// The SHAPE a gesture id must have, not merely a length: exactly the v4 UUID
+// lib/gesture.ts mints. The schema comment beneath this field claims it carries
+// no PII, and a length bound alone would leave that claim as documentation while
+// 64 characters of arbitrary caller text landed on every row of a transaction,
+// in an append-only table, permanently (anonymizePersonAuditRows scrubs the
+// payload and searchText, never this). A shape the client can only satisfy by
+// generating a UUID is what makes the claim true in code.
+const GESTURE_ID_SHAPE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 // A mutation ctx that may carry the caller's gesture id. The org/admin
 // mutation wrappers put it there (lib/functions.ts), so every audit row
@@ -778,15 +781,27 @@ const MAX_BATCH_ID = 64
 // is the case that matters, since a bulk confirm's rows are written from one)
 // gets it for free. Optional, so a plain MutationCtx stays assignable.
 export type AuditMutationCtx = GenericMutationCtx<DataModel> & {
-  batchId?: string
+  gestureId?: string
 }
 
-// Normalizes what a caller sent into what may be stored: a non-empty string
-// within the bound, or nothing at all.
-export function normalizeBatchId(batchId: unknown): string | undefined {
-  if (typeof batchId !== "string") return undefined
-  const trimmed = batchId.trim()
-  if (trimmed === "" || trimmed.length > MAX_BATCH_ID) return undefined
+// Normalizes what a caller sent into what may be stored: a v4-shaped id, or
+// nothing at all. Dropped rather than thrown on, because a gesture id only ever
+// affects how the log GROUPS rows: a client bug in an id must never fail the
+// write it decorates, and a row without one simply reads as its own story.
+//
+// The drop is not silent. A rejected NON-EMPTY id means the client sent
+// something it thought was an id, which is a bug that would otherwise degrade
+// grouping invisibly and forever; the breadcrumb follows resolveActorName's own
+// pattern above. It logs the LENGTH only, never the value, since the value is
+// the very thing that just failed validation.
+export function normalizeGestureId(gestureId: unknown): string | undefined {
+  if (typeof gestureId !== "string") return undefined
+  const trimmed = gestureId.trim()
+  if (trimmed === "") return undefined
+  if (!GESTURE_ID_SHAPE.test(trimmed)) {
+    console.warn("audit gestureId rejected", { length: trimmed.length })
+    return undefined
+  }
   return trimmed
 }
 
@@ -806,7 +821,7 @@ export async function logAudit<E extends keyof AuditPayloads>(
     // built before the custom ctx it belongs to exists. Every other caller
     // hands over the handler's own ctx, which already carries the id, and
     // passes nothing here.
-    batchId?: string
+    gestureId?: string
   }
 ) {
   const actorName = await resolveActorName(ctx, entry.actorId)
@@ -816,7 +831,7 @@ export async function logAudit<E extends keyof AuditPayloads>(
   // The gesture id belongs to the whole transaction, not to one row: it comes
   // from the ctx the handler is running under, so no writer has to remember to
   // thread it. The entry override exists only for the ctx-bound writer.
-  const batchId = normalizeBatchId(entry.batchId ?? ctx.batchId)
+  const gestureId = normalizeGestureId(entry.gestureId ?? ctx.gestureId)
   const rowId = await ctx.db.insert("auditLog", {
     orgId: entry.orgId,
     type: entry.type,
@@ -825,7 +840,7 @@ export async function logAudit<E extends keyof AuditPayloads>(
     payload: entry.payload as Record<string, unknown>,
     category: categoryForEvent(entry.type),
     ...(subject !== undefined ? { subject } : {}),
-    ...(batchId !== undefined ? { batchId } : {}),
+    ...(gestureId !== undefined ? { gestureId } : {}),
     searchText: buildSearchText(
       actorName,
       entry.type,

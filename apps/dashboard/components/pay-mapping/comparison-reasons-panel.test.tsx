@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
@@ -97,6 +103,27 @@ describe("ComparisonReasonsPanel", () => {
         done: false,
       })
     )
+  })
+
+  // Editing a DONE group's explanation reopens it, which is a second write of
+  // the same event type a millisecond after the first. Without one gesture id
+  // the log shows one chip click as two identical-looking pay-mapping edits
+  // with nothing saying the second followed from the first, which in a
+  // statutory kartlaggning trail is the place a reader most needs one act to
+  // read as one story.
+  it("gives the edit and the reopen it forces a single gesture id", async () => {
+    renderPanel({ groupDone: true })
+    fireEvent.click(screen.getByText(mReasons.experience))
+    await waitFor(() => {
+      expect(upsert).toHaveBeenCalledTimes(2)
+    })
+    const [edit, reopen] = (
+      upsert.mock.calls as Array<[{ gestureId?: string; done: boolean }]>
+    ).map(([args]) => args)
+    expect(typeof edit?.gestureId).toBe("string")
+    expect(edit?.gestureId).toBe(reopen?.gestureId)
+    // The second call really is the reopen, not a repeat of the edit.
+    expect(reopen?.done).toBe(false)
   })
 })
 

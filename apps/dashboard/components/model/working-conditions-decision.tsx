@@ -129,7 +129,7 @@ function DecisionForm({
   async function onValid(values: WorkingConditionsValues) {
     // Removing the criterion and recording the decision are one answer to one
     // question, so the two rows read as one story.
-    const batchId = newGestureId()
+    const gestureId = newGestureId()
     try {
       // Removal FIRST, then the decision. The backend refuses
       // testedNotMaterial while a working-conditions criterion is active, so
@@ -140,11 +140,11 @@ function DecisionForm({
       if (removesCriterion && criterion !== null) {
         await deactivate({
           orgId,
-          batchId,
+          gestureId,
           criterionId: criterion.criterionId,
         })
       }
-      await save({ orgId, batchId, ...values })
+      await save({ orgId, gestureId, ...values })
       toast.success(tToast("workingConditionsDecided"))
       onDone()
     } catch (error) {
