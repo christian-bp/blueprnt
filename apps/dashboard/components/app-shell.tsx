@@ -17,7 +17,10 @@ import {
   OrganizationProvider,
   useOrganization,
 } from "@/components/org-context"
+import { ClassificationFooter } from "@/components/people/classification-footer"
+import { RunFactsFooter } from "@/components/pay-mapping/run-facts-footer"
 import { RunSidebar } from "@/components/pay-mapping/run-sidebar"
+import { TodoFooter } from "@/components/todo-footer"
 import { RoleSheetProvider } from "@/components/role-sheet"
 import { areaForPathname, innerNavFor } from "@/lib/navigation"
 import {
@@ -87,10 +90,14 @@ function inPayMappingRun(pathname: string): boolean {
 function AreaChrome({
   areaId,
   sidebar,
+  footer,
   children,
 }: {
   areaId: string
   sidebar: ReactNode | null
+  // The sidebar's bottom block (InnerSidebar's footer slot); only rendered
+  // while the area has a sidebar at all.
+  footer?: ReactNode
   children: ReactNode
 }) {
   const t = useTranslations("dashboard.shell")
@@ -109,6 +116,7 @@ function AreaChrome({
           open={open}
           label={t("areaNav")}
           height="fill"
+          footer={footer}
           // Below md the rail collapses into the nav sheet, which already
           // lists these rows; keeping the 240px column too would squeeze the
           // content to a sliver (the docs nav takes the same way out).
@@ -150,10 +158,25 @@ function ShellContent({ children }: { children: ReactNode }) {
     ) : groups.length > 0 ? (
       <InnerSidebarNav groups={groups} />
     ) : null
+  // The sidebar's bottom blocks: an area's own block where one carries real
+  // information (the run's frozen key figures, the people area's
+  // classification split), then the to-do glance on every area, pinned
+  // bottom-most so it holds one position app-wide.
+  const footer =
+    sidebar === null ? undefined : (
+      <>
+        {run ? (
+          <RunFactsFooter />
+        ) : area?.id === "people" ? (
+          <ClassificationFooter />
+        ) : null}
+        <TodoFooter />
+      </>
+    )
   // The run sidebar remembers its own collapse choice apart from the list's.
   const areaId = run ? "payMappingRun" : (area?.id ?? "none")
   return (
-    <AreaChrome key={areaId} areaId={areaId} sidebar={sidebar}>
+    <AreaChrome key={areaId} areaId={areaId} sidebar={sidebar} footer={footer}>
       <main data-slot="app-scroll" className="min-h-0 flex-1 overflow-y-auto">
         <div className={pageContentClasses(pathname)}>
           {/* Role quick-look sheet, openable from any role chip in the app
