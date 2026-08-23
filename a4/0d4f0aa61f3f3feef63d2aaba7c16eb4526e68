@@ -1,0 +1,64 @@
+apps/dashboard/content/docs/da/criteria-and-scale.mdx
+  s_58dd112dc09435::t_8bfe571da65afd 85-96
+apps/dashboard/content/docs/fi/criteria-and-scale.mdx
+  s_58dd112dc09435::t_8bfe571da65afd 90-101
+apps/dashboard/components/model/library-picker-dialog.tsx
+  s_58dd112dc09435::t_d99345b74536c6 37,279-283,288-289
+  s_58dd112dc09435::t_938e9c4706fd0c 3
+apps/dashboard/content/docs/nb/criteria-and-scale.mdx
+  s_58dd112dc09435::t_8bfe571da65afd 87-98
+apps/dashboard/components/role-sheet.tsx
+  s_58dd112dc09435::t_178b7f157850b0 224
+apps/dashboard/content/docs/nb/evaluating-a-role.mdx
+  s_58dd112dc09435::t_3a468d210891ef 35-37
+apps/dashboard/content/docs/sv/evaluating-a-role.mdx
+  s_58dd112dc09435::t_3a468d210891ef 35-37
+apps/dashboard/content/docs/da/evaluating-a-role.mdx
+  s_58dd112dc09435::t_3a468d210891ef 34-37
+apps/dashboard/content/docs/fi/evaluating-a-role.mdx
+  s_58dd112dc09435::t_3213d31f463d50 36-39
+docs/superpowers/plans/2026-08-23-role-evaluation-phase-4-assessment.md
+  s_58dd112dc09435::t_05268c72f5f739 7,102,105,110,113,115
+apps/dashboard/content/docs/en/criteria-and-scale.mdx
+  s_58dd112dc09435::t_8bfe571da65afd 87-98
+packages/backend/convex/ai/promptGuard.ts
+  s_58dd112dc09435::t_238278fccd3e26 132-142
+apps/dashboard/components/rating/lock-assessment-panel.tsx
+  s_58dd112dc09435::t_178b7f157850b0 38,43
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_58dd112dc09435::t_178b7f157850b0 53,92
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_0075e1403f4de5 1632
+apps/dashboard/components/model/weight-review-panel.tsx
+  s_58dd112dc09435::t_5afe4bc18458a3 13,321-325
+apps/dashboard/content/docs/sv/criteria-and-scale.mdx
+  s_58dd112dc09435::t_8bfe571da65afd 85-95
+docs/superpowers/specs/2026-08-18-adaptable-role-evaluation-design.md
+  s_58dd112dc09435::t_86ac9d5f0b3a35 191
+  s_58dd112dc09435::t_05268c72f5f739 221
+apps/dashboard/content/docs/en/evaluating-a-role.mdx
+  s_58dd112dc09435::t_3213d31f463d50 34-36
+packages/backend/convex/ai/promptGuard.test.ts
+  s_58dd112dc09435::t_6fb4e486bf1e6a 253-257,264,281,301-305,307-310,312-314
+  s_58dd112dc09435::t_2d5e5ccd5f6388 244-250
+  s_58dd112dc09435::t_620b86c0480c7c 306,311
+  s_58dd112dc09435::t_12f7f73ed6d255 315
+packages/backend/convex/ai/suggest.ts
+  s_58dd112dc09435::t_238278fccd3e26 108-113,117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "a40d4f0aa61f3f3feef63d2aaba7c16eb4526e68",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": null
+    }
+  }
+}
