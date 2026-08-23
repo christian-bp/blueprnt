@@ -71,7 +71,7 @@ export function LockAssessmentPanel({
   return (
     <div className="space-y-3">
       <p className="text-muted-foreground text-sm">
-        {t("readyToLockExplanation")}
+        {t("readyToReadExplanation")}
       </p>
       {errorText !== null && (
         <p role="alert" className="text-destructive text-sm">

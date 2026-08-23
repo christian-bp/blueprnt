@@ -85,7 +85,7 @@ function result(overrides: Record<string, unknown> = {}) {
     title: "Engineer",
     complete: false,
     locked: false,
-    readyToLock: false,
+    readyToRead: false,
     calibrated: false,
     methodDrift: false,
     ratedCount: 0,
@@ -193,7 +193,7 @@ describe("RatePage (lock-as-reveal)", () => {
       })
     })
     await waitFor(() => {
-      expect(screen.getByText(t.readyToLockExplanation)).toBeDefined()
+      expect(screen.getByText(t.readyToReadExplanation)).toBeDefined()
     })
     expect(screen.getByRole("button", { name: t.lockCta })).toBeDefined()
     // Still blind: no score/level anywhere on this screen.

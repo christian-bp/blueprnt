@@ -47,18 +47,18 @@ describe("PendingRoles", () => {
     ).toBe("/roles/r1")
   })
 
-  it("badges a complete-but-unlocked role as ready to lock", () => {
+  it("badges a complete-but-unlocked role as ready to read", () => {
     renderPending([
       role({ roleId: "r3", title: "Ready Role", readyToLock: true }),
     ])
     expect(
-      screen.getByText(messages.dashboard.levels.readyToLock)
+      screen.getByText(messages.dashboard.levels.readyToRead)
     ).toBeDefined()
   })
 
   it("does not badge a role that is merely still being rated", () => {
     renderPending([role({})])
-    expect(screen.queryByText(messages.dashboard.levels.readyToLock)).toBeNull()
+    expect(screen.queryByText(messages.dashboard.levels.readyToRead)).toBeNull()
   })
 
   it("ignores roles that already have a level", () => {

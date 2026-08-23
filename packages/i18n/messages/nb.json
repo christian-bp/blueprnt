@@ -1115,6 +1115,8 @@
           "archivedEmpty": "Rollen er arkivert, så ingen er klassifisert i den. Historikken beholdes."
         },
         "lockedBadge": "Låst",
+        "calibratedBadge": "Kalibrert",
+        "lockedIncomplete": "Låst, men et kriterium som er lagt til siden da mangler vurdering. Lås opp, vurder det og lås igjen for å se resultatet.",
         "methodDriftBadge": "Vurdert etter tidligere metode"
       },
       "archive": {
@@ -1604,7 +1606,7 @@
       "modelUnapprovedExplanation": "Evalueringsmodellen må godkjennes før roller kan vurderes.",
       "modelUnapprovedCta": "Gå til kapittelet Godkjenning",
       "lockCta": "Lås vurderingen",
-      "readyToLockExplanation": "Alle kriterier har en vurdering. Lås vurderingen for å vise vekting og nivå.",
+      "readyToReadExplanation": "Alle kriterier har en vurdering. Lås vurderingen for å vise vekting og nivå.",
       "lockError": "Vurderingen kunne ikke låses. Prøv igjen.",
       "alreadyLockedExplanation": "Denne vurderingen er låst. Lås den opp for å endre noen vurderinger.",
       "unlockCta": "Lås opp vurderingen",
@@ -1658,7 +1660,7 @@
       "deviationLabel": "Beregnet nivå avviker fra det avtalte nivået {level}",
       "empty": "Ingen roller å vise ennå. Opprett en rolle og vurder den for å se nivåene.",
       "emptyCta": "Opprett en rolle",
-      "readyToLock": "Klar til å låses"
+      "readyToRead": "Klar til å leses"
     },
     "auth": {
       "loading": "Sjekker økten din",

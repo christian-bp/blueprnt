@@ -12,6 +12,12 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
+import {
+  CalibratedBadge,
+  LockedBadge,
+  LockedIncompleteNotice,
+  MethodDriftBadge,
+} from "@/components/assessment-status"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SPRING } from "@/lib/motion"
 
@@ -43,26 +49,34 @@ export function RatingResult({
     orgId,
   })
 
+  // Locking is the reveal (spec 2.4/6): this component only ever renders
+  // AFTER a successful lock (rate/page.tsx) or for a role that arrives
+  // already locked, so it waits on `locked`, not merely `complete` (a
+  // complete-but-unlocked role's score/level/zone read null on the wire).
   if (
     result === undefined ||
     anchors === undefined ||
     result === null ||
-    // Locking is the reveal (spec 2.4/6): this component only ever renders
-    // AFTER a successful lock (rate/page.tsx) or for a role that arrives
-    // already locked, so it waits on `locked`, not merely `complete` (a
-    // complete-but-unlocked role's score/level/zone read null on the wire).
-    // `locked` alone is not enough either: a criterion added after the lock
-    // can leave a locked role incomplete again, which reads back as
-    // complete=false, score=null, level=null even though locked stays true
-    // (results.ts) -- without the complete/level check below, `score ?? 0`
-    // prints a dishonest "0 / 100" for a result that was never computed.
-    !result.locked ||
-    !result.complete ||
-    result.level === null
+    !result.locked
   ) {
     return (
       <main className="flex items-center justify-center p-6">
         <Spinner aria-label={t("computing")} />
+      </main>
+    )
+  }
+
+  // `locked` alone is not enough: a criterion added after the lock leaves a
+  // locked role incomplete again, reading back as complete=false, score=null,
+  // level=null while locked stays true (results.ts). `score ?? 0` would print
+  // a dishonest "0 / 100" for a result that was never computed. Nothing is in
+  // flight in that state either, so it is a message, not a spinner: the
+  // spinner spun forever and told the reader to keep waiting for a
+  // computation that will not start until the new criterion is rated.
+  if (!result.complete || result.level === null) {
+    return (
+      <main className="w-full max-w-2xl">
+        <LockedIncompleteNotice />
       </main>
     )
   }
@@ -89,8 +103,14 @@ export function RatingResult({
       >
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex flex-wrap items-center gap-2">
               {t("heading")}
+              {/* The same status vocabulary the role page and the sheet use.
+                  The reveal is where a result is read most closely, so a role
+                  rated under a superseded method has to say so here too. */}
+              <LockedBadge />
+              {result.calibrated ? <CalibratedBadge /> : null}
+              {result.methodDrift ? <MethodDriftBadge /> : null}
               <HelpMorphButton label={tHelp("scoreLabel")}>
                 {tHelp("scoreBody")}
               </HelpMorphButton>

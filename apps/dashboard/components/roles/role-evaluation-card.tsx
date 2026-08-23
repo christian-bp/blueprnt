@@ -33,9 +33,11 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { useState } from "react"
 import {
+  CalibratedBadge,
   LockedBadge,
+  LockedIncompleteNotice,
   MethodDriftBadge,
-} from "@/components/assessment-lock-badges"
+} from "@/components/assessment-status"
 import { DeviationBadge } from "@/components/deviation-badge"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { LockAssessmentPanel } from "@/components/rating/lock-assessment-panel"
@@ -121,8 +123,9 @@ export function RoleEvaluationCard({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           {t("evaluationHeading")}
-          {locked && <LockedBadge />}
-          {result?.methodDrift && <MethodDriftBadge />}
+          {locked ? <LockedBadge /> : null}
+          {result?.calibrated ? <CalibratedBadge /> : null}
+          {result?.methodDrift ? <MethodDriftBadge /> : null}
           {showResult && locked ? (
             <HelpMorphButton label={tHelp("scoreLabel")}>
               {tHelp("scoreBody")}
@@ -254,9 +257,7 @@ export function RoleEvaluationCard({
                 <RoleCriterionBreakdown criteria={result.criteria} />
               </>
             ) : (
-              <p className="text-muted-foreground text-sm">
-                {tResult("computing")}
-              </p>
+              <LockedIncompleteNotice />
             )
           ) : (
             <LockAssessmentPanel orgId={orgId} roleId={roleId} />

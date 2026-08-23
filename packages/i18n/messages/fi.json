@@ -1115,6 +1115,8 @@
           "archivedEmpty": "Rooli on arkistoitu, joten siihen ei ole luokiteltu ketään. Historia säilyy."
         },
         "lockedBadge": "Lukittu",
+        "calibratedBadge": "Kalibroitu",
+        "lockedIncomplete": "Lukittu, mutta sen jälkeen lisätyltä kriteeriltä puuttuu arvio. Avaa lukitus, arvioi se ja lukitse uudelleen nähdäksesi tuloksen.",
         "methodDriftBadge": "Arvioitu aiemmalla menetelmällä"
       },
       "archive": {
@@ -1604,7 +1606,7 @@
       "modelUnapprovedExplanation": "Arviointimalli on hyväksyttävä ennen kuin rooleja voi arvioida.",
       "modelUnapprovedCta": "Siirry Hyväksyntä-lukuun",
       "lockCta": "Lukitse arviointi",
-      "readyToLockExplanation": "Jokaisella kriteerillä on arvio. Lukitse arviointi näyttääksesi painotuksen ja vaativuustason.",
+      "readyToReadExplanation": "Jokaisella kriteerillä on arvio. Lukitse arviointi näyttääksesi painotuksen ja vaativuustason.",
       "lockError": "Arviointia ei voitu lukita. Yritä uudelleen.",
       "alreadyLockedExplanation": "Tämä arviointi on lukittu. Avaa lukitus muuttaaksesi arvioita.",
       "unlockCta": "Avaa arvioinnin lukitus",
@@ -1658,7 +1660,7 @@
       "deviationLabel": "Laskettu vaativuustaso poikkeaa sovitusta vaativuustasosta {level}",
       "empty": "Ei vielä näytettäviä rooleja. Luo rooli ja arvioi se nähdäksesi tasot.",
       "emptyCta": "Luo rooli",
-      "readyToLock": "Valmis lukittavaksi"
+      "readyToRead": "Valmis luettavaksi"
     },
     "auth": {
       "loading": "Tarkistetaan istuntoasi",

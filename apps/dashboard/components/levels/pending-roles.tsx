@@ -41,7 +41,7 @@ export function PendingRoles({ rows }: { rows: LevelRoleRow[] }) {
           >
             <span className="truncate font-medium">{role.title}</span>
             {role.readyToLock && (
-              <Badge variant="outline">{t("readyToLock")}</Badge>
+              <Badge variant="outline">{t("readyToRead")}</Badge>
             )}
             <TrackBadge trackKey={role.trackKey} name={role.trackName} />
           </Link>

@@ -106,10 +106,15 @@ describe("RatingResult", () => {
       level: null,
     }
     renderResult()
-    expect(screen.getByLabelText(labels.computing)).toBeDefined()
     expect(
       screen.queryByText(labels.scoreOutOf.replace("{score}", "0"))
     ).toBeNull()
+    // Nothing is in flight, so it is a message and not a spinner: the reader
+    // is told what happened and what clears it.
+    expect(screen.queryByLabelText(labels.computing)).toBeNull()
+    expect(
+      screen.getByText(messages.dashboard.roles.detail.lockedIncomplete)
+    ).toBeDefined()
   })
 
   it("shows the score and level badge when complete", () => {
@@ -120,6 +125,30 @@ describe("RatingResult", () => {
       screen.getByText(labels.scoreOutOf.replace("{score}", "74"))
     ).toBeDefined()
     expect(screen.getByText("2")).toBeDefined()
+  })
+
+  it("names the reveal as locked, uncalibrated and on the current method", () => {
+    renderResult()
+    const detail = messages.dashboard.roles.detail
+    expect(screen.getByText(detail.lockedBadge)).toBeDefined()
+    expect(screen.queryByText(detail.calibratedBadge)).toBeNull()
+    expect(screen.queryByText(detail.methodDriftBadge)).toBeNull()
+  })
+
+  it("carries the stale-method chip into the reveal when the lock predates the approval", () => {
+    resultFixture = { ...COMPLETE_RESULT, methodDrift: true }
+    renderResult()
+    expect(
+      screen.getByText(messages.dashboard.roles.detail.methodDriftBadge)
+    ).toBeDefined()
+  })
+
+  it("carries the calibrated chip into the reveal for a confirmed placement", () => {
+    resultFixture = { ...COMPLETE_RESULT, calibrated: true }
+    renderResult()
+    expect(
+      screen.getByText(messages.dashboard.roles.detail.calibratedBadge)
+    ).toBeDefined()
   })
 
   it("hides the anchor comparison when there are no active anchors", () => {

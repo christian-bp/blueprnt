@@ -51,7 +51,7 @@ describe("LockAssessmentPanel", () => {
   it("explains the lock action and calls lockAssessment on click, toasting success", async () => {
     lockAssessmentMock.mockResolvedValue(null)
     renderPanel()
-    expect(screen.getByText(t.readyToLockExplanation)).toBeDefined()
+    expect(screen.getByText(t.readyToReadExplanation)).toBeDefined()
     fireEvent.click(screen.getByRole("button", { name: t.lockCta }))
     await waitFor(() => {
       expect(lockAssessmentMock).toHaveBeenCalledWith({

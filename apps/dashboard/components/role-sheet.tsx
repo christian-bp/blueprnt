@@ -25,9 +25,11 @@ import {
   useState,
 } from "react"
 import {
+  CalibratedBadge,
   LockedBadge,
+  LockedIncompleteNotice,
   MethodDriftBadge,
-} from "@/components/assessment-lock-badges"
+} from "@/components/assessment-status"
 import { DeviationBadge } from "@/components/deviation-badge"
 import { useOrganization } from "@/components/org-context"
 import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
@@ -141,13 +143,21 @@ function RoleSheetContent({
               {/* Level sits with the title once the assessment is locked
                   (lock-as-reveal, spec 2.4/6), matching the role page result
                   badge; the locked/drift badges ride alongside it. */}
-              {result?.locked && result.level !== null && (
+              {result?.locked ? (
                 <>
-                  <LevelBadge level={result.level} />
+                  {/* The level only once there IS one: a criterion added
+                      after the lock leaves a locked role incomplete, and the
+                      lock is still true even though nothing computes. The
+                      locked chip stays either way, because saying nothing
+                      about a locked assessment reads as "not evaluated". */}
+                  {result.level !== null ? (
+                    <LevelBadge level={result.level} />
+                  ) : null}
                   <LockedBadge />
-                  {result.methodDrift && <MethodDriftBadge />}
+                  {result.calibrated ? <CalibratedBadge /> : null}
+                  {result.methodDrift ? <MethodDriftBadge /> : null}
                 </>
-              )}
+              ) : null}
             </div>
             {subtitle.length > 0 ? (
               <SheetDescription>{subtitle}</SheetDescription>
@@ -226,11 +236,16 @@ function RoleSheetContent({
                 // (results.ts), and the breakdown must not render a partial
                 // reveal for that drifted state (mirrors rating-result.tsx).
                 <RoleCriterionBreakdown criteria={result.criteria} />
+              ) : result?.locked ? (
+                // Locked but not readable: say so, instead of falling back to
+                // the "not yet evaluated" line an unrated role gets. The role
+                // WAS evaluated; a criterion arrived afterwards.
+                <LockedIncompleteNotice />
               ) : (
                 <div className="space-y-1">
                   <p className="text-muted-foreground text-sm">
                     {result?.complete
-                      ? tLevels("readyToLock")
+                      ? tLevels("readyToRead")
                       : tRoles("notEvaluated")}
                   </p>
                   {!result?.complete && (

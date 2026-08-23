@@ -27,6 +27,7 @@ type Result = {
   complete: boolean
   locked: boolean
   methodDrift?: boolean
+  calibrated?: boolean
   ratedCount: number
   totalCriteria: number
   score: number | null
@@ -163,7 +164,7 @@ describe("RoleEvaluationCard", () => {
     setResult(readyToLockResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(
-      screen.getByText(messages.dashboard.rating.readyToLockExplanation)
+      screen.getByText(messages.dashboard.rating.readyToReadExplanation)
     ).toBeDefined()
     expect(
       screen.getByRole("button", { name: messages.dashboard.rating.lockCta })
@@ -176,6 +177,41 @@ describe("RoleEvaluationCard", () => {
     setResult({ ...completeResult, methodDrift: true })
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(screen.getByText(detail.methodDriftBadge)).toBeDefined()
+  })
+
+  it("leaves the stale-method chip off a role locked under the current method", () => {
+    setResult({ ...completeResult, methodDrift: false })
+    renderCard({ ratedCount: 3, totalCriteria: 3 })
+    expect(screen.queryByText(detail.methodDriftBadge)).toBeNull()
+  })
+
+  it("marks a confirmed placement as calibrated, and an unconfirmed one not", () => {
+    setResult(completeResult)
+    renderCard({ ratedCount: 3, totalCriteria: 3 })
+    expect(screen.queryByText(detail.calibratedBadge)).toBeNull()
+    cleanup()
+    setResult({ ...completeResult, calibrated: true })
+    renderCard({ ratedCount: 3, totalCriteria: 3 })
+    expect(screen.getByText(detail.calibratedBadge)).toBeDefined()
+  })
+
+  it("says a locked role carries an unrated criterion instead of claiming to compute", () => {
+    // A criterion activated after the lock leaves the role locked and
+    // incomplete at once. Nothing computes in that state, so the card must
+    // not show the computing placeholder it shows while a query is in flight.
+    setResult({
+      ...completeResult,
+      complete: false,
+      score: null,
+      level: null,
+    })
+    renderCard({ ratedCount: 3, totalCriteria: 3 })
+    expect(screen.getByText(detail.lockedIncomplete)).toBeDefined()
+    expect(screen.getByText(detail.lockedBadge)).toBeDefined()
+    expect(
+      screen.queryByText(messages.dashboard.rating.result.computing)
+    ).toBeNull()
+    expect(screen.queryByText("Weighting 71")).toBeNull()
   })
 
   it("puts Adjust ratings in the actions menu for a ready-to-lock role, not as a body button", async () => {

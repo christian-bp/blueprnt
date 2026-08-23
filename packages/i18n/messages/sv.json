@@ -1115,6 +1115,8 @@
           "archivedEmpty": "Rollen är arkiverad, så ingen är klassificerad i den. Historiken finns kvar."
         },
         "lockedBadge": "Låst",
+        "calibratedBadge": "Kalibrerad",
+        "lockedIncomplete": "Låst, men ett kriterium som lagts till sedan dess saknar bedömning. Lås upp, bedöm det och lås igen för att se resultatet.",
         "methodDriftBadge": "Bedömd enligt tidigare metod"
       },
       "archive": {
@@ -1604,7 +1606,7 @@
       "modelUnapprovedExplanation": "Utvärderingsmodellen måste godkännas innan roller kan bedömas.",
       "modelUnapprovedCta": "Gå till kapitlet Godkännande",
       "lockCta": "Lås bedömningen",
-      "readyToLockExplanation": "Alla kriterier har en bedömning. Lås bedömningen för att visa viktning och nivå.",
+      "readyToReadExplanation": "Alla kriterier har en bedömning. Lås bedömningen för att visa viktning och nivå.",
       "lockError": "Bedömningen kunde inte låsas. Försök igen.",
       "alreadyLockedExplanation": "Den här bedömningen är låst. Lås upp den för att ändra några bedömningar.",
       "unlockCta": "Lås upp bedömningen",
@@ -1658,7 +1660,7 @@
       "deviationLabel": "Beräknad nivå avviker från den överenskomna nivån {level}",
       "empty": "Inga roller att visa ännu. Skapa en roll och utvärdera den för att se nivåerna.",
       "emptyCta": "Skapa en roll",
-      "readyToLock": "Klar att låsa"
+      "readyToRead": "Klar att läsa"
     },
     "auth": {
       "loading": "Kontrollerar din session",

@@ -45,6 +45,7 @@ type Result = {
   complete: boolean
   locked: boolean
   methodDrift?: boolean
+  calibrated?: boolean
   ratedCount: number
   totalCriteria: number
   score: number | null
@@ -153,6 +154,26 @@ describe("RoleSheet", () => {
     expect(screen.getByText("Assessed under a previous method")).toBeTruthy()
   })
 
+  it("leaves the stale-method chip off a role locked under the current method", () => {
+    result = { ...(result as Result), methodDrift: false }
+    install()
+    renderSheet()
+    open()
+    expect(screen.queryByText("Assessed under a previous method")).toBeNull()
+  })
+
+  it("marks a confirmed placement as calibrated, and an unconfirmed one not", () => {
+    renderSheet()
+    open()
+    expect(screen.queryByText("Calibrated")).toBeNull()
+    cleanup()
+    result = { ...(result as Result), calibrated: true }
+    install()
+    renderSheet()
+    open()
+    expect(screen.getByText("Calibrated")).toBeTruthy()
+  })
+
   it("hides the breakdown for a locked-but-incomplete role (drift added a criterion after lock)", () => {
     // results.ts: a criterion added after the lock can leave a locked role
     // incomplete again, reading back as complete=false, level=null while
@@ -168,13 +189,18 @@ describe("RoleSheet", () => {
     renderSheet()
     open()
     expect(screen.queryByText("Level 3")).toBeNull()
-    expect(screen.queryByText("Locked")).toBeNull()
     expect(screen.queryByText("Complexity")).toBeNull()
-    expect(screen.getByText("Not yet evaluated")).toBeTruthy()
-    expect(screen.getByText("2 / 3 criteria assessed")).toBeTruthy()
+    // The lock is real and stays named: what changed is that the role now
+    // carries an unrated criterion, which is a different thing from never
+    // having been evaluated.
+    expect(screen.getByText("Locked")).toBeTruthy()
+    expect(
+      screen.getByText(messages.dashboard.roles.detail.lockedIncomplete)
+    ).toBeTruthy()
+    expect(screen.queryByText("Not yet evaluated")).toBeNull()
   })
 
-  it("shows ready-to-lock wording for a complete role that is not yet locked", () => {
+  it("shows ready-to-read wording for a complete role that is not yet locked", () => {
     result = {
       ...(result as Result),
       locked: false,
@@ -184,7 +210,7 @@ describe("RoleSheet", () => {
     install()
     renderSheet()
     open()
-    expect(screen.getByText("Ready to lock")).toBeTruthy()
+    expect(screen.getByText("Ready to read")).toBeTruthy()
     // Not revealed: no level badge, no breakdown, no incomplete-progress line.
     expect(screen.queryByText("Level 3")).toBeNull()
     expect(screen.queryByText("Complexity")).toBeNull()
