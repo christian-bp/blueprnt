@@ -1,0 +1,113 @@
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_05541c03cb544e 804-809,941-947,990-996,1045-1054,1056,1058,1109-1115,1291-1296
+  s_58dd112dc09435::t_16cb5be339e046 1067-1073
+packages/backend/convex/accounts/audit.test.ts
+  s_58dd112dc09435::t_74c6055a691f61 753-856
+apps/dashboard/components/model/criterion-compliance-dialog.tsx
+  s_58dd112dc09435::t_da1bc265e86a59 47
+  s_58dd112dc09435::t_002c41c5002b9b 185-188,193,199-204,209
+packages/backend/convex/lib/audit.ts
+  s_58dd112dc09435::t_1a5d2a340c9e84 805-809
+  s_58dd112dc09435::t_d518cc21e2c30a 828
+  s_58dd112dc09435::t_531ff3058f63f6 816-819
+  s_58dd112dc09435::t_f8a60b59806ef5 767-792,799
+apps/dashboard/components/organization/organization-profile-form.tsx
+  s_58dd112dc09435::t_00adf8a6ab3a73 20,79-81,84,94
+apps/dashboard/components/people/edit-person-dialog.test.tsx
+  s_58dd112dc09435::t_05541c03cb544e 128-139
+apps/dashboard/components/people/edit-person-dialog.tsx
+  s_58dd112dc09435::t_2f59fba59d1b8c 40,197-199,203,232
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_7e1c88c1ba405c 594-597
+apps/dashboard/components/model/working-conditions-decision.tsx
+  s_58dd112dc09435::t_00adf8a6ab3a73 36,130-132,141-145,147
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_58dd112dc09435::t_165778938b83a0 54,615-621,628
+apps/dashboard/content/docs/sv/audit-log.mdx
+  s_58dd112dc09435::t_86bb7d1d184560 29-41
+apps/dashboard/lib/audit-stories.ts
+  s_58dd112dc09435::t_883be1d00583c7 1-95
+apps/dashboard/lib/audit-stories.test.ts
+  s_58dd112dc09435::t_896670ffc1171f 1-116
+apps/dashboard/components/model/criterion-compliance-dialog.test.tsx
+  s_58dd112dc09435::t_b01670812c3b75 244-250,343-349
+  s_58dd112dc09435::t_1ab56953d29dfe 275-281,289-300
+apps/dashboard/lib/gesture.ts
+  s_58dd112dc09435::t_beed8e7838226a 1-16
+packages/backend/convex/shared/tables.ts
+  s_58dd112dc09435::t_4fe278e0a92b15 54-64,76
+packages/backend/convex/accounts/audit.ts
+  s_58dd112dc09435::t_f2d45c4eb8b925 22-25,37,189
+apps/dashboard/content/docs/en/audit-log.mdx
+  s_58dd112dc09435::t_bee570503ccd8a 28-39
+apps/dashboard/content/docs/da/audit-log.mdx
+  s_58dd112dc09435::t_86bb7d1d184560 29-40
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_7e1c88c1ba405c 594-597
+apps/dashboard/content/docs/fi/audit-log.mdx
+  s_58dd112dc09435::t_86bb7d1d184560 31-43
+apps/dashboard/components/organization/organization-profile-form.test.tsx
+  s_58dd112dc09435::t_4f34fd2ca535c9 49,103-123
+  s_58dd112dc09435::t_05541c03cb544e 92-97
+  s_58dd112dc09435::t_c3db44ed51dd8f 21-24
+  s_58dd112dc09435::t_aeba91c512e451 124-125
+apps/dashboard/content/docs/nb/audit-log.mdx
+  s_58dd112dc09435::t_86bb7d1d184560 30-41
+apps/dashboard/components/people/add-person-dialog.test.tsx
+  s_58dd112dc09435::t_b5add79e655656 208-212
+  s_58dd112dc09435::t_05541c03cb544e 126-132,184-194,198-206
+packages/backend/convex/assessment/compute.ts
+  s_58dd112dc09435::t_2fff9e34d65227 108,115-116,143
+  s_58dd112dc09435::t_f93250257814d5 13-18
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_7e1c88c1ba405c 594-597
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_7e1c88c1ba405c 594-597
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_7e1c88c1ba405c 594-597
+apps/dashboard/components/org-audit-log-section.test.tsx
+  s_58dd112dc09435::t_541b9b2805a226 66,122,137
+  s_58dd112dc09435::t_77061adb53d1be 155-161
+  s_58dd112dc09435::t_93d4ec794f6d3d 1-5,7-15,28-65,67-83,86,89-91,94-99,103,105-118,123-136,138-154,162-164,168-172,180-181
+  s_58dd112dc09435::t_83476a4925c814 23-27,175-177
+  s_58dd112dc09435::t_a8d265eabd4201 173-174
+  s_58dd112dc09435::t_5eaaac0edd2707 6,119-121,165-167,178-179
+  s_58dd112dc09435::t_70a6be69549b94 16-22
+  s_58dd112dc09435::t_397b275e7bcacf 84-85,87-88,92-93,100-102,104
+apps/dashboard/components/people/add-person-dialog.tsx
+  s_58dd112dc09435::t_2f59fba59d1b8c 41,174-176,181,212
+apps/dashboard/components/people/classify/classify-title-table.test.tsx
+  s_58dd112dc09435::t_38b4d249e4e2e4 911-912,914-922,931,933,935-939
+  s_58dd112dc09435::t_c04ac241ec65fe 923-930
+  s_58dd112dc09435::t_0774ec8dba7cd7 900-910,913,932,934
+apps/dashboard/components/org-audit-log-section.tsx
+  s_58dd112dc09435::t_c21745566a7650 518-569
+  s_58dd112dc09435::t_7e1c88c1ba405c 41
+  s_58dd112dc09435::t_68364b97012722 4-5,47,109-111,151-156
+  s_58dd112dc09435::t_e24da85d977c55 44,241-245
+  s_58dd112dc09435::t_61219d58712afd 603-704
+  s_58dd112dc09435::t_82b936918c46c7 246
+packages/backend/convex/lib/functions.ts
+  s_58dd112dc09435::t_c43a66dd62f5fe 174-175,178,180-187
+  s_58dd112dc09435::t_f5f25f8aeccf69 125-136
+  s_58dd112dc09435::t_a66994bfbb8543 45-49,53-54,57-58,60
+  s_58dd112dc09435::t_e329afd5a87dda 148-149,151-153,155-162
+  s_58dd112dc09435::t_d6f224dec83ad2 16
+  s_58dd112dc09435::t_b9a55486733ece 154,179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "dcfc7e0c05ffd20d976d2af17d0cb2209d4777be",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
