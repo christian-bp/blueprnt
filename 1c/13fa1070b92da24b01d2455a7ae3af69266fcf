@@ -1,0 +1,21 @@
+apps/dashboard/components/people/classify/classify-title-table.test.tsx
+  s_11a5c14eb07397::t_f1f02acb462f47 660,662-664,666-681
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_11a5c14eb07397::t_8fc29b5ddd13cd 326-328,778-789,835-851
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "1c13fa1070b92da24b01d2455a7ae3af69266fcf",
+  "prompts": {},
+  "sessions": {
+    "s_11a5c14eb07397": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "681d98c8-bae9-4f4e-91fc-13245dc521c6",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
