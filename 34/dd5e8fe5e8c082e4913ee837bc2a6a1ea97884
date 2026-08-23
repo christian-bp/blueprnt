@@ -1,0 +1,19 @@
+apps/dashboard/components/todo-footer.tsx
+  s_11a5c14eb07397::t_8476fb825bf9ea 78-86,89-103,109
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "34dd5e8fe5e8c082e4913ee837bc2a6a1ea97884",
+  "prompts": {},
+  "sessions": {
+    "s_11a5c14eb07397": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "681d98c8-bae9-4f4e-91fc-13245dc521c6",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
