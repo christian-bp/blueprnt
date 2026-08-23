@@ -1,0 +1,24 @@
+apps/dashboard/components/app-shell.tsx
+  s_11a5c14eb07397::t_28f016014b5ad1 161-164,166-175
+  s_11a5c14eb07397::t_b695818a70e652 20-21
+  s_11a5c14eb07397::t_182122cc822c09 119
+  s_11a5c14eb07397::t_1ff86a8d85d206 93,98-100
+  s_11a5c14eb07397::t_c7da15d3b351b9 23
+  s_11a5c14eb07397::t_202097e1e9c078 165,179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "9b57b934a486863ee01c3b45c71cc8cdf14466f9",
+  "prompts": {},
+  "sessions": {
+    "s_11a5c14eb07397": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "681d98c8-bae9-4f4e-91fc-13245dc521c6",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
