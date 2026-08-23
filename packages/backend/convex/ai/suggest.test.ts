@@ -1985,7 +1985,16 @@ describe("requestWeightReview enrichment", () => {
     // production check can never disagree about what "an outcome" means.
     expect(() => assertPromptDataSafe(args, "test")).not.toThrow()
     const serialized = JSON.stringify(args)
-    for (const key of ["score", "level", "zone", "assessment", "rating"]) {
+    for (const key of [
+      "score",
+      "level",
+      "zone",
+      "assessment",
+      "rating",
+      // The raw 0-5 an assessor gave is an assessment VALUE, which the
+      // invariant names explicitly and a ratings row carries under this key.
+      "value",
+    ]) {
       expect(serialized).not.toContain(`"${key}":`)
     }
   })

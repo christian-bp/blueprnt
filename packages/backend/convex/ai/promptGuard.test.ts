@@ -140,6 +140,99 @@ describe("promptJson and buildPrompt", () => {
       buildPrompt(["5 = heaviest relative weight, specialist level"], "test")
     ).not.toThrow()
   })
+
+  // The backstop governs OUR assembly, never the user's words. Every prompt
+  // that carries user text wraps it in a data tag, and scanning inside one
+  // turned the guard into a content filter: an HR specialist pasting a role
+  // export that happens to be JSON failed the whole import with no explanation
+  // anywhere, and a chat message containing `"score": 74` silently lost its
+  // thread title.
+  it.each([
+    [
+      "a pasted role list that happens to be JSON",
+      '<pasted_roles>[{"title":"Developer","level":3}]</pasted_roles>',
+    ],
+    [
+      "a role description quoting a score",
+      '<role_description>Owns the model where "score": 74 came from.</role_description>',
+    ],
+    [
+      "a chat message quoting a result",
+      '<user_message>Why is "level": 3 on this role?</user_message>',
+    ],
+    [
+      "a criterion description a user wrote",
+      '<criterion_description>Covers what "value": 5 means here.</criterion_description>',
+    ],
+    ["a tag carrying attributes", '<role index="0">Level 3 Analyst</role>'],
+  ])("accepts %s", (_name, line) => {
+    expect(() =>
+      buildPrompt(["Instructions we wrote.", line], "test")
+    ).not.toThrow()
+  })
+
+  // And the backstop still does its job on the line beside it: stripping the
+  // user's block must not disarm the scan for our own.
+  it("still refuses our own serialized outcome beside a user's block", () => {
+    expect(() =>
+      buildPrompt(
+        [
+          '<pasted_roles>[{"title":"Developer","level":3}]</pasted_roles>',
+          'Roles: [{"title":"Developer","score":74}]',
+        ],
+        "test"
+      )
+    ).toThrow(PromptContaminationError)
+  })
+
+  it("refuses an unclosed data tag rather than treating the rest as data", () => {
+    expect(() =>
+      buildPrompt(
+        ['<pasted_roles>[{"level":3}]', 'Roles: [{"score":74}]'],
+        "test"
+      )
+    ).toThrow(PromptContaminationError)
+  })
+})
+
+// The raw 0-5 an assessor gave IS an assessment value, and a ratings row is the
+// shape most likely to be spread into a prompt by accident.
+describe("the ratings table's own outcome field", () => {
+  it("refuses a ratings row", () => {
+    expect(() =>
+      assertPromptDataSafe(
+        { ratings: [{ criterionId: "c1", value: 4, motivation: "Broad." }] },
+        "test"
+      )
+    ).toThrow(PromptContaminationError)
+    // Refused on `value` even without the giveaway `ratings` wrapper.
+    expect(() =>
+      assertPromptDataSafe([{ criterionId: "c1", value: 4 }], "test")
+    ).toThrow(/value/)
+  })
+
+  it("refuses a role result's profileFailures", () => {
+    expect(() =>
+      assertPromptDataSafe({ profileFailures: ["scope-impact"] }, "test")
+    ).toThrow(PromptContaminationError)
+  })
+
+  // The fields our prompts actually carry name themselves; none is a bare
+  // `value`, which is why the key can be forbidden outright.
+  it("leaves every shape a prompt legitimately sends alone", () => {
+    expect(() =>
+      assertPromptDataSafe(
+        {
+          criteria: [{ criterionId: "c1", name: "Scope", weightPoints: 4 }],
+          families: [{ name: "Eng", roleCount: 3, sampleTitles: ["Dev"] }],
+          workingConditions: { status: "active", motivation: "On-call." },
+          tracks: [{ key: "IC", name: "Individual contributor" }],
+          anchors: ["Follows a method.", "Defines the field."],
+        },
+        "test"
+      )
+    ).not.toThrow()
+  })
 })
 
 // Source-confinement guard, in the same style as assistant/pii-guard.test.ts:

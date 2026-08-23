@@ -91,9 +91,12 @@ const LONE_ROW = row({
 
 let browseRows: Row[] = []
 let searchRows: Row[] | null = null
+// The first-load state, where the browse query has not answered yet.
+let loading = false
 
 onQuery((ref) => {
   if (ref === "accounts.audit.getAuditLogPage") {
+    if (loading) return undefined
     return { rows: browseRows, total: browseRows.length }
   }
   if (ref === "accounts.audit.searchAuditLog") {
@@ -139,6 +142,7 @@ describe("OrgAuditLogSection stories", () => {
   beforeEach(() => {
     browseRows = [...GESTURE_ROWS, LONE_ROW]
     searchRows = null
+    loading = false
   })
   afterEach(() => cleanup())
 
@@ -272,6 +276,19 @@ describe("OrgAuditLogSection stories", () => {
     const [only] = dataRows()
     expect(only?.getAttribute("aria-label")).toBe(log.detail.viewDetails)
     expect(only?.textContent).toContain(SOLO_DETAIL)
+  })
+
+  // The skeleton must MEASURE like a data row, not merely look like one. The
+  // action cell leads with a fixed chevron box on every row, so a skeleton
+  // without it jumps the action text its width to the right on the swap.
+  it("reserves the action cell's chevron box in the loading skeleton", () => {
+    browseRows = []
+    loading = true
+    renderLog()
+    const cells = container.querySelectorAll("tbody tr:first-child td")
+    const action = cells[3]
+    expect(action).toBeDefined()
+    expect(action?.querySelector(".size-4")).not.toBeNull()
   })
 
   // A search shows the rows that MATCHED; folding one into a story would hide

@@ -202,6 +202,14 @@ export function isCriteriaLibraryKey(key: string): key is CriteriaLibraryKey {
   return CRITERIA_LIBRARY_KEY_SET.has(key)
 }
 
+// The steps the library leaves without an anchor of their own. ADR-0021 has
+// each criterion author full anchor texts at 1, 3 and 5; 2 and 4 are the
+// considered space between them, filled from the model's shared midpoint copy
+// (`midpoints: { step2, step4 }` in every content module). Derived from that
+// shape's own keys, so a library that ever anchored 2 or 4 per criterion could
+// not leave a consumer explaining a midpoint that no longer exists.
+export const MIDPOINT_STEPS: readonly number[] = [2, 4]
+
 // The library's measures/notMeasures split, joined into the one help-text
 // sentence every consumer actually needs (what the criterion DOES and does
 // NOT cover, in one line): the method-builder wire (method.ts), the rating

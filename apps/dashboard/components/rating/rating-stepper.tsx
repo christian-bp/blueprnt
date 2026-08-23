@@ -2,8 +2,7 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { ArrowDown01Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { MIDPOINT_STEPS } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import type { DimensionKey } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -21,6 +20,8 @@ import { useMutation } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useTranslations } from "next-intl"
+import { DisclosureToggle } from "@/components/disclosure-toggle"
+import { STAGE_EYEBROW_CLASS } from "@/components/stage-eyebrow"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useEffect, useId, useRef, useState } from "react"
 import { SPRING } from "@/lib/motion"
@@ -28,11 +29,6 @@ import { SPRING } from "@/lib/motion"
 // The "omfattas inte" step: valid only for a workingConditions criterion,
 // never one of the five graded anchor steps.
 const NOT_COVERED_STEP = 0
-
-// Steps 2 and 4 carry no anchor of their own in the library: they are the
-// considered space between the steps around them, and the model's shared
-// midpoint copy is what fills them.
-const MIDPOINT_STEPS = [2, 4]
 
 export interface StepperCriterion {
   criterionId: Id<"criteria">
@@ -85,10 +81,11 @@ export function RatingStepper({
   const motivationErrorId = useId()
   const scalePanelId = useId()
 
-  // The 1-5 grades mean the same thing on every criterion, so the table is
+  // The 1-5 steps mean the same thing on every criterion, so the table is
   // built once here and read both by the option rows (the name) and by the
-  // panel (the meaning).
-  const grades = [
+  // panel (the meaning). "Step" is the glossary's word for a position on this
+  // scale; "grade" is listed there as the term to avoid.
+  const scaleSteps = [
     {
       step: 1,
       name: t("scale.step1.name"),
@@ -290,7 +287,7 @@ export function RatingStepper({
   }
 
   return (
-    <div className="w-full max-w-2xl space-y-4">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-muted-foreground text-sm">
           {t("progress", { current: index + 1, total: criteria.length })}
@@ -335,30 +332,18 @@ export function RatingStepper({
                   expanding animates new content below it, a legitimate enter
                   (docs/ui-animation.md). */}
               <div>
-                <button
-                  type="button"
-                  aria-expanded={contextOpen}
-                  aria-controls={contextPanelId}
-                  className="flex items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
-                  onClick={() =>
+                <DisclosureToggle
+                  label={t("contextToggleLabel")}
+                  open={contextOpen}
+                  panelId={contextPanelId}
+                  onToggle={() =>
                     setContextOpenFor((openFor) =>
                       openFor === current.criterionId
                         ? null
                         : current.criterionId
                     )
                   }
-                >
-                  {t("contextToggleLabel")}
-                  <HugeiconsIcon
-                    icon={ArrowDown01Icon}
-                    strokeWidth={2}
-                    aria-hidden="true"
-                    className={cn(
-                      "size-3.5 transition-transform motion-reduce:transition-none",
-                      contextOpen && "rotate-180"
-                    )}
-                  />
-                </button>
+                />
                 <AnimatePresence initial={false}>
                   {contextOpen && (
                     <motion.div
@@ -390,32 +375,21 @@ export function RatingStepper({
               </div>
 
               {/* The shared scale names itself before its steps: the same
-                  1-5 grades frame every criterion, and the criterion's own
-                  anchors say what each grade means here. */}
+                  1-5 steps frame every criterion, and the criterion's own
+                  anchors say what each step means here. */}
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
                   <h3 className="font-medium text-sm">{t("scale.title")}</h3>
                   <HelpMorphButton label={tHelp("sharedScaleLabel")}>
                     {tHelp("sharedScaleBody")}
                   </HelpMorphButton>
-                  <button
-                    type="button"
-                    aria-expanded={scaleOpen}
-                    aria-controls={scalePanelId}
-                    className="ms-auto flex items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
-                    onClick={() => setScaleOpen((open) => !open)}
-                  >
-                    {t("scale.meaningsToggle")}
-                    <HugeiconsIcon
-                      icon={ArrowDown01Icon}
-                      strokeWidth={2}
-                      aria-hidden="true"
-                      className={cn(
-                        "size-3.5 transition-transform motion-reduce:transition-none",
-                        scaleOpen && "rotate-180"
-                      )}
-                    />
-                  </button>
+                  <DisclosureToggle
+                    label={t("scale.meaningsToggle")}
+                    open={scaleOpen}
+                    panelId={scalePanelId}
+                    onToggle={() => setScaleOpen((open) => !open)}
+                    className="ms-auto"
+                  />
                 </div>
                 <AnimatePresence initial={false}>
                   {scaleOpen ? (
@@ -429,20 +403,20 @@ export function RatingStepper({
                       className="overflow-hidden"
                     >
                       <dl className="space-y-2 pb-1">
-                        {grades.map((grade) => (
+                        {scaleSteps.map((entry) => (
                           <div
-                            key={grade.step}
+                            key={entry.step}
                             className="flex gap-3 text-sm leading-relaxed"
                           >
                             <dt className="w-3 shrink-0 font-medium text-muted-foreground tabular-nums">
-                              {grade.step}
+                              {entry.step}
                             </dt>
                             <dd className="min-w-0 flex-1">
-                              <span className="font-medium">{grade.name}</span>{" "}
+                              <span className="font-medium">{entry.name}</span>{" "}
                               <span className="text-muted-foreground">
-                                {grade.meaning}
+                                {entry.meaning}
                               </span>
-                              {MIDPOINT_STEPS.includes(grade.step) ? (
+                              {MIDPOINT_STEPS.includes(entry.step) ? (
                                 <span className="block text-muted-foreground">
                                   {t("scale.midpointExplanation")}
                                 </span>
@@ -463,7 +437,7 @@ export function RatingStepper({
                   {displayAnchors.map((anchor) => {
                     const isSelected = selected === anchor.step
                     const isNotCovered = anchor.step === NOT_COVERED_STEP
-                    const grade = grades.find(
+                    const scaleStep = scaleSteps.find(
                       (entry) => entry.step === anchor.step
                     )
                     return (
@@ -505,9 +479,19 @@ export function RatingStepper({
                           {anchor.step}
                         </span>
                         <span className="min-w-0 flex-1">
-                          {grade === undefined ? null : (
-                            <span className="mb-0.5 block font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                              {grade.name}
+                          {/* The app's scanned-label treatment, shared with the
+                              stage eyebrows so a scanned label reads the same
+                              wherever one appears. `block` and the bottom
+                              margin are this slot's own layout; the type
+                              treatment is not re-typed. */}
+                          {scaleStep === undefined ? null : (
+                            <span
+                              className={cn(
+                                STAGE_EYEBROW_CLASS,
+                                "mb-0.5 block"
+                              )}
+                            >
+                              {scaleStep.name}
                             </span>
                           )}
                           <span className="block">{anchor.text}</span>

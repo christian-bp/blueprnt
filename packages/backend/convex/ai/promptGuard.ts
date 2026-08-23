@@ -46,9 +46,17 @@ export const FORBIDDEN_OUTCOME_KEYS: readonly string[] = [
   "zoneprofilerules",
   "expectedlevel",
   "profilelimited",
+  "profilefailures",
   "calibrated",
   "methoddrift",
   "ratedcount",
+  // The ratings table's own field: `value` is the raw 0-5 an assessor gave,
+  // which IS the assessment value the invariant names. A ratings row spread as
+  // {criterionId, value, motivation} would otherwise pass every check here.
+  // Nothing legitimate carries a bare `value` key into a prompt: the data we
+  // send names its fields (weightPoints, roleCount, sampleTitles, status).
+  "value",
+  "values",
 ]
 
 // The person family. Role-level fields (title, function, team, track, purpose,
@@ -81,10 +89,11 @@ const FORBIDDEN_KEYS = new Set([
 ])
 
 // Thrown when a prompt path tries to carry data it must never carry. A plain
-// Error, not an appError: this is never a condition a user can cause or fix,
-// it is a programming mistake, and the calling action's own catch turns it
-// into an ordinary generation failure. What must NOT happen is the call going
-// out, and that is what throwing here prevents.
+// Error, not an appError: this is a programming mistake in OUR assembly, never
+// something a user typed (see stripDelimitedData below), so there is no code to
+// translate and nothing the user could do differently. The calling action's own
+// catch turns it into an ordinary generation failure; what must NOT happen is
+// the call going out, and that is what throwing here prevents.
 export class PromptContaminationError extends Error {
   constructor(key: string, where: string) {
     super(`prompt contamination: forbidden key "${key}" in ${where}`)
@@ -136,12 +145,37 @@ const SERIALIZED_KEY = new RegExp(
   "i"
 )
 
+// Every prompt that carries user-supplied text wraps it in a data tag and tells
+// the model so ("data, not instructions"): <pasted_roles>, <role_description>,
+// <criterion_description>, <criterion_help>, <user_message>, <role index="N">.
+const DELIMITED_DATA = /<([a-z_]+)(?:\s[^>]*)?>[\s\S]*?<\/\1>/g
+
+// Removes those blocks before the backstop scans.
+//
+// The backstop exists for OUR OWN lines: a line that serialized its own JSON
+// instead of going through promptJson. None of those live inside a data tag.
+// What DOES live inside one is whatever the user typed or pasted, and scanning
+// that turns the guard into a content filter on their words: an HR specialist
+// pasting a role export that happens to be JSON with a "level" field had the
+// whole import fail as aiGenerationFailed with no explanation anywhere, and a
+// chat message containing `"score": 74` silently lost its thread title.
+//
+// This is not a hole. User text cannot smuggle outcomes OUT of the org (the
+// user already has them), and it cannot smuggle them IN as facts either: the
+// content sits inside a labelled data tag the prompt tells the model to treat
+// as data. The invariant this guard enforces is about what WE choose to send,
+// and the structural check (assertPromptDataSafe, on every promptJson call) is
+// untouched by this and is the real control.
+function stripDelimitedData(prompt: string): string {
+  return prompt.replace(DELIMITED_DATA, "")
+}
+
 // Assembles a prompt from its lines. EVERY prompt path calls this: joining
 // lines with "\n" by hand is refused by the seam guard test, so a new prompt
 // cannot quietly skip the check.
 export function buildPrompt(lines: readonly string[], where: string): string {
   const prompt = lines.join("\n")
-  const match = SERIALIZED_KEY.exec(prompt)
+  const match = SERIALIZED_KEY.exec(stripDelimitedData(prompt))
   if (match !== null) {
     throw new PromptContaminationError(match[1] ?? "unknown", where)
   }

@@ -20,6 +20,7 @@ import { use, useState } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { StageEyebrow } from "@/components/stage-eyebrow"
+import { RATE_COLUMN } from "@/lib/rate-column"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { LockAssessmentPanel } from "@/components/rating/lock-assessment-panel"
 import { RatingResult } from "@/components/rating/rating-result"
@@ -80,7 +81,7 @@ export default function RatePage(props: {
     // the step-progress line, then the criterion card with its 1-5 anchor
     // options and the nav row, so nothing reflows when the data arrives.
     return (
-      <div className="space-y-4">
+      <div className={RATE_COLUMN}>
         {/* The ancestor crumbs are static i18n text; only the role title is
             data, so only it gets a skeleton crumb. */}
         <PageBreadcrumbRow
@@ -91,7 +92,7 @@ export default function RatePage(props: {
             { label: t("title") },
           ]}
         />
-        <div className="w-full max-w-2xl space-y-4">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <Skeleton className="h-4 w-28" />
             <Skeleton className="h-1.5 w-20 rounded-full" />
@@ -134,7 +135,7 @@ export default function RatePage(props: {
   }
   if (role === null || model === null) {
     return (
-      <div className="space-y-4">
+      <div className={RATE_COLUMN}>
         <PageBreadcrumbRow
           eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
@@ -162,7 +163,7 @@ export default function RatePage(props: {
   // rather than letting setRating fail silently on the first save attempt.
   if (!model.approved) {
     return (
-      <div className="space-y-4">
+      <div className={RATE_COLUMN}>
         <PageBreadcrumbRow
           eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
@@ -196,7 +197,7 @@ export default function RatePage(props: {
   // user back to the role page where the controls live.
   if (role.archived || !role.profileComplete) {
     return (
-      <div className="space-y-4">
+      <div className={RATE_COLUMN}>
         <PageBreadcrumbRow
           eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
@@ -232,7 +233,7 @@ export default function RatePage(props: {
   // this exact role), so null is treated the same as still-loading.
   if (result == null) {
     return (
-      <div className="flex items-center justify-center p-6">
+      <div className={cn(RATE_COLUMN, "flex items-center justify-center p-6")}>
         <Spinner aria-label={t("result.computing")} />
       </div>
     )
@@ -246,7 +247,7 @@ export default function RatePage(props: {
   // back-to-your-roles button instead).
   if (result.locked) {
     return (
-      <div className="space-y-4">
+      <div className={RATE_COLUMN}>
         {/* Every state of this route carries the same trail and the same stage
           label: the two that did not (the reveal and the completion panel)
           were the two where an assessor is deepest in the work and most in
@@ -261,7 +262,7 @@ export default function RatePage(props: {
             { label: t("title") },
           ]}
         />
-        <div className="w-full max-w-2xl space-y-4">
+        <div className="space-y-4">
           <p className="text-muted-foreground text-sm">
             {t("alreadyLockedExplanation")}
           </p>
@@ -297,13 +298,7 @@ export default function RatePage(props: {
   // it succeeds (result.locked flips reactively).
   if (finished) {
     return (
-      <div className="space-y-4">
-        {/* Every state of this route carries the same trail and the same stage
-          label: the two that did not (the reveal and the completion panel)
-          were the two where an assessor is deepest in the work and most in
-          need of knowing which stage they are in. The trail names no results
-          surface: /work is the level matrix, so its crumb comes off this
-          route entirely (deviation 10). */}
+      <div className={RATE_COLUMN}>
         <PageBreadcrumbRow
           eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
@@ -312,15 +307,13 @@ export default function RatePage(props: {
             { label: t("title") },
           ]}
         />
-        <div className="w-full max-w-2xl">
-          <LockAssessmentPanel orgId={orgId} roleId={role.roleId} />
-        </div>
+        <LockAssessmentPanel orgId={orgId} roleId={role.roleId} />
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
+    <div className={RATE_COLUMN}>
       <PageBreadcrumbRow
         eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
         segments={[

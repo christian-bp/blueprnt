@@ -75,7 +75,7 @@ export function RatingResult({
   // computation that will not start until the new criterion is rated.
   if (!result.complete || result.level === null) {
     return (
-      <main className="w-full max-w-2xl">
+      <main className="w-full">
         <LockedIncompleteNotice />
       </main>
     )
@@ -95,7 +95,7 @@ export function RatingResult({
       : null
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full">
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}

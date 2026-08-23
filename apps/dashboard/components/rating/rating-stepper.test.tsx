@@ -158,7 +158,7 @@ describe("RatingStepper", () => {
     expect(screen.queryByText(labels.result.levelLabel)).toBeNull()
   })
 
-  it("names the shared grade on every graded step", () => {
+  it("names the shared step on every graded option", () => {
     renderStepper()
     for (const step of [1, 2, 3, 4, 5] as const) {
       const name = labels.scale[`step${step}`].name
@@ -179,7 +179,7 @@ describe("RatingStepper", () => {
     }
   })
 
-  it("makes every grade's meaning reachable from the stepper", () => {
+  it("makes every step's meaning reachable from the stepper", () => {
     renderStepper()
     for (const step of [1, 2, 3, 4, 5] as const) {
       expect(screen.queryByText(labels.scale[`step${step}`].meaning)).toBeNull()
@@ -194,7 +194,7 @@ describe("RatingStepper", () => {
     }
   })
 
-  it("explains the midpoints on grades 2 and 4 only", () => {
+  it("explains the midpoints on steps 2 and 4 only", () => {
     renderStepper()
     fireEvent.click(
       screen.getByRole("button", { name: labels.scale.meaningsToggle })
@@ -412,7 +412,7 @@ describe("RatingStepper", () => {
         value: 0,
       })
     })
-    // 0 is not a sixth grade, so the 1/4/5 motivation rule does not reach it:
+    // 0 is not a sixth step, so the 1/4/5 motivation rule does not reach it:
     // "omfattas inte" is explained by the option's own standing explanation.
     expect(screen.queryByText(labels.motivationRequiredError)).toBeNull()
     expect(screen.getByText(labels.notCoveredExplanation)).toBeDefined()

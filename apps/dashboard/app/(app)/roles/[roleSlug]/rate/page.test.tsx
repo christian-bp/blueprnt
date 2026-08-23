@@ -29,6 +29,7 @@ vi.mock("@/lib/toast", () => ({
 
 import RatePage from "@/app/(app)/roles/[roleSlug]/rate/page"
 import { chapterHref } from "@/lib/model-chapters"
+import { RATE_COLUMN } from "@/lib/rate-column"
 
 const t = messages.dashboard.rating
 const tDetail = messages.dashboard.roles.detail
@@ -251,6 +252,66 @@ describe("RatePage (lock-as-reveal)", () => {
   // Deviation 10: the assessment route names its stage rather than blocking
   // navigation, and it names it in EVERY state, including the two where an
   // assessor is deepest in the work.
+  // The route's reading column is ONE container holding the breadcrumb row and
+  // the content, never two siblings each deciding its own width. It was two:
+  // the outer wrapper spanned the content region while the card inside carried
+  // max-w-2xl with no mx-auto, so the header ran the full region and the card
+  // sat pinned to its left edge with a dead margin beside it.
+  //
+  // Pinned STRUCTURALLY rather than by measurement: jsdom lays nothing out, so
+  // what a test can guarantee is that the header and the content cannot have
+  // separate centring axes, which is true exactly when they share one
+  // container and nothing under it re-caps the width.
+  describe("the route's reading column", () => {
+    const trail = () =>
+      document.querySelector(
+        '[data-slot="page-breadcrumb-row"]'
+      ) as HTMLElement | null
+
+    it("holds the breadcrumb and the content in one centred container", async () => {
+      await renderPage()
+      const column = trail()?.parentElement
+      expect(column).not.toBeNull()
+      for (const token of RATE_COLUMN.split(/\s+/)) {
+        expect(column?.className.split(/\s+/)).toContain(token)
+      }
+      // The content is a SIBLING of the trail inside that container, not a
+      // cousin in a wrapper of its own.
+      expect(column?.childElementCount).toBeGreaterThan(1)
+    })
+
+    it("re-caps the width nowhere below the column", async () => {
+      await renderPage()
+      const column = trail()?.parentElement
+      expect(column).not.toBeNull()
+      // A second cap under the column would put the content back on an axis of
+      // its own, which is the shape this route just came off.
+      const capped = [...(column?.querySelectorAll("[class]") ?? [])].filter(
+        (node) =>
+          /(^|\s)max-w-(sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl)(\s|$)/.test(
+            node.className.toString()
+          )
+      )
+      expect(capped.map((node) => node.className.toString())).toEqual([])
+    })
+
+    // Every state of the route, so the column cannot shift as the page moves
+    // between loading, a precondition, the stepper and the reveal.
+    it("uses the same column in the locked reveal state", async () => {
+      resultFixture = result({ locked: true })
+      install()
+      await renderPage()
+      expect(trail()?.parentElement?.className).toContain("mx-auto")
+    })
+
+    it("uses the same column in the precondition state", async () => {
+      roleFixture = role({ profileComplete: false })
+      install()
+      await renderPage()
+      expect(trail()?.parentElement?.className).toContain("mx-auto")
+    })
+  })
+
   describe("the stage names itself", () => {
     const eyebrow = () =>
       document.querySelector(
@@ -305,9 +366,20 @@ describe("RatePage (lock-as-reveal)", () => {
       expect(tokens).toContain("uppercase")
       expect(tokens).toContain("text-xs")
       expect(tokens).toContain("tracking-wide")
-      // Chrome, not content: the surface's own title already says what the
-      // page is, so the label is not announced on top of it.
-      expect(eyebrow()?.getAttribute("aria-hidden")).toBe("true")
+    })
+
+    // Scanned in TREATMENT, but not hidden from the accessibility tree. The
+    // label was aria-hidden at first, on the reasoning that the surface's own
+    // title already says where you are. That reasoning does not survive the
+    // other surface this label serves: the model shell has no breadcrumb at
+    // all, so hiding it announced the stage to nobody there. One behaviour,
+    // announced on both.
+    it("is announced, not hidden from assistive technology", async () => {
+      await renderPage()
+      expect(eyebrow()?.hasAttribute("aria-hidden")).toBe(false)
+      expect(
+        await screen.findByText(t.stageEyebrow, { ignore: "[aria-hidden]" })
+      ).toBeDefined()
     })
   })
 

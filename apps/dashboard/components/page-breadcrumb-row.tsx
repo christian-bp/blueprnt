@@ -39,7 +39,10 @@ export function PageBreadcrumbRow({
   const last = trail.at(-1)
   const title = last !== undefined && "label" in last ? last.label : undefined
   return (
-    <header className="flex min-h-9 w-full shrink-0 items-center justify-between gap-2">
+    <header
+      data-slot="page-breadcrumb-row"
+      className="flex min-h-9 w-full shrink-0 items-center justify-between gap-2"
+    >
       {title !== undefined && <h1 className="sr-only">{title}</h1>}
       {/* The adornment slot puts a concept's HelpMorphButton right after the
           trail's last segment (the help-after-title rule); the aside slot is

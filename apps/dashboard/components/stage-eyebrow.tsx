@@ -14,17 +14,22 @@
 export const STAGE_EYEBROW_CLASS =
   "shrink-0 whitespace-nowrap font-semibold text-muted-foreground text-xs uppercase tracking-wide"
 
+// Announced, not aria-hidden.
+//
+// It was hidden at first, on the reasoning that the surface's own title already
+// says where you are and the stage is chrome. That reasoning holds on the rate
+// route, which renders a breadcrumb in every one of its states, and does NOT
+// hold on the model shell, which has no breadcrumb at all: its heading reads
+// "Chapters", so hiding the eyebrow left the stage announced to nobody on one
+// of the two surfaces this label exists for. Two words before a heading is a
+// small cost; the phase's whole point is that the reader knows which stage they
+// are in, and a reader using a screen reader needs that as much as anyone.
+//
+// One behaviour rather than a per-surface prop: two modes of one label is the
+// drift this shared component exists to prevent.
 export function StageEyebrow({ label }: { label: string }) {
-  // aria-hidden: the label names the surface, and the surface's own title (the
-  // heading or the breadcrumb's last segment) already says what the page is.
-  // Announced it would prefix every title with a word that is chrome, not
-  // content; a screen-reader user gets the stage from the trail they walked.
   return (
-    <span
-      aria-hidden="true"
-      className={STAGE_EYEBROW_CLASS}
-      data-slot="stage-eyebrow"
-    >
+    <span className={STAGE_EYEBROW_CLASS} data-slot="stage-eyebrow">
       {label}
     </span>
   )

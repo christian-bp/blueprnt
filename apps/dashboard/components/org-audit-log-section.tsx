@@ -56,6 +56,7 @@ import { ChangeArrow } from "@/components/change-arrow"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { endOfDay, startOfDay } from "@/lib/date-bounds"
@@ -491,7 +492,19 @@ export function OrgAuditLogSection() {
                 { className: "w-28" },
                 { className: "w-24" },
                 { className: "h-5 w-16 rounded-full" },
-                { className: "w-28" },
+                {
+                  // The action cell leads with a fixed chevron box on EVERY
+                  // row, present or empty, so the column cannot jog as stories
+                  // open. The skeleton has to carry the same box, or the action
+                  // text jumps its width to the right on the skeleton-to-data
+                  // swap, which is the reflow the box exists to prevent.
+                  content: (
+                    <span className="flex items-center gap-1.5">
+                      <span className="size-4 shrink-0" aria-hidden="true" />
+                      <Skeleton className="h-4 w-28" />
+                    </span>
+                  ),
+                },
                 {},
               ]}
             />
