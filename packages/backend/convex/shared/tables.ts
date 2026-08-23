@@ -51,6 +51,17 @@ void _assertSubjectKindsMatch
 // subject. The derived fields are optional so a schema push against
 // pre-existing rows does not fail (and events with no single-entity subject
 // stay subject-free); logAudit always sets category/searchText going forward.
+// batchId is the CLIENT's correlation id for one user gesture that spans more
+// than one mutation (the compliance dialog's up-to-three calls, a chunked bulk
+// confirm): the caller mints one id and passes it to every mutation in the
+// gesture, the mutation wrappers put it on ctx, and logAudit stamps every row
+// written in that transaction with it. Row METADATA, not payload: it carries
+// no PII (a random v4 UUID), needs no event label, and no event declares it.
+// Deliberately UNINDEXED. The log paginates by time and the rows of one
+// gesture are written milliseconds apart, so they arrive adjacent on the same
+// page; grouping is a render concern over the page already fetched, never a
+// query. An index would only pay for a "show me this gesture" retrieval
+// surface, which no product surface asks for.
 export const auditLog = defineTable({
   orgId: v.string(),
   type: v.string(),
@@ -62,6 +73,7 @@ export const auditLog = defineTable({
     v.object({ kind: auditSubjectKindValidator, id: v.string() })
   ),
   searchText: v.optional(v.string()),
+  batchId: v.optional(v.string()),
 })
   .index("by_org", ["orgId"])
   .index("by_org_type", ["orgId", "type"])

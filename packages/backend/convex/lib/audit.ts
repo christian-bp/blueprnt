@@ -764,24 +764,59 @@ export async function resolveActorName(
   return "unknown"
 }
 
+// A gesture correlation id is at most this long. A batchId only affects how
+// the log GROUPS rows, so a malformed one is dropped rather than thrown on: a
+// client bug in an id must never be able to fail the write it decorates, and a
+// row with no batchId simply reads as its own story. The bound exists so a
+// hostile or broken caller cannot store arbitrary text on every audit row.
+const MAX_BATCH_ID = 64
+
+// A mutation ctx that may carry the caller's gesture id. The org/admin
+// mutation wrappers put it there (lib/functions.ts), so every audit row
+// written in that transaction inherits it without a single writer threading it
+// through its own arguments: a helper that already takes `ctx` (writeAssignment
+// is the case that matters, since a bulk confirm's rows are written from one)
+// gets it for free. Optional, so a plain MutationCtx stays assignable.
+export type AuditMutationCtx = GenericMutationCtx<DataModel> & {
+  batchId?: string
+}
+
+// Normalizes what a caller sent into what may be stored: a non-empty string
+// within the bound, or nothing at all.
+export function normalizeBatchId(batchId: unknown): string | undefined {
+  if (typeof batchId !== "string") return undefined
+  const trimmed = batchId.trim()
+  if (trimmed === "" || trimmed.length > MAX_BATCH_ID) return undefined
+  return trimmed
+}
+
 // Called inside the same mutation transaction as the change it records.
 // Uses GenericMutationCtx<DataModel> so both MutationCtx (from _generated/server)
 // and trigger handler contexts (GenericMutationCtx<DataModel>) are assignable.
 // Generic over the event type so the payload is type-checked against
 // AuditPayloads[E] (the per-event envelope contract).
 export async function logAudit<E extends keyof AuditPayloads>(
-  ctx: GenericMutationCtx<DataModel>,
+  ctx: AuditMutationCtx,
   entry: {
     orgId: string
     type: E
     actorId: string
     payload: AuditPayloads[E]
+    // Only the ctx-bound writer (makeAuditWriter) passes this, because it is
+    // built before the custom ctx it belongs to exists. Every other caller
+    // hands over the handler's own ctx, which already carries the id, and
+    // passes nothing here.
+    batchId?: string
   }
 ) {
   const actorName = await resolveActorName(ctx, entry.actorId)
   // Derived like category: never passed by call sites, always computed from
   // the typed payload. Spread conditionally (undefined is not a Convex value).
   const subject = subjectForEvent(entry.type, entry.payload)
+  // The gesture id belongs to the whole transaction, not to one row: it comes
+  // from the ctx the handler is running under, so no writer has to remember to
+  // thread it. The entry override exists only for the ctx-bound writer.
+  const batchId = normalizeBatchId(entry.batchId ?? ctx.batchId)
   const rowId = await ctx.db.insert("auditLog", {
     orgId: entry.orgId,
     type: entry.type,
@@ -790,6 +825,7 @@ export async function logAudit<E extends keyof AuditPayloads>(
     payload: entry.payload as Record<string, unknown>,
     category: categoryForEvent(entry.type),
     ...(subject !== undefined ? { subject } : {}),
+    ...(batchId !== undefined ? { batchId } : {}),
     searchText: buildSearchText(
       actorName,
       entry.type,

@@ -123,11 +123,13 @@ describe("AddPersonDialog", () => {
     fireEvent.click(submitButton())
     await waitFor(() => {
       // Exact match: empty optionals are omitted, never sent as "".
-      expect(createPersonMock).toHaveBeenCalledWith({
-        orgId: "org-1",
-        displayName: "Anna Svensson",
-        gender: "Kvinna",
-      })
+      expect(createPersonMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgId: "org-1",
+          displayName: "Anna Svensson",
+          gender: "Kvinna",
+        })
+      )
     })
     expect(toast.success).toHaveBeenCalledWith(
       messages.dashboard.toast.personCreated
@@ -179,26 +181,35 @@ describe("AddPersonDialog", () => {
 
     await clickSubmit()
     await waitFor(() => {
-      expect(createPersonMock).toHaveBeenCalledWith({
-        orgId: "org-1",
-        displayName: "Anna Svensson",
-        gender: "Kvinna",
-        externalRef: "1001",
-        department: "Finance",
-        employmentStartDate: expectedIso,
-        ftePercent: 80,
-      })
+      expect(createPersonMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgId: "org-1",
+          displayName: "Anna Svensson",
+          gender: "Kvinna",
+          externalRef: "1001",
+          department: "Finance",
+          employmentStartDate: expectedIso,
+          ftePercent: 80,
+        })
+      )
     })
     // The picked role becomes a confirmed assignment after the create.
     await waitFor(() => {
-      expect(assignMock).toHaveBeenCalledWith({
-        orgId: "org-1",
-        personId: "person-new",
-        roleId: "role-1",
-        seniority: "IC1",
-        senioritySource: "confirmed",
-      })
+      expect(assignMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgId: "org-1",
+          personId: "person-new",
+          roleId: "role-1",
+          seniority: "IC1",
+          senioritySource: "confirmed",
+        })
+      )
     })
+    // Adding the person and classifying them are one submit, so their two
+    // audit rows share a gesture id and read as one story in the log.
+    const created = createPersonMock.mock.calls[0]?.[0]?.batchId
+    expect(typeof created).toBe("string")
+    expect(assignMock.mock.calls[0]?.[0]?.batchId).toBe(created)
   })
 
   it("surfaces a taken employee number inline on its field and stays open", async () => {

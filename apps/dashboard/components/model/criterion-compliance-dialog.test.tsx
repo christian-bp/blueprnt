@@ -241,11 +241,13 @@ describe("CriterionComplianceDialog", () => {
     fireEvent.click(approveBox())
     fireEvent.click(saveButton())
     await waitFor(() => {
-      expect(setApproval).toHaveBeenCalledWith({
-        orgId: "org1",
-        criterionId: "c2",
-        approved: true,
-      })
+      expect(setApproval).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgId: "org1",
+          criterionId: "c2",
+          approved: true,
+        })
+      )
     })
     expect(save).toHaveBeenCalledTimes(1)
     expect(setApproval).toHaveBeenCalledTimes(1)
@@ -270,7 +272,13 @@ describe("CriterionComplianceDialog", () => {
     await waitFor(() => {
       expect(save).toHaveBeenCalledTimes(1)
     })
-    expect(setApproval.mock.calls.map(([args]) => args)).toEqual([
+    expect(
+      setApproval.mock.calls.map(([args]) => ({
+        orgId: args.orgId,
+        criterionId: args.criterionId,
+        approved: args.approved,
+      }))
+    ).toEqual([
       { orgId: "org1", criterionId: "c3", approved: false },
       { orgId: "org1", criterionId: "c3", approved: true },
     ])
@@ -278,6 +286,18 @@ describe("CriterionComplianceDialog", () => {
     const [write] = save.mock.invocationCallOrder
     expect(unapprove as number).toBeLessThan(write as number)
     expect(write as number).toBeLessThan(reapprove as number)
+
+    // One press, one story: all three mutations carry the SAME gesture id, so
+    // the three audit rows they write group into one line in the log instead
+    // of scattering as three unrelated-looking changes.
+    const ids = [
+      ...setApproval.mock.calls.map(([args]) => args.batchId),
+      ...save.mock.calls.map(([args]) => args.batchId),
+    ]
+    expect(ids).toHaveLength(3)
+    expect(new Set(ids).size).toBe(1)
+    expect(typeof ids[0]).toBe("string")
+    expect(ids[0]).not.toBe("")
   })
 
   // Re-checking the box mid-edit locks the edited text again, which is the
@@ -320,11 +340,13 @@ describe("CriterionComplianceDialog", () => {
     fireEvent.click(approveBox())
     fireEvent.click(saveButton())
     await waitFor(() => {
-      expect(setApproval).toHaveBeenCalledWith({
-        orgId: "org1",
-        criterionId: "c3",
-        approved: false,
-      })
+      expect(setApproval).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgId: "org1",
+          criterionId: "c3",
+          approved: false,
+        })
+      )
     })
     // Nothing else: the text was never touched, so there is nothing to write
     // and no second approval call to make.

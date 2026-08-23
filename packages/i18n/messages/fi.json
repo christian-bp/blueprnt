@@ -591,6 +591,10 @@
     },
     "auditLog": {
       "empty": "Toimintaa ei ole vielä kirjattu.",
+      "story": {
+        "count": "{count} muutosta",
+        "toggle": "Näytä tämän toiminnon muutokset"
+      },
       "notAuthorized": "Vain organisaation järjestelmänvalvojat voivat nähdä tapahtumalokin.",
       "categories": {
         "all": "Kaikki kategoriat",

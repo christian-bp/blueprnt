@@ -38,6 +38,7 @@ import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "@/lib/toast"
+import { newGestureId } from "@/lib/gesture"
 import { z } from "zod"
 import { DatePicker } from "@/components/date-picker"
 import { useOrganization } from "@/components/org-context"
@@ -170,10 +171,14 @@ export function AddPersonDialog() {
 
   async function onSubmit(values: AddPersonValues) {
     setFailure(false)
+    // Creating the person and classifying them are one form submit, so the
+    // two audit rows they write read as one story.
+    const batchId = newGestureId()
     let created: Awaited<ReturnType<typeof createPerson>>
     try {
       created = await createPerson({
         orgId,
+        batchId,
         displayName: values.displayName,
         gender: values.gender,
         ...(values.externalRef !== ""
@@ -204,6 +209,7 @@ export function AddPersonDialog() {
       try {
         await assignPerson({
           orgId,
+          batchId,
           personId: created.personId,
           roleId: values.roleId as Id<"roles">,
           seniority: values.seniority,

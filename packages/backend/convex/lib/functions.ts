@@ -13,7 +13,7 @@ import {
   type QueryCtx,
 } from "../_generated/server"
 import { logLevelShifts } from "../assessment/compute"
-import { logAudit } from "./audit"
+import { logAudit, normalizeBatchId } from "./audit"
 import type { AuditPayloads, LevelCause } from "./auditPayloads"
 import { appError, ERROR_CODES } from "./errors"
 
@@ -42,15 +42,22 @@ export interface AuditWriter {
 }
 
 // Builds the ctx-bound audit writer for an org-scoped mutation ctx.
+//
+// batchId is passed explicitly rather than read off ctx, because the writer is
+// built INSIDE the wrapper's input step, before the custom ctx that carries the
+// id exists. Every other audit writer takes the handler's own ctx and inherits
+// the id from it.
 function makeAuditWriter(
   ctx: MutationCtx,
   orgId: string,
-  authUserId: string
+  authUserId: string,
+  batchId: string | undefined
 ): AuditWriter {
   return {
-    log: (entry) => logAudit(ctx, { orgId, actorId: authUserId, ...entry }),
+    log: (entry) =>
+      logAudit(ctx, { orgId, actorId: authUserId, batchId, ...entry }),
     levelShifts: (entry) =>
-      logLevelShifts(ctx, { orgId, actorId: authUserId, ...entry }),
+      logLevelShifts(ctx, { orgId, actorId: authUserId, batchId, ...entry }),
   }
 }
 
@@ -115,6 +122,18 @@ async function resolveOrgContext(
 
 const orgArgs = { orgId: v.string() }
 
+// Writes additionally accept the caller's gesture correlation id. One user
+// gesture that spans several mutations (the compliance dialog's sequence, a
+// chunked bulk confirm) mints ONE id on the client and passes it to every
+// mutation in the gesture; the id lands on ctx here, and logAudit stamps every
+// row the transaction writes. It is declared once on the wrapper rather than
+// on each mutation's args, so an audited mutation joins a gesture without
+// changing its own signature, and no writer can forget to thread it.
+//
+// Never server-generated: a server id could only ever span ONE transaction,
+// which is the opposite of what a gesture id is for.
+const orgMutationArgs = { ...orgArgs, batchId: v.optional(v.string()) }
+
 // Org-scoped read: injects ctx.orgId / ctx.role / ctx.authUserId.
 export const orgQuery = customQuery(query, {
   args: orgArgs,
@@ -126,11 +145,21 @@ export const orgQuery = customQuery(query, {
 
 // Org-scoped write (any member role).
 export const orgMutation = customMutation(mutation, {
-  args: orgArgs,
-  input: async (ctx, { orgId }) => {
+  args: orgMutationArgs,
+  input: async (ctx, { orgId, batchId }) => {
     const org = await resolveOrgContext(ctx, orgId)
-    const audit = makeAuditWriter(ctx, org.orgId, org.authUserId)
-    return { ctx: { ...org, audit }, args: {} }
+    // Bound and normalize once, at the edge: a malformed id is dropped, never
+    // thrown on, because it can only cost grouping and must not fail a write.
+    const gestureId = normalizeBatchId(batchId)
+    const audit = makeAuditWriter(ctx, org.orgId, org.authUserId, gestureId)
+    return {
+      ctx: {
+        ...org,
+        audit,
+        ...(gestureId !== undefined ? { batchId: gestureId } : {}),
+      },
+      args: {},
+    }
   },
 })
 
@@ -142,12 +171,20 @@ export const orgMutation = customMutation(mutation, {
 // dashboard suite because the backend suite runs on edge-runtime and the
 // guard scans this source from disk.
 export const adminMutation = customMutation(mutation, {
-  args: orgArgs,
-  input: async (ctx, { orgId }) => {
+  args: orgMutationArgs,
+  input: async (ctx, { orgId, batchId }) => {
     const org = await resolveOrgContext(ctx, orgId)
     if (org.role !== "admin") throw appError(ERROR_CODES.adminRequired)
-    const audit = makeAuditWriter(ctx, org.orgId, org.authUserId)
-    return { ctx: { ...org, audit }, args: {} }
+    const gestureId = normalizeBatchId(batchId)
+    const audit = makeAuditWriter(ctx, org.orgId, org.authUserId, gestureId)
+    return {
+      ctx: {
+        ...org,
+        audit,
+        ...(gestureId !== undefined ? { batchId: gestureId } : {}),
+      },
+      args: {},
+    }
   },
 })
 

@@ -8,11 +8,14 @@ import {
   type ZoneProfileRule,
   computeResults,
 } from "@workspace/core"
-import type { GenericMutationCtx } from "convex/server"
-import type { DataModel } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
 import { LIBRARY_DIMENSION } from "../evaluationModel/criteriaLibrary"
-import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
+import {
+  AUDIT_EVENTS,
+  type AuditMutationCtx,
+  buildChanges,
+  logAudit,
+} from "../lib/audit"
 import type { LevelCause } from "../lib/auditPayloads"
 
 export interface DerivedResults {
@@ -102,13 +105,15 @@ export async function deriveResults(
 // `cause` records the triggering domain event (and the role/criterion/entity it
 // touched) so a level.shift can always be traced back to what moved it.
 export async function logLevelShifts(
-  ctx: GenericMutationCtx<DataModel>,
+  ctx: AuditMutationCtx,
   args: {
     orgId: string
     actorId: string
     before: RoleResult[]
     after: RoleResult[]
     cause: LevelCause
+    // Only the ctx-bound writer passes this; see logAudit's own note.
+    batchId?: string
   }
 ) {
   const beforeByRole = new Map(args.before.map((r) => [r.roleId, r]))
@@ -135,6 +140,7 @@ export async function logLevelShifts(
       orgId: args.orgId,
       type: AUDIT_EVENTS.levelShift,
       actorId: args.actorId,
+      batchId: args.batchId,
       payload: {
         roleId,
         cause: args.cause,

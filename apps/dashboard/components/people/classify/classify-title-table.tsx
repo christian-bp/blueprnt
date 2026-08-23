@@ -51,6 +51,7 @@ import { useMutation } from "convex/react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { Fragment, useMemo, useRef, useState } from "react"
 import { useTranslations } from "next-intl"
+import { newGestureId } from "@/lib/gesture"
 import { toast } from "@/lib/toast"
 import { SPRING } from "@/lib/motion"
 import { FrameTable } from "@/components/frame-table"
@@ -611,12 +612,20 @@ export function ClassifyTitleTable({
     groups: ReadonlyArray<readonly BulkAssignment[]>,
     onChunkDone?: (count: number) => void
   ) {
+    // The gesture id is minted ONCE, outside the loop, and therefore spans
+    // every chunk: chunking is a transaction-size decision, not something the
+    // reader did, so a confirm of 400 people has to read as one story and not
+    // as however many transactions it happened to take. This is the strongest
+    // case for batching in the app, since one press can otherwise scatter
+    // hundreds of assignment.set rows down the log.
+    const batchId = newGestureId()
     for (const chunk of packAssignmentChunks(
       groups,
       MAX_ASSIGNMENTS_PER_MUTATION
     )) {
       await assignPeople({
         orgId,
+        batchId,
         assignments: chunk as Parameters<typeof assignPeople>[0]["assignments"],
         senioritySource: "confirmed",
       })

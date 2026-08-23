@@ -750,3 +750,107 @@ describe("accounts.audit.searchAuditLog", () => {
     ).rejects.toThrow(/errors.notAuthenticated/)
   })
 })
+
+// One gesture, one story (lib/audit.ts, lib/functions.ts).
+//
+// A batchId is passed by the CLIENT, once per gesture, to every mutation the
+// gesture fires. The mutation wrappers put it on ctx and logAudit stamps every
+// row the transaction writes, without any individual mutation declaring it.
+describe("accounts.audit batchId correlation", () => {
+  it("stamps every row a batched gesture writes, and projects it to the log", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const batchId = "11111111-2222-3333-4444-555555555555"
+
+    // Two mutations, one gesture id, exactly as a client sequence sends it.
+    await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      batchId,
+      title: "Batched One",
+      function: "engineering",
+      team: "Platform",
+      trackKey: "IC",
+    })
+    await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      batchId,
+      title: "Batched Two",
+      function: "engineering",
+      team: "Platform",
+      trackKey: "IC",
+    })
+
+    const page = await asAdmin.query(api.accounts.audit.getAuditLogPage, {
+      orgId,
+      page: 0,
+    })
+    const batched = page.rows.filter((row) => row.batchId === batchId)
+    expect(batched).toHaveLength(2)
+  })
+
+  it("leaves an unbatched act with no gesture id at all", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    await createRole(t, adminId, orgId, "Lone Role")
+    const page = await t
+      .withIdentity({ subject: adminId })
+      .query(api.accounts.audit.getAuditLogPage, { orgId, page: 0 })
+    expect(page.rows.every((row) => row.batchId === undefined)).toBe(true)
+  })
+
+  // A malformed id can only ever cost grouping, so it is dropped rather than
+  // thrown on: the write it decorates must never fail because of it.
+  it("drops a malformed gesture id instead of failing the write", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      batchId: "x".repeat(200),
+      title: "Overlong Id",
+      function: "engineering",
+      team: "Platform",
+      trackKey: "IC",
+    })
+    await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      batchId: "   ",
+      title: "Blank Id",
+      function: "engineering",
+      team: "Platform",
+      trackKey: "IC",
+    })
+    const page = await asAdmin.query(api.accounts.audit.getAuditLogPage, {
+      orgId,
+      page: 0,
+    })
+    expect(page.rows).toHaveLength(2)
+    expect(page.rows.every((row) => row.batchId === undefined)).toBe(true)
+  })
+
+  // The aggregates count ROWS. Grouping is a render fold over a fetched page,
+  // so a three-row gesture pages as three rows and jump-to-page stays exact.
+  it("keeps the pager's totals row-based, never story-based", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const batchId = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+    for (const title of ["A", "B", "C"]) {
+      await asAdmin.mutation(api.assessment.roles.createRole, {
+        orgId,
+        batchId,
+        title,
+        function: "engineering",
+        team: "Platform",
+        trackKey: "IC",
+      })
+    }
+    const page = await asAdmin.query(api.accounts.audit.getAuditLogPage, {
+      orgId,
+      page: 0,
+    })
+    expect(page.total).toBe(3)
+    expect(page.rows).toHaveLength(3)
+  })
+})

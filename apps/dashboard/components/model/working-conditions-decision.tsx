@@ -33,6 +33,7 @@ import { useForm } from "react-hook-form"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SubmitButton } from "@/components/submit-button"
 import { toast } from "@/lib/toast"
+import { newGestureId } from "@/lib/gesture"
 import {
   makeWorkingConditionsSchema,
   type WorkingConditionsValues,
@@ -126,6 +127,9 @@ function DecisionForm({
   const removesCriterion = chosen === "testedNotMaterial" && criterion !== null
 
   async function onValid(values: WorkingConditionsValues) {
+    // Removing the criterion and recording the decision are one answer to one
+    // question, so the two rows read as one story.
+    const batchId = newGestureId()
     try {
       // Removal FIRST, then the decision. The backend refuses
       // testedNotMaterial while a working-conditions criterion is active, so
@@ -134,9 +138,13 @@ function DecisionForm({
       // question again, or the material-with-an-empty-slot state), with an
       // error toast, rather than in one no surface can explain.
       if (removesCriterion && criterion !== null) {
-        await deactivate({ orgId, criterionId: criterion.criterionId })
+        await deactivate({
+          orgId,
+          batchId,
+          criterionId: criterion.criterionId,
+        })
       }
-      await save({ orgId, ...values })
+      await save({ orgId, batchId, ...values })
       toast.success(tToast("workingConditionsDecided"))
       onDone()
     } catch (error) {

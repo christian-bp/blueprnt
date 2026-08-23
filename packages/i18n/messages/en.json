@@ -591,6 +591,10 @@
     },
     "auditLog": {
       "empty": "No activity recorded yet.",
+      "story": {
+        "count": "{count} changes",
+        "toggle": "Show the changes in this action"
+      },
       "notAuthorized": "Only organization admins can view the audit log.",
       "categories": {
         "all": "All categories",

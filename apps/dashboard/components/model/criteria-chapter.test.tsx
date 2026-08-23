@@ -801,10 +801,12 @@ describe("the Kriterier chapter", () => {
 
     fireEvent.click(confirm)
     await waitFor(() => {
-      expect(deactivateCriterion).toHaveBeenCalledWith({
-        orgId: "org-1",
-        criterionId: "c4",
-      })
+      expect(deactivateCriterion).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgId: "org-1",
+          criterionId: "c4",
+        })
+      )
     })
     // Nothing completes silently.
     await waitFor(() => {
@@ -936,11 +938,13 @@ describe("the Kriterier chapter", () => {
       })
       fireEvent.click(save())
       await waitFor(() => {
-        expect(setWorkingConditionsDecision).toHaveBeenCalledWith({
-          orgId: "org-1",
-          status: "testedNotMaterial",
-          motivation: "No role carries a lasting special condition.",
-        })
+        expect(setWorkingConditionsDecision).toHaveBeenCalledWith(
+          expect.objectContaining({
+            orgId: "org-1",
+            status: "testedNotMaterial",
+            motivation: "No role carries a lasting special condition.",
+          })
+        )
       })
       // Nothing completes silently, and the dialog gets out of the way of the
       // column it just settled.
@@ -983,11 +987,13 @@ describe("the Kriterier chapter", () => {
         })
       )
       await waitFor(() => {
-        expect(setWorkingConditionsDecision).toHaveBeenCalledWith({
-          orgId: "org-1",
-          status: "active",
-          motivation: "Standby duty is a recurring requirement.",
-        })
+        expect(setWorkingConditionsDecision).toHaveBeenCalledWith(
+          expect.objectContaining({
+            orgId: "org-1",
+            status: "active",
+            motivation: "Standby duty is a recurring requirement.",
+          })
+        )
       })
     })
 
@@ -1036,16 +1042,20 @@ describe("the Kriterier chapter", () => {
       fireEvent.click(save())
 
       await waitFor(() => {
-        expect(setWorkingConditionsDecision).toHaveBeenCalledWith({
+        expect(setWorkingConditionsDecision).toHaveBeenCalledWith(
+          expect.objectContaining({
+            orgId: "org-1",
+            status: "testedNotMaterial",
+            motivation: "Retested this year and found it not material.",
+          })
+        )
+      })
+      expect(deactivateCriterion).toHaveBeenCalledWith(
+        expect.objectContaining({
           orgId: "org-1",
-          status: "testedNotMaterial",
-          motivation: "Retested this year and found it not material.",
+          criterionId: "c9",
         })
-      })
-      expect(deactivateCriterion).toHaveBeenCalledWith({
-        orgId: "org-1",
-        criterionId: "c9",
-      })
+      )
       // Removal FIRST. The backend refuses the not-material decision while a
       // working-conditions criterion is active, so the other order can only
       // fail.
@@ -1054,6 +1064,13 @@ describe("the Kriterier chapter", () => {
       ).toBeLessThan(
         setWorkingConditionsDecision.mock.invocationCallOrder[0] as number
       )
+      // One answer to one question, so the two audit rows it writes share a
+      // gesture id and read as one story in the log.
+      const removalId = deactivateCriterion.mock.calls[0]?.[0]?.batchId
+      const decisionId =
+        setWorkingConditionsDecision.mock.calls[0]?.[0]?.batchId
+      expect(typeof removalId).toBe("string")
+      expect(removalId).toBe(decisionId)
     })
 
     // With nothing selected there is nothing to offer to remove, so the same
@@ -1089,11 +1106,13 @@ describe("the Kriterier chapter", () => {
       })
       fireEvent.click(save())
       await waitFor(() => {
-        expect(setWorkingConditionsDecision).toHaveBeenCalledWith({
-          orgId: "org-1",
-          status: "testedNotMaterial",
-          motivation: "Retested: not material.",
-        })
+        expect(setWorkingConditionsDecision).toHaveBeenCalledWith(
+          expect.objectContaining({
+            orgId: "org-1",
+            status: "testedNotMaterial",
+            motivation: "Retested: not material.",
+          })
+        )
       })
       expect(deactivateCriterion).not.toHaveBeenCalled()
     })
@@ -1269,10 +1288,12 @@ describe("the Kriterier chapter", () => {
         await screen.findByRole("button", { name: editor.removeConfirm })
       )
       await waitFor(() => {
-        expect(deactivateCriterion).toHaveBeenCalledWith({
-          orgId: "org-1",
-          criterionId: "c9",
-        })
+        expect(deactivateCriterion).toHaveBeenCalledWith(
+          expect.objectContaining({
+            orgId: "org-1",
+            criterionId: "c9",
+          })
+        )
       })
 
       // The model a live query would serve next, handed to the same tree:

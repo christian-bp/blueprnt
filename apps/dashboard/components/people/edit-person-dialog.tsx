@@ -37,6 +37,7 @@ import { useTranslations } from "next-intl"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "@/lib/toast"
+import { newGestureId } from "@/lib/gesture"
 import { z } from "zod"
 import { DatePicker } from "@/components/date-picker"
 import { useOrganization } from "@/components/org-context"
@@ -193,9 +194,13 @@ export function EditPersonDialog({
 
   async function onSubmit(values: EditPersonValues) {
     setFailure(false)
+    // The person's own fields and their classification can both change in one
+    // submit, which is two mutations and one story.
+    const batchId = newGestureId()
     try {
       await updatePerson({
         orgId,
+        batchId,
         personId: person.personId,
         displayName: values.displayName,
         gender: values.gender,
@@ -224,6 +229,7 @@ export function EditPersonDialog({
       try {
         await assignPerson({
           orgId,
+          batchId,
           personId: person.personId,
           roleId: values.roleId as Id<"roles">,
           seniority: values.seniority,

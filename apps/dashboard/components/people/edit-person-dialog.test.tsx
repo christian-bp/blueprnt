@@ -125,16 +125,18 @@ describe("EditPersonDialog", () => {
     fireEvent.click(saveButton())
 
     await waitFor(() => {
-      expect(updatePersonMock).toHaveBeenCalledWith({
-        orgId: "org-1",
-        personId: "p1",
-        displayName: "Anna Svensson",
-        gender: "Kvinna",
-        externalRef: "1001",
-        department: "",
-        employmentStartDate: "2024-03-01",
-        ftePercent: null,
-      })
+      expect(updatePersonMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgId: "org-1",
+          personId: "p1",
+          displayName: "Anna Svensson",
+          gender: "Kvinna",
+          externalRef: "1001",
+          department: "",
+          employmentStartDate: "2024-03-01",
+          ftePercent: null,
+        })
+      )
     })
     expect(toast.success).toHaveBeenCalledWith(
       messages.dashboard.toast.personUpdated

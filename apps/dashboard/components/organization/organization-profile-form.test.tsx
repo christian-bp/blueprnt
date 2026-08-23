@@ -18,8 +18,10 @@ vi.mock("@/lib/toast", () => ({
   toast: { success: toastSuccess, error: toastError },
 }))
 
-const updateName = vi.fn(async () => null)
-const updateSettings = vi.fn(async () => null)
+// Typed by their argument shape so tests can read the gesture id back off a
+// recorded call.
+const updateName = vi.fn(async (_args: { batchId?: string }) => null)
+const updateSettings = vi.fn(async (_args: { batchId?: string }) => null)
 
 // Mock the generated api to PLAIN STRING refs: a real FunctionReference is a
 // proxy that throws on String()/coercion, so route useMutation by identity.
@@ -44,6 +46,7 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "o1", name: "Acme AB", role: "admin" }),
 }))
 
+import { pickSelectOption } from "@/test/select"
 import { OrganizationProfileForm } from "./organization-profile-form"
 
 const t = en.dashboard.organization.general
@@ -86,13 +89,38 @@ describe("OrganizationProfileForm", () => {
     )
     fireEvent.click(save)
     await waitFor(() =>
-      expect(updateName).toHaveBeenCalledWith({
-        orgId: "o1",
-        name: "Renamed AB",
-      })
+      expect(updateName).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgId: "o1",
+          name: "Renamed AB",
+        })
+      )
     )
     // Name-only change must not fire a settings write.
     expect(updateSettings).not.toHaveBeenCalled()
+  })
+
+  // One Save can change the name AND the settings, which is two mutations and
+  // two audit rows. They share a gesture id so the log reads them as one story
+  // instead of as two unrelated edits a second apart.
+  it("gives one save's two writes a single gesture id", async () => {
+    renderForm()
+    const nameInput = screen.getByLabelText(t.nameLabel)
+    fireEvent.change(nameInput, { target: { value: "Renamed AB" } })
+    fireEvent.blur(nameInput)
+    await pickSelectOption(
+      screen.getByRole("combobox", { name: t.countryLabel }),
+      /Norway|Norge/
+    )
+    const save = screen.getByRole("button", { name: t.save })
+    await waitFor(() =>
+      expect((save as HTMLButtonElement).disabled).toBe(false)
+    )
+    fireEvent.click(save)
+    await waitFor(() => expect(updateSettings).toHaveBeenCalled())
+    const nameId = updateName.mock.calls[0]?.[0]?.batchId
+    expect(typeof nameId).toBe("string")
+    expect(updateSettings.mock.calls[0]?.[0]?.batchId).toBe(nameId)
   })
 
   it("fires toast.success(orgSaved) after a successful save", async () => {

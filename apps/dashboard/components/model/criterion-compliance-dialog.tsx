@@ -44,6 +44,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SubmitButton } from "@/components/submit-button"
 import { FORM_DIALOG_CONTENT } from "@/lib/dialog-style"
+import { newGestureId } from "@/lib/gesture"
 import {
   type CriterionComplianceValues,
   makeCriterionComplianceSchema,
@@ -181,20 +182,31 @@ function CriterionComplianceForm({
   // keeping the log clean.
   async function handleValid(formValues: CriterionComplianceValues) {
     setFailed(false)
+    // One press, up to three mutations: reopen, save, sign off again. They are
+    // one act to the reader, so they share one gesture id and the audit log
+    // shows them as one story instead of three unrelated-looking rows.
+    const batchId = newGestureId()
     try {
       if (wasApproved && (!approved || isDirty)) {
         await setApproval({
           orgId,
+          batchId,
           criterionId: target.criterionId,
           approved: false,
         })
       }
       if (isDirty) {
-        await save({ orgId, criterionId: target.criterionId, ...formValues })
+        await save({
+          orgId,
+          batchId,
+          criterionId: target.criterionId,
+          ...formValues,
+        })
       }
       if (approved && (!wasApproved || isDirty)) {
         await setApproval({
           orgId,
+          batchId,
           criterionId: target.criterionId,
           approved: true,
         })

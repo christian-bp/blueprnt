@@ -1,7 +1,8 @@
 "use client"
 
 import { Medallion } from "@/components/medallion"
-import { Audit02Icon } from "@hugeicons/core-free-icons"
+import { ArrowDown01Icon, Audit02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -37,11 +38,13 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 import { AUDIT_LOG_PAGE_SIZE } from "@workspace/constants"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
-import { type ReactNode, useEffect, useRef, useState } from "react"
+import { Fragment, type ReactNode, useEffect, useRef, useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { TableSearchField } from "@/components/table-search-field"
+import { auditStories } from "@/lib/audit-stories"
 import { FrameTable, FrameTableFooter } from "@/components/frame-table"
 import { TablePagination } from "@/components/table-pagination"
 import {
@@ -103,6 +106,9 @@ type AuditRow = {
   actorName: string
   type: string
   category?: string
+  // Set only on a row written as part of a multi-mutation gesture; the log
+  // folds consecutive rows sharing one into a single story (lib/audit-stories).
+  batchId?: string
   payload: unknown
   names: Record<string, string>
 }
@@ -142,6 +148,12 @@ export function OrgAuditLogSection() {
 
   // Row whose detail sheet is open, or null when the sheet is closed.
   const [selectedRow, setSelectedRow] = useState<AuditRow | null>(null)
+  // Which stories are open, by their lead row's id. Kept as a set rather than
+  // a single id because a page can hold several gestures and closing one to
+  // read another would lose the reader's place.
+  const [openStories, setOpenStories] = useState<ReadonlySet<string>>(
+    () => new Set()
+  )
 
   const isSearching = debouncedSearch.trim().length > 0
   const categoryArg = selectedCategory === "all" ? undefined : selectedCategory
@@ -225,6 +237,12 @@ export function OrgAuditLogSection() {
     page,
     pageSize: PAGE_SIZE,
   })
+
+  // Grouping is a render fold over the page already fetched, never a query,
+  // and it is OFF while searching: search shows the rows that MATCHED, and
+  // folding a hit into a story would either hide it inside a collapsed summary
+  // or imply that its unmatched siblings matched too.
+  const stories = auditStories(view.pageRows, { grouped: !isSearching })
 
   // Translate an event type to its label, falling back to the raw type when no
   // key exists (a future event added before its string). t.has guards the
@@ -497,45 +515,58 @@ export function OrgAuditLogSection() {
           <Table className="table-fixed">
             {auditTableHeader}
             <TableBody>
-              {view.pageRows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={t("detail.viewDetails")}
-                  className="cursor-pointer hover:bg-muted/50"
-                  onClick={() => setSelectedRow(row)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault()
-                      setSelectedRow(row)
-                    }
-                  }}
-                >
-                  <TableCell className="truncate text-muted-foreground">
-                    {format.dateTime(new Date(row.at), {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })}
-                  </TableCell>
-                  <TableCell className="truncate font-medium">
-                    {actorLabel(row.actorId, row.actorName)}
-                  </TableCell>
-                  <TableCell>
-                    {row.category ? (
-                      <Badge variant="secondary">
-                        {categoryLabel(row.category)}
-                      </Badge>
-                    ) : null}
-                  </TableCell>
-                  <TableCell className="truncate">
-                    {actionLabel(row.type)}
-                  </TableCell>
-                  <TableCell className="truncate text-muted-foreground">
-                    {detailText(row.type, row.payload, row.names)}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {stories.map((story) => {
+                // A story of one is an ordinary row and renders exactly as it
+                // always did. A story of several renders its summary row,
+                // which opens the gesture's own rows instead of the detail
+                // sheet; each of those rows still opens the sheet.
+                const isStory = story.rows.length > 1
+                const open = openStories.has(story.key)
+                return (
+                  <Fragment key={story.key}>
+                    <AuditLogRow
+                      row={story.lead}
+                      t={t}
+                      format={format}
+                      actorLabel={actorLabel}
+                      actionLabel={actionLabel}
+                      categoryLabel={categoryLabel}
+                      detailText={detailText}
+                      storyCount={isStory ? story.rows.length : null}
+                      expanded={isStory ? open : null}
+                      onActivate={() => {
+                        if (!isStory) {
+                          setSelectedRow(story.lead)
+                          return
+                        }
+                        setOpenStories((current) => {
+                          const next = new Set(current)
+                          if (!next.delete(story.key)) next.add(story.key)
+                          return next
+                        })
+                      }}
+                    />
+                    {isStory && open
+                      ? story.rows.map((row) => (
+                          <AuditLogRow
+                            key={row.id}
+                            row={row}
+                            t={t}
+                            format={format}
+                            actorLabel={actorLabel}
+                            actionLabel={actionLabel}
+                            categoryLabel={categoryLabel}
+                            detailText={detailText}
+                            storyCount={null}
+                            expanded={null}
+                            nested
+                            onActivate={() => setSelectedRow(row)}
+                          />
+                        ))
+                      : null}
+                  </Fragment>
+                )
+              })}
             </TableBody>
           </Table>
         )}
@@ -566,6 +597,108 @@ export function OrgAuditLogSection() {
         </SheetContent>
       </Sheet>
     </section>
+  )
+}
+
+// One line of the log. The same component draws an ordinary row, a story's
+// summary row, and a story's opened member rows, so the three can never drift
+// into different anatomies (the brief's requirement that sub-rows keep the
+// existing row shape).
+//
+// `storyCount` non-null makes it a summary (count chip + chevron); `expanded`
+// non-null makes it the toggle rather than a link into the detail sheet.
+function AuditLogRow({
+  row,
+  t,
+  format,
+  actorLabel,
+  actionLabel,
+  categoryLabel,
+  detailText,
+  storyCount,
+  expanded,
+  nested,
+  onActivate,
+}: {
+  row: AuditRow
+  t: ReturnType<typeof useTranslations<"dashboard.auditLog">>
+  format: ReturnType<typeof useFormatter>
+  actorLabel: (actorId: string, actorName: string) => string
+  actionLabel: (type: string) => string
+  categoryLabel: (category: string) => string
+  detailText: (
+    type: string,
+    payload: unknown,
+    names: Record<string, string>
+  ) => ReactNode
+  storyCount: number | null
+  expanded: boolean | null
+  nested?: boolean
+  onActivate: () => void
+}) {
+  const isSummary = storyCount !== null
+  return (
+    <TableRow
+      role="button"
+      tabIndex={0}
+      aria-label={isSummary ? t("story.toggle") : t("detail.viewDetails")}
+      {...(expanded !== null ? { "aria-expanded": expanded } : {})}
+      className={cn(
+        "cursor-pointer hover:bg-muted/50",
+        nested === true && "bg-muted/30"
+      )}
+      onClick={onActivate}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault()
+          onActivate()
+        }
+      }}
+    >
+      <TableCell className="truncate text-muted-foreground">
+        {format.dateTime(new Date(row.at), {
+          dateStyle: "medium",
+          timeStyle: "short",
+        })}
+      </TableCell>
+      <TableCell className="truncate font-medium">
+        {actorLabel(row.actorId, row.actorName)}
+      </TableCell>
+      <TableCell>
+        {row.category ? (
+          <Badge variant="secondary">{categoryLabel(row.category)}</Badge>
+        ) : null}
+      </TableCell>
+      <TableCell>
+        <span className="flex items-center gap-1.5">
+          {/* The chevron's box is on EVERY row, empty where there is no
+              chevron, so an ordinary row's action text starts at the same x as
+              a story's and the column does not jog as stories open and close. */}
+          <span className="flex size-4 shrink-0 items-center justify-center">
+            {isSummary ? (
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                strokeWidth={2}
+                aria-hidden="true"
+                className={cn(
+                  "size-3.5 transition-transform motion-reduce:transition-none",
+                  expanded === true && "rotate-180"
+                )}
+              />
+            ) : null}
+          </span>
+          <span className="truncate">{actionLabel(row.type)}</span>
+          {isSummary ? (
+            <Badge variant="secondary" className="shrink-0">
+              {t("story.count", { count: storyCount })}
+            </Badge>
+          ) : null}
+        </span>
+      </TableCell>
+      <TableCell className="truncate text-muted-foreground">
+        {detailText(row.type, row.payload, row.names)}
+      </TableCell>
+    </TableRow>
   )
 }
 

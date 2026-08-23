@@ -17,6 +17,7 @@ import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "@/lib/toast"
+import { newGestureId } from "@/lib/gesture"
 import { CountrySelect } from "@/components/country-select"
 import { CurrencySelect } from "@/components/currency-select"
 import { HelpMorphButton } from "@/components/help-morph-button"
@@ -75,9 +76,12 @@ export function OrganizationProfileForm(props: {
 
   async function onSubmit(values: OrganizationProfileValues) {
     setError(false)
+    // One Save can change the name and the settings, which are two mutations
+    // and therefore two audit rows; one gesture id keeps them one story.
+    const batchId = newGestureId()
     try {
       if (values.name !== name) {
-        await updateName({ orgId, name: values.name })
+        await updateName({ orgId, batchId, name: values.name })
       }
       const settingsChanged =
         (values.country ?? "") !== (props.initial.country ?? "") ||
@@ -87,6 +91,7 @@ export function OrganizationProfileForm(props: {
       if (settingsChanged) {
         await updateSettings({
           orgId,
+          batchId,
           country: values.country || undefined,
           currency: values.currency || undefined,
           language: values.language || undefined,

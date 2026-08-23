@@ -591,6 +591,10 @@
     },
     "auditLog": {
       "empty": "Ingen aktivitet er registrert ennå.",
+      "story": {
+        "count": "{count} endringer",
+        "toggle": "Vis endringene i denne handlingen"
+      },
       "notAuthorized": "Bare organisasjonsadministratorer kan se hendelsesloggen.",
       "categories": {
         "all": "Alle kategorier",

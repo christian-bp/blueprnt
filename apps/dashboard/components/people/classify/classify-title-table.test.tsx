@@ -897,5 +897,45 @@ describe("ClassifyTitleTable", () => {
     expect(allIds.slice().sort()).toEqual(
       BIG_GROUP.people.map((p) => p.personId).sort()
     )
+    // The gesture id spans the CHUNKS. Chunking is a transaction-size decision,
+    // not something the reader did, so one confirm has to read as one story in
+    // the audit log however many transactions it happened to take.
+    const batchIds = (
+      assignMock.mock.calls as Array<[{ batchId?: string }]>
+    ).map(([payload]) => payload.batchId)
+    expect(batchIds).toHaveLength(2)
+    expect(typeof batchIds[0]).toBe("string")
+    expect(new Set(batchIds).size).toBe(1)
+  })
+
+  // Two separate confirms are two gestures, so they must NOT share an id: one
+  // id per component would weld unrelated acts into one story in the log.
+  it("gives each confirm its own gesture id", async () => {
+    const second: ClassifyTitleGroup = {
+      ...HIGH_GROUP,
+      title: "Support Engineer",
+      people: HIGH_GROUP.people.map((person) => ({
+        ...person,
+        personId: `${person.personId}-b`,
+      })),
+    }
+    renderTable([HIGH_GROUP, second])
+    for (const toggle of screen.getAllByRole("button", {
+      name: m.expandLabel,
+    })) {
+      fireEvent.click(toggle)
+    }
+    const confirms = await screen.findAllByRole("button", {
+      name: m.assignCta,
+    })
+    fireEvent.click(confirms[0] as HTMLElement)
+    await waitFor(() => expect(assignMock).toHaveBeenCalledTimes(1))
+    fireEvent.click(confirms[1] as HTMLElement)
+    await waitFor(() => expect(assignMock).toHaveBeenCalledTimes(2))
+    const ids = (assignMock.mock.calls as Array<[{ batchId?: string }]>).map(
+      ([payload]) => payload.batchId
+    )
+    expect(typeof ids[0]).toBe("string")
+    expect(ids[0]).not.toBe(ids[1])
   })
 })
