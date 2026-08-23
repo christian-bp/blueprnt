@@ -131,6 +131,35 @@ describe("InnerSidebar", () => {
     )
     expect(screen.getByRole("button", { name: "New" })).toBeTruthy()
   })
+
+  it("pins the footer slot under the scrolling content, with no box styles of its own", () => {
+    render(
+      <InnerSidebar open label="Guide navigation" footer={<p>stats</p>}>
+        <p>tree</p>
+      </InnerSidebar>
+    )
+    const inner = innerBox()
+    // [scroll content, footer]: the footer is the column's last child, so it
+    // stays pinned while the content above it scrolls.
+    expect(inner.children).toHaveLength(2)
+    const footer = inner.lastElementChild as HTMLElement
+    expect(footer.className).toContain("shrink-0")
+    // The border belongs to each block inside (SidebarFooterBlock), never to
+    // the slot: a bordered slot would draw an empty strip whenever every
+    // block has nothing to say.
+    expect(footer.className).not.toMatch(/(^|\s)border/)
+    expect(footer.className).not.toMatch(/(^|\s)p[xytrbl]?-/)
+    expect(screen.getByText("stats")).toBeTruthy()
+  })
+
+  it("keeps the footer inside the inert column while collapsed", () => {
+    render(
+      <InnerSidebar open={false} label="Guide navigation" footer={<p>stats</p>}>
+        <p>tree</p>
+      </InnerSidebar>
+    )
+    expect(screen.getByText("stats").closest("[inert]")).not.toBeNull()
+  })
 })
 
 describe("InnerSidebarHandle", () => {

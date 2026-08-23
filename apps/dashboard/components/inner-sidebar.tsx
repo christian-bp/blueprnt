@@ -59,6 +59,7 @@ export function InnerSidebar({
   width = DEFAULT_WIDTH,
   height = "fill",
   actions,
+  footer,
   className,
   children,
 }: {
@@ -71,6 +72,11 @@ export function InnerSidebar({
   // button). A sidebar without actions renders no header row at all, so its
   // content starts at the top of the column instead of below an empty strip.
   actions?: ReactNode
+  // A bottom block pinned under the scrolling content (the Verve
+  // live-metrics anatomy): Home's to-do glance, the people area's
+  // classification split, a run's key figures. Inside the inert column, so
+  // a collapsed sidebar's footer keeps no tab stops either.
+  footer?: ReactNode
   // Responsive visibility only (e.g. `hidden lg:flex`). Never box styles: the
   // outer element is the animated one, and a border or padding here would
   // survive the collapse (see the class invariant in the tests).
@@ -111,6 +117,10 @@ export function InnerSidebar({
           </div>
         )}
         <div className="min-h-0 flex-1 overflow-y-auto pb-2">{children}</div>
+        {/* No box styles on the slot itself: each block inside brings its own
+            top border (SidebarFooterBlock), so a footer whose every block has
+            nothing to say renders nothing visible. */}
+        {footer !== undefined && <div className="shrink-0">{footer}</div>}
       </div>
       {/* The seam line, riding the clipping box's own right edge so the
           collapse sweeps it across the content; clipped away entirely at
