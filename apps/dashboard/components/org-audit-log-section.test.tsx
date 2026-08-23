@@ -58,15 +58,36 @@ function row(overrides: Partial<Row> & { id: string; type: string }): Row {
   }
 }
 
+// Every fixture below carries a REAL payload whose detail resolves to a
+// distinctive string. An empty payload renders an empty details cell, which
+// makes "the details cell is blank" indistinguishable from "the details cell
+// was suppressed", and a test written against it cannot fail.
+const LEAD_DETAIL = "Scope and impact"
+const LONE_DETAIL = "Data Engineer"
+const SOLO_DETAIL = "Platform Engineer"
+
 // The compliance dialog's three-call gesture, newest-first as the log serves
 // it: the re-approval finished the act, the write is in the middle, the
-// reopening started it.
+// reopening started it. Mixed types, so the lead really is the row that names
+// the act and its detail belongs on the story's face.
 const GESTURE_ROWS = [
-  row({ id: "r1", type: "criterion.approved", gestureId: "g1" }),
+  row({
+    id: "r1",
+    type: "criterion.approved",
+    gestureId: "g1",
+    payload: { criterionId: "c1" },
+    names: { c1: LEAD_DETAIL },
+  }),
   row({ id: "r2", type: "model.updated", gestureId: "g1" }),
   row({ id: "r3", type: "criterion.reopened", gestureId: "g1" }),
 ]
-const LONE_ROW = row({ id: "r4", type: "role.created", category: "role" })
+const LONE_ROW = row({
+  id: "r4",
+  type: "role.created",
+  category: "role",
+  payload: { roleId: "role-9" },
+  names: { "role-9": LONE_DETAIL },
+})
 
 let browseRows: Row[] = []
 let searchRows: Row[] | null = null
@@ -160,6 +181,7 @@ describe("OrgAuditLogSection stories", () => {
     const [only] = dataRows()
     expect(only?.getAttribute("aria-label")).toBe(log.detail.viewDetails)
     expect(only?.textContent).toContain(log.events.roleCreated)
+    expect(only?.textContent).toContain(LONE_DETAIL)
   })
 
   // The aggregates count ROWS, so a three-row story pages as three. The count
@@ -212,11 +234,44 @@ describe("OrgAuditLogSection stories", () => {
     expect(summary.textContent).not.toContain("Analyst")
   })
 
-  // The mixed story keeps its lead's detail: there the lead really is the row
-  // that names the act, so suppressing it would lose the summary.
+  // The mixed story keeps its lead's DETAIL, not merely its action label: the
+  // label is on the row either way, so asserting it cannot tell a kept detail
+  // from a suppressed one. Suppressing detail everywhere has to fail here.
   it("keeps the lead's detail on a story whose rows differ", () => {
     renderLog()
-    expect(storyRow().textContent).toContain(log.events.criterionApproved)
+    expect(storyRow().textContent).toContain(LEAD_DETAIL)
+  })
+
+  // The other half of the same guard: the suppression is scoped to a story
+  // SUMMARY. An ordinary row is a story of one and is uniform by definition,
+  // so a check that forgot to ask whether this is a summary at all would blank
+  // the details column on every row in the log.
+  it("keeps the detail on an ordinary row, which is a uniform story of one", () => {
+    browseRows = [LONE_ROW]
+    renderLog()
+    const [only] = dataRows()
+    expect(only?.textContent).toContain(LONE_DETAIL)
+  })
+
+  // A gesture that ended up writing ONE row is still a story of one: it renders
+  // as a plain row, with its detail, exactly like a row that carries no gesture
+  // id at all. Pinned with an id present, because the ordinary-row test above
+  // uses a row without one and so pins nothing about this branch.
+  it("renders a one-row gesture as a plain row, detail and all", () => {
+    browseRows = [
+      row({
+        id: "solo",
+        type: "role.created",
+        category: "role",
+        gestureId: "22222222-3333-4444-5555-666666666666",
+        payload: { roleId: "role-7" },
+        names: { "role-7": SOLO_DETAIL },
+      }),
+    ]
+    renderLog()
+    const [only] = dataRows()
+    expect(only?.getAttribute("aria-label")).toBe(log.detail.viewDetails)
+    expect(only?.textContent).toContain(SOLO_DETAIL)
   })
 
   // A search shows the rows that MATCHED; folding one into a story would hide

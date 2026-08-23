@@ -753,7 +753,7 @@ describe("accounts.audit.searchAuditLog", () => {
 
 // One gesture, one story (lib/audit.ts, lib/functions.ts).
 //
-// A batchId is passed by the CLIENT, once per gesture, to every mutation the
+// A gestureId is passed by the CLIENT, once per gesture, to every mutation the
 // gesture fires. The mutation wrappers put it on ctx and logAudit stamps every
 // row the transaction writes, without any individual mutation declaring it.
 describe("accounts.audit gestureId correlation", () => {

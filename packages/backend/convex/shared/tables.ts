@@ -57,7 +57,7 @@ void _assertSubjectKindsMatch
 // gesture, the mutation wrappers put it on ctx, and logAudit stamps every row
 // written in that transaction with it. Row METADATA, not payload: it needs no
 // event label and no event declares it. It carries no PII because
-// normalizeGestureId (lib/audit.ts) accepts ONLY a v4-shaped UUID and drops
+// normalizeGestureId (lib/audit.ts) accepts ONLY a UUID-shaped string and drops
 // anything else, so the claim is enforced rather than merely documented.
 // Distinct from the `batchId` some payloads carry: that one is server-minted
 // per starter-seed run and is shown to the reader as a raw trace key. Two

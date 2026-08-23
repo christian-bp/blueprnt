@@ -118,12 +118,18 @@ describe("ComparisonReasonsPanel", () => {
       expect(upsert).toHaveBeenCalledTimes(2)
     })
     const [edit, reopen] = (
-      upsert.mock.calls as Array<[{ gestureId?: string; done: boolean }]>
+      upsert.mock.calls as Array<
+        [{ gestureId?: string; comparisonKey?: string }]
+      >
     ).map(([args]) => args)
     expect(typeof edit?.gestureId).toBe("string")
     expect(edit?.gestureId).toBe(reopen?.gestureId)
-    // The second call really is the reopen, not a repeat of the edit.
-    expect(reopen?.done).toBe(false)
+    // The second call really is the reopen and not a repeat of the edit: the
+    // edit is written against ONE comparison, the reopen against the group as
+    // a whole and therefore without a comparisonKey. (`done: false` cannot
+    // tell them apart; both calls send it.)
+    expect(edit?.comparisonKey).toBe("IT Manager|5")
+    expect(reopen?.comparisonKey).toBeUndefined()
   })
 })
 

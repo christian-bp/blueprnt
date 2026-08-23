@@ -764,13 +764,21 @@ export async function resolveActorName(
   return "unknown"
 }
 
-// The SHAPE a gesture id must have, not merely a length: exactly the v4 UUID
-// lib/gesture.ts mints. The schema comment beneath this field claims it carries
-// no PII, and a length bound alone would leave that claim as documentation while
-// 64 characters of arbitrary caller text landed on every row of a transaction,
-// in an append-only table, permanently (anonymizePersonAuditRows scrubs the
-// payload and searchText, never this). A shape the client can only satisfy by
-// generating a UUID is what makes the claim true in code.
+// The SHAPE a gesture id must have, not merely a length: a UUID, which is what
+// lib/gesture.ts mints. The schema comment beneath this field claims the id
+// carries no PII, and a length bound alone would leave that claim as
+// documentation while 64 characters of arbitrary caller text landed on every
+// row of a transaction, in an append-only table, permanently
+// (anonymizePersonAuditRows scrubs the payload and searchText, never this). A
+// shape a caller can only satisfy by generating a UUID is what makes the claim
+// true in code.
+//
+// UUID-SHAPED rather than strictly v4: the version and variant nibbles are not
+// pinned, and case is accepted. That is deliberate. The check exists to bound
+// what can be STORED, and every UUID shape is equally free of meaning; refusing
+// an uppercase or v7 id from some future client would be a false refusal that
+// silently costs grouping, which is the failure this whole guard is trying to
+// make impossible to introduce quietly.
 const GESTURE_ID_SHAPE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -784,7 +792,7 @@ export type AuditMutationCtx = GenericMutationCtx<DataModel> & {
   gestureId?: string
 }
 
-// Normalizes what a caller sent into what may be stored: a v4-shaped id, or
+// Normalizes what a caller sent into what may be stored: a UUID-shaped id, or
 // nothing at all. Dropped rather than thrown on, because a gesture id only ever
 // affects how the log GROUPS rows: a client bug in an id must never fail the
 // write it decorates, and a row without one simply reads as its own story.
