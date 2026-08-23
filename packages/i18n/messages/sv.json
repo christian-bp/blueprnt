@@ -676,6 +676,7 @@
         "deletedUser": "Borttagen användare",
         "deletedRun": "Borttagen lönekartläggning",
         "itemsChanged": "{count, plural, one {# objekt ändrat} other {# objekt ändrade}}",
+        "weightingConfirmed": "Viktningen bekräftad oförändrad",
         "fieldsChanged": "{count, plural, one {# fält ändrat} other {# fält ändrade}}",
         "complexValue": "Sammansatt värde"
       },

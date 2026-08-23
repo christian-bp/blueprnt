@@ -7,6 +7,7 @@ import {
   initConvexTest,
 } from "../testing.helpers"
 import { AI_MODEL_ID } from "./config"
+import { assertPromptDataSafe } from "./promptGuard"
 
 async function seedRoleOrganization(t: ReturnType<typeof initConvexTest>) {
   const { orgId, userId } = await t.mutation(
@@ -1842,5 +1843,150 @@ describe("getOpenSuggestions kind filter", () => {
       orgId,
     })
     expect(all.length).toBeGreaterThan(1)
+  })
+})
+
+// The weight review's enrichment (masterdokument: the reviewer must know the
+// organization it advises) and its hard invariant. Structural only: these
+// assert the arguments the scheduled action receives and the prompt those
+// arguments assemble into. No model is ever called.
+describe("requestWeightReview enrichment", () => {
+  async function scheduledReviewArgs(t: ReturnType<typeof initConvexTest>) {
+    const scheduled = await t.run(async (ctx) =>
+      ctx.db.system.query("_scheduled_functions").collect()
+    )
+    const job = scheduled.find((row) => row.name.includes("reviewWeights"))
+    expect(job).toBeDefined()
+    return job?.args[0] as Record<string, unknown>
+  }
+
+  it("sends the role landscape aggregated per family, with counts and sample titles", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedRoleOrganization(t)
+    const track = model.tracks[0]
+    if (track === undefined) throw new Error("seed")
+    const familyId = await asAdmin.mutation(
+      api.assessment.families.createRoleFamily,
+      { orgId, name: "Engineering" }
+    )
+    for (const title of ["Backend Developer", "Platform Engineer"]) {
+      await asAdmin.mutation(api.assessment.roles.createRole, {
+        orgId,
+        title,
+        function: "Engineering",
+        team: "Core",
+        trackKey: track.key,
+        familyId,
+      })
+    }
+    await asAdmin.mutation(api.ai.suggest.requestWeightReview, { orgId })
+
+    const args = await scheduledReviewArgs(t)
+    const families = args.families as {
+      name: string
+      roleCount: number
+      sampleTitles: string[]
+    }[]
+    const engineering = families.find((f) => f.name === "Engineering")
+    expect(engineering?.roleCount).toBe(2)
+    expect(engineering?.sampleTitles.slice().sort()).toEqual([
+      "Backend Developer",
+      "Platform Engineer",
+    ])
+    // The seeded role has no family, so its count is still visible in an
+    // unnamed bucket rather than being invented into a family.
+    const ungrouped = families.find((f) => f.name === "")
+    expect(ungrouped?.roleCount).toBe(1)
+  })
+
+  it("leaves an archived role out of the landscape", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
+    await asAdmin.mutation(api.assessment.roles.archiveRole, { orgId, roleId })
+    await asAdmin.mutation(api.ai.suggest.requestWeightReview, { orgId })
+    const args = await scheduledReviewArgs(t)
+    const families = args.families as { roleCount: number }[]
+    const total = families.reduce((sum, f) => sum + f.roleCount, 0)
+    expect(total).toBe(0)
+  })
+
+  it("sends the org's own weight motivations and materiality decision", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedRoleOrganization(t)
+    const criterion = model.criteria[0]
+    if (criterion === undefined) throw new Error("seed")
+    await asAdmin.mutation(
+      api.evaluationModel.criteria.setCriterionWeightMotivation,
+      {
+        orgId,
+        criterionId: criterion.criterionId,
+        motivation: "Specialist depth is what this business sells.",
+      }
+    )
+    await asAdmin.mutation(
+      api.evaluationModel.approval.setWorkingConditionsDecision,
+      {
+        orgId,
+        status: "testedNotMaterial",
+        motivation: "Tested this year; no role carries special conditions.",
+      }
+    )
+    await asAdmin.mutation(api.ai.suggest.requestWeightReview, { orgId })
+
+    const args = await scheduledReviewArgs(t)
+    const criteria = args.criteria as { motivation?: string }[]
+    expect(
+      criteria.some(
+        (c) => c.motivation === "Specialist depth is what this business sells."
+      )
+    ).toBe(true)
+    expect(args.workingConditions).toEqual({
+      status: "testedNotMaterial",
+      motivation: "Tested this year; no role carries special conditions.",
+    })
+  })
+
+  // THE INVARIANT. The review advises the METHOD; it must never see where a
+  // role landed under it. This drives a real assessment first, so the org
+  // genuinely HAS outcomes at the moment the prompt is assembled.
+  it("sends no outcome of any kind, even when the org has results", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, roleId, model } = await seedRoleOrganization(t)
+    // Rating needs the job profile's mandatory core; this test is about the
+    // prompt, not about the profile gate.
+    await t.run(async (ctx) => {
+      await ctx.db.patch(roleId, {
+        purpose: "Builds and runs the platform.",
+        responsibilities: "Design, build, operate.",
+      })
+    })
+    for (const criterion of model.criteria) {
+      await asAdmin.mutation(api.assessment.ratings.setRating, {
+        orgId,
+        roleId,
+        criterionId: criterion.criterionId,
+        value: 3,
+      })
+    }
+    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      orgId,
+      roleId,
+    })
+    // The org now has a real, locked, revealed result.
+    const results = await asAdmin.query(api.assessment.results.getResults, {
+      orgId,
+    })
+    expect(results.rows.some((row) => row.level !== null)).toBe(true)
+
+    await asAdmin.mutation(api.ai.suggest.requestWeightReview, { orgId })
+    const args = await scheduledReviewArgs(t)
+    // Nothing the guard forbids may appear anywhere in the scheduled payload,
+    // at any depth. Asserted through the guard itself, so the test and the
+    // production check can never disagree about what "an outcome" means.
+    expect(() => assertPromptDataSafe(args, "test")).not.toThrow()
+    const serialized = JSON.stringify(args)
+    for (const key of ["score", "level", "zone", "assessment", "rating"]) {
+      expect(serialized).not.toContain(`"${key}":`)
+    }
   })
 })

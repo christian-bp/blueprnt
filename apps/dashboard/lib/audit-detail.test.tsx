@@ -88,6 +88,7 @@ const labels = {
   itemsChanged: (count: number) => `${count} items`,
   fieldsChanged: (count: number) => `${count} fields`,
   createdMarker: "Created",
+  weightingConfirmed: "Weighting confirmed",
 }
 
 // Stub resolver: upper-cases the field name so tests can tell labels apart from
@@ -908,6 +909,53 @@ describe("formatAuditDetail", () => {
         fieldLabel
       )
     ).toBe("Analyst")
+  })
+
+  // A rebalance that moved no points is the organization confirming the
+  // weighting it already has, which is one of the approval checklist's own
+  // obligations. Reading it as "0 items changed" says the opposite of what
+  // happened.
+  it("names a zero-move rebalance as a confirmation, not as an empty change", () => {
+    expect(
+      formatAuditDetail(
+        "model.updated",
+        { change: "weights.rebalanced", modelId: "m1", count: 0, items: [] },
+        {},
+        labels,
+        fieldLabel
+      )
+    ).toBe("Weighting confirmed")
+  })
+
+  it("still counts the items of a rebalance that moved points", () => {
+    expect(
+      formatAuditDetail(
+        "model.updated",
+        {
+          change: "weights.rebalanced",
+          modelId: "m1",
+          count: 2,
+          items: [{ criterionId: "c1" }, { criterionId: "c2" }],
+        },
+        {},
+        labels,
+        fieldLabel
+      )
+    ).toBe("2 items")
+  })
+
+  // Scoped to the rebalance: another bulk model.updated with nothing in it is
+  // not a weighting confirmation and must not borrow its words.
+  it("leaves other zero-count bulk model.updated events on the count", () => {
+    expect(
+      formatAuditDetail(
+        "model.updated",
+        { change: "criterion.removed", modelId: "m1", count: 0, items: [] },
+        {},
+        labels,
+        fieldLabel
+      )
+    ).toBe("0 items")
   })
 
   it("renders role.assessmentCalibrated as the role name, never blank (payloadStats alone would drop the boolean noteProvided too)", () => {

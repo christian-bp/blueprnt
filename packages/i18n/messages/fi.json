@@ -676,6 +676,7 @@
         "deletedUser": "Poistettu käyttäjä",
         "deletedRun": "Poistettu palkkakartoitus",
         "itemsChanged": "{count, plural, one {# kohde muuttui} other {# kohdetta muuttui}}",
+        "weightingConfirmed": "Painotus vahvistettu ennallaan",
         "fieldsChanged": "{count, plural, one {# kenttä muuttui} other {# kenttää muuttui}}",
         "complexValue": "Koostettu arvo"
       },

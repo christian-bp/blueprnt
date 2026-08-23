@@ -676,6 +676,7 @@
         "deletedUser": "Deleted user",
         "deletedRun": "Deleted pay mapping",
         "itemsChanged": "{count, plural, one {# item changed} other {# items changed}}",
+        "weightingConfirmed": "Weighting confirmed unchanged",
         "fieldsChanged": "{count, plural, one {# field changed} other {# fields changed}}",
         "complexValue": "Complex value"
       },

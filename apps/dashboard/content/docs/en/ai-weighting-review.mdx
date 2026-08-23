@@ -30,6 +30,22 @@ the overall allocation stays exactly on budget no matter which moves you
 end up choosing. If the AI finds nothing worth adjusting, it says so
 ("The AI found no moves to suggest.") and offers only a way to dismiss.
 
+## What the AI is shown, and what it is never shown
+
+The review sees your organization's profile (industry, country, size),
+your criteria with their current weight points, any weight motivations
+you have written, your working-conditions decision, and your roles
+grouped into role families with a sample of titles from each. That is
+what lets it argue about your company rather than about companies in
+general.
+
+It is never shown a single person, and it is never shown a result. No
+salaries, no names, no employment data, and no role's weighting, level,
+or zone. That is deliberate and enforced in code, not only in the
+instructions the AI is given: an AI that could see where your roles land
+could tune the method toward those placements, and the method has to be
+argued from the work instead.
+
 ## Choosing which moves to accept
 
 Each proposed move has its own checkbox and starts checked; you can

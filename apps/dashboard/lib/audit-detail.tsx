@@ -717,6 +717,9 @@ export type AuditDetailLabels = {
   itemsChanged: (count: number) => string
   fieldsChanged: (count: number) => string
   createdMarker: string
+  // A rebalance that moved no points. Its own words, not a count: see the
+  // model.updated case below.
+  weightingConfirmed: string
 }
 
 // Turns an audit event + its (id-resolved) names into a human-readable one-line
@@ -928,6 +931,14 @@ export function formatAuditDetail(
       )
     }
     case "model.updated": {
+      // A rebalance that moved NO points is not an empty change, and reading
+      // it as "0 items changed" says the opposite of what happened: the
+      // organization looked at the weighting it already had and confirmed it,
+      // which is a real, dated, attributable decision and one of the
+      // approval checklist's own obligations. It gets its own words.
+      if (p.change === "weights.rebalanced" && bulkCount === 0) {
+        return labels.weightingConfirmed
+      }
       // Bulk model.updated (weights.rebalanced, criterion.removed): item count.
       if (isBulk) return labels.itemsChanged(bulkCount)
       // Non-bulk model.updated (criterion.added/updated, keyed on

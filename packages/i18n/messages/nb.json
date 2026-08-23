@@ -676,6 +676,7 @@
         "deletedUser": "Slettet bruker",
         "deletedRun": "Slettet lønnskartlegging",
         "itemsChanged": "{count, plural, one {# element endret} other {# elementer endret}}",
+        "weightingConfirmed": "Vektingen bekreftet uendret",
         "fieldsChanged": "{count, plural, one {# felt endret} other {# felter endret}}",
         "complexValue": "Sammensatt verdi"
       },

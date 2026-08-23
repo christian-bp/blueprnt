@@ -68,6 +68,67 @@ async function requireCompleteSettings(
   }
 }
 
+// How many roles the landscape aggregation reads, and how many titles it
+// carries per family. Both are bounds on an ORG-SCALED read that runs inside a
+// mutation, not preferences: a large org has thousands of roles, and neither
+// the transaction nor the prompt may grow with the register.
+//
+// The aggregation, and why it has this shape:
+//   - non-archived roles are read once through by_org and grouped by familyId;
+//   - each family contributes its NAME, its ROLE COUNT, and a sample of titles;
+//   - roles with no family land in one unnamed bucket, so their count is still
+//     visible without inventing a family that does not exist.
+// Counts answer "how big is this part of the company", titles answer "what kind
+// of work is it", and both are role-level data the no-PII rule permits. What is
+// deliberately NOT here: any person, any salary, and any evaluation outcome.
+// The role document carries an `assessment` aggregate and an `anchorRole` with
+// an expectedLevel; the projection below names its fields one by one and never
+// spreads a role, and ai/promptGuard refuses the outcome keys if that ever
+// slips.
+const MAX_LANDSCAPE_ROLES = 500
+const MAX_FAMILY_TITLE_SAMPLE = 8
+
+interface RoleFamilyAggregate {
+  name: string
+  roleCount: number
+  sampleTitles: string[]
+}
+
+async function collectRoleLandscape(
+  ctx: MutationCtx,
+  orgId: string
+): Promise<RoleFamilyAggregate[]> {
+  const families = await ctx.db
+    .query("roleFamilies")
+    .withIndex("by_org", (q) => q.eq("orgId", orgId))
+    .collect()
+  const familyNames = new Map(
+    families.map((family) => [family._id as string, family.name])
+  )
+  const roles = await ctx.db
+    .query("roles")
+    .withIndex("by_org", (q) => q.eq("orgId", orgId))
+    .take(MAX_LANDSCAPE_ROLES)
+  const buckets = new Map<string, RoleFamilyAggregate>()
+  for (const role of roles) {
+    // An archived role is not part of the landscape the method is being
+    // weighted for.
+    if (role.archivedAt !== undefined) continue
+    const key = role.familyId === undefined ? "" : (role.familyId as string)
+    const bucket = buckets.get(key) ?? {
+      name: familyNames.get(key) ?? "",
+      roleCount: 0,
+      sampleTitles: [],
+    }
+    bucket.roleCount += 1
+    if (bucket.sampleTitles.length < MAX_FAMILY_TITLE_SAMPLE) {
+      bucket.sampleTitles.push(role.title)
+    }
+    buckets.set(key, bucket)
+  }
+  return [...buckets.values()]
+}
+
 export const requestWeightReview = orgMutation({
   args: { locale: v.optional(v.string()) },
   returns: v.id("suggestions"),
@@ -109,7 +170,22 @@ export const requestWeightReview = orgMutation({
         criterionId: criterion._id as string,
         name: content.criteria[criterion.libraryKey].name,
         weightPoints: criterion.weightPoints,
+        ...(criterion.weightMotivation !== undefined &&
+        criterion.weightMotivation !== ""
+          ? { motivation: criterion.weightMotivation }
+          : {}),
       })),
+      families: await collectRoleLandscape(ctx, ctx.orgId),
+      // Named field by field, never spread: the model row carries an approval
+      // and the level/zone rules, none of which may reach a prompt.
+      ...(model.workingConditions !== undefined
+        ? {
+            workingConditions: {
+              status: model.workingConditions.status,
+              motivation: model.workingConditions.motivation,
+            },
+          }
+        : {}),
     })
     return suggestionId
   },

@@ -676,6 +676,7 @@
         "deletedUser": "Slettet bruger",
         "deletedRun": "Slettet lønkortlægning",
         "itemsChanged": "{count, plural, one {# element ændret} other {# elementer ændret}}",
+        "weightingConfirmed": "Vægtningen bekræftet uændret",
         "fieldsChanged": "{count, plural, one {# felt ændret} other {# felter ændret}}",
         "complexValue": "Sammensat værdi"
       },
