@@ -1,0 +1,43 @@
+packages/i18n/messages/sv.json
+  s_cc28b0c83ccbad::t_3f0bd93a00923e 218-221
+  s_cc28b0c83ccbad::t_3c4922a4ab58aa 1087-1089,1157-1158
+  s_cc28b0c83ccbad::t_1eddd4a05b140b 213,1200
+  s_cc28b0c83ccbad::t_a106687810fc2c 212,214-217,225
+packages/i18n/messages/nb.json
+  s_cc28b0c83ccbad::t_3c4922a4ab58aa 1087-1089,1157-1158
+  s_cc28b0c83ccbad::t_3f0bd93a00923e 218-221
+  s_cc28b0c83ccbad::t_a106687810fc2c 212,214-217,225
+  s_cc28b0c83ccbad::t_1eddd4a05b140b 213,1200
+packages/i18n/messages/da.json
+  s_cc28b0c83ccbad::t_a106687810fc2c 212,214-217,225
+  s_cc28b0c83ccbad::t_1eddd4a05b140b 213,1200
+  s_cc28b0c83ccbad::t_3c4922a4ab58aa 1087-1089,1157-1158
+  s_cc28b0c83ccbad::t_3f0bd93a00923e 218-221
+packages/i18n/messages/en.json
+  s_cc28b0c83ccbad::t_a106687810fc2c 212,214-217,225
+  s_cc28b0c83ccbad::t_1eddd4a05b140b 213,1200
+  s_cc28b0c83ccbad::t_3f0bd93a00923e 218-221
+  s_cc28b0c83ccbad::t_3c4922a4ab58aa 1087-1089,1157-1158
+packages/i18n/messages/fi.json
+  s_cc28b0c83ccbad::t_a106687810fc2c 212,215-217,225
+  s_cc28b0c83ccbad::t_402541cc293f39 214
+  s_cc28b0c83ccbad::t_3c4922a4ab58aa 1087-1089,1157-1158
+  s_cc28b0c83ccbad::t_1eddd4a05b140b 213,1200
+  s_cc28b0c83ccbad::t_3f0bd93a00923e 218-221
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "c3afcd530ca83800812de938539b9a1c10b9bf2f",
+  "prompts": {},
+  "sessions": {
+    "s_cc28b0c83ccbad": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a9b05540-f272-439e-a6f9-eba12a06fd6b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
