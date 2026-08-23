@@ -1,0 +1,27 @@
+packages/backend/convex/lib/audit.ts
+  s_58dd112dc09435::t_afd557fc1db336 767-781,795
+apps/dashboard/components/pay-mapping/comparison-reasons-panel.test.tsx
+  s_58dd112dc09435::t_883c9fc88ea3f1 121-123,127-132
+packages/backend/convex/shared/tables.ts
+  s_58dd112dc09435::t_afd557fc1db336 60
+apps/dashboard/components/org-audit-log-section.test.tsx
+  s_58dd112dc09435::t_76e1290b8cb98a 61-68,71-72,74-80,84-90,184,237-239,242-274
+packages/backend/convex/accounts/audit.test.ts
+  s_58dd112dc09435::t_afd557fc1db336 756
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "4d61d74dde85feb0dafe07edfb36ccd5b36a262b",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
