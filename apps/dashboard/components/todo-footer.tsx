@@ -75,25 +75,38 @@ export function TodoFooter() {
     keys: Set<TodoGroup["key"]>
   } | null>(null)
 
-  useEffect(() => {
-    if (todo === undefined) return
+  // Finish detection runs DURING RENDER, not in an effect (the
+  // adjust-state-during-render pattern, like the locale provider): an effect
+  // fires after paint, so the finished group's row had already unmounted and
+  // begun its exit in the transition frame, and the celebration was re-added
+  // into a race it could lose (a classify completion showed no burst at
+  // all). Latching before this render commits means the row simply never
+  // leaves. Safe because the setState is guarded: once latched, the
+  // leaving-dedupe below makes `finished` empty on the re-render.
+  if (todo !== undefined) {
     const prev = prevRef.current
     const keys = new Set(todo.groups.map((group) => group.key))
+    if (prev !== null && prev.orgId === orgId) {
+      const finished = prev.visible.filter(
+        (group) =>
+          !keys.has(group.key) &&
+          !leaving.some((held) => held.key === group.key)
+      )
+      if (finished.length > 0) {
+        setLeaving((current) => [
+          ...current,
+          ...finished.filter(
+            (group) => !current.some((held) => held.key === group.key)
+          ),
+        ])
+      }
+    }
     prevRef.current = {
       orgId,
       visible: todo.groups.slice(0, MAX_ROWS),
       keys,
     }
-    if (prev === null || prev.orgId !== orgId) return
-    const finished = prev.visible.filter((group) => !keys.has(group.key))
-    if (finished.length === 0) return
-    setLeaving((current) => [
-      ...current,
-      ...finished.filter(
-        (group) => !current.some((held) => held.key === group.key)
-      ),
-    ])
-  }, [todo, orgId])
+  }
 
   // Each celebrating row leaves after its hold. Re-armed per change; a
   // second finish landing mid-hold extends the first by a beat, which reads
