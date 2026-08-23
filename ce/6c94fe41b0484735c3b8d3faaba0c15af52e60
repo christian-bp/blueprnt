@@ -1,0 +1,22 @@
+docs/superpowers/specs/2026-08-18-adaptable-role-evaluation-design.md
+  s_58dd112dc09435::t_98401001b98721 188-190
+  s_58dd112dc09435::t_c67c65376d35ce 210-239
+docs/superpowers/plans/2026-08-23-role-evaluation-phase-4-assessment.md
+  s_58dd112dc09435::t_88a033cb16e9ca 1-138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "ce6c94fe41b0484735c3b8d3faaba0c15af52e60",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
