@@ -1,0 +1,107 @@
+apps/dashboard/components/people/edit-person-dialog.tsx
+  s_58dd112dc09435::t_06f0f3f218595e 199,203,232
+apps/dashboard/components/org-audit-log-section.tsx
+  s_58dd112dc09435::t_06f0f3f218595e 111
+  s_58dd112dc09435::t_843d201c521a8a 621
+  s_58dd112dc09435::t_3f335b27ff0817 638-643,649,654-661,707,716-718
+  s_58dd112dc09435::t_20f2782c589e43 537
+apps/dashboard/components/people/add-person-dialog.tsx
+  s_58dd112dc09435::t_06f0f3f218595e 176,181,212
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_20f2782c589e43 596
+apps/dashboard/lib/audit-stories.ts
+  s_58dd112dc09435::t_06f0f3f218595e 7,35,92,116
+  s_58dd112dc09435::t_9f1c3cd8485f0c 10-12,14-23,39-40,42-45,52-60,63-73,86-89,110-112,117,122,125-131
+  s_58dd112dc09435::t_0c8abc8952bdcd 90-91
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_2f9587ccb117c6 804-807,939-944,987-992,1041,1043-1045,1047-1052,1103-1108,1284-1287
+  s_58dd112dc09435::t_71d448a498616b 1063,1065
+apps/dashboard/components/pay-mapping/comparison-reasons-panel.test.tsx
+  s_58dd112dc09435::t_43fdbccc6b488d 107-127
+  s_58dd112dc09435::t_ad8ce0fcbbef59 1-7
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_20f2782c589e43 596
+apps/dashboard/lib/gesture.ts
+  s_58dd112dc09435::t_1e466cb5d5201c 7,13-17
+apps/dashboard/components/people/edit-person-dialog.test.tsx
+  s_58dd112dc09435::t_2f9587ccb117c6 128-138
+packages/backend/convex/accounts/audit.ts
+  s_58dd112dc09435::t_6a1504582529d7 25,37,189
+apps/dashboard/components/organization/organization-profile-form.tsx
+  s_58dd112dc09435::t_06f0f3f218595e 81,84,94
+apps/dashboard/lib/audit-stories.test.ts
+  s_58dd112dc09435::t_0d92e7077836da 20,35,41-43,49,51,53-80,88,135
+  s_58dd112dc09435::t_06f0f3f218595e 4-5
+apps/dashboard/components/model/criterion-compliance-dialog.test.tsx
+  s_58dd112dc09435::t_2f9587ccb117c6 244-249,342-347
+  s_58dd112dc09435::t_71d448a498616b 293-294
+apps/dashboard/components/people/classify/classify-title-table.test.tsx
+  s_58dd112dc09435::t_1e466cb5d5201c 903,906-908
+  s_58dd112dc09435::t_71d448a498616b 904-905,935-936
+apps/dashboard/content/docs/da/audit-log.mdx
+  s_58dd112dc09435::t_e9b4110960858e 39-41
+packages/backend/convex/lib/functions.ts
+  s_58dd112dc09435::t_7bd72a537beb45 149,153,156,171,174,177
+  s_58dd112dc09435::t_6a1504582529d7 16,46,54,58,60,135
+packages/backend/convex/assessment/compute.ts
+  s_58dd112dc09435::t_6a1504582529d7 116,143
+apps/dashboard/components/pay-mapping/comparison-reasons-panel.tsx
+  s_58dd112dc09435::t_16c5f056cdbc9a 13,120-127,131,148,152,160,172,176,186,214,216-217
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_20f2782c589e43 596
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_58dd112dc09435::t_06f0f3f218595e 621,628
+apps/dashboard/components/model/criterion-compliance-dialog.tsx
+  s_58dd112dc09435::t_06f0f3f218595e 188,193,201,209
+packages/backend/convex/shared/tables.ts
+  s_58dd112dc09435::t_6a1504582529d7 54,82
+  s_58dd112dc09435::t_69f857aa2835c6 58-70
+packages/backend/convex/lib/audit.ts
+  s_58dd112dc09435::t_6a1504582529d7 784,797-799,824,834,843
+  s_58dd112dc09435::t_3e7e85ee403a5d 767-775,787-796,800-804
+apps/dashboard/components/organization/organization-profile-form.test.tsx
+  s_58dd112dc09435::t_2f9587ccb117c6 92-96
+  s_58dd112dc09435::t_71d448a498616b 23-24,120,122
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_20f2782c589e43 596
+apps/dashboard/components/org-audit-log-section.test.tsx
+  s_58dd112dc09435::t_71d448a498616b 44,65-67
+  s_58dd112dc09435::t_d33b5d761a347b 178-192,197-221
+  s_58dd112dc09435::t_706b54debea3b5 193-196
+  s_58dd112dc09435::t_843d201c521a8a 96-103,105-107,155-159,236-240
+apps/dashboard/components/people/add-person-dialog.test.tsx
+  s_58dd112dc09435::t_2f9587ccb117c6 126-131,183-192,196-203
+  s_58dd112dc09435::t_71d448a498616b 207,209
+apps/dashboard/content/docs/en/audit-log.mdx
+  s_58dd112dc09435::t_e9b4110960858e 38-40
+apps/dashboard/content/docs/fi/audit-log.mdx
+  s_58dd112dc09435::t_e9b4110960858e 43-44
+apps/dashboard/content/docs/nb/audit-log.mdx
+  s_58dd112dc09435::t_e9b4110960858e 40-42
+apps/dashboard/content/docs/sv/audit-log.mdx
+  s_58dd112dc09435::t_e9b4110960858e 40-41
+apps/dashboard/components/model/working-conditions-decision.tsx
+  s_58dd112dc09435::t_06f0f3f218595e 132,143,147
+packages/backend/convex/accounts/audit.test.ts
+  s_58dd112dc09435::t_a5e2e5970512eb 759,769,777,788,799,868
+  s_58dd112dc09435::t_44a1edac1eea39 764,800,802-815,821-822,827-842,845-846,855,864
+  s_58dd112dc09435::t_46fa9f5550de2b 801
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_20f2782c589e43 596
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "5a30af76c60dd1d0c790a08db279b34aaa47622d",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
