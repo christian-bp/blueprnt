@@ -35,12 +35,12 @@ function errorMessage(
   return fallback
 }
 
-// The "ready to lock" state: every criterion has a rating, but the result is
+// The "ready to read" state: every criterion has a rating, but the result is
 // still a draft (lock-as-reveal, spec 2.4/6). Locking is the reveal itself,
 // so this panel is the ONLY thing shown here -- no score, no level, nothing
 // the lock has not yet unlocked. Reused by the rate flow's completion state
 // and the role page's evaluation card, so the action reads identically
-// wherever a role becomes ready to lock.
+// wherever a role becomes ready to read.
 export function LockAssessmentPanel({
   orgId,
   roleId,

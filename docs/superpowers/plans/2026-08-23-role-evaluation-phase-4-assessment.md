@@ -4,7 +4,7 @@
 
 **Goal:** The assessment experience teaches its own method: stage identity, the shared scale, decision-support in the picker, and an audit trail that reads as stories, on the surfaces that already exist.
 
-**Architecture:** No new routes. Every change lands on existing surfaces (model section, rate page, role page, library picker, audit log) composed from the Verve anatomy and the app's primitives. Backend changes are additive (batchId on auditLog, prompt enrichment); the engine is untouched.
+**Architecture:** No new routes. Every change lands on existing surfaces (model section, rate page, role page, library picker, audit log) composed from the Verve anatomy and the app's primitives. Backend changes are additive (gestureId on auditLog, prompt enrichment); the engine is untouched.
 
 **Tech Stack:** Next 16 / Convex / next-intl / Motion / Verve-Frame anatomy / convex-test + Vitest 4.
 
@@ -99,20 +99,20 @@
 - [ ] Tests: a card with a selected overlap counterpart shows the warning naming it; without, none; control question renders; cap chip reflects the dimension's count; activation still one click.
 - [ ] Commit: `feat(model): the picker becomes the decision support the method promises`
 
-### Task 6: Audit batchId correlation
+### Task 6: Audit gestureId correlation
 
 **Files:**
-- Modify: `packages/backend/convex/lib/audit.ts` (+ `auditPayloads.ts`), `schema` (auditLog gains optional `batchId: v.string()`), the multi-mutation gestures' mutations (compliance dialog sequence; restore; any gesture the inventory finds), their client call sites
+- Modify: `packages/backend/convex/lib/audit.ts` (+ `auditPayloads.ts`), `schema` (auditLog gains optional `gestureId: v.string()`; named for the gesture, not `batchId`, which is already a payload field on the same table), the multi-mutation gestures' mutations (compliance dialog sequence; restore; any gesture the inventory finds), their client call sites
 - Modify: `apps/dashboard/components/org-audit-log-section.tsx` + `lib/audit-detail.tsx` (+ tests), five-locale labels if any new
 - Test: backend audit tests + dashboard log rendering tests
 
 **Interfaces:**
-- Produces: a client-generated `batchId` (crypto.randomUUID) passed by gestures that span multiple mutations; `logAudit` stamps it; the log UI groups consecutive same-batch rows into one story row with expandable sub-rows. Single-mutation acts carry none and render exactly as today.
+- Produces: a client-generated `gestureId` (crypto.randomUUID) passed by gestures that span multiple mutations; `logAudit` stamps it; the log UI groups consecutive same-batch rows into one story row with expandable sub-rows. Single-mutation acts carry none and render exactly as today.
 
 - [ ] Inventory every client gesture that fires >1 audited mutation (the compliance dialog's three-call sequence is the known case; sweep for others and list them).
-- [ ] Schema + logAudit: optional batchId, no PII, indexed only if the render path needs it (verify; pagination is by time, grouping is within a page — say so in a comment if unindexed).
+- [ ] Schema + logAudit: optional gestureId, no PII (enforced: only a UUID-shaped string is stored), indexed only if the render path needs it (verify; pagination is by time, grouping is within a page — say so in a comment if unindexed).
 - [ ] Log UI: group within the fetched page; the story row shows the gesture's summary (the most specific event's label) and count; sub-rows render the existing detail anatomy unchanged.
-- [ ] Tests: the dialog gesture writes N rows sharing one batchId; the log groups them; a lone row renders ungrouped; pager totals unaffected (aggregates count rows, not stories — assert and document).
+- [ ] Tests: the dialog gesture writes N rows sharing one gestureId; the log groups them; a lone row renders ungrouped; pager totals unaffected (aggregates count rows, not stories — assert and document).
 - [ ] Commit: `feat(audit): one gesture reads as one story`
 
 ### Task 7: AI weight-review enrichment and the confirm-save label

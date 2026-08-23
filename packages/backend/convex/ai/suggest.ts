@@ -105,15 +105,19 @@ async function collectRoleLandscape(
   const familyNames = new Map(
     families.map((family) => [family._id as string, family.name])
   )
+  // FILTERED before the bound, not after: an archived role is not part of the
+  // landscape the method is being weighted for, and taking 500 rows and then
+  // dropping the archived ones would report an org with 600 roles of which 200
+  // are archived as having 333 active roles rather than sampling 500 of its
+  // 400. The filter runs in the index scan, so the bound still bounds the
+  // documents this transaction reads.
   const roles = await ctx.db
     .query("roles")
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
+    .filter((q) => q.eq(q.field("archivedAt"), undefined))
     .take(MAX_LANDSCAPE_ROLES)
   const buckets = new Map<string, RoleFamilyAggregate>()
   for (const role of roles) {
-    // An archived role is not part of the landscape the method is being
-    // weighted for.
-    if (role.archivedAt !== undefined) continue
     const key = role.familyId === undefined ? "" : (role.familyId as string)
     const bucket = buckets.get(key) ?? {
       name: familyNames.get(key) ?? "",

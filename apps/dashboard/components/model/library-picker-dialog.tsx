@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowDown01Icon, PlusSignIcon } from "@hugeicons/core-free-icons"
+import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
@@ -34,6 +34,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useId, useRef, useState } from "react"
 import { cn } from "@workspace/ui/lib/utils"
+import { DisclosureToggle } from "@/components/disclosure-toggle"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import { formatNames } from "@/lib/list-format"
 import { modelErrorKey } from "@/lib/model-errors"
@@ -275,28 +276,17 @@ export function LibraryPickerDialog({
                         definition, where the criterion fits and where it does
                         not, and the control question. Behind a press, always
                         present so no row changes height on hover. */}
-                    <button
-                      type="button"
-                      aria-expanded={detailOpen}
-                      aria-controls={detailPanelId}
-                      className="flex items-center gap-1 self-start text-muted-foreground text-xs hover:text-foreground"
-                      onClick={() =>
+                    <DisclosureToggle
+                      label={t("detailToggle")}
+                      open={detailOpen}
+                      panelId={detailPanelId}
+                      onToggle={() =>
                         setDetailKey((openKey) =>
                           openKey === key ? null : key
                         )
                       }
-                    >
-                      {t("detailToggle")}
-                      <HugeiconsIcon
-                        icon={ArrowDown01Icon}
-                        strokeWidth={2}
-                        aria-hidden="true"
-                        className={cn(
-                          "size-3.5 transition-transform motion-reduce:transition-none",
-                          detailOpen && "rotate-180"
-                        )}
-                      />
-                    </button>
+                      className="self-start"
+                    />
                     <AnimatePresence initial={false}>
                       {detailOpen ? (
                         <motion.div

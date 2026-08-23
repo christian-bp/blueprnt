@@ -221,7 +221,7 @@ function RoleSheetContent({
             </section>
 
             {/* Result: weighting + level + breakdown once LOCKED (lock-as-
-                reveal, spec 2.4/6), else progress or "ready to lock". */}
+                reveal, spec 2.4/6), else progress or "ready to read". */}
             <section className="space-y-3">
               {result === undefined ? (
                 <div className="flex justify-center py-4">

@@ -50,7 +50,7 @@ import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakd
 
 // One card for the whole evaluation lifecycle, now three states instead of
 // two (lock-as-reveal, spec 2.4/6): incomplete (progress + stepper entry),
-// complete-but-unlocked ("ready to lock", the Lock action itself is the
+// complete-but-unlocked ("ready to read", the Lock action itself is the
 // reveal), and locked (weighting, level, and per-criterion breakdown, with
 // the anchor status inline and the header menu). An archived role has left
 // the results set (deriveResults excludes it), so it stays read-only
@@ -89,7 +89,7 @@ export function RoleEvaluationCard({
   const evaluated = totalCriteria > 0 && ratedCount === totalCriteria
   // The view is chosen from the props so it never flashes; the query only
   // fills the result data. `showResult` means "past the in-progress stepper
-  // state", covering BOTH ready-to-lock and locked; which of those two is
+  // state", covering BOTH ready-to-read and locked; which of those two is
   // decided below once `result` (query-based; lock state is not a prop)
   // resolves.
   const showResult = evaluated && !archived

@@ -129,9 +129,17 @@ export function assertPromptDataSafe(value: unknown, where: string): void {
   walk(value)
 }
 
-// Serializes data INTO a prompt. The only sanctioned way to do it: guarding and
-// stringifying are one call, so a prompt line cannot carry a structure that was
-// never checked.
+// Serializes a DATA PAYLOAD into a prompt: guarding and stringifying are one
+// call, so a payload cannot reach a prompt line without being walked.
+//
+// Not every JSON.stringify in a prompt goes through this, and that is the
+// honest boundary rather than an oversight: the raw ones serialize fixed
+// CONTRACT values the prompt is built around (the track key/name list, a
+// criterion's anchor texts, the other criteria's names, the bias checklist),
+// which are string arrays and constant shapes with no route to a role, a
+// person, or a result. What this exists for is anything derived from ORG DATA,
+// where a widened read is the realistic mistake. The buildPrompt backstop
+// covers both.
 export function promptJson(value: unknown, where: string): string {
   assertPromptDataSafe(value, where)
   return JSON.stringify(value)

@@ -241,17 +241,27 @@ describe("the ratings table's own outcome field", () => {
 // assembly shape itself is pinned rather than trusted to memory.
 const AI_DIR = dirname(fileURLToPath(import.meta.url))
 const CONVEX_DIR = dirname(AI_DIR)
+// Where text-generation calls are allowed to live. Not a convenience list:
+// `aiModel` (ai/provider) is the only source of a text model handle, so a
+// prompt can only be built in a file that reaches for it, and the second test
+// below asserts that every such file is inside these two directories. That is
+// what makes scanning only these two equivalent to scanning the whole tree.
+// `aiEmbeddingModel` is deliberately not in scope: an embedding call takes a
+// document, never a prompt, and docs/rag.ts is its only caller.
 const GUARDED_DIRS = [AI_DIR, join(CONVEX_DIR, "assistant")]
 
-function sourceFiles(dir: string): { path: string; content: string }[] {
-  const out: { path: string; content: string }[] = []
+function sourceFiles(dir: string): {
+  relativePath: string
+  content: string
+}[] {
+  const out: { relativePath: string; content: string }[] = []
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name)
     if (entry.isDirectory()) {
       out.push(...sourceFiles(full))
     } else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts")) {
       out.push({
-        path: relative(CONVEX_DIR, full),
+        relativePath: relative(CONVEX_DIR, full),
         content: readFileSync(full, "utf8"),
       })
     }
@@ -268,7 +278,7 @@ describe("every prompt path goes through the guard", () => {
           const trimmed = line.trim()
           if (!trimmed.startsWith("prompt:")) continue
           if (trimmed.includes("buildPrompt(")) continue
-          offenders.push(`${file.path}: ${trimmed}`)
+          offenders.push(`${file.relativePath}: ${trimmed}`)
         }
       }
     }
@@ -287,5 +297,20 @@ describe("every prompt path goes through the guard", () => {
       }
     }
     expect(found).toBeGreaterThanOrEqual(6)
+  })
+
+  // And the two directories really are the whole surface. A prompt needs a
+  // model handle, `aiModel` is the only source of one, so a file that reaches
+  // for it outside these directories would be a prompt path the scan above
+  // cannot see. Walks the WHOLE convex tree to find them.
+  it("keeps every text-model call inside the scanned directories", () => {
+    const guarded = new Set(
+      GUARDED_DIRS.map((dir) => relative(CONVEX_DIR, dir))
+    )
+    const strays = sourceFiles(CONVEX_DIR)
+      .filter((file) => /\baiModel\s*\(/.test(file.content))
+      .map((file) => file.relativePath)
+      .filter((path) => !guarded.has(path.split("/")[0] ?? ""))
+    expect(strays).toEqual([])
   })
 })

@@ -188,6 +188,7 @@ House rules apply: wizard/morph animation patterns, content-shaped skeletons per
 9. **§4.1 standard text lives in the help layer, not as standing prose** (decision 13, 2026-08-23): the masterdokument asks every step to open with VARFOR/VAD/VAD HANDER blocks; the framing-prose law (CLAUDE.md, 2026-08-21) rules standing explainer sentences a defect. The §4.1 content is carried by titles, HelpMorphButton bodies, preconditions-in-words, and the stage eyebrows (deviation 10) instead. The pedagogy is kept; the prose form is not.
 10. **Stage visibility as eyebrows, not blocking modes** (§4.2.2, §17.5): METODBYGGNAD/ROLLBEDOMNING render as scanned stage labels on their surfaces, and the assessment route links to no builder or results surface; we do not hard-block navigation for the HR-only audience (extends deviation 2).
 11. **Zone and level descriptions ship as seeded library content** (§14.7 steps 1, 5): the five-locale texts are authored in the repo and rendered read-only; org-authored descriptions and the full six-step anchoring process are deferred. Calibration is the queue + confirm-placement act (deviation 4); level rules stay editable through the existing validated mutations with a minimal surface.
+12. **§17.3.3's second motivation trigger is deferred, not relaxed** (fas 4, 2026-08-23): the rule reads "vid niva 1, 4 eller 5, eller nar tillgangligt rollunderlag motsager bedomningen". The first clause ships and is enforced on both the client and the backend, pinned domain-completely. The second has no input: nothing in V1 ingests role documentation, so there is no source for a rating to contradict. It is a rule with no data, not a rule we chose to soften; it becomes implementable when role documentation is ingested.
 
 ## 9. Testing
 
@@ -217,7 +218,7 @@ Ground truths the replan builds on: much of the original phase 4 shipped early (
 - Motivation trued to §17.3: required at 1, 4, 5 (verify the current gate empirically and pin it).
 - Role-page states pass: klar-att-lasa / last / kalibrerad and the drift chip against §6's wordings.
 - The §11 decision-support picker: every card surfaces short text, suitability ("nar det ar lampligt" / "nar det inte bor anvandas"), the control question, overlap warnings against already-selected criteria, and the dimension cap; activation stays one click (deviation 6 stands).
-- Audit batchId correlation: multi-row acts stamp a shared id; the log renders them as one story with sub-rows (PROVENANCE_KEYS idiom).
+- Audit gestureId correlation: multi-row acts stamp a shared id; the log renders them as one story with sub-rows (PROVENANCE_KEYS idiom). Named `gestureId` rather than `batchId` because `batchId` is already a payload field on the same table (the server-minted starter-seed run id, which PROVENANCE_KEYS renders to the reader); two correlation ids may not share one name.
 - AI weight-review enrichment: org's roles (family-aggregated, no PII) into the prompt, protokoll and materiality coherence, the never-feed-outcomes rule as a hard prompt invariant; the confirm-save audit row gets its own labeled variant.
 
 **Fas 5 - resultatet forsvarar sig (zones, levels, calibration, consequence):**

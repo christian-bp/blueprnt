@@ -1,18 +1,16 @@
 "use client"
 
-import { ArrowDown01Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { SUGGESTION_KINDS } from "@workspace/constants"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Spinner } from "@workspace/ui/components/spinner"
-import { cn } from "@workspace/ui/lib/utils"
 import { useMutation } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useRef, useState } from "react"
+import { DisclosureToggle } from "@/components/disclosure-toggle"
 import { ChangeArrow } from "@/components/change-arrow"
 import { useSuggestionFlow } from "@/hooks/use-suggestion-flow"
 import { useSuggestionSelection } from "@/hooks/use-suggestion-selection"
@@ -320,21 +318,11 @@ function MoveCard({
           </span>
         </label>
         <div>
-          <button
-            type="button"
-            aria-expanded={showWhy}
-            onClick={() => setShowWhy((open) => !open)}
-            className="flex items-center gap-1 text-muted-foreground text-xs transition-colors hover:text-foreground"
-          >
-            <HugeiconsIcon
-              icon={ArrowDown01Icon}
-              size={14}
-              strokeWidth={2}
-              aria-hidden="true"
-              className={cn("transition-transform", showWhy && "rotate-180")}
-            />
-            {whyLabel}
-          </button>
+          <DisclosureToggle
+            label={whyLabel}
+            open={showWhy}
+            onToggle={() => setShowWhy((open) => !open)}
+          />
           {/* The reveal carries ONLY geometry (height/opacity) and no box
               styles, so height:0 truly collapses (docs/ui-animation.md rule
               2); the inner padding lives on the clipped paragraph. Reduced
