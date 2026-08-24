@@ -1,0 +1,427 @@
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_14bad9b504fc7b 196,199,890-891,1129,1131,1232,1234,1674,1679,1899,2109,2226,2801-2802
+apps/dashboard/content/docs/en/glossary.mdx
+  s_58dd112dc09435::t_67c28fe6fb9af6 45,56-58
+apps/dashboard/content/docs/sv/score-and-levels.mdx
+  s_58dd112dc09435::t_a1c5dae6a7a9c7 69
+  s_58dd112dc09435::t_f16cc7bbced9eb 64
+  s_58dd112dc09435::t_ab4a5aa7f124d2 7-9
+  s_58dd112dc09435::t_a52748876ee3e3 36
+  s_58dd112dc09435::t_7bc22dfaaf368b 30
+  s_58dd112dc09435::t_bc4d63e9992aee 76-90
+  s_58dd112dc09435::t_8ca782c1260cb2 95
+apps/dashboard/hooks/use-reopen-assessment.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 26-28,36
+apps/dashboard/content/docs/en/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_85128187bd71c4 3,72,101,103,105,108-112,114,116,118,120-124
+apps/dashboard/content/docs/sv/key-concepts.mdx
+  s_58dd112dc09435::t_043fbc4d9409a9 35-37
+apps/dashboard/content/docs/sv/anchor-roles.mdx
+  s_58dd112dc09435::t_e0556e182fcf7e 23-29
+apps/dashboard/content/docs/nb/glossary.mdx
+  s_58dd112dc09435::t_dfd8bba1514d86 45-46
+  s_58dd112dc09435::t_b5bde3630bd50f 56-59
+apps/dashboard/content/docs/fi/score-and-levels.mdx
+  s_58dd112dc09435::t_feed7bd04c19e0 66
+  s_58dd112dc09435::t_326178a1180117 101
+  s_58dd112dc09435::t_bc939f240ad48c 71
+  s_58dd112dc09435::t_c99788f74360e2 80,82-95
+  s_58dd112dc09435::t_d6caf6a8f04fa5 7,9
+  s_58dd112dc09435::t_0838b9305581ee 31
+  s_58dd112dc09435::t_af162bcf7e182f 37
+apps/dashboard/content/docs/da/method-documentation.mdx
+  s_58dd112dc09435::t_0b7c39246b1ad5 126,139,148
+  s_58dd112dc09435::t_df7582fe7858e9 127
+  s_58dd112dc09435::t_92626bd0fcf3ac 140-141
+apps/dashboard/components/levels/confirm-placement-dialog.tsx
+  s_58dd112dc09435::t_9f5b011de7ebbd 58
+apps/dashboard/content/docs/da/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_c262b625d733dd 28-29
+  s_58dd112dc09435::t_127e615a187728 47-50,52-53
+  s_58dd112dc09435::t_3322ba70c81a18 30-31,40-41
+packages/backend/convex/assessment/seed.test.ts
+  s_58dd112dc09435::t_6644b9c4ddbdf7 217,227,400
+  s_58dd112dc09435::t_34d4cf2d5fda32 425
+  s_58dd112dc09435::t_9f5b011de7ebbd 218,221,225
+apps/dashboard/content/docs/nb/roles-register.mdx
+  s_58dd112dc09435::t_3faebfad007152 21
+packages/backend/convex/assessment/anchorRoles.test.ts
+  s_58dd112dc09435::t_cf1b6d88c1ab8a 670,674-677
+  s_58dd112dc09435::t_a919b8e20c9c9c 106,178,185,188,203,210,213,215,636,663
+  s_58dd112dc09435::t_9f5b011de7ebbd 107,181,223,236,270,302,376,441,516,588,646,665
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_14bad9b504fc7b 196,199,890-891,1123,1125,1232,1234,1674,1679,1899,2109,2226,2801-2802
+apps/dashboard/content/docs/en/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_7dfcb64f134551 28-30,39,45-47,50
+apps/dashboard/components/levels/calibration-queue.tsx
+  s_58dd112dc09435::t_ffa4d9f5344c63 170
+apps/dashboard/content/docs/en/method-documentation.mdx
+  s_58dd112dc09435::t_67c28fe6fb9af6 123,135,143
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_58dd112dc09435::t_34d4cf2d5fda32 245
+  s_58dd112dc09435::t_8482c16448b1b6 227
+apps/dashboard/content/docs/nb/method-documentation.mdx
+  s_58dd112dc09435::t_6b6d3f40f7cc05 124
+  s_58dd112dc09435::t_ee4dbe51545f8e 136-138
+  s_58dd112dc09435::t_313e4a75b0d4ca 145
+apps/dashboard/content/docs/fi/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_248f781d66b14a 43
+  s_58dd112dc09435::t_26cdaeda0c0ceb 49-53,55
+  s_58dd112dc09435::t_0c9e4c9f0bb378 31-33
+apps/dashboard/content/docs/da/glossary.mdx
+  s_58dd112dc09435::t_ca85c806e0fece 46
+  s_58dd112dc09435::t_d135d7450ab692 45,56-59
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.test.tsx
+  s_58dd112dc09435::t_34d4cf2d5fda32 91,243,259,351,435,475,541
+  s_58dd112dc09435::t_3a8b21c6335cde 131-133,166,379
+  s_58dd112dc09435::t_9f5b011de7ebbd 128-130,165,321,335
+apps/dashboard/components/levels/pending-roles.tsx
+  s_58dd112dc09435::t_9f5b011de7ebbd 44
+  s_58dd112dc09435::t_a2c37f49833e9f 12-14,17
+docs/contexts/assessment/CONTEXT.md
+  s_58dd112dc09435::t_7f263c277daf2a 20,22-23
+  s_58dd112dc09435::t_da6723fc8ad2e0 60-62
+  s_58dd112dc09435::t_3841fac5be06cc 21
+apps/dashboard/content/docs/da/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_ee0378552d8e43 3
+  s_58dd112dc09435::t_a7fc60c35a61cf 76
+  s_58dd112dc09435::t_6bed088d99c6ec 106,108,110,112-117,119,121,123,125-129
+apps/dashboard/lib/audit-detail.tsx
+  s_58dd112dc09435::t_9f5b011de7ebbd 794,797,800,803-804
+apps/dashboard/content/docs/sv/adjusting-a-rating.mdx
+  s_58dd112dc09435::t_479e7fe5eccee1 3,7-9,11,13-19,35-38,42-47,50,61-62
+  s_58dd112dc09435::t_6d79b2f3f7fc9f 23
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_58dd112dc09435::t_54c1d42e0f32b2 37-38,264
+  s_58dd112dc09435::t_c6c6424e879cdb 92-93,102-103,106,126,129,155,173-174,177,194
+  s_58dd112dc09435::t_369449a6f597f3 175
+  s_58dd112dc09435::t_5e0b44fd059044 50-55
+  s_58dd112dc09435::t_3fadd409345e03 57
+apps/dashboard/lib/audit-detail.test.tsx
+  s_58dd112dc09435::t_9f5b011de7ebbd 899,902,911,914
+apps/dashboard/content/docs/nb/levels-views.mdx
+  s_58dd112dc09435::t_5f6825007cf344 79-80
+  s_58dd112dc09435::t_f9e36ceb951bac 60
+  s_58dd112dc09435::t_039b5c1653a5a7 57-59,61
+  s_58dd112dc09435::t_4b4e14b7365185 67
+packages/backend/convex/assessment/seed.ts
+  s_58dd112dc09435::t_e5d7daac9b1e95 208-214
+  s_58dd112dc09435::t_9f5b011de7ebbd 215,220
+packages/backend/convex/assessment/ratings.ts
+  s_58dd112dc09435::t_6b90daf000ac1a 41-43
+  s_58dd112dc09435::t_9f5b011de7ebbd 45
+packages/backend/convex/lib/audit.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 48-49,206-207,209-210
+  s_58dd112dc09435::t_d9260798cbbb7c 208
+packages/backend/convex/lib/errors.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 43-44
+apps/dashboard/components/levels/calibration-queue.test.tsx
+  s_58dd112dc09435::t_34d4cf2d5fda32 54
+  s_58dd112dc09435::t_9f5b011de7ebbd 35,50
+  s_58dd112dc09435::t_ffa4d9f5344c63 135
+packages/backend/convex/ai/suggest.test.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 1971
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_14bad9b504fc7b 196,199,890-891,1129,1131,1232,1234,1674,1679,1899,2109,2226,2801-2802
+apps/dashboard/components/pay-mapping/pay-mapping-preconditions-panel.test.tsx
+  s_58dd112dc09435::t_aa247c565676ea 66,84,99,135,149
+packages/backend/convex/payMapping/runs.test.ts
+  s_58dd112dc09435::t_34d4cf2d5fda32 848
+  s_58dd112dc09435::t_28159803d6161e 160
+  s_58dd112dc09435::t_9f5b011de7ebbd 163,165,653,659,674,689,692,709,913,918,1956
+packages/backend/convex/assessment/completion.test.ts
+  s_58dd112dc09435::t_f6f88751fde96f 86,117,233,257,274,290,357,453,467,546
+  s_58dd112dc09435::t_3a8b21c6335cde 312
+  s_58dd112dc09435::t_bc8bd80d3ff478 394,514,519,566,568-569,581
+  s_58dd112dc09435::t_9f5b011de7ebbd 1-85,87-116,118-232,234-256,258-273,275-289,291-311,313-356,358-393,395-452,454-466,468-480,482-510,512-513,515-518,520-545,547-559,561-565,567,570-577,579-580,582-597
+  s_58dd112dc09435::t_34d4cf2d5fda32 481,511,560,578
+apps/dashboard/content/docs/nb/adjusting-a-rating.mdx
+  s_58dd112dc09435::t_d93e7892874db9 3
+  s_58dd112dc09435::t_0e7610d2765c20 62-63
+  s_58dd112dc09435::t_6cf7fc4eb23311 24
+  s_58dd112dc09435::t_c3bfd807b5e04e 36-39,43-47,51
+  s_58dd112dc09435::t_d7b35531fb8809 7-9,11,13-16,18-20
+apps/dashboard/content/docs/nb/anchor-roles.mdx
+  s_58dd112dc09435::t_035f31755f23bc 23,26,28
+apps/dashboard/lib/zone-bands.test.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 24
+apps/dashboard/components/assessment-status.tsx
+  s_58dd112dc09435::t_2133901959bdd5 11-12,14-18,20,23,26-27,35-36,42-49,53
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_14bad9b504fc7b 196,199,890-891,1129,1131,1232,1234,1674,1679,1899,2109,2226,2801-2802
+apps/dashboard/content/docs/en/key-concepts.mdx
+  s_58dd112dc09435::t_67c28fe6fb9af6 34-35
+apps/dashboard/content/docs/da/model-overview.mdx
+  s_58dd112dc09435::t_4e1a0b7d438def 62
+apps/dashboard/content/docs/fi/evaluating-a-role.mdx
+  s_58dd112dc09435::t_bdf82e4c4cfae3 57,59-63,66-67
+  s_58dd112dc09435::t_5b82ab96e6b09b 10
+  s_58dd112dc09435::t_d56305083e8305 3
+  s_58dd112dc09435::t_8f4bef7f91037b 71-84
+  s_58dd112dc09435::t_22737d127feba5 53-54,64-65
+apps/dashboard/content/docs/fi/key-concepts.mdx
+  s_58dd112dc09435::t_03474d6f7abe43 37-39
+apps/dashboard/content/docs/nb/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_a43842df60a564 108,110,112,114-118,121,123,125,127-131
+  s_58dd112dc09435::t_279512b00f2bbb 3
+  s_58dd112dc09435::t_dafa2a37f1b43f 77
+apps/dashboard/content/docs/nb/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_f1207d5183fd22 39
+  s_58dd112dc09435::t_c22fb46d398b6e 47-53
+  s_58dd112dc09435::t_63e4ecbccc312c 28-31
+apps/dashboard/content/docs/da/evaluating-a-role.mdx
+  s_58dd112dc09435::t_a77ca418ce1d48 9-10
+  s_58dd112dc09435::t_79b4f9499d5a1c 3
+  s_58dd112dc09435::t_b426f4a06bf59b 50-51
+  s_58dd112dc09435::t_c05217d3aa013a 53,55-60
+  s_58dd112dc09435::t_8e7736ccd035d3 66-77
+packages/backend/convex/assessment/anchorRoles.ts
+  s_58dd112dc09435::t_d2f7e9cdddf4fc 127,132,203,236,242
+  s_58dd112dc09435::t_9f5b011de7ebbd 83,151
+  s_58dd112dc09435::t_ba15b5c11b43cc 61-62,129,202,204-205
+apps/dashboard/content/docs/nb/model-overview.mdx
+  s_58dd112dc09435::t_4e1a0b7d438def 62
+packages/backend/convex/evaluationModel/consequence.test.ts
+  s_58dd112dc09435::t_34d4cf2d5fda32 540
+  s_58dd112dc09435::t_9f5b011de7ebbd 93
+packages/backend/convex/assessment/ratings.test.ts
+  s_58dd112dc09435::t_cf1b6d88c1ab8a 313
+apps/dashboard/content/docs/nb/key-concepts.mdx
+  s_58dd112dc09435::t_b5f04cb35bc79f 34-36
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_14bad9b504fc7b 196,199,890-891,1129,1131,1232,1234,1674,1679,1899,2109,2226,2801-2802
+apps/dashboard/components/levels/level-ladder.test.tsx
+  s_58dd112dc09435::t_9f5b011de7ebbd 40
+apps/dashboard/content/docs/en/evaluating-a-role.mdx
+  s_58dd112dc09435::t_8c5f335c7e90c1 3,9,51,53-60,64-73
+apps/dashboard/lib/assessment-error.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 3,18
+apps/dashboard/content/docs/en/score-and-levels.mdx
+  s_58dd112dc09435::t_7dfcb64f134551 7,9,30,36-37,63,68,75-76
+  s_58dd112dc09435::t_8ff5de36d11fb6 82-83,85-87,92
+apps/dashboard/components/levels/level-matrix.test.tsx
+  s_58dd112dc09435::t_9f5b011de7ebbd 26
+packages/backend/convex/lib/audit.test.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 336-337,527-528
+apps/dashboard/components/role-sheet.test.tsx
+  s_58dd112dc09435::t_54c1d42e0f32b2 198
+  s_58dd112dc09435::t_aa247c565676ea 135,146,177,196
+  s_58dd112dc09435::t_7c028ba558df1e 181
+  s_58dd112dc09435::t_34d4cf2d5fda32 46,109,206,224
+  s_58dd112dc09435::t_f0ef649e2a2e96 149,157,178,180,193
+apps/dashboard/content/docs/sv/method-documentation.mdx
+  s_58dd112dc09435::t_ea7ef36d54bf81 134-136
+  s_58dd112dc09435::t_2e5eef6c351003 143-144
+  s_58dd112dc09435::t_4781d059c92c9f 122-123
+apps/dashboard/content/docs/fi/adjusting-a-rating.mdx
+  s_58dd112dc09435::t_3e25047995d1b0 3
+  s_58dd112dc09435::t_6bdf1580ce31dd 37-41,45-48,53-55
+  s_58dd112dc09435::t_6b562d4e2d8e71 65-66
+  s_58dd112dc09435::t_08eb4ad5a0cf8e 7-9,11,13-20,24-25
+  s_58dd112dc09435::t_0523fc5fc25329 30
+apps/dashboard/components/model/consequence-panel.test.tsx
+  s_58dd112dc09435::t_aa247c565676ea 171,262
+apps/dashboard/content/docs/fi/method-documentation.mdx
+  s_58dd112dc09435::t_cf5a7edfd02d18 131
+  s_58dd112dc09435::t_044ed3cd21cf89 144-146
+  s_58dd112dc09435::t_40f71f8f755063 153-154
+packages/backend/convex/payMapping/erasure.test.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 127
+  s_58dd112dc09435::t_28159803d6161e 122
+apps/dashboard/components/rating/rating-result.test.tsx
+  s_58dd112dc09435::t_54c1d42e0f32b2 116,133
+  s_58dd112dc09435::t_7c028ba558df1e 91,99
+  s_58dd112dc09435::t_3fadd409345e03 100,130,138
+  s_58dd112dc09435::t_34d4cf2d5fda32 26,86,92
+apps/dashboard/content/docs/da/adjusting-a-rating.mdx
+  s_58dd112dc09435::t_defa322193bc70 3
+  s_58dd112dc09435::t_1a8302287d7dd8 23-24
+  s_58dd112dc09435::t_58aa7ec89369e0 35-38,42-44,51-52
+  s_58dd112dc09435::t_f12e2870c05b72 45-48
+  s_58dd112dc09435::t_1c3e3fdcaca85c 7-9,11,13-19
+  s_58dd112dc09435::t_fd3116c4a0d3f6 63-64
+packages/backend/convex/assessment/results.test.ts
+  s_58dd112dc09435::t_2ee45a5799f7ba 209,216,260-261,318
+  s_58dd112dc09435::t_9f5b011de7ebbd 104,157,166,231,249,340,359,390,423
+  s_58dd112dc09435::t_6644b9c4ddbdf7 331
+  s_58dd112dc09435::t_34d4cf2d5fda32 156,165,198,229,248,329,339,358,399,422
+  s_58dd112dc09435::t_cf1b6d88c1ab8a 95,97,177
+apps/dashboard/content/docs/sv/levels-views.mdx
+  s_58dd112dc09435::t_052e09bf9e26e4 67-68
+  s_58dd112dc09435::t_18a4570fa21c70 57-59,61-63
+  s_58dd112dc09435::t_61a158d93520bf 79-81
+  s_58dd112dc09435::t_f9e36ceb951bac 60
+apps/dashboard/content/docs/fi/levels-views.mdx
+  s_58dd112dc09435::t_f9e36ceb951bac 61
+  s_58dd112dc09435::t_c53d508f796ccb 58-59,63
+  s_58dd112dc09435::t_87efaad8be52ab 69-71
+  s_58dd112dc09435::t_23d1f5e24cbfd2 82-85
+packages/backend/convex/assessment/roles.ts
+  s_58dd112dc09435::t_d2f7e9cdddf4fc 212,214,253
+apps/dashboard/lib/calibration-queue.test.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 20
+  s_58dd112dc09435::t_34d4cf2d5fda32 24,105-109,111
+  s_58dd112dc09435::t_4a02e8c7073f23 110
+apps/dashboard/content/docs/sv/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_3962e58bb7bdbb 77
+  s_58dd112dc09435::t_a8b5415c71a71e 108,110,112,114-119,121,123,125,127-130
+  s_58dd112dc09435::t_5a403951497cd2 3
+apps/dashboard/content/docs/fi/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_2f495e7f49b48a 78
+  s_58dd112dc09435::t_8849e72e925333 3
+  s_58dd112dc09435::t_6996a2beb429d2 109,111,113,115-120,122,124,126,128-132
+apps/dashboard/content/docs/da/levels-views.mdx
+  s_58dd112dc09435::t_d135d7450ab692 57,68,82-83
+  s_58dd112dc09435::t_abbdea22cb628c 70
+  s_58dd112dc09435::t_8ddb01aedcb5c7 71-73
+  s_58dd112dc09435::t_543781fc6eb788 59
+  s_58dd112dc09435::t_3f2b2ef38cbd0d 60-64
+  s_58dd112dc09435::t_646224c0b96be4 58
+  s_58dd112dc09435::t_c30b5498338be1 69
+apps/dashboard/components/levels/family-level-matrix.test.tsx
+  s_58dd112dc09435::t_9f5b011de7ebbd 26
+packages/backend/convex/assessment/roles.test.ts
+  s_58dd112dc09435::t_34d4cf2d5fda32 175,216,224,237
+  s_58dd112dc09435::t_9f5b011de7ebbd 227,747,763
+  s_58dd112dc09435::t_6644b9c4ddbdf7 174,194,760
+apps/dashboard/lib/calibration-schemas.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 4
+packages/backend/convex/assessment/tables.ts
+  s_58dd112dc09435::t_06821bdc127bde 58-61
+  s_58dd112dc09435::t_9f5b011de7ebbd 64-65
+apps/dashboard/content/docs/sv/evaluating-a-role.mdx
+  s_58dd112dc09435::t_c4f7e77c1c50d2 3,9,52,54-61,65-75
+apps/dashboard/content/docs/sv/glossary.mdx
+  s_58dd112dc09435::t_49fd57992e7cbe 57-60
+  s_58dd112dc09435::t_99355ba97b437b 45-47
+apps/dashboard/content/docs/nb/score-and-levels.mdx
+  s_58dd112dc09435::t_92ea42195a8c70 36-37
+  s_58dd112dc09435::t_09575554c4ede1 69
+  s_58dd112dc09435::t_3e096779374d48 7-10
+  s_58dd112dc09435::t_4a49ab9d6786b7 30
+  s_58dd112dc09435::t_694b6443b63835 64
+  s_58dd112dc09435::t_852b42d2b085c9 77-91
+  s_58dd112dc09435::t_d0c6d52e12da58 96
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_58dd112dc09435::t_9f5b011de7ebbd 181,241,320,337
+  s_58dd112dc09435::t_a2c37f49833e9f 326-327,335,343
+  s_58dd112dc09435::t_3a8b21c6335cde 26-28,143,267
+  s_58dd112dc09435::t_8482c16448b1b6 334,336,344
+  s_58dd112dc09435::t_34d4cf2d5fda32 38,58,90
+  s_58dd112dc09435::t_369449a6f597f3 88-89,167,199,205,240,319
+  s_58dd112dc09435::t_54c1d42e0f32b2 173,196,232-233
+apps/dashboard/lib/todo.test.ts
+  s_58dd112dc09435::t_34d4cf2d5fda32 21,174,192,538-541,543,571-574,576,630-633,635,656-659,661
+  s_58dd112dc09435::t_6c4532dcc84a1b 542,575,634,660
+apps/dashboard/content/docs/sv/starting-a-pay-mapping.mdx
+  s_58dd112dc09435::t_9c380169e50bbd 29,31-32
+  s_58dd112dc09435::t_d28a7cc09d16e2 40-41
+  s_58dd112dc09435::t_12fd1e866a2cc4 48-50,53-54
+apps/dashboard/content/docs/fi/anchor-roles.mdx
+  s_58dd112dc09435::t_590f8083d86e99 24,27-29
+packages/backend/convex/lib/auditPayloads.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 347-348
+apps/dashboard/content/docs/da/key-concepts.mdx
+  s_58dd112dc09435::t_eaa8dd6f2aafd4 38
+  s_58dd112dc09435::t_a61d7052cbdac1 36
+  s_58dd112dc09435::t_942bafafdef636 37
+packages/backend/convex/assessment/completion.ts
+  s_58dd112dc09435::t_e4eb16381dbd64 108-113,134,136
+  s_58dd112dc09435::t_9f5b011de7ebbd 1-7,14-19,22-27,29-107,115-133,135,137-179
+  s_58dd112dc09435::t_06821bdc127bde 8-13,20-21,28
+  s_58dd112dc09435::t_3a8b21c6335cde 114
+apps/dashboard/content/docs/en/anchor-roles.mdx
+  s_58dd112dc09435::t_67c28fe6fb9af6 22,24,26
+apps/dashboard/content/docs/en/roles-register.mdx
+  s_58dd112dc09435::t_67c28fe6fb9af6 21
+apps/dashboard/lib/levels.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 25
+apps/dashboard/components/assessment-status.test.tsx
+  s_58dd112dc09435::t_54c1d42e0f32b2 8-9,41-42
+  s_58dd112dc09435::t_f0ef649e2a2e96 27,30,40
+apps/dashboard/components/rating/rating-result.tsx
+  s_58dd112dc09435::t_f0ef649e2a2e96 71
+  s_58dd112dc09435::t_54c1d42e0f32b2 17-18,79,111
+  s_58dd112dc09435::t_3fadd409345e03 52-55,70
+  s_58dd112dc09435::t_34d4cf2d5fda32 60
+apps/dashboard/content/docs/fi/roles-register.mdx
+  s_58dd112dc09435::t_9a720f2dbb3c54 22
+apps/dashboard/lib/calibration-queue.ts
+  s_58dd112dc09435::t_34d4cf2d5fda32 40,62
+apps/dashboard/components/rating/rating-stepper.test.tsx
+  s_58dd112dc09435::t_71d945bd7cd76d 29-31
+  s_58dd112dc09435::t_7c028ba558df1e 239
+  s_58dd112dc09435::t_1531dcd949457f 20-22
+apps/dashboard/content/docs/fi/glossary.mdx
+  s_58dd112dc09435::t_a4a598c3acbb66 60-63
+  s_58dd112dc09435::t_878a9abc592ab1 49
+apps/dashboard/content/docs/da/score-and-levels.mdx
+  s_58dd112dc09435::t_c47020e3112cab 7,9
+  s_58dd112dc09435::t_56f8e6f140f1ed 30
+  s_58dd112dc09435::t_6e96be744aeb03 36-37
+  s_58dd112dc09435::t_6a022282def733 63
+  s_58dd112dc09435::t_1d5a653c7cfb45 68
+  s_58dd112dc09435::t_8efcb590de0948 75-89,94-95
+apps/dashboard/lib/todo.ts
+  s_58dd112dc09435::t_34d4cf2d5fda32 98,191,313
+  s_58dd112dc09435::t_2199284f82d1c3 199
+  s_58dd112dc09435::t_bc8bf872f137da 95,97,188,190
+apps/dashboard/content/docs/en/levels-views.mdx
+  s_58dd112dc09435::t_67c28fe6fb9af6 55,59,64,76
+  s_58dd112dc09435::t_f9e36ceb951bac 57
+apps/dashboard/content/docs/sv/model-overview.mdx
+  s_58dd112dc09435::t_4e1a0b7d438def 61
+apps/dashboard/content/docs/sv/roles-register.mdx
+  s_58dd112dc09435::t_70a162cca5c0af 21-23
+apps/dashboard/content/docs/da/roles-register.mdx
+  s_58dd112dc09435::t_91f4a25f651fcd 21-23
+packages/backend/convex/payMapping/runs.ts
+  s_58dd112dc09435::t_9f5b011de7ebbd 270
+apps/dashboard/components/role-sheet.tsx
+  s_58dd112dc09435::t_54c1d42e0f32b2 29-30,156,245
+  s_58dd112dc09435::t_34d4cf2d5fda32 146,230-232,241
+  s_58dd112dc09435::t_7c028ba558df1e 143,150
+  s_58dd112dc09435::t_f0ef649e2a2e96 144-145,149,151-152,223,236-237,242
+apps/dashboard/components/levels/role-chip.test.tsx
+  s_58dd112dc09435::t_9f5b011de7ebbd 20
+packages/backend/convex/evaluationModel/method.ts
+  s_58dd112dc09435::t_34d4cf2d5fda32 76
+apps/dashboard/components/levels/pending-roles.test.tsx
+  s_58dd112dc09435::t_9f5b011de7ebbd 20,65
+  s_58dd112dc09435::t_a2c37f49833e9f 63
+packages/backend/convex/assessment/starters.test.ts
+  s_58dd112dc09435::t_2ee45a5799f7ba 1359
+  s_58dd112dc09435::t_9f5b011de7ebbd 1353,1362
+apps/dashboard/content/docs/en/adjusting-a-rating.mdx
+  s_58dd112dc09435::t_1945e6e23675a7 3,7-9,11,13-19,23,35-38,42-46,50,60
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_58dd112dc09435::t_9f5b011de7ebbd 88-90,286
+apps/dashboard/content/docs/nb/evaluating-a-role.mdx
+  s_58dd112dc09435::t_d0c4f70e8f76a2 9-11
+  s_58dd112dc09435::t_9645cab54587ee 3
+  s_58dd112dc09435::t_dcb3e0daeaa595 67-77
+  s_58dd112dc09435::t_d4610d0c97c42f 54,56-63
+packages/backend/convex/assessment/results.ts
+  s_58dd112dc09435::t_2ee45a5799f7ba 17,22,29
+  s_58dd112dc09435::t_d2f7e9cdddf4fc 25,27-28,34,105-106,120,197,208,210,212-216,252,256,269,322,330,332,334-338
+  s_58dd112dc09435::t_ba15b5c11b43cc 24,104
+  s_58dd112dc09435::t_9f5b011de7ebbd 45,122,271
+apps/dashboard/content/docs/da/anchor-roles.mdx
+  s_58dd112dc09435::t_a61d7052cbdac1 23,26,28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "7ac6531d9e62d81a365e8562db3dfe68602eefae",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
