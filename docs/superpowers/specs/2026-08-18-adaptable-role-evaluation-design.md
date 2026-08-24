@@ -61,9 +61,9 @@ A fixed structural constant, not a table (ADR-0006 pattern, like tracks):
 
 ### 2.4 `roles` table
 
-- New optional aggregate `assessment`: `{ status: "locked" | "calibrated", lockedBy, lockedAt, calibratedBy?, calibratedAt?, calibrationNote? }`. Absent = draft. Locking requires a complete, valid rating set against an approved model. Unlocking is explicit and audited. `calibrated` is set from the calibration queue with a note.
+- New optional aggregate `assessment`: `{ status: "completed" | "calibrated", completedBy, completedAt, calibratedBy?, calibratedAt?, calibrationNote? }` (fields renamed by decision 14). Absent = draft. Completing requires a complete, valid rating set against an approved model. Reopening is a light, audited act. `calibrated` is set from the calibration queue with a note.
 - `anchorRole.expectedLevel` range becomes 1-12.
-- Method drift is derived, never stored: `assessment.lockedAt < model.approval.approvedAt` renders "bedomd enligt tidigare metod" (§17.5 marking); re-locking clears it.
+- Method drift is derived, never stored: `assessment.completedAt < model.approval.approvedAt` renders "bedomd enligt tidigare metod" (§17.5 marking); re-completing clears it.
 
 ### 2.5 `ratings` table
 
@@ -77,7 +77,7 @@ Grows into full method evidence, frozen at run creation: per-criterion `{ name, 
 ### 2.7 Onboarding and seed
 
 - `EnsureDefaultModel` seeds an empty draft model shell (name, default `levelRules`, no criteria, materiality undecided) via a new `createDefaultModel` mutation; `createModelFromTemplate` retires with the template. Onboarding is otherwise unchanged; the dashboard todo gains "Bygg och godkann er metod" as the leading task.
-- `seed.ts` builds the demo org the new way: select from the library, document, weight, approve, lock assessments. `devReset` and `testing.helpers` follow.
+- `seed.ts` builds the demo org the new way: select from the library, document, weight, approve, complete assessments. `devReset` and `testing.helpers` follow.
 
 ## 3. Engine (`packages/core`)
 
@@ -152,11 +152,11 @@ House rules apply: wizard/morph animation patterns, content-shaped skeletons per
 
 **Completion is the reveal** (reworded by decision 14): while rating, no results exist anywhere. The assessment flow's FINAL act completes the assessment, and completion triggers the rating-result reveal (score, level, zone) in the same gesture; there is no separate lock errand. Reopening to re-rate is a light, audited act (the trail is the record). The derived method-drift chip ("bedomd enligt tidigare metod") appears when `completedAt < approvedAt`; re-completing under the current method clears it.
 
-**Levels surfaces:** the ladder and matrix render 12 levels grouped into the four zones with zone descriptions (§14.5.1 architecture overview). Only locked assessments place; complete-but-unlocked roles appear as "klar att lasa" in the pending list. The §14.3 numbering-direction parameter is deferred (Level 1 = highest is an app invariant; recorded in ADR-0022).
+**Levels surfaces:** the ladder and matrix render 12 levels grouped into the four zones with zone descriptions (§14.5.1 architecture overview). Only completed assessments place; rated-but-not-completed roles appear as "klar att slutfora" in the pending list. The §14.3 numbering-direction parameter is deferred (Level 1 = highest is an app invariant; recorded in ADR-0022).
 
-**Calibration queue (derived, on the levels surface):** roles with `profileLimited` and not yet calibrated ("kalibrering kravs"), anchor roles whose computed level deviates from `expectedLevel`, and stale locks after method changes. Per role: confirm placement (sets `calibrated` + note, audited) or jump to the builder.
+**Calibration queue (derived, on the levels surface):** roles with `profileLimited` and not yet calibrated ("kalibrering kravs"), anchor roles whose computed level deviates from `expectedLevel`, and stale completions after method changes. Per role: confirm placement (sets `calibrated` + note, audited) or jump to the builder.
 
-**Pay mapping:** grouping keeps **level** as its key (decision 7). New runs snapshot 12-level rules; old frozen runs are untouched. Run creation includes people whose roles have locked assessments, the same way incomplete assessments are excluded today (verify the exact exclusion seam at plan time).
+**Pay mapping:** grouping keeps **level** as its key (decision 7). New runs snapshot 12-level rules; old frozen runs are untouched. Run creation includes people whose roles have completed assessments, the same way incomplete assessments are excluded today (verify the exact exclusion seam at plan time).
 
 ## 7. Governance and content
 
@@ -167,7 +167,7 @@ House rules apply: wizard/morph animation patterns, content-shaped skeletons per
 
 **Repo documents:** the masterdokument lands as `docs/rollvardering-masterdokument.md`. The evaluation-model glossary (`docs/contexts/evaluation-model/CONTEXT.md`) gains Dimension, Kriteriebibliotek, Materialitetsprovning, Zon, Profilkrav, Last bedomning, Kalibrering; updates Steg/Ankare (1-5, anchors 1/3/5), Niva (1-12), Nivaregel (replacing Nivatroskal), and retires Mall in favor of the library; the i18n term table grows accordingly.
 
-**Audit events** (full house machinery: typed payloads, categories, subjects, labels in five locales, drift-guard tests): model approval + re-opening, the materiality decision, criterion activation/deactivation from the library, level-rule and zone-profile-rule diffs, assessment locked/unlocked/calibrated (subject: role). `level.shift` continues to cover result movement. Toasts for approve, lock, unlock, calibrate, materiality.
+**Audit events** (full house machinery: typed payloads, categories, subjects, labels in five locales, drift-guard tests): model approval + re-opening, the materiality decision, criterion activation/deactivation from the library, level-rule and zone-profile-rule diffs, assessment completed/reopened/calibrated (subject: role). `level.shift` continues to cover result movement. Toasts for approve, complete, reopen, calibrate, materiality.
 
 **Docs (MDX, five locales, `docs:sync` in the same change, `docs:eval` after):** new building-your-method page; updates to criteria-and-scale, evaluating-a-role, levels-views, key-concepts, glossary, anchor-roles.
 
@@ -193,8 +193,8 @@ House rules apply: wizard/morph animation patterns, content-shaped skeletons per
 ## 9. Testing
 
 - **Core:** engine tests for the scale (0-rule edges), zone capping, profile derivation, validators; fixtures updated; property-style checks around budget/caps.
-- **Backend (convex-test):** library guard test (§4 above), selection mutations (caps, overlap, materiality), approval gate + checklist, method-affecting flip list, rating validations, locking lifecycle + gates, frozenModel growth, seed/devReset, audit events (label coverage auto-guards).
-- **Dashboard:** builder steps + derived step state, picker, overview, stepper scale UI, reveal-behind-lock, ladder zones, calibration queue; existing i18n-parity, audit-label, help-cap, skeleton guards extended.
+- **Backend (convex-test):** library guard test (§4 above), selection mutations (caps, overlap, materiality), approval gate + checklist, method-affecting flip list, rating validations, completion lifecycle + gates, frozenModel growth, seed/devReset, audit events (label coverage auto-guards).
+- **Dashboard:** builder steps + derived step state, picker, overview, stepper scale UI, reveal-behind-completion, ladder zones, calibration queue; existing i18n-parity, audit-label, help-cap, skeleton guards extended.
 - E2E stays out of scope (Playwright later, per house rule).
 
 ## 10. Phasing
