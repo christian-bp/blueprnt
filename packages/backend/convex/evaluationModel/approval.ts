@@ -484,10 +484,40 @@ export const setWorkingConditionsDecision = orgMutation({
 // before it is ever stored. Reopens approval (a rules change can move
 // levels) and wraps a level-shift diff (placeRole/scoreRole depend on
 // levelRules).
+// A minScore is a point on the normalized 0-100 weighting scale, and a minStep
+// a point on the 1-5 rating scale. The engine's own checks constrain the SHAPE
+// of each list (twelve levels, strictly decreasing, bottom at 0; zone steps
+// non-increasing A -> D) but not the range of an individual number, so a value
+// outside its scale would be stored and then be permanently unsatisfiable: a
+// zone gated at step 9 admits nobody, and no check would ever say why. Bounded
+// here, matching the client's own gate, with the client staying the
+// convenience and this the authority.
+const MIN_SCORE_FLOOR = 0
+const MIN_SCORE_CEILING = 100
+const MIN_STEP_FLOOR = 1
+const MIN_STEP_CEILING = 5
+
+function assertInRange(
+  values: readonly number[],
+  floor: number,
+  ceiling: number
+): void {
+  for (const value of values) {
+    if (!Number.isInteger(value) || value < floor || value > ceiling) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+  }
+}
+
 export const updateLevelRules = orgMutation({
   args: { levelRules: v.array(levelRuleShape) },
   returns: v.null(),
   handler: async (ctx, { levelRules }) => {
+    assertInRange(
+      levelRules.map((rule) => rule.minScore),
+      MIN_SCORE_FLOOR,
+      MIN_SCORE_CEILING
+    )
     const model = await requireModel(ctx, ctx.orgId)
     const candidate = await buildMethodCheckInput(ctx, model)
     const checks = validateMethod({ ...candidate, levelRules })
@@ -526,6 +556,11 @@ export const updateZoneProfileRules = orgMutation({
   args: { zoneProfileRules: v.array(zoneProfileRuleShape) },
   returns: v.null(),
   handler: async (ctx, { zoneProfileRules }) => {
+    assertInRange(
+      zoneProfileRules.map((rule) => rule.minStep),
+      MIN_STEP_FLOOR,
+      MIN_STEP_CEILING
+    )
     const model = await requireModel(ctx, ctx.orgId)
     const candidate = await buildMethodCheckInput(ctx, model)
     const checks = validateMethod({ ...candidate, zoneProfileRules })

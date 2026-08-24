@@ -13,7 +13,6 @@ import { v } from "convex/values"
 import type { Doc } from "../_generated/dataModel"
 import { readResultInputs, type ResultInputs } from "../assessment/compute"
 import { orgQuery } from "../lib/functions"
-import { LIBRARY_DIMENSION } from "./criteriaLibrary"
 import type { ModelEvidence } from "./tables"
 
 // The masterdokument's section 18: before a method change is approved, show
@@ -31,16 +30,23 @@ import type { ModelEvidence } from "./tables"
 // itself is always exact, because it is what the reader actually needs.
 export const MAX_LISTED_MOVERS = 12
 
+export const GENDER_DOMINANCE_KEYS = [
+  "women",
+  "men",
+  "mixed",
+  // A role nobody is assigned to has no dominance to report. Its own bucket
+  // rather than folded into "mixed", which would claim a balance that was
+  // never measured.
+  "unstaffed",
+] as const
+
 const genderDominanceValidator = v.union(
   v.literal("women"),
   v.literal("men"),
   v.literal("mixed"),
-  // A role nobody is assigned to has no dominance to report. Its own bucket
-  // rather than folded into "mixed", which would claim a balance that was
-  // never measured.
   v.literal("unstaffed")
 )
-export type GenderDominance = "women" | "men" | "mixed" | "unstaffed"
+export type GenderDominance = (typeof GENDER_DOMINANCE_KEYS)[number]
 
 const distributionValidator = v.array(
   v.object({
@@ -50,17 +56,26 @@ const distributionValidator = v.array(
   })
 )
 
-const groupShiftValidator = v.array(
-  v.object({
-    key: v.string(),
-    label: v.union(v.string(), v.null()),
-    // How many of the group's roles move at all, and the net direction in
-    // LEVELS (negative is up, since level 1 is the highest).
-    moved: v.number(),
-    up: v.number(),
-    down: v.number(),
-    total: v.number(),
-  })
+// Declared as FIELDS rather than a finished validator so the gender table can
+// type its key as the four-class union while the family table keeps a free
+// string (a family id). A shared v.string() left the class untyped on the wire
+// and let the panel swallow an unknown value into "unstaffed".
+const groupShiftFields = {
+  label: v.union(v.string(), v.null()),
+  // How many of the group's roles move at all, and the net direction in
+  // LEVELS (negative is up, since level 1 is the highest).
+  moved: v.number(),
+  up: v.number(),
+  down: v.number(),
+  total: v.number(),
+}
+
+const familyShiftValidator = v.array(
+  v.object({ key: v.string(), ...groupShiftFields })
+)
+
+const genderShiftValidator = v.array(
+  v.object({ key: genderDominanceValidator, ...groupShiftFields })
 )
 
 // Maps the buffer's criteria (identified by libraryKey, since ids are not part
@@ -94,9 +109,17 @@ function approvedCriteria(
       continue
     }
     matched.add(id)
+    const live = inputs.criteria.find((entry) => entry.criterionId === id)
+    if (live === undefined) {
+      removed += 1
+      continue
+    }
     criteria.push({
       criterionId: id,
-      dimensionKey: LIBRARY_DIMENSION[libraryKey as never],
+      // From the LIVE criterion, which already carries it: the buffer's own
+      // dimensionKey is an optional legacy-tolerant string, and reading it
+      // through LIBRARY_DIMENSION needed a cast to silence the index type.
+      dimensionKey: live.dimensionKey,
       weightPoints: entry.weightPoints as WeightPoints,
     })
   }
@@ -153,10 +176,19 @@ function levelByRole(results: readonly RoleResult[]): Map<string, number> {
   return map
 }
 
-function zoneCounts(results: readonly RoleResult[]): Record<ZoneKey, number> {
+// ONE population for the whole panel: only LOCKED roles, the same set `placed`,
+// `movers`, `families` and `genders` speak about. Counting every active role
+// here instead put a zone table about N roles beside a summary about the M
+// locked ones, with nothing saying they were different sets.
+function zoneCounts(
+  results: readonly RoleResult[],
+  lockedIds: ReadonlySet<string>
+): Record<ZoneKey, number> {
   const counts: Record<ZoneKey, number> = { A: 0, B: 0, C: 0, D: 0 }
   for (const result of results) {
-    if (result.zone !== null) counts[result.zone] += 1
+    if (result.zone !== null && lockedIds.has(result.roleId)) {
+      counts[result.zone] += 1
+    }
   }
   return counts
 }
@@ -176,6 +208,16 @@ export const getConsequenceAnalysis = orgQuery({
     // nothing to report.
     comparable: v.boolean(),
     moved: v.number(),
+    // A placement that DISAPPEARS is the largest consequence there is, and it
+    // used to be the one the panel could not see. Approving a method that
+    // added a criterion leaves every already-locked role unrated on it, so the
+    // engine returns no level and the role falls off the ladder until someone
+    // rates it. Counted here as its own class rather than folded into `moved`,
+    // because "moved to another level" and "has no level any more" are
+    // different things to tell an approver. `gaining` is the mirror: a role
+    // that could not place under the approved method and can now.
+    losing: v.number(),
+    gaining: v.number(),
     // Every locked, placed role, counted once, so the panel can say "8 of 42".
     placed: v.number(),
     criteriaAdded: v.number(),
@@ -186,17 +228,21 @@ export const getConsequenceAnalysis = orgQuery({
         roleId: v.id("roles"),
         title: v.string(),
         slug: v.string(),
-        from: v.number(),
-        to: v.number(),
+        // Null on the side where the role has no placement: `to: null` is a
+        // role that loses its level, `from: null` one that gains one.
+        from: v.union(v.number(), v.null()),
+        to: v.union(v.number(), v.null()),
       })
     ),
-    families: groupShiftValidator,
-    genders: groupShiftValidator,
+    families: familyShiftValidator,
+    genders: genderShiftValidator,
   }),
   handler: async (ctx) => {
     const empty = {
       comparable: false,
       moved: 0,
+      losing: 0,
+      gaining: 0,
       placed: 0,
       criteriaAdded: 0,
       criteriaRemoved: 0,
@@ -281,7 +327,12 @@ export const getConsequenceAnalysis = orgQuery({
     ) => {
       const bucket = buckets.get(key) ?? { moved: 0, up: 0, down: 0, total: 0 }
       bucket.total += 1
-      if (delta !== null && delta !== 0) {
+      // NaN is "moved, but in no direction": a role that gained or lost its
+      // placement altogether counts as changed without claiming it went up or
+      // down a ladder it was not on.
+      if (Number.isNaN(delta)) {
+        bucket.moved += 1
+      } else if (delta !== null && delta !== 0) {
         bucket.moved += 1
         // Level 1 is the HIGHEST, so a smaller number is up.
         if (delta < 0) bucket.up += 1
@@ -290,22 +341,30 @@ export const getConsequenceAnalysis = orgQuery({
       buckets.set(key, bucket)
     }
 
+    // `from`/`to` are null when the role has no placement on that side. A
+    // moving role has both; a role that loses its placement has a `from` and
+    // no `to`, which is the case the panel used to be blind to.
     const movers: {
       roleId: Doc<"roles">["_id"]
       title: string
       slug: string
-      from: number
-      to: number
+      from: number | null
+      to: number | null
     }[] = []
     let placed = 0
+    let losing = 0
+    let gaining = 0
     for (const role of lockedRoles) {
       const id = role._id as string
-      const to = nowLevel.get(id)
-      const from = approvedLevel.get(id)
-      if (to === undefined || from === undefined) continue
+      const to = nowLevel.get(id) ?? null
+      const from = approvedLevel.get(id) ?? null
+      // Placeable on neither side: nothing to say about it either way.
+      if (to === null && from === null) continue
       placed += 1
-      const delta = to - from
-      if (delta !== 0) {
+      if (from !== null && to === null) losing += 1
+      if (from === null && to !== null) gaining += 1
+      const changed = from !== to
+      if (changed) {
         movers.push({
           roleId: role._id,
           title: role.title,
@@ -314,28 +373,43 @@ export const getConsequenceAnalysis = orgQuery({
           to,
         })
       }
+      // The group tables count a role that gains or loses its placement as
+      // MOVED, without a direction: it did not go up or down the ladder, it
+      // left it or joined it. `delta` stays null for those, which `bump`
+      // already reads as "no direction".
+      const delta = from !== null && to !== null ? to - from : null
+      const bucketDelta = changed && delta === null ? Number.NaN : delta
       bump(
         familyBuckets,
         role.familyId === undefined ? "" : (role.familyId as string),
-        delta
+        bucketDelta
       )
-      bump(genderBuckets, dominance.get(id) ?? "unstaffed", delta)
+      bump(genderBuckets, dominance.get(id) ?? "unstaffed", bucketDelta)
     }
 
     // Biggest movement first, then by title, so the capped list shows the
     // changes worth reading rather than the alphabetically luckiest.
+    // Losing or gaining a placement outranks any distance moved: a role that
+    // fell off the ladder is the thing an approver most needs to see, and a
+    // capped list must never spend its twelve rows on level shifts while a
+    // role disappears below the fold.
+    const magnitude = (mover: { from: number | null; to: number | null }) =>
+      mover.from === null || mover.to === null
+        ? Number.POSITIVE_INFINITY
+        : Math.abs(mover.to - mover.from)
     movers.sort(
-      (a, b) =>
-        Math.abs(b.to - b.from) - Math.abs(a.to - a.from) ||
-        a.title.localeCompare(b.title)
+      (a, b) => magnitude(b) - magnitude(a) || a.title.localeCompare(b.title)
     )
 
-    const nowZones = zoneCounts(nowResults)
-    const approvedZones = zoneCounts(approvedResults)
+    const lockedIds = new Set(lockedRoles.map((role) => role._id as string))
+    const nowZones = zoneCounts(nowResults, lockedIds)
+    const approvedZones = zoneCounts(approvedResults, lockedIds)
 
     return {
       comparable: true,
       moved: movers.length,
+      losing,
+      gaining,
       placed,
       criteriaAdded: added,
       criteriaRemoved: removed,
@@ -360,5 +434,3 @@ export const getConsequenceAnalysis = orgQuery({
     }
   },
 })
-
-export { genderDominanceValidator }

@@ -1449,3 +1449,65 @@ describe("restoreApprovedModel writes what the diff promised", () => {
     })
   })
 })
+
+// The rule mutations bound each individual number, not only the SHAPE of the
+// list. A minScore outside 0-100 or a minStep outside the 1-5 rating scale
+// would otherwise be stored and then be permanently unsatisfiable, with no
+// check ever saying why.
+describe("updateLevelRules / updateZoneProfileRules bounds", () => {
+  async function seeded(t: ReturnType<typeof initConvexTest>) {
+    const { orgId, asAdmin } = await seedApprovableModel(t)
+    const model = await asAdmin.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    if (model === null) throw new Error("no model")
+    return { orgId, asAdmin, levelRules: model.levelRules }
+  }
+
+  it.each([
+    ["above the scale", 101],
+    ["below the scale", -1],
+    ["not a whole number", 42.5],
+  ])("refuses a minScore %s", async (_name, minScore) => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, levelRules } = await seeded(t)
+    await expect(
+      asAdmin.mutation(api.evaluationModel.approval.updateLevelRules, {
+        orgId,
+        levelRules: levelRules.map((rule) =>
+          rule.level === 1 ? { level: 1, minScore } : rule
+        ),
+      })
+    ).rejects.toThrow(/errors\.invalidInput/)
+  })
+
+  it.each([
+    ["above the rating scale", 9],
+    ["below the rating scale", 0],
+    ["not a whole number", 3.5],
+  ])("refuses a minStep %s", async (_name, minStep) => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seeded(t)
+    await expect(
+      asAdmin.mutation(api.evaluationModel.approval.updateZoneProfileRules, {
+        orgId,
+        zoneProfileRules: [{ zone: "A", minStep }],
+      })
+    ).rejects.toThrow(/errors\.invalidInput/)
+  })
+
+  it("accepts the ends of both scales", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, levelRules } = await seeded(t)
+    await asAdmin.mutation(api.evaluationModel.approval.updateLevelRules, {
+      orgId,
+      levelRules: levelRules.map((rule) =>
+        rule.level === 1 ? { level: 1, minScore: 100 } : rule
+      ),
+    })
+    await asAdmin.mutation(
+      api.evaluationModel.approval.updateZoneProfileRules,
+      { orgId, zoneProfileRules: [{ zone: "A", minStep: 5 }] }
+    )
+  })
+})

@@ -1,6 +1,7 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
+import type { GenderDominance } from "@workspace/backend/convex/evaluationModel/consequence"
 import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
 import {
   Card,
@@ -24,6 +25,17 @@ import { CARD_READING_MEASURE } from "@/components/model/approval-card"
 // be the standing framing prose the surface laws forbid, and worse, it would
 // train the reader to skip the one visit where it matters.
 //
+// A TOTAL map, so a fifth gender class cannot compile until it has words. The
+// if/else chain this replaces ended in an `else` that swallowed any unknown
+// value into "nobody assigned", which is the quietest possible way to be wrong
+// about someone's gender.
+const GENDER_LABELS = {
+  women: "genderWomen",
+  men: "genderMen",
+  mixed: "genderMixed",
+  unstaffed: "genderUnstaffed",
+} as const satisfies Record<GenderDominance, string>
+
 // Numbers, not a chart. The comparison is four zones times two columns and a
 // short list of roles; a chart here would be a chart project (the chart laws
 // govern geometry, hover, legend and marks in full) for a table that reads
@@ -41,6 +53,13 @@ export function ConsequencePanel({ orgId }: { orgId: string }) {
   // skeleton for a section that usually renders nothing would announce a
   // consequence before knowing there is one.
   if (analysis === undefined || !analysis.comparable) return null
+  // Silence means "approving changes nothing", and a role falling off the
+  // ladder is not nothing. That used to be invisible here, but the fix belongs
+  // upstream and is there now: `moved` counts every placement that CHANGED,
+  // and a role that loses or gains its level is a change, so it is a mover
+  // with a null side. Adding `+ losing + gaining` to this gate would be a
+  // branch no input can reach, which is the dead defensive code this file was
+  // already corrected for once.
   if (analysis.moved === 0) return null
 
   const content = zoneContent(locale)
@@ -64,6 +83,20 @@ export function ConsequencePanel({ orgId }: { orgId: string }) {
               placed: analysis.placed,
             })}
           </p>
+          {/* Its own sentence, not a number folded into the one above: "moved
+              to another level" and "has no level any more" are different
+              things to tell an approver, and the second is the one that needs
+              acting on. */}
+          {analysis.losing > 0 && (
+            <p className="text-sm leading-relaxed">
+              {t("losing", { count: analysis.losing })}
+            </p>
+          )}
+          {analysis.gaining > 0 && (
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              {t("gaining", { count: analysis.gaining })}
+            </p>
+          )}
           {analysis.criteriaAdded + analysis.criteriaRemoved > 0 && (
             // Why the placements move at all: the criteria set itself changed,
             // which is a different kind of change from a reweighting and the
@@ -82,7 +115,11 @@ export function ConsequencePanel({ orgId }: { orgId: string }) {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-muted-foreground text-xs">
-                <th scope="col" className="w-1/2 text-left font-medium" />
+                <th scope="col" className="w-1/2 text-left font-medium">
+                  {/* Named for a screen reader; the zone rows below carry the
+                      column's meaning visually. */}
+                  <span className="sr-only">{t("zoneColumn")}</span>
+                </th>
                 <th scope="col" className="text-right font-medium">
                   {t("zoneApproved")}
                 </th>
@@ -122,7 +159,14 @@ export function ConsequencePanel({ orgId }: { orgId: string }) {
                   {mover.title}
                 </Link>
                 <span className="shrink-0 text-muted-foreground tabular-nums">
-                  {t("moverChange", { from: mover.from, to: mover.to })}
+                  {mover.to === null
+                    ? t("moverLoses", { from: mover.from ?? 0 })
+                    : mover.from === null
+                      ? t("moverGains", { to: mover.to })
+                      : t("moverChange", {
+                          from: mover.from,
+                          to: mover.to,
+                        })}
                 </span>
               </li>
             ))}
@@ -150,15 +194,7 @@ export function ConsequencePanel({ orgId }: { orgId: string }) {
           heading={t("gendersHeading")}
           rows={analysis.genders.map((group) => ({
             ...group,
-            name: t(
-              group.key === "women"
-                ? "genderWomen"
-                : group.key === "men"
-                  ? "genderMen"
-                  : group.key === "mixed"
-                    ? "genderMixed"
-                    : "genderUnstaffed"
-            ),
+            name: t(GENDER_LABELS[group.key]),
           }))}
         />
       </CardContent>

@@ -22,6 +22,8 @@ const m = messages.dashboard.model.consequence
 type Analysis = {
   comparable: boolean
   moved: number
+  losing: number
+  gaining: number
   placed: number
   criteriaAdded: number
   criteriaRemoved: number
@@ -30,8 +32,8 @@ type Analysis = {
     roleId: string
     title: string
     slug: string
-    from: number
-    to: number
+    from: number | null
+    to: number | null
   }[]
   families: {
     key: string
@@ -57,6 +59,8 @@ type Analysis = {
 const SILENT: Analysis = {
   comparable: false,
   moved: 3,
+  losing: 0,
+  gaining: 0,
   placed: 0,
   criteriaAdded: 0,
   criteriaRemoved: 0,
@@ -69,6 +73,8 @@ const SILENT: Analysis = {
 const MOVED: Analysis = {
   comparable: true,
   moved: 2,
+  losing: 0,
+  gaining: 0,
   placed: 9,
   criteriaAdded: 1,
   criteriaRemoved: 0,
@@ -142,41 +148,34 @@ describe("ConsequencePanel", () => {
 
   it("renders nothing when approving would move nothing", () => {
     // Comparable, so only the movement guard can silence it.
-    analysis = { ...MOVED, moved: 0, movers: [] }
+    analysis = { ...MOVED, moved: 0, losing: 0, gaining: 0, movers: [] }
     const { container } = renderPanel()
     expect(container.textContent).toBe("")
   })
 
   it("says how many placements would move, out of how many", () => {
     analysis = MOVED
-    renderPanel()
-    expect(
-      screen.getByText(
-        m.summary.replace("{moved}", "2").replace("{placed}", "9")
-      )
-    ).toBeDefined()
+    const { container } = renderPanel()
+    // Rendered text, not a hand-substituted template: these messages carry ICU
+    // plurals now, and a `.replace()` on the raw source would assert against a
+    // string the app never shows.
+    expect(container.textContent).toContain("2 of 9 locked placements")
   })
 
   // Why they move at all: a changed criteria set is a different kind of change
   // from a reweighting, and the reader should not have to infer it.
   it("says when the criteria set itself changed", () => {
     analysis = MOVED
-    renderPanel()
-    expect(
-      screen.getByText(
-        m.criteriaChanged.replace("{added}", "1").replace("{removed}", "0")
-      )
-    ).toBeDefined()
+    const { container } = renderPanel()
+    // Agreement, not "1 criteria added": the commonest case is exactly one.
+    expect(container.textContent).toContain("1 criterion added")
+    expect(container.textContent).toContain("none removed")
   })
 
   it("stays quiet about the criteria when only the weights moved", () => {
     analysis = { ...MOVED, criteriaAdded: 0, criteriaRemoved: 0 }
-    renderPanel()
-    expect(
-      screen.queryByText(
-        m.criteriaChanged.replace("{added}", "0").replace("{removed}", "0")
-      )
-    ).toBeNull()
+    const { container } = renderPanel()
+    expect(container.textContent).not.toContain("no criteria added")
   })
 
   it("shows both sides of the zone distribution", () => {
@@ -200,6 +199,52 @@ describe("ConsequencePanel", () => {
         m.moverChange.replace("{from}", "5").replace("{to}", "3")
       )
     ).toBeDefined()
+  })
+
+  // THE CRITICAL CASE. Approving a method that added a criterion leaves every
+  // already-locked role unrated on it, so the engine returns no level and the
+  // role falls off the ladder. The panel used to gate its silence on `moved`
+  // alone and therefore said nothing at all about the largest consequence
+  // there is.
+  it("speaks when a role would lose its level, even though nothing moves", () => {
+    analysis = {
+      ...MOVED,
+      moved: 1,
+      losing: 1,
+      gaining: 0,
+      criteriaAdded: 1,
+      movers: [
+        { roleId: "r9", title: "Nurse", slug: "nurse", from: 6, to: null },
+      ],
+    }
+    const { container } = renderPanel()
+    expect(container.textContent).toContain("1 role would lose its level")
+    // And the mover says so in words rather than showing a level it no longer
+    // has.
+    expect(screen.getByText(m.moverLoses.replace("{from}", "6"))).toBeDefined()
+  })
+
+  it("speaks when a role would gain a level it could not reach", () => {
+    analysis = {
+      ...MOVED,
+      moved: 1,
+      losing: 0,
+      gaining: 1,
+      movers: [
+        { roleId: "r9", title: "Nurse", slug: "nurse", from: null, to: 4 },
+      ],
+    }
+    const { container } = renderPanel()
+    expect(container.textContent).toContain("1 role would gain a level")
+    expect(screen.getByText(m.moverGains.replace("{to}", "4"))).toBeDefined()
+  })
+
+  // A losing role IS a mover with a null side, so `moved` already counts it;
+  // this is the one state where nothing at all would change.
+  it("stays silent only when nothing changes on either side", () => {
+    analysis = { ...MOVED, moved: 0, losing: 0, gaining: 0, movers: [] }
+    const { container } = renderPanel()
+    expect(container.textContent).toBe("")
   })
 
   // The list is capped; the COUNT is not, because how many roles move is what

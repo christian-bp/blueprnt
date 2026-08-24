@@ -250,12 +250,16 @@ describe("getConsequenceAnalysis", () => {
   it("carries no person identifier anywhere on the wire", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedOrg(t)
+    // Uneven across the two criteria whose weights swap, or the reweighting
+    // moves nothing and the movers list this test is about stays empty.
     const roleId = await lockedRole({
       orgId,
       asAdmin,
       model,
       title: "Analyst",
-      value: 5,
+      value: 3,
+      high: model.criteria[0]?.criterionId,
+      low: model.criteria[1]?.criterionId,
     })
     await lockedRole({ orgId, asAdmin, model, title: "Low", value: 1 })
     await bufferApproval(t, orgId)
@@ -278,6 +282,27 @@ describe("getConsequenceAnalysis", () => {
       api.evaluationModel.consequence.getConsequenceAnalysis,
       { orgId }
     )
+    // NON-VACUOUS: the only part of the wire that carries role IDENTITY is the
+    // movers list, so a privacy pin over an empty one proves nothing. The
+    // fixture above is uneven across the reweighted criteria precisely so this
+    // is not empty.
+    expect(analysis.movers.length).toBeGreaterThan(0)
+
+    // A structural ALLOWLIST, not a substring denylist. A denylist cannot see
+    // a field it was not told to look for, and the composition that would
+    // actually turn these role-level aggregates into per-role gender data is
+    // a new key on a mover (a dominance class, a personId, a headcount). This
+    // fails on any key that is not one of the five a mover may carry.
+    for (const mover of analysis.movers) {
+      expect(Object.keys(mover).sort()).toEqual([
+        "from",
+        "roleId",
+        "slug",
+        "title",
+        "to",
+      ])
+    }
+
     const serialized = JSON.stringify(analysis)
     expect(serialized).not.toContain("Anna")
     expect(serialized).not.toContain("Andersson")
@@ -349,6 +374,209 @@ describe("getConsequenceAnalysis", () => {
     expect(unstaffed?.total).toBe(1)
   })
 
+  // THE CRITICAL CASE, in the exact shape the reviewer probed. A criterion
+  // added since the approval is unrated on every already-locked role, so the
+  // engine returns no level on the LIVE side and the role falls off the
+  // ladder. Counting only roles placed on both sides made `moved` 0 and the
+  // panel silent about the largest consequence an approval can have.
+  it("counts a placement that would DISAPPEAR when a criterion was added", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedOrg(t)
+    const roleId = await lockedRole({
+      orgId,
+      asAdmin,
+      model,
+      title: "Nurse",
+      value: 3,
+    })
+    await bufferApproval(t, orgId)
+    // The real-world shape: the approval was granted, then a criterion joined
+    // the model, so the locked role has no rating for it.
+    await t.run(async (ctx) => {
+      const doc = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      const buffer = doc?.lastApprovedModel
+      if (doc === null || buffer === undefined) throw new Error("no buffer")
+      await ctx.db.patch(doc._id, {
+        lastApprovedModel: { ...buffer, criteria: buffer.criteria.slice(1) },
+      })
+      const dropped = model.criteria[0]
+      if (dropped === undefined) throw new Error("seed")
+      const rating = await ctx.db
+        .query("ratings")
+        .withIndex("by_role_criterion", (q) =>
+          q
+            .eq("roleId", roleId)
+            .eq("criterionId", dropped.criterionId as Id<"criteria">)
+        )
+        .unique()
+      if (rating !== null) await ctx.db.delete(rating._id)
+    })
+
+    const analysis = await asAdmin.query(
+      api.evaluationModel.consequence.getConsequenceAnalysis,
+      { orgId }
+    )
+    expect(analysis.comparable).toBe(true)
+    expect(analysis.losing).toBe(1)
+    expect(analysis.gaining).toBe(0)
+    // The role is counted, named, and its lost side is null rather than a
+    // level it no longer has.
+    expect(analysis.placed).toBe(1)
+    expect(analysis.movers).toHaveLength(1)
+    expect(analysis.movers[0]?.title).toBe("Nurse")
+    expect(analysis.movers[0]?.to).toBeNull()
+    expect(analysis.movers[0]?.from).not.toBeNull()
+    // And the group tables count it as moved without claiming a direction: it
+    // did not go up or down a ladder, it left one.
+    const gender = analysis.genders.find((group) => group.moved > 0)
+    expect(gender?.moved).toBe(1)
+    expect(gender?.up).toBe(0)
+    expect(gender?.down).toBe(0)
+  })
+
+  // I4: the level thresholds are the most placement-consequential method
+  // change ADR-0022 allows, and the analysis's correctness on them rested on
+  // nothing. Only the thresholds differ here; the criteria and weights are
+  // identical on both sides.
+  it("sees a movement that only the level thresholds cause", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedOrg(t)
+    await lockedRole({ orgId, asAdmin, model, title: "Analyst", value: 3 })
+    await bufferApproval(t, orgId)
+    // Collapse the live ladder so a mid-scoring role lands somewhere else.
+    await t.run(async (ctx) => {
+      const doc = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (doc === null) throw new Error("no model")
+      await ctx.db.patch(doc._id, {
+        levelRules: doc.levelRules.map((rule) => ({
+          level: rule.level,
+          minScore: rule.level === 12 ? 0 : Math.max(1, 100 - rule.level * 2),
+        })),
+      })
+    })
+
+    const analysis = await asAdmin.query(
+      api.evaluationModel.consequence.getConsequenceAnalysis,
+      { orgId }
+    )
+    expect(analysis.moved).toBeGreaterThan(0)
+    expect(analysis.criteriaAdded).toBe(0)
+    expect(analysis.criteriaRemoved).toBe(0)
+    const mover = analysis.movers[0]
+    expect(mover?.from).not.toBe(mover?.to)
+  })
+
+  // I4's other axis: the zone profile rules, alone.
+  it("sees a movement that only the zone profile rules cause", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedOrg(t)
+    const gated = model.criteria[0]
+    const donor = model.criteria[1]
+    if (gated === undefined || donor === undefined) throw new Error("seed")
+    // A real profile criterion, rated at the floor while the rest score top:
+    // the role's total lands it high, its profile rating does not.
+    await t.run(async (ctx) => {
+      await ctx.db.patch(gated.criterionId as Id<"criteria">, {
+        weightPoints: 5,
+      })
+      await ctx.db.patch(donor.criterionId as Id<"criteria">, {
+        weightPoints: 1,
+      })
+    })
+    await lockedRole({
+      orgId,
+      asAdmin,
+      model,
+      title: "Capped",
+      value: 5,
+      low: gated.criterionId,
+    })
+    await bufferApproval(t, orgId)
+    // Live now gates every zone hard; the buffer gates only A and B.
+    await t.run(async (ctx) => {
+      const doc = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (doc === null) throw new Error("no model")
+      await ctx.db.patch(doc._id, {
+        zoneProfileRules: [
+          { zone: "A", minStep: 5 },
+          { zone: "B", minStep: 5 },
+          { zone: "C", minStep: 5 },
+        ],
+      })
+    })
+
+    const analysis = await asAdmin.query(
+      api.evaluationModel.consequence.getConsequenceAnalysis,
+      { orgId }
+    )
+    expect(analysis.moved).toBeGreaterThan(0)
+    expect(analysis.criteriaAdded).toBe(0)
+  })
+
+  // I1: one population. The distribution used to count every ACTIVE role while
+  // everything beside it counted locked ones, so a reader saw "1 of 1 locked
+  // placements would move" beside a zone table about two roles.
+  it("counts one population: the locked roles, everywhere", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedOrg(t)
+    await lockedRole({
+      orgId,
+      asAdmin,
+      model,
+      title: "Locked",
+      value: 3,
+      high: model.criteria[0]?.criterionId,
+      low: model.criteria[1]?.criterionId,
+    })
+    // Fully rated and deliberately NOT locked: it has an engine level and no
+    // revealed placement, so it belongs to no part of this panel.
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Unlocked",
+      function: "engineering",
+      team: "Core",
+      trackKey: "IC",
+      purpose: "Purpose",
+      responsibilities: "Responsibilities",
+    })
+    for (const criterion of model.criteria) {
+      await asAdmin.mutation(api.assessment.ratings.setRating, {
+        orgId,
+        roleId,
+        criterionId: criterion.criterionId as Id<"criteria">,
+        value: 3,
+        motivation: "Fixture.",
+      })
+    }
+    await bufferApproval(t, orgId)
+    await reweight(t, model, 1, 5)
+
+    const analysis = await asAdmin.query(
+      api.evaluationModel.consequence.getConsequenceAnalysis,
+      { orgId }
+    )
+    const zoneTotal = analysis.distribution.reduce(
+      (sum, entry) => sum + entry.now,
+      0
+    )
+    expect(analysis.placed).toBe(1)
+    expect(zoneTotal).toBe(1)
+    const approvedTotal = analysis.distribution.reduce(
+      (sum, entry) => sum + entry.approved,
+      0
+    )
+    expect(approvedTotal).toBe(1)
+  })
+
   it("rejects a caller from another organization", async () => {
     const t = initConvexTest()
     const { orgId } = await seedOrg(t)
@@ -374,36 +602,48 @@ describe("getConsequenceAnalysis", () => {
 describe("getConsequenceAnalysis reads", () => {
   const HERE = dirname(fileURLToPath(import.meta.url))
   const sources = [
-    readFileSync(join(HERE, "consequence.ts"), "utf8"),
-    readFileSync(join(HERE, "..", "assessment", "compute.ts"), "utf8"),
+    {
+      name: "consequence.ts",
+      body: readFileSync(join(HERE, "consequence.ts"), "utf8"),
+    },
+    {
+      name: "compute.ts",
+      body: readFileSync(join(HERE, "..", "assessment", "compute.ts"), "utf8"),
+    },
   ]
 
-  it("reads nine org-scoped tables and nothing per row", () => {
-    const queries = sources.flatMap(
-      (source) => source.match(/\.query\("[a-zA-Z]+"\)/g) ?? []
+  // The audited total: 5 in consequence.ts (models, roles, roleFamilies,
+  // people, personAssignments) + 4 in readResultInputs (models, criteria,
+  // roles, ratings). Both models reads hit the same document; keeping them
+  // separate costs one indexed lookup and keeps readResultInputs usable alone.
+  //
+  // Counted as `ctx.db` OCCURRENCES rather than by matching indentation. The
+  // first version of this guard tested for `ctx.db.` at the start of a deeply
+  // indented line, which cannot fire here at all: Biome breaks every read as
+  // `const x = await ctx.db` + newline + `.query(...)`, so the literal
+  // `ctx.db.` appears zero times in either file and a read planted inside the
+  // movers loop sailed past it. Counting every `ctx.db` catches a read of any
+  // kind, in a loop or out of one, and cannot be defeated by formatting.
+  it("touches the database exactly nine times, and nowhere else", () => {
+    const total = sources.reduce(
+      (sum, source) => sum + (source.body.match(/ctx\.db/g) ?? []).length,
+      0
     )
-    // 5 in consequence.ts (models, roles, roleFamilies, people,
-    // personAssignments) + 4 in readResultInputs (models, criteria, roles,
-    // ratings). Both models reads are the same document; keeping them separate
-    // costs one indexed lookup and keeps readResultInputs usable on its own.
-    expect(queries).toHaveLength(9)
-    // Every one of them rides an index.
-    for (const source of sources) {
-      const scans = source.match(/\.query\("[a-zA-Z]+"\)/g) ?? []
-      const indexed = source.match(/\.withIndex\(/g) ?? []
-      expect(indexed.length).toBeGreaterThanOrEqual(scans.length)
-    }
+    expect(total).toBe(9)
   })
 
-  it("makes no read inside a loop", () => {
+  // Per query, not in aggregate: one query carrying two withIndex calls used to
+  // cover for an unindexed neighbour.
+  it("rides an index on every one of them", () => {
     for (const source of sources) {
-      // A `ctx.db` inside a for/while body is the shape that turns an org-
-      // scaled surface into an N-query one.
-      for (const line of source.split("\n")) {
-        if (/^\s{6,}(await )?ctx\.db\./.test(line)) {
-          expect(line).toBe("no read at loop depth")
-        }
-      }
+      const unindexed = source.body
+        .split(/ctx\.db/)
+        .slice(1)
+        .filter((tail) => !/^\s*\.query\([^)]*\)\s*\.withIndex\(/.test(tail))
+      expect({ file: source.name, unindexed }).toEqual({
+        file: source.name,
+        unindexed: [],
+      })
     }
   })
 })
