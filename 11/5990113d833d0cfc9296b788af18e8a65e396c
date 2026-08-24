@@ -1,0 +1,47 @@
+apps/dashboard/components/model/level-rules-panel.tsx
+  s_58dd112dc09435::t_a573b2d1c954d4 1-298
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_a6890b74564a5b 130-135,199,1924-1936,2227-2229
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_a6890b74564a5b 130-135,199,1924-1936,2227-2229
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_a6890b74564a5b 130-135,199,1924-1936,2227-2229
+apps/dashboard/lib/level-rules-schemas.ts
+  s_58dd112dc09435::t_b2575c32455aa8 1-114
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_a6890b74564a5b 130-135,199,1924-1936,2227-2229
+apps/dashboard/components/model/level-rules-panel.test.tsx
+  s_58dd112dc09435::t_13e326c79a1aab 111,116-117,139,161,182,225
+  s_58dd112dc09435::t_4d6c8ee730a356 120-134
+  s_58dd112dc09435::t_5d4d0213115b36 1-110,112-115,118-119,135-138,140-160,162-181,183-224,226-251
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_a6890b74564a5b 130-135,199,1924-1936,2227-2229
+apps/dashboard/app/(app)/model/approval/page.tsx
+  s_58dd112dc09435::t_04a21e31ee52b3 6,37-40
+apps/dashboard/content/docs/da/method-documentation.mdx
+  s_58dd112dc09435::t_8585c80b0f7892 138-152
+apps/dashboard/content/docs/en/method-documentation.mdx
+  s_58dd112dc09435::t_5008ff3fd41cb3 134-148
+apps/dashboard/content/docs/fi/method-documentation.mdx
+  s_58dd112dc09435::t_89aa33b054e7b5 143-158
+apps/dashboard/content/docs/nb/method-documentation.mdx
+  s_58dd112dc09435::t_0236dcc14f9f07 135-149
+apps/dashboard/content/docs/sv/method-documentation.mdx
+  s_58dd112dc09435::t_ebabfdc1e4bc3a 133-147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "115990113d833d0cfc9296b788af18e8a65e396c",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
