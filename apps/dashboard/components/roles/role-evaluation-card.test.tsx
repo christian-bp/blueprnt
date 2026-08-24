@@ -177,19 +177,25 @@ describe("RoleEvaluationCard", () => {
   // flow; it does not carry the act. Completing from here was the second trip
   // decision 14 removed, so a button that completed from outside the flow
   // would be that errand growing back.
-  it("sends a complete-but-uncompleted role into the flow rather than completing it here", () => {
+  it("sends a rated-but-uncompleted role into the flow rather than completing it here", () => {
     setResult(readyToCompleteResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
+    // The sentence says what is LEFT, not only what completing does: this card
+    // owes the reader where the role stands.
     expect(
-      screen.getByText(messages.dashboard.rating.completeExplanation)
+      screen.getByText(messages.dashboard.rating.readyToCompleteExplanation)
     ).toBeDefined()
+    // And the control says what it DOES. It carried the act's own label while
+    // only navigating, which promised a press that completes and delivered a
+    // press that opens a screen where an identically labelled button completes.
+    expect(screen.queryByText(messages.dashboard.rating.completeCta)).toBeNull()
     const into = screen.getByRole("link", {
-      name: messages.dashboard.rating.completeCta,
+      name: messages.dashboard.rating.openAssessmentCta,
     })
     expect(into.getAttribute("href")).toBe("/roles/r1/rate")
     expect(
       screen.queryByRole("button", {
-        name: messages.dashboard.rating.completeCta,
+        name: messages.dashboard.rating.openAssessmentCta,
       })
     ).toBeNull()
     expect(screen.queryByText("Weighting 71")).toBeNull()
@@ -218,8 +224,8 @@ describe("RoleEvaluationCard", () => {
     expect(screen.getByText(detail.calibratedBadge)).toBeDefined()
   })
 
-  it("says a locked role carries an unrated criterion instead of claiming to compute", () => {
-    // A criterion activated after the lock leaves the role locked and
+  it("says a completed role carries an unrated criterion instead of claiming to compute", () => {
+    // A criterion activated afterwards leaves the role completed and
     // incomplete at once. Nothing computes in that state, so the card must
     // not show the computing placeholder it shows while a query is in flight.
     setResult({
@@ -331,7 +337,8 @@ describe("RoleEvaluationCard", () => {
     ).toBeNull()
   })
 
-  // Anchor work needs a completed reference, so a ready-to-complete role offers only
+  // Anchor work needs a completed reference, so a ready-to-complete role
+  // offers only
   // Adjust whoever is looking: the gate is completion, never the role.
   it("gives only Adjust in the menu for a ready-to-complete anchor role", async () => {
     setResult(readyToCompleteResult)

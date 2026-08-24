@@ -1644,6 +1644,8 @@
       },
       "completeCta": "Complete the assessment",
       "completeExplanation": "Completing settles the assessment and reveals its weighting and level.",
+      "readyToCompleteExplanation": "Every criterion is rated. Complete the assessment on its last step to reveal the weighting and level.",
+      "openAssessmentCta": "Open the assessment",
       "completeError": "The assessment could not be completed. Try again.",
       "alreadyCompletedExplanation": "This assessment is completed. Re-evaluating opens the ratings for changes and hides the weighting and level until you complete it again.",
       "reopenCta": "Re-evaluate"
@@ -1696,7 +1698,6 @@
         "showFewer": "Show fewer"
       },
       "pendingHeading": "Not yet evaluated",
-      "pendingDescription": "These roles have no level until their assessment is complete.",
       "anchorLabel": "Anchor role",
       "deviation": "≠ Level {level}",
       "deviationLabel": "Computed level deviates from the agreed level {level}",
@@ -2172,7 +2173,7 @@
       "familiesReviewLabel": "What are families and tracks?",
       "familiesReviewBody": "A family groups roles doing the same kind of work, like Engineering. A track is the kind of job, such as individual contributor or manager. Neither affects the weighting.",
       "pendingLevelLabel": "Why does a role have no level yet?",
-      "pendingLevelBody": "A role gets a level only after every criterion is rated. Until then it has no weighting and no level, so it waits here.",
+      "pendingLevelBody": "A role gets a level only once its assessment is completed. Until then it has no weighting and no level, so it waits here.",
       "contributionLabel": "What do the bars and percentages show?",
       "contributionBody": "Each criterion's share of this role's weighting: your rating times its weight in the model, adding up to 100%. The bars are scaled to the biggest contributor.",
       "twoFactorLabel": "What is two-step verification?",

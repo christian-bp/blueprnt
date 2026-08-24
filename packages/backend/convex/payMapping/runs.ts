@@ -53,17 +53,17 @@ export type PayMappingPreconditions = {
   // may no longer be the live one.
   modelApprovedAt: number | null
   // Non-blocking (CLAUDE.md: recommended, never a blocker): how many staffed,
-  // active roles are both evaluated AND locked (so they do NOT appear in
-  // unevaluatedRoles above) but were locked before the model's CURRENT
-  // approval -- the same drift the roles wire reveals per role
+  // active roles are both evaluated AND have a COMPLETED assessment (so they
+  // do NOT appear in unevaluatedRoles above) but were completed before the
+  // model's CURRENT approval -- the same drift the roles wire reveals per role
   // (assessment/results.ts's deriveMethodDrift, reused here verbatim so the
-  // two can never name a different set of roles). A role only counts once
-  // its own lock is stale against the model that is actually approved right
-  // now; while modelApproved is false every currently-locked role is
-  // trivially stale (deriveMethodDrift treats "no current approval" as
-  // drift), which is expected: the modelApproved line above is already the
-  // blocker in that state, and this count still names the roles that will
-  // need re-locking once approval is restored.
+  // two can never name a different set of roles). A role only counts once its
+  // own assessment is stale against the model that is actually approved right
+  // now; while modelApproved is false every completed assessment is trivially
+  // stale (deriveMethodDrift treats "no current approval" as drift), which is
+  // expected: the modelApproved line above is already the blocker in that
+  // state, and this count still names the roles that will need evaluating
+  // again once approval is restored.
   driftedRolesCount: number
   ready: boolean
 }
@@ -75,12 +75,12 @@ export type PayMappingPreconditions = {
 // countClassified, the people-tab badge, and the to-do's classify group all
 // use), every ACTIVE role holding at least one open assignment ("staffed")
 // is both evaluated (resolves a level, the same deriveResults resolution the
-// frozen snapshot reads) AND locked (spec 2.4/6: a run may only include
-// roles whose result has actually been revealed, not merely a
-// complete-but-unlocked draft), AND the org's model carries a CURRENT
+// frozen snapshot reads) AND has a COMPLETED assessment (spec 2.4/6: a run may
+// only include roles whose result has actually been revealed, not merely one
+// that is fully rated and still open), AND the org's model carries a CURRENT
 // approval (ADR-0011/ADR-0023: the freeze below stamps the live model as the
 // run's statutory method evidence, so an unapproved method can never become
-// one). An unstaffed role's evaluation/lock state never blocks. Shared by
+// one). An unstaffed role's evaluation state never blocks. Shared by
 // startPayMappingRun's server-side gate and getPayMappingPreconditions so
 // the two can never fork. Archived roles are excluded from BOTH the
 // staffed-evaluation and classified checks: from the staffed-evaluation
@@ -148,17 +148,17 @@ export async function computePayMappingPreconditions(
   const unevaluatedRoles: PreconditionRole[] = staffedActiveRoles
     .filter((role) => {
       const level = levelByRole.get(role._id as string)?.level ?? null
-      // Evaluated AND locked (spec 2.4/6): a staffed role that is complete
-      // but still a draft (not yet locked) blocks the gate exactly like an
-      // unrated one, since its result has not been revealed yet.
+      // Evaluated AND COMPLETED (spec 2.4/6): a staffed role that is fully
+      // rated but whose assessment is still open blocks the gate exactly like
+      // an unrated one, since its result has not been revealed yet.
       return level === null || role.assessment === undefined
     })
     .map((role) => ({ roleId: role._id, title: role.title, slug: role.slug }))
     .sort((a, b) => a.title.localeCompare(b.title))
 
-  // Drift is a property of the LOCKED, non-blocking subset: an unevaluated
-  // role above already blocks on its own, and there is no lock timestamp to
-  // compare while it has none.
+  // Drift is a property of the COMPLETED, non-blocking subset: an unevaluated
+  // role above already blocks on its own, and there is no completion timestamp
+  // to compare while it has none.
   const driftedRolesCount = staffedActiveRoles.filter(
     (role) =>
       role.assessment !== undefined && deriveMethodDrift(role.assessment, model)

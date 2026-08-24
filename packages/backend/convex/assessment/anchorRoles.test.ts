@@ -210,7 +210,8 @@ describe("designateAnchorRole", () => {
       title: "Ready To Complete",
       value: 3,
     })
-    // Every criterion rated, but never completed: completion is the reveal, so no level
+    // Every criterion rated, but never completed: completion is the reveal, so
+    // no level
     // is revealed anywhere yet, so the role cannot become a calibration
     // reference until it is completed.
     await expect(
@@ -654,13 +655,14 @@ describe("listAnchorRoles", () => {
       motivation: "m",
     })
 
-    const lockedAnchors = await asAdmin.query(
+    const completedAnchors = await asAdmin.query(
       api.assessment.anchorRoles.listAnchorRoles,
       { orgId }
     )
-    expect(lockedAnchors[0]?.computedLevel).not.toBeNull()
+    expect(completedAnchors[0]?.computedLevel).not.toBeNull()
 
-    // Reopening withdraws the revealed level (completion is the reveal) but leaves the
+    // Reopening withdraws the revealed level (completion is the reveal) but
+    // leaves the
     // designation itself in place: only archiving retires an anchor.
     await asAdmin.mutation(api.assessment.completion.reopenAssessment, {
       orgId,

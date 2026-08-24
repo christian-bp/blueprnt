@@ -1128,7 +1128,7 @@
         },
         "completedBadge": "Fullført",
         "calibratedBadge": "Kalibrert",
-        "completedIncomplete": "Fullført, men et kriterium som er lagt til siden da mangler vurdering. Vurder på nytt, vurder det og fullfør vurderingen igjen for å se resultatet.",
+        "completedIncomplete": "Fullført, men et kriterium som er lagt til siden da mangler vurdering. Åpne vurderingen på nytt, vurder kriteriet og fullfør vurderingen igjen for å se resultatet.",
         "methodDriftBadge": "Vurdert etter tidligere metode"
       },
       "archive": {
@@ -1231,7 +1231,7 @@
         "classifyLine": "{count, plural, one {# person er ikke klassifisert ennå} other {# personer er ikke klassifisert ennå}}",
         "evaluateLine": "{count, plural, one {# rolle med ansatte mangler fortsatt å få vurderingen fullført} other {# roller med ansatte mangler fortsatt å få vurderingene fullført}}",
         "approvalLine": "Modellen må være godkjent før en lønnskartlegging kan startes",
-        "driftWarning": "{count, plural, one {# rolle ble vurdert etter en tidligere versjon av metoden. Vurder å vurdere den på nytt først.} other {# roller ble vurdert etter en tidligere versjon av metoden. Vurder å vurdere dem på nytt først.}}"
+        "driftWarning": "{count, plural, one {# rolle ble vurdert etter en tidligere versjon av metoden. Overvei å vurdere den på nytt først.} other {# roller ble vurdert etter en tidligere versjon av metoden. Overvei å vurdere dem på nytt først.}}"
       },
       "actions": {
         "status": {
@@ -1644,6 +1644,8 @@
       },
       "completeCta": "Fullfør vurderingen",
       "completeExplanation": "Når dere fullfører, fastsettes vurderingen, og vektingen og nivået vises.",
+      "readyToCompleteExplanation": "Alle kriterier er vurdert. Fullfør vurderingen i dens siste trinn for å vise vektingen og nivået.",
+      "openAssessmentCta": "Åpne vurderingen",
       "completeError": "Vurderingen kunne ikke fullføres. Prøv igjen.",
       "alreadyCompletedExplanation": "Denne vurderingen er fullført. Å vurdere på nytt åpner vurderingene for endring og skjuler vekting og nivå til dere fullfører den igjen.",
       "reopenCta": "Vurder på nytt"
@@ -1696,7 +1698,6 @@
         "showFewer": "Vis færre"
       },
       "pendingHeading": "Ikke vurdert ennå",
-      "pendingDescription": "Disse rollene har ikke nivå før vurderingen er fullført.",
       "anchorLabel": "Ankerrolle",
       "deviation": "≠ Nivå {level}",
       "deviationLabel": "Beregnet nivå avviker fra det avtalte nivået {level}",
@@ -2114,7 +2115,7 @@
         "draft": "UTKAST: ikke alle kriterier er gjennomgått og godkjent",
         "final": "ENDELIG",
         "methodologyTitle": "Metodikk",
-        "methodologyBody": "Roller vurderes kriterium for kriterium på en skala fra 1 til 5. Kriterienes vekter summerer til et fast poengbudsjett; rollens poengsum normaliseres til 0 til 100 og nivået utledes, det settes aldri for hånd. Vurderingene er skjult til vurderingen er fullført. Hver endring registreres i endringsloggen. Roller beskriver arbeid, aldri en person.",
+        "methodologyBody": "Roller vurderes kriterium for kriterium på en skala fra 1 til 5. Kriterievektene summeres til et fast poengbudsjett; rollens poengsum normaliseres til 0 til 100 og nivået utledes automatisk, aldri satt for hånd. Karakterer er skjult til vurderingen er fullført. Hver endring registreres i hendelsesloggen. Roller beskriver arbeid, aldri en person.",
         "biasStatement": "Denne modellen er utformet for å redusere bias. Den er biasreduserende, aldri biasfri.",
         "criteriaTitle": "Kriterier og vekter",
         "rationaleTitle": "Kriterierationale og biasvurdering",
@@ -2172,7 +2173,7 @@
       "familiesReviewLabel": "Hva er familier og tracks?",
       "familiesReviewBody": "En familie grupperer roller med samme slags arbeid, som Teknologi. En track er typen jobb, for eksempel individuell spesialist eller leder. Ingen av dem påvirker vektingen.",
       "pendingLevelLabel": "Hvorfor har en rolle ikke nivå ennå?",
-      "pendingLevelBody": "En rolle får et nivå først når alle kriterier er vurdert. Fram til da har den verken vekting eller nivå, så den venter her.",
+      "pendingLevelBody": "En rolle får et nivå først når vurderingen er fullført. Fram til da har den ingen vekting og intet nivå, så den venter her.",
       "contributionLabel": "Hva viser søylene og prosentene?",
       "contributionBody": "Hvert kriteriums andel av rollens vekting: din karakter ganger kriteriets vekt i modellen, summert til 100%. Søylene skaleres mot den største bidragsyteren.",
       "twoFactorLabel": "Hva er tostegsbekreftelse?",

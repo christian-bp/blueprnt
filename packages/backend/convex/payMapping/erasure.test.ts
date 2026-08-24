@@ -53,7 +53,7 @@ async function seedPersonAndFreeze(t: ReturnType<typeof initConvexTest>) {
   // Decide working conditions, approve every criterion, and approve the
   // model itself, all directly (bypassing setWorkingConditionsDecision/
   // setCriterionApproval/approveModel's own checklist re-validation, like
-  // the ratings and the lock below): the preconditions gate now also
+  // the ratings and the completion below): the preconditions gate now also
   // requires a CURRENT approval AND a passing checklist re-check
   // (methodBlockersPass, belt-and-braces) before a run can start, and this
   // fixture is about erasure mechanics, not the approval lifecycle. All
@@ -119,10 +119,11 @@ async function seedPersonAndFreeze(t: ReturnType<typeof initConvexTest>) {
         value: 5,
       })
     }
-    // Complete directly (bypassing completeAssessment's own gates, like the ratings
+    // Complete directly (bypassing completeAssessment's own gates, like the
+    // ratings
     // above bypass setRating): the preconditions gate now requires evaluated
-    // AND locked (spec 2.4/6), and this fixture is about erasure mechanics,
-    // not the locking lifecycle.
+    // AND completed (spec 2.4/6), and this fixture is about erasure
+    // mechanics, not the completion lifecycle.
     await ctx.db.patch(roleDocId, {
       assessment: { completedBy: userId, completedAt: Date.now() },
     })

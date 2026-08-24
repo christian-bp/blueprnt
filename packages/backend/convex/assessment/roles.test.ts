@@ -214,11 +214,14 @@ describe("listRoles and getRole", () => {
     }
 
     // Fully rated but not yet completed: still reads false.
-    const beforeLock = await asAdmin.query(api.assessment.roles.listRoles, {
-      orgId,
-      locale: "sv",
-    })
-    expect(beforeLock.find((r) => r.roleId === roleId)).toMatchObject({
+    const beforeCompletion = await asAdmin.query(
+      api.assessment.roles.listRoles,
+      {
+        orgId,
+        locale: "sv",
+      }
+    )
+    expect(beforeCompletion.find((r) => r.roleId === roleId)).toMatchObject({
       ratedCount: 8,
       totalCriteria: 8,
       completed: false,
@@ -229,11 +232,14 @@ describe("listRoles and getRole", () => {
       roleId,
     })
 
-    const afterLock = await asAdmin.query(api.assessment.roles.listRoles, {
-      orgId,
-      locale: "sv",
-    })
-    expect(afterLock.find((r) => r.roleId === roleId)).toMatchObject({
+    const afterCompletion = await asAdmin.query(
+      api.assessment.roles.listRoles,
+      {
+        orgId,
+        locale: "sv",
+      }
+    )
+    expect(afterCompletion.find((r) => r.roleId === roleId)).toMatchObject({
       completed: true,
     })
   })
@@ -757,7 +763,8 @@ describe("archiveRole", () => {
         await ctx.db.patch(rating._id, { motivation: "Top of scale." })
       }
     })
-    // An anchor role must be a completed reference (completion is the reveal); completing
+    // An anchor role must be a completed reference (completion is the reveal);
+    // completing
     // requires an approved model.
     await grantModelApproval(t, orgId)
     await asAdmin.mutation(api.assessment.completion.completeAssessment, {

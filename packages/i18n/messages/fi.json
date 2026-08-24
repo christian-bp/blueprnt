@@ -1128,7 +1128,7 @@
         },
         "completedBadge": "Viimeistelty",
         "calibratedBadge": "Kalibroitu",
-        "completedIncomplete": "Viimeistelty, mutta sen jälkeen lisätyltä kriteeriltä puuttuu arvio. Arvioi uudelleen, arvioi se ja viimeistele arviointi uudelleen nähdäksesi tuloksen.",
+        "completedIncomplete": "Viimeistelty, mutta sen jälkeen lisätyltä kriteeriltä puuttuu arvio. Avaa arviointi uudelleen, arvioi kriteeri ja viimeistele arviointi nähdäksesi tuloksen.",
         "methodDriftBadge": "Arvioitu aiemmalla menetelmällä"
       },
       "archive": {
@@ -1644,6 +1644,8 @@
       },
       "completeCta": "Viimeistele arviointi",
       "completeExplanation": "Viimeistely vahvistaa arvioinnin ja näyttää sen painotuksen ja vaativuustason.",
+      "readyToCompleteExplanation": "Kaikki kriteerit on arvioitu. Viimeistele arviointi sen viimeisessä vaiheessa, niin painotus ja vaativuustaso tulevat näkyviin.",
+      "openAssessmentCta": "Avaa arviointi",
       "completeError": "Arviointia ei voitu viimeistellä. Yritä uudelleen.",
       "alreadyCompletedExplanation": "Tämä arviointi on viimeistelty. Uudelleenarviointi avaa arviot muutettaviksi ja piilottaa painotuksen ja vaativuustason, kunnes viimeistelette sen uudelleen.",
       "reopenCta": "Arvioi uudelleen"
@@ -1688,7 +1690,7 @@
         "confirmSubmit": "Vahvista sijoitus",
         "cancel": "Peruuta",
         "class": {
-          "profileLimited": "Profiilivaatimus rajoitti",
+          "profileLimited": "Profiilivaatimuksen rajoittama",
           "anchorDeviation": "Poikkeaa ankkuriroolista",
           "staleMethod": "Arvioitu aiemmalla menetelmällä"
         },
@@ -1696,7 +1698,6 @@
         "showFewer": "Näytä vähemmän"
       },
       "pendingHeading": "Ei vielä arvioitu",
-      "pendingDescription": "Näillä rooleilla ei ole vaativuustasoa ennen kuin arviointi on valmis.",
       "anchorLabel": "Ankkurirooli",
       "deviation": "≠ Taso {level}",
       "deviationLabel": "Laskettu vaativuustaso poikkeaa sovitusta vaativuustasosta {level}",
@@ -1904,7 +1905,7 @@
       },
       "consequence": {
         "heading": "Mitä hyväksyminen muuttaisi",
-        "summary": "{moved}/{placed, plural, =1 {1 viimeistelty sijoitus} other {# viimeisteltyä sijoitusta}} siirtyisi toiselle vaativuustasolle.",
+        "summary": "{placed, plural, =1 {Yhdestä viimeistellystä sijoituksesta} other {# viimeistellystä sijoituksesta}} {moved} siirtyisi toiselle vaativuustasolle.",
         "losing": "{count, plural, =1 {1 rooli menettäisi vaativuustasonsa} other {# roolia menettäisi vaativuustasonsa}}, kunnes se on arvioitu menetelmän saamilla kriteereillä.",
         "gaining": "{count, plural, =1 {1 rooli saisi vaativuustason, johon se ei aiemmin yltänyt} other {# roolia saisi vaativuustason, johon ne eivät aiemmin yltäneet}}.",
         "criteriaChanged": "Menetelmä on muuttunut edellisen hyväksynnän jälkeen: {added, plural, =0 {ei yhtään kriteeriä} =1 {1 kriteeri} other {# kriteeriä}} lisätty, {removed, plural, =0 {ei yhtään} other {#}} poistettu.",
@@ -2114,7 +2115,7 @@
         "draft": "LUONNOS: kaikkia kriteereitä ei ole tarkastettu ja hyväksytty",
         "final": "LOPULLINEN",
         "methodologyTitle": "Menetelmä",
-        "methodologyBody": "Roolit arvioidaan kriteeri kerrallaan asteikolla 1-5. Kriteerien painot summautuvat kiinteään pistebudjettiin; roolin pisteet normalisoidaan välille 0-100 ja vaativuustaso johdetaan, sitä ei koskaan aseteta käsin. Arviot ovat piilossa, kunnes arviointi on viimeistelty. Jokainen muutos kirjataan muutoslokiin. Roolit kuvaavat työtä, eivät koskaan henkilöä.",
+        "methodologyBody": "Rooleja arvioidaan kriteeri kerrallaan asteikolla 1-5. Kriteerien painot muodostavat yhdessä kiinteän pistebudjetin; roolin pistemäärä normalisoidaan välille 0-100 ja vaativuustaso johdetaan automaattisesti, sitä ei koskaan aseteta käsin. Arviot ovat piilossa, kunnes arviointi on viimeistelty. Jokainen muutos kirjataan tapahtumalokiin. Roolit kuvaavat työtä, eivät henkilöä.",
         "biasStatement": "Tämä malli on suunniteltu vähentämään vinoumaa. Se on vinoumaa vähentävä, ei koskaan vinoumaton.",
         "criteriaTitle": "Kriteerit ja painot",
         "rationaleTitle": "Kriteeriperustelu ja vinoumatarkistus",
@@ -2172,7 +2173,7 @@
       "familiesReviewLabel": "Mitä perheet ja trackit ovat?",
       "familiesReviewBody": "Perhe ryhmittelee samanlaista työtä tekevät roolit, kuten Teknologia. Track on työn tyyppi, esimerkiksi yksilöasiantuntija tai esihenkilö. Kumpikaan ei vaikuta painotukseen.",
       "pendingLevelLabel": "Miksi roolilla ei vielä ole vaativuustasoa?",
-      "pendingLevelBody": "Rooli saa tason vasta kun kaikki kriteerit on arvioitu. Siihen asti sillä ei ole painotusta eikä tasoa, joten se odottaa täällä.",
+      "pendingLevelBody": "Rooli saa vaativuustason vasta, kun sen arviointi on viimeistelty. Siihen asti sillä ei ole painotusta eikä tasoa, joten se odottaa täällä.",
       "contributionLabel": "Mitä palkit ja prosentit näyttävät?",
       "contributionBody": "Kunkin kriteerin osuus roolin painotuksesta: arviosi kerrottuna kriteerin painolla mallissa, yhteensä 100%. Palkit skaalataan suurimpaan osuuteen.",
       "twoFactorLabel": "Mitä kaksivaiheinen vahvistus tarkoittaa?",
@@ -2231,7 +2232,7 @@
       "consequenceLabel": "Mikä on seurausanalyysi?",
       "consequenceBody": "Mitä tämän menetelmän hyväksyminen tekisi jo olemassa oleville sijoituksille verrattuna viimeksi hyväksymäänne menetelmään. Se siirtää rooleja, ei henkilöitä: kenenkään palkka ei muutu tässä.",
       "calibrationLabel": "Mitä kalibrointi on?",
-      "calibrationBody": "Viimeistellyn sijoituksen tarkastus, joka jonkun on hyvä katsoa ennen kuin tasoja pidetään valmiina. Vahvistaminen ei muuta tasoa: se kirjaa, että joku seisoo sen takana.",
+      "calibrationBody": "Viimeistellyn sijoituksen tarkistus, joka jonkun on hyvä tehdä ennen kuin tikkaita pidetään valmiina. Vahvistaminen ei muuta vaativuustasoa: se kirjaa, että joku seisoo sen takana.",
       "profileRequirementLabel": "Mikä on profiilivaatimus?",
       "profileRequirementBody": "Vyöhyke voi vaatia vähimmäisportaan mallin profiilikriteereillä, joten rooli ei yllä sinne pelkällä kokonaispainotuksella. Se rajaa vaativuustason, se ei koskaan muuta kenenkään arviota.",
       "levelThresholdLabel": "Mikä on vaativuustason raja?",

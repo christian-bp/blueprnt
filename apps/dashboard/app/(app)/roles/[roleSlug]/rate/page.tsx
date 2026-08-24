@@ -65,8 +65,9 @@ export default function RatePage(props: {
     orgId,
     locale,
   })
-  // Lock state (spec 2.4/6): fetched as soon as the role resolves, so it is
-  // ready before either the reveal or the already-locked notice needs it.
+  // Completion state (spec 2.4/6): fetched as soon as the role resolves, so it
+  // is ready before either the reveal or the already-completed notice needs
+  // it.
   const result = useQuery(
     api.assessment.results.getRoleResult,
     role != null ? { orgId, roleId: role.roleId, locale } : "skip"
@@ -223,9 +224,8 @@ export default function RatePage(props: {
     )
   }
 
-  // Lock state is not yet known: wait rather than flash the stepper (or the
-  // stale ready-to-complete state) for a role that turns out to already be
-  // locked a moment later. `result` is only ever null for a garbage/missing
+  // Completion state is not yet known: wait rather than flash the stepper for
+  // a role that turns out to already be completed a moment later. `result` is only ever null for a garbage/missing
   // role id, which cannot happen here (getRoleBySlug above already resolved
   // this exact role), so null is treated the same as still-loading.
   if (result == null) {
@@ -236,12 +236,11 @@ export default function RatePage(props: {
     )
   }
 
-  // Already locked, whether from before this visit or from just clicking
-  // Lock below: the rate entry states it in words and shows the reveal as
-  // confirmation (spec 2.4/6, lock-as-reveal), with Unlock as the explicit,
-  // audited way back into editing. RatingResult is a pure reveal; this host
-  // owns the surrounding nav (the onboarding host owns its own
-  // back-to-your-roles button instead).
+  // Already completed, whether from before this visit or from the last step
+  // just now: the route states it in words and shows the reveal as the
+  // confirmation (spec 2.4/6, completion is the reveal), with Re-evaluate as
+  // the one-press way back into editing. RatingResult is a pure reveal; this
+  // host owns the surrounding nav.
   if (result.completed) {
     return (
       <div className={RATE_COLUMN}>

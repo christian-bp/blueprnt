@@ -208,7 +208,7 @@ export const listRoles = orgQuery({
       ratedCount: v.number(),
       totalCriteria: v.number(),
       profileComplete: v.boolean(),
-      // Locking is the reveal (spec 2.4/6): a complete rating set is not yet
+      // Completing is the reveal (spec 2.4/6): a complete rating set is not yet
       // an evaluated role until it is completed (see the home to-do's
       // payMappingReady mirror in lib/todo.ts, which reads this).
       completed: v.boolean(),

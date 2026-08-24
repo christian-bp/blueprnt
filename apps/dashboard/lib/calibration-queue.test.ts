@@ -4,7 +4,7 @@ import {
   calibrationQueue,
 } from "@/lib/calibration-queue"
 
-// A locked, placed, unremarkable role: in the ladder, out of the queue.
+// A completed, placed, unremarkable assessment: in the ladder, out of the queue.
 function role(overrides: Partial<CalibrationInput> = {}): CalibrationInput {
   return {
     roleId: "r1",
@@ -31,7 +31,7 @@ function role(overrides: Partial<CalibrationInput> = {}): CalibrationInput {
 }
 
 describe("calibrationQueue", () => {
-  it("leaves an ordinary locked placement alone", () => {
+  it("leaves an ordinary completed placement alone", () => {
     expect(calibrationQueue([role()])).toEqual([])
   })
 
@@ -82,15 +82,15 @@ describe("calibrationQueue", () => {
     ).toEqual([])
   })
 
-  // Class 3: the method moved on after the assessment was locked.
-  it("queues a role locked under a superseded method", () => {
+  // Class 3: the method moved on after the assessment was completed.
+  it("queues a role assessed under a superseded method", () => {
     const queue = calibrationQueue([role({ methodDrift: true })])
     expect(queue[0]?.reason).toBe("staleMethod")
   })
 
-  // Calibrating does NOT clear a stale lock: re-locking is what does, so the
-  // row stays until the assessment is locked again.
-  it("keeps a stale lock queued even when the placement was confirmed", () => {
+  // Calibrating does NOT clear a stale method: completing the assessment
+  // again is what does, so the row stays until then.
+  it("keeps a stale method queued even when the placement was confirmed", () => {
     const queue = calibrationQueue([
       role({ methodDrift: true, calibrated: true }),
     ])
@@ -98,7 +98,7 @@ describe("calibrationQueue", () => {
   })
 
   // Only a revealed placement can be reviewed: an unlocked role has no
-  // placement yet (lock-as-reveal), so it belongs to the pending list.
+  // placement yet (completion is the reveal), so it belongs to the pending list.
   it("never queues an unlocked role, whatever its flags say", () => {
     expect(
       calibrationQueue([
@@ -113,7 +113,7 @@ describe("calibrationQueue", () => {
     ).toEqual([])
   })
 
-  it("never queues a locked role with no level", () => {
+  it("never queues a completed assessment with no level", () => {
     expect(
       calibrationQueue([role({ level: null, profileLimited: true })])
     ).toEqual([])

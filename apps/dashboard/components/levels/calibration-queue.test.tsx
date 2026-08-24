@@ -129,7 +129,7 @@ describe("CalibrationQueue", () => {
     )
   })
 
-  it("states a stale lock and sends the reader to the assessment", () => {
+  it("states a stale method and sends the reader to the assessment", () => {
     renderQueue([role({ title: "Nurse", slug: "nurse", methodDrift: true })])
     const row = rowFor("Nurse")
     expect(row.textContent).toContain(m.staleMethodReason)

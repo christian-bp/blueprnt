@@ -65,7 +65,7 @@ export function RatingResult({
     )
   }
 
-  // `locked` alone is not enough: a criterion added after the lock leaves a
+  // `completed` alone is not enough: a criterion added afterwards leaves a
   // completed role incomplete again, reading back as complete=false, score=null,
   // level=null while completed stays true (results.ts). `score ?? 0` would print
   // a dishonest "0 / 100" for a result that was never computed. Nothing is in

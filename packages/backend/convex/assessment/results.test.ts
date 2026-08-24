@@ -94,9 +94,10 @@ async function createRatedRole(args: {
 
 // Completes a role's assessment via the real mutation: the reveal (spec 2.4/6).
 // Every result/zone/profile assertion below only holds once a role is
-// completed, so callers must complete a fully and validly rated role before reading
+// completed, so callers must complete a fully and validly rated role before
+// reading
 // its score/level/zone from the wire.
-async function lockRole(
+async function completeRole(
   asAdmin: ReturnType<ReturnType<typeof initConvexTest>["withIdentity"]>,
   orgId: string,
   roleId: string
@@ -118,7 +119,7 @@ describe("getResults", () => {
       title: "Top",
       value: 5,
     })
-    await lockRole(asAdmin, orgId, topId)
+    await completeRole(asAdmin, orgId, topId)
     // 1 is the floor for non-workingConditions criteria (7 of these 8), so
     // it is the lowest uniform rating achievable here, not 0.
     const lowId = await createRatedRole({
@@ -128,7 +129,7 @@ describe("getResults", () => {
       title: "Low",
       value: 1,
     })
-    await lockRole(asAdmin, orgId, lowId)
+    await completeRole(asAdmin, orgId, lowId)
     const partialId = await createRatedRole({
       orgId,
       asAdmin,
@@ -184,7 +185,7 @@ describe("getResults", () => {
       title: "Top",
       value: 5,
     })
-    await lockRole(asAdmin, orgId, topId)
+    await completeRole(asAdmin, orgId, topId)
 
     const results = await asAdmin.query(api.assessment.results.getResults, {
       orgId,
@@ -237,7 +238,7 @@ describe("getResults", () => {
       profileFailures: null,
     })
 
-    await lockRole(asAdmin, orgId, roleId)
+    await completeRole(asAdmin, orgId, roleId)
 
     const after = await asAdmin.query(api.assessment.results.getResults, {
       orgId,
@@ -259,7 +260,7 @@ describe("getResults", () => {
     // Fully rated => complete => level 1 (value 5 on every criterion).
     // An anchor role must itself be a completed reference (completion is the
     // reveal), and the WIRE assertions below (top?.level) also need it to
-    // read non-null, so one lockRole call below covers both.
+    // read non-null, so one completeRole call below covers both.
     const topId = await createRatedRole({
       orgId,
       asAdmin,
@@ -267,7 +268,7 @@ describe("getResults", () => {
       title: "Top",
       value: 5,
     })
-    await lockRole(asAdmin, orgId, topId)
+    await completeRole(asAdmin, orgId, topId)
     await createRatedRole({ orgId, asAdmin, model, title: "Plain", value: 1 })
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
@@ -330,11 +331,11 @@ describe("getRoleResult", () => {
     // still available (rating.ts already wrote them; blindness for the
     // AGGREGATE outcome is what the UI's own completion gate enforces), but the
     // aggregate outcome itself reads null.
-    const beforeLock = await asAdmin.query(
+    const beforeCompletion = await asAdmin.query(
       api.assessment.results.getRoleResult,
       { orgId, roleId: roleId as string, locale: "sv" }
     )
-    expect(beforeLock).toMatchObject({
+    expect(beforeCompletion).toMatchObject({
       complete: true,
       completed: false,
       readyToComplete: true,
@@ -344,9 +345,9 @@ describe("getRoleResult", () => {
       profileLimited: null,
       profileFailures: null,
     })
-    expect(beforeLock?.criteria).toHaveLength(8)
+    expect(beforeCompletion?.criteria).toHaveLength(8)
 
-    await lockRole(asAdmin, orgId, roleId)
+    await completeRole(asAdmin, orgId, roleId)
     const result = await asAdmin.query(api.assessment.results.getRoleResult, {
       orgId,
       roleId: roleId as string,
@@ -376,7 +377,7 @@ describe("getRoleResult", () => {
     expect(firstRow?.dimensionKey).toBe("competence")
   })
 
-  it("reflects calibration once a locked assessment is calibrated", async () => {
+  it("reflects calibration once a completed assessment is calibrated", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     const roleId = await createRatedRole({
@@ -386,7 +387,7 @@ describe("getRoleResult", () => {
       title: "Top",
       value: 5,
     })
-    await lockRole(asAdmin, orgId, roleId)
+    await completeRole(asAdmin, orgId, roleId)
     await asAdmin.mutation(api.assessment.completion.calibrateAssessment, {
       orgId,
       roleId,
@@ -512,7 +513,7 @@ describe("getResults: what the calibration queue needs", () => {
         motivation: "Fixture.",
       })
     }
-    await lockRole(asAdmin, orgId, roleId)
+    await completeRole(asAdmin, orgId, roleId)
 
     for (const locale of ["en", "sv"] as const) {
       const results = await asAdmin.query(api.assessment.results.getResults, {
@@ -533,7 +534,7 @@ describe("getResults: what the calibration queue needs", () => {
     }
   })
 
-  it("carries no profile failures for a role that is not locked", async () => {
+  it("carries no profile failures for an assessment that is not completed", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     await createRatedRole({

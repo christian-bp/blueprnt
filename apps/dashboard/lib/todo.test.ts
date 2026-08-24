@@ -16,7 +16,7 @@ const role = (
   ratedCount: 0,
   totalCriteria: 9,
   profileComplete: true,
-  // Draft by default (spec 2.4/6: locking is the reveal); tests representing
+  // Open by default (spec 2.4/6: completing is the reveal); tests representing
   // a genuinely finished role override this explicitly.
   completed: false,
   familyName: "Engineering",
@@ -27,7 +27,7 @@ const role = (
 // filler (a status excluded from every derived count, so document/approve
 // counts never move) up to MODEL_MIN_CRITERIA by default, so the many
 // fixtures below that are not about the buildModel group never sprout it
-// unasked and desync their total/groups assertions (mirrors role()'s locked
+// unasked and desync their total/groups assertions (mirrors role()'s completed
 // default). Tests about buildModel's own criteria-incomplete state pass
 // pad: false to keep an exact, intentionally-short list.
 //
@@ -164,7 +164,7 @@ describe("buildTodo", () => {
     expect(item.totalCriteria).toBe(9)
   })
 
-  it("excludes a profiled, fully-rated, LOCKED role from every group", () => {
+  it("excludes a profiled, fully-rated, COMPLETED role from every group", () => {
     const todo = buildTodo({
       roles: [
         role({
@@ -182,7 +182,7 @@ describe("buildTodo", () => {
     expect(todo.groups).toEqual([])
   })
 
-  it("keeps a fully-rated but NOT YET LOCKED role in evaluateRoles (spec 2.4/6: it still needs action)", () => {
+  it("keeps a fully-rated but NOT YET COMPLETED role in evaluateRoles (spec 2.4/6: it still needs action)", () => {
     const todo = buildTodo({
       roles: [
         role({
@@ -532,7 +532,7 @@ describe("buildTodo startPayMapping group", () => {
     expect(todo.groups.map((g) => g.key)).not.toContain("startPayMapping")
   })
 
-  it("does not add it while a staffed role is fully rated but NOT YET LOCKED (spec 2.4/6, mirrors computePayMappingPreconditions)", () => {
+  it("does not add it while a staffed role is fully rated but NOT YET COMPLETED (spec 2.4/6, mirrors computePayMappingPreconditions)", () => {
     const todo = buildTodo({
       roles: [
         role({
@@ -565,7 +565,7 @@ describe("buildTodo startPayMapping group", () => {
   // three are about role/run state, and now that payMappingReady also reads
   // the model, NO_MODEL would block on the model instead of the thing each
   // test actually names, per its own title.
-  it("adds it once that same staffed role is locked", () => {
+  it("adds it once that same staffed role is completed", () => {
     const todo = buildTodo({
       roles: [
         role({

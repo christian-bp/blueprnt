@@ -1972,7 +1972,7 @@ describe("requestWeightReview enrichment", () => {
       orgId,
       roleId,
     })
-    // The org now has a real, locked, revealed result.
+    // The org now has a real, completed, revealed result.
     const results = await asAdmin.query(api.assessment.results.getResults, {
       orgId,
     })

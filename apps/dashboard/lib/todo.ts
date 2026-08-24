@@ -180,9 +180,9 @@ function computeCounts({
   const evaluate: EvaluateItem[] = []
   for (const r of roles) {
     const family = r.familyName ?? undefined
-    // A fully-rated role that is not yet locked still needs action (spec
-    // 2.4/6: locking is the reveal, and the pay-mapping gate below refuses
-    // it until locked), so it stays in the evaluate group rather than
+    // A fully-rated role whose assessment is not yet completed still needs
+    // action (spec 2.4/6: completing is the reveal, and the pay-mapping gate
+    // below refuses it until then), so it stays in the evaluate group rather
     // silently disappearing from the to-do once its ratings are done. Gated
     // on totalCriteria > 0 so a role under a not-yet-built model (no
     // criteria at all, "completed" trivially false) is not wrongly flagged.
@@ -291,12 +291,12 @@ function computeCounts({
   // precondition helper exactly (computePayMappingPreconditions): every
   // person classified (a confirmed open assignment) and every STAFFED role
   // (holding at least one open assignment, any confirmation state) is both
-  // fully rated AND locked (spec 2.4/6: a complete-but-unlocked draft is not
-  // a revealed evaluation, so it blocks the gate exactly like an unrated
-  // role), AND the model itself carries a CURRENT approval (ADR-0023) that
-  // still clears its own checklist. An unstaffed role's evaluation/lock state
-  // never blocks this, unlike describe/evaluate above, which track every
-  // role regardless of staffing.
+  // fully rated AND COMPLETED (spec 2.4/6: an assessment that is fully rated
+  // and still open is not a revealed evaluation, so it blocks the gate exactly
+  // like an unrated role), AND the model itself carries a CURRENT approval
+  // (ADR-0023) that still clears its own checklist. An unstaffed role's
+  // evaluation state never blocks this, unlike describe/evaluate above, which
+  // track every role regardless of staffing.
   const totalUnclassified = classify.reduce(
     (sum, item) => sum + item.peopleCount,
     0

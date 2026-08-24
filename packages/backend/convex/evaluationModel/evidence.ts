@@ -116,7 +116,8 @@ export async function buildModelEvidence(
     workingConditions: model?.workingConditions,
     // Approval can be legitimately absent, not just as a defensive fallback:
     // a method-affecting edit reopens approval (reopenApprovalIfSet) without
-    // touching any role already locked under the prior approval, so a run can
+    // touching any assessment already completed under the prior approval, so a
+    // run can
     // freeze this state. ADR-0023 accepts it as visible-never-prevented.
     approval: model?.approval,
   }

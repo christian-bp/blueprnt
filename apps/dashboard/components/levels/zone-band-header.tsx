@@ -6,7 +6,9 @@ import type { ZoneEntryContent } from "@workspace/backend/convex/evaluationModel
 import type { ZoneKey } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
+import { SPRING } from "@/lib/motion"
 import { FAMILY_COUNT_CLASS, FAMILY_NAME_CLASS } from "@/lib/role-family-row"
 
 // One zone band's heading, shared by the ladder and the level matrix so the
@@ -102,20 +104,34 @@ export function ZoneBandHeader({
             now opens the same way. The label stays: the column is an
             OBSERVATION, and run bare a list of job kinds reads as the rule for
             who belongs here, which is the one thing it must not say. */}
-        {open && (
-          <p className="max-w-2xl text-muted-foreground text-sm leading-relaxed">
-            {/* The colon is composed HERE, not carried in the message. Every
+        {/* Animated, not toggled. The band's BODY animates open from the
+            ladder below, and this paragraph lives in the header ABOVE that
+            wrapper, so a bare conditional made one gesture jump the header and
+            spring the body, shoving the bands underneath instantly. Two halves
+            of one press must not move at two speeds. */}
+        <AnimatePresence initial={false}>
+          {open ? (
+            <motion.p
+              key="typical"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={SPRING}
+              className="max-w-2xl overflow-hidden text-muted-foreground text-sm leading-relaxed"
+            >
+              {/* The colon is composed HERE, not carried in the message. Every
                 other "Label: value" line in the app does it this way (the
                 stepper's measures/not-measures, the role card's motivation,
                 the picker's three suitability lines); no message key carries
                 an inline one. Punctuation in the message reads like the
                 better rule until you count the siblings. */}
-            <span className="font-medium text-foreground">
-              {`${t("zoneTypicalLabel")}: `}
-            </span>
-            {content.typicalProfile}
-          </p>
-        )}
+              <span className="font-medium text-foreground">
+                {`${t("zoneTypicalLabel")}: `}
+              </span>
+              {content.typicalProfile}
+            </motion.p>
+          ) : null}
+        </AnimatePresence>
       </div>
     </div>
   )

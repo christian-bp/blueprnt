@@ -171,6 +171,21 @@ describe("ConsequencePanel", () => {
   // twelve-check approval gate, and shipping five sections open made a report
   // out of a one-decision moment. The summary and the zone table stay standing
   // because they ARE the decision; the rest is opt-in.
+  // SINGLE-open, and load-bearing: it is what stops the card growing back
+  // into the five-section report above the Approve button. It holds only
+  // because Base UI's accordion `multiple` defaults to false, which is a
+  // vendor default a dependency bump could change under us, so the choice is
+  // asserted rather than assumed.
+  it("closes the open breakdown when another is opened", () => {
+    analysis = MOVED
+    renderPanel()
+    openGroup(m.moversHeading)
+    expect(screen.getByText("Head of Data")).toBeDefined()
+    openGroup(m.familiesHeading)
+    expect(screen.getByText("Engineering")).toBeDefined()
+    expect(screen.queryByText("Head of Data")).toBeNull()
+  })
+
   it("keeps the group breakdowns closed until asked", () => {
     analysis = MOVED
     renderPanel()
@@ -252,7 +267,7 @@ describe("ConsequencePanel", () => {
   })
 
   // THE CRITICAL CASE. Approving a method that added a criterion leaves every
-  // already-locked role unrated on it, so the engine returns no level and the
+  // already-completed role unrated on it, so the engine returns no level and the
   // role falls off the ladder. The panel used to gate its silence on `moved`
   // alone and therefore said nothing at all about the largest consequence
   // there is.

@@ -791,7 +791,8 @@ export function formatAuditDetail(
     // assignment.set carries the assigned roleId (top-level, resolved to the
     // role title by the audit-log query); the seniority detail lives in the sheet.
     case "assignment.set":
-    // Locking lifecycle events (assessment/completion.ts): roleId is their only
+    // Completion lifecycle events (assessment/completion.ts): roleId is their
+    // only
     // identifying payload field. Without an explicit case here they would
     // fall to the default branch, where payloadStats drops "*Id" fields
     // (assessmentReopened) and booleans (assessmentCalibrated's

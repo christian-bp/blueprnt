@@ -89,7 +89,7 @@ function result(overrides: Record<string, unknown> = {}) {
     title: "Engineer",
     complete: false,
     completed: false,
-    readyToRead: false,
+    readyToComplete: false,
     calibrated: false,
     methodDrift: false,
     ratedCount: 0,
@@ -155,7 +155,7 @@ async function renderPage() {
   return rendered
 }
 
-describe("RatePage (lock-as-reveal)", () => {
+describe("RatePage (completion is the reveal)", () => {
   beforeEach(() => {
     roleFixture = role()
     resultFixture = result()
@@ -199,11 +199,13 @@ describe("RatePage (lock-as-reveal)", () => {
   //    an assessor who could read how much each criterion counts is no longer
   //    rating against the anchors.
   //  - the score and the level ARE revealed, but only once the assessment is
-  //    locked. That is the whole lock-as-reveal design, not a leak.
+  //    completed. That is the whole completion-is-the-reveal design, not a
+  //    leak.
   //  - the ZONE is on the wire whenever the result is (the firewall protects
-  //    the assessment ACT, which locking ends), and never RENDERS here. Where
+  //    the assessment ACT, which completing ends), and never RENDERS here.
+  //    Where
   //    the role lands as a KIND OF WORK is a judgement the assessor must not
-  //    be anchored by, before locking or after it, and the reveal has no
+  //    be anchored by, before completing or after it, and the reveal has no
   //    reason to name it: the level is the answer, the zone is the model's
   //    grouping of levels and belongs on the surfaces that show all twelve.
   //
@@ -229,7 +231,7 @@ describe("RatePage (lock-as-reveal)", () => {
     }[] = [
       { state: "draft", result: {} },
       {
-        state: "complete, awaiting lock",
+        state: "rated, awaiting completion",
         result: { complete: true, ratedCount: 1 },
         role: {
           ratedCount: 1,
@@ -237,7 +239,7 @@ describe("RatePage (lock-as-reveal)", () => {
         },
       },
       {
-        state: "locked reveal",
+        state: "completed reveal",
         result: {
           complete: true,
           completed: true,
@@ -253,7 +255,7 @@ describe("RatePage (lock-as-reveal)", () => {
         },
       },
       {
-        state: "locked reveal, profile-limited",
+        state: "completed reveal, profile-limited",
         result: {
           complete: true,
           completed: true,
@@ -431,7 +433,7 @@ describe("RatePage (lock-as-reveal)", () => {
 
     // Every state of the route, so the column cannot shift as the page moves
     // between loading, a precondition, the stepper and the reveal.
-    it("uses the same column in the locked reveal state", async () => {
+    it("uses the same column in the completed reveal state", async () => {
       resultFixture = result({ completed: true })
       install()
       await renderPage()
@@ -458,7 +460,7 @@ describe("RatePage (lock-as-reveal)", () => {
       expect(eyebrow()?.textContent).toBe(t.stageEyebrow)
       cleanup()
 
-      // Every criterion answered, waiting to lock.
+      // Every criterion answered, waiting to be completed.
       resultFixture = result({ complete: true, ratedCount: 1 })
       roleFixture = role({
         ratedCount: 1,
@@ -469,7 +471,7 @@ describe("RatePage (lock-as-reveal)", () => {
       expect(eyebrow()?.textContent).toBe(t.stageEyebrow)
       cleanup()
 
-      // Locked: the reveal.
+      // Completed: the reveal.
       resultFixture = result({
         complete: true,
         completed: true,

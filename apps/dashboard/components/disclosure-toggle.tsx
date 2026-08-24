@@ -43,6 +43,7 @@ import { cn } from "@workspace/ui/lib/utils"
 // The caller owns the panel and the animation: this is the trigger only, so a
 // surface can reveal in place, inside a table cell, or through AnimatePresence
 // without this component knowing which.
+
 // The glyph itself, so the one surface that cannot use the button (the audit
 // story row) still draws the identical chevron rather than a second copy of
 // its spec. Decorative: the control that owns it carries aria-expanded, so it

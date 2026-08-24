@@ -282,6 +282,23 @@ export function RatingStepper({
         // completes the assessment. Sequential rather than concurrent, because
         // the completion is refused unless every rating is already stored.
         try {
+          // Nothing here re-guards the button, and nothing needs to. A
+          // Convex mutation does not resolve when its response arrives: the
+          // client stores the resolver and only settles it from the
+          // Transition handler, once it has applied the query updates at or
+          // past the mutation's own timestamp. So by the time this await
+          // returns, the parent's getRoleResult already reads completed, and
+          // the `pending` reset in the finally below lands in the SAME render
+          // that swaps this stepper out for the reveal. The button is never
+          // live on a completed assessment, which is why a second press
+          // cannot call setRating and paint "could not be saved" over a
+          // completion that worked.
+          //
+          // Written down because the retired onCompleted() made this obvious
+          // by swapping React state synchronously, and the merged flow rests
+          // on a platform property instead. A future reader who does not know
+          // it will either "fix" a bug that cannot happen or remove the await
+          // ordering that makes it true.
           await completeAssessment({ orgId, roleId })
           toast.success(tToast("assessmentCompleted"))
         } catch (error) {

@@ -175,7 +175,7 @@ describe("RoleSheet", () => {
   })
 
   it("hides the breakdown for a completed-but-incomplete role (drift added a criterion after completion)", () => {
-    // results.ts: a criterion added after the lock can leave a completed role
+    // results.ts: a criterion added afterwards can leave a completed role
     // incomplete again, reading back as complete=false, level=null while
     // completed stays true. The breakdown must not render a partial reveal for
     // that state (mirrors rating-result.tsx's own completed/complete/level gate).

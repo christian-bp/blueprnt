@@ -99,7 +99,8 @@ export function RoleEvaluationCard({
     locale,
   })
   const completed = result?.completed ?? false
-  // The level-position scale needs the level count; only the completed view uses it.
+  // The level-position scale needs the level count; only the completed view
+  // uses it.
   const model = useQuery(
     api.evaluationModel.model.getModel,
     showResult && completed ? { orgId, locale } : "skip"
@@ -268,17 +269,26 @@ export function RoleEvaluationCard({
             // is the ordinary way here). The ACT is not offered from this
             // card: completing is the assessment flow's own ending, and an
             // errand that finished an assessment from outside it was exactly
-            // the second trip decision 14 removed. What this card owes the
-            // reader is what is left and where it happens.
+            // the second trip decision 14 removed.
+            //
+            // So the control says what it DOES. It carried the act's own label
+            // for a while and only navigated, which promised a press that
+            // completes and delivered a press that opens a screen where an
+            // identically labelled button completes: one press more than the
+            // retired panel, wearing a label that said otherwise. And the
+            // sentence states what is LEFT, which is what this card owes the
+            // reader; the shared completeExplanation said only what completing
+            // does, which reads as a definition with no subject once it is not
+            // sitting on the button that performs it.
             <div className="space-y-3">
               <p className="text-muted-foreground text-sm leading-relaxed">
-                {tRating("completeExplanation")}
+                {tRating("readyToCompleteExplanation")}
               </p>
               <Link
                 href={`/roles/${slug}/rate`}
                 className={cn(buttonVariants())}
               >
-                {tRating("completeCta")}
+                {tRating("openAssessmentCta")}
               </Link>
             </div>
           )

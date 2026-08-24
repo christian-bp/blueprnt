@@ -326,12 +326,15 @@ starting V2:
   surface (`components/levels/calibration-queue.tsx`, fas 5): the derived
   queue lists the three classes with the reason in words per row, and
   confirming a placement calls `calibrateAssessment` with an optional note.
-- [ ] **Bound the calibration queue for a large register.** The queue derives
-  from rows the levels page has already fetched, so it costs no extra reads,
-  but it renders EVERY row that needs review with no cap and no pagination.
-  Re-approving a method puts every locked role into the stale-lock class at
-  once, so an org with a thousand roles gets a thousand-row list on one page.
-  Cap it, paginate it, or collapse it per class before large-org onboarding.
+- [ ] **Bound the calibration queue and the pending panel for a large
+  register.** Both derive from rows the levels page has already fetched, so
+  they cost no extra reads, but neither is bounded by the data. The queue is
+  now grouped by class and caps each class at five with a show-more, which
+  covers the flood case (re-approving a method puts every completed assessment
+  into the stale-method class at once); what is still unbounded is the class
+  once EXPANDED, and the pending panel's chip list once opened, which an org
+  with a thousand roles can still turn into a thousand items on one page.
+  Paginate both, or cap the expansion, before large-org onboarding.
 - [ ] **Calibrate `DEFAULT_LEVEL_RULES` and `DEFAULT_ZONE_PROFILE_RULES`
   against real data.** Both (`packages/core/src/zones.ts`) are the starting
   points every model's `levelRules`/`zoneProfileRules` seed from at creation,

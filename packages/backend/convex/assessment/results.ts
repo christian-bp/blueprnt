@@ -21,13 +21,13 @@ import { familyNames, trackNames } from "./names"
 // exposed always (completeness counters, never the outcome itself), so the
 // "ready to complete" state has something to show. Method drift is derived here
 // at read time and never stored, mirroring score/level/zone: it is always
-// false for a role that is not completed (nothing has been revealed yet to drift), but a
-// COMPLETED role whose model carries no CURRENT approval is itself drift, not
-// the absence of it. A method-affecting edit reopens approval
+// false for a role that is not completed (nothing has been revealed yet to
+// drift), but a COMPLETED role whose model carries no CURRENT approval is
+// itself drift, not the absence of it. A method-affecting edit reopens approval
 // (reopenApprovalIfSet) without touching any role already completed under the
 // prior approval, so a completed role next to an unapproved model means the
-// method moved since that role was completed, exactly the case this marking exists
-// to surface (ADR-0023 accepts this as visible-never-prevented).
+// method moved since that role was completed, exactly the case this marking
+// exists to surface (ADR-0023 accepts this as visible-never-prevented).
 //
 // Exported so payMapping/runs.ts's precondition computation can reuse this
 // EXACT predicate for its (non-blocking) drift warning, rather than
@@ -101,7 +101,8 @@ function nameFailures(
 // The results view: live-derived rows for every non-archived role plus the
 // model's level list. Score/level are computed at read time and never stored
 // (ADR-0002). Sorted level-first (Level 1 on top), score desc within a level,
-// incomplete and uncompleted roles last by title -- which is also what makes "only
+// incomplete and uncompleted roles last by title -- which is also what makes
+// "only
 // completed roles place" fall out of the existing sort for free on the levels
 // surfaces (their level is null until completed).
 export const getResults = orgQuery({

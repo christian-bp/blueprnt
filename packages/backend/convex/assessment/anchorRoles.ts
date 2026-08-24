@@ -58,9 +58,9 @@ function validateMotivation(motivation: string): string {
 
 // Designates a role as an anchor role. Preconditions follow the guide's
 // designation process: the role must exist, not be archived, not already be
-// an anchor, and must be a COMPLETED reference (completion is the reveal: an
-// uncompleted
-// role's level is not revealed anywhere, so it cannot anchor anything) with a
+// an anchor, and must be a COMPLETED reference (completion is the reveal, so
+// an uncompleted role's level is not revealed anywhere and cannot anchor
+// anything) with a
 // COMPLETE assessment (a real rating on every criterion, so the anchor has a
 // criteria profile and a computed level to calibrate against).
 export const designateAnchorRole = orgMutation({
@@ -201,9 +201,10 @@ export const updateAnchorRole = orgMutation({
 // at read time like every result (ADR-0002). computedLevel is null for an
 // uncompleted role, mirroring results.ts's own completed gate: an anchor's
 // designation survives its role being reopened (only archiving retires it),
-// but completion is the reveal, so the level itself is shown nowhere while
-// an assessment is not completed, calibration surfaces included. Replaced anchors are included (the
-// consumer filters by status); the list is small by design (2-5). Archived
+// but completion is the reveal, so the level itself is shown nowhere while an
+// assessment is not completed, calibration surfaces included. Replaced anchors
+// are included (the consumer filters by status); the list is small by design
+// (2-5). Archived
 // roles are excluded here, and archiveRole marks their designation "replaced"
 // so the role page and the audit log agree with that exclusion.
 export const listAnchorRoles = orgQuery({

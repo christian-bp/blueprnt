@@ -52,7 +52,7 @@ async function seedOrg(t: ReturnType<typeof initConvexTest>) {
   return { orgId, asAdmin, model, userId }
 }
 
-async function lockedRole(args: {
+async function completedRole(args: {
   orgId: string
   asAdmin: ReturnType<ReturnType<typeof initConvexTest>["withIdentity"]>
   model: { criteria: { criterionId: string }[] }
@@ -157,7 +157,7 @@ describe("getConsequenceAnalysis", () => {
   it("says nothing when the method has not moved since the approval", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedOrg(t)
-    await lockedRole({ orgId, asAdmin, model, title: "Analyst", value: 3 })
+    await completedRole({ orgId, asAdmin, model, title: "Analyst", value: 3 })
     await bufferApproval(t, orgId)
 
     const analysis = await asAdmin.query(
@@ -175,7 +175,7 @@ describe("getConsequenceAnalysis", () => {
     // is 100 however the points are spread), so moving weight between criteria
     // would change nothing. The mover has to be UNEVEN across the two criteria
     // whose weights swap.
-    const top = await lockedRole({
+    const top = await completedRole({
       orgId,
       asAdmin,
       model,
@@ -184,7 +184,7 @@ describe("getConsequenceAnalysis", () => {
       high: model.criteria[0]?.criterionId,
       low: model.criteria[1]?.criterionId,
     })
-    await lockedRole({ orgId, asAdmin, model, title: "Low", value: 1 })
+    await completedRole({ orgId, asAdmin, model, title: "Low", value: 1 })
     await bufferApproval(t, orgId)
     await reweight(t, model, 1, 5)
 
@@ -222,7 +222,7 @@ describe("getConsequenceAnalysis", () => {
   it("counts a criterion the approved method did not carry", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedOrg(t)
-    await lockedRole({ orgId, asAdmin, model, title: "Analyst", value: 3 })
+    await completedRole({ orgId, asAdmin, model, title: "Analyst", value: 3 })
     await bufferApproval(t, orgId)
     await t.run(async (ctx) => {
       const doc = await ctx.db
@@ -252,7 +252,7 @@ describe("getConsequenceAnalysis", () => {
     const { orgId, asAdmin, model } = await seedOrg(t)
     // Uneven across the two criteria whose weights swap, or the reweighting
     // moves nothing and the movers list this test is about stays empty.
-    const roleId = await lockedRole({
+    const roleId = await completedRole({
       orgId,
       asAdmin,
       model,
@@ -261,7 +261,7 @@ describe("getConsequenceAnalysis", () => {
       high: model.criteria[0]?.criterionId,
       low: model.criteria[1]?.criterionId,
     })
-    await lockedRole({ orgId, asAdmin, model, title: "Low", value: 1 })
+    await completedRole({ orgId, asAdmin, model, title: "Low", value: 1 })
     await bufferApproval(t, orgId)
     await reweight(t, model, 1, 5)
 
@@ -322,14 +322,14 @@ describe("getConsequenceAnalysis", () => {
   it("classes a staffed role by the pay-mapping dominance convention", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedOrg(t)
-    const roleId = await lockedRole({
+    const roleId = await completedRole({
       orgId,
       asAdmin,
       model,
       title: "Analyst",
       value: 5,
     })
-    await lockedRole({ orgId, asAdmin, model, title: "Low", value: 1 })
+    await completedRole({ orgId, asAdmin, model, title: "Low", value: 1 })
     await bufferApproval(t, orgId)
     await reweight(t, model, 1, 5)
 
@@ -375,14 +375,14 @@ describe("getConsequenceAnalysis", () => {
   })
 
   // THE CRITICAL CASE, in the exact shape the reviewer probed. A criterion
-  // added since the approval is unrated on every already-locked role, so the
+  // added since the approval is unrated on every already-completed role, so the
   // engine returns no level on the LIVE side and the role falls off the
   // ladder. Counting only roles placed on both sides made `moved` 0 and the
   // panel silent about the largest consequence an approval can have.
   it("counts a placement that would DISAPPEAR when a criterion was added", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedOrg(t)
-    const roleId = await lockedRole({
+    const roleId = await completedRole({
       orgId,
       asAdmin,
       model,
@@ -391,7 +391,7 @@ describe("getConsequenceAnalysis", () => {
     })
     await bufferApproval(t, orgId)
     // The real-world shape: the approval was granted, then a criterion joined
-    // the model, so the locked role has no rating for it.
+    // the model, so the completed role has no rating for it.
     await t.run(async (ctx) => {
       const doc = await ctx.db
         .query("models")
@@ -444,7 +444,7 @@ describe("getConsequenceAnalysis", () => {
   it("sees a movement that only the level thresholds cause", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedOrg(t)
-    await lockedRole({ orgId, asAdmin, model, title: "Analyst", value: 3 })
+    await completedRole({ orgId, asAdmin, model, title: "Analyst", value: 3 })
     await bufferApproval(t, orgId)
     // Collapse the live ladder so a mid-scoring role lands somewhere else.
     await t.run(async (ctx) => {
@@ -489,7 +489,7 @@ describe("getConsequenceAnalysis", () => {
         weightPoints: 1,
       })
     })
-    await lockedRole({
+    await completedRole({
       orgId,
       asAdmin,
       model,
@@ -523,16 +523,16 @@ describe("getConsequenceAnalysis", () => {
   })
 
   // I1: one population. The distribution used to count every ACTIVE role while
-  // everything beside it counted locked ones, so a reader saw "1 of 1 locked
-  // placements would move" beside a zone table about two roles.
-  it("counts one population: the locked roles, everywhere", async () => {
+  // everything beside it counted completed ones, so a reader saw "1 of 1
+  // completed placements would move" beside a zone table about two roles.
+  it("counts one population: the completed assessments, everywhere", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedOrg(t)
-    await lockedRole({
+    await completedRole({
       orgId,
       asAdmin,
       model,
-      title: "Locked",
+      title: "Completed",
       value: 3,
       high: model.criteria[0]?.criterionId,
       low: model.criteria[1]?.criterionId,
@@ -541,7 +541,7 @@ describe("getConsequenceAnalysis", () => {
     // revealed placement, so it belongs to no part of this panel.
     const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
-      title: "Unlocked",
+      title: "Open",
       function: "engineering",
       team: "Core",
       trackKey: "IC",

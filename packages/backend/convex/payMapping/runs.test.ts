@@ -47,9 +47,9 @@ const WORKING_CONDITIONS_MOTIVATION =
   "Rollen är regelbundet exponerad för säkerhetsrisker i det dagliga arbetet."
 
 // Seeds an org with: a default model (criteria + level rules), one fully
-// evaluated AND LOCKED role (every criterion rated so the engine returns a
-// non-null level/score, then the assessment is locked so the preconditions
-// gate's "evaluated AND locked" requirement, spec 2.4/6, is actually met),
+// evaluated AND COMPLETED role (every criterion rated so the engine returns a
+// non-null level/score, then the assessment completed so the preconditions
+// gate's "evaluated AND completed" requirement, spec 2.4/6, is actually met),
 // and two classified active people (confirmed open assignment to that role)
 // one of whom has a pay record and one who does not. Satisfies the
 // preconditions gate outright, so startPayMappingRun succeeds. Returns the
@@ -92,7 +92,7 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
   // Decide working conditions, individually approve every criterion, and
   // approve the model, all directly (bypassing setWorkingConditionsDecision/
   // setCriterionApproval/approveModel's own checklist re-validation),
-  // mirroring how locking is bypassed below: this fixture is about freeze
+  // mirroring how completion is bypassed below: this fixture is about freeze
   // mechanics, not the approval lifecycle, which has its own dedicated suite
   // (evaluationModel/approval.test). Every criterion's own `approved` must be
   // true here too, not only the model's `approval`: computePayMappingPreconditions
@@ -159,7 +159,7 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
     }
     // Complete directly (bypassing completeAssessment's per-mutation re-validation
     // and motivation-required law, like the ratings above bypass setRating):
-    // this fixture is about freeze/pay-mapping mechanics, not the locking
+    // this fixture is about freeze/pay-mapping mechanics, not the completion
     // lifecycle, which has its own dedicated suite (assessment/completion.test).
     await ctx.db.patch(roleDocId, {
       assessment: { completedBy: userId, completedAt: Date.now() },
@@ -584,11 +584,11 @@ describe("getPayMappingPreconditions", () => {
     expect(result.peopleCount).toBeGreaterThan(0)
   })
 
-  it("reports not ready when the model's approval is unset, even though every person is classified and every staffed role is evaluated and locked; re-approving restores ready and lets the run start", async () => {
+  it("reports not ready when the model's approval is unset, even though every person is classified and every staffed role is evaluated and completed; re-approving restores ready and lets the run start", async () => {
     const t = initConvexTest()
     const { orgId, asHr } = await seedForFreeze(t)
 
-    // Reopen approval directly (mirrors how locking.test.ts's "method drift
+    // Reopen approval directly (mirrors how completion.test.ts's "method drift
     // derivation" suite forces approval state): every other precondition
     // stays exactly as seedForFreeze left it, satisfied.
     const modelBefore = await t.run(async (ctx) => {
@@ -646,7 +646,7 @@ describe("getPayMappingPreconditions", () => {
     })
   })
 
-  it("counts a staffed, evaluated, locked role as drifted once the model is re-approved after that role's lock, and clears once the role is re-locked", async () => {
+  it("counts a staffed, evaluated, completed role as drifted once the model is re-approved after that role's completion, and clears once it is completed again", async () => {
     const t = initConvexTest()
     const { orgId, asHr } = await seedForFreeze(t)
 
@@ -659,8 +659,8 @@ describe("getPayMappingPreconditions", () => {
       return role?.assessment?.completedAt ?? 0
     })
 
-    // A later re-approval (direct write, same as locking.test.ts's "method
-    // drift derivation" suite): the role stays locked, but under a method
+    // A later re-approval (direct write, same as completion.test.ts's "method
+    // drift derivation" suite): the role stays completed, but under a method
     // that is no longer the one currently approved.
     await t.run(async (ctx) => {
       const modelDoc = await ctx.db
@@ -684,11 +684,11 @@ describe("getPayMappingPreconditions", () => {
     expect(drifted.ready).toBe(true)
     expect(drifted.driftedRolesCount).toBe(1)
 
-    // Re-locking under the current approval clears the drift again. A real
-    // re-lock a moment later in wall-clock time is not reliably past the
+    // Completing again under the current approval clears the drift. A real
+    // completion a moment later in wall-clock time is not reliably past the
     // artificial `completedAt + 1000` used above (this test runs in well under a
     // second), so approvedAt is moved back to just-before "now" first
-    // (mirrors locking.test.ts's "method drift derivation" suite): still
+    // (mirrors completion.test.ts's "method drift derivation" suite): still
     // exercises the real completedAt-vs-approvedAt comparison, deterministically.
     await t.run(async (ctx) => {
       const modelDoc = await ctx.db
@@ -709,11 +709,11 @@ describe("getPayMappingPreconditions", () => {
         assessment: { completedBy: "second-approver", completedAt: Date.now() },
       })
     })
-    const relocked = await asHr.query(
+    const recompleted = await asHr.query(
       api.payMapping.runs.getPayMappingPreconditions,
       { orgId }
     )
-    expect(relocked.driftedRolesCount).toBe(0)
+    expect(recompleted.driftedRolesCount).toBe(0)
   })
 
   it("goes not-ready again once a previously-approved criterion is un-approved through the real mutation, the empirical scenario approve -> un-approve -> approval null -> preconditions not ready", async () => {
@@ -831,7 +831,7 @@ describe("getPayMappingPreconditions", () => {
     expect(result.ready).toBe(false)
   })
 
-  it("blocks on a staffed role that is fully rated but not yet locked (evaluated AND locked)", async () => {
+  it("blocks on a staffed role that is fully rated but not yet completed (evaluated AND completed)", async () => {
     const t = initConvexTest()
     const { orgId, asHr } = await seedForFreeze(t)
 
@@ -907,23 +907,23 @@ describe("getPayMappingPreconditions", () => {
       })
     ).rejects.toThrow(/errors.payMappingPreconditionsUnmet/)
 
-    // Locking the draft role clears the block. Patched directly (like the
+    // Completing the open assessment clears the block. Patched directly (like the
     // ratings above): this test is about the PRECONDITIONS predicate, not
-    // the locking mutation's own gates (model approval, motivation-required
+    // the completion mutation's own gates (model approval, motivation-required
     // law), which have their own dedicated suite (assessment/completion.test).
     await t.run(async (ctx) => {
       const roleDocId = ctx.db.normalizeId("roles", draftRoleId as string)
       if (roleDocId === null) throw new Error("seed: role id")
       await ctx.db.patch(roleDocId, {
-        assessment: { completedBy: "test-locker", completedAt: Date.now() },
+        assessment: { completedBy: "test-completer", completedAt: Date.now() },
       })
     })
-    const afterLock = await asHr.query(
+    const afterCompletion = await asHr.query(
       api.payMapping.runs.getPayMappingPreconditions,
       { orgId }
     )
-    expect(afterLock.unevaluatedRoles).toEqual([])
-    expect(afterLock.ready).toBe(true)
+    expect(afterCompletion.unevaluatedRoles).toEqual([])
+    expect(afterCompletion.ready).toBe(true)
   })
 
   it("never reports ready for an org with no people, so the empty org must import first", async () => {
@@ -1905,7 +1905,8 @@ describe("deletePayMappingRun", () => {
 
 // The two pay-mapping seams fas 5 had to prove rather than assume: that a new
 // run groups on the TWELVE-level key ADR-0022 introduced, and that the
-// exclusion of non-locked assessments is exactly what spec section 6 says.
+// exclusion of assessments that are not completed is exactly what spec
+// section 6 says.
 // Both were found intact; these pin them so a later change to the engine's
 // placement or to the preconditions gate cannot move them silently.
 describe("the run's level grouping and exclusion seam", () => {
@@ -2092,11 +2093,12 @@ describe("the run's level grouping and exclusion seam", () => {
 
   // Spec section 6's exclusion, as it is actually built: NOT a silent
   // per-person filter but a precondition GATE. A staffed active role whose
-  // assessment is not locked stops the whole run and names itself, which is
+  // assessment is not completed stops the whole run and names itself, which is
   // stricter than excluding its people would be, and is the right reading of
-  // lock-as-reveal: a run must not quietly leave people out of a statutory
+  // completion is the reveal: a run must not quietly leave people out of a
+  // statutory
   // mapping.
-  it("lets a locked role's people into a run", async () => {
+  it("lets a completed role's people into a run", async () => {
     const t = initConvexTest()
     const { orgId, asHr } = await seedForFreeze(t)
     const preconditions = await asHr.query(
@@ -2122,10 +2124,10 @@ describe("the run's level grouping and exclusion seam", () => {
     expect(rows).toHaveLength(2)
   })
 
-  it("refuses the run while a staffed role is rated but not locked", async () => {
+  it("refuses the run while a staffed role is rated but not completed", async () => {
     const t = initConvexTest()
     const { orgId, asHr } = await seedForFreeze(t)
-    // Fully rated, and the lock taken away: complete-but-unlocked is exactly
+    // Fully rated, and the completion taken away: rated-but-open is exactly
     // the draft state a run may not include (spec 2.4/6).
     await t.run(async (ctx) => {
       const role = await ctx.db
@@ -2140,7 +2142,7 @@ describe("the run's level grouping and exclusion seam", () => {
       api.payMapping.runs.getPayMappingPreconditions,
       { orgId }
     )
-    // Named, not merely counted: the operator has to know WHICH role to lock.
+    // Named, not merely counted: the operator has to know WHICH role to complete.
     expect(preconditions.unevaluatedRoles).toHaveLength(1)
     expect(preconditions.unevaluatedRoles[0]?.title).toBe("Software Engineer")
 
@@ -2161,7 +2163,7 @@ describe("the run's level grouping and exclusion seam", () => {
     expect(runs).toEqual([])
   })
 
-  // An UNSTAFFED role's lock state never blocks: nobody is in it, so it
+  // An UNSTAFFED role's completion state never blocks: nobody is in it, so it
   // contributes nothing to the mapping either way.
   it("lets an unlocked role with nobody in it pass", async () => {
     const t = initConvexTest()

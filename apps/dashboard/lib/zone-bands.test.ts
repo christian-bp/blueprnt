@@ -117,7 +117,8 @@ describe("bandRowsFor", () => {
     }
   })
 
-  // A locked role whose zone somehow arrived without a level is not placed
+  // A completed assessment whose zone somehow arrived without a level is not
+  // placed
   // either: a band draws roles at a level, and a row with none has no lane.
   it("places no row that has a zone but no level", () => {
     const odd = row({ roleId: "odd", level: null, zone: "B" })

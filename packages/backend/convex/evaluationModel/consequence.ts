@@ -19,7 +19,7 @@ import type { ModelEvidence } from "./tables"
 // what approving it would DO to the organization's existing placements.
 //
 // The whole analysis is derived, never stored (ADR-0002). It compares two runs
-// of the same pure engine over the SAME locked ratings: once under the live
+// of the same pure engine over the SAME completed ratings: once under the live
 // model, once under the method the last approval buffered
 // (`lastApprovedModel`, ADR-0023 decision 11). Nothing here re-implements
 // placement; the engine is the only authority on where a role lands.
@@ -183,17 +183,17 @@ function levelByRole(results: readonly RoleResult[]): Map<string, number> {
   return map
 }
 
-// ONE population for the whole panel: only LOCKED roles, the same set `placed`,
-// `movers`, `families` and `genders` speak about. Counting every active role
-// here instead put a zone table about N roles beside a summary about the M
-// locked ones, with nothing saying they were different sets.
+// ONE population for the whole panel: only COMPLETED assessments, the same set
+// `placed`, `movers`, `families` and `genders` speak about. Counting every
+// active role here instead put a zone table about N roles beside a summary
+// about the M completed ones, with nothing saying they were different sets.
 function zoneCounts(
   results: readonly RoleResult[],
-  lockedIds: ReadonlySet<string>
+  completedIds: ReadonlySet<string>
 ): Record<ZoneKey, number> {
   const counts: Record<ZoneKey, number> = { A: 0, B: 0, C: 0, D: 0 }
   for (const result of results) {
-    if (result.zone !== null && lockedIds.has(result.roleId)) {
+    if (result.zone !== null && completedIds.has(result.roleId)) {
       counts[result.zone] += 1
     }
   }
@@ -217,7 +217,7 @@ export const getConsequenceAnalysis = orgQuery({
     moved: v.number(),
     // A placement that DISAPPEARS is the largest consequence there is, and it
     // used to be the one the panel could not see. Approving a method that
-    // added a criterion leaves every already-locked role unrated on it, so the
+    // added a criterion leaves every already-completed role unrated on it, so
     // engine returns no level and the role falls off the ladder until someone
     // rates it. Counted here as its own class rather than folded into `moved`,
     // because "moved to another level" and "has no level any more" are
@@ -225,7 +225,7 @@ export const getConsequenceAnalysis = orgQuery({
     // that could not place under the approved method and can now.
     losing: v.number(),
     gaining: v.number(),
-    // Every locked, placed role, counted once, so the panel can say "8 of 42".
+    // Every completed, placed role, counted once, so the panel can say "8 of 42".
     placed: v.number(),
     criteriaAdded: v.number(),
     criteriaRemoved: v.number(),
@@ -417,9 +417,11 @@ export const getConsequenceAnalysis = orgQuery({
       return a.title.localeCompare(b.title)
     })
 
-    const lockedIds = new Set(completedRoles.map((role) => role._id as string))
-    const nowZones = zoneCounts(nowResults, lockedIds)
-    const approvedZones = zoneCounts(approvedResults, lockedIds)
+    const completedIds = new Set(
+      completedRoles.map((role) => role._id as string)
+    )
+    const nowZones = zoneCounts(nowResults, completedIds)
+    const approvedZones = zoneCounts(approvedResults, completedIds)
 
     return {
       comparable: true,

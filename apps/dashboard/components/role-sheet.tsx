@@ -230,7 +230,7 @@ function RoleSheetContent({
                 result.level !== null ? (
                 // Level now lives in the header; the body carries only the
                 // per-criterion contribution breakdown. Gated on complete AND
-                // level (not locked alone): a criterion added after the lock
+                // level (not completion alone): a criterion added afterwards
                 // can leave a completed role incomplete again, reading back as
                 // complete=false, level=null while completed stays true
                 // (results.ts), and the breakdown must not render a partial

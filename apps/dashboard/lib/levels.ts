@@ -19,7 +19,8 @@ export interface LevelRoleRow {
   zone: ZoneKey | null
   ratedCount: number
   totalCriteria: number
-  // Complete but not yet locked (lock-as-reveal, spec 2.4/6): the row has no
+  // Fully rated, assessment not yet completed (completion is the reveal, spec
+  // 2.4/6): the row has no
   // level yet not because it is unrated, but because its result has not been
   // revealed. PendingRoles uses this to tell the two apart.
   readyToComplete: boolean

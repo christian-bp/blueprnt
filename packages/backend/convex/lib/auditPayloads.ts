@@ -337,13 +337,13 @@ export interface AuditPayloads {
     count: number
     items: AuditItem[]
   }
-  // Locking lifecycle (ADR-0023, spec 2.4/6): lock-as-reveal never wraps in a
-  // level.shift (locking/unlocking changes what getResults exposes, not the
-  // underlying derivation), so these three carry only their own marker/stat
-  // shape. ratedCount is a flat stat (how many criteria were covered at lock
-  // time); unlock carries no extra field (the role subject is enough); the
-  // calibration note itself never enters the trail (free-text audit
-  // practice), only whether one was given.
+  // Completion lifecycle (ADR-0023, spec 2.4/6): completing is the reveal, and
+  // it never wraps in a level.shift (completing and reopening change what
+  // getResults exposes, not the underlying derivation), so these three carry
+  // only their own marker/stat shape. ratedCount is a flat stat (how many
+  // criteria were covered at completion time); reopening carries no extra
+  // field (the role subject is enough); the calibration note itself never
+  // enters the trail (free-text audit practice), only whether one was given.
   "role.assessmentCompleted": { roleId: string; ratedCount: number }
   "role.assessmentReopened": { roleId: string }
   "role.assessmentCalibrated": { roleId: string; noteProvided: boolean }
