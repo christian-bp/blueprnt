@@ -1599,7 +1599,6 @@
       "motivationRequiredError": "Tilføj en begrundelse, før du fortsætter.",
       "backCta": "Tilbage",
       "nextCta": "Næste kriterium",
-      "finishCta": "Afslut vurderingen",
       "saveError": "Vurderingen kunne ikke gemmes. Prøv igen.",
       "result": {
         "heading": "Resultat",
@@ -1617,15 +1616,6 @@
       "lockedExplanation": "Vurderingen er låst, fordi rollen er arkiveret. Arkivering kan ikke fortrydes, så opret en ny rolle, hvis arbejdet skal vurderes igen.",
       "modelUnapprovedExplanation": "Evalueringsmodellen skal godkendes, før roller kan vurderes.",
       "modelUnapprovedCta": "Gå til kapitlet Godkendelse",
-      "lockCta": "Lås vurderingen",
-      "readyToReadExplanation": "Alle kriterier har en vurdering. Lås vurderingen for at vise vægtning og niveau.",
-      "lockError": "Vurderingen kunne ikke låses. Prøv igen.",
-      "alreadyLockedExplanation": "Denne vurdering er låst. Lås den op for at ændre nogen vurderinger.",
-      "unlockCta": "Lås vurderingen op",
-      "unlockDialogTitle": "Lås denne vurdering op?",
-      "unlockDialogDescription": "At låse op skjuler vægtning og niveau igen, indtil vurderingen låses på ny. Vurderinger kan derefter ændres.",
-      "unlockConfirm": "Ja, lås op",
-      "unlockCancel": "Annuller",
       "stageEyebrow": "Rollevurdering",
       "scale": {
         "title": "Fælles vurderingsskala",
@@ -1651,7 +1641,12 @@
           "name": "Meget avanceret, omfattende eller forretningskritisk krav",
           "meaning": "Kravet har meget stort omfang, sværhedsgrad, konsekvens eller strategisk betydning. Rollen former ofte retning, standarder, løsninger eller resultater uden for sit eget nærmeste område."
         }
-      }
+      },
+      "completeCta": "Afslut bedømmelsen",
+      "completeExplanation": "Når I afslutter, fastlægges bedømmelsen, og dens vægtning og niveau vises.",
+      "completeError": "Bedømmelsen kunne ikke afsluttes. Prøv igen.",
+      "alreadyCompletedExplanation": "Denne bedømmelse er afsluttet. At bedømme igen åbner bedømmelserne for ændring og skjuler vægtning og niveau, indtil I afslutter den igen.",
+      "reopenCta": "Bedøm igen"
     },
     "levels": {
       "description": "Niveauerne og rollerne i hvert niveau, udledt live fra den aktuelle model og vurderinger.",
@@ -1699,7 +1694,7 @@
       "deviationLabel": "Det beregnede niveau afviger fra det aftalte niveau {level}",
       "empty": "Ingen roller at vise endnu. Opret en rolle og vurder den for at se niveauerne.",
       "emptyCta": "Opret en rolle",
-      "readyToRead": "Klar til at blive læst"
+      "readyToComplete": "Klar til at afslutte"
     },
     "auth": {
       "loading": "Kontrollerer din session",

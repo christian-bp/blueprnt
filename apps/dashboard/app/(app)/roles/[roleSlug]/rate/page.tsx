@@ -16,16 +16,15 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
-import { use, useState } from "react"
+import { use } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { StageEyebrow } from "@/components/stage-eyebrow"
 import { RATE_COLUMN } from "@/lib/rate-column"
 import { usePageTitle } from "@/hooks/use-page-title"
-import { LockAssessmentPanel } from "@/components/rating/lock-assessment-panel"
 import { RatingResult } from "@/components/rating/rating-result"
 import { RatingStepper } from "@/components/rating/rating-stepper"
-import { UnlockAssessmentDialog } from "@/components/rating/unlock-assessment-dialog"
+import { ReopenAssessmentButton } from "@/components/rating/reopen-assessment-button"
 import { chapterHref } from "@/lib/model-chapters"
 
 // Steps 1-5 are always per-criterion; the library leaves 2/4 undefined when
@@ -72,8 +71,6 @@ export default function RatePage(props: {
     api.assessment.results.getRoleResult,
     role != null ? { orgId, roleId: role.roleId, locale } : "skip"
   )
-  const [finished, setFinished] = useState(false)
-  const [unlockOpen, setUnlockOpen] = useState(false)
   usePageTitle([role?.title, t("title")])
 
   if (role === undefined || model === undefined) {
@@ -264,17 +261,11 @@ export default function RatePage(props: {
         />
         <div className="space-y-4">
           <p className="text-muted-foreground text-sm">
-            {t("alreadyLockedExplanation")}
+            {t("alreadyCompletedExplanation")}
           </p>
           <RatingResult orgId={orgId} roleId={role.roleId} />
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setUnlockOpen(true)}
-            >
-              {t("unlockCta")}
-            </Button>
+            <ReopenAssessmentButton orgId={orgId} roleId={role.roleId} />
             <Link
               href={`/roles/${role.slug}`}
               className={cn(buttonVariants({ variant: "outline" }))}
@@ -282,35 +273,16 @@ export default function RatePage(props: {
               {t("result.backToRole")}
             </Link>
           </div>
-          <UnlockAssessmentDialog
-            open={unlockOpen}
-            onOpenChange={setUnlockOpen}
-            orgId={orgId}
-            roleId={role.roleId}
-          />
         </div>
       </div>
     )
   }
 
-  // Every criterion answered but not yet locked: the completion state offers
-  // the lock action itself; the branch above takes over as the reveal once
-  // it succeeds (result.locked flips reactively).
-  if (finished) {
-    return (
-      <div className={RATE_COLUMN}>
-        <PageBreadcrumbRow
-          eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
-          segments={[
-            { label: tNav("roles"), href: "/roles" },
-            { label: role.title, href: `/roles/${role.slug}` },
-            { label: t("title") },
-          ]}
-        />
-        <LockAssessmentPanel orgId={orgId} roleId={role.roleId} />
-      </div>
-    )
-  }
+  // No completion screen between the last criterion and the reveal. The
+  // stepper's own last step completes the assessment, so the branch above
+  // takes the screen the moment the result turns readable; a role whose
+  // criteria are all rated and which is still not completed (a reopened one,
+  // normally) resumes at that last step, one press from its ending.
 
   return (
     <div className={RATE_COLUMN}>
@@ -335,7 +307,6 @@ export default function RatePage(props: {
           anchors: resolveAnchors(criterion, model.midpoints),
         }))}
         ratings={role.ratings}
-        onCompleted={() => setFinished(true)}
       />
     </div>
   )

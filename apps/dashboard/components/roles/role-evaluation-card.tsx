@@ -40,13 +40,12 @@ import {
 } from "@/components/assessment-status"
 import { DeviationBadge } from "@/components/deviation-badge"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { LockAssessmentPanel } from "@/components/rating/lock-assessment-panel"
-import { UnlockAssessmentDialog } from "@/components/rating/unlock-assessment-dialog"
 import {
   type AnchorRoleInfo,
   AnchorDialog,
 } from "@/components/roles/role-anchor-control"
 import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
+import { useReopenAssessment } from "@/hooks/use-reopen-assessment"
 
 // One card for the whole evaluation lifecycle, now three states instead of
 // two (lock-as-reveal, spec 2.4/6): incomplete (progress + stepper entry),
@@ -84,7 +83,7 @@ export function RoleEvaluationCard({
   const locale = useLocale()
 
   const [anchorOpen, setAnchorOpen] = useState(false)
-  const [unlockOpen, setUnlockOpen] = useState(false)
+  const { reopen, pending: reopenPending } = useReopenAssessment(orgId, roleId)
 
   const evaluated = totalCriteria > 0 && ratedCount === totalCriteria
   // The view is chosen from the props so it never flashes; the query only
@@ -153,11 +152,15 @@ export function RoleEvaluationCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {locked ? (
+                // Not destructive, and no confirm: reopening keeps every
+                // rating and is undone by completing again from the flow's
+                // last step. The result it hides is derived, never stored
+                // (ADR-0002), so there is nothing here to lose.
                 <DropdownMenuItem
-                  variant="destructive"
-                  onClick={() => setUnlockOpen(true)}
+                  disabled={reopenPending}
+                  onClick={() => void reopen()}
                 >
-                  {tRating("unlockCta")}
+                  {tRating("reopenCta")}
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem
@@ -260,7 +263,23 @@ export function RoleEvaluationCard({
               <LockedIncompleteNotice />
             )
           ) : (
-            <LockAssessmentPanel orgId={orgId} roleId={roleId} />
+            // Rated, not completed (an assessment reopened for re-evaluation
+            // is the ordinary way here). The ACT is not offered from this
+            // card: completing is the assessment flow's own ending, and an
+            // errand that finished an assessment from outside it was exactly
+            // the second trip decision 14 removed. What this card owes the
+            // reader is what is left and where it happens.
+            <div className="space-y-3">
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                {tRating("completeExplanation")}
+              </p>
+              <Link
+                href={`/roles/${slug}/rate`}
+                className={cn(buttonVariants())}
+              >
+                {tRating("completeCta")}
+              </Link>
+            </div>
           )
         ) : !archived && !profileComplete ? (
           // Preconditions in words (guidance convention): a role cannot be
@@ -293,12 +312,6 @@ export function RoleEvaluationCard({
         orgId={orgId}
         roleId={roleId}
         anchorRole={anchorRole}
-      />
-      <UnlockAssessmentDialog
-        open={unlockOpen}
-        onOpenChange={setUnlockOpen}
-        orgId={orgId}
-        roleId={roleId}
       />
     </Card>
   )

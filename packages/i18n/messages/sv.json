@@ -1599,7 +1599,6 @@
       "motivationRequiredError": "Lägg till en motivering innan du fortsätter.",
       "backCta": "Tillbaka",
       "nextCta": "Nästa kriterium",
-      "finishCta": "Avsluta bedömningen",
       "saveError": "Betyget kunde inte sparas. Försök igen.",
       "result": {
         "heading": "Resultat",
@@ -1617,15 +1616,6 @@
       "lockedExplanation": "Betygsättningen är låst eftersom rollen är arkiverad. Arkivering kan inte ångras, så skapa en ny roll om arbetet behöver betygsättas igen.",
       "modelUnapprovedExplanation": "Utvärderingsmodellen måste godkännas innan roller kan bedömas.",
       "modelUnapprovedCta": "Gå till kapitlet Godkännande",
-      "lockCta": "Lås bedömningen",
-      "readyToReadExplanation": "Alla kriterier har en bedömning. Lås bedömningen för att visa viktning och nivå.",
-      "lockError": "Bedömningen kunde inte låsas. Försök igen.",
-      "alreadyLockedExplanation": "Den här bedömningen är låst. Lås upp den för att ändra några bedömningar.",
-      "unlockCta": "Lås upp bedömningen",
-      "unlockDialogTitle": "Lås upp den här bedömningen?",
-      "unlockDialogDescription": "Att låsa upp döljer viktning och nivå igen tills bedömningen låses på nytt. Bedömningarna kan då ändras.",
-      "unlockConfirm": "Ja, lås upp",
-      "unlockCancel": "Avbryt",
       "stageEyebrow": "Rollbedömning",
       "scale": {
         "title": "Gemensam bedömningsskala",
@@ -1651,7 +1641,12 @@
           "name": "Mycket avancerat, omfattande eller verksamhetskritiskt krav",
           "meaning": "Kravet har mycket stor omfattning, svårighetsgrad, konsekvens eller strategisk betydelse. Rollen formar ofta riktning, standarder, lösningar eller resultat utanför det egna närmaste området."
         }
-      }
+      },
+      "completeCta": "Slutför bedömningen",
+      "completeExplanation": "När ni slutför fastställs bedömningen och dess viktning och nivå visas.",
+      "completeError": "Bedömningen kunde inte slutföras. Försök igen.",
+      "alreadyCompletedExplanation": "Den här bedömningen är slutförd. Att omvärdera öppnar bedömningarna för ändring och döljer viktning och nivå tills ni slutför den igen.",
+      "reopenCta": "Omvärdera"
     },
     "levels": {
       "description": "Nivåerna och rollerna i varje nivå, härledda live från aktuell modell och bedömningar.",
@@ -1699,7 +1694,7 @@
       "deviationLabel": "Beräknad nivå avviker från den överenskomna nivån {level}",
       "empty": "Inga roller att visa ännu. Skapa en roll och utvärdera den för att se nivåerna.",
       "emptyCta": "Skapa en roll",
-      "readyToRead": "Klar att läsa"
+      "readyToComplete": "Klar att slutföra"
     },
     "auth": {
       "loading": "Kontrollerar din session",

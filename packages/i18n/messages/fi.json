@@ -1599,7 +1599,6 @@
       "motivationRequiredError": "Lisää perustelu ennen kuin jatkat.",
       "backCta": "Takaisin",
       "nextCta": "Seuraava kriteeri",
-      "finishCta": "Viimeistele arviointi",
       "saveError": "Arviota ei voitu tallentaa. Yritä uudelleen.",
       "result": {
         "heading": "Tulos",
@@ -1617,15 +1616,6 @@
       "lockedExplanation": "Arviointi on lukittu, koska rooli on arkistoitu. Arkistointia ei voi perua, joten luo uusi rooli, jos työ pitää arvioida uudelleen.",
       "modelUnapprovedExplanation": "Arviointimalli on hyväksyttävä ennen kuin rooleja voi arvioida.",
       "modelUnapprovedCta": "Siirry Hyväksyntä-lukuun",
-      "lockCta": "Lukitse arviointi",
-      "readyToReadExplanation": "Jokaisella kriteerillä on arvio. Lukitse arviointi näyttääksesi painotuksen ja vaativuustason.",
-      "lockError": "Arviointia ei voitu lukita. Yritä uudelleen.",
-      "alreadyLockedExplanation": "Tämä arviointi on lukittu. Avaa lukitus muuttaaksesi arvioita.",
-      "unlockCta": "Avaa arvioinnin lukitus",
-      "unlockDialogTitle": "Avataanko tämän arvioinnin lukitus?",
-      "unlockDialogDescription": "Lukituksen avaaminen piilottaa painotuksen ja vaativuustason jälleen, kunnes arviointi lukitaan uudelleen. Arvioita voi tämän jälkeen muuttaa.",
-      "unlockConfirm": "Kyllä, avaa lukitus",
-      "unlockCancel": "Peruuta",
       "stageEyebrow": "Roolin arviointi",
       "scale": {
         "title": "Yhteinen arviointiasteikko",
@@ -1651,7 +1641,12 @@
           "name": "Erittäin vaativa, laaja tai liiketoimintakriittinen vaatimus",
           "meaning": "Vaatimuksella on erittäin suuri laajuus, vaikeusaste, seuraus tai strateginen merkitys. Rooli muovaa usein suuntaa, standardeja, ratkaisuja tai tuloksia oman lähialueensa ulkopuolella."
         }
-      }
+      },
+      "completeCta": "Viimeistele arviointi",
+      "completeExplanation": "Viimeistely vahvistaa arvioinnin ja näyttää sen painotuksen ja vaativuustason.",
+      "completeError": "Arviointia ei voitu viimeistellä. Yritä uudelleen.",
+      "alreadyCompletedExplanation": "Tämä arviointi on viimeistelty. Uudelleenarviointi avaa arviot muutettaviksi ja piilottaa painotuksen ja vaativuustason, kunnes viimeistelette sen uudelleen.",
+      "reopenCta": "Arvioi uudelleen"
     },
     "levels": {
       "description": "Vaativuustasot ja kunkin tason roolit, johdettu reaaliaikaisesti nykyisestä mallista ja arvioinneista.",
@@ -1699,7 +1694,7 @@
       "deviationLabel": "Laskettu vaativuustaso poikkeaa sovitusta vaativuustasosta {level}",
       "empty": "Ei vielä näytettäviä rooleja. Luo rooli ja arvioi se nähdäksesi tasot.",
       "emptyCta": "Luo rooli",
-      "readyToRead": "Valmis luettavaksi"
+      "readyToComplete": "Valmis viimeisteltäväksi"
     },
     "auth": {
       "loading": "Tarkistetaan istuntoasi",

@@ -65,13 +65,15 @@ describe("PendingRoles", () => {
       role({ roleId: "r3", title: "Ready Role", readyToLock: true }),
     ])
     expect(
-      screen.getByText(messages.dashboard.levels.readyToRead)
+      screen.getByText(messages.dashboard.levels.readyToComplete)
     ).toBeDefined()
   })
 
   it("does not badge a role that is merely still being rated", () => {
     renderPending([role({})])
-    expect(screen.queryByText(messages.dashboard.levels.readyToRead)).toBeNull()
+    expect(
+      screen.queryByText(messages.dashboard.levels.readyToComplete)
+    ).toBeNull()
   })
 
   it("ignores roles that already have a level", () => {

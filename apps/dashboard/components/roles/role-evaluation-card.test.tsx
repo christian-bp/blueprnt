@@ -1,9 +1,15 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { AnchorRoleInfo } from "@/components/roles/role-anchor-control"
-import { onQuery } from "@/test/convex-mocks"
+import { mockMutation, onQuery } from "@/test/convex-mocks"
 
 vi.mock(
   "convex/react",
@@ -16,6 +22,8 @@ vi.mock(
 
 import { RoleEvaluationCard } from "@/components/roles/role-evaluation-card"
 import { openMenu } from "@/test/menu"
+
+const unlockAssessmentMock = mockMutation("assessment.locking.unlockAssessment")
 
 const detail = messages.dashboard.roles.detail
 const roles = messages.dashboard.roles
@@ -128,7 +136,10 @@ function openManageMenu() {
 }
 
 describe("RoleEvaluationCard", () => {
-  beforeEach(() => setResult(null))
+  beforeEach(() => {
+    setResult(null)
+    unlockAssessmentMock.mockReset().mockResolvedValue(null)
+  })
   afterEach(() => cleanup())
 
   it("states the precondition and offers no rate action when the profile is incomplete", () => {
@@ -160,15 +171,25 @@ describe("RoleEvaluationCard", () => {
     expect(screen.getByText(detail.lockedBadge)).toBeDefined()
   })
 
-  it("shows the ready-to-lock panel (not the result) for a complete but unlocked role", () => {
+  // Rated but not completed. This card SAYS what is left and points into the
+  // flow; it does not carry the act. Completing from here was the second trip
+  // decision 14 removed, so a button that completed from outside the flow
+  // would be that errand growing back.
+  it("sends a complete-but-uncompleted role into the flow rather than completing it here", () => {
     setResult(readyToLockResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(
-      screen.getByText(messages.dashboard.rating.readyToReadExplanation)
+      screen.getByText(messages.dashboard.rating.completeExplanation)
     ).toBeDefined()
+    const into = screen.getByRole("link", {
+      name: messages.dashboard.rating.completeCta,
+    })
+    expect(into.getAttribute("href")).toBe("/roles/r1/rate")
     expect(
-      screen.getByRole("button", { name: messages.dashboard.rating.lockCta })
-    ).toBeDefined()
+      screen.queryByRole("button", {
+        name: messages.dashboard.rating.completeCta,
+      })
+    ).toBeNull()
     expect(screen.queryByText("Weighting 71")).toBeNull()
     expect(screen.queryByText(detail.lockedBadge)).toBeNull()
   })
@@ -226,21 +247,26 @@ describe("RoleEvaluationCard", () => {
     expect(adjust.getAttribute("href")).toBe("/roles/r1/rate")
   })
 
-  it("puts Unlock assessment in the actions menu for a locked role, behind a confirm dialog", async () => {
+  // One press, straight to the mutation: decision 14 retired the confirm, so a
+  // dialog appearing between the click and the write would be the ceremony
+  // growing back.
+  it("reopens from the actions menu in one press, with no confirm in between", async () => {
     setResult(completeResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(
       screen.queryByRole("menuitem", { name: detail.adjustRateCta })
     ).toBeNull()
     await openManageMenu()
-    const unlock = screen.getByRole("menuitem", {
-      name: messages.dashboard.rating.unlockCta,
+    const reopen = screen.getByRole("menuitem", {
+      name: messages.dashboard.rating.reopenCta,
     })
-    expect(unlock).toBeDefined()
-    fireEvent.click(unlock)
-    expect(
-      screen.getByText(messages.dashboard.rating.unlockDialogTitle)
-    ).toBeDefined()
+    fireEvent.click(reopen)
+    await waitFor(() => {
+      expect(unlockAssessmentMock).toHaveBeenCalledWith({
+        orgId: "org_1",
+        roleId: "role_1",
+      })
+    })
   })
 
   it("offers Designate in the menu when there is no anchor, and shows no status row", async () => {

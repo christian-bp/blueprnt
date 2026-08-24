@@ -1599,7 +1599,6 @@
       "motivationRequiredError": "Legg til en begrunnelse før du fortsetter.",
       "backCta": "Tilbake",
       "nextCta": "Neste kriterium",
-      "finishCta": "Fullfør vurderingen",
       "saveError": "Vurderingen kunne ikke lagres. Prøv igjen.",
       "result": {
         "heading": "Resultat",
@@ -1617,15 +1616,6 @@
       "lockedExplanation": "Vurderingen er låst fordi rollen er arkivert. Arkivering kan ikke angres, så opprett en ny rolle hvis arbeidet skal vurderes på nytt.",
       "modelUnapprovedExplanation": "Evalueringsmodellen må godkjennes før roller kan vurderes.",
       "modelUnapprovedCta": "Gå til kapittelet Godkjenning",
-      "lockCta": "Lås vurderingen",
-      "readyToReadExplanation": "Alle kriterier har en vurdering. Lås vurderingen for å vise vekting og nivå.",
-      "lockError": "Vurderingen kunne ikke låses. Prøv igjen.",
-      "alreadyLockedExplanation": "Denne vurderingen er låst. Lås den opp for å endre noen vurderinger.",
-      "unlockCta": "Lås opp vurderingen",
-      "unlockDialogTitle": "Lås opp denne vurderingen?",
-      "unlockDialogDescription": "Å låse opp skjuler vekting og nivå igjen til vurderingen låses på nytt. Vurderinger kan da endres.",
-      "unlockConfirm": "Ja, lås opp",
-      "unlockCancel": "Avbryt",
       "stageEyebrow": "Rollevurdering",
       "scale": {
         "title": "Felles vurderingsskala",
@@ -1651,7 +1641,12 @@
           "name": "Svært avansert, omfattende eller virksomhetskritisk krav",
           "meaning": "Kravet har svært stort omfang, vanskelighetsgrad, konsekvens eller strategisk betydning. Rollen former ofte retning, standarder, løsninger eller resultater utenfor sitt eget nærmeste område."
         }
-      }
+      },
+      "completeCta": "Fullfør vurderingen",
+      "completeExplanation": "Når dere fullfører, fastsettes vurderingen, og vektingen og nivået vises.",
+      "completeError": "Vurderingen kunne ikke fullføres. Prøv igjen.",
+      "alreadyCompletedExplanation": "Denne vurderingen er fullført. Å vurdere på nytt åpner vurderingene for endring og skjuler vekting og nivå til dere fullfører den igjen.",
+      "reopenCta": "Vurder på nytt"
     },
     "levels": {
       "description": "Nivåene og rollene i hvert nivå, utledet live fra gjeldende modell og vurderinger.",
@@ -1699,7 +1694,7 @@
       "deviationLabel": "Beregnet nivå avviker fra det avtalte nivået {level}",
       "empty": "Ingen roller å vise ennå. Opprett en rolle og vurder den for å se nivåene.",
       "emptyCta": "Opprett en rolle",
-      "readyToRead": "Klar til å leses"
+      "readyToComplete": "Klar til å fullføres"
     },
     "auth": {
       "loading": "Sjekker økten din",

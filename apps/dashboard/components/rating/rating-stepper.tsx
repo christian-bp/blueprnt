@@ -24,7 +24,9 @@ import { DisclosureToggle } from "@/components/disclosure-toggle"
 import { STAGE_EYEBROW_CLASS } from "@/components/stage-eyebrow"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useEffect, useId, useRef, useState } from "react"
+import { assessmentErrorMessage } from "@/lib/assessment-error"
 import { SPRING } from "@/lib/motion"
+import { toast } from "@/lib/toast"
 
 // The "omfattas inte" step: valid only for a workingConditions criterion,
 // never one of the five graded anchor steps.
@@ -58,24 +60,32 @@ const stepVariants: Variants = {
 // The blind rating flow (assessment glossary): one criterion at a time, the
 // anchor texts are the selectable options, with a motivation that becomes
 // required at 1, 4, or 5. NEVER renders score, level, weights, or other
-// criteria's values; the reveal happens in the result step the parent shows
-// after onCompleted.
+// criteria's values.
+//
+// COMPLETING THE ASSESSMENT IS THIS FLOW'S OWN ENDING (decision 14). The last
+// step's button saves its rating and completes the assessment in one gesture,
+// and the reveal takes the screen the moment the result turns readable. The
+// completion used to be a second errand on a screen of its own after the
+// stepper finished, which made finishing an assessment two trips: the same
+// shape the criterion-compliance dialog was corrected for when its sign-off
+// stopped being a button after the save and became part of it.
 export function RatingStepper({
   orgId,
   roleId,
   criteria,
   ratings,
-  onCompleted,
 }: {
   orgId: string
   roleId: Id<"roles">
   criteria: StepperCriterion[]
   ratings: { criterionId: string; value: number; motivation: string | null }[]
-  onCompleted: () => void
 }) {
   const t = useTranslations("dashboard.rating")
   const tHelp = useTranslations("dashboard.help")
+  const tToast = useTranslations("dashboard.toast")
+  const tErrors = useTranslations("errors")
   const setRating = useMutation(api.assessment.ratings.setRating)
+  const completeAssessment = useMutation(api.assessment.locking.lockAssessment)
   const contextPanelId = useId()
   const notCoveredExplanationId = useId()
   const motivationErrorId = useId()
@@ -117,7 +127,15 @@ export function RatingStepper({
     (criterion) =>
       !ratings.some((rating) => rating.criterionId === criterion.criterionId)
   )
-  const [index, setIndex] = useState(firstUnrated === -1 ? 0 : firstUnrated)
+  // Resume where the work is. With something still unrated that is the first
+  // gap; with everything rated it is the LAST criterion, because an assessment
+  // whose criteria are all answered and which is still not completed is one
+  // press from its own ending (a reopened assessment is the ordinary way to
+  // arrive here), and opening at step 1 would ask the reader to walk the whole
+  // ladder again to reach a button they could have had immediately.
+  const [index, setIndex] = useState(
+    firstUnrated === -1 ? criteria.length - 1 : firstUnrated
+  )
   const [direction, setDirection] = useState(1)
   const [values, setValues] = useState<Record<string, number | undefined>>(() =>
     Object.fromEntries(
@@ -131,6 +149,11 @@ export function RatingStepper({
   )
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
+  // The completion's own failure, separate from `failed` (a rating that would
+  // not save): its causes are another operator's edits and each one has words
+  // of its own, so a shared "could not save" line would hide which of them
+  // happened.
+  const [completeError, setCompleteError] = useState<string | null>(null)
   // Which criterion's context panel is expanded / has a shown
   // motivation-required message, compared against the current criterion at
   // render time rather than reset with an effect: a fresh step's id can
@@ -243,6 +266,7 @@ export function RatingStepper({
     }
     setPending(true)
     setFailed(false)
+    setCompleteError(null)
     try {
       await setRating({
         orgId,
@@ -252,7 +276,17 @@ export function RatingStepper({
         ...(trimmedMotivation !== "" ? { motivation: trimmedMotivation } : {}),
       })
       if (index === criteria.length - 1) {
-        onCompleted()
+        // The flow's ending: the same gesture that saved the last rating
+        // completes the assessment. Sequential rather than concurrent, because
+        // the completion is refused unless every rating is already stored.
+        try {
+          await completeAssessment({ orgId, roleId })
+          toast.success(tToast("assessmentLocked"))
+        } catch (error) {
+          setCompleteError(
+            assessmentErrorMessage(error, tErrors, t("completeError"))
+          )
+        }
       } else {
         setDirection(1)
         setIndex(index + 1)
@@ -554,6 +588,24 @@ export function RatingStepper({
                 </p>
               )}
 
+              {completeError !== null && (
+                <p role="alert" className="text-destructive text-sm">
+                  {completeError}
+                </p>
+              )}
+
+              {/* What the ending DOES, in one sentence, where the ending is.
+                  It is not framing prose: it states the consequence of the
+                  press the reader is about to make, on the one step that
+                  carries it, which is the guidance the flow owes them. The
+                  sentence used to live on a completion screen of its own; the
+                  screen went, the sentence had to stay. */}
+              {index === criteria.length - 1 && (
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {t("completeExplanation")}
+                </p>
+              )}
+
               <div className="flex items-center justify-between">
                 <Button
                   type="button"
@@ -569,7 +621,7 @@ export function RatingStepper({
                   onClick={handleNext}
                 >
                   {index === criteria.length - 1
-                    ? t("finishCta")
+                    ? t("completeCta")
                     : t("nextCta")}
                   <Kbd
                     data-icon="inline-end"

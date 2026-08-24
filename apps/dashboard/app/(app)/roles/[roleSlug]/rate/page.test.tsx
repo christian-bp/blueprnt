@@ -28,6 +28,7 @@ vi.mock("@/lib/toast", () => ({
 }))
 
 import RatePage from "@/app/(app)/roles/[roleSlug]/rate/page"
+import { ConvexError } from "convex/values"
 import { chapterHref } from "@/lib/model-chapters"
 import { ZONE_KEYS } from "@workspace/core"
 import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
@@ -168,8 +169,12 @@ describe("RatePage (lock-as-reveal)", () => {
     expect(
       screen.getByText("How wide does this role's impact reach?")
     ).toBeDefined()
-    // No reveal, no lock action yet.
-    expect(screen.queryByText(t.lockCta)).toBeNull()
+    // Blind: the draft state renders no result, whatever step it is on. (The
+    // fixture has one criterion, so its first step is also its last and DOES
+    // carry the completion act; the invariant worth pinning here is that
+    // rating shows nothing, not that the ending is out of reach.)
+    expect(screen.queryByText(t.result.scoreLabel)).toBeNull()
+    expect(screen.queryByText(t.result.levelLabel)).toBeNull()
   })
 
   // The firewall, at the wire rather than at the render: an assessor rates
@@ -289,10 +294,16 @@ describe("RatePage (lock-as-reveal)", () => {
     }
   })
 
-  it("offers Lock assessment once the last criterion is answered, without revealing anything", async () => {
+  // Decision 14: completing IS the flow's ending. One press on the last step
+  // saves the rating and completes the assessment; there is no screen in
+  // between, which is what the old pin asserted (it required a second click on
+  // a second surface to reach the same mutation).
+  it("completes the assessment from the last step itself, in one gesture", async () => {
     await renderPage()
+    // The ending says what it will do, on the step that does it.
+    expect(screen.getByText(t.completeExplanation)).toBeDefined()
     fireEvent.click(screen.getByText("Scope anchor 3"))
-    fireEvent.click(screen.getByRole("button", { name: t.finishCta }))
+    fireEvent.click(screen.getByRole("button", { name: t.completeCta }))
     await waitFor(() => {
       expect(setRatingMock).toHaveBeenCalledWith({
         orgId: "org-1",
@@ -301,23 +312,36 @@ describe("RatePage (lock-as-reveal)", () => {
         value: 3,
       })
     })
-    await waitFor(() => {
-      expect(screen.getByText(t.readyToReadExplanation)).toBeDefined()
-    })
-    expect(screen.getByRole("button", { name: t.lockCta })).toBeDefined()
-    // Still blind: no score/level anywhere on this screen.
-    expect(screen.queryByText(t.result.scoreLabel)).toBeNull()
-
-    fireEvent.click(screen.getByRole("button", { name: t.lockCta }))
+    // The same gesture, no second surface in between.
     await waitFor(() => {
       expect(lockAssessmentMock).toHaveBeenCalledWith({
         orgId: "org-1",
         roleId: "role-1",
       })
     })
+    // Still blind while it was pressed: the reveal belongs to the branch that
+    // takes over once the result turns readable, never to this screen.
+    expect(screen.queryByText(t.result.scoreLabel)).toBeNull()
   })
 
-  it("states the precondition and reveals the result with an unlock affordance for an already-locked role", async () => {
+  // The completion's own failures are another operator's edits landing between
+  // render and press, and each has words of its own. They are said on the step
+  // rather than swallowed into the rating's "could not save".
+  it("says why a refused completion was refused, on the step itself", async () => {
+    lockAssessmentMock
+      .mockReset()
+      .mockRejectedValue(new ConvexError({ code: "errors.modelNotApproved" }))
+    await renderPage()
+    fireEvent.click(screen.getByText("Scope anchor 3"))
+    fireEvent.click(screen.getByRole("button", { name: t.completeCta }))
+    await waitFor(() => {
+      expect(screen.getByRole("alert").textContent).toBe(
+        messages.errors.modelNotApproved
+      )
+    })
+  })
+
+  it("states the precondition and reveals the result with a one-press reopen for an already-completed role", async () => {
     resultFixture = result({
       complete: true,
       locked: true,
@@ -337,18 +361,16 @@ describe("RatePage (lock-as-reveal)", () => {
     install()
     await renderPage()
 
-    expect(screen.getByText(t.alreadyLockedExplanation)).toBeDefined()
+    expect(screen.getByText(t.alreadyCompletedExplanation)).toBeDefined()
     expect(
       screen.getByText(t.result.scoreOutOf.replace("{score}", "74"))
     ).toBeDefined()
-    // No stepper: the assessment cannot be rated while locked.
+    // No stepper: a completed assessment cannot be rated.
     expect(screen.queryByText("Scope anchor 3")).toBeNull()
 
-    const unlockCta = screen.getByRole("button", { name: t.unlockCta })
-    fireEvent.click(unlockCta)
-    expect(screen.getByText(t.unlockDialogTitle)).toBeDefined()
-
-    fireEvent.click(screen.getByRole("button", { name: t.unlockConfirm }))
+    // One press, no confirm ceremony (decision 14): the trail is the record,
+    // and what it costs the reader is in the sentence above the result.
+    fireEvent.click(screen.getByRole("button", { name: t.reopenCta }))
     await waitFor(() => {
       expect(unlockAssessmentMock).toHaveBeenCalledWith({
         orgId: "org-1",

@@ -1599,17 +1599,7 @@
       "motivationRequiredError": "Add a motivation before continuing.",
       "backCta": "Back",
       "nextCta": "Next criterion",
-      "finishCta": "Finish rating",
       "saveError": "The rating could not be saved. Try again.",
-      "lockCta": "Lock assessment",
-      "readyToReadExplanation": "Every criterion has a rating. Lock the assessment to reveal the weighting and level.",
-      "lockError": "The assessment could not be locked. Try again.",
-      "alreadyLockedExplanation": "This assessment is locked. Unlock it to change any ratings.",
-      "unlockCta": "Unlock assessment",
-      "unlockDialogTitle": "Unlock this assessment?",
-      "unlockDialogDescription": "Unlocking hides the weighting and level again until the assessment is locked once more. Ratings can then be changed.",
-      "unlockConfirm": "Yes, unlock",
-      "unlockCancel": "Cancel",
       "result": {
         "heading": "Result",
         "scoreLabel": "Weighting",
@@ -1651,7 +1641,12 @@
           "name": "Highly advanced, extensive or business-critical requirement",
           "meaning": "The requirement carries great scope, difficulty, consequence or strategic importance. The role often shapes direction, standards, solutions or outcomes beyond its own immediate area."
         }
-      }
+      },
+      "completeCta": "Complete the assessment",
+      "completeExplanation": "Completing settles the assessment and reveals its weighting and level.",
+      "completeError": "The assessment could not be completed. Try again.",
+      "alreadyCompletedExplanation": "This assessment is completed. Re-evaluating opens the ratings for changes and hides the weighting and level until you complete it again.",
+      "reopenCta": "Re-evaluate"
     },
     "levels": {
       "description": "The levels and the roles in each, derived live from the current model and ratings.",
@@ -1694,12 +1689,12 @@
       },
       "pendingHeading": "Not yet evaluated",
       "pendingDescription": "These roles have no level until their assessment is complete.",
-      "readyToRead": "Ready to read",
       "anchorLabel": "Anchor role",
       "deviation": "≠ Level {level}",
       "deviationLabel": "Computed level deviates from the agreed level {level}",
       "empty": "No roles to show yet. Create a role and evaluate it to see the levels.",
-      "emptyCta": "Create a role"
+      "emptyCta": "Create a role",
+      "readyToComplete": "Ready to complete"
     },
     "auth": {
       "loading": "Checking your session",

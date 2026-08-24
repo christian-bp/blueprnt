@@ -200,7 +200,7 @@ describe("RoleSheet", () => {
     expect(screen.queryByText("Not yet evaluated")).toBeNull()
   })
 
-  it("shows ready-to-read wording for a complete role that is not yet locked", () => {
+  it("shows ready-to-complete wording for a rated role that is not yet completed", () => {
     result = {
       ...(result as Result),
       locked: false,
@@ -210,7 +210,7 @@ describe("RoleSheet", () => {
     install()
     renderSheet()
     open()
-    expect(screen.getByText("Ready to read")).toBeTruthy()
+    expect(screen.getByText("Ready to complete")).toBeTruthy()
     // Not revealed: no level badge, no breakdown, no incomplete-progress line.
     expect(screen.queryByText("Level 3")).toBeNull()
     expect(screen.queryByText("Complexity")).toBeNull()

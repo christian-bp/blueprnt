@@ -245,7 +245,7 @@ function RoleSheetContent({
                 <div className="space-y-1">
                   <p className="text-muted-foreground text-sm">
                     {result?.complete
-                      ? tLevels("readyToRead")
+                      ? tLevels("readyToComplete")
                       : tRoles("notEvaluated")}
                   </p>
                   {!result?.complete && (

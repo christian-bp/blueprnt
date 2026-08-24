@@ -10,15 +10,27 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
 const setRatingMock = vi.fn()
+const completeMock = vi.fn()
 
+// Two mutations now, not one: the last step saves its rating AND completes the
+// assessment, so the mock has to tell them apart or a test could not see which
+// of the two a press reached.
 vi.mock("convex/react", () => ({
-  useMutation: () => setRatingMock,
+  useMutation: (ref: string) =>
+    ref === "assessment.locking.lockAssessment" ? completeMock : setRatingMock,
 }))
 
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
   api: {
-    assessment: { ratings: { setRating: "assessment.ratings.setRating" } },
+    assessment: {
+      ratings: { setRating: "assessment.ratings.setRating" },
+      locking: { lockAssessment: "assessment.locking.lockAssessment" },
+    },
   },
+}))
+
+vi.mock("@/lib/toast", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
 }))
 
 import { RatingStepper } from "@/components/rating/rating-stepper"
@@ -79,7 +91,6 @@ function renderStepper(overrides?: {
         roleId={"role-1" as never}
         criteria={(overrides?.criteria ?? CRITERIA) as never}
         ratings={overrides?.ratings ?? []}
-        onCompleted={overrides?.onCompleted ?? vi.fn()}
       />
     </NextIntlClientProvider>
   )
@@ -89,6 +100,8 @@ describe("RatingStepper", () => {
   beforeEach(() => {
     setRatingMock.mockReset()
     setRatingMock.mockResolvedValue(null)
+    completeMock.mockReset()
+    completeMock.mockResolvedValue(null)
   })
   afterEach(() => {
     cleanup()
@@ -127,17 +140,15 @@ describe("RatingStepper", () => {
     })
   })
 
-  it("includes the motivation when given and finishes on the last step", async () => {
-    const onCompleted = vi.fn()
+  it("includes the motivation when given and completes on the last step", async () => {
     renderStepper({
       ratings: [{ criterionId: "c-scope", value: 2, motivation: null }],
-      onCompleted,
     })
     fireEvent.click(screen.getByText("Risk anchor 4"))
     fireEvent.change(screen.getByLabelText(labels.motivationLabel), {
       target: { value: "Broad consequence" },
     })
-    fireEvent.click(screen.getByRole("button", { name: labels.finishCta }))
+    fireEvent.click(screen.getByRole("button", { name: labels.completeCta }))
     await waitFor(() => {
       expect(setRatingMock).toHaveBeenCalledWith({
         orgId: "org-1",
@@ -147,8 +158,13 @@ describe("RatingStepper", () => {
         motivation: "Broad consequence",
       })
     })
+    // The ending is the same gesture, not a handoff to a screen that would
+    // then have to ask for a second press.
     await waitFor(() => {
-      expect(onCompleted).toHaveBeenCalled()
+      expect(completeMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        roleId: "role-1",
+      })
     })
   })
 
@@ -403,7 +419,7 @@ describe("RatingStepper", () => {
   it("saves a workingConditions 0 with no motivation required", async () => {
     renderStepper({ criteria: WC_CRITERIA })
     fireEvent.click(screen.getByText(labels.notCoveredOption))
-    fireEvent.click(screen.getByRole("button", { name: labels.finishCta }))
+    fireEvent.click(screen.getByRole("button", { name: labels.completeCta }))
     await waitFor(() => {
       expect(setRatingMock).toHaveBeenCalledWith({
         orgId: "org-1",
