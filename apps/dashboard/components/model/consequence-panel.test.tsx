@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import daMessages from "@workspace/i18n/messages/da.json"
 import messages from "@workspace/i18n/messages/en.json"
 import fiMessages from "@workspace/i18n/messages/fi.json"
@@ -142,9 +142,45 @@ function renderPanel() {
   )
 }
 
+// The three group breakdowns ship COLLAPSED (they are evidence for a decision
+// the sentences above already answer), so a test about their content opens
+// them first. Opening every section rather than naming one keeps each test
+// about what it asserts instead of about which accordion holds it.
+const GROUP_HEADINGS = [m.moversHeading, m.familiesHeading, m.gendersHeading]
+
+function groupTriggers() {
+  // By NAME, not by aria-expanded: the help popover on the card title carries
+  // aria-expanded too, and a blanket sweep opened it as a fourth "section".
+  return GROUP_HEADINGS.flatMap((heading) =>
+    screen.queryAllByRole("button", { name: new RegExp(heading) })
+  )
+}
+
+// ONE at a time, because the accordion is single-open by default and that is
+// deliberate: opening "By gender" closes "Roles that would move", so the card
+// can never grow back into the five-section report this change removed.
+function openGroup(heading: string) {
+  fireEvent.click(screen.getByRole("button", { name: new RegExp(heading) }))
+}
+
 describe("ConsequencePanel", () => {
   beforeEach(() => install())
   afterEach(() => cleanup())
+
+  // The density rule this panel was corrected for: it lands directly above the
+  // twelve-check approval gate, and shipping five sections open made a report
+  // out of a one-decision moment. The summary and the zone table stay standing
+  // because they ARE the decision; the rest is opt-in.
+  it("keeps the group breakdowns closed until asked", () => {
+    analysis = MOVED
+    renderPanel()
+    expect(screen.queryByText("Engineering")).toBeNull()
+    const triggers = groupTriggers()
+    expect(triggers.length).toBe(GROUP_HEADINGS.length)
+    for (const trigger of triggers) {
+      expect(trigger.getAttribute("aria-expanded")).toBe("false")
+    }
+  })
 
   // The silence rule. A panel that appeared on every visit to say "no change"
   // would be standing framing prose, and it would train the reader to skip the
@@ -205,6 +241,7 @@ describe("ConsequencePanel", () => {
   it("names every mover with both levels and a link to the role", () => {
     analysis = MOVED
     renderPanel()
+    openGroup(m.moversHeading)
     const link = screen.getByRole("link", { name: "Head of Data" })
     expect(link.getAttribute("href")).toBe("/roles/head-of-data")
     expect(
@@ -231,6 +268,7 @@ describe("ConsequencePanel", () => {
       ],
     }
     const { container } = renderPanel()
+    openGroup(m.moversHeading)
     expect(container.textContent).toContain("1 role would lose its level")
     // And the mover says so in words rather than showing a level it no longer
     // has.
@@ -281,6 +319,7 @@ describe("ConsequencePanel", () => {
       genders: [],
     }
     const { container } = renderPanel()
+    openGroup(m.familiesHeading)
     expect(container.textContent).toContain("1 of 3 moves")
     expect(container.textContent).not.toContain("0 up")
     expect(container.textContent).not.toContain("0 down")
@@ -295,6 +334,7 @@ describe("ConsequencePanel", () => {
       genders: [],
     }
     const { container } = renderPanel()
+    openGroup(m.familiesHeading)
     expect(container.textContent).toContain("1 up")
     expect(container.textContent).toContain("1 down")
   })
@@ -310,6 +350,7 @@ describe("ConsequencePanel", () => {
       ],
     }
     const { container } = renderPanel()
+    openGroup(m.moversHeading)
     expect(container.textContent).toContain("1 role would gain a level")
     expect(screen.getByText(m.moverGains.replace("{to}", "4"))).toBeDefined()
   })
@@ -328,6 +369,7 @@ describe("ConsequencePanel", () => {
   it("says how many movers the list does not show", () => {
     analysis = { ...MOVED, moved: 14 }
     renderPanel()
+    openGroup(m.moversHeading)
     expect(
       screen.getByText(m.moreMovers.replace("{count}", "12"))
     ).toBeDefined()
@@ -336,6 +378,7 @@ describe("ConsequencePanel", () => {
   it("shows only the groups where something moves", () => {
     analysis = MOVED
     renderPanel()
+    openGroup(m.familiesHeading)
     expect(screen.getByText("Engineering")).toBeDefined()
     // The family with nothing moving says nothing.
     expect(screen.queryByText(m.noFamily)).toBeNull()
@@ -374,6 +417,15 @@ describe("ConsequencePanel", () => {
           <ConsequencePanel orgId="org-1" />
         </NextIntlClientProvider>
       )
+      // The movers list is behind its disclosure, named in the locale under
+      // test rather than in English.
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: new RegExp(
+            localeMessages[locale].dashboard.model.consequence.moversHeading
+          ),
+        })
+      )
       expect(container.textContent).toContain(loses)
       expect(container.textContent).toContain(gains)
       // And never the reading these corrections exist to remove.
@@ -385,16 +437,16 @@ describe("ConsequencePanel", () => {
   it("names the gender classes in the app's own words, never a person", () => {
     analysis = MOVED
     renderPanel()
+    openGroup(m.gendersHeading)
     expect(screen.getByText(m.genderWomen)).toBeDefined()
     expect(screen.getByText(m.genderUnstaffed)).toBeDefined()
     // Counts only, no MARK: the gender-mark law governs marks, and drawing one
     // here would pull hue, shape and a legend into a column of integers. The
-    // section is checked rather than the whole card, which carries the title's
-    // help icon.
-    const section = screen
-      .getByText(m.gendersHeading)
-      .closest("section") as HTMLElement
-    expect(section.querySelector("svg")).toBeNull()
-    expect(section.className).not.toContain("gender-")
+    // ROWS are checked rather than the whole section: the section is a
+    // disclosure now, and its trigger carries the accordion chevron, which is
+    // chrome rather than a mark.
+    const rows = screen.getByText(m.genderWomen).closest("ul") as HTMLElement
+    expect(rows.querySelector("svg")).toBeNull()
+    expect(rows.className).not.toContain("gender-")
   })
 })

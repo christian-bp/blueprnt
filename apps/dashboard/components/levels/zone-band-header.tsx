@@ -93,17 +93,23 @@ export function ZoneBandHeader({
         <p className="max-w-2xl text-muted-foreground text-sm leading-relaxed">
           {content.character}
         </p>
-        {/* Section 14.5's second column, the kinds of role that normally land
-            in this zone. It carries a label because the column is an
-            OBSERVATION and the sentence above it is a definition: run bare
-            under the character line, a list of job kinds reads as the rule for
+        {/* Section 14.5's second column moved BEHIND the band's own
+            disclosure. It is an observation about who usually lands in a zone,
+            printed on a surface that is already showing exactly who did, and
+            four bands standing open made eight sentences above a ladder whose
+            job is showing where roles sit. The level-function text three rows
+            below has always been behind a press; this is the same depth and
+            now opens the same way. The label stays: the column is an
+            OBSERVATION, and run bare a list of job kinds reads as the rule for
             who belongs here, which is the one thing it must not say. */}
-        <p className="max-w-2xl text-muted-foreground text-sm leading-relaxed">
-          <span className="font-medium text-foreground">
-            {t("zoneTypicalLabel")}
-          </span>{" "}
-          {content.typicalProfile}
-        </p>
+        {open && (
+          <p className="max-w-2xl text-muted-foreground text-sm leading-relaxed">
+            <span className="font-medium text-foreground">
+              {t("zoneTypicalLabel")}
+            </span>{" "}
+            {content.typicalProfile}
+          </p>
+        )}
       </div>
     </div>
   )

@@ -1659,6 +1659,7 @@
       "clearAll": "Tøm",
       "levelRow": "Nivå {level}",
       "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
+      "groupCount": "{count, plural, =1 {1 gruppe} other {# grupper}}",
       "levelEmpty": "Ingen roller på dette nivået",
       "zoneLabel": "Sone {zone}",
       "zoneSpan": "Nivå {from} til {to}",
@@ -1685,7 +1686,14 @@
         "noteLabel": "Notat (valgfritt)",
         "notePlaceholder": "Hvorfor plasseringen er riktig for denne rollen.",
         "confirmSubmit": "Bekreft plasseringen",
-        "cancel": "Avbryt"
+        "cancel": "Avbryt",
+        "class": {
+          "profileLimited": "Holdt tilbake av et profilkrav",
+          "anchorDeviation": "Avviker fra en ankerrolle",
+          "staleLock": "Vurdert etter en tidligere metode"
+        },
+        "showMore": "Vis {count} til",
+        "showFewer": "Vis færre"
       },
       "pendingHeading": "Ikke vurdert ennå",
       "pendingDescription": "Disse rollene har ikke nivå før vurderingen er fullført.",
@@ -2224,6 +2232,8 @@
       "consequenceBody": "Hva en godkjenning av denne metoden ville gjøre med plasseringene dere allerede har, sammenlignet med metoden dere sist godkjente. Den flytter roller, ikke personer: ingens lønn endres her.",
       "calibrationLabel": "Hva er kalibrering?",
       "calibrationBody": "Gjennomgang av en fullført plassering som noen bør se på før stigen regnes som avklart. Å bekrefte en endrer ikke nivået: den registrerer at noen står bak det.",
+      "profileRequirementLabel": "Hva er et profilkrav?",
+      "profileRequirementBody": "En sone kan kreve et laveste trinn på modellens profilkriterier, så en rolle ikke når den på total vekting alene. Det setter et tak for nivået, det endrer aldri noens vurdering.",
       "levelThresholdLabel": "Hva er en nivågrense?",
       "levelThresholdBody": "Vektingen en rolle må nå for å ligge på et nivå, og profiltrinnet en sone krever. De avgjør hvor hver rolle havner, så en endring plasserer hele stigen på nytt."
     },

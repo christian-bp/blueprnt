@@ -1659,6 +1659,7 @@
       "clearAll": "Clear",
       "levelRow": "Level {level}",
       "roleCount": "{count, plural, =1 {1 role} other {# roles}}",
+      "groupCount": "{count, plural, =1 {1 group} other {# groups}}",
       "levelEmpty": "No roles in this level",
       "zoneLabel": "Zone {zone}",
       "zoneSpan": "Level {from} to {to}",
@@ -1685,7 +1686,14 @@
         "noteLabel": "Note (optional)",
         "notePlaceholder": "Why this placement is right for this role.",
         "confirmSubmit": "Confirm placement",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "class": {
+          "profileLimited": "Held back by a profile requirement",
+          "anchorDeviation": "Differs from an anchor role",
+          "staleLock": "Assessed under an earlier method"
+        },
+        "showMore": "Show {count} more",
+        "showFewer": "Show fewer"
       },
       "pendingHeading": "Not yet evaluated",
       "pendingDescription": "These roles have no level until their assessment is complete.",
@@ -2224,6 +2232,8 @@
       "consequenceBody": "What approving this method would do to the placements you already have, compared with the method you last approved. It moves roles, not people: nobody's pay changes here.",
       "calibrationLabel": "What is calibration?",
       "calibrationBody": "Reviewing a completed placement a person should look at before the ladder is taken as settled. Confirming one does not change the level: it records that someone stands behind it.",
+      "profileRequirementLabel": "What is a profile requirement?",
+      "profileRequirementBody": "A zone can require a minimum step on the model's profile criteria, so a role cannot reach it on total weighting alone. It caps the level; it never changes what anyone rated.",
       "levelThresholdLabel": "What is a level threshold?",
       "levelThresholdBody": "The weighting a role must reach to sit at a level, and the profile step a zone gates on. They decide where every role lands, so changing one re-places the whole ladder."
     },

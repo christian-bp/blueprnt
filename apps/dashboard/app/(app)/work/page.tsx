@@ -216,9 +216,10 @@ export default function WorkOverviewPage() {
   const trackCols = trackColumns(results.rows)
   // The queue reads the UNFILTERED rows: it is a list of work to do, and a
   // family filter is a way of looking at the ladder, not a decision that some
-  // placements no longer need reviewing. One node, rendered under every tab
-  // beside the pending list, so a review is never hiding on the view the reader
-  // did not pick.
+  // placements no longer need reviewing. One node, rendered under every tab, so
+  // a review is never hiding on the view the reader did not pick. It sits
+  // SECOND, between the ladder and the pending list: of the two things below
+  // the ladder it is the one carrying an act.
   const queue = (
     <CalibrationQueue
       orgId={orgId}
@@ -291,23 +292,24 @@ export default function WorkOverviewPage() {
                 </div>
               )}
             </div>
-            {/* Same anatomy as the matrix panels: the ladder scrolls in its
-              own box and the pending panel stays pinned below it, so "Not
-              yet evaluated" is always in view on every tab instead of
-              hiding at the bottom of one view's scroll and not another's. */}
+            {/* The ladder tab scrolls as ONE column, so what is below the
+              ladder is below it on the page rather than pinned into view
+              beside it. The pending panel used to sit in that pinned slot:
+              a permanent block of chips, on every tab, for the work that has
+              not started yet, on a surface whose subject is where the
+              finished work landed. It goes last now, and it goes away when
+              the reader scrolls past it. */}
             <TabsContent
               value="ladder"
-              className="flex min-h-0 w-full flex-1 flex-col gap-4"
+              className="flex min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto"
             >
-              <div className="min-h-0 flex-1 overflow-y-auto">
-                <LevelLadder
-                  levels={results.levels}
-                  rows={filteredRows}
-                  groupByFamily={grouped}
-                />
-              </div>
-              <PendingRoles rows={filteredRows} />
+              <LevelLadder
+                levels={results.levels}
+                rows={filteredRows}
+                groupByFamily={grouped}
+              />
               {queue}
+              <PendingRoles rows={filteredRows} />
             </TabsContent>
             {/* The matrix panels are flex columns WITHOUT their own scroll:
               the matrix wrapper (MATRIX_WRAPPER_CLASS) is the vertical
@@ -324,16 +326,16 @@ export default function WorkOverviewPage() {
                 tracks={trackCols}
                 groupByFamily={grouped}
               />
-              <PendingRoles rows={filteredRows} />
               {queue}
+              <PendingRoles rows={filteredRows} />
             </TabsContent>
             <TabsContent
               value="families"
               className="flex min-h-0 flex-1 flex-col gap-4"
             >
               <FamilyLevelMatrix levels={results.levels} rows={filteredRows} />
-              <PendingRoles rows={filteredRows} />
               {queue}
+              <PendingRoles rows={filteredRows} />
             </TabsContent>
           </Tabs>
         )}

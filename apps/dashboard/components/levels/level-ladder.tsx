@@ -130,99 +130,123 @@ export function LevelLadder({
                 }
               />
             </div>
-            {open ? (
-              <ul className="space-y-2 p-3">
-                {band.ranges.map((range) => {
-                  const inLevel = bandRows.filter(
-                    (row) => row.level === range.level
-                  )
-                  const fn = levelFunction(content, range.level)
-                  const functionOpen =
-                    openFunction.get(band.zone) === range.level
-                  return (
-                    <li key={range.level} className="rounded-xl border p-3">
-                      <div className="flex gap-4">
-                        <div className="w-28 shrink-0">
-                          <div className="font-semibold text-sm">
-                            {t("levelRow", { level: range.level })}
-                          </div>
-                          <div className="text-muted-foreground text-xs">
-                            {t("roleCount", { count: inLevel.length })}
-                          </div>
-                          {/* What this level IS inside its zone (masterdokument 14.6):
+            {/* The band's own collapse, animated like the level-function
+                disclosure three rows inside it: two controls on one surface
+                that both mean "show me this" should not behave differently.
+                Geometry only on the motion element, box styles on the inner
+                list: a padded border-box element never reaches height 0, so
+                the collapse would stall and the unmount would jump
+                (ui-animation.md rule 2). The MATRIX's band is table rows and
+                gets no equivalent: a <tr> cannot be height-animated without
+                fighting table layout, and a half-animated table is worse than
+                an honest instant one. */}
+            <AnimatePresence initial={false}>
+              {open ? (
+                <motion.div
+                  key="band"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={SPRING}
+                  className="overflow-hidden"
+                >
+                  <ul className="space-y-2 p-3">
+                    {band.ranges.map((range) => {
+                      const inLevel = bandRows.filter(
+                        (row) => row.level === range.level
+                      )
+                      const fn = levelFunction(content, range.level)
+                      const functionOpen =
+                        openFunction.get(band.zone) === range.level
+                      return (
+                        <li key={range.level} className="rounded-xl border p-3">
+                          <div className="flex gap-4">
+                            <div className="w-28 shrink-0">
+                              <div className="font-semibold text-sm">
+                                {t("levelRow", { level: range.level })}
+                              </div>
+                              <div className="text-muted-foreground text-xs">
+                                {t("roleCount", { count: inLevel.length })}
+                              </div>
+                              {/* What this level IS inside its zone (masterdokument 14.6):
                     the entry, the established middle, or the top. Behind a
                     press, because the ladder's job is showing where roles sit
                     and twelve standing paragraphs would bury that. */}
-                          <DisclosureToggle
-                            label={fn.label}
-                            open={functionOpen}
-                            onToggle={() =>
-                              setOpenFunction((current) => {
-                                const next = new Map(current)
-                                if (next.get(band.zone) === range.level) {
-                                  next.delete(band.zone)
-                                } else {
-                                  next.set(band.zone, range.level)
+                              <DisclosureToggle
+                                label={fn.label}
+                                open={functionOpen}
+                                onToggle={() =>
+                                  setOpenFunction((current) => {
+                                    const next = new Map(current)
+                                    if (next.get(band.zone) === range.level) {
+                                      next.delete(band.zone)
+                                    } else {
+                                      next.set(band.zone, range.level)
+                                    }
+                                    return next
+                                  })
                                 }
-                                return next
-                              })
-                            }
-                            className="mt-1"
-                          />
-                        </div>
-                        {/* self-center (not stretch) so a short content block (an empty
+                                className="mt-1"
+                              />
+                            </div>
+                            {/* self-center (not stretch) so a short content block (an empty
                   hatch or a single chip row) sits vertically centered against
                   the taller two-line rail, giving equal padding above and
                   below. items-start still top-aligns chips within a multi-row
                   level, where the column is the taller side and self-center
                   is a no-op. */}
-                        <div className="relative flex flex-1 flex-wrap items-start gap-2 self-center">
-                          {inLevel.length === 0 ? (
-                            // Empty level: a subtle diagonal-hatch placeholder (the
-                            // level's "0 roles" count in the rail carries the wording).
-                            <div
-                              role="img"
-                              aria-label={t("levelEmpty")}
-                              className={`h-8 w-full rounded-md ${HATCH_CLASS}`}
-                            />
-                          ) : (
-                            <AnimatePresence initial={false} mode="popLayout">
-                              {groupByFamily
-                                ? groupRowsByFamily(inLevel).flatMap(
-                                    (group) => [
-                                      familyLabel(
-                                        group.familyId ?? "none",
-                                        group.familyName ?? tFamily("none")
-                                      ),
-                                      ...group.rows.map(renderChip),
-                                    ]
-                                  )
-                                : inLevel.map(renderChip)}
-                            </AnimatePresence>
-                          )}
-                        </div>
-                      </div>
-                      <AnimatePresence initial={false}>
-                        {functionOpen ? (
-                          <motion.div
-                            key="function"
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={SPRING}
-                            className="overflow-hidden"
-                          >
-                            <p className="max-w-2xl pt-2 text-muted-foreground text-sm leading-relaxed">
-                              {fn.meaning}
-                            </p>
-                          </motion.div>
-                        ) : null}
-                      </AnimatePresence>
-                    </li>
-                  )
-                })}
-              </ul>
-            ) : null}
+                            <div className="relative flex flex-1 flex-wrap items-start gap-2 self-center">
+                              {inLevel.length === 0 ? (
+                                // Empty level: a subtle diagonal-hatch placeholder (the
+                                // level's "0 roles" count in the rail carries the wording).
+                                <div
+                                  role="img"
+                                  aria-label={t("levelEmpty")}
+                                  className={`h-8 w-full rounded-md ${HATCH_CLASS}`}
+                                />
+                              ) : (
+                                <AnimatePresence
+                                  initial={false}
+                                  mode="popLayout"
+                                >
+                                  {groupByFamily
+                                    ? groupRowsByFamily(inLevel).flatMap(
+                                        (group) => [
+                                          familyLabel(
+                                            group.familyId ?? "none",
+                                            group.familyName ?? tFamily("none")
+                                          ),
+                                          ...group.rows.map(renderChip),
+                                        ]
+                                      )
+                                    : inLevel.map(renderChip)}
+                                </AnimatePresence>
+                              )}
+                            </div>
+                          </div>
+                          <AnimatePresence initial={false}>
+                            {functionOpen ? (
+                              <motion.div
+                                key="function"
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={SPRING}
+                                className="overflow-hidden"
+                              >
+                                <p className="max-w-2xl pt-2 text-muted-foreground text-sm leading-relaxed">
+                                  {fn.meaning}
+                                </p>
+                              </motion.div>
+                            ) : null}
+                          </AnimatePresence>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
           </section>
         )
       })}

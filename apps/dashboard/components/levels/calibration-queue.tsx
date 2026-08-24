@@ -18,9 +18,12 @@ import { useState } from "react"
 import { ConfirmPlacementDialog } from "@/components/levels/confirm-placement-dialog"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SectionTitleRow } from "@/components/section-title-row"
+import { DisclosureToggle } from "@/components/disclosure-toggle"
 import {
+  type CalibrationClass,
   type CalibrationInput,
   type CalibrationRow,
+  calibrationClasses,
   calibrationQueue,
 } from "@/lib/calibration-queue"
 
@@ -106,12 +109,12 @@ export function CalibrationQueue({
           </EmptyHeader>
         </Empty>
       ) : (
-        <ul className="space-y-2">
-          {queue.map((entry) => (
-            <QueueRow
-              key={entry.row.roleId}
-              entry={entry}
-              onConfirm={() =>
+        <div className="space-y-4">
+          {calibrationClasses(queue).map((group) => (
+            <QueueClass
+              key={group.reason}
+              group={group}
+              onConfirm={(entry) =>
                 setTarget({
                   roleId: entry.row.roleId as Id<"roles">,
                   title: entry.row.title,
@@ -119,7 +122,7 @@ export function CalibrationQueue({
               }
             />
           ))}
-        </ul>
+        </div>
       )}
       <ConfirmPlacementDialog
         orgId={orgId}
@@ -129,6 +132,71 @@ export function CalibrationQueue({
         }}
       />
     </section>
+  )
+}
+
+// How many rows of ONE class stand open before the rest go behind a press.
+// Small on purpose: the cap exists for the flood case, and a reader who needs
+// more than five of one question is going to open it anyway.
+const CLASS_CAP = 5
+
+// One class of question, with its own count and its own cap. The heading names
+// the class so the three are told apart before any row is read, and the count
+// is on the heading rather than only in the section total, because "12 to
+// review" splits very differently into "1 placement, 11 stale" than into "12
+// placements".
+function QueueClass({
+  group,
+  onConfirm,
+}: {
+  group: CalibrationClass
+  onConfirm: (entry: CalibrationRow) => void
+}) {
+  const t = useTranslations("dashboard.levels.calibration")
+  const tHelp = useTranslations("dashboard.help")
+  const tLevels = useTranslations("dashboard.levels")
+  const [expanded, setExpanded] = useState(false)
+  const hidden = group.rows.length - CLASS_CAP
+  const shown = expanded ? group.rows : group.rows.slice(0, CLASS_CAP)
+
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center gap-x-2">
+        <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+          {t(`class.${group.reason}`)}
+        </h4>
+        {/* The profile requirement is a section-14 term this surface
+            introduces and never explains: the rows below it read "needs step
+            4, this row has 3" to a reader who has not met either idea. Its
+            help sits on its own class heading rather than beside the queue's,
+            which already carries calibration's: one concept per anchor, and
+            never two popovers on one row. */}
+        {group.reason === "profileLimited" && (
+          <HelpMorphButton label={tHelp("profileRequirementLabel")}>
+            {tHelp("profileRequirementBody")}
+          </HelpMorphButton>
+        )}
+        <span className="text-muted-foreground text-xs tabular-nums">
+          {tLevels("roleCount", { count: group.rows.length })}
+        </span>
+      </div>
+      <ul className="space-y-2">
+        {shown.map((entry) => (
+          <QueueRow
+            key={entry.row.roleId}
+            entry={entry}
+            onConfirm={() => onConfirm(entry)}
+          />
+        ))}
+      </ul>
+      {hidden > 0 && (
+        <DisclosureToggle
+          label={expanded ? t("showFewer") : t("showMore", { count: hidden })}
+          open={expanded}
+          onToggle={() => setExpanded((current) => !current)}
+        />
+      )}
+    </div>
   )
 }
 

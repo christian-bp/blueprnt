@@ -12,6 +12,8 @@ import {
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
+import { Accordion } from "@workspace/ui/components/accordion"
+import { AccordionSection } from "@/components/accordion-section"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { CARD_READING_MEASURE } from "@/components/model/approval-card"
 import { zoneHeading } from "@/lib/zone-bands"
@@ -154,83 +156,107 @@ export function ConsequencePanel({ orgId }: { orgId: string }) {
           </table>
         </section>
 
-        <section className="space-y-2">
-          <h3 className="font-medium text-sm">{t("moversHeading")}</h3>
-          <ul className="space-y-1">
-            {analysis.movers.map((mover) => (
-              <li
-                key={mover.roleId}
-                className="flex flex-wrap items-baseline justify-between gap-x-3 text-sm"
-              >
-                <Link
-                  href={`/roles/${mover.slug}`}
-                  className="truncate underline-offset-4 hover:underline"
+        {/* The three group breakdowns are EVIDENCE, and evidence is what
+            progressive disclosure is for. The decision this card exists to
+            support is answered by the sentences and the zone table above:
+            how much moves, and where it moves to. Who moves, and how that
+            falls per family and per gender make-up, is what a reader opens
+            when the answer above made them want it. Shipping all three open
+            put a five-section report directly above the Approve button.
+            AccordionSection is the app's idiom for exactly this (the
+            pay-mapping review checklist), and the count in each trigger says
+            what opening it costs. */}
+        <Accordion className="border-t">
+          <AccordionSection
+            value="movers"
+            title={t("moversHeading")}
+            meta={
+              <span className="tabular-nums">
+                {tLevels("roleCount", { count: analysis.moved })}
+              </span>
+            }
+          >
+            <ul className="space-y-1">
+              {analysis.movers.map((mover) => (
+                <li
+                  key={mover.roleId}
+                  className="flex flex-wrap items-baseline justify-between gap-x-3 text-sm"
                 >
-                  {mover.title}
-                </Link>
-                <span className="shrink-0 text-muted-foreground tabular-nums">
-                  {/* Narrowed by the checks themselves rather than by a
+                  <Link
+                    href={`/roles/${mover.slug}`}
+                    className="truncate underline-offset-4 hover:underline"
+                  >
+                    {mover.title}
+                  </Link>
+                  <span className="shrink-0 text-muted-foreground tabular-nums">
+                    {/* Narrowed by the checks themselves rather than by a
                       `?? 0` default, which would have rendered "Level 0 to
                       none" for a level that does not exist. A mover always has
                       at least one side (the query skips a role placeable on
                       neither), so the last branch is unreachable and renders
                       nothing rather than a number nobody has. */}
-                  {mover.from !== null && mover.to !== null
-                    ? t("moverChange", { from: mover.from, to: mover.to })
-                    : mover.from !== null
-                      ? t("moverLoses", { from: mover.from })
-                      : mover.to !== null
-                        ? t("moverGains", { to: mover.to })
-                        : null}
-                </span>
-              </li>
-            ))}
-          </ul>
-          {hidden > 0 && (
-            // The count stays exact even when the list is capped: how many
-            // roles move is the number the approver is deciding on.
-            <p className="text-muted-foreground text-sm">
-              {t("moreMovers", { count: hidden })}
-            </p>
-          )}
-        </section>
+                    {mover.from !== null && mover.to !== null
+                      ? t("moverChange", { from: mover.from, to: mover.to })
+                      : mover.from !== null
+                        ? t("moverLoses", { from: mover.from })
+                        : mover.to !== null
+                          ? t("moverGains", { to: mover.to })
+                          : null}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {hidden > 0 && (
+              // The count stays exact even when the list is capped: how many
+              // roles move is the number the approver is deciding on.
+              <p className="text-muted-foreground text-sm">
+                {t("moreMovers", { count: hidden })}
+              </p>
+            )}
+          </AccordionSection>
 
-        <GroupShifts
-          heading={t("familiesHeading")}
-          rows={analysis.families.map((group) => ({
-            ...group,
-            // Two different situations arrive here as a null label, and only
-            // ONE of them is "these roles have no family": the other is a
-            // family whose name lookup missed. Both read as "No family" once,
-            // which reported roles that HAVE a family under the bucket for
-            // roles that do not. The empty key is the genuine bucket (the
-            // backend groups familyless roles under ""), so a null label on
-            // any other key is a lookup that failed, and says so rather than
-            // borrowing the other row's meaning. The id itself never renders.
-            name:
-              group.label ??
-              (group.key === "" ? t("noFamily") : t("unknownFamily")),
-          }))}
-        />
-        {/* Counts per gender make-up, never a mark: this is a table of
+          <GroupShifts
+            value="families"
+            heading={t("familiesHeading")}
+            rows={analysis.families.map((group) => ({
+              ...group,
+              // Two different situations arrive here as a null label, and only
+              // ONE of them is "these roles have no family": the other is a
+              // family whose name lookup missed. Both read as "No family" once,
+              // which reported roles that HAVE a family under the bucket for
+              // roles that do not. The empty key is the genuine bucket (the
+              // backend groups familyless roles under ""), so a null label on
+              // any other key is a lookup that failed, and says so rather than
+              // borrowing the other row's meaning. The id itself never renders.
+              name:
+                group.label ??
+                (group.key === "" ? t("noFamily") : t("unknownFamily")),
+            }))}
+          />
+          {/* Counts per gender make-up, never a mark: this is a table of
             numbers, and the gender-mark law governs MARKS. Drawing one here
             would pull in hue, shape and legend for a column of integers. */}
-        <GroupShifts
-          heading={t("gendersHeading")}
-          rows={analysis.genders.map((group) => ({
-            ...group,
-            name: t(GENDER_LABELS[group.key]),
-          }))}
-        />
+          <GroupShifts
+            value="genders"
+            heading={t("gendersHeading")}
+            rows={analysis.genders.map((group) => ({
+              ...group,
+              name: t(GENDER_LABELS[group.key]),
+            }))}
+          />
+        </Accordion>
       </CardContent>
     </Card>
   )
 }
 
 function GroupShifts({
+  value,
   heading,
   rows,
 }: {
+  // The accordion item's key; the parent Accordion owns which are open.
+  value: string
   heading: string
   rows: {
     key: string
@@ -242,12 +268,20 @@ function GroupShifts({
   }[]
 }) {
   const t = useTranslations("dashboard.model.consequence")
+  const tLevels = useTranslations("dashboard.levels")
   // A group where nothing moves says nothing: the table is about the change.
   const shifting = rows.filter((row) => row.moved > 0)
   if (shifting.length === 0) return null
   return (
-    <section className="space-y-2">
-      <h3 className="font-medium text-sm">{heading}</h3>
+    <AccordionSection
+      value={value}
+      title={heading}
+      meta={
+        <span className="tabular-nums">
+          {tLevels("groupCount", { count: shifting.length })}
+        </span>
+      }
+    >
       <ul className="space-y-1">
         {shifting.map((row) => (
           <li
@@ -272,6 +306,6 @@ function GroupShifts({
           </li>
         ))}
       </ul>
-    </section>
+    </AccordionSection>
   )
 }

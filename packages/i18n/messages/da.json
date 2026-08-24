@@ -1659,6 +1659,7 @@
       "clearAll": "Ryd",
       "levelRow": "Niveau {level}",
       "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
+      "groupCount": "{count, plural, =1 {1 gruppe} other {# grupper}}",
       "levelEmpty": "Ingen roller på dette niveau",
       "zoneLabel": "Zone {zone}",
       "zoneSpan": "Niveau {from} til {to}",
@@ -1685,7 +1686,14 @@
         "noteLabel": "Notat (valgfrit)",
         "notePlaceholder": "Hvorfor placeringen er rigtig for denne rolle.",
         "confirmSubmit": "Bekræft placeringen",
-        "cancel": "Annuller"
+        "cancel": "Annuller",
+        "class": {
+          "profileLimited": "Holdt tilbage af et profilkrav",
+          "anchorDeviation": "Afviger fra en ankerrolle",
+          "staleLock": "Bedømt efter en tidligere metode"
+        },
+        "showMore": "Vis {count} flere",
+        "showFewer": "Vis færre"
       },
       "pendingHeading": "Endnu ikke vurderet",
       "pendingDescription": "Disse roller har intet niveau, før deres vurdering er fuldført.",
@@ -2224,6 +2232,8 @@
       "consequenceBody": "Hvad en godkendelse af denne metode ville gøre ved de placeringer, I allerede har, sammenlignet med den metode, I sidst godkendte. Den flytter roller, ikke personer: ingens løn ændres her.",
       "calibrationLabel": "Hvad er kalibrering?",
       "calibrationBody": "Gennemgang af en afsluttet placering, som nogen bør se på, før stigen betragtes som afklaret. At bekræfte en ændrer ikke niveauet: den registrerer, at nogen står bag det.",
+      "profileRequirementLabel": "Hvad er et profilkrav?",
+      "profileRequirementBody": "En zone kan kræve et laveste trin på modellens profilkriterier, så en rolle ikke når den på samlet vægtning alene. Det sætter et loft for niveauet, det ændrer aldrig nogens vurdering.",
       "levelThresholdLabel": "Hvad er en niveaugrænse?",
       "levelThresholdBody": "Den vægtning, en rolle skal nå for at ligge på et niveau, og det profiltrin, en zone kræver. De afgør, hvor hver rolle lander, så en ændring placerer hele stigen på ny."
     },

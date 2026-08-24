@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
@@ -45,11 +45,35 @@ function renderPending(rows: LevelRoleRow[]) {
   )
 }
 
+// The chips ship COLLAPSED behind the panel's own count, so a test about a
+// chip opens it first. The panel is last on /work and least urgent: a standing
+// block of chips for work not yet started, on a surface whose subject is where
+// the finished work landed.
+function openPending(count = 1) {
+  // By its COUNT label, not by aria-expanded: the panel's help popover carries
+  // aria-expanded too, and a blanket match found two buttons.
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: count === 1 ? "1 role" : `${count} roles`,
+    })
+  )
+}
+
 describe("PendingRoles", () => {
   afterEach(() => cleanup())
 
+  it("stays collapsed until asked, behind its own count", () => {
+    renderPending([role({}), role({ roleId: "r2", title: "Second" })])
+    expect(
+      screen.getByText(messages.dashboard.levels.pendingHeading)
+    ).toBeDefined()
+    expect(screen.queryByRole("link", { name: /Data Analyst/ })).toBeNull()
+    expect(screen.getByText("2 roles")).toBeDefined()
+  })
+
   it("lists roles without a level and a link, with no rating count", () => {
     renderPending([role({})])
+    openPending()
     expect(
       screen.getByText(messages.dashboard.levels.pendingHeading)
     ).toBeDefined()
@@ -64,6 +88,7 @@ describe("PendingRoles", () => {
     renderPending([
       role({ roleId: "r3", title: "Ready Role", readyToComplete: true }),
     ])
+    openPending()
     expect(
       screen.getByText(messages.dashboard.levels.readyToComplete)
     ).toBeDefined()

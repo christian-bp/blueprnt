@@ -4,8 +4,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 
 import {
-  CalibratedBadge,
-  CompletedBadge,
+  AssessmentStatusBadge,
   CompletedIncompleteNotice,
   MethodDriftBadge,
 } from "@/components/assessment-status"
@@ -27,14 +26,32 @@ describe("assessment status", () => {
   // A glyph beside the word "Completed" adds nothing the word does not, and
   // a row of small icons reads as a toolbar rather than as state.
   it.each([
-    ["completed", <CompletedBadge key="l" />, detail.completedBadge],
-    ["calibrated", <CalibratedBadge key="c" />, detail.calibratedBadge],
+    [
+      "completed",
+      <AssessmentStatusBadge calibrated={false} key="l" />,
+      detail.completedBadge,
+    ],
+    [
+      "calibrated",
+      <AssessmentStatusBadge calibrated key="c" />,
+      detail.calibratedBadge,
+    ],
     ["method drift", <MethodDriftBadge key="d" />, detail.methodDriftBadge],
   ])("renders %s as a word with no icon", (_name, node, label) => {
     const { container } = renderStatus(node)
     expect(screen.getByText(label)).toBeDefined()
     expect(container.querySelector("svg")).toBeNull()
     expect(container.querySelector("img")).toBeNull()
+  })
+
+  // The two states are ONE chip, so a calibrated assessment shows the
+  // confirmed word INSTEAD of the completed one, never both. Two chips side by
+  // side said one fact twice: calibrating requires a completed assessment, so
+  // the second could never appear without the first.
+  it("shows one chip, not two, once a placement is confirmed", () => {
+    renderStatus(<AssessmentStatusBadge calibrated />)
+    expect(screen.getByText(detail.calibratedBadge)).toBeDefined()
+    expect(screen.queryByText(detail.completedBadge)).toBeNull()
   })
 
   it("says what a completed-but-incomplete assessment needs", () => {

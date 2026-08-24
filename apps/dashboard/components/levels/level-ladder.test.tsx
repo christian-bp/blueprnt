@@ -3,6 +3,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
   within,
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
@@ -140,7 +141,7 @@ describe("LevelLadder", () => {
     ).toHaveLength(3)
   })
 
-  it("collapses a band and opens it again, its levels with it", () => {
+  it("collapses a band and opens it again, its levels with it", async () => {
     renderLadder([role({ roleId: "r1", level: 1 })], false, TWELVE_LEVELS)
     expect(screen.getByText("Level 1")).toBeDefined()
     fireEvent.click(
@@ -148,7 +149,12 @@ describe("LevelLadder", () => {
         name: messages.dashboard.levels.hideZone.replace("{zone}", "A"),
       })
     )
-    expect(screen.queryByText("Level 1")).toBeNull()
+    // The band collapses through an exit animation now, like the
+    // level-function disclosure inside it, so its levels leave the DOM when
+    // the exit finishes rather than on the click.
+    await waitFor(() => {
+      expect(screen.queryByText("Level 1")).toBeNull()
+    })
     // Level 4 belongs to zone B and is untouched: bands fold one at a time.
     expect(screen.getByText("Level 4")).toBeDefined()
     fireEvent.click(

@@ -25,8 +25,7 @@ import {
   useState,
 } from "react"
 import {
-  CalibratedBadge,
-  CompletedBadge,
+  AssessmentStatusBadge,
   CompletedIncompleteNotice,
   MethodDriftBadge,
 } from "@/components/assessment-status"
@@ -153,8 +152,7 @@ function RoleSheetContent({
                   {result.level !== null ? (
                     <LevelBadge level={result.level} />
                   ) : null}
-                  <CompletedBadge />
-                  {result.calibrated ? <CalibratedBadge /> : null}
+                  <AssessmentStatusBadge calibrated={result.calibrated} />
                   {result.methodDrift ? <MethodDriftBadge /> : null}
                 </>
               ) : null}

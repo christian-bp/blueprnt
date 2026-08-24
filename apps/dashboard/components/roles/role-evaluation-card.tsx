@@ -33,8 +33,7 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { useState } from "react"
 import {
-  CalibratedBadge,
-  CompletedBadge,
+  AssessmentStatusBadge,
   CompletedIncompleteNotice,
   MethodDriftBadge,
 } from "@/components/assessment-status"
@@ -123,8 +122,9 @@ export function RoleEvaluationCard({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           {t("evaluationHeading")}
-          {completed ? <CompletedBadge /> : null}
-          {result?.calibrated ? <CalibratedBadge /> : null}
+          {completed ? (
+            <AssessmentStatusBadge calibrated={result?.calibrated ?? false} />
+          ) : null}
           {result?.methodDrift ? <MethodDriftBadge /> : null}
           {showResult && completed ? (
             <HelpMorphButton label={tHelp("scoreLabel")}>

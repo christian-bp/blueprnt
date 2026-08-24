@@ -13,8 +13,7 @@ import { useQuery } from "convex/react"
 import { motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import {
-  CalibratedBadge,
-  CompletedBadge,
+  AssessmentStatusBadge,
   CompletedIncompleteNotice,
   MethodDriftBadge,
 } from "@/components/assessment-status"
@@ -108,8 +107,7 @@ export function RatingResult({
               {/* The same status vocabulary the role page and the sheet use.
                   The reveal is where a result is read most closely, so a role
                   rated under a superseded method has to say so here too. */}
-              <CompletedBadge />
-              {result.calibrated ? <CalibratedBadge /> : null}
+              <AssessmentStatusBadge calibrated={result.calibrated} />
               {result.methodDrift ? <MethodDriftBadge /> : null}
               <HelpMorphButton label={tHelp("scoreLabel")}>
                 {tHelp("scoreBody")}

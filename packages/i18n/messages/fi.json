@@ -1659,6 +1659,7 @@
       "clearAll": "Tyhjennä",
       "levelRow": "Taso {level}",
       "roleCount": "{count, plural, =1 {1 rooli} other {# roolia}}",
+      "groupCount": "{count, plural, =1 {1 ryhmä} other {# ryhmää}}",
       "levelEmpty": "Ei rooleja tällä vaativuustasolla",
       "zoneLabel": "Vyöhyke {zone}",
       "zoneSpan": "Vaativuustaso {from}-{to}",
@@ -1685,7 +1686,14 @@
         "noteLabel": "Merkintä (valinnainen)",
         "notePlaceholder": "Miksi sijoitus on oikea tälle roolille.",
         "confirmSubmit": "Vahvista sijoitus",
-        "cancel": "Peruuta"
+        "cancel": "Peruuta",
+        "class": {
+          "profileLimited": "Profiilivaatimus rajoitti",
+          "anchorDeviation": "Poikkeaa ankkuriroolista",
+          "staleLock": "Arvioitu aiemmalla menetelmällä"
+        },
+        "showMore": "Näytä {count} lisää",
+        "showFewer": "Näytä vähemmän"
       },
       "pendingHeading": "Ei vielä arvioitu",
       "pendingDescription": "Näillä rooleilla ei ole vaativuustasoa ennen kuin arviointi on valmis.",
@@ -2224,6 +2232,8 @@
       "consequenceBody": "Mitä tämän menetelmän hyväksyminen tekisi jo olemassa oleville sijoituksille verrattuna viimeksi hyväksymäänne menetelmään. Se siirtää rooleja, ei henkilöitä: kenenkään palkka ei muutu tässä.",
       "calibrationLabel": "Mitä kalibrointi on?",
       "calibrationBody": "Viimeistellyn sijoituksen tarkastus, joka jonkun on hyvä katsoa ennen kuin tasoja pidetään valmiina. Vahvistaminen ei muuta tasoa: se kirjaa, että joku seisoo sen takana.",
+      "profileRequirementLabel": "Mikä on profiilivaatimus?",
+      "profileRequirementBody": "Vyöhyke voi vaatia vähimmäisportaan mallin profiilikriteereillä, joten rooli ei yllä sinne pelkällä kokonaispainotuksella. Se rajaa vaativuustason, se ei koskaan muuta kenenkään arviota.",
       "levelThresholdLabel": "Mikä on vaativuustason raja?",
       "levelThresholdBody": "Painotus, joka roolin on saavutettava ollakseen tasolla, ja profiiliporras, jonka vyöhyke vaatii. Ne ratkaisevat mihin kukin rooli päätyy, joten muutos sijoittaa koko tikkaat uudelleen."
     },

@@ -90,3 +90,32 @@ export function calibrationQueue(
   }
   return queue
 }
+
+// The three classes, in the queue's own order of consequence, each with its
+// rows. The queue is grouped rather than flat because the class is the thing
+// that tells a reader WHICH of three questions a row is asking, and because
+// the classes flood at very different rates: re-approving a method moves every
+// completed role into the stale class at once, which as a flat list buried the
+// two classes that carry an act under a wall of the one that does not.
+//
+// Empty classes are dropped, so a queue with one kind of question renders as
+// one group rather than three headings and two empties.
+export const CALIBRATION_CLASSES = [
+  "profileLimited",
+  "anchorDeviation",
+  "staleLock",
+] as const satisfies readonly CalibrationReason[]
+
+export interface CalibrationClass {
+  reason: CalibrationReason
+  rows: CalibrationRow[]
+}
+
+export function calibrationClasses(
+  queue: readonly CalibrationRow[]
+): CalibrationClass[] {
+  return CALIBRATION_CLASSES.flatMap((reason) => {
+    const rows = queue.filter((entry) => entry.reason === reason)
+    return rows.length === 0 ? [] : [{ reason, rows }]
+  })
+}

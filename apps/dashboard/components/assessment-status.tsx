@@ -11,13 +11,25 @@ import { useTranslations } from "next-intl"
 // glyph beside the word "Completed" says nothing the word does not, and a row
 // of little icons reads as a toolbar rather than as state.
 
-// A completed, revealed result (spec 2.4/6, decision 14): the assessment is
-// settled, closed to further rating, and its weighting and level are readable.
-// Neutral ink, because completing is the ordinary end state of every
-// assessment, not an achievement or a warning.
-export function CompletedBadge() {
+// The assessment's own status, as ONE chip with two states.
+//
+// It used to be two chips standing side by side, and the second could never
+// appear without the first: calibrateAssessment refuses an assessment that is
+// not completed, so "Calibrated" strictly implies "Completed" and the pair
+// said one fact twice. A reader counting chips read two pieces of state and
+// had to work out that one contained the other.
+//
+// Neutral ink at rest, because completing is the ordinary end state of every
+// assessment rather than an achievement. Success ink once a person has
+// confirmed the placement, which IS an extra step someone chose to take and
+// is the only state on this chip row that carries one.
+export function AssessmentStatusBadge({ calibrated }: { calibrated: boolean }) {
   const t = useTranslations("dashboard.roles.detail")
-  return <Badge variant="outline">{t("completedBadge")}</Badge>
+  return calibrated ? (
+    <Badge variant="success">{t("calibratedBadge")}</Badge>
+  ) : (
+    <Badge variant="outline">{t("completedBadge")}</Badge>
+  )
 }
 
 // The derived method-drift chip: a role completed before the model's latest
@@ -28,15 +40,6 @@ export function CompletedBadge() {
 export function MethodDriftBadge() {
   const t = useTranslations("dashboard.roles.detail")
   return <Badge variant="secondary">{t("methodDriftBadge")}</Badge>
-}
-
-// A placement a human has confirmed from the calibration queue (spec 6):
-// `calibratedAt` is stamped on the assessment. Success ink, because unlike
-// completion it IS an extra step someone chose to take, and it is the only
-// state on this chip row that carries one.
-export function CalibratedBadge() {
-  const t = useTranslations("dashboard.roles.detail")
-  return <Badge variant="success">{t("calibratedBadge")}</Badge>
 }
 
 // Completed, yet incomplete: completing an assessment does not freeze the
