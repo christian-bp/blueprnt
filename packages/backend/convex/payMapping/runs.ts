@@ -259,8 +259,19 @@ export const startPayMappingRun = orgMutation({
     // setWorkingConditionsDecision, updateLevelRules, updateZoneProfileRules,
     // setCriterionApproval's un-approve direction, and saveCriterionCompliance
     // as defense in depth) -- so a model whose approval is currently set has
-    // had no blocker-moving edit since that approval was granted, and the
-    // live model IS the last-approved model, byte for byte. The
+    // had no blocker-moving edit since that approval was granted, and the live
+    // model's METHOD is the last-approved method, field for field.
+    //
+    // "Its method", not "the document": two things on a model can move while
+    // an approval stands, and neither is method evidence. `weightsSavedAt` is
+    // stamped without a reopen on the one path that records an unchanged
+    // weighting as decided (criteria.ts), and it is not a checklist blocker
+    // and not part of ModelEvidence. Role CALIBRATION
+    // (assessment/locking.ts) writes to the role, never the model, and
+    // deliberately does not reopen: confirming where a role landed is a review
+    // of a placement, not a change to the method that produced it. The
+    // invariant this freeze needs is about the evidence, and both stay outside
+    // it. The
     // methodBlockersPass re-check is the second, independent proof of the
     // same fact: it would catch a future mutation that changes a blocker
     // input and forgets to wire the reopen. The evidence built below is

@@ -2,12 +2,14 @@ import { BASE_PRAXIS_AREA_KEYS, TRACK_SENIORITIES } from "@workspace/constants"
 import {
   DEFAULT_LEVEL_RULES,
   DEFAULT_ZONE_PROFILE_RULES,
+  LEVEL_COUNT,
   NEUTRAL_WEIGHT_POINTS,
 } from "@workspace/core"
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { onUserCreate } from "../accounts/mirrors"
+import { deriveResults } from "../assessment/compute"
 import {
   criteriaLibraryContent,
   LIBRARY_DIMENSION,
@@ -1898,5 +1900,293 @@ describe("deletePayMappingRun", () => {
         runId,
       })
     ).rejects.toThrow(/errors.notFound/)
+  })
+})
+
+// The two pay-mapping seams fas 5 had to prove rather than assume: that a new
+// run groups on the TWELVE-level key ADR-0022 introduced, and that the
+// exclusion of non-locked assessments is exactly what spec section 6 says.
+// Both were found intact; these pin them so a later change to the engine's
+// placement or to the preconditions gate cannot move them silently.
+describe("the run's level grouping and exclusion seam", () => {
+  it("snapshots the level the ENGINE placed the role at, over twelve level rules", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr } = await seedForFreeze(t)
+    // A SECOND role at a different level. With one role the fixture is
+    // degenerate: everything in the seed rates 5 and lands at level 1, so a
+    // snapshot that hardcoded a constant would satisfy every assertion below.
+    // Two roles at two levels is the smallest fixture that can tell the
+    // engine's answer from a constant.
+    const model = await asHr.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    const track = model?.tracks[0]
+    if (model === null || track === undefined) throw new Error("seed: model")
+    const { roleId: lowRoleId } = await asHr.mutation(
+      api.assessment.roles.createRole,
+      {
+        orgId,
+        title: "Support Engineer",
+        function: "Engineering",
+        team: "Platform",
+        trackKey: track.key,
+      }
+    )
+    const { personId: lowPerson } = await asHr.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Cecilia Nord", gender: "Kvinna" }
+    )
+    await t.run(async (ctx) => {
+      const roleDocId = ctx.db.normalizeId("roles", lowRoleId as string)
+      if (roleDocId === null) throw new Error("seed: low role")
+      for (const criterion of model.criteria) {
+        const criterionDocId = ctx.db.normalizeId(
+          "criteria",
+          criterion.criterionId
+        )
+        if (criterionDocId === null) throw new Error("seed: criterion")
+        await ctx.db.insert("ratings", {
+          orgId,
+          roleId: roleDocId,
+          criterionId: criterionDocId,
+          value: 1,
+        })
+      }
+      await ctx.db.patch(roleDocId, {
+        assessment: { lockedBy: "test", lockedAt: Date.now() },
+      })
+    })
+    await asHr.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: lowPerson,
+      roleId: lowRoleId,
+      seniority:
+        TRACK_SENIORITIES[track.key as keyof typeof TRACK_SENIORITIES][0] ??
+        "IC1",
+      senioritySource: "confirmed",
+    })
+
+    await asHr.mutation(api.payMapping.runs.startPayMappingRun, {
+      orgId,
+      label: "2026",
+    })
+
+    const { levels, rows } = await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      const run = await ctx.db
+        .query("payMappingRuns")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .first()
+      if (run === null) throw new Error("no run")
+      const snapshot = await ctx.db
+        .query("payMappingSnapshotRows")
+        .withIndex("by_run", (q) => q.eq("orgId", orgId).eq("runId", run._id))
+        .collect()
+      return { levels: model?.levelRules ?? [], rows: snapshot }
+    })
+
+    // The architecture is twelve levels (ADR-0022), and the run's own frozen
+    // method carries all twelve: a run that grouped on an older, shorter
+    // ladder would be statutory evidence of a method the org does not have.
+    expect(levels).toHaveLength(LEVEL_COUNT)
+    expect(levels.map((rule) => rule.level).sort((a, b) => a - b)).toEqual(
+      Array.from({ length: LEVEL_COUNT }, (_, index) => index + 1)
+    )
+    const frozenRules = await t.run(async (ctx) => {
+      const run = await ctx.db
+        .query("payMappingRuns")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .first()
+      return run?.frozenModel.levelRules ?? []
+    })
+    expect(frozenRules).toHaveLength(LEVEL_COUNT)
+
+    // Every frozen row carries a real level, inside the architecture's range,
+    // and it is the level the engine placed the role at rather than anything
+    // the run re-derived for itself.
+    expect(rows.length).toBeGreaterThan(0)
+    const derived = await t.run(async (ctx) => deriveResults(ctx, orgId))
+    const engineLevelByTitle = new Map(
+      derived.results.map((result) => [result.roleId, result.level])
+    )
+    // Pairs, not a Map: t.run's return value crosses the Convex serializer.
+    const rolePairs = await t.run(async (ctx) => {
+      const roleDocs = await ctx.db
+        .query("roles")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      return roleDocs.map((role) => ({
+        title: role.title,
+        id: role._id as string,
+      }))
+    })
+    const roleIdByTitle = new Map(
+      rolePairs.map((pair) => [pair.title, pair.id])
+    )
+    for (const row of rows) {
+      expect(row.level).not.toBeNull()
+      expect(row.level).toBeGreaterThanOrEqual(1)
+      expect(row.level).toBeLessThanOrEqual(LEVEL_COUNT)
+      // The frozen level is THIS role's engine level, not merely some level
+      // the engine produced somewhere.
+      const roleId = roleIdByTitle.get(row.roleTitle)
+      expect(row.level).toBe(engineLevelByTitle.get(roleId ?? ""))
+    }
+    // And the two roles really did land apart, or the assertion above could
+    // be satisfied by a constant.
+    expect(new Set(rows.map((row) => row.level)).size).toBeGreaterThan(1)
+  })
+
+  // Steg 2 (likvärdigt arbete) groups on the level alone, so the grouping key
+  // IS the twelve-level key. equalWorkGroupKey pairs it with the role title.
+  it("keys both grouping steps on that level", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr } = await seedForFreeze(t)
+    // The seed prices only one of its two people, and an unpriced row cannot
+    // enter a gap group; without a second priced row the groupings below are
+    // empty and the loops assert nothing.
+    await t.run(async (ctx) => {
+      const unpaid = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .filter((q) => q.eq(q.field("gender"), "Man"))
+        .first()
+      if (unpaid === null) throw new Error("seed: unpaid person")
+      await ctx.db.insert("payRecords", {
+        orgId,
+        personId: unpaid._id,
+        payYear: 2026,
+        source: "manual",
+        basicMonthly: 52000,
+        currency: "SEK",
+        components: [],
+        effectiveAt: PAST,
+        createdAt: PAST,
+      })
+    })
+    const { runId } = await asHr.mutation(
+      api.payMapping.runs.startPayMappingRun,
+      { orgId, label: "2026" }
+    )
+    const gap = await asHr.query(api.payMapping.gap.getPayMappingGap, {
+      orgId,
+      runId,
+    })
+    if (gap === null) throw new Error("no gap")
+    // NON-VACUOUS: a loop over an empty grouping asserts nothing about the key.
+    expect(gap.equivalentWork.length).toBeGreaterThan(0)
+    expect(gap.equalWork.length).toBeGreaterThan(0)
+    for (const group of gap.equivalentWork) {
+      // The equivalence key is the level and nothing else.
+      expect(group.key).toBe(String(group.level))
+      expect(group.level).not.toBeNull()
+    }
+    for (const group of gap.equalWork) {
+      // roleTitle|level, so a title at two levels is two groups.
+      expect(group.key).toBe(`${group.roleTitle}|${group.level ?? "none"}`)
+    }
+  })
+
+  // Spec section 6's exclusion, as it is actually built: NOT a silent
+  // per-person filter but a precondition GATE. A staffed active role whose
+  // assessment is not locked stops the whole run and names itself, which is
+  // stricter than excluding its people would be, and is the right reading of
+  // lock-as-reveal: a run must not quietly leave people out of a statutory
+  // mapping.
+  it("lets a locked role's people into a run", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr } = await seedForFreeze(t)
+    const preconditions = await asHr.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    expect(preconditions.unevaluatedRoles).toEqual([])
+    await asHr.mutation(api.payMapping.runs.startPayMappingRun, {
+      orgId,
+      label: "2026",
+    })
+    const rows = await t.run(async (ctx) => {
+      const run = await ctx.db
+        .query("payMappingRuns")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .first()
+      if (run === null) throw new Error("no run")
+      return ctx.db
+        .query("payMappingSnapshotRows")
+        .withIndex("by_run", (q) => q.eq("orgId", orgId).eq("runId", run._id))
+        .collect()
+    })
+    expect(rows).toHaveLength(2)
+  })
+
+  it("refuses the run while a staffed role is rated but not locked", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr } = await seedForFreeze(t)
+    // Fully rated, and the lock taken away: complete-but-unlocked is exactly
+    // the draft state a run may not include (spec 2.4/6).
+    await t.run(async (ctx) => {
+      const role = await ctx.db
+        .query("roles")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .first()
+      if (role === null) throw new Error("seed: role")
+      await ctx.db.patch(role._id, { assessment: undefined })
+    })
+
+    const preconditions = await asHr.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    // Named, not merely counted: the operator has to know WHICH role to lock.
+    expect(preconditions.unevaluatedRoles).toHaveLength(1)
+    expect(preconditions.unevaluatedRoles[0]?.title).toBe("Software Engineer")
+
+    await expect(
+      asHr.mutation(api.payMapping.runs.startPayMappingRun, {
+        orgId,
+        label: "2026",
+      })
+    ).rejects.toThrow(/errors\./)
+
+    // And nothing was frozen: the refusal is total, not partial.
+    const runs = await t.run(async (ctx) =>
+      ctx.db
+        .query("payMappingRuns")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+    )
+    expect(runs).toEqual([])
+  })
+
+  // An UNSTAFFED role's lock state never blocks: nobody is in it, so it
+  // contributes nothing to the mapping either way.
+  it("lets an unlocked role with nobody in it pass", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr } = await seedForFreeze(t)
+    const model = await asHr.query(api.evaluationModel.model.getModel, {
+      orgId,
+    })
+    const track = model?.tracks[0]
+    if (track === undefined) throw new Error("seed: track")
+    await asHr.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Empty Role",
+      function: "Engineering",
+      team: "Platform",
+      trackKey: track.key,
+    })
+
+    const preconditions = await asHr.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    expect(preconditions.unevaluatedRoles).toEqual([])
+    await asHr.mutation(api.payMapping.runs.startPayMappingRun, {
+      orgId,
+      label: "2026",
+    })
   })
 })
