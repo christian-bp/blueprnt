@@ -127,7 +127,12 @@
       "maxLength": "Kenttä on liian pitkä.",
       "slug": "Käytä pieniä kirjaimia, numeroita ja väliviivoja.",
       "passwordsMatch": "Salasanojen on täsmättävä.",
-      "emailUnchanged": "Anna eri sähköpostiosoite."
+      "emailUnchanged": "Anna eri sähköpostiosoite.",
+      "levelDecreasing": "Oltava pienempi kuin yläpuolinen taso.",
+      "levelBottomZero": "Alimman tason on alettava nollasta.",
+      "levelCeiling": "Ei voi alkaa yli sadan.",
+      "zoneMonotonic": "Ei voi vaatia enempää kuin yläpuolinen vyöhyke.",
+      "scoreRange": "Kokonaisluku väliltä 0-100."
     },
     "toast": {
       "error": "Jokin meni vikaan. Yritä uudelleen.",
@@ -191,6 +196,7 @@
       "workingConditionsDecided": "Työolosuhteiden päätös tallennettu",
       "assessmentLocked": "Arviointi lukittu",
       "placementConfirmed": "Sijoitus vahvistettu",
+      "thresholdsSaved": "Rajat tallennettu",
       "assessmentUnlocked": "Arvioinnin lukitus avattu",
       "weightMotivationSaved": "Perustelu tallennettu"
     },
@@ -1915,6 +1921,19 @@
         "groupUp": "{count} ylös",
         "groupDown": "{count} alas"
       },
+      "levelRules": {
+        "title": "Vaativuustasojen rajat",
+        "description": "Painotus, jolta kukin vaativuustaso alkaa, ja profiilivaatimus, jolla kukin vyöhyke portitetaan. Kumman tahansa muuttaminen sijoittaa kaikki roolit uudelleen.",
+        "levelsLabel": "Mistä kukin taso alkaa",
+        "levelsDescription": "Rooli yltää tasolle, kun sen painotus on vähintään tämä luku. Taso 1 on korkein, joten luvut laskevat tasojen laskiessa, ja taso 12 alkaa nollasta, jotta jokainen rooli sijoittuu jonnekin.",
+        "zonesLabel": "Vyöhykkeiden profiilivaatimukset",
+        "zonesDescription": "Alin porras, joka roolin on saavutettava jokaisella profiilikriteerillä päästäkseen vyöhykkeelle. Jätä vyöhyke tyhjäksi, jos se portitetaan pelkällä painotuksella.",
+        "levelField": "Taso {level}",
+        "zoneField": "Vyöhyke {zone}",
+        "reopensApproval": "Tallentaminen avaa mallin hyväksynnän uudelleen: rajat ovat osa hyväksyttyä kokonaisuutta, joten tarkistuslista on allekirjoitettava uudelleen.",
+        "save": "Tallenna rajat",
+        "invalid": "Moottori hylkäsi nämä säännöt. Tarkistakaa, että luvut laskevat tasojen laskiessa eikä mikään vyöhyke vaadi enempää kuin sen yläpuolinen."
+      },
       "review": {
         "cta": "Avaa hallintapaneeli"
       },
@@ -2205,7 +2224,9 @@
       "consequenceLabel": "Mikä on seurausanalyysi?",
       "consequenceBody": "Mitä tämän menetelmän hyväksyminen tekisi jo olemassa oleville sijoituksille verrattuna viimeksi hyväksymäänne menetelmään. Se siirtää rooleja, ei henkilöitä: kenenkään palkka ei muutu tässä.",
       "calibrationLabel": "Mitä kalibrointi on?",
-      "calibrationBody": "Lukitun sijoituksen tarkistus, joka jonkun on hyvä tehdä ennen kuin tikkaita pidetään valmiina. Vahvistaminen ei muuta vaativuustasoa: se kirjaa, että joku seisoo sen takana."
+      "calibrationBody": "Lukitun sijoituksen tarkistus, joka jonkun on hyvä tehdä ennen kuin tikkaita pidetään valmiina. Vahvistaminen ei muuta vaativuustasoa: se kirjaa, että joku seisoo sen takana.",
+      "levelThresholdLabel": "Mikä on vaativuustason raja?",
+      "levelThresholdBody": "Painotus, joka roolin on saavutettava ollakseen tasolla, ja profiiliporras, jolla vyöhyke portitetaan. Ne ratkaisevat mihin kukin rooli päätyy, joten muutos sijoittaa koko tikkaat uudelleen."
     },
     "widgetCard": {
       "expand": "Suurenna"

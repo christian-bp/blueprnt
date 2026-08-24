@@ -131,6 +131,21 @@ The panel appears only when it has something to say. A model that has never
 been approved has nothing to compare against, and a change that moves nobody
 is not reported. It moves roles, not people: no pay changes here.
 
+## Correcting the level thresholds
+
+Under the checklist, "Level thresholds" shows the weighting each of the twelve
+levels opens at, grouped under the zone each belongs to, and the profile
+requirement each zone gates on. Both are editable. The numbers must fall as
+the levels descend, the lowest level must open at 0 so every role places
+somewhere, and no zone may ask more of a role than the zone above it; a number
+that breaks one of those is marked on its own field before you can save. A
+zone left empty is gated on the weighting alone.
+
+Saving reopens the model's approval, which the section says beside its own
+save button: the thresholds are part of what was approved, so the checklist
+has to be signed off again. The change is recorded in the audit log, and every
+role is re-placed against the new numbers immediately.
+
 ## Related
 
 - [Model overview](/docs/model-overview)

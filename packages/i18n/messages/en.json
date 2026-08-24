@@ -127,7 +127,12 @@
       "maxLength": "This field is too long.",
       "slug": "Use lowercase letters, numbers, and hyphens.",
       "passwordsMatch": "Passwords must match.",
-      "emailUnchanged": "Enter a different email address."
+      "emailUnchanged": "Enter a different email address.",
+      "levelDecreasing": "Must be lower than the level above it.",
+      "levelBottomZero": "The lowest level must open at 0.",
+      "levelCeiling": "Cannot open above 100.",
+      "zoneMonotonic": "Cannot ask more than the zone above it.",
+      "scoreRange": "A whole number between 0 and 100."
     },
     "toast": {
       "error": "Something went wrong. Try again.",
@@ -191,6 +196,7 @@
       "workingConditionsDecided": "Working conditions decision saved",
       "assessmentLocked": "Assessment locked",
       "placementConfirmed": "Placement confirmed",
+      "thresholdsSaved": "Thresholds saved",
       "assessmentUnlocked": "Assessment unlocked",
       "weightMotivationSaved": "Motivation saved"
     },
@@ -1915,6 +1921,19 @@
         "groupUp": "{count} up",
         "groupDown": "{count} down"
       },
+      "levelRules": {
+        "title": "Level thresholds",
+        "description": "The weighting each level opens at, and the profile requirement each zone gates on. Changing either re-places every role.",
+        "levelsLabel": "Where each level opens",
+        "levelsDescription": "A role reaches a level when its weighting is at least this number. Level 1 is the highest, so the numbers fall as the levels descend, and level 12 opens at 0 so every role places somewhere.",
+        "zonesLabel": "Zone profile requirements",
+        "zonesDescription": "The lowest step a role must reach on every profile criterion to enter the zone. Leave a zone empty to gate it on the weighting alone.",
+        "levelField": "Level {level}",
+        "zoneField": "Zone {zone}",
+        "reopensApproval": "Saving reopens the model's approval: the thresholds are part of what was approved, so the checklist has to be signed off again.",
+        "save": "Save thresholds",
+        "invalid": "The engine refused these rules. Check that the numbers fall as the levels descend and that no zone asks more than the zone above it."
+      },
       "review": {
         "cta": "Open the dashboard"
       },
@@ -2205,7 +2224,9 @@
       "consequenceLabel": "What is a consequence analysis?",
       "consequenceBody": "What approving this method would do to the placements you already have, compared with the method you last approved. It moves roles, not people: nobody's pay changes here.",
       "calibrationLabel": "What is calibration?",
-      "calibrationBody": "Reviewing a locked placement a person should look at before the ladder is taken as settled. Confirming one does not change the level: it records that someone stands behind it."
+      "calibrationBody": "Reviewing a locked placement a person should look at before the ladder is taken as settled. Confirming one does not change the level: it records that someone stands behind it.",
+      "levelThresholdLabel": "What is a level threshold?",
+      "levelThresholdBody": "The weighting a role must reach to sit at a level, and the profile step a zone gates on. They decide where every role lands, so changing one re-places the whole ladder."
     },
     "widgetCard": {
       "expand": "Expand"

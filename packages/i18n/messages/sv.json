@@ -127,7 +127,12 @@
       "maxLength": "Fältet är för långt.",
       "slug": "Använd små bokstäver, siffror och bindestreck.",
       "passwordsMatch": "Lösenorden måste matcha.",
-      "emailUnchanged": "Ange en annan e-postadress."
+      "emailUnchanged": "Ange en annan e-postadress.",
+      "levelDecreasing": "Måste vara lägre än nivån ovanför.",
+      "levelBottomZero": "Den lägsta nivån måste börja vid 0.",
+      "levelCeiling": "Kan inte börja över 100.",
+      "zoneMonotonic": "Kan inte kräva mer än zonen ovanför.",
+      "scoreRange": "Ett heltal mellan 0 och 100."
     },
     "toast": {
       "error": "Något gick fel. Försök igen.",
@@ -191,6 +196,7 @@
       "workingConditionsDecided": "Beslut om arbetsförhållanden sparat",
       "assessmentLocked": "Bedömningen låst",
       "placementConfirmed": "Placeringen bekräftad",
+      "thresholdsSaved": "Gränserna sparade",
       "assessmentUnlocked": "Bedömningen upplåst",
       "weightMotivationSaved": "Motivering sparad"
     },
@@ -1915,6 +1921,19 @@
         "groupUp": "{count} upp",
         "groupDown": "{count} ned"
       },
+      "levelRules": {
+        "title": "Nivågränser",
+        "description": "Viktningen varje nivå börjar vid, och profilkravet varje zon spärrar på. Att ändra något av dem placerar om alla roller.",
+        "levelsLabel": "Var varje nivå börjar",
+        "levelsDescription": "En roll når en nivå när dess viktning är minst det här talet. Nivå 1 är högst, så talen sjunker när nivåerna går nedåt, och nivå 12 börjar vid 0 så att varje roll hamnar någonstans.",
+        "zonesLabel": "Profilkrav per zon",
+        "zonesDescription": "Det lägsta steg en roll måste nå på varje profilkriterium för att komma in i zonen. Lämna en zon tom för att spärra den enbart på viktningen.",
+        "levelField": "Nivå {level}",
+        "zoneField": "Zon {zone}",
+        "reopensApproval": "Att spara öppnar modellens godkännande igen: gränserna är en del av det som godkändes, så checklistan måste signeras på nytt.",
+        "save": "Spara gränserna",
+        "invalid": "Motorn avvisade de här reglerna. Kontrollera att talen sjunker när nivåerna går nedåt och att ingen zon kräver mer än zonen ovanför."
+      },
       "review": {
         "cta": "Öppna dashboarden"
       },
@@ -2205,7 +2224,9 @@
       "consequenceLabel": "Vad är en konsekvensanalys?",
       "consequenceBody": "Vad ett godkännande av den här metoden skulle göra med de placeringar ni redan har, jämfört med metoden ni senast godkände. Den flyttar roller, inte personer: ingens lön ändras här.",
       "calibrationLabel": "Vad är kalibrering?",
-      "calibrationBody": "Granskning av en låst placering som någon bör titta på innan stegen betraktas som färdig. Att bekräfta en ändrar inte nivån: den registrerar att någon står bakom den."
+      "calibrationBody": "Granskning av en låst placering som någon bör titta på innan stegen betraktas som färdig. Att bekräfta en ändrar inte nivån: den registrerar att någon står bakom den.",
+      "levelThresholdLabel": "Vad är en nivågräns?",
+      "levelThresholdBody": "Viktningen en roll måste nå för att ligga på en nivå, och profilsteget en zon spärrar på. De avgör var varje roll hamnar, så en ändring placerar om hela stegen."
     },
     "widgetCard": {
       "expand": "Förstora"

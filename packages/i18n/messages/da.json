@@ -127,7 +127,12 @@
       "maxLength": "Feltet er for langt.",
       "slug": "Brug små bogstaver, tal og bindestreger.",
       "passwordsMatch": "Adgangskoderne skal være ens.",
-      "emailUnchanged": "Indtast en anden e-mailadresse."
+      "emailUnchanged": "Indtast en anden e-mailadresse.",
+      "levelDecreasing": "Skal være lavere end niveauet ovenfor.",
+      "levelBottomZero": "Det laveste niveau skal starte ved 0.",
+      "levelCeiling": "Kan ikke starte over 100.",
+      "zoneMonotonic": "Kan ikke kræve mere end zonen ovenfor.",
+      "scoreRange": "Et helt tal mellem 0 og 100."
     },
     "toast": {
       "error": "Noget gik galt. Prøv igen.",
@@ -191,6 +196,7 @@
       "workingConditionsDecided": "Beslutning om arbejdsforhold gemt",
       "assessmentLocked": "Vurderingen låst",
       "placementConfirmed": "Placeringen bekræftet",
+      "thresholdsSaved": "Grænserne gemt",
       "assessmentUnlocked": "Vurderingen låst op",
       "weightMotivationSaved": "Begrundelse gemt"
     },
@@ -1915,6 +1921,19 @@
         "groupUp": "{count} op",
         "groupDown": "{count} ned"
       },
+      "levelRules": {
+        "title": "Niveaugrænser",
+        "description": "Den vægtning, hvert niveau starter ved, og det profilkrav, hver zone spærrer på. At ændre nogen af dem placerer alle roller på ny.",
+        "levelsLabel": "Hvor hvert niveau starter",
+        "levelsDescription": "En rolle når et niveau, når dens vægtning er mindst dette tal. Niveau 1 er højest, så tallene falder, når niveauerne går nedad, og niveau 12 starter ved 0, så hver rolle lander et sted.",
+        "zonesLabel": "Profilkrav per zone",
+        "zonesDescription": "Det laveste trin, en rolle skal nå på hvert profilkriterium for at komme ind i zonen. Lad en zone stå tom for at spærre den alene på vægtningen.",
+        "levelField": "Niveau {level}",
+        "zoneField": "Zone {zone}",
+        "reopensApproval": "At gemme åbner modellens godkendelse igen: grænserne er en del af det, der blev godkendt, så tjeklisten skal underskrives på ny.",
+        "save": "Gem grænserne",
+        "invalid": "Motoren afviste disse regler. Kontrollér, at tallene falder, når niveauerne går nedad, og at ingen zone kræver mere end zonen ovenfor."
+      },
       "review": {
         "cta": "Åbn dashboardet"
       },
@@ -2205,7 +2224,9 @@
       "consequenceLabel": "Hvad er en konsekvensanalyse?",
       "consequenceBody": "Hvad en godkendelse af denne metode ville gøre ved de placeringer, I allerede har, sammenlignet med den metode, I sidst godkendte. Den flytter roller, ikke personer: ingens løn ændres her.",
       "calibrationLabel": "Hvad er kalibrering?",
-      "calibrationBody": "Gennemgang af en låst placering, som nogen bør se på, før stigen betragtes som afklaret. At bekræfte en ændrer ikke niveauet: den registrerer, at nogen står bag den."
+      "calibrationBody": "Gennemgang af en låst placering, som nogen bør se på, før stigen betragtes som afklaret. At bekræfte en ændrer ikke niveauet: den registrerer, at nogen står bag den.",
+      "levelThresholdLabel": "Hvad er en niveaugrænse?",
+      "levelThresholdBody": "Den vægtning, en rolle skal nå for at ligge på et niveau, og det profiltrin, en zone spærrer på. De afgør, hvor hver rolle lander, så en ændring placerer hele stigen på ny."
     },
     "widgetCard": {
       "expand": "Forstør"

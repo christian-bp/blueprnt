@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl"
 import { ApprovalCard } from "@/components/model/approval-card"
 import { ConsequencePanel } from "@/components/model/consequence-panel"
+import { LevelRulesPanel } from "@/components/model/level-rules-panel"
 import { useOrganization } from "@/components/org-context"
 import { usePageTitle } from "@/hooks/use-page-title"
 
@@ -33,6 +34,10 @@ export default function ModelApprovalChapterPage() {
           approving would actually move something. */}
       <ConsequencePanel orgId={orgId} />
       <ApprovalCard orgId={orgId} />
+      {/* The thresholds under the gate they belong to: they are part of what
+          approval certifies, so the surface that edits them sits with the
+          approval and says, beside its own save, that saving reopens it. */}
+      <LevelRulesPanel orgId={orgId} />
     </div>
   )
 }
