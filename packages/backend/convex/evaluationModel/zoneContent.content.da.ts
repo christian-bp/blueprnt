@@ -9,6 +9,7 @@ import type { ZoneContent } from "./zoneContent.content.en"
 export const zoneContentDa: ZoneContent = {
   zones: {
     A: {
+      shortName: "Strategisk ledelse",
       name: "Virksomhedsomfattende og strategiske roller",
       character:
         "Former virksomhedens langsigtede retning, kritiske valg eller samlede evne til at lykkes.",
@@ -17,6 +18,7 @@ export const zoneContentDa: ZoneContent = {
       summary: "Strategisk og virksomhedsomfattende indflydelse.",
     },
     B: {
+      shortName: "Bredt lederskab",
       name: "Ledende specialist- og lederroller med bred indflydelse",
       character:
         "Har bred, varig og ofte tværfunktionel indflydelse på en væsentlig del af virksomheden.",
@@ -25,6 +27,7 @@ export const zoneContentDa: ZoneContent = {
       summary: "Bred og varig indflydelse på en væsentlig del af virksomheden.",
     },
     C: {
+      shortName: "Selvstændige specialister",
       name: "Selvstændige specialist- og operative lederroller",
       character:
         "Har selvstændigt ansvar for et tydeligt område, avancerede arbejdskrav eller indflydelse på team og nærliggende funktioner.",
@@ -34,6 +37,7 @@ export const zoneContentDa: ZoneContent = {
         "Selvstændigt ansvar og avancerede krav inden for et tydeligt område.",
     },
     D: {
+      shortName: "Professionel kerne",
       name: "Professionelle og støttende roller med mere afgrænset indflydelse",
       character:
         "Har tydelige og relevante krav, men normalt mere afgrænset rækkevidde, lavere beslutningsniveau eller mere etablerede rammer.",

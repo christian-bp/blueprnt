@@ -220,10 +220,13 @@ function QueueRow({
           >
             {row.title}
           </Link>
+          {/* Meta rides in a CHIP, not in a sentence and not as loose grey
+              text beside the title: the row is a feed row, and a feed row's
+              meta is scanned, never read. */}
           {row.level !== null && (
-            <span className="shrink-0 text-muted-foreground text-xs">
+            <Badge variant="secondary" className="shrink-0 tabular-nums">
               {tLevels("levelRow", { level: row.level })}
-            </span>
+            </Badge>
           )}
         </div>
         {/* The reason, in words. Running text, so it floors at text-sm. */}
@@ -240,18 +243,20 @@ function QueueRow({
         {entry.failures.length > 0 && (
           // WHICH requirement held the role back: the criterion by name, what
           // the zone asked of it, and what the role actually scored. Without
-          // these three the first sentence is a verdict with no evidence.
-          <ul className="space-y-0.5">
+          // these three the sentence above is a verdict with no evidence.
+          // Chips rather than a bulleted list of sentences: each is a name and
+          // two numbers, which is meta a reader scans, and a role failing
+          // three criteria used to stack three full-width lines under one row.
+          <ul className="flex flex-wrap gap-1">
             {entry.failures.map((failure) => (
-              <li
-                key={failure.criterionId}
-                className="text-muted-foreground text-sm leading-relaxed"
-              >
-                {t("profileLimitedFailure", {
-                  name: failure.name,
-                  required: failure.required,
-                  actual: failure.actual,
-                })}
+              <li key={failure.criterionId}>
+                <Badge variant="outline" className="font-normal">
+                  {t("profileLimitedFailure", {
+                    name: failure.name,
+                    required: failure.required,
+                    actual: failure.actual,
+                  })}
+                </Badge>
               </li>
             ))}
           </ul>

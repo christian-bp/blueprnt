@@ -112,12 +112,13 @@ describe("ApprovalCard", () => {
       const card = container.querySelector('[data-slot="card"]') as HTMLElement
       expect(card.className).not.toMatch(/\bmax-w-/)
 
-      // Every block a reader reads as sentences is capped, and by the SAME
-      // constant, so the three cannot drift into three measures.
-      const description = screen.getByText(m.approvalDescription)
-      expect(description.className).toContain(CARD_READING_MEASURE)
-      // Every reading block in the content is capped, and by the same
-      // constant: the state line, the restore hint and the checklist.
+      // The card no longer STANDS a description: "the model must pass every
+      // required check before roles can be rated" was descriptive prose that
+      // the checklist below shows in full and the title's own help already
+      // says (text-minimal law). Every remaining block a reader reads as
+      // sentences is capped, and by the SAME constant, so they cannot drift
+      // into separate measures: the state line, the restore hint and the
+      // checklist.
       const blocks = [
         ...card.querySelectorAll(
           `[data-slot="card-content"] > .${CARD_READING_MEASURE}`
@@ -456,11 +457,12 @@ describe("ApprovalCard", () => {
   it("renders a content-shaped skeleton while loading", () => {
     queryResult = undefined
     renderCard()
+    // The title is static i18n text and renders for real; the description it
+    // used to stand beside is gone from both states, so the skeleton and the
+    // loaded card still measure the same.
     expect(screen.getByText("Approval")).toBeDefined()
     expect(
-      screen.getByText(
-        "The model must pass every required check below before roles can be rated."
-      )
+      screen.getByLabelText(messages.dashboard.help.modelApprovalLabel)
     ).toBeDefined()
   })
 

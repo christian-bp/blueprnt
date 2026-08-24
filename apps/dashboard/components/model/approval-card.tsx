@@ -13,7 +13,6 @@ import {
   Card,
   CardAction,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
@@ -174,12 +173,6 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
               {tHelp("modelApprovalBody")}
             </HelpMorphButton>
           </CardTitle>
-          {/* Reading text, so it keeps its measure while the card around it
-            takes the page. CARD_READING_MEASURE is the one cap this card
-            uses, on every block a reader reads as sentences. */}
-          <CardDescription className={CARD_READING_MEASURE}>
-            {t("approvalDescription")}
-          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Skeleton className="h-4 w-40" />
@@ -235,12 +228,6 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
             {tHelp("modelApprovalBody")}
           </HelpMorphButton>
         </CardTitle>
-        {/* Reading text, so it keeps its measure while the card around it
-            takes the page. CARD_READING_MEASURE is the one cap this card
-            uses, on every block a reader reads as sentences. */}
-        <CardDescription className={CARD_READING_MEASURE}>
-          {t("approvalDescription")}
-        </CardDescription>
         {/* The chapter's actions, level with the card's title and against the
             card's own right edge: the same anatomy the journey row uses, and
             the design system's own slot for it rather than a hand-rolled flex
@@ -278,11 +265,11 @@ export function ApprovalCard({ orgId }: { orgId: string }) {
         </CardAction>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* The state, and what a restore would go back to. Reading text now
-            that the action has moved up to the title row: with nothing beside
-            them to hold against the card's edge, these are two sentences and
-            they take the card's reading measure like the description above
-            them. */}
+        {/* The state, and what a restore would go back to. Both are STATE
+            words carrying a name and a date, which is what standing text on a
+            surface is for; the card's descriptive line stood above them until
+            the text-minimal sweep moved it into the title's own help. They
+            keep the card's reading measure. */}
         <div className={cn("space-y-1", CARD_READING_MEASURE)}>
           <p className="text-sm">
             {data.approval

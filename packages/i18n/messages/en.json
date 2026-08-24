@@ -1651,7 +1651,6 @@
       "reopenCta": "Re-evaluate"
     },
     "levels": {
-      "description": "The levels and the roles in each, derived live from the current model and ratings.",
       "viewLadder": "Ladder",
       "viewMatrix": "Matrix",
       "viewFamilies": "Families",

@@ -56,6 +56,7 @@ describe("zone content", () => {
     for (const zone of ZONE_KEYS) {
       const entry = content.zones[zone]
       for (const field of [
+        "shortName",
         "name",
         "character",
         "typicalProfile",
@@ -90,6 +91,26 @@ describe("zone content", () => {
     )
     expect(new Set(names).size).toBe(PRESENT_LOCALES.length)
   })
+
+  // The band header is a stat row: letter chip, name, span chip, count. A
+  // short name that ran to a clause would break that line, which is the whole
+  // reason the field exists beside the masterdokument's own full name.
+  it.each(PRESENT_LOCALES)(
+    "locale %s keeps every short name to a band-width phrase",
+    (locale) => {
+      const content = zoneContent(locale)
+      for (const zone of ZONE_KEYS) {
+        const shortName = content.zones[zone].shortName
+        expect(shortName.length, `${locale}.${zone}`).toBeLessThanOrEqual(34)
+        expect(
+          shortName.split(/\s+/).length,
+          `${locale}.${zone}`
+        ).toBeLessThanOrEqual(4)
+        // A name, not a sentence.
+        expect(shortName, `${locale}.${zone}`).not.toMatch(/[.!?]$/)
+      }
+    }
+  )
 
   it.each(PRESENT_LOCALES)(
     "locale %s leaves the zone letter to the key",

@@ -10,6 +10,7 @@ import type { ZoneContent } from "./zoneContent.content.en"
 export const zoneContentFi: ZoneContent = {
   zones: {
     A: {
+      shortName: "Strateginen johtaminen",
       name: "Koko yrityksen kattavat ja strategiset roolit",
       character:
         "Muovaa yrityksen pitkän aikavälin suuntaa, kriittisiä valintoja tai kokonaisvaltaista menestymiskykyä.",
@@ -18,6 +19,7 @@ export const zoneContentFi: ZoneContent = {
       summary: "Strateginen ja koko yrityksen kattava vaikutus.",
     },
     B: {
+      shortName: "Laajavaikutteiset johtajat",
       name: "Johtavat asiantuntija- ja esihenkilöroolit, joilla on laaja vaikutus",
       character:
         "Roolilla on laaja, pysyvä ja usein poikkitoiminnallinen vaikutus olennaiseen osaan liiketoimintaa.",
@@ -26,6 +28,7 @@ export const zoneContentFi: ZoneContent = {
       summary: "Laaja ja pysyvä vaikutus olennaiseen osaan liiketoimintaa.",
     },
     C: {
+      shortName: "Itsenäiset asiantuntijat",
       name: "Itsenäiset asiantuntija- ja operatiiviset johtoroolit",
       character:
         "Roolilla on itsenäistä vastuuta selkeästä alueesta, vaativia työtehtäviä tai vaikutusta tiimeihin ja lähialueen toimintoihin.",
@@ -34,6 +37,7 @@ export const zoneContentFi: ZoneContent = {
       summary: "Itsenäinen vastuu ja vaativat tehtävät selkeällä alueella.",
     },
     D: {
+      shortName: "Ammatillinen ydin",
       name: "Ammatilliset roolit ja tukiroolit, joiden vaikutus on rajatumpi",
       character:
         "Roolilla on selkeät ja relevantit vaatimukset, mutta tavallisesti rajatumpi vaikutusalue, matalampi päätöstaso tai vakiintuneemmat raamit.",

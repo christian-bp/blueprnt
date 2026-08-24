@@ -11,6 +11,7 @@ import type { ZoneContent } from "./zoneContent.content.en"
 export const zoneContentSv: ZoneContent = {
   zones: {
     A: {
+      shortName: "Strategiskt ledarskap",
       name: "Företagsövergripande och strategiska roller",
       character:
         "Formar bolagets långsiktiga riktning, kritiska vägval eller samlade förmåga att lyckas.",
@@ -19,6 +20,7 @@ export const zoneContentSv: ZoneContent = {
       summary: "Strategisk och företagsövergripande påverkan.",
     },
     B: {
+      shortName: "Brett ledarskap",
       name: "Ledande specialist- och chefsroller med bred påverkan",
       character:
         "Har bred, varaktig och ofta tvärfunktionell påverkan på en väsentlig del av verksamheten.",
@@ -28,6 +30,7 @@ export const zoneContentSv: ZoneContent = {
         "Bred och varaktig påverkan på en väsentlig del av verksamheten.",
     },
     C: {
+      shortName: "Självständiga specialister",
       name: "Självständiga specialist- och operativa ledarroller",
       character:
         "Har självständigt ansvar för ett tydligt område, avancerade arbetskrav eller påverkan på team och närliggande funktioner.",
@@ -37,6 +40,7 @@ export const zoneContentSv: ZoneContent = {
         "Självständigt ansvar och avancerade krav inom ett tydligt område.",
     },
     D: {
+      shortName: "Professionell kärna",
       name: "Professionella och stödjande roller med mer avgränsad påverkan",
       character:
         "Har tydliga och relevanta krav, men normalt mer avgränsad räckvidd, lägre beslutshöjd eller mer etablerade ramar.",

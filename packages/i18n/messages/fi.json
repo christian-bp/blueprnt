@@ -1651,7 +1651,6 @@
       "reopenCta": "Arvioi uudelleen"
     },
     "levels": {
-      "description": "Vaativuustasot ja kunkin tason roolit, johdettu reaaliaikaisesti nykyisestä mallista ja arvioinneista.",
       "viewLadder": "Tikkaat",
       "viewMatrix": "Matriisi",
       "viewFamilies": "Perheet",

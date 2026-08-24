@@ -1651,7 +1651,6 @@
       "reopenCta": "Omvärdera"
     },
     "levels": {
-      "description": "Nivåerna och rollerna i varje nivå, härledda live från aktuell modell och bedömningar.",
       "viewLadder": "Stege",
       "viewMatrix": "Matris",
       "viewFamilies": "Familjer",

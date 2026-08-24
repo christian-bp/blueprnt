@@ -72,13 +72,22 @@ describe("LevelMatrix", () => {
 
   // The matrix bands by zone too, on a row of its own: there is no left column
   // wide enough to carry a zone's description beside twelve level rows.
-  it("puts each zone's levels under a band row naming and describing it", () => {
+  it("puts each zone's levels under a band row that names and counts, not describes", () => {
     renderMatrix([role({ roleId: "r1", level: 1 })], TWELVE_LEVELS)
     const content = zoneContent("en")
     for (const zone of ZONE_KEYS) {
-      expect(screen.getByText(`Zone ${zone}`)).toBeDefined()
-      expect(screen.getByText(content.zones[zone].name)).toBeDefined()
-      expect(screen.getByText(content.zones[zone].character)).toBeDefined()
+      // A stat row: the letter as a chip, the SHORT name as the line, the span
+      // as a chip, the count right-aligned. Everything identifies or
+      // quantifies.
+      expect(screen.getByText(zone)).toBeDefined()
+      expect(screen.getByText(content.zones[zone].shortName)).toBeDefined()
+      // Section 14.5's three columns opened OUT of the band: the
+      // masterdokument's own full name, the character and the typical profile
+      // were standing prose, two paragraphs per band, four bands deep, above a
+      // ladder whose job is showing where roles sit.
+      expect(screen.queryByText(content.zones[zone].name)).toBeNull()
+      expect(screen.queryByText(content.zones[zone].character)).toBeNull()
+      expect(screen.queryByText(content.zones[zone].typicalProfile)).toBeNull()
     }
   })
 

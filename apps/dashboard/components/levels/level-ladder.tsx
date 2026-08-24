@@ -1,14 +1,10 @@
 "use client"
 
-import {
-  levelFunction,
-  zoneContent,
-} from "@workspace/backend/convex/evaluationModel/zoneContent"
+import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
 import type { ZoneKey } from "@workspace/core"
 import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
-import { DisclosureToggle } from "@/components/disclosure-toggle"
 import { HATCH_CLASS } from "@/components/hatch"
 import { RoleChip } from "@/components/levels/role-chip"
 import { ZoneBandHeader } from "@/components/levels/zone-band-header"
@@ -59,20 +55,12 @@ export function LevelLadder({
   // filter change that reveals a band cannot leave it collapsed, and a zone the
   // model gains later opens by default like every other.
   const [closed, setClosed] = useState<ReadonlySet<ZoneKey>>(() => new Set())
-  // Which level's function text is showing, PER BAND. One at a time within a
-  // zone: the three texts are three sentences about the same three positions,
-  // and a whole ladder of them open at once is a wall rather than an answer.
-  //
-  // Per band rather than per ladder, because one shared slot made opening a
-  // level collapse whichever level was open somewhere else, and when that
-  // other level sat ABOVE the click the row under the pointer jumped up by the
-  // height of a paragraph the reader was not looking at. A collapse the reader
-  // did not ask for and cannot see is the layout shift the surface laws
-  // forbid; scoping it means the only thing that ever moves is below the
-  // gesture that moved it.
-  const [openFunction, setOpenFunction] = useState<
-    ReadonlyMap<ZoneKey, number>
-  >(() => new Map())
+  // No per-level function control any more. Each of twelve rows carried its
+  // own toggle for section 14.6's entry/established/upper text, and a control
+  // that repeats twelve times has to earn it: the ladder's job is showing
+  // where roles sit, and what a level IS inside its zone is a question about
+  // the ZONE, asked once, not twelve times. The row stands its number and its
+  // count; the zone's own help carries its words.
 
   const renderChip = (role: LevelRoleRow) => (
     <motion.div
@@ -155,9 +143,6 @@ export function LevelLadder({
                       const inLevel = bandRows.filter(
                         (row) => row.level === range.level
                       )
-                      const fn = levelFunction(content, range.level)
-                      const functionOpen =
-                        openFunction.get(band.zone) === range.level
                       return (
                         <li key={range.level} className="rounded-xl border p-3">
                           <div className="flex gap-4">
@@ -168,26 +153,6 @@ export function LevelLadder({
                               <div className="text-muted-foreground text-xs">
                                 {t("roleCount", { count: inLevel.length })}
                               </div>
-                              {/* What this level IS inside its zone (masterdokument 14.6):
-                    the entry, the established middle, or the top. Behind a
-                    press, because the ladder's job is showing where roles sit
-                    and twelve standing paragraphs would bury that. */}
-                              <DisclosureToggle
-                                label={fn.label}
-                                open={functionOpen}
-                                onToggle={() =>
-                                  setOpenFunction((current) => {
-                                    const next = new Map(current)
-                                    if (next.get(band.zone) === range.level) {
-                                      next.delete(band.zone)
-                                    } else {
-                                      next.set(band.zone, range.level)
-                                    }
-                                    return next
-                                  })
-                                }
-                                className="mt-1"
-                              />
                             </div>
                             {/* self-center (not stretch) so a short content block (an empty
                   hatch or a single chip row) sits vertically centered against
@@ -224,22 +189,6 @@ export function LevelLadder({
                               )}
                             </div>
                           </div>
-                          <AnimatePresence initial={false}>
-                            {functionOpen ? (
-                              <motion.div
-                                key="function"
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: "auto", opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                transition={SPRING}
-                                className="overflow-hidden"
-                              >
-                                <p className="max-w-2xl pt-2 text-muted-foreground text-sm leading-relaxed">
-                                  {fn.meaning}
-                                </p>
-                              </motion.div>
-                            ) : null}
-                          </AnimatePresence>
                         </li>
                       )
                     })}

@@ -1651,7 +1651,6 @@
       "reopenCta": "Genåbn"
     },
     "levels": {
-      "description": "Niveauerne og rollerne i hvert niveau, udledt live fra den aktuelle model og vurderinger.",
       "viewLadder": "Stige",
       "viewMatrix": "Matrix",
       "viewFamilies": "Familier",

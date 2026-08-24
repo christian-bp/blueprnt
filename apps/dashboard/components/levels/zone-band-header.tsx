@@ -4,11 +4,11 @@ import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import type { ZoneEntryContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
 import type { ZoneKey } from "@workspace/core"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
-import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
-import { SPRING } from "@/lib/motion"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { FAMILY_COUNT_CLASS, FAMILY_NAME_CLASS } from "@/lib/role-family-row"
 
 // One zone band's heading, shared by the ladder and the level matrix so the
@@ -62,76 +62,51 @@ export function ZoneBandHeader({
           )}
         />
       </Button>
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <span className={cn(FAMILY_NAME_CLASS, "shrink-0")}>
-            {t("zoneLabel", { zone })}
-          </span>
-          <span className={cn(FAMILY_NAME_CLASS, "min-w-0")}>
-            {content.name}
-          </span>
-          {/* The one-level wording is NOT dead defensive code, and it is not
-              the same class as the ceiling branch this round deleted from the
-              level-rules schema. That one could never fire by Zod's own
-              evaluation order, inside a single file. This one renders a shape
-              zoneBands is written and documented to produce: it spans only the
-              levels the MODEL configures, not ZONE_LEVEL_RANGES' three, so a
-              zone holding one configured level arrives here with from === to.
-              That a stored model always has all twelve rules today is an
-              invariant enforced in the backend, three layers away; the
-              alternative is a header reading "Level 3 to 3". */}
-          <span className={cn(FAMILY_COUNT_CLASS, "shrink-0")}>
-            {span.from === span.to
-              ? t("zoneSpanOne", { from: span.from })
-              : t("zoneSpan", { from: span.from, to: span.to })}
-          </span>
-          <span className={cn(FAMILY_COUNT_CLASS, "ms-auto shrink-0")}>
-            {t("roleCount", { count: roleCount })}
-          </span>
-        </div>
-        {/* The zone's character at reading measure: it is a sentence about what
-            kind of work lands here, so it obeys the reading floor rather than
-            joining the band's scanned chrome. */}
-        <p className="max-w-2xl text-muted-foreground text-sm leading-relaxed">
-          {content.character}
-        </p>
-        {/* Section 14.5's second column moved BEHIND the band's own
-            disclosure. It is an observation about who usually lands in a zone,
-            printed on a surface that is already showing exactly who did, and
-            four bands standing open made eight sentences above a ladder whose
-            job is showing where roles sit. The level-function text three rows
-            below has always been behind a press; this is the same depth and
-            now opens the same way. The label stays: the column is an
-            OBSERVATION, and run bare a list of job kinds reads as the rule for
-            who belongs here, which is the one thing it must not say. */}
-        {/* Animated, not toggled. The band's BODY animates open from the
-            ladder below, and this paragraph lives in the header ABOVE that
-            wrapper, so a bare conditional made one gesture jump the header and
-            spring the body, shoving the bands underneath instantly. Two halves
-            of one press must not move at two speeds. */}
-        <AnimatePresence initial={false}>
-          {open ? (
-            <motion.p
-              key="typical"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={SPRING}
-              className="max-w-2xl overflow-hidden text-muted-foreground text-sm leading-relaxed"
-            >
-              {/* The colon is composed HERE, not carried in the message. Every
-                other "Label: value" line in the app does it this way (the
-                stepper's measures/not-measures, the role card's motivation,
-                the picker's three suitability lines); no message key carries
-                an inline one. Punctuation in the message reads like the
-                better rule until you count the siblings. */}
+      {/* A Verve STAT ROW, not a paragraph block: the zone's letter as a
+          chip, its short name as the line, its span as a second chip, and the
+          count right-aligned. Everything here identifies or quantifies. The
+          masterdokument's own full name, the zone's character and its typical
+          profile are section 14.5's three columns and were standing here as
+          prose; they open from the help beside the name, which is what
+          deviation 11's "rendered read-only" asks for and where the reader
+          who wants them will look.
+
+          The collapse chevron to the left is not a second affordance of the
+          same kind: it shows and hides the band's ROWS. This carries the
+          band's words. One control per job. */}
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <Badge variant="outline" className="shrink-0 tabular-nums">
+          {zone}
+        </Badge>
+        <span className={cn(FAMILY_NAME_CLASS, "min-w-0 truncate")}>
+          {content.shortName}
+        </span>
+        <HelpMorphButton label={content.shortName}>
+          <span className="space-y-2">
+            <span className="block font-medium text-foreground">
+              {content.name}
+            </span>
+            <span className="block">{content.character}</span>
+            <span className="block">
               <span className="font-medium text-foreground">
                 {`${t("zoneTypicalLabel")}: `}
               </span>
               {content.typicalProfile}
-            </motion.p>
-          ) : null}
-        </AnimatePresence>
+            </span>
+          </span>
+        </HelpMorphButton>
+        {/* The one-level wording is not dead defensive code: zoneBands spans
+            only the levels the MODEL configures, not ZONE_LEVEL_RANGES'
+            three, so a zone holding one configured level arrives with
+            from === to. The alternative is a chip reading "Level 3 to 3". */}
+        <Badge variant="secondary" className="shrink-0 tabular-nums">
+          {span.from === span.to
+            ? t("zoneSpanOne", { from: span.from })
+            : t("zoneSpan", { from: span.from, to: span.to })}
+        </Badge>
+        <span className={cn(FAMILY_COUNT_CLASS, "ms-auto shrink-0")}>
+          {t("roleCount", { count: roleCount })}
+        </span>
       </div>
     </div>
   )

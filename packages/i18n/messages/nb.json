@@ -1651,7 +1651,6 @@
       "reopenCta": "Vurder på nytt"
     },
     "levels": {
-      "description": "Nivåene og rollene i hvert nivå, utledet live fra gjeldende modell og vurderinger.",
       "viewLadder": "Stige",
       "viewMatrix": "Matrise",
       "viewFamilies": "Familier",

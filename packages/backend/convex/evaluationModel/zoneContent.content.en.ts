@@ -2,8 +2,15 @@ import type { ZoneKey } from "@workspace/core"
 import type { ZonePosition } from "./zoneContent"
 
 export interface ZoneEntryContent {
-  // The zone's name without its letter: ZONE_KEYS carries the letter, and a
-  // surface that shows both would read it twice.
+  // The zone's DISPLAY name: two to four words, the form a band header wears
+  // beside its letter chip and its counts. The masterdokument's own name is
+  // `name` below and runs to a clause; a band that wore it could not also
+  // carry a span and a count on one scannable line, which is what a stat row
+  // is for. This is the one a reader meets first.
+  shortName: string
+  // The masterdokument's full name for the zone, without its letter (ZONE_KEYS
+  // carries the letter, and a surface that shows both would read it twice).
+  // Depth now: it opens from the band's help beside the short name.
   name: string
   // Section 14.5's overall character column: what the zone is.
   character: string
@@ -29,9 +36,19 @@ export interface ZoneLevelFunctionContent {
 
 export interface ZoneContent {
   zones: Record<ZoneKey, ZoneEntryContent>
-  // Four zones times three positions: one cell per level, total in both axes,
-  // so a level can never resolve to a missing text. The three functions are
-  // the same in every zone except zone A's top, which has no zone above it.
+  // Section 14.6: four zones times three positions, one cell per level, total
+  // in both axes so a level can never resolve to a missing text. The three
+  // functions are the same in every zone except zone A's top, which has no
+  // zone above it.
+  //
+  // NO CONSUMER TODAY. Each of the twelve level rows used to carry its own
+  // toggle for its cell, which is a control repeating twelve times for an
+  // answer that is really about the ZONE, and it was taken off the ladder for
+  // that reason. The content is kept on the same terms as `summary` above: it
+  // is the masterdokument's, it is authored in five locales, and a surface
+  // that wants "what are this zone's three positions" would otherwise have to
+  // re-author it. The shape test guards it so no locale can arrive without
+  // it.
   levelFunctions: Record<
     ZoneKey,
     Record<ZonePosition, ZoneLevelFunctionContent>
@@ -47,6 +64,7 @@ export interface ZoneContent {
 export const zoneContentEn: ZoneContent = {
   zones: {
     A: {
+      shortName: "Strategic leadership",
       name: "Company-wide and strategic roles",
       character:
         "Shapes the company's long-term direction, its critical choices or its overall ability to succeed.",
@@ -55,6 +73,7 @@ export const zoneContentEn: ZoneContent = {
       summary: "Strategic and company-wide impact.",
     },
     B: {
+      shortName: "Broad-impact leaders",
       name: "Leading specialist and manager roles with broad impact",
       character:
         "Has broad, lasting and often cross-functional impact on a material part of the business.",
@@ -63,6 +82,7 @@ export const zoneContentEn: ZoneContent = {
       summary: "Broad and lasting impact on a material part of the business.",
     },
     C: {
+      shortName: "Independent specialists",
       name: "Independent specialist and operational leadership roles",
       character:
         "Has independent responsibility for a clearly defined area, advanced work requirements, or impact on teams and adjacent functions.",
@@ -72,6 +92,7 @@ export const zoneContentEn: ZoneContent = {
         "Independent responsibility and advanced requirements within a clearly defined area.",
     },
     D: {
+      shortName: "Professional core",
       name: "Professional and supporting roles with more limited impact",
       character:
         "Has clear and relevant requirements, but normally a more limited reach, lower decision-making authority or more established frames.",

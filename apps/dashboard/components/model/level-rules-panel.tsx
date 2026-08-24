@@ -211,8 +211,12 @@ function LevelRulesForm({
           }
         >
           <SettingsRow
-            label={t("levelsLabel")}
-            description={t("levelsDescription")}
+            label={
+              <RowLabel
+                label={t("levelsLabel")}
+                help={t("levelsDescription")}
+              />
+            }
           >
             {/* Grouped by zone, in the zones' own words: twelve bare numbers
                 are a column of digits, and the reader who is correcting them
@@ -259,8 +263,9 @@ function LevelRulesForm({
           </SettingsRow>
 
           <SettingsRow
-            label={t("zonesLabel")}
-            description={t("zonesDescription")}
+            label={
+              <RowLabel label={t("zonesLabel")} help={t("zonesDescription")} />
+            }
           >
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {ZONE_KEYS.map((zone) => (
@@ -300,6 +305,20 @@ function LevelRulesForm({
         </SettingsFrame>
       </form>
     </Form>
+  )
+}
+
+// A settings row's label with its own depth behind it. The two rows used to
+// stand a paragraph each under their label, which on a panel that already
+// carries a title, a title help, sixteen inputs and a consequence sentence is
+// the descriptive prose the text-minimal law moves. The strings keep their
+// keys: the morph renders them, nothing was re-authored.
+function RowLabel({ label, help }: { label: string; help: string }) {
+  return (
+    <span className="flex items-center gap-1.5">
+      {label}
+      <HelpMorphButton label={label}>{help}</HelpMorphButton>
+    </span>
   )
 }
 
@@ -343,8 +362,9 @@ function LevelRulesSkeleton() {
       }
     >
       <SettingsRow
-        label={t("levelsLabel")}
-        description={t("levelsDescription")}
+        label={
+          <RowLabel label={t("levelsLabel")} help={t("levelsDescription")} />
+        }
       >
         <div className="space-y-3">
           {ZONE_KEYS.map((zone) => (
@@ -366,7 +386,11 @@ function LevelRulesSkeleton() {
           ))}
         </div>
       </SettingsRow>
-      <SettingsRow label={t("zonesLabel")} description={t("zonesDescription")}>
+      <SettingsRow
+        label={
+          <RowLabel label={t("zonesLabel")} help={t("zonesDescription")} />
+        }
+      >
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {ZONE_KEYS.map((zone) => (
             <Skeleton key={zone} className="h-9 w-full" />

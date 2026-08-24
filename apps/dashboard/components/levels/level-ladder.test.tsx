@@ -82,13 +82,22 @@ describe("LevelLadder", () => {
   // Twelve levels read flat are a list of numbers. The zone band is what says
   // levels 1-3 are one KIND of role, so it carries the zone's letter, its name
   // and its own description (masterdokument 14.5), not just a divider.
-  it("groups the levels into their zone band, named and described", () => {
+  it("names and quantifies each zone band without describing it", () => {
     renderLadder([role({ roleId: "r1", level: 1 })], false, TWELVE_LEVELS)
     const content = zoneContent("en")
     for (const zone of ZONE_KEYS) {
-      expect(screen.getByText(`Zone ${zone}`)).toBeDefined()
-      expect(screen.getByText(content.zones[zone].name)).toBeDefined()
-      expect(screen.getByText(content.zones[zone].character)).toBeDefined()
+      // A stat row: the letter as a chip, the SHORT name as the line, the span
+      // as a chip, the count right-aligned. Everything identifies or
+      // quantifies.
+      expect(screen.getByText(zone)).toBeDefined()
+      expect(screen.getByText(content.zones[zone].shortName)).toBeDefined()
+      // Section 14.5's three columns opened OUT of the band: the
+      // masterdokument's own full name, the character and the typical profile
+      // were standing prose, two paragraphs per band, four bands deep, above a
+      // ladder whose job is showing where roles sit.
+      expect(screen.queryByText(content.zones[zone].name)).toBeNull()
+      expect(screen.queryByText(content.zones[zone].character)).toBeNull()
+      expect(screen.queryByText(content.zones[zone].typicalProfile)).toBeNull()
     }
   })
 
@@ -132,7 +141,7 @@ describe("LevelLadder", () => {
     // And the lane it would have landed in reads as empty rather than as
     // holding an invisible role.
     const bandA = screen
-      .getByText(zoneContent("en").zones.A.name)
+      .getByText(zoneContent("en").zones.A.shortName)
       .closest("section") as HTMLElement
     expect(
       within(bandA).getAllByRole("img", {
@@ -167,13 +176,18 @@ describe("LevelLadder", () => {
 
   // What a level IS inside its zone (14.6): entry, established middle, or top.
   // Behind a press, so twelve standing paragraphs never bury the roles.
-  it("reveals a level's function text on request", () => {
+  // The row stands its NUMBER and its COUNT, and nothing else. Section 14.6's
+  // entry/established/upper text had its own toggle on every one of twelve
+  // rows; a control that repeats twelve times has to earn it, and what a level
+  // IS inside its zone is a question about the ZONE, asked once.
+  it("gives a level row no control of its own", () => {
     renderLadder([], false, TWELVE_LEVELS)
     const content = zoneContent("en")
     const top = levelFunction(content, 1)
+    expect(screen.queryByText(top.label)).toBeNull()
     expect(screen.queryByText(top.meaning)).toBeNull()
-    fireEvent.click(screen.getAllByText(top.label)[0] as HTMLElement)
-    expect(screen.getByText(top.meaning)).toBeDefined()
+    const row = screen.getByText("Level 1").closest("li") as HTMLElement
+    expect(within(row).queryAllByRole("button")).toHaveLength(0)
   })
 
   it("renders a lane per level without weighting numbers", () => {
