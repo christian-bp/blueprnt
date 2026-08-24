@@ -150,7 +150,7 @@ House rules apply: wizard/morph animation patterns, content-shaped skeletons per
 
 **Rating stepper:** steps 1-5 with full anchors at 1/3/5 and shared midpoint copy at 2/4; the criterion's assessment question as the step question; measures/notMeasures as collapsible context; motivation required inline at 1, 4, 5; working-conditions criteria offer "omfattas inte" (0) with its explanation. The existing firewall stays (no weights, score, or other roles). Rating is gated on an approved method, stated in words on the entry surface.
 
-**Locking is the reveal:** while rating, no results exist anywhere. Complete roles show "klar att lasa"; the lock action triggers today's rating-result reveal (score, level, zone). Unlock to re-rate is explicit and audited. The derived method-drift chip ("bedomd enligt tidigare metod") appears when `lockedAt < approvedAt`; re-locking under the current method clears it.
+**Completion is the reveal** (reworded by decision 14): while rating, no results exist anywhere. The assessment flow's FINAL act completes the assessment, and completion triggers the rating-result reveal (score, level, zone) in the same gesture; there is no separate lock errand. Reopening to re-rate is a light, audited act (the trail is the record). The derived method-drift chip ("bedomd enligt tidigare metod") appears when `completedAt < approvedAt`; re-completing under the current method clears it.
 
 **Levels surfaces:** the ladder and matrix render 12 levels grouped into the four zones with zone descriptions (§14.5.1 architecture overview). Only locked assessments place; complete-but-unlocked roles appear as "klar att lasa" in the pending list. The §14.3 numbering-direction parameter is deferred (Level 1 = highest is an app invariant; recorded in ADR-0022).
 
@@ -207,6 +207,14 @@ Each phase lands uncommitted for review, then focused commits on approval. Tests
 4. **Assessment UI:** stepper scale, motivation, lock/reveal, gates, role-page states.
 5. **Results:** 12-level ladder/matrix with zones, calibration queue, anchor deviations, pay-mapping touchpoints.
 6. **Content closure:** docs MDX + `docs:sync` + `docs:eval`, metodbilaga, help texts, assistant pass, ADR finalization, full browser verification.
+
+### Decision 14: "låsning" means completion, not a lock (2026-08-24, author clarification)
+
+The masterdokument's author (Karl) clarified that "låsning" was never meant literally: *"Jag tror nog att ordet låsning tas för ordagrant... syftet va nog mer att fastställa, godkänna, vara klar"*; the owner and the author agreed the act belongs as *"godkännandet i sista steget av bedömningen"*. Consequences, per no-legacy:
+- **The completion act merges into the assessment flow's final step**: finishing the last criterion offers "complete the assessment" as the flow's own ending; completing reveals the result in the same gesture. The separate lock errand on the role page retires.
+- **Reopening is light**: re-evaluating is a one-click audited act with a toast, no confirm ceremony; the audit trail is the record (the author's explicit answer to "räcker ändringsloggen?" was yes).
+- **The vocabulary renames end to end**: `lockedAt/lockedBy` -> `completedAt/completedBy`, `lockAssessment` -> `completeAssessment`, `unlockAssessment` -> `reopenAssessment`, audit events `role.assessmentLocked/Unlocked` -> `role.assessmentCompleted/Reopened` with fresh five-locale labels, UI copy from the lås family to the slutför/omvärdera families, the glossary term Låst bedömning -> Slutförd bedömning (kod: completed). §3.2's sequencing invariant is untouched: weights apply only after completion, and no result renders before it.
+- **The author's audit-filter wish** (view only assessment changes in the log) is satisfied today by the log's role category filter; a finer per-event filter is noted for later, not built.
 
 ### 10.1 Fasning v2 (decision 13, 2026-08-23; replans phases 4-6 after the phase-3 closing review and the Verve shell migration)
 
