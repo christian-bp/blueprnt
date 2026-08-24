@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-08-24-role-evaluation-phase-5-results.md
+  s_58dd112dc09435::t_fe6aa5f23d47e7 1-111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "5eca5e9ceaa390bfaafc9fd118601606f029c7e5",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
