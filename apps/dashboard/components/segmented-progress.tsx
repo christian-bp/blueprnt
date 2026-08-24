@@ -44,6 +44,7 @@ export function SegmentedProgress({
   renderTitle,
   renderCount,
   celebrateOnComplete,
+  inputReady = true,
 }: {
   // The bar always shows the WHOLE journey, whichever page it is on, so its
   // accessible name says so rather than borrowing the heading's.
@@ -74,6 +75,15 @@ export function SegmentedProgress({
   // kartläggning's analysis spine stays as it was, and only a section that
   // opts in (the model spine) gets the burst.
   celebrateOnComplete?: boolean
+  // Whether the numbers above are the REAL ones yet, or a placeholder the
+  // caller substitutes while its query is still in flight. Only meaningful
+  // together with celebrateOnComplete, and only ever used to decide when the
+  // completeness baseline may be taken; the bar itself renders whatever it is
+  // handed, exactly as before.
+  //
+  // Defaults to true, so a caller that always has its data passes nothing and
+  // behaves exactly as it did.
+  inputReady?: boolean
 }) {
   const pct = total <= 0 ? 0 : Math.round((done / total) * 100)
 
@@ -92,6 +102,19 @@ export function SegmentedProgress({
 
   useEffect(() => {
     if (!celebrateOnComplete) return
+    // Nothing is recorded, and nothing can cross, while the input is still
+    // assembling. A section shell substitutes an empty progress input for its
+    // query's loading frame (model-section-shell.tsx), so on ANY navigation
+    // every segment renders incomplete for a frame and then complete once the
+    // data lands. Baselining on that first frame turned arriving at a
+    // finished chapter into a false crossing, and the bar celebrated a
+    // completion that had happened days earlier.
+    //
+    // Skipping instead of baselining is what makes it safe: the map keeps no
+    // entry for a segment seen only while loading, so the first READY render
+    // baselines it as `undefined` rather than `false`, and the crossing rule
+    // below (strictly `false`) cannot fire on it.
+    if (!inputReady) return
     const wasComplete = wasCompleteRef.current
     const justCompleted: string[] = []
     for (const segment of segments) {
@@ -114,7 +137,7 @@ export function SegmentedProgress({
         return next
       })
     }
-  }, [celebrateOnComplete, segments])
+  }, [celebrateOnComplete, inputReady, segments])
 
   return (
     // Equally wide chapters: a guided section's chapters are its stations,

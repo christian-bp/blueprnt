@@ -94,6 +94,12 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
                 // celebration a finished to-do card does. The kartläggning's
                 // analysis section does not opt in.
                 celebrateOnComplete
+                // The one query this section's whole progress derives from.
+                // While it is in flight the input above is a placeholder with
+                // no checks, so every chapter reads incomplete; saying so here
+                // is what stops arriving at a finished chapter counting as
+                // finishing it.
+                inputReady={data !== undefined}
                 done={overall.done}
                 renderTitle={(segment) =>
                   nameFor.get(segment.key) ?? segment.key

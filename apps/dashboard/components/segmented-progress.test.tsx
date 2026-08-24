@@ -242,6 +242,81 @@ describe("SegmentedProgress celebration", () => {
     })
   })
 
+  // The walkthrough's bug: navigating to an ALREADY-FINISHED chapter played
+  // the burst. The section shell substitutes an empty progress input while its
+  // one query is in flight, so every segment renders incomplete for a frame
+  // and complete the next, which is a false crossing on every navigation.
+  // Staged exactly as the shell stages it: first frame the loading
+  // placeholder, second frame the real numbers.
+  it("never fires when the input only assembles across frames on arrival", async () => {
+    const { container, rerender } = renderBar({
+      done: 0,
+      total: 0,
+      segments: [{ key: "only", done: 0, total: 0 }],
+      celebrateOnComplete: true,
+      inputReady: false,
+    })
+    rerender(
+      <SegmentedProgress
+        barLabel="Overall progress"
+        done={4}
+        total={4}
+        renderCount={(segment) => `${segment.done} of ${segment.total}`}
+        renderTitle={(segment) => segment.key}
+        segments={oneSegment(4)}
+        celebrateOnComplete
+        inputReady
+      />
+    )
+    // Given a frame to fire in, so a pass means it did not fire rather than
+    // that the assertion ran first.
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(container.querySelector(BURST)).toBeNull()
+  })
+
+  // And the real thing still bursts: once the input is loaded and stable, a
+  // segment crossing false -> true is a completion the reader just caused.
+  it("still fires for a real crossing after the input has settled", async () => {
+    const { container, rerender } = renderBar({
+      done: 0,
+      total: 0,
+      segments: [{ key: "only", done: 0, total: 0 }],
+      celebrateOnComplete: true,
+      inputReady: false,
+    })
+    const render1 = (
+      <SegmentedProgress
+        barLabel="Overall progress"
+        done={1}
+        total={4}
+        renderCount={(segment) => `${segment.done} of ${segment.total}`}
+        renderTitle={(segment) => segment.key}
+        segments={oneSegment(1)}
+        celebrateOnComplete
+        inputReady
+      />
+    )
+    rerender(render1)
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(container.querySelector(BURST)).toBeNull()
+
+    rerender(
+      <SegmentedProgress
+        barLabel="Overall progress"
+        done={4}
+        total={4}
+        renderCount={(segment) => `${segment.done} of ${segment.total}`}
+        renderTitle={(segment) => segment.key}
+        segments={oneSegment(4)}
+        celebrateOnComplete
+        inputReady
+      />
+    )
+    await waitFor(() => {
+      expect(container.querySelector(BURST)).not.toBeNull()
+    })
+  })
+
   it("never fires for a segment that is already complete on mount", () => {
     const { container } = renderBar({
       done: 4,
