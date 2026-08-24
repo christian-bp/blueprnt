@@ -1664,7 +1664,7 @@
       "zoneLabel": "Zone {zone}",
       "zoneSpan": "Niveau {from} til {to}",
       "zoneSpanOne": "Niveau {from}",
-      "zoneTypicalLabel": "Typisk her:",
+      "zoneTypicalLabel": "Typisk her",
       "showZone": "Vis niveauerne i zone {zone}",
       "hideZone": "Skjul niveauerne i zone {zone}",
       "calibration": {
@@ -1690,7 +1690,7 @@
         "class": {
           "profileLimited": "Holdt tilbage af et profilkrav",
           "anchorDeviation": "Afviger fra en ankerrolle",
-          "staleLock": "Bedømt efter en tidligere metode"
+          "staleMethod": "Bedømt efter en tidligere metode"
         },
         "showMore": "Vis {count} flere",
         "showFewer": "Vis færre"

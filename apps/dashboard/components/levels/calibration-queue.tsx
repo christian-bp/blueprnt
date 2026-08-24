@@ -264,9 +264,9 @@ function QueueRow({
           <Button type="button" size="sm" onClick={onConfirm}>
             {t("confirmCta")}
           </Button>
-        ) : reason === "staleLock" ? (
-          // Answered by re-locking under the current method, which happens on
-          // the role's own assessment.
+        ) : reason === "staleMethod" ? (
+          // Answered by completing the assessment again under the current
+          // method, which happens on the role's own assessment.
           <Link
             href={`/roles/${row.slug}/rate`}
             className={cn(buttonVariants({ variant: "outline", size: "sm" }))}

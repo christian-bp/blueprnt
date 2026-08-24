@@ -1,15 +1,15 @@
 import { ZONE_LEVEL_RANGES, zoneForLevel } from "@workspace/core"
 import { clampLocale, type ProductContentLocale } from "./localize"
-import { zoneContentDa } from "./zoneContent.da"
+import { zoneContentDa } from "./zoneContent.content.da"
 import {
   type ZoneContent,
   type ZoneEntryContent,
   zoneContentEn,
   type ZoneLevelFunctionContent,
-} from "./zoneContent.en"
-import { zoneContentFi } from "./zoneContent.fi"
-import { zoneContentNb } from "./zoneContent.nb"
-import { zoneContentSv } from "./zoneContent.sv"
+} from "./zoneContent.content.en"
+import { zoneContentFi } from "./zoneContent.content.fi"
+import { zoneContentNb } from "./zoneContent.content.nb"
+import { zoneContentSv } from "./zoneContent.content.sv"
 
 // The words for the four-zone, twelve-level architecture (the
 // masterdokument's sections 14.5 and 14.6). The geometry itself is structural

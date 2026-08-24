@@ -4,6 +4,8 @@ import {
   type MethodCheckCriterion,
   type MethodCheckInput,
   methodBlockersPass,
+  MIN_STEP_CEILING,
+  MIN_STEP_FLOOR,
   SCORE_SCALE_MAX,
   validateMethod,
   type WeightPoints,
@@ -495,8 +497,6 @@ export const setWorkingConditionsDecision = orgMutation({
 // convenience and this the authority.
 const MIN_SCORE_FLOOR = 0
 const MIN_SCORE_CEILING = SCORE_SCALE_MAX
-const MIN_STEP_FLOOR = 1
-const MIN_STEP_CEILING = 5
 
 function assertInRange(
   values: readonly number[],

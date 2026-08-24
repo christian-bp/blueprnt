@@ -1,4 +1,4 @@
-import type { ZoneContent } from "./zoneContent.en"
+import type { ZoneContent } from "./zoneContent.content.en"
 
 // Norwegian Bokmål content for the zone and level descriptions (the
 // masterdokument's sections 14.5 and 14.6). Translated from zoneContentSv

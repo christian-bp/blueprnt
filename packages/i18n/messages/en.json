@@ -1664,7 +1664,7 @@
       "zoneLabel": "Zone {zone}",
       "zoneSpan": "Level {from} to {to}",
       "zoneSpanOne": "Level {from}",
-      "zoneTypicalLabel": "Typically here:",
+      "zoneTypicalLabel": "Typically here",
       "showZone": "Show the levels in zone {zone}",
       "hideZone": "Hide the levels in zone {zone}",
       "calibration": {
@@ -1690,7 +1690,7 @@
         "class": {
           "profileLimited": "Held back by a profile requirement",
           "anchorDeviation": "Differs from an anchor role",
-          "staleLock": "Assessed under an earlier method"
+          "staleMethod": "Assessed under an earlier method"
         },
         "showMore": "Show {count} more",
         "showFewer": "Show fewer"

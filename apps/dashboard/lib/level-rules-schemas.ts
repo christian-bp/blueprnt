@@ -1,4 +1,10 @@
-import { LEVEL_COUNT, SCORE_SCALE_MAX, ZONE_KEYS } from "@workspace/core"
+import {
+  LEVEL_COUNT,
+  MIN_STEP_CEILING,
+  MIN_STEP_FLOOR,
+  SCORE_SCALE_MAX,
+  ZONE_KEYS,
+} from "@workspace/core"
 import { z } from "zod"
 import type { ValidationT } from "@/lib/validation"
 
@@ -19,14 +25,6 @@ import type { ValidationT } from "@/lib/validation"
 //   - level 1 never opens above 100, the scale's own ceiling;
 //   - zone minSteps never rise as the zones descend A -> D: a lower zone may
 //     not be gated harder than a higher one.
-
-// The zone gate is a STEP on the 0-5 rating scale, so it is bounded by that
-// scale rather than by anything the engine exports: the engine places no bound
-// on minStep at all. Exported because the number input that collects it must
-// carry the same bounds, and a form whose min/max disagreed with its schema
-// would refuse a value it had just offered.
-export const MIN_STEP_FLOOR = 1
-export const MIN_STEP_CEILING = 5
 
 export interface LevelRulesMessages {
   decreasing: string

@@ -8,6 +8,7 @@ import {
   type ZoneProfileRule,
   computeResults,
 } from "@workspace/core"
+import type { Doc } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
 import { LIBRARY_DIMENSION } from "../evaluationModel/criteriaLibrary"
 import {
@@ -36,6 +37,13 @@ export interface ResultInputs {
   thresholds: LevelThreshold[]
   zoneProfileRules: ZoneProfileRule[]
   roles: RoleRatings[]
+  // The ACTIVE role documents these RoleRatings were built from, in the same
+  // order. The engine only needs the ratings, but a caller that also has to
+  // name a role (its title, slug, family) would otherwise collect the whole
+  // table a second time in the same transaction to get fields this read has
+  // already paid for. getConsequenceAnalysis did exactly that, on the branch's
+  // hottest new read, which is the cost the extraction existed to remove.
+  activeRoles: Doc<"roles">[]
   // The live criteria rows' library keys, by criterion id. The buffer
   // identifies its criteria by libraryKey (ids are not part of the evidence),
   // so a caller re-scoring under it needs the mapping back to the ids the
@@ -113,6 +121,7 @@ export async function readResultInputs(
     thresholds,
     zoneProfileRules,
     roles,
+    activeRoles,
     libraryKeyById: new Map(
       criteriaRows.map((row) => [row._id as string, row.libraryKey as string])
     ),

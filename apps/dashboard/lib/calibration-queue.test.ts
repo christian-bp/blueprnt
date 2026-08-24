@@ -85,7 +85,7 @@ describe("calibrationQueue", () => {
   // Class 3: the method moved on after the assessment was locked.
   it("queues a role locked under a superseded method", () => {
     const queue = calibrationQueue([role({ methodDrift: true })])
-    expect(queue[0]?.reason).toBe("staleLock")
+    expect(queue[0]?.reason).toBe("staleMethod")
   })
 
   // Calibrating does NOT clear a stale lock: re-locking is what does, so the
@@ -94,7 +94,7 @@ describe("calibrationQueue", () => {
     const queue = calibrationQueue([
       role({ methodDrift: true, calibrated: true }),
     ])
-    expect(queue[0]?.reason).toBe("staleLock")
+    expect(queue[0]?.reason).toBe("staleMethod")
   })
 
   // Only a revealed placement can be reviewed: an unlocked role has no

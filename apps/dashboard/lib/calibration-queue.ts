@@ -12,7 +12,7 @@ import type { LevelRoleRow } from "@/lib/levels"
 export type CalibrationReason =
   | "profileLimited"
   | "anchorDeviation"
-  | "staleLock"
+  | "staleMethod"
 
 export interface ProfileFailure {
   criterionId: string
@@ -45,20 +45,21 @@ export interface CalibrationInput extends LevelRoleRow {
 }
 
 // One row per role, in the order the classes are listed below. A role can
-// satisfy more than one condition (a stale lock whose placement was also
+// satisfy more than one condition (a stale method whose placement was also
 // capped); it appears ONCE, under the first condition that holds, because the
 // queue is a list of things to do and the same role listed three times would
 // read as three roles. The order is the order of consequence: a capped
 // placement is a claim about the role's level, a deviating anchor is a claim
-// about the model's calibration, and a stale lock is a claim about neither
-// until it is re-locked.
+// about the model's calibration, and a stale method is a claim about neither
+// until the assessment is completed again.
 export function calibrationQueue(
   rows: readonly CalibrationInput[]
 ): CalibrationRow[] {
   const queue: CalibrationRow[] = []
   for (const row of rows) {
-    // Only a locked, placed role can be calibrated: an unlocked role has no
-    // revealed placement to confirm, and the reveal is the lock (spec 2.4/6).
+    // Only a completed, placed assessment can be calibrated: one still open
+    // has no revealed placement to confirm, and completing IS the reveal
+    // (spec 2.4/6).
     if (!row.completed || row.level === null) continue
 
     if (row.profileLimited === true && !row.calibrated) {
@@ -82,7 +83,7 @@ export function calibrationQueue(
     if (row.methodDrift) {
       queue.push({
         row,
-        reason: "staleLock",
+        reason: "staleMethod",
         failures: [],
         expectedLevel: null,
       })
@@ -103,7 +104,7 @@ export function calibrationQueue(
 export const CALIBRATION_CLASSES = [
   "profileLimited",
   "anchorDeviation",
-  "staleLock",
+  "staleMethod",
 ] as const satisfies readonly CalibrationReason[]
 
 export interface CalibrationClass {

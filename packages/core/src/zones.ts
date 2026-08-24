@@ -20,6 +20,19 @@ export const LEVEL_COUNT = 12
 // have to.
 export const SCORE_SCALE_MAX = 100
 
+// The bounds of a zone's profile requirement.
+//
+// A minStep is a rating on a PROFILE criterion, and profile criteria are the
+// weight-4-or-5 ones that are NOT working conditions, so their ratings run 1
+// to 5: assertValidRatingValue's 0 exists only for a working-conditions
+// criterion, which by definition is never a profile criterion. The engine
+// itself places no bound on minStep, so these are the SCALE's bounds rather
+// than a rule of the placement, and they live here because the client's form
+// gate and the backend's own re-validation both need them and had drifted into
+// disagreeing about which scale they came from.
+export const MIN_STEP_FLOOR = 1
+export const MIN_STEP_CEILING = 5
+
 // from = the zone's highest level, to = its lowest.
 export const ZONE_LEVEL_RANGES: Record<ZoneKey, { from: number; to: number }> =
   {

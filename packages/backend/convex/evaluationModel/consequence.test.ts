@@ -612,10 +612,17 @@ describe("getConsequenceAnalysis reads", () => {
     },
   ]
 
-  // The audited total: 5 in consequence.ts (models, roles, roleFamilies,
-  // people, personAssignments) + 4 in readResultInputs (models, criteria,
-  // roles, ratings). Both models reads hit the same document; keeping them
-  // separate costs one indexed lookup and keeps readResultInputs usable alone.
+  // The audited total: 4 in consequence.ts (models, roleFamilies, people,
+  // personAssignments) + 4 in readResultInputs (models, criteria, roles,
+  // ratings). Both models reads hit the same document; keeping them separate
+  // costs one indexed lookup and keeps readResultInputs usable alone.
+  //
+  // It was NINE. consequence.ts collected the roles table a second time,
+  // because it needs a title, a slug and a family id and readResultInputs
+  // returned only the RoleRatings it had built from those same rows. It
+  // returns the rows too now, so the hottest read this query makes is paid for
+  // once. That the count dropped rather than the assertions changing is the
+  // evidence the two collects really were the same set.
   //
   // Counted as `ctx.db` OCCURRENCES rather than by matching indentation. The
   // first version of this guard tested for `ctx.db.` at the start of a deeply
@@ -624,12 +631,12 @@ describe("getConsequenceAnalysis reads", () => {
   // `ctx.db.` appears zero times in either file and a read planted inside the
   // movers loop sailed past it. Counting every `ctx.db` catches a read of any
   // kind, in a loop or out of one, and cannot be defeated by formatting.
-  it("touches the database exactly nine times, and nowhere else", () => {
+  it("touches the database exactly eight times, and nowhere else", () => {
     const total = sources.reduce(
       (sum, source) => sum + (source.body.match(/ctx\.db/g) ?? []).length,
       0
     )
-    expect(total).toBe(9)
+    expect(total).toBe(8)
   })
 
   // Per query, not in aggregate: one query carrying two withIndex calls used to

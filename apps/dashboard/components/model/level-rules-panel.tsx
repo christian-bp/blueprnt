@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
   LEVEL_COUNT,
+  MIN_STEP_CEILING,
+  MIN_STEP_FLOOR,
   SCORE_SCALE_MAX,
   ZONE_KEYS,
   type ZoneKey,
@@ -30,8 +32,6 @@ import { newGestureId } from "@/lib/gesture"
 import {
   type LevelRulesValues,
   makeLevelRulesSchema,
-  MIN_STEP_CEILING,
-  MIN_STEP_FLOOR,
 } from "@/lib/level-rules-schemas"
 import { numberInputField } from "@/lib/number-field"
 import { zoneHeading, zoneLevels } from "@/lib/zone-bands"

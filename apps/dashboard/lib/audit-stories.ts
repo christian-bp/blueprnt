@@ -107,9 +107,16 @@ export function auditStories<Row extends StoryRow>(
   const stories: AuditStory<Row>[] = []
   for (const row of rows) {
     const previous = stories[stories.length - 1]
-    // Compared against the STORY's own id, never against the lead's: the lead
-    // is reassigned every time a row joins, so reading the id off it would make
-    // a correct invariant look accidental.
+    // Compared against the STORY's own id, never against the lead's.
+    //
+    // The two are EQUAL by construction, and deliberately so: every row in a
+    // story shares the gesture id that let it join, so whichever row leadIndex
+    // picks carries the same id the story was opened with. Reading it off the
+    // story is therefore not a behaviour choice and no test can distinguish
+    // the two; it is the choice that keeps the equality something leadIndex
+    // cannot quietly break, since the lead is reassigned every time a row
+    // joins. Said plainly here because the comment used to claim this was a
+    // live invariant, which sent a reviewer looking for the test that pins it.
     const joins =
       grouped &&
       previous !== undefined &&

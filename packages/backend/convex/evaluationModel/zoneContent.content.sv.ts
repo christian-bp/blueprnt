@@ -1,4 +1,4 @@
-import type { ZoneContent } from "./zoneContent.en"
+import type { ZoneContent } from "./zoneContent.content.en"
 
 // Swedish content for the zone and level descriptions (the masterdokument's
 // sections 14.5 and 14.6). Swedish is the substance source locale: the zone

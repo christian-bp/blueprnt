@@ -1664,7 +1664,7 @@
       "zoneLabel": "Vyöhyke {zone}",
       "zoneSpan": "Vaativuustaso {from}-{to}",
       "zoneSpanOne": "Vaativuustaso {from}",
-      "zoneTypicalLabel": "Tyypillisesti täällä:",
+      "zoneTypicalLabel": "Tyypillisesti täällä",
       "showZone": "Näytä vyöhykkeen {zone} vaativuustasot",
       "hideZone": "Piilota vyöhykkeen {zone} vaativuustasot",
       "calibration": {
@@ -1690,7 +1690,7 @@
         "class": {
           "profileLimited": "Profiilivaatimus rajoitti",
           "anchorDeviation": "Poikkeaa ankkuriroolista",
-          "staleLock": "Arvioitu aiemmalla menetelmällä"
+          "staleMethod": "Arvioitu aiemmalla menetelmällä"
         },
         "showMore": "Näytä {count} lisää",
         "showFewer": "Näytä vähemmän"

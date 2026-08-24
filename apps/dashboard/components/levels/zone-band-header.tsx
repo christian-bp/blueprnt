@@ -104,9 +104,15 @@ export function ZoneBandHeader({
             who belongs here, which is the one thing it must not say. */}
         {open && (
           <p className="max-w-2xl text-muted-foreground text-sm leading-relaxed">
+            {/* The colon is composed HERE, not carried in the message. Every
+                other "Label: value" line in the app does it this way (the
+                stepper's measures/not-measures, the role card's motivation,
+                the picker's three suitability lines); no message key carries
+                an inline one. Punctuation in the message reads like the
+                better rule until you count the siblings. */}
             <span className="font-medium text-foreground">
-              {t("zoneTypicalLabel")}
-            </span>{" "}
+              {`${t("zoneTypicalLabel")}: `}
+            </span>
             {content.typicalProfile}
           </p>
         )}

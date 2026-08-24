@@ -290,15 +290,17 @@ export const getConsequenceAnalysis = orgQuery({
       roles: inputs.roles,
     })
 
-    // Only LOCKED roles carry a placement anyone has seen (lock-as-reveal), so
-    // only they can move in the reader's terms. An unlocked role's numbers
-    // exist in the engine and nowhere else.
-    const roleRows = await ctx.db
-      .query("roles")
-      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
-      .collect()
-    const lockedRoles = roleRows.filter(
-      (role) => role.archivedAt === undefined && role.assessment !== undefined
+    // Only COMPLETED assessments carry a placement anyone has seen (completion
+    // is the reveal), so only they can move in the reader's terms. The numbers
+    // of an assessment still open exist in the engine and nowhere else.
+    //
+    // Read off readResultInputs rather than collected again: this query runs on
+    // every render of the approval chapter, on top of two whole-org engine
+    // passes and three more org-wide collects, and it was paying for the roles
+    // table twice in one transaction. readResultInputs already holds the active
+    // rows and used to throw them away after building its RoleRatings.
+    const completedRoles = inputs.activeRoles.filter(
+      (role) => role.assessment !== undefined
     )
     const nowLevel = levelByRole(nowResults)
     const approvedLevel = levelByRole(approvedResults)
@@ -361,7 +363,7 @@ export const getConsequenceAnalysis = orgQuery({
     let placed = 0
     let losing = 0
     let gaining = 0
-    for (const role of lockedRoles) {
+    for (const role of completedRoles) {
       const id = role._id as string
       const to = nowLevel.get(id) ?? null
       const from = approvedLevel.get(id) ?? null
@@ -415,7 +417,7 @@ export const getConsequenceAnalysis = orgQuery({
       return a.title.localeCompare(b.title)
     })
 
-    const lockedIds = new Set(lockedRoles.map((role) => role._id as string))
+    const lockedIds = new Set(completedRoles.map((role) => role._id as string))
     const nowZones = zoneCounts(nowResults, lockedIds)
     const approvedZones = zoneCounts(approvedResults, lockedIds)
 

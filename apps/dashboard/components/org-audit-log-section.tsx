@@ -1,8 +1,7 @@
 "use client"
 
 import { Medallion } from "@/components/medallion"
-import { ArrowDown01Icon, Audit02Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { Audit02Icon } from "@hugeicons/core-free-icons"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -43,6 +42,7 @@ import { useQuery } from "convex/react"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { Fragment, type ReactNode, useEffect, useRef, useState } from "react"
 import type { DateRange } from "react-day-picker"
+import { DisclosureChevron } from "@/components/disclosure-toggle"
 import { TableSearchField } from "@/components/table-search-field"
 import { auditStories } from "@/lib/audit-stories"
 import { FrameTable, FrameTableFooter } from "@/components/frame-table"
@@ -706,17 +706,10 @@ function AuditLogRow({
               chevron, so an ordinary row's action text starts at the same x as
               a story's and the column does not jog as stories open and close. */}
           <span className="flex size-4 shrink-0 items-center justify-center">
-            {isSummary ? (
-              <HugeiconsIcon
-                icon={ArrowDown01Icon}
-                strokeWidth={2}
-                aria-hidden="true"
-                className={cn(
-                  "size-3.5 transition-transform motion-reduce:transition-none",
-                  expanded === true && "rotate-180"
-                )}
-              />
-            ) : null}
+            {/* The shared glyph, not a second copy of its spec: this row
+                cannot use DisclosureToggle because the whole <TableRow> is
+                already the button and a nested <button> would be invalid. */}
+            {isSummary ? <DisclosureChevron open={expanded === true} /> : null}
           </span>
           <span className="truncate">{action}</span>
           {isSummary ? (
