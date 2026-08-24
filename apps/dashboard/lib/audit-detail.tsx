@@ -289,6 +289,17 @@ export function payloadProvenance(
 // Ordered via FIELD_DISPLAY_ORDER so the read is stable regardless of stored key
 // order (Convex does not guarantee object key order on read of a v.any() payload).
 // Booleans are excluded: a provenance flag is not a stat.
+// The payload booleans that are the event's own CONTENT rather than a flag
+// about the write. Most payload booleans are the latter (created, applied,
+// profileClearedByRename), and a "Created: Yes" row on every sheet is noise,
+// so payloadStats drops booleans by default. These are the exceptions, and
+// they must be declared: the dense table cell already renders noteProvided as
+// a marker (detailText's role.assessmentCalibrated case), and the audit law
+// binds the cell AND the sheet, so a fact good enough for one is owed to the
+// other. An allowlist rather than a rule, because "is this boolean content or
+// bookkeeping" is a judgement per field that only the event's author can make.
+export const CONTENT_BOOLEAN_FIELDS = ["noteProvided"] as const
+
 export function payloadStats(
   payload: unknown,
   // Localizes a coded string stat value (e.g. platform.membershipGranted's
@@ -296,9 +307,17 @@ export function payloadStats(
   valueLabel?: (field: string, value: string) => string | undefined,
   // Fields an event renders elsewhere (its subject line, say), so the same
   // value is never stated twice in one row.
-  exclude: readonly string[] = []
+  exclude: readonly string[] = [],
+  // Localizes a CONTENT_BOOLEAN_FIELDS value to Yes/No. Without it those
+  // fields stay dropped, so a caller that has no boolean vocabulary renders
+  // exactly what it did before rather than a raw "true".
+  boolLabel?: (value: boolean) => string
 ): Array<{ field: string; value: string }> {
   const p = (payload ?? {}) as Record<string, unknown>
+  const isContentBoolean = (key: string, value: unknown) =>
+    typeof value === "boolean" &&
+    boolLabel !== undefined &&
+    (CONTENT_BOOLEAN_FIELDS as readonly string[]).includes(key)
   const stats = Object.entries(p)
     .filter(
       ([key, value]) =>
@@ -306,13 +325,18 @@ export function payloadStats(
         !key.endsWith("Id") &&
         key !== "source" &&
         !exclude.includes(key) &&
-        (typeof value === "string" || typeof value === "number")
+        (typeof value === "string" ||
+          typeof value === "number" ||
+          isContentBoolean(key, value))
     )
     .map(([field, value]) => ({
       field,
       value:
-        (typeof value === "string" ? valueLabel?.(field, value) : undefined) ??
-        formatAuditValue(value),
+        typeof value === "boolean"
+          ? (boolLabel?.(value) ?? formatAuditValue(value))
+          : ((typeof value === "string"
+              ? valueLabel?.(field, value)
+              : undefined) ?? formatAuditValue(value)),
     }))
   return orderEntries(stats)
 }

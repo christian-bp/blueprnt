@@ -822,7 +822,10 @@ function AuditDetailSheet({
   // Flat-stats events (people.imported, classification.suggested) carry no
   // `changes` map; their scalar counts render as a labeled card, not a raw dump.
   // Only when there are no field changes, so a diff event never doubles up.
-  const stats = entries.length > 0 ? [] : payloadStats(row.payload, valueLabel)
+  const stats =
+    entries.length > 0
+      ? []
+      : payloadStats(row.payload, valueLabel, [], boolLabel)
 
   // Whether any of the structured groups produced renderable content; the
   // one-line summary / no-changes note is only a final fallback when not.

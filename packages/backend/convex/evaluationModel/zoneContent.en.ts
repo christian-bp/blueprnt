@@ -10,8 +10,13 @@ export interface ZoneEntryContent {
   // Section 14.5's typical role profile column: the kinds of role that
   // normally land here, never a rule about which role belongs where.
   typicalProfile: string
-  // Section 14.5.1's short character line for the architecture overview,
-  // where the full line does not fit.
+  // Section 14.5.1's short character line for the architecture overview: the
+  // one surface that shows all four zones at once, where `character` is too
+  // long to sit in a zone's cell. That surface is a fas-6 deliverable and does
+  // not exist yet, so this field is authored and has no consumer today. It is
+  // kept rather than dropped because the content is section 14.5.1's and would
+  // otherwise have to be re-authored in five locales when the overview lands;
+  // the shape test guards it so no locale can arrive without it.
   summary: string
 }
 

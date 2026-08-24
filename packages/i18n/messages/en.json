@@ -1669,6 +1669,7 @@
       "zoneLabel": "Zone {zone}",
       "zoneSpan": "Level {from} to {to}",
       "zoneSpanOne": "Level {from}",
+      "zoneTypicalLabel": "Typically here:",
       "showZone": "Show the levels in zone {zone}",
       "hideZone": "Hide the levels in zone {zone}",
       "levelFunctionToggle": "What this level is",
@@ -2095,8 +2096,8 @@
           "anchorsComplete": "A criterion is missing steps on its evaluation scale. Remove it and choose it again in <link>{chapter}</link>.",
           "documentationComplete": "{count, plural, =1 {# criterion is} other {# criteria are}} still undocumented or unapproved. Open Document on each in <link>{chapter}</link>.",
           "weightBudget": "The weight points do not add up to the budget. Balance them and save in <link>{chapter}</link>.",
-          "levelRulesValid": "The model's level thresholds are not a valid 1 to 12 scale. This cannot be corrected in the app yet.",
-          "zoneProfileMonotonic": "The model's zone profile rules are not consistent. This cannot be corrected in the app yet.",
+          "levelRulesValid": "The model's level thresholds are not a valid 1 to 12 scale. Correct them in Level thresholds, below this checklist.",
+          "zoneProfileMonotonic": "The model's zone profile rules are not consistent. Correct them in Level thresholds, below this checklist.",
           "dimensionWeightBalance": "{dimensions} carries a dominant share of the weighting with no recorded reason. Motivate it in <link>{chapter}</link>, or move weight points to another dimension.",
           "peopleLeadershipWeight": "{criterion} carries a heavy weight with no recorded reason. Motivate it in <link>{chapter}</link>, or lower its weight points.",
           "overlapPairs": "Overlapping criteria: {pairs}. Note the overlap on either criterion of a pair in <link>{chapter}</link>."

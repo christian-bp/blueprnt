@@ -183,25 +183,110 @@ describe("RatePage (lock-as-reveal)", () => {
     expect(requestedRefs).not.toContain("evaluationModel.model.getModel")
   })
 
-  // The zones are the RESULT side of the wall. An assessor rates a role
-  // against its anchors; where the role would land is the thing the whole
-  // blind-rating design exists to keep out of that judgement, so no zone name,
-  // no zone letter and no zone description may reach this route in any of its
-  // states. Asserted against the real content, in every locale the app ships,
-  // rather than against a word list someone has to remember to extend.
-  it("shows no zone anywhere on the assessor's route", async () => {
-    const { container } = await renderPage()
-    const rendered = container.textContent ?? ""
-    for (const locale of ["en", "sv", "nb", "da", "fi"]) {
-      const content = zoneContent(locale)
-      for (const zone of ZONE_KEYS) {
-        expect(rendered).not.toContain(content.zones[zone].name)
-        expect(rendered).not.toContain(content.zones[zone].character)
-        expect(rendered).not.toContain(content.zones[zone].summary)
+  // The zones are the RESULT side of the wall, and the wall has three
+  // different heights that this file must not blur together:
+  //
+  //  - the WEIGHTING is kept off the wire entirely (the sibling test above):
+  //    an assessor who could read how much each criterion counts is no longer
+  //    rating against the anchors.
+  //  - the score and the level ARE revealed, but only once the assessment is
+  //    locked. That is the whole lock-as-reveal design, not a leak.
+  //  - the ZONE is on the wire whenever the result is (the firewall protects
+  //    the assessment ACT, which locking ends), and never RENDERS here. Where
+  //    the role lands as a KIND OF WORK is a judgement the assessor must not
+  //    be anchored by, before locking or after it, and the reveal has no
+  //    reason to name it: the level is the answer, the zone is the model's
+  //    grouping of levels and belongs on the surfaces that show all twelve.
+  //
+  // So this asserts a RENDER claim, across every state the route has, against
+  // the real content in every locale the app ships rather than a word list
+  // someone has to remember to extend. The fixture the reveal runs on carries
+  // a real zone for the same reason: on the old `zone: null` fixture no
+  // data-driven render of a zone could have failed this test.
+  it("shows no zone anywhere on the assessor's route, in any state", async () => {
+    const answered = [
+      {
+        criterionId: "c-scope",
+        name: "Scope",
+        weightPoints: 3,
+        value: 3,
+        motivation: null,
+      },
+    ]
+    const states: {
+      state: string
+      result: Record<string, unknown>
+      role?: Record<string, unknown>
+    }[] = [
+      { state: "draft", result: {} },
+      {
+        state: "complete, awaiting lock",
+        result: { complete: true, ratedCount: 1 },
+        role: {
+          ratedCount: 1,
+          ratings: [{ criterionId: "c-scope", value: 3, motivation: null }],
+        },
+      },
+      {
+        state: "locked reveal",
+        result: {
+          complete: true,
+          locked: true,
+          ratedCount: 1,
+          score: 74,
+          level: 2,
+          zone: "A",
+          criteria: answered,
+        },
+        role: {
+          ratedCount: 1,
+          ratings: [{ criterionId: "c-scope", value: 3, motivation: null }],
+        },
+      },
+      {
+        state: "locked reveal, profile-limited",
+        result: {
+          complete: true,
+          locked: true,
+          ratedCount: 1,
+          score: 74,
+          level: 4,
+          zone: "B",
+          profileLimited: true,
+          profileFailures: [
+            { criterionId: "c-scope", name: "Scope", value: 3, required: 4 },
+          ],
+          criteria: answered,
+        },
+        role: {
+          ratedCount: 1,
+          ratings: [{ criterionId: "c-scope", value: 3, motivation: null }],
+        },
+      },
+    ]
+
+    for (const fixture of states) {
+      resultFixture = result(fixture.result)
+      roleFixture = role(fixture.role ?? {})
+      install()
+      const { container } = await renderPage()
+      const rendered = container.textContent ?? ""
+      for (const locale of ["en", "sv", "nb", "da", "fi"]) {
+        const content = zoneContent(locale)
+        for (const zone of ZONE_KEYS) {
+          const where = `${fixture.state} / ${locale} / ${zone}`
+          expect(rendered, where).not.toContain(content.zones[zone].name)
+          expect(rendered, where).not.toContain(content.zones[zone].character)
+          expect(rendered, where).not.toContain(
+            content.zones[zone].typicalProfile
+          )
+          expect(rendered, where).not.toContain(content.zones[zone].summary)
+        }
       }
+      // And the band chrome that would name one.
+      expect(rendered, fixture.state).not.toMatch(/\bZone [A-D]\b/)
+      cleanup()
     }
-    // And the band chrome that would name one.
-    expect(rendered).not.toMatch(/\bZone [A-D]\b/)
   })
 
   it("offers Lock assessment once the last criterion is answered, without revealing anything", async () => {

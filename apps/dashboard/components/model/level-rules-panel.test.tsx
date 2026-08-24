@@ -5,6 +5,8 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react"
+import { LEVEL_COUNT, ZONE_KEYS } from "@workspace/core"
+import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -239,13 +241,44 @@ describe("LevelRulesPanel", () => {
     expect(screen.getByText(m.reopensApproval)).toBeDefined()
   })
 
+  // The skeleton MEASURES like the form, and everything it can know for real it
+  // states for real. The version this replaces drew the title and the labels as
+  // gray bars, left out the second settings row and the whole footer, and its
+  // guard asserted only "some skeleton exists" plus the absence of the Save
+  // button, actively pinning the missing footer: replacing the entire skeleton
+  // with one 4x4 bar passed it.
   it("shows a content-shaped skeleton while the model loads", () => {
     model = undefined
     install()
     const { container } = renderPanel()
+
+    // Static i18n text, rendered rather than barred.
+    expect(screen.getByText(m.title)).toBeDefined()
+    expect(screen.getByText(m.levelsLabel)).toBeDefined()
+    expect(screen.getByText(m.zonesLabel)).toBeDefined()
+    expect(screen.getByText(m.reopensApproval)).toBeDefined()
     expect(
-      container.querySelectorAll('[data-slot="skeleton"]').length
-    ).toBeGreaterThan(0)
-    expect(screen.queryByRole("button", { name: m.save })).toBeNull()
+      screen.getByRole("button", {
+        name: messages.dashboard.help.levelThresholdLabel,
+      })
+    ).toBeDefined()
+
+    // Structural law, also known before the data: the four zones by name.
+    const content = zoneContent("en")
+    for (const zone of ZONE_KEYS) {
+      expect(
+        screen.getByText(`${zone}. ${content.zones[zone].name}`)
+      ).toBeDefined()
+    }
+
+    // One bar per number the query has yet to answer, and nothing else.
+    expect(container.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+      LEVEL_COUNT + ZONE_KEYS.length
+    )
+
+    // The footer is PRESENT so the panel does not grow a button row on
+    // arrival, and disabled because the loaded form's own initial state is.
+    const save = screen.getByRole("button", { name: m.save })
+    expect((save as HTMLButtonElement).disabled).toBe(true)
   })
 })

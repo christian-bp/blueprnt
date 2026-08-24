@@ -22,7 +22,14 @@ import {
   STATUS_VALUE_KEYS,
   TRACK_VALUE_KEYS,
 } from "./audit-constants"
+import da from "@workspace/i18n/messages/da.json"
+import en from "@workspace/i18n/messages/en.json"
+import fi from "@workspace/i18n/messages/fi.json"
+import nb from "@workspace/i18n/messages/nb.json"
+import sv from "@workspace/i18n/messages/sv.json"
 import { LANGUAGE_LABEL_KEYS } from "./locales"
+
+const allAuditMessages = { en, sv, nb, da, fi }
 import {
   aiAuditDetail,
   auditContextParts,
@@ -36,6 +43,7 @@ import {
   payloadItems,
   payloadMoves,
   payloadProvenance,
+  CONTENT_BOOLEAN_FIELDS,
   payloadStats,
   payloadSuggestions,
   sectionKind,
@@ -1249,6 +1257,48 @@ describe("payloadStats", () => {
     expect(payloadStats({ seeded: true, orgCount: 3 })).toEqual([
       { field: "orgCount", value: "3" },
     ])
+  })
+
+  // The audit law binds the table cell AND the detail sheet. The cell renders
+  // this fact as a marker; the sheet reads its rows from payloadStats, which
+  // drops booleans, so the calibration note silently existed in one surface
+  // and not the other. Declared fields survive that filter, and only them.
+  const bool = (value: boolean) => (value ? "Yes" : "No")
+
+  it("keeps a declared content boolean, labeled, when the caller has a boolLabel", () => {
+    expect(
+      payloadStats({ roleId: "r1", noteProvided: true }, undefined, [], bool)
+    ).toEqual([{ field: "noteProvided", value: "Yes" }])
+    expect(
+      payloadStats({ roleId: "r1", noteProvided: false }, undefined, [], bool)
+    ).toEqual([{ field: "noteProvided", value: "No" }])
+  })
+
+  it("still drops an undeclared boolean beside a declared one", () => {
+    expect(
+      payloadStats({ noteProvided: true, seeded: true }, undefined, [], bool)
+    ).toEqual([{ field: "noteProvided", value: "Yes" }])
+  })
+
+  it("drops even a declared content boolean when the caller has no boolean vocabulary", () => {
+    expect(payloadStats({ noteProvided: true })).toEqual([])
+  })
+
+  it("labels every declared content boolean in every locale", () => {
+    for (const field of CONTENT_BOOLEAN_FIELDS) {
+      for (const locale of ["en", "sv", "nb", "da", "fi"] as const) {
+        const fields = (
+          allAuditMessages[locale].dashboard.auditLog as unknown as {
+            fields: Record<string, string>
+          }
+        ).fields
+        expect({ locale, field, labeled: typeof fields[field] }).toEqual({
+          locale,
+          field,
+          labeled: "string",
+        })
+      }
+    }
   })
 
   it("is empty for a payload with no stats", () => {

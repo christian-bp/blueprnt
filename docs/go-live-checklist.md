@@ -314,11 +314,14 @@ bias-review UI, the metodbilaga export, the verbatim anchor texts, the
 `PLAN-V1.md` four-factor prose) are closed. These remain, and none of them block
 starting V2:
 
-- [ ] **Level-rule editing UI (E2 configurability).** `updateLevelRules` and
-  `updateZoneProfileRules` (`evaluationModel/approval.ts`) already let an org
-  patch `levelRules`/`zoneProfileRules` after model creation; the remaining
-  gap is UI only, no dashboard surface calls either mutation yet. The docs
-  promise per-org configurability; add the editing UI.
+- [x] **Level-rule editing UI (E2 configurability).** Shipped as the Level
+  thresholds section on the Godkannande chapter
+  (`components/model/level-rules-panel.tsx`, fas 5): twelve thresholds grouped
+  by zone plus the four zone profile requirements, with the engine's own rules
+  stated on the field that breaks them and a save that says it reopens the
+  approval. Both `levelRulesValid` and `zoneProfileMonotonic` now route their
+  checklist remedy to that section, so the two checks are reachable from the UI
+  rather than only from the database.
 - [x] **Calibration queue UI (spec section 6).** Shipped on the levels
   surface (`components/levels/calibration-queue.tsx`, fas 5): the derived
   queue lists the three classes with the reason in words per row, and

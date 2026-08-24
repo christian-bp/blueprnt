@@ -1,6 +1,12 @@
-import { MODEL_MIN_CRITERIA } from "@workspace/core"
+import { METHOD_CHECK_KEYS, MODEL_MIN_CRITERIA } from "@workspace/core"
+import daMessages from "@workspace/i18n/messages/da.json"
+import messages from "@workspace/i18n/messages/en.json"
+import fiMessages from "@workspace/i18n/messages/fi.json"
+import nbMessages from "@workspace/i18n/messages/nb.json"
+import svMessages from "@workspace/i18n/messages/sv.json"
 import { describe, expect, it } from "vitest"
 import {
+  CHECK_CHAPTER,
   chapterHref,
   currentChapter,
   MODEL_CHAPTERS,
@@ -319,5 +325,78 @@ describe("chapter progress", () => {
       0
     )
     expect(modelProgress(all).done).toBe(summed)
+  })
+})
+
+// Every check's remedy has to be true of the app as it stands. Two of them told
+// the reader the level thresholds "cannot be corrected in the app yet", on the
+// same screen as the section that corrects them, because the copy was written
+// when that was true and nothing re-read it when the surface shipped.
+const allMessages = {
+  en: messages,
+  sv: svMessages,
+  nb: nbMessages,
+  da: daMessages,
+  fi: fiMessages,
+}
+
+describe("CHECK_CHAPTER and its remedies", () => {
+  const remedies = messages.dashboard.model.method.remedies
+
+  it("routes every check to a chapter that can actually fix it", () => {
+    for (const key of METHOD_CHECK_KEYS) {
+      const chapter = CHECK_CHAPTER[key]
+      // null stays legal as a reviewed decision, but nothing claims it today.
+      expect(chapter === null || MODEL_CHAPTERS.includes(chapter)).toBe(true)
+    }
+    // The two the level-rules surface closed.
+    expect(CHECK_CHAPTER.levelRulesValid).toBe("approval")
+    expect(CHECK_CHAPTER.zoneProfileMonotonic).toBe("approval")
+  })
+
+  // In every locale, because a denial left in one locale is the same defect.
+  it.each(["en", "sv", "nb", "da", "fi"] as const)(
+    "always tells the reader where the fix is, in %s",
+    (locale) => {
+      const localeMessages = allMessages[locale]
+      const localeRemedies = localeMessages.dashboard.model.method
+        .remedies as Record<string, string>
+      // The name the panel on this chapter actually renders as its title, read
+      // from the same message file the remedy is read from. A blacklist of
+      // denial PHRASES was tried here first and is not a pin: it passes any
+      // wording nobody thought to list, and it proved it by passing a planted
+      // "det gar inte att ratta i appen annu" that meant exactly what the
+      // listed phrase meant. This is the positive claim instead, and a denial
+      // cannot satisfy it in any wording.
+      const sectionTitle = (
+        localeMessages.dashboard.model.levelRules as Record<string, string>
+      ).title
+      if (sectionTitle === undefined) throw new Error("no levelRules.title")
+      for (const key of METHOD_CHECK_KEYS) {
+        const text = localeRemedies[key]
+        if (text === undefined) continue
+        // Either it links to the chapter that fixes it, or the fix is on this
+        // chapter and it names the section by the section's own title.
+        const directs = text.includes("<link>") || text.includes(sectionTitle)
+        expect({ key, directs }).toEqual({ key, directs: true })
+      }
+    }
+  )
+
+  // A remedy with no chapter must carry no <link> tag, and one with a chapter
+  // must: the renderer passes the tag only in the second case.
+  it("matches each remedy's link tag to whether it has a chapter to link to", () => {
+    for (const key of METHOD_CHECK_KEYS) {
+      const text = (remedies as Record<string, string>)[key]
+      if (text === undefined) continue
+      const chapter = CHECK_CHAPTER[key]
+      // The two on THIS chapter name their section instead of linking to the
+      // route the reader is already on.
+      const selfHosted = chapter === "approval"
+      expect({ key, linked: text.includes("<link>") }).toEqual({
+        key,
+        linked: chapter !== null && !selfHosted,
+      })
+    }
   })
 })

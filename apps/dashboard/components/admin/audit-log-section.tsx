@@ -533,7 +533,10 @@ function AuditDetailSheet({
   // No `changes`: surface the payload's own scalar fields as a labeled flat
   // record (a count/code per row). `changes`, ids, and `source` are excluded by
   // payloadStats; ordering is stable via FIELD_DISPLAY_ORDER.
-  const stats = entries.length > 0 ? [] : payloadStats(row.payload, valueLabel)
+  const stats =
+    entries.length > 0
+      ? []
+      : payloadStats(row.payload, valueLabel, [], boolLabel)
 
   return (
     <>

@@ -69,12 +69,12 @@ export function currentChapter(pathname: string): ModelChapter | undefined {
 // check must not compile until someone decides where its remedy lives, the same
 // guard idiom AUDIT_SUBJECTS uses in the backend.
 //
-// `null` is the reviewed decision that a check has NO in-app remedy: the level
-// and zone-profile rules are validated by the same engine on every write path
-// that could change them, so the only way to see them fail is a model whose
-// stored rules were never valid. Nothing in the app edits them, and a remedy
-// line pointing at a chapter that cannot fix it would be worse than one that
-// says so.
+// `null` stays available as the reviewed decision that a check has NO in-app
+// remedy, and nothing claims it today. It used to hold the level and
+// zone-profile rules, on the reasoning that nothing in the app edited them;
+// the Level thresholds section on the Godkannande chapter does, so both point
+// there now. A check whose remedy exists must never say it does not: that line
+// is read at exactly the moment the surface below it would fix the problem.
 export const CHECK_CHAPTER: Record<MethodCheckKey, ModelChapter | null> = {
   dimensionCoverage: "criteria",
   // The materiality decision is asked on the Kriterier chapter's fourth column.
@@ -86,8 +86,9 @@ export const CHECK_CHAPTER: Record<MethodCheckKey, ModelChapter | null> = {
   anchorsComplete: "criteria",
   documentationComplete: "method",
   weightBudget: "weighting",
-  levelRulesValid: null,
-  zoneProfileMonotonic: null,
+  // Both are corrected by the Level thresholds section on this same chapter.
+  levelRulesValid: "approval",
+  zoneProfileMonotonic: "approval",
   dimensionWeightBalance: "weighting",
   peopleLeadershipWeight: "weighting",
   overlapPairs: "method",

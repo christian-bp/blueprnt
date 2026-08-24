@@ -1669,6 +1669,7 @@
       "zoneLabel": "Vyöhyke {zone}",
       "zoneSpan": "Vaativuustaso {from}-{to}",
       "zoneSpanOne": "Vaativuustaso {from}",
+      "zoneTypicalLabel": "Tyypillisesti täällä:",
       "showZone": "Näytä vyöhykkeen {zone} vaativuustasot",
       "hideZone": "Piilota vyöhykkeen {zone} vaativuustasot",
       "levelFunctionToggle": "Mikä taso on",
@@ -2095,8 +2096,8 @@
           "anchorsComplete": "Yhdeltä kriteeriltä puuttuu portaita arviointiasteikolta. Poista se ja valitse uudelleen luvussa <link>{chapter}</link>.",
           "documentationComplete": "{count, plural, =1 {# kriteeri on} other {# kriteeriä on}} yhä dokumentoimatta ja hyväksymättä. Avaa Dokumentoi kunkin kohdalla luvussa <link>{chapter}</link>.",
           "weightBudget": "Painopisteet eivät täsmää budjettiin. Tasapainota ne ja tallenna luvussa <link>{chapter}</link>.",
-          "levelRulesValid": "Mallin vaativuustasorajat eivät muodosta kelvollista asteikkoa 1-12. Tätä ei voi vielä korjata sovelluksessa.",
-          "zoneProfileMonotonic": "Mallin vyöhykeprofiilisäännöt eivät ole johdonmukaisia. Tätä ei voi vielä korjata sovelluksessa.",
+          "levelRulesValid": "Mallin vaativuustasojen rajat eivät muodosta kelvollista asteikkoa 1-12. Korjaa ne kohdassa Vaativuustasojen rajat, tämän tarkistuslistan alapuolella.",
+          "zoneProfileMonotonic": "Mallin vyöhykkeiden profiilivaatimukset eivät ole johdonmukaiset. Korjaa ne kohdassa Vaativuustasojen rajat, tämän tarkistuslistan alapuolella.",
           "dimensionWeightBalance": "{dimensions} kantaa hallitsevan osan painotuksesta ilman kirjattua syytä. Perustele se luvussa <link>{chapter}</link> tai siirrä painopisteitä toiseen ulottuvuuteen.",
           "peopleLeadershipWeight": "{criterion} saa suuren painon ilman kirjattua syytä. Perustele se luvussa <link>{chapter}</link> tai laske sen painopisteitä.",
           "overlapPairs": "Päällekkäiset kriteerit: {pairs}. Kirjaa päällekkäisyys jommallekummalle parin kriteerille luvussa <link>{chapter}</link>."

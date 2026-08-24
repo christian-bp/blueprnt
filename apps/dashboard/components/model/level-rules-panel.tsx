@@ -47,7 +47,18 @@ import { toast } from "@/lib/toast"
 // unchanged half would still write an audit row and reopen the approval for a
 // change nobody made. They share a gesture id, so the rows they write read as
 // one story in the log.
-export function LevelRulesPanel({ orgId }: { orgId: string }) {
+export function LevelRulesPanel({
+  orgId,
+  onSaved,
+}: {
+  orgId: string
+  // Fired after a save lands. Saving reopens the approval, which makes the
+  // consequence panel at the TOP of the chapter go from silent to speaking:
+  // the chapter grows a card above the reader, who is at the bottom looking at
+  // the button they just pressed. The panel does not scroll itself, because the
+  // thing worth showing is not this panel; the chapter owns the target.
+  onSaved?: () => void
+}) {
   const locale = useLocale()
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   if (model === undefined) return <LevelRulesSkeleton />
@@ -55,6 +66,7 @@ export function LevelRulesPanel({ orgId }: { orgId: string }) {
   return (
     <LevelRulesForm
       orgId={orgId}
+      onSaved={onSaved}
       // Keyed on the stored values, so an edit landing from elsewhere (a
       // restore, another operator) re-seeds the form instead of leaving the
       // reader typing into a stale ladder.
@@ -69,10 +81,12 @@ function LevelRulesForm({
   orgId,
   levelRules,
   zoneProfileRules,
+  onSaved,
 }: {
   orgId: string
   levelRules: readonly { level: number; minScore: number }[]
   zoneProfileRules: readonly { zone: ZoneKey; minStep: number }[]
+  onSaved?: () => void
 }) {
   const t = useTranslations("dashboard.model.levelRules")
   const tHelp = useTranslations("dashboard.help")
@@ -144,6 +158,7 @@ function LevelRulesForm({
       }
       toast.success(tToast("thresholdsSaved"))
       form.reset(values)
+      onSaved?.()
     } catch {
       // The backend re-runs the engine's own check and refuses with
       // invalidInput; the client schema encodes the same truths, so reaching
@@ -197,7 +212,7 @@ function LevelRulesForm({
               {ZONE_KEYS.map((zone) => (
                 <div key={zone} className="space-y-1.5">
                   <p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                    {`${zone}. ${content.zones[zone].name}`}
+                    {zoneHeading(zone, content.zones[zone].name)}
                   </p>
                   <div className="grid grid-cols-3 gap-2">
                     {levelsInZone(zone).map((level) => (
@@ -276,20 +291,82 @@ function LevelRulesForm({
   )
 }
 
+// The zone eyebrow the form and its skeleton both draw. One builder, because
+// the skeleton's whole job is measuring like the thing it stands in for.
+function zoneHeading(zone: ZoneKey, name: string): string {
+  return `${zone}. ${name}`
+}
+
 // A zone's three levels, highest first, from the engine's own ranges.
 function levelsInZone(zone: ZoneKey): number[] {
   const { from, to } = ZONE_LEVEL_RANGES[zone]
   return Array.from({ length: to - from + 1 }, (_, index) => from + index)
 }
 
+// The loading state, on the REAL anatomy.
+//
+// Everything here that is static i18n text or structural law is rendered for
+// real: the title and its help, both row labels, the four zone names, the
+// reopens-approval sentence and the Save button. Bars stand in only for the
+// numbers, which are the one thing unknown until the query answers. The
+// previous version drew the title and the labels as bars and left out the
+// second row and the whole footer, so the panel grew by a settings row and a
+// button row on arrival, which is the reflow a skeleton exists to prevent.
 function LevelRulesSkeleton() {
+  const t = useTranslations("dashboard.model.levelRules")
+  const tHelp = useTranslations("dashboard.help")
+  const locale = useLocale()
+  const content = zoneContent(locale)
   return (
-    <SettingsFrame title={<Skeleton className="h-5 w-40" />}>
-      <SettingsRow label={<Skeleton className="h-4 w-36" />}>
-        <div className="grid grid-cols-3 gap-2">
-          {Array.from({ length: LEVEL_COUNT }, (_, index) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
-            <Skeleton key={index} className="h-9 w-full" />
+    <SettingsFrame
+      title={
+        <span className="flex items-center gap-2">
+          {t("title")}
+          <HelpMorphButton label={tHelp("levelThresholdLabel")}>
+            {tHelp("levelThresholdBody")}
+          </HelpMorphButton>
+        </span>
+      }
+      description={t("description")}
+      footer={
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <p className="max-w-md text-muted-foreground text-sm leading-relaxed">
+            {t("reopensApproval")}
+          </p>
+          {/* Disabled, because the loaded form's own initial state is
+              disabled: an enabled Save that flipped to disabled on arrival
+              would be a control that changes under the reader. */}
+          <SubmitButton type="button" isSubmitting={false} disabled>
+            {t("save")}
+          </SubmitButton>
+        </div>
+      }
+    >
+      <SettingsRow
+        label={t("levelsLabel")}
+        description={t("levelsDescription")}
+      >
+        <div className="space-y-3">
+          {ZONE_KEYS.map((zone) => (
+            <div key={zone} className="space-y-1.5">
+              <p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                {zoneHeading(zone, content.zones[zone].name)}
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {levelsInZone(zone).map((level) => (
+                  // Input-height, so the row measures as it will once the
+                  // numbers arrive.
+                  <Skeleton key={level} className="h-9 w-full" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </SettingsRow>
+      <SettingsRow label={t("zonesLabel")} description={t("zonesDescription")}>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {ZONE_KEYS.map((zone) => (
+            <Skeleton key={zone} className="h-9 w-full" />
           ))}
         </div>
       </SettingsRow>

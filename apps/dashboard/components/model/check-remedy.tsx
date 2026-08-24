@@ -90,9 +90,11 @@ export function CheckRemedy({
 
   const chapter = CHECK_CHAPTER[check.key]
   // The chapter's own tab label, so the link text always reads as the tab the
-  // reader is about to land on. A remedy with no in-app chapter (the level and
-  // zone-profile rules, which nothing in the app edits) passes no link at all;
-  // its message carries no <link> tag either.
+  // reader is about to land on. A remedy with no in-app chapter passes no link
+  // at all and its message carries no <link> tag either; so does a remedy whose
+  // fix lives on THIS chapter (the level and zone-profile rules, corrected in
+  // the Level thresholds section below the checklist), where a link back to the
+  // route the reader is already on would read as navigation and go nowhere.
   const values = {
     chapter: chapter === null ? "" : tChapters(chapter),
     link: (chunks: ReactNode) =>

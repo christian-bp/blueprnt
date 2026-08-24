@@ -1669,6 +1669,7 @@
       "zoneLabel": "Sone {zone}",
       "zoneSpan": "Nivå {from} til {to}",
       "zoneSpanOne": "Nivå {from}",
+      "zoneTypicalLabel": "Vanligvis her:",
       "showZone": "Vis nivåene i sone {zone}",
       "hideZone": "Skjul nivåene i sone {zone}",
       "levelFunctionToggle": "Hva nivået er",
@@ -2095,8 +2096,8 @@
           "anchorsComplete": "Et kriterium mangler trinn på vurderingsskalaen sin. Fjern det og velg det på nytt i <link>{chapter}</link>.",
           "documentationComplete": "{count, plural, =1 {# kriterium er} other {# kriterier er}} ennå ikke dokumentert og godkjent. Åpne Dokumenter på hvert av dem i <link>{chapter}</link>.",
           "weightBudget": "Vektpoengene går ikke opp mot budsjettet. Balanser dem og lagre i <link>{chapter}</link>.",
-          "levelRulesValid": "Modellens nivågrenser er ikke en gyldig skala fra 1 til 12. Dette kan ikke rettes i appen ennå.",
-          "zoneProfileMonotonic": "Modellens soneprofilregler er ikke konsekvente. Dette kan ikke rettes i appen ennå.",
+          "levelRulesValid": "Modellens nivågrenser er ikke en gyldig skala 1 til 12. Rett dem under Nivågrenser, nedenfor denne sjekklisten.",
+          "zoneProfileMonotonic": "Modellens profilkrav per sone henger ikke sammen. Rett dem under Nivågrenser, nedenfor denne sjekklisten.",
           "dimensionWeightBalance": "{dimensions} bærer en dominerende andel av vektingen uten dokumentert grunn. Begrunn det i <link>{chapter}</link>, eller flytt vektpoeng til en annen dimensjon.",
           "peopleLeadershipWeight": "{criterion} har en høy vekt uten dokumentert grunn. Begrunn den i <link>{chapter}</link>, eller senk vektpoengene.",
           "overlapPairs": "Overlappende kriterier: {pairs}. Noter overlappet på ett av kriteriene i paret i <link>{chapter}</link>."
