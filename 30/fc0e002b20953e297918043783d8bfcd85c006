@@ -1,0 +1,68 @@
+packages/backend/convex/evaluationModel/zoneContent.content.nb.ts
+  s_58dd112dc09435::t_bf0c40c987ba96 12,21,30,40
+apps/dashboard/components/model/level-rules-panel.tsx
+  s_58dd112dc09435::t_218c295299b086 214-215,217-219,266-268,311-324,365-367,389-393
+  s_58dd112dc09435::t_e4e286c72cc7d5 216
+apps/dashboard/components/levels/level-ladder.tsx
+  s_58dd112dc09435::t_395a43b33b0486 3
+  s_58dd112dc09435::t_b1e3185667df5d 58-63
+apps/dashboard/content/docs/en/levels-views.mdx
+  s_58dd112dc09435::t_259794dce20f5c 27-31
+apps/dashboard/components/levels/level-ladder.test.tsx
+  s_58dd112dc09435::t_e7089972df0a92 100
+  s_58dd112dc09435::t_101220be96f4f8 89-98
+  s_58dd112dc09435::t_b6abf65ae73ca6 187
+  s_58dd112dc09435::t_0c465775db2e9b 144,179-183,189-190
+  s_58dd112dc09435::t_8b40f9647b3ffa 85,99
+apps/dashboard/components/model/approval-card.tsx
+  s_58dd112dc09435::t_2336518379c8d3 268-272
+packages/backend/convex/evaluationModel/zoneContent.content.en.ts
+  s_58dd112dc09435::t_cc31cc2a04fd82 39-51
+  s_58dd112dc09435::t_bf0c40c987ba96 67,76,85,95
+  s_58dd112dc09435::t_1615381e8d0024 5-13
+apps/dashboard/components/levels/zone-band-header.tsx
+  s_58dd112dc09435::t_11281dfa65da9d 11,95
+  s_58dd112dc09435::t_5d49067cc2f5bc 7,65-90,97-109
+  s_58dd112dc09435::t_465bc6abe76eb9 96
+apps/dashboard/content/docs/nb/levels-views.mdx
+  s_58dd112dc09435::t_259794dce20f5c 28-32
+apps/dashboard/content/docs/sv/levels-views.mdx
+  s_58dd112dc09435::t_259794dce20f5c 28-32
+packages/backend/convex/evaluationModel/zoneContent.content.da.ts
+  s_58dd112dc09435::t_bf0c40c987ba96 12,21,30,40
+apps/dashboard/components/levels/level-matrix.test.tsx
+  s_58dd112dc09435::t_101220be96f4f8 79-88
+  s_58dd112dc09435::t_e7089972df0a92 90
+  s_58dd112dc09435::t_ca93f9f9dbe491 75,89
+packages/backend/convex/evaluationModel/zoneContent.content.sv.ts
+  s_58dd112dc09435::t_bf0c40c987ba96 14,23,33,43
+packages/backend/convex/evaluationModel/zoneContent.test.ts
+  s_58dd112dc09435::t_0b8b526a876e02 59,95-113
+  s_58dd112dc09435::t_ac9f728c3b7780 114
+apps/dashboard/components/levels/calibration-queue.tsx
+  s_58dd112dc09435::t_c13f0f7917cc97 223-225,227,229,246-250,252-259
+apps/dashboard/content/docs/fi/levels-views.mdx
+  s_58dd112dc09435::t_259794dce20f5c 28-33
+apps/dashboard/content/docs/da/levels-views.mdx
+  s_58dd112dc09435::t_259794dce20f5c 28-32
+packages/backend/convex/evaluationModel/zoneContent.content.fi.ts
+  s_58dd112dc09435::t_bf0c40c987ba96 13,22,31,40
+apps/dashboard/components/model/approval-card.test.tsx
+  s_58dd112dc09435::t_f74bfe96adf3be 115-121,460-462,465
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "30fc0e002b20953e297918043783d8bfcd85c006",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
