@@ -1,0 +1,89 @@
+packages/backend/convex/evaluationModel/consequence.test.ts
+  s_58dd112dc09435::t_d8436cd7236c3d 615-625,634,639
+apps/dashboard/components/levels/calibration-queue.tsx
+  s_58dd112dc09435::t_e60b983d02f7a9 267-269
+packages/core/src/zones.ts
+  s_58dd112dc09435::t_2846443f14f526 23-35
+packages/backend/convex/evaluationModel/zoneContent.content.da.ts
+  s_58dd112dc09435::t_4a27933210ad63 1-115
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_2844d078b68ef4 1667
+  s_58dd112dc09435::t_01514fc1189d2c 1693
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_01514fc1189d2c 1693
+  s_58dd112dc09435::t_2844d078b68ef4 1667
+apps/dashboard/components/model/level-rules-panel.tsx
+  s_58dd112dc09435::t_cd928ebed5c5f6 7-8
+apps/dashboard/lib/level-rules-schemas.ts
+  s_58dd112dc09435::t_030fd54fc26bc5 1-7
+packages/backend/convex/evaluationModel/zoneContent.content.nb.ts
+  s_58dd112dc09435::t_4a27933210ad63 1-115
+packages/backend/convex/evaluationModel/zoneContent.content.sv.ts
+  s_58dd112dc09435::t_4a27933210ad63 1-118
+packages/backend/convex/evaluationModel/approval.ts
+  s_58dd112dc09435::t_030fd54fc26bc5 7-8
+apps/dashboard/lib/level-rules-schemas.test.ts
+  s_58dd112dc09435::t_f63a02069dc0e3 67-69,71
+  s_58dd112dc09435::t_25851706864230 1-66,70,72-119
+apps/dashboard/components/disclosure-toggle.test.tsx
+  s_58dd112dc09435::t_836309afc3c964 1-33,37-41,45-81
+  s_58dd112dc09435::t_4c4e5f9824b1dd 34-36,42-44
+apps/dashboard/lib/calibration-queue.ts
+  s_58dd112dc09435::t_e60b983d02f7a9 15,48,53-54,60-62,86,107
+apps/dashboard/components/stage-eyebrow.test.tsx
+  s_58dd112dc09435::t_e9f55a27c9dd00 1-37
+apps/dashboard/lib/audit-stories.ts
+  s_58dd112dc09435::t_34af37b9bdfaac 110-119
+packages/backend/convex/evaluationModel/zoneContent.content.fi.ts
+  s_58dd112dc09435::t_4a27933210ad63 1-116
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_01514fc1189d2c 1693
+  s_58dd112dc09435::t_2844d078b68ef4 1667
+packages/backend/convex/evaluationModel/consequence.ts
+  s_58dd112dc09435::t_03a7f0b1e203cf 293-303,366,420
+apps/dashboard/lib/calibration-queue.test.ts
+  s_58dd112dc09435::t_e60b983d02f7a9 88,97
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_2844d078b68ef4 1667
+  s_58dd112dc09435::t_01514fc1189d2c 1693
+packages/backend/convex/evaluationModel/zoneContent.ts
+  s_58dd112dc09435::t_4a27933210ad63 3,9-12
+packages/backend/convex/assessment/compute.ts
+  s_58dd112dc09435::t_8c26114484d7fd 11
+  s_58dd112dc09435::t_aef52bb3210f68 40-46,124
+apps/dashboard/components/levels/zone-band-header.tsx
+  s_58dd112dc09435::t_2844d078b68ef4 107-112,114-115
+apps/dashboard/components/org-audit-log-section.tsx
+  s_58dd112dc09435::t_bfc4d185160b99 4
+  s_58dd112dc09435::t_48bdc3d4685697 45
+  s_58dd112dc09435::t_09affd0f048a99 709-712
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_2844d078b68ef4 1667
+  s_58dd112dc09435::t_01514fc1189d2c 1693
+apps/dashboard/components/disclosure-toggle.tsx
+  s_31f7625685cebe::t_9970aae21138e5 7-8,10-36,46-70,99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "d08bb917dbbc9047ebfaa5a275ad2a375b26d939",
+  "prompts": {},
+  "sessions": {
+    "s_31f7625685cebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a20c0b49285fa7d2a",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
