@@ -1,0 +1,36 @@
+packages/backend/convex/evaluationModel/zoneContent.nb.ts
+  s_58dd112dc09435::t_b3cac4a6830d0e 1-115
+packages/backend/convex/evaluationModel/zoneContent.da.ts
+  s_58dd112dc09435::t_47c868680ebbb9 1-115
+packages/backend/convex/evaluationModel/zoneContent.ts
+  s_58dd112dc09435::t_12218a7ae05253 1-67
+packages/backend/convex/evaluationModel/zoneContent.fi.ts
+  s_58dd112dc09435::t_82fd24448f4627 1-41,44-90,96-116
+  s_58dd112dc09435::t_82b0cee8f19417 42-43,91-95
+packages/backend/convex/evaluationModel/zoneContent.test.ts
+  s_58dd112dc09435::t_44186711d042b0 1-63,68-70,75-87,91-150
+  s_58dd112dc09435::t_a0239438599543 64-67,71-74,88-90
+packages/backend/convex/evaluationModel/zoneContent.sv.ts
+  s_58dd112dc09435::t_a0239438599543 27-28
+  s_58dd112dc09435::t_89691acd31107e 1-26,29-118
+packages/backend/convex/evaluationModel/zoneContent.en.ts
+  s_58dd112dc09435::t_1a68cd539f5a4c 1-7,9,12-18,20,22-151
+  s_58dd112dc09435::t_48c409f208eb84 19,21
+  s_58dd112dc09435::t_97244d2f15a739 8,10-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "785b4a19528cf6ffae56c2f444e0f6a649cadd7a",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
