@@ -1893,6 +1893,27 @@
         "progressBarLabel": "Koko mallin edistyminen",
         "countRich": "<done></done> / <total></total>"
       },
+      "consequence": {
+        "heading": "Mitä hyväksyminen muuttaisi",
+        "summary": "{moved} lukitusta sijoituksesta {placed}:sta siirtyisi toiselle vaativuustasolle.",
+        "criteriaChanged": "Menetelmä on muuttunut edellisen hyväksynnän jälkeen: {added} kriteeriä lisätty, {removed} poistettu.",
+        "distributionHeading": "Roolit vyöhykkeittäin",
+        "zoneNow": "Hyväksynnän jälkeen",
+        "zoneApproved": "Kuten viimeksi hyväksytty",
+        "moversHeading": "Roolit, jotka siirtyisivät",
+        "moverChange": "Vaativuustaso {from} tasolle {to}",
+        "moreMovers": "ja {count} muuta",
+        "familiesHeading": "Rooliperheittäin",
+        "gendersHeading": "Sukupuolijakauman mukaan",
+        "noFamily": "Ei perhettä",
+        "genderWomen": "Naisvaltaiset roolit",
+        "genderMen": "Miesvaltaiset roolit",
+        "genderMixed": "Sekaroolit",
+        "genderUnstaffed": "Roolit, joihin ei ole sijoitettu ketään",
+        "groupMoved": "{moved} / {total} siirtyy",
+        "groupUp": "{count} ylös",
+        "groupDown": "{count} alas"
+      },
       "review": {
         "cta": "Avaa hallintapaneeli"
       },
@@ -2179,7 +2200,9 @@
       "weightMotivationLabel": "Mikä on painotuksen perustelu?",
       "weightMotivationBody": "Kirjattu syy sille, miksi ulottuvuus saa painaa näin paljon. Se perustelee painotuksen, ei 0-5-asteikkoa: kerro, mikä työssä painaa enemmän, älä koskaan kuka sen tekee.",
       "sharedScaleLabel": "Mikä yhteinen asteikko on?",
-      "sharedScaleBody": "Asteikko 1-5 kuvaa, kuinka vaativa vaatimus on, samalla tavalla jokaisessa kriteerissä. Nelonen yhdessä kriteerissä ei ole nelonen toisessa: kriteerin omat ankkurit ratkaisevat sen merkityksen."
+      "sharedScaleBody": "Asteikko 1-5 kuvaa, kuinka vaativa vaatimus on, samalla tavalla jokaisessa kriteerissä. Nelonen yhdessä kriteerissä ei ole nelonen toisessa: kriteerin omat ankkurit ratkaisevat sen merkityksen.",
+      "consequenceLabel": "Mikä on seurausanalyysi?",
+      "consequenceBody": "Mitä tämän menetelmän hyväksyminen tekisi jo olemassa oleville sijoituksille verrattuna viimeksi hyväksymäänne menetelmään. Se siirtää rooleja, ei henkilöitä: kenenkään palkka ei muutu tässä."
     },
     "widgetCard": {
       "expand": "Suurenna"

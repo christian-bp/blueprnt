@@ -1893,6 +1893,27 @@
         "progressBarLabel": "Hele modellens framdrift",
         "countRich": "<done></done> av <total></total>"
       },
+      "consequence": {
+        "heading": "Hva en godkjenning ville endre",
+        "summary": "{moved} av {placed} låste plasseringer ville flytte til et annet nivå.",
+        "criteriaChanged": "Metoden er endret siden forrige godkjenning: {added} kriterier lagt til, {removed} fjernet.",
+        "distributionHeading": "Roller per sone",
+        "zoneNow": "Etter godkjenning",
+        "zoneApproved": "Som sist godkjent",
+        "moversHeading": "Roller som ville flytte",
+        "moverChange": "Nivå {from} til {to}",
+        "moreMovers": "og {count} til",
+        "familiesHeading": "Per rollefamilie",
+        "gendersHeading": "Per kjønnssammensetning",
+        "noFamily": "Ingen familie",
+        "genderWomen": "Kvinnedominerte roller",
+        "genderMen": "Mannsdominerte roller",
+        "genderMixed": "Blandede roller",
+        "genderUnstaffed": "Roller uten noen plassert",
+        "groupMoved": "{moved} av {total} flytter",
+        "groupUp": "{count} opp",
+        "groupDown": "{count} ned"
+      },
       "review": {
         "cta": "Åpne dashbordet"
       },
@@ -2179,7 +2200,9 @@
       "weightMotivationLabel": "Hva er en vektbegrunnelse?",
       "weightMotivationBody": "Den dokumenterte grunnen til at en dimensjon kan veie så mye som den gjør. Den begrunner vektingen, ikke 0-5-skalaen: si hva ved arbeidet som veier mer, aldri hvem som utfører det.",
       "sharedScaleLabel": "Hva er den felles skalaen?",
-      "sharedScaleBody": "Skalaen 1 til 5 beskriver hvor krevende et krav er, på samme måte for hvert kriterium. En firer på ett kriterium er ikke en firer på et annet: kriteriets egne ankere avgjør hva den betyr."
+      "sharedScaleBody": "Skalaen 1 til 5 beskriver hvor krevende et krav er, på samme måte for hvert kriterium. En firer på ett kriterium er ikke en firer på et annet: kriteriets egne ankere avgjør hva den betyr.",
+      "consequenceLabel": "Hva er en konsekvensanalyse?",
+      "consequenceBody": "Hva en godkjenning av denne metoden ville gjøre med plasseringene dere allerede har, sammenlignet med metoden dere sist godkjente. Den flytter roller, ikke personer: ingens lønn endres her."
     },
     "widgetCard": {
       "expand": "Forstørr"

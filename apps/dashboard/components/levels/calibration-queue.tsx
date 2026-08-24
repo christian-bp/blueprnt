@@ -52,10 +52,13 @@ export function CalibrationQueue({
     title: string
   } | null>(null)
 
-  // Derived unconditionally: the approval precondition is enforced by the
-  // branch below, which is the only gate. A second guard here would be a line
-  // no test could reach, and two authorities on the same rule.
   const queue = calibrationQueue(rows)
+  const showQueue = modelApproved && queue.length > 0
+  // The ONE condition the whole section reads: the heading's count, the list,
+  // and which empty state shows all follow it. Deriving the queue and then
+  // gating only the list left the count rendering beside a "not approved yet"
+  // message, claiming three things to review on a surface that was showing
+  // none. A count is a promise about what is below it.
 
   return (
     <section className="space-y-3">
@@ -67,7 +70,7 @@ export function CalibrationQueue({
                 the reader is looking at it, so the number rolls rather than
                 swapping (the NumberFlow law). Hidden at zero, where the empty
                 state below says it in words instead. */}
-            {queue.length > 0 && (
+            {showQueue && (
               <Badge variant="outline" className="rounded-full tabular-nums">
                 <NumberFlow value={queue.length} />
               </Badge>
@@ -88,7 +91,7 @@ export function CalibrationQueue({
             {t("unapprovedCta")}
           </Link>
         </Empty>
-      ) : queue.length === 0 ? (
+      ) : !showQueue ? (
         <Empty>
           <EmptyHeader>
             <EmptyTitle>{t("emptyTitle")}</EmptyTitle>

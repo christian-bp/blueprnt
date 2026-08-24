@@ -234,6 +234,22 @@ describe("CalibrationQueue", () => {
     expect(screen.queryByRole("button", { name: m.confirmCta })).toBeNull()
   })
 
+  // The count is a promise about what is below it. Deriving the queue and then
+  // gating only the LIST left the heading claiming rows on a surface that was
+  // showing none, beside a message saying there was nothing to review.
+  it("shows no count beside the heading when the method is not approved", () => {
+    renderQueue(
+      [
+        role({ roleId: "a", title: "A", methodDrift: true }),
+        role({ roleId: "b", title: "B", methodDrift: true }),
+        role({ roleId: "c", title: "C", profileLimited: true }),
+      ],
+      { modelApproved: false }
+    )
+    expect(screen.queryByText("3")).toBeNull()
+    expect(screen.getByText(m.unapprovedTitle)).toBeDefined()
+  })
+
   it("counts the rows waiting, and drops the count at zero", () => {
     const { rerender } = renderQueue([
       role({ roleId: "a", title: "Capped", profileLimited: true }),

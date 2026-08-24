@@ -23,19 +23,35 @@ export interface DerivedResults {
   totalCriteria: number
 }
 
-// Derives the org's full result set (score/level per role) from current state
-// via the pure engine. Never stores anything (ADR-0002). Used by the results
-// queries and by mutations for before/after level.shift diffs. Alpha-scale
-// data: full-org collects are deliberate and fine.
-export async function deriveResults(
+// Everything the engine needs for one org, read ONCE. Alpha-scale data:
+// full-org collects are deliberate and fine.
+//
+// Split out of deriveResults so a caller that wants the same ratings scored
+// under a DIFFERENT method (the consequence analysis: live model vs the
+// last-approved buffer) pays for one set of reads instead of two. The ratings
+// and the roles are the same in both runs by definition; only the method
+// changes, and the method is pure input.
+export interface ResultInputs {
+  criteria: CriterionWeight[]
+  thresholds: LevelThreshold[]
+  zoneProfileRules: ZoneProfileRule[]
+  roles: RoleRatings[]
+  // The live criteria rows' library keys, by criterion id. The buffer
+  // identifies its criteria by libraryKey (ids are not part of the evidence),
+  // so a caller re-scoring under it needs the mapping back to the ids the
+  // ratings are keyed on.
+  libraryKeyById: Map<string, string>
+}
+
+export async function readResultInputs(
   ctx: QueryCtx | MutationCtx,
   orgId: string
-): Promise<DerivedResults> {
+): Promise<ResultInputs | null> {
   const model = await ctx.db
     .query("models")
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
     .unique()
-  if (model === null) return { results: [], totalCriteria: 0 }
+  if (model === null) return null
 
   const criteriaRows = await ctx.db
     .query("criteria")
@@ -93,8 +109,28 @@ export async function deriveResults(
   }))
 
   return {
-    results: computeResults({ criteria, thresholds, zoneProfileRules, roles }),
-    totalCriteria: criteria.length,
+    criteria,
+    thresholds,
+    zoneProfileRules,
+    roles,
+    libraryKeyById: new Map(
+      criteriaRows.map((row) => [row._id as string, row.libraryKey as string])
+    ),
+  }
+}
+
+// Derives the org's full result set (score/level per role) from current state
+// via the pure engine. Never stores anything (ADR-0002). Used by the results
+// queries and by mutations for before/after level.shift diffs.
+export async function deriveResults(
+  ctx: QueryCtx | MutationCtx,
+  orgId: string
+): Promise<DerivedResults> {
+  const inputs = await readResultInputs(ctx, orgId)
+  if (inputs === null) return { results: [], totalCriteria: 0 }
+  return {
+    results: computeResults(inputs),
+    totalCriteria: inputs.criteria.length,
   }
 }
 

@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { ApprovalCard } from "@/components/model/approval-card"
+import { ConsequencePanel } from "@/components/model/consequence-panel"
 import { useOrganization } from "@/components/org-context"
 import { usePageTitle } from "@/hooks/use-page-title"
 
@@ -26,6 +27,11 @@ export default function ModelApprovalChapterPage() {
           text that must not run the width of a monitor, not the frame around
           it, and the status row wants the full width so its action can sit at
           the card's own edge. */}
+      {/* Section 18 first, above the gate: the consequence of approving is
+          what the approver is deciding on, and a summary below the Approve
+          button is a summary nobody reads before pressing it. Silent unless
+          approving would actually move something. */}
+      <ConsequencePanel orgId={orgId} />
       <ApprovalCard orgId={orgId} />
     </div>
   )
