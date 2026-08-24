@@ -1,0 +1,86 @@
+apps/dashboard/components/levels/role-chip.test.tsx
+  s_58dd112dc09435::t_50aa73ed66ca2a 24
+apps/dashboard/components/levels/level-matrix.test.tsx
+  s_58dd112dc09435::t_2cacd829279235 73-112
+  s_58dd112dc09435::t_4c05d8bce3a9ae 1,6-7,174
+  s_58dd112dc09435::t_b55503693fa3b6 46-51,54,61
+  s_58dd112dc09435::t_590e84a6881875 31-36,40-43
+  s_58dd112dc09435::t_8cce2951ab37e9 186,202
+  s_58dd112dc09435::t_7f8f5de0b31ccb 44-45
+apps/dashboard/components/levels/level-ladder.tsx
+  s_58dd112dc09435::t_dae1d92b3ce708 3-7,9-11,14,18,20-23,26-35
+  s_58dd112dc09435::t_7bf1ad65179617 55-65,100-104,106-156,162-209,212
+apps/dashboard/components/levels/level-matrix.tsx
+  s_58dd112dc09435::t_3f9c9f6f93c315 3-4,6-7,14,18,20-21,41-46,101-109,115,118-131,133-211
+  s_58dd112dc09435::t_992a10bdea064b 110-113,116
+apps/dashboard/components/levels/pending-roles.test.tsx
+  s_58dd112dc09435::t_590e84a6881875 6,25-30,34-37
+  s_58dd112dc09435::t_06a7fea591df3d 38-39
+apps/dashboard/lib/zone-bands.test.ts
+  s_58dd112dc09435::t_62f06ba779c2ac 1-126
+apps/dashboard/content/docs/en/levels-views.mdx
+  s_58dd112dc09435::t_9538ca9e8f8efc 23-39
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_0e6c9463380731 1661-1666
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_0e6c9463380731 1661-1666
+apps/dashboard/app/(app)/work/page.tsx
+  s_58dd112dc09435::t_03bcb6028e5f14 6,44-47,119-139,143-177,179
+apps/dashboard/content/docs/fi/levels-views.mdx
+  s_58dd112dc09435::t_9538ca9e8f8efc 24-41
+apps/dashboard/app/(app)/work/page.test.tsx
+  s_58dd112dc09435::t_ba799ac28551fc 47-50,54-57
+  s_58dd112dc09435::t_5e3cafe6b9c497 28,129-141
+  s_58dd112dc09435::t_712fe8bbf2d385 58-59,142-143
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.test.tsx
+  s_58dd112dc09435::t_a71b68024172fc 32-33,186-204
+  s_58dd112dc09435::t_48dfaca30512cb 205-206
+apps/dashboard/components/levels/level-ladder.test.tsx
+  s_58dd112dc09435::t_590e84a6881875 45-50,54-57
+  s_58dd112dc09435::t_430c34022c73c9 108-117,119-126,130-133,137-140
+  s_58dd112dc09435::t_45d501df2a86bd 1-7,12-21,60-70,73,81-107,118,127-129,134-136,141-171
+  s_58dd112dc09435::t_b074f7c5934138 58-59,172
+apps/dashboard/components/levels/zone-band-header.tsx
+  s_58dd112dc09435::t_b795c0b0a83aa8 57-60,83-85
+  s_58dd112dc09435::t_7d33126c9f658e 1-56,61-82,86-89
+apps/dashboard/content/docs/da/levels-views.mdx
+  s_58dd112dc09435::t_9538ca9e8f8efc 24-40
+apps/dashboard/lib/levels.ts
+  s_58dd112dc09435::t_3e4c80dd841411 1-2,15-19
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_0e6c9463380731 1661-1666
+apps/dashboard/lib/zone-bands.ts
+  s_58dd112dc09435::t_a84d62cc9062de 2-62
+  s_58dd112dc09435::t_3e4c80dd841411 1
+apps/dashboard/content/docs/nb/levels-views.mdx
+  s_58dd112dc09435::t_9538ca9e8f8efc 24-40
+apps/dashboard/content/docs/sv/levels-views.mdx
+  s_58dd112dc09435::t_9538ca9e8f8efc 24-40
+apps/dashboard/components/levels/family-level-matrix.test.tsx
+  s_58dd112dc09435::t_590e84a6881875 7,31-36,40-43
+  s_58dd112dc09435::t_b9a0fc5f234c71 5,79-81,85-90,98-106,108-109,160
+  s_58dd112dc09435::t_560b56d49a7717 107,162-171
+  s_58dd112dc09435::t_bb8a1ab5a5328d 44-45
+apps/dashboard/components/levels/family-level-matrix.tsx
+  s_58dd112dc09435::t_e013aaeba88319 5-6,11,37-38,40-46,72-85
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_0e6c9463380731 1661-1666
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_0e6c9463380731 1661-1666
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "d9660a31b75dcd5ed94ede5fa8baa49edad911e9",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
