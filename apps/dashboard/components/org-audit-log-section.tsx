@@ -332,6 +332,7 @@ export function OrgAuditLogSection() {
         fieldsChanged: (count) => t("details.fieldsChanged", { count }),
         createdMarker: t("detail.createdMarker"),
         weightingConfirmed: t("details.weightingConfirmed"),
+        noteMarker: t("details.noteMarker"),
       },
       fieldLabel,
       boolLabel,

@@ -171,13 +171,15 @@ describe("CalibrationQueue", () => {
       within(dialog).getByRole("button", { name: m.confirmSubmit })
     )
     await waitFor(() => {
-      expect(calibrate).toHaveBeenCalledWith(
-        expect.objectContaining({
-          orgId: "org-1",
-          roleId: "r1",
-          note: "Reviewed with the department head.",
-        })
-      )
+      // Exact, so a field added or dropped on this call reddens here. The
+      // gesture id rides along so the calibration and any level.shift it
+      // cascades read as one story in the log.
+      expect(calibrate).toHaveBeenCalledWith({
+        orgId: "org-1",
+        roleId: "r1",
+        note: "Reviewed with the department head.",
+        gestureId: expect.any(String),
+      })
     })
     expect(toast.success).toHaveBeenCalledWith(
       messages.dashboard.toast.placementConfirmed
@@ -198,6 +200,11 @@ describe("CalibrationQueue", () => {
     expect(submit.disabled).toBe(false)
     fireEvent.click(submit)
     await waitFor(() => expect(calibrate).toHaveBeenCalled())
+    expect(calibrate).toHaveBeenCalledWith({
+      orgId: "org-1",
+      roleId: "r1",
+      gestureId: expect.any(String),
+    })
     const [args] = calibrate.mock.calls[0] as [Record<string, unknown>]
     expect("note" in args).toBe(false)
   })
@@ -214,6 +221,18 @@ describe("CalibrationQueue", () => {
       expect(toast.error).toHaveBeenCalledWith(messages.dashboard.toast.error)
     })
     expect(screen.getByRole("dialog")).toBeDefined()
+  })
+
+  // "Kalibrering" is a section-14 term the reader meets here for the first
+  // time, and the boundary worth stating is the one people get wrong:
+  // confirming a placement does not move it.
+  it("explains calibration where the term is used", () => {
+    renderQueue([role()])
+    expect(
+      screen.getByRole("button", {
+        name: messages.dashboard.help.calibrationLabel,
+      })
+    ).toBeDefined()
   })
 
   it("shows the empty state when nothing needs reviewing", () => {
@@ -265,24 +284,41 @@ describe("CalibrationQueue", () => {
   })
 
   // Role-level data only (Role != Person). The queue is a list of ROLES.
-  it("shows nothing but role-level data", () => {
-    const { container } = renderQueue([
-      role({
+  //
+  // Pinned against a POISONED row rather than a word list: a scan for "salary"
+  // over a fixture that never had one cannot fail, and the words a leak would
+  // actually carry are a person's name and their numbers, which no word list
+  // can anticipate. The row below carries every person field the wire could
+  // ever grow, and none of them may reach the screen.
+  it("renders no person data even when the row carries some", () => {
+    const poisoned = {
+      ...role({
         profileLimited: true,
         profileFailures: [
           { criterionId: "c1", name: "Scope", required: 4, actual: 2 },
         ],
       }),
-    ])
-    const rendered = container.textContent ?? ""
-    for (const forbidden of [
-      "salary",
-      "Salary",
-      "kr",
-      "employee",
-      "Employee",
-    ]) {
-      expect(rendered).not.toContain(forbidden)
+      personId: "person-1",
+      displayName: "Anna Andersson",
+      gender: "Kvinna",
+      seniority: "IC3",
+      basicMonthly: 52000,
     }
+    const { container } = renderQueue([poisoned as CalibrationInput])
+    const rendered = container.textContent ?? ""
+    for (const leaked of [
+      "person-1",
+      "Anna Andersson",
+      "Anna",
+      "Kvinna",
+      "IC3",
+      "52000",
+    ]) {
+      expect(rendered).not.toContain(leaked)
+    }
+    // Non-vacuous: the row IS on screen, so the assertions above are about a
+    // rendered row rather than an empty container.
+    expect(screen.getByText("Analyst")).toBeDefined()
+    expect(rendered).toContain(m.profileLimitedReason)
   })
 })

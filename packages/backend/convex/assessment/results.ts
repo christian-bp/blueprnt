@@ -4,6 +4,7 @@ import {
   criteriaLibraryContent,
   LIBRARY_DIMENSION,
 } from "../evaluationModel/criteriaLibrary"
+
 import { clampLocale } from "../evaluationModel/localize"
 import {
   dimensionKeyValidator,
@@ -62,6 +63,22 @@ const profileFailuresWireValidator = v.union(
   ),
   v.null()
 )
+
+// Criterion ids to their localized display names. Every criterion is a library
+// selection (decision 8), so its name always resolves from the library by
+// libraryKey and is never stored. One builder, because both queries here need
+// the same map and a third hand-rolled copy of it was already drifting.
+function criterionNameMap(
+  rows: readonly Doc<"criteria">[],
+  content: ReturnType<typeof criteriaLibraryContent>
+): Map<string, string> {
+  return new Map(
+    rows.map((row) => [
+      row._id as string,
+      content.criteria[row.libraryKey].name,
+    ])
+  )
+}
 
 // Names each profile failure from the model's own criteria. The engine reports
 // failures by criterion id (it knows nothing about display text); every
@@ -148,12 +165,7 @@ export const getResults = orgQuery({
             .withIndex("by_model", (q) => q.eq("modelId", model._id))
             .collect()
     const content = criteriaLibraryContent(clampLocale(locale))
-    const criterionNames = new Map(
-      criteriaRows.map((row) => [
-        row._id as string,
-        content.criteria[row.libraryKey].name,
-      ])
-    )
+    const criterionNames = criterionNameMap(criteriaRows, content)
     const levels =
       model === null
         ? []
@@ -306,6 +318,7 @@ export const getRoleResult = orgQuery({
       ratingRows.map((rating) => [rating.criterionId as string, rating])
     )
 
+    const names = criterionNameMap(criteriaRows, content)
     const locked = role.assessment !== undefined
     const complete = result?.complete ?? false
     return {
@@ -323,24 +336,13 @@ export const getRoleResult = orgQuery({
       zone: locked ? (result?.zone ?? null) : null,
       profileLimited: locked ? (result?.profileLimited ?? null) : null,
       profileFailures: locked
-        ? nameFailures(
-            result?.profileFailures ?? [],
-            new Map(
-              criteriaRows.map((row) => [
-                row._id as string,
-                content.criteria[row.libraryKey].name,
-              ])
-            )
-          )
+        ? nameFailures(result?.profileFailures ?? [], names)
         : null,
       criteria: criteriaRows.map((row) => {
-        // Every criterion is a library selection (decision 8): its display
-        // name always localizes from criteriaLibraryContent by libraryKey,
-        // never stored (same rule as getModel).
         const rating = ratingByCriterion.get(row._id as string)
         return {
           criterionId: row._id,
-          name: content.criteria[row.libraryKey].name,
+          name: names.get(row._id as string) ?? "",
           dimensionKey: LIBRARY_DIMENSION[row.libraryKey],
           weightPoints: row.weightPoints,
           value: rating?.value ?? null,

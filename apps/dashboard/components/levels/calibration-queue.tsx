@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useState } from "react"
 import { ConfirmPlacementDialog } from "@/components/levels/confirm-placement-dialog"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { SectionTitleRow } from "@/components/section-title-row"
 import {
   type CalibrationInput,
@@ -47,6 +48,7 @@ export function CalibrationQueue({
   modelApproved: boolean
 }) {
   const t = useTranslations("dashboard.levels.calibration")
+  const tHelp = useTranslations("dashboard.help")
   const [target, setTarget] = useState<{
     roleId: Id<"roles">
     title: string
@@ -63,6 +65,11 @@ export function CalibrationQueue({
   return (
     <section className="space-y-3">
       <SectionTitleRow
+        help={
+          <HelpMorphButton label={tHelp("calibrationLabel")}>
+            {tHelp("calibrationBody")}
+          </HelpMorphButton>
+        }
         heading={
           <span className="flex items-center gap-2">
             {t("heading")}

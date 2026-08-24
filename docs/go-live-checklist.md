@@ -319,15 +319,16 @@ starting V2:
   patch `levelRules`/`zoneProfileRules` after model creation; the remaining
   gap is UI only, no dashboard surface calls either mutation yet. The docs
   promise per-org configurability; add the editing UI.
-- [ ] **Calibration queue UI (spec section 6).** `calibrateAssessment`
-  (`assessment/locking.ts`) already lets an admin confirm a locked role's
-  placement (stamps `calibratedBy`/`calibratedAt` and an optional note,
-  audited), but no dashboard surface calls it, and nothing reads
-  `calibrated`/`calibrationNote` either: the derived queue itself
-  (`profileLimited` roles not yet calibrated, anchor roles whose computed
-  level deviates from `expectedLevel`, and stale locks after a method
-  change) has no panel anywhere in `apps/`. The spec promises a calibration
-  queue on the levels surface; add it.
+- [x] **Calibration queue UI (spec section 6).** Shipped on the levels
+  surface (`components/levels/calibration-queue.tsx`, fas 5): the derived
+  queue lists the three classes with the reason in words per row, and
+  confirming a placement calls `calibrateAssessment` with an optional note.
+- [ ] **Bound the calibration queue for a large register.** The queue derives
+  from rows the levels page has already fetched, so it costs no extra reads,
+  but it renders EVERY row that needs review with no cap and no pagination.
+  Re-approving a method puts every locked role into the stale-lock class at
+  once, so an org with a thousand roles gets a thousand-row list on one page.
+  Cap it, paginate it, or collapse it per class before large-org onboarding.
 - [ ] **Calibrate `DEFAULT_LEVEL_RULES` and `DEFAULT_ZONE_PROFILE_RULES`
   against real data.** Both (`packages/core/src/zones.ts`) are the starting
   points every model's `levelRules`/`zoneProfileRules` seed from at creation,

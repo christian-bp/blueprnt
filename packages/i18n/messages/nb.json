@@ -678,6 +678,7 @@
         "deletedRun": "Slettet lønnskartlegging",
         "itemsChanged": "{count, plural, one {# element endret} other {# elementer endret}}",
         "weightingConfirmed": "Vektingen bekreftet uendret",
+        "noteMarker": "Notat skrevet",
         "fieldsChanged": "{count, plural, one {# felt endret} other {# felter endret}}",
         "complexValue": "Sammensatt verdi"
       },
@@ -2202,7 +2203,9 @@
       "sharedScaleLabel": "Hva er den felles skalaen?",
       "sharedScaleBody": "Skalaen 1 til 5 beskriver hvor krevende et krav er, på samme måte for hvert kriterium. En firer på ett kriterium er ikke en firer på et annet: kriteriets egne ankere avgjør hva den betyr.",
       "consequenceLabel": "Hva er en konsekvensanalyse?",
-      "consequenceBody": "Hva en godkjenning av denne metoden ville gjøre med plasseringene dere allerede har, sammenlignet med metoden dere sist godkjente. Den flytter roller, ikke personer: ingens lønn endres her."
+      "consequenceBody": "Hva en godkjenning av denne metoden ville gjøre med plasseringene dere allerede har, sammenlignet med metoden dere sist godkjente. Den flytter roller, ikke personer: ingens lønn endres her.",
+      "calibrationLabel": "Hva er kalibrering?",
+      "calibrationBody": "Gjennomgang av en låst plassering som noen bør se på før stigen regnes som avklart. Å bekrefte en endrer ikke nivået: den registrerer at noen står bak den."
     },
     "widgetCard": {
       "expand": "Forstørr"

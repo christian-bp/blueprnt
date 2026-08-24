@@ -89,6 +89,7 @@ const labels = {
   fieldsChanged: (count: number) => `${count} fields`,
   createdMarker: "Created",
   weightingConfirmed: "Weighting confirmed",
+  noteMarker: "Note written",
 }
 
 // Stub resolver: upper-cases the field name so tests can tell labels apart from
@@ -958,11 +959,26 @@ describe("formatAuditDetail", () => {
     ).toBe("0 items")
   })
 
-  it("renders role.assessmentCalibrated as the role name, never blank (payloadStats alone would drop the boolean noteProvided too)", () => {
+  // The note's TEXT never enters the trail, so this boolean is the only record
+  // that one was written. A row that dropped it would say a placement was
+  // confirmed while hiding that the confirmer explained why.
+  it("renders role.assessmentCalibrated with the note marker when a note was written", () => {
     expect(
       formatAuditDetail(
         "role.assessmentCalibrated",
         { roleId: "r1", noteProvided: true },
+        { r1: "Analyst" },
+        labels,
+        fieldLabel
+      )
+    ).toBe("Analyst: Note written")
+  })
+
+  it("renders a calibration without a note as the role name alone", () => {
+    expect(
+      formatAuditDetail(
+        "role.assessmentCalibrated",
+        { roleId: "r1", noteProvided: false },
         { r1: "Analyst" },
         labels,
         fieldLabel

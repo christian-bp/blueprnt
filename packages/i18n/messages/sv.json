@@ -678,6 +678,7 @@
         "deletedRun": "Borttagen lönekartläggning",
         "itemsChanged": "{count, plural, one {# objekt ändrat} other {# objekt ändrade}}",
         "weightingConfirmed": "Viktningen bekräftad oförändrad",
+        "noteMarker": "Anteckning skriven",
         "fieldsChanged": "{count, plural, one {# fält ändrat} other {# fält ändrade}}",
         "complexValue": "Sammansatt värde"
       },
@@ -2202,7 +2203,9 @@
       "sharedScaleLabel": "Vad är den gemensamma skalan?",
       "sharedScaleBody": "Skalan 1 till 5 beskriver hur krävande ett krav är, på samma sätt för varje kriterium. En fyra på ett kriterium är inte en fyra på ett annat: kriteriets egna ankare avgör vad den betyder.",
       "consequenceLabel": "Vad är en konsekvensanalys?",
-      "consequenceBody": "Vad ett godkännande av den här metoden skulle göra med de placeringar ni redan har, jämfört med metoden ni senast godkände. Den flyttar roller, inte personer: ingens lön ändras här."
+      "consequenceBody": "Vad ett godkännande av den här metoden skulle göra med de placeringar ni redan har, jämfört med metoden ni senast godkände. Den flyttar roller, inte personer: ingens lön ändras här.",
+      "calibrationLabel": "Vad är kalibrering?",
+      "calibrationBody": "Granskning av en låst placering som någon bör titta på innan stegen betraktas som färdig. Att bekräfta en ändrar inte nivån: den registrerar att någon står bakom den."
     },
     "widgetCard": {
       "expand": "Förstora"

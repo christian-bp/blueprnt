@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 vi.mock(
   "convex/react",
@@ -99,11 +99,18 @@ const MOVED: Analysis = {
 }
 
 let analysis: Analysis | undefined = MOVED
-onQuery((ref) =>
-  ref === "evaluationModel.consequence.getConsequenceAnalysis"
-    ? analysis
-    : undefined
-)
+
+// Re-claimed per test, not once at module scope: onQuery installs ONE module
+// singleton, so whichever test file imports last owns it for every file in the
+// worker. Registering here makes this file's handler the live one whenever its
+// own tests run.
+function install() {
+  onQuery((ref) =>
+    ref === "evaluationModel.consequence.getConsequenceAnalysis"
+      ? analysis
+      : undefined
+  )
+}
 
 function renderPanel() {
   return render(
@@ -114,6 +121,7 @@ function renderPanel() {
 }
 
 describe("ConsequencePanel", () => {
+  beforeEach(() => install())
   afterEach(() => cleanup())
 
   // The silence rule. A panel that appeared on every visit to say "no change"

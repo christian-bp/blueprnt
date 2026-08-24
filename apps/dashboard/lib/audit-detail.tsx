@@ -720,6 +720,11 @@ export type AuditDetailLabels = {
   // A rebalance that moved no points. Its own words, not a count: see the
   // model.updated case below.
   weightingConfirmed: string
+  // A calibration that carried a note. The note's TEXT is deliberately never
+  // in the trail (free-text audit practice), so this boolean is the only
+  // record that one was written at all, and a row that dropped it would say a
+  // placement was confirmed while hiding that the confirmer explained why.
+  noteMarker: string
 }
 
 // Turns an audit event + its (id-resolved) names into a human-readable one-line
@@ -773,8 +778,17 @@ export function formatAuditDetail(
     // one-line cell.
     case "role.assessmentLocked":
     case "role.assessmentUnlocked":
-    case "role.assessmentCalibrated":
       return roleName(p.roleId)
+    // The marker idiom (organization.created's own case below), not a
+    // field:value stat: payloadStats drops top-level booleans on purpose,
+    // because most of them are flags about the WRITE (created, applied) rather
+    // than content, and "Created: Yes" on every row is noise. noteProvided is
+    // the exception that proves the rule: it is this event's own content.
+    case "role.assessmentCalibrated": {
+      const name = roleName(p.roleId)
+      if (p.noteProvided !== true) return name
+      return name === "" ? labels.noteMarker : `${name}: ${labels.noteMarker}`
+    }
     case "role.updated": {
       const base = roleName(p.roleId)
       if (changes === null) return base

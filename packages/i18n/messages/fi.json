@@ -678,6 +678,7 @@
         "deletedRun": "Poistettu palkkakartoitus",
         "itemsChanged": "{count, plural, one {# kohde muuttui} other {# kohdetta muuttui}}",
         "weightingConfirmed": "Painotus vahvistettu ennallaan",
+        "noteMarker": "Muistiinpano kirjoitettu",
         "fieldsChanged": "{count, plural, one {# kenttä muuttui} other {# kenttää muuttui}}",
         "complexValue": "Koostettu arvo"
       },
@@ -2202,7 +2203,9 @@
       "sharedScaleLabel": "Mikä yhteinen asteikko on?",
       "sharedScaleBody": "Asteikko 1-5 kuvaa, kuinka vaativa vaatimus on, samalla tavalla jokaisessa kriteerissä. Nelonen yhdessä kriteerissä ei ole nelonen toisessa: kriteerin omat ankkurit ratkaisevat sen merkityksen.",
       "consequenceLabel": "Mikä on seurausanalyysi?",
-      "consequenceBody": "Mitä tämän menetelmän hyväksyminen tekisi jo olemassa oleville sijoituksille verrattuna viimeksi hyväksymäänne menetelmään. Se siirtää rooleja, ei henkilöitä: kenenkään palkka ei muutu tässä."
+      "consequenceBody": "Mitä tämän menetelmän hyväksyminen tekisi jo olemassa oleville sijoituksille verrattuna viimeksi hyväksymäänne menetelmään. Se siirtää rooleja, ei henkilöitä: kenenkään palkka ei muutu tässä.",
+      "calibrationLabel": "Mitä kalibrointi on?",
+      "calibrationBody": "Lukitun sijoituksen tarkistus, joka jonkun on hyvä tehdä ennen kuin tikkaita pidetään valmiina. Vahvistaminen ei muuta vaativuustasoa: se kirjaa, että joku seisoo sen takana."
     },
     "widgetCard": {
       "expand": "Suurenna"

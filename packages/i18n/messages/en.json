@@ -678,6 +678,7 @@
         "deletedRun": "Deleted pay mapping",
         "itemsChanged": "{count, plural, one {# item changed} other {# items changed}}",
         "weightingConfirmed": "Weighting confirmed unchanged",
+        "noteMarker": "Note written",
         "fieldsChanged": "{count, plural, one {# field changed} other {# fields changed}}",
         "complexValue": "Complex value"
       },
@@ -2202,7 +2203,9 @@
       "sharedScaleLabel": "What is the shared scale?",
       "sharedScaleBody": "The 1 to 5 steps describe how demanding a requirement is, the same way on every criterion. A four on one criterion is not a four on another: the criterion's own anchors decide what it means.",
       "consequenceLabel": "What is a consequence analysis?",
-      "consequenceBody": "What approving this method would do to the placements you already have, compared with the method you last approved. It moves roles, not people: nobody's pay changes here."
+      "consequenceBody": "What approving this method would do to the placements you already have, compared with the method you last approved. It moves roles, not people: nobody's pay changes here.",
+      "calibrationLabel": "What is calibration?",
+      "calibrationBody": "Reviewing a locked placement a person should look at before the ladder is taken as settled. Confirming one does not change the level: it records that someone stands behind it."
     },
     "widgetCard": {
       "expand": "Expand"
