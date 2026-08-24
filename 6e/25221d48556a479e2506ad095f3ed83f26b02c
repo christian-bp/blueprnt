@@ -1,0 +1,48 @@
+apps/dashboard/content/docs/da/method-documentation.mdx
+  s_58dd112dc09435::t_c0d4a94e6d45fa 138-149
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_7c3e1727aa943a 1905,1915-1916
+apps/dashboard/content/docs/fi/method-documentation.mdx
+  s_58dd112dc09435::t_c0d4a94e6d45fa 143-154
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_7c3e1727aa943a 1905,1915-1916
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_7c3e1727aa943a 1905,1915-1916
+packages/backend/convex/payMapping/gap.ts
+  s_58dd112dc09435::t_9f8b8eab29a94f 147-156
+apps/dashboard/content/docs/sv/method-documentation.mdx
+  s_58dd112dc09435::t_c0d4a94e6d45fa 133-144
+apps/dashboard/components/model/consequence-panel.tsx
+  s_58dd112dc09435::t_c61ff07f6091dd 67,81-90,167-179,244-255
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_7c3e1727aa943a 1905,1915-1916
+packages/backend/convex/evaluationModel/consequence.ts
+  s_58dd112dc09435::t_0aec85809d9a5e 114-122,407-416
+apps/dashboard/content/docs/en/method-documentation.mdx
+  s_58dd112dc09435::t_c0d4a94e6d45fa 134-145
+apps/dashboard/content/docs/nb/method-documentation.mdx
+  s_58dd112dc09435::t_c0d4a94e6d45fa 135-146
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_7c3e1727aa943a 1905,1907-1908,1915-1916
+apps/dashboard/components/model/consequence-panel.test.tsx
+  s_58dd112dc09435::t_5e1ad753d0a879 234-295,314-315
+  s_58dd112dc09435::t_e04868eaa5b3ef 28-30,352-377,379
+  s_58dd112dc09435::t_f32b6a4155030d 2,4-6,26-27,31-37,340-351,378
+  s_58dd112dc09435::t_ec226a6417d66e 380
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "6e25221d48556a479e2506ad095f3ed83f26b02c",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
