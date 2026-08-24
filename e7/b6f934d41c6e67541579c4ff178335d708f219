@@ -1,0 +1,65 @@
+apps/dashboard/content/docs/da/levels-views.mdx
+  s_58dd112dc09435::t_8606b2d963266e 65-86
+apps/dashboard/lib/calibration-schemas.ts
+  s_58dd112dc09435::t_16822a52dc28ad 1-26
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_a00870b63d36c3 193,1668-1688
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_a00870b63d36c3 193,1668-1688
+apps/dashboard/content/docs/en/levels-views.mdx
+  s_58dd112dc09435::t_8606b2d963266e 62-82
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_a00870b63d36c3 193,1668-1688
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_a00870b63d36c3 193,1668-1688
+packages/backend/convex/assessment/results.ts
+  s_58dd112dc09435::t_99040d71c0f1e7 71-75
+  s_58dd112dc09435::t_c50ee76ed88a00 124-129,228
+  s_58dd112dc09435::t_44f57040610320 48-53,58
+  s_58dd112dc09435::t_c7312c489e876d 66-70,76-83,143-156,204-206,325-335
+apps/dashboard/app/(app)/work/page.tsx
+  s_58dd112dc09435::t_4a968290cd4edf 30,217-228,310,328,336
+apps/dashboard/content/docs/fi/levels-views.mdx
+  s_58dd112dc09435::t_8606b2d963266e 67-88
+apps/dashboard/lib/calibration-queue.test.ts
+  s_58dd112dc09435::t_894089c52cefbf 1-44,51-93,97-152
+  s_58dd112dc09435::t_99040d71c0f1e7 45-50,94-96
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_a00870b63d36c3 193,1668-1688
+apps/dashboard/components/levels/calibration-queue.tsx
+  s_58dd112dc09435::t_13da5eed31bfd0 3,5,62-77
+  s_58dd112dc09435::t_bf833c6efd0760 1-2,4,6-54,59-61,78-212
+  s_58dd112dc09435::t_d3765e19020759 55-58
+apps/dashboard/lib/calibration-queue.ts
+  s_58dd112dc09435::t_d2be0d0d87f7fd 1-11,16-82,89-92
+  s_58dd112dc09435::t_13da5eed31bfd0 12-15,83-88
+apps/dashboard/content/docs/nb/levels-views.mdx
+  s_58dd112dc09435::t_8606b2d963266e 65-85
+apps/dashboard/components/levels/calibration-queue.test.tsx
+  s_58dd112dc09435::t_de23813252d623 170-172,210-212,262-268
+  s_58dd112dc09435::t_2ac17812f1bcda 1-169,173-209,213-261,269-272
+packages/backend/convex/assessment/results.test.ts
+  s_58dd112dc09435::t_64bad6f0bc6ce3 473-479,483-496,499-503,505-514,523-527
+  s_58dd112dc09435::t_a03dd57f04ded3 3
+  s_58dd112dc09435::t_7de4aa6de432d3 443-472,480-482,497-498,504,515-522,528-552
+apps/dashboard/content/docs/sv/levels-views.mdx
+  s_58dd112dc09435::t_8606b2d963266e 65-85
+apps/dashboard/components/levels/confirm-placement-dialog.tsx
+  s_58dd112dc09435::t_39f6e547b629b2 1-153
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "e7b6f934d41c6e67541579c4ff178335d708f219",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
