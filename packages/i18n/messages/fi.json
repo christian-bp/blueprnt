@@ -130,7 +130,6 @@
       "emailUnchanged": "Anna eri sähköpostiosoite.",
       "levelDecreasing": "Oltava pienempi kuin yläpuolinen taso.",
       "levelBottomZero": "Alimman tason on alettava nollasta.",
-      "levelCeiling": "Ei voi alkaa yli sadan.",
       "zoneMonotonic": "Ei voi vaatia enempää kuin yläpuolinen vyöhyke.",
       "scoreRange": "Kokonaisluku väliltä 0-100."
     },
@@ -196,7 +195,7 @@
       "workingConditionsDecided": "Työolosuhteiden päätös tallennettu",
       "assessmentLocked": "Arviointi lukittu",
       "placementConfirmed": "Sijoitus vahvistettu",
-      "thresholdsSaved": "Rajat tallennettu",
+      "thresholdsSaved": "Vaativuustasorajat tallennettu",
       "assessmentUnlocked": "Arvioinnin lukitus avattu",
       "weightMotivationSaved": "Perustelu tallennettu"
     },
@@ -684,7 +683,7 @@
         "deletedRun": "Poistettu palkkakartoitus",
         "itemsChanged": "{count, plural, one {# kohde muuttui} other {# kohdetta muuttui}}",
         "weightingConfirmed": "Painotus vahvistettu ennallaan",
-        "noteMarker": "Muistiinpano kirjoitettu",
+        "noteMarker": "Merkintä kirjoitettu",
         "fieldsChanged": "{count, plural, one {# kenttä muuttui} other {# kenttää muuttui}}",
         "complexValue": "Koostettu arvo"
       },
@@ -708,7 +707,7 @@
         "status": "Tila",
         "purpose": "Tarkoitus",
         "whyRelevant": "Miksi relevantti",
-        "overlapNotes": "Päällekkäisyysmuistiinpanot",
+        "overlapNotes": "Päällekkäisyysmerkinnät",
         "biasRisk": "Vinoumariski",
         "biasComment": "Vinoumakommentti",
         "biasAction": "Vinoumien lieventäminen",
@@ -793,7 +792,7 @@
         "effortShare": "Ponnistus %",
         "responsibilityShare": "Vastuu %",
         "workingConditionsShare": "Työolosuhteet %",
-        "noteProvided": "Muistiinpano annettu"
+        "noteProvided": "Merkintä annettu"
       },
       "values": {
         "yes": "Kyllä",
@@ -1672,7 +1671,6 @@
       "zoneTypicalLabel": "Tyypillisesti täällä:",
       "showZone": "Näytä vyöhykkeen {zone} vaativuustasot",
       "hideZone": "Piilota vyöhykkeen {zone} vaativuustasot",
-      "levelFunctionToggle": "Mikä taso on",
       "calibration": {
         "heading": "Tarkistettavat sijoitukset",
         "profileLimitedReason": "Profiilivaatimukset pidättivät tämän roolin korkeammalta vyöhykkeeltä.",
@@ -1688,8 +1686,8 @@
         "unapprovedDescription": "Roolit sijoitetaan, kun menetelmä on hyväksytty, joten siihen asti ei ole mitään tarkistettavaa.",
         "unapprovedCta": "Avaa malli",
         "dialogTitle": "Vahvista roolin {title} sijoitus",
-        "dialogDescription": "Kirjaatte, että joku on katsonut sijoituksen ja seisoo sen takana. Lisätkää muistiinpano, jos jäljen myöhemmin lukevan kollegan on hyvä tietää jotain.",
-        "noteLabel": "Muistiinpano (valinnainen)",
+        "dialogDescription": "Kirjaatte, että joku on katsonut sijoituksen ja seisoo sen takana. Lisää merkintä, jos jäljen myöhemmin lukevan kollegan on hyvä tietää jotain.",
+        "noteLabel": "Merkintä (valinnainen)",
         "notePlaceholder": "Miksi sijoitus on oikea tälle roolille.",
         "confirmSubmit": "Vahvista sijoitus",
         "cancel": "Peruuta"
@@ -1913,12 +1911,13 @@
         "zoneApproved": "Kuten viimeksi hyväksytty",
         "moversHeading": "Roolit, jotka siirtyisivät",
         "moverChange": "Vaativuustasolta {from} tasolle {to}",
-        "moverLoses": "Vaativuustasolta {from} pois",
-        "moverGains": "Ei tasoa, nyt vaativuustaso {to}",
+        "moverLoses": "Vaativuustasolta {from} ei tasoa",
+        "moverGains": "Ei tasoa vaativuustasolle {to}",
         "moreMovers": "ja {count} muuta",
         "familiesHeading": "Rooliperheittäin",
         "gendersHeading": "Sukupuolijakauman mukaan",
         "noFamily": "Ei perhettä",
+        "unknownFamily": "Perhettä ei löytynyt",
         "genderWomen": "Naisvaltaiset roolit",
         "genderMen": "Miesvaltaiset roolit",
         "genderMixed": "Sekaroolit",
@@ -1928,17 +1927,16 @@
         "groupDown": "{count} alas"
       },
       "levelRules": {
-        "title": "Vaativuustasojen rajat",
-        "description": "Painotus, jolta kukin vaativuustaso alkaa, ja profiilivaatimus, jolla kukin vyöhyke portitetaan. Kumman tahansa muuttaminen sijoittaa kaikki roolit uudelleen.",
+        "title": "Vaativuustasorajat",
         "levelsLabel": "Mistä kukin taso alkaa",
         "levelsDescription": "Rooli yltää tasolle, kun sen painotus on vähintään tämä luku. Taso 1 on korkein, joten luvut laskevat tasojen laskiessa, ja taso 12 alkaa nollasta, jotta jokainen rooli sijoittuu jonnekin.",
         "zonesLabel": "Vyöhykkeiden profiilivaatimukset",
-        "zonesDescription": "Alin porras, joka roolin on saavutettava jokaisella profiilikriteerillä päästäkseen vyöhykkeelle. Jätä vyöhyke tyhjäksi, jos se portitetaan pelkällä painotuksella.",
+        "zonesDescription": "Alin porras, joka roolin on saavutettava jokaisella profiilikriteerillä päästäkseen vyöhykkeelle. Jätä vyöhyke tyhjäksi, jos haluat sen määräytyvän pelkän painotuksen mukaan.",
         "levelField": "Taso {level}",
         "zoneField": "Vyöhyke {zone}",
         "reopensApproval": "Tallentaminen avaa mallin hyväksynnän uudelleen: rajat ovat osa hyväksyttyä kokonaisuutta, joten tarkistuslista on allekirjoitettava uudelleen.",
         "save": "Tallenna rajat",
-        "invalid": "Moottori hylkäsi nämä säännöt. Tarkistakaa, että luvut laskevat tasojen laskiessa eikä mikään vyöhyke vaadi enempää kuin sen yläpuolinen."
+        "invalid": "Sääntöjä ei voitu tallentaa. Tarkista, että luvut laskevat tasojen laskiessa eikä mikään vyöhyke vaadi enempää kuin sen yläpuolinen."
       },
       "review": {
         "cta": "Avaa hallintapaneeli"
@@ -2096,8 +2094,8 @@
           "anchorsComplete": "Yhdeltä kriteeriltä puuttuu portaita arviointiasteikolta. Poista se ja valitse uudelleen luvussa <link>{chapter}</link>.",
           "documentationComplete": "{count, plural, =1 {# kriteeri on} other {# kriteeriä on}} yhä dokumentoimatta ja hyväksymättä. Avaa Dokumentoi kunkin kohdalla luvussa <link>{chapter}</link>.",
           "weightBudget": "Painopisteet eivät täsmää budjettiin. Tasapainota ne ja tallenna luvussa <link>{chapter}</link>.",
-          "levelRulesValid": "Mallin vaativuustasojen rajat eivät muodosta kelvollista asteikkoa 1-12. Korjaa ne kohdassa Vaativuustasojen rajat, tämän tarkistuslistan alapuolella.",
-          "zoneProfileMonotonic": "Mallin vyöhykkeiden profiilivaatimukset eivät ole johdonmukaiset. Korjaa ne kohdassa Vaativuustasojen rajat, tämän tarkistuslistan alapuolella.",
+          "levelRulesValid": "Mallin vaativuustasojen rajat eivät muodosta kelvollista asteikkoa 1-12. Korjaa ne kohdassa Vaativuustasorajat, tämän tarkistuslistan alapuolella.",
+          "zoneProfileMonotonic": "Mallin vyöhykkeiden profiilivaatimukset eivät ole johdonmukaiset. Korjaa ne kohdassa Vaativuustasorajat, tämän tarkistuslistan alapuolella.",
           "dimensionWeightBalance": "{dimensions} kantaa hallitsevan osan painotuksesta ilman kirjattua syytä. Perustele se luvussa <link>{chapter}</link> tai siirrä painopisteitä toiseen ulottuvuuteen.",
           "peopleLeadershipWeight": "{criterion} saa suuren painon ilman kirjattua syytä. Perustele se luvussa <link>{chapter}</link> tai laske sen painopisteitä.",
           "overlapPairs": "Päällekkäiset kriteerit: {pairs}. Kirjaa päällekkäisyys jommallekummalle parin kriteerille luvussa <link>{chapter}</link>."
@@ -2232,7 +2230,7 @@
       "calibrationLabel": "Mitä kalibrointi on?",
       "calibrationBody": "Lukitun sijoituksen tarkistus, joka jonkun on hyvä tehdä ennen kuin tikkaita pidetään valmiina. Vahvistaminen ei muuta vaativuustasoa: se kirjaa, että joku seisoo sen takana.",
       "levelThresholdLabel": "Mikä on vaativuustason raja?",
-      "levelThresholdBody": "Painotus, joka roolin on saavutettava ollakseen tasolla, ja profiiliporras, jolla vyöhyke portitetaan. Ne ratkaisevat mihin kukin rooli päätyy, joten muutos sijoittaa koko tikkaat uudelleen."
+      "levelThresholdBody": "Painotus, joka roolin on saavutettava ollakseen tasolla, ja profiiliporras, jonka vyöhyke vaatii. Ne ratkaisevat mihin kukin rooli päätyy, joten muutos sijoittaa koko tikkaat uudelleen."
     },
     "widgetCard": {
       "expand": "Suurenna"

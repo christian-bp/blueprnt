@@ -12,6 +12,7 @@ import { assertUniqueCriteria } from "./scoring"
 import { budgetDelta, isWeightPoints, type WeightPoints } from "./weighting"
 import {
   LEVEL_COUNT,
+  SCORE_SCALE_MAX,
   type LevelRule,
   PROFILE_WEIGHT_FLOOR,
   ZONE_KEYS,
@@ -104,7 +105,7 @@ function levelRulesAreValid(levelRules: readonly LevelRule[]): boolean {
   const first = sorted[0]
   const last = sorted[sorted.length - 1]
   if (first === undefined || last === undefined) return false
-  return last.minScore === 0 && first.minScore <= 100
+  return last.minScore === 0 && first.minScore <= SCORE_SCALE_MAX
 }
 
 // Walking configured zones A -> D, a zone's minStep must never exceed an

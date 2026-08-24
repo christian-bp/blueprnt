@@ -191,7 +191,11 @@ describe("ConsequencePanel", () => {
     analysis = MOVED
     renderPanel()
     const row = screen
-      .getByText((text) => text.startsWith("A."))
+      .getByText((text) =>
+        text.startsWith(
+          `${messages.dashboard.levels.zoneLabel.replace("{zone}", "A")}:`
+        )
+      )
       .closest("tr") as HTMLElement
     // As approved, then after approval.
     expect(row.textContent).toContain("1")
@@ -346,7 +350,7 @@ describe("ConsequencePanel", () => {
   it.each([
     ["nb", "Fra nivå 6 til uten nivå", "Uten nivå til nivå 4"],
     ["da", "Fra niveau 6 til uden niveau", "Uden niveau til niveau 4"],
-    ["fi", "Vaativuustasolta 6 pois", "Ei tasoa, nyt vaativuustaso 4"],
+    ["fi", "Vaativuustasolta 6 ei tasoa", "Ei tasoa vaativuustasolle 4"],
     ["sv", "Från nivå 6 till ingen nivå", "Ingen nivå till nivå 4"],
     ["en", "From level 6 to no level", "No level to level 4"],
   ] as [ContentLocale, string, string][])(

@@ -59,10 +59,20 @@ export function LevelLadder({
   // filter change that reveals a band cannot leave it collapsed, and a zone the
   // model gains later opens by default like every other.
   const [closed, setClosed] = useState<ReadonlySet<ZoneKey>>(() => new Set())
-  // Which level's function text is showing. One at a time: the texts are
-  // three sentences about the same three positions, and four open at once is a
-  // wall rather than an answer.
-  const [openFunction, setOpenFunction] = useState<number | null>(null)
+  // Which level's function text is showing, PER BAND. One at a time within a
+  // zone: the three texts are three sentences about the same three positions,
+  // and a whole ladder of them open at once is a wall rather than an answer.
+  //
+  // Per band rather than per ladder, because one shared slot made opening a
+  // level collapse whichever level was open somewhere else, and when that
+  // other level sat ABOVE the click the row under the pointer jumped up by the
+  // height of a paragraph the reader was not looking at. A collapse the reader
+  // did not ask for and cannot see is the layout shift the surface laws
+  // forbid; scoping it means the only thing that ever moves is below the
+  // gesture that moved it.
+  const [openFunction, setOpenFunction] = useState<
+    ReadonlyMap<ZoneKey, number>
+  >(() => new Map())
 
   const renderChip = (role: LevelRoleRow) => (
     <motion.div
@@ -127,7 +137,8 @@ export function LevelLadder({
                     (row) => row.level === range.level
                   )
                   const fn = levelFunction(content, range.level)
-                  const functionOpen = openFunction === range.level
+                  const functionOpen =
+                    openFunction.get(band.zone) === range.level
                   return (
                     <li key={range.level} className="rounded-xl border p-3">
                       <div className="flex gap-4">
@@ -146,9 +157,15 @@ export function LevelLadder({
                             label={fn.label}
                             open={functionOpen}
                             onToggle={() =>
-                              setOpenFunction((current) =>
-                                current === range.level ? null : range.level
-                              )
+                              setOpenFunction((current) => {
+                                const next = new Map(current)
+                                if (next.get(band.zone) === range.level) {
+                                  next.delete(band.zone)
+                                } else {
+                                  next.set(band.zone, range.level)
+                                }
+                                return next
+                              })
                             }
                             className="mt-1"
                           />

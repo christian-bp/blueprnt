@@ -130,7 +130,6 @@
       "emailUnchanged": "Enter a different email address.",
       "levelDecreasing": "Must be lower than the level above it.",
       "levelBottomZero": "The lowest level must open at 0.",
-      "levelCeiling": "Cannot open above 100.",
       "zoneMonotonic": "Cannot ask more than the zone above it.",
       "scoreRange": "A whole number between 0 and 100."
     },
@@ -196,7 +195,7 @@
       "workingConditionsDecided": "Working conditions decision saved",
       "assessmentLocked": "Assessment locked",
       "placementConfirmed": "Placement confirmed",
-      "thresholdsSaved": "Thresholds saved",
+      "thresholdsSaved": "Level thresholds saved",
       "assessmentUnlocked": "Assessment unlocked",
       "weightMotivationSaved": "Motivation saved"
     },
@@ -1672,7 +1671,6 @@
       "zoneTypicalLabel": "Typically here:",
       "showZone": "Show the levels in zone {zone}",
       "hideZone": "Hide the levels in zone {zone}",
-      "levelFunctionToggle": "What this level is",
       "calibration": {
         "heading": "Placements to review",
         "profileLimitedReason": "The profile requirements held this role back from a higher zone.",
@@ -1904,7 +1902,7 @@
       "consequence": {
         "heading": "What approving this would change",
         "summary": "{moved} of {placed, plural, =1 {1 locked placement} other {# locked placements}} would move to another level.",
-        "losing": "{count, plural, =1 {1 role would lose its level} other {# roles would lose their level}} until it is rated on the criteria the method has gained.",
+        "losing": "{count, plural, =1 {1 role would lose its level until it is rated} other {# roles would lose their level until they are rated}} on the criteria the method has gained.",
         "gaining": "{count, plural, =1 {1 role would gain a level it could not reach before} other {# roles would gain a level they could not reach before}}.",
         "criteriaChanged": "The method has changed since the last approval: {added, plural, =0 {no criteria} =1 {1 criterion} other {# criteria}} added, {removed, plural, =0 {none} other {#}} removed.",
         "distributionHeading": "Roles per zone",
@@ -1919,6 +1917,7 @@
         "familiesHeading": "By role family",
         "gendersHeading": "By gender make-up",
         "noFamily": "No family",
+        "unknownFamily": "Family not found",
         "genderWomen": "Women-dominated roles",
         "genderMen": "Men-dominated roles",
         "genderMixed": "Mixed roles",
@@ -1929,7 +1928,6 @@
       },
       "levelRules": {
         "title": "Level thresholds",
-        "description": "The weighting each level opens at, and the profile requirement each zone gates on. Changing either re-places every role.",
         "levelsLabel": "Where each level opens",
         "levelsDescription": "A role reaches a level when its weighting is at least this number. Level 1 is the highest, so the numbers fall as the levels descend, and level 12 opens at 0 so every role places somewhere.",
         "zonesLabel": "Zone profile requirements",
@@ -1938,7 +1936,7 @@
         "zoneField": "Zone {zone}",
         "reopensApproval": "Saving reopens the model's approval: the thresholds are part of what was approved, so the checklist has to be signed off again.",
         "save": "Save thresholds",
-        "invalid": "The engine refused these rules. Check that the numbers fall as the levels descend and that no zone asks more than the zone above it."
+        "invalid": "These rules were not saved. Check that the numbers fall as the levels descend and that no zone asks more than the zone above it."
       },
       "review": {
         "cta": "Open the dashboard"

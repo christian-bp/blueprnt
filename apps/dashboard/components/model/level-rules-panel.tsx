@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
   LEVEL_COUNT,
+  SCORE_SCALE_MAX,
   ZONE_KEYS,
-  ZONE_LEVEL_RANGES,
   type ZoneKey,
 } from "@workspace/core"
 import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
@@ -30,8 +30,11 @@ import { newGestureId } from "@/lib/gesture"
 import {
   type LevelRulesValues,
   makeLevelRulesSchema,
+  MIN_STEP_CEILING,
+  MIN_STEP_FLOOR,
 } from "@/lib/level-rules-schemas"
 import { numberInputField } from "@/lib/number-field"
+import { zoneHeading, zoneLevels } from "@/lib/zone-bands"
 import { toast } from "@/lib/toast"
 
 // The level thresholds and the zone profile rules, readable and correctable.
@@ -47,6 +50,13 @@ import { toast } from "@/lib/toast"
 // unchanged half would still write an audit row and reopen the approval for a
 // change nobody made. They share a gesture id, so the rows they write read as
 // one story in the log.
+// No frame `description`. It stated the same two facts, clause for clause in
+// the same order, that the help body on the title beside it states, that the
+// two settings rows below it state in more useful detail, and that the
+// footer's reopensApproval sentence closes with: four tellings of one thing.
+// A standing sentence restating what the reader is already looking at is the
+// framing prose the surface laws name as a defect, and the help popover is
+// where that depth belongs, opt-in rather than always on.
 export function LevelRulesPanel({
   orgId,
   onSaved,
@@ -90,6 +100,7 @@ function LevelRulesForm({
 }) {
   const t = useTranslations("dashboard.model.levelRules")
   const tHelp = useTranslations("dashboard.help")
+  const tLevels = useTranslations("dashboard.levels")
   const tToast = useTranslations("dashboard.toast")
   const tv = useTranslations("dashboard.validation")
   const locale = useLocale()
@@ -118,7 +129,6 @@ function LevelRulesForm({
       makeLevelRulesSchema(tv, {
         decreasing: tv("levelDecreasing"),
         bottomZero: tv("levelBottomZero"),
-        ceiling: tv("levelCeiling"),
         zoneMonotonic: tv("zoneMonotonic"),
         range: tv("scoreRange"),
       }),
@@ -180,7 +190,6 @@ function LevelRulesForm({
               </HelpMorphButton>
             </span>
           }
-          description={t("description")}
           footer={
             <div className="flex flex-wrap items-center justify-end gap-3">
               {/* The precondition in words, beside the act rather than after
@@ -212,10 +221,13 @@ function LevelRulesForm({
               {ZONE_KEYS.map((zone) => (
                 <div key={zone} className="space-y-1.5">
                   <p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                    {zoneHeading(zone, content.zones[zone].name)}
+                    {zoneHeading(
+                      tLevels("zoneLabel", { zone }),
+                      content.zones[zone].name
+                    )}
                   </p>
                   <div className="grid grid-cols-3 gap-2">
-                    {levelsInZone(zone).map((level) => (
+                    {zoneLevels(zone).map((level) => (
                       <FormField
                         key={level}
                         control={form.control}
@@ -230,7 +242,7 @@ function LevelRulesForm({
                                 type="number"
                                 inputMode="numeric"
                                 min={0}
-                                max={100}
+                                max={SCORE_SCALE_MAX}
                                 className="tabular-nums"
                                 {...numberInputField(field)}
                               />
@@ -265,8 +277,8 @@ function LevelRulesForm({
                         <Input
                           type="number"
                           inputMode="numeric"
-                          min={1}
-                          max={5}
+                          min={MIN_STEP_FLOOR}
+                          max={MIN_STEP_CEILING}
                           className="tabular-nums"
                           {...numberInputField(field)}
                         />
@@ -291,18 +303,6 @@ function LevelRulesForm({
   )
 }
 
-// The zone eyebrow the form and its skeleton both draw. One builder, because
-// the skeleton's whole job is measuring like the thing it stands in for.
-function zoneHeading(zone: ZoneKey, name: string): string {
-  return `${zone}. ${name}`
-}
-
-// A zone's three levels, highest first, from the engine's own ranges.
-function levelsInZone(zone: ZoneKey): number[] {
-  const { from, to } = ZONE_LEVEL_RANGES[zone]
-  return Array.from({ length: to - from + 1 }, (_, index) => from + index)
-}
-
 // The loading state, on the REAL anatomy.
 //
 // Everything here that is static i18n text or structural law is rendered for
@@ -315,6 +315,7 @@ function levelsInZone(zone: ZoneKey): number[] {
 function LevelRulesSkeleton() {
   const t = useTranslations("dashboard.model.levelRules")
   const tHelp = useTranslations("dashboard.help")
+  const tLevels = useTranslations("dashboard.levels")
   const locale = useLocale()
   const content = zoneContent(locale)
   return (
@@ -327,7 +328,6 @@ function LevelRulesSkeleton() {
           </HelpMorphButton>
         </span>
       }
-      description={t("description")}
       footer={
         <div className="flex flex-wrap items-center justify-end gap-3">
           <p className="max-w-md text-muted-foreground text-sm leading-relaxed">
@@ -350,10 +350,13 @@ function LevelRulesSkeleton() {
           {ZONE_KEYS.map((zone) => (
             <div key={zone} className="space-y-1.5">
               <p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                {zoneHeading(zone, content.zones[zone].name)}
+                {zoneHeading(
+                  tLevels("zoneLabel", { zone }),
+                  content.zones[zone].name
+                )}
               </p>
               <div className="grid grid-cols-3 gap-2">
-                {levelsInZone(zone).map((level) => (
+                {zoneLevels(zone).map((level) => (
                   // Input-height, so the row measures as it will once the
                   // numbers arrive.
                   <Skeleton key={level} className="h-9 w-full" />

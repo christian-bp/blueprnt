@@ -64,7 +64,7 @@
     "anchor": "Anker",
     "step": "Trinn",
     "template": "Mal",
-    "levelThreshold": "Nivåterskel",
+    "levelThreshold": "Nivågrense",
     "auditLog": "Hendelseslogg",
     "criterionRationale": "Kriterieutvalgsprotokoll",
     "biasReview": "Bias-gjennomgang",
@@ -130,7 +130,6 @@
       "emailUnchanged": "Skriv inn en annen e-postadresse.",
       "levelDecreasing": "Må være lavere enn nivået over.",
       "levelBottomZero": "Det laveste nivået må starte på 0.",
-      "levelCeiling": "Kan ikke starte over 100.",
       "zoneMonotonic": "Kan ikke kreve mer enn sonen over.",
       "scoreRange": "Et heltall mellom 0 og 100."
     },
@@ -196,7 +195,7 @@
       "workingConditionsDecided": "Beslutning om arbeidsforhold lagret",
       "assessmentLocked": "Vurderingen låst",
       "placementConfirmed": "Plasseringen bekreftet",
-      "thresholdsSaved": "Grensene lagret",
+      "thresholdsSaved": "Nivågrensene lagret",
       "assessmentUnlocked": "Vurderingen låst opp",
       "weightMotivationSaved": "Begrunnelse lagret"
     },
@@ -1672,7 +1671,6 @@
       "zoneTypicalLabel": "Vanligvis her:",
       "showZone": "Vis nivåene i sone {zone}",
       "hideZone": "Skjul nivåene i sone {zone}",
-      "levelFunctionToggle": "Hva nivået er",
       "calibration": {
         "heading": "Plasseringer å gjennomgå",
         "profileLimitedReason": "Profilkravene holdt denne rollen tilbake fra en høyere sone.",
@@ -1904,7 +1902,7 @@
       "consequence": {
         "heading": "Hva en godkjenning ville endre",
         "summary": "{moved} av {placed, plural, =1 {1 låst plassering} other {# låste plasseringer}} ville flytte til et annet nivå.",
-        "losing": "{count, plural, =1 {1 rolle ville miste nivået sitt} other {# roller ville miste nivået sitt}} til den er vurdert på kriteriene metoden har fått.",
+        "losing": "{count, plural, =1 {1 rolle ville miste nivået sitt til den er vurdert} other {# roller ville miste nivået sitt til de er vurdert}} på kriteriene metoden har fått.",
         "gaining": "{count, plural, =1 {1 rolle ville få et nivå den ikke kunne nå før} other {# roller ville få et nivå de ikke kunne nå før}}.",
         "criteriaChanged": "Metoden er endret siden forrige godkjenning: {added, plural, =0 {ingen kriterier} =1 {1 kriterium} other {# kriterier}} lagt til, {removed, plural, =0 {ingen} other {#}} fjernet.",
         "distributionHeading": "Roller per sone",
@@ -1919,6 +1917,7 @@
         "familiesHeading": "Per rollefamilie",
         "gendersHeading": "Per kjønnssammensetning",
         "noFamily": "Ingen familie",
+        "unknownFamily": "Familien ble ikke funnet",
         "genderWomen": "Kvinnedominerte roller",
         "genderMen": "Mannsdominerte roller",
         "genderMixed": "Blandede roller",
@@ -1929,16 +1928,15 @@
       },
       "levelRules": {
         "title": "Nivågrenser",
-        "description": "Vektingen hvert nivå starter ved, og profilkravet hver sone sperrer på. Å endre noen av dem plasserer alle roller på nytt.",
         "levelsLabel": "Hvor hvert nivå starter",
         "levelsDescription": "En rolle når et nivå når vektingen er minst dette tallet. Nivå 1 er høyest, så tallene synker når nivåene går nedover, og nivå 12 starter på 0 slik at hver rolle havner et sted.",
         "zonesLabel": "Profilkrav per sone",
-        "zonesDescription": "Det laveste trinnet en rolle må nå på hvert profilkriterium for å komme inn i sonen. La en sone stå tom for å sperre den kun på vektingen.",
+        "zonesDescription": "Det laveste trinnet en rolle må nå på hvert profilkriterium for å komme inn i sonen. La en sone stå tom, så avgjøres den bare av vektingen.",
         "levelField": "Nivå {level}",
         "zoneField": "Sone {zone}",
         "reopensApproval": "Å lagre åpner modellens godkjenning igjen: grensene er en del av det som ble godkjent, så sjekklisten må signeres på nytt.",
         "save": "Lagre grensene",
-        "invalid": "Motoren avviste disse reglene. Kontroller at tallene synker når nivåene går nedover, og at ingen sone krever mer enn sonen over."
+        "invalid": "Reglene kunne ikke lagres. Kontroller at tallene synker når nivåene går nedover, og at ingen sone krever mer enn sonen over."
       },
       "review": {
         "cta": "Åpne dashbordet"
@@ -2232,7 +2230,7 @@
       "calibrationLabel": "Hva er kalibrering?",
       "calibrationBody": "Gjennomgang av en låst plassering som noen bør se på før stigen regnes som avklart. Å bekrefte en endrer ikke nivået: den registrerer at noen står bak den.",
       "levelThresholdLabel": "Hva er en nivågrense?",
-      "levelThresholdBody": "Vektingen en rolle må nå for å ligge på et nivå, og profiltrinnet en sone sperrer på. De avgjør hvor hver rolle havner, så en endring plasserer hele stigen på nytt."
+      "levelThresholdBody": "Vektingen en rolle må nå for å ligge på et nivå, og profiltrinnet en sone krever. De avgjør hvor hver rolle havner, så en endring plasserer hele stigen på nytt."
     },
     "widgetCard": {
       "expand": "Forstørr"

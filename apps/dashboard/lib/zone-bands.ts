@@ -20,15 +20,37 @@ export interface ZoneBand {
   span: { from: number; to: number } | null
 }
 
+// Every level the ARCHITECTURE puts in a zone, highest first, whether or not
+// the model configures it. zoneBands filters the model's own ranges against
+// this; a caller that wants the full span regardless of configuration (the
+// level-rules editor offers a field for every level, rule or no rule) wants
+// this directly. It lives here rather than privately in that editor because
+// this module claims to be the home of UI zone geometry, and a second private
+// derivation from ZONE_LEVEL_RANGES makes that claim false.
+export function zoneLevels(zone: ZoneKey): number[] {
+  const { from, to } = ZONE_LEVEL_RANGES[zone]
+  return Array.from({ length: to - from + 1 }, (_, index) => from + index)
+}
+
+// One heading format for "which zone is this", so the surfaces that name a
+// zone cannot drift into four different punctuations, and none of them can
+// bypass i18n on the way (two were building `${zone}. ${name}` from the raw
+// letter). It takes the ALREADY LOCALIZED label, because this module owns the
+// geometry and has no business reaching for a translator; what it owns here is
+// that the letter comes first and the zone's name follows it.
+export function zoneHeading(zoneLabel: string, name: string): string {
+  return `${zoneLabel}: ${name}`
+}
+
 // Splits the model's configured level ranges into the four zone bands, in
 // ZONE_KEYS order (A first, the highest). A zone with no configured level is
 // returned with an empty `ranges` and a null `span` so the caller decides
 // whether an empty band is drawn; every caller today drops it.
 export function zoneBands(ranges: readonly LevelRange[]): ZoneBand[] {
   return ZONE_KEYS.map((zone) => {
-    const { from, to } = ZONE_LEVEL_RANGES[zone]
+    const levels = zoneLevels(zone)
     const inZone = ranges
-      .filter((range) => range.level >= from && range.level <= to)
+      .filter((range) => levels.includes(range.level))
       .sort((a, b) => a.level - b.level)
     const first = inZone[0]
     const last = inZone[inZone.length - 1]

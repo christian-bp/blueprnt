@@ -1,4 +1,4 @@
-import { LEVEL_COUNT, ZONE_KEYS } from "@workspace/core"
+import { LEVEL_COUNT, SCORE_SCALE_MAX, ZONE_KEYS } from "@workspace/core"
 import { z } from "zod"
 import type { ValidationT } from "@/lib/validation"
 
@@ -20,15 +20,17 @@ import type { ValidationT } from "@/lib/validation"
 //   - zone minSteps never rise as the zones descend A -> D: a lower zone may
 //     not be gated harder than a higher one.
 
-// Bounds shared with the engine's scale. The rating scale's own 1-5 bounds the
-// zone gate, since a minStep is a step on that scale.
-const MIN_STEP_FLOOR = 1
-const MIN_STEP_CEILING = 5
+// The zone gate is a STEP on the 0-5 rating scale, so it is bounded by that
+// scale rather than by anything the engine exports: the engine places no bound
+// on minStep at all. Exported because the number input that collects it must
+// carry the same bounds, and a form whose min/max disagreed with its schema
+// would refuse a value it had just offered.
+export const MIN_STEP_FLOOR = 1
+export const MIN_STEP_CEILING = 5
 
 export interface LevelRulesMessages {
   decreasing: string
   bottomZero: string
-  ceiling: string
   zoneMonotonic: string
   range: string
 }
@@ -41,7 +43,7 @@ export function makeLevelRulesSchema(
     .number({ message: t("required") })
     .int(messages.range)
     .min(0, messages.range)
-    .max(100, messages.range)
+    .max(SCORE_SCALE_MAX, messages.range)
 
   const minStep = z
     .number()
@@ -77,14 +79,9 @@ export function makeLevelRulesSchema(
           })
         }
       }
-      const first = values.levels[0]
-      if (first !== undefined && first > 100) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["levels", 0],
-          message: messages.ceiling,
-        })
-      }
+      // No ceiling check here. The field schema above already caps every entry
+      // at SCORE_SCALE_MAX and Zod skips superRefine when the base object
+      // fails, so a branch on levels[0] > SCORE_SCALE_MAX could never fire.
       const last = values.levels[LEVEL_COUNT - 1]
       if (last !== undefined && last !== 0) {
         ctx.addIssue({

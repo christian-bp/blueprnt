@@ -68,6 +68,16 @@ export function ZoneBandHeader({
           <span className={cn(FAMILY_NAME_CLASS, "min-w-0")}>
             {content.name}
           </span>
+          {/* The one-level wording is NOT dead defensive code, and it is not
+              the same class as the ceiling branch this round deleted from the
+              level-rules schema. That one could never fire by Zod's own
+              evaluation order, inside a single file. This one renders a shape
+              zoneBands is written and documented to produce: it spans only the
+              levels the MODEL configures, not ZONE_LEVEL_RANGES' three, so a
+              zone holding one configured level arrives here with from === to.
+              That a stored model always has all twelve rules today is an
+              invariant enforced in the backend, three layers away; the
+              alternative is a header reading "Level 3 to 3". */}
           <span className={cn(FAMILY_COUNT_CLASS, "shrink-0")}>
             {span.from === span.to
               ? t("zoneSpanOne", { from: span.from })

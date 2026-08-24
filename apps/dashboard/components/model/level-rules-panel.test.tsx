@@ -104,8 +104,14 @@ describe("LevelRulesPanel", () => {
   // twelve digits.
   it("groups the levels under their zone's own name", () => {
     renderPanel()
-    expect(screen.getByText(/^A\./)).toBeDefined()
-    expect(screen.getByText(/^D\./)).toBeDefined()
+    const content = zoneContent("en")
+    for (const zone of ["A", "D"] as const) {
+      expect(
+        screen.getByText(
+          `${messages.dashboard.levels.zoneLabel.replace("{zone}", zone)}: ${content.zones[zone].name}`
+        )
+      ).toBeDefined()
+    }
   })
 
   // A prefilled edit form: unchanged means nothing to save, and firing anyway
@@ -267,7 +273,9 @@ describe("LevelRulesPanel", () => {
     const content = zoneContent("en")
     for (const zone of ZONE_KEYS) {
       expect(
-        screen.getByText(`${zone}. ${content.zones[zone].name}`)
+        screen.getByText(
+          `${messages.dashboard.levels.zoneLabel.replace("{zone}", zone)}: ${content.zones[zone].name}`
+        )
       ).toBeDefined()
     }
 

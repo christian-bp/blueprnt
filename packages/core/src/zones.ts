@@ -13,6 +13,13 @@ export type ZoneKey = (typeof ZONE_KEYS)[number]
 
 export const LEVEL_COUNT = 12
 
+// The top of the normalized role score (ADR-0004: role scores are normalized
+// to a fixed 0-100 scale). It bounds the level ladder's thresholds, so the
+// engine's own check, the client schema, and the number input all have to
+// agree on it; they held it as a literal in four places until they did not
+// have to.
+export const SCORE_SCALE_MAX = 100
+
 // from = the zone's highest level, to = its lowest.
 export const ZONE_LEVEL_RANGES: Record<ZoneKey, { from: number; to: number }> =
   {

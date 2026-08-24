@@ -540,6 +540,18 @@ suite covers them before go-live:
   deliberately atomic (a half-restored model would be off the ADR-0004 point
   budget), so bounding it means chunking the restore itself, not relaxing the
   transaction. Bound all four before large-org onboarding.
+  `updateLevelRules` and `updateZoneProfileRules` are now REACHABLE FROM THE
+  UI: nothing called them when this entry was written, and the Level
+  thresholds panel on the Godkannande chapter calls both. Their cost is a
+  live one rather than a theoretical one, which moves them to the front of
+  this group.
+  Same class, read-side, on the same chapter: `getConsequenceAnalysis`
+  (`evaluationModel/consequence.ts`) runs a whole-org `deriveResults` against
+  the live model AND a second against the approved buffer, then groups every
+  role, on every render of the approval chapter. It is a read, so it cannot
+  conflict with anything, but it is org-scaled and sits on a surface an
+  approver returns to repeatedly; bound or cache it with the write paths
+  above.
 
   Note (data, not scale, same surface): the model-evidence shape shared by
   `models.lastApprovedModel` and `payMappingRuns.frozenModel`

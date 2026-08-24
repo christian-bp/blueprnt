@@ -4,6 +4,7 @@ import {
   type MethodCheckCriterion,
   type MethodCheckInput,
   methodBlockersPass,
+  SCORE_SCALE_MAX,
   validateMethod,
   type WeightPoints,
 } from "@workspace/core"
@@ -493,7 +494,7 @@ export const setWorkingConditionsDecision = orgMutation({
 // here, matching the client's own gate, with the client staying the
 // convenience and this the authority.
 const MIN_SCORE_FLOOR = 0
-const MIN_SCORE_CEILING = 100
+const MIN_SCORE_CEILING = SCORE_SCALE_MAX
 const MIN_STEP_FLOOR = 1
 const MIN_STEP_CEILING = 5
 

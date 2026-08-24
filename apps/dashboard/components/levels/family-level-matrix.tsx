@@ -8,7 +8,7 @@ import { HATCH_CLASS } from "@/components/hatch"
 import { RoleChip } from "@/components/levels/role-chip"
 import { type LevelRoleRow, levelRanges } from "@/lib/levels"
 import { SPRING } from "@/lib/motion"
-import { zoneBands } from "@/lib/zone-bands"
+import { zoneBands, zoneHeading } from "@/lib/zone-bands"
 import {
   MATRIX_COL_HEADER_CLASS,
   MATRIX_WRAPPER_CLASS,
@@ -78,7 +78,10 @@ export function FamilyLevelMatrix({
                   colSpan={band.ranges.length}
                   className={`whitespace-nowrap rounded-lg bg-muted/50 px-2 py-1 text-left font-semibold text-sm ${MATRIX_COL_HEADER_CLASS}`}
                 >
-                  {`${t("zoneLabel", { zone: band.zone })}: ${content.zones[band.zone].name}`}
+                  {zoneHeading(
+                    t("zoneLabel", { zone: band.zone }),
+                    content.zones[band.zone].name
+                  )}
                 </th>
               )
             )}

@@ -14,6 +14,7 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { CARD_READING_MEASURE } from "@/components/model/approval-card"
+import { zoneHeading } from "@/lib/zone-bands"
 
 // The masterdokument's section 18, on the chapter where it decides something:
 // what approving this method would do to the placements the organization
@@ -43,6 +44,7 @@ const GENDER_LABELS = {
 export function ConsequencePanel({ orgId }: { orgId: string }) {
   const t = useTranslations("dashboard.model.consequence")
   const tHelp = useTranslations("dashboard.help")
+  const tLevels = useTranslations("dashboard.levels")
   const locale = useLocale()
   const analysis = useQuery(
     api.evaluationModel.consequence.getConsequenceAnalysis,
@@ -137,7 +139,10 @@ export function ConsequencePanel({ orgId }: { orgId: string }) {
               {analysis.distribution.map((entry) => (
                 <tr key={entry.zone}>
                   <th scope="row" className="py-1 text-left font-normal">
-                    {`${entry.zone}. ${content.zones[entry.zone].name}`}
+                    {zoneHeading(
+                      tLevels("zoneLabel", { zone: entry.zone }),
+                      content.zones[entry.zone].name
+                    )}
                   </th>
                   <td className="py-1 text-right tabular-nums">
                     {entry.approved}
@@ -194,7 +199,17 @@ export function ConsequencePanel({ orgId }: { orgId: string }) {
           heading={t("familiesHeading")}
           rows={analysis.families.map((group) => ({
             ...group,
-            name: group.label ?? t("noFamily"),
+            // Two different situations arrive here as a null label, and only
+            // ONE of them is "these roles have no family": the other is a
+            // family whose name lookup missed. Both read as "No family" once,
+            // which reported roles that HAVE a family under the bucket for
+            // roles that do not. The empty key is the genuine bucket (the
+            // backend groups familyless roles under ""), so a null label on
+            // any other key is a lookup that failed, and says so rather than
+            // borrowing the other row's meaning. The id itself never renders.
+            name:
+              group.label ??
+              (group.key === "" ? t("noFamily") : t("unknownFamily")),
           }))}
         />
         {/* Counts per gender make-up, never a mark: this is a table of
