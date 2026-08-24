@@ -344,8 +344,8 @@ export interface AuditPayloads {
   // time); unlock carries no extra field (the role subject is enough); the
   // calibration note itself never enters the trail (free-text audit
   // practice), only whether one was given.
-  "role.assessmentLocked": { roleId: string; ratedCount: number }
-  "role.assessmentUnlocked": { roleId: string }
+  "role.assessmentCompleted": { roleId: string; ratedCount: number }
+  "role.assessmentReopened": { roleId: string }
   "role.assessmentCalibrated": { roleId: string; noteProvided: boolean }
   // These three diff the employee's identity values too (ADR-0013), which
   // erasure tombstones via anonymizePersonAuditRows. Keep the shape flat:

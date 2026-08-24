@@ -21,7 +21,7 @@ function row(overrides: Partial<LevelRoleRow>): LevelRoleRow {
     zone: "B",
     ratedCount: 9,
     totalCriteria: 9,
-    readyToLock: false,
+    readyToComplete: false,
     familyId: null,
     familyName: null,
     anchor: null,

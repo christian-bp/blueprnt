@@ -17,7 +17,7 @@ function role(overrides: Partial<LevelRoleRow>): LevelRoleRow {
     level: null,
     ratedCount: 3,
     totalCriteria: 9,
-    readyToLock: false,
+    readyToComplete: false,
     familyId: null,
     familyName: null,
     anchor: null,
@@ -60,9 +60,9 @@ describe("PendingRoles", () => {
     ).toBe("/roles/r1")
   })
 
-  it("badges a complete-but-unlocked role as ready to read", () => {
+  it("badges a rated-but-uncompleted role as ready to complete", () => {
     renderPending([
-      role({ roleId: "r3", title: "Ready Role", readyToLock: true }),
+      role({ roleId: "r3", title: "Ready Role", readyToComplete: true }),
     ])
     expect(
       screen.getByText(messages.dashboard.levels.readyToComplete)

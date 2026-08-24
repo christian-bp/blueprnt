@@ -171,8 +171,8 @@ describe("listRoles and getRole", () => {
       ratedCount: 1,
       totalCriteria: 8,
       profileComplete: true,
-      // Not locked (only 1/8 rated, and the model was never approved).
-      locked: false,
+      // Not completed (only 1/8 rated, and the model was never approved).
+      completed: false,
     })
 
     const role = await asAdmin.query(api.assessment.roles.getRole, {
@@ -191,7 +191,7 @@ describe("listRoles and getRole", () => {
     expect(role?.profileComplete).toBe(true)
   })
 
-  it("reports locked true only once the assessment is actually locked (spec 2.4/6)", async () => {
+  it("reports completed true only once the assessment is actually completed (spec 2.4/6)", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
@@ -213,7 +213,7 @@ describe("listRoles and getRole", () => {
       })
     }
 
-    // Fully rated but not yet locked: still reads false.
+    // Fully rated but not yet completed: still reads false.
     const beforeLock = await asAdmin.query(api.assessment.roles.listRoles, {
       orgId,
       locale: "sv",
@@ -221,10 +221,10 @@ describe("listRoles and getRole", () => {
     expect(beforeLock.find((r) => r.roleId === roleId)).toMatchObject({
       ratedCount: 8,
       totalCriteria: 8,
-      locked: false,
+      completed: false,
     })
 
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })
@@ -234,7 +234,7 @@ describe("listRoles and getRole", () => {
       locale: "sv",
     })
     expect(afterLock.find((r) => r.roleId === roleId)).toMatchObject({
-      locked: true,
+      completed: true,
     })
   })
 
@@ -744,7 +744,7 @@ describe("archiveRole", () => {
     })
     // All ratings 5, so the computed level is the top level (1).
     await rateAll(t, orgId, roleId as string, model.criteria, 5)
-    // Value 5 requires a motivation before lockAssessment (below) accepts
+    // Value 5 requires a motivation before completeAssessment (below) accepts
     // it; rateAll's direct inserts skip that, so patch it in afterward.
     await t.run(async (ctx) => {
       const docId = ctx.db.normalizeId("roles", roleId as string)
@@ -757,10 +757,10 @@ describe("archiveRole", () => {
         await ctx.db.patch(rating._id, { motivation: "Top of scale." })
       }
     })
-    // An anchor role must be a locked reference (lock-as-reveal); locking
+    // An anchor role must be a completed reference (completion is the reveal); completing
     // requires an approved model.
     await grantModelApproval(t, orgId)
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })

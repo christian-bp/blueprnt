@@ -1,6 +1,6 @@
 import { ConvexError } from "convex/values"
 
-// The appError codes the completion act can raise (assessment/locking.ts).
+// The appError codes the completion act can raise (assessment/completion.ts).
 // Every one of them is another operator's edit landing between the moment the
 // flow rendered and the moment the last step was pressed: the model losing its
 // approval, a new criterion making the role incomplete again, a rating that no
@@ -15,7 +15,7 @@ export const ASSESSMENT_ERROR_KEYS = [
   "ratingsIncomplete",
   "motivationRequired",
   "modelNotApproved",
-  "assessmentLocked",
+  "assessmentCompleted",
 ] as const
 
 export type AssessmentErrorKey = (typeof ASSESSMENT_ERROR_KEYS)[number]

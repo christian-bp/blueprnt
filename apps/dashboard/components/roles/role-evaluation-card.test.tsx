@@ -23,7 +23,9 @@ vi.mock(
 import { RoleEvaluationCard } from "@/components/roles/role-evaluation-card"
 import { openMenu } from "@/test/menu"
 
-const unlockAssessmentMock = mockMutation("assessment.locking.unlockAssessment")
+const reopenAssessmentMock = mockMutation(
+  "assessment.completion.reopenAssessment"
+)
 
 const detail = messages.dashboard.roles.detail
 const roles = messages.dashboard.roles
@@ -33,7 +35,7 @@ type Result = {
   roleId: string
   title: string
   complete: boolean
-  locked: boolean
+  completed: boolean
   methodDrift?: boolean
   calibrated?: boolean
   ratedCount: number
@@ -53,7 +55,7 @@ const completeResult: Result = {
   roleId: "role_1",
   title: "Engineer",
   complete: true,
-  locked: true,
+  completed: true,
   ratedCount: 3,
   totalCriteria: 3,
   score: 71,
@@ -83,9 +85,9 @@ const completeResult: Result = {
   ],
 }
 
-// Complete but not yet locked: the "ready to lock" state (spec 2.4/6),
-// distinct from the locked-results state `completeResult` represents.
-const readyToLockResult: Result = { ...completeResult, locked: false }
+// Rated but not completed: the "ready to complete" state (spec 2.4/6),
+// distinct from the completed-results state `completeResult` represents.
+const readyToCompleteResult: Result = { ...completeResult, completed: false }
 
 const designated: AnchorRoleInfo = {
   expectedLevel: 2,
@@ -138,7 +140,7 @@ function openManageMenu() {
 describe("RoleEvaluationCard", () => {
   beforeEach(() => {
     setResult(null)
-    unlockAssessmentMock.mockReset().mockResolvedValue(null)
+    reopenAssessmentMock.mockReset().mockResolvedValue(null)
   })
   afterEach(() => cleanup())
 
@@ -162,13 +164,13 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("shows the weighting, level, and breakdown once locked", () => {
+  it("shows the weighting, level, and breakdown once completed", () => {
     setResult(completeResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(screen.getByText("Weighting 71")).toBeDefined()
     expect(screen.getByText("Level 3")).toBeDefined()
     expect(screen.getByText("Complexity")).toBeDefined()
-    expect(screen.getByText(detail.lockedBadge)).toBeDefined()
+    expect(screen.getByText(detail.completedBadge)).toBeDefined()
   })
 
   // Rated but not completed. This card SAYS what is left and points into the
@@ -176,7 +178,7 @@ describe("RoleEvaluationCard", () => {
   // decision 14 removed, so a button that completed from outside the flow
   // would be that errand growing back.
   it("sends a complete-but-uncompleted role into the flow rather than completing it here", () => {
-    setResult(readyToLockResult)
+    setResult(readyToCompleteResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(
       screen.getByText(messages.dashboard.rating.completeExplanation)
@@ -191,16 +193,16 @@ describe("RoleEvaluationCard", () => {
       })
     ).toBeNull()
     expect(screen.queryByText("Weighting 71")).toBeNull()
-    expect(screen.queryByText(detail.lockedBadge)).toBeNull()
+    expect(screen.queryByText(detail.completedBadge)).toBeNull()
   })
 
-  it("flags method drift on a locked role with a stale-method chip", () => {
+  it("flags method drift on a completed role with a stale-method chip", () => {
     setResult({ ...completeResult, methodDrift: true })
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(screen.getByText(detail.methodDriftBadge)).toBeDefined()
   })
 
-  it("leaves the stale-method chip off a role locked under the current method", () => {
+  it("leaves the stale-method chip off a role completed under the current method", () => {
     setResult({ ...completeResult, methodDrift: false })
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(screen.queryByText(detail.methodDriftBadge)).toBeNull()
@@ -227,16 +229,16 @@ describe("RoleEvaluationCard", () => {
       level: null,
     })
     renderCard({ ratedCount: 3, totalCriteria: 3 })
-    expect(screen.getByText(detail.lockedIncomplete)).toBeDefined()
-    expect(screen.getByText(detail.lockedBadge)).toBeDefined()
+    expect(screen.getByText(detail.completedIncomplete)).toBeDefined()
+    expect(screen.getByText(detail.completedBadge)).toBeDefined()
     expect(
       screen.queryByText(messages.dashboard.rating.result.computing)
     ).toBeNull()
     expect(screen.queryByText("Weighting 71")).toBeNull()
   })
 
-  it("puts Adjust ratings in the actions menu for a ready-to-lock role, not as a body button", async () => {
-    setResult(readyToLockResult)
+  it("puts Adjust ratings in the actions menu for a ready-to-complete role, not as a body button", async () => {
+    setResult(readyToCompleteResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     // No standalone Adjust link in the card body.
     expect(
@@ -262,7 +264,7 @@ describe("RoleEvaluationCard", () => {
     })
     fireEvent.click(reopen)
     await waitFor(() => {
-      expect(unlockAssessmentMock).toHaveBeenCalledWith({
+      expect(reopenAssessmentMock).toHaveBeenCalledWith({
         orgId: "org_1",
         roleId: "role_1",
       })
@@ -314,32 +316,32 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("hides Designate from the menu on a complete-but-unlocked role", async () => {
-    setResult(readyToLockResult)
+  it("hides Designate from the menu on a rated-but-uncompleted role", async () => {
+    setResult(readyToCompleteResult)
     renderCard({
       ratedCount: 3,
       totalCriteria: 3,
       anchorRole: null,
     })
-    // Lock-as-reveal: the backend refuses designation until the role is
-    // locked, so the affordance stays off the menu until then too.
+    // Completion is the reveal: the backend refuses designation until the
+    // assessment is completed, so the affordance stays off the menu too.
     await openManageMenu()
     expect(
       screen.queryByRole("menuitem", { name: anchor.designateCta })
     ).toBeNull()
   })
 
-  // Anchor work needs a locked reference, so a ready-to-lock role offers only
-  // Adjust whoever is looking: the gate is the lock, never the role.
-  it("gives only Adjust in the menu for a ready-to-lock anchor role", async () => {
-    setResult(readyToLockResult)
+  // Anchor work needs a completed reference, so a ready-to-complete role offers only
+  // Adjust whoever is looking: the gate is completion, never the role.
+  it("gives only Adjust in the menu for a ready-to-complete anchor role", async () => {
+    setResult(readyToCompleteResult)
     renderCard({
       ratedCount: 3,
       totalCriteria: 3,
       anchorRole: designated,
     })
-    // Not yet locked: the level is not revealed (lock-as-reveal), but the
-    // ready-to-lock panel confirms the role is still marked as an anchor
+    // Not yet completed: the level is not revealed, but the
+    // ready-to-complete state confirms the role is still marked as an anchor
     // candidate via the menu below.
     expect(screen.queryByText("Level 3")).toBeNull()
     await openManageMenu()

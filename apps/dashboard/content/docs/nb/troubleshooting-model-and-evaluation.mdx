@@ -1,6 +1,6 @@
 ---
 title: Feil i modell og vurdering
-description: Hva hver melding om modellbygging, vurdering, rollelåsing og AI betyr, og hva dere skal gjøre med det.
+description: Hva hver melding om modellbygging, vurdering, vurderingsfullføring og AI betyr, og hva dere skal gjøre med det.
 section: troubleshooting
 ---
 
@@ -74,7 +74,7 @@ Hvert av bibliotekets kriterier kan bare være aktivt én gang per modell.
 Se etter det i dimensjonens liste på siden Kriterier i stedet for å
 legge det til igjen.
 
-## Jeg kan ikke redigere eller vurdere noe fordi det sier det er låst
+## Jeg kan ikke redigere eller vurdere noe fordi det sier det er stengt
 
 ### Rollen er låst
 
@@ -105,28 +105,30 @@ i Modell-områdets kapittel Metode for å fjerne godkjenningen og signeringen, r
 teksten, og godkjenn den igjen. Se
 [Metodedokumentasjon](/docs/method-documentation).
 
-### Vurderingen er låst
+### Vurderingen er fullført
 
-Kode: `assessmentLocked`
+Kode: `assessmentCompleted`
 
-"Vurderingen er låst. Lås den opp for å endre vurderinger."
+"Vurderingen er fullført. Vurder den på nytt for å endre vurderingene."
 
-En rolles vurderinger kan ikke lenger endres når vurderingen er låst: å
-låse en fullstendig vurdering er det som viser vekting og nivå. Lås
-den opp fra rollesidens handlingsmeny for å gjøre flere endringer, noe
-som skjuler vektingen og nivået igjen til den låses på nytt. Se
+En rolles vurderinger kan ikke lenger endres når vurderingen er
+fullført: å fullføre en fullstendig vurdering er det som viser vekting
+og nivå. Velg "Vurder på nytt", ved siden av resultatet eller på
+rollesidens handlingsmeny, for å gjøre flere endringer; det skjuler
+vektingen og nivået igjen til dere fullfører vurderingen på nytt. Se
 [Vurdere en rolle](/docs/evaluating-a-role).
 
-### Vurderingen må låses først
+### Vurderingen må fullføres først
 
-Kode: `assessmentNotLocked`
+Kode: `assessmentNotCompleted`
 
-"Vurderingen må låses først."
+"Vurderingen må fullføres først."
 
-Å låse opp, bekrefte en kalibrert plassering, eller utnevne en rolle
-til ankerrolle, gjelder bare en vurdering som allerede er låst. Lås
-vurderingen først, fra rollesiden når hvert kriterium har en vurdering.
-Se [Vurdere en rolle](/docs/evaluating-a-role) og
+Å gjenåpne, bekrefte en kalibrert plassering, eller utnevne en rolle
+til ankerrolle, gjelder bare en vurdering som allerede er fullført.
+Fullfør vurderingen først, på det siste trinnet i vurderingsflyten når
+hvert kriterium har en vurdering. Se
+[Vurdere en rolle](/docs/evaluating-a-role) og
 [Ankerroller](/docs/anchor-roles).
 
 ## Jeg kan ikke sette en rolle som ankerrolle

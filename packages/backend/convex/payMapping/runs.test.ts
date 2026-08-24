@@ -157,12 +157,12 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
         value: 5,
       })
     }
-    // Lock directly (bypassing lockAssessment's per-mutation re-validation
+    // Complete directly (bypassing completeAssessment's per-mutation re-validation
     // and motivation-required law, like the ratings above bypass setRating):
     // this fixture is about freeze/pay-mapping mechanics, not the locking
-    // lifecycle, which has its own dedicated suite (assessment/locking.test).
+    // lifecycle, which has its own dedicated suite (assessment/completion.test).
     await ctx.db.patch(roleDocId, {
-      assessment: { lockedBy: userId, lockedAt: Date.now() },
+      assessment: { completedBy: userId, completedAt: Date.now() },
     })
   })
 
@@ -650,13 +650,13 @@ describe("getPayMappingPreconditions", () => {
     const t = initConvexTest()
     const { orgId, asHr } = await seedForFreeze(t)
 
-    const lockedAt = await t.run(async (ctx) => {
+    const completedAt = await t.run(async (ctx) => {
       const roles = await ctx.db
         .query("roles")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
       const role = roles.find((r) => r.title === "Software Engineer")
-      return role?.assessment?.lockedAt ?? 0
+      return role?.assessment?.completedAt ?? 0
     })
 
     // A later re-approval (direct write, same as locking.test.ts's "method
@@ -671,7 +671,7 @@ describe("getPayMappingPreconditions", () => {
       await ctx.db.patch(modelDoc._id, {
         approval: {
           approvedBy: "second-approver",
-          approvedAt: lockedAt + 1000,
+          approvedAt: completedAt + 1000,
         },
       })
     })
@@ -686,10 +686,10 @@ describe("getPayMappingPreconditions", () => {
 
     // Re-locking under the current approval clears the drift again. A real
     // re-lock a moment later in wall-clock time is not reliably past the
-    // artificial `lockedAt + 1000` used above (this test runs in well under a
+    // artificial `completedAt + 1000` used above (this test runs in well under a
     // second), so approvedAt is moved back to just-before "now" first
     // (mirrors locking.test.ts's "method drift derivation" suite): still
-    // exercises the real lockedAt-vs-approvedAt comparison, deterministically.
+    // exercises the real completedAt-vs-approvedAt comparison, deterministically.
     await t.run(async (ctx) => {
       const modelDoc = await ctx.db
         .query("models")
@@ -706,7 +706,7 @@ describe("getPayMappingPreconditions", () => {
       const role = roles.find((r) => r.title === "Software Engineer")
       if (role === undefined) throw new Error("seed: role")
       await ctx.db.patch(role._id, {
-        assessment: { lockedBy: "second-approver", lockedAt: Date.now() },
+        assessment: { completedBy: "second-approver", completedAt: Date.now() },
       })
     })
     const relocked = await asHr.query(
@@ -845,7 +845,7 @@ describe("getPayMappingPreconditions", () => {
       TRACK_SENIORITIES[track.key as keyof typeof TRACK_SENIORITIES][0]
     if (seniority === undefined) throw new Error("seed: seniority")
 
-    // A second role, staffed and FULLY RATED, but never locked: complete
+    // A second role, staffed and FULLY RATED, but never completed: complete
     // draft results are not a revealed evaluation, so this must block the
     // gate exactly like an unrated role does (spec 2.4/6).
     const { roleId: draftRoleId, slug: draftRoleSlug } = await asHr.mutation(
@@ -910,12 +910,12 @@ describe("getPayMappingPreconditions", () => {
     // Locking the draft role clears the block. Patched directly (like the
     // ratings above): this test is about the PRECONDITIONS predicate, not
     // the locking mutation's own gates (model approval, motivation-required
-    // law), which have their own dedicated suite (assessment/locking.test).
+    // law), which have their own dedicated suite (assessment/completion.test).
     await t.run(async (ctx) => {
       const roleDocId = ctx.db.normalizeId("roles", draftRoleId as string)
       if (roleDocId === null) throw new Error("seed: role id")
       await ctx.db.patch(roleDocId, {
-        assessment: { lockedBy: "test-locker", lockedAt: Date.now() },
+        assessment: { completedBy: "test-locker", completedAt: Date.now() },
       })
     })
     const afterLock = await asHr.query(
@@ -1953,7 +1953,7 @@ describe("the run's level grouping and exclusion seam", () => {
         })
       }
       await ctx.db.patch(roleDocId, {
-        assessment: { lockedBy: "test", lockedAt: Date.now() },
+        assessment: { completedBy: "test", completedAt: Date.now() },
       })
     })
     await asHr.mutation(api.people.assignments.assignPersonToRole, {

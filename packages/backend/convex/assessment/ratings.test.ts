@@ -310,7 +310,7 @@ describe("setRating", () => {
     })
   })
 
-  it("rejects out-of-range values, locked roles, and incomplete profiles", async () => {
+  it("rejects out-of-range values, completed assessments, and incomplete profiles", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
     const criterion = model.criteria[0]

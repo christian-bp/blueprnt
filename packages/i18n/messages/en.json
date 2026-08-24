@@ -193,10 +193,10 @@
       "modelApproved": "Model approved",
       "modelRestored": "Model restored",
       "workingConditionsDecided": "Working conditions decision saved",
-      "assessmentLocked": "Assessment locked",
+      "assessmentCompleted": "Assessment completed",
       "placementConfirmed": "Placement confirmed",
       "thresholdsSaved": "Level thresholds saved",
-      "assessmentUnlocked": "Assessment unlocked",
+      "assessmentReopened": "Assessment reopened",
       "weightMotivationSaved": "Motivation saved"
     },
     "accountMenu": "Account menu",
@@ -887,8 +887,8 @@
         "modelZoneProfileRulesUpdated": "Zone profile rules updated",
         "modelApprovalReopened": "Model approval reopened",
         "modelRestored": "Model restored to last approved",
-        "roleAssessmentLocked": "Assessment locked",
-        "roleAssessmentUnlocked": "Assessment unlocked",
+        "roleAssessmentCompleted": "Assessment completed",
+        "roleAssessmentReopened": "Assessment reopened",
         "roleAssessmentCalibrated": "Assessment calibrated"
       },
       "ai": {
@@ -1120,9 +1120,9 @@
         "emptyField": "Not filled in yet",
         "archivedBadge": "Archived",
         "archivedHint": "This role is archived and read-only. Its history is kept.",
-        "lockedBadge": "Locked",
+        "completedBadge": "Completed",
         "calibratedBadge": "Calibrated",
-        "lockedIncomplete": "Locked, but a criterion added since then has no rating. Unlock, rate it, and lock again to see the result.",
+        "completedIncomplete": "Completed, but a criterion added since then has no rating. Re-evaluate, rate it, and complete the assessment again to see the result.",
         "methodDriftBadge": "Assessed under a previous method",
         "aiProvenance": "Review and edit the draft, then Save.",
         "people": {
@@ -1229,9 +1229,9 @@
         "title": "Not ready yet",
         "importLine": "No employees have been imported yet",
         "classifyLine": "{count, plural, one {# person is not classified yet} other {# people are not classified yet}}",
-        "evaluateLine": "{count, plural, one {# role with employees still needs its evaluation locked} other {# roles with employees still need their evaluation locked}}",
+        "evaluateLine": "{count, plural, one {# role with employees still needs its assessment completed} other {# roles with employees still need their assessments completed}}",
         "approvalLine": "The model must be approved before a pay mapping can start",
-        "driftWarning": "{count, plural, one {# role was locked under an earlier version of the method. Consider re-locking it first.} other {# roles were locked under an earlier version of the method. Consider re-locking them first.}}"
+        "driftWarning": "{count, plural, one {# role was assessed under an earlier version of the method. Consider re-evaluating it first.} other {# roles were assessed under an earlier version of the method. Consider re-evaluating them first.}}"
       },
       "actions": {
         "status": {
@@ -1671,12 +1671,12 @@
         "profileLimitedReason": "The profile requirements held this role back from a higher zone.",
         "profileLimitedFailure": "{name}: needs step {required}, this role has {actual}",
         "anchorDeviationReason": "This anchor role landed on level {level}, and the agreed level is {expected}.",
-        "staleLockReason": "This role was assessed under an earlier version of the method.",
+        "staleMethodReason": "This role was assessed under an earlier version of the method.",
         "confirmCta": "Confirm placement",
         "openRoleCta": "Open the role",
         "rateCta": "Open the assessment",
         "emptyTitle": "Nothing to review",
-        "emptyDescription": "Every locked placement is either confirmed or raises no question.",
+        "emptyDescription": "Every completed placement is either confirmed or raises no question.",
         "unapprovedTitle": "The method is not approved yet",
         "unapprovedDescription": "Roles are placed once the method is approved, so there is nothing to review until then.",
         "unapprovedCta": "Open the model",
@@ -1896,7 +1896,7 @@
       },
       "consequence": {
         "heading": "What approving this would change",
-        "summary": "{moved} of {placed, plural, =1 {1 locked placement} other {# locked placements}} would move to another level.",
+        "summary": "{moved} of {placed, plural, =1 {1 completed placement} other {# completed placements}} would move to another level.",
         "losing": "{count, plural, =1 {1 role would lose its level until it is rated} other {# roles would lose their level until they are rated}} on the criteria the method has gained.",
         "gaining": "{count, plural, =1 {1 role would gain a level it could not reach before} other {# roles would gain a level they could not reach before}}.",
         "criteriaChanged": "The method has changed since the last approval: {added, plural, =0 {no criteria} =1 {1 criterion} other {# criteria}} added, {removed, plural, =0 {none} other {#}} removed.",
@@ -2106,7 +2106,7 @@
         "draft": "DRAFT: not all criteria are reviewed and approved",
         "final": "FINAL",
         "methodologyTitle": "Methodology",
-        "methodologyBody": "Roles are evaluated criterion by criterion on a 1 to 5 scale. Criterion weights sum to a fixed point budget; the role score is normalized to 0 to 100 and the level is derived, never set by hand. Ratings are hidden until the assessment is locked. Every change is recorded in the audit log. Roles describe work, never a person.",
+        "methodologyBody": "Roles are evaluated criterion by criterion on a 1 to 5 scale. Criterion weights sum to a fixed point budget; the role score is normalized to 0 to 100 and the level is derived, never set by hand. Ratings are hidden until the assessment is completed. Every change is recorded in the audit log. Roles describe work, never a person.",
         "biasStatement": "This model is designed to reduce bias. It is bias-reducing, never bias-free.",
         "criteriaTitle": "Criteria and weights",
         "rationaleTitle": "Criterion rationale and bias review",
@@ -2223,7 +2223,7 @@
       "consequenceLabel": "What is a consequence analysis?",
       "consequenceBody": "What approving this method would do to the placements you already have, compared with the method you last approved. It moves roles, not people: nobody's pay changes here.",
       "calibrationLabel": "What is calibration?",
-      "calibrationBody": "Reviewing a locked placement a person should look at before the ladder is taken as settled. Confirming one does not change the level: it records that someone stands behind it.",
+      "calibrationBody": "Reviewing a completed placement a person should look at before the ladder is taken as settled. Confirming one does not change the level: it records that someone stands behind it.",
       "levelThresholdLabel": "What is a level threshold?",
       "levelThresholdBody": "The weighting a role must reach to sit at a level, and the profile step a zone gates on. They decide where every role lands, so changing one re-places the whole ladder."
     },
@@ -2798,7 +2798,7 @@
     "criterionAlreadySelected": "This criterion is already part of the model.",
     "methodBlocked": "The method checklist has unresolved items. Resolve every blocker before approving.",
     "modelNotApproved": "The evaluation model needs to be approved before roles can be rated.",
-    "assessmentLocked": "The assessment is locked. Unlock it to change ratings.",
-    "assessmentNotLocked": "The assessment needs to be locked first."
+    "assessmentCompleted": "The assessment is completed. Re-evaluate it to change the ratings.",
+    "assessmentNotCompleted": "The assessment needs to be completed first."
   }
 }

@@ -14,24 +14,24 @@ import { orgQuery } from "../lib/functions"
 import { deriveResults } from "./compute"
 import { familyNames, trackNames } from "./names"
 
-// Locking is the reveal (ADR-0023, spec 2.4/6): while a role's assessment is
+// Completing is the reveal (ADR-0023, spec 2.4/6): while a role's assessment is
 // a draft (roles.assessment absent), no result exists anywhere -- score,
 // level, zone, and the profile outcome all read null here regardless of what
 // the engine actually derived. `complete`/`ratedCount`/`totalCriteria` stay
 // exposed always (completeness counters, never the outcome itself), so the
-// "ready to lock" state has something to show. Method drift is derived here
+// "ready to complete" state has something to show. Method drift is derived here
 // at read time and never stored, mirroring score/level/zone: it is always
-// false for an unlocked role (nothing has been revealed yet to drift), but a
-// LOCKED role whose model carries no CURRENT approval is itself drift, not
+// false for a role that is not completed (nothing has been revealed yet to drift), but a
+// COMPLETED role whose model carries no CURRENT approval is itself drift, not
 // the absence of it. A method-affecting edit reopens approval
-// (reopenApprovalIfSet) without touching any role already locked under the
-// prior approval, so a locked role next to an unapproved model means the
-// method moved since that role's lock, exactly the case this marking exists
+// (reopenApprovalIfSet) without touching any role already completed under the
+// prior approval, so a completed role next to an unapproved model means the
+// method moved since that role was completed, exactly the case this marking exists
 // to surface (ADR-0023 accepts this as visible-never-prevented).
 //
 // Exported so payMapping/runs.ts's precondition computation can reuse this
 // EXACT predicate for its (non-blocking) drift warning, rather than
-// re-deriving a second notion of "locked under an earlier method": the roles
+// re-deriving a second notion of "completed under an earlier method": the roles
 // wire and the pay-mapping start dialog must never be able to name a
 // different set of drifted roles.
 export function deriveMethodDrift(
@@ -42,7 +42,7 @@ export function deriveMethodDrift(
     return false
   }
   if (model.approval === undefined) return true
-  return assessment.lockedAt < model.approval.approvedAt
+  return assessment.completedAt < model.approval.approvedAt
 }
 
 const zoneWireValidator = v.union(zoneKeyValidator, v.null())
@@ -101,9 +101,9 @@ function nameFailures(
 // The results view: live-derived rows for every non-archived role plus the
 // model's level list. Score/level are computed at read time and never stored
 // (ADR-0002). Sorted level-first (Level 1 on top), score desc within a level,
-// incomplete/unlocked roles last by title -- which is also what makes "only
-// locked roles place" fall out of the existing sort for free on the levels
-// surfaces (their level is null until locked).
+// incomplete and uncompleted roles last by title -- which is also what makes "only
+// completed roles place" fall out of the existing sort for free on the levels
+// surfaces (their level is null until completed).
 export const getResults = orgQuery({
   args: { locale: v.optional(v.string()) },
   returns: v.object({
@@ -117,9 +117,9 @@ export const getResults = orgQuery({
         complete: v.boolean(),
         ratedCount: v.number(),
         totalCriteria: v.number(),
-        locked: v.boolean(),
+        completed: v.boolean(),
         calibrated: v.boolean(),
-        readyToLock: v.boolean(),
+        readyToComplete: v.boolean(),
         methodDrift: v.boolean(),
         score: v.union(v.number(), v.null()),
         level: v.union(v.number(), v.null()),
@@ -194,7 +194,7 @@ export const getResults = orgQuery({
               expectedLevel: anchorRole.expectedLevel,
               status: anchorRole.status,
             }
-      const locked = role.assessment !== undefined
+      const completed = role.assessment !== undefined
       const complete = result?.complete ?? false
       rows.push({
         roleId: role._id,
@@ -205,15 +205,15 @@ export const getResults = orgQuery({
         complete,
         ratedCount: result?.ratedCount ?? 0,
         totalCriteria: derived.totalCriteria,
-        locked,
+        completed,
         calibrated: role.assessment?.calibratedAt !== undefined,
-        readyToLock: complete && !locked,
+        readyToComplete: complete && !completed,
         methodDrift: deriveMethodDrift(role.assessment, model),
-        score: locked ? (result?.score ?? null) : null,
-        level: locked ? (result?.level ?? null) : null,
-        zone: locked ? (result?.zone ?? null) : null,
-        profileLimited: locked ? (result?.profileLimited ?? null) : null,
-        profileFailures: locked
+        score: completed ? (result?.score ?? null) : null,
+        level: completed ? (result?.level ?? null) : null,
+        zone: completed ? (result?.zone ?? null) : null,
+        profileLimited: completed ? (result?.profileLimited ?? null) : null,
+        profileFailures: completed
           ? nameFailures(result?.profileFailures ?? [], criterionNames)
           : null,
         familyId: role.familyId ?? null,
@@ -249,11 +249,11 @@ export const getResults = orgQuery({
 // travels alongside weightPoints and value.
 //
 // NOTE on `criteria`: the per-criterion value/motivation are NOT gated on
-// `locked` at this wire (unlike score/level/zone below) -- they are the same
+// `completed` at this wire (unlike score/level/zone below) -- they are the same
 // per-criterion rows the blind rating flow already writes and re-reads while
 // rating. Blindness for the AGGREGATE outcome (the reveal this whole task is
 // about) is enforced by the four dashboard consumers of this query, which
-// only ever render the breakdown once `locked` is true (rating-result.tsx,
+// only ever render the breakdown once `completed` is true (rating-result.tsx,
 // role-evaluation-card.tsx, role-sheet.tsx, rate/page.tsx); a future fifth
 // consumer must keep that same rule.
 export const getRoleResult = orgQuery({
@@ -266,9 +266,9 @@ export const getRoleResult = orgQuery({
       complete: v.boolean(),
       ratedCount: v.number(),
       totalCriteria: v.number(),
-      locked: v.boolean(),
+      completed: v.boolean(),
       calibrated: v.boolean(),
-      readyToLock: v.boolean(),
+      readyToComplete: v.boolean(),
       methodDrift: v.boolean(),
       score: v.union(v.number(), v.null()),
       level: v.union(v.number(), v.null()),
@@ -319,7 +319,7 @@ export const getRoleResult = orgQuery({
     )
 
     const names = criterionNameMap(criteriaRows, content)
-    const locked = role.assessment !== undefined
+    const completed = role.assessment !== undefined
     const complete = result?.complete ?? false
     return {
       roleId: role._id,
@@ -327,15 +327,15 @@ export const getRoleResult = orgQuery({
       complete,
       ratedCount: result?.ratedCount ?? 0,
       totalCriteria: derived.totalCriteria,
-      locked,
+      completed,
       calibrated: role.assessment?.calibratedAt !== undefined,
-      readyToLock: complete && !locked,
+      readyToComplete: complete && !completed,
       methodDrift: deriveMethodDrift(role.assessment, model),
-      score: locked ? (result?.score ?? null) : null,
-      level: locked ? (result?.level ?? null) : null,
-      zone: locked ? (result?.zone ?? null) : null,
-      profileLimited: locked ? (result?.profileLimited ?? null) : null,
-      profileFailures: locked
+      score: completed ? (result?.score ?? null) : null,
+      level: completed ? (result?.level ?? null) : null,
+      zone: completed ? (result?.zone ?? null) : null,
+      profileLimited: completed ? (result?.profileLimited ?? null) : null,
+      profileFailures: completed
         ? nameFailures(result?.profileFailures ?? [], names)
         : null,
       criteria: criteriaRows.map((row) => {

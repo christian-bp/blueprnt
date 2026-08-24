@@ -119,12 +119,12 @@ async function seedPersonAndFreeze(t: ReturnType<typeof initConvexTest>) {
         value: 5,
       })
     }
-    // Lock directly (bypassing lockAssessment's own gates, like the ratings
+    // Complete directly (bypassing completeAssessment's own gates, like the ratings
     // above bypass setRating): the preconditions gate now requires evaluated
     // AND locked (spec 2.4/6), and this fixture is about erasure mechanics,
     // not the locking lifecycle.
     await ctx.db.patch(roleDocId, {
-      assessment: { lockedBy: userId, lockedAt: Date.now() },
+      assessment: { completedBy: userId, completedAt: Date.now() },
     })
   })
 

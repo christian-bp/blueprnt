@@ -1,6 +1,6 @@
 ---
 title: Mallin ja arvioinnin virheet
-description: Mitä kukin mallin rakentamisen, arvioinnin, roolin lukituksen ja tekoälyn viesti tarkoittaa, ja mitä sille pitää tehdä.
+description: Mitä kukin mallin rakentamisen, arvioinnin, arvioinnin viimeistelyn ja tekoälyn viesti tarkoittaa, ja mitä sille pitää tehdä.
 section: troubleshooting
 ---
 
@@ -75,7 +75,7 @@ Jokainen kirjaston kriteeri voi olla aktiivinen vain kerran mallia
 kohden. Etsikää se oman ulottuvuutensa listalta Kriteerit-sivulta sen
 sijaan, että lisäisitte sen uudelleen.
 
-## En voi muokata tai arvioida jotain, koska se sanoo olevansa lukittu
+## En voi muokata tai arvioida jotain, koska se sanoo olevansa suljettu
 
 ### Rooli on lukittu
 
@@ -106,28 +106,30 @@ uudelleen" Malli-alueen Menetelmä-luvussa poistaaksenne hyväksynnän ja sen
 vahvistuksen, muokatkaa tekstiä, ja hyväksykää se sitten uudelleen.
 Katso [Menetelmän dokumentointi](/docs/method-documentation).
 
-### Arviointi on lukittu
+### Arviointi on viimeistelty
 
-Koodi: `assessmentLocked`
+Koodi: `assessmentCompleted`
 
-"Arviointi on lukittu. Avaa lukitus muuttaaksesi arvioita."
+"Arviointi on viimeistelty. Arvioi se uudelleen muuttaaksesi arvioita."
 
-Roolin arvioita ei voi enää muuttaa, kun sen arviointi on lukittu:
-täydellisen arvioinnin lukitseminen paljastaa sen painotuksen ja
-tason. Avatkaa lukitus roolisivun toimintovalikosta tehdäksenne lisää
-muutoksia, jolloin painotus ja taso piilotetaan jälleen, kunnes se
-lukitaan uudelleen. Katso [Roolin arviointi](/docs/evaluating-a-role).
+Roolin arvioita ei voi enää muuttaa, kun sen arviointi on
+viimeistelty: täydellisen arvioinnin viimeisteleminen paljastaa sen
+painotuksen ja tason. Valitse "Arvioi uudelleen", tuloksen vierestä
+tai roolisivun toimintovalikosta, lisää muutoksia varten; se piilottaa
+painotuksen ja tason jälleen, kunnes arviointi viimeistellään
+uudelleen. Katso [Roolin arviointi](/docs/evaluating-a-role).
 
-### Arviointi täytyy lukita ensin
+### Arviointi täytyy viimeistellä ensin
 
-Koodi: `assessmentNotLocked`
+Koodi: `assessmentNotCompleted`
 
-"Arviointi täytyy lukita ensin."
+"Arviointi on viimeisteltävä ensin."
 
-Lukituksen avaaminen, kalibroidun sijoituksen vahvistaminen tai roolin
-nimeäminen ankkuriksi koskee vain arviointia, joka on jo lukittu.
-Lukitkaa arviointi ensin roolisivulla, kun jokaisella kriteerillä on
-arvio. Katso [Roolin arviointi](/docs/evaluating-a-role) ja
+Uudelleenavaaminen, kalibroidun sijoituksen vahvistaminen tai roolin
+nimeäminen ankkuriksi koskee vain arviointia, joka on jo viimeistelty.
+Viimeistele arviointi ensin, kulun viimeisessä vaiheessa, kun
+jokaisella kriteerillä on arvio. Katso
+[Roolin arviointi](/docs/evaluating-a-role) ja
 [Ankkuriroolit](/docs/anchor-roles).
 
 ## En voi asettaa roolia ankkurirooliksi

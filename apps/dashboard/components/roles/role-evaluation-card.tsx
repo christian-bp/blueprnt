@@ -34,8 +34,8 @@ import Link from "next/link"
 import { useState } from "react"
 import {
   CalibratedBadge,
-  LockedBadge,
-  LockedIncompleteNotice,
+  CompletedBadge,
+  CompletedIncompleteNotice,
   MethodDriftBadge,
 } from "@/components/assessment-status"
 import { DeviationBadge } from "@/components/deviation-badge"
@@ -47,13 +47,14 @@ import {
 import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
 import { useReopenAssessment } from "@/hooks/use-reopen-assessment"
 
-// One card for the whole evaluation lifecycle, now three states instead of
-// two (lock-as-reveal, spec 2.4/6): incomplete (progress + stepper entry),
-// complete-but-unlocked ("ready to read", the Lock action itself is the
-// reveal), and locked (weighting, level, and per-criterion breakdown, with
-// the anchor status inline and the header menu). An archived role has left
+// One card for the whole evaluation lifecycle, in three states (completion is
+// the reveal, spec 2.4/6): not fully rated (progress + stepper entry), rated
+// but not completed (where the card says what is left and points into the
+// flow that ends it), and completed (weighting, level, and per-criterion
+// breakdown, with the anchor status inline and the header menu). An archived
+// role has left
 // the results set (deriveResults excludes it), so it stays read-only
-// regardless of any lock state it carries.
+// regardless of any completion state it carries.
 export function RoleEvaluationCard({
   orgId,
   roleId,
@@ -88,8 +89,8 @@ export function RoleEvaluationCard({
   const evaluated = totalCriteria > 0 && ratedCount === totalCriteria
   // The view is chosen from the props so it never flashes; the query only
   // fills the result data. `showResult` means "past the in-progress stepper
-  // state", covering BOTH ready-to-read and locked; which of those two is
-  // decided below once `result` (query-based; lock state is not a prop)
+  // state", covering BOTH rated-not-completed and completed; which of those
+  // two is decided below once `result` (query-based; it is not a prop)
   // resolves.
   const showResult = evaluated && !archived
 
@@ -98,11 +99,11 @@ export function RoleEvaluationCard({
     roleId,
     locale,
   })
-  const locked = result?.locked ?? false
-  // The level-position scale needs the level count; only the locked view uses it.
+  const completed = result?.completed ?? false
+  // The level-position scale needs the level count; only the completed view uses it.
   const model = useQuery(
     api.evaluationModel.model.getModel,
-    showResult && locked ? { orgId, locale } : "skip"
+    showResult && completed ? { orgId, locale } : "skip"
   )
   const levelCount = model?.levelRules.length ?? 0
   // The level leads with the engine-computed outcome for every role (ADR-0002).
@@ -122,10 +123,10 @@ export function RoleEvaluationCard({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           {t("evaluationHeading")}
-          {locked ? <LockedBadge /> : null}
+          {completed ? <CompletedBadge /> : null}
           {result?.calibrated ? <CalibratedBadge /> : null}
           {result?.methodDrift ? <MethodDriftBadge /> : null}
-          {showResult && locked ? (
+          {showResult && completed ? (
             <HelpMorphButton label={tHelp("scoreLabel")}>
               {tHelp("scoreBody")}
             </HelpMorphButton>
@@ -151,7 +152,7 @@ export function RoleEvaluationCard({
               <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {locked ? (
+              {completed ? (
                 // Not destructive, and no confirm: reopening keeps every
                 // rating and is undone by completing again from the flow's
                 // last step. The result it hides is derived, never stored
@@ -169,11 +170,11 @@ export function RoleEvaluationCard({
                   {t("adjustRateCta")}
                 </DropdownMenuItem>
               )}
-              {/* An anchor role must be a locked reference (lock-as-reveal):
-                  the backend refuses designate/update on an unlocked role,
-                  so the affordance stays hidden for a complete-but-unlocked
+              {/* An anchor role must be a completed reference (completion is the reveal):
+                  the backend refuses designate/update on an uncompleted role,
+                  so the affordance stays hidden for a rated-but-uncompleted
                   role rather than opening a dialog whose submit always fails. */}
-              {locked && (
+              {completed && (
                 <DropdownMenuItem onClick={() => setAnchorOpen(true)}>
                   {anchorRole === null
                     ? tAnchor("designateCta")
@@ -190,7 +191,7 @@ export function RoleEvaluationCard({
             <p className="text-muted-foreground text-sm">
               {tResult("computing")}
             </p>
-          ) : locked ? (
+          ) : completed ? (
             result.complete ? (
               <>
                 {/* The level is the engine-computed outcome. An anchor role is
@@ -260,7 +261,7 @@ export function RoleEvaluationCard({
                 <RoleCriterionBreakdown criteria={result.criteria} />
               </>
             ) : (
-              <LockedIncompleteNotice />
+              <CompletedIncompleteNotice />
             )
           ) : (
             // Rated, not completed (an assessment reopened for re-evaluation

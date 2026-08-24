@@ -5,8 +5,8 @@ import { afterEach, describe, expect, it } from "vitest"
 
 import {
   CalibratedBadge,
-  LockedBadge,
-  LockedIncompleteNotice,
+  CompletedBadge,
+  CompletedIncompleteNotice,
   MethodDriftBadge,
 } from "@/components/assessment-status"
 
@@ -24,10 +24,10 @@ describe("assessment status", () => {
   afterEach(() => cleanup())
 
   // The owner's standing ruling: statuses at chip scale are words, not icons.
-  // A lock glyph beside the word "Locked" adds nothing the word does not, and
+  // A glyph beside the word "Completed" adds nothing the word does not, and
   // a row of small icons reads as a toolbar rather than as state.
   it.each([
-    ["locked", <LockedBadge key="l" />, detail.lockedBadge],
+    ["completed", <CompletedBadge key="l" />, detail.completedBadge],
     ["calibrated", <CalibratedBadge key="c" />, detail.calibratedBadge],
     ["method drift", <MethodDriftBadge key="d" />, detail.methodDriftBadge],
   ])("renders %s as a word with no icon", (_name, node, label) => {
@@ -37,9 +37,9 @@ describe("assessment status", () => {
     expect(container.querySelector("img")).toBeNull()
   })
 
-  it("says what a locked-but-incomplete assessment needs", () => {
-    renderStatus(<LockedIncompleteNotice />)
-    const notice = screen.getByText(detail.lockedIncomplete)
+  it("says what a completed-but-incomplete assessment needs", () => {
+    renderStatus(<CompletedIncompleteNotice />)
+    const notice = screen.getByText(detail.completedIncomplete)
     // Running text a user reads as sentences, so it floors at text-sm.
     expect(notice.className).toContain("text-sm")
   })

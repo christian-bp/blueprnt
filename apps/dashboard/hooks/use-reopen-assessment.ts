@@ -23,7 +23,9 @@ import { toast } from "@/lib/toast"
 // act cannot read as two different things depending on where it is pressed.
 export function useReopenAssessment(orgId: string, roleId: Id<"roles">) {
   const tToast = useTranslations("dashboard.toast")
-  const reopenAssessment = useMutation(api.assessment.locking.unlockAssessment)
+  const reopenAssessment = useMutation(
+    api.assessment.completion.reopenAssessment
+  )
   const [pending, setPending] = useState(false)
 
   async function reopen() {
@@ -31,7 +33,7 @@ export function useReopenAssessment(orgId: string, roleId: Id<"roles">) {
     setPending(true)
     try {
       await reopenAssessment({ orgId, roleId })
-      toast.success(tToast("assessmentUnlocked"))
+      toast.success(tToast("assessmentReopened"))
     } catch {
       toast.error(tToast("error"))
     } finally {

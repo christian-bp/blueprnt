@@ -896,10 +896,10 @@ describe("formatAuditDetail", () => {
     ).toBe("Analyst")
   })
 
-  it("renders role.assessmentLocked as the role name", () => {
+  it("renders role.assessmentCompleted as the role name", () => {
     expect(
       formatAuditDetail(
-        "role.assessmentLocked",
+        "role.assessmentCompleted",
         { roleId: "r1", ratedCount: 8 },
         { r1: "Analyst" },
         labels,
@@ -908,10 +908,10 @@ describe("formatAuditDetail", () => {
     ).toBe("Analyst")
   })
 
-  it("renders role.assessmentUnlocked as the role name, never blank (payloadStats alone would drop the id-only payload entirely)", () => {
+  it("renders role.assessmentReopened as the role name, never blank (payloadStats alone would drop the id-only payload entirely)", () => {
     expect(
       formatAuditDetail(
-        "role.assessmentUnlocked",
+        "role.assessmentReopened",
         { roleId: "r1" },
         { r1: "Analyst" },
         labels,

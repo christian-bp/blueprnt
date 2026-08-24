@@ -1350,16 +1350,16 @@ describe("reconcileStarterSet audit before/after", () => {
           roleId: roleDocId,
           criterionId: criterion._id,
           value: 5,
-          // Value 5 requires a motivation before lockAssessment (below) will
+          // Value 5 requires a motivation before completeAssessment (below) will
           // accept it.
           motivation: "Top of scale.",
         })
       }
     })
-    // An anchor role must be a locked reference (lock-as-reveal); locking
+    // An anchor role must be a completed reference (completion is the reveal); completing
     // requires an approved model.
     await grantModelApproval(t, orgId)
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId: anchor.roleId,
     })

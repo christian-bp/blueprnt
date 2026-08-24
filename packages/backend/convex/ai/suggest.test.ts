@@ -1968,7 +1968,7 @@ describe("requestWeightReview enrichment", () => {
         value: 3,
       })
     }
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })

@@ -26,8 +26,8 @@ import {
 } from "react"
 import {
   CalibratedBadge,
-  LockedBadge,
-  LockedIncompleteNotice,
+  CompletedBadge,
+  CompletedIncompleteNotice,
   MethodDriftBadge,
 } from "@/components/assessment-status"
 import { DeviationBadge } from "@/components/deviation-badge"
@@ -140,20 +140,20 @@ function RoleSheetContent({
                 name={role.trackName}
                 short
               />
-              {/* Level sits with the title once the assessment is locked
-                  (lock-as-reveal, spec 2.4/6), matching the role page result
-                  badge; the locked/drift badges ride alongside it. */}
-              {result?.locked ? (
+              {/* Level sits with the title once the assessment is completed
+                  (completion is the reveal, spec 2.4/6), matching the role page result
+                  badge; the completed/drift badges ride alongside it. */}
+              {result?.completed ? (
                 <>
                   {/* The level only once there IS one: a criterion added
-                      after the lock leaves a locked role incomplete, and the
-                      lock is still true even though nothing computes. The
-                      locked chip stays either way, because saying nothing
-                      about a locked assessment reads as "not evaluated". */}
+                      after completion leaves a completed role incomplete, and the
+                      completion is still true even though nothing computes. The
+                      completed chip stays either way, because saying nothing
+                      about a completed assessment reads as "not evaluated". */}
                   {result.level !== null ? (
                     <LevelBadge level={result.level} />
                   ) : null}
-                  <LockedBadge />
+                  <CompletedBadge />
                   {result.calibrated ? <CalibratedBadge /> : null}
                   {result.methodDrift ? <MethodDriftBadge /> : null}
                 </>
@@ -220,27 +220,29 @@ function RoleSheetContent({
               </div>
             </section>
 
-            {/* Result: weighting + level + breakdown once LOCKED (lock-as-
+            {/* Result: weighting + level + breakdown once COMPLETED (completion-as-
                 reveal, spec 2.4/6), else progress or "ready to read". */}
             <section className="space-y-3">
               {result === undefined ? (
                 <div className="flex justify-center py-4">
                   <Spinner aria-label={t("loading")} />
                 </div>
-              ) : result?.locked && result.complete && result.level !== null ? (
+              ) : result?.completed &&
+                result.complete &&
+                result.level !== null ? (
                 // Level now lives in the header; the body carries only the
                 // per-criterion contribution breakdown. Gated on complete AND
                 // level (not locked alone): a criterion added after the lock
-                // can leave a locked role incomplete again, reading back as
-                // complete=false, level=null while locked stays true
+                // can leave a completed role incomplete again, reading back as
+                // complete=false, level=null while completed stays true
                 // (results.ts), and the breakdown must not render a partial
                 // reveal for that drifted state (mirrors rating-result.tsx).
                 <RoleCriterionBreakdown criteria={result.criteria} />
-              ) : result?.locked ? (
-                // Locked but not readable: say so, instead of falling back to
+              ) : result?.completed ? (
+                // Completed but not readable: say so, instead of falling back to
                 // the "not yet evaluated" line an unrated role gets. The role
                 // WAS evaluated; a criterion arrived afterwards.
-                <LockedIncompleteNotice />
+                <CompletedIncompleteNotice />
               ) : (
                 <div className="space-y-1">
                   <p className="text-muted-foreground text-sm">

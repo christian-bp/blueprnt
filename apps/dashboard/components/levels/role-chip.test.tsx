@@ -17,7 +17,7 @@ function row(overrides: Partial<LevelRoleRow>): LevelRoleRow {
     level: 3,
     ratedCount: 9,
     totalCriteria: 9,
-    readyToLock: false,
+    readyToComplete: false,
     familyId: null,
     familyName: null,
     anchor: null,

@@ -32,7 +32,7 @@ import type { CalibrationInput } from "@/lib/calibration-queue"
 import { toast } from "@/lib/toast"
 import { mockMutation } from "@/test/convex-mocks"
 
-const calibrate = mockMutation("assessment.locking.calibrateAssessment")
+const calibrate = mockMutation("assessment.completion.calibrateAssessment")
 const m = messages.dashboard.levels.calibration
 
 function role(overrides: Partial<CalibrationInput> = {}): CalibrationInput {
@@ -47,11 +47,11 @@ function role(overrides: Partial<CalibrationInput> = {}): CalibrationInput {
     zone: "B",
     ratedCount: 9,
     totalCriteria: 9,
-    readyToLock: false,
+    readyToComplete: false,
     familyId: null,
     familyName: null,
     anchor: null,
-    locked: true,
+    completed: true,
     calibrated: false,
     methodDrift: false,
     profileLimited: false,
@@ -132,7 +132,7 @@ describe("CalibrationQueue", () => {
   it("states a stale lock and sends the reader to the assessment", () => {
     renderQueue([role({ title: "Nurse", slug: "nurse", methodDrift: true })])
     const row = rowFor("Nurse")
-    expect(row.textContent).toContain(m.staleLockReason)
+    expect(row.textContent).toContain(m.staleMethodReason)
     const link = within(row).getByRole("link", { name: m.rateCta })
     expect(link.getAttribute("href")).toBe("/roles/nurse/rate")
   })

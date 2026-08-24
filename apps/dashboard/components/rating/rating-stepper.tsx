@@ -85,7 +85,9 @@ export function RatingStepper({
   const tToast = useTranslations("dashboard.toast")
   const tErrors = useTranslations("errors")
   const setRating = useMutation(api.assessment.ratings.setRating)
-  const completeAssessment = useMutation(api.assessment.locking.lockAssessment)
+  const completeAssessment = useMutation(
+    api.assessment.completion.completeAssessment
+  )
   const contextPanelId = useId()
   const notCoveredExplanationId = useId()
   const motivationErrorId = useId()
@@ -281,7 +283,7 @@ export function RatingStepper({
         // the completion is refused unless every rating is already stored.
         try {
           await completeAssessment({ orgId, roleId })
-          toast.success(tToast("assessmentLocked"))
+          toast.success(tToast("assessmentCompleted"))
         } catch (error) {
           setCompleteError(
             assessmentErrorMessage(error, tErrors, t("completeError"))

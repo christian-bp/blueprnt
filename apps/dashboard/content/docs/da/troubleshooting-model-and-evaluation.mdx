@@ -1,6 +1,6 @@
 ---
 title: Fejl med model og vurdering
-description: Hvad hver besked om modelopbygning, vurdering, rollelåsning og AI betyder, og hvad I skal gøre ved den.
+description: Hvad hver besked om modelopbygning, vurdering, afslutning af bedømmelsen og AI betyder, og hvad I skal gøre ved den.
 section: troubleshooting
 ---
 
@@ -73,7 +73,7 @@ Hvert af bibliotekets kriterier kan kun være aktivt én gang pr. model.
 Find det i dets dimensions liste på siden Kriterier i stedet for at
 tilføje det igen.
 
-## Jeg kan ikke redigere eller vurdere noget, fordi det siger, det er låst
+## Jeg kan ikke redigere eller vurdere noget, fordi det siger, det er lukket
 
 ### Rollen er låst
 
@@ -103,28 +103,30 @@ i Model-områdets kapitel Metode for at fjerne godkendelsen og dens bekræftelse
 teksten, og godkend den derefter igen. Se
 [Metodedokumentation](/docs/method-documentation).
 
-### Vurderingen er låst
+### Bedømmelsen er afsluttet
 
-Kode: `assessmentLocked`
+Kode: `assessmentCompleted`
 
-"Vurderingen er låst. Lås den op for at ændre vurderinger."
+"Bedømmelsen er afsluttet. Bedøm den igen for at ændre vurderingerne."
 
-En rolles vurderinger kan ikke længere ændres, når vurderingen er
-låst: at låse en fuldstændig vurdering er det, der viser dens vægtning
-og niveau. Lås den op fra rollesidens handlingsmenu for at foretage
-flere ændringer, hvilket skjuler vægtningen og niveauet igen, indtil
-den låses på ny. Se [Vurder en rolle](/docs/evaluating-a-role).
+En rolles vurderinger kan ikke længere ændres, når bedømmelsen er
+afsluttet: at afslutte en fuldt vurderet bedømmelse er det, der viser
+dens vægtning og niveau. Vælg "Bedøm igen", ved siden af resultatet
+eller på rollesidens handlingsmenu, for at foretage flere ændringer;
+det skjuler vægtningen og niveauet igen, indtil I afslutter
+bedømmelsen på ny. Se [Vurder en rolle](/docs/evaluating-a-role).
 
-### Vurderingen skal låses først
+### Bedømmelsen skal afsluttes først
 
-Kode: `assessmentNotLocked`
+Kode: `assessmentNotCompleted`
 
-"Vurderingen skal låses først."
+"Bedømmelsen skal afsluttes først."
 
-At låse op, bekræfte en kalibreret placering, eller udpege en rolle
-som ankerrolle, gælder kun en vurdering, der allerede er låst. Lås
-vurderingen først, fra rollesiden, når hvert kriterium har en
-vurdering. Se [Vurder en rolle](/docs/evaluating-a-role) og
+At bedømme igen, bekræfte en kalibreret placering, eller udpege en
+rolle som ankerrolle, gælder kun en bedømmelse, der allerede er
+afsluttet. Afslut bedømmelsen først, på vurderingsflowets sidste
+trin, når hvert kriterium har en vurdering. Se
+[Vurder en rolle](/docs/evaluating-a-role) og
 [Ankerroller](/docs/anchor-roles).
 
 ## Jeg kan ikke sætte en rolle som ankerrolle

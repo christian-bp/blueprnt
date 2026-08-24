@@ -82,29 +82,29 @@ async function rateAll(args: {
   }
 }
 
-describe("lockAssessment", () => {
-  it("locks a fully and validly rated role, auditing ratedCount", async () => {
+describe("completeAssessment", () => {
+  it("completes a fully and validly rated role, auditing ratedCount", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId, userId } =
       await seedTemplateOrganization(t)
     await grantModelApproval(t, orgId)
     await rateAll({ asAdmin, orgId, roleId, model, value: 3 })
 
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })
 
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
-      expect(role?.assessment?.lockedBy).toBe(userId)
-      expect(role?.assessment?.lockedAt).toBeGreaterThan(0)
+      expect(role?.assessment?.completedBy).toBe(userId)
+      expect(role?.assessment?.completedAt).toBeGreaterThan(0)
       expect(role?.assessment?.calibratedAt).toBeUndefined()
 
       const rows = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "role.assessmentLocked")
+          q.eq("orgId", orgId).eq("type", "role.assessmentCompleted")
         )
         .collect()
       expect(rows).toHaveLength(1)
@@ -114,7 +114,7 @@ describe("lockAssessment", () => {
     })
   })
 
-  it("locks a mixed vector: the working-conditions criterion at 0 (omfattas inte) alongside siblings spread across 1-5", async () => {
+  it("completes a mixed vector: the working-conditions criterion at 0 (omfattas inte) alongside siblings spread across 1-5", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
     await grantModelApproval(t, orgId)
@@ -151,14 +151,14 @@ describe("lockAssessment", () => {
       })
     }
 
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })
 
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
-      expect(role?.assessment?.lockedAt).toBeGreaterThan(0)
+      expect(role?.assessment?.completedAt).toBeGreaterThan(0)
       const rating = await ctx.db
         .query("ratings")
         .withIndex("by_role_criterion", (q) =>
@@ -184,7 +184,7 @@ describe("lockAssessment", () => {
       })
     }
     await expect(
-      asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      asAdmin.mutation(api.assessment.completion.completeAssessment, {
         orgId,
         roleId,
       })
@@ -209,7 +209,7 @@ describe("lockAssessment", () => {
     })
     // ...then directly corrupt the stored row to simulate a rating that no
     // longer carries its required motivation (setRating itself can never
-    // produce this state; lockAssessment's re-validation is the backstop for
+    // produce this state; completeAssessment's re-validation is the backstop for
     // exactly this kind of stale/corrupted row).
     await t.run(async (ctx) => {
       const rating = await ctx.db
@@ -223,14 +223,14 @@ describe("lockAssessment", () => {
     })
 
     await expect(
-      asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      asAdmin.mutation(api.assessment.completion.completeAssessment, {
         orgId,
         roleId,
       })
     ).rejects.toThrow(/errors.motivationRequired/)
   })
 
-  it("refuses to lock against an unapproved model with modelNotApproved", async () => {
+  it("refuses to complete against an unapproved model with modelNotApproved", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
     await grantModelApproval(t, orgId)
@@ -247,31 +247,31 @@ describe("lockAssessment", () => {
     })
 
     await expect(
-      asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      asAdmin.mutation(api.assessment.completion.completeAssessment, {
         orgId,
         roleId,
       })
     ).rejects.toThrow(/errors.modelNotApproved/)
   })
 
-  it("refuses to lock an already-locked assessment", async () => {
+  it("refuses to complete an already-completed assessment", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
     await grantModelApproval(t, orgId)
     await rateAll({ asAdmin, orgId, roleId, model, value: 3 })
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })
     await expect(
-      asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      asAdmin.mutation(api.assessment.completion.completeAssessment, {
         orgId,
         roleId,
       })
-    ).rejects.toThrow(/errors.assessmentLocked/)
+    ).rejects.toThrow(/errors.assessmentCompleted/)
   })
 
-  it("refuses to lock an archived role", async () => {
+  it("refuses to complete an archived role", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
     await grantModelApproval(t, orgId)
@@ -280,19 +280,19 @@ describe("lockAssessment", () => {
       await ctx.db.patch(roleId, { archivedAt: Date.now() })
     })
     await expect(
-      asAdmin.mutation(api.assessment.locking.lockAssessment, {
+      asAdmin.mutation(api.assessment.completion.completeAssessment, {
         orgId,
         roleId,
       })
     ).rejects.toThrow(/errors.roleLocked/)
   })
 
-  it("blocks setRating on a locked role with assessmentLocked", async () => {
+  it("blocks setRating on a completed role with assessmentCompleted", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
     await grantModelApproval(t, orgId)
     await rateAll({ asAdmin, orgId, roleId, model, value: 3 })
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })
@@ -305,27 +305,27 @@ describe("lockAssessment", () => {
         criterionId: first.criterionId as never,
         value: 2,
       })
-    ).rejects.toThrow(/errors.assessmentLocked/)
+    ).rejects.toThrow(/errors.assessmentCompleted/)
   })
 })
 
-describe("unlockAssessment", () => {
+describe("reopenAssessment", () => {
   it("clears the whole assessment aggregate and audits it", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
     await grantModelApproval(t, orgId)
     await rateAll({ asAdmin, orgId, roleId, model, value: 3 })
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })
-    await asAdmin.mutation(api.assessment.locking.calibrateAssessment, {
+    await asAdmin.mutation(api.assessment.completion.calibrateAssessment, {
       orgId,
       roleId,
       note: "Looks right.",
     })
 
-    await asAdmin.mutation(api.assessment.locking.unlockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.reopenAssessment, {
       orgId,
       roleId,
     })
@@ -336,7 +336,7 @@ describe("unlockAssessment", () => {
       const rows = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "role.assessmentUnlocked")
+          q.eq("orgId", orgId).eq("type", "role.assessmentReopened")
         )
         .collect()
       expect(rows).toHaveLength(1)
@@ -354,15 +354,15 @@ describe("unlockAssessment", () => {
     })
   })
 
-  it("refuses to unlock a role that is not locked", async () => {
+  it("refuses to reopen a role that is not completed", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, roleId } = await seedTemplateOrganization(t)
     await expect(
-      asAdmin.mutation(api.assessment.locking.unlockAssessment, {
+      asAdmin.mutation(api.assessment.completion.reopenAssessment, {
         orgId,
         roleId,
       })
-    ).rejects.toThrow(/errors.assessmentNotLocked/)
+    ).rejects.toThrow(/errors.assessmentNotCompleted/)
   })
 })
 
@@ -373,12 +373,12 @@ describe("calibrateAssessment", () => {
       await seedTemplateOrganization(t)
     await grantModelApproval(t, orgId)
     await rateAll({ asAdmin, orgId, roleId, model, value: 3 })
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })
 
-    await asAdmin.mutation(api.assessment.locking.calibrateAssessment, {
+    await asAdmin.mutation(api.assessment.completion.calibrateAssessment, {
       orgId,
       roleId,
       note: "Matches the anchor roles.",
@@ -391,8 +391,8 @@ describe("calibrateAssessment", () => {
       expect(role?.assessment?.calibrationNote).toBe(
         "Matches the anchor roles."
       )
-      // Locking survives calibration untouched.
-      expect(role?.assessment?.lockedBy).toBe(userId)
+      // Completion survives calibration untouched.
+      expect(role?.assessment?.completedBy).toBe(userId)
 
       const rows = await ctx.db
         .query("auditLog")
@@ -412,12 +412,12 @@ describe("calibrateAssessment", () => {
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
     await grantModelApproval(t, orgId)
     await rateAll({ asAdmin, orgId, roleId, model, value: 3 })
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })
 
-    await asAdmin.mutation(api.assessment.locking.calibrateAssessment, {
+    await asAdmin.mutation(api.assessment.completion.calibrateAssessment, {
       orgId,
       roleId,
     })
@@ -433,13 +433,13 @@ describe("calibrateAssessment", () => {
       expect(rows[0]?.payload).toEqual({ roleId, noteProvided: false })
     })
 
-    await asAdmin.mutation(api.assessment.locking.calibrateAssessment, {
+    await asAdmin.mutation(api.assessment.completion.calibrateAssessment, {
       orgId,
       roleId,
       note: "First note.",
     })
     // A later blank re-calibration (whitespace only) leaves the note as-is.
-    await asAdmin.mutation(api.assessment.locking.calibrateAssessment, {
+    await asAdmin.mutation(api.assessment.completion.calibrateAssessment, {
       orgId,
       roleId,
       note: "   ",
@@ -450,26 +450,26 @@ describe("calibrateAssessment", () => {
     })
   })
 
-  it("refuses to calibrate a role that is not locked", async () => {
+  it("refuses to calibrate a role that is not completed", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, roleId } = await seedTemplateOrganization(t)
     await expect(
-      asAdmin.mutation(api.assessment.locking.calibrateAssessment, {
+      asAdmin.mutation(api.assessment.completion.calibrateAssessment, {
         orgId,
         roleId,
         note: "x",
       })
-    ).rejects.toThrow(/errors.assessmentNotLocked/)
+    ).rejects.toThrow(/errors.assessmentNotCompleted/)
   })
 })
 
 describe("method drift derivation", () => {
-  it("is false immediately after locking, true after a later re-approval, and clears again on re-lock", async () => {
+  it("is false immediately after completing, true after a later re-approval, and clears again on completing anew", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
     await grantModelApproval(t, orgId, "first-approver")
     await rateAll({ asAdmin, orgId, roleId, model, value: 3 })
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })
@@ -478,7 +478,7 @@ describe("method drift derivation", () => {
       orgId,
       roleId: roleId as string,
     })
-    expect(result?.locked).toBe(true)
+    expect(result?.completed).toBe(true)
     expect(result?.methodDrift).toBe(false)
 
     // Simulate a later re-approval (a real method change would flip approval
@@ -486,9 +486,9 @@ describe("method drift derivation", () => {
     // cares about the approvedAt boundary, so bumping it directly keeps this
     // a focused unit test of the comparison itself, deterministic instead of
     // racing the system clock).
-    const lockedAt = await t.run(async (ctx) => {
+    const completedAt = await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
-      return role?.assessment?.lockedAt ?? 0
+      return role?.assessment?.completedAt ?? 0
     })
     await t.run(async (ctx) => {
       const modelDoc = await ctx.db
@@ -499,7 +499,7 @@ describe("method drift derivation", () => {
       await ctx.db.patch(modelDoc._id, {
         approval: {
           approvedBy: "second-approver",
-          approvedAt: lockedAt + 1000,
+          approvedAt: completedAt + 1000,
         },
       })
     })
@@ -508,15 +508,15 @@ describe("method drift derivation", () => {
       orgId,
       roleId: roleId as string,
     })
-    expect(result?.locked).toBe(true)
+    expect(result?.completed).toBe(true)
     expect(result?.methodDrift).toBe(true)
 
-    // Re-locking under the current method clears the drift. A real re-lock
+    // Completing anew under the current method clears the drift. A real one
     // a moment later in wall-clock time is not reliably past the artificial
-    // `lockedAt + 1000` used above (this test runs in well under a second),
+    // `completedAt + 1000` used above (this test runs in well under a second),
     // so approvedAt is moved back to just-before "now" first: deterministic
-    // and still exercises the real mutation's fresh Date.now() lockedAt
-    // landing after it, exactly the re-approve-then-re-lock scenario this
+    // and still exercises the real mutation's fresh Date.now() completedAt
+    // landing after it, exactly the re-approve-then-complete-again scenario this
     // case documents.
     await t.run(async (ctx) => {
       const modelDoc = await ctx.db
@@ -528,11 +528,11 @@ describe("method drift derivation", () => {
         approval: { approvedBy: "second-approver", approvedAt: Date.now() - 1 },
       })
     })
-    await asAdmin.mutation(api.assessment.locking.unlockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.reopenAssessment, {
       orgId,
       roleId,
     })
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })
@@ -543,12 +543,12 @@ describe("method drift derivation", () => {
     expect(result?.methodDrift).toBe(false)
   })
 
-  it("is true once a real method edit reopens approval after locking (the edit never touches the already-locked role), and clears on re-approve + re-lock", async () => {
+  it("is true once a real method edit reopens approval after completion (the edit never touches the already-completed role), and clears on re-approve + complete anew", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
     await grantModelApproval(t, orgId)
     await rateAll({ asAdmin, orgId, roleId, model, value: 3 })
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })
@@ -557,16 +557,16 @@ describe("method drift derivation", () => {
       orgId,
       roleId: roleId as string,
     })
-    expect(result?.locked).toBe(true)
+    expect(result?.completed).toBe(true)
     expect(result?.methodDrift).toBe(false)
 
     // A real method-affecting mutation (not a direct db patch): reopens
     // approval via reopenApprovalIfSet, same as any of
     // activateCriterion/deactivateCriterion/rebalanceWeights/
-    // updateLevelRules/updateZoneProfileRules would. It never unlocks or
+    // updateLevelRules/updateZoneProfileRules would. It never reopens or
     // otherwise touches the role, which is exactly the gap the drift
-    // marking exists to surface: the role stays locked, but the model it
-    // was locked under no longer has a current approval.
+    // marking exists to surface: the role stays completed, but the model it
+    // was completed under no longer has a current approval.
     await asAdmin.mutation(
       api.evaluationModel.approval.setWorkingConditionsDecision,
       { orgId, status: "active", motivation: "Ny motivering efter omprövning." }
@@ -575,16 +575,16 @@ describe("method drift derivation", () => {
       orgId,
       roleId: roleId as string,
     })
-    expect(result?.locked).toBe(true)
+    expect(result?.completed).toBe(true)
     expect(result?.methodDrift).toBe(true)
 
-    // Re-approving and re-locking clears the drift again.
+    // Re-approving and completing again clears the drift again.
     await grantModelApproval(t, orgId, "second-approver")
-    await asAdmin.mutation(api.assessment.locking.unlockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.reopenAssessment, {
       orgId,
       roleId,
     })
-    await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+    await asAdmin.mutation(api.assessment.completion.completeAssessment, {
       orgId,
       roleId,
     })

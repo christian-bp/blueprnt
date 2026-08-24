@@ -167,7 +167,7 @@ function QueueRow({
                   level: row.level ?? 0,
                   expected: entry.expectedLevel ?? 0,
                 })
-              : t("staleLockReason")}
+              : t("staleMethodReason")}
         </p>
         {entry.failures.length > 0 && (
           // WHICH requirement held the role back: the criterion by name, what

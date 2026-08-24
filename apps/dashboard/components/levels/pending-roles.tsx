@@ -9,11 +9,12 @@ import type { LevelRoleRow } from "@/lib/levels"
 
 // The "not yet evaluated" zone: roles whose assessment has no level (level
 // null) wait here, for either of two reasons -- still being rated, or fully
-// rated but not yet locked (lock-as-reveal, spec 2.4/6). A `readyToLock` row
-// gets its own badge so "waiting to be rated" and "waiting to be locked"
+// rated but not yet completed (completion is the reveal, spec 2.4/6). A
+// `readyToComplete` row gets its own badge so "waiting to be rated" and
+// "waiting to be completed"
 // read as the two different states they are; how far an in-progress rating
 // has gone is still deliberately not shown. Clicking opens the role, where
-// either the rating flow continues or the lock action lives. Disappears
+// either the rating continues or the flow's own ending waits. Disappears
 // entirely when every role has a level.
 export function PendingRoles({ rows }: { rows: LevelRoleRow[] }) {
   const t = useTranslations("dashboard.levels")
@@ -40,7 +41,7 @@ export function PendingRoles({ rows }: { rows: LevelRoleRow[] }) {
             className="inline-flex items-center gap-2 rounded-md border border-dashed px-2.5 py-1.5 text-muted-foreground text-sm hover:bg-accent"
           >
             <span className="truncate font-medium">{role.title}</span>
-            {role.readyToLock && (
+            {role.readyToComplete && (
               <Badge variant="outline">{t("readyToComplete")}</Badge>
             )}
             <TrackBadge trackKey={role.trackKey} name={role.trackName} />

@@ -1,7 +1,7 @@
 import { z } from "zod"
 import type { ValidationT } from "@/lib/validation"
 
-// Mirrors MAX_CALIBRATION_NOTE in assessment/locking.ts. The backend is what
+// Mirrors MAX_CALIBRATION_NOTE in assessment/completion.ts. The backend is what
 // decides; this is the gate that keeps a reader from typing past it and losing
 // the save.
 const MAX = 1000

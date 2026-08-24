@@ -40,8 +40,8 @@ export const ERROR_CODES = {
   assistantPersonalData: "errors.assistantPersonalData",
   methodBlocked: "errors.methodBlocked",
   modelNotApproved: "errors.modelNotApproved",
-  assessmentLocked: "errors.assessmentLocked",
-  assessmentNotLocked: "errors.assessmentNotLocked",
+  assessmentCompleted: "errors.assessmentCompleted",
+  assessmentNotCompleted: "errors.assessmentNotCompleted",
 } as const
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES]

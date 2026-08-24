@@ -43,7 +43,7 @@ type Result = {
   roleId: string
   title: string
   complete: boolean
-  locked: boolean
+  completed: boolean
   methodDrift?: boolean
   calibrated?: boolean
   ratedCount: number
@@ -106,7 +106,7 @@ describe("RoleSheet", () => {
       roleId: "role_1",
       title: "Engineer",
       complete: true,
-      locked: true,
+      completed: true,
       ratedCount: 3,
       totalCriteria: 3,
       score: 71,
@@ -132,7 +132,7 @@ describe("RoleSheet", () => {
   })
   afterEach(() => cleanup())
 
-  it("shows the level and a compact breakdown (no raw score) for a locked role", () => {
+  it("shows the level and a compact breakdown (no raw score) for a completed role", () => {
     renderSheet()
     open()
     expect(screen.getByText("Engineer")).toBeTruthy()
@@ -143,10 +143,10 @@ describe("RoleSheet", () => {
     expect(screen.getByText("Complexity")).toBeTruthy()
     expect(screen.getByText("57%")).toBeTruthy()
     expect(screen.queryByText("rated 5 / 5")).toBeNull()
-    expect(screen.getByText("Locked")).toBeTruthy()
+    expect(screen.getByText("Completed")).toBeTruthy()
   })
 
-  it("flags method drift on a locked role with a stale-method chip", () => {
+  it("flags method drift on a completed role with a stale-method chip", () => {
     result = { ...(result as Result), methodDrift: true }
     install()
     renderSheet()
@@ -154,7 +154,7 @@ describe("RoleSheet", () => {
     expect(screen.getByText("Assessed under a previous method")).toBeTruthy()
   })
 
-  it("leaves the stale-method chip off a role locked under the current method", () => {
+  it("leaves the stale-method chip off a role completed under the current method", () => {
     result = { ...(result as Result), methodDrift: false }
     install()
     renderSheet()
@@ -174,11 +174,11 @@ describe("RoleSheet", () => {
     expect(screen.getByText("Calibrated")).toBeTruthy()
   })
 
-  it("hides the breakdown for a locked-but-incomplete role (drift added a criterion after lock)", () => {
-    // results.ts: a criterion added after the lock can leave a locked role
+  it("hides the breakdown for a completed-but-incomplete role (drift added a criterion after completion)", () => {
+    // results.ts: a criterion added after the lock can leave a completed role
     // incomplete again, reading back as complete=false, level=null while
-    // locked stays true. The breakdown must not render a partial reveal for
-    // that state (mirrors rating-result.tsx's own locked/complete/level gate).
+    // completed stays true. The breakdown must not render a partial reveal for
+    // that state (mirrors rating-result.tsx's own completed/complete/level gate).
     result = {
       ...(result as Result),
       complete: false,
@@ -190,12 +190,12 @@ describe("RoleSheet", () => {
     open()
     expect(screen.queryByText("Level 3")).toBeNull()
     expect(screen.queryByText("Complexity")).toBeNull()
-    // The lock is real and stays named: what changed is that the role now
+    // The completion is real and stays named: what changed is that the role now
     // carries an unrated criterion, which is a different thing from never
     // having been evaluated.
-    expect(screen.getByText("Locked")).toBeTruthy()
+    expect(screen.getByText("Completed")).toBeTruthy()
     expect(
-      screen.getByText(messages.dashboard.roles.detail.lockedIncomplete)
+      screen.getByText(messages.dashboard.roles.detail.completedIncomplete)
     ).toBeTruthy()
     expect(screen.queryByText("Not yet evaluated")).toBeNull()
   })
@@ -203,7 +203,7 @@ describe("RoleSheet", () => {
   it("shows ready-to-complete wording for a rated role that is not yet completed", () => {
     result = {
       ...(result as Result),
-      locked: false,
+      completed: false,
       score: null,
       level: null,
     }
@@ -221,7 +221,7 @@ describe("RoleSheet", () => {
     result = {
       ...(result as Result),
       complete: false,
-      locked: false,
+      completed: false,
       score: null,
       level: null,
     }

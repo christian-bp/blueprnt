@@ -791,17 +791,17 @@ export function formatAuditDetail(
     // assignment.set carries the assigned roleId (top-level, resolved to the
     // role title by the audit-log query); the seniority detail lives in the sheet.
     case "assignment.set":
-    // Locking lifecycle events (assessment/locking.ts): roleId is their only
+    // Locking lifecycle events (assessment/completion.ts): roleId is their only
     // identifying payload field. Without an explicit case here they would
     // fall to the default branch, where payloadStats drops "*Id" fields
-    // (assessmentUnlocked) and booleans (assessmentCalibrated's
+    // (assessmentReopened) and booleans (assessmentCalibrated's
     // noteProvided) alike, leaving the table cell blank even though the
     // sheet's "Applies to" line (auditContextParts, generic over p.roleId)
-    // already names the role. assessmentLocked's ratedCount still renders
+    // already names the role. assessmentCompleted's ratedCount still renders
     // separately as a flat stat in the sheet; this case only fixes the
     // one-line cell.
-    case "role.assessmentLocked":
-    case "role.assessmentUnlocked":
+    case "role.assessmentCompleted":
+    case "role.assessmentReopened":
       return roleName(p.roleId)
     // The marker idiom (organization.created's own case below), not a
     // field:value stat: payloadStats drops top-level booleans on purpose,

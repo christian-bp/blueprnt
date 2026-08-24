@@ -4,9 +4,9 @@ description: Miten painotus 0-100 lasketaan arvioistanne, ja muuttuu yhdeksi kah
 section: evaluation
 ---
 
-Kun kaikki kriteerit on arvioitu ja arviointi on lukittu, blueprnt
+Kun kaikki kriteerit on arvioitu ja arviointi on viimeistelty, blueprnt
 laskee roolille painotuksen ja vaativuustason. Molemmat johdetaan aina
-lukituista arvioista ja nykyisestä mallista; kumpaakaan ei koskaan
+viimeistellyistä arvioista ja nykyisestä mallista; kumpaakaan ei koskaan
 kirjoiteta käsin. Älkää sekoittako tätä
 painotusta, roolin kokonaistulosta, painotukseen, jota tehdään
 [Malli](/model)-alueen [Painotus-luvussa](/model/weighting) ja joka
@@ -28,13 +28,13 @@ on painotus. Alaspäin pyöristäminen tarkoittaa, että rooli saavuttaa
 tason vasta, kun sen painotus todella yltää rajaan, ei koskaan
 pyöristymällä siihen ylöspäin.
 
-Roolin painotus näkyy vasta, kun sen arviointi on lukittu. Siihen asti
+Roolin painotus näkyy vasta, kun sen arviointi on viimeistelty. Siihen asti
 blueprnt näyttää, kuinka monta kriteeriä on arvioitu, osittaisen luvun
 sijaan, myös sen jälkeen kun kaikki kriteerit on arvioitu.
 
 ## Mistä painotus muodostuu
 
-Roolin sivulla, kun se on lukittu, erittely listaa jokaisen kriteerin
+Roolin sivulla, kun arviointi on viimeistelty, erittely listaa jokaisen kriteerin
 sen osuuden mukaan: kriteerin arvio kerrottuna sen painopisteillä,
 näytettynä prosenttiosuutena kaikkien kriteerien kokonaisuudesta,
 suurin vaikuttaja ensin. Tämä on erittelyn ainoa luku, joka on samaan
@@ -63,12 +63,12 @@ vyöhykkeen ylimmälle tasolle sen sijaan. Täysin tasaisella mallilla,
 jossa kaikki kriteerit ovat painolla 3, ei ole mitään tarkistettavaa:
 julistettujen prioriteettien puuttuminen tarkoittaa, ettei mikään estä
 sijoittelua. Roolilla ei ole vaativuustasoa eikä painotusta ennen kuin
-sen arviointi on lukittu.
+sen arviointi on viimeistelty.
 
 ## Vertailu ankkuriroolienne kanssa
 
 Jos organisaatiollanne on aktiivisia ankkurirooleja, ne näkyvät juuri
-lukitun tuloksen yhteydessä, jotta voitte verrata roolin
+paljastuneen tuloksen yhteydessä, jotta voitte verrata roolin
 vaativuustasoa rooleihin, joihin luotatte jo; tulos, joka päätyy
 vähintään kaksi tasoa jokaisesta ankkurista, merkitään manuaalisen
 tarkistuksen arvoiseksi ennen kuin luotatte siihen. Katso
@@ -77,28 +77,28 @@ hallinnasta.
 
 ## Tulos seuraa mallia
 
-Roolin painotus ja vaativuustaso heijastavat aina sen lukittuja
+Roolin painotus ja vaativuustaso heijastavat aina sen viimeisteltyjä
 arvioita ja mallia sellaisena kuin se on juuri nyt, eivät sellaisena
-kuin se oli, kun lukitsitte sen. Tämä tarkoittaa, että mallin itsensä
-muutos, kuten kriteerin valitseminen, painopisteen muuttaminen tai
-uudelleenpainottaminen, voi siirtää roolin toiselle vaativuustasolle
-välittömästi, vaikka kukaan ei koskisi sen arvioita. Uuden kriteerin
-valitseminen voi jopa muuttaa aiemmin valmiin roolin keskeneräiseksi
-uudelleen, kunnes sekin on arvioitu. Jokainen tällainen muutos
-kirjataan tapahtumalokiin. Lukittu rooli näyttää tekstin "Arvioitu
-aiemmalla menetelmällä" aina, kun se lukittiin ennen mallin nykyistä
-hyväksyntää, tai aina, kun mallin hyväksyntä on tällä hetkellä avattu
-uudelleen, mikä on tavallista heti minkä tahansa menetelmään
-vaikuttavan muutoksen jälkeen, koska uudelleenavaus koskee kaikkia
-lukittuja rooleja kerralla, ei vain niitä, jotka pysyivät lukittuina
-hyväksyntämuutoksen yli. Uudelleenlukitseminen nykyisen menetelmän
-mukaan poistaa merkinnän.
+kuin se oli, kun viimeistelitte sen. Tämä tarkoittaa, että mallin
+itsensä muutos, kuten kriteerin valitseminen, painopisteen muuttaminen
+tai uudelleenpainottaminen, voi siirtää roolin toiselle
+vaativuustasolle välittömästi, vaikka kukaan ei koskisi sen arvioita.
+Uuden kriteerin valitseminen voi jopa muuttaa aiemmin valmiin roolin
+keskeneräiseksi uudelleen, kunnes sekin on arvioitu. Jokainen
+tällainen muutos kirjataan tapahtumalokiin. Viimeistelty rooli näyttää
+tekstin "Arvioitu aiemmalla menetelmällä" aina, kun se viimeisteltiin
+ennen mallin nykyistä hyväksyntää, tai aina, kun mallin hyväksyntä on
+tällä hetkellä avattu uudelleen, mikä on tavallista heti minkä
+tahansa menetelmään vaikuttavan muutoksen jälkeen, koska hyväksynnän
+uudelleenavaus koskee kaikkia viimeisteltyjä rooleja kerralla, ei vain
+niitä, jotka pysyivät viimeisteltyinä hyväksyntämuutoksen yli. Roolin
+arvioiminen uudelleen nykyisen menetelmän mukaan poistaa merkinnän.
 
 ## Ei manuaalista ohitusta
 
 Roolin vaativuustasoa ei voi asettaa tai muuttaa suoraan millään
 tavalla. Jos taso ei näytä oikealta, ainoa tapa muuttaa sitä on avata
-arviointi ja säätää sen taustalla olevia arvioita (katso
+arviointi uudelleen ja säätää sen taustalla olevia arvioita (katso
 [Arvion muokkaaminen](/docs/adjusting-a-rating)) tai itse mallia, ei
 koskaan lopputulosta. Roolin vaativuustaso ei myöskään kerro mitään
 sen haltijan senioriteetista: senioriteetti kuuluu henkilölle,

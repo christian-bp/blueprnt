@@ -1,6 +1,6 @@
 ---
 title: Model and evaluation errors
-description: What each model-building, rating, role-locking, and AI message means, and what to do about it.
+description: What each model-building, rating, assessment-completion, and AI message means, and what to do about it.
 section: troubleshooting
 ---
 
@@ -69,7 +69,7 @@ Code: `criterionAlreadySelected`
 Each of the library's criteria can only be active once per model. Look for
 it in its dimension's list on the Criteria page instead of adding it again.
 
-## I can't edit or rate something because it says it's locked
+## I can't edit or rate something because it says it is closed
 
 ### The role is locked
 
@@ -98,28 +98,30 @@ bias-review text can no longer be edited. Choose "Reopen" in the Model
 area's Method chapter to clear the approval and its sign-off, edit the text, then approve it
 again. See [Method documentation](/docs/method-documentation).
 
-### The assessment is locked
+### The assessment is completed
 
-Code: `assessmentLocked`
+Code: `assessmentCompleted`
 
-"The assessment is locked. Unlock it to change ratings."
+"The assessment is completed. Re-evaluate it to change the ratings."
 
 A role's ratings can no longer be changed once its assessment is
-locked: locking a complete assessment is what reveals its weighting and
-level. Unlock it from the role page's actions menu to make further
-changes, which hides the weighting and level again until it is locked
-once more. See [Evaluating a role](/docs/evaluating-a-role).
+completed: completing a fully rated assessment is what reveals its
+weighting and level. Choose "Re-evaluate", beside the result or on the
+role page's actions menu, to make further changes; that hides the
+weighting and level again until you complete the assessment once more.
+See [Evaluating a role](/docs/evaluating-a-role).
 
-### The assessment needs to be locked first
+### The assessment needs to be completed first
 
-Code: `assessmentNotLocked`
+Code: `assessmentNotCompleted`
 
-"The assessment needs to be locked first."
+"The assessment needs to be completed first."
 
-Unlocking, confirming a calibrated placement, or designating a role as
-an anchor, only applies to an assessment that has already been locked.
-Lock the assessment first, from the role page once every criterion has
-a rating. See [Evaluating a role](/docs/evaluating-a-role) and
+Reopening, confirming a calibrated placement, or designating a role as
+an anchor, only applies to an assessment that has already been completed.
+Complete the assessment first, on the last step of the rating flow once
+every criterion has a rating. See
+[Evaluating a role](/docs/evaluating-a-role) and
 [Anchor roles](/docs/anchor-roles).
 
 ## I can't set a role as an anchor role

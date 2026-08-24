@@ -4,10 +4,10 @@ description: Hvordan vektingen 0-100 beregnes fra vurderingene deres, og blir et
 section: evaluation
 ---
 
-Når hvert kriterium er vurdert og vurderingen er låst, beregner blueprnt
-en vekting og et nivå for rollen. Begge utledes alltid fra de låste
-vurderingene og den nåværende modellen; ingen av dem skrives noensinne
-inn for hånd. Ikke bland sammen denne vektingen, en rolles
+Når hvert kriterium er vurdert og vurderingen er fullført, beregner
+blueprnt en vekting og et nivå for rollen. Begge utledes alltid fra de
+fullførte vurderingene og den nåværende modellen; ingen av dem skrives
+noensinne inn for hånd. Ikke bland sammen denne vektingen, en rolles
 samlede resultat, med vektingen dere gjør i
 [Modell](/model)-områdets [kapittel Vekting](/model/weighting), som
 setter hvert kriteriums egne vektpoeng; de to deler ordet med vilje, men de er forskjellige
@@ -27,14 +27,14 @@ modellen har, er vektingen. Nedoverrunding betyr at en rolle når et nivå
 først når vektingen dens virkelig har nådd terskelen, aldri ved å bli
 rundet opp til den.
 
-En rolles vekting vises bare når vurderingen dens er låst. Til da viser
+En rolles vekting vises bare når vurderingen dens er fullført. Til da viser
 blueprnt hvor mange kriterier som er vurdert i stedet for et delvis
 tall, selv etter at hvert kriterium har fått ett.
 
 ## Hvor vektingen kommer fra
 
-På rollens side, når den er låst, lister en sammenstilling hvert
-kriterium etter bidraget dens: et kriteriums vurdering multiplisert med
+På rollens side, når vurderingen er fullført, lister en sammenstilling
+hvert kriterium etter bidraget dens: et kriteriums vurdering multiplisert med
 vektpoengene dens, vist som en prosentandel av totalen over alle
 kriterier, sortert med den største driveren først. Dette er det ene
 tallet i sammenstillingen som både er spesifikt for denne rollen og
@@ -61,12 +61,12 @@ mål, ellers plasserer regelen den på den lavere sonens øverste nivå i
 stedet. En helt flat modell med alle kriterier på vekt 3 har ingenting
 for kontrollen å se på: ingen erklærte prioriteringer betyr at
 ingenting sperrer plasseringen. En rolle har ikke noe nivå eller
-vekting før vurderingen dens er låst.
+vekting før vurderingen dens er fullført.
 
 ## Sammenligne med ankerrollene deres
 
 Hvis organisasjonen deres har aktive ankerroller, vises de sammen med et
-nettopp låst resultat så dere kan sjekke rollens nivå mot roller dere
+nettopp avslørt resultat så dere kan sjekke rollens nivå mot roller dere
 allerede har tillit til; et resultat som havner minst to nivåer fra
 hvert anker, flagges som verdt en manuell kontroll før dere stoler på
 det. Se [Ankerroller](/docs/anchor-roles) for å utnevne og administrere
@@ -74,25 +74,26 @@ dem.
 
 ## Resultatet følger modellen
 
-En rolles vekting og nivå gjenspeiler alltid de låste vurderingene dens
-og modellen slik den er akkurat nå, ikke slik den var da dere låste
-den. Det betyr at en endring i selve modellen, som å velge et kriterium,
-endre et vektpoeng eller omvekte, kan flytte en rolle til et annet nivå
-umiddelbart, uten at noen rører vurderingene dens. Å velge et nytt
-kriterium kan til og med gjøre en tidligere fullført rolle ufullstendig
-igjen til det også er vurdert. Hvert slikt skifte registreres i
-hendelsesloggen. En låst rolle viser "Vurdert etter tidligere metode"
-når som helst den ble låst før modellens gjeldende godkjenning, eller
-når som helst modellens godkjenning for øyeblikket er åpnet igjen,
-som er det vanlige like etter en metodepåvirkende endring, siden
-gjenåpningen gjelder alle låste roller på én gang, ikke bare dem som
-forble låst gjennom en godkjenningsendring. Å låse på nytt under
-gjeldende metode fjerner den.
+En rolles vekting og nivå gjenspeiler alltid de fullførte vurderingene
+dens og modellen slik den er akkurat nå, ikke slik den var da dere
+fullførte den. Det betyr at en endring i selve modellen, som å velge et
+kriterium, endre et vektpoeng eller omvekte, kan flytte en rolle til et
+annet nivå umiddelbart, uten at noen rører vurderingene dens. Å velge et
+nytt kriterium kan til og med gjøre en tidligere fullført rolle
+ufullstendig igjen til det også er vurdert. Hvert slikt skifte
+registreres i hendelsesloggen. En fullført rolle viser "Vurdert etter
+tidligere metode" når som helst den ble fullført før modellens
+gjeldende godkjenning, eller når som helst modellens godkjenning for
+øyeblikket er åpnet igjen, som er det vanlige like etter en
+metodepåvirkende endring, siden gjenåpningen av godkjenningen gjelder
+alle fullførte roller på én gang, ikke bare dem som forble fullført
+gjennom en godkjenningsendring. Å vurdere den på nytt under gjeldende
+metode fjerner den.
 
 ## Ingen manuell overstyring
 
 Det finnes ingen måte å sette eller justere en rolles nivå direkte. Hvis
-et nivå ikke ser riktig ut, er den eneste måten å endre det å låse opp
+et nivå ikke ser riktig ut, er den eneste måten å endre det å gjenåpne
 vurderingen og justere de underliggende vurderingene (se
 [Justere en vurdering](/docs/adjusting-a-rating)) eller selve modellen,
 aldri utfallet. En rolles nivå sier heller ingenting om senioriteten til

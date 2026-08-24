@@ -1,25 +1,26 @@
 ---
 title: Adjusting a rating
-description: Unlocking a locked assessment to change a rating, and what changes are recorded.
+description: Reopening a completed assessment to change a rating, and what changes are recorded.
 section: evaluation
 ---
 
-A role's ratings can only change while its assessment is unlocked. A
-locked assessment protects a revealed result from casual edits: you
-unlock it first, on purpose, before anything can be rated differently.
+A role's ratings can only change while its assessment is open. Completing
+an assessment settles it, so you reopen it first, on purpose, before
+anything can be rated differently.
 
-## Unlocking a locked role
+## Reopening a completed role
 
-From a locked role's actions menu, choose "Unlock assessment". A confirm
-dialog explains what happens: unlocking hides the weighting and level
-again until the assessment is locked once more, and ratings can then be
-changed. Confirming with "Yes, unlock" does exactly that; the weighting,
-level, and any anchor-role comparison disappear from the role's page
-immediately.
+Choose "Re-evaluate", from beside the result or from the role's actions
+menu. It takes one press: the ratings are all kept, and completing the
+assessment again from the flow's last step puts the result straight back,
+so there is nothing to confirm. The weighting, level, and any anchor-role
+comparison disappear from the role's page immediately, and stay hidden
+until you complete the assessment once more. The line above the result
+says this before you press.
 
 ## Changing a rating
 
-Once unlocked, choose "Adjust ratings" from the same menu. This opens
+Once reopened, choose "Adjust ratings" from the same menu. This opens
 the same stepper described in
 [Evaluating a role](/docs/evaluating-a-role), starting again at the
 first criterion, but pre-filled: every criterion already shows the step
@@ -31,21 +32,22 @@ that criterion immediately, one at a time; submitting the same step and
 motivation that are already there changes nothing, and no audit entry
 is created.
 
-You see the result again only once you lock the assessment once more,
-the same "Lock assessment" action as the first time, available once
-every criterion has a rating.
+You see the result again only once you complete the assessment once more,
+on the flow's last step, exactly as the first time. A role whose criteria
+are all rated resumes at that last step, so completing again is one press
+away.
 
 ## When adjusting is blocked
 
-Unlocking always requires the role's assessment to already be locked;
-there is nothing to unlock otherwise. Once a role is archived, it can no
-longer be rated, unlocked, or adjusted at all: "Unlock assessment" no
-longer appears on its menu, and archiving is one-way, so there is no way
-to reopen an archived role for further rating; see
+Reopening always requires the role's assessment to already be completed;
+there is nothing to reopen otherwise. Once a role is archived, it can no
+longer be rated, reopened, or adjusted at all: "Re-evaluate" no longer
+appears on its menu, and archiving is one-way, so there is no way to open
+an archived role for further rating; see
 [Archiving a role](/docs/archiving-roles) for what else becomes
 read-only. Rating still requires your organization's model to be
 approved, the same precondition as the first time; this normally stays
-satisfied once a role already has a locked evaluation to adjust, unless
+satisfied once a role already has a completed assessment to adjust, unless
 a method change has reopened approval in the meantime.
 
 ## What gets logged
@@ -55,7 +57,7 @@ changed", with the criterion's before and after value and motivation. If
 the change moves the role to a different level, blueprnt also logs a
 separate "Level recalibrated" entry pointing back to the rating that
 caused it, so the history of why a role's level moved stays visible
-alongside the ratings themselves. Unlocking and locking again are each
+alongside the ratings themselves. Reopening and completing again are each
 their own audited actions too.
 
 ## Related

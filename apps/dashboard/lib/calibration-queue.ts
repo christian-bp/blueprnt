@@ -37,7 +37,7 @@ export interface CalibrationRow {
 // as its own shape so the queue can be fed from the results wire without the
 // ladder's row type growing fields only this surface reads.
 export interface CalibrationInput extends LevelRoleRow {
-  locked: boolean
+  completed: boolean
   calibrated: boolean
   methodDrift: boolean
   profileLimited: boolean | null
@@ -59,7 +59,7 @@ export function calibrationQueue(
   for (const row of rows) {
     // Only a locked, placed role can be calibrated: an unlocked role has no
     // revealed placement to confirm, and the reveal is the lock (spec 2.4/6).
-    if (!row.locked || row.level === null) continue
+    if (!row.completed || row.level === null) continue
 
     if (row.profileLimited === true && !row.calibrated) {
       queue.push({

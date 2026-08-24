@@ -17,6 +17,10 @@ _Undvik_: Rollbeskrivning (ok beskrivande; "jobbprofil" är den strukturerade ma
 Posten över att värdera en roll mot modellen — dess betyg, beräknade poäng och tilldelade nivå, plus motiveringar.
 _Undvik_: Bedömning (godtagbar synonym), Granskning
 
+**Slutförd bedömning** *(kod: Completed assessment)*:
+En värdering vars alla kriterier är betygsatta och som någon har slutfört. Slutförandet är sista steget i bedömningsflödet, inte ett separat ärende: samma tryck sparar det sista betyget och avslöjar poängen och nivån (beslut 14, 2026-08-24; tidigare "låst bedömning", där "låsning" togs bokstavligt fast författaren menade fastställa). Innan dess finns inget resultat någonstans. Att **omvärdera** öppnar bedömningen igen med ett tryck, behåller alla betyg och döljer resultatet tills den slutförs på nytt; både slutförande och omvärdering loggas var för sig i ändringsloggen.
+_Undvik_: Låst bedömning (utgången term, beslut 14), Låsning, Upplåsning
+
 **Betyg** *(kod: Rating)*:
 Det råa 0–5 en bedömare ger en roll på ett kriterium, bedömt mot kriteriets ankartext. Det enda som matas in för hand.
 _Undvik_: Poäng (poäng är den viktade totalen), Grad
@@ -53,6 +57,9 @@ _Undvik_: AI-svar, Automatiskt värde (det är ett *förslag* tills HR bekräfta
 | `assessment.role.purpose` | Syfte | Purpose |
 | `assessment.role.responsibilities` | Ansvarsområden | Responsibilities |
 | `assessment.assessment` | Värdering | Assessment |
+| `dashboard.roles.detail.completedBadge` | Slutförd | Completed |
+| `dashboard.rating.completeCta` | Slutför bedömningen | Complete the assessment |
+| `dashboard.rating.reopenCta` | Omvärdera | Re-evaluate |
 | `assessment.rating` | Betyg | Rating |
 | `assessment.motivation` | Motivering | Motivation |
 | `assessment.score` | Viktning | Weighting |

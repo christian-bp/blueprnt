@@ -23,7 +23,7 @@ const COMPLETE_RESULT = {
   roleId: "role-1",
   title: "Senior Engineer",
   complete: true,
-  locked: true,
+  completed: true,
   ratedCount: 2,
   totalCriteria: 2,
   score: 74,
@@ -83,21 +83,21 @@ describe("RatingResult", () => {
   })
 
   it("shows a spinner when the result exists but is not yet complete", () => {
-    resultFixture = { ...COMPLETE_RESULT, complete: false, locked: false }
+    resultFixture = { ...COMPLETE_RESULT, complete: false, completed: false }
     renderResult()
     expect(screen.getByLabelText(labels.computing)).toBeDefined()
   })
 
-  it("shows a spinner when the result is complete but not yet locked (lock-as-reveal)", () => {
-    resultFixture = { ...COMPLETE_RESULT, locked: false }
+  it("shows a spinner when the result is complete but not yet completed (completion is the reveal)", () => {
+    resultFixture = { ...COMPLETE_RESULT, completed: false }
     renderResult()
     expect(screen.getByLabelText(labels.computing)).toBeDefined()
   })
 
   it("shows the not-ready state, never a stale score, when a later criterion made a locked role incomplete", () => {
     // Locked stays true once set (locking.ts), but a criterion added after
-    // the lock can leave the role incomplete again: the wire then reads
-    // complete=false, score=null, level=null even though locked=true
+    // completion can leave the role incomplete again: the wire then reads
+    // complete=false, score=null, level=null even though completed=true
     // (results.ts). The reveal must not print "0 / 100" for that.
     resultFixture = {
       ...COMPLETE_RESULT,
@@ -113,7 +113,7 @@ describe("RatingResult", () => {
     // is told what happened and what clears it.
     expect(screen.queryByLabelText(labels.computing)).toBeNull()
     expect(
-      screen.getByText(messages.dashboard.roles.detail.lockedIncomplete)
+      screen.getByText(messages.dashboard.roles.detail.completedIncomplete)
     ).toBeDefined()
   })
 
@@ -127,15 +127,15 @@ describe("RatingResult", () => {
     expect(screen.getByText("2")).toBeDefined()
   })
 
-  it("names the reveal as locked, uncalibrated and on the current method", () => {
+  it("names the reveal as completed, uncalibrated and on the current method", () => {
     renderResult()
     const detail = messages.dashboard.roles.detail
-    expect(screen.getByText(detail.lockedBadge)).toBeDefined()
+    expect(screen.getByText(detail.completedBadge)).toBeDefined()
     expect(screen.queryByText(detail.calibratedBadge)).toBeNull()
     expect(screen.queryByText(detail.methodDriftBadge)).toBeNull()
   })
 
-  it("carries the stale-method chip into the reveal when the lock predates the approval", () => {
+  it("carries the stale-method chip into the reveal when the completion predates the approval", () => {
     resultFixture = { ...COMPLETE_RESULT, methodDrift: true }
     renderResult()
     expect(

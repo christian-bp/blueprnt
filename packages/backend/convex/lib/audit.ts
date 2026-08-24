@@ -45,8 +45,8 @@ export const AUDIT_EVENTS = {
   modelZoneProfileRulesUpdated: "model.zoneProfileRulesUpdated",
   modelApprovalReopened: "model.approvalReopened",
   modelRestored: "model.restored",
-  assessmentLocked: "role.assessmentLocked",
-  assessmentUnlocked: "role.assessmentUnlocked",
+  assessmentCompleted: "role.assessmentCompleted",
+  assessmentReopened: "role.assessmentReopened",
   assessmentCalibrated: "role.assessmentCalibrated",
   personCreated: "person.created",
   personUpdated: "person.updated",
@@ -203,8 +203,11 @@ const AUDIT_SUBJECTS: {
   "model.zoneProfileRulesUpdated": null,
   "model.approvalReopened": null,
   "model.restored": null,
-  "role.assessmentLocked": (payload) => ({ kind: "role", id: payload.roleId }),
-  "role.assessmentUnlocked": (payload) => ({
+  "role.assessmentCompleted": (payload) => ({
+    kind: "role",
+    id: payload.roleId,
+  }),
+  "role.assessmentReopened": (payload) => ({
     kind: "role",
     id: payload.roleId,
   }),

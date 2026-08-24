@@ -168,7 +168,7 @@ describe("ConsequencePanel", () => {
     // Rendered text, not a hand-substituted template: these messages carry ICU
     // plurals now, and a `.replace()` on the raw source would assert against a
     // string the app never shows.
-    expect(container.textContent).toContain("2 of 9 locked placements")
+    expect(container.textContent).toContain("2 of 9 completed placements")
   })
 
   // Why they move at all: a changed criteria set is a different kind of change
@@ -259,7 +259,7 @@ describe("ConsequencePanel", () => {
     const { container } = renderPanel()
     // Three movers, but only ONE of them moves between levels.
     expect(container.textContent).toContain(
-      "1 of 9 locked placements would move to another level"
+      "1 of 9 completed placements would move to another level"
     )
     expect(container.textContent).toContain("1 role would lose its level")
     expect(container.textContent).toContain("1 role would gain a level")

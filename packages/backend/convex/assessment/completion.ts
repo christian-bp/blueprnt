@@ -5,25 +5,27 @@ import { AUDIT_EVENTS } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation } from "../lib/functions"
 
-// The assessment locking lifecycle (ADR-0023, spec 2.4/6): while rating, a
-// role's assessment is a draft and no results exist anywhere; locking is the
-// reveal. `roles.assessment` (assessment/tables.ts) is the whole state:
-// absent = draft, present = locked, `calibratedAt` present = also calibrated.
-// Method drift (assessment.lockedAt < model.approval.approvedAt) is derived
+// The assessment completion lifecycle (ADR-0023, spec 2.4/6, decision 14):
+// while rating, a role's assessment is open and no results exist anywhere;
+// COMPLETING it is the reveal, and it is taken at the end of the rating flow
+// rather than as an errand of its own. `roles.assessment`
+// (assessment/tables.ts) is the whole state: absent = open, present =
+// completed, `calibratedAt` present = also calibrated.
+// Method drift (assessment.completedAt < model.approval.approvedAt) is derived
 // at read time by the results wire (assessment/results.ts), never stored
 // here or anywhere else.
 //
 // None of the three mutations below wrap in ctx.audit.levelShifts. A
 // level.shift row records the derivation actually moving (a rating changing
-// the computed level); locking/unlocking never touches the derivation, only
-// what assessment/results.ts is willing to reveal from it. Wrapping a
+// the computed level); completing and reopening never touch the derivation,
+// only what assessment/results.ts is willing to reveal from it. Wrapping a
 // visibility change in the level-shift trail would log a "shift" for a level
 // that never moved, which is exactly the confusion that trail exists to
 // prevent.
 
 const MAX_CALIBRATION_NOTE = 1000
 
-// Locks a role's assessment: the reveal (spec 2.4/6). Requires the role
+// Completes a role's assessment: the reveal (spec 2.4/6). Requires the role
 // active and org-owned, the model approved, and every model criterion
 // carrying a rating that still satisfies current law (dimension-aware range,
 // motivation required at 1/4/5) -- re-validated here rather than trusted from
@@ -31,7 +33,7 @@ const MAX_CALIBRATION_NOTE = 1000
 // the model's law today (a criterion's own dimension is fixed once selected,
 // but this is the gate that would catch a future law change touching
 // existing rows).
-export const lockAssessment = orgMutation({
+export const completeAssessment = orgMutation({
   args: { roleId: v.id("roles") },
   returns: v.null(),
   handler: async (ctx, { roleId }) => {
@@ -43,7 +45,7 @@ export const lockAssessment = orgMutation({
       throw appError(ERROR_CODES.roleLocked)
     }
     if (role.assessment !== undefined) {
-      throw appError(ERROR_CODES.assessmentLocked)
+      throw appError(ERROR_CODES.assessmentCompleted)
     }
 
     const model = await ctx.db
@@ -91,23 +93,25 @@ export const lockAssessment = orgMutation({
       }
     }
 
-    const lockedAt = Date.now()
+    const completedAt = Date.now()
     await ctx.db.patch(roleId, {
-      assessment: { lockedBy: ctx.authUserId, lockedAt },
+      assessment: { completedBy: ctx.authUserId, completedAt },
     })
     await ctx.audit.log({
-      type: AUDIT_EVENTS.assessmentLocked,
+      type: AUDIT_EVENTS.assessmentCompleted,
       payload: { roleId, ratedCount: criteria.length },
     })
     return null
   },
 })
 
-// Unlocks a role's assessment: explicit and audited (spec 2.4). Clears the
-// whole assessment aggregate (lock + any calibration it carried), so
-// re-locking starts a fresh reveal rather than resurrecting a stale
-// calibration note against a possibly different set of ratings.
-export const unlockAssessment = orgMutation({
+// Reopens a role's assessment for re-evaluation: one press, audited, no
+// confirm (decision 14). Clears the whole assessment aggregate (the completion
+// AND any calibration it carried), so completing again starts a fresh reveal
+// rather than resurrecting a stale calibration note against a possibly
+// different set of ratings. The ratings themselves are untouched, which is
+// what makes the act light: it is undone by completing again.
+export const reopenAssessment = orgMutation({
   args: { roleId: v.id("roles") },
   returns: v.null(),
   handler: async (ctx, { roleId }) => {
@@ -116,20 +120,20 @@ export const unlockAssessment = orgMutation({
       throw appError(ERROR_CODES.notFound)
     }
     if (role.assessment === undefined) {
-      throw appError(ERROR_CODES.assessmentNotLocked)
+      throw appError(ERROR_CODES.assessmentNotCompleted)
     }
     await ctx.db.patch(roleId, { assessment: undefined })
     await ctx.audit.log({
-      type: AUDIT_EVENTS.assessmentUnlocked,
+      type: AUDIT_EVENTS.assessmentReopened,
       payload: { roleId },
     })
     return null
   },
 })
 
-// Confirms a locked role's placement from the calibration queue (spec 6):
+// Confirms a completed role's placement from the calibration queue (spec 6):
 // stamps calibratedBy/calibratedAt and an optional note. Requires the
-// assessment already locked (calibration reviews a revealed placement, it
+// assessment already completed (calibration reviews a revealed placement, it
 // does not itself reveal one). An omitted or blank note leaves any
 // previously recorded note untouched, mirroring the anchor-role motivation
 // update's leave-as-is rule; the note text itself never enters the audit
@@ -145,7 +149,7 @@ export const calibrateAssessment = orgMutation({
     }
     const assessment = role.assessment
     if (assessment === undefined) {
-      throw appError(ERROR_CODES.assessmentNotLocked)
+      throw appError(ERROR_CODES.assessmentNotCompleted)
     }
     const trimmedNote = note !== undefined ? note.trim() : undefined
     if (

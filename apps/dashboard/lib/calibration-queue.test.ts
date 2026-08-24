@@ -17,11 +17,11 @@ function role(overrides: Partial<CalibrationInput> = {}): CalibrationInput {
     zone: "B",
     ratedCount: 9,
     totalCriteria: 9,
-    readyToLock: false,
+    readyToComplete: false,
     familyId: null,
     familyName: null,
     anchor: null,
-    locked: true,
+    completed: true,
     calibrated: false,
     methodDrift: false,
     profileLimited: false,
@@ -102,8 +102,13 @@ describe("calibrationQueue", () => {
   it("never queues an unlocked role, whatever its flags say", () => {
     expect(
       calibrationQueue([
-        role({ locked: false, level: null, profileLimited: true }),
-        role({ roleId: "r2", locked: false, level: null, methodDrift: true }),
+        role({ completed: false, level: null, profileLimited: true }),
+        role({
+          roleId: "r2",
+          completed: false,
+          level: null,
+          methodDrift: true,
+        }),
       ])
     ).toEqual([])
   })

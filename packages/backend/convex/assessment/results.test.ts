@@ -92,16 +92,16 @@ async function createRatedRole(args: {
   return roleId
 }
 
-// Locks a role's assessment via the real mutation: the reveal (spec 2.4/6).
+// Completes a role's assessment via the real mutation: the reveal (spec 2.4/6).
 // Every result/zone/profile assertion below only holds once a role is
-// locked, so callers must lock a fully and validly rated role before reading
+// completed, so callers must complete a fully and validly rated role before reading
 // its score/level/zone from the wire.
 async function lockRole(
   asAdmin: ReturnType<ReturnType<typeof initConvexTest>["withIdentity"]>,
   orgId: string,
   roleId: string
 ) {
-  await asAdmin.mutation(api.assessment.locking.lockAssessment, {
+  await asAdmin.mutation(api.assessment.completion.completeAssessment, {
     orgId,
     roleId: roleId as never,
   })
@@ -153,8 +153,8 @@ describe("getResults", () => {
     expect(results.rows[0]).toMatchObject({
       title: "Top",
       complete: true,
-      locked: true,
-      readyToLock: false,
+      completed: true,
+      readyToComplete: false,
       score: 100,
       level: 1,
     })
@@ -162,8 +162,8 @@ describe("getResults", () => {
     expect(results.rows[1]).toMatchObject({ score: 20, level: 12 })
     expect(results.rows[2]).toMatchObject({
       complete: false,
-      locked: false,
-      readyToLock: false,
+      completed: false,
+      readyToComplete: false,
       score: null,
       level: null,
       ratedCount: 4,
@@ -174,7 +174,7 @@ describe("getResults", () => {
     })
   })
 
-  it("derives a zone for a complete, locked role", async () => {
+  it("derives a zone for a complete, completed role", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     const topId = await createRatedRole({
@@ -195,7 +195,7 @@ describe("getResults", () => {
     // none clears the weight-4 profile floor: the placement is exactly the
     // score-implied top zone, uncapped.
     expect(top).toMatchObject({
-      locked: true,
+      completed: true,
       calibrated: false,
       methodDrift: false,
       score: 100,
@@ -206,14 +206,14 @@ describe("getResults", () => {
     })
   })
 
-  it("hides score/level/zone/profile until locked, and flags readyToLock once complete", async () => {
+  it("hides score/level/zone/profile until completed, and flags readyToComplete once rated", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     const roleId = await createRatedRole({
       orgId,
       asAdmin,
       model,
-      title: "Not Yet Locked",
+      title: "Not Yet Completed",
       value: 5,
     })
 
@@ -226,9 +226,9 @@ describe("getResults", () => {
       complete: true,
       ratedCount: 8,
       totalCriteria: 8,
-      locked: false,
+      completed: false,
       calibrated: false,
-      readyToLock: true,
+      readyToComplete: true,
       methodDrift: false,
       score: null,
       level: null,
@@ -245,8 +245,8 @@ describe("getResults", () => {
     })
     const afterRow = after.rows.find((row) => row.roleId === roleId)
     expect(afterRow).toMatchObject({
-      locked: true,
-      readyToLock: false,
+      completed: true,
+      readyToComplete: false,
       score: 100,
       level: 1,
       zone: "A",
@@ -257,8 +257,8 @@ describe("getResults", () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     // Fully rated => complete => level 1 (value 5 on every criterion).
-    // An anchor role must itself be a locked reference (lock-as-reveal), and
-    // the WIRE assertions below (top?.level) also need the role locked to
+    // An anchor role must itself be a completed reference (completion is the
+    // reveal), and the WIRE assertions below (top?.level) also need it to
     // read non-null, so one lockRole call below covers both.
     const topId = await createRatedRole({
       orgId,
@@ -315,7 +315,7 @@ describe("getResults", () => {
 })
 
 describe("getRoleResult", () => {
-  it("returns the per-criterion breakdown when complete, gating score/level/zone on locked", async () => {
+  it("returns the per-criterion breakdown when complete, gating score/level/zone on completed", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     const roleId = await createRatedRole({
@@ -326,9 +326,9 @@ describe("getRoleResult", () => {
       value: 5,
     })
 
-    // Complete but not yet locked: the breakdown's per-criterion rows are
+    // Complete but not yet completed: the breakdown's per-criterion rows are
     // still available (rating.ts already wrote them; blindness for the
-    // AGGREGATE outcome is what the UI's own lock gate enforces), but the
+    // AGGREGATE outcome is what the UI's own completion gate enforces), but the
     // aggregate outcome itself reads null.
     const beforeLock = await asAdmin.query(
       api.assessment.results.getRoleResult,
@@ -336,8 +336,8 @@ describe("getRoleResult", () => {
     )
     expect(beforeLock).toMatchObject({
       complete: true,
-      locked: false,
-      readyToLock: true,
+      completed: false,
+      readyToComplete: true,
       score: null,
       level: null,
       zone: null,
@@ -355,8 +355,8 @@ describe("getRoleResult", () => {
     expect(result).not.toBeNull()
     expect(result).toMatchObject({
       complete: true,
-      locked: true,
-      readyToLock: false,
+      completed: true,
+      readyToComplete: false,
       calibrated: false,
       methodDrift: false,
       score: 100,
@@ -387,7 +387,7 @@ describe("getRoleResult", () => {
       value: 5,
     })
     await lockRole(asAdmin, orgId, roleId)
-    await asAdmin.mutation(api.assessment.locking.calibrateAssessment, {
+    await asAdmin.mutation(api.assessment.completion.calibrateAssessment, {
       orgId,
       roleId,
       note: "Confirmed against anchors.",
@@ -396,7 +396,7 @@ describe("getRoleResult", () => {
       orgId,
       roleId: roleId as string,
     })
-    expect(result?.locked).toBe(true)
+    expect(result?.completed).toBe(true)
     expect(result?.calibrated).toBe(true)
   })
 
@@ -419,8 +419,8 @@ describe("getRoleResult", () => {
       complete: false,
       ratedCount: 2,
       totalCriteria: 8,
-      locked: false,
-      readyToLock: false,
+      completed: false,
+      readyToComplete: false,
       score: null,
       level: null,
       zone: null,

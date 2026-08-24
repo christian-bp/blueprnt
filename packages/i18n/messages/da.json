@@ -193,10 +193,10 @@
       "modelApproved": "Model godkendt",
       "modelRestored": "Model gendannet",
       "workingConditionsDecided": "Beslutning om arbejdsforhold gemt",
-      "assessmentLocked": "Vurderingen låst",
+      "assessmentCompleted": "Bedømmelsen afsluttet",
       "placementConfirmed": "Placeringen bekræftet",
       "thresholdsSaved": "Niveaugrænserne gemt",
-      "assessmentUnlocked": "Vurderingen låst op",
+      "assessmentReopened": "Bedømmelsen åbnet igen",
       "weightMotivationSaved": "Begrundelse gemt"
     },
     "accountMenu": "Kontomenu",
@@ -887,8 +887,8 @@
         "modelZoneProfileRulesUpdated": "Zoneprofilregler opdateret",
         "modelApprovalReopened": "Modelgodkendelse genåbnet",
         "modelRestored": "Model gendannet til senest godkendte",
-        "roleAssessmentLocked": "Vurdering låst",
-        "roleAssessmentUnlocked": "Vurdering låst op",
+        "roleAssessmentCompleted": "Bedømmelse afsluttet",
+        "roleAssessmentReopened": "Bedømmelse åbnet igen",
         "roleAssessmentCalibrated": "Vurdering kalibreret"
       },
       "ai": {
@@ -1126,9 +1126,9 @@
           "empty": "Ingen medarbejdere er klassificeret i denne rolle endnu.",
           "archivedEmpty": "Rollen er arkiveret, så ingen er klassificeret i den. Historikken bevares."
         },
-        "lockedBadge": "Låst",
+        "completedBadge": "Afsluttet",
         "calibratedBadge": "Kalibreret",
-        "lockedIncomplete": "Låst, men et kriterium, der er tilføjet siden da, mangler en vurdering. Lås op, vurder det, og lås igen for at se resultatet.",
+        "completedIncomplete": "Afsluttet, men et kriterium, der er tilføjet siden da, mangler en vurdering. Bedøm igen, vurder det, og afslut bedømmelsen igen for at se resultatet.",
         "methodDriftBadge": "Vurderet efter tidligere metode"
       },
       "archive": {
@@ -1229,9 +1229,9 @@
         "title": "Ikke klar endnu",
         "importLine": "Ingen medarbejdere er importeret endnu",
         "classifyLine": "{count, plural, one {# person er ikke klassificeret endnu} other {# personer er ikke klassificeret endnu}}",
-        "evaluateLine": "{count, plural, one {# rolle med medarbejdere mangler stadig at få vurderingen låst} other {# roller med medarbejdere mangler stadig at få vurderingen låst}}",
+        "evaluateLine": "{count, plural, one {# rolle med medarbejdere mangler stadig at få sin bedømmelse afsluttet} other {# roller med medarbejdere mangler stadig at få deres bedømmelser afsluttet}}",
         "approvalLine": "Modellen skal være godkendt, før en lønkortlægning kan startes",
-        "driftWarning": "{count, plural, one {# rolle blev låst under en tidligere version af metoden. Overvej at låse den igen først.} other {# roller blev låst under en tidligere version af metoden. Overvej at låse dem igen først.}}"
+        "driftWarning": "{count, plural, one {# rolle blev bedømt efter en tidligere version af metoden. Overvej at bedømme den igen først.} other {# roller blev bedømt efter en tidligere version af metoden. Overvej at bedømme dem igen først.}}"
       },
       "actions": {
         "status": {
@@ -1671,12 +1671,12 @@
         "profileLimitedReason": "Profilkravene holdt denne rolle tilbage fra en højere zone.",
         "profileLimitedFailure": "{name}: kræver trin {required}, rollen har {actual}",
         "anchorDeviationReason": "Denne ankerrolle landede på niveau {level}, og det aftalte niveau er {expected}.",
-        "staleLockReason": "Denne rolle blev vurderet efter en tidligere version af metoden.",
+        "staleMethodReason": "Denne rolle blev bedømt efter en tidligere version af metoden.",
         "confirmCta": "Bekræft placeringen",
         "openRoleCta": "Åbn rollen",
         "rateCta": "Åbn vurderingen",
         "emptyTitle": "Intet at gennemgå",
-        "emptyDescription": "Hver låst placering er enten bekræftet eller rejser ingen spørgsmål.",
+        "emptyDescription": "Hver afsluttet placering er enten bekræftet eller rejser ingen spørgsmål.",
         "unapprovedTitle": "Metoden er ikke godkendt endnu",
         "unapprovedDescription": "Roller placeres, når metoden er godkendt, så der er intet at gennemgå indtil da.",
         "unapprovedCta": "Åbn modellen",
@@ -1896,7 +1896,7 @@
       },
       "consequence": {
         "heading": "Hvad en godkendelse ville ændre",
-        "summary": "{moved} af {placed, plural, =1 {1 låst placering} other {# låste placeringer}} ville flytte til et andet niveau.",
+        "summary": "{moved} af {placed, plural, =1 {1 afsluttet placering} other {# afsluttede placeringer}} ville flytte til et andet niveau.",
         "losing": "{count, plural, =1 {1 rolle ville miste sit niveau, indtil den er vurderet} other {# roller ville miste deres niveau, indtil de er vurderet}} på de kriterier, metoden har fået.",
         "gaining": "{count, plural, =1 {1 rolle ville få et niveau, den ikke kunne nå før} other {# roller ville få et niveau, de ikke kunne nå før}}.",
         "criteriaChanged": "Metoden er ændret siden sidste godkendelse: {added, plural, =0 {ingen kriterier} =1 {1 kriterium} other {# kriterier}} tilføjet, {removed, plural, =0 {ingen} other {#}} fjernet.",
@@ -2106,7 +2106,7 @@
         "draft": "UDKAST: ikke alle kriterier er gennemgået og godkendt",
         "final": "ENDELIG",
         "methodologyTitle": "Metodologi",
-        "methodologyBody": "Roller evalueres kriterium for kriterium på en skala fra 1 til 5. Kriterievægtene summeres til et fast pointbudget; rollens pointtal normaliseres til 0 til 100 og niveauet udledes automatisk, aldrig sat i hånden. Karakterer er skjult, indtil vurderingen er låst. Hver ændring registreres i hændelsesloggen. Roller beskriver arbejde, aldrig en person.",
+        "methodologyBody": "Roller vurderes kriterium for kriterium på en skala fra 1 til 5. Kriteriernes vægte summerer til et fast pointbudget; rollens point normaliseres til 0 til 100, og niveauet udledes, det sættes aldrig i hånden. Vurderingerne er skjult, indtil bedømmelsen er afsluttet. Hver ændring registreres i ændringsloggen. Roller beskriver arbejde, aldrig en person.",
         "biasStatement": "Denne model er udformet for at reducere bias. Den er biasreducerende, aldrig biasfri.",
         "criteriaTitle": "Kriterier og vægte",
         "rationaleTitle": "Kriterierationale og biasvurdering",
@@ -2223,7 +2223,7 @@
       "consequenceLabel": "Hvad er en konsekvensanalyse?",
       "consequenceBody": "Hvad en godkendelse af denne metode ville gøre ved de placeringer, I allerede har, sammenlignet med den metode, I sidst godkendte. Den flytter roller, ikke personer: ingens løn ændres her.",
       "calibrationLabel": "Hvad er kalibrering?",
-      "calibrationBody": "Gennemgang af en låst placering, som nogen bør se på, før stigen betragtes som afklaret. At bekræfte en ændrer ikke niveauet: den registrerer, at nogen står bag den.",
+      "calibrationBody": "Gennemgang af en afsluttet placering, som nogen bør se på, før stigen betragtes som afklaret. At bekræfte en ændrer ikke niveauet: den registrerer, at nogen står bag det.",
       "levelThresholdLabel": "Hvad er en niveaugrænse?",
       "levelThresholdBody": "Den vægtning, en rolle skal nå for at ligge på et niveau, og det profiltrin, en zone kræver. De afgør, hvor hver rolle lander, så en ændring placerer hele stigen på ny."
     },
@@ -2798,7 +2798,7 @@
     "criterionAlreadySelected": "Kriteriet indgår allerede i modellen.",
     "methodBlocked": "Metodens tjekliste har uløste punkter. Løs alle blokeringer, før du godkender.",
     "modelNotApproved": "Evalueringsmodellen skal godkendes, før roller kan vurderes.",
-    "assessmentLocked": "Vurderingen er låst. Lås den op for at ændre vurderinger.",
-    "assessmentNotLocked": "Vurderingen skal låses først."
+    "assessmentCompleted": "Bedømmelsen er afsluttet. Bedøm den igen for at ændre vurderingerne.",
+    "assessmentNotCompleted": "Bedømmelsen skal afsluttes først."
   }
 }

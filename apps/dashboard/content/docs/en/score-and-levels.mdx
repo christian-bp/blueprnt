@@ -4,9 +4,9 @@ description: How the 0-100 weighting is computed from your ratings, and turned i
 section: evaluation
 ---
 
-Once every criterion is rated and the assessment is locked, blueprnt
+Once every criterion is rated and the assessment is completed, blueprnt
 computes a weighting and a level for the role. Both are always derived
-from the locked ratings and the current model; neither is ever typed in
+from the completed ratings and the current model; neither is ever typed in
 by hand. Do not confuse this weighting, a role's overall
 result, with the weighting you do in the [Model](/model) area's
 [Weighting chapter](/model/weighting), which sets each criterion's own
@@ -27,13 +27,14 @@ between 0 and 100 however many criteria the model has, is the weighting.
 Rounding down means a role reaches a level only once its weighting has
 genuinely met the threshold, never by rounding up to it.
 
-A role's weighting only appears once its assessment is locked. Until
+A role's weighting only appears once its assessment is completed. Until
 then, blueprnt shows how many criteria are rated instead of a partial
 number, even after every criterion has one.
 
 ## Where the weighting comes from
 
-On the role's page, once it is locked, a breakdown lists every criterion
+On the role's page, once the assessment is completed, a breakdown lists
+every criterion
 by its contribution: a criterion's rating multiplied by its weight
 points, shown as a percentage share of the total across all criteria,
 sorted with the biggest driver first. This is the one number on that
@@ -59,36 +60,36 @@ still needs its ratings on those specific criteria to hold up, or the
 rule settles it at the top level of the lower zone instead. A flat
 model with every criterion at weight 3 has nothing for the check to
 look at: no declared priorities means nothing gates the placement. A
-role has no level or weighting until its assessment is locked.
+role has no level or weighting until its assessment is completed.
 
 ## Comparing against your anchor roles
 
 If your organization has active anchor roles, they appear alongside a
-newly locked result so you can sanity check the role's level against
+newly revealed result so you can sanity check the role's level against
 roles you already trust; a result that lands two or more levels from
 every anchor is flagged as worth a manual check before you rely on it.
 See [Anchor roles](/docs/anchor-roles) for designating and managing them.
 
 ## The result follows the model
 
-A role's weighting and level always reflect its locked ratings and the
-model as it stands right now, not as it stood when you locked it. This
+A role's weighting and level always reflect its completed ratings and the
+model as it stands right now, not as it stood when you completed it. This
 means a change to the model itself, such as selecting a criterion,
 changing a weight point, or reweighting, can move a role to a different
 level immediately, without anyone touching its ratings. Selecting a new
 criterion can even make a previously complete role incomplete again until
 it is rated too. Every shift like this is recorded in the audit log. A
-locked role shows "Assessed under a previous method" whenever it was
-locked before the model's current approval, or whenever the model's
+completed role shows "Assessed under a previous method" whenever it was
+completed before the model's current approval, or whenever the model's
 approval is currently reopened at all, the common case right after any
-method-affecting edit, since reopening applies to every locked role at
-once, not only ones that stayed locked across an approval change.
-Re-locking under the current method clears it.
+method-affecting edit, since reopening the approval applies to every
+completed role at once, not only ones that stayed completed across an
+approval change. Evaluating it again under the current method clears it.
 
 ## No manual override
 
 There is no way to set or adjust a role's level directly. If a level does
-not look right, the only way to change it is to unlock the assessment and
+not look right, the only way to change it is to reopen the assessment and
 adjust the underlying ratings (see
 [Adjusting a rating](/docs/adjusting-a-rating)) or the model itself, never
 the outcome. A role's level also says nothing about the seniority of

@@ -267,7 +267,7 @@ export const startPayMappingRun = orgMutation({
     // stamped without a reopen on the one path that records an unchanged
     // weighting as decided (criteria.ts), and it is not a checklist blocker
     // and not part of ModelEvidence. Role CALIBRATION
-    // (assessment/locking.ts) writes to the role, never the model, and
+    // (assessment/completion.ts) writes to the role, never the model, and
     // deliberately does not reopen: confirming where a role landed is a review
     // of a placement, not a change to the method that produced it. The
     // invariant this freeze needs is about the evidence, and both stay outside

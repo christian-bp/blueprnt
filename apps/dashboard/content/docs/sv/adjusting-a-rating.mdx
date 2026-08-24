@@ -1,25 +1,26 @@
 ---
 title: Justera ett betyg
-description: Att låsa upp en låst bedömning för att ändra ett betyg, och vad som registreras.
+description: Att omvärdera en slutförd bedömning för att ändra ett betyg, och vad som registreras.
 section: evaluation
 ---
 
-En rolls betyg kan bara ändras medan bedömningen är upplåst. En låst
-bedömning skyddar ett avslöjat resultat från oavsiktliga ändringar: ni
-låser upp den först, medvetet, innan något kan betygsättas annorlunda.
+En rolls betyg kan bara ändras medan bedömningen är öppen. Att slutföra
+en bedömning fastställer den, så ni omvärderar den först, medvetet,
+innan något kan betygsättas annorlunda.
 
-## Låsa upp en låst roll
+## Omvärdera en slutförd roll
 
-Från en låst rolls åtgärdsmeny väljer ni "Lås upp bedömningen". En
-bekräftelsedialog förklarar vad som händer: att låsa upp döljer
-viktning och nivå igen tills bedömningen låses på nytt, och betygen kan
-då ändras. Att bekräfta med "Ja, lås upp" gör precis det; viktningen,
-nivån och eventuell jämförelse med ankarroller försvinner omedelbart
-från rollens sida.
+Välj "Omvärdera", bredvid resultatet eller från rollens åtgärdsmeny.
+Det räcker med ett tryck: alla betyg behålls, och att slutföra
+bedömningen igen från flödets sista steg lägger tillbaka resultatet
+direkt, så det finns inget att bekräfta. Viktningen, nivån och
+eventuell jämförelse med ankarroller försvinner omedelbart från
+rollens sida, och förblir dolda tills ni slutför bedömningen på nytt.
+Raden ovanför resultatet säger det här innan ni trycker.
 
 ## Ändra ett betyg
 
-När rollen är upplåst väljer ni "Justera betyg" i samma meny. Det
+När bedömningen är öppnad igen väljer ni "Justera betyg" i samma meny. Det
 öppnar samma flöde som beskrivs i
 [Utvärdera en roll](/docs/evaluating-a-role), och börjar om från det
 första kriteriet, men förifyllt: varje kriterium visar redan det steg
@@ -31,21 +32,22 @@ kriterium" sparar det kriteriet omedelbart, ett i taget; att skicka in
 samma steg och motivering som redan finns ändrar ingenting, och ingen
 post skapas i händelseloggen.
 
-Ni ser resultatet igen först när ni låser bedömningen på nytt, samma
-åtgärd "Lås bedömningen" som första gången, tillgänglig när alla
-kriterier har ett betyg.
+Ni ser resultatet igen först när ni slutför bedömningen på nytt, på
+flödets sista steg, precis som första gången. En roll vars alla
+kriterier redan är betygsatta återupptas vid det sista steget, så att
+slutföra på nytt bara är ett tryck bort.
 
 ## När justering är blockerad
 
-Att låsa upp kräver alltid att rollens bedömning redan är låst; annars
-finns inget att låsa upp. När en roll är arkiverad kan den inte längre
-betygsättas, låsas upp eller justeras alls: "Lås upp bedömningen" visas
-inte längre i dess meny, och arkivering går bara en väg, så det finns
-inget sätt att återöppna en arkiverad roll för vidare betygsättning; se
-[Arkivera en roll](/docs/archiving-roles) för vad som annars blir
+Att omvärdera kräver alltid att rollens bedömning redan är slutförd;
+annars finns inget att omvärdera. När en roll är arkiverad kan den
+inte längre betygsättas, omvärderas eller justeras alls: "Omvärdera"
+visas inte längre i dess meny, och arkivering går bara en väg, så det
+finns inget sätt att öppna en arkiverad roll för vidare betygsättning;
+se [Arkivera en roll](/docs/archiving-roles) för vad som annars blir
 skrivskyddat. Betygsättning kräver fortfarande att er organisations
 modell är godkänd, samma villkor som första gången; det här är normalt
-fortsatt uppfyllt när en roll redan har en låst utvärdering att
+fortsatt uppfyllt när en roll redan har en slutförd bedömning att
 justera, om inte en metodändring har öppnat godkännandet igen under
 tiden.
 
@@ -56,8 +58,8 @@ Varje sparad ändring av ett betyg registreras i händelseloggen som
 Om ändringen flyttar rollen till en annan nivå loggar blueprnt också en
 separat post, "Nivå omkalibrerad", som pekar tillbaka på betyget som
 orsakade det, så att historiken över varför en rolls nivå flyttades
-förblir synlig tillsammans med betygen själva. Att låsa upp och låsa
-igen är också var och en sin egen loggförda åtgärd.
+förblir synlig tillsammans med betygen själva. Att omvärdera och
+slutföra på nytt är också var och en sin egen loggförda åtgärd.
 
 ## Relaterat
 

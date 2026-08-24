@@ -4,9 +4,9 @@ description: Hur viktningen 0-100 räknas fram från era betyg, och blir en av t
 section: evaluation
 ---
 
-När alla kriterier har fått ett betyg och bedömningen är låst räknar
-blueprnt fram en viktning och en nivå för rollen. Båda härleds alltid
-från de låsta betygen och den aktuella modellen; ingen av dem skrivs
+När alla kriterier har fått ett betyg och bedömningen är slutförd
+räknar blueprnt fram en viktning och en nivå för rollen. Båda härleds
+alltid från de slutförda betygen och den aktuella modellen; ingen av dem skrivs
 någonsin in för hand. Blanda inte ihop den här viktningen,
 en rolls samlade resultat, med viktningen ni gör i
 [Modell](/model)-ytans [kapitel Viktning](/model/weighting), som sätter
@@ -27,13 +27,13 @@ Nedåtavrundningen betyder att en roll når en nivå först när dess
 viktning verkligen har nått tröskeln, aldrig genom att avrundas upp
 till den.
 
-En rolls viktning visas bara när dess bedömning är låst. Fram tills dess
+En rolls viktning visas bara när dess bedömning är slutförd. Fram tills dess
 visar blueprnt hur många kriterier som är betygsatta istället för ett
 partiellt tal, även när alla har fått ett.
 
 ## Var viktningen kommer ifrån
 
-På rollens sida, när den är låst, listar en sammanställning
+På rollens sida, när bedömningen är slutförd, listar en sammanställning
 varje kriterium efter dess bidrag: ett kriteriums betyg multiplicerat
 med dess viktpoäng, visat som en procentandel av totalen över alla
 kriterier, sorterat med den största drivkraften först. Det här är det
@@ -61,37 +61,38 @@ annars placerar regeln den på den lägre zonens högsta nivå istället.
 En helt platt modell med alla kriterier på vikt 3 har inget för
 kontrollen att titta på: inga deklarerade prioriteringar betyder att
 ingenting spärrar placeringen. En roll saknar nivå eller viktning tills
-dess bedömning är låst.
+dess bedömning är slutförd.
 
 ## Jämföra med era ankarroller
 
 Om er organisation har aktiva ankarroller visas de tillsammans med ett
-nyss låst resultat så att ni kan stämma av rollens nivå mot roller ni
+nyss avslöjat resultat så att ni kan stämma av rollens nivå mot roller ni
 redan litar på; ett resultat som hamnar minst två nivåer från varje
 ankare flaggas som värt en manuell kontroll innan ni litar på det. Se
 [Ankarroller](/docs/anchor-roles) för att utse och hantera dem.
 
 ## Resultatet följer modellen
 
-En rolls viktning och nivå speglar alltid dess låsta betyg och modellen
-som den ser ut just nu, inte som den såg ut när ni låste den. Det
-betyder att en ändring i själva modellen, som att välja ett kriterium,
-ändra en viktpoäng eller vikta om, omedelbart kan flytta en roll till
-en annan nivå, utan att någon rör dess betyg. Att välja ett nytt
-kriterium kan till och med göra en tidigare komplett roll inkomplett
-igen tills det också är betygsatt. Varje sådant skifte registreras i
-händelseloggen. En låst roll visar "Bedömd enligt tidigare metod"
-närhelst den låstes innan modellens aktuella godkännande, eller
-närhelst modellens godkännande för tillfället är öppnat igen, vilket är
-det vanliga läget direkt efter en metodpåverkande ändring, eftersom
-återöppningen gäller varje låst roll på en gång, inte bara de som
-förblev låsta över en godkännandeändring. Att låsa om under den
-aktuella metoden rensar den.
+En rolls viktning och nivå speglar alltid dess slutförda betyg och
+modellen som den ser ut just nu, inte som den såg ut när ni slutförde
+den. Det betyder att en ändring i själva modellen, som att välja ett
+kriterium, ändra en viktpoäng eller vikta om, omedelbart kan flytta en
+roll till en annan nivå, utan att någon rör dess betyg. Att välja ett
+nytt kriterium kan till och med göra en tidigare komplett roll
+inkomplett igen tills det också är betygsatt. Varje sådant skifte
+registreras i händelseloggen. En slutförd roll visar "Bedömd enligt
+tidigare metod" närhelst den slutfördes innan modellens aktuella
+godkännande, eller närhelst modellens godkännande för tillfället är
+öppnat igen, vilket är det vanliga läget direkt efter en
+metodpåverkande ändring, eftersom återöppningen av godkännandet gäller
+varje slutförd roll på en gång, inte bara de som förblev slutförda över
+en godkännandeändring. Att utvärdera rollen igen under den aktuella
+metoden rensar den.
 
 ## Ingen manuell överskrivning
 
 Det finns inget sätt att sätta eller justera en rolls nivå direkt. Om en
-nivå inte ser rätt ut är det enda sättet att ändra den att låsa upp
+nivå inte ser rätt ut är det enda sättet att ändra den att omvärdera
 bedömningen och justera de underliggande betygen (se
 [Justera ett betyg](/docs/adjusting-a-rating)) eller själva modellen,
 aldrig utfallet. En rolls nivå säger heller ingenting om senioriteten

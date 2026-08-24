@@ -63,7 +63,7 @@ describe("PayMappingPreconditionsPanel", () => {
       ],
     })
     const line = screen.getByText(
-      "2 roles with employees still need their evaluation locked"
+      "2 roles with employees still need their assessments completed"
     )
     expect(line.closest("a")?.getAttribute("href")).toBe("/roles")
     const designerLink = screen.getByText("Designer").closest("a")
@@ -81,7 +81,7 @@ describe("PayMappingPreconditionsPanel", () => {
     renderPanel({ peopleCount: 8, unclassifiedCount: 0, unevaluatedRoles })
     expect(
       screen.getByText(
-        "6 roles with employees still need their evaluation locked"
+        "6 roles with employees still need their assessments completed"
       )
     ).toBeDefined()
     expect(screen.getAllByText(/^Role \d$/)).toHaveLength(4)
@@ -96,7 +96,7 @@ describe("PayMappingPreconditionsPanel", () => {
     expect(screen.getByText("2 people are not classified yet")).toBeDefined()
     expect(
       screen.getByText(
-        "1 role with employees still needs its evaluation locked"
+        "1 role with employees still needs its assessment completed"
       )
     ).toBeDefined()
   })
@@ -132,7 +132,7 @@ describe("PayMappingPreconditionsPanel", () => {
     })
     expect(
       screen.getByText(
-        "2 roles were locked under an earlier version of the method. Consider re-locking them first."
+        "2 roles were assessed under an earlier version of the method. Consider re-evaluating them first."
       )
     ).toBeDefined()
   })
@@ -146,7 +146,7 @@ describe("PayMappingPreconditionsPanel", () => {
     })
     expect(
       screen.getByText(
-        "1 role was locked under an earlier version of the method. Consider re-locking it first."
+        "1 role was assessed under an earlier version of the method. Consider re-evaluating it first."
       )
     ).toBeDefined()
   })

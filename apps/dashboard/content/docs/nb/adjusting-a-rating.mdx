@@ -1,25 +1,27 @@
 ---
 title: Justere en vurdering
-description: Å låse opp en låst vurdering for å endre en vurdering, og hva som registreres.
+description: Å gjenåpne en fullført vurdering for å endre en vurdering, og hva som registreres.
 section: evaluation
 ---
 
-En rolles vurderinger kan bare endres mens vurderingen er låst opp. En
-låst vurdering beskytter et avslørt resultat mot tilfeldige endringer:
-dere låser den opp først, med vilje, før noe kan vurderes annerledes.
+En rolles vurderinger kan bare endres mens vurderingen er åpen. Å
+fullføre en vurdering fastsetter den, så dere gjenåpner den først, med
+vilje, før noe kan vurderes annerledes.
 
-## Låse opp en låst rolle
+## Gjenåpne en fullført rolle
 
-Fra en låst rolles handlingsmeny velger dere "Lås opp vurderingen". En
-bekreftelsesdialog forklarer hva som skjer: å låse opp skjuler vekting
-og nivå igjen til vurderingen låses på nytt, og vurderingene kan da
-endres. Å bekrefte med "Ja, lås opp" gjør nettopp det; vektingen,
+Velg "Vurder på nytt", enten ved siden av resultatet eller fra rollens
+handlingsmeny. Det tar ett trykk: alle vurderingene beholdes, og å
+fullføre vurderingen igjen fra det siste trinnet i flyten setter
+resultatet rett tilbake, så det er ingenting å bekrefte. Vektingen,
 nivået og en eventuell sammenligning med ankerroller forsvinner
-umiddelbart fra rollens side.
+umiddelbart fra rollens side, og forblir skjult til dere fullfører
+vurderingen på nytt. Linjen over resultatet sier dette før dere
+trykker.
 
 ## Endre en vurdering
 
-Når rollen er låst opp, velger dere "Juster vurderinger" i samme meny.
+Når rollen er gjenåpnet, velger dere "Juster vurderinger" i samme meny.
 Det åpner samme flyt som beskrevet i
 [Vurdere en rolle](/docs/evaluating-a-role), og begynner om fra det
 første kriteriet, men forhåndsutfylt: hvert kriterium viser allerede
@@ -31,21 +33,22 @@ gjennom kriteriene, akkurat som første gang. Å endre et trinn og velge
 sende inn det samme trinnet og den samme begrunnelsen som allerede
 finnes, endrer ingenting, og ingen post opprettes i hendelsesloggen.
 
-Dere ser resultatet igjen først når dere låser vurderingen på nytt, den
-samme handlingen "Lås vurderingen" som første gang, tilgjengelig når
-alle kriterier har en vurdering.
+Dere ser resultatet igjen først når dere fullfører vurderingen på
+nytt, på det siste trinnet i flyten, akkurat som første gang. En rolle
+hvis kriterier alle er vurdert, gjenopptar ved det siste trinnet, så å
+fullføre på nytt er ett trykk unna.
 
 ## Når justering er blokkert
 
-Å låse opp krever alltid at rollens vurdering allerede er låst; ellers
-finnes det ingenting å låse opp. Når en rolle er arkivert, kan den ikke
-lenger vurderes, låses opp eller justeres i det hele tatt: "Lås opp
-vurderingen" vises ikke lenger i menyen, og arkivering går bare én vei,
-så det finnes ingen måte å gjenåpne en arkivert rolle for videre
+Å gjenåpne krever alltid at rollens vurdering allerede er fullført;
+ellers finnes det ingenting å gjenåpne. Når en rolle er arkivert, kan
+den ikke lenger vurderes, gjenåpnes eller justeres i det hele tatt:
+"Vurder på nytt" vises ikke lenger i menyen, og arkivering går bare én
+vei, så det finnes ingen måte å åpne en arkivert rolle for videre
 vurdering; se [Arkivere en rolle](/docs/archiving-roles) for hva som
 ellers blir skrivebeskyttet. Vurdering krever fortsatt at
 organisasjonens modell er godkjent, samme forutsetning som første gang;
-dette er normalt fortsatt oppfylt når en rolle allerede har en låst
+dette er normalt fortsatt oppfylt når en rolle allerede har en fullført
 vurdering å justere, med mindre en metodendring har åpnet godkjenningen
 igjen i mellomtiden.
 
@@ -56,8 +59,8 @@ Hver lagret endring av en vurdering registreres i hendelsesloggen som
 Hvis endringen flytter rollen til et annet nivå, logger blueprnt også
 en egen post, "Nivå omkalibrert", som peker tilbake på vurderingen som
 forårsaket det, slik at historikken over hvorfor en rolles nivå flyttet
-seg, forblir synlig sammen med vurderingene selv. Å låse opp og låse på
-nytt er også hver sin egen loggførte handling.
+seg, forblir synlig sammen med vurderingene selv. Å gjenåpne og
+fullføre på nytt er også hver sin egen loggførte handling.
 
 ## Relatert
 

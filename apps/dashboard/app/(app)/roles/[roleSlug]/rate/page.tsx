@@ -224,7 +224,7 @@ export default function RatePage(props: {
   }
 
   // Lock state is not yet known: wait rather than flash the stepper (or the
-  // stale ready-to-lock panel) for a role that turns out to already be
+  // stale ready-to-complete state) for a role that turns out to already be
   // locked a moment later. `result` is only ever null for a garbage/missing
   // role id, which cannot happen here (getRoleBySlug above already resolved
   // this exact role), so null is treated the same as still-loading.
@@ -242,7 +242,7 @@ export default function RatePage(props: {
   // audited way back into editing. RatingResult is a pure reveal; this host
   // owns the surrounding nav (the onboarding host owns its own
   // back-to-your-roles button instead).
-  if (result.locked) {
+  if (result.completed) {
     return (
       <div className={RATE_COLUMN}>
         {/* Every state of this route carries the same trail and the same stage

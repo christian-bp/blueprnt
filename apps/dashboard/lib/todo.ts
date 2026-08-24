@@ -92,10 +92,10 @@ type TodoRole = {
   ratedCount: number
   totalCriteria: number
   profileComplete: boolean
-  // Locking is the reveal (spec 2.4/6): a fully-rated role is still a draft,
+  // Completing is the reveal (spec 2.4/6): a fully-rated role is still open,
   // and the pay-mapping gate (computePayMappingPreconditions) refuses it,
-  // until this is true. Sourced from listRoles' own locked field.
-  locked: boolean
+  // until this is true. Sourced from listRoles' own completed field.
+  completed: boolean
   familyName: string | null
 }
 type TodoMethod = {
@@ -185,10 +185,10 @@ function computeCounts({
     // it until locked), so it stays in the evaluate group rather than
     // silently disappearing from the to-do once its ratings are done. Gated
     // on totalCriteria > 0 so a role under a not-yet-built model (no
-    // criteria at all, "locked" trivially false) is not wrongly flagged.
+    // criteria at all, "completed" trivially false) is not wrongly flagged.
     const needsRating = r.ratedCount < r.totalCriteria
-    const needsLocking =
-      r.totalCriteria > 0 && r.ratedCount === r.totalCriteria && !r.locked
+    const needsCompleting =
+      r.totalCriteria > 0 && r.ratedCount === r.totalCriteria && !r.completed
     if (!r.profileComplete) {
       describe.push({
         id: r.roleId,
@@ -196,7 +196,7 @@ function computeCounts({
         href: `/roles/${r.slug}`,
         family,
       })
-    } else if (needsRating || needsLocking) {
+    } else if (needsRating || needsCompleting) {
       evaluate.push({
         id: r.roleId,
         title: r.title,
@@ -310,7 +310,7 @@ function computeCounts({
     }
   }
   const isRoleReady = (r: TodoRole) =>
-    r.totalCriteria > 0 && r.ratedCount === r.totalCriteria && r.locked
+    r.totalCriteria > 0 && r.ratedCount === r.totalCriteria && r.completed
   const unevaluatedStaffedRoles = roles.filter(
     (r) => staffedRoleIds.has(r.roleId) && !isRoleReady(r)
   )

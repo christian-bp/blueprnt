@@ -88,7 +88,7 @@ function result(overrides: Record<string, unknown> = {}) {
     roleId: "role-1",
     title: "Engineer",
     complete: false,
-    locked: false,
+    completed: false,
     readyToRead: false,
     calibrated: false,
     methodDrift: false,
@@ -125,8 +125,12 @@ function install() {
 }
 
 const setRatingMock = mockMutation("assessment.ratings.setRating")
-const lockAssessmentMock = mockMutation("assessment.locking.lockAssessment")
-const unlockAssessmentMock = mockMutation("assessment.locking.unlockAssessment")
+const completeAssessmentMock = mockMutation(
+  "assessment.completion.completeAssessment"
+)
+const reopenAssessmentMock = mockMutation(
+  "assessment.completion.reopenAssessment"
+)
 
 const PARAMS = Promise.resolve({ roleSlug: "engineer" })
 
@@ -158,8 +162,8 @@ describe("RatePage (lock-as-reveal)", () => {
     modelFixture = MODEL
     install()
     setRatingMock.mockReset().mockResolvedValue(null)
-    lockAssessmentMock.mockReset().mockResolvedValue(null)
-    unlockAssessmentMock.mockReset().mockResolvedValue(null)
+    completeAssessmentMock.mockReset().mockResolvedValue(null)
+    reopenAssessmentMock.mockReset().mockResolvedValue(null)
   })
   afterEach(() => cleanup())
 
@@ -236,7 +240,7 @@ describe("RatePage (lock-as-reveal)", () => {
         state: "locked reveal",
         result: {
           complete: true,
-          locked: true,
+          completed: true,
           ratedCount: 1,
           score: 74,
           level: 2,
@@ -252,7 +256,7 @@ describe("RatePage (lock-as-reveal)", () => {
         state: "locked reveal, profile-limited",
         result: {
           complete: true,
-          locked: true,
+          completed: true,
           ratedCount: 1,
           score: 74,
           level: 4,
@@ -314,7 +318,7 @@ describe("RatePage (lock-as-reveal)", () => {
     })
     // The same gesture, no second surface in between.
     await waitFor(() => {
-      expect(lockAssessmentMock).toHaveBeenCalledWith({
+      expect(completeAssessmentMock).toHaveBeenCalledWith({
         orgId: "org-1",
         roleId: "role-1",
       })
@@ -328,7 +332,7 @@ describe("RatePage (lock-as-reveal)", () => {
   // render and press, and each has words of its own. They are said on the step
   // rather than swallowed into the rating's "could not save".
   it("says why a refused completion was refused, on the step itself", async () => {
-    lockAssessmentMock
+    completeAssessmentMock
       .mockReset()
       .mockRejectedValue(new ConvexError({ code: "errors.modelNotApproved" }))
     await renderPage()
@@ -344,7 +348,7 @@ describe("RatePage (lock-as-reveal)", () => {
   it("states the precondition and reveals the result with a one-press reopen for an already-completed role", async () => {
     resultFixture = result({
       complete: true,
-      locked: true,
+      completed: true,
       ratedCount: 1,
       score: 74,
       level: 2,
@@ -372,7 +376,7 @@ describe("RatePage (lock-as-reveal)", () => {
     // and what it costs the reader is in the sentence above the result.
     fireEvent.click(screen.getByRole("button", { name: t.reopenCta }))
     await waitFor(() => {
-      expect(unlockAssessmentMock).toHaveBeenCalledWith({
+      expect(reopenAssessmentMock).toHaveBeenCalledWith({
         orgId: "org-1",
         roleId: "role-1",
       })
@@ -428,7 +432,7 @@ describe("RatePage (lock-as-reveal)", () => {
     // Every state of the route, so the column cannot shift as the page moves
     // between loading, a precondition, the stepper and the reveal.
     it("uses the same column in the locked reveal state", async () => {
-      resultFixture = result({ locked: true })
+      resultFixture = result({ completed: true })
       install()
       await renderPage()
       expect(trail()?.parentElement?.className).toContain("mx-auto")
@@ -468,7 +472,7 @@ describe("RatePage (lock-as-reveal)", () => {
       // Locked: the reveal.
       resultFixture = result({
         complete: true,
-        locked: true,
+        completed: true,
         ratedCount: 1,
         score: 74,
         level: 2,
@@ -534,7 +538,7 @@ describe("RatePage (lock-as-reveal)", () => {
     it("links to neither from the reveal", async () => {
       resultFixture = result({
         complete: true,
-        locked: true,
+        completed: true,
         ratedCount: 1,
         score: 74,
         level: 2,

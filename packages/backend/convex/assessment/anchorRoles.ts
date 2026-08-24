@@ -58,7 +58,8 @@ function validateMotivation(motivation: string): string {
 
 // Designates a role as an anchor role. Preconditions follow the guide's
 // designation process: the role must exist, not be archived, not already be
-// an anchor, and must be a LOCKED reference (lock-as-reveal: an unlocked
+// an anchor, and must be a COMPLETED reference (completion is the reveal: an
+// uncompleted
 // role's level is not revealed anywhere, so it cannot anchor anything) with a
 // COMPLETE assessment (a real rating on every criterion, so the anchor has a
 // criteria profile and a computed level to calibrate against).
@@ -79,7 +80,7 @@ export const designateAnchorRole = orgMutation({
       throw appError(ERROR_CODES.invalidTransition)
     }
     if (role.assessment === undefined) {
-      throw appError(ERROR_CODES.assessmentNotLocked)
+      throw appError(ERROR_CODES.assessmentNotCompleted)
     }
     validateExpectedLevel(expectedLevel, await levelCount(ctx, ctx.orgId))
     const trimmedMotivation = validateMotivation(motivation)
@@ -123,12 +124,12 @@ export const designateAnchorRole = orgMutation({
 // status (underReview during a review round, replaced when retired). Every
 // update counts as a review, so reviewedAt is always bumped, and every update
 // re-reads the live computed level for the audit row -- which means every
-// call, not only reactivation, requires the role still be a LOCKED reference
+// call, not only reactivation, requires the role still be a COMPLETED reference
 // (same rule as designation), so that write never leaks a derived level for
-// an unlocked role. Reactivating a non-active anchor additionally re-passes
+// an uncompleted role. Reactivating a non-active anchor additionally re-passes
 // the completeness precondition: the assessment may have become incomplete
 // (e.g. a criterion was added) since it was designated, even while it stays
-// locked.
+// completed.
 export const updateAnchorRole = orgMutation({
   args: {
     roleId: v.id("roles"),
@@ -147,7 +148,7 @@ export const updateAnchorRole = orgMutation({
       throw appError(ERROR_CODES.notFound)
     }
     if (role.assessment === undefined) {
-      throw appError(ERROR_CODES.assessmentNotLocked)
+      throw appError(ERROR_CODES.assessmentNotCompleted)
     }
     if (expectedLevel !== undefined) {
       validateExpectedLevel(expectedLevel, await levelCount(ctx, ctx.orgId))
@@ -198,10 +199,10 @@ export const updateAnchorRole = orgMutation({
 // The org's anchor roles with their live computed level next to the agreed
 // level, for the calibration surfaces (results page, rating reveal). Computed
 // at read time like every result (ADR-0002). computedLevel is null for an
-// unlocked role, mirroring results.ts's own locked gate: an anchor's
-// designation survives its role being unlocked (only archiving retires it),
-// but lock-as-reveal means the level itself is not revealed anywhere while
-// unlocked, calibration surfaces included. Replaced anchors are included (the
+// uncompleted role, mirroring results.ts's own completed gate: an anchor's
+// designation survives its role being reopened (only archiving retires it),
+// but completion is the reveal, so the level itself is shown nowhere while
+// an assessment is not completed, calibration surfaces included. Replaced anchors are included (the
 // consumer filters by status); the list is small by design (2-5). Archived
 // roles are excluded here, and archiveRole marks their designation "replaced"
 // so the role page and the audit log agree with that exclusion.
@@ -232,13 +233,13 @@ export const listAnchorRoles = orgQuery({
     return anchors.map((role) => {
       const anchorRole = role.anchorRole
       if (anchorRole === undefined) throw appError(ERROR_CODES.notFound)
-      const locked = role.assessment !== undefined
+      const completed = role.assessment !== undefined
       return {
         roleId: role._id,
         title: role.title,
         trackKey: role.trackKey,
         expectedLevel: anchorRole.expectedLevel,
-        computedLevel: locked
+        computedLevel: completed
           ? (derived.results.find((row) => row.roleId === role._id)?.level ??
             null)
           : null,

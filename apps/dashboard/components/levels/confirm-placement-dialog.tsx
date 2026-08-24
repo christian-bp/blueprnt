@@ -55,7 +55,7 @@ function ConfirmPlacementForm({
   const t = useTranslations("dashboard.levels.calibration")
   const tToast = useTranslations("dashboard.toast")
   const tv = useTranslations("dashboard.validation")
-  const calibrate = useMutation(api.assessment.locking.calibrateAssessment)
+  const calibrate = useMutation(api.assessment.completion.calibrateAssessment)
 
   const schema = useMemo(() => makeCalibrationNoteSchema(tv), [tv])
   const form = useForm<CalibrationNoteValues>({

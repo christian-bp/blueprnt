@@ -73,7 +73,7 @@ export function complianceStatus(c: Doc<"criteria">): ComplianceStatus {
 }
 
 // Saves rationale + bias texts. Empty strings clear a field (stored as
-// undefined so the optional stays clean). Approved criteria are locked: editing
+// undefined so the optional stays clean). Approved criteria are completed: editing
 // requires an explicit reopen via setCriterionApproval first. No level-shift.
 //
 // Also reopens the MODEL's own approval if it is currently set (defense in

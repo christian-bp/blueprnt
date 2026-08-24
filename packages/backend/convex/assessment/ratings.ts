@@ -38,11 +38,11 @@ export const setRating = orgMutation({
     if (role === null || role.orgId !== ctx.orgId) {
       throw appError(ERROR_CODES.notFound)
     }
-    // Locking is the reveal (spec 2.4/6): a locked assessment refuses every
-    // further rating write until it is explicitly unlocked, so the revealed
-    // result can never silently drift from what was actually rated.
+    // Completing is the reveal (spec 2.4/6): a completed assessment refuses
+    // every further rating write until it is explicitly reopened, so the
+    // revealed result can never silently drift from what was actually rated.
     if (role.assessment !== undefined) {
-      throw appError(ERROR_CODES.assessmentLocked)
+      throw appError(ERROR_CODES.assessmentCompleted)
     }
     // Ratings are editable until the role is archived.
     if (role.archivedAt !== undefined) {

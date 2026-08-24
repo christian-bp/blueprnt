@@ -55,13 +55,14 @@ export const roles = defineTable({
       reviewedAt: v.number(),
     })
   ),
-  // Assessment state: presence indicates the role's ratings are locked against
-  // modification (locked), optionally calibrated against anchors. Absence means
-  // the role is in draft and ratings can change (ADR-0023).
+  // Assessment state: presence means the assessment is COMPLETED, so its
+  // ratings are settled and its result readable, optionally calibrated against
+  // anchors. Absence means the assessment is still open and ratings can change
+  // (ADR-0023). Reopening removes this whole object, calibration with it.
   assessment: v.optional(
     v.object({
-      lockedBy: v.string(),
-      lockedAt: v.number(),
+      completedBy: v.string(),
+      completedAt: v.number(),
       calibratedBy: v.optional(v.string()),
       calibratedAt: v.optional(v.number()),
       calibrationNote: v.optional(v.string()),

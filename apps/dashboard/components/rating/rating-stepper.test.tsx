@@ -17,14 +17,18 @@ const completeMock = vi.fn()
 // of the two a press reached.
 vi.mock("convex/react", () => ({
   useMutation: (ref: string) =>
-    ref === "assessment.locking.lockAssessment" ? completeMock : setRatingMock,
+    ref === "assessment.completion.completeAssessment"
+      ? completeMock
+      : setRatingMock,
 }))
 
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
   api: {
     assessment: {
       ratings: { setRating: "assessment.ratings.setRating" },
-      locking: { lockAssessment: "assessment.locking.lockAssessment" },
+      completion: {
+        completeAssessment: "assessment.completion.completeAssessment",
+      },
     },
   },
 }))
@@ -232,7 +236,7 @@ describe("RatingStepper", () => {
     const rendered = container.textContent ?? ""
     // The assessor grades requirements, never their consequences: the model's
     // weighting, its budget, the resulting weighting/level and the level's
-    // zone all belong to the reveal after the assessment is locked.
+    // zone all belong to the reveal after the assessment is completed.
     for (const term of [
       messages.model.weightPoints,
       messages.assessment.score,

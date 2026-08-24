@@ -4,9 +4,9 @@ description: Hvordan 0-100-vægtningen beregnes fra jeres vurderinger, og bliver
 section: evaluation
 ---
 
-Når hvert kriterium er vurderet, og vurderingen er låst, beregner
+Når hvert kriterium er vurderet, og bedømmelsen er afsluttet, beregner
 blueprnt en vægtning og et niveau for rollen. Begge er altid udledt af
-de låste vurderinger og den nuværende model; ingen af dem indtastes
+de afsluttede vurderinger og den nuværende model; ingen af dem indtastes
 nogensinde i hånden. Forveksl ikke denne vægtning, en
 rolles samlede resultat, med den vægtning, I foretager i
 [Model](/model)-områdets [kapitel Vægtning](/model/weighting), som
@@ -27,14 +27,14 @@ modellen har, er vægtningen. At runde ned betyder, at en rolle først
 når et niveau, når dens vægtning reelt har nået tærsklen, aldrig ved at
 blive rundet op til den.
 
-En rolles vægtning vises først, når dens vurdering er låst. Indtil da
+En rolles vægtning vises først, når dens bedømmelse er afsluttet. Indtil da
 viser blueprnt, hvor mange kriterier der er vurderet, i stedet for et
 delvist tal, selv efter at hvert kriterium har fået ét.
 
 ## Hvor vægtningen kommer fra
 
-På rollens side, når den er låst, viser en opdeling hvert kriterium
-efter dets bidrag: et kriteriums vurdering multipliceret med dets
+På rollens side, når bedømmelsen er afsluttet, viser en opdeling
+hvert kriterium efter dets bidrag: et kriteriums vurdering multipliceret med dets
 vægtpoint, vist som en procentandel af totalen på tværs af alle
 kriterier, sorteret med den største bidragyder først. Dette er det ene
 tal i den opdeling, som er både specifikt for denne rolle og flytter
@@ -60,39 +60,39 @@ stik, ellers placerer reglen den på den lavere zones øverste niveau i
 stedet. En helt flad model, hvor alle kriterier står på vægt 3, har
 intet for tjekket at kigge på: ingen erklærede prioriteter betyder, at
 intet spærrer placeringen. En rolle har intet niveau eller vægtning,
-før dens vurdering er låst.
+før dens bedømmelse er afsluttet.
 
 ## At sammenligne med jeres ankerroller
 
 Hvis jeres organisation har aktive ankerroller, vises de sammen med et
-netop låst resultat, så I kan efterprøve rollens niveau mod roller, I
+netop afsløret resultat, så I kan efterprøve rollens niveau mod roller, I
 allerede har tillid til; et resultat, der lander mindst to niveauer fra
 hvert anker, flages som værd et manuelt tjek, før I stoler på det. Se
 [Ankerroller](/docs/anchor-roles) for at udpege og administrere dem.
 
 ## Resultatet følger modellen
 
-En rolles vægtning og niveau afspejler altid dens låste vurderinger og
-modellen, som den er lige nu, ikke som den var, da I låste den. Det
-betyder, at en ændring i selve modellen, som at vælge et kriterium,
-ændre et vægtpoint eller omveje, kan flytte en rolle til et andet
-niveau med det samme, uden at nogen har rørt dens vurderinger. At
-vælge et nyt kriterium kan endda gøre en tidligere færdig rolle
-ufuldstændig igen, indtil det også er vurderet. Hver sådan forskydning
-registreres i hændelsesloggen. En låst rolle viser "Vurderet efter
-tidligere metode", når som helst den blev låst før modellens aktuelle
-godkendelse, eller når som helst modellens godkendelse for øjeblikket
-er genåbnet, hvilket er det almindelige lige efter enhver
-metodepåvirkende ændring, da genåbningen gælder alle låste roller på
-én gang, ikke kun dem, der forblev låst hen over en
-godkendelsesændring. At låse igen under den aktuelle metode fjerner
-den.
+En rolles vægtning og niveau afspejler altid dens afsluttede
+vurderinger og modellen, som den er lige nu, ikke som den var, da I
+afsluttede den. Det betyder, at en ændring i selve modellen, som at
+vælge et kriterium, ændre et vægtpoint eller omveje, kan flytte en
+rolle til et andet niveau med det samme, uden at nogen har rørt dens
+vurderinger. At vælge et nyt kriterium kan endda gøre en tidligere
+færdig rolle ufuldstændig igen, indtil det også er vurderet. Hver
+sådan forskydning registreres i hændelsesloggen. En afsluttet rolle
+viser "Vurderet efter tidligere metode", når som helst den blev
+afsluttet før modellens aktuelle godkendelse, eller når som helst
+modellens godkendelse for øjeblikket er genåbnet, hvilket er det
+almindelige lige efter enhver metodepåvirkende ændring, da
+genåbningen af godkendelsen gælder alle afsluttede roller på én gang,
+ikke kun dem, der forblev afsluttede hen over en godkendelsesændring.
+At vurdere den igen under den aktuelle metode fjerner den.
 
 ## Ingen manuel tilsidesættelse
 
 Der er ingen måde at sætte eller justere en rolles niveau direkte. Ser
-et niveau ikke rigtigt ud, er den eneste måde at ændre det på at låse
-vurderingen op og justere de underliggende vurderinger (se
+et niveau ikke rigtigt ud, er den eneste måde at ændre det på at
+bedømme rollen igen og justere de underliggende vurderinger (se
 [Juster en vurdering](/docs/adjusting-a-rating)) eller selve modellen,
 aldrig resultatet. En rolles niveau siger heller ikke noget om
 senioriteten for den, der har den: senioritet hører til personen, sat

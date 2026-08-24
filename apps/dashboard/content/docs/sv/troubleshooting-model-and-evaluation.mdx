@@ -1,6 +1,6 @@
 ---
 title: Modell- och utvärderingsfel
-description: Vad varje meddelande om modellbygge, betygsättning, rollåslåsning och AI betyder, och vad ni ska göra åt det.
+description: Vad varje meddelande om modellbygge, betygsättning, bedömningsslutförande och AI betyder, och vad ni ska göra åt det.
 section: troubleshooting
 ---
 
@@ -74,7 +74,7 @@ Vart och ett av bibliotekets kriterier kan bara vara aktivt en gång per
 modell. Leta efter det i dess dimensions lista på sidan Kriterier
 istället för att lägga till det igen.
 
-## Jag kan inte redigera eller betygsätta något eftersom det står att det är låst
+## Jag kan inte redigera eller betygsätta något eftersom det står att det är stängt
 
 ### Rollen är låst
 
@@ -105,27 +105,29 @@ i Modell-ytans kapitel Metod för att rensa godkännandet och dess signering, re
 texten, och godkänn den igen. Se
 [Metoddokumentation](/docs/method-documentation).
 
-### Bedömningen är låst
+### Bedömningen är slutförd
 
-Kod: `assessmentLocked`
+Kod: `assessmentCompleted`
 
-"Bedömningen är låst. Lås upp den för att ändra bedömningar."
+"Bedömningen är slutförd. Omvärdera den för att ändra bedömningarna."
 
-En rolls bedömningar kan inte längre ändras när dess bedömning är låst:
-att låsa en fullständig bedömning är det som visar dess viktning och
-nivå. Lås upp den från rollsidans åtgärdsmeny för att göra fler
-ändringar, vilket döljer viktningen och nivån igen tills den låses på
-nytt. Se [Utvärdera en roll](/docs/evaluating-a-role).
+En rolls bedömningar kan inte längre ändras när dess bedömning är
+slutförd: att slutföra en fullt betygsatt bedömning är det som visar
+dess viktning och nivå. Välj "Omvärdera", bredvid resultatet eller i
+rollsidans åtgärdsmeny, för att göra fler ändringar; det döljer
+viktningen och nivån igen tills ni slutför bedömningen på nytt. Se
+[Utvärdera en roll](/docs/evaluating-a-role).
 
-### Bedömningen måste låsas först
+### Bedömningen måste slutföras först
 
-Kod: `assessmentNotLocked`
+Kod: `assessmentNotCompleted`
 
-"Bedömningen måste låsas först."
+"Bedömningen måste slutföras först."
 
-Att låsa upp, bekräfta en kalibrerad placering, eller utse en roll till
-ankarroll, gäller bara en bedömning som redan är låst. Lås bedömningen
-först, från rollsidan när varje kriterium har en bedömning. Se
+Att omvärdera, bekräfta en kalibrerad placering, eller utse en roll
+till ankarroll, gäller bara en bedömning som redan är slutförd. Slutför
+bedömningen först, på betygsättningsflödets sista steg när varje
+kriterium har ett betyg. Se
 [Utvärdera en roll](/docs/evaluating-a-role) och
 [Ankarroller](/docs/anchor-roles).
 

@@ -18,7 +18,7 @@ const role = (
   profileComplete: true,
   // Draft by default (spec 2.4/6: locking is the reveal); tests representing
   // a genuinely finished role override this explicitly.
-  locked: false,
+  completed: false,
   familyName: "Engineering",
   ...over,
 })
@@ -171,7 +171,7 @@ describe("buildTodo", () => {
           profileComplete: true,
           ratedCount: 9,
           totalCriteria: 9,
-          locked: true,
+          completed: true,
         }),
       ],
       ...NO_MODEL,
@@ -189,7 +189,7 @@ describe("buildTodo", () => {
           profileComplete: true,
           ratedCount: 9,
           totalCriteria: 9,
-          locked: false,
+          completed: false,
         }),
       ],
       ...NO_MODEL,
@@ -535,7 +535,12 @@ describe("buildTodo startPayMapping group", () => {
   it("does not add it while a staffed role is fully rated but NOT YET LOCKED (spec 2.4/6, mirrors computePayMappingPreconditions)", () => {
     const todo = buildTodo({
       roles: [
-        role({ roleId: "r1", ratedCount: 9, totalCriteria: 9, locked: false }),
+        role({
+          roleId: "r1",
+          ratedCount: 9,
+          totalCriteria: 9,
+          completed: false,
+        }),
       ],
       ...NO_MODEL,
       payMappingRuns: [],
@@ -563,7 +568,12 @@ describe("buildTodo startPayMapping group", () => {
   it("adds it once that same staffed role is locked", () => {
     const todo = buildTodo({
       roles: [
-        role({ roleId: "r1", ratedCount: 9, totalCriteria: 9, locked: true }),
+        role({
+          roleId: "r1",
+          ratedCount: 9,
+          totalCriteria: 9,
+          completed: true,
+        }),
       ],
       ...method([]),
       payMappingRuns: [],
@@ -617,7 +627,12 @@ describe("buildTodo startPayMapping group", () => {
   it("never adds it for an org with no model at all, even once every other precondition (people, staffed role) is met", () => {
     const todo = buildTodo({
       roles: [
-        role({ roleId: "r1", ratedCount: 9, totalCriteria: 9, locked: true }),
+        role({
+          roleId: "r1",
+          ratedCount: 9,
+          totalCriteria: 9,
+          completed: true,
+        }),
       ],
       ...NO_MODEL,
       payMappingRuns: [],
@@ -638,7 +653,12 @@ describe("buildTodo startPayMapping group", () => {
   it("hides it and shows the buildModel approve entry instead once a previously-approved model's approval is reopened, even though people and roles are otherwise fully ready", () => {
     const todo = buildTodo({
       roles: [
-        role({ roleId: "r1", ratedCount: 9, totalCriteria: 9, locked: true }),
+        role({
+          roleId: "r1",
+          ratedCount: 9,
+          totalCriteria: 9,
+          completed: true,
+        }),
       ],
       // modelApproved: false, station checks otherwise clean: the criteria
       // selection itself is done, only the model's own approval is missing

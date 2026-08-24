@@ -90,7 +90,7 @@ async function lockedRole(args: {
       motivation: "Fixture.",
     })
   }
-  await args.asAdmin.mutation(api.assessment.locking.lockAssessment, {
+  await args.asAdmin.mutation(api.assessment.completion.completeAssessment, {
     orgId: args.orgId,
     roleId,
   })
@@ -537,7 +537,7 @@ describe("getConsequenceAnalysis", () => {
       high: model.criteria[0]?.criterionId,
       low: model.criteria[1]?.criterionId,
     })
-    // Fully rated and deliberately NOT locked: it has an engine level and no
+    // Fully rated and deliberately NOT completed: it has an engine level and no
     // revealed placement, so it belongs to no part of this panel.
     const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,

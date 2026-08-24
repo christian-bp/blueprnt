@@ -193,10 +193,10 @@
       "modelApproved": "Malli hyväksytty",
       "modelRestored": "Malli palautettu",
       "workingConditionsDecided": "Työolosuhteiden päätös tallennettu",
-      "assessmentLocked": "Arviointi lukittu",
+      "assessmentCompleted": "Arviointi viimeistelty",
       "placementConfirmed": "Sijoitus vahvistettu",
       "thresholdsSaved": "Vaativuustasorajat tallennettu",
-      "assessmentUnlocked": "Arvioinnin lukitus avattu",
+      "assessmentReopened": "Arviointi avattu uudelleen",
       "weightMotivationSaved": "Perustelu tallennettu"
     },
     "accountMenu": "Tilivalikko",
@@ -887,8 +887,8 @@
         "modelZoneProfileRulesUpdated": "Vyöhykeprofiilisäännöt päivitetty",
         "modelApprovalReopened": "Mallin hyväksyntä avattu uudelleen",
         "modelRestored": "Malli palautettu viimeksi hyväksyttyyn",
-        "roleAssessmentLocked": "Arviointi lukittu",
-        "roleAssessmentUnlocked": "Arvioinnin lukitus avattu",
+        "roleAssessmentCompleted": "Arviointi viimeistelty",
+        "roleAssessmentReopened": "Arviointi avattu uudelleen",
         "roleAssessmentCalibrated": "Arviointi kalibroitu"
       },
       "ai": {
@@ -1126,9 +1126,9 @@
           "empty": "Tähän rooliin ei ole vielä luokiteltu työntekijöitä.",
           "archivedEmpty": "Rooli on arkistoitu, joten siihen ei ole luokiteltu ketään. Historia säilyy."
         },
-        "lockedBadge": "Lukittu",
+        "completedBadge": "Viimeistelty",
         "calibratedBadge": "Kalibroitu",
-        "lockedIncomplete": "Lukittu, mutta sen jälkeen lisätyltä kriteeriltä puuttuu arvio. Avaa lukitus, arvioi se ja lukitse uudelleen nähdäksesi tuloksen.",
+        "completedIncomplete": "Viimeistelty, mutta sen jälkeen lisätyltä kriteeriltä puuttuu arvio. Arvioi uudelleen, arvioi se ja viimeistele arviointi uudelleen nähdäksesi tuloksen.",
         "methodDriftBadge": "Arvioitu aiemmalla menetelmällä"
       },
       "archive": {
@@ -1229,9 +1229,9 @@
         "title": "Ei vielä valmis",
         "importLine": "Työntekijöitä ei ole vielä tuotu",
         "classifyLine": "{count, plural, one {# henkilö ei ole vielä luokiteltu} other {# henkilöä ei ole vielä luokiteltu}}",
-        "evaluateLine": "{count, plural, one {# roolin, jossa on työntekijöitä, arviointi odottaa vielä lukitsemista} other {# roolin, joissa on työntekijöitä, arviointi odottaa vielä lukitsemista}}",
+        "evaluateLine": "{count, plural, one {# roolilta, jolla on työntekijöitä, puuttuu yhä viimeistelty arviointi} other {# roolilta, joilla on työntekijöitä, puuttuu yhä viimeistelty arviointi}}",
         "approvalLine": "Malli on hyväksyttävä ennen kuin palkkakartoitus voidaan aloittaa",
-        "driftWarning": "{count, plural, one {# rooli lukittiin menetelmän aiemman version mukaisesti. Harkitse sen lukitsemista uudelleen ennen aloittamista.} other {# roolia lukittiin menetelmän aiemman version mukaisesti. Harkitse niiden lukitsemista uudelleen ennen aloittamista.}}"
+        "driftWarning": "{count, plural, one {# rooli arvioitiin menetelmän aiemmalla versiolla. Harkitse sen arvioimista uudelleen ensin.} other {# roolia arvioitiin menetelmän aiemmalla versiolla. Harkitse niiden arvioimista uudelleen ensin.}}"
       },
       "actions": {
         "status": {
@@ -1671,12 +1671,12 @@
         "profileLimitedReason": "Profiilivaatimukset pidättivät tämän roolin korkeammalta vyöhykkeeltä.",
         "profileLimitedFailure": "{name}: vaatii portaan {required}, roolilla on {actual}",
         "anchorDeviationReason": "Tämä ankkurirooli päätyi vaativuustasolle {level}, ja sovittu taso on {expected}.",
-        "staleLockReason": "Tämä rooli arvioitiin menetelmän aiemmalla versiolla.",
+        "staleMethodReason": "Tämä rooli arvioitiin menetelmän aiemmalla versiolla.",
         "confirmCta": "Vahvista sijoitus",
         "openRoleCta": "Avaa rooli",
         "rateCta": "Avaa arviointi",
         "emptyTitle": "Ei tarkistettavaa",
-        "emptyDescription": "Jokainen lukittu sijoitus on joko vahvistettu tai ei herätä kysymyksiä.",
+        "emptyDescription": "Jokainen viimeistelty sijoitus on joko vahvistettu tai ei herätä kysymyksiä.",
         "unapprovedTitle": "Menetelmää ei ole vielä hyväksytty",
         "unapprovedDescription": "Roolit sijoitetaan, kun menetelmä on hyväksytty, joten siihen asti ei ole mitään tarkistettavaa.",
         "unapprovedCta": "Avaa malli",
@@ -1896,7 +1896,7 @@
       },
       "consequence": {
         "heading": "Mitä hyväksyminen muuttaisi",
-        "summary": "{placed, plural, =1 {1 lukitusta sijoituksesta} other {# lukitusta sijoituksesta}} {moved} siirtyisi toiselle vaativuustasolle.",
+        "summary": "{moved}/{placed, plural, =1 {1 viimeistelty sijoitus} other {# viimeisteltyä sijoitusta}} siirtyisi toiselle vaativuustasolle.",
         "losing": "{count, plural, =1 {1 rooli menettäisi vaativuustasonsa} other {# roolia menettäisi vaativuustasonsa}}, kunnes se on arvioitu menetelmän saamilla kriteereillä.",
         "gaining": "{count, plural, =1 {1 rooli saisi vaativuustason, johon se ei aiemmin yltänyt} other {# roolia saisi vaativuustason, johon ne eivät aiemmin yltäneet}}.",
         "criteriaChanged": "Menetelmä on muuttunut edellisen hyväksynnän jälkeen: {added, plural, =0 {ei yhtään kriteeriä} =1 {1 kriteeri} other {# kriteeriä}} lisätty, {removed, plural, =0 {ei yhtään} other {#}} poistettu.",
@@ -2106,7 +2106,7 @@
         "draft": "LUONNOS: kaikkia kriteereitä ei ole tarkastettu ja hyväksytty",
         "final": "LOPULLINEN",
         "methodologyTitle": "Menetelmä",
-        "methodologyBody": "Rooleja arvioidaan kriteeri kerrallaan asteikolla 1-5. Kriteerien painot muodostavat yhdessä kiinteän pistebudjetin; roolin pistemäärä normalisoidaan välille 0-100 ja vaativuustaso johdetaan automaattisesti, sitä ei koskaan aseteta käsin. Arviot ovat piilossa, kunnes arviointi on lukittu. Jokainen muutos kirjataan tapahtumalokiin. Roolit kuvaavat työtä, eivät henkilöä.",
+        "methodologyBody": "Roolit arvioidaan kriteeri kerrallaan asteikolla 1-5. Kriteerien painot summautuvat kiinteään pistebudjettiin; roolin pisteet normalisoidaan välille 0-100 ja vaativuustaso johdetaan, sitä ei koskaan aseteta käsin. Arviot ovat piilossa, kunnes arviointi on viimeistelty. Jokainen muutos kirjataan muutoslokiin. Roolit kuvaavat työtä, eivät koskaan henkilöä.",
         "biasStatement": "Tämä malli on suunniteltu vähentämään vinoumaa. Se on vinoumaa vähentävä, ei koskaan vinoumaton.",
         "criteriaTitle": "Kriteerit ja painot",
         "rationaleTitle": "Kriteeriperustelu ja vinoumatarkistus",
@@ -2223,7 +2223,7 @@
       "consequenceLabel": "Mikä on seurausanalyysi?",
       "consequenceBody": "Mitä tämän menetelmän hyväksyminen tekisi jo olemassa oleville sijoituksille verrattuna viimeksi hyväksymäänne menetelmään. Se siirtää rooleja, ei henkilöitä: kenenkään palkka ei muutu tässä.",
       "calibrationLabel": "Mitä kalibrointi on?",
-      "calibrationBody": "Lukitun sijoituksen tarkistus, joka jonkun on hyvä tehdä ennen kuin tikkaita pidetään valmiina. Vahvistaminen ei muuta vaativuustasoa: se kirjaa, että joku seisoo sen takana.",
+      "calibrationBody": "Viimeistellyn sijoituksen tarkastus, joka jonkun on hyvä katsoa ennen kuin tasoja pidetään valmiina. Vahvistaminen ei muuta tasoa: se kirjaa, että joku seisoo sen takana.",
       "levelThresholdLabel": "Mikä on vaativuustason raja?",
       "levelThresholdBody": "Painotus, joka roolin on saavutettava ollakseen tasolla, ja profiiliporras, jonka vyöhyke vaatii. Ne ratkaisevat mihin kukin rooli päätyy, joten muutos sijoittaa koko tikkaat uudelleen."
     },
@@ -2798,7 +2798,7 @@
     "criterionAlreadySelected": "Kriteeri kuuluu jo malliin.",
     "methodBlocked": "Menetelmän tarkistuslistalla on ratkaisemattomia kohtia. Korjaa jokainen estävä kohta ennen hyväksymistä.",
     "modelNotApproved": "Arviointimalli on hyväksyttävä ennen kuin rooleja voi arvioida.",
-    "assessmentLocked": "Arviointi on lukittu. Avaa lukitus muuttaaksesi arvioita.",
-    "assessmentNotLocked": "Arviointi täytyy lukita ensin."
+    "assessmentCompleted": "Arviointi on viimeistelty. Arvioi se uudelleen muuttaaksesi arvioita.",
+    "assessmentNotCompleted": "Arviointi on viimeisteltävä ensin."
   }
 }

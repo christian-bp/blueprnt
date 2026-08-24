@@ -14,8 +14,8 @@ import { motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import {
   CalibratedBadge,
-  LockedBadge,
-  LockedIncompleteNotice,
+  CompletedBadge,
+  CompletedIncompleteNotice,
   MethodDriftBadge,
 } from "@/components/assessment-status"
 import { HelpMorphButton } from "@/components/help-morph-button"
@@ -49,15 +49,15 @@ export function RatingResult({
     orgId,
   })
 
-  // Locking is the reveal (spec 2.4/6): this component only ever renders
-  // AFTER a successful lock (rate/page.tsx) or for a role that arrives
-  // already locked, so it waits on `locked`, not merely `complete` (a
-  // complete-but-unlocked role's score/level/zone read null on the wire).
+  // Completing is the reveal (spec 2.4/6): this component only ever renders
+  // AFTER a successful completion (rate/page.tsx) or for a role that arrives
+  // already completed, so it waits on `completed`, not merely `complete` (the
+  // score/level/zone of a rated but uncompleted role read null on the wire).
   if (
     result === undefined ||
     anchors === undefined ||
     result === null ||
-    !result.locked
+    !result.completed
   ) {
     return (
       <main className="flex items-center justify-center p-6">
@@ -67,8 +67,8 @@ export function RatingResult({
   }
 
   // `locked` alone is not enough: a criterion added after the lock leaves a
-  // locked role incomplete again, reading back as complete=false, score=null,
-  // level=null while locked stays true (results.ts). `score ?? 0` would print
+  // completed role incomplete again, reading back as complete=false, score=null,
+  // level=null while completed stays true (results.ts). `score ?? 0` would print
   // a dishonest "0 / 100" for a result that was never computed. Nothing is in
   // flight in that state either, so it is a message, not a spinner: the
   // spinner spun forever and told the reader to keep waiting for a
@@ -76,7 +76,7 @@ export function RatingResult({
   if (!result.complete || result.level === null) {
     return (
       <main className="w-full">
-        <LockedIncompleteNotice />
+        <CompletedIncompleteNotice />
       </main>
     )
   }
@@ -108,7 +108,7 @@ export function RatingResult({
               {/* The same status vocabulary the role page and the sheet use.
                   The reveal is where a result is read most closely, so a role
                   rated under a superseded method has to say so here too. */}
-              <LockedBadge />
+              <CompletedBadge />
               {result.calibrated ? <CalibratedBadge /> : null}
               {result.methodDrift ? <MethodDriftBadge /> : null}
               <HelpMorphButton label={tHelp("scoreLabel")}>
