@@ -1,0 +1,51 @@
+apps/dashboard/components/model/consequence-panel.tsx
+  s_58dd112dc09435::t_50acce82d45815 4,28-38,56,86-99,118-122,162-169,197
+  s_58dd112dc09435::t_24f12c073763f0 57-62
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_ffed41eb2e70db 1905-1908,1910,1915-1916,1925
+packages/backend/convex/evaluationModel/consequence.ts
+  s_58dd112dc09435::t_24c9adccc0a74c 33-42,49,59-64
+  s_58dd112dc09435::t_06845a349a22ca 112-116,119-122,211-220,244-245
+  s_58dd112dc09435::t_b7108f9692edf8 179-186,189-191,231-234,404-406
+  s_58dd112dc09435::t_15d686c3d47a48 65-78,237-238
+  s_58dd112dc09435::t_39f4c4bd41d8d0 330-335,344-346,351-352,355-356,359-362,364-367,376-381,385,387,392-399,401,411-412
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_ffed41eb2e70db 1905-1908,1910,1915-1916,1925
+apps/dashboard/components/model/consequence-panel.test.tsx
+  s_58dd112dc09435::t_07792463ce2489 204-241,245-249
+  s_58dd112dc09435::t_24f12c073763f0 242-244
+  s_58dd112dc09435::t_d2bdb15fea2965 25-26,35-36,62-63,76-77,151,158-162,169-172,177-178
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_ffed41eb2e70db 1905-1908,1910,1914-1916,1925
+apps/dashboard/content/docs/fi/method-documentation.mdx
+  s_58dd112dc09435::t_6f27b39536522c 135,138-139
+packages/backend/convex/evaluationModel/approval.test.ts
+  s_58dd112dc09435::t_9b53ec44ce3125 1452-1458,1460-1513
+  s_58dd112dc09435::t_de295266c47ecc 1459
+packages/backend/convex/evaluationModel/approval.ts
+  s_58dd112dc09435::t_995688c6ac7cbb 487-511,516-520,559-563
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_ffed41eb2e70db 1905-1908,1910,1915-1916,1925
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_ffed41eb2e70db 1905-1908,1910,1915-1916,1925
+packages/backend/convex/evaluationModel/consequence.test.ts
+  s_58dd112dc09435::t_575145e5c9d089 253-254,260-262,285-305
+  s_58dd112dc09435::t_23ce6e74aebbf9 377-579
+  s_58dd112dc09435::t_67f1782c0b8578 605-612,615-630,632,635-637,639-646
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "06556e29739e2688eea5c364b96cc727110c644c",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
