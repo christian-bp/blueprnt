@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
+import type { Id } from "../_generated/dataModel"
 import { grantModelApproval, initConvexTest } from "../testing.helpers"
 
 // A spread of 8 library keys across every dimension at (or under) its own
@@ -437,5 +438,115 @@ describe("getRoleResult", () => {
         roleId: "garbage",
       })
     ).toBeNull()
+  })
+})
+
+// The two fields the calibration queue reads. Both live on this wire rather
+// than behind a second query: the queue is rendered from these very rows, and
+// two subscriptions could disagree for a frame.
+describe("getResults: what the calibration queue needs", () => {
+  it("reports whether the method is approved", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedTemplateOrganization(t)
+    const approved = await asAdmin.query(api.assessment.results.getResults, {
+      orgId,
+    })
+    expect(approved.approved).toBe(true)
+
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (model !== null) {
+        await ctx.db.patch(model._id, { approval: undefined })
+      }
+    })
+    const reopened = await asAdmin.query(api.assessment.results.getResults, {
+      orgId,
+    })
+    expect(reopened.approved).toBe(false)
+  })
+
+  // The engine reports a failure by criterion id; the queue has to say WHICH
+  // requirement held the role back, in words, so the name is resolved here.
+  //
+  // Producing a real failure takes a real profile criterion: only weight 4-5
+  // criteria gate a zone (PROFILE_WEIGHT_FLOOR), and the seed weights every
+  // criterion at the neutral 3, so the fixture moves points to make one a
+  // profile criterion and then rates that one at the floor while the rest
+  // score top. The role's own total lands it high, its profile rating does
+  // not, and the engine caps it.
+  it("names every profile failure from the library, in the caller's locale", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
+    const gated = model.criteria[0]
+    const donor = model.criteria[1]
+    if (gated === undefined || donor === undefined) throw new Error("seed")
+    await t.run(async (ctx) => {
+      // Zero-sum, so the point budget stays exact (ADR-0004).
+      await ctx.db.patch(gated.criterionId as Id<"criteria">, {
+        weightPoints: 5,
+      })
+      await ctx.db.patch(donor.criterionId as Id<"criteria">, {
+        weightPoints: 1,
+      })
+    })
+
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Capped",
+      function: "engineering",
+      team: "Core",
+      trackKey: "IC",
+      purpose: "Purpose",
+      responsibilities: "Responsibilities",
+    })
+    for (const criterion of model.criteria) {
+      const isGated = criterion.criterionId === gated.criterionId
+      await asAdmin.mutation(api.assessment.ratings.setRating, {
+        orgId,
+        roleId,
+        criterionId: criterion.criterionId,
+        value: isGated ? 1 : 5,
+        motivation: "Fixture.",
+      })
+    }
+    await lockRole(asAdmin, orgId, roleId)
+
+    for (const locale of ["en", "sv"] as const) {
+      const results = await asAdmin.query(api.assessment.results.getResults, {
+        orgId,
+        locale,
+      })
+      const row = results.rows.find((entry) => entry.title === "Capped")
+      expect(row?.profileLimited).toBe(true)
+      const failures = row?.profileFailures ?? []
+      // Non-vacuous: there IS a failure to name.
+      expect(failures.length).toBeGreaterThan(0)
+      for (const failure of failures) {
+        // A real, localized criterion name, never an id and never blank.
+        expect(failure.name).not.toBe("")
+        expect(failure.name).not.toBe(failure.criterionId)
+        expect(failure.required).toBeGreaterThan(failure.actual)
+      }
+    }
+  })
+
+  it("carries no profile failures for a role that is not locked", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
+    await createRatedRole({
+      orgId,
+      asAdmin,
+      model,
+      title: "Unlocked",
+      value: 1,
+    })
+    const results = await asAdmin.query(api.assessment.results.getResults, {
+      orgId,
+    })
+    const row = results.rows.find((entry) => entry.title === "Unlocked")
+    expect(row?.profileFailures).toBeNull()
   })
 })

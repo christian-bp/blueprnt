@@ -45,16 +45,41 @@ export function deriveMethodDrift(
 }
 
 const zoneWireValidator = v.union(zoneKeyValidator, v.null())
+// A profile failure carries the criterion's NAME as well as its id, because
+// the only surface that reads it (the calibration queue) has to say WHICH
+// requirement held a role back, in words. Resolving it here costs one bounded
+// indexed read of the model's own criteria (at most MODEL_MAX_CRITERIA rows)
+// and saves every reader a second query plus its own copy of the libraryKey
+// name lookup.
 const profileFailuresWireValidator = v.union(
   v.array(
     v.object({
       criterionId: v.string(),
+      name: v.string(),
       required: v.number(),
       actual: v.number(),
     })
   ),
   v.null()
 )
+
+// Names each profile failure from the model's own criteria. The engine reports
+// failures by criterion id (it knows nothing about display text); every
+// criterion is a library selection (decision 8), so its name always localizes
+// from the library by libraryKey and is never stored.
+function nameFailures(
+  failures: readonly {
+    criterionId: string
+    required: number
+    actual: number
+  }[],
+  nameById: ReadonlyMap<string, string>
+) {
+  return failures.map((failure) => ({
+    ...failure,
+    name: nameById.get(failure.criterionId) ?? "",
+  }))
+}
 
 // The results view: live-derived rows for every non-archived role plus the
 // model's level list. Score/level are computed at read time and never stored
@@ -96,6 +121,12 @@ export const getResults = orgQuery({
       })
     ),
     levels: v.array(v.object({ level: v.number(), minScore: v.number() })),
+    // Whether the method is approved (ADR-0023). On this wire rather than a
+    // second query because the handler already reads the model, and the one
+    // surface that needs it (the calibration queue) is rendered from these very
+    // rows: two subscriptions could disagree for a frame and show a queue
+    // beside a "not approved yet" message.
+    approved: v.boolean(),
   }),
   handler: async (ctx, { locale }) => {
     const derived = await deriveResults(ctx, ctx.orgId)
@@ -109,6 +140,20 @@ export const getResults = orgQuery({
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .unique()
+    const criteriaRows =
+      model === null
+        ? []
+        : await ctx.db
+            .query("criteria")
+            .withIndex("by_model", (q) => q.eq("modelId", model._id))
+            .collect()
+    const content = criteriaLibraryContent(clampLocale(locale))
+    const criterionNames = new Map(
+      criteriaRows.map((row) => [
+        row._id as string,
+        content.criteria[row.libraryKey].name,
+      ])
+    )
     const levels =
       model === null
         ? []
@@ -156,7 +201,9 @@ export const getResults = orgQuery({
         level: locked ? (result?.level ?? null) : null,
         zone: locked ? (result?.zone ?? null) : null,
         profileLimited: locked ? (result?.profileLimited ?? null) : null,
-        profileFailures: locked ? (result?.profileFailures ?? null) : null,
+        profileFailures: locked
+          ? nameFailures(result?.profileFailures ?? [], criterionNames)
+          : null,
         familyId: role.familyId ?? null,
         familyName:
           role.familyId !== undefined
@@ -178,7 +225,7 @@ export const getResults = orgQuery({
       if (b.level !== null) return 1
       return a.title.localeCompare(b.title, sortLocale)
     })
-    return { rows, levels }
+    return { rows, levels, approved: model?.approval !== undefined }
   },
 })
 
@@ -275,7 +322,17 @@ export const getRoleResult = orgQuery({
       level: locked ? (result?.level ?? null) : null,
       zone: locked ? (result?.zone ?? null) : null,
       profileLimited: locked ? (result?.profileLimited ?? null) : null,
-      profileFailures: locked ? (result?.profileFailures ?? null) : null,
+      profileFailures: locked
+        ? nameFailures(
+            result?.profileFailures ?? [],
+            new Map(
+              criteriaRows.map((row) => [
+                row._id as string,
+                content.criteria[row.libraryKey].name,
+              ])
+            )
+          )
+        : null,
       criteria: criteriaRows.map((row) => {
         // Every criterion is a library selection (decision 8): its display
         // name always localizes from criteriaLibraryContent by libraryKey,
