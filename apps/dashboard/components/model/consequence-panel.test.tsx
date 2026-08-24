@@ -1,5 +1,9 @@
 import { cleanup, render, screen } from "@testing-library/react"
+import daMessages from "@workspace/i18n/messages/da.json"
 import messages from "@workspace/i18n/messages/en.json"
+import fiMessages from "@workspace/i18n/messages/fi.json"
+import nbMessages from "@workspace/i18n/messages/nb.json"
+import svMessages from "@workspace/i18n/messages/sv.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -18,6 +22,18 @@ import { ConsequencePanel } from "@/components/model/consequence-panel"
 import { onQuery } from "@/test/convex-mocks"
 
 const m = messages.dashboard.model.consequence
+
+// Every configured locale, so the null-side copy is checked as rendered words
+// rather than as a message-file value.
+type ContentLocale = "en" | "sv" | "nb" | "da" | "fi"
+
+const localeMessages: Record<ContentLocale, typeof messages> = {
+  en: messages,
+  sv: svMessages,
+  nb: nbMessages,
+  da: daMessages,
+  fi: fiMessages,
+}
 
 type Analysis = {
   comparable: boolean
@@ -146,13 +162,6 @@ describe("ConsequencePanel", () => {
     expect(container.textContent).toBe("")
   })
 
-  it("renders nothing when approving would move nothing", () => {
-    // Comparable, so only the movement guard can silence it.
-    analysis = { ...MOVED, moved: 0, losing: 0, gaining: 0, movers: [] }
-    const { container } = renderPanel()
-    expect(container.textContent).toBe("")
-  })
-
   it("says how many placements would move, out of how many", () => {
     analysis = MOVED
     const { container } = renderPanel()
@@ -222,6 +231,68 @@ describe("ConsequencePanel", () => {
     // And the mover says so in words rather than showing a level it no longer
     // has.
     expect(screen.getByText(m.moverLoses.replace("{from}", "6"))).toBeDefined()
+    // THE CONTRADICTION THIS CLOSES: a losing role is a mover, so counting it
+    // in the summary too made one role carry two opposite claims, and a
+    // pure-losing analysis asserted that N placements move to another level
+    // when zero do. The summary is silent here because nothing moves BETWEEN
+    // levels.
+    expect(container.textContent).not.toContain("would move to another level")
+  })
+
+  it("counts only between-level moves in the summary when both happen", () => {
+    analysis = {
+      ...MOVED,
+      placed: 9,
+      moved: 3,
+      losing: 1,
+      gaining: 1,
+      movers: [
+        { roleId: "a", title: "Shifts", slug: "shifts", from: 5, to: 3 },
+        { roleId: "b", title: "Falls", slug: "falls", from: 6, to: null },
+        { roleId: "c", title: "Joins", slug: "joins", from: null, to: 4 },
+      ],
+    }
+    const { container } = renderPanel()
+    // Three movers, but only ONE of them moves between levels.
+    expect(container.textContent).toContain(
+      "1 of 9 locked placements would move to another level"
+    )
+    expect(container.textContent).toContain("1 role would lose its level")
+    expect(container.textContent).toContain("1 role would gain a level")
+  })
+
+  // A group whose roles all left or joined the ladder moved in no direction,
+  // and "(0 up, 0 down)" beside "1 of 3 moves" reads as a contradiction.
+  it("drops the direction parenthetical when there is no direction", () => {
+    analysis = {
+      ...MOVED,
+      moved: 1,
+      losing: 1,
+      movers: [
+        { roleId: "b", title: "Falls", slug: "falls", from: 6, to: null },
+      ],
+      families: [
+        { key: "f1", label: "Engineering", moved: 1, up: 0, down: 0, total: 3 },
+      ],
+      genders: [],
+    }
+    const { container } = renderPanel()
+    expect(container.textContent).toContain("1 of 3 moves")
+    expect(container.textContent).not.toContain("0 up")
+    expect(container.textContent).not.toContain("0 down")
+  })
+
+  it("keeps the direction parenthetical when roles really move up or down", () => {
+    analysis = {
+      ...MOVED,
+      families: [
+        { key: "f1", label: "Engineering", moved: 2, up: 1, down: 1, total: 5 },
+      ],
+      genders: [],
+    }
+    const { container } = renderPanel()
+    expect(container.textContent).toContain("1 up")
+    expect(container.textContent).toContain("1 down")
   })
 
   it("speaks when a role would gain a level it could not reach", () => {
@@ -240,7 +311,8 @@ describe("ConsequencePanel", () => {
   })
 
   // A losing role IS a mover with a null side, so `moved` already counts it;
-  // this is the one state where nothing at all would change.
+  // this is the one state where nothing at all would change. Comparable, so
+  // only the movement guard can silence it.
   it("stays silent only when nothing changes on either side", () => {
     analysis = { ...MOVED, moved: 0, losing: 0, gaining: 0, movers: [] }
     const { container } = renderPanel()
@@ -264,6 +336,47 @@ describe("ConsequencePanel", () => {
     // The family with nothing moving says nothing.
     expect(screen.queryByText(m.noFamily)).toBeNull()
   })
+
+  // The null side is the one place these locales can go wrong grammatically:
+  // nivå/niveau are NEUTER, so an elliptical "til ingen" reads "to nobody" on a
+  // screen about roles and people, and a Finnish negative pronoun with no
+  // negative verb is not a well-formed phrase. Rendered per locale rather than
+  // asserted against the message file, so a regression shows as the words a
+  // reader would actually see.
+  it.each([
+    ["nb", "Fra nivå 6 til uten nivå", "Uten nivå til nivå 4"],
+    ["da", "Fra niveau 6 til uden niveau", "Uden niveau til niveau 4"],
+    ["fi", "Vaativuustasolta 6 pois", "Ei tasoa, nyt vaativuustaso 4"],
+    ["sv", "Från nivå 6 till ingen nivå", "Ingen nivå till nivå 4"],
+    ["en", "From level 6 to no level", "No level to level 4"],
+  ] as [ContentLocale, string, string][])(
+    "says the null side grammatically in %s",
+    (locale, loses, gains) => {
+      analysis = {
+        ...MOVED,
+        moved: 2,
+        losing: 1,
+        gaining: 1,
+        movers: [
+          { roleId: "b", title: "Falls", slug: "falls", from: 6, to: null },
+          { roleId: "c", title: "Joins", slug: "joins", from: null, to: 4 },
+        ],
+      }
+      const { container } = render(
+        <NextIntlClientProvider
+          locale={locale}
+          messages={localeMessages[locale]}
+        >
+          <ConsequencePanel orgId="org-1" />
+        </NextIntlClientProvider>
+      )
+      expect(container.textContent).toContain(loses)
+      expect(container.textContent).toContain(gains)
+      // And never the reading these corrections exist to remove.
+      expect(container.textContent).not.toContain("til ingen")
+      expect(container.textContent).not.toContain("ei millekään")
+    }
+  )
 
   it("names the gender classes in the app's own words, never a person", () => {
     analysis = MOVED

@@ -111,8 +111,15 @@ function approvedCriteria(
     matched.add(id)
     const live = inputs.criteria.find((entry) => entry.criterionId === id)
     if (live === undefined) {
-      removed += 1
-      continue
+      // Unreachable: `id` came out of inputs.libraryKeyById, and both that map
+      // and inputs.criteria are built from the same criteriaRows read. Counting
+      // it as "removed" would quietly mis-report a criterion the model still
+      // has, so this fails loudly instead, like startPayMappingRun's own
+      // gate-divergence throw. A plain Error: it guards a programming mistake,
+      // not anything a user can cause.
+      throw new Error(
+        `consequence analysis invariant: criterion ${id} is in libraryKeyById but not in criteria`
+      )
     }
     criteria.push({
       criterionId: id,
@@ -397,9 +404,16 @@ export const getConsequenceAnalysis = orgQuery({
       mover.from === null || mover.to === null
         ? Number.POSITIVE_INFINITY
         : Math.abs(mover.to - mover.from)
-    movers.sort(
-      (a, b) => magnitude(b) - magnitude(a) || a.title.localeCompare(b.title)
-    )
+    movers.sort((a, b) => {
+      const left = magnitude(a)
+      const right = magnitude(b)
+      // Two null-sided movers are both Infinity, and Infinity - Infinity is
+      // NaN. Comparing them explicitly rather than leaning on NaN being falsy:
+      // that works today only by accident, and one `??`-for-`||` edit away it
+      // becomes an inconsistent comparator with an unspecified sort.
+      if (left !== right) return right - left
+      return a.title.localeCompare(b.title)
+    })
 
     const lockedIds = new Set(lockedRoles.map((role) => role._id as string))
     const nowZones = zoneCounts(nowResults, lockedIds)

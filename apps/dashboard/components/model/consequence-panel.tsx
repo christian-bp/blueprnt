@@ -64,6 +64,7 @@ export function ConsequencePanel({ orgId }: { orgId: string }) {
 
   const content = zoneContent(locale)
   const hidden = analysis.moved - analysis.movers.length
+  const shifting = analysis.moved - analysis.losing - analysis.gaining
 
   return (
     <Card>
@@ -77,12 +78,16 @@ export function ConsequencePanel({ orgId }: { orgId: string }) {
       </CardHeader>
       <CardContent className={`space-y-6 ${CARD_READING_MEASURE}`}>
         <div className="space-y-1">
-          <p className="text-sm leading-relaxed">
-            {t("summary", {
-              moved: analysis.moved,
-              placed: analysis.placed,
-            })}
-          </p>
+          {/* Only the roles that move BETWEEN levels. `losing` and `gaining`
+              are movers too (a role that leaves the ladder has changed), so
+              counting them here as well made this sentence argue with the two
+              below it: one role, "would move to another level" and "would lose
+              its level". The three now partition the movers. */}
+          {shifting > 0 && (
+            <p className="text-sm leading-relaxed">
+              {t("summary", { moved: shifting, placed: analysis.placed })}
+            </p>
+          )}
           {/* Its own sentence, not a number folded into the one above: "moved
               to another level" and "has no level any more" are different
               things to tell an approver, and the second is the one that needs
@@ -159,14 +164,19 @@ export function ConsequencePanel({ orgId }: { orgId: string }) {
                   {mover.title}
                 </Link>
                 <span className="shrink-0 text-muted-foreground tabular-nums">
-                  {mover.to === null
-                    ? t("moverLoses", { from: mover.from ?? 0 })
-                    : mover.from === null
-                      ? t("moverGains", { to: mover.to })
-                      : t("moverChange", {
-                          from: mover.from,
-                          to: mover.to,
-                        })}
+                  {/* Narrowed by the checks themselves rather than by a
+                      `?? 0` default, which would have rendered "Level 0 to
+                      none" for a level that does not exist. A mover always has
+                      at least one side (the query skips a role placeable on
+                      neither), so the last branch is unreachable and renders
+                      nothing rather than a number nobody has. */}
+                  {mover.from !== null && mover.to !== null
+                    ? t("moverChange", { from: mover.from, to: mover.to })
+                    : mover.from !== null
+                      ? t("moverLoses", { from: mover.from })
+                      : mover.to !== null
+                        ? t("moverGains", { to: mover.to })
+                        : null}
                 </span>
               </li>
             ))}
@@ -231,10 +241,18 @@ function GroupShifts({
           >
             <span className="truncate">{row.name}</span>
             <span className="shrink-0 text-muted-foreground tabular-nums">
-              {`${t("groupMoved", { moved: row.moved, total: row.total })} (${t(
-                "groupUp",
-                { count: row.up }
-              )}, ${t("groupDown", { count: row.down })})`}
+              {/* A group whose roles all left or joined the ladder moved in no
+                  DIRECTION, and "(0 up, 0 down)" beside "1 of 3 moves" reads
+                  as a contradiction rather than as the directionless change it
+                  is. The count stands alone there. */}
+              {row.up + row.down === 0
+                ? t("groupMoved", { moved: row.moved, total: row.total })
+                : `${t("groupMoved", {
+                    moved: row.moved,
+                    total: row.total,
+                  })} (${t("groupUp", { count: row.up })}, ${t("groupDown", {
+                    count: row.down,
+                  })})`}
             </span>
           </li>
         ))}

@@ -144,6 +144,16 @@ type SnapshotRow = Doc<"payMappingSnapshotRows">
 // the "roleTitle|level" format: the grouping below, the work layer's
 // target-membership validation, and every label derivation resolve through
 // this same builder so the key format can never drift.
+//
+// The `none` branch is unreachable from a NEW run (the preconditions gate
+// refuses to start one while any staffed role lacks a revealed placement, and
+// startPayMappingRun throws loudly if a level-less row reaches its loop), but
+// it is NOT dead: the stored row's own validator allows a null level, and
+// workLayer.ts calls this over rows read back from the database, including
+// runs frozen before that gate existed. Frozen evidence is never migrated
+// (ADR-0011), so the branch stays and is deliberately not deleted under the
+// no-legacy rule: a `title|undefined` key on an old run would silently detach
+// its analyses from their groups.
 export function equalWorkGroupKey(row: {
   roleTitle: string
   level: number | null
