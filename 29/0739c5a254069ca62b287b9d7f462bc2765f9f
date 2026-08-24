@@ -1,0 +1,144 @@
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_58dd112dc09435::t_bd3f541ecbc73c 272-282,285,291
+  s_58dd112dc09435::t_291cba0bc53fcd 102-103
+packages/backend/convex/assessment/anchorRoles.test.ts
+  s_58dd112dc09435::t_f8fce4424e3e84 213-214,664-665
+  s_58dd112dc09435::t_283115135bd2a3 658,662
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_676ba2e0c0c88c 1647-1648
+  s_58dd112dc09435::t_7e9a0c3826b9c9 196,199,890-891,1131,1232,1234,1645-1646,1649-1651,1677,1695,2812-2813
+  s_58dd112dc09435::t_f25fde1b9fcc2b 2118
+  s_58dd112dc09435::t_a4635e623e09d7 2176
+packages/backend/convex/assessment/results.ts
+  s_58dd112dc09435::t_5041f5869ef228 24-26,29-30
+  s_58dd112dc09435::t_493dc8380239dc 104-105
+apps/dashboard/lib/levels.ts
+  s_58dd112dc09435::t_7767885c1dbebf 22-23
+packages/backend/convex/evaluationModel/consequence.ts
+  s_58dd112dc09435::t_b17662569a4e51 420-422
+  s_58dd112dc09435::t_283115135bd2a3 192,196,423-424
+  s_58dd112dc09435::t_56f869206cf5f7 22,186-189,220,228
+apps/dashboard/components/rating/rating-result.test.tsx
+  s_58dd112dc09435::t_1b26ce66b948a4 97-98
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_676ba2e0c0c88c 1647-1648
+  s_58dd112dc09435::t_a4635e623e09d7 2176
+apps/dashboard/content/docs/en/evaluating-a-role.mdx
+  s_58dd112dc09435::t_d971365bcc89d2 48-49
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_a4635e623e09d7 2176
+  s_58dd112dc09435::t_676ba2e0c0c88c 1647-1648
+  s_58dd112dc09435::t_f25fde1b9fcc2b 2118
+  s_58dd112dc09435::t_7567972a34aeb1 1131,1234
+apps/dashboard/components/levels/zone-band-header.tsx
+  s_58dd112dc09435::t_5930fc9d48592d 9,11,107-122,128-134
+apps/dashboard/lib/evaluation-summary.ts
+  s_58dd112dc09435::t_7767885c1dbebf 2-5
+packages/backend/convex/lib/auditPayloads.ts
+  s_58dd112dc09435::t_766262762b7ed9 340-346
+apps/dashboard/lib/todo.test.ts
+  s_58dd112dc09435::t_1b26ce66b948a4 19,30,167,185,535,568
+apps/dashboard/content/docs/da/evaluating-a-role.mdx
+  s_58dd112dc09435::t_21c7ec40585c1f 3,56,66-67,70,77
+apps/dashboard/content/docs/da/adjusting-a-rating.mdx
+  s_58dd112dc09435::t_87341a73a23917 3,7-8,11,13,15,18,23,35,42-45,52,63
+packages/backend/convex/assessment/anchorRoles.ts
+  s_58dd112dc09435::t_f8fce4424e3e84 206-207
+  s_58dd112dc09435::t_5041f5869ef228 61-63,204-205
+apps/dashboard/lib/audit-detail.tsx
+  s_58dd112dc09435::t_f8fce4424e3e84 794-795
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_58dd112dc09435::t_1b26ce66b948a4 227-228
+  s_58dd112dc09435::t_5666463635ffc2 180,183-184,186,188-190,193,198
+  s_58dd112dc09435::t_b17662569a4e51 191
+  s_58dd112dc09435::t_291cba0bc53fcd 340-341
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_58dd112dc09435::t_5bde58fe555710 68-70,227-228,239-243
+apps/dashboard/lib/zone-bands.test.ts
+  s_58dd112dc09435::t_3b6fcf534a6564 120-121
+packages/backend/convex/evaluationModel/consequence.test.ts
+  s_58dd112dc09435::t_283115135bd2a3 55,160,178,187,225,255,264,325,332,385,447,492,531
+  s_58dd112dc09435::t_56f869206cf5f7 378,394,526-528,535
+  s_58dd112dc09435::t_7e4b0781aed7b6 544
+apps/dashboard/components/levels/calibration-queue.test.tsx
+  s_58dd112dc09435::t_1b26ce66b948a4 132
+packages/backend/convex/evaluationModel/evidence.ts
+  s_58dd112dc09435::t_831665f8149c63 119-120
+apps/dashboard/components/disclosure-toggle.tsx
+  s_58dd112dc09435::t_1afd7bc303d2d0 46
+packages/backend/convex/payMapping/runs.test.ts
+  s_58dd112dc09435::t_283115135bd2a3 712,716,918,921,925-926
+  s_58dd112dc09435::t_ff9195b5decd97 50-52,95,162,587,591,649,662-663,687-688,691,834,910,912,2096,2101,2127,2130,2145,2166
+  s_58dd112dc09435::t_1d7d0ded76dde0 2098-2099
+  s_58dd112dc09435::t_493dc8380239dc 1908-1909
+apps/dashboard/content/docs/nb/evaluating-a-role.mdx
+  s_58dd112dc09435::t_d971365bcc89d2 50-51
+apps/dashboard/components/model/consequence-panel.test.tsx
+  s_58dd112dc09435::t_7ee51f36cc12ee 174-188
+  s_58dd112dc09435::t_b2f223cc400da4 270
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_676ba2e0c0c88c 1647-1648
+  s_58dd112dc09435::t_f25fde1b9fcc2b 2118
+  s_58dd112dc09435::t_a4635e623e09d7 2176
+  s_58dd112dc09435::t_7567972a34aeb1 1131,1693,1908
+  s_58dd112dc09435::t_2adcba330ea189 2235
+apps/dashboard/lib/calibration-queue.test.ts
+  s_58dd112dc09435::t_1b26ce66b948a4 7,34,85-86,91-93,101,116
+packages/backend/convex/payMapping/erasure.test.ts
+  s_58dd112dc09435::t_56f869206cf5f7 56,125-126
+  s_58dd112dc09435::t_493dc8380239dc 122-123
+apps/dashboard/content/docs/da/troubleshooting-model-and-evaluation.mdx
+  s_58dd112dc09435::t_21c7ec40585c1f 3,106,110,112-114,117,119,123,125-127
+packages/backend/convex/assessment/results.test.ts
+  s_58dd112dc09435::t_283115135bd2a3 100,122,132,188,241,263,271,334,338,348,350,390,516
+  s_58dd112dc09435::t_493dc8380239dc 97-98
+  s_58dd112dc09435::t_56f869206cf5f7 380,537
+packages/backend/convex/assessment/roles.test.ts
+  s_58dd112dc09435::t_283115135bd2a3 224,242
+  s_58dd112dc09435::t_493dc8380239dc 766-767
+  s_58dd112dc09435::t_b17662569a4e51 217-223,235-241
+packages/backend/convex/payMapping/runs.ts
+  s_58dd112dc09435::t_e445b9283bed68 151-153,159-161
+  s_58dd112dc09435::t_70b0c2855429ec 56-58,60-66,78-80,83
+apps/dashboard/components/role-sheet.test.tsx
+  s_58dd112dc09435::t_1b26ce66b948a4 178
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_58dd112dc09435::t_6bea253b7c4fa7 285-301
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.test.tsx
+  s_58dd112dc09435::t_61c928da8e053c 92,158,202-203,205-206,208,234,242,258,436,463,474
+packages/backend/convex/assessment/roles.ts
+  s_58dd112dc09435::t_56f869206cf5f7 211
+apps/dashboard/components/role-sheet.tsx
+  s_58dd112dc09435::t_7767885c1dbebf 233
+docs/go-live-checklist.md
+  s_58dd112dc09435::t_adbb24296a6ed3 329-337
+apps/dashboard/lib/todo.ts
+  s_58dd112dc09435::t_3b6fcf534a6564 298-299
+  s_58dd112dc09435::t_7767885c1dbebf 183-185,294-297
+packages/backend/convex/ai/suggest.test.ts
+  s_58dd112dc09435::t_56f869206cf5f7 1975
+packages/backend/convex/evaluationModel/method.ts
+  s_58dd112dc09435::t_ca91bd3c9a708d 76
+apps/dashboard/components/rating/rating-result.tsx
+  s_58dd112dc09435::t_b2f223cc400da4 68
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_a4635e623e09d7 2176
+  s_58dd112dc09435::t_f25fde1b9fcc2b 2118
+  s_58dd112dc09435::t_676ba2e0c0c88c 1647-1648
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "290739c5a254069ca62b287b9d7f462bc2765f9f",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
