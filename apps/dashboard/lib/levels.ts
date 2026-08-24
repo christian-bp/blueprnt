@@ -1,3 +1,5 @@
+import type { ZoneKey } from "@workspace/core"
+
 // The shape the level Overview components consume. It is a structural subset
 // of a getResults row (assessment/results.ts), so rows can be passed straight
 // through. Score/level are derived at read time and may be null while a role's
@@ -10,6 +12,11 @@ export interface LevelRoleRow {
   trackName: string
   score: number | null
   level: number | null
+  // The zone the ENGINE placed the role in (placeRole, ADR-0022), null while
+  // the role has no placement. Carried on the row rather than derived from the
+  // level in the UI: placement is the engine's judgement, and a surface that
+  // re-derived it would be a second authority on structural law.
+  zone: ZoneKey | null
   ratedCount: number
   totalCriteria: number
   // Complete but not yet locked (lock-as-reveal, spec 2.4/6): the row has no

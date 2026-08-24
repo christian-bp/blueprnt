@@ -1,17 +1,37 @@
 "use client"
 
+import {
+  levelFunction,
+  zoneContent,
+} from "@workspace/backend/convex/evaluationModel/zoneContent"
+import type { ZoneKey } from "@workspace/core"
 import { AnimatePresence, motion } from "motion/react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
+import { useState } from "react"
+import { DisclosureToggle } from "@/components/disclosure-toggle"
 import { HATCH_CLASS } from "@/components/hatch"
 import { RoleChip } from "@/components/levels/role-chip"
+import { ZoneBandHeader } from "@/components/levels/zone-band-header"
 import { type LevelRoleRow, levelRanges } from "@/lib/levels"
 import { SPRING } from "@/lib/motion"
 import { groupByFamily as groupRowsByFamily } from "@/lib/role-groups"
+import { bandRowsFor, zoneBands } from "@/lib/zone-bands"
 
-// Vertical level ladder: one lane per level, Level 1 (highest) on top. Roles
-// wrap as chips inside their lane (getResults already sorts by weighting desc
-// within a level). Empty levels stay visible so the full level structure
+// Vertical level ladder, grouped into the four ZONES: one band per zone (A on
+// top, the highest), one lane per level inside it, Level 1 (highest) on top.
+// Roles wrap as chips inside their lane (getResults already sorts by weighting
+// desc within a level). Empty levels stay visible so the full level structure
 // always reads.
+//
+// The zone is what makes twelve levels legible: read flat, a twelve-rung
+// ladder is a list of numbers, and the reader has no way to know that levels
+// 1-3 are one KIND of role rather than three neighbouring rungs. Each band
+// states what its zone is (masterdokument 14.5) and each level can reveal what
+// its position inside its zone means (14.6).
+//
+// A role is placed in the band its OWN zone names, never in the band its level
+// implies: placement is the engine's (ADR-0022's placeRole, which may cap a
+// role into a lower zone), and the UI reports it. See lib/zone-bands.ts.
 //
 // With groupByFamily on, the chips inside each level lane cluster by family: a
 // full-width family label (family A-Z, family-less last) precedes that
@@ -32,8 +52,17 @@ export function LevelLadder({
 }) {
   const t = useTranslations("dashboard.levels")
   const tFamily = useTranslations("dashboard.roles.family")
-  const ranges = levelRanges(levels)
-  const placed = rows.filter((row) => row.level !== null)
+  const locale = useLocale()
+  const content = zoneContent(locale)
+  const bands = zoneBands(levelRanges(levels))
+  // Which bands are CLOSED, not which are open: every band starts open, so a
+  // filter change that reveals a band cannot leave it collapsed, and a zone the
+  // model gains later opens by default like every other.
+  const [closed, setClosed] = useState<ReadonlySet<ZoneKey>>(() => new Set())
+  // Which level's function text is showing. One at a time: the texts are
+  // three sentences about the same three positions, and four open at once is a
+  // wall rather than an answer.
+  const [openFunction, setOpenFunction] = useState<number | null>(null)
 
   const renderChip = (role: LevelRoleRow) => (
     <motion.div
@@ -68,53 +97,118 @@ export function LevelLadder({
   )
 
   return (
-    <ul className="space-y-2">
-      {ranges.map((range) => {
-        const inLevel = placed.filter((row) => row.level === range.level)
+    <div className="space-y-4">
+      {bands.map((band) => {
+        if (band.span === null) return null
+        const bandRows = bandRowsFor(rows, band.zone)
+        const open = !closed.has(band.zone)
         return (
-          <li key={range.level} className="rounded-xl border p-3">
-            <div className="flex gap-4">
-              <div className="w-28 shrink-0">
-                <div className="font-semibold text-sm">
-                  {t("levelRow", { level: range.level })}
-                </div>
-                <div className="text-muted-foreground text-xs">
-                  {t("roleCount", { count: inLevel.length })}
-                </div>
-              </div>
-              {/* self-center (not stretch) so a short content block (an empty
+          <section key={band.zone} className="rounded-xl border">
+            <div className="rounded-t-xl bg-muted/50 p-3">
+              <ZoneBandHeader
+                zone={band.zone}
+                content={content.zones[band.zone]}
+                span={band.span}
+                roleCount={bandRows.length}
+                open={open}
+                onToggle={() =>
+                  setClosed((current) => {
+                    const next = new Set(current)
+                    if (!next.delete(band.zone)) next.add(band.zone)
+                    return next
+                  })
+                }
+              />
+            </div>
+            {open ? (
+              <ul className="space-y-2 p-3">
+                {band.ranges.map((range) => {
+                  const inLevel = bandRows.filter(
+                    (row) => row.level === range.level
+                  )
+                  const fn = levelFunction(content, range.level)
+                  const functionOpen = openFunction === range.level
+                  return (
+                    <li key={range.level} className="rounded-xl border p-3">
+                      <div className="flex gap-4">
+                        <div className="w-28 shrink-0">
+                          <div className="font-semibold text-sm">
+                            {t("levelRow", { level: range.level })}
+                          </div>
+                          <div className="text-muted-foreground text-xs">
+                            {t("roleCount", { count: inLevel.length })}
+                          </div>
+                          {/* What this level IS inside its zone (masterdokument 14.6):
+                    the entry, the established middle, or the top. Behind a
+                    press, because the ladder's job is showing where roles sit
+                    and twelve standing paragraphs would bury that. */}
+                          <DisclosureToggle
+                            label={fn.label}
+                            open={functionOpen}
+                            onToggle={() =>
+                              setOpenFunction((current) =>
+                                current === range.level ? null : range.level
+                              )
+                            }
+                            className="mt-1"
+                          />
+                        </div>
+                        {/* self-center (not stretch) so a short content block (an empty
                   hatch or a single chip row) sits vertically centered against
                   the taller two-line rail, giving equal padding above and
                   below. items-start still top-aligns chips within a multi-row
                   level, where the column is the taller side and self-center
                   is a no-op. */}
-              <div className="relative flex flex-1 flex-wrap items-start gap-2 self-center">
-                {inLevel.length === 0 ? (
-                  // Empty level: a subtle diagonal-hatch placeholder (the
-                  // level's "0 roles" count in the rail carries the wording).
-                  <div
-                    role="img"
-                    aria-label={t("levelEmpty")}
-                    className={`h-8 w-full rounded-md ${HATCH_CLASS}`}
-                  />
-                ) : (
-                  <AnimatePresence initial={false} mode="popLayout">
-                    {groupByFamily
-                      ? groupRowsByFamily(inLevel).flatMap((group) => [
-                          familyLabel(
-                            group.familyId ?? "none",
-                            group.familyName ?? tFamily("none")
-                          ),
-                          ...group.rows.map(renderChip),
-                        ])
-                      : inLevel.map(renderChip)}
-                  </AnimatePresence>
-                )}
-              </div>
-            </div>
-          </li>
+                        <div className="relative flex flex-1 flex-wrap items-start gap-2 self-center">
+                          {inLevel.length === 0 ? (
+                            // Empty level: a subtle diagonal-hatch placeholder (the
+                            // level's "0 roles" count in the rail carries the wording).
+                            <div
+                              role="img"
+                              aria-label={t("levelEmpty")}
+                              className={`h-8 w-full rounded-md ${HATCH_CLASS}`}
+                            />
+                          ) : (
+                            <AnimatePresence initial={false} mode="popLayout">
+                              {groupByFamily
+                                ? groupRowsByFamily(inLevel).flatMap(
+                                    (group) => [
+                                      familyLabel(
+                                        group.familyId ?? "none",
+                                        group.familyName ?? tFamily("none")
+                                      ),
+                                      ...group.rows.map(renderChip),
+                                    ]
+                                  )
+                                : inLevel.map(renderChip)}
+                            </AnimatePresence>
+                          )}
+                        </div>
+                      </div>
+                      <AnimatePresence initial={false}>
+                        {functionOpen ? (
+                          <motion.div
+                            key="function"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={SPRING}
+                            className="overflow-hidden"
+                          >
+                            <p className="max-w-2xl pt-2 text-muted-foreground text-sm leading-relaxed">
+                              {fn.meaning}
+                            </p>
+                          </motion.div>
+                        ) : null}
+                      </AnimatePresence>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : null}
+          </section>
         )
       })}
-    </ul>
+    </div>
   )
 }

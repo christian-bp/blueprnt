@@ -21,6 +21,7 @@ function row(overrides: Partial<LevelRoleRow>): LevelRoleRow {
     familyId: null,
     familyName: null,
     anchor: null,
+    zone: "A",
     ...overrides,
   }
 }

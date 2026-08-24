@@ -29,6 +29,8 @@ vi.mock("@/lib/toast", () => ({
 
 import RatePage from "@/app/(app)/roles/[roleSlug]/rate/page"
 import { chapterHref } from "@/lib/model-chapters"
+import { ZONE_KEYS } from "@workspace/core"
+import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
 import { RATE_COLUMN } from "@/lib/rate-column"
 
 const t = messages.dashboard.rating
@@ -179,6 +181,27 @@ describe("RatePage (lock-as-reveal)", () => {
     await renderPage()
     expect(requestedRefs).toContain("evaluationModel.model.getRatingModel")
     expect(requestedRefs).not.toContain("evaluationModel.model.getModel")
+  })
+
+  // The zones are the RESULT side of the wall. An assessor rates a role
+  // against its anchors; where the role would land is the thing the whole
+  // blind-rating design exists to keep out of that judgement, so no zone name,
+  // no zone letter and no zone description may reach this route in any of its
+  // states. Asserted against the real content, in every locale the app ships,
+  // rather than against a word list someone has to remember to extend.
+  it("shows no zone anywhere on the assessor's route", async () => {
+    const { container } = await renderPage()
+    const rendered = container.textContent ?? ""
+    for (const locale of ["en", "sv", "nb", "da", "fi"]) {
+      const content = zoneContent(locale)
+      for (const zone of ZONE_KEYS) {
+        expect(rendered).not.toContain(content.zones[zone].name)
+        expect(rendered).not.toContain(content.zones[zone].character)
+        expect(rendered).not.toContain(content.zones[zone].summary)
+      }
+    }
+    // And the band chrome that would name one.
+    expect(rendered).not.toMatch(/\bZone [A-D]\b/)
   })
 
   it("offers Lock assessment once the last criterion is answered, without revealing anything", async () => {

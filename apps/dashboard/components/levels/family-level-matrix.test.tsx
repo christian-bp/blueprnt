@@ -2,7 +2,9 @@ import { cleanup, render, screen, within } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
+import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
 import { FamilyLevelMatrix } from "@/components/levels/family-level-matrix"
+import { type ZoneKey, zoneForLevel } from "@workspace/core"
 import type { LevelRoleRow } from "@/lib/levels"
 
 const LEVELS = [
@@ -26,7 +28,19 @@ function role(overrides: Partial<LevelRoleRow>): LevelRoleRow {
     familyName: null,
     anchor: null,
     ...overrides,
+    // A fixture stays COHERENT by default: the zone follows the level the
+    // row ends up with, so a test that moves a role to another level does
+    // not have to remember to move its zone too. A test that wants the two
+    // to DISAGREE says so explicitly, which is how the ladder's
+    // zone-from-the-engine rule is pinned.
+    zone: coherentZone(overrides),
   }
+}
+
+function coherentZone(overrides: Partial<LevelRoleRow>): ZoneKey | null {
+  if (overrides?.zone !== undefined) return overrides.zone
+  const level = overrides?.level === undefined ? 1 : overrides.level
+  return level === null ? null : zoneForLevel(level)
 }
 
 function renderMatrix(rows: LevelRoleRow[]) {
@@ -62,16 +76,35 @@ describe("FamilyLevelMatrix", () => {
     expect(screen.getByRole("columnheader", { name: "Level 1" })).toBeDefined()
     expect(screen.getByRole("columnheader", { name: "Level 2" })).toBeDefined()
     // Family labels are full-width rows (scope=colgroup, so columnheader
-    // role) in order: Finance, Tech, then the family-less bucket.
+    // role) in order: Finance, Tech, then the family-less bucket. The zone
+    // header row above the levels is a colgroup header too, so it is excluded
+    // by name rather than by counting.
     const familyLabels = screen
       .getAllByRole("columnheader")
       .map((header) => header.textContent)
-      .filter((label) => label !== null && !/^Level \d+$/.test(label))
+      .filter(
+        (label) =>
+          label !== null &&
+          !/^Level \d+$/.test(label) &&
+          !label.startsWith("Zone ")
+      )
     expect(familyLabels).toEqual([
       "Finance",
       "Tech",
       messages.dashboard.roles.family.none,
     ])
+  })
+
+  // Levels are the column axis here, so the zones are a header row spanning
+  // their own levels: names only, since a header three columns wide has no
+  // room for a zone's description (the ladder carries that).
+  it("groups the level columns under their zone", () => {
+    renderMatrix([role({ roleId: "r1", level: 1 })])
+    const zoneHeader = screen.getByRole("columnheader", {
+      name: /^Zone A/,
+    }) as HTMLTableCellElement
+    expect(zoneHeader.colSpan).toBe(2)
+    expect(zoneHeader.textContent).toContain(zoneContent("en").zones.A.name)
   })
 
   it("places each role in the cell where its family meets its level", () => {
@@ -124,11 +157,17 @@ describe("FamilyLevelMatrix", () => {
     expect(screen.queryByText("Draft Role")).toBeNull()
   })
 
-  it("renders nothing but level headers when every role is filtered away", () => {
+  it("renders nothing but the zone and level headers when every role is filtered away", () => {
     renderMatrix([])
-    // Only the two level headers remain: no family label rows.
-    expect(
-      screen.getAllByRole("columnheader").map((header) => header.textContent)
-    ).toEqual(["Level 1", "Level 2"])
+    // The structural axes stay: the zone band over its levels, and the level
+    // headers. What goes is every family label row.
+    const headers = screen
+      .getAllByRole("columnheader")
+      .map((header) => header.textContent ?? "")
+    expect(headers.filter((label) => !label.startsWith("Zone "))).toEqual([
+      "Level 1",
+      "Level 2",
+    ])
+    expect(headers.some((label) => label.startsWith("Zone A"))).toBe(true)
   })
 })

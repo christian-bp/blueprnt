@@ -2,11 +2,13 @@
 
 import { AnimatePresence, motion } from "motion/react"
 import { Fragment } from "react"
-import { useTranslations } from "next-intl"
+import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
+import { useLocale, useTranslations } from "next-intl"
 import { HATCH_CLASS } from "@/components/hatch"
 import { RoleChip } from "@/components/levels/role-chip"
 import { type LevelRoleRow, levelRanges } from "@/lib/levels"
 import { SPRING } from "@/lib/motion"
+import { zoneBands } from "@/lib/zone-bands"
 import {
   MATRIX_COL_HEADER_CLASS,
   MATRIX_WRAPPER_CLASS,
@@ -32,7 +34,16 @@ export function FamilyLevelMatrix({
 }) {
   const t = useTranslations("dashboard.levels")
   const tFamily = useTranslations("dashboard.roles.family")
+  const locale = useLocale()
+  const content = zoneContent(locale)
   const ranges = levelRanges(levels)
+  // Levels are the COLUMN axis here, so the zones become a header row above
+  // them rather than collapsible bands: a column group cannot fold away without
+  // taking its data with it on every row at once, and this view's job is the
+  // whole register side by side. Names only, no descriptions: a header cell
+  // three levels wide has no room for a sentence, and the ladder is where the
+  // zone is explained.
+  const bands = zoneBands(ranges)
   // Sections come from ALL the rows' families, not only evaluated ones: a
   // family whose roles are still unevaluated shows as a fully hatched band
   // (the ladder's empty look) instead of vanishing from the view. The cells
@@ -58,6 +69,20 @@ export function FamilyLevelMatrix({
     <div className={MATRIX_WRAPPER_CLASS}>
       <table className="w-full border-separate border-spacing-2">
         <thead>
+          <tr>
+            {bands.map((band) =>
+              band.span === null ? null : (
+                <th
+                  key={band.zone}
+                  scope="colgroup"
+                  colSpan={band.ranges.length}
+                  className={`whitespace-nowrap rounded-lg bg-muted/50 px-2 py-1 text-left font-semibold text-sm ${MATRIX_COL_HEADER_CLASS}`}
+                >
+                  {`${t("zoneLabel", { zone: band.zone })}: ${content.zones[band.zone].name}`}
+                </th>
+              )
+            )}
+          </tr>
           <tr>
             {ranges.map((range) => (
               <th

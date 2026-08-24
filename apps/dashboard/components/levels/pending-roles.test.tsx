@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { PendingRoles } from "@/components/levels/pending-roles"
+import { type ZoneKey, zoneForLevel } from "@workspace/core"
 import type { LevelRoleRow } from "@/lib/levels"
 
 function role(overrides: Partial<LevelRoleRow>): LevelRoleRow {
@@ -21,7 +22,19 @@ function role(overrides: Partial<LevelRoleRow>): LevelRoleRow {
     familyName: null,
     anchor: null,
     ...overrides,
+    // A fixture stays COHERENT by default: the zone follows the level the
+    // row ends up with, so a test that moves a role to another level does
+    // not have to remember to move its zone too. A test that wants the two
+    // to DISAGREE says so explicitly, which is how the ladder's
+    // zone-from-the-engine rule is pinned.
+    zone: coherentZone(overrides),
   }
+}
+
+function coherentZone(overrides: Partial<LevelRoleRow>): ZoneKey | null {
+  if (overrides?.zone !== undefined) return overrides.zone
+  const level = overrides?.level === undefined ? 1 : overrides.level
+  return level === null ? null : zoneForLevel(level)
 }
 
 function renderPending(rows: LevelRoleRow[]) {

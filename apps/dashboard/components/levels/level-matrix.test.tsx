@@ -1,8 +1,10 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { LevelMatrix } from "@/components/levels/level-matrix"
+import { type ZoneKey, ZONE_KEYS, zoneForLevel } from "@workspace/core"
+import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
 import { type LevelRoleRow, trackColumns } from "@/lib/levels"
 
 const LEVELS = [
@@ -26,18 +28,37 @@ function role(overrides: Partial<LevelRoleRow>): LevelRoleRow {
     familyName: null,
     anchor: null,
     ...overrides,
+    // A fixture stays COHERENT by default: the zone follows the level the
+    // row ends up with, so a test that moves a role to another level does
+    // not have to remember to move its zone too. A test that wants the two
+    // to DISAGREE says so explicitly, which is how the ladder's
+    // zone-from-the-engine rule is pinned.
+    zone: coherentZone(overrides),
   }
 }
 
+function coherentZone(overrides: Partial<LevelRoleRow>): ZoneKey | null {
+  if (overrides?.zone !== undefined) return overrides.zone
+  const level = overrides?.level === undefined ? 1 : overrides.level
+  return level === null ? null : zoneForLevel(level)
+}
+
+// The full twelve-level architecture, for the tests that are about the zones.
+const TWELVE_LEVELS = Array.from({ length: 12 }, (_, index) => ({
+  level: index + 1,
+  minScore: 100 - index * 8,
+}))
+
 function renderMatrix(
   rows: LevelRoleRow[],
+  levels: { level: number; minScore: number }[] = LEVELS,
   groupByFamily = false,
   tracks = trackColumns(rows.filter((row) => row.level !== null))
 ) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <LevelMatrix
-        levels={LEVELS}
+        levels={levels}
         rows={rows}
         tracks={tracks}
         groupByFamily={groupByFamily}
@@ -48,6 +69,46 @@ function renderMatrix(
 
 describe("LevelMatrix", () => {
   afterEach(() => cleanup())
+
+  // The matrix bands by zone too, on a row of its own: there is no left column
+  // wide enough to carry a zone's description beside twelve level rows.
+  it("puts each zone's levels under a band row naming and describing it", () => {
+    renderMatrix([role({ roleId: "r1", level: 1 })], TWELVE_LEVELS)
+    const content = zoneContent("en")
+    for (const zone of ZONE_KEYS) {
+      expect(screen.getByText(`Zone ${zone}`)).toBeDefined()
+      expect(screen.getByText(content.zones[zone].name)).toBeDefined()
+      expect(screen.getByText(content.zones[zone].character)).toBeDefined()
+    }
+  })
+
+  it("collapses one band without touching the others", () => {
+    renderMatrix([role({ roleId: "r1", level: 1 })], TWELVE_LEVELS)
+    expect(screen.getByText("Level 1")).toBeDefined()
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: messages.dashboard.levels.hideZone.replace("{zone}", "A"),
+      })
+    )
+    expect(screen.queryByText("Level 1")).toBeNull()
+    expect(screen.getByText("Level 4")).toBeDefined()
+  })
+
+  // Same rule as the ladder: the engine places, the matrix reports.
+  it("draws no cell for a row the engine has not placed", () => {
+    renderMatrix(
+      [
+        role({
+          roleId: "unplaced",
+          title: "Unplaced Role",
+          level: 1,
+          zone: null,
+        }),
+      ],
+      TWELVE_LEVELS
+    )
+    expect(screen.queryByRole("link", { name: /Unplaced Role/ })).toBeNull()
+  })
 
   it("renders a column header per present track in IC, Lead, M order", () => {
     renderMatrix([
@@ -110,6 +171,7 @@ describe("LevelMatrix", () => {
           familyName: "Sales",
         }),
       ],
+      LEVELS,
       true
     )
     expect(screen.getByText("Engineering")).toBeDefined()
@@ -121,7 +183,7 @@ describe("LevelMatrix", () => {
     // cells in Safari (WebKit #94795). The matrix is where this actually bites,
     // because a cell stretches to the tallest sibling. jsdom cannot paint, so we
     // guard the class: every empty cell must carry the size-pinned hatch.
-    const { container } = renderMatrix([], false, [
+    const { container } = renderMatrix([], LEVELS, false, [
       { key: "IC", name: "Individual contributor" },
       { key: "M", name: "Manager" },
     ])
@@ -137,7 +199,7 @@ describe("LevelMatrix", () => {
     // The family filter can hide every role; the matrix must still show the
     // grid (hatched), not collapse to nothing. Columns come from the
     // unfiltered roles, so they survive an empty `rows`.
-    renderMatrix([], false, [
+    renderMatrix([], LEVELS, false, [
       { key: "IC", name: "Individual contributor" },
       { key: "M", name: "Manager" },
     ])

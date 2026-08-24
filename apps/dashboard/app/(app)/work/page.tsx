@@ -3,6 +3,7 @@
 import { Medallion } from "@/components/medallion"
 import { Briefcase01Icon } from "@hugeicons/core-free-icons"
 import { api } from "@workspace/backend/convex/_generated/api"
+import { ZONE_KEYS, ZONE_LEVEL_RANGES } from "@workspace/core"
 import { buttonVariants } from "@workspace/ui/components/button"
 import {
   Empty,
@@ -39,6 +40,10 @@ import { trackColumns } from "@/lib/levels"
 
 // Filter key for roles with no family (the "No family" option).
 const NO_FAMILY = "__none__"
+
+// How many chips each level row of the loading ladder stands in for. Three
+// entries, one per level in a zone (every zone spans exactly three).
+const LADDER_SKELETON_CHIPS = [3, 2, 4]
 
 // /work is the app's only full-bleed route (AppShell), which the matrix and
 // families views need: they are horizontal and want every pixel. The ladder is
@@ -111,40 +116,67 @@ export default function WorkOverviewPage() {
               <TabsTrigger value="matrix">{t("viewMatrix")}</TabsTrigger>
               <TabsTrigger value="families">{t("viewFamilies")}</TabsTrigger>
             </TabsList>
-            <ul className="min-h-0 w-full flex-1 space-y-2 overflow-y-auto">
-              {[3, 2, 4, 1, 2].map((chips, level) => (
-                <li
-                  // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
-                  key={level}
-                  className="rounded-xl border p-3"
-                >
-                  <div className="flex gap-4">
-                    {/* The rail bars sit in line boxes matching the real text
-                      lines (text-sm 20px + text-xs 16px = a 36px rail), so
-                      the skeleton row measures exactly as tall as a loaded
-                      level row (measured in headless Chrome: 62px vs 60px
-                      with naively stacked bars). */}
-                    <div className="w-28 shrink-0">
-                      <div className="flex h-5 items-center">
-                        <Skeleton className="h-4 w-16" />
+            {/* The ladder's ZONAL shape: a band per zone, three level rows
+              inside it, so the surface does not re-shape into bands when the
+              results arrive. The zone letters and level numbers are structural
+              law (ZONE_KEYS), not data, so the skeleton states them for real;
+              only the names, counts and chips are bars. */}
+            <div className="min-h-0 w-full flex-1 space-y-4 overflow-y-auto">
+              {ZONE_KEYS.map((zone) => (
+                <section key={zone} className="rounded-xl border">
+                  <div className="rounded-t-xl bg-muted/50 p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="size-8 shrink-0" aria-hidden="true" />
+                      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                        <div className="flex h-5 items-center gap-2">
+                          <span className="font-semibold text-sm">
+                            {t("zoneLabel", { zone })}
+                          </span>
+                          <Skeleton className="h-4 w-52 max-w-full" />
+                        </div>
+                        <div className="flex h-5 items-center">
+                          <Skeleton className="h-4 w-full max-w-2xl" />
+                        </div>
                       </div>
-                      <div className="flex h-4 items-center">
-                        <Skeleton className="h-3 w-20" />
-                      </div>
-                    </div>
-                    <div className="flex flex-1 flex-wrap items-start gap-2 self-center">
-                      {Array.from({ length: chips }, (_, chip) => (
-                        <Skeleton
-                          // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
-                          key={chip}
-                          className="h-8 w-28 rounded-md"
-                        />
-                      ))}
                     </div>
                   </div>
-                </li>
+                  <ul className="space-y-2 p-3">
+                    {LADDER_SKELETON_CHIPS.map((chips, index) => {
+                      const level = ZONE_LEVEL_RANGES[zone].from + index
+                      return (
+                        <li key={level} className="rounded-xl border p-3">
+                          <div className="flex gap-4">
+                            {/* The rail bars sit in line boxes matching the
+                              real text lines, so the skeleton row measures
+                              exactly as tall as a loaded level row. */}
+                            <div className="w-28 shrink-0">
+                              <div className="flex h-5 items-center font-semibold text-sm">
+                                {t("levelRow", { level })}
+                              </div>
+                              <div className="flex h-4 items-center">
+                                <Skeleton className="h-3 w-20" />
+                              </div>
+                              <div className="mt-1 flex h-4 items-center">
+                                <Skeleton className="h-3 w-24" />
+                              </div>
+                            </div>
+                            <div className="flex flex-1 flex-wrap items-start gap-2 self-center">
+                              {Array.from({ length: chips }, (_, chip) => (
+                                <Skeleton
+                                  // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
+                                  key={chip}
+                                  className="h-8 w-28 rounded-md"
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </section>
               ))}
-            </ul>
+            </div>
           </Tabs>
         </div>
       </div>

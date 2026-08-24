@@ -25,6 +25,7 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org-1", name: "Acme", role: "admin" }),
 }))
 
+import { type ZoneKey, ZONE_KEYS, zoneForLevel } from "@workspace/core"
 import WorkOverviewPage from "@/app/(app)/work/page"
 
 function levelRow(overrides: Record<string, unknown>) {
@@ -43,7 +44,17 @@ function levelRow(overrides: Record<string, unknown>) {
     familyName: null,
     anchor: null,
     ...overrides,
+    // The zone the engine placed the role in. Coherent with the level by
+    // default so a test that moves a role does not have to move its zone too;
+    // a test that wants the two to DISAGREE says so explicitly.
+    zone: coherentZone(overrides),
   }
+}
+
+function coherentZone(overrides: Record<string, unknown>): ZoneKey | null {
+  if (overrides.zone !== undefined) return overrides.zone as ZoneKey | null
+  const level = overrides.level === undefined ? 1 : overrides.level
+  return typeof level === "number" ? zoneForLevel(level) : null
 }
 
 function results(rows: Array<Record<string, unknown>>) {
@@ -113,6 +124,21 @@ describe("WorkOverviewPage", () => {
     rerender(page())
     expect(screen.getByRole("link", { name: /CTO/ })).toBeDefined()
     expect(screen.getByText("Level 1")).toBeDefined()
+  })
+
+  // The skeleton law: a surface waiting on its own data shows the SHAPE it is
+  // about to become. The ladder is banded by zone now, so a flat list of level
+  // rows would re-shape into four bands the moment the results land.
+  it("shapes the loading ladder into the four zone bands", () => {
+    useQueryMock.mockImplementation(() => undefined)
+    renderPage()
+    for (const zone of ZONE_KEYS) {
+      expect(screen.getByText(`Zone ${zone}`)).toBeDefined()
+    }
+    // The letters and the level numbers are structural law, not data, so the
+    // skeleton states them for real rather than standing bars in for them.
+    expect(screen.getByText("Level 1")).toBeDefined()
+    expect(screen.getByText("Level 12")).toBeDefined()
   })
 
   it("the families view shows family rows with roles in level columns and hides the group toggle", async () => {
