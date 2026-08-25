@@ -1,0 +1,24 @@
+apps/dashboard/components/rating/rating-stepper.test.tsx
+  s_58dd112dc09435::t_ce949b725825f9 43,239
+  s_58dd112dc09435::t_544ff3f884364f 234-238,240-241,243-244,248-251,254,261-269,289
+  s_58dd112dc09435::t_6ef6dba9557b6f 272-284
+  s_58dd112dc09435::t_cad98bdb722b71 270-271
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_58dd112dc09435::t_8c1974b993d58f 431-443,448-450,452-459,461-462,464-467,626-630,634
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "3ba24697148340af50c9b26088f9f43086e227e8",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
