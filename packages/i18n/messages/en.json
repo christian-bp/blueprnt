@@ -1663,11 +1663,7 @@
       "groupCount": "{count, plural, =1 {1 group} other {# groups}}",
       "levelEmpty": "No roles in this level",
       "zoneLabel": "Zone {zone}",
-      "zoneSpan": "Level {from} to {to}",
-      "zoneSpanOne": "Level {from}",
       "zoneTypicalLabel": "Typically here",
-      "showZone": "Show the levels in zone {zone}",
-      "hideZone": "Hide the levels in zone {zone}",
       "calibration": {
         "heading": "Placements to review",
         "profileLimitedReason": "The profile requirements held this role back from a higher zone.",

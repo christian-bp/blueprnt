@@ -1,15 +1,9 @@
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react"
+import { cleanup, render, screen, within } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { LevelLadder } from "@/components/levels/level-ladder"
+import { ZONE_RAIL_CLASS } from "@/components/levels/zone-rail"
 import {
   type ZoneKey,
   ZONE_KEYS,
@@ -82,37 +76,63 @@ describe("LevelLadder", () => {
   // Twelve levels read flat are a list of numbers. The zone band is what says
   // levels 1-3 are one KIND of role, so it carries the zone's letter, its name
   // and its own description (masterdokument 14.5), not just a divider.
-  it("names and quantifies each zone band without describing it", () => {
+  // The zone is an ANNOTATION around the rows, not a section the ladder is cut
+  // into: a rail down the group's edge and one small label at its top. It
+  // stands the letter and the SHORT name; section 14.5's three columns (the
+  // masterdokument's own full name, the character, the typical profile) are
+  // what the morph beside it carries.
+  it("labels each zone at the top of its rail, and describes it nowhere", () => {
     renderLadder([role({ roleId: "r1", level: 1 })], false, TWELVE_LEVELS)
     const content = zoneContent("en")
     for (const zone of ZONE_KEYS) {
-      // A stat row: the letter as a chip, the SHORT name as the line, the span
-      // as a chip, the count right-aligned. Everything identifies or
-      // quantifies.
-      expect(screen.getByText(zone)).toBeDefined()
+      expect(screen.getByText(`Zone ${zone}`)).toBeDefined()
       expect(screen.getByText(content.zones[zone].shortName)).toBeDefined()
-      // Section 14.5's three columns opened OUT of the band: the
-      // masterdokument's own full name, the character and the typical profile
-      // were standing prose, two paragraphs per band, four bands deep, above a
-      // ladder whose job is showing where roles sit.
+      expect(
+        screen.getByRole("button", { name: content.zones[zone].shortName })
+      ).toBeDefined()
       expect(screen.queryByText(content.zones[zone].name)).toBeNull()
       expect(screen.queryByText(content.zones[zone].character)).toBeNull()
       expect(screen.queryByText(content.zones[zone].typicalProfile)).toBeNull()
     }
   })
 
-  it("states each band's level span from the engine's own ranges", () => {
+  // The rail spans exactly its zone's levels: the grouping is structural, so a
+  // reader can read the ladder flat and still see which three rungs are one
+  // kind of role.
+  it("rails exactly the three levels of each zone", () => {
     renderLadder([], false, TWELVE_LEVELS)
+    const content = zoneContent("en")
     for (const zone of ZONE_KEYS) {
       const { from, to } = ZONE_LEVEL_RANGES[zone]
-      expect(
-        screen.getByText(
-          messages.dashboard.levels.zoneSpan
-            .replace("{from}", String(from))
-            .replace("{to}", String(to))
-        )
-      ).toBeDefined()
+      const rail = screen
+        .getByText(content.zones[zone].shortName)
+        .closest("section") as HTMLElement
+      // The marker itself, not just the grouping: the zone is supposed to be
+      // VISIBLE around its levels (masterdokument 14.5.1), and a group that
+      // lost its rail would still group its rows correctly while showing the
+      // reader nothing. Asserted as the shared class so the two views cannot
+      // drift into two markers.
+      expect(rail.className).toContain(ZONE_RAIL_CLASS)
+      const levels = [...rail.querySelectorAll("li")].map(
+        (row) => row.textContent ?? ""
+      )
+      expect(levels).toHaveLength(to - from + 1)
+      for (let level = from; level <= to; level++) {
+        expect(
+          levels.some((text) => text.startsWith(`Level ${level}`)),
+          `zone ${zone} rails level ${level}`
+        ).toBe(true)
+      }
     }
+  })
+
+  // The flat list is the shape: twelve rows, no band row between them, and no
+  // control on the group. Band rows were what cost the ladder its rhythm.
+  it("draws twelve level rows and no band row between them", () => {
+    const { container } = renderLadder([], false, TWELVE_LEVELS)
+    expect(container.querySelectorAll("li")).toHaveLength(12)
+    // Only the four zone morphs; nothing to collapse.
+    expect(screen.getAllByRole("button")).toHaveLength(ZONE_KEYS.length)
   })
 
   // THE RULE (ADR-0022): the engine places, the UI reports. This row has a
@@ -150,32 +170,6 @@ describe("LevelLadder", () => {
     ).toHaveLength(3)
   })
 
-  it("collapses a band and opens it again, its levels with it", async () => {
-    renderLadder([role({ roleId: "r1", level: 1 })], false, TWELVE_LEVELS)
-    expect(screen.getByText("Level 1")).toBeDefined()
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: messages.dashboard.levels.hideZone.replace("{zone}", "A"),
-      })
-    )
-    // The band collapses through an exit animation now, like the
-    // level-function disclosure inside it, so its levels leave the DOM when
-    // the exit finishes rather than on the click.
-    await waitFor(() => {
-      expect(screen.queryByText("Level 1")).toBeNull()
-    })
-    // Level 4 belongs to zone B and is untouched: bands fold one at a time.
-    expect(screen.getByText("Level 4")).toBeDefined()
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: messages.dashboard.levels.showZone.replace("{zone}", "A"),
-      })
-    )
-    expect(screen.getByText("Level 1")).toBeDefined()
-  })
-
-  // What a level IS inside its zone (14.6): entry, established middle, or top.
-  // Behind a press, so twelve standing paragraphs never bury the roles.
   // The row stands its NUMBER and its COUNT, and nothing else. Section 14.6's
   // entry/established/upper text had its own toggle on every one of twelve
   // rows; a control that repeats twelve times has to earn it, and what a level

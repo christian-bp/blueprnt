@@ -1663,11 +1663,7 @@
       "groupCount": "{count, plural, =1 {1 gruppe} other {# grupper}}",
       "levelEmpty": "Ingen roller på dette nivået",
       "zoneLabel": "Sone {zone}",
-      "zoneSpan": "Nivå {from} til {to}",
-      "zoneSpanOne": "Nivå {from}",
       "zoneTypicalLabel": "Vanligvis her",
-      "showZone": "Vis nivåene i sone {zone}",
-      "hideZone": "Skjul nivåene i sone {zone}",
       "calibration": {
         "heading": "Plasseringer å gjennomgå",
         "profileLimitedReason": "Profilkravene holdt denne rollen tilbake fra en høyere sone.",

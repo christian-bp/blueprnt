@@ -1,17 +1,16 @@
 "use client"
 
 import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
-import type { ZoneKey } from "@workspace/core"
 import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
-import { Fragment, useState } from "react"
+import { Fragment } from "react"
 import { HATCH_CLASS } from "@/components/hatch"
 import { RoleChip } from "@/components/levels/role-chip"
 import {
   MATRIX_COL_HEADER_CLASS,
   MATRIX_WRAPPER_CLASS,
 } from "@/components/levels/matrix-chrome"
-import { ZoneBandHeader } from "@/components/levels/zone-band-header"
+import { ZoneRailLabel } from "@/components/levels/zone-rail"
 import { type LevelRoleRow, levelRanges } from "@/lib/levels"
 import { SPRING } from "@/lib/motion"
 import { groupByFamily as groupRowsByFamily } from "@/lib/role-groups"
@@ -41,9 +40,6 @@ export function LevelMatrix({
   const locale = useLocale()
   const content = zoneContent(locale)
   const bands = zoneBands(levelRanges(levels))
-  // Closed, not open: every band starts open and a newly configured zone opens
-  // with the rest (same rule as the ladder).
-  const [closed, setClosed] = useState<ReadonlySet<ZoneKey>>(() => new Set())
 
   const renderChip = (role: LevelRoleRow) => (
     <motion.div
@@ -100,112 +96,98 @@ export function LevelMatrix({
         <tbody>
           {bands.map((band) => {
             if (band.span === null) return null
-            const open = !closed.has(band.zone)
             return (
               <Fragment key={band.zone}>
-                {/* The band's own row, spanning the whole grid: a matrix has
-                    no left column wide enough to carry a zone's description,
-                    so the band takes a row of its own above its levels. */}
+                {/* THE MATRIX KEEPS A BAND ROW, stripped to a label.
+                    The ladder draws its zones as a rail down the group's edge,
+                    which is what section 14.5.1 asks for. A <table> cannot
+                    carry that honestly. The two ways to try both cost more
+                    than they give: a rowspan rowgroup column spends horizontal
+                    width on the one view that scrolls sideways and wants every
+                    pixel, and a border on <tbody> is unreliable under
+                    border-collapse. So this stays a row, and carries exactly
+                    what the rail's label carries: letter, short name, and the
+                    depth behind the morph. No description, no count, no
+                    collapse. */}
                 <tr>
                   {/* A td, not a th: the band heads a group of ROWS, and the
                       roles register's family band does the same. A colgroup
                       th would also enter every columnheader query on the
                       surface, which the track headers own. */}
-                  <td
-                    colSpan={tracks.length + 1}
-                    className="rounded-lg bg-muted/50 p-3 text-left"
-                  >
-                    <ZoneBandHeader
+                  <td colSpan={tracks.length + 1} className="pt-2 text-left">
+                    <ZoneRailLabel
                       zone={band.zone}
                       content={content.zones[band.zone]}
-                      span={band.span}
-                      roleCount={bandRowsFor(rows, band.zone).length}
-                      open={open}
-                      onToggle={() =>
-                        setClosed((current) => {
-                          const next = new Set(current)
-                          if (!next.delete(band.zone)) next.add(band.zone)
-                          return next
-                        })
-                      }
                     />
                   </td>
                 </tr>
-                {open
-                  ? band.ranges.map((range) => (
-                      <tr key={range.level}>
-                        <th
-                          scope="row"
-                          className="text-left align-middle font-normal"
+                {band.ranges.map((range) => (
+                  <tr key={range.level}>
+                    <th
+                      scope="row"
+                      className="text-left align-middle font-normal"
+                    >
+                      <div className="whitespace-nowrap font-semibold text-sm">
+                        {t("levelRow", { level: range.level })}
+                      </div>
+                    </th>
+                    {tracks.map((track) => {
+                      // From the band's OWN rows, so a role sits in the zone the
+                      // engine placed it in even if its level were ever read
+                      // differently.
+                      const cell = bandRowsFor(rows, band.zone).filter(
+                        (row) =>
+                          row.level === range.level &&
+                          row.trackKey === track.key
+                      )
+                      return (
+                        <td
+                          key={track.key}
+                          // relative so the empty-cell hatch can fill the cell via
+                          // absolute positioning: a percentage height on a <td> child
+                          // does not resolve, but `absolute inset-*` against the
+                          // relative cell does, so the hatch stretches to the full row
+                          // height set by the tallest sibling cell.
+                          className="relative min-w-32 rounded-lg border p-2 align-top"
                         >
-                          <div className="whitespace-nowrap font-semibold text-sm">
-                            {t("levelRow", { level: range.level })}
-                          </div>
-                        </th>
-                        {tracks.map((track) => {
-                          // From the band's OWN rows, so a role sits in the zone the
-                          // engine placed it in even if its level were ever read
-                          // differently.
-                          const cell = bandRowsFor(rows, band.zone).filter(
-                            (row) =>
-                              row.level === range.level &&
-                              row.trackKey === track.key
-                          )
-                          return (
-                            <td
-                              key={track.key}
-                              // relative so the empty-cell hatch can fill the cell via
-                              // absolute positioning: a percentage height on a <td> child
-                              // does not resolve, but `absolute inset-*` against the
-                              // relative cell does, so the hatch stretches to the full row
-                              // height set by the tallest sibling cell.
-                              className="relative min-w-32 rounded-lg border p-2 align-top"
-                            >
-                              {cell.length === 0 ? (
-                                // Empty cell: a diagonal-hatch placeholder that fills the
-                                // whole cell (matching a tall sibling, e.g. a 3-role
-                                // track). The spacer floors the row height when the entire
-                                // level row is empty; the absolute hatch then stretches to
-                                // whatever height the row ends up being. Decorative (the
-                                // row and column headers carry the level and track).
-                                <>
-                                  <div aria-hidden="true" className="min-h-8" />
-                                  <div
-                                    aria-hidden="true"
-                                    className={`absolute inset-2 rounded-md ${HATCH_CLASS}`}
-                                  />
-                                </>
-                              ) : (
-                                // popLayout: chips the family filter removes pop out of
-                                // flow so the survivors reflow in a single pass instead
-                                // of two (docs/ui-animation.md rule 6); relative anchors
-                                // the popped chips within the cell.
-                                <div className="relative flex flex-col gap-2">
-                                  <AnimatePresence
-                                    initial={false}
-                                    mode="popLayout"
-                                  >
-                                    {groupByFamily
-                                      ? groupRowsByFamily(cell).flatMap(
-                                          (group) => [
-                                            familyLabel(
-                                              group.familyId ?? "none",
-                                              group.familyName ??
-                                                tFamily("none")
-                                            ),
-                                            ...group.rows.map(renderChip),
-                                          ]
-                                        )
-                                      : cell.map(renderChip)}
-                                  </AnimatePresence>
-                                </div>
-                              )}
-                            </td>
-                          )
-                        })}
-                      </tr>
-                    ))
-                  : null}
+                          {cell.length === 0 ? (
+                            // Empty cell: a diagonal-hatch placeholder that fills the
+                            // whole cell (matching a tall sibling, e.g. a 3-role
+                            // track). The spacer floors the row height when the entire
+                            // level row is empty; the absolute hatch then stretches to
+                            // whatever height the row ends up being. Decorative (the
+                            // row and column headers carry the level and track).
+                            <>
+                              <div aria-hidden="true" className="min-h-8" />
+                              <div
+                                aria-hidden="true"
+                                className={`absolute inset-2 rounded-md ${HATCH_CLASS}`}
+                              />
+                            </>
+                          ) : (
+                            // popLayout: chips the family filter removes pop out of
+                            // flow so the survivors reflow in a single pass instead
+                            // of two (docs/ui-animation.md rule 6); relative anchors
+                            // the popped chips within the cell.
+                            <div className="relative flex flex-col gap-2">
+                              <AnimatePresence initial={false} mode="popLayout">
+                                {groupByFamily
+                                  ? groupRowsByFamily(cell).flatMap((group) => [
+                                      familyLabel(
+                                        group.familyId ?? "none",
+                                        group.familyName ?? tFamily("none")
+                                      ),
+                                      ...group.rows.map(renderChip),
+                                    ])
+                                  : cell.map(renderChip)}
+                              </AnimatePresence>
+                            </div>
+                          )}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                ))}
               </Fragment>
             )
           })}

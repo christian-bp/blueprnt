@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import { cleanup, render, screen } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
@@ -72,14 +72,15 @@ describe("LevelMatrix", () => {
 
   // The matrix bands by zone too, on a row of its own: there is no left column
   // wide enough to carry a zone's description beside twelve level rows.
-  it("puts each zone's levels under a band row that names and counts, not describes", () => {
+  // The matrix keeps a band ROW where the ladder took a rail: a <table>
+  // cannot span a rail down a group's edge without spending a rowspan column
+  // of horizontal width, which is what this view has least of. What it carries
+  // is exactly the rail's label and nothing more.
+  it("heads each zone's rows with the rail's own label, and nothing else", () => {
     renderMatrix([role({ roleId: "r1", level: 1 })], TWELVE_LEVELS)
     const content = zoneContent("en")
     for (const zone of ZONE_KEYS) {
-      // A stat row: the letter as a chip, the SHORT name as the line, the span
-      // as a chip, the count right-aligned. Everything identifies or
-      // quantifies.
-      expect(screen.getByText(zone)).toBeDefined()
+      expect(screen.getByText(`Zone ${zone}`)).toBeDefined()
       expect(screen.getByText(content.zones[zone].shortName)).toBeDefined()
       // Section 14.5's three columns opened OUT of the band: the
       // masterdokument's own full name, the character and the typical profile
@@ -89,18 +90,6 @@ describe("LevelMatrix", () => {
       expect(screen.queryByText(content.zones[zone].character)).toBeNull()
       expect(screen.queryByText(content.zones[zone].typicalProfile)).toBeNull()
     }
-  })
-
-  it("collapses one band without touching the others", () => {
-    renderMatrix([role({ roleId: "r1", level: 1 })], TWELVE_LEVELS)
-    expect(screen.getByText("Level 1")).toBeDefined()
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: messages.dashboard.levels.hideZone.replace("{zone}", "A"),
-      })
-    )
-    expect(screen.queryByText("Level 1")).toBeNull()
-    expect(screen.getByText("Level 4")).toBeDefined()
   })
 
   // Same rule as the ladder: the engine places, the matrix reports.

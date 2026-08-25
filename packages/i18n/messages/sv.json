@@ -1663,11 +1663,7 @@
       "groupCount": "{count, plural, =1 {1 grupp} other {# grupper}}",
       "levelEmpty": "Inga roller på denna nivå",
       "zoneLabel": "Zon {zone}",
-      "zoneSpan": "Nivå {from} till {to}",
-      "zoneSpanOne": "Nivå {from}",
       "zoneTypicalLabel": "Vanligtvis här",
-      "showZone": "Visa nivåerna i zon {zone}",
-      "hideZone": "Dölj nivåerna i zon {zone}",
       "calibration": {
         "heading": "Placeringar att granska",
         "profileLimitedReason": "Profilkraven höll tillbaka den här rollen från en högre zon.",

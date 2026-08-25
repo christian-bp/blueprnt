@@ -1663,11 +1663,7 @@
       "groupCount": "{count, plural, =1 {1 gruppe} other {# grupper}}",
       "levelEmpty": "Ingen roller på dette niveau",
       "zoneLabel": "Zone {zone}",
-      "zoneSpan": "Niveau {from} til {to}",
-      "zoneSpanOne": "Niveau {from}",
       "zoneTypicalLabel": "Typisk her",
-      "showZone": "Vis niveauerne i zone {zone}",
-      "hideZone": "Skjul niveauerne i zone {zone}",
       "calibration": {
         "heading": "Placeringer til gennemgang",
         "profileLimitedReason": "Profilkravene holdt denne rolle tilbage fra en højere zone.",

@@ -104,7 +104,13 @@ describe("FamilyLevelMatrix", () => {
       name: /^Zone A/,
     }) as HTMLTableCellElement
     expect(zoneHeader.colSpan).toBe(2)
-    expect(zoneHeader.textContent).toContain(zoneContent("en").zones.A.name)
+    // This view groups the zones around the levels on the COLUMN axis
+    // already, so only its label changed: the short name and the morph, like
+    // the ladder's rail, instead of the masterdokument's full clause.
+    expect(zoneHeader.textContent).toContain(
+      zoneContent("en").zones.A.shortName
+    )
+    expect(zoneHeader.textContent).not.toContain(zoneContent("en").zones.A.name)
   })
 
   it("places each role in the cell where its family meets its level", () => {

@@ -33,6 +33,10 @@ import { FamilyLevelMatrix } from "@/components/levels/family-level-matrix"
 import { LevelLadder } from "@/components/levels/level-ladder"
 import { LevelMatrix } from "@/components/levels/level-matrix"
 import { PendingRoles } from "@/components/levels/pending-roles"
+import {
+  ZONE_RAIL_CLASS,
+  ZONE_RAIL_LABEL_CLASS,
+} from "@/components/levels/zone-rail"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
@@ -117,31 +121,23 @@ export default function WorkOverviewPage() {
               <TabsTrigger value="matrix">{t("viewMatrix")}</TabsTrigger>
               <TabsTrigger value="families">{t("viewFamilies")}</TabsTrigger>
             </TabsList>
-            {/* The ladder's ZONAL shape: a band per zone, three level rows
-              inside it, so the surface does not re-shape into bands when the
-              results arrive. The zone letters and level numbers are structural
-              law (ZONE_KEYS), not data, so the skeleton states them for real;
-              only the names, counts and chips are bars. */}
-            <div className="min-h-0 w-full flex-1 space-y-4 overflow-y-auto">
+            {/* The ladder's real shape: a FLAT list of level rows with the
+              zones railed around them, so the surface does not re-shape when
+              the results arrive. The zone letters and level numbers are
+              structural law (ZONE_KEYS), not data, so the skeleton states them
+              for real; only the short names, counts and chips are bars. */}
+            <div className="min-h-0 w-full flex-1 space-y-5 overflow-y-auto">
               {ZONE_KEYS.map((zone) => (
-                <section key={zone} className="rounded-xl border">
-                  <div className="rounded-t-xl bg-muted/50 p-3">
-                    <div className="flex items-start gap-2">
-                      <div className="size-8 shrink-0" aria-hidden="true" />
-                      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                        <div className="flex h-5 items-center gap-2">
-                          <span className="font-semibold text-sm">
-                            {t("zoneLabel", { zone })}
-                          </span>
-                          <Skeleton className="h-4 w-52 max-w-full" />
-                        </div>
-                        <div className="flex h-5 items-center">
-                          <Skeleton className="h-4 w-full max-w-2xl" />
-                        </div>
-                      </div>
-                    </div>
+                <section key={zone} className={ZONE_RAIL_CLASS}>
+                  <div className="mb-2 flex h-5 items-center gap-1.5">
+                    <span className={ZONE_RAIL_LABEL_CLASS}>
+                      {t("zoneLabel", { zone })}
+                    </span>
+                    {/* The short name is content; the help is chrome, but it
+                      needs the loaded zone to say anything, so both wait. */}
+                    <Skeleton className="h-3 w-32" />
                   </div>
-                  <ul className="space-y-2 p-3">
+                  <ul className="space-y-2">
                     {LADDER_SKELETON_CHIPS.map((chips, index) => {
                       const level = ZONE_LEVEL_RANGES[zone].from + index
                       return (
@@ -156,9 +152,6 @@ export default function WorkOverviewPage() {
                               </div>
                               <div className="flex h-4 items-center">
                                 <Skeleton className="h-3 w-20" />
-                              </div>
-                              <div className="mt-1 flex h-4 items-center">
-                                <Skeleton className="h-3 w-24" />
                               </div>
                             </div>
                             <div className="flex flex-1 flex-wrap items-start gap-2 self-center">

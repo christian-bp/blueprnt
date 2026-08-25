@@ -1663,11 +1663,7 @@
       "groupCount": "{count, plural, =1 {1 ryhmä} other {# ryhmää}}",
       "levelEmpty": "Ei rooleja tällä vaativuustasolla",
       "zoneLabel": "Vyöhyke {zone}",
-      "zoneSpan": "Vaativuustaso {from}-{to}",
-      "zoneSpanOne": "Vaativuustaso {from}",
       "zoneTypicalLabel": "Tyypillisesti täällä",
-      "showZone": "Näytä vyöhykkeen {zone} vaativuustasot",
-      "hideZone": "Piilota vyöhykkeen {zone} vaativuustasot",
       "calibration": {
         "heading": "Tarkistettavat sijoitukset",
         "profileLimitedReason": "Profiilivaatimukset pidättivät tämän roolin korkeammalta vyöhykkeeltä.",
