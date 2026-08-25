@@ -54,7 +54,31 @@ function SheetContent({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "fixed z-50 flex flex-col gap-4 bg-popover bg-clip-padding text-sm text-popover-foreground shadow-lg transition duration-200 ease-in-out data-ending-style:opacity-0 data-starting-style:opacity-0 data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto data-[side=bottom]:border-t data-[side=bottom]:data-ending-style:translate-y-[2.5rem] data-[side=bottom]:data-starting-style:translate-y-[2.5rem] data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-3/4 data-[side=left]:border-r data-[side=left]:data-ending-style:translate-x-[-2.5rem] data-[side=left]:data-starting-style:translate-x-[-2.5rem] data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:w-3/4 data-[side=right]:border-l data-[side=right]:data-ending-style:translate-x-[2.5rem] data-[side=right]:data-starting-style:translate-x-[2.5rem] data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:h-auto data-[side=top]:border-b data-[side=top]:data-ending-style:translate-y-[-2.5rem] data-[side=top]:data-starting-style:translate-y-[-2.5rem] data-[side=left]:sm:max-w-sm data-[side=right]:sm:max-w-sm",
+          // LOCAL DEVIATION (documented in patches/sheet.patch): the app's
+          // sheets FLOAT. Upstream pins the panel to the viewport edge, full
+          // bleed with one border; ours insets by 4 on every side, rounds its
+          // corners and lets the shadow carry the separation, which is the
+          // house sheet language. Geometry and chrome only: the data-slots,
+          // the Base UI wiring and the focus handling are untouched.
+          //
+          // Every side gets the same treatment even though only right and left
+          // are used today, so the component stays coherent rather than
+          // growing a second look the first time someone opens a bottom sheet.
+          //
+          // p-0 and gap-0 because the header, body and footer own their own
+          // padding now; overflow-hidden so the rounded corners actually clip
+          // the content that runs to them, which means the BODY is what
+          // scrolls (min-h-0 flex-1 overflow-y-auto at the call site).
+          "fixed z-50 flex flex-col gap-0 overflow-hidden rounded-xl border-0 bg-popover bg-clip-padding p-0 text-sm text-popover-foreground shadow-lg transition duration-200 ease-in-out data-ending-style:opacity-0 data-starting-style:opacity-0",
+          // Right and left mirror each other: inset from their own edge, full
+          // height minus the inset, and a width that gives way on a narrow
+          // viewport instead of overflowing it.
+          "data-[side=right]:inset-y-4 data-[side=right]:right-4 data-[side=right]:left-auto data-[side=right]:h-[calc(100svh-2rem)] data-[side=right]:w-[min(28rem,calc(100vw-2rem))] data-[side=right]:max-w-[28rem] data-[side=right]:data-ending-style:translate-x-[2.5rem] data-[side=right]:data-starting-style:translate-x-[2.5rem]",
+          "data-[side=left]:inset-y-4 data-[side=left]:left-4 data-[side=left]:right-auto data-[side=left]:h-[calc(100svh-2rem)] data-[side=left]:w-[min(28rem,calc(100vw-2rem))] data-[side=left]:max-w-[28rem] data-[side=left]:data-ending-style:translate-x-[-2.5rem] data-[side=left]:data-starting-style:translate-x-[-2.5rem]",
+          // Top and bottom inset horizontally and sit against their own edge,
+          // sized by content up to the same full-height-minus-inset ceiling.
+          "data-[side=top]:inset-x-4 data-[side=top]:top-4 data-[side=top]:bottom-auto data-[side=top]:h-auto data-[side=top]:max-h-[calc(100svh-2rem)] data-[side=top]:data-ending-style:translate-y-[-2.5rem] data-[side=top]:data-starting-style:translate-y-[-2.5rem]",
+          "data-[side=bottom]:inset-x-4 data-[side=bottom]:bottom-4 data-[side=bottom]:top-auto data-[side=bottom]:h-auto data-[side=bottom]:max-h-[calc(100svh-2rem)] data-[side=bottom]:data-ending-style:translate-y-[2.5rem] data-[side=bottom]:data-starting-style:translate-y-[2.5rem]",
           className
         )}
         {...props}
@@ -66,7 +90,12 @@ function SheetContent({
             render={
               <Button
                 variant="ghost"
-                className="absolute top-3 right-3"
+                // z-10 so it stays above header content, and the header
+                // RESERVES its corner (SheetHeader's padding-right below), so
+                // a title, a description or a badge row can never render
+                // underneath it. The reservation is structural: a call site
+                // cannot forget it, because it is not a call site's to make.
+                className="absolute top-3 right-3 z-10 size-7"
                 size="icon-sm"
               />
             }
@@ -84,7 +113,11 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-header"
-      className={cn("flex flex-col gap-0.5 p-4", className)}
+      // pr-12 reserves the close button's corner: the close is absolute at
+      // top-3 right-3 and size-7, so anything the header lays out has to stop
+      // clear of it. This lived nowhere before, and a long title or a trailing
+      // status chip would render under the button and take its clicks.
+      className={cn("flex flex-col gap-0.5 border-b px-5 py-4 pr-12", className)}
       {...props}
     />
   )
@@ -94,7 +127,10 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-footer"
-      className={cn("mt-auto flex flex-col gap-2 p-4", className)}
+      className={cn(
+        "mt-auto flex flex-row flex-wrap justify-end gap-2 border-t px-5 py-3",
+        className
+      )}
       {...props}
     />
   )
@@ -105,7 +141,10 @@ function SheetTitle({ className, ...props }: SheetPrimitive.Title.Props) {
     <SheetPrimitive.Title
       data-slot="sheet-title"
       className={cn(
-        "cn-font-heading text-base font-medium text-foreground",
+        // truncate, not wrap: the header reserves the close's corner, and a
+        // title long enough to need the space must give way inside its own
+        // line rather than growing a second one under the button.
+        "cn-font-heading truncate text-base font-semibold text-foreground",
         className
       )}
       {...props}

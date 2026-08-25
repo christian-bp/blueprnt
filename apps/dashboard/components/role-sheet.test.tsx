@@ -379,3 +379,70 @@ describe("RoleSheet state priority", () => {
     expect(screen.queryByRole("button", { name: cal.confirmCta })).toBeNull()
   })
 })
+
+// The close button's corner is RESERVED, structurally.
+//
+// The owner saw the close covered by the header's own content: this sheet
+// lays a title, a track chip, a level badge and up to three status chips on
+// one row, and with nothing reserving the corner they ran under the button and
+// took its clicks. The reservation lives in the vendored SheetHeader, so no
+// call site can forget it and no future sheet inherits the bug.
+//
+// jsdom measures no boxes, so what is pinned is the ANATOMY that guarantees
+// the geometry: the header reserves the corner, the close renders in its own
+// slot above it, and the title truncates inside the reserved space rather than
+// wrapping under the button.
+describe("RoleSheet close-button reservation", () => {
+  beforeEach(() => install())
+  afterEach(() => cleanup())
+
+  it("keeps the close clear of a long title and its trailing chips", () => {
+    role = {
+      ...baseRole(),
+      title:
+        "Senior Principal Engineering Manager for Platform Infrastructure and Reliability",
+    }
+    result = {
+      roleId: "role_1",
+      title: "Engineer",
+      complete: true,
+      completed: true,
+      calibrated: true,
+      methodDrift: true,
+      profileLimited: false,
+      profileFailures: null,
+      ratedCount: 3,
+      totalCriteria: 3,
+      score: 70,
+      level: 4,
+      criteria: [],
+    }
+    renderSheet()
+    open()
+
+    const header = document.querySelector(
+      '[data-slot="sheet-header"]'
+    ) as HTMLElement
+    // The reserved corner. pr-12 against a size-7 close at right-3.
+    expect(header.className).toContain("pr-12")
+
+    // The close is its own slot, outside the header's flow, and layered above.
+    const close = document.querySelector(
+      '[data-slot="sheet-content"] > [data-slot="sheet-close"]'
+    ) as HTMLElement
+    expect(close).not.toBeNull()
+    expect(header.contains(close)).toBe(false)
+    expect(close.className).toContain("z-10")
+
+    // A title too long for its line gives way INSIDE the reserved space.
+    const title = document.querySelector(
+      '[data-slot="sheet-title"]'
+    ) as HTMLElement
+    expect(title.className).toContain("truncate")
+    // And the chips that sit beside it are still inside the header, so the
+    // reservation governs them too.
+    expect(
+      header.querySelector('[data-slot="badge"], .rounded-full, span')
+    ).not.toBeNull()
+  })
+})

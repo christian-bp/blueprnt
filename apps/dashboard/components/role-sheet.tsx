@@ -140,7 +140,7 @@ function RoleSheetContent({
     : ""
 
   return (
-    <SheetContent className="gap-0 overflow-y-auto">
+    <SheetContent>
       {role === undefined ? (
         <>
           <SheetTitle className="sr-only">{t("loading")}</SheetTitle>
@@ -216,7 +216,7 @@ function RoleSheetContent({
             )}
           </SheetHeader>
 
-          <div className="flex-1 space-y-6 px-4 pb-4">
+          <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-5 py-4">
             {/* The job profile leads the sheet: it is what the reader came for;
                 the evaluation result (level + breakdown) follows below. No
                 heading: as the first section, the profile needs no label. */}
