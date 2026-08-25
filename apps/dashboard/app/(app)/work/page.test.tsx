@@ -27,6 +27,7 @@ vi.mock("@/components/org-context", () => ({
 
 import { type ZoneKey, ZONE_KEYS, zoneForLevel } from "@workspace/core"
 import WorkOverviewPage from "@/app/(app)/work/page"
+import { PAGE_CONTENT_MAX_W } from "@/components/app-shell"
 import { RoleSheetProvider } from "@/components/role-sheet"
 
 function levelRow(overrides: Record<string, unknown>) {
@@ -292,5 +293,113 @@ describe("WorkOverviewPage", () => {
         document.querySelector('[data-slot="sheet-content"]')
       ).not.toBeNull()
     })
+  })
+})
+
+// THE CHROME DOES NOT MOVE.
+//
+// The families grid takes the region's width because it is strongly
+// horizontal; everything above it keeps the reading column it shares with
+// every other page. If the tab row moved when the third tab was picked,
+// switching views would read as navigating to a different page, so the
+// chrome's container is rendered ONCE, outside every per-tab branch, and its
+// class set is the pin: jsdom measures no boxes, but a container that never
+// varies with the active tab cannot render at two different X positions.
+describe("WorkOverviewPage width", () => {
+  beforeEach(() => {
+    useQueryMock.mockReset()
+    useQueryMock.mockImplementation((ref: string) =>
+      ref === "assessment.results.getResults"
+        ? results([levelRow({ familyId: "f1", familyName: "Engineering" })])
+        : undefined
+    )
+  })
+  afterEach(() => cleanup())
+
+  const TABS = ["viewLadder", "viewMatrix", "viewFamilies"] as const
+
+  // The reading column's cap, from the shell. Read rather than restated, so a
+  // change to the shell's width moves this pin with it instead of failing it.
+  const READING_COLUMN = PAGE_CONTENT_MAX_W
+
+  function chrome() {
+    const list = screen.getByRole("tablist")
+    // The chrome column: the tab row's nearest ancestor carrying the cap.
+    return list.closest(`[class*="max-w-"]`) as HTMLElement
+  }
+
+  function panelFor(tab: (typeof TABS)[number]) {
+    const trigger = screen.getByRole("tab", {
+      name: messages.dashboard.levels[tab],
+    })
+    fireEvent.click(trigger)
+    return screen.getByRole("tabpanel")
+  }
+
+  it("keeps one chrome container, identical on every tab", async () => {
+    renderPage()
+    const seen = new Set<string>()
+    for (const tab of TABS) {
+      fireEvent.click(
+        screen.getByRole("tab", { name: messages.dashboard.levels[tab] })
+      )
+      await waitFor(() => {
+        expect(screen.getByRole("tabpanel")).toBeDefined()
+      })
+      const box = chrome()
+      expect(box).not.toBeNull()
+      seen.add(box.className)
+    }
+    // ONE class string across all three tabs, and it is the reading column.
+    expect(seen.size).toBe(1)
+    for (const token of READING_COLUMN.split(" ")) {
+      expect([...seen][0]).toContain(token)
+    }
+  })
+
+  // And the breadcrumbs ride in that same container, so the page's whole top
+  // edge holds its position rather than only the tabs.
+  it("holds the breadcrumbs in the chrome container too", () => {
+    renderPage()
+    const box = chrome()
+    expect(box.querySelector("nav, [aria-label]")).not.toBeNull()
+    expect(box.textContent).toContain(messages.dashboard.nav.overview)
+  })
+
+  it("leaves the ladder and the matrix in the reading column", async () => {
+    renderPage()
+    for (const tab of ["viewLadder", "viewMatrix"] as const) {
+      const panel = panelFor(tab)
+      await waitFor(() => expect(panel.isConnected).toBe(true))
+      for (const token of READING_COLUMN.split(" ")) {
+        expect(panel.className).toContain(token)
+      }
+    }
+  })
+
+  it("gives the families grid the whole region", async () => {
+    renderPage()
+    const panel = panelFor("viewFamilies")
+    await waitFor(() => expect(panel.isConnected).toBe(true))
+    expect(panel.className).toContain("w-full")
+    // No cap and no centering: the panel IS the region.
+    expect(panel.className).not.toMatch(/max-w-/)
+    expect(panel.className).not.toContain("mx-auto")
+  })
+
+  // Full width is the REGION's width, not more than it. The grid scrolls
+  // inside its own wrapper (the table law), so nothing hands a horizontal
+  // scrollbar to the page.
+  it("never lets the page scroll sideways", async () => {
+    renderPage()
+    const panel = panelFor("viewFamilies")
+    await waitFor(() => expect(panel.isConnected).toBe(true))
+    for (const node of [panel, ...panel.querySelectorAll("*")]) {
+      const className = (node as HTMLElement).className
+      if (typeof className !== "string") continue
+      expect(className).not.toContain("overflow-x-visible")
+    }
+    // The scroller is the matrix's own wrapper, inside the panel.
+    expect(panel.querySelector('[class*="overflow-auto"]')).not.toBeNull()
   })
 })
