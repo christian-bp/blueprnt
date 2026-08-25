@@ -1,0 +1,31 @@
+apps/dashboard/components/levels/matrix-chrome.ts
+  s_58dd112dc09435::t_1df61532542b17 48-73
+apps/dashboard/components/levels/matrix-chrome.test.ts
+  s_58dd112dc09435::t_921a57b490731d 6,9,52-77
+  s_58dd112dc09435::t_c4a4d8300e6ae4 78
+apps/dashboard/lib/zone-bands.ts
+  s_58dd112dc09435::t_264eb5b738a30c 1-7,74-108
+  s_58dd112dc09435::t_299ce81a498d45 109-110
+apps/dashboard/components/levels/family-level-matrix.tsx
+  s_58dd112dc09435::t_1df61532542b17 12,18,53-68,107,128,151,162-164
+apps/dashboard/components/levels/family-level-matrix.test.tsx
+  s_58dd112dc09435::t_c25c7a6fa6f8ce 7-9,188-221,237-301
+  s_58dd112dc09435::t_09fa449e12a130 222-236
+  s_58dd112dc09435::t_4bfaeccbd2cef8 302
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "7af5eaf67acb2bfe08b665e665d32f103b4a61db",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
