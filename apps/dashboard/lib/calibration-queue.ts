@@ -56,17 +56,38 @@ export interface CalibrationFacts {
 export function calibrationReason(
   facts: CalibrationFacts
 ): CalibrationReason | null {
+  // DEFENSIVE ABOUT ABSENT FIELDS, on purpose. Three surfaces read this fold,
+  // it runs inside RENDER on every chip, and the rows reaching it come off a
+  // wire. A wire shape is not guaranteed complete: during a deploy the client
+  // bundle can be a version ahead of the deployed query for as long as the
+  // push takes, and a field the new client expects simply is not there.
+  //
+  // The first version compared `facts.anchor !== null` and then dereferenced
+  // it, which is true for `undefined` and threw
+  // "Cannot read properties of undefined (reading 'expectedLevel')" once per
+  // chip, inside render, on the one route that renders chips. That is not a
+  // wrong badge; it is a page that paints its shell and then never settles,
+  // swallows every click, and cannot be scripted or screenshotted. It is what
+  // took /work down.
+  //
+  // So every read below treats a MISSING field the same as its empty value:
+  // `== null` for the two nullable numbers, an explicit `=== true` for the
+  // booleans, and optional chaining for the nested one. A fold whose answer
+  // depends on the wire being complete is a fold that takes a page down the
+  // next time a deploy is mid-flight.
+
   // Only a completed, placed assessment can be calibrated: one still open has
   // no revealed placement to confirm, and completing IS the reveal (spec
   // 2.4/6).
-  if (!facts.completed || facts.level === null) return null
-  if (facts.profileLimited === true && !facts.calibrated) {
+  if (facts.completed !== true || facts.level == null) return null
+  if (facts.profileLimited === true && facts.calibrated !== true) {
     return "profileLimited"
   }
-  if (facts.anchor !== null && facts.anchor.expectedLevel !== facts.level) {
+  const agreedLevel = facts.anchor?.expectedLevel
+  if (agreedLevel != null && agreedLevel !== facts.level) {
     return "anchorDeviation"
   }
-  if (facts.methodDrift) return "staleMethod"
+  if (facts.methodDrift === true) return "staleMethod"
   return null
 }
 

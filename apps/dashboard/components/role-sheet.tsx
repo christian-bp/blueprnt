@@ -442,20 +442,34 @@ function ReviewBlock({
           </Link>
         )}
       </div>
-      <ConfirmPlacementDialog
-        orgId={orgId}
-        target={confirming ? { roleId: roleId as Id<"roles">, title } : null}
-        onOpenChange={(open) => {
-          if (!open) setConfirming(false)
-        }}
-      />
-      <AnchorDialog
-        open={managing}
-        onOpenChange={setManaging}
-        orgId={orgId}
-        roleId={roleId as Id<"roles">}
-        anchorRole={anchorRole}
-      />
+      {/* MOUNTED ONLY WHILE OPEN, and that is not a nicety.
+          These are Base UI Dialog roots, and this block renders INSIDE an open
+          Sheet, which is a dialog itself. Mounting them unconditionally put
+          three dialog roots on the page at once, each running its own
+          scroll-lock and focus-guard against the same <body>; they fight, and
+          the page stops producing frames. Sync scripts still run, so it does
+          not read as a busy CPU: what dies is rendering. No paint, no idle, no
+          click ever handled, and every screenshot times out.
+          A closed dialog has nothing to render, so there is no reason to mount
+          one. */}
+      {confirming && (
+        <ConfirmPlacementDialog
+          orgId={orgId}
+          target={{ roleId: roleId as Id<"roles">, title }}
+          onOpenChange={(open) => {
+            if (!open) setConfirming(false)
+          }}
+        />
+      )}
+      {managing && (
+        <AnchorDialog
+          open
+          onOpenChange={setManaging}
+          orgId={orgId}
+          roleId={roleId as Id<"roles">}
+          anchorRole={anchorRole}
+        />
+      )}
     </section>
   )
 }
@@ -496,13 +510,17 @@ function AnchorManageRow({
       >
         {t("manageCta")}
       </Button>
-      <AnchorDialog
-        open={open}
-        onOpenChange={setOpen}
-        orgId={orgId}
-        roleId={roleId as Id<"roles">}
-        anchorRole={anchorRole}
-      />
+      {/* Same rule: a dialog root inside an open Sheet only while it is
+          actually open. See the note in ReviewBlock above. */}
+      {open && (
+        <AnchorDialog
+          open
+          onOpenChange={setOpen}
+          orgId={orgId}
+          roleId={roleId as Id<"roles">}
+          anchorRole={anchorRole}
+        />
+      )}
     </div>
   )
 }

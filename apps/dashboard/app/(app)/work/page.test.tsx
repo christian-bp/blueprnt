@@ -27,6 +27,7 @@ vi.mock("@/components/org-context", () => ({
 
 import { type ZoneKey, ZONE_KEYS, zoneForLevel } from "@workspace/core"
 import WorkOverviewPage from "@/app/(app)/work/page"
+import { RoleSheetProvider } from "@/components/role-sheet"
 
 function levelRow(overrides: Record<string, unknown>) {
   return {
@@ -227,5 +228,69 @@ describe("WorkOverviewPage", () => {
     expect(
       screen.getByText(messages.dashboard.levels.calibration.cappedMarker)
     ).toBeDefined()
+  })
+
+  // A LIVE BUG, pinned: /work busy-looped after the calibration redesign. The
+  // page painted and then never reached idle, so the browser never settled,
+  // chip clicks were swallowed by the thrash, and every injection timed out on
+  // this route alone.
+  //
+  // A render counter rather than a timing assertion: a loop is unbounded, so
+  // any small bound catches it and no bound is flaky. The probe wraps the page
+  // so it counts the page's own renders, not the harness's.
+  it("settles instead of re-rendering itself forever", () => {
+    useQueryMock.mockImplementation((ref: string) =>
+      ref === "assessment.results.getResults"
+        ? results([
+            levelRow({ methodDrift: true }),
+            levelRow({ roleId: "r2", title: "CFO", profileLimited: true }),
+            levelRow({
+              roleId: "r3",
+              title: "COO",
+              level: 3,
+              anchor: { expectedLevel: 5, status: "active" },
+            }),
+          ])
+        : undefined
+    )
+    let renders = 0
+    function Probe() {
+      renders++
+      if (renders > 50) throw new Error(`render loop: ${renders} renders`)
+      return <WorkOverviewPage />
+    }
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <RoleSheetProvider>
+          <Probe />
+        </RoleSheetProvider>
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByText("CTO")).toBeDefined()
+    expect(renders).toBeLessThan(5)
+  })
+
+  // And the click the thrash was swallowing.
+  it("opens the sheet when a chip is clicked", async () => {
+    useQueryMock.mockImplementation((ref: string) =>
+      ref === "assessment.results.getResults"
+        ? results([levelRow({})])
+        : ref === "assessment.roles.getRole"
+          ? null
+          : undefined
+    )
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <RoleSheetProvider>
+          <WorkOverviewPage />
+        </RoleSheetProvider>
+      </NextIntlClientProvider>
+    )
+    fireEvent.click(screen.getByRole("button", { name: /CTO/ }))
+    await waitFor(() => {
+      expect(
+        document.querySelector('[data-slot="sheet-content"]')
+      ).not.toBeNull()
+    })
   })
 })

@@ -140,3 +140,73 @@ describe("calibrationCount", () => {
     expect(calibrationCount([])).toBe(0)
   })
 })
+
+// THE LOOP THAT TOOK /work DOWN.
+//
+// The fold ran `facts.anchor !== null` and then read `.expectedLevel`, which
+// is true for `undefined`. A row arriving without the field, as it does while a
+// deploy is mid-push and the client bundle is a version ahead of the deployed
+// query, threw inside render, once per chip, on the one route that renders
+// chips. The page painted its shell and then never settled: no idle, no
+// clicks, nothing scriptable.
+//
+// Every field is exercised as ABSENT, not just the one that broke, because the
+// fix is the rule (a missing field reads as its empty value) rather than a
+// patch on the field that happened to be dereferenced.
+describe("calibrationReason on an incomplete wire row", () => {
+  const FIELDS = [
+    "completed",
+    "level",
+    "calibrated",
+    "methodDrift",
+    "profileLimited",
+    "anchor",
+  ] as const
+
+  it.each(FIELDS)("survives a row with no %s field", (field) => {
+    const full: CalibrationFacts = {
+      completed: true,
+      level: 4,
+      calibrated: false,
+      methodDrift: true,
+      profileLimited: true,
+      anchor: { expectedLevel: 2 },
+    }
+    const partial = { ...full }
+    delete (partial as Record<string, unknown>)[field]
+    expect(() => calibrationReason(partial as CalibrationFacts)).not.toThrow()
+  })
+
+  // The exact shape that threw: everything present except the anchor.
+  it("reads an absent anchor as no anchor, not as a deviation", () => {
+    const partial = {
+      completed: true,
+      level: 4,
+      calibrated: false,
+      methodDrift: false,
+      profileLimited: false,
+    } as CalibrationFacts
+    expect(calibrationReason(partial)).toBeNull()
+  })
+
+  // And an anchor object whose own level is missing is not a deviation either:
+  // "no agreed level" is not "an agreed level that differs".
+  it("reads an anchor with no agreed level as no deviation", () => {
+    expect(
+      calibrationReason({
+        completed: true,
+        level: 4,
+        calibrated: false,
+        methodDrift: false,
+        profileLimited: false,
+        anchor: {} as { expectedLevel: number },
+      })
+    ).toBeNull()
+  })
+
+  it("counts a register of half-formed rows without throwing", () => {
+    expect(() =>
+      calibrationCount([{}, { completed: true }] as CalibrationFacts[])
+    ).not.toThrow()
+  })
+})

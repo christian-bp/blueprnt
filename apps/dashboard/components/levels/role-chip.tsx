@@ -35,7 +35,10 @@ export function RoleChip({ role }: { role: LevelRoleRow }) {
 
   const inner = (
     <>
-      {role.anchor !== null && (
+      {/* != null, like the fold beside it: a row from a deployment that has
+          not finished pushing has no such field, and `!== null` would draw an
+          anchor on a role that is not one. */}
+      {role.anchor != null && (
         <HugeiconsIcon
           icon={AnchorIcon}
           size={14}

@@ -228,8 +228,11 @@ function computeCounts({
         calibrated: r.calibrated,
         methodDrift: r.methodDrift,
         profileLimited: r.profileLimited,
+        // ?? null, not === null: an older deployed listRoles has no such
+        // field at all, and { expectedLevel: undefined } would read as a
+        // deviating anchor and inflate the count.
         anchor:
-          r.anchorExpectedLevel === null
+          r.anchorExpectedLevel == null
             ? null
             : { expectedLevel: r.anchorExpectedLevel },
       }) !== null
