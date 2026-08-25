@@ -1127,7 +1127,6 @@
           "empty": "Ingen medarbejdere er klassificeret i denne rolle endnu.",
           "archivedEmpty": "Rollen er arkiveret, så ingen er klassificeret i den. Historikken bevares."
         },
-        "completedBadge": "Afsluttet",
         "calibratedBadge": "Kalibreret",
         "completedIncomplete": "Afsluttet, men et kriterium, der er tilføjet siden da, mangler en vurdering. Genåbn vurderingen, vurder kriteriet, og afslut vurderingen igen for at se resultatet.",
         "methodDriftBadge": "Vurderet efter tidligere metode"

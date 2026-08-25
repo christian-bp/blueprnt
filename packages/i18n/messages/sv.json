@@ -1127,7 +1127,6 @@
           "empty": "Inga medarbetare är klassificerade i den här rollen ännu.",
           "archivedEmpty": "Rollen är arkiverad, så ingen är klassificerad i den. Historiken finns kvar."
         },
-        "completedBadge": "Slutförd",
         "calibratedBadge": "Kalibrerad",
         "completedIncomplete": "Slutförd, men ett kriterium som lagts till sedan dess saknar bedömning. Omvärdera, bedöm det och slutför bedömningen igen för att se resultatet.",
         "methodDriftBadge": "Bedömd enligt tidigare metod"

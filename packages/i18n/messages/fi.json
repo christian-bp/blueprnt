@@ -1127,7 +1127,6 @@
           "empty": "Tähän rooliin ei ole vielä luokiteltu työntekijöitä.",
           "archivedEmpty": "Rooli on arkistoitu, joten siihen ei ole luokiteltu ketään. Historia säilyy."
         },
-        "completedBadge": "Viimeistelty",
         "calibratedBadge": "Kalibroitu",
         "completedIncomplete": "Viimeistelty, mutta sen jälkeen lisätyltä kriteeriltä puuttuu arvio. Avaa arviointi uudelleen, arvioi kriteeri ja viimeistele arviointi nähdäksesi tuloksen.",
         "methodDriftBadge": "Arvioitu aiemmalla menetelmällä"

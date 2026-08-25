@@ -1,7 +1,4 @@
 "use client"
-
-import { AnchorIcon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Badge } from "@workspace/ui/components/badge"
@@ -27,7 +24,7 @@ import {
   useState,
 } from "react"
 import {
-  AssessmentStatusBadge,
+  CalibratedBadge,
   CompletedIncompleteNotice,
   MethodDriftBadge,
 } from "@/components/assessment-status"
@@ -38,6 +35,7 @@ import {
   type AnchorRoleInfo,
 } from "@/components/roles/role-anchor-control"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
+import { FIELD_LABEL_CLASS } from "@/lib/field-label"
 import { toast } from "@/lib/toast"
 import {
   type CalibrationReason,
@@ -107,7 +105,6 @@ function RoleSheetContent({
   const _tAssessment = useTranslations("assessment")
   const tFamily = useTranslations("dashboard.roles.family")
   const tModel = useTranslations("model")
-  const tAnchor = useTranslations("dashboard.roles.anchor")
   const { orgId } = useOrganization()
   const locale = useLocale()
   const role = useQuery(api.assessment.roles.getRole, { orgId, roleId, locale })
@@ -168,31 +165,29 @@ function RoleSheetContent({
       ) : (
         <>
           <SheetHeader>
-            {/* Title and track sit on one line, matching the role detail
-                header. The text-lg override is deliberate: the vendored
-                SheetTitle inherits the content's text-sm, too small for the
-                primary heading. */}
+            {/* ONE ROW: what the role IS and where it landed. Title, track,
+                level. The vendored SheetTitle owns its own size now; the
+                text-lg override here predated the sheet having a type pass of
+                its own and made the header a second scale.
+
+                The COMPLETED chip is gone: the level chip beside it proves
+                completion, because an uncompleted assessment has no level to
+                show. What still speaks is a state the level cannot demonstrate
+                (a confirmed placement, a superseded method), and the anchor,
+                which moved into the body where it can carry its own row. */}
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <SheetTitle className="text-lg">{role.title}</SheetTitle>
+              <SheetTitle>{role.title}</SheetTitle>
               <TrackBadge
                 trackKey={role.trackKey}
                 name={role.trackName}
                 short
               />
-              {/* Level sits with the title once the assessment is completed
-                  (completion is the reveal, spec 2.4/6), matching the role page result
-                  badge; the completed/drift badges ride alongside it. */}
               {result?.completed ? (
                 <>
-                  {/* The level only once there IS one: a criterion added
-                      after completion leaves a completed role incomplete, and the
-                      completion is still true even though nothing computes. The
-                      completed chip stays either way, because saying nothing
-                      about a completed assessment reads as "not evaluated". */}
                   {result.level !== null ? (
                     <LevelBadge level={result.level} />
                   ) : null}
-                  <AssessmentStatusBadge calibrated={result.calibrated} />
+                  <CalibratedBadge calibrated={result.calibrated} />
                   {result.methodDrift ? <MethodDriftBadge /> : null}
                 </>
               ) : null}
@@ -206,61 +201,41 @@ function RoleSheetContent({
                 {role.title}
               </SheetDescription>
             )}
-            {role.anchorRole !== null && (
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="flex items-center gap-1 text-muted-foreground text-xs">
-                  <HugeiconsIcon
-                    icon={AnchorIcon}
-                    size={12}
-                    strokeWidth={2}
-                    aria-hidden="true"
-                  />
-                  {tLevels("anchorLabel")}
-                </span>
-                {/* A retired anchor says so, and never wears the deviation
-                    chip: "not level 8" is a live claim about a reference this
-                    organization has stopped referring to. */}
-                {role.anchorRole.status === "replaced" ? (
-                  <Badge variant="outline">{tAnchor("statusReplaced")}</Badge>
-                ) : (
-                  result !== undefined &&
-                  result !== null &&
-                  result.level !== null &&
-                  result.level !== role.anchorRole.expectedLevel && (
-                    <DeviationBadge
-                      agreedLevel={role.anchorRole.expectedLevel}
-                    />
-                  )
-                )}
-              </div>
-            )}
           </SheetHeader>
 
           <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-5 py-4">
-            {/* The job profile leads the sheet: it is what the reader came for;
-                the evaluation result (level + breakdown) follows below. No
-                heading: as the first section, the profile needs no label. */}
+            {/* The anchor, as a labelled row like the ones under it, first in
+                the body. It rode in the HEADER before, which made the header
+                two rows on any anchor role and put a status word next to the
+                title; anchor-ness is a fact ABOUT the role, the same species
+                as its family, so it reads as one of them. */}
+            {role.anchorRole !== null && (
+              <AnchorRow
+                orgId={orgId}
+                roleId={roleId}
+                anchorRole={role.anchorRole}
+                computedLevel={result?.level ?? null}
+              />
+            )}
+            {/* The job profile: what the reader came for; the evaluation
+                result (level + breakdown) follows below. */}
             <section className="space-y-4">
               {role.purpose.trim().length > 0 && (
                 <div className="space-y-1">
-                  <p className="text-muted-foreground text-xs">
-                    {tRole("purpose")}
-                  </p>
+                  <p className={FIELD_LABEL_CLASS}>{tRole("purpose")}</p>
                   <p className="whitespace-pre-line text-sm">{role.purpose}</p>
                 </div>
               )}
               {role.responsibilities.trim().length > 0 && (
                 <div className="space-y-1">
-                  <p className="text-muted-foreground text-xs">
+                  <p className={FIELD_LABEL_CLASS}>
                     {tRole("responsibilities")}
                   </p>
                   <ResponsibilitiesList value={role.responsibilities} />
                 </div>
               )}
               <div className="space-y-1">
-                <p className="text-muted-foreground text-xs">
-                  {tModel("roleFamily")}
-                </p>
+                <p className={FIELD_LABEL_CLASS}>{tModel("roleFamily")}</p>
                 <p className="text-sm">{role.familyName ?? tFamily("none")}</p>
               </div>
             </section>
@@ -292,22 +267,10 @@ function RoleSheetContent({
                 failures={result.profileFailures ?? []}
                 computedLevel={result.level}
                 agreedLevel={role.anchorRole?.expectedLevel ?? null}
-                anchorRole={liveAnchor}
                 onClose={onClose}
               />
             ) : (
               <section className="space-y-3">
-                {liveAnchor !== null && (
-                  // Manage the anchor WHERE YOU SEE IT. The role page's own
-                  // menu keeps its shortcut, but a reader who opened this
-                  // sheet because they were looking at the ladder should not
-                  // have to leave it to change an agreed level.
-                  <AnchorManageRow
-                    orgId={orgId}
-                    roleId={roleId}
-                    anchorRole={liveAnchor}
-                  />
-                )}
                 {result?.completed &&
                 result.complete &&
                 result.level !== null ? (
@@ -374,7 +337,6 @@ function ReviewBlock({
   failures,
   computedLevel,
   agreedLevel,
-  anchorRole,
   onClose,
 }: {
   orgId: string
@@ -392,13 +354,11 @@ function ReviewBlock({
   // what the organization agreed for this anchor.
   computedLevel: number | null
   agreedLevel: number | null
-  anchorRole: AnchorRoleInfo | null
   onClose: () => void
 }) {
   const t = useTranslations("dashboard.levels.calibration")
   const tAnchor = useTranslations("dashboard.roles.anchor")
   const [confirming, setConfirming] = useState(false)
-  const [managing, setManaging] = useState(false)
   const [pending, setPending] = useState(false)
   const tToast = useTranslations("dashboard.toast")
   const updateAnchor = useMutation(api.assessment.anchorRoles.updateAnchorRole)
@@ -467,9 +427,10 @@ function ReviewBlock({
         // what the field value does. The three answers are acts, each saying
         // what it will do before it is pressed.
         //
-        // The full form survives as the advanced path below: fine control over
-        // level, motivation and status is still reachable, it is just not the
-        // front door to a review.
+        // The full form survives on the anchor row at the top of the body:
+        // fine control over level, motivation and status is still reachable,
+        // it is just not the front door to a review, and it has exactly one
+        // door rather than one per block that happens to mention the anchor.
         <div className="space-y-2">
           <AnchorActRow
             label={tAnchor("alignCta", { level: computedLevel ?? 0 })}
@@ -491,17 +452,6 @@ function ReviewBlock({
             pending={pending}
             onAct={() => act({ status: "replaced" })}
           />
-          {/* The advanced path, deliberately quiet: a review never needs it. */}
-          <div className="pt-1">
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => setManaging(true)}
-            >
-              {tAnchor("detailsCta")}
-            </Button>
-          </div>
         </div>
       ) : (
         <div className="flex flex-wrap gap-2">
@@ -539,57 +489,70 @@ function ReviewBlock({
           }}
         />
       )}
-      {managing && (
-        <AnchorDialog
-          open
-          onOpenChange={setManaging}
-          orgId={orgId}
-          roleId={roleId as Id<"roles">}
-          anchorRole={anchorRole}
-        />
-      )}
     </section>
   )
 }
 
-// The anchor's own management, on the surface where the anchor is visible.
-// The role page's actions menu keeps its shortcut; this is the one the reader
-// reaches without leaving the ladder they were reading.
-function AnchorManageRow({
+// The anchor as a labelled row, in the same idiom as Role family above it: a
+// muted label, the value, and this one's own chips and affordance.
+//
+// Rendered for EVERY anchor state, retired included. A retired anchor used to
+// have no way back: the details form was the only place to change a status,
+// and it was offered only while the anchor was live, so retiring one from the
+// sheet removed the control that could undo it. The form is the management
+// entry regardless of status, and a retired anchor's form naturally offers
+// Active again.
+function AnchorRow({
   orgId,
   roleId,
   anchorRole,
+  computedLevel,
 }: {
   orgId: string
   roleId: string
   anchorRole: AnchorRoleInfo
+  // For the deviation chip, which only a LIVE anchor can wear.
+  computedLevel: number | null
 }) {
   const t = useTranslations("dashboard.roles.anchor")
+  const tLevels = useTranslations("dashboard.levels")
   const [open, setOpen] = useState(false)
+  const retired = anchorRole.status === "replaced"
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border p-3">
-      <div className="min-w-0 space-y-0.5">
-        <p className="font-medium text-sm">
-          {`${t("expectedLevelLabel")}: ${t("levelOption", {
-            level: anchorRole.expectedLevel,
-          })}`}
+    <div className="space-y-1">
+      <p className={FIELD_LABEL_CLASS}>{tLevels("anchorLabel")}</p>
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="text-sm">
+          {t("levelOption", { level: anchorRole.expectedLevel })}
         </p>
-        {anchorRole.motivation.trim().length > 0 && (
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            {anchorRole.motivation}
-          </p>
+        {/* A retired anchor states its retirement and never wears the
+            deviation chip: "not level 8" is a live claim about a reference
+            this organization has stopped referring to. */}
+        {retired ? (
+          <Badge variant="outline">{t("statusReplaced")}</Badge>
+        ) : (
+          computedLevel !== null &&
+          computedLevel !== anchorRole.expectedLevel && (
+            <DeviationBadge agreedLevel={anchorRole.expectedLevel} />
+          )
         )}
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          className="ms-auto"
+          onClick={() => setOpen(true)}
+        >
+          {t("detailsCta")}
+        </Button>
       </div>
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        onClick={() => setOpen(true)}
-      >
-        {t("manageCta")}
-      </Button>
-      {/* Same rule: a dialog root inside an open Sheet only while it is
-          actually open. See the note in ReviewBlock above. */}
+      {anchorRole.motivation.trim().length > 0 && (
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          {anchorRole.motivation}
+        </p>
+      )}
+      {/* A dialog root inside an open Sheet only while it is actually open.
+          See the note in ReviewBlock above. */}
       {open && (
         <AnchorDialog
           open

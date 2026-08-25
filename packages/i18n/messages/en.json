@@ -1121,7 +1121,6 @@
         "emptyField": "Not filled in yet",
         "archivedBadge": "Archived",
         "archivedHint": "This role is archived and read-only. Its history is kept.",
-        "completedBadge": "Completed",
         "calibratedBadge": "Calibrated",
         "completedIncomplete": "Completed, but a criterion added since then has no rating. Re-evaluate, rate it, and complete the assessment again to see the result.",
         "methodDriftBadge": "Assessed under a previous method",

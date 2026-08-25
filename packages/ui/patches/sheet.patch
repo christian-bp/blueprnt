@@ -1,10 +1,10 @@
 # sheet.tsx local deviation
-# The app's sheets float: inset from the viewport edge, rounded, borderless with the shadow carrying the separation, and the header reserves the close button's corner so content can never render under it.
+# The app's sheets float: inset from the viewport edge, rounded, borderless on all four sides (upstream gives each side variant its own edge border) with the shadow and the house hairline ring carrying the separation, and the header reserves the close button's corner so content can never render under it.
 # Regenerate with: bun run ui:refresh-patches
 diff --git a/packages/ui/src/components/sheet.tsx b/packages/ui/src/components/sheet.tsx
 --- a/packages/ui/src/components/sheet.tsx
 +++ b/packages/ui/src/components/sheet.tsx
-@@ -54,7 +54,31 @@ function SheetContent({
+@@ -54,7 +54,40 @@ function SheetContent({
          data-slot="sheet-content"
          data-side={side}
          className={cn(
@@ -24,7 +24,16 @@ diff --git a/packages/ui/src/components/sheet.tsx b/packages/ui/src/components/s
 +          // padding now; overflow-hidden so the rounded corners actually clip
 +          // the content that runs to them, which means the BODY is what
 +          // scrolls (min-h-0 flex-1 overflow-y-auto at the call site).
-+          "fixed z-50 flex flex-col gap-0 overflow-hidden rounded-xl border-0 bg-popover bg-clip-padding p-0 text-sm text-popover-foreground shadow-lg transition duration-200 ease-in-out data-ending-style:opacity-0 data-starting-style:opacity-0",
++          //
++          // BORDERLESS, on every side. Upstream gives each side variant its own
++          // edge border (border-l on right, border-r on left, and so on);
++          // border-0 kills all four, and no side block below adds one back.
++          // The ring is the house hairline every other floating surface wears
++          // (popover, dropdown, dialog: ring-1 ring-foreground/10), not a
++          // border returning by another name. It is what carries the edge on
++          // the DARK plane, where a shadow over a dark ground has almost
++          // nothing to darken; on light it disappears into the shadow.
++          "fixed z-50 flex flex-col gap-0 overflow-hidden rounded-xl border-0 bg-popover bg-clip-padding p-0 text-sm text-popover-foreground shadow-lg ring-1 ring-foreground/10 transition duration-200 ease-in-out data-ending-style:opacity-0 data-starting-style:opacity-0",
 +          // Right and left mirror each other: inset from their own edge, full
 +          // height minus the inset, and a width that gives way on a narrow
 +          // viewport instead of overflowing it.
@@ -37,7 +46,7 @@ diff --git a/packages/ui/src/components/sheet.tsx b/packages/ui/src/components/s
            className
          )}
          {...props}
-@@ -66,7 +90,12 @@ function SheetContent({
+@@ -66,7 +99,12 @@ function SheetContent({
              render={
                <Button
                  variant="ghost"
@@ -51,7 +60,7 @@ diff --git a/packages/ui/src/components/sheet.tsx b/packages/ui/src/components/s
                  size="icon-sm"
                />
              }
-@@ -84,7 +113,11 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
+@@ -84,7 +122,11 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
    return (
      <div
        data-slot="sheet-header"
@@ -64,7 +73,7 @@ diff --git a/packages/ui/src/components/sheet.tsx b/packages/ui/src/components/s
        {...props}
      />
    )
-@@ -94,7 +127,10 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
+@@ -94,7 +136,10 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
    return (
      <div
        data-slot="sheet-footer"
@@ -76,7 +85,7 @@ diff --git a/packages/ui/src/components/sheet.tsx b/packages/ui/src/components/s
        {...props}
      />
    )
-@@ -105,7 +141,10 @@ function SheetTitle({ className, ...props }: SheetPrimitive.Title.Props) {
+@@ -105,7 +150,10 @@ function SheetTitle({ className, ...props }: SheetPrimitive.Title.Props) {
      <SheetPrimitive.Title
        data-slot="sheet-title"
        className={cn(

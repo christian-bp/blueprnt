@@ -11,25 +11,23 @@ import { useTranslations } from "next-intl"
 // glyph beside the word "Completed" says nothing the word does not, and a row
 // of little icons reads as a toolbar rather than as state.
 
-// The assessment's own status, as ONE chip with two states.
+// A placement a person has CONFIRMED from the calibration queue (spec 6):
+// `calibratedAt` is stamped on the assessment. Success ink, because it is an
+// extra step someone chose to take, and it is the only state on this chip row
+// that carries one.
 //
-// It used to be two chips standing side by side, and the second could never
-// appear without the first: calibrateAssessment refuses an assessment that is
-// not completed, so "Calibrated" strictly implies "Completed" and the pair
-// said one fact twice. A reader counting chips read two pieces of state and
-// had to work out that one contained the other.
-//
-// Neutral ink at rest, because completing is the ordinary end state of every
-// assessment rather than an achievement. Success ink once a person has
-// confirmed the placement, which IS an extra step someone chose to take and
-// is the only state on this chip row that carries one.
-export function AssessmentStatusBadge({ calibrated }: { calibrated: boolean }) {
+// It renders nothing when the assessment is merely completed, and that is the
+// point. This was briefly a two-state chip whose other state said "Completed",
+// which every surface that showed it also proved: a level chip beside it, a
+// weighting figure under it, or a notice already saying the word. A chip that
+// repeats what the thing next to it demonstrates is a chip the reader has to
+// read before discovering it says nothing. Completion still speaks where it is
+// the ONLY signal: the rated-but-not-completed state names what is left, and a
+// flagged placement states its own reason.
+export function CalibratedBadge({ calibrated }: { calibrated: boolean }) {
   const t = useTranslations("dashboard.roles.detail")
-  return calibrated ? (
-    <Badge variant="success">{t("calibratedBadge")}</Badge>
-  ) : (
-    <Badge variant="outline">{t("completedBadge")}</Badge>
-  )
+  if (!calibrated) return null
+  return <Badge variant="success">{t("calibratedBadge")}</Badge>
 }
 
 // The derived method-drift chip: a role completed before the model's latest

@@ -170,7 +170,6 @@ describe("RoleEvaluationCard", () => {
     expect(screen.getByText("Weighting 71")).toBeDefined()
     expect(screen.getByText("Level 3")).toBeDefined()
     expect(screen.getByText("Complexity")).toBeDefined()
-    expect(screen.getByText(detail.completedBadge)).toBeDefined()
   })
 
   // Rated but not completed. This card SAYS what is left and points into the
@@ -199,7 +198,6 @@ describe("RoleEvaluationCard", () => {
       })
     ).toBeNull()
     expect(screen.queryByText("Weighting 71")).toBeNull()
-    expect(screen.queryByText(detail.completedBadge)).toBeNull()
   })
 
   it("flags method drift on a completed role with a stale-method chip", () => {
@@ -235,8 +233,10 @@ describe("RoleEvaluationCard", () => {
       level: null,
     })
     renderCard({ ratedCount: 3, totalCriteria: 3 })
+    // The notice already opens with the word "Completed", so the chip that
+    // used to sit above it said it twice. This is the one completed state
+    // with no level to demonstrate it, and the notice is what demonstrates it.
     expect(screen.getByText(detail.completedIncomplete)).toBeDefined()
-    expect(screen.getByText(detail.completedBadge)).toBeDefined()
     expect(
       screen.queryByText(messages.dashboard.rating.result.computing)
     ).toBeNull()

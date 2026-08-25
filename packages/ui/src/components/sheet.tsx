@@ -69,7 +69,16 @@ function SheetContent({
           // padding now; overflow-hidden so the rounded corners actually clip
           // the content that runs to them, which means the BODY is what
           // scrolls (min-h-0 flex-1 overflow-y-auto at the call site).
-          "fixed z-50 flex flex-col gap-0 overflow-hidden rounded-xl border-0 bg-popover bg-clip-padding p-0 text-sm text-popover-foreground shadow-lg transition duration-200 ease-in-out data-ending-style:opacity-0 data-starting-style:opacity-0",
+          //
+          // BORDERLESS, on every side. Upstream gives each side variant its own
+          // edge border (border-l on right, border-r on left, and so on);
+          // border-0 kills all four, and no side block below adds one back.
+          // The ring is the house hairline every other floating surface wears
+          // (popover, dropdown, dialog: ring-1 ring-foreground/10), not a
+          // border returning by another name. It is what carries the edge on
+          // the DARK plane, where a shadow over a dark ground has almost
+          // nothing to darken; on light it disappears into the shadow.
+          "fixed z-50 flex flex-col gap-0 overflow-hidden rounded-xl border-0 bg-popover bg-clip-padding p-0 text-sm text-popover-foreground shadow-lg ring-1 ring-foreground/10 transition duration-200 ease-in-out data-ending-style:opacity-0 data-starting-style:opacity-0",
           // Right and left mirror each other: inset from their own edge, full
           // height minus the inset, and a width that gives way on a narrow
           // viewport instead of overflowing it.

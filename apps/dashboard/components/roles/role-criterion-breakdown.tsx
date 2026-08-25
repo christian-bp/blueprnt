@@ -9,6 +9,7 @@ import {
 import { motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { FIELD_LABEL_CLASS } from "@/lib/field-label"
 import { SPRING } from "@/lib/motion"
 
 // One criterion as it arrives from getRoleResult.criteria.
@@ -63,9 +64,12 @@ export function RoleCriterionBreakdown({
     // space-y-1 so the label hugs its rows like the other section labels
     // (Purpose, Responsibilities, Role family) rather than floating above them.
     <div className="space-y-1">
-      {/* Section label for the breakdown: text-sm (muted) so it reads as a
-          heading for the rows below rather than a tiny caption. */}
-      <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+      {/* Section label for the breakdown, at the SAME scale and treatment as
+          the sheet's other field labels (Purpose, Responsibilities, Role
+          family). It sat at text-sm, which read as a heading of a different
+          rank rather than the fourth member of a set. The help sits after it
+          because this label is the concept's own title. */}
+      <div className={`flex items-center gap-1.5 ${FIELD_LABEL_CLASS}`}>
         {tResult("breakdownLabel")}
         <HelpMorphButton label={tHelp("contributionLabel")}>
           {tHelp("contributionBody")}
@@ -102,8 +106,12 @@ export function RoleCriterionBreakdown({
                 transition={SPRING}
               />
             </div>
+            {/* The rater's own words: running text a user reads as
+                sentences, so it takes leading-relaxed with its floor. */}
             {row.motivation !== null && (
-              <p className="text-muted-foreground text-sm">{row.motivation}</p>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                {row.motivation}
+              </p>
             )}
           </motion.div>
         ))}

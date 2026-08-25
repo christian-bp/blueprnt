@@ -46,7 +46,7 @@ const DEVIATIONS: Record<string, string> = {
   select:
     "Trigger may shrink inside form grids; popup sized to its content for the same clipping reason as the dropdown.",
   sheet:
-    "The app's sheets float: inset from the viewport edge, rounded, borderless with the shadow carrying the separation, and the header reserves the close button's corner so content can never render under it.",
+    "The app's sheets float: inset from the viewport edge, rounded, borderless on all four sides (upstream gives each side variant its own edge border) with the shadow and the house hairline ring carrying the separation, and the header reserves the close button's corner so content can never render under it.",
   spinner:
     "HugeiconsIcon types strokeWidth as a number, so the svg props type must not admit a string.",
   tooltip: "No arrow unless asked for; upstream always draws one.",

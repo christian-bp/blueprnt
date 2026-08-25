@@ -127,10 +127,15 @@ describe("RatingResult", () => {
     expect(screen.getByText("2")).toBeDefined()
   })
 
-  it("names the reveal as completed, uncalibrated and on the current method", () => {
+  // The reveal REVEALS a level, which is a thing only a completed assessment
+  // has. A chip saying "Completed" beside it said that a second time in
+  // smaller type, so what is left are the states the level cannot show.
+  it("wears no chip on a plain completed reveal", () => {
     renderResult()
     const detail = messages.dashboard.roles.detail
-    expect(screen.getByText(detail.completedBadge)).toBeDefined()
+    // The level is the proof, and it is on screen (its own test above pins
+    // the figure); what this one pins is that nothing repeats it in words.
+    expect(screen.getByText("2")).toBeDefined()
     expect(screen.queryByText(detail.calibratedBadge)).toBeNull()
     expect(screen.queryByText(detail.methodDriftBadge)).toBeNull()
   })

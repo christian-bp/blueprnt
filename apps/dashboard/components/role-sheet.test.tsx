@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
@@ -21,6 +22,7 @@ vi.mock(
 
 import { OrganizationProvider } from "@/components/org-context"
 import { RoleSheetProvider, useRoleSheet } from "@/components/role-sheet"
+import { FIELD_LABEL_CLASS } from "@/lib/field-label"
 
 function baseRole() {
   return {
@@ -114,6 +116,33 @@ function open() {
   fireEvent.click(screen.getByRole("button", { name: "trigger" }))
 }
 
+function completed(over: Partial<Result> = {}): Result {
+  return {
+    roleId: "role_1",
+    title: "Engineer",
+    complete: true,
+    completed: true,
+    calibrated: false,
+    methodDrift: false,
+    profileLimited: false,
+    profileFailures: null,
+    ratedCount: 3,
+    totalCriteria: 3,
+    score: 70,
+    level: 4,
+    criteria: [
+      {
+        criterionId: "c1",
+        name: "Scope",
+        weightPoints: 3,
+        value: 4,
+        motivation: null,
+      },
+    ],
+    ...over,
+  }
+}
+
 describe("RoleSheet", () => {
   beforeEach(() => {
     role = baseRole()
@@ -158,7 +187,6 @@ describe("RoleSheet", () => {
     expect(screen.getByText("Complexity")).toBeTruthy()
     expect(screen.getByText("57%")).toBeTruthy()
     expect(screen.queryByText("rated 5 / 5")).toBeNull()
-    expect(screen.getByText("Completed")).toBeTruthy()
   })
 
   it("flags method drift on a completed role with a stale-method chip", () => {
@@ -205,10 +233,10 @@ describe("RoleSheet", () => {
     open()
     expect(screen.queryByText("Level 3")).toBeNull()
     expect(screen.queryByText("Complexity")).toBeNull()
-    // The completion is real and stays named: what changed is that the role now
-    // carries an unrated criterion, which is a different thing from never
-    // having been evaluated.
-    expect(screen.getByText("Completed")).toBeTruthy()
+    // The completion is real and stays named, by the NOTICE, which opens with
+    // the word. It is the only completed state with no level to demonstrate
+    // it, so the sentence is what separates it from never having been
+    // evaluated.
     expect(
       screen.getByText(messages.dashboard.roles.detail.completedIncomplete)
     ).toBeTruthy()
@@ -275,33 +303,6 @@ describe("RoleSheet state priority", () => {
   const cal = messages.dashboard.levels.calibration
   const anchor = messages.dashboard.roles.anchor
 
-  function completed(over: Partial<Result> = {}): Result {
-    return {
-      roleId: "role_1",
-      title: "Engineer",
-      complete: true,
-      completed: true,
-      calibrated: false,
-      methodDrift: false,
-      profileLimited: false,
-      profileFailures: null,
-      ratedCount: 3,
-      totalCriteria: 3,
-      score: 70,
-      level: 4,
-      criteria: [
-        {
-          criterionId: "c1",
-          name: "Scope",
-          weightPoints: 3,
-          value: 4,
-          motivation: null,
-        },
-      ],
-      ...over,
-    }
-  }
-
   it("replaces the evaluation with the review block for a capped placement", () => {
     role = baseRole()
     result = completed({
@@ -346,6 +347,12 @@ describe("RoleSheet state priority", () => {
       })
     ).toBeDefined()
     expect(screen.queryByRole("button", { name: anchor.manageCta })).toBeNull()
+    // ONE door to the form, on the anchor row. The review block used to carry
+    // a second copy of the same ghost button, so a deviating anchor showed two
+    // identical controls opening the same dialog on one screen.
+    expect(
+      screen.getAllByRole("button", { name: anchor.detailsCta })
+    ).toHaveLength(1)
   })
 
   it("sends a stale placement back to its assessment", () => {
@@ -376,7 +383,9 @@ describe("RoleSheet state priority", () => {
     renderSheet()
     open()
     expect(screen.queryByText(cal.profileLimitedReason)).toBeNull()
-    expect(screen.getByRole("button", { name: anchor.manageCta })).toBeDefined()
+    expect(
+      screen.getByRole("button", { name: anchor.detailsCta })
+    ).toBeDefined()
     // And the evaluation it did not replace.
     expect(screen.getByText("Scope")).toBeDefined()
   })
@@ -581,5 +590,213 @@ describe("RoleSheet anchor review acts", () => {
       )
     ).toBeNull()
     expect(screen.queryByText(anchor.retireCta)).toBeNull()
+  })
+})
+
+// The floating sheet is BORDERLESS.
+//
+// Upstream pins the panel to the viewport edge and gives each side variant its
+// own edge border (border-l on the right sheet, border-r on the left, and so
+// on). Ours floats, so a border would draw a hard line around a panel that is
+// meant to lift off the page; the shadow separates it, and the house hairline
+// ring (the one popovers, dropdowns and dialogs all wear) is what still gives
+// it an edge on the dark plane, where a shadow has almost nothing to darken.
+//
+// jsdom measures no pixels, but the class set is exactly what regressed here:
+// a future shadcn update reinstates the side borders, and nothing else would
+// notice.
+describe("RoleSheet panel edge", () => {
+  beforeEach(() => {
+    install()
+    role = baseRole()
+    result = completed()
+  })
+  afterEach(() => cleanup())
+
+  it("draws no border on any side, and keeps the house hairline", () => {
+    renderSheet()
+    open()
+    const panel = document.querySelector(
+      '[data-slot="sheet-content"]'
+    ) as HTMLElement
+    expect(panel.className).toContain("border-0")
+    for (const side of ["border-l", "border-r", "border-t", "border-b"]) {
+      expect(panel.className).not.toContain(side)
+    }
+    expect(panel.className).toContain("ring-1")
+    expect(panel.className).toContain("ring-foreground/10")
+  })
+
+  // The separators INSIDE the panel are a different thing from its edge: the
+  // header and footer still rule off from the body.
+  it("keeps the header and footer rules, which are not the panel's edge", () => {
+    renderSheet()
+    open()
+    const header = document.querySelector(
+      '[data-slot="sheet-header"]'
+    ) as HTMLElement
+    expect(header.className).toContain("border-b")
+  })
+})
+
+// The header is ONE ROW, and stays one.
+//
+// It carried a second row on every anchor role (the anchor's label, its agreed
+// level and a status word) plus a "Completed" chip beside a level chip that
+// already proved completion. Both are facts ABOUT the role rather than what it
+// IS, so they belong in the body with the role's other facts; the header says
+// what this is and where it landed, and nothing else.
+describe("RoleSheet header", () => {
+  const anchor = messages.dashboard.roles.anchor
+  const detail = messages.dashboard.roles.detail
+
+  beforeEach(() => {
+    install()
+    role = {
+      ...baseRole(),
+      anchorRole: {
+        expectedLevel: 8,
+        motivation: "Reference role",
+        status: "active" as const,
+        reviewedAt: 0,
+      },
+    }
+    result = completed({ level: 8, calibrated: true })
+  })
+  afterEach(() => cleanup())
+
+  function header() {
+    renderSheet()
+    open()
+    return document.querySelector('[data-slot="sheet-header"]') as HTMLElement
+  }
+
+  it("holds the title, its track and its level, and nothing else", () => {
+    const h = header()
+    expect(h.textContent).toContain("Engineer")
+    // The track chip renders short in a header this dense.
+    expect(h.textContent).toContain(baseRole().trackKey)
+    expect(h.textContent).toContain("Level 8")
+    // The states a level cannot demonstrate still belong here.
+    expect(h.textContent).toContain(detail.calibratedBadge)
+  })
+
+  it("keeps the anchor out of the header entirely", () => {
+    const h = header()
+    expect(h.textContent).not.toContain(messages.dashboard.levels.anchorLabel)
+    expect(h.textContent).not.toContain(anchor.statusReplaced)
+    // The anchor's own way in came with it. A header carries no controls.
+    expect(h.querySelector("button")).toBeNull()
+    // And it says the level ONCE, as the placement. The agreed level is the
+    // body row's, and the two are only the same words while they agree.
+    expect(h.textContent?.match(/Level 8/g)).toHaveLength(1)
+  })
+
+  it("lets the level chip speak for completion instead of a second chip", () => {
+    // Uncalibrated on purpose: this is the state that used to wear the chip.
+    result = completed({ level: 8 })
+    const h = header()
+    // An uncompleted assessment has no level, so a level chip IS the proof.
+    expect(h.textContent).toContain("Level 8")
+    // textContent runs the chips together, so a word-boundary regex would
+    // never match; a plain substring is what actually catches the chip.
+    expect(h.textContent).not.toContain("Completed")
+  })
+
+  it("says nothing about the level before the assessment is completed", () => {
+    cleanup()
+    result = { ...completed({ level: 8 }), completed: false, complete: false }
+    const h = header()
+    expect(h.textContent).not.toContain("Level 8")
+    expect(h.textContent).toContain("Engineer")
+  })
+
+  // The sheet title takes the vendored size. It carried a text-lg override
+  // from before the sheet had a type pass, which made the header a second
+  // scale beside every other sheet in the app.
+  it("leaves the title at the vendored heading size", () => {
+    header()
+    const title = document.querySelector(
+      '[data-slot="sheet-title"]'
+    ) as HTMLElement
+    expect(title.className).not.toContain("text-lg")
+    expect(title.className).toContain("cn-font-heading")
+  })
+})
+
+// The anchor is a FACT ABOUT THE ROLE, in the same idiom as its family: a
+// muted label, the value under it, its own chips, and its own way in.
+describe("RoleSheet anchor row", () => {
+  const anchor = messages.dashboard.roles.anchor
+  const anchorLabel = messages.dashboard.levels.anchorLabel
+
+  beforeEach(() => {
+    install()
+    result = completed({ level: 8 })
+  })
+  afterEach(() => cleanup())
+
+  function withAnchor(status: "active" | "underReview" | "replaced") {
+    role = {
+      ...baseRole(),
+      anchorRole: {
+        expectedLevel: 8,
+        motivation: "Reference role",
+        status,
+        reviewedAt: 0,
+      },
+    }
+    renderSheet()
+    open()
+  }
+
+  it("names the anchor and its agreed level in the body", () => {
+    withAnchor("active")
+    const label = screen.getByText(anchorLabel)
+    const row = label.parentElement as HTMLElement
+    // The agreed level reads inside the row, under its own label. It matches
+    // the header's placement chip word for word while the two agree, which is
+    // the point of an anchor and is why the label above it has to be there.
+    expect(
+      within(row).getByText(anchor.levelOption.replace("{level}", "8"))
+    ).toBeDefined()
+    expect(within(row).getByText("Reference role")).toBeDefined()
+  })
+
+  // THE HOLE THIS ROW EXISTS TO CLOSE. The form used to be offered only while
+  // the anchor was live, so retiring one from the sheet removed the only
+  // control that could bring it back: the status field lives in that form.
+  it.each(["active", "underReview", "replaced"] as const)(
+    "offers the form on a %s anchor",
+    (status) => {
+      withAnchor(status)
+      expect(
+        screen.getByRole("button", { name: anchor.detailsCta })
+      ).toBeDefined()
+    }
+  )
+
+  it("says nothing at all on a role that is not an anchor", () => {
+    role = baseRole()
+    renderSheet()
+    open()
+    expect(screen.queryByText(anchorLabel)).toBeNull()
+    expect(screen.queryByRole("button", { name: anchor.detailsCta })).toBeNull()
+  })
+
+  // One species of label across the sheet. The contribution label sat at
+  // text-sm while the three above it sat at text-xs, which read as a heading
+  // of a different rank rather than the fourth member of a set.
+  it("labels every field in the same idiom", () => {
+    withAnchor("active")
+    for (const label of [
+      anchorLabel,
+      messages.model.roleFamily,
+      messages.dashboard.rating.result.breakdownLabel,
+    ]) {
+      const node = screen.getByText(label, { exact: false })
+      const box = node.closest("p, div") as HTMLElement
+      expect(box.className).toContain(FIELD_LABEL_CLASS)
+    }
   })
 })

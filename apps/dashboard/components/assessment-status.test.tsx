@@ -4,7 +4,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 
 import {
-  AssessmentStatusBadge,
+  CalibratedBadge,
   CompletedIncompleteNotice,
   MethodDriftBadge,
 } from "@/components/assessment-status"
@@ -27,13 +27,8 @@ describe("assessment status", () => {
   // a row of small icons reads as a toolbar rather than as state.
   it.each([
     [
-      "completed",
-      <AssessmentStatusBadge calibrated={false} key="l" />,
-      detail.completedBadge,
-    ],
-    [
       "calibrated",
-      <AssessmentStatusBadge calibrated key="c" />,
+      <CalibratedBadge calibrated key="c" />,
       detail.calibratedBadge,
     ],
     ["method drift", <MethodDriftBadge key="d" />, detail.methodDriftBadge],
@@ -44,14 +39,14 @@ describe("assessment status", () => {
     expect(container.querySelector("img")).toBeNull()
   })
 
-  // The two states are ONE chip, so a calibrated assessment shows the
-  // confirmed word INSTEAD of the completed one, never both. Two chips side by
-  // side said one fact twice: calibrating requires a completed assessment, so
-  // the second could never appear without the first.
-  it("shows one chip, not two, once a placement is confirmed", () => {
-    renderStatus(<AssessmentStatusBadge calibrated />)
-    expect(screen.getByText(detail.calibratedBadge)).toBeDefined()
-    expect(screen.queryByText(detail.completedBadge)).toBeNull()
+  // Nothing at all while the assessment is merely completed. Every surface
+  // that showed a "Completed" chip also proved completion beside it: a level
+  // chip, a weighting figure, or a notice already saying the word. A chip that
+  // repeats what the thing next to it demonstrates is one the reader has to
+  // read before discovering it says nothing.
+  it("says nothing until a placement is confirmed", () => {
+    const { container } = renderStatus(<CalibratedBadge calibrated={false} />)
+    expect(container.textContent).toBe("")
   })
 
   it("says what a completed-but-incomplete assessment needs", () => {
