@@ -111,11 +111,35 @@ describe("RatingStepper", () => {
     cleanup()
   })
 
-  it("starts at the first unrated criterion (resume)", () => {
+  // OPENS AT THE BEGINNING, whatever is already answered (owner ruling
+  // 2026-08-25). It used to resume at the first gap, and at the LAST
+  // criterion once everything was answered, which showed a reader the final
+  // question the moment they opened an assessment.
+  it("opens at the first criterion even when it is already answered", () => {
     renderStepper({
       ratings: [{ criterionId: "c-scope", value: 2, motivation: null }],
     })
-    expect(screen.getByText("Risk")).toBeDefined()
+    expect(screen.getByText("Scope")).toBeDefined()
+    expect(screen.queryByText("Risk")).toBeNull()
+    // And it opens with the saved answer already chosen, so walking forward
+    // over answered ground costs a press rather than a re-read.
+    expect(
+      screen
+        .getByText("Scope anchor 2")
+        .closest("button")
+        ?.getAttribute("aria-checked")
+    ).toBe("true")
+  })
+
+  it("opens at the first criterion when every criterion is answered", () => {
+    renderStepper({
+      ratings: [
+        { criterionId: "c-scope", value: 2, motivation: null },
+        { criterionId: "c-risk", value: 4, motivation: "Broad consequence" },
+      ],
+    })
+    expect(screen.getByText("Scope")).toBeDefined()
+    expect(screen.queryByText("Risk")).toBeNull()
   })
 
   it("renders the criterion's assessment question as the step description", () => {
@@ -147,6 +171,13 @@ describe("RatingStepper", () => {
   it("includes the motivation when given and completes on the last step", async () => {
     renderStepper({
       ratings: [{ criterionId: "c-scope", value: 2, motivation: null }],
+    })
+    // The flow opens at the beginning now, so reaching the last step means
+    // walking to it; Scope arrives with its saved answer selected, so Next is
+    // live without touching an anchor.
+    fireEvent.click(screen.getByRole("button", { name: labels.nextCta }))
+    await waitFor(() => {
+      expect(screen.getByText("Risk anchor 4")).toBeDefined()
     })
     fireEvent.click(screen.getByText("Risk anchor 4"))
     fireEvent.change(screen.getByLabelText(labels.motivationLabel), {

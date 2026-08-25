@@ -124,19 +124,23 @@ export function RatingStepper({
     },
   ]
 
-  const firstUnrated = criteria.findIndex(
-    (criterion) =>
-      !ratings.some((rating) => rating.criterionId === criterion.criterionId)
-  )
-  // Resume where the work is. With something still unrated that is the first
-  // gap; with everything rated it is the LAST criterion, because an assessment
-  // whose criteria are all answered and which is still not completed is one
-  // press from its own ending (a reopened assessment is the ordinary way to
-  // arrive here), and opening at step 1 would ask the reader to walk the whole
-  // ladder again to reach a button they could have had immediately.
-  const [index, setIndex] = useState(
-    firstUnrated === -1 ? criteria.length - 1 : firstUnrated
-  )
+  // THE FLOW OPENS AT ITS BEGINNING, every time (owner ruling 2026-08-25).
+  //
+  // It used to resume "where the work is": the first unanswered criterion, or
+  // the LAST one when everything was answered, on the reasoning that a fully
+  // rated assessment is one press from its own ending. What that produced is a
+  // reader who opens an assessment and is shown the final question, which is
+  // not where anyone reads from. Opening an assessment is opening it, not
+  // returning to a bookmark.
+  //
+  // ONE rule rather than two, deliberately. The alternative kept the first
+  // gap for a half-done draft and only changed the all-answered case, but the
+  // old code was a single ternary conflating "resume at the gap" with "jump
+  // to the end", and a position that is sometimes the start and sometimes not
+  // is a behaviour nobody can predict from outside. A partly rated draft opens
+  // on step 1 with its own saved answer already selected, so nothing is lost
+  // on the way forward; the last step still carries the completion.
+  const [index, setIndex] = useState(0)
   const [direction, setDirection] = useState(1)
   const [values, setValues] = useState<Record<string, number | undefined>>(() =>
     Object.fromEntries(
