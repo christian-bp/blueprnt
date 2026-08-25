@@ -1,0 +1,115 @@
+apps/dashboard/lib/todo.test.ts
+  s_58dd112dc09435::t_50aaf8b76e8864 870-872
+  s_58dd112dc09435::t_b47c983ad317fe 22-28
+  s_58dd112dc09435::t_2fae8e8fd99ed9 796-869,873-875
+apps/dashboard/app/(app)/work/page.test.tsx
+  s_58dd112dc09435::t_d77d9c9d0c3aec 221-222,224
+  s_58dd112dc09435::t_2bff3eafc00783 46-52
+  s_58dd112dc09435::t_b34476093ad376 208-220,223,225-230
+apps/dashboard/components/admin/email-log-section.tsx
+  s_58dd112dc09435::t_35c804ce57ecf5 431
+  s_58dd112dc09435::t_363ad33febf742 356-358,361
+apps/dashboard/lib/calibration-queue.test.ts
+  s_58dd112dc09435::t_a9e347ddbc6268 3-5,8-9,12,16,21-23,28-31,34-38,41-46,49,51-52,56-57,60-65,68-72,74,76,78-96,99-101,103-106,109-112,114,116-136,139-140
+apps/dashboard/components/levels/calibration-marker.tsx
+  s_58dd112dc09435::t_4ed3290cea8fe8 1-50
+apps/dashboard/content/docs/sv/levels-views.mdx
+  s_58dd112dc09435::t_43b35c2a245936 65-83
+apps/dashboard/components/org-audit-log-section.tsx
+  s_58dd112dc09435::t_363ad33febf742 597
+  s_58dd112dc09435::t_5886db9525a5f7 851
+apps/dashboard/components/levels/level-ladder.test.tsx
+  s_58dd112dc09435::t_c9fd331ac5394a 38-44
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_d77d9c9d0c3aec 1686
+  s_58dd112dc09435::t_66ec97bb202d7f 942
+  s_58dd112dc09435::t_70126f36128c4e 1669
+packages/backend/convex/assessment/roles.ts
+  s_58dd112dc09435::t_a5e12b9b09cbf4 33
+  s_58dd112dc09435::t_50aaf8b76e8864 280
+  s_58dd112dc09435::t_03bc3863f4a87d 216-224,260-262,275-279,281-282
+  s_58dd112dc09435::t_e14e0bce723a4a 236-243
+apps/dashboard/lib/levels.ts
+  s_58dd112dc09435::t_fe1d8bd95db5da 2,31-39
+apps/dashboard/content/docs/nb/levels-views.mdx
+  s_58dd112dc09435::t_43b35c2a245936 65-83
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_d77d9c9d0c3aec 1686
+  s_58dd112dc09435::t_70126f36128c4e 1669
+  s_58dd112dc09435::t_66ec97bb202d7f 942
+apps/dashboard/components/levels/role-chip.test.tsx
+  s_58dd112dc09435::t_8134f43e25ce29 89-159
+  s_58dd112dc09435::t_c9fd331ac5394a 24-30
+apps/dashboard/components/levels/role-chip.tsx
+  s_58dd112dc09435::t_1bc0be37230d42 5,8-11,14,21-30,34,49-53,58-59,64,73
+apps/dashboard/lib/zone-bands.test.ts
+  s_58dd112dc09435::t_c9fd331ac5394a 28-34
+apps/dashboard/components/role-sheet.tsx
+  s_58dd112dc09435::t_d296d7fbdf6e55 248-270,272-291,294-305,307-316
+  s_58dd112dc09435::t_35e960bd29b1b7 335-352,354-362,372-376,378-381,385-395,397-430,432-478,482-508
+  s_58dd112dc09435::t_b97412a18d5247 271,353,363-371,382-384,396
+  s_58dd112dc09435::t_c78b15a8c89e66 118-132
+  s_58dd112dc09435::t_31f8468ceedc4c 6,479-481
+  s_58dd112dc09435::t_c249c07a0fbfc5 7-8,35-44,377,431
+  s_58dd112dc09435::t_a0c0109d2a26d4 317-318
+apps/dashboard/lib/todo.ts
+  s_58dd112dc09435::t_c6e7e373cd7a13 5,13
+  s_58dd112dc09435::t_75eac4d8595b73 382
+  s_58dd112dc09435::t_bb9d11492e2060 28,83,103-108,191-196,224-244,431-436,511,534,553
+apps/dashboard/components/levels/pending-roles.test.tsx
+  s_58dd112dc09435::t_c9fd331ac5394a 24-30
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_66ec97bb202d7f 942
+  s_58dd112dc09435::t_d77d9c9d0c3aec 1686
+  s_58dd112dc09435::t_70126f36128c4e 1669
+apps/dashboard/content/docs/en/levels-views.mdx
+  s_58dd112dc09435::t_43b35c2a245936 62-78
+apps/dashboard/content/docs/da/levels-views.mdx
+  s_58dd112dc09435::t_43b35c2a245936 66-84
+apps/dashboard/components/role-sheet.test.tsx
+  s_58dd112dc09435::t_cbd9b7b7099b47 36-41
+  s_58dd112dc09435::t_35c804ce57ecf5 311,336,367
+  s_58dd112dc09435::t_7f7195689c2873 54-57,260-294,296-310,312-335,337-366,368-380
+  s_58dd112dc09435::t_e82999901ef3e2 295
+  s_58dd112dc09435::t_b7956ace57d4ce 381
+apps/dashboard/components/levels/level-matrix.test.tsx
+  s_58dd112dc09435::t_c9fd331ac5394a 30-36
+apps/dashboard/content/docs/fi/levels-views.mdx
+  s_58dd112dc09435::t_43b35c2a245936 66-84
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_58dd112dc09435::t_363ad33febf742 455
+  s_58dd112dc09435::t_5886db9525a5f7 556
+apps/dashboard/lib/calibration-queue.ts
+  s_58dd112dc09435::t_6f540de33acc1f 30-34,36,40,43,45-70,73-74,76-79
+  s_58dd112dc09435::t_48c3d8bc4ed898 75
+  s_58dd112dc09435::t_d3736a5a37b6e2 1-8,10-14,23
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.tsx
+  s_58dd112dc09435::t_363ad33febf742 884-885
+  s_58dd112dc09435::t_3fde2eb0e37d9a 888-892
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_66ec97bb202d7f 942
+  s_58dd112dc09435::t_70126f36128c4e 1669
+  s_58dd112dc09435::t_d77d9c9d0c3aec 1686
+apps/dashboard/components/levels/family-level-matrix.test.tsx
+  s_58dd112dc09435::t_c9fd331ac5394a 30-36
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_d77d9c9d0c3aec 1686
+  s_58dd112dc09435::t_70126f36128c4e 1669
+  s_58dd112dc09435::t_66ec97bb202d7f 942
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "9b83b46fedbc501aa035a3b093e74cfef6891d12",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
