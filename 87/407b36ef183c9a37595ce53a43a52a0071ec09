@@ -1,0 +1,27 @@
+packages/ui/scripts/update-shadcn.ts
+  s_58dd112dc09435::t_c101890c94e61c 48-49
+apps/dashboard/components/role-sheet.tsx
+  s_58dd112dc09435::t_e526ac5a86f343 143,219
+packages/ui/src/components/sheet.tsx
+  s_58dd112dc09435::t_135321d512e1a3 57-81,93-98,116-120,130-133,144-147
+apps/dashboard/components/role-sheet.test.tsx
+  s_58dd112dc09435::t_e526ac5a86f343 382-448
+packages/ui/patches/sheet.patch
+  s_58dd112dc09435::t_c101890c94e61c 1-90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "87407b36ef183c9a37595ce53a43a52a0071ec09",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
