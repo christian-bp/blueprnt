@@ -1,0 +1,35 @@
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_aa8ec84ec10863 2133
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_aa8ec84ec10863 2133
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_aa8ec84ec10863 2133
+apps/dashboard/components/model/model-section-shell.test.tsx
+  s_58dd112dc09435::t_f5367175d9cc86 137-143,145
+docs/superpowers/specs/2026-08-18-adaptable-role-evaluation-design.md
+  s_58dd112dc09435::t_c278a32cb9a55e 188-189,224
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_aa8ec84ec10863 2133
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_aa8ec84ec10863 2133
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_58dd112dc09435::t_050d3579c24860 534-540,542
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.test.tsx
+  s_58dd112dc09435::t_f5367175d9cc86 451-485,488,490
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "0c0022cbe1b0fea28c9368f70692b5da26cc12fa",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
