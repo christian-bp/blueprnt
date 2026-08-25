@@ -1630,15 +1630,15 @@
         "midpointExplanation": "Harkittu välivaihe: vaatimus asettuu sen ympärillä olevien kahden portaan väliin.",
         "step1": {
           "name": "Rajattu vaatimus",
-          "meaning": "Vaatimus on selkeästi määritelty, paikallinen tai laajuudeltaan rajattu. Rooli toimii pääosin vakiintuneissa puitteissa."
+          "meaning": "Vaatimus on selkeästi määritelty, paikallinen tai laajuudeltaan rajattu. Vakiintuneet puitteet ja toimintatavat riittävät yleensä."
         },
         "step2": {
           "name": "Perustasosta kohtalaiseen ulottuva vaatimus",
-          "meaning": "Vaatimus toistuu, mutta selkeästi rajatulla alueella. Rooli käsittelee vaihtelua ja yksinkertaisempia poikkeamia."
+          "meaning": "Vaatimus toistuu selkeästi rajatulla alueella. Vaihtelut ja yksinkertaisemmat poikkeamat on hoidettava."
         },
         "step3": {
           "name": "Itsenäinen ja vakiintunut vaatimus",
-          "meaning": "Vaatimus on selkeä ja toistuva osa roolia. Rooli tekee ammatillisia arvioita omalla alueellaan."
+          "meaning": "Vaatimus on selkeä ja toistuva osa aluetta. Ammatilliset arviot tehdään vakiintuneiden puitteiden sisällä."
         },
         "step4": {
           "name": "Vaativa tai laaja vaatimus",
@@ -1646,7 +1646,7 @@
         },
         "step5": {
           "name": "Erittäin vaativa, laaja tai liiketoimintakriittinen vaatimus",
-          "meaning": "Vaatimuksella on erittäin suuri laajuus, vaikeusaste, seuraus tai strateginen merkitys. Rooli muovaa usein suuntaa, standardeja, ratkaisuja tai tuloksia oman lähialueensa ulkopuolella."
+          "meaning": "Vaatimuksella on erittäin suuri laajuus, vaikeusaste, seuraus tai strateginen merkitys. Se voi vaikuttaa suuntaan, standardeihin, ratkaisuihin tai tuloksiin myös lähialueen ulkopuolella."
         }
       },
       "completeCta": "Viimeistele arviointi",

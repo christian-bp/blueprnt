@@ -89,7 +89,7 @@ const COMPLEXITY = "Complexity and ambiguity"
 const COMPLEXITY_SHORT =
   "The role's requirement to handle uncertainty, multi-faceted questions and unclear frames with qualified judgment."
 
-const COMMUNICATION = "Communication and relationship effort"
+const COMMUNICATION = "Communication and relationship-demanding work"
 const ANCHOR_LOW = "Follows an established method"
 const ANCHOR_HIGH = "Defines how the field works"
 

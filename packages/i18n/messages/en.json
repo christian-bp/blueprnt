@@ -1630,23 +1630,23 @@
         "midpointExplanation": "A considered midpoint: the requirement sits between the two steps around it.",
         "step1": {
           "name": "Defined requirement",
-          "meaning": "The requirement is clearly defined, local or limited in scope. The role works mainly within established frameworks."
+          "meaning": "The requirement is clearly defined, local or limited in scope. Established frames and ways of working are normally enough."
         },
         "step2": {
           "name": "Basic to moderate requirement",
-          "meaning": "The requirement recurs, but within a clearly bounded area. The role handles variation and straightforward exceptions."
+          "meaning": "The requirement recurs within a clearly bounded area. Variations and simpler deviations have to be handled."
         },
         "step3": {
           "name": "Independent and established requirement",
-          "meaning": "The requirement is a clear and recurring part of the role. The role makes professional judgements within its own area."
+          "meaning": "The requirement is a clear and recurring part of the area. Professional judgments are made within established frames."
         },
         "step4": {
           "name": "Advanced or broad requirement",
-          "meaning": "The requirement is advanced, reaches wider, or calls for independent trade-offs where established practice is not always enough."
+          "meaning": "The requirement is advanced, reaches wider or calls for independent trade-offs where established ways of working are not always enough."
         },
         "step5": {
           "name": "Highly advanced, extensive or business-critical requirement",
-          "meaning": "The requirement carries great scope, difficulty, consequence or strategic importance. The role often shapes direction, standards, solutions or outcomes beyond its own immediate area."
+          "meaning": "The requirement carries very great scope, difficulty, consequence or strategic significance. It can shape direction, standards, solutions or results beyond the immediate area."
         }
       },
       "completeCta": "Complete the assessment",

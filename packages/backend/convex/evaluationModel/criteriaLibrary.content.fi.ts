@@ -45,27 +45,27 @@ export const criteriaLibraryContentFi: CriteriaLibraryContent = {
     "1": {
       name: "Rajattu vaatimus",
       meaning:
-        "Vaatimus on selkeästi määritelty, paikallinen tai laajuudeltaan rajattu. Rooli toimii pääasiassa vakiintuneiden raamien sisällä.",
+        "Vaatimus on selkeästi määritelty, paikallinen tai laajuudeltaan rajattu. Vakiintuneet puitteet ja toimintatavat riittävät yleensä.",
     },
     "2": {
       name: "Perustason tai kohtalainen vaatimus",
       meaning:
-        "Vaatimus toistuu, mutta selkeästi rajatulla alueella. Rooli käsittelee vaihteluita ja yksinkertaisempia poikkeamia.",
+        "Vaatimus toistuu selkeästi rajatulla alueella. Vaihtelut ja yksinkertaisemmat poikkeamat on hoidettava.",
     },
     "3": {
       name: "Itsenäinen ja vakiintunut vaatimus",
       meaning:
-        "Vaatimus on selkeä ja toistuva osa roolia. Rooli tekee ammatillisia arvioita omalla alueellaan.",
+        "Vaatimus on selkeä ja toistuva osa aluetta. Ammatilliset arviot tehdään vakiintuneiden puitteiden sisällä.",
     },
     "4": {
       name: "Vaativa tai laaja-alainen vaatimus",
       meaning:
-        "Vaatimus on vaativa, sen vaikutusalue on laajempi, tai se edellyttää itsenäistä harkintaa tilanteissa, joissa vakiintuneet toimintatavat eivät aina riitä.",
+        "Vaatimus on vaativa, ulottuu laajemmalle tai edellyttää itsenäisiä punnintoja, joihin vakiintuneet toimintatavat eivät aina riitä.",
     },
     "5": {
       name: "Erittäin vaativa, laaja tai liiketoimintakriittinen vaatimus",
       meaning:
-        "Vaatimuksella on erittäin suuri laajuus, vaikeusaste, seuraus tai strateginen merkitys. Rooli muovaa usein suuntaa, standardeja, ratkaisuja tai tuloksia oman lähialueensa ulkopuolella.",
+        "Vaatimuksella on erittäin suuri laajuus, vaikeusaste, seuraus tai strateginen merkitys. Se voi vaikuttaa suuntaan, standardeihin, ratkaisuihin tai tuloksiin myös lähialueen ulkopuolella.",
     },
   },
   midpoints: {
@@ -75,526 +75,535 @@ export const criteriaLibraryContentFi: CriteriaLibraryContent = {
   criteria: {
     "knowledge-depth": {
       name: "Tiedon syvyys ja asiantuntijataso",
-      shortUiText:
-        "Roolin edellyttämä syvällinen asiantuntemus ja vaativa ongelmanratkaisu.",
+      shortUiText: "Syvä erikoisosaaminen rajatulla ammattialueella.",
       fullDefinition:
-        "Kuvaa roolin edellyttämää syvällistä ammattiosaamista, asiantuntijamenetelmiä, vaativaa ongelmanratkaisua ja olennaista kokemusta. Kriteeri mittaa roolin tavanomaisesti käyttämän asiantuntemuksen syvyyttä, ei muodollista tutkintoa sinänsä eikä sitä, miten yksittäinen ongelma sattui ratkeamaan.",
+        "Kattaa syvän ammattitiedon, asiantuntijamenetelmät ja olennaisen kokemuksen yhdellä pääalueella. Kriteeri koskee sitä, kuinka syvää osaamisen on oltava, jotta alueen vaikeat kysymykset voidaan ratkaista. Se ei koske osaamisen laajuutta, muodollisia kelpoisuuksia, toimintaympäristön tuntemusta eikä neuvonantoa omana alueenaan.",
       measures:
-        "Syvällisen ammattiosaamisen, asiantuntijamenetelmien, vaativan ongelmanratkaisun ja olennaisen kokemuksen vaatimusta.",
+        "Syvä ammattitieto, asiantuntijamenetelmät, olennainen ja pysyvä kokemus yhdeltä alueelta.",
       notMeasures:
-        "Muodollista tutkintoa sinänsä, yksittäisen ongelman vaikeutta tai yksilön suoritusta.",
+        "Osaamisalueiden lukumäärä, muodollinen tutkinto tai sertifiointi sinänsä, tietyn toimialan tai organisaation tuntemus sinänsä, päätösvalta tai yksilön suoriutuminen.",
       whenSuitable:
-        "Lähes aina relevantti tietointensiivisissä organisaatioissa.",
+        "Valitse, kun syvää erikoisosaamista yhdellä ammattialueella halutaan painottaa erityisesti samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Valitse yleensä joko tämä tai laajempi yhdistetty osaamiskriteeri, ei molempia.",
+        "Älä valitse pelkästään koulutusvaatimusten, useiden ammattialueiden välisen laajan yhteistyön tai neuvonannon vuoksi. Arvioi sen sijaan, kattaako jokin lähikriteeri paremmin sen, mitä yritys haluaa painottaa.",
       controlQuestion:
-        "Onko roolin edellyttämän asiantuntemuksen syvyydellä merkitystä itsessään, erillään sen laajuudesta, muodollisesta pätevyydestä, toimialakontekstista ja neuvonantoharkinnasta?",
+        "Onko syvä erikoisosaaminen alue, jota haluatte painottaa erityisesti samanarvoisuuden arvioinnissa?",
       assessmentQuestion:
         "Millaista asiantuntemuksen syvyyttä rooli normaalisti ja pysyvästi edellyttää?",
       anchor1:
-        "Rooli käyttää vakiintunutta, hyvin dokumentoitua ammattiosaamista selkeästi rajatulla alueella ja soveltaa tuttuja menetelmiä tuttuihin ongelmiin.",
+        "Vakiintunutta ja hyvin dokumentoitua ammattitietoa selkeästi rajatulla alueella. Tunnetut menetelmät riittävät tuttuihin kysymyksiin.",
       anchor3:
-        "Rooli soveltaa itsenäisesti syvällistä asiantuntemusta ja vakiintuneita ammattimenetelmiä ratkaistakseen ongelmia omalla alueellaan.",
+        "Syvennettyä erikoisosaamista ja vakiintunutta ammattimetodiikkaa käytetään itsenäisesti alueen toistuviin ja vaativampiin kysymyksiin.",
       anchor5:
-        "Roolilla on erittäin vaativan tason asiantuntemusta, ja sitä käytetään usein alan vaikeimpien ongelmien ratkaisemiseen, mikä muovaa ammatillisia standardeja tai käytäntöjä oman tiimin ulkopuolella.",
+        "Erittäin syvää erikoisosaamista käytetään alan vaikeimpiin kysymyksiin. Osaaminen auttaa kehittämään menetelmiä, laatutasoja tai ammatillista käytäntöä.",
     },
     "knowledge-breadth": {
-      name: "Tiedon laajuus ja monialainen ymmärrys",
+      name: "Tiedon laajuus ja poikkitieteellinen ymmärrys",
       shortUiText:
-        "Roolin edellyttämä useiden osaamisalueiden yhdistäminen ja niiden välisten yhteyksien ymmärtäminen.",
+        "Kyky yhdistää useita osaamisalueita ja ymmärtää niiden väliset yhteydet.",
       fullDefinition:
-        "Kuvaa roolin edellyttämää useiden osaamisalueiden, kuten tuotteen, datan, liiketoiminnan ja teknologian, yhdistämistä ja niiden keskinäisten yhteyksien ymmärtämistä. Kriteeri mittaa yhdistämisen laajuutta, ei niiden henkilöiden määrää, joiden kanssa rooli tekee yhteistyötä.",
+        "Kattaa tarpeen yhdistää tietoa useilta eri alueilta, esimerkiksi liiketoiminnasta, tekniikasta, datasta, tuotteesta ja toiminnasta. Kriteeri koskee alueiden välisten yhteyksien ja punnintojen ymmärtämistä. Se ei koske yksittäisen ammattialueen syvyyttä eikä kontaktien tai yhteistyökumppanien määrää.",
       measures:
-        "Useiden osaamisalueiden yhdistämisen ja niiden välisten yhteyksien ymmärtämisen vaatimusta.",
-      notMeasures: "Yhteistyökumppanien määrää tai organisatorista vaikutusta.",
+        "Osaamisalueiden laajuus, alueiden välisten yhteyksien ymmärtäminen, kyky punnita eri näkökulmia keskenään.",
+      notMeasures:
+        "Syvä erikoisosaaminen yhdellä alueella, kokousten, sidosryhmien tai kontaktipintojen määrä, organisatorinen ulottuvuus.",
       whenSuitable:
-        "Kun roolien on yhdistettävä useita sisältöalueita, esimerkiksi tuote, data, liiketoiminta ja teknologia.",
+        "Valitse, kun kokonaisnäkemystä ja kykyä yhdistää useita osaamisalueita halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Valitse vain, kun laajuus on itsenäinen ero asiantuntemuksen syvyyteen nähden.",
+        "Älä valitse pelkästään lukuisten kontaktipintojen vuoksi. Jos kyse on ennen kaikkea syvästä ammattitiedosta yhdellä alueella, 7.1 osuu paremmin.",
       controlQuestion:
-        "Onko roolin yhdistämän osaamisen laajuudella merkitystä itsessään, erillään siitä, kuinka syvällistä sen asiantuntemus on?",
+        "Onko kyky yhdistää useita osaamisalueita keskeinen sille, miten toiminta luo arvoa?",
       assessmentQuestion:
         "Millaista monialaista laajuutta rooli normaalisti ja pysyvästi edellyttää?",
       anchor1:
-        "Rooli käyttää pääasiassa yhtä osaamisaluetta ja tarvitsee harvoin yhdistää sitä muihin osa-alueisiin.",
+        "Käytössä on yksi pääosaamisalue. Yhteyksiä muihin alueisiin tarvitaan harvoin.",
       anchor3:
-        "Rooli yhdistää itsenäisesti muutamia vakiintuneita osaamisalueita ja ymmärtää, miten ne vaikuttavat toisiinsa.",
+        "Muutamaa vakiintunutta osaamisaluetta yhdistetään itsenäisesti ymmärtäen, miten ne vaikuttavat toisiinsa.",
       anchor5:
-        "Rooli yhdistää useita erilaisia osaamisalueita erittäin vaativalla tasolla, ja siihen luotetaan niiden yhdistämisessä tavoilla, jotka muovaavat ratkaisuja tai suuntaa oman alueen ulkopuolella.",
+        "Monia eri osaamisalueita yhdistetään tavalla, joka vaikuttaa siihen, miten laajempia ratkaisuja, tarjoomia tai toimintatapoja muotoillaan.",
     },
     "formal-qualifications": {
-      name: "Muodolliset pätevyys-, lupa- ja sertifiointivaatimukset",
-      shortUiText:
-        "Roolin edellyttämä pakollinen laillistus, lupa tai sertifiointi.",
+      name: "Muodolliset kelpoisuus-, pätevyys- ja sertifiointivaatimukset",
+      shortUiText: "Pakollinen laillistus, pätevyys tai sertifiointi.",
       fullDefinition:
-        "Kuvaa muodollisia vaatimuksia, jotka roolin on täytettävä voidakseen laillisesti harjoittaa, hyväksyä tai vastata työstä, kuten pakollista laillistusta, lupaa tai sertifiointia. Kriteeri mittaa muodollista vaatimusta sinänsä, ei yleistä koulutustasoa tai arvostettua tutkintoa, jota työn tekeminen ei edellytä.",
+        "Kattaa muodolliset vaatimukset, joiden on täytyttävä, jotta tiettyä toimintaa saa tehdä, hyväksyä, allekirjoittaa tai siitä vastata. Esimerkkejä ovat laillistus, lakisääteinen pätevyys ja pakollinen sertifiointi. Kriteeri koskee pakollisia vaatimuksia, ei koulutuksia, kursseja tai tutkintoja, jotka ovat ansioksi mutta eivät välttämättömiä.",
       measures:
-        "Työn harjoittamiseksi, hyväksymiseksi tai siitä vastaamiseksi vaadittavia muodollisia vaatimuksia.",
+        "Pakollinen laillistus, lakisääteinen tai toiminnan edellyttämä pätevyys, pakollinen sertifiointi.",
       notMeasures:
-        "Yleistä koulutustasoa, arvostettua tutkintoa tai vapaaehtoisia kursseja.",
+        "Yleinen koulutustaso, vapaaehtoiset kurssit, arvostettu tutkinto ilman pätevyysvaatimusta.",
       whenSuitable:
-        "Säännellyt tai turvallisuuskriittiset roolit, joissa vaaditaan pakollinen laillistus, lupa tai sertifiointi.",
+        "Valitse, kun pakollisia laillistuksia, pätevyyksiä tai sertifiointeja halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Ei tule käyttää, kun koulutus on vain väylä osaamiseen, jonka Tiedon syvyys jo kattaa.",
+        "Älä valitse, kun koulutus on ennen kaikkea väylä osaamiseen, jonka 7.1 Tiedon syvyys ja asiantuntijataso jo kattaa.",
       controlQuestion:
-        "Onko roolin pakollisella laillistuksella, luvalla tai sertifioinnilla merkitystä itsessään, erillään asiantuntemuksesta, jota se myös edellyttää?",
+        "Halutaanko pakollisten laillistusten, pätevyyksien tai sertifiointien vaikuttaa samanarvoisuuden arviointiin?",
       assessmentQuestion:
         "Millaista muodollista pätevyyttä, lupaa tai sertifiointia rooli normaalisti ja pysyvästi edellyttää?",
       anchor1:
-        "Rooli ei edellytä muodollista pätevyyttä, lupaa tai sertifiointia, tai se edellyttää vain perustason, selkeästi määriteltyä lupaa tai sertifiointia, jonka uusimis- tai laajuusvaatimus on rajallinen.",
+        "Ei pakollista vaatimusta, tai perustason selkeästi rajattu vaatimus, jonka uusiminen tai laajuus on vähäinen.",
       anchor3:
-        "Rooli edellyttää vakiintunutta ammatillista laillistusta tai sertifiointia, joka on toistuva, itsenäinen ehto roolin harjoittamiselle.",
+        "Vakiintunut ammatillinen laillistus tai sertifiointi, joka on toistuva ja itsenäinen ehto alalla toimimiselle.",
       anchor5:
-        "Rooli edellyttää vaativaa tai liiketoimintakriittistä laillistusta, lupaa tai sertifiointia, ilman jota roolia ei voi laillisesti harjoittaa, hyväksyä tai siitä vastata, ja joka usein asettaa standardin, jota muiden on noudatettava.",
+        "Vaativa tai toiminnan kannalta kriittinen pätevyys, jota edellytetään erittäin suuria seurauksia sisältävän toiminnan hyväksymiseen, allekirjoittamiseen tai siitä vastaamiseen.",
     },
     "domain-knowledge": {
-      name: "Toimiala- ja liiketoimintaosaaminen",
+      name: "Toimiala- ja toimintaympäristötuntemus",
       shortUiText:
-        "Roolin edellyttämä syvällinen, vaikeasti korvattavissa oleva tuntemus omasta toimialastaan tai liiketoimintaympäristöstään.",
+        "Syvä tuntemus toimialasta, tuotteesta, asiakasympäristöstä tai toimintaympäristöstä.",
       fullDefinition:
-        "Kuvaa roolin edellyttämää syvällistä kontekstiosaamista, kuten toimialaa, tuotetta, asiakasympäristöä tai säädöskontekstia, jota ei voida nopeasti korvata yleisellä ammattitaidolla. Kriteeri mittaa kontekstiosaamisen syvyyttä, ei yleistä kokemusta tai organisaatiotuntemusta, jota kaikkien odotetaan kartuttavan ajan myötä.",
+        "Kattaa tuntemuksen siitä ympäristöstä, jossa toimintaa harjoitetaan, esimerkiksi toimialasta, tuotteesta, asiakasympäristöstä, liiketoimintamallista tai sääntelystä. Kriteeri koskee ympäristösidonnaista tietoa, joka ei korvaudu nopeasti yleisellä ammattitiedolla. Se ei koske tavanomaista organisaation tuntemusta, joka karttuu perehdytyksen ja kokemuksen myötä.",
       measures:
-        "Syvällistä kontekstiosaamista, jota yleinen ammattitaito ei nopeasti korvaa.",
+        "Toimialatuntemus, tuote- ja asiakastuntemus, liiketoimintamallin tai sääntely-ympäristön tuntemus.",
       notMeasures:
-        "Yleistä kokemusta tai organisaatiotuntemusta, jota kaikkien odotetaan kartuttavan.",
+        "Yleinen ammattitaito, tavanomainen organisaation tuntemus, muodollinen pätevyys.",
       whenSuitable:
-        "Kun tietyn toimialan, tuotteen, asiakasympäristön tai säädösten tuntemus on roolin oma erillinen edellytys.",
+        "Valitse, kun toimintaympäristön erityistuntemusta halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Toimiala on konteksti; asiantuntijataso on ammatillinen menetelmä ja taito.",
+        "Älä valitse, kun yleinen ammattitieto ja tavanomainen perehdytys riittävät toimintaympäristön ymmärtämiseen.",
       controlQuestion:
-        "Onko roolin kontekstisidonnaisella toimialaosaamisella merkitystä itsessään, erillään sen yleisestä asiantuntijamenetelmästä ja taidosta?",
+        "Halutteko ottaa huomioon, kuinka paljon toiminta- ja toimialatuntemusta eri alueilla tarvitaan?",
       assessmentQuestion:
         "Millaista toimiala- ja liiketoimintaosaamista rooli normaalisti ja pysyvästi edellyttää?",
       anchor1:
-        "Rooli edellyttää toimialaosaamista, joka rajoittuu selkeästi rajattuun tuote-, prosessi- tai asiakaskontekstiin.",
+        "Selkeästi rajatun tuote-, prosessi- tai asiakasympäristön tuntemus.",
       anchor3:
-        "Rooli edellyttää vakiintunutta, itsenäistä tuntemusta omasta toimialastaan, jota yleinen ammattitaito ei nopeasti korvaa.",
+        "Vakiintunut ja itsenäinen toimintaympäristön tuntemus, joka ei korvaudu nopeasti yleisellä ammattitiedolla.",
       anchor5:
-        "Rooli edellyttää erittäin syvällistä, liiketoimintakriittistä toimialaosaamista, jota on vaikea korvata ja joka usein muovaa sitä, miten toimialan standardit tai käytännöt määritellään roolin oman alueen ulkopuolella.",
+        "Erittäin syvä ja vaikeasti korvattava toimialan, markkinan, asiakkaiden tai sääntelyn tuntemus, joka vaikuttaa tärkeisiin valintoihin ja toimintatapoihin.",
     },
     "advisory-judgment": {
       name: "Neuvonanto- ja harkintaosaaminen",
       shortUiText:
-        "Roolin edellyttämä kyky punnita tietoa ja muuttaa asiantuntemus päteviksi suosituksiksi.",
+        "Pätevä neuvonanto ja ammatillinen harkinta muiden päätösten pohjaksi.",
       fullDefinition:
-        "Kuvaa roolin edellyttämää kykyä punnita tietoa, käyttää ammatillista harkintaa ja muuttaa asiantuntemus päteviksi neuvoiksi tai suosituksiksi, joiden pohjalta muut toimivat. Kriteeri mittaa itse neuvonantoharkintaa, ei muodollista valtuutta päättää, mitä seuraavaksi tapahtuu.",
+        "Kattaa pätevän neuvonannon toistuvana osana toiminnan tarjoomaa tai ratkaisevana päätöstukena asiakkaille, kumppaneille tai sisäisille päättäjille. Siihen kuuluu tosiseikkojen punnitseminen, epävarman tai ristiriitaisen aineiston arviointi sekä sellaisten neuvojen tai suositusten muotoilu, joita muut käyttävät omissa valinnoissaan. Kriteeri koskee neuvonannon ja harkinnan laatua. Se ei koske muodollista oikeutta tehdä lopullinen päätös.",
       measures:
-        "Tiedon arvioinnin, pätevien neuvojen antamisen ja asiantuntemuksen suosituksiksi muuttamisen vaatimusta.",
-      notMeasures: "Muodollista päätösvaltaa.",
+        "Aineiston pätevä arviointi, neuvonanto ja suositukset, ammatillinen harkinta punnintaa vaativissa kysymyksissä.",
+      notMeasures:
+        "Muodollinen päätösvalta, yleisen tiedon jakaminen, erikoisosaaminen sinänsä.",
       whenSuitable:
-        "Konsultti-, partneri-, asiantuntija- ja johtavat asiantuntijaroolit, joissa pätevät neuvot ovat työn ydintuotos.",
+        "Valitse, kun pätevää neuvonantoa ja ammatillista harkintaa halutaan painottaa erityisesti samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Ei tule yhdistää Tiedon syvyys -kriteeriin, jos se vain kuvaa samaa asiantuntemusta eri sanoin.",
+        "Älä valitse pelkästään tiedon jakamisen tai rutiinivastausten vuoksi. Neuvonannolla on oltava selkeä merkitys valinnoille tai päätöksille.",
       controlQuestion:
-        "Onko roolin edellyttämällä neuvonantoharkinnalla merkitystä itsessään, erillään asiantuntemuksesta, johon harkinta perustuu?",
+        "Onko pätevä neuvonanto ja ammatillinen harkinta jotain, jolle haluatte antaa painoa samanarvoisuuden arvioinnissa?",
       assessmentQuestion:
         "Millaista neuvonanto- ja harkintaosaamista rooli normaalisti ja pysyvästi edellyttää?",
       anchor1:
-        "Rooli tuottaa taustatietoa tai yksinkertaisia neuvoja selkeästi rajatulla alueella vakiintuneen ohjeistuksen mukaisesti.",
+        "Aineistoa tai mutkattomia neuvoja selkeästi rajatulla alueella vakiintuneen ohjeistuksen tuella.",
       anchor3:
-        "Rooli punnitsee itsenäisesti tietoa ja antaa vakiintuneita, ammatillisia neuvoja, joihin muut luottavat omalla alueellaan.",
+        "Itsenäisiä ja vakiintuneita ammatillisia neuvoja yhdellä alueella olennaisen tiedon punnintaan perustuen.",
       anchor5:
-        "Roolin neuvoja ja harkintaa kysytään erittäin vaativissa tai liiketoimintakriittisissä kysymyksissä, ja ne muovaavat usein suosituksia, standardeja tai suuntaa, joita muut osat organisaatiosta noudattavat.",
+        "Neuvoja ja arvioita erittäin vaativissa tai arkaluonteisissa kysymyksissä, joilla on suuri merkitys toiminnan valinnoille tai riskien hallinnalle.",
     },
     "complexity-ambiguity": {
       name: "Monimutkaisuus ja epäselvyys",
       shortUiText:
-        "Roolin edellyttämä kyky käsitellä epävarmuutta, monitahoisia kysymyksiä ja epäselviä raameja pätevällä harkinnalla.",
+        "Käsiteltävien kysymysten vaikeusaste, epävarmuus ja epäselvyys.",
       fullDefinition:
-        "Kuvaa epävarmuutta, monitahoisia kysymyksiä, epäselviä raameja ja pätevän harkinnan tarvetta, joiden parissa rooli tavanomaisesti työskentelee. Kriteeri mittaa roolin käsittelemien ongelmien luonnetta, ei osaamisvaatimusta sinänsä, työtahtia eikä organisatorista vaikutusaluetta.",
+        "Kattaa epävarmuuden asteen, ristiriitaiset vaatimukset, epäselvät tavoitteet ja valmiiden ratkaisujen puuttumisen. Kriteeri koskee itse ongelmien luonnetta. Se ei koske niiden käsittelyyn käytetyn analyysin määrää, työtahtia eikä organisatorista ulottuvuutta.",
       measures:
-        "Epävarmuutta, monitahoisia kysymyksiä, epäselviä raameja ja pätevän harkinnan tarvetta.",
+        "Epäselvät puitteet ja tavoitteet, ristiriitaiset vaatimukset ja punninnat, epävarmuus ja monimutkaiset riippuvuudet.",
       notMeasures:
-        "Osaamisvaatimusta sinänsä, nopeaa työtahtia tai organisatorista vaikutusaluetta.",
-      whenSuitable: "Lähes aina relevantti.",
-      whenNotSuitable: "Tulisi yleensä olla ulottuvuuden pääkriteeri.",
+        "Analyysityön laajuus, suuri työmäärä tai tahti, erikoisosaaminen sinänsä.",
+      whenSuitable:
+        "Valitse, kun vaikeiden, epäselvien tai monitahoisten kysymysten käsittelyä halutaan painottaa samanarvoisuuden arvioinnissa.",
+      whenNotSuitable:
+        "Älä valitse pelkästään laajan analyysin tai monen samanaikaisen tehtävän vuoksi. Ne kattavat 8.2 ja 8.4, jos ne valitaan.",
       controlQuestion:
-        "Onko roolin käsittelemällä monimutkaisuudella ja epäselvyydellä merkitystä itsessään, erillään analyyttisestä ponnistuksesta, joka sen läpikäymiseen käytetään?",
+        "Halutteko ottaa huomioon käsiteltävien kysymysten epäselvyyden ja vaikeusasteen?",
       assessmentQuestion:
         "Millaista monimutkaisuutta ja epäselvyyttä rooli normaalisti ja pysyvästi käsittelee?",
       anchor1:
-        "Rooli työskentelee pääasiassa selkeästi määriteltyjen kysymysten, vakiintuneiden menetelmien ja ennakoitavissa olevien tilanteiden parissa.",
+        "Selkeästi määritellyt kysymykset, vakiintuneet menetelmät ja ennakoitavat tilanteet.",
       anchor2:
-        "Rooli käsittelee toistuvia vaihteluita ja yksinkertaisempia poikkeamia, joissa se valitsee tuttujen vaihtoehtojen väliltä.",
+        "Toistuvia vaihteluita ja yksinkertaisempia poikkeamia käsitellään valitsemalla tuttujen vaihtoehtojen väliltä.",
       anchor3:
-        "Rooli käsittelee itsenäisesti monimutkaisia kysymyksiä omalla alueellaan ja joutuu analysoimaan, priorisoimaan ja mukauttamaan ratkaisuja.",
+        "Monimutkaisia kysymyksiä vakiintuneiden puitteiden sisällä, joissa tarvitaan analyysia, priorisointia ja sopeuttamista.",
       anchor4:
-        "Rooli käsittelee vaativia, eri toimintojen välisiä tai osittain epäselviä ongelmia, joissa vakiintuneet ratkaisut eivät aina riitä.",
+        "Vaativia, eri toimintojen välisiä tai osittain epäselviä ongelmia käsitellään, kun vakiintuneet ratkaisut eivät aina riitä.",
       anchor5:
-        "Rooli määrittelee ja käsittelee erittäin monimutkaisia tai strategisesti tärkeitä ongelmia suuren epävarmuuden vallitessa ja muovaa usein lähestymistapoja, periaatteita tai pitkän aikavälin ratkaisuja.",
+        "Erittäin monimutkaisia tai strategisesti merkittäviä kysymyksiä, joissa epävarmuus on suuri ja joihin on muotoiltava uusia lähestymistapoja tai pitkän aikavälin ratkaisuja.",
     },
     "analytical-effort": {
-      name: "Analyyttinen ja ongelmanratkaisuun liittyvä ponnistus",
+      name: "Analyyttinen ja ongelmanratkaisua vaativa panos",
       shortUiText:
-        "Analyysin, vianetsinnän tai systemaattisen ongelmanratkaisun laajuus, jota rooli tavanomaisesti tekee.",
+        "Järjestelmällisen analyysin, vianhaun ja ongelmanratkaisun laajuus.",
       fullDefinition:
-        "Kuvaa analyysin, vianetsinnän, mallintamisen, diagnostiikan tai systemaattisen ongelmanratkaisun laajuutta, jota rooli tavanomaisesti tekee. Kriteeri mittaa analyyttistä työtä sinänsä, ei sen taustalla olevaa asiantuntemusta eikä pelkkää epäselvien ongelmien esiintymistä.",
+        "Kattaa järjestelmällisen analyysin, vianhaun, mallinnuksen, diagnostiikan, testauksen ja laskennan, joita ratkaisuihin pääseminen edellyttää. Kriteeri koskee analyyttistä panosta. Se ei koske pelkästään sitä, että ongelma on epäselvä, eikä analyysin taustalla olevaa erikoisosaamista.",
       measures:
-        "Analyysin, vianetsinnän, mallintamisen, diagnostiikan tai systemaattisen ongelmanratkaisun laajuutta.",
+        "Järjestelmällinen analyysi, vianhaku ja diagnostiikka, mallinnus, testaus ja laskenta.",
       notMeasures:
-        "Asiantuntemusta tai pelkkää epäselvien ongelmien esiintymistä.",
+        "Ongelman epäselvyys sinänsä, erikoisosaaminen sinänsä, tilapäinen suuri työmäärä.",
       whenSuitable:
-        "Kun henkinen analyysikuorma eroaa selvästi roolien välillä vastaavasta monimutkaisuudesta huolimatta.",
+        "Valitse, kun järjestelmällistä analyysi- ja ongelmanratkaisutyötä halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Yhdistä Monimutkaisuus-kriteeriin vain, jos ero voidaan selittää: monimutkaisuus on ongelman luonne, analyysi on työ, jota sen käsittely vaatii.",
+        "Älä valitse pelkästään epäselvien kysymysten vuoksi. Analyysin, vianhaun tai diagnostiikan on oltava toistuva ja selkeä osa työtä.",
       controlQuestion:
-        "Onko analyyttisellä ponnistuksella, jonka rooli käyttää ongelmien ratkaisemiseen, merkitystä itsessään, erillään siitä, kuinka monimutkaisia tai epäselviä nämä ongelmat ovat?",
+        "Halutaanko järjestelmällisen analyysi- ja ongelmanratkaisutyön laajuuden vaikuttaa samanarvoisuuden arviointiin?",
       assessmentQuestion:
         "Millaista analyyttistä ja ongelmanratkaisuun liittyvää ponnistusta rooli normaalisti ja pysyvästi kantaa?",
       anchor1:
-        "Rooli tekee yksinkertaista analyysia tai vianetsintää selkeästi rajatun tehtävän puitteissa vakiintuneiden vaiheiden mukaisesti.",
+        "Mutkatonta analyysia tai vianhakua selkeästi rajatussa kysymyksessä vakiintuneiden vaiheiden mukaan.",
       anchor3:
-        "Rooli tekee itsenäisesti vakiintunutta analyysia, diagnostiikkaa tai systemaattista ongelmanratkaisua toistuvana osana omaa aluettaan.",
+        "Itsenäistä ja vakiintunutta analyysia, diagnostiikkaa tai järjestelmällistä ongelmanratkaisua yhdellä alueella.",
       anchor5:
-        "Rooli tekee erittäin vaativaa tai laajaa analyysia, mallintamista tai diagnostiikkaa, joka on usein liiketoimintakriittistä ja muovaa sitä, miten vastaavia ongelmia lähestytään oman alueen ulkopuolella.",
+        "Erittäin vaativaa tai laajaa analyysia, mallinnusta tai diagnostiikkaa, jolla on suuri merkitys toiminnan kyvylle ratkaista kriittisiä tai toistuvia ongelmia.",
     },
     "communication-effort": {
       name: "Viestintää ja vuorovaikutusta vaativa työ",
       shortUiText:
-        "Roolin edellyttämä vaativa viestintä, neuvottelu tai konfliktinhallinta.",
+        "Vaatimukset pätevälle viestinnälle, neuvottelulle ja ristiriitaisten etujen käsittelylle.",
       fullDefinition:
-        "Kuvaa roolin edellyttämää vaativaa viestintää, neuvottelua, vaikuttamista, konfliktinhallintaa tai eri intressien välistä tulkintaa. Kriteeri mittaa viestinnällistä ponnistusta, ei sidosryhmien määrää, joiden kanssa rooli sattuu toimimaan, eikä sen organisatorista vaikutusta.",
+        "Kattaa viestinnän, neuvottelun, vaikuttamisen, ristiriitojen käsittelyn sekä eri tarpeiden ja etujen välisen tulkinnan vaikeusasteen. Kriteeri koskee viestinnällistä ja vuorovaikutuksellista panosta. Se ei koske kontaktien määrää, organisatorista ulottuvuutta eikä liiketoimintavastuuta.",
       measures:
-        "Pitkälle kehittyneen viestinnän, neuvottelun, vaikuttamisen, konfliktinhallinnan tai intressien välisen tulkinnan vaatimusta.",
-      notMeasures: "Sidosryhmien määrää tai organisatorista vaikutusta.",
+        "Neuvottelu ja vaikuttaminen, vaikeiden keskustelujen ja ristiriitojen käsittely, eri tarpeiden ja etujen välinen tulkinta.",
+      notMeasures:
+        "Kontaktien tai kokousten määrä, asiakas- tai tuottovastuu, organisatorinen ulottuvuus.",
       whenSuitable:
-        "Asiakasläheiset, neuvottelevat, neuvoa-antavat tai konfliktinhallintaa vaativat toiminnot, joissa tämä on keskeinen osa työtä.",
+        "Valitse, kun pätevää viestintää, neuvottelua ja ristiriitaisten etujen käsittelyä halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Mitataan viestinnällisenä ponnistuksena, ei verkoston kokona.",
+        "Älä valitse pelkästään kokousten tai asiakaskontaktien määrän vuoksi. Painotettavan on oltava viestinnän vaikeusaste.",
       controlQuestion:
-        "Onko viestinnällisellä ponnistuksella, jota rooli kantaa, merkitystä itsessään, erillään siitä, kuinka monta sidosryhmää tai kuinka laajan organisatorisen vaikutusalueen roolilla on?",
+        "Halutaanko pätevän viestinnän, neuvottelun ja ristiriitaisten etujen käsittelyn vaikuttaa samanarvoisuuden arviointiin?",
       assessmentQuestion:
         "Millaista viestintään ja vuorovaikutukseen liittyvää ponnistusta rooli normaalisti ja pysyvästi kantaa?",
       anchor1:
-        "Rooli viestii selkeästi rajatussa, pääosin rutiininomaisessa vuorovaikutuksessa vakiintuneiden osapuolten kanssa.",
+        "Selkeästi rajattua ja pääosin rutiininomaista viestintää vakiintuneiden osapuolten kanssa.",
       anchor3:
-        "Rooli toteuttaa itsenäisesti vakiintunutta, toistuvaa viestintää, neuvottelua tai konfliktinhallintaa osana omaa aluettaan.",
+        "Itsenäistä ja toistuvaa viestintää, neuvottelua tai ristiriitojen käsittelyä vakiintuneiden puitteiden sisällä.",
       anchor5:
-        "Rooli kantaa erittäin vaativaa tai liiketoimintakriittistä viestintää, neuvottelua tai konfliktinhallintaa ja muovaa usein sitä, miten arkaluonteisia suhteita tai kiistoja käsitellään oman alueen ulkopuolella.",
+        "Erittäin vaativaa tai arkaluonteista viestintää, neuvottelua tai ristiriitojen käsittelyä, jonka lopputuloksella on suuri merkitys toiminnan suhteille tai valinnoille.",
     },
     "operational-intensity": {
-      name: "Operatiivinen intensiteetti ja rinnakkaisten tehtävien vaatimus",
+      name: "Operatiivinen intensiteetti ja samanaikaisuusvaatimukset",
       shortUiText:
-        "Roolin tavanomainen vaatimus pitää huomio useissa samanaikaisissa prosesseissa ja priorisoida jatkuvasti.",
+        "Vaatimus hallita useita samanaikaisia virtoja ja priorisoida jatkuvasti.",
       fullDefinition:
-        "Kuvaa huomiokykyä, rinnakkaista suorituskykyä ja jatkuvaa priorisointia, jota rooli tavanomaisesti edellyttää tavanomaisessa toimintatilassaan. Kriteeri mittaa pysyvää, rakenteellista vaatimusta, ei tilapäisiä huippuja, alimiehitystä tai huonoa suunnittelua, jotka sattuvat lisäämään työmäärää.",
+        "Kattaa tarkkaavaisuuden, samanaikaisen suorituskyvyn ja jatkuvan priorisoinnin vaatimukset useiden virtojen välillä normaalitilanteessa. Esimerkkejä voivat olla asiakastapaukset, hälytykset, toimitukset tai käyttövirrat. Kriteeri koskee vakaata ja rakenteellista vaatimusta, ei tilapäisiä huippuja, resurssipulaa eikä puutteellista suunnittelua.",
       measures:
-        "Huomiokykyä, rinnakkaista suorituskykyä ja jatkuvaa priorisointia tavanomaisessa toimintatilassa.",
+        "Useita samanaikaisia virtoja, jatkuva priorisointi, tarkkaavaisuus aikapaineessa normaalitilanteessa.",
       notMeasures:
-        "Tilapäisiä huippuja, alimiehitystä tai huonoa suunnittelua.",
+        "Tilapäinen suuri työkuorma, alimiehitys, itse asiakysymyksen monimutkaisuus.",
       whenSuitable:
-        "Operatiiviset, asiakaspalvelu-, logistiikka- tai valvontaroolit, joissa on pysyvä vaatimus hallita useita samanaikaisia prosesseja ja tehdä nopeita priorisointeja.",
+        "Valitse, kun useiden samanaikaisten virtojen hallintaa ja priorisointia halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Ei saa käyttää palkitsemaan työmäärää, joka johtuu resurssipulasta.",
+        "Älä valitse korvaamaan tilapäisiä työhuippuja tai resurssipulaa. Vaatimuksen on oltava pysyvä osa toiminnan työtapaa.",
       controlQuestion:
-        "Onko roolin tavanomaisella operatiivisella intensiteetillä merkitystä itsessään, erillään alimiehityksen tai huonon suunnittelun aiheuttamista tilapäisistä huipuista?",
+        "Halutteko ottaa huomioon vaatimuksen hallita useita samanaikaisia virtoja ja priorisoida jatkuvasti?",
       assessmentQuestion:
         "Millaista operatiivista intensiteettiä ja rinnakkaisten tehtävien vaatimusta rooli normaalisti ja pysyvästi kantaa?",
       anchor1:
-        "Rooli käsittelee tavallisesti yhtä prosessia tai tehtävää kerrallaan selkeästi rajatussa työrytmissä.",
+        "Yksi virta tai tehtävä kerrallaan selkeästi rajatussa rytmissä.",
       anchor3:
-        "Rooli hallitsee itsenäisesti useita vakiintuneita, samanaikaisia prosesseja ja priorisoi niiden välillä tavanomaisena osana omaa aluettaan.",
+        "Useita vakiintuneita ja samanaikaisia virtoja hallitaan itsenäisesti jatkuvasti priorisoiden.",
       anchor5:
-        "Rooli ylläpitää erittäin korkeaa, liiketoimintakriittistä operatiivista intensiteettiä useiden samanaikaisten prosessien yli, ja sen tapa priorisoida asettaa usein mallin, jota muut noudattavat.",
+        "Erittäin korkea operatiivinen intensiteetti monen samanaikaisen virran yli, jolloin väärä priorisointi voi nopeasti aiheuttaa suuria seurauksia toiminnalle.",
     },
     "physical-sensory": {
-      name: "Fyysinen tai aisteihin kohdistuva rasitus",
+      name: "Fyysinen tai aistinvarainen rasitus",
       shortUiText:
-        "Roolin toistuva fyysinen kuormitus, tarkkuusvaatimus tai aisteihin kohdistuva keskittyminen.",
+        "Toistuva fyysinen kuormitus, tarkkuus tai pitkäkestoisen aistikeskittymisen vaatimus.",
       fullDefinition:
-        "Kuvaa toistuvaa fyysistä kuormitusta, tarkkuutta, ergonomisesti vaativia vaiheita tai aisteihin kohdistuvaa keskittymistä, jota rooli tavanomaisesti edellyttää. Kriteeri mittaa fyysistä tai aisteihin kohdistuvaa rasitusta sinänsä, ei turvallisuusriskiä tai altistumista, joita työ voi myös sisältää.",
+        "Kattaa fyysisen kuormituksen, ergonomisesti vaativat vaiheet, tarkkuuden sekä näköön, kuuloon tai muihin aisteihin perustuvan keskittymisen. Kriteeri koskee kehoon ja tarkkaavaisuuteen kohdistuvia vaatimuksia. Se ei koske riskiympäristöjä, altistumista vaarallisille aineille eikä seurauksia toiminnalle, jos jokin menee vikaan.",
       measures:
-        "Toistuvaa fyysistä kuormitusta, tarkkuutta, ergonomisesti vaativia vaiheita tai aisteihin kohdistuvaa keskittymistä.",
-      notMeasures: "Turvallisuusriskiä tai fyysistä altistumista.",
+        "Fyysinen ja ergonominen kuormitus, tarkkuusvaatimukset, pitkäkestoinen aisteihin perustuva keskittyminen.",
+      notMeasures:
+        "Riskiympäristö tai altistuminen, yleinen kuormittuneisuus, virheiden seuraukset.",
       whenSuitable:
-        "Teollisuus, terveydenhuolto, varastointi, tuotanto, kenttähuolto tai laboratoriot.",
+        "Valitse, kun fyysistä kuormitusta, tarkkuutta tai aistikeskittymistä halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Riskiympäristö ja altistuminen kuuluvat yleensä Työolosuhteet-ulottuvuuteen.",
+        "Älä valitse pelkästään työympäristön riskin vuoksi. Jos altistuminen ja suojatoimet ovat keskeisiä, 10.1 sopii paremmin.",
       controlQuestion:
-        "Onko fyysisellä tai aisteihin kohdistuvalla rasituksella, jota rooli kantaa, merkitystä itsessään, erillään turvallisuusriskistä tai altistumisesta, joita se voi myös sisältää?",
+        "Halutaanko toistuvan fyysisen kuormituksen, tarkkuuden tai pitkäkestoisen keskittymisen vaikuttaa samanarvoisuuden arviointiin?",
       assessmentQuestion:
         "Millaista fyysistä tai aisteihin kohdistuvaa rasitusta rooli normaalisti ja pysyvästi kantaa?",
       anchor1:
-        "Rooliin sisältyy kevyitä, satunnaisia fyysisiä tai aisteihin kohdistuvia vaatimuksia selkeästi rajatussa tehtävässä.",
+        "Kevyitä ja satunnaisia fyysisiä tai aistinvaraisia vaatimuksia selkeästi rajatussa tehtävässä.",
       anchor3:
-        "Rooli kantaa itsenäisesti vakiintunutta, toistuvaa fyysistä kuormitusta, tarkkuustyötä tai aisteihin kohdistuvaa keskittymistä tavanomaisena osana omaa aluettaan.",
+        "Toistuvaa fyysistä kuormitusta, tarkkuutta vaativia vaiheita tai aistikeskittymistä vakiintuneena osana aluetta.",
       anchor5:
-        "Rooli kantaa erittäin vaativaa, jatkuvaa fyysistä tai aisteihin kohdistuvaa rasitusta, jonka oikein suorittaminen on usein liiketoimintakriittistä, kuten tarkkuustyötä, jonka taso on muille mittapuu.",
+        "Erittäin vaativaa ja pitkäkestoista fyysistä tai aistinvaraista rasitusta, jossa tarkkuus ja johdonmukainen suoritus ovat ratkaisevia.",
     },
     "scope-impact": {
-      name: "Laajuus ja vaikutus",
-      shortUiText:
-        "Roolin vaikutusalue: rajatusta tehtävästä tiimiin, toimintoon, useisiin toimintoihin tai koko yritykseen.",
+      name: "Vaikutusala ja vaikuttavuus",
+      shortUiText: "Tulosten ja vaikutusten ulottuvuus toiminnassa.",
       fullDefinition:
-        "Kuvaa, kuinka pitkälle roolin tulokset ja päätökset ulottuvat organisaatiossa, selkeästi rajatuista omista tehtävistä koko yrityksen kattavaan vaikutukseen. Kriteeri mittaa vaikutusalueen laajuutta, ei muodollista valtuutta.",
+        "Kattaa sen, kuinka laajalle tulokset, valinnat ja toimitukset vaikuttavat toiminnassa: selkeästi rajatusta alueesta tiimeihin, toimintoihin, useisiin yrityksen osiin tai koko yritykseen. Kriteeri koskee sitä, missä vaikutus näkyy. Se ei koske muodollista päätösvaltaa, henkilöstövastuuta eikä budjetin kokoa sinänsä.",
       measures:
-        "Roolin vaikutusaluetta: rajatusta tehtävästä tiimiin, toimintoon, useisiin toimintoihin tai yritykseen.",
+        "Tulosten ja vaikutusten ulottuvuus, toiminnan koskettamien osien laajuus, pysyvät seuraukset toiminnan toimituskyvylle tai suunnalle.",
       notMeasures:
-        "Muodollista henkilöstövastuuta, budjetin kokoa tai itse valtuutusta.",
-      whenSuitable: "Lähes aina relevantti.",
+        "Muodollinen henkilöstövastuu, päätösvalta, resurssi- tai budjettivastuu sinänsä.",
+      whenSuitable:
+        "Valitse, kun tulosten ja vaikutusten ulottuvuutta halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Ei tule yhdistää erilliseen kriteeriin, joka mittaa vain organisatorista vaikutusaluetta.",
+        "Älä valitse pelkästään nimikkeen, esimiestason, budjetin koon tai päätösvallan vuoksi. Arvioi, kattaako jokin erillisistä vastuukriteereistä paremmin sen, mitä halutaan painottaa.",
       controlQuestion:
-        "Onko roolienne vaikutusalueen erolla merkitystä itsessään, valtuutuksen ja seurausten lisäksi?",
+        "Onko teille olennaista ottaa huomioon, kuinka laajalle tulokset ja vaikutukset toiminnassa ulottuvat?",
       assessmentQuestion:
         "Kuinka pitkälle roolin normaali ja pysyvä vaikutus ulottuu?",
       anchor1:
-        "Rooli vaikuttaa ensisijaisesti omien selkeästi rajattujen työtehtävien laatuun, tehokkuuteen tai tulokseen.",
+        "Tulokset ja vaikutukset rajoittuvat pääosin selkeästi rajattuun alueeseen tai yksittäiseen toimitukseen.",
       anchor2:
-        "Rooli vaikuttaa rajattuun työalueeseen tai toistuvaan toimitukseen tiimin sisällä.",
+        "Vaikutus ulottuu rajattuun työalueeseen tai toistuvaan toimitukseen tiimin sisällä.",
       anchor3:
-        "Roolilla on itsenäinen vastuu tuloksista selkeällä alueella, ja se vaikuttaa tiiminsä tai lähialueen toimintojen toimituksiin ja priorisointeihin.",
+        "Tulokset ja vaikutukset ulottuvat selkeään alueeseen ja vaikuttavat toimituksiin tai painotuksiin lähialueilla.",
       anchor4:
-        "Rooli vaikuttaa useisiin tiimeihin, toimintoon tai merkittävään osaan liiketoiminnasta valinnoilla, priorisoinneilla tai ratkaisuilla, joilla on pysyviä seurauksia.",
+        "Vaikutus ulottuu useisiin tiimeihin, toimintoon tai merkittävään osaan liiketoiminnasta valinnoilla, priorisoinneilla tai ratkaisuilla, joilla on pysyviä seurauksia.",
       anchor5:
-        "Rooli vaikuttaa yrityksen yleiseen suuntaan, tuloksiin tai menestymiskykyyn päätöksillä ja vastuulla, joilla on koko yrityksen kattava tai strateginen vaikutus.",
+        "Tulokset ja vaikutukset ulottuvat useisiin yrityksen osiin tai koko yritykseen ja vaikuttavat kokonaissuuntaan, tulokseen tai onnistumisen edellytyksiin.",
     },
     "autonomy-mandate": {
       name: "Itsenäisyys ja päätösvalta",
-      shortUiText:
-        "Kuinka itsenäisesti rooli tekee päätöksiä ja millä tasolla, ennen kuin eskalointi on tarpeen.",
+      shortUiText: "Itsenäisyys ja valtuudet tehdä punnintoja ja päätöksiä.",
       fullDefinition:
-        "Kuvaa, kuinka itsenäisesti rooli tekee päätöksiä, millä tasolla päätökset ovat ja kuinka paljon on eskaloitava jollekulle muulle. Kriteeri mittaa itse päätösvaltaa, ei päätöksen seurausta tai sitä, kuinka pitkälle sen vaikutus ulottuu.",
-      measures: "Itsenäisyyttä, päätösten tasoa ja eskaloinnin tarvetta.",
+        "Kattaa valtuudet tehdä itsenäisesti punnintoja ja päätöksiä määritellyllä alueella. Kriteeri koskee sitä liikkumavaraa, joka on valita suunta, priorisoida vaihtoehtojen välillä ja päättää sopivista ratkaisuista alueen sisällä. Se ei koske sitä, kuinka laajalle päätöksen vaikutus ulottuu, kuinka suuria seurauksia virheellä voi olla, eikä sitä, minkätyyppistä vastuuta päätös koskee.",
+      measures:
+        "Valtuudet tehdä itsenäisiä päätöksiä, liikkumavara valita olennaisten vaihtoehtojen välillä, valtuudet priorisoida ja punnita, itsenäisyyden aste määritellyllä alueella.",
       notMeasures:
-        "Päätöksen seurausta tai sen organisatorista vaikutusaluetta.",
-      whenSuitable: "Lähes aina relevantti.",
+        "Tulosten tai vaikutusten ulottuvuus, virheellisten päätösten seuraus, henkilöstö-, resurssi- tai asiakasvastuu sinänsä, yrityksen sisäiset hyväksymisprosessit tai kuulemisen muodot.",
+      whenSuitable:
+        "Valitse, kun itsenäistä päätösvaltaa halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Päätösvalta on oikeus päättää, laajuus on se, missä vaikutus näkyy, ja riski on seuraus, jos jokin menee pieleen.",
+        "Älä valitse kuvaamaan sitä, kuinka laajalle päätöksen vaikutus ulottuu, mitä seurauksia virheellä voi olla tai minkätyyppistä vastuuta päätös koskee. Ne kattavat muut vastuukriteerit, jos ne valitaan.",
       controlQuestion:
-        "Onko roolin päätösvallan tasolla merkitystä itsessään, erillään siitä, missä vaikutukset näkyvät ja mitä seurauksia olisi, jos jokin menisi pieleen?",
+        "Halutaanko itsenäisen päätösvallan asteen vaikuttaa samanarvoisuuden arviointiin?",
       assessmentQuestion:
         "Millaista itsenäisyyttä ja päätösvaltaa roolilla on normaalisti ja pysyvästi?",
       anchor1:
-        "Rooli tekee päätöksiä selkeästi rajatun tehtävän puitteissa ja eskaloi kaiken, mikä on vakiintuneen rutiinin ulkopuolella.",
+        "Rajallinen valtuus valita selkeästi määriteltyjen vaihtoehtojen välillä vakiintuneiden ohjeiden puitteissa.",
       anchor3:
-        "Rooli tekee itsenäisesti vakiintuneita päätöksiä omalla alueellaan ja eskaloi vain aidosti uusia tai alueiden välisiä kysymyksiä.",
+        "Itsenäinen valtuus tehdä vakiintuneita punnintoja, priorisoida vaihtoehtojen välillä ja tehdä päätöksiä määritellyllä alueella.",
       anchor5:
-        "Roolilla on erittäin laaja tai liiketoimintakriittinen päätösvalta, ja se päättää kysymyksissä, joiden suunta tai standardit ulottuvat oman lähialueen ulkopuolelle, ja eskaloinnin tarve on vähäinen.",
+        "Erittäin laaja valtuus tehdä punnintoja ja päätöksiä, jotka asettavat suunnan, periaatteet tai painotukset toiminnan useille osille.",
     },
     "risk-consequence": {
-      name: "Riski ja seuraukset",
+      name: "Riski ja seuraus",
       shortUiText:
-        "Seuraukset liiketoiminnalle, jos roolin päätökset, virheet tai puutteet menevät pieleen.",
+        "Virheiden, puutteiden tai virheellisten päätösten mahdollisten seurausten vakavuus.",
       fullDefinition:
-        "Kuvaa seurauksia, joita roolin päätöksillä, virheillä tai puutteilla voi olla turvallisuudelle, asiakkaalle, laadulle, vaatimustenmukaisuudelle, tiedolle tai brändille. Kriteeri mittaa seurauksia laajasti, ei pelkästään taloudellista riskiä tai sitä, kuinka kuormittavana yksilö kokee roolin.",
+        "Kattaa sen, mitä seurauksia virheillä, puutteilla tai virheellisillä päätöksillä voi olla esimerkiksi asiakkaille, laadulle, taloudelle, turvallisuudelle, tiedolle, vaatimustenmukaisuudelle ja luottamukselle. Kriteeri koskee seurausta, jos jokin menee vikaan. Se ei koske sitä, kenellä on muodollinen vastuu valvoa, että säännöt tai suojaukset toimivat.",
       measures:
-        "Päätösten, virheiden tai puutteiden seurauksia turvallisuudelle, asiakkaalle, laadulle, vaatimustenmukaisuudelle, tiedolle tai brändille.",
-      notMeasures: "Pelkästään taloudellista riskiä tai yksilön stressitasoa.",
-      whenSuitable: "Lähes aina relevantti.",
+        "Seuraukset asiakkaalle, laadulle ja toimitukselle, seuraukset turvallisuudelle, tiedolle ja vaatimustenmukaisuudelle, taloudelliset ja maineeseen liittyvät seuraukset.",
+      notMeasures:
+        "Yksilön kokema kuormitus, budjetin koko sinänsä, muodollinen valvontavastuu.",
+      whenSuitable:
+        "Valitse, kun virheiden ja puutteiden mahdollisten seurausten eroja halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Vältä erillistä vaatimustenmukaisuusriskiä, jos se on vain esimerkki samasta riskistä ja seurauksesta.",
+        "Älä valitse kuvaamaan sitä, kuinka paineiselta tai vaativalta jokin tuntuu. Arvioi asiallinen ja mahdollinen seuraus, jos jokin menee vikaan.",
       controlQuestion:
-        "Onko roolin päätösten tai virheiden seurauksella merkitystä itsessään, erillään muodollisesta vaatimustenmukaisuusvastuusta, jota se voi myös kantaa?",
+        "Onko virheiden tai puutteiden mahdollisten seurausten eroilla merkitystä samanarvoisuuden arvioinnissa?",
       assessmentQuestion:
         "Millaista riskiä ja seurauksia roolin päätökset ja työ normaalisti ja pysyvästi kantavat?",
       anchor1:
-        "Virheillä tai puutteilla on tavallisesti rajalliset ja helposti korjattavat seuraukset omalla työalueella.",
+        "Virheillä tai puutteilla on yleensä rajalliset ja helposti korjattavat seuraukset rajatulla alueella.",
       anchor2:
         "Virheet tai puutteet voivat vaikuttaa tiimin laatuun, tehokkuuteen tai toimitukseen ja edellyttävät tavallisesti korjaamista vakiintuneiden prosessien puitteissa.",
       anchor3:
-        "Virheillä, päätöksillä tai puutteilla voi olla selkeitä seurauksia asiakkaalle, toimitukselle, laadulle, taloudelle tai vaatimustenmukaisuudelle yhdellä alueella.",
+        "Virheillä, puutteilla tai virheellisillä päätöksillä voi olla selkeitä seurauksia asiakkaalle, toimitukselle, laadulle, taloudelle tai vaatimustenmukaisuudelle yhdellä alueella.",
       anchor4:
         "Virheillä, päätöksillä tai puutteilla voi olla merkittäviä seurauksia useille liiketoiminnan osa-alueille, tärkeille asiakkaille, kriittisille prosesseille tai säännösten noudattamiselle.",
       anchor5:
-        "Virheillä, päätöksillä tai puutteilla voi olla erittäin suuria, pitkäkestoisia tai liiketoimintakriittisiä seurauksia strategialle, turvallisuudelle, vaatimustenmukaisuudelle, luottamukselle tai selviytymiskyvylle.",
+        "Virheillä tai puutteilla voi olla erittäin suuria, pitkäkestoisia tai toiminnan kannalta kriittisiä seurauksia turvallisuudelle, vaatimustenmukaisuudelle, luottamukselle, taloudelle tai toiminnan jatkuvuudelle.",
     },
     "people-leadership": {
-      name: "Henkilöstö- ja johtamisvastuu",
+      name: "Johtamis- ja henkilöstövastuu",
       shortUiText:
-        "Roolin muodollinen vastuu ihmisten johtamisesta ja tulosten aikaansaamisesta heidän kauttaan.",
+        "Vastuu ihmisten johtamisesta, toiminnan koordinoinnista ja tulosten aikaansaamisesta muiden kautta.",
       fullDefinition:
-        "Kuvaa roolin muodollista vastuuta ihmisten johtamisesta: työn jakamisesta, heidän valmiuksiensa kehittämisestä ja tulosten aikaansaamisesta muiden kautta. Kriteeri mittaa muodollista henkilöstövastuuta, ei projektinjohtoa ilman tätä vastuuta, asiantuntijajohtajuutta eikä tiimin kokoa ainoana mittarina.",
+        "Kattaa vastuun ihmisten tai toiminnan osien johtamisesta ja koordinoinnista tulosten aikaansaamiseksi muiden kautta. Se voi sisältää vastuun painotuksista, työnjaosta, suunnasta, toimintatapojen kehittämisestä tai toimituksen koordinoinnista. Muodollinen henkilöstövastuu kuuluu tähän, kun vastuu kattaa myös työntekijöiden tavoitteet, kehittymisen, suoriutumisen ja työympäristön. Kriteeri koskee johtamisvastuuta muiden kautta, ei pelkkää asiantuntijavaikuttamista, projektikoordinointia tai laajaa omaa päätösvaltaa.",
       measures:
-        "Vastuuta ihmisten johtamisesta, työn jakamisesta, valmiuksien kehittämisestä ja tulosten aikaansaamisesta muiden kautta.",
+        "Vastuu työn johtamisesta ja koordinoinnista muiden kautta, vastuu suunnasta, painotuksista ja toimituksesta toiminnan osassa, vastuu toimintatapojen tai kapasiteetin kehittämisestä muiden kautta, muodollinen vastuu työntekijöiden tavoitteista, kehittymisestä ja suoriutumisesta.",
       notMeasures:
-        "Projektinjohtoa ilman henkilöstövastuuta, asiantuntijajohtajuutta tai tiimin kokoa ainoana mittarina.",
+        "Asiantuntijavaikuttaminen ilman vastuuta muiden työstä tai toiminnan osasta, yksittäisten tehtävien tilapäinen koordinointi, projektinjohto ilman pysyvää vastuuta ihmisistä tai toiminnan osasta, oma päätösvalta ilman vastuuta tulosten aikaansaamisesta muiden kautta.",
       whenSuitable:
-        "Kun muodollinen henkilöstövastuu on olennainen ero roolien välillä.",
+        "Valitse, kun vastuuta ihmisten tai toiminnan osien johtamisesta muiden kautta halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Tulisi yleensä painottaa vähän tai kohtalaisesti, koska esimiesasema näkyy usein jo laajuudessa ja päätösvallassa.",
+        "Älä valitse pelkästään siksi, että koordinointia, asiantuntijatukea tai projektinjohtoa esiintyy. Vastuun suunnasta, painotuksista, toimituksesta tai kehittämisestä muiden kautta on oltava pysyvä.",
       controlQuestion:
-        "Onko roolin muodollisella henkilöstövastuulla merkitystä itsessään, sen laajuuden ja päätösvallan jo kattaman lisäksi?",
+        "Halutaanko vastuun ihmisten tai toiminnan osien johtamisesta muiden kautta vaikuttaa samanarvoisuuden arviointiin?",
       assessmentQuestion:
         "Millaista henkilöstö- ja johtamisvastuuta rooli normaalisti ja pysyvästi kantaa?",
       anchor1:
-        "Roolilla ei ole muodollista henkilöstövastuuta tai se on hyvin rajallista, kuten satunnaista yhden tai kahden muun henkilön tehtävien koordinointia.",
+        "Rajallinen vastuu muiden työn koordinoinnista selkeästi rajatulla alueella. Ei pysyvää vastuuta suunnasta, toimituksesta tai työntekijöiden kehittymisestä.",
       anchor3:
-        "Roolilla on vakiintunut, itsenäinen vastuu tiimin johtamisesta: työn jakamisesta, valmiuksien kehittämisestä ja tulosten aikaansaamisesta muiden kautta.",
+        "Pysyvä vastuu tiimin, työnkulun tai toiminnan osan johtamisesta ja koordinoinnista muiden kautta. Vastuu kattaa painotukset, työnjaon ja toimituksen. Muodollista henkilöstövastuuta voi olla, mutta se ei ole tällä tasolla vaatimus.",
       anchor5:
-        "Rooli kantaa erittäin vaativaa tai liiketoimintakriittistä henkilöstö- ja johtamisvastuuta, johtaa johtajia tai suurta organisaatiota ja asettaa usein standardin sille, miten ihmisiä johdetaan oman tiimin ulkopuolella.",
+        "Laaja vastuu suuremman toiminnan osan tai useiden tiimien johtamisesta muiden kautta. Vastuu kattaa suunnan, kapasiteetin, tulokset ja kehittymisen ajan myötä. Muodollinen henkilöstövastuu muista esihenkilöistä tai laajemmasta organisaatiosta kuuluu tälle tasolle yleensä.",
     },
     "resource-capacity": {
       name: "Resurssi- ja kapasiteettivastuu",
       shortUiText:
-        "Roolin vastuu olennaisten resurssien tai kapasiteetin priorisoinnista ja käytöstä.",
+        "Vastuu rajallisten resurssien priorisoinnista toiminnan tarpeiden välillä.",
       fullDefinition:
-        "Kuvaa roolin vastuuta priorisoida ja käyttää olennaisia resursseja, kapasiteettia, omaisuutta tai kriittistä toimituskykyä siten, että liiketoiminta jatkuu. Kriteeri mittaa itsenäistä resurssiohjausta, ei rutiininomaista budjettiseurantaa tai hankintoja pienten, ennalta määrättyjen rajojen puitteissa.",
+        "Kattaa vastuun punnita kilpailevia tarpeita, kun resurssit ovat rajalliset. Resursseja voivat olla esimerkiksi aika, budjetti, laitteet, varasto, miehitys tai toimituskapasiteetti. Kriteeri koskee sitä, millaisia painotuksia tarvitaan, jotta resurssit ja kapasiteetti käytetään siellä, missä ne hyödyttävät toimintaa eniten. Kriteeri ei koske ihmisten johtamista, kehittämistä tai koordinointia sinänsä. Se ei koske myöskään rutiininomaista budjettiseurantaa, hankintoja tai jakoa pienissä ja ennalta määrätyissä rajoissa.",
       measures:
-        "Vastuuta priorisoida ja käyttää resursseja siten, että liiketoiminta toimii.",
+        "Priorisointi kilpailevien tarpeiden välillä, rajallisten resurssien ja kapasiteetin jakaminen, punninta käytettävissä olevien resurssien, tarpeiden ja toimituskyvyn välillä.",
       notMeasures:
-        "Tavanomaista budjettiseurantaa tai hankintoja pienten rajojen puitteissa.",
+        "Ihmisten johtaminen tai kehittäminen, rutiininomainen budjettiseuranta, hankinnat pienissä kiinteissä rajoissa, liiketoiminnan tulos sinänsä.",
       whenSuitable:
-        "Kun rooli päättää itsenäisesti olennaisista resursseista, kapasiteetista, omaisuudesta tai kriittisestä toimituskyvystä.",
+        "Valitse, kun vastuuta rajallisten resurssien priorisoinnista toiminnan tarpeiden välillä halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Ei tule valita samanaikaisesti suppean taloudellisen vastuun kanssa, jos molemmat mittaavat samaa resurssiohjausta.",
+        "Älä valitse pelkästään budjettiseurannan, hankintojen tai ihmisten koordinoinnin vuoksi. Vastuun kilpailevien tarpeiden ja rajallisten resurssien punninnasta on oltava pysyvä.",
       controlQuestion:
-        "Onko roolin itsenäisellä vastuulla resursseista tai kapasiteetista merkitystä itsessään, erillään rutiininomaisesta budjettiseurannasta ennalta määrättyjen rajojen puitteissa?",
+        "Halutteko painottaa vastuuta rajallisten resurssien priorisoinnista toiminnan eri tarpeiden välillä?",
       assessmentQuestion:
         "Millaista resurssi- ja kapasiteettivastuuta rooli normaalisti ja pysyvästi kantaa?",
       anchor1:
-        "Rooli priorisoi itsenäisesti pienen, selkeästi rajatun resurssi- tai kapasiteettijoukon käyttöä omalla alueellaan, jossa sen valinnoilla on rajallinen ja helposti korjattava vaikutus.",
+        "Priorisointia pienessä ja selkeästi rajatussa resurssijoukossa, jossa valintojen vaikutus on rajallinen ja helposti korjattavissa.",
       anchor3:
-        "Rooli priorisoi ja jakaa itsenäisesti vakiintuneita resursseja tai kapasiteettia siten, että oma alue jatkaa toimintaansa.",
+        "Itsenäistä priorisointia vakiintuneiden tarpeiden ja rajallisten resurssien tai kapasiteetin välillä yhdellä alueella.",
       anchor5:
-        "Rooli hallinnoi itsenäisesti erittäin merkittäviä tai liiketoimintakriittisiä resursseja, kapasiteettia tai toimituskykyä päätöksillä, jotka muovaavat resurssien priorisointia oman alueen ulkopuolella.",
+        "Priorisointia erittäin merkittävien tai toiminnan kannalta kriittisten tarpeiden ja resurssien välillä, jolloin punninnat vaikuttavat toiminnan toimituskykyyn useissa osissa.",
     },
     "business-customer": {
       name: "Liiketoiminta- ja asiakasvastuu",
       shortUiText:
-        "Roolin vastuu olennaisen liiketoiminta-arvon luomisesta, turvaamisesta tai kehittämisestä.",
+        "Vastuu tärkeistä asiakkaista, tuotoista tai liiketoiminnan tuloksesta.",
       fullDefinition:
-        "Kuvaa roolin vastuuta luoda, turvata tai kehittää olennaista liiketoiminta-arvoa merkittävän asiakassuhteen, tulovirran, liiketoimintasalkun tai kaupallisen aseman kautta. Kriteeri mittaa tämän liiketoimintavastuun vakautta, ei yksilön myyntisuoritusta, provisiota tai neuvottelutaitoa sinänsä.",
+        "Kattaa pysyvän vastuun liiketoiminta-arvon luomisesta, turvaamisesta tai kehittämisestä esimerkiksi asiakassuhteiden, tuottovirtojen, sopimusten, liiketoimintasalkkujen tai markkina-aseman kautta. Kriteeri koskee vastuuta, joka kuuluu toimintaan. Se ei koske yksittäisiä myyntituloksia, provisiota eikä taitavuutta yksittäisessä neuvottelussa.",
       measures:
-        "Vastuuta olennaisen liiketoiminta-arvon luomisesta, turvaamisesta tai kehittämisestä.",
+        "Vastuu asiakassuhteista, vastuu tuotoista tai liiketoimintasalkusta, vastuu liiketoiminnan tuloksesta tai markkina-asemasta.",
       notMeasures:
-        "Yksilön myyntisuoritusta, provisiota tai neuvottelutaitoa sinänsä.",
+        "Asiakaskontakti sinänsä, yksilön myyntisuoritus, neuvottelutaito sinänsä.",
       whenSuitable:
-        "Kun rooli vastaa suoraan merkittävästä asiakassuhteesta, tulovirrasta, liiketoimintasalkusta tai kaupallisesta asemasta.",
+        "Valitse, kun vastuuta asiakkaista, tuotoista tai liiketoiminnan tuloksesta halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Ei saa automaattisesti suosia myyntirooleja; vastuun on oltava vakaa osa roolia.",
+        "Älä valitse pelkästään asiakaskontaktin tai myynnin vuoksi. Vastuun asiakasarvosta, tuotoista tai liiketoiminnan tuloksesta on oltava pysyvä.",
       controlQuestion:
-        "Onko roolin vakaalla vastuulla liiketoiminta- tai asiakasarvosta merkitystä itsessään, erillään yksilön myyntisuorituksesta tai neuvottelutaidosta?",
+        "Onko vastuu asiakkaista, tuotoista tai liiketoiminnan tuloksesta jotain, jolle haluatte antaa erityistä painoa samanarvoisuuden arvioinnissa?",
       assessmentQuestion:
         "Millaista liiketoiminta- ja asiakasvastuuta rooli normaalisti ja pysyvästi kantaa?",
       anchor1:
-        "Rooli tukee asiakassuhdetta tai liiketoimintaa selkeästi rajatun, vakiintuneen asiakastilin tai tehtävän puitteissa.",
+        "Tukea vakiintuneelle asiakassuhteelle tai liiketoiminnalle rajatulla asiakkuudella tai alueella.",
       anchor3:
-        "Roolilla on itsenäinen, vakiintunut vastuu asiakassuhteesta, tulovirrasta tai liiketoimintasalkusta, joka on vakaa osa roolia.",
+        "Itsenäinen ja vakiintunut vastuu asiakassuhteesta, tuottovirrasta tai liiketoimintasalkusta.",
       anchor5:
-        "Rooli kantaa erittäin merkittävää tai liiketoimintakriittistä vastuuta suurista asiakassuhteista, tuloista tai kaupallisesta asemasta päätöksillä, jotka muovaavat liiketoiminnan suuntaa oman salkun ulkopuolella.",
+        "Vastuu asiakkaista, tuotoista tai liiketoiminta-alueista, joilla on suuri merkitys yritykselle ja vaikutusta markkina-asemaan tai tulevaan liiketoimintaan.",
     },
     "compliance-control": {
       name: "Tieto-, turvallisuus- tai vaatimustenmukaisuusvastuu",
       shortUiText:
-        "Roolin muodollinen vastuu suojauksesta, laadunvarmistuksesta tai vaatimustenmukaisuuden valvonnasta.",
+        "Muodollinen vastuu valvonnasta, suojauksesta, laadunvarmistuksesta tai säännösten noudattamisesta.",
       fullDefinition:
-        "Kuvaa roolin muodollista vastuuta suojauksesta, laadunvarmistuksesta, valvonnasta tai kriittisten vaatimusten, kuten tietoturvan tai säännösten noudattamisen, oikeasta soveltamisesta. Kriteeri mittaa erillistä, muodollista valvontavastuuta, ei yleistä riskitietoisuutta, jollaista jokaiselta roolilta odotetaan.",
+        "Kattaa muodollisen vastuun siitä, että tärkeitä vaatimuksia valvotaan, laadunvarmistetaan tai niiden noudattaminen varmistetaan, esimerkiksi tietoturvassa, laadussa, turvallisuudessa tai sääntelyssä. Kriteeri koskee vastuuta siitä, että vaatimuksia sovelletaan oikein. Se ei koske yleistä velvollisuutta noudattaa sääntöjä tai olla riskitietoinen.",
       measures:
-        "Vastuuta suojauksesta, laadunvarmistuksesta, valvonnasta tai kriittisten vaatimusten oikeasta soveltamisesta.",
-      notMeasures: "Yleistä riskitietoisuutta.",
+        "Valvonta- ja laadunvarmistusvastuu, vastuu tiedon tai turvallisuuden suojaamisesta, vastuu vaatimusten ja sääntelyn oikeasta soveltamisesta.",
+      notMeasures:
+        "Yleinen riskitietoisuus, sellaisten ohjeiden noudattaminen, joista vastaa joku muu, seuraus, jos virhe tapahtuu.",
       whenSuitable:
-        "Säännellyt, turvallisuuskriittiset tai data-painotteiset toiminnot, joissa on erillinen muodollinen valvontavastuu.",
+        "Valitse, kun muodollista vastuuta valvonnasta, suojauksesta ja vaatimustenmukaisuudesta halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Valitse vain, jos vastuu on erillinen Riski ja seuraukset -kriteeristä.",
+        "Älä valitse, kun alue kattaa vain vakiintuneiden valvontakäytäntöjen noudattamisen. Vastuun siitä, että valvonta ja vaatimukset toimivat, on oltava selkeä.",
       controlQuestion:
-        "Onko roolin muodollisella valvontavastuulla merkitystä itsessään, erillään yleisestä riskistä ja seurauksista, joita se myös kantaa?",
+        "Halutaanko muodollisen valvonta-, suojaus- ja vaatimustenmukaisuusvastuun vaikuttaa samanarvoisuuden arviointiin?",
       assessmentQuestion:
         "Millaista tieto-, turvallisuus- tai vaatimustenmukaisuusvastuuta rooli normaalisti ja pysyvästi kantaa?",
       anchor1:
-        "Rooli noudattaa vakiintuneita valvontarutiineja selkeästi rajatulla alueella, ilman itsenäistä valvontavastuuta.",
+        "Vakiintuneita valvontakäytäntöjä noudatetaan selkeästi rajatulla alueella ilman itsenäistä valvontavastuuta.",
       anchor3:
-        "Roolilla on itsenäinen, vakiintunut, muodollinen vastuu suojauksesta, laadunvarmistuksesta tai vaatimustenmukaisuuden valvonnasta omalla alueellaan.",
+        "Itsenäinen ja muodollinen vastuu suojauksesta, laadunvarmistuksesta tai vaatimustenmukaisuuden valvonnasta yhdellä alueella.",
       anchor5:
-        "Rooli kantaa erittäin vaativaa tai liiketoimintakriittistä valvontavastuuta, ja tapa, jolla se soveltaa kriittisiä vaatimuksia, asettaa usein standardin vaatimustenmukaisuudelle oman alueen ulkopuolella.",
+        "Erittäin vaativa tai toiminnan kannalta kriittinen valvontavastuu, jossa tulkinnat ja toimintatavat ohjaavat sitä, miten tärkeitä vaatimuksia noudatetaan toiminnan useissa osissa.",
     },
     "safety-exposure": {
       name: "Turvallisuus- ja altistumisolosuhteet",
       shortUiText:
-        "Roolin pysyvä vaatimus työskennellä riskiympäristössä suojatoimenpiteiden alaisena.",
+        "Pysyvä altistuminen fysikaalisille, kemiallisille, biologisille tai ympäristöriskeille.",
       fullDefinition:
-        "Kuvaa pysyvää riskiympäristöä, jossa rooli työskentelee, ja vaatimusta työskennellä suojatoimenpiteiden alaisena, mikä kattaa todellisen fyysisen, kemiallisen, biologisen tai ympäristöön liittyvän altistumisen. Kriteeri mittaa itse työolosuhdetta, ei seurausta liiketoiminnalle, jos jokin menee pieleen.",
+        "Kattaa toistuvan työskentelyn ympäristöissä, joissa on todellista fysikaalista, kemiallista, biologista tai ympäristöön liittyvää altistumista ja vaatimus suojatoimista. Esimerkkejä ovat melu, vaaralliset aineet, tartunta, korkeus, kuumuus, kylmyys ja vaaralliset koneet. Kriteeri koskee työolosuhdetta, ei fyysistä rasitusta eikä seurausta toiminnalle, jos jokin menee vikaan.",
       measures:
-        "Pysyvää riskiympäristöä ja vaatimusta työskennellä suojatoimenpiteiden alaisena.",
-      notMeasures: "Virheen seurausta yritykselle.",
+        "Riskiympäristö ja todellinen altistuminen, toistuva suojatoimien tarve, ympäristön erityiset turvallisuusolosuhteet.",
+      notMeasures:
+        "Fyysinen tai aistinvarainen rasitus sinänsä, muodollinen turvallisuusvastuu, liiketoiminnallinen tai organisatorinen riski.",
       whenSuitable:
-        "Roolit, joissa on todellista fyysistä, kemiallista, biologista, ympäristöön liittyvää tai muuta altistumista.",
+        "Valitse, kun erityisiä turvallisuus- ja altistumisolosuhteita halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Älä valitse samanaikaisesti laajemman työolosuhdekriteerin kanssa, joka kattaa saman altistumisen.",
+        "Älä valitse pelkästään turvallisuusvastuun tai päätösriskin vuoksi. Kyse on oltava todellisesta ja pysyvästä altistumisesta toiminnan ympäristöissä.",
       controlQuestion:
-        "Onko roolin altistumisella pysyvälle riskiympäristölle merkitystä itsessään, sen lisäksi mitä kriteeri Fyysinen tai aisteihin kohdistuva rasitus jo kattaa?",
+        "Onko työskentely erityisissä turvallisuus- tai altistumisolosuhteissa jotain, jonka haluatte ottaa huomioon samanarvoisuuden arvioinnissa?",
       assessmentQuestion:
         "Millaisen turvallisuuden ja altistumisen tasolla rooli normaalisti ja pysyvästi työskentelee?",
       anchor1:
-        "Rooli altistuu satunnaisesti selkeästi rajatulle, matalan tason turvallisuus- tai altistumisolosuhteelle, jossa käytetään vakioituja suojatoimenpiteitä.",
+        "Satunnaista ja vähäistä altistumista selkeästi rajatuissa olosuhteissa vakioiduin suojatoimin.",
       anchor3:
-        "Rooli työskentelee vakiintuneessa, toistuvassa riskiympäristössä, joka edellyttää suojatoimenpiteiden johdonmukaista käyttöä tavanomaisena osana työtä.",
+        "Toistuvaa altistumista vakiintuneessa riskiympäristössä, joka edellyttää suojatoimien johdonmukaista käyttöä.",
       anchor5:
-        "Rooli työskentelee erittäin vaativissa tai liiketoimintakriittisissä altistumisolosuhteissa, joissa sen noudattama tai asettama suojaustaso ulottuu usein oman lähitiimin ulkopuolelle.",
+        "Erittäin vaativia tai toiminnan kannalta kriittisiä altistumisolosuhteita, joissa suojaus, turvallisuuskäytännöt ja oikea toiminta ovat ratkaisevia turvalliselle toiminnalle.",
     },
     "on-call": {
-      name: "Päivystys, valmius ja saatavuusvaatimukset",
+      name: "Päivystys-, varallaolo- ja tavoitettavuusvaatimukset",
       shortUiText:
-        "Roolin toistuva vaatimus olla tavoitettavissa varsinaisen työajan ulkopuolella tai vastata välittömästi.",
+        "Toistuva päivystys, varallaolo tai nopean tavoitettavuuden vaatimus.",
       fullDefinition:
-        "Kuvaa roolin toistuvaa vaatimusta olla tavoitettavissa varsinaisen työajan ulkopuolella tai vastata välittömästi roolin kiinteänä edellytyksenä. Kriteeri mittaa olennaista, toistuvaa päivystysvaatimusta, ei tilapäistä ylityötä, vapaaehtoista joustavuutta tai yleisesti suurta työmäärää.",
+        "Kattaa toistuvat vaatimukset olla tavoitettavissa tai kyetä toimimaan säännöllisen työajan ulkopuolella, tai kyetä vastaamaan välittömästi työvuoron aikana. Kriteeri koskee suunniteltua tai odotettua varallaoloa, joka on vakaa osa toiminnan edellytyksiä. Se ei koske satunnaista ylityötä, vapaaehtoista joustavuutta eikä tilapäisesti suurta työkuormaa.",
       measures:
-        "Toistuvaa vaatimusta tavoitettavuudesta varsinaisen työajan ulkopuolella tai välittömästä toiminnasta.",
+        "Päivystys ja varallaolo, nopean tavoitettavuuden vaatimus, toistuvat hälytystehtävät säännöllisen työajan ulkopuolella.",
       notMeasures:
-        "Tilapäistä ylityötä, vapaaehtoista joustavuutta tai suurta työmäärää.",
+        "Tilapäinen ylityö, epäviralliset odotukset vastaamisesta, yleisesti suuri työmäärä.",
       whenSuitable:
-        "Operatiiviset, IT-, terveydenhuolto-, turvallisuus- ja muut roolit, joissa päivystys on roolin kiinteä edellytys.",
+        "Valitse, kun päivystystä, varallaoloa tai nopean tavoitettavuuden vaatimusta halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Tulisi olla oma kriterinsä vain, kun päivystys on olennaista ja toistuvaa.",
+        "Älä valitse, kun tavoitettavuutta tarvitaan vain satunnaisissa kriiseissä tai kun sillä ei ole selkeää ja toistuvaa perustaa toiminnassa.",
       controlQuestion:
-        "Onko roolin toistuvalla päivystysvaatimuksella merkitystä itsessään, tilapäisen ylityön tai yleisesti suuren työmäärän lisäksi?",
+        "Onko toistuva päivystys, varallaolo tai nopean tavoitettavuuden vaatimus työn edellytys, jonka haluatte ottaa huomioon samanarvoisuuden arvioinnissa?",
       assessmentQuestion:
         "Millaista päivystystä, valmiutta ja saatavuutta rooli normaalisti ja pysyvästi kantaa?",
-      anchor1:
-        "Rooli kattaa satunnaisesti selkeästi rajatun, harvoin toistuvan päivystysvaatimuksen.",
+      anchor1: "Satunnaista ja selkeästi rajattua varallaoloa harvoin.",
       anchor3:
-        "Rooli kantaa vakiintunutta, toistuvaa päivystys- tai saatavuusvaatimusta varsinaisen työajan ulkopuolella tavanomaisena osana roolia.",
+        "Vakiintunutta ja toistuvaa varallaoloa tai tavoitettavuutta säännöllisen työajan ulkopuolella.",
       anchor5:
-        "Rooli kantaa erittäin vaativaa tai liiketoimintakriittistä päivystysvaatimusta, johon liittyy usein toistuva tai välitön toimintavelvollisuus, jonka ympärille muiden roolien saatavuus usein rakennetaan.",
+        "Erittäin vaativaa varallaoloa, jossa toimintavelvollisuus on tiheä tai välitön ja jossa toiminta on vahvasti riippuvainen nopeasta tavoitettavuudesta.",
     },
     "irregularity-mobility": {
       name: "Epäsäännöllisyys, liikkuvuus ja paikkasidonnaisuus",
       shortUiText:
-        "Roolin pysyvä vaatimus epäsäännöllisistä työajoista, laajasta matkustamisesta tai työskentelystä tietyissä paikoissa.",
+        "Pysyvät vaatimukset epäsäännöllisistä ajoista, matkustamisesta tai työstä tietyissä paikoissa.",
       fullDefinition:
-        "Kuvaa roolin pysyvää vaatimusta epäsäännöllisistä työajoista, laajasta matkustamisesta tai tiettyihin paikkoihin sidotusta työstä, kuten kenttä-, vuoro- tai kansainvälisestä työstä. Kriteeri mittaa roolin vakaata, rakenteellista ominaisuutta, ei yksittäisiä matkoja, henkilökohtaisia toiveita tai tilapäistä projektia.",
+        "Kattaa pysyvät vaatimukset epäsäännöllisestä työajasta, laajasta matkustamisesta tai paikkasidonnaisesta työstä, esimerkiksi kenttätyöstä, vuorotyöstä tai kansainvälisestä läsnäolosta. Kriteeri koskee toiminnan vakaata ja rakenteellista olosuhdetta. Se ei koske yksittäisiä matkoja, henkilökohtaisia toiveita eikä tilapäisiä projekteja.",
       measures:
-        "Pysyvää vaatimusta epäsäännöllisistä työajoista, laajasta matkustamisesta tai työskentelystä tietyissä paikoissa.",
+        "Epäsäännöllinen työaika, laaja ja toistuva matkustaminen, kenttä-, vuoro- tai paikkasidonnainen työ.",
       notMeasures:
-        "Yksittäisiä matkoja, henkilökohtaisia toiveita tai tilapäisiä projekteja.",
+        "Yksittäiset työmatkat, tilapäiset projektit, päivystys tai varallaolo työajan ulkopuolella.",
       whenSuitable:
-        "Kenttäroolit, kansainvälinen toiminta, vuorotyö tai tiheä matkustaminen.",
+        "Valitse, kun epäsäännöllisiä aikoja, liikkuvuutta tai paikkasidonnaisuutta halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Voidaan yhdistää Päivystys/valmius-kriteeriin vain, kun molemmat kuuluvat samaan vakaaseen työolosuhteeseen.",
+        "Älä valitse, kun vaatimus on tilapäinen tai esiintyy harvoin olematta vakaa osa toiminnan edellytyksiä.",
       controlQuestion:
-        "Onko roolin pysyvällä epäsäännöllisyys- tai liikkuvuusvaatimuksella merkitystä itsessään, yksittäisten matkojen tai tilapäisen projektin lisäksi?",
+        "Halutteko ottaa huomioon pysyvät vaatimukset epäsäännöllisistä ajoista, matkustamisesta tai paikkasidonnaisesta työstä?",
       assessmentQuestion:
         "Millaista epäsäännöllisyyttä, liikkuvuutta tai paikkasidonnaisuutta rooli normaalisti ja pysyvästi kantaa?",
       anchor1:
-        "Rooli kantaa toistuvaa, mutta rajallista vaatimusta epäsäännöllisistä ajoista, matkustamisesta tai paikkasidonnaisesta työstä, kuten säännöllistä mutta harvoin toistuvaa mallia, joka on roolin pysyvä osa.",
+        "Toistuvia mutta rajallisia vaatimuksia epäsäännöllisistä ajoista, matkustamisesta tai paikkasidonnaisesta työstä.",
       anchor3:
-        "Rooli kantaa vakiintunutta, toistuvaa mallia epäsäännöllisistä ajoista, matkustamisesta tai paikkasidonnaisesta työstä tavanomaisena ja vakaana osana roolia.",
+        "Vakiintunut ja toistuva epäsäännöllisten aikojen, matkustamisen tai paikkasidonnaisen työn kaava.",
       anchor5:
-        "Rooli kantaa erittäin laajaa tai liiketoimintakriittistä epäsäännöllisyyttä, liikkuvuutta tai paikkasidonnaisuutta, kuten pysyviä kansainvälisiä, vuorotyö- tai kenttäsitoumuksia, jotka muovaavat sitä, miten rooliin voidaan rekrytoida henkilöstöä.",
+        "Erittäin laajat vaatimukset vuorotyöstä, matkustamisesta, kenttätyöstä tai kansainvälisestä läsnäolosta, jotka vaikuttavat selvästi suunnitteluun ja miehitykseen.",
     },
     "restricted-environments": {
       name: "Erityiset turvallisuus-, salassapito- tai valvontaympäristöt",
       shortUiText:
-        "Roolin vaatimus työskennellä erityisten pääsy-, valvonta- tai turvallisuusrajoitusten alaisena.",
+        "Työ erityisten pääsy-, salassapito-, turvallisuus- tai valvontasääntöjen alaisena.",
       fullDefinition:
-        "Kuvaa työolosuhdetta, jossa toimitaan erityisten pääsy-, valvonta- tai turvallisuusrajoitusten alaisena, kuten turvallisuusluokitellussa tai salassapidolle herkässä ympäristössä. Kriteeri mittaa rajoitusta, jonka alaisena rooli työskentelee, ei vastuuta tietoturvasta sinänsä.",
+        "Kattaa työolosuhteet, joissa on erityisiä rajoituksia pääsylle, salassapidolle, turvallisuudelle tai valvonnalle, esimerkiksi turvaluokitellut ympäristöt tai erityistä suojaa vaativa tieto. Kriteeri koskee ympäristössä voimassa olevia sääntöjä ja rajoituksia. Se ei koske vastuuta tietoturvan suunnittelusta, seurannasta tai valvonnasta.",
       measures:
-        "Työolosuhdetta, jossa työskennellään erityisten pääsy-, valvonta- tai turvallisuusrajoitusten alaisena.",
-      notMeasures: "Vastuuta tietoturvasta.",
+        "Erityiset pääsyrajoitukset, salassapito- ja turvallisuusrajoitukset, valvontavaatimukset, jotka vaikuttavat työn tekemisen tapaan.",
+      notMeasures:
+        "Muodollinen vastuu tietoturvasta, yleinen vaitiolovelvollisuus, yleinen riskitietoisuus.",
       whenSuitable:
-        "Turvallisuusluokitellut, salassapidolle herkät tai tiukasti valvotut ympäristöt, joissa on todellisia rajoituksia.",
+        "Valitse, kun erityisiä pääsy-, salassapito- tai turvallisuusrajoituksia halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Käytä vain, kun mitattavana on työympäristö/edellytys, ei valvontavastuu.",
+        "Älä valitse pelkästään luottamuksellisen tiedon vuoksi. Rajoitusten on oltava erityisiä, toistuvia ja vaikutettava siihen, miten työtä voidaan tehdä.",
       controlQuestion:
-        "Onko roolin vaatimuksella työskennellä erityisten pääsy- tai turvallisuusrajoitusten alaisena merkitystä itsessään, erillään muodollisesta valvontavastuusta, jota se voi myös kantaa?",
+        "Halutaanko erityisten pääsy-, salassapito- tai turvallisuusrajoitusten alaisen työn vaikuttaa samanarvoisuuden arviointiin?",
       assessmentQuestion:
         "Millaisen turvallisuus-, salassapito- tai valvontarajoituksen alaisena rooli normaalisti ja pysyvästi työskentelee?",
       anchor1:
-        "Rooli työskentelee satunnaisesti selkeästi rajatun, matalan tason pääsy- tai salassapitorajoituksen alaisena.",
+        "Satunnaisia ja selkeästi rajattuja matalan tason pääsy- tai salassapitorajoituksia.",
       anchor3:
-        "Rooli työskentelee vakiintuneiden, toistuvien pääsy-, valvonta- tai turvallisuusrajoitusten alaisena tavanomaisena osana roolia.",
+        "Vakiintuneita ja toistuvia pääsy-, valvonta- tai turvallisuusrajoituksia.",
       anchor5:
-        "Rooli työskentelee erittäin tiukkojen tai liiketoimintakriittisten turvallisuus-, salassapito- tai valvontarajoitusten alaisena, jotka muovaavat sitä, miten roolia ja sen ympäristöä on johdettava.",
+        "Erittäin tiukkoja tai toiminnan kannalta kriittisiä turvallisuus-, salassapito- tai valvontarajoituksia, jotka ohjaavat suuresti suunnittelua, toteutusta ja dokumentointia.",
     },
   },
 }

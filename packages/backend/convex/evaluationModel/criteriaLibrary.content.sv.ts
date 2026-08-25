@@ -220,11 +220,11 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       anchor1:
         "Tydligt definierade frågor, etablerade metoder och förutsägbara situationer.",
       anchor2:
-        "Rollen hanterar återkommande variationer och enklare avvikelser där den väljer mellan kända alternativ.",
+        "Återkommande variationer och enklare avvikelser hanteras genom val mellan kända alternativ.",
       anchor3:
         "Komplexa frågor inom etablerade ramar, där analys, prioritering och anpassning behövs.",
       anchor4:
-        "Rollen hanterar avancerade, tvärfunktionella eller delvis otydliga problem där etablerade lösningar inte alltid räcker.",
+        "Avancerade, tvärfunktionella eller delvis otydliga problem hanteras där etablerade lösningar inte alltid räcker.",
       anchor5:
         "Mycket komplexa eller strategiskt betydelsefulla frågor med hög osäkerhet, där nya angreppssätt eller långsiktiga lösningar behöver utformas.",
     },
@@ -348,11 +348,11 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       anchor1:
         "Resultat och påverkan är främst begränsade till ett tydligt avgränsat område eller en enskild leverans.",
       anchor2:
-        "Rollen påverkar ett avgränsat arbetsområde eller återkommande leverans inom ett team.",
+        "Påverkan når ett avgränsat arbetsområde eller en återkommande leverans inom ett team.",
       anchor3:
         "Resultat och påverkan når ett tydligt område och påverkar leveranser eller prioriteringar i närliggande delar av verksamheten.",
       anchor4:
-        "Rollen påverkar flera team, en funktion eller en väsentlig del av verksamheten genom val, prioriteringar eller lösningar med varaktiga följder.",
+        "Påverkan når flera team, en funktion eller en väsentlig del av verksamheten genom val, prioriteringar eller lösningar med varaktiga följder.",
       anchor5:
         "Resultat och påverkan når flera delar av företaget eller företagsnivå och har betydelse för övergripande riktning, resultat eller förmåga att lyckas.",
     },

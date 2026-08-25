@@ -45,17 +45,17 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
     "1": {
       name: "Avgrenset krav",
       meaning:
-        "Kravet er tydelig definert, lokalt eller begrenset i omfang. Rollen arbeider hovedsakelig innenfor etablerte rammer.",
+        "Kravet er tydelig definert, lokalt eller begrenset i omfang. Etablerte rammer og arbeidsmåter er normalt nok.",
     },
     "2": {
       name: "Grunnleggende til moderat krav",
       meaning:
-        "Kravet forekommer tilbakevendende, men innenfor et tydelig avgrenset område. Rollen håndterer variasjoner og enklere avvik.",
+        "Kravet er tilbakevendende innenfor et tydelig avgrenset område. Variasjoner og enklere avvik må håndteres.",
     },
     "3": {
       name: "Selvstendig og etablert krav",
       meaning:
-        "Kravet er en tydelig og tilbakevendende del av rollen. Rollen gjør profesjonelle vurderinger innenfor sitt område.",
+        "Kravet er en tydelig og tilbakevendende del av området. Faglige vurderinger gjøres innenfor etablerte rammer.",
     },
     "4": {
       name: "Avansert eller bredt krav",
@@ -65,7 +65,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
     "5": {
       name: "Svært avansert, omfattende eller virksomhetskritisk krav",
       meaning:
-        "Kravet har svært stort omfang, vanskelighetsgrad, konsekvens eller strategisk betydning. Rollen former ofte retning, standarder, løsninger eller resultater utenfor sitt eget nærmeste område.",
+        "Kravet har svært stort omfang, vanskelighetsgrad, konsekvens eller strategisk betydning. Det kan påvirke retning, standarder, løsninger eller resultater også utenfor det nærmeste området.",
     },
   },
   midpoints: {
@@ -75,523 +75,537 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
   criteria: {
     "knowledge-depth": {
       name: "Kunnskapsdybde og spesialistnivå",
-      shortUiText:
-        "Rollens krav til fordypet spesialistkunnskap og avansert problemløsning.",
+      shortUiText: "Dyp spesialistkunnskap innenfor et avgrenset fagområde.",
       fullDefinition:
-        "Fanger rollens krav til fordypet fagkunnskap, spesialistmetodikk, avansert problemløsning og relevant erfaring. Kriteriet måler dybden i den ekspertisen rollen normalt bruker, ikke en formell eksamen i seg selv eller hvordan et enkelt problem tilfeldigvis ble løst.",
+        "Omfatter dyp fagkunnskap, spesialistmetoder og relevant erfaring innenfor ett hovedområde. Kriteriet gjelder hvor avansert kunnskapen må være for å håndtere vanskelige spørsmål innenfor området. Det gjelder ikke kunnskapsbredde, formelle autorisasjoner, virksomhetskontekst eller rådgivning som eget område.",
       measures:
-        "Krav til fordypet fagkunnskap, spesialistmetodikk, avansert problemløsning og relevant erfaring.",
+        "Dyp fagkunnskap, spesialistmetoder, relevant og varig erfaring innenfor ett område.",
       notMeasures:
-        "Formell eksamen i seg selv, vanskelighetsgraden i et enkelt problem eller individets prestasjon.",
-      whenSuitable: "Nesten alltid relevant i kunnskapsintensive virksomheter.",
+        "Antall kunnskapsområder, formell eksamen eller sertifisering i seg selv, kunnskap om en bestemt bransje eller organisasjon i seg selv, beslutningsmandat eller individuell prestasjon.",
+      whenSuitable:
+        "Velg når dyp spesialistkunnskap innenfor et fagområde skal ha særlig betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Velg normalt dette eller det bredere samlede kompetansekriteriet, ikke begge.",
+        "Velg ikke bare for utdanningskrav, bred samhandling mellom flere fagområder eller rådgivning. Vurder i stedet om et av de nærliggende kriteriene bedre fanger det virksomheten vil prioritere.",
       controlQuestion:
-        "Har dybden i den spesialistkunnskapen rollen krever, betydning i seg selv, atskilt fra dens bredde, formelle kvalifikasjoner, domenekontekst og rådgivningsvurdering?",
+        "Er dyp spesialistkunnskap et område dere vil legge særlig vekt på i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av spesialistkunnskapsdybde krever rollen normalt og varig?",
       anchor1:
-        "Rollen bruker etablert, veldokumentert fagkunnskap innenfor et tydelig avgrenset område og anvender kjente metoder på velkjente problemer.",
+        "Etablert og veldokumentert fagkunnskap innenfor et tydelig avgrenset område. Kjente metoder er nok for velkjente spørsmål.",
       anchor3:
-        "Rollen anvender selvstendig fordypet spesialistkunnskap og etablert fagmetodikk for å løse problemer innenfor sitt eget område.",
+        "Fordypet spesialistkunnskap og etablert fagmetodikk brukes selvstendig for tilbakevendende og mer krevende spørsmål innenfor området.",
       anchor5:
-        "Rollen besitter spesialistkunnskap på svært avansert nivå og engasjeres ofte for fagfeltets vanskeligste problemer, noe som former profesjonelle standarder eller praksis utenfor eget team.",
+        "Svært dyp spesialistkunnskap brukes for feltets vanskeligste spørsmål. Kunnskapen bidrar til å utvikle metoder, kvalitetsnivåer eller faglig praksis.",
     },
     "knowledge-breadth": {
       name: "Kunnskapsbredde og tverrfaglig forståelse",
       shortUiText:
-        "Rollens krav til å integrere flere kompetanseområder og forstå sammenhengen mellom dem.",
+        "Evne til å koble sammen flere kunnskapsområder og forstå sammenhengene mellom dem.",
       fullDefinition:
-        "Fanger rollens krav til å kombinere og integrere flere kompetanseområder, for eksempel produkt, data, forretning og teknologi, og å forstå hvordan de henger sammen. Kriteriet måler bredden i integrasjonen, ikke antallet personer rollen samarbeider med.",
+        "Omfatter behovet for å kombinere kunnskap fra flere ulike områder, for eksempel forretning, teknologi, data, produkt og virksomhet. Kriteriet gjelder forståelse for sammenhenger og avveininger mellom områdene. Det gjelder ikke dybden i ett enkelt fagområde eller antallet kontakter og samarbeidspartnere.",
       measures:
-        "Krav til å integrere flere kompetanseområder og forstå sammenhengen mellom dem.",
-      notMeasures: "Antall samarbeidspartnere eller organisatorisk påvirkning.",
+        "Bredde av kunnskapsområder, forståelse for sammenhenger mellom områder, evne til å gjøre avveininger mellom ulike perspektiver.",
+      notMeasures:
+        "Dyp spesialistkunnskap innenfor ett område, antall møter, interessenter eller kontaktflater, organisatorisk rekkevidde.",
       whenSuitable:
-        "Når roller må kombinere flere fagområder, for eksempel produkt, data, forretning og teknologi.",
+        "Velg når helhetssyn og evnen til å forene flere kunnskapsområder skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Velg bare når bredde er en selvstendig forskjell fra spesialistdybde.",
+        "Velg ikke bare for mange kontaktflater. Handler det først og fremst om dyp fagkunnskap innenfor ett område, treffer 7.1 bedre.",
       controlQuestion:
-        "Har bredden i kompetansen rollen integrerer, betydning i seg selv, atskilt fra hvor dyp spesialistkunnskapen er?",
+        "Er evnen til å forene flere kunnskapsområder sentral for hvordan virksomheten skaper verdi?",
       assessmentQuestion:
         "Hvilket nivå av tverrfaglig bredde krever rollen normalt og varig?",
       anchor1:
-        "Rollen bruker hovedsakelig ett kompetanseområde og trenger sjelden å koble det til andre disipliner.",
+        "Ett hovedområde for kunnskap brukes. Koblinger til andre områder trengs sjelden.",
       anchor3:
-        "Rollen kombinerer selvstendig et fåtall etablerte kompetanseområder og forstår hvordan de påvirker hverandre.",
+        "Noen få etablerte kunnskapsområder kombineres selvstendig, med forståelse for hvordan de påvirker hverandre.",
       anchor5:
-        "Rollen integrerer mange ulike kompetanseområder på svært avansert nivå og er den man stoler på for å koble dem sammen på måter som former løsninger eller retning utenfor eget område.",
+        "Mange ulike kunnskapsområder kobles sammen på en måte som påvirker hvordan større løsninger, tilbud eller arbeidsmåter utformes.",
     },
     "formal-qualifications": {
       name: "Formelle kvalifikasjons-, autorisasjons- og sertifiseringskrav",
       shortUiText:
-        "Rollens krav til obligatorisk autorisasjon, godkjenning eller sertifisering.",
+        "Obligatorisk autorisasjon, godkjenning eller sertifisering.",
       fullDefinition:
-        "Fanger formelle krav rollen må oppfylle for lovlig å utøve, signere eller ha ansvar for arbeidet, for eksempel en obligatorisk autorisasjon, godkjenning eller sertifisering. Kriteriet måler det formelle kravet i seg selv, ikke generell utdanningsstatus eller en prestisjefylt eksamen som ikke kreves for å utføre arbeidet.",
+        "Omfatter formelle krav som må være oppfylt for å få utføre, godkjenne, signere eller ha ansvar for en bestemt type virksomhet. Eksempler er autorisasjon, lovpålagt godkjenning og obligatorisk sertifisering. Kriteriet gjelder obligatoriske krav, ikke utdanninger, kurs eller eksamener som er meritterende, men ikke nødvendige.",
       measures:
-        "Formelle krav som kreves for å utøve, signere eller ha ansvar for arbeidet.",
+        "Obligatorisk autorisasjon, lovpålagt eller virksomhetsstyrt godkjenning, obligatorisk sertifisering.",
       notMeasures:
-        "Generell utdanningsstatus, prestisjefylt eksamen eller frivillige kurs.",
+        "Generelt utdanningsnivå, frivillige kurs, prestisjefylt eksamen uten krav om godkjenning.",
       whenSuitable:
-        "Regulerte eller sikkerhetskritiske roller med obligatorisk autorisasjon, godkjenning eller sertifisering.",
+        "Velg når obligatoriske autorisasjoner, godkjenninger eller sertifiseringer skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Skal ikke brukes hvis utdanning bare er en vei til kompetanse som allerede fanges av Kunnskapsdybde.",
+        "Velg ikke når utdanning først og fremst er en vei til kunnskap som allerede fanges av 7.1 Kunnskapsdybde og spesialistnivå.",
       controlQuestion:
-        "Har rollens obligatoriske autorisasjon, godkjenning eller sertifisering betydning i seg selv, atskilt fra spesialistkunnskapen den også krever?",
+        "Skal obligatoriske autorisasjoner, godkjenninger eller sertifiseringer slå gjennom i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av formell kvalifikasjon, autorisasjon eller sertifisering krever rollen normalt og varig?",
       anchor1:
-        "Rollen har ikke noe krav til autorisasjon, godkjenning eller sertifisering, eller bare et grunnleggende, tydelig definert slikt krav med begrenset krav til fornyelse eller omfang.",
+        "Ingen obligatoriske krav, eller et grunnleggende og tydelig avgrenset krav med begrenset fornyelse eller omfang.",
       anchor3:
-        "Rollen krever en etablert yrkesautorisasjon eller sertifisering som er et tilbakevendende, selvstendig vilkår for å utøve rollen.",
+        "Etablert yrkesautorisasjon eller sertifisering som er et tilbakevendende og selvstendig vilkår for å utøve et område.",
       anchor5:
-        "Rollen krever en avansert eller virksomhetskritisk autorisasjon, godkjenning eller sertifisering, uten hvilken rollen ikke lovlig kan utøves, signeres eller ansvares for, og som ofte setter standarden andre må oppfylle.",
+        "Avansert eller virksomhetskritisk godkjenning som kreves for å godkjenne, signere eller ha ansvar for virksomhet med svært store konsekvenser.",
     },
     "domain-knowledge": {
       name: "Domene- og virksomhetskunnskap",
       shortUiText:
-        "Rollens krav til dyp, vanskelig erstattbar kunnskap om sin spesifikke bransje eller virksomhetskontekst.",
+        "Dyp kunnskap om bransje, produkt, kundemiljø eller virksomhetskontekst.",
       fullDefinition:
-        "Fanger rollens krav til dyp kontekstkunnskap, for eksempel bransje, produkt, kundemiljø eller regelverkskontekst, som ikke raskt kan erstattes av generell yrkesdyktighet. Kriteriet måler dybden i kontekstkunnskapen, ikke den generelle erfaringen eller organisasjonskunnskapen alle forventes å bygge opp over tid.",
+        "Omfatter kunnskap om sammenhengen virksomheten drives i, for eksempel bransje, produkt, kundemiljø, forretningsmodell eller regelverk. Kriteriet gjelder kontekstspesifikk kunnskap som ikke raskt erstattes av allmenn yrkeskunnskap. Det gjelder ikke vanlig organisasjonskjennskap som bygges opp gjennom introduksjon og erfaring over tid.",
       measures:
-        "Dyp kontekstkunnskap som ikke raskt erstattes av generell yrkesdyktighet.",
+        "Bransjekunnskap, produkt- og kundekunnskap, kunnskap om forretningsmodell eller regelverkskontekst.",
       notMeasures:
-        "Generell erfaring eller organisasjonskunnskap som alle forventes å bygge opp.",
+        "Allmenn yrkesdyktighet, vanlig organisasjonskjennskap, formell godkjenning.",
       whenSuitable:
-        "Når spesifikk bransje-, produkt-, kundemiljø- eller regelverkskunnskap er en egen forutsetning for rollen.",
+        "Velg når spesifikk kunnskap om virksomhetens sammenheng skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Domene = konteksten; spesialistnivå = profesjonell metode og ferdighet.",
+        "Velg ikke når generell yrkeskunnskap og vanlig introduksjon er nok til å forstå virksomhetens sammenheng.",
       controlQuestion:
-        "Har rollens kontekstspesifikke domenekunnskap betydning i seg selv, atskilt fra dens generelle spesialistmetode og ferdighet?",
+        "Vil dere veie inn hvor mye virksomhets- og bransjekunnskap som trengs innenfor ulike områder?",
       assessmentQuestion:
         "Hvilket nivå av domene- og virksomhetskunnskap krever rollen normalt og varig?",
       anchor1:
-        "Rollen krever domenekunnskap begrenset til en tydelig avgrenset produkt-, prosess- eller kundekontekst.",
+        "Kunnskap om en tydelig avgrenset produkt-, prosess- eller kundekontekst.",
       anchor3:
-        "Rollen krever etablert, selvstendig kunnskap om sitt virksomhetsdomene som ikke raskt erstattes av generell yrkesdyktighet.",
+        "Etablert og selvstendig kunnskap om virksomhetens sammenheng som ikke raskt erstattes av allmenn yrkeskunnskap.",
       anchor5:
-        "Rollen krever svært dyp, virksomhetskritisk domenekunnskap som er vanskelig å erstatte og som ofte former hvordan domenets standarder eller praksis fastsettes utenfor rollens eget område.",
+        "Svært dyp og vanskelig erstattelig kunnskap om bransje, marked, kunder eller regelverk som påvirker viktige veivalg og arbeidsmåter.",
     },
     "advisory-judgment": {
       name: "Rådgivnings- og vurderingskompetanse",
       shortUiText:
-        "Rollens krav til å veie informasjon og omsette ekspertise i kvalifiserte anbefalinger.",
+        "Kvalifisert rådgivning og faglig vurdering som grunnlag for andres beslutninger.",
       fullDefinition:
-        "Fanger rollens krav til å veie informasjon, utøve profesjonell vurderingsevne og omsette ekspertise i kvalifiserte råd eller anbefalinger som andre handler ut fra. Kriteriet måler selve rådgivningsvurderingen, ikke det formelle mandatet til å beslutte hva som skjer videre.",
+        "Omfatter kvalifisert rådgivning som en tilbakevendende del av virksomhetens tilbud eller som avgjørende beslutningsstøtte til kunder, partnere eller interne beslutningstakere. Det innebærer å veie fakta, vurdere usikkert eller motstridende grunnlag og formulere råd eller anbefalinger som andre bruker i sine veivalg. Kriteriet gjelder kvaliteten i rådgivningen og vurderingen. Det gjelder ikke den formelle retten til å ta den endelige beslutningen.",
       measures:
-        "Krav til å vurdere informasjon, gi kvalifiserte råd og omsette ekspertise i anbefalinger.",
-      notMeasures: "Formelt beslutningsmandat.",
+        "Kvalifisert vurdering av grunnlag, rådgivning og anbefalinger, faglig vurdering i spørsmål med avveininger.",
+      notMeasures:
+        "Formelt beslutningsmandat, å dele generell informasjon, spesialistkunnskap i seg selv.",
       whenSuitable:
-        "Konsulent-, partner-, spesialist- og ledende ekspertroller der kvalifiserte råd er kjerneleveransen.",
+        "Velg når kvalifisert rådgivning og faglig vurdering skal ha særlig betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Skal ikke kombineres med Kunnskapsdybde hvis det bare beskriver samme ekspertise med andre ord.",
+        "Velg ikke bare for kunnskapsdeling eller rutinemessige svar. Rådgivningen skal ha tydelig betydning for veivalg eller beslutninger.",
       controlQuestion:
-        "Har rollens krav til å utøve rådgivningsvurdering betydning i seg selv, atskilt fra spesialistkunnskapen vurderingen bygger på?",
+        "Er kvalifisert rådgivning og faglig vurdering noe dere vil gi vekt i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av rådgivnings- og vurderingskompetanse krever rollen normalt og varig?",
       anchor1:
-        "Rollen bidrar med underlag eller ukompliserte råd innenfor et tydelig avgrenset område, i tråd med etablert veiledning.",
+        "Grunnlag eller ukompliserte råd innenfor et tydelig avgrenset område, med støtte i etablert veiledning.",
       anchor3:
-        "Rollen veier selvstendig informasjon og gir etablerte, profesjonelle råd som andre stoler på innenfor sitt eget område.",
+        "Selvstendige og etablerte faglige råd innenfor et område, basert på avveining av relevant informasjon.",
       anchor5:
-        "Rollens råd og vurderinger etterspørres i svært avanserte eller virksomhetskritiske spørsmål og former ofte de anbefalingene, standardene eller retningen andre deler av virksomheten følger.",
+        "Råd og vurderinger i svært avanserte eller sensitive spørsmål som har stor betydning for virksomhetens veivalg eller håndtering av risiko.",
     },
     "complexity-ambiguity": {
       name: "Kompleksitet og uklarhet",
       shortUiText:
-        "Rollens krav til å håndtere usikkerhet, mangefasetterte spørsmål og uklare rammer med kvalifisert vurderingsevne.",
+        "Vanskelighetsgrad, usikkerhet og uklarhet i spørsmålene som må håndteres.",
       fullDefinition:
-        "Fanger usikkerheten, de mangefasetterte spørsmålene, uklare rammer og behovet for kvalifisert vurderingsevne rollen normalt arbeider med. Kriteriet måler karakteren til problemene rollen håndterer, ikke kunnskapskravet i seg selv, arbeidstempoet eller den organisatoriske rekkevidden.",
+        "Omfatter graden av usikkerhet, motstridende krav, uklare mål og mangel på ferdige løsninger. Kriteriet gjelder selve problemenes karakter. Det gjelder ikke mengden analyse som legges ned i å håndtere dem, arbeidstempo eller organisatorisk rekkevidde.",
       measures:
-        "Usikkerhet, mangefasetterte spørsmål, uklare rammer og behov for kvalifisert vurderingsevne.",
+        "Uklare rammer og mål, motstridende krav og avveininger, usikkerhet og komplekse avhengigheter.",
       notMeasures:
-        "Kunnskapskravet i seg selv, høyt arbeidstempo eller organisatorisk rekkevidde.",
-      whenSuitable: "Nesten alltid relevant.",
-      whenNotSuitable: "Bør normalt være hovedkriteriet innenfor dimensjonen.",
+        "Omfanget av analysearbeid, høy arbeidsmengde eller tempo, spesialistkunnskap i seg selv.",
+      whenSuitable:
+        "Velg når håndtering av vanskelige, uklare eller sammensatte spørsmål skal ha betydning i synet på likeverdighet.",
+      whenNotSuitable:
+        "Velg ikke bare for omfattende analyse eller mange samtidige oppgaver. Disse fanges av henholdsvis 8.2 og 8.4 dersom de velges.",
       controlQuestion:
-        "Har kompleksiteten og uklarheten rollen håndterer, betydning i seg selv, atskilt fra den analytiske innsatsen som legges i å arbeide seg gjennom den?",
+        "Vil dere ta hensyn til graden av uklarhet og vanskelighet i spørsmålene virksomheten må håndtere?",
       assessmentQuestion:
         "Hvilket nivå av kompleksitet og uklarhet håndterer rollen normalt og varig?",
       anchor1:
-        "Rollen arbeider hovedsakelig med tydelig definerte spørsmål, etablerte metoder og forutsigbare situasjoner.",
+        "Tydelig definerte spørsmål, etablerte metoder og forutsigbare situasjoner.",
       anchor2:
-        "Rollen håndterer tilbakevendende variasjoner og enklere avvik der den velger mellom kjente alternativer.",
+        "Tilbakevendende variasjoner og enklere avvik håndteres gjennom valg mellom kjente alternativer.",
       anchor3:
-        "Rollen håndterer selvstendig komplekse spørsmål innenfor sitt område og må analysere, prioritere og tilpasse løsninger.",
+        "Komplekse spørsmål innenfor etablerte rammer, der analyse, prioritering og tilpasning trengs.",
       anchor4:
-        "Rollen håndterer avanserte, tverrfunksjonelle eller delvis uklare problemer der etablerte løsninger ikke alltid strekker til.",
+        "Avanserte, tverrfunksjonelle eller delvis uklare problemer håndteres der etablerte løsninger ikke alltid strekker til.",
       anchor5:
-        "Rollen definerer og håndterer svært komplekse eller strategisk viktige problemer under høy usikkerhet, og former ofte tilnærming, prinsipper eller langsiktige løsninger.",
+        "Svært komplekse eller strategisk betydningsfulle spørsmål med høy usikkerhet, der nye tilnærminger eller langsiktige løsninger må utformes.",
     },
     "analytical-effort": {
       name: "Analytisk og problemløsende innsats",
       shortUiText:
-        "Omfanget av analyse, feilsøking eller systematisk problemløsning rollen normalt utfører.",
+        "Omfanget av systematisk analyse, feilsøking og problemløsning.",
       fullDefinition:
-        "Fanger omfanget av analyse, feilsøking, modellering, diagnostikk eller systematisk problemløsning rollen normalt utfører. Kriteriet måler det analytiske arbeidet i seg selv, ikke spesialistkunnskapen bak det eller bare forekomsten av uklare problemer.",
+        "Omfatter systematisk analyse, feilsøking, modellering, diagnostikk, testing og beregning som trengs for å komme fram til løsninger. Kriteriet gjelder den analytiske innsatsen. Det gjelder ikke bare at problemet er uklart, eller hvilken spesialistkunnskap som ligger bak analysen.",
       measures:
-        "Omfang av analyse, feilsøking, modellering, diagnostikk eller systematisk problemløsning.",
-      notMeasures: "Spesialistkunnskap eller bare uklare problemer.",
+        "Systematisk analyse, feilsøking og diagnostikk, modellering, testing og beregning.",
+      notMeasures:
+        "Uklarhet i problemet i seg selv, spesialistkunnskap i seg selv, midlertidig høy arbeidsmengde.",
       whenSuitable:
-        "Når den mentale analysebyrden skiller seg tydelig mellom roller til tross for sammenlignbar kompleksitet.",
+        "Velg når systematisk analyse- og problemløsningsarbeid skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Kombiner med Kompleksitet bare hvis forskjellen kan forklares: kompleksitet = problemets natur; analyse = arbeidet som kreves for å håndtere det.",
+        "Velg ikke bare for uklare spørsmål. Det skal finnes et tilbakevendende og tydelig innslag av analyse, feilsøking eller diagnostikk.",
       controlQuestion:
-        "Har den analytiske innsatsen rollen legger i å løse problemer, betydning i seg selv, atskilt fra hvor komplekse eller uklare disse problemene er?",
+        "Skal omfanget av systematisk analyse- og problemløsningsarbeid ha betydning i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av analytisk og problemløsende innsats bærer rollen normalt og varig?",
       anchor1:
-        "Rollen utfører ukomplisert analyse eller feilsøking innenfor en tydelig avgrenset oppgave, i tråd med etablerte trinn.",
+        "Ukomplisert analyse eller feilsøking i et tydelig avgrenset spørsmål, etter etablerte trinn.",
       anchor3:
-        "Rollen utfører selvstendig etablert analyse, diagnostikk eller systematisk problemløsning som en tilbakevendende del av sitt eget område.",
+        "Selvstendig og etablert analyse, diagnostikk eller systematisk problemløsning innenfor et område.",
       anchor5:
-        "Rollen utfører svært avansert eller omfattende analyse, modellering eller diagnostikk som ofte er virksomhetskritisk og former hvordan lignende problemer angripes utenfor eget område.",
+        "Svært avansert eller omfattende analyse, modellering eller diagnostikk med stor betydning for virksomhetens evne til å løse kritiske eller tilbakevendende problemer.",
     },
     "communication-effort": {
       name: "Kommunikasjons- og relasjonskrevende arbeid",
       shortUiText:
-        "Rollens krav til avansert kommunikasjon, forhandling eller konflikthåndtering.",
+        "Krav til kvalifisert kommunikasjon, forhandling og håndtering av motstridende interesser.",
       fullDefinition:
-        "Fanger rollens krav til avansert kommunikasjon, forhandling, påvirkning, konflikthåndtering eller oversettelse mellom ulike interesser. Kriteriet måler den kommunikative innsatsen, ikke antallet interessenter rollen tilfeldigvis håndterer eller dens organisatoriske påvirkning.",
+        "Omfatter vanskelighetsgraden i kommunikasjon, forhandling, påvirkning, konflikthåndtering og oversettelse mellom ulike behov og interesser. Kriteriet gjelder den kommunikative og relasjonelle innsatsen. Det gjelder ikke antallet kontakter, organisatorisk rekkevidde eller forretningsansvar.",
       measures:
-        "Krav til avansert kommunikasjon, forhandling, påvirkning, konflikthåndtering eller oversettelse mellom interesser.",
-      notMeasures: "Antall interessenter eller organisatorisk påvirkning.",
+        "Forhandling og påvirkning, håndtering av vanskelige samtaler og konflikter, oversettelse mellom ulike behov og interesser.",
+      notMeasures:
+        "Antall kontakter eller møter, kunde- eller inntektsansvar, organisatorisk rekkevidde.",
       whenSuitable:
-        "Kundenære, forhandlende, rådgivende eller konflikthåndterende virksomheter der dette er en sentral del av arbeidet.",
+        "Velg når kvalifisert kommunikasjon, forhandling og håndtering av motstridende interesser skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Måles som kommunikativ innsats, ikke som størrelsen på nettverket.",
+        "Velg ikke bare for mange møter eller kundekontakter. Vanskelighetsgraden i kommunikasjonen skal være det som prioriteres.",
       controlQuestion:
-        "Har den kommunikative innsatsen rollen bærer, betydning i seg selv, atskilt fra hvor mange interessenter eller hvor stor organisatorisk rekkevidde den har?",
+        "Skal kvalifisert kommunikasjon, forhandling og håndtering av motstridende interesser ha betydning i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av kommunikasjons- og relasjonsinnsats bærer rollen normalt og varig?",
       anchor1:
-        "Rollen kommuniserer innenfor et tydelig avgrenset, for det meste rutinemessig samspill med etablerte motparter.",
+        "Tydelig avgrenset og i hovedsak rutinemessig kommunikasjon med etablerte motparter.",
       anchor3:
-        "Rollen gjennomfører selvstendig etablert, tilbakevendende kommunikasjon, forhandling eller konflikthåndtering som en del av sitt eget område.",
+        "Selvstendig og tilbakevendende kommunikasjon, forhandling eller konflikthåndtering innenfor etablerte rammer.",
       anchor5:
-        "Rollen bærer svært avansert eller virksomhetskritisk kommunikasjon, forhandling eller konflikthåndtering og former ofte hvordan sensitive relasjoner eller tvister håndteres utenfor eget område.",
+        "Svært avansert eller sensitiv kommunikasjon, forhandling eller konflikthåndtering der utfallet har stor betydning for virksomhetens relasjoner eller veivalg.",
     },
     "operational-intensity": {
       name: "Operativ intensitet og samtidighetskrav",
       shortUiText:
-        "Rollens normale krav til å holde oppmerksomheten på flere samtidige strømmer og prioritere fortløpende.",
+        "Krav om å håndtere flere samtidige strømmer og prioritere løpende.",
       fullDefinition:
-        "Fanger oppmerksomheten, simultanevnen og den kontinuerlige prioriteringen rollen normalt krever i sin ordinære arbeidsmodus. Kriteriet måler et varig, strukturelt krav, ikke midlertidige topper, underbemanning eller dårlig planlegging som tilfeldigvis øker arbeidsmengden.",
+        "Omfatter krav til oppmerksomhet, evne til å håndtere flere ting samtidig og løpende prioritering mellom flere strømmer i normalsituasjonen. Eksempler kan være kundesaker, alarmer, leveranser eller driftsstrømmer. Kriteriet gjelder et stabilt og strukturelt krav, ikke midlertidige topper, ressursmangel eller mangelfull planlegging.",
       measures:
-        "Oppmerksomhet, simultanevne og kontinuerlig prioritering i normalmodus.",
+        "Flere samtidige strømmer, løpende prioritering, oppmerksomhet under tidspress i normalsituasjonen.",
       notMeasures:
-        "Midlertidige topper, underbemanning eller dårlig planlegging.",
+        "Midlertidig høy arbeidsbelastning, underbemanning, kompleksitet i selve saken.",
       whenSuitable:
-        "Drift, kundeservice, logistikk eller overvåkning med varige krav til flere samtidige strømmer og raske prioriteringer.",
+        "Velg når håndtering og prioritering av flere samtidige strømmer skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Skal ikke brukes til å belønne arbeidsmengde som oppstår på grunn av ressursmangel.",
+        "Velg ikke for å kompensere for midlertidige arbeidstopper eller ressursmangel. Kravet skal være en varig del av virksomhetens arbeidsmåte.",
       controlQuestion:
-        "Har rollens normale operative intensitet betydning i seg selv, atskilt fra midlertidige topper forårsaket av underbemanning eller dårlig planlegging?",
+        "Vil dere veie inn krav om å håndtere flere samtidige strømmer og prioritere løpende?",
       assessmentQuestion:
         "Hvilket nivå av operativ intensitet og samtidighetskrav bærer rollen normalt og varig?",
       anchor1:
-        "Rollen håndterer normalt én strøm eller oppgave om gangen innenfor en tydelig avgrenset arbeidsrytme.",
+        "Én strøm eller én oppgave om gangen innenfor en tydelig avgrenset rytme.",
       anchor3:
-        "Rollen håndterer selvstendig flere etablerte, samtidige strømmer og prioriterer mellom dem som en normal del av sitt eget område.",
+        "Flere etablerte og samtidige strømmer håndteres selvstendig med løpende prioritering.",
       anchor5:
-        "Rollen opprettholder svært høy, virksomhetskritisk operativ intensitet over mange samtidige strømmer, og hvordan den prioriterer setter ofte mønsteret andre følger.",
+        "Svært høy operativ intensitet over mange samtidige strømmer, der feil prioritering raskt kan få store følger for virksomheten.",
     },
     "physical-sensory": {
       name: "Fysisk eller sensorisk anstrengelse",
       shortUiText:
-        "Rollens tilbakevendende fysiske belastning, presisjonskrav eller sensoriske konsentrasjon.",
+        "Tilbakevendende fysisk belastning, presisjon eller krav til utholdende sansekonsentrasjon.",
       fullDefinition:
-        "Fanger den tilbakevendende fysiske belastningen, presisjonen, ergonomisk krevende moment eller sensoriske konsentrasjonen rollen normalt krever. Kriteriet måler den fysiske eller sensoriske anstrengelsen i seg selv, ikke sikkerhetsrisikoen eller eksponeringen arbeidet også kan innebære.",
+        "Omfatter fysisk belastning, ergonomisk krevende momenter, presisjon og konsentrasjon med syn, hørsel eller andre sanser. Kriteriet gjelder krav til kropp og oppmerksomhet. Det gjelder ikke risikomiljøer, eksponering for farlige stoffer eller konsekvensen for virksomheten dersom noe går galt.",
       measures:
-        "Tilbakevendende fysisk belastning, presisjon, ergonomisk krevende moment eller sensorisk konsentrasjon.",
-      notMeasures: "Sikkerhetsrisiko eller fysisk eksponering.",
+        "Fysisk og ergonomisk belastning, presisjonskrav, utholdende konsentrasjon med sansene.",
+      notMeasures:
+        "Risikomiljø eller eksponering, allmenn stress, konsekvenser av feil.",
       whenSuitable:
-        "Industri, helse, lager, produksjon, feltservice eller laboratorier.",
+        "Velg når fysisk belastning, presisjon eller sensorisk konsentrasjon skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Risikomiljø og eksponering hører normalt til Arbeidsforhold.",
+        "Velg ikke bare for risiko i arbeidsmiljøet. Er eksponering og verneetiltak det sentrale, passer 10.1 bedre.",
       controlQuestion:
-        "Har den fysiske eller sensoriske anstrengelsen rollen bærer, betydning i seg selv, atskilt fra sikkerhetsrisikoen eller eksponeringen den også kan innebære?",
+        "Skal tilbakevendende fysisk belastning, presisjon eller utholdende konsentrasjon ha betydning i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av fysisk eller sensorisk anstrengelse bærer rollen normalt og varig?",
       anchor1:
-        "Rollen innebærer lette, midlertidige fysiske eller sensoriske krav innenfor en tydelig avgrenset oppgave.",
+        "Lette og enkeltstående fysiske eller sensoriske krav innenfor en tydelig avgrenset oppgave.",
       anchor3:
-        "Rollen bærer selvstendig etablert, tilbakevendende fysisk belastning, presisjonsarbeid eller sensorisk konsentrasjon som en normal del av sitt eget område.",
+        "Tilbakevendende fysisk belastning, presisjonsmomenter eller sensorisk konsentrasjon som en etablert del av området.",
       anchor5:
-        "Rollen bærer svært krevende, vedvarende fysisk eller sensorisk anstrengelse som ofte er virksomhetskritisk å utføre riktig, for eksempel presisjonsarbeid som setter standarden andre måles mot.",
+        "Svært krevende og utholdende fysisk eller sensorisk anstrengelse der presisjon og konsekvent utførelse er avgjørende.",
     },
     "scope-impact": {
       name: "Omfang og påvirkning",
-      shortUiText:
-        "Rollens rekkevidde: fra en avgrenset oppgave til team, funksjon, flere funksjoner eller hele selskapet.",
+      shortUiText: "Rekkevidden for resultater og påvirkning i virksomheten.",
       fullDefinition:
-        "Fanger hvor langt rollens resultater og beslutninger strekker seg i organisasjonen, fra tydelig avgrensede egne oppgaver til selskapsovergripende påvirkning. Kriteriet måler rekkevidde, ikke formell myndighet.",
+        "Omfatter hvor langt resultater, valg og leveranser får gjennomslag i virksomheten: fra et tydelig avgrenset område til team, funksjoner, flere deler av selskapet eller hele selskapet. Kriteriet gjelder hvor effekten merkes. Det gjelder ikke formell beslutningsrett, personalansvar eller budsjettstørrelse i seg selv.",
       measures:
-        "Rollens rekkevidde: fra avgrenset oppgave til team, funksjon, flere funksjoner eller selskap.",
+        "Rekkevidde for resultater og påvirkning, omfanget av berørte deler av virksomheten, varige følger for virksomhetens leveranse eller retning.",
       notMeasures:
-        "Formelt personalansvar, budsjettstørrelse eller selve mandatet.",
-      whenSuitable: "Nesten alltid relevant.",
+        "Formelt personalansvar, beslutningsmandat, ressurs- eller budsjettansvar i seg selv.",
+      whenSuitable:
+        "Velg når rekkevidden for resultater og påvirkning skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Skal ikke kombineres med et separat kriterium som bare måler organisatorisk rekkevidde.",
+        "Velg ikke bare for tittel, ledernivå, budsjettstørrelse eller beslutningsrett. Vurder om et av de separate ansvarskriteriene bedre fanger det som skal prioriteres.",
       controlQuestion:
-        "Har forskjellen i rekkevidde mellom rollene deres betydning i seg selv, utover mandat og konsekvens?",
+        "Er det relevant for dere å veie inn hvor langt resultater og påvirkning når i virksomheten?",
       assessmentQuestion:
         "Hvor langt strekker rollens normale og varige påvirkning seg?",
       anchor1:
-        "Rollen påvirker først og fremst kvaliteten, effektiviteten eller resultatet i egne tydelig avgrensede arbeidsoppgaver.",
+        "Resultater og påvirkning er hovedsakelig begrenset til et tydelig avgrenset område eller en enkelt leveranse.",
       anchor2:
-        "Rollen påvirker et avgrenset arbeidsområde eller tilbakevendende leveranse innenfor et team.",
+        "Påvirkningen når et avgrenset arbeidsområde eller en tilbakevendende leveranse innenfor et team.",
       anchor3:
-        "Rollen har selvstendig ansvar for resultater innenfor et tydelig område og påvirker teamets eller nærliggende funksjoners leveranse og prioriteringer.",
+        "Resultater og påvirkning når et tydelig område og påvirker leveranser eller prioriteringer i nærliggende deler av virksomheten.",
       anchor4:
-        "Rollen påvirker flere team, en funksjon eller en vesentlig del av virksomheten gjennom valg, prioriteringer eller løsninger med varige følger.",
+        "Påvirkningen når flere team, en funksjon eller en vesentlig del av virksomheten gjennom valg, prioriteringer eller løsninger med varige følger.",
       anchor5:
-        "Rollen påvirker selskapets overordnede retning, resultater eller evne til å lykkes gjennom beslutninger og ansvar med selskapsovergripende eller strategisk effekt.",
+        "Resultater og påvirkning når flere deler av selskapet eller selskapsnivå og har betydning for overordnet retning, resultat eller evne til å lykkes.",
     },
     "autonomy-mandate": {
       name: "Autonomi og beslutningsmandat",
       shortUiText:
-        "Hvor selvstendig rollen beslutter, og på hvilket nivå, før eskalering kreves.",
+        "Selvstendighet og mandat til å gjøre avveininger og fatte beslutninger.",
       fullDefinition:
-        "Fanger hvor selvstendig rollen fatter beslutninger, på hvilket nivå beslutningene ligger og hvor mye som må eskaleres til noen andre. Kriteriet måler selve beslutningsmandatet, ikke konsekvensen av beslutningen eller hvor langt effekten strekker seg.",
-      measures: "Selvstendighet, beslutningenes nivå og behov for eskalering.",
+        "Omfatter mandatet til selvstendig å gjøre avveininger og fatte beslutninger innenfor et definert område. Kriteriet gjelder hvilket rom som finnes til å velge retning, prioritere mellom alternativer og beslutte egnede løsninger innenfor området. Det gjelder ikke hvor langt beslutningens effekt når, hvor store følger en feil kan få, eller hvilken type ansvar beslutningen gjelder.",
+      measures:
+        "Mandat til å fatte selvstendige beslutninger, rom til å velge mellom relevante alternativer, mandat til å prioritere og gjøre avveininger, grad av selvstendighet innenfor et definert område.",
       notMeasures:
-        "Konsekvensen av beslutningen eller dens organisatoriske rekkevidde.",
-      whenSuitable: "Nesten alltid relevant.",
+        "Rekkevidden for resultater eller påvirkning, konsekvensen av feilaktige beslutninger, personal-, ressurs- eller kundeansvar i seg selv, selskapets interne godkjenningsprosesser eller former for samråd.",
+      whenSuitable:
+        "Velg når selvstendig beslutningsmandat skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Mandat = retten til å beslutte; omfang = hvor effekten merkes; risiko = følgen hvis det blir feil.",
+        "Velg ikke for å beskrive hvor langt beslutningens effekt når, hvilke følger en feil kan få, eller hvilken type ansvar beslutningen gjelder. Det fanges av andre ansvarskriterier dersom de velges.",
       controlQuestion:
-        "Har nivået av beslutningsmandat rollen har, betydning i seg selv, atskilt fra hvor effektene merkes og hva konsekvensene ville blitt om det ble feil?",
+        "Skal graden av selvstendig beslutningsmandat ha betydning i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av autonomi og beslutningsmandat har rollen normalt og varig?",
       anchor1:
-        "Rollen fatter beslutninger innenfor en tydelig avgrenset oppgave og eskalerer alt som ligger utenfor etablert rutine.",
+        "Begrenset mandat til å velge mellom tydelig angitte alternativer innenfor etablerte instrukser.",
       anchor3:
-        "Rollen fatter selvstendig etablerte beslutninger innenfor sitt eget område og eskalerer bare genuint nye eller tverrgående spørsmål.",
+        "Selvstendig mandat til å gjøre etablerte avveininger, prioritere mellom alternativer og fatte beslutninger innenfor et definert område.",
       anchor5:
-        "Rollen har svært bredt eller virksomhetskritisk beslutningsmandat og beslutter i spørsmål der retningen eller standardene strekker seg utenfor eget nærmeste område, med lite behov for eskalering.",
+        "Svært bredt mandat til å gjøre avveininger og fatte beslutninger som setter retning, prinsipper eller prioriteringer for flere deler av virksomheten.",
     },
     "risk-consequence": {
       name: "Risiko og konsekvens",
       shortUiText:
-        "Konsekvensene for virksomheten hvis rollens beslutninger, feil eller mangler slår feil.",
+        "Alvoret i mulige følger av feil, mangler eller feilaktige beslutninger.",
       fullDefinition:
-        "Fanger konsekvensene rollens beslutninger, feil eller mangler kan få for sikkerhet, kunde, kvalitet, etterlevelse, informasjon eller merkevare. Kriteriet måler konsekvens bredt, ikke bare økonomisk risiko eller hvor belastende individet opplever rollen.",
+        "Omfatter hvilke følger feil, mangler eller feilaktige beslutninger kan få for for eksempel kunder, kvalitet, økonomi, sikkerhet, informasjon, etterlevelse og tillit. Kriteriet gjelder følgen dersom noe går galt. Det gjelder ikke hvem som har det formelle ansvaret for å kontrollere at regler eller vern fungerer.",
       measures:
-        "Følger av beslutninger, feil eller mangler for sikkerhet, kunde, kvalitet, etterlevelse, informasjon eller merkevare.",
-      notMeasures: "Bare økonomisk risiko eller individets stressnivå.",
-      whenSuitable: "Nesten alltid relevant.",
+        "Konsekvenser for kunde, kvalitet og leveranse, konsekvenser for sikkerhet, informasjon og etterlevelse, økonomiske og omdømmemessige følger.",
+      notMeasures:
+        "Individets opplevde stress, budsjettstørrelse i seg selv, formelt kontrollansvar.",
+      whenSuitable:
+        "Velg når forskjeller i mulige følger av feil og mangler skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Unngå separat compliance-risiko hvis den bare er et eksempel på samme risiko og konsekvens.",
+        "Velg ikke for å beskrive hvor presset eller krevende noe oppleves. Vurder den saklige og mulige følgen dersom noe blir feil.",
       controlQuestion:
-        "Har konsekvensen av rollens beslutninger eller feil betydning i seg selv, atskilt fra det formelle etterlevelsesansvaret den også kan bære?",
+        "Er forskjeller i de følgene feil eller mangler kan få relevante å veie inn i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av risiko og konsekvens bærer rollens beslutninger og arbeid normalt og varig?",
       anchor1:
-        "Feil eller mangler får normalt begrensede og lett korrigerbare følger innenfor eget arbeidsområde.",
+        "Feil eller mangler har normalt begrensede og lett korrigerbare følger innenfor et avgrenset område.",
       anchor2:
         "Feil eller mangler kan påvirke teamets kvalitet, effektivitet eller leveranse og krever normalt korrigering innenfor etablerte prosesser.",
       anchor3:
-        "Feil, beslutninger eller mangler kan få tydelige følger for kunde, leveranse, kvalitet, økonomi eller etterlevelse innenfor et område.",
+        "Feil, mangler eller feilaktige beslutninger kan få tydelige følger for kunde, leveranse, kvalitet, økonomi eller etterlevelse innenfor et område.",
       anchor4:
         "Feil, beslutninger eller mangler kan få betydelige følger for flere deler av virksomheten, viktige kunder, kritiske prosesser eller regeletterlevelse.",
       anchor5:
-        "Feil, beslutninger eller mangler kan få svært store, langvarige eller virksomhetskritiske følger for strategi, sikkerhet, etterlevelse, tillit eller overlevelsesevne.",
+        "Feil eller mangler kan få svært store, langvarige eller virksomhetskritiske følger for sikkerhet, etterlevelse, tillit, økonomi eller virksomhetens fortsatte evne til å fungere.",
     },
     "people-leadership": {
-      name: "Personal- og ledelsesansvar",
+      name: "Ledelses- og personalansvar",
       shortUiText:
-        "Rollens formelle ansvar for å lede mennesker og skape resultater gjennom dem.",
+        "Ansvar for å lede mennesker, samordne virksomhet og skape resultater gjennom andre.",
       fullDefinition:
-        "Fanger rollens formelle ansvar for å lede mennesker: fordele arbeid, utvikle deres kapasitet og skape resultater gjennom andre. Kriteriet måler formelt personalansvar, ikke prosjektledelse uten dette, spesialistledelse eller teamstørrelse brukt som eneste mål.",
+        "Omfatter ansvar for å lede og samordne mennesker eller deler av virksomheten for å skape resultater gjennom andre. Det kan innebære ansvar for prioriteringer, arbeidsfordeling, retning, utvikling av arbeidsmåter eller samordning av leveranse. Formelt personalansvar inngår når ansvaret også omfatter medarbeidernes mål, utvikling, prestasjon og arbeidsmiljø. Kriteriet gjelder ledelsesansvar gjennom andre, ikke bare spesialistinnflytelse, prosjektkoordinering eller et stort eget beslutningsmandat.",
       measures:
-        "Ansvar for å lede mennesker, fordele arbeid, utvikle kapasitet og skape resultater gjennom andre.",
+        "Ansvar for å lede og samordne arbeid gjennom andre, ansvar for retning, prioriteringer og leveranse i en virksomhetsdel, ansvar for å utvikle arbeidsmåter eller kapasitet gjennom andre, formelt ansvar for medarbeidernes mål, utvikling og prestasjon.",
       notMeasures:
-        "Prosjektledelse uten personalansvar, spesialistledelse eller teamstørrelse som eneste mål.",
+        "Spesialistinnflytelse uten ansvar for andres arbeid eller for en virksomhetsdel, midlertidig samordning av enkeltoppgaver, prosjektledelse uten varig ansvar for mennesker eller en virksomhetsdel, eget beslutningsmandat uten ansvar for å skape resultater gjennom andre.",
       whenSuitable:
-        "Når formelt personalansvar er en vesentlig forskjell mellom roller.",
+        "Velg når ansvar for å lede mennesker eller deler av virksomheten gjennom andre skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Skal normalt ha lav til moderat vekt siden lederskap ofte allerede vises i omfang og mandat.",
+        "Velg ikke bare fordi samordning, spesialiststøtte eller prosjektledelse forekommer. Det skal finnes et varig ansvar for retning, prioriteringer, leveranse eller utvikling gjennom andre.",
       controlQuestion:
-        "Har rollens formelle personalansvar betydning i seg selv, utover det dens omfang og beslutningsmandat allerede fanger?",
+        "Skal ansvar for å lede mennesker eller virksomhetsdeler gjennom andre ha betydning i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av personal- og ledelsesansvar bærer rollen normalt og varig?",
       anchor1:
-        "Rollen har ingen eller svært begrenset formelt personalansvar, for eksempel å enkelte ganger samordne oppgavene til én eller to andre.",
+        "Begrenset ansvar for å samordne andres arbeid innenfor et tydelig avgrenset område. Ikke noe varig ansvar for retning, leveranse eller medarbeidernes utvikling.",
       anchor3:
-        "Rollen har etablert, selvstendig ansvar for å lede et team: fordele arbeid, utvikle kapasitet og skape resultater gjennom andre.",
+        "Varig ansvar for å lede og samordne et team, en arbeidsflyt eller en virksomhetsdel gjennom andre. Ansvaret omfatter prioriteringer, arbeidsfordeling og leveranse. Formelt personalansvar kan forekomme, men er ikke et krav på dette nivået.",
       anchor5:
-        "Rollen bærer svært avansert eller virksomhetskritisk personal- og ledelsesansvar, leder ledere eller en stor organisasjon, og setter ofte standarden for hvordan mennesker ledes utenfor eget team.",
+        "Omfattende ansvar for å lede en større virksomhetsdel eller flere team gjennom andre. Ansvaret omfatter retning, kapasitet, resultater og utvikling over tid. Formelt personalansvar for andre ledere eller en større organisasjon inngår normalt på dette nivået.",
     },
     "resource-capacity": {
       name: "Ressurs- og kapasitetsansvar",
       shortUiText:
-        "Rollens ansvar for å prioritere og bruke vesentlige ressurser eller kapasitet.",
+        "Ansvar for å prioritere begrensede ressurser mellom virksomhetens behov.",
       fullDefinition:
-        "Fanger rollens ansvar for å prioritere og bruke vesentlige ressurser, kapasitet, eiendeler eller kritisk leveringsevne slik at virksomheten fortsetter å fungere. Kriteriet måler selvstendig ressursstyring, ikke rutinemessig budsjettoppfølging eller innkjøp innenfor små, forhåndsbestemte rammer.",
+        "Omfatter ansvar for å gjøre avveininger mellom konkurrerende behov når ressursene er begrensede. Ressurser kan for eksempel være tid, budsjett, utstyr, lager, bemanning eller leveransekapasitet. Kriteriet gjelder hvilke prioriteringer som trengs for at ressurser og kapasitet skal brukes der de gjør mest nytte for virksomheten. Kriteriet gjelder ikke ledelse, utvikling eller samordning av mennesker som sådan. Det gjelder heller ikke rutinemessig budsjettoppfølging, innkjøp eller fordeling innenfor små og forhåndsbestemte rammer.",
       measures:
-        "Ansvar for å prioritere og bruke ressurser slik at virksomheten fungerer.",
+        "Prioritering mellom konkurrerende behov, fordeling av begrensede ressurser og kapasitet, avveining mellom tilgjengelige ressurser, behov og leveranseevne.",
       notMeasures:
-        "Vanlig budsjettoppfølging eller innkjøp innenfor små rammer.",
+        "Ledelse eller utvikling av mennesker, rutinemessig budsjettoppfølging, innkjøp innenfor små faste rammer, forretningsresultat i seg selv.",
       whenSuitable:
-        "Når rollen selvstendig disponerer vesentlige ressurser, kapasitet, eiendeler eller kritisk leveringsevne.",
+        "Velg når ansvar for å prioritere begrensede ressurser mellom virksomhetens behov skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Skal ikke velges samtidig med et snevert finansielt ansvar hvis begge måler samme ressursstyring.",
+        "Velg ikke bare for budsjettoppfølging, innkjøp eller samordning av mennesker. Det skal finnes et varig ansvar for avveininger mellom konkurrerende behov og begrensede ressurser.",
       controlQuestion:
-        "Har rollens selvstendige ansvar for ressurser eller kapasitet betydning i seg selv, atskilt fra rutinemessig budsjettoppfølging innenfor forhåndsbestemte rammer?",
+        "Vil dere legge vekt på ansvar for å prioritere begrensede ressurser mellom ulike behov i virksomheten?",
       assessmentQuestion:
         "Hvilket nivå av ressurs- og kapasitetsansvar bærer rollen normalt og varig?",
       anchor1:
-        "Rollen prioriterer selvstendig bruken av et lite, tydelig avgrenset sett med ressurser eller kapasitet innenfor sitt eget område, der dens valg har begrenset og lett korrigerbar effekt.",
+        "Prioritering innenfor et lite og tydelig avgrenset sett av ressurser, der effekten av valgene er begrenset og lett å korrigere.",
       anchor3:
-        "Rollen prioriterer og fordeler selvstendig etablerte ressurser eller kapasitet slik at eget område fortsetter å fungere.",
+        "Selvstendig prioritering mellom etablerte behov og begrensede ressurser eller kapasitet innenfor et område.",
       anchor5:
-        "Rollen forvalter selvstendig svært betydelige eller virksomhetskritiske ressurser, kapasitet eller leveringsevne, med beslutninger som former ressursprioriteringer utenfor eget område.",
+        "Prioritering mellom svært betydelige eller virksomhetskritiske behov og ressurser, der avveiningene påvirker flere deler av virksomhetens evne til å levere.",
     },
     "business-customer": {
       name: "Forretnings- og kundeansvar",
       shortUiText:
-        "Rollens ansvar for å skape, sikre eller utvikle vesentlig forretningsverdi.",
+        "Ansvar for viktige kunder, inntekter eller forretningsresultat.",
       fullDefinition:
-        "Fanger rollens ansvar for å skape, sikre eller utvikle vesentlig forretningsverdi gjennom en vesentlig kunderelasjon, inntektsstrøm, forretningsportefølje eller kommersiell posisjon. Kriteriet måler stabiliteten i dette forretningsansvaret, ikke individuell salgsprestasjon, provisjon eller forhandlingsferdighet i seg selv.",
+        "Omfatter et varig ansvar for å skape, sikre eller utvikle forretningsverdi gjennom for eksempel kunderelasjoner, inntektsstrømmer, avtaler, forretningsporteføljer eller markedsposisjon. Kriteriet gjelder ansvar som inngår i virksomheten. Det gjelder ikke enkeltstående salgsresultater, provisjon eller dyktighet i en isolert forhandling.",
       measures:
-        "Ansvar for å skape, sikre eller utvikle vesentlig forretningsverdi.",
+        "Ansvar for kunderelasjoner, ansvar for inntekter eller forretningsportefølje, ansvar for forretningsresultat eller markedsposisjon.",
       notMeasures:
-        "Individuell salgsprestasjon, provisjon eller forhandlingsferdighet i seg selv.",
+        "Kundekontakt i seg selv, individuell salgsprestasjon, forhandlingsdyktighet i seg selv.",
       whenSuitable:
-        "Når rollen har direkte ansvar for vesentlig kunderelasjon, inntektsstrøm, forretningsportefølje eller kommersiell posisjon.",
+        "Velg når ansvar for kunder, inntekter eller forretningsresultat skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Skal ikke automatisk favorisere salgsroller; ansvaret må være en stabil del av rollen.",
+        "Velg ikke bare for kundekontakt eller salg. Det skal finnes et varig ansvar for kundeverdi, inntekter eller forretningsresultat.",
       controlQuestion:
-        "Har rollens stabile ansvar for forretnings- eller kundeverdi betydning i seg selv, atskilt fra individuell salgsprestasjon eller forhandlingsferdighet?",
+        "Er ansvar for kunder, inntekter eller forretningsresultat noe dere vil gi særlig vekt i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av forretnings- og kundeansvar bærer rollen normalt og varig?",
       anchor1:
-        "Rollen støtter en kunderelasjon eller forretningsaktivitet innenfor en tydelig avgrenset, etablert kundekonto eller oppgave.",
+        "Støtte til en etablert kunderelasjon eller forretningsaktivitet innenfor en avgrenset konto eller et avgrenset område.",
       anchor3:
-        "Rollen har selvstendig etablert ansvar for en kunderelasjon, inntektsstrøm eller forretningsportefølje som er en stabil del av rollen.",
+        "Selvstendig og etablert ansvar for en kunderelasjon, inntektsstrøm eller forretningsportefølje.",
       anchor5:
-        "Rollen bærer svært betydelig eller virksomhetskritisk ansvar for store kunderelasjoner, inntekter eller kommersiell posisjon, med beslutninger som former virksomhetens retning utenfor egen portefølje.",
+        "Ansvar for kunder, inntekter eller forretningsområder med stor betydning for selskapet og påvirkning på markedsposisjon eller framtidig forretning.",
     },
     "compliance-control": {
-      name: "Informasjons-, sikkerhets- eller regeletterlevelsesansvar",
+      name: "Informasjons-, sikkerhets- eller etterlevelsesansvar",
       shortUiText:
-        "Rollens formelle ansvar for beskyttelse, kvalitetssikring eller etterlevelseskontroll.",
+        "Formelt ansvar for kontroll, vern, kvalitetssikring eller etterlevelse av regelverk.",
       fullDefinition:
-        "Fanger rollens formelle ansvar for beskyttelse, kvalitetssikring, kontroll eller korrekt anvendelse av kritiske krav, for eksempel informasjonssikkerhet eller regeletterlevelse. Kriteriet måler et separat, formelt kontrollansvar, ikke den generelle risikobevisstheten hver rolle forventes å ha.",
+        "Omfatter formelt ansvar for å kontrollere, kvalitetssikre eller sikre at viktige krav følges, for eksempel innenfor informasjonssikkerhet, kvalitet, sikkerhet eller regelverk. Kriteriet gjelder ansvar for at kravene anvendes riktig. Det gjelder ikke den allmenne plikten til å følge regler eller være risikobevisst.",
       measures:
-        "Ansvar for beskyttelse, kvalitetssikring, kontroll eller korrekt anvendelse av kritiske krav.",
-      notMeasures: "Generell risikobevissthet.",
+        "Kontroll- og kvalitetssikringsansvar, ansvar for vern av informasjon eller sikkerhet, ansvar for korrekt anvendelse av krav og regelverk.",
+      notMeasures:
+        "Allmenn risikobevissthet, å følge rutiner som noen andre har ansvar for, konsekvensen dersom feil oppstår.",
       whenSuitable:
-        "Regulerte, sikkerhetskritiske eller datatunge virksomheter med et separat formelt kontrollansvar.",
+        "Velg når formelt ansvar for kontroll, vern og etterlevelse skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Velg bare hvis ansvaret er separat fra Risiko og konsekvens.",
+        "Velg ikke når området bare omfatter å følge etablerte kontrollrutiner. Det skal finnes et tydelig ansvar for at kontroller og krav fungerer.",
       controlQuestion:
-        "Har rollens formelle kontrollansvar betydning i seg selv, atskilt fra den generelle risikoen og konsekvensen den også bærer?",
+        "Skal formelt ansvar for kontroll, vern og etterlevelse veies inn i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av informasjons-, sikkerhets- eller regeletterlevelsesansvar bærer rollen normalt og varig?",
       anchor1:
-        "Rollen følger etablerte kontrollrutiner innenfor et tydelig avgrenset område, uten selvstendig kontrollansvar.",
+        "Etablerte kontrollrutiner følges innenfor et tydelig avgrenset område, uten selvstendig kontrollansvar.",
       anchor3:
-        "Rollen har selvstendig etablert, formelt ansvar for beskyttelse, kvalitetssikring eller etterlevelseskontroll innenfor sitt eget område.",
+        "Selvstendig og formelt ansvar for vern, kvalitetssikring eller etterlevelseskontroll innenfor et område.",
       anchor5:
-        "Rollen bærer svært avansert eller virksomhetskritisk kontrollansvar, og hvordan den anvender kritiske krav setter ofte standarden for etterlevelse utenfor eget område.",
+        "Svært avansert eller virksomhetskritisk kontrollansvar der tolkninger og arbeidsmåter styrer hvordan viktige krav følges i flere deler av virksomheten.",
     },
     "safety-exposure": {
       name: "Sikkerhets- og eksponeringsforhold",
       shortUiText:
-        "Rollens varige krav til å arbeide i et risikomiljø under beskyttelsestiltak.",
+        "Varig eksponering for fysiske, kjemiske, biologiske eller miljømessige risikoer.",
       fullDefinition:
-        "Fanger det varige risikomiljøet rollen arbeider i og kravet om å arbeide under beskyttelsestiltak, som omfatter faktisk fysisk, kjemisk, biologisk eller miljømessig eksponering. Kriteriet måler selve arbeidsforholdet, ikke konsekvensen for virksomheten hvis noe går galt.",
-      measures: "Varig risikomiljø og krav om arbeid under beskyttelsestiltak.",
-      notMeasures: "Konsekvens for selskapet av en feil.",
+        "Omfatter tilbakevendende arbeid i miljøer med faktisk fysisk, kjemisk, biologisk eller miljømessig eksponering og krav om verneetiltak. Eksempler er støy, farlige stoffer, smitte, høyde, varme, kulde og farlige maskiner. Kriteriet gjelder arbeidsforholdet, ikke fysisk anstrengelse eller konsekvensen for virksomheten dersom noe går galt.",
+      measures:
+        "Risikomiljø og faktisk eksponering, tilbakevendende behov for verneetiltak, særlige sikkerhetsforhold i miljøet.",
+      notMeasures:
+        "Fysisk eller sensorisk anstrengelse i seg selv, formelt sikkerhetsansvar, forretningsmessig eller organisatorisk risiko.",
       whenSuitable:
-        "Roller med faktisk fysisk, kjemisk, biologisk, miljømessig eller annen eksponering.",
+        "Velg når særlige sikkerhets- og eksponeringsforhold skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Velg ikke samtidig med et bredere arbeidsforholdkriterium som dekker samme eksponering.",
+        "Velg ikke bare for sikkerhetsansvar eller beslutningsrisiko. Det skal handle om faktisk og varig eksponering i virksomhetens miljøer.",
       controlQuestion:
-        "Har rollens eksponering for et varig risikomiljø betydning i seg selv, utover det kriteriet fysisk eller sensorisk anstrengelse allerede fanger?",
+        "Er arbeid under særlige sikkerhets- eller eksponeringsforhold noe dere vil ta hensyn til i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av sikkerhet og eksponering arbeider rollen normalt og varig under?",
       anchor1:
-        "Rollen utsettes enkelte ganger for et tydelig avgrenset sikkerhets- eller eksponeringsforhold på lavt nivå, med standardiserte beskyttelsestiltak.",
+        "Enkeltstående og lav eksponering under tydelig avgrensede forhold med standardiserte verneetiltak.",
       anchor3:
-        "Rollen arbeider under et etablert, tilbakevendende risikomiljø som krever konsekvent bruk av beskyttelsestiltak som en normal del av arbeidet.",
+        "Tilbakevendende eksponering i et etablert risikomiljø som krever konsekvent bruk av verneetiltak.",
       anchor5:
-        "Rollen arbeider under svært krevende eller virksomhetskritiske eksponeringsforhold, der beskyttelsesstandarden den følger eller setter, ofte strekker seg utenfor eget nærmeste team.",
+        "Svært krevende eller virksomhetskritiske eksponeringsforhold der vern, sikkerhetsrutiner og korrekt opptreden er avgjørende for sikker drift.",
     },
     "on-call": {
-      name: "Beredskapsvakt, hjemmevakt og tilgjengelighetskrav",
+      name: "Vakt, beredskap og tilgjengelighetskrav",
       shortUiText:
-        "Rollens tilbakevendende krav til å være tilgjengelig utenfor ordinær arbeidstid eller å svare umiddelbart.",
+        "Tilbakevendende vakt, beredskap eller krav om rask tilgjengelighet.",
       fullDefinition:
-        "Fanger rollens tilbakevendende krav til å være tilgjengelig utenfor ordinær arbeidstid, eller å svare umiddelbart, som en integrert forutsetning for rollen. Kriteriet måler et vesentlig, tilbakevendende beredskapskrav, ikke midlertidig overtid, frivillig fleksibilitet eller en generelt høy arbeidsmengde.",
+        "Omfatter tilbakevendende krav om å være tilgjengelig eller kunne handle utenfor ordinær arbeidstid, eller å kunne svare umiddelbart i løpet av et skift. Kriteriet gjelder planlagt eller forventet beredskap som er en stabil del av virksomhetens forutsetninger. Det gjelder ikke enkeltstående overtid, frivillig fleksibilitet eller midlertidig høy arbeidsbelastning.",
       measures:
-        "Tilbakevendende krav til tilgjengelighet utenfor ordinær arbeidstid eller umiddelbar innsats.",
+        "Vakt og beredskap, krav om rask tilgjengelighet, tilbakevendende utrykning utenfor ordinær arbeidstid.",
       notMeasures:
-        "Midlertidig overtid, frivillig fleksibilitet eller høy arbeidsmengde.",
+        "Midlertidig overtid, uformelle forventninger om å svare, generelt høy arbeidsmengde.",
       whenSuitable:
-        "Drift, IT, helse, sikkerhet og andre roller der beredskap er en integrert forutsetning for rollen.",
+        "Velg når vakt, beredskap eller krav om rask tilgjengelighet skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Skal være et eget kriterium bare når beredskap er vesentlig og tilbakevendende.",
+        "Velg ikke når tilgjengelighet bare oppstår ved enkeltstående kriser eller mangler en tydelig og tilbakevendende forankring i virksomheten.",
       controlQuestion:
-        "Har rollens tilbakevendende beredskapskrav betydning i seg selv, utover midlertidig overtid eller en generelt høy arbeidsmengde?",
+        "Er tilbakevendende vakt, beredskap eller krav om rask tilgjengelighet en arbeidsforutsetning dere vil ta hensyn til i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av beredskapsvakt, hjemmevakt og tilgjengelighet bærer rollen normalt og varig?",
-      anchor1:
-        "Rollen dekker enkelte ganger et tydelig avgrenset beredskapskrav med lav frekvens.",
+      anchor1: "Enkeltstående og tydelig avgrenset beredskap med lav frekvens.",
       anchor3:
-        "Rollen bærer et etablert, tilbakevendende beredskaps- eller tilgjengelighetskrav utenfor ordinær arbeidstid som en normal del av rollen.",
+        "Etablert og tilbakevendende beredskap eller tilgjengelighet utenfor ordinær arbeidstid.",
       anchor5:
-        "Rollen bærer et svært krevende eller virksomhetskritisk beredskapskrav, med hyppig eller umiddelbar innsatsplikt som andre rollers tilgjengelighet ofte bygges rundt.",
+        "Svært krevende beredskap med hyppig eller umiddelbar utrykningsplikt, der virksomheten er sterkt avhengig av rask tilgjengelighet.",
     },
     "irregularity-mobility": {
       name: "Uregelmessighet, mobilitet og stedbundethet",
       shortUiText:
-        "Rollens varige krav til uregelmessige tider, omfattende reising eller arbeid på bestemte steder.",
+        "Varige krav om uregelmessige tider, reiser eller arbeid på bestemte steder.",
       fullDefinition:
-        "Fanger rollens varige krav til uregelmessig arbeidstid, omfattende reising eller arbeid knyttet til bestemte steder, for eksempel felt-, skift- eller internasjonalt arbeid. Kriteriet måler et stabilt, strukturelt forhold ved rollen, ikke enkeltstående reiser, personlige ønsker eller et midlertidig prosjekt.",
+        "Omfatter varige krav om uregelmessig arbeidstid, omfattende reising eller stedbundet arbeid, for eksempel feltvirksomhet, skiftarbeid eller internasjonal tilstedeværelse. Kriteriet gjelder et stabilt og strukturelt forhold i virksomheten. Det gjelder ikke enkeltstående reiser, personlige ønsker eller midlertidige prosjekter.",
       measures:
-        "Varige krav til uregelmessige tider, omfattende reising eller arbeid på bestemte steder.",
+        "Uregelmessig arbeidstid, omfattende og tilbakevendende reising, felt-, skift- eller stedbundet arbeid.",
       notMeasures:
-        "Enkeltstående reiser, personlige ønsker eller midlertidige prosjekter.",
+        "Enkeltstående tjenestereiser, midlertidige prosjekter, vakt eller beredskap utenfor arbeidstid.",
       whenSuitable:
-        "Feltroller, internasjonal virksomhet, skiftarbeid eller høy reisefrekvens.",
+        "Velg når uregelmessige tider, mobilitet eller stedbundethet skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Kan slås sammen med Beredskapsvakt/hjemmevakt bare når begge inngår i samme stabile arbeidsforhold.",
+        "Velg ikke når kravet er midlertidig eller forekommer sjelden uten å være en stabil del av virksomhetens forutsetninger.",
       controlQuestion:
-        "Har rollens varige krav til uregelmessighet eller mobilitet betydning i seg selv, utover enkeltstående reiser eller et midlertidig prosjekt?",
+        "Vil dere veie inn varige krav om uregelmessige tider, reiser eller stedbundet arbeid?",
       assessmentQuestion:
         "Hvilket nivå av uregelmessighet, mobilitet eller stedbundethet bærer rollen normalt og varig?",
       anchor1:
-        "Rollen bærer et tilbakevendende, men begrenset krav til uregelmessige tider, reising eller stedbundet arbeid, for eksempel et regelmessig, men sjeldent forekommende mønster som er en varig del av rollen.",
+        "Tilbakevendende, men begrensede krav om uregelmessige tider, reiser eller stedbundet arbeid.",
       anchor3:
-        "Rollen bærer et etablert, tilbakevendende mønster av uregelmessige tider, reising eller stedbundet arbeid som en normal og stabil del av rollen.",
+        "Etablert og tilbakevendende mønster av uregelmessige tider, reiser eller stedbundet arbeid.",
       anchor5:
-        "Rollen bærer svært omfattende eller virksomhetskritisk uregelmessighet, mobilitet eller stedbundethet, for eksempel varige internasjonale forpliktelser, skiftforpliktelser eller feltforpliktelser som former hvordan rollen kan bemannes.",
+        "Svært omfattende krav om skift, reiser, feltarbeid eller internasjonal tilstedeværelse som tydelig påvirker planlegging og bemanning.",
     },
     "restricted-environments": {
-      name: "Særskilte sikkerhets-, konfidensialitets- eller kontrollmiljøer",
+      name: "Særlige sikkerhets-, taushets- eller kontrollmiljøer",
       shortUiText:
-        "Rollens krav til å arbeide under særskilte tilgangs-, kontroll- eller sikkerhetsrestriksjoner.",
+        "Arbeid under særlige regler for tilgang, taushetsplikt, sikkerhet eller kontroll.",
       fullDefinition:
-        "Fanger arbeidsforholdet ved å operere under særskilte tilgangs-, kontroll- eller sikkerhetsrestriksjoner, for eksempel et sikkerhetsklarert eller konfidensialitetssensitivt miljø. Kriteriet måler restriksjonen rollen arbeider under, ikke ansvaret for informasjonssikkerhet i seg selv.",
+        "Omfatter arbeidsforhold med særlige begrensninger for tilgang, taushetsplikt, sikkerhet eller kontroll, for eksempel sikkerhetsklassifiserte miljøer eller informasjon som krever særskilt vern. Kriteriet gjelder de reglene og begrensningene som gjelder i miljøet. Det gjelder ikke ansvar for å utforme, følge opp eller kontrollere informasjonssikkerhet.",
       measures:
-        "Arbeidsforholdet ved å arbeide under særskilte tilgangs-, kontroll- eller sikkerhetsrestriksjoner.",
-      notMeasures: "Ansvar for informasjonssikkerhet.",
+        "Særlige tilgangsbegrensninger, taushets- og sikkerhetsrestriksjoner, kontrollkrav som påvirker hvordan arbeidet kan utføres.",
+      notMeasures:
+        "Formelt ansvar for informasjonssikkerhet, allmenn taushetsplikt, allmenn risikobevissthet.",
       whenSuitable:
-        "Sikkerhetsklarerte, konfidensialitetssensitive eller strengt kontrollerte miljøer med faktiske begrensninger.",
+        "Velg når særlige tilgangs-, taushets- eller sikkerhetsrestriksjoner skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Bruk bare når det er arbeidsmiljøet/forutsetningen, ikke kontrollansvaret, som måles.",
+        "Velg ikke bare for konfidensiell informasjon. Begrensningene skal være særskilte, tilbakevendende og påvirke hvordan arbeidet kan utføres.",
       controlQuestion:
-        "Har rollens krav til å arbeide under særskilte tilgangs- eller sikkerhetsrestriksjoner betydning i seg selv, atskilt fra det formelle kontrollansvaret den også kan bære?",
+        "Skal arbeid under særlige tilgangs-, taushets- eller sikkerhetsrestriksjoner ha betydning i synet på likeverdighet?",
       assessmentQuestion:
         "Hvilket nivå av sikkerhets-, konfidensialitets- eller kontrollrestriksjon arbeider rollen normalt og varig under?",
       anchor1:
-        "Rollen arbeider enkelte ganger under en tydelig avgrenset tilgangs- eller konfidensialitetsrestriksjon på lavt nivå.",
+        "Enkeltstående og tydelig avgrensede tilgangs- eller taushetsrestriksjoner på lavt nivå.",
       anchor3:
-        "Rollen arbeider under et etablert, tilbakevendende sett med tilgangs-, kontroll- eller sikkerhetsrestriksjoner som en normal del av rollen.",
+        "Etablerte og tilbakevendende tilgangs-, kontroll- eller sikkerhetsrestriksjoner.",
       anchor5:
-        "Rollen arbeider under svært strenge eller virksomhetskritiske sikkerhets-, konfidensialitets- eller kontrollrestriksjoner som former hvordan rollen og dens omgivelser må drives.",
+        "Svært strenge eller virksomhetskritiske sikkerhets-, taushets- eller kontrollrestriksjoner som i stor grad styrer planlegging, gjennomføring og dokumentasjon.",
     },
   },
 }

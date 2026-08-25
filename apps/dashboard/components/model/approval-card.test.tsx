@@ -698,7 +698,7 @@ describe("ApprovalCard", () => {
     it("names the people-leadership criterion", () => {
       failing("peopleLeadershipWeight")
       expect(rowText(checks.peopleLeadershipWeight)).toContain(
-        "People and management responsibility"
+        "Leadership and people responsibility"
       )
       expect(
         screen.getByRole("link", { name: "Weighting" }).getAttribute("href")

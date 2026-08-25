@@ -1630,15 +1630,15 @@
         "midpointExplanation": "Et gjennomtenkt mellomtrinn: kravet ligger mellom de to trinnene rundt det.",
         "step1": {
           "name": "Avgrenset krav",
-          "meaning": "Kravet er tydelig definert, lokalt eller begrenset i omfang. Rollen arbeider hovedsakelig innenfor etablerte rammer."
+          "meaning": "Kravet er tydelig definert, lokalt eller begrenset i omfang. Etablerte rammer og arbeidsmåter er normalt nok."
         },
         "step2": {
           "name": "Grunnleggende til moderat krav",
-          "meaning": "Kravet forekommer gjentatte ganger, men innenfor et tydelig avgrenset område. Rollen håndterer variasjoner og enklere avvik."
+          "meaning": "Kravet er tilbakevendende innenfor et tydelig avgrenset område. Variasjoner og enklere avvik må håndteres."
         },
         "step3": {
           "name": "Selvstendig og etablert krav",
-          "meaning": "Kravet er en tydelig og gjentakende del av rollen. Rollen gjør profesjonelle vurderinger innenfor sitt eget område."
+          "meaning": "Kravet er en tydelig og tilbakevendende del av området. Faglige vurderinger gjøres innenfor etablerte rammer."
         },
         "step4": {
           "name": "Avansert eller bredt krav",
@@ -1646,7 +1646,7 @@
         },
         "step5": {
           "name": "Svært avansert, omfattende eller virksomhetskritisk krav",
-          "meaning": "Kravet har svært stort omfang, vanskelighetsgrad, konsekvens eller strategisk betydning. Rollen former ofte retning, standarder, løsninger eller resultater utenfor sitt eget nærmeste område."
+          "meaning": "Kravet har svært stort omfang, vanskelighetsgrad, konsekvens eller strategisk betydning. Det kan påvirke retning, standarder, løsninger eller resultater også utenfor det nærmeste området."
         }
       },
       "completeCta": "Fullfør vurderingen",

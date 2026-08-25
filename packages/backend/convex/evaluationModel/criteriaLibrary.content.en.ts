@@ -81,27 +81,27 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
     "1": {
       name: "Bounded requirement",
       meaning:
-        "The requirement is clearly defined, local or limited in scope. The role works mainly within established frames.",
+        "The requirement is clearly defined, local or limited in scope. Established frames and ways of working are normally enough.",
     },
     "2": {
       name: "Basic to moderate requirement",
       meaning:
-        "The requirement recurs but within a clearly bounded area. The role handles variations and simpler deviations.",
+        "The requirement recurs within a clearly bounded area. Variations and simpler deviations have to be handled.",
     },
     "3": {
       name: "Independent and established requirement",
       meaning:
-        "The requirement is a clear and recurring part of the role. The role makes professional judgments within its own area.",
+        "The requirement is a clear and recurring part of the area. Professional judgments are made within established frames.",
     },
     "4": {
       name: "Advanced or broad requirement",
       meaning:
-        "The requirement is advanced, has a broader reach, or requires independent judgment calls where established ways of working are not always enough.",
+        "The requirement is advanced, reaches wider or calls for independent trade-offs where established ways of working are not always enough.",
     },
     "5": {
       name: "Very advanced, extensive or business-critical requirement",
       meaning:
-        "The requirement has very great scope, difficulty, consequence or strategic significance. The role often shapes direction, standards, solutions or results beyond its own immediate area.",
+        "The requirement carries very great scope, difficulty, consequence or strategic significance. It can shape direction, standards, solutions or results beyond the immediate area.",
     },
   },
   midpoints: {
@@ -111,527 +111,536 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
   criteria: {
     "knowledge-depth": {
       name: "Knowledge depth and specialist level",
-      shortUiText:
-        "The role's requirement for in-depth specialist knowledge and advanced problem-solving.",
+      shortUiText: "Deep specialist knowledge within a bounded field.",
       fullDefinition:
-        "Captures the role's requirement for in-depth professional knowledge, specialist methodology, advanced problem-solving and relevant experience. It measures the depth of expertise the role normally draws on, not a formal degree in itself or how a single problem happened to turn out.",
+        "Covers deep professional knowledge, specialist methods and relevant experience within one main field. The criterion concerns how advanced the knowledge has to be in order to handle difficult questions in the field. It does not concern breadth of knowledge, formal authorisations, business context or advisory work as a field of its own.",
       measures:
-        "The requirement for in-depth professional knowledge, specialist methodology, advanced problem-solving and relevant experience.",
+        "Deep professional knowledge, specialist methods, relevant and lasting experience within one field.",
       notMeasures:
-        "A formal degree in itself, the difficulty of a single problem, or the individual's performance.",
-      whenSuitable: "Almost always relevant in knowledge-intensive businesses.",
+        "The number of knowledge areas, a formal degree or certification in itself, knowledge of a specific industry or organisation in itself, decision mandate or individual performance.",
+      whenSuitable:
+        "Choose this when deep specialist knowledge within a professional field should carry particular weight in your view of equivalence.",
       whenNotSuitable:
-        "Choose normally either this criterion or the broader, combined competence criterion, not both.",
+        "Do not choose it merely for education requirements, broad collaboration across several fields, or advisory work. Consider instead whether one of the neighbouring criteria captures what you want to prioritise more precisely.",
       controlQuestion:
-        "Does the depth of specialist knowledge this role requires matter on its own, separately from its breadth, formal qualifications, domain context and advisory judgment?",
+        "Is deep specialist knowledge an area you want to give particular weight in your view of equivalence?",
       assessmentQuestion:
         "What level of specialist knowledge depth does this role normally and lastingly require?",
       anchor1:
-        "The role draws on established, well-documented professional knowledge within a clearly bounded area, applying known methods to familiar problems.",
+        "Established and well-documented professional knowledge within a clearly bounded area. Known methods are enough for familiar questions.",
       anchor3:
-        "The role independently applies in-depth specialist knowledge and established professional methodology to solve problems within its own area.",
+        "Deepened specialist knowledge and established professional methodology are used independently for recurring and more demanding questions in the field.",
       anchor5:
-        "The role commands specialist knowledge at a very advanced level and is often turned to for the hardest problems in the field, shaping professional standards or practice beyond its own team.",
+        "Very deep specialist knowledge is used for the hardest questions in the field. The knowledge contributes to developing methods, quality levels or professional practice.",
     },
     "knowledge-breadth": {
       name: "Knowledge breadth and cross-disciplinary understanding",
       shortUiText:
-        "The role's requirement to integrate several competence areas and understand their connections.",
+        "The ability to connect several knowledge areas and understand how they relate.",
       fullDefinition:
-        "Captures the role's requirement to combine and integrate several competence areas, such as product, data, business and technology, and to understand how they connect. It measures breadth of integration, not the number of people the role works with.",
+        "Covers the need to combine knowledge from several different areas, for example business, technology, data, product and operations. The criterion concerns understanding of the connections and trade-offs between those areas. It does not concern the depth of a single professional field or the number of contacts and collaboration partners.",
       measures:
-        "The requirement to integrate several competence areas and understand how they connect.",
+        "Breadth of knowledge areas, understanding of the connections between areas, the ability to make trade-offs between different perspectives.",
       notMeasures:
-        "The number of collaboration partners or organizational impact.",
+        "Deep specialist knowledge within one area, the number of meetings, stakeholders or points of contact, organisational reach.",
       whenSuitable:
-        "When roles need to combine several subject areas, for example product, data, business and technology.",
+        "Choose this when an overall view and the ability to unite several knowledge areas should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Choose only when breadth is an independent difference from specialist depth.",
+        "Do not choose it merely for many points of contact. If it is mainly about deep professional knowledge within one area, 7.1 is more precise.",
       controlQuestion:
-        "Does the breadth of competence this role integrates matter on its own, separately from how deep its specialist knowledge runs?",
+        "Is the ability to unite several knowledge areas central to how the business creates value?",
       assessmentQuestion:
         "What level of cross-disciplinary breadth does this role normally and lastingly require?",
       anchor1:
-        "The role draws mainly on one competence area and rarely needs to connect it to other disciplines.",
+        "One main knowledge area is used. Connections to other areas are rarely needed.",
       anchor3:
-        "The role independently combines a small number of established competence areas and understands how they affect each other.",
+        "A few established knowledge areas are combined independently, with an understanding of how they affect each other.",
       anchor5:
-        "The role integrates many different competence areas at a very advanced level and is relied on to connect them in ways that shape solutions or direction beyond its own area.",
+        "Many distinct knowledge areas are connected in a way that shapes how larger solutions, offerings or ways of working are designed.",
     },
     "formal-qualifications": {
-      name: "Formal qualification, licensing and certification requirements",
-      shortUiText:
-        "The role's requirement for a mandatory license, authorization or certification.",
+      name: "Formal qualification, authorisation and certification requirements",
+      shortUiText: "Mandatory licence, authorisation or certification.",
       fullDefinition:
-        "Captures formal requirements the role must hold to legally practice, sign off on, or take responsibility for the work, such as a mandatory license, authorization or certification. It measures the formal requirement itself, not general education status or a prestigious degree that is not required to do the job.",
+        "Covers formal requirements that must be met in order to perform, approve, sign for or be responsible for a certain type of activity. Examples are a professional licence, statutory authorisation and mandatory certification. The criterion concerns mandatory requirements, not education, courses or degrees that are a merit but not a necessity.",
       measures:
-        "Formal requirements needed to practice, sign off on, or take responsibility for the work.",
+        "Mandatory professional licence, statutory or business-mandated authorisation, mandatory certification.",
       notMeasures:
-        "General education status, a prestigious degree, or voluntary courses.",
+        "General level of education, voluntary courses, a prestigious degree with no authorisation requirement attached.",
       whenSuitable:
-        "Regulated or safety-critical roles with a mandatory license, authorization or certification.",
+        "Choose this when mandatory licences, authorisations or certifications should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Should not be used when education is only a path to competence already captured by Knowledge depth.",
+        "Do not choose it when education is mainly a route to knowledge that 7.1 Knowledge depth and specialist level already captures.",
       controlQuestion:
-        "Does the role's mandatory license, authorization or certification matter on its own, separately from the specialist knowledge it also requires?",
+        "Should mandatory licences, authorisations or certifications carry through into your view of equivalence?",
       assessmentQuestion:
         "What level of formal qualification, licensing or certification does this role normally and lastingly require?",
       anchor1:
-        "The role has no formal qualification, licensing or certification requirement, or only a basic, clearly defined one with a limited renewal or scope requirement.",
+        "No mandatory requirement, or a basic and clearly bounded requirement with limited renewal or scope.",
       anchor3:
-        "The role requires an established professional license or certification that is a recurring, independent condition for practicing the role.",
+        "An established professional licence or certification that is a recurring and independent condition for practising in a field.",
       anchor5:
-        "The role requires an advanced or business-critical license, authorization or certification, without which the role cannot legally be practiced, signed off on, or held accountable, and which often sets the standard others must meet.",
+        "Advanced or business-critical authorisation required in order to approve, sign for or be responsible for activity with very large consequences.",
     },
     "domain-knowledge": {
       name: "Domain and business knowledge",
       shortUiText:
-        "The role's requirement for deep, hard-to-replace knowledge of its specific industry or business context.",
+        "Deep knowledge of the industry, product, customer environment or business context.",
       fullDefinition:
-        "Captures the role's requirement for deep contextual knowledge, such as industry, product, customer environment or regulatory context, that cannot quickly be replaced by general professional skill. It measures depth of context, not the general experience or organizational familiarity everyone is expected to build over time.",
+        "Covers knowledge of the context the business operates in, for example industry, product, customer environment, business model or regulatory framework. The criterion concerns context-specific knowledge that is not quickly replaced by general professional knowledge. It does not concern the ordinary familiarity with an organisation that is built up through onboarding and experience over time.",
       measures:
-        "Deep contextual knowledge that cannot quickly be replaced by general professional skill.",
+        "Industry knowledge, product and customer knowledge, knowledge of the business model or regulatory context.",
       notMeasures:
-        "General experience or organizational familiarity that everyone is expected to build up.",
+        "General professional skill, ordinary familiarity with the organisation, formal authorisation.",
       whenSuitable:
-        "When specific industry, product, customer-environment or regulatory knowledge is a distinct condition for the role.",
+        "Choose this when specific knowledge of the business context should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Domain is the context; specialist level is the professional method and skill.",
+        "Do not choose it when general professional knowledge and ordinary onboarding are enough to understand the business context.",
       controlQuestion:
-        "Does the role's context-specific domain knowledge matter on its own, separately from its general specialist method and skill?",
+        "Do you want to weigh in how much business and industry knowledge different areas need?",
       assessmentQuestion:
         "What level of domain and business knowledge does this role normally and lastingly require?",
       anchor1:
-        "The role requires domain knowledge limited to one clearly bounded product, process or customer context.",
+        "Knowledge of a clearly bounded product, process or customer context.",
       anchor3:
-        "The role requires established, independent knowledge of its business domain that is not quickly replaced by general professional skill.",
+        "Established and independent knowledge of the business context that is not quickly replaced by general professional knowledge.",
       anchor5:
-        "The role requires very deep, business-critical domain knowledge that is hard to replace and often shapes how the domain's standards or practice are set beyond the role's own area.",
+        "Very deep and hard-to-replace knowledge of the industry, market, customers or regulatory framework that shapes important choices and ways of working.",
     },
     "advisory-judgment": {
       name: "Advisory and judgment competence",
       shortUiText:
-        "The role's requirement to weigh information and turn expertise into qualified recommendations.",
+        "Qualified advice and professional judgment as a basis for other people's decisions.",
       fullDefinition:
-        "Captures the role's requirement to weigh information, exercise professional judgment and turn expertise into qualified advice or recommendations for others to act on. It measures the advisory judgment itself, not the formal authority to decide what happens next.",
+        "Covers qualified advice as a recurring part of what the business offers, or as decisive decision support for customers, partners or internal decision-makers. It includes weighing facts, assessing uncertain or conflicting information and formulating advice or recommendations that others use in their own choices. The criterion concerns the quality of the advice and judgment. It does not concern the formal right to take the final decision.",
       measures:
-        "The requirement to weigh information, give qualified advice and turn expertise into recommendations.",
-      notMeasures: "Formal decision-making mandate.",
+        "Qualified assessment of information, advice and recommendations, professional judgment in questions involving trade-offs.",
+      notMeasures:
+        "Formal decision mandate, sharing general information, specialist knowledge in itself.",
       whenSuitable:
-        "Consulting, partner, specialist and leading expert roles where qualified advice is the core deliverable.",
+        "Choose this when qualified advice and professional judgment should carry particular weight in your view of equivalence.",
       whenNotSuitable:
-        "Should not be combined with Knowledge depth if it only describes the same expertise in different words.",
+        "Do not choose it merely for knowledge sharing or routine answers. The advice has to matter clearly for choices or decisions.",
       controlQuestion:
-        "Does the role's requirement to exercise advisory judgment matter on its own, separately from the specialist knowledge it draws that judgment from?",
+        "Is qualified advice and professional judgment something you want to give weight in your view of equivalence?",
       assessmentQuestion:
         "What level of advisory and judgment competence does this role normally and lastingly require?",
       anchor1:
-        "The role gives input or straightforward advice within a clearly bounded area, following established guidance.",
+        "Background material or uncomplicated advice within a clearly bounded area, supported by established guidance.",
       anchor3:
-        "The role independently weighs information and gives established, professional advice that others rely on within its own area.",
+        "Independent and established professional advice within an area, based on weighing the relevant information.",
       anchor5:
-        "The role's advice and judgment are sought on very advanced or business-critical questions, and often shape the recommendations, standards or direction that other parts of the business follow.",
+        "Advice and assessments in highly advanced or sensitive questions that matter greatly for the business's choices or its handling of risk.",
     },
     "complexity-ambiguity": {
       name: "Complexity and ambiguity",
       shortUiText:
-        "The role's requirement to handle uncertainty, multi-faceted questions and unclear frames with qualified judgment.",
+        "Difficulty, uncertainty and ambiguity in the questions that have to be handled.",
       fullDefinition:
-        "Captures the uncertainty, multi-faceted questions, unclear frames and need for qualified judgment the role normally works with. It measures the nature of the problems the role handles, not the knowledge requirement in itself, work pace, or organizational reach.",
+        "Covers the degree of uncertainty, conflicting requirements, unclear goals and absence of ready-made solutions. The criterion concerns the nature of the problems themselves. It does not concern the amount of analysis spent on handling them, work pace or organisational reach.",
       measures:
-        "Uncertainty, multi-faceted questions, unclear frames and the need for qualified judgment.",
+        "Unclear frames and goals, conflicting requirements and trade-offs, uncertainty and complex dependencies.",
       notMeasures:
-        "The knowledge requirement in itself, a high work pace, or organizational reach.",
-      whenSuitable: "Almost always relevant.",
+        "The extent of analytical work, high workload or pace, specialist knowledge in itself.",
+      whenSuitable:
+        "Choose this when handling difficult, unclear or many-sided questions should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Should normally be the main criterion within the dimension.",
+        "Do not choose it merely for extensive analysis or many simultaneous tasks. Those are captured by 8.2 and 8.4 respectively, if selected.",
       controlQuestion:
-        "Does the complexity and ambiguity this role handles matter on its own, separately from the analytical effort spent working through it?",
+        "Do you want to take account of the degree of ambiguity and difficulty in the questions the business has to handle?",
       assessmentQuestion:
         "What level of complexity and ambiguity does this role normally and lastingly handle?",
       anchor1:
-        "The role works mainly with clearly defined questions, established methods and predictable situations.",
+        "Clearly defined questions, established methods and predictable situations.",
       anchor2:
-        "The role handles recurring variations and simpler deviations, choosing between known alternatives.",
+        "Recurring variations and simpler deviations are handled by choosing between known alternatives.",
       anchor3:
-        "The role independently handles complex questions within its area and needs to analyze, prioritize and adapt solutions.",
+        "Complex questions within established frames, where analysis, prioritisation and adaptation are needed.",
       anchor4:
-        "The role handles advanced, cross-functional or partly ambiguous problems where established solutions are not always enough.",
+        "Advanced, cross-functional or partly ambiguous problems are handled where established solutions are not always enough.",
       anchor5:
-        "The role defines and handles very complex or strategically important problems under high uncertainty, and often shapes the approach, principles or long-term solutions.",
+        "Highly complex or strategically significant questions with high uncertainty, where new approaches or long-term solutions have to be designed.",
     },
     "analytical-effort": {
       name: "Analytical and problem-solving effort",
       shortUiText:
-        "The extent of analysis, troubleshooting or systematic problem-solving the role normally carries out.",
+        "The extent of systematic analysis, troubleshooting and problem solving.",
       fullDefinition:
-        "Captures the extent of analysis, troubleshooting, modeling, diagnostics or systematic problem-solving the role normally carries out. It measures the analytical work itself, not the specialist knowledge behind it or the mere presence of unclear problems.",
+        "Covers the systematic analysis, troubleshooting, modelling, diagnostics, testing and calculation needed to arrive at solutions. The criterion concerns the analytical effort. It does not concern merely that the problem is unclear, or the specialist knowledge behind the analysis.",
       measures:
-        "The extent of analysis, troubleshooting, modeling, diagnostics or systematic problem-solving.",
+        "Systematic analysis, troubleshooting and diagnostics, modelling, testing and calculation.",
       notMeasures:
-        "Specialist knowledge, or merely the presence of unclear problems.",
+        "Ambiguity in the problem itself, specialist knowledge in itself, temporary high workload.",
       whenSuitable:
-        "When the mental analytical load differs clearly between roles despite comparable complexity.",
+        "Choose this when systematic analysis and problem-solving work should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Combine with Complexity only when the difference can be explained: complexity is the nature of the problem, analysis is the work required to handle it.",
+        "Do not choose it merely for unclear questions. There has to be a recurring and distinct element of analysis, troubleshooting or diagnostics.",
       controlQuestion:
-        "Does the analytical effort this role spends solving problems matter on its own, separately from how complex or ambiguous those problems are?",
+        "Should the extent of systematic analysis and problem-solving work carry weight in your view of equivalence?",
       assessmentQuestion:
         "What level of analytical and problem-solving effort does this role normally and lastingly carry?",
       anchor1:
-        "The role carries out straightforward analysis or troubleshooting within a clearly bounded task, following established steps.",
+        "Uncomplicated analysis or troubleshooting in a clearly bounded question, following established steps.",
       anchor3:
-        "The role independently carries out established analysis, diagnostics or systematic problem-solving as a recurring part of its own area.",
+        "Independent and established analysis, diagnostics or systematic problem solving within an area.",
       anchor5:
-        "The role carries out very advanced or extensive analysis, modeling or diagnostics that is often business-critical and shapes how similar problems are approached beyond its own area.",
+        "Highly advanced or extensive analysis, modelling or diagnostics of great significance for the business's ability to solve critical or recurring problems.",
     },
     "communication-effort": {
-      name: "Communication and relationship effort",
+      name: "Communication and relationship-demanding work",
       shortUiText:
-        "The role's requirement for advanced communication, negotiation or conflict handling.",
+        "Requirements for qualified communication, negotiation and handling conflicting interests.",
       fullDefinition:
-        "Captures the role's requirement for advanced communication, negotiation, influencing, conflict handling or translating between different interests. It measures the communicative effort involved, not the number of stakeholders the role happens to deal with or its organizational impact.",
+        "Covers the difficulty of communication, negotiation, influence, conflict handling and translation between different needs and interests. The criterion concerns the communicative and relational effort. It does not concern the number of contacts, organisational reach or business responsibility.",
       measures:
-        "The requirement for advanced communication, negotiation, influencing, conflict handling or translating between interests.",
-      notMeasures: "The number of stakeholders or organizational impact.",
+        "Negotiation and influence, handling difficult conversations and conflicts, translation between different needs and interests.",
+      notMeasures:
+        "Number of contacts or meetings, customer or revenue responsibility, organisational reach.",
       whenSuitable:
-        "Customer-facing, negotiating, advisory or conflict-handling businesses where this is a central part of the work.",
+        "Choose this when qualified communication, negotiation and handling conflicting interests should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Measured as communicative effort, not as the size of the role's network.",
+        "Do not choose it merely for many meetings or customer contacts. The difficulty of the communication has to be what is prioritised.",
       controlQuestion:
-        "Does the communicative effort this role carries matter on its own, separately from how many stakeholders or how much organizational reach it has?",
+        "Should qualified communication, negotiation and handling conflicting interests carry weight in your view of equivalence?",
       assessmentQuestion:
         "What level of communication and relationship effort does this role normally and lastingly carry?",
       anchor1:
-        "The role communicates within a clearly bounded, mostly routine exchange with established counterparts.",
+        "Clearly bounded and largely routine communication with established counterparts.",
       anchor3:
-        "The role independently carries out established, recurring communication, negotiation or conflict handling as part of its own area.",
+        "Independent and recurring communication, negotiation or conflict handling within established frames.",
       anchor5:
-        "The role carries very advanced or business-critical communication, negotiation or conflict handling, often shaping how sensitive relationships or disputes are handled beyond its own area.",
+        "Highly advanced or sensitive communication, negotiation or conflict handling where the outcome matters greatly for the business's relationships or choices.",
     },
     "operational-intensity": {
       name: "Operational intensity and simultaneous demands",
       shortUiText:
-        "The role's normal requirement to hold attention across several simultaneous flows and prioritize continuously.",
+        "Requirements to handle several simultaneous flows and prioritise continuously.",
       fullDefinition:
-        "Captures the attention, simultaneous-handling ability and continuous prioritization the role normally requires in its ordinary operating mode. It measures a lasting, structural requirement, not temporary peaks, understaffing or poor planning that happen to increase workload.",
+        "Covers requirements for attention, the ability to handle several things at once, and continuous prioritisation between flows in normal operation. Examples might be customer cases, alarms, deliveries or operational flows. The criterion concerns a stable and structural requirement, not temporary peaks, shortage of resources or poor planning.",
       measures:
-        "Attention, the ability to work on several things at once, and continuous prioritization in the role's normal operating mode.",
-      notMeasures: "Temporary peaks, understaffing or poor planning.",
+        "Several simultaneous flows, continuous prioritisation, attention under time pressure in normal operation.",
+      notMeasures:
+        "Temporary high workload, understaffing, complexity in the subject matter.",
       whenSuitable:
-        "Operations, customer service, logistics or monitoring roles with a lasting requirement to handle several simultaneous flows and fast prioritization.",
+        "Choose this when handling and prioritising several simultaneous flows should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Must not be used to reward workload that results from a lack of resources.",
+        "Do not choose it to compensate for temporary work peaks or shortage of resources. The requirement has to be a lasting part of how the business works.",
       controlQuestion:
-        "Does this role's normal operational intensity matter on its own, separately from temporary peaks caused by understaffing or poor planning?",
+        "Do you want to weigh in requirements to handle several simultaneous flows and prioritise continuously?",
       assessmentQuestion:
         "What level of operational intensity and simultaneous demands does this role normally and lastingly carry?",
       anchor1:
-        "The role normally handles one flow or task at a time within a clearly bounded operating rhythm.",
+        "One flow or one task at a time within a clearly bounded rhythm.",
       anchor3:
-        "The role independently handles several established, simultaneous flows and prioritizes between them as a normal part of its own area.",
+        "Several established and simultaneous flows are handled independently with continuous prioritisation.",
       anchor5:
-        "The role sustains very high, business-critical operational intensity across many simultaneous flows, and how it prioritizes often sets the pattern others follow.",
+        "Very high operational intensity across many simultaneous flows, where the wrong prioritisation can quickly have large consequences for the business.",
     },
     "physical-sensory": {
       name: "Physical or sensory effort",
       shortUiText:
-        "The role's recurring physical load, precision demands or sensory concentration.",
+        "Recurring physical load, precision or sustained sensory concentration.",
       fullDefinition:
-        "Captures the recurring physical load, precision, ergonomically demanding tasks or sensory concentration the role normally requires. It measures physical or sensory effort itself, not the safety risk or exposure the work may also involve.",
+        "Covers physical load, ergonomically demanding elements, precision and concentration using sight, hearing or other senses. The criterion concerns demands on the body and on attention. It does not concern risk environments, exposure to hazardous substances, or the consequences for the business if something goes wrong.",
       measures:
-        "Recurring physical load, precision, ergonomically demanding tasks or sensory concentration.",
-      notMeasures: "Safety risk or physical exposure.",
+        "Physical and ergonomic load, precision requirements, sustained concentration using the senses.",
+      notMeasures:
+        "Risk environment or exposure, general stress, consequences of errors.",
       whenSuitable:
-        "Industry, healthcare, warehousing, production, field service or laboratory work.",
+        "Choose this when physical load, precision or sensory concentration should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Risk environment and exposure normally belong to Working conditions.",
+        "Do not choose it merely for risk in the work environment. If exposure and protective measures are the central point, 10.1 fits better.",
       controlQuestion:
-        "Does the physical or sensory effort this role carries matter on its own, separately from the safety risk or exposure it may also involve?",
+        "Should recurring physical load, precision or sustained concentration carry weight in your view of equivalence?",
       assessmentQuestion:
         "What level of physical or sensory effort does this role normally and lastingly carry?",
       anchor1:
-        "The role involves light, occasional physical or sensory demands within a clearly bounded task.",
+        "Light and occasional physical or sensory demands within a clearly bounded task.",
       anchor3:
-        "The role independently carries established, recurring physical load, precision work or sensory concentration as a normal part of its own area.",
+        "Recurring physical load, precision elements or sensory concentration as an established part of the area.",
       anchor5:
-        "The role carries very demanding, sustained physical or sensory effort that is often business-critical to get right, such as precision work whose standard others are held to.",
+        "Very demanding and sustained physical or sensory effort where precision and consistent execution are decisive.",
     },
     "scope-impact": {
       name: "Scope and impact",
-      shortUiText:
-        "The role's reach: from a bounded task to team, function, several functions or the whole company.",
+      shortUiText: "The reach of results and impact in the business.",
       fullDefinition:
-        "Captures how far the role's results and decisions reach in the organization, from clearly bounded own tasks to company-wide impact. It measures reach, not formal authority.",
+        "Covers how far results, choices and deliveries carry through in the business: from a clearly bounded area to teams, functions, several parts of the company or the whole company. The criterion concerns where the effect is felt. It does not concern formal decision rights, people responsibility or budget size in themselves.",
       measures:
-        "The role's reach: from a bounded task to team, function, several functions or company.",
+        "Reach of results and impact, the extent of the parts of the business affected, lasting consequences for the business's delivery or direction.",
       notMeasures:
-        "Formal people responsibility, budget size or the mandate itself.",
-      whenSuitable: "Almost always relevant.",
+        "Formal people responsibility, decision mandate, resource or budget responsibility in itself.",
+      whenSuitable:
+        "Choose this when the reach of results and impact should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Should not be combined with a separate criterion that only measures organizational reach.",
+        "Do not choose it merely for title, management level, budget size or decision rights. Consider whether one of the separate responsibility criteria captures what should be prioritised more precisely.",
       controlQuestion:
-        "Does the difference in reach between your roles matter on its own, beyond mandate and consequence?",
+        "Is it relevant for you to weigh in how far results and impact reach in the business?",
       assessmentQuestion:
         "How far does this role's normal and lasting impact reach?",
       anchor1:
-        "The role mainly affects the quality, efficiency or results of its own clearly bounded tasks.",
+        "Results and impact are mainly limited to a clearly bounded area or a single delivery.",
       anchor2:
-        "The role affects a bounded work area or recurring delivery within a team.",
+        "Impact reaches a bounded work area or a recurring delivery within a team.",
       anchor3:
-        "The role has independent responsibility for results within a clear area and affects the delivery and priorities of the team or adjacent functions.",
+        "Results and impact reach a clear area and affect deliveries or priorities in neighbouring parts of the business.",
       anchor4:
-        "The role affects several teams, a function or a significant part of the business through choices, priorities or solutions with lasting consequences.",
+        "Impact reaches several teams, a function or a significant part of the business through choices, priorities or solutions with lasting consequences.",
       anchor5:
-        "The role affects the company's overall direction, results or ability to succeed through decisions and responsibility with company-wide or strategic effect.",
+        "Results and impact reach several parts of the company or company level and matter for overall direction, results or the ability to succeed.",
     },
     "autonomy-mandate": {
       name: "Autonomy and decision mandate",
       shortUiText:
-        "How independently the role decides, and at what level, before escalation is needed.",
+        "Independence and the mandate to make trade-offs and take decisions.",
       fullDefinition:
-        "Captures how independently the role makes decisions, at what level those decisions sit, and how much needs to be escalated to someone else. It measures decision-making mandate itself, not the consequence of the decision or how far its effect reaches.",
+        "Covers the mandate to independently make trade-offs and take decisions within a defined area. The criterion concerns the room there is to choose direction, prioritise between alternatives and decide on suitable solutions within the area. It does not concern how far the effect of the decision reaches, how large the consequences of an error can be, or what kind of responsibility the decision covers.",
       measures:
-        "Independence, the level at which decisions are made, and the need for escalation.",
+        "Mandate to take independent decisions, room to choose between relevant alternatives, mandate to prioritise and make trade-offs, degree of independence within a defined area.",
       notMeasures:
-        "The consequence of the decision or its organizational reach.",
-      whenSuitable: "Almost always relevant.",
+        "The reach of results or impact, the consequence of incorrect decisions, people, resource or customer responsibility in itself, the company's internal approval processes or forms of consultation.",
+      whenSuitable:
+        "Choose this when an independent decision mandate should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Mandate is the right to decide; scope is where the effect is felt; risk is the consequence if it goes wrong.",
+        "Do not choose it to describe how far the effect of the decision reaches, what the consequences of an error can be, or what kind of responsibility the decision covers. Those are captured by other responsibility criteria if selected.",
       controlQuestion:
-        "Does the level of decision mandate this role holds matter on its own, separately from where its effects are felt and what the consequences would be if it went wrong?",
+        "Should the degree of independent decision mandate carry weight in your view of equivalence?",
       assessmentQuestion:
         "What level of autonomy and decision mandate does this role normally and lastingly hold?",
       anchor1:
-        "The role makes decisions within a clearly bounded task and escalates anything outside established routine.",
+        "Limited mandate to choose between clearly stated alternatives within established instructions.",
       anchor3:
-        "The role independently makes established decisions within its own area, escalating only genuinely new or cross-cutting questions.",
+        "Independent mandate to make established trade-offs, prioritise between alternatives and take decisions within a defined area.",
       anchor5:
-        "The role holds very broad or business-critical decision mandate, deciding on matters whose direction or standards extend beyond its own immediate area with little need for escalation.",
+        "Very broad mandate to make trade-offs and take decisions that set direction, principles or priorities for several parts of the business.",
     },
     "risk-consequence": {
       name: "Risk and consequence",
       shortUiText:
-        "The consequences for the business if this role's decisions, errors or shortcomings go wrong.",
+        "The seriousness of the possible consequences of errors, shortcomings or incorrect decisions.",
       fullDefinition:
-        "Captures the consequences the role's decisions, errors or shortcomings can have for safety, customers, quality, compliance, information or brand. It measures consequence broadly, not financial risk alone or how stressful the individual finds the role.",
+        "Covers what consequences errors, shortcomings or incorrect decisions can have for, for example, customers, quality, finances, safety, information, compliance and trust. The criterion concerns the consequence if something goes wrong. It does not concern who holds the formal responsibility for checking that rules or protections work.",
       measures:
-        "The consequences of decisions, errors or shortcomings for safety, customers, quality, compliance, information or brand.",
-      notMeasures: "Financial risk alone, or the individual's stress level.",
-      whenSuitable: "Almost always relevant.",
+        "Consequences for customer, quality and delivery, consequences for safety, information and compliance, financial and brand consequences.",
+      notMeasures:
+        "The individual's experience of stress, budget size in itself, formal control responsibility.",
+      whenSuitable:
+        "Choose this when differences in the possible consequences of errors and shortcomings should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Avoid a separate compliance-risk criterion if it is only an example of the same risk and consequence.",
+        "Do not choose it to describe how pressured or demanding something feels. Assess the factual and possible consequence if something goes wrong.",
       controlQuestion:
-        "Does the consequence of this role's decisions or errors matter on its own, separately from the formal compliance responsibility it may also carry?",
+        "Are differences in the consequences errors or shortcomings can have relevant to weigh into your view of equivalence?",
       assessmentQuestion:
         "What level of risk and consequence does this role's decisions and work normally and lastingly carry?",
       anchor1:
-        "Errors or shortcomings normally have limited, easily corrected consequences within the role's own work area.",
+        "Errors or shortcomings normally have limited and easily corrected consequences within a bounded area.",
       anchor2:
         "Errors or shortcomings can affect the team's quality, efficiency or delivery and normally require correction within established processes.",
       anchor3:
-        "Errors, decisions or shortcomings can have clear consequences for customers, delivery, quality, finances or compliance within one area.",
+        "Errors, shortcomings or incorrect decisions can have clear consequences for customer, delivery, quality, finances or compliance within an area.",
       anchor4:
         "Errors, decisions or shortcomings can have significant consequences for several parts of the business, key customers, critical processes or regulatory compliance.",
       anchor5:
-        "Errors, decisions or shortcomings can have very large, long-lasting or business-critical consequences for strategy, safety, compliance, trust or the organization's ability to survive.",
+        "Errors or shortcomings can have very large, long-lasting or business-critical consequences for safety, compliance, trust, finances or the business's continued ability to function.",
     },
     "people-leadership": {
-      name: "People and management responsibility",
+      name: "Leadership and people responsibility",
       shortUiText:
-        "The role's formal responsibility for leading people and delivering results through them.",
+        "Responsibility for leading people, coordinating activity and creating results through others.",
       fullDefinition:
-        "Captures the role's formal responsibility for leading people: allocating work, developing their capacity and delivering results through others. It measures formal people responsibility, not project leadership without it, specialist leadership, or team size used as a stand-alone measure.",
+        "Covers responsibility for leading and coordinating people or parts of the business in order to create results through others. It can include responsibility for priorities, allocation of work, direction, developing ways of working or coordinating delivery. Formal people responsibility is included when the responsibility also covers employees' goals, development, performance and working environment. The criterion concerns leadership responsibility through others, not specialist influence, project coordination or a large decision mandate of one's own.",
       measures:
-        "Responsibility for leading people, allocating work, developing capacity and delivering results through others.",
+        "Responsibility for leading and coordinating work through others, responsibility for direction, priorities and delivery in a part of the business, responsibility for developing ways of working or capacity through others, formal responsibility for employees' goals, development and performance.",
       notMeasures:
-        "Project leadership without formal people responsibility, specialist leadership, or team size used as the only measure.",
+        "Specialist influence without responsibility for others' work or for a part of the business, temporary coordination of individual tasks, project management without lasting responsibility for people or a part of the business, a decision mandate of one's own without responsibility for creating results through others.",
       whenSuitable:
-        "When formal people responsibility is a material difference between roles.",
+        "Choose this when responsibility for leading people or parts of the business through others should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Should normally carry low to moderate weight since managerial responsibility is often already visible in scope and mandate.",
+        "Do not choose it merely because coordination, specialist support or project management occurs. There has to be a lasting responsibility for direction, priorities, delivery or development through others.",
       controlQuestion:
-        "Does this role's formal people responsibility matter on its own, beyond what its scope and decision mandate already capture?",
+        "Should responsibility for leading people or parts of the business through others carry weight in your view of equivalence?",
       assessmentQuestion:
         "What level of people and management responsibility does this role normally and lastingly carry?",
       anchor1:
-        "The role has no or very limited formal people responsibility, such as occasionally coordinating one or two others' tasks.",
+        "Limited responsibility for coordinating others' work within a clearly bounded area. No lasting responsibility for direction, delivery or employees' development.",
       anchor3:
-        "The role has established, independent responsibility for leading a team: allocating work, developing capacity and delivering results through others.",
+        "Lasting responsibility for leading and coordinating a team, a workflow or a part of the business through others. The responsibility covers priorities, allocation of work and delivery. Formal people responsibility may occur but is not required at this level.",
       anchor5:
-        "The role carries very advanced or business-critical people and management responsibility, leading leaders or a large organization, and often sets the standard for how people are led beyond its own team.",
+        "Extensive responsibility for leading a larger part of the business or several teams through others. The responsibility covers direction, capacity, results and development over time. Formal people responsibility for other managers or a larger organisation is normally included at this level.",
     },
     "resource-capacity": {
       name: "Resource and capacity responsibility",
       shortUiText:
-        "The role's responsibility for prioritizing and using significant resources or capacity.",
+        "Responsibility for prioritising limited resources between the needs of the business.",
       fullDefinition:
-        "Captures the role's responsibility for prioritizing and using significant resources, capacity, assets or critical delivery capability so the business keeps functioning. It measures independent resource stewardship, not routine budget follow-up or purchasing within small, pre-set limits.",
+        "Covers responsibility for making trade-offs between competing needs when resources are limited. Resources can be, for example, time, budget, equipment, stock, staffing or delivery capacity. The criterion concerns the prioritisation needed for resources and capacity to be used where they do the business most good. The criterion does not concern leading, developing or coordinating people as such. Nor does it concern routine budget follow-up, purchasing or allocation within small and predetermined frames.",
       measures:
-        "Responsibility for prioritizing and using resources so the business keeps functioning.",
+        "Prioritisation between competing needs, allocation of limited resources and capacity, trade-offs between available resources, needs and delivery capability.",
       notMeasures:
-        "Routine budget follow-up or purchasing within small limits.",
+        "Leading or developing people, routine budget follow-up, purchasing within small fixed frames, business results in themselves.",
       whenSuitable:
-        "When the role independently allocates significant resources, capacity, assets or critical delivery capability.",
+        "Choose this when responsibility for prioritising limited resources between the needs of the business should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Should not be selected alongside a narrow financial-responsibility criterion if both measure the same resource stewardship.",
+        "Do not choose it merely for budget follow-up, purchasing or coordinating people. There has to be a lasting responsibility for trade-offs between competing needs and limited resources.",
       controlQuestion:
-        "Does this role's independent responsibility for resources or capacity matter on its own, separately from routine budget follow-up within pre-set limits?",
+        "Do you want to give weight to responsibility for prioritising limited resources between different needs in the business?",
       assessmentQuestion:
         "What level of resource and capacity responsibility does this role normally and lastingly carry?",
       anchor1:
-        "The role independently prioritizes the use of a small, clearly bounded set of resources or capacity within its own area, where its choices have limited and easily corrected effect.",
+        "Prioritisation within a small and clearly bounded set of resources, where the effect of the choices is limited and easy to correct.",
       anchor3:
-        "The role independently prioritizes and allocates established resources or capacity so its own area keeps functioning.",
+        "Independent prioritisation between established needs and limited resources or capacity within an area.",
       anchor5:
-        "The role independently stewards very significant or business-critical resources, capacity or delivery capability, with decisions that shape resource priorities beyond its own area.",
+        "Prioritisation between very significant or business-critical needs and resources, where the trade-offs affect several parts of the business's ability to deliver.",
     },
     "business-customer": {
       name: "Business and customer responsibility",
       shortUiText:
-        "The role's responsibility for creating, securing or developing material business value.",
+        "Responsibility for important customers, revenue or business results.",
       fullDefinition:
-        "Captures the role's responsibility for creating, securing or developing material business value through a significant customer relationship, revenue stream, business portfolio or commercial position. It measures the stability of that business responsibility, not individual sales performance, commission or negotiation skill by itself.",
+        "Covers a lasting responsibility for creating, securing or developing business value through, for example, customer relationships, revenue streams, contracts, business portfolios or market position. The criterion concerns responsibility that is part of the business. It does not concern individual sales results, commission or skill in an isolated negotiation.",
       measures:
-        "Responsibility for creating, securing or developing material business value.",
+        "Responsibility for customer relationships, responsibility for revenue or a business portfolio, responsibility for business results or market position.",
       notMeasures:
-        "Individual sales performance, commission, or negotiation skill in itself.",
+        "Customer contact in itself, individual sales performance, negotiating skill in itself.",
       whenSuitable:
-        "When the role is directly responsible for a significant customer relationship, revenue stream, business portfolio or commercial position.",
+        "Choose this when responsibility for customers, revenue or business results should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Must not automatically favor sales roles; the responsibility has to be a stable part of the role.",
+        "Do not choose it merely for customer contact or sales. There has to be a lasting responsibility for customer value, revenue or business results.",
       controlQuestion:
-        "Does this role's stable responsibility for business or customer value matter on its own, separately from individual sales performance or negotiation skill?",
+        "Is responsibility for customers, revenue or business results something you want to give particular weight in your view of equivalence?",
       assessmentQuestion:
         "What level of business and customer responsibility does this role normally and lastingly carry?",
       anchor1:
-        "The role supports a customer relationship or business activity within a clearly bounded, established account or task.",
+        "Support to an established customer relationship or business activity within a bounded account or area.",
       anchor3:
-        "The role independently holds established responsibility for a customer relationship, revenue stream or business portfolio that is a stable part of the role.",
+        "Independent and established responsibility for a customer relationship, revenue stream or business portfolio.",
       anchor5:
-        "The role carries very significant or business-critical responsibility for major customer relationships, revenue or commercial position, with decisions that shape the business's direction beyond its own portfolio.",
+        "Responsibility for customers, revenue or business areas of great significance to the company, affecting market position or future business.",
     },
     "compliance-control": {
-      name: "Information, security or regulatory compliance responsibility",
+      name: "Information, security or compliance responsibility",
       shortUiText:
-        "The role's formal responsibility for protection, quality assurance or compliance control.",
+        "Formal responsibility for control, protection, quality assurance or regulatory compliance.",
       fullDefinition:
-        "Captures the role's formal responsibility for protection, quality assurance, control or the correct application of critical requirements, such as information security or regulatory compliance. It measures a separate, formal control responsibility, not general risk awareness that every role is expected to have.",
+        "Covers formal responsibility for checking, quality-assuring or ensuring that important requirements are followed, for example within information security, quality, safety or regulation. The criterion concerns responsibility for the requirements being applied correctly. It does not concern the general obligation to follow rules or to be risk-aware.",
       measures:
-        "Responsibility for protection, quality assurance, control or the correct application of critical requirements.",
-      notMeasures: "General risk awareness.",
+        "Control and quality assurance responsibility, responsibility for protecting information or safety, responsibility for the correct application of requirements and regulation.",
+      notMeasures:
+        "General risk awareness, following routines that someone else is responsible for, the consequence if an error occurs.",
       whenSuitable:
-        "Regulated, safety-critical or data-heavy businesses with a separate, formal control responsibility.",
+        "Choose this when formal responsibility for control, protection and compliance should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Choose only if the responsibility is separate from Risk and consequence.",
+        "Do not choose it when the area only involves following established control routines. There has to be a clear responsibility for the controls and requirements working.",
       controlQuestion:
-        "Does this role's formal control responsibility matter on its own, separately from the general risk and consequence it also carries?",
+        "Should formal responsibility for control, protection and compliance be weighed into your view of equivalence?",
       assessmentQuestion:
         "What level of information, security or regulatory compliance responsibility does this role normally and lastingly carry?",
       anchor1:
-        "The role follows established control routines within a clearly bounded area, without independent control responsibility.",
+        "Established control routines are followed within a clearly bounded area, without independent control responsibility.",
       anchor3:
-        "The role independently holds established, formal responsibility for protection, quality assurance or compliance control within its own area.",
+        "Independent and formal responsibility for protection, quality assurance or compliance checking within an area.",
       anchor5:
-        "The role carries very advanced or business-critical control responsibility, and how it applies critical requirements often sets the standard for compliance beyond its own area.",
+        "Highly advanced or business-critical control responsibility where interpretations and ways of working govern how important requirements are followed in several parts of the business.",
     },
     "safety-exposure": {
       name: "Safety and exposure conditions",
       shortUiText:
-        "The role's lasting requirement to work in a risk environment under protective measures.",
+        "Lasting exposure to physical, chemical, biological or environmental risks.",
       fullDefinition:
-        "Captures the lasting risk environment the role works in and the requirement to work under protective measures, covering actual physical, chemical, biological or environmental exposure. It measures the working condition itself, not the consequence for the business if something goes wrong.",
+        "Covers recurring work in environments with actual physical, chemical, biological or environmental exposure and a requirement for protective measures. Examples are noise, hazardous substances, infection, height, heat, cold and dangerous machinery. The criterion concerns the working condition, not physical effort or the consequence for the business if something goes wrong.",
       measures:
-        "A lasting risk environment and the requirement to work under protective measures.",
-      notMeasures: "The consequence for the business if something goes wrong.",
+        "Risk environment and actual exposure, recurring need for protective measures, special safety conditions in the environment.",
+      notMeasures:
+        "Physical or sensory effort in itself, formal safety responsibility, commercial or organisational risk.",
       whenSuitable:
-        "Roles with actual physical, chemical, biological, environmental or other exposure.",
+        "Choose this when special safety and exposure conditions should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Do not select alongside a broader working-conditions criterion that covers the same exposure.",
+        "Do not choose it merely for safety responsibility or decision risk. It has to be about actual and lasting exposure in the business's environments.",
       controlQuestion:
-        "Does this role's exposure to a lasting risk environment matter on its own, beyond what the physical or sensory effort criterion already captures?",
+        "Is work under special safety or exposure conditions something you want to take into account in your view of equivalence?",
       assessmentQuestion:
         "What level of safety and exposure does this role normally and lastingly work under?",
       anchor1:
-        "The role is occasionally exposed to a clearly bounded, low-level safety or exposure condition with standard protective measures.",
+        "Occasional and low exposure under clearly bounded conditions with standardised protective measures.",
       anchor3:
-        "The role works under an established, recurring risk environment that requires consistent use of protective measures as a normal part of the work.",
+        "Recurring exposure in an established risk environment that requires consistent use of protective measures.",
       anchor5:
-        "The role works under very demanding or business-critical exposure conditions, where the protective standard it follows or sets often extends beyond its own immediate team.",
+        "Very demanding or business-critical exposure conditions where protection, safety routines and correct conduct are decisive for safe operation.",
     },
     "on-call": {
       name: "On-call, standby and availability requirements",
       shortUiText:
-        "The role's recurring requirement to be available outside ordinary hours or to respond immediately.",
+        "Recurring on-call duty, standby or requirements for rapid availability.",
       fullDefinition:
-        "Captures the role's recurring requirement to be available outside ordinary working hours, or to respond immediately, as an integrated condition of the role. It measures a material, recurring standby requirement, not occasional overtime, voluntary flexibility or a generally high workload.",
+        "Covers recurring requirements to be reachable or able to act outside ordinary working hours, or to be able to respond immediately during a shift. The criterion concerns planned or expected standby that is a stable part of the business's conditions. It does not concern occasional overtime, voluntary flexibility or temporarily high workload.",
       measures:
-        "A recurring requirement to be available outside ordinary working hours or to respond immediately.",
+        "On-call duty and standby, requirements for rapid availability, recurring call-outs outside ordinary working hours.",
       notMeasures:
-        "Occasional overtime, voluntary flexibility, or a high workload.",
+        "Occasional overtime, informal expectations to respond, generally high workload.",
       whenSuitable:
-        "Operations, IT, healthcare, security and other roles where standby duty is an integrated condition of the role.",
+        "Choose this when on-call duty, standby or requirements for rapid availability should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Should be its own criterion only when standby duty is material and recurring.",
+        "Do not choose it when availability only arises in occasional crises or has no clear and recurring basis in the business.",
       controlQuestion:
-        "Does this role's recurring standby requirement matter on its own, beyond occasional overtime or a generally high workload?",
+        "Is recurring on-call duty, standby or rapid availability a working condition you want to take into account in your view of equivalence?",
       assessmentQuestion:
         "What level of on-call, standby and availability does this role normally and lastingly carry?",
-      anchor1:
-        "The role occasionally covers a clearly bounded, low-frequency standby requirement.",
+      anchor1: "Occasional and clearly bounded standby at low frequency.",
       anchor3:
-        "The role carries an established, recurring standby or availability requirement outside ordinary working hours as a normal part of the role.",
+        "Established and recurring standby or availability outside ordinary working hours.",
       anchor5:
-        "The role carries a very demanding or business-critical standby requirement, with frequent or immediate-response duty that other roles' availability is often built around.",
+        "Very demanding standby with frequent or immediate obligation to act, where the business depends heavily on rapid availability.",
     },
     "irregularity-mobility": {
-      name: "Irregularity, mobility and location-boundedness",
+      name: "Irregularity, mobility and place-bound work",
       shortUiText:
-        "The role's lasting requirement for irregular hours, extensive travel or work at particular locations.",
+        "Lasting requirements for irregular hours, travel or work at particular places.",
       fullDefinition:
-        "Captures the role's lasting requirement for irregular working hours, extensive travel, or work tied to particular locations, such as field, shift or international work. It measures a stable, structural condition of the role, not occasional trips, personal preference, or a temporary project.",
+        "Covers lasting requirements for irregular working hours, extensive travel or place-bound work, for example field operations, shift work or international presence. The criterion concerns a stable and structural condition in the business. It does not concern occasional travel, personal preferences or temporary projects.",
       measures:
-        "A lasting requirement for irregular hours, extensive travel, or working at particular locations.",
+        "Irregular working hours, extensive and recurring travel, field, shift or place-bound work.",
       notMeasures:
-        "Occasional trips, personal preferences, or temporary projects.",
+        "Occasional business trips, temporary projects, on-call duty or standby outside working hours.",
       whenSuitable:
-        "Field roles, international operations, shift work or a high frequency of travel.",
+        "Choose this when irregular hours, mobility or place-bound work should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Can be merged with On-call/standby only when both are part of the same stable working condition.",
+        "Do not choose it when the requirement is temporary or occurs rarely without being a stable part of the business's conditions.",
       controlQuestion:
-        "Does this role's lasting irregularity or mobility requirement matter on its own, beyond occasional trips or a temporary project?",
+        "Do you want to weigh in lasting requirements for irregular hours, travel or place-bound work?",
       assessmentQuestion:
         "What level of irregularity, mobility or location-boundedness does this role normally and lastingly carry?",
       anchor1:
-        "The role carries a recurring but limited requirement for irregular hours, travel or location-bound work, such as a regular though infrequent scheduled pattern that is a lasting part of the role.",
+        "Recurring but limited requirements for irregular hours, travel or place-bound work.",
       anchor3:
-        "The role carries an established, recurring pattern of irregular hours, travel or location-bound work as a normal and stable part of the role.",
+        "An established and recurring pattern of irregular hours, travel or place-bound work.",
       anchor5:
-        "The role carries very extensive or business-critical irregularity, mobility or location-boundedness, such as sustained international, shift or field commitments that shape how the role can be staffed.",
+        "Very extensive requirements for shift work, travel, field work or international presence that clearly affect planning and staffing.",
     },
     "restricted-environments": {
-      name: "Special security, confidentiality or control environments",
+      name: "Special security, confidentiality or controlled environments",
       shortUiText:
-        "The role's requirement to work under special access, control or security restrictions.",
+        "Work under special rules for access, confidentiality, security or control.",
       fullDefinition:
-        "Captures the working condition of operating under special access, control or security restrictions, such as a security-classified or confidentiality-sensitive environment. It measures the restriction the role works under, not the responsibility for information security itself.",
+        "Covers working conditions with special restrictions on access, confidentiality, security or control, for example security-classified environments or information requiring special protection. The criterion concerns the rules and restrictions that apply in the environment. It does not concern responsibility for designing, following up or checking information security.",
       measures:
-        "The working condition of operating under special access, control or security restrictions.",
-      notMeasures: "Responsibility for information security.",
+        "Special access restrictions, confidentiality and security restrictions, control requirements that affect how the work can be carried out.",
+      notMeasures:
+        "Formal responsibility for information security, general duty of confidentiality, general risk awareness.",
       whenSuitable:
-        "Security-classified, confidentiality-sensitive or strictly controlled environments with actual restrictions.",
+        "Choose this when special access, confidentiality or security restrictions should carry weight in your view of equivalence.",
       whenNotSuitable:
-        "Use only when it is the working environment or condition, not the control responsibility, that is being measured.",
+        "Do not choose it merely for confidential information. The restrictions have to be special, recurring and to affect how the work can be carried out.",
       controlQuestion:
-        "Does this role's requirement to work under special access or security restrictions matter on its own, separately from the formal control responsibility it may also carry?",
+        "Should work under special access, confidentiality or security restrictions carry weight in your view of equivalence?",
       assessmentQuestion:
         "What level of security, confidentiality or control restriction does this role normally and lastingly work under?",
       anchor1:
-        "The role occasionally works under a clearly bounded, low-level access or confidentiality restriction.",
+        "Occasional and clearly bounded access or confidentiality restrictions at a low level.",
       anchor3:
-        "The role works under an established, recurring set of access, control or security restrictions as a normal part of the role.",
+        "Established and recurring access, control or security restrictions.",
       anchor5:
-        "The role works under very strict or business-critical security, confidentiality or control restrictions that shape how the role and its surroundings must be run.",
+        "Very strict or business-critical security, confidentiality or control restrictions that largely govern planning, execution and documentation.",
     },
   },
 }

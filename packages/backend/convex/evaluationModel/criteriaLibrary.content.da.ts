@@ -45,27 +45,27 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
     "1": {
       name: "Afgrænset krav",
       meaning:
-        "Kravet er tydeligt defineret, lokalt eller begrænset i omfang. Rollen arbejder hovedsageligt inden for etablerede rammer.",
+        "Kravet er tydeligt defineret, lokalt eller begrænset i omfang. Etablerede rammer og arbejdsmåder rækker normalt.",
     },
     "2": {
       name: "Grundlæggende til moderat krav",
       meaning:
-        "Kravet forekommer tilbagevendende, men inden for et tydeligt afgrænset område. Rollen håndterer variationer og enklere afvigelser.",
+        "Kravet er tilbagevendende inden for et tydeligt afgrænset område. Variationer og enklere afvigelser skal håndteres.",
     },
     "3": {
       name: "Selvstændigt og etableret krav",
       meaning:
-        "Kravet er en tydelig og tilbagevendende del af rollen. Rollen foretager professionelle vurderinger inden for sit område.",
+        "Kravet er en tydelig og tilbagevendende del af området. Faglige vurderinger foretages inden for etablerede rammer.",
     },
     "4": {
       name: "Avanceret eller bredt krav",
       meaning:
-        "Kravet er avanceret, har bredere rækkevidde eller kræver selvstændige afvejninger, hvor etablerede arbejdsmåder ikke altid slår til.",
+        "Kravet er avanceret, har bredere rækkevidde eller kræver selvstændige afvejninger, hvor etablerede arbejdsmåder ikke altid rækker.",
     },
     "5": {
       name: "Meget avanceret, omfattende eller forretningskritisk krav",
       meaning:
-        "Kravet har meget stort omfang, sværhedsgrad, konsekvens eller strategisk betydning. Rollen former ofte retning, standarder, løsninger eller resultater uden for eget nærmeste område.",
+        "Kravet har meget stort omfang, sværhedsgrad, konsekvens eller strategisk betydning. Det kan påvirke retning, standarder, løsninger eller resultater også uden for det nærmeste område.",
     },
   },
   midpoints: {
@@ -74,526 +74,539 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
   },
   criteria: {
     "knowledge-depth": {
-      name: "Videndybde og specialistniveau",
-      shortUiText:
-        "Rollens krav om fordybet specialistviden og avanceret problemløsning.",
+      name: "Videnstyngde og specialistniveau",
+      shortUiText: "Dyb specialistviden inden for et afgrænset fagområde.",
       fullDefinition:
-        "Fanger rollens krav om fordybet fagviden, specialistmetodik, avanceret problemløsning og relevant erfaring. Kriteriet måler dybden i den ekspertise, rollen normalt bruger, ikke en formel eksamen i sig selv eller hvordan et enkelt problem tilfældigvis blev løst.",
+        "Omfatter dyb faglig viden, specialistmetoder og relevant erfaring inden for ét hovedområde. Kriteriet vedrører, hvor avanceret viden skal være for at håndtere vanskelige spørgsmål inden for området. Det vedrører ikke videnbredde, formelle autorisationer, virksomhedskontekst eller rådgivning som selvstændigt område.",
       measures:
-        "Krav om fordybet fagviden, specialistmetodik, avanceret problemløsning og relevant erfaring.",
+        "Dyb faglig viden, specialistmetoder, relevant og varig erfaring inden for ét område.",
       notMeasures:
-        "Formel eksamen i sig selv, sværhedsgraden i et enkelt problem eller individets præstation.",
-      whenSuitable: "Næsten altid relevant i videnintensive virksomheder.",
+        "Antallet af vidensområder, formel eksamen eller certificering i sig selv, viden om en bestemt branche eller organisation i sig selv, beslutningsmandat eller individuel præstation.",
+      whenSuitable:
+        "Vælg når dyb specialistviden inden for et fagområde skal have særlig betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Vælg normalt dette eller det bredere samlede kompetencekriterium, ikke begge.",
+        "Vælg ikke alene for uddannelseskrav, bredt samarbejde mellem flere fagområder eller rådgivning. Vurder i stedet, om et af de nærliggende kriterier bedre fanger det, virksomheden vil prioritere.",
       controlQuestion:
-        "Har dybden i den specialistviden, rollen kræver, betydning i sig selv, adskilt fra dens bredde, formelle kvalifikationer, domænekontekst og rådgivningsvurdering?",
+        "Er dyb specialistviden et område, I vil lægge særlig vægt på i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af specialistvidensdybde kræver rollen normalt og varigt?",
       anchor1:
-        "Rollen bruger etableret, veldokumenteret fagviden inden for et tydeligt afgrænset område og anvender kendte metoder på velkendte problemer.",
+        "Etableret og veldokumenteret faglig viden inden for et tydeligt afgrænset område. Kendte metoder rækker til velkendte spørgsmål.",
       anchor3:
-        "Rollen anvender selvstændigt fordybet specialistviden og etableret fagmetodik til at løse problemer inden for sit eget område.",
+        "Uddybet specialistviden og etableret faglig metodik anvendes selvstændigt til tilbagevendende og mere krævende spørgsmål inden for området.",
       anchor5:
-        "Rollen besidder specialistviden på meget avanceret niveau og bliver ofte inddraget i fagfeltets sværeste problemer, hvilket former professionelle standarder eller praksis uden for eget team.",
+        "Meget dyb specialistviden anvendes til feltets sværeste spørgsmål. Viden bidrager til at udvikle metoder, kvalitetsniveauer eller faglig praksis.",
     },
     "knowledge-breadth": {
-      name: "Vidensbredde og tværfaglig forståelse",
+      name: "Videnbredde og tværfaglig forståelse",
       shortUiText:
-        "Rollens krav om at integrere flere kompetenceområder og forstå sammenhængen mellem dem.",
+        "Evne til at forbinde flere vidensområder og forstå sammenhængene mellem dem.",
       fullDefinition:
-        "Fanger rollens krav om at kombinere og integrere flere kompetenceområder, for eksempel produkt, data, forretning og teknologi, og at forstå hvordan de hænger sammen. Kriteriet måler bredden i integrationen, ikke antallet af personer, rollen samarbejder med.",
+        "Omfatter behovet for at kombinere viden fra flere forskellige områder, for eksempel forretning, teknologi, data, produkt og drift. Kriteriet vedrører forståelse for sammenhænge og afvejninger mellem områderne. Det vedrører ikke dybden i et enkelt fagområde eller antallet af kontakter og samarbejdspartnere.",
       measures:
-        "Krav om at integrere flere kompetenceområder og forstå sammenhængen mellem dem.",
-      notMeasures: "Antal samarbejdspartnere eller organisatorisk indflydelse.",
+        "Bredde af vidensområder, forståelse for sammenhænge mellem områder, evne til at foretage afvejninger mellem forskellige perspektiver.",
+      notMeasures:
+        "Dyb specialistviden inden for ét område, antal møder, interessenter eller kontaktflader, organisatorisk rækkevidde.",
       whenSuitable:
-        "Når roller skal kombinere flere fagområder, for eksempel produkt, data, forretning og teknologi.",
+        "Vælg når helhedssyn og evnen til at forene flere vidensområder skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Vælg kun når bredde er en selvstændig forskel fra specialistdybde.",
+        "Vælg ikke alene for mange kontaktflader. Handler det først og fremmest om dyb faglig viden inden for ét område, rammer 7.1 bedre.",
       controlQuestion:
-        "Har bredden i den kompetence, rollen integrerer, betydning i sig selv, adskilt fra hvor dyb dens specialistviden er?",
+        "Er evnen til at forene flere vidensområder central for, hvordan virksomheden skaber værdi?",
       assessmentQuestion:
         "Hvilket niveau af tværfaglig bredde kræver rollen normalt og varigt?",
       anchor1:
-        "Rollen bruger hovedsageligt ét kompetenceområde og har sjældent behov for at koble det til andre discipliner.",
+        "Ét hovedvidensområde anvendes. Koblinger til andre områder er sjældent nødvendige.",
       anchor3:
-        "Rollen kombinerer selvstændigt et fåtal etablerede kompetenceområder og forstår, hvordan de påvirker hinanden.",
+        "Nogle få etablerede vidensområder kombineres selvstændigt, med forståelse for hvordan de påvirker hinanden.",
       anchor5:
-        "Rollen integrerer mange forskellige kompetenceområder på meget avanceret niveau og er den, man stoler på til at koble dem sammen på måder, der former løsninger eller retning uden for eget område.",
+        "Mange forskellige vidensområder forbindes på en måde, der påvirker, hvordan større løsninger, tilbud eller arbejdsmåder udformes.",
     },
     "formal-qualifications": {
       name: "Formelle kvalifikations-, autorisations- og certificeringskrav",
       shortUiText:
-        "Rollens krav om obligatorisk autorisation, godkendelse eller certificering.",
+        "Obligatorisk autorisation, godkendelse eller certificering.",
       fullDefinition:
-        "Fanger formelle krav, rollen skal opfylde for lovligt at udøve, underskrive eller have ansvar for arbejdet, for eksempel en obligatorisk autorisation, godkendelse eller certificering. Kriteriet måler det formelle krav i sig selv, ikke generel uddannelsesstatus eller en prestigefyldt eksamen, der ikke kræves for at udføre arbejdet.",
+        "Omfatter formelle krav, der skal være opfyldt for at måtte udføre, godkende, underskrive eller have ansvar for en bestemt type virksomhed. Eksempler er autorisation, lovpligtig godkendelse og obligatorisk certificering. Kriteriet vedrører obligatoriske krav, ikke uddannelser, kurser eller eksamener, der er meriterende, men ikke nødvendige.",
       measures:
-        "Formelle krav, der kræves for at udøve, underskrive eller have ansvar for arbejdet.",
+        "Obligatorisk autorisation, lovpligtig eller virksomhedsstyret godkendelse, obligatorisk certificering.",
       notMeasures:
-        "Generel uddannelsesstatus, prestigefyldt eksamen eller frivillige kurser.",
+        "Generelt uddannelsesniveau, frivillige kurser, prestigefyldt eksamen uden krav om godkendelse.",
       whenSuitable:
-        "Regulerede eller sikkerhedskritiske roller med obligatorisk autorisation, godkendelse eller certificering.",
+        "Vælg når obligatoriske autorisationer, godkendelser eller certificeringer skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Bør ikke bruges, hvis uddannelse blot er en vej til kompetence, der allerede fanges af Videndybde.",
+        "Vælg ikke når uddannelse først og fremmest er en vej til viden, som 7.1 Videnstyngde og specialistniveau allerede fanger.",
       controlQuestion:
-        "Har rollens obligatoriske autorisation, godkendelse eller certificering betydning i sig selv, adskilt fra den specialistviden, den også kræver?",
+        "Skal obligatoriske autorisationer, godkendelser eller certificeringer slå igennem i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af formel kvalifikation, autorisation eller certificering kræver rollen normalt og varigt?",
       anchor1:
-        "Rollen har intet krav om autorisation, godkendelse eller certificering, eller kun et grundlæggende, tydeligt defineret sådant krav med begrænset krav om fornyelse eller omfang.",
+        "Intet obligatorisk krav, eller et grundlæggende og tydeligt afgrænset krav med begrænset fornyelse eller omfang.",
       anchor3:
-        "Rollen kræver en etableret erhvervsautorisation eller certificering, der er et tilbagevendende, selvstændigt vilkår for at udøve rollen.",
+        "Etableret erhvervsautorisation eller certificering, som er et tilbagevendende og selvstændigt vilkår for at udøve et område.",
       anchor5:
-        "Rollen kræver en avanceret eller forretningskritisk autorisation, godkendelse eller certificering, uden hvilken rollen ikke lovligt kan udøves, underskrives eller ansvares for, og som ofte sætter den standard, andre skal opfylde.",
+        "Avanceret eller forretningskritisk godkendelse, som kræves for at godkende, underskrive eller have ansvar for virksomhed med meget store konsekvenser.",
     },
     "domain-knowledge": {
-      name: "Domæne- og forretningsviden",
+      name: "Domæne- og virksomhedsviden",
       shortUiText:
-        "Rollens krav om dyb, vanskeligt erstattelig viden om sin specifikke branche eller forretningskontekst.",
+        "Dyb viden om branche, produkt, kundemiljø eller virksomhedskontekst.",
       fullDefinition:
-        "Fanger rollens krav om dyb kontekstviden, for eksempel branche, produkt, kundemiljø eller regelsætskontekst, som ikke hurtigt kan erstattes af generel faglig dygtighed. Kriteriet måler dybden i kontekstviden, ikke den generelle erfaring eller organisationskendskab, alle forventes at opbygge over tid.",
+        "Omfatter viden om den sammenhæng, virksomheden drives i, for eksempel branche, produkt, kundemiljø, forretningsmodel eller regelsæt. Kriteriet vedrører kontekstspecifik viden, som ikke hurtigt erstattes af almen faglig viden. Det vedrører ikke almindeligt organisationskendskab, der opbygges gennem introduktion og erfaring over tid.",
       measures:
-        "Dyb kontekstviden, der ikke hurtigt erstattes af generel faglig dygtighed.",
+        "Branchekendskab, produkt- og kundekendskab, viden om forretningsmodel eller regelsætskontekst.",
       notMeasures:
-        "Generel erfaring eller organisationskendskab, som alle forventes at opbygge.",
+        "Almen faglig dygtighed, almindeligt organisationskendskab, formel godkendelse.",
       whenSuitable:
-        "Når specifik branche-, produkt-, kundemiljø- eller regelsætsviden er en selvstændig forudsætning for rollen.",
+        "Vælg når specifik viden om virksomhedens sammenhæng skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Domæne = konteksten; specialistniveau = professionel metode og færdighed.",
+        "Vælg ikke når generel faglig viden og almindelig introduktion rækker til at forstå virksomhedens sammenhæng.",
       controlQuestion:
-        "Har rollens kontekstspecifikke domæneviden betydning i sig selv, adskilt fra dens generelle specialistmetode og færdighed?",
+        "Vil I veje ind, hvor meget virksomheds- og branchekendskab der er brug for inden for forskellige områder?",
       assessmentQuestion:
         "Hvilket niveau af domæne- og forretningsviden kræver rollen normalt og varigt?",
       anchor1:
-        "Rollen kræver domæneviden begrænset til en tydeligt afgrænset produkt-, proces- eller kundekontekst.",
+        "Viden om en tydeligt afgrænset produkt-, proces- eller kundekontekst.",
       anchor3:
-        "Rollen kræver etableret, selvstændig viden om sit forretningsdomæne, som ikke hurtigt erstattes af generel faglig dygtighed.",
+        "Etableret og selvstændig viden om virksomhedens sammenhæng, som ikke hurtigt erstattes af almen faglig viden.",
       anchor5:
-        "Rollen kræver meget dyb, forretningskritisk domæneviden, som er svær at erstatte, og som ofte former, hvordan domænets standarder eller praksis fastsættes uden for rollens eget område.",
+        "Meget dyb og svært erstattelig viden om branche, marked, kunder eller regelsæt, som påvirker vigtige valg og arbejdsmåder.",
     },
     "advisory-judgment": {
       name: "Rådgivnings- og vurderingskompetence",
       shortUiText:
-        "Rollens krav om at afveje information og omsætte ekspertise til kvalificerede anbefalinger.",
+        "Kvalificeret rådgivning og faglig vurdering som grundlag for andres beslutninger.",
       fullDefinition:
-        "Fanger rollens krav om at afveje information, udøve professionel vurderingsevne og omsætte ekspertise til kvalificerede råd eller anbefalinger, som andre handler ud fra. Kriteriet måler selve rådgivningsvurderingen, ikke det formelle mandat til at beslutte, hvad der sker herefter.",
+        "Omfatter kvalificeret rådgivning som en tilbagevendende del af virksomhedens tilbud eller som afgørende beslutningsstøtte til kunder, partnere eller interne beslutningstagere. Det indebærer at afveje fakta, vurdere usikkert eller modstridende grundlag og formulere råd eller anbefalinger, som andre bruger i deres valg. Kriteriet vedrører kvaliteten i rådgivningen og vurderingen. Det vedrører ikke den formelle ret til at træffe den endelige beslutning.",
       measures:
-        "Krav om at vurdere information, give kvalificerede råd og omsætte ekspertise til anbefalinger.",
-      notMeasures: "Formelt beslutningsmandat.",
+        "Kvalificeret vurdering af grundlag, rådgivning og anbefalinger, faglig vurdering i spørgsmål med afvejninger.",
+      notMeasures:
+        "Formelt beslutningsmandat, at dele generel information, specialistviden i sig selv.",
       whenSuitable:
-        "Konsulent-, partner-, specialist- og ledende ekspertroller, hvor kvalificerede råd er kerneleverancen.",
+        "Vælg når kvalificeret rådgivning og faglig vurdering skal have særlig betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Bør ikke kombineres med Videndybde, hvis det blot beskriver samme ekspertise med andre ord.",
+        "Vælg ikke alene for videndeling eller rutinemæssige svar. Rådgivningen skal have tydelig betydning for valg eller beslutninger.",
       controlQuestion:
-        "Har rollens krav om at udøve rådgivningsvurdering betydning i sig selv, adskilt fra den specialistviden, vurderingen bygger på?",
+        "Er kvalificeret rådgivning og faglig vurdering noget, I vil give vægt i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af rådgivnings- og vurderingskompetence kræver rollen normalt og varigt?",
       anchor1:
-        "Rollen bidrager med grundlag eller ukomplicerede råd inden for et tydeligt afgrænset område, i tråd med etableret vejledning.",
+        "Grundlag eller ukomplicerede råd inden for et tydeligt afgrænset område, med støtte i etableret vejledning.",
       anchor3:
-        "Rollen afvejer selvstændigt information og giver etablerede, professionelle råd, som andre stoler på inden for sit eget område.",
+        "Selvstændige og etablerede faglige råd inden for et område, baseret på afvejning af relevant information.",
       anchor5:
-        "Rollens råd og vurderinger efterspørges i meget avancerede eller forretningskritiske spørgsmål og former ofte de anbefalinger, standarder eller den retning, andre dele af virksomheden følger.",
+        "Råd og vurderinger i meget avancerede eller følsomme spørgsmål, som har stor betydning for virksomhedens valg eller håndtering af risici.",
     },
     "complexity-ambiguity": {
       name: "Kompleksitet og uklarhed",
       shortUiText:
-        "Rollens krav om at håndtere usikkerhed, mangefacetterede spørgsmål og uklare rammer med kvalificeret vurderingsevne.",
+        "Sværhedsgrad, usikkerhed og uklarhed i de spørgsmål, der skal håndteres.",
       fullDefinition:
-        "Fanger usikkerheden, de mangefacetterede spørgsmål, uklare rammer og behovet for kvalificeret vurderingsevne, rollen normalt arbejder med. Kriteriet måler karakteren af de problemer, rollen håndterer, ikke vidensbehovet i sig selv, arbejdstempoet eller den organisatoriske rækkevidde.",
+        "Omfatter graden af usikkerhed, modstridende krav, uklare mål og mangel på færdige løsninger. Kriteriet vedrører selve problemernes karakter. Det vedrører ikke mængden af analyse, der lægges i at håndtere dem, arbejdstempo eller organisatorisk rækkevidde.",
       measures:
-        "Usikkerhed, mangefacetterede spørgsmål, uklare rammer og behov for kvalificeret vurderingsevne.",
+        "Uklare rammer og mål, modstridende krav og afvejninger, usikkerhed og komplekse afhængigheder.",
       notMeasures:
-        "Vidensbehovet i sig selv, højt arbejdstempo eller organisatorisk rækkevidde.",
-      whenSuitable: "Næsten altid relevant.",
-      whenNotSuitable: "Bør normalt være hovedkriteriet inden for dimensionen.",
+        "Omfanget af analysearbejde, høj arbejdsmængde eller tempo, specialistviden i sig selv.",
+      whenSuitable:
+        "Vælg når håndtering af vanskelige, uklare eller mangesidede spørgsmål skal have betydning i synet på ligeværdighed.",
+      whenNotSuitable:
+        "Vælg ikke alene for omfattende analyse eller mange samtidige opgaver. Disse fanges af henholdsvis 8.2 og 8.4, hvis de vælges.",
       controlQuestion:
-        "Har kompleksiteten og uklarheden, rollen håndterer, betydning i sig selv, adskilt fra den analytiske indsats, der lægges i at arbejde sig igennem den?",
+        "Vil I tage hensyn til graden af uklarhed og sværhedsgrad i de spørgsmål, virksomheden skal håndtere?",
       assessmentQuestion:
         "Hvilket niveau af kompleksitet og uklarhed håndterer rollen normalt og varigt?",
       anchor1:
-        "Rollen arbejder hovedsageligt med tydeligt definerede spørgsmål, etablerede metoder og forudsigelige situationer.",
+        "Tydeligt definerede spørgsmål, etablerede metoder og forudsigelige situationer.",
       anchor2:
-        "Rollen håndterer tilbagevendende variationer og enklere afvigelser, hvor den vælger mellem kendte alternativer.",
+        "Tilbagevendende variationer og enklere afvigelser håndteres gennem valg mellem kendte alternativer.",
       anchor3:
-        "Rollen håndterer selvstændigt komplekse spørgsmål inden for sit område og skal analysere, prioritere og tilpasse løsninger.",
+        "Komplekse spørgsmål inden for etablerede rammer, hvor analyse, prioritering og tilpasning er nødvendig.",
       anchor4:
-        "Rollen håndterer avancerede, tværfunktionelle eller delvist uklare problemer, hvor etablerede løsninger ikke altid slår til.",
+        "Avancerede, tværfunktionelle eller delvist uklare problemer håndteres, hvor etablerede løsninger ikke altid slår til.",
       anchor5:
-        "Rollen definerer og håndterer meget komplekse eller strategisk vigtige problemer under høj usikkerhed og former ofte tilgang, principper eller langsigtede løsninger.",
+        "Meget komplekse eller strategisk betydningsfulde spørgsmål med høj usikkerhed, hvor nye tilgange eller langsigtede løsninger skal udformes.",
     },
     "analytical-effort": {
       name: "Analytisk og problemløsende indsats",
       shortUiText:
-        "Omfanget af analyse, fejlfinding eller systematisk problemløsning, rollen normalt udfører.",
+        "Omfanget af systematisk analyse, fejlfinding og problemløsning.",
       fullDefinition:
-        "Fanger omfanget af analyse, fejlfinding, modellering, diagnostik eller systematisk problemløsning, rollen normalt udfører. Kriteriet måler det analytiske arbejde i sig selv, ikke specialistviden bag det eller blot forekomsten af uklare problemer.",
+        "Omfatter systematisk analyse, fejlfinding, modellering, diagnostik, test og beregning, som er nødvendig for at nå frem til løsninger. Kriteriet vedrører den analytiske indsats. Det vedrører ikke blot, at problemet er uklart, eller hvilken specialistviden der ligger bag analysen.",
       measures:
-        "Omfang af analyse, fejlfinding, modellering, diagnostik eller systematisk problemløsning.",
-      notMeasures: "Specialistviden eller blot uklare problemer.",
+        "Systematisk analyse, fejlfinding og diagnostik, modellering, test og beregning.",
+      notMeasures:
+        "Uklarhed i selve problemet, specialistviden i sig selv, midlertidig høj arbejdsmængde.",
       whenSuitable:
-        "Når den mentale analysebyrde adskiller sig tydeligt mellem roller på trods af sammenlignelig kompleksitet.",
+        "Vælg når systematisk analyse- og problemløsningsarbejde skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Kombiner med Kompleksitet kun hvis forskellen kan forklares: kompleksitet = problemets natur; analyse = arbejdet, der kræves for at håndtere det.",
+        "Vælg ikke alene for uklare spørgsmål. Der skal være et tilbagevendende og tydeligt element af analyse, fejlfinding eller diagnostik.",
       controlQuestion:
-        "Har den analytiske indsats, rollen lægger i at løse problemer, betydning i sig selv, adskilt fra hvor komplekse eller uklare disse problemer er?",
+        "Skal omfanget af systematisk analyse- og problemløsningsarbejde have betydning i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af analytisk og problemløsende indsats bærer rollen normalt og varigt?",
       anchor1:
-        "Rollen udfører ukompliceret analyse eller fejlfinding inden for en tydeligt afgrænset opgave, i tråd med etablerede trin.",
+        "Ukompliceret analyse eller fejlfinding i et tydeligt afgrænset spørgsmål efter etablerede trin.",
       anchor3:
-        "Rollen udfører selvstændigt etableret analyse, diagnostik eller systematisk problemløsning som en tilbagevendende del af sit eget område.",
+        "Selvstændig og etableret analyse, diagnostik eller systematisk problemløsning inden for et område.",
       anchor5:
-        "Rollen udfører meget avanceret eller omfattende analyse, modellering eller diagnostik, der ofte er forretningskritisk og former, hvordan lignende problemer angribes uden for eget område.",
+        "Meget avanceret eller omfattende analyse, modellering eller diagnostik med stor betydning for virksomhedens evne til at løse kritiske eller tilbagevendende problemer.",
     },
     "communication-effort": {
       name: "Kommunikations- og relationskrævende arbejde",
       shortUiText:
-        "Rollens krav om avanceret kommunikation, forhandling eller konflikthåndtering.",
+        "Krav om kvalificeret kommunikation, forhandling og håndtering af modstridende interesser.",
       fullDefinition:
-        "Fanger rollens krav om avanceret kommunikation, forhandling, påvirkning, konflikthåndtering eller oversættelse mellem forskellige interesser. Kriteriet måler den kommunikative indsats, ikke antallet af interessenter, rollen tilfældigvis håndterer, eller dens organisatoriske indflydelse.",
+        "Omfatter sværhedsgraden i kommunikation, forhandling, påvirkning, konflikthåndtering og oversættelse mellem forskellige behov og interesser. Kriteriet vedrører den kommunikative og relationelle indsats. Det vedrører ikke antallet af kontakter, organisatorisk rækkevidde eller forretningsansvar.",
       measures:
-        "Krav om avanceret kommunikation, forhandling, påvirkning, konflikthåndtering eller oversættelse mellem interesser.",
-      notMeasures: "Antal interessenter eller organisatorisk indflydelse.",
+        "Forhandling og påvirkning, håndtering af vanskelige samtaler og konflikter, oversættelse mellem forskellige behov og interesser.",
+      notMeasures:
+        "Antal kontakter eller møder, kunde- eller indtægtsansvar, organisatorisk rækkevidde.",
       whenSuitable:
-        "Kundenære, forhandlende, rådgivende eller konflikthåndterende virksomheder, hvor dette er en central del af arbejdet.",
+        "Vælg når kvalificeret kommunikation, forhandling og håndtering af modstridende interesser skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Måles som kommunikativ indsats, ikke som størrelsen på netværket.",
+        "Vælg ikke alene for mange møder eller kundekontakter. Sværhedsgraden i kommunikationen skal være det, der prioriteres.",
       controlQuestion:
-        "Har den kommunikative indsats, rollen bærer, betydning i sig selv, adskilt fra hvor mange interessenter eller hvor stor organisatorisk rækkevidde den har?",
+        "Skal kvalificeret kommunikation, forhandling og håndtering af modstridende interesser have betydning i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af kommunikations- og relationsindsats bærer rollen normalt og varigt?",
       anchor1:
-        "Rollen kommunikerer inden for et tydeligt afgrænset, overvejende rutinemæssigt samspil med etablerede modparter.",
+        "Tydeligt afgrænset og hovedsagelig rutinemæssig kommunikation med etablerede modparter.",
       anchor3:
-        "Rollen gennemfører selvstændigt etableret, tilbagevendende kommunikation, forhandling eller konflikthåndtering som en del af sit eget område.",
+        "Selvstændig og tilbagevendende kommunikation, forhandling eller konflikthåndtering inden for etablerede rammer.",
       anchor5:
-        "Rollen bærer meget avanceret eller forretningskritisk kommunikation, forhandling eller konflikthåndtering og former ofte, hvordan følsomme relationer eller tvister håndteres uden for eget område.",
+        "Meget avanceret eller følsom kommunikation, forhandling eller konflikthåndtering, hvor udfaldet har stor betydning for virksomhedens relationer eller valg.",
     },
     "operational-intensity": {
-      name: "Operationel intensitet og samtidighedskrav",
+      name: "Operativ intensitet og samtidighedskrav",
       shortUiText:
-        "Rollens normale krav om at holde opmærksomheden på flere samtidige strømme og prioritere løbende.",
+        "Krav om at håndtere flere samtidige strømme og prioritere løbende.",
       fullDefinition:
-        "Fanger opmærksomheden, evnen til at håndtere flere ting samtidig og den kontinuerlige prioritering, rollen normalt kræver i sin ordinære arbejdsform. Kriteriet måler et varigt, strukturelt krav, ikke midlertidige toppe, underbemanding eller dårlig planlægning, der tilfældigvis øger arbejdsmængden.",
+        "Omfatter krav til opmærksomhed, evnen til at håndtere flere ting på én gang og løbende prioritering mellem flere strømme i normalsituationen. Eksempler kan være kundesager, alarmer, leverancer eller driftsstrømme. Kriteriet vedrører et stabilt og strukturelt krav, ikke midlertidige spidsbelastninger, ressourcemangel eller mangelfuld planlægning.",
       measures:
-        "Opmærksomhed, evne til at håndtere flere ting samtidig og kontinuerlig prioritering i normalformen.",
+        "Flere samtidige strømme, løbende prioritering, opmærksomhed under tidspres i normalsituationen.",
       notMeasures:
-        "Midlertidige toppe, underbemanding eller dårlig planlægning.",
+        "Midlertidig høj arbejdsbelastning, underbemanding, kompleksitet i selve sagen.",
       whenSuitable:
-        "Drift, kundeservice, logistik eller overvågning med varige krav om flere samtidige strømme og hurtige prioriteringer.",
+        "Vælg når håndtering og prioritering af flere samtidige strømme skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Må ikke bruges til at belønne arbejdsmængde, der opstår som følge af ressourcemangel.",
+        "Vælg ikke for at kompensere for midlertidige arbejdsspidser eller ressourcemangel. Kravet skal være en varig del af virksomhedens arbejdsmåde.",
       controlQuestion:
-        "Har rollens normale operationelle intensitet betydning i sig selv, adskilt fra midlertidige toppe forårsaget af underbemanding eller dårlig planlægning?",
+        "Vil I veje krav om at håndtere flere samtidige strømme og prioritere løbende ind?",
       assessmentQuestion:
         "Hvilket niveau af operationel intensitet og samtidighedskrav bærer rollen normalt og varigt?",
       anchor1:
-        "Rollen håndterer normalt én strøm eller opgave ad gangen inden for en tydeligt afgrænset arbejdsrytme.",
+        "Én strøm eller én opgave ad gangen inden for en tydeligt afgrænset rytme.",
       anchor3:
-        "Rollen håndterer selvstændigt flere etablerede, samtidige strømme og prioriterer mellem dem som en normal del af sit eget område.",
+        "Flere etablerede og samtidige strømme håndteres selvstændigt med løbende prioritering.",
       anchor5:
-        "Rollen opretholder meget høj, forretningskritisk operationel intensitet på tværs af mange samtidige strømme, og hvordan den prioriterer, sætter ofte det mønster, andre følger.",
+        "Meget høj operativ intensitet på tværs af mange samtidige strømme, hvor forkert prioritering hurtigt kan få store følger for virksomheden.",
     },
     "physical-sensory": {
       name: "Fysisk eller sensorisk anstrengelse",
       shortUiText:
-        "Rollens tilbagevendende fysiske belastning, præcisionskrav eller sensoriske koncentration.",
+        "Tilbagevendende fysisk belastning, præcision eller krav om vedvarende sansekoncentration.",
       fullDefinition:
-        "Fanger den tilbagevendende fysiske belastning, præcision, ergonomisk krævende moment eller sensoriske koncentration, rollen normalt kræver. Kriteriet måler den fysiske eller sensoriske anstrengelse i sig selv, ikke sikkerhedsrisikoen eller eksponeringen, arbejdet også kan indebære.",
+        "Omfatter fysisk belastning, ergonomisk krævende momenter, præcision og koncentration med syn, hørelse eller andre sanser. Kriteriet vedrører krav til krop og opmærksomhed. Det vedrører ikke risikomiljøer, eksponering for farlige stoffer eller konsekvensen for virksomheden, hvis noget går galt.",
       measures:
-        "Tilbagevendende fysisk belastning, præcision, ergonomisk krævende moment eller sensorisk koncentration.",
-      notMeasures: "Sikkerhedsrisiko eller fysisk eksponering.",
+        "Fysisk og ergonomisk belastning, præcisionskrav, vedvarende koncentration med sanserne.",
+      notMeasures:
+        "Risikomiljø eller eksponering, almindelig stress, konsekvenser af fejl.",
       whenSuitable:
-        "Industri, sundhed, lager, produktion, feltservice eller laboratorier.",
+        "Vælg når fysisk belastning, præcision eller sensorisk koncentration skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Risikomiljø og eksponering hører normalt under Arbejdsforhold.",
+        "Vælg ikke alene for risiko i arbejdsmiljøet. Er eksponering og beskyttelsesforanstaltninger det centrale, passer 10.1 bedre.",
       controlQuestion:
-        "Har den fysiske eller sensoriske anstrengelse, rollen bærer, betydning i sig selv, adskilt fra sikkerhedsrisikoen eller eksponeringen, den også kan indebære?",
+        "Skal tilbagevendende fysisk belastning, præcision eller vedvarende koncentration have betydning i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af fysisk eller sensorisk anstrengelse bærer rollen normalt og varigt?",
       anchor1:
-        "Rollen indebærer lette, midlertidige fysiske eller sensoriske krav inden for en tydeligt afgrænset opgave.",
+        "Lette og enkeltstående fysiske eller sensoriske krav inden for en tydeligt afgrænset opgave.",
       anchor3:
-        "Rollen bærer selvstændigt etableret, tilbagevendende fysisk belastning, præcisionsarbejde eller sensorisk koncentration som en normal del af sit eget område.",
+        "Tilbagevendende fysisk belastning, præcisionsmomenter eller sensorisk koncentration som en etableret del af området.",
       anchor5:
-        "Rollen bærer meget krævende, vedvarende fysisk eller sensorisk anstrengelse, der ofte er forretningskritisk at udføre korrekt, for eksempel præcisionsarbejde, der sætter den standard, andre måles op imod.",
+        "Meget krævende og vedvarende fysisk eller sensorisk anstrengelse, hvor præcision og konsekvent udførelse er afgørende.",
     },
     "scope-impact": {
-      name: "Omfang og indflydelse",
-      shortUiText:
-        "Rollens rækkevidde: fra en afgrænset opgave til team, funktion, flere funktioner eller hele virksomheden.",
+      name: "Omfang og påvirkning",
+      shortUiText: "Rækkevidden af resultater og påvirkning i virksomheden.",
       fullDefinition:
-        "Fanger hvor langt rollens resultater og beslutninger rækker i organisationen, fra tydeligt afgrænsede egne opgaver til virksomhedsomfattende indflydelse. Kriteriet måler rækkevidde, ikke formel bemyndigelse.",
+        "Omfatter hvor langt resultater, valg og leverancer slår igennem i virksomheden: fra et tydeligt afgrænset område til teams, funktioner, flere dele af virksomheden eller hele virksomheden. Kriteriet vedrører, hvor effekten mærkes. Det vedrører ikke formel beslutningsret, personaleansvar eller budgetstørrelse i sig selv.",
       measures:
-        "Rollens rækkevidde: fra afgrænset opgave til team, funktion, flere funktioner eller virksomhed.",
+        "Rækkevidde for resultater og påvirkning, omfanget af berørte dele af virksomheden, varige følger for virksomhedens leverance eller retning.",
       notMeasures:
-        "Formelt personaleansvar, budgetstørrelse eller selve mandatet.",
-      whenSuitable: "Næsten altid relevant.",
+        "Formelt personaleansvar, beslutningsmandat, ressource- eller budgetansvar i sig selv.",
+      whenSuitable:
+        "Vælg når rækkevidden af resultater og påvirkning skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Bør ikke kombineres med et separat kriterium, der kun måler organisatorisk rækkevidde.",
+        "Vælg ikke alene for titel, ledelsesniveau, budgetstørrelse eller beslutningsret. Vurder, om et af de separate ansvarskriterier bedre fanger det, der skal prioriteres.",
       controlQuestion:
-        "Har forskellen i rækkevidde mellem jeres roller betydning i sig selv, ud over mandat og konsekvens?",
+        "Er det relevant for jer at veje ind, hvor langt resultater og påvirkning når i virksomheden?",
       assessmentQuestion:
         "Hvor langt rækker rollens normale og varige indflydelse?",
       anchor1:
-        "Rollen påvirker primært kvaliteten, effektiviteten eller resultatet af egne tydeligt afgrænsede arbejdsopgaver.",
+        "Resultater og påvirkning er hovedsagelig begrænset til et tydeligt afgrænset område eller en enkelt leverance.",
       anchor2:
-        "Rollen påvirker et afgrænset arbejdsområde eller tilbagevendende leverance inden for et team.",
+        "Påvirkningen når et afgrænset arbejdsområde eller en tilbagevendende leverance inden for et team.",
       anchor3:
-        "Rollen har selvstændigt ansvar for resultater inden for et tydeligt område og påvirker teamets eller nærliggende funktioners leverance og prioriteringer.",
+        "Resultater og påvirkning når et tydeligt område og påvirker leverancer eller prioriteringer i nærliggende dele af virksomheden.",
       anchor4:
-        "Rollen påvirker flere teams, en funktion eller en væsentlig del af virksomheden gennem valg, prioriteringer eller løsninger med varige følger.",
+        "Påvirkningen når flere teams, en funktion eller en væsentlig del af virksomheden gennem valg, prioriteringer eller løsninger med varige følger.",
       anchor5:
-        "Rollen påvirker virksomhedens overordnede retning, resultater eller evne til at lykkes gennem beslutninger og ansvar med virksomhedsomfattende eller strategisk effekt.",
+        "Resultater og påvirkning når flere dele af virksomheden eller virksomhedsniveau og har betydning for overordnet retning, resultat eller evne til at lykkes.",
     },
     "autonomy-mandate": {
       name: "Autonomi og beslutningsmandat",
       shortUiText:
-        "Hvor selvstændigt rollen beslutter, og på hvilket niveau, før eskalering kræves.",
+        "Selvstændighed og mandat til at foretage afvejninger og træffe beslutninger.",
       fullDefinition:
-        "Fanger hvor selvstændigt rollen træffer beslutninger, på hvilket niveau beslutningerne ligger, og hvor meget der skal eskaleres til andre. Kriteriet måler selve beslutningsmandatet, ikke konsekvensen af beslutningen eller hvor langt dens effekt rækker.",
+        "Omfatter mandatet til selvstændigt at foretage afvejninger og træffe beslutninger inden for et defineret område. Kriteriet vedrører det råderum, der er til at vælge retning, prioritere mellem alternativer og beslutte egnede løsninger inden for området. Det vedrører ikke, hvor langt beslutningens effekt når, hvor store følger en fejl kan få, eller hvilken type ansvar beslutningen angår.",
       measures:
-        "Selvstændighed, beslutningernes niveau og behov for eskalering.",
+        "Mandat til at træffe selvstændige beslutninger, råderum til at vælge mellem relevante alternativer, mandat til at prioritere og foretage afvejninger, grad af selvstændighed inden for et defineret område.",
       notMeasures:
-        "Konsekvensen af beslutningen eller dens organisatoriske rækkevidde.",
-      whenSuitable: "Næsten altid relevant.",
+        "Rækkevidden af resultater eller påvirkning, konsekvensen af forkerte beslutninger, personale-, ressource- eller kundeansvar i sig selv, virksomhedens interne godkendelsesprocesser eller former for samråd.",
+      whenSuitable:
+        "Vælg når selvstændigt beslutningsmandat skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Mandat = retten til at beslutte; omfang = hvor effekten mærkes; risiko = følgen, hvis det går galt.",
+        "Vælg ikke for at beskrive, hvor langt beslutningens effekt når, hvilke følger en fejl kan få, eller hvilken type ansvar beslutningen angår. Det fanges af andre ansvarskriterier, hvis de vælges.",
       controlQuestion:
-        "Har det niveau af beslutningsmandat, rollen har, betydning i sig selv, adskilt fra hvor effekterne mærkes, og hvad konsekvenserne ville blive, hvis det gik galt?",
+        "Skal graden af selvstændigt beslutningsmandat have betydning i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af autonomi og beslutningsmandat har rollen normalt og varigt?",
       anchor1:
-        "Rollen træffer beslutninger inden for en tydeligt afgrænset opgave og eskalerer alt, der ligger uden for etableret rutine.",
+        "Begrænset mandat til at vælge mellem tydeligt angivne alternativer inden for etablerede instrukser.",
       anchor3:
-        "Rollen træffer selvstændigt etablerede beslutninger inden for sit eget område og eskalerer kun genuint nye eller tværgående spørgsmål.",
+        "Selvstændigt mandat til at foretage etablerede afvejninger, prioritere mellem alternativer og træffe beslutninger inden for et defineret område.",
       anchor5:
-        "Rollen har meget bredt eller forretningskritisk beslutningsmandat og beslutter i spørgsmål, hvor retningen eller standarderne rækker ud over eget nærmeste område, med lille behov for eskalering.",
+        "Meget bredt mandat til at foretage afvejninger og træffe beslutninger, som sætter retning, principper eller prioriteringer for flere dele af virksomheden.",
     },
     "risk-consequence": {
       name: "Risiko og konsekvens",
       shortUiText:
-        "Konsekvenserne for virksomheden, hvis rollens beslutninger, fejl eller mangler slår fejl.",
+        "Alvoret i mulige følger af fejl, mangler eller forkerte beslutninger.",
       fullDefinition:
-        "Fanger de konsekvenser, rollens beslutninger, fejl eller mangler kan få for sikkerhed, kunde, kvalitet, efterlevelse, information eller brand. Kriteriet måler konsekvens bredt, ikke kun økonomisk risiko eller hvor belastende individet oplever rollen.",
+        "Omfatter hvilke følger fejl, mangler eller forkerte beslutninger kan få for eksempelvis kunder, kvalitet, økonomi, sikkerhed, information, efterlevelse og tillid. Kriteriet vedrører følgen, hvis noget går galt. Det vedrører ikke, hvem der har det formelle ansvar for at kontrollere, at regler eller beskyttelse fungerer.",
       measures:
-        "Følger af beslutninger, fejl eller mangler for sikkerhed, kunde, kvalitet, efterlevelse, information eller brand.",
-      notMeasures: "Kun økonomisk risiko eller individets stressniveau.",
-      whenSuitable: "Næsten altid relevant.",
+        "Konsekvenser for kunde, kvalitet og leverance, konsekvenser for sikkerhed, information og efterlevelse, økonomiske og omdømmemæssige følger.",
+      notMeasures:
+        "Individets oplevede stress, budgetstørrelse i sig selv, formelt kontrolansvar.",
+      whenSuitable:
+        "Vælg når forskelle i mulige følger af fejl og mangler skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Undgå separat compliance-risiko, hvis den blot er et eksempel på samme risiko og konsekvens.",
+        "Vælg ikke for at beskrive, hvor presset eller krævende noget opleves. Vurder den saglige og mulige følge, hvis noget går galt.",
       controlQuestion:
-        "Har konsekvensen af rollens beslutninger eller fejl betydning i sig selv, adskilt fra det formelle efterlevelsesansvar, den også kan bære?",
+        "Er forskelle i de følger, fejl eller mangler kan få, relevante at veje ind i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af risiko og konsekvens bærer rollens beslutninger og arbejde normalt og varigt?",
       anchor1:
-        "Fejl eller mangler får normalt begrænsede og let korrigerbare følger inden for eget arbejdsområde.",
+        "Fejl eller mangler har normalt begrænsede og let korrigerbare følger inden for et afgrænset område.",
       anchor2:
         "Fejl eller mangler kan påvirke teamets kvalitet, effektivitet eller leverance og kræver normalt korrigering inden for etablerede processer.",
       anchor3:
-        "Fejl, beslutninger eller mangler kan få tydelige følger for kunde, leverance, kvalitet, økonomi eller efterlevelse inden for et område.",
+        "Fejl, mangler eller forkerte beslutninger kan få tydelige følger for kunde, leverance, kvalitet, økonomi eller efterlevelse inden for et område.",
       anchor4:
         "Fejl, beslutninger eller mangler kan få betydelige følger for flere dele af virksomheden, vigtige kunder, kritiske processer eller regelefterlevelse.",
       anchor5:
-        "Fejl, beslutninger eller mangler kan få meget store, langvarige eller forretningskritiske følger for strategi, sikkerhed, efterlevelse, tillid eller overlevelsesevne.",
+        "Fejl eller mangler kan få meget store, langvarige eller forretningskritiske følger for sikkerhed, efterlevelse, tillid, økonomi eller virksomhedens fortsatte evne til at fungere.",
     },
     "people-leadership": {
-      name: "Personale- og ledelsesansvar",
+      name: "Ledelses- og personaleansvar",
       shortUiText:
-        "Rollens formelle ansvar for at lede mennesker og skabe resultater gennem dem.",
+        "Ansvar for at lede mennesker, koordinere virksomhed og skabe resultater gennem andre.",
       fullDefinition:
-        "Fanger rollens formelle ansvar for at lede mennesker: fordele arbejde, udvikle deres kapacitet og skabe resultater gennem andre. Kriteriet måler formelt personaleansvar, ikke projektledelse uden dette, specialistledelse eller teamstørrelse brugt som eneste mål.",
+        "Omfatter ansvar for at lede og koordinere mennesker eller dele af virksomheden for at skabe resultater gennem andre. Det kan indebære ansvar for prioriteringer, arbejdsfordeling, retning, udvikling af arbejdsmåder eller koordinering af leverance. Formelt personaleansvar indgår, når ansvaret også omfatter medarbejdernes mål, udvikling, præstation og arbejdsmiljø. Kriteriet vedrører ledelsesansvar gennem andre, ikke blot specialistindflydelse, projektkoordinering eller et stort eget beslutningsmandat.",
       measures:
-        "Ansvar for at lede mennesker, fordele arbejde, udvikle kapacitet og skabe resultater gennem andre.",
+        "Ansvar for at lede og koordinere arbejde gennem andre, ansvar for retning, prioriteringer og leverance i en del af virksomheden, ansvar for at udvikle arbejdsmåder eller kapacitet gennem andre, formelt ansvar for medarbejdernes mål, udvikling og præstation.",
       notMeasures:
-        "Projektledelse uden personaleansvar, specialistledelse eller teamstørrelse som eneste mål.",
+        "Specialistindflydelse uden ansvar for andres arbejde eller for en del af virksomheden, midlertidig koordinering af enkeltopgaver, projektledelse uden varigt ansvar for mennesker eller en del af virksomheden, eget beslutningsmandat uden ansvar for at skabe resultater gennem andre.",
       whenSuitable:
-        "Når formelt personaleansvar er en væsentlig forskel mellem roller.",
+        "Vælg når ansvar for at lede mennesker eller dele af virksomheden gennem andre skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Bør normalt have lav til moderat vægt, da lederskab ofte allerede fremgår af omfang og mandat.",
+        "Vælg ikke alene fordi koordinering, specialiststøtte eller projektledelse forekommer. Der skal være et varigt ansvar for retning, prioriteringer, leverance eller udvikling gennem andre.",
       controlQuestion:
-        "Har rollens formelle personaleansvar betydning i sig selv, ud over hvad dens omfang og beslutningsmandat allerede fanger?",
+        "Skal ansvar for at lede mennesker eller dele af virksomheden gennem andre have betydning i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af personale- og ledelsesansvar bærer rollen normalt og varigt?",
       anchor1:
-        "Rollen har intet eller meget begrænset formelt personaleansvar, for eksempel enkeltvis at koordinere en eller to andres opgaver.",
+        "Begrænset ansvar for at koordinere andres arbejde inden for et tydeligt afgrænset område. Intet varigt ansvar for retning, leverance eller medarbejdernes udvikling.",
       anchor3:
-        "Rollen har etableret, selvstændigt ansvar for at lede et team: fordele arbejde, udvikle kapacitet og skabe resultater gennem andre.",
+        "Varigt ansvar for at lede og koordinere et team, et arbejdsflow eller en del af virksomheden gennem andre. Ansvaret omfatter prioriteringer, arbejdsfordeling og leverance. Formelt personaleansvar kan forekomme, men er ikke et krav på dette niveau.",
       anchor5:
-        "Rollen bærer meget avanceret eller forretningskritisk personale- og ledelsesansvar, leder ledere eller en stor organisation og sætter ofte standarden for, hvordan mennesker ledes uden for eget team.",
+        "Omfattende ansvar for at lede en større del af virksomheden eller flere teams gennem andre. Ansvaret omfatter retning, kapacitet, resultater og udvikling over tid. Formelt personaleansvar for andre ledere eller en større organisation indgår normalt på dette niveau.",
     },
     "resource-capacity": {
       name: "Ressource- og kapacitetsansvar",
       shortUiText:
-        "Rollens ansvar for at prioritere og anvende væsentlige ressourcer eller kapacitet.",
+        "Ansvar for at prioritere begrænsede ressourcer mellem virksomhedens behov.",
       fullDefinition:
-        "Fanger rollens ansvar for at prioritere og anvende væsentlige ressourcer, kapacitet, aktiver eller kritisk leveringsevne, så virksomheden fortsætter med at fungere. Kriteriet måler selvstændig ressourcestyring, ikke rutinemæssig budgetopfølgning eller indkøb inden for små, forudbestemte rammer.",
+        "Omfatter ansvar for at foretage afvejninger mellem konkurrerende behov, når ressourcerne er begrænsede. Ressourcer kan for eksempel være tid, budget, udstyr, lager, bemanding eller leveringskapacitet. Kriteriet vedrører de prioriteringer, der er nødvendige, for at ressourcer og kapacitet bruges der, hvor de gør mest gavn for virksomheden. Kriteriet vedrører ikke ledelse, udvikling eller koordinering af mennesker som sådan. Det vedrører heller ikke rutinemæssig budgetopfølgning, indkøb eller fordeling inden for små og forudbestemte rammer.",
       measures:
-        "Ansvar for at prioritere og anvende ressourcer, så virksomheden fungerer.",
+        "Prioritering mellem konkurrerende behov, fordeling af begrænsede ressourcer og kapacitet, afvejning mellem tilgængelige ressourcer, behov og leveringsevne.",
       notMeasures:
-        "Almindelig budgetopfølgning eller indkøb inden for små rammer.",
+        "Ledelse eller udvikling af mennesker, rutinemæssig budgetopfølgning, indkøb inden for små faste rammer, forretningsresultat i sig selv.",
       whenSuitable:
-        "Når rollen selvstændigt disponerer væsentlige ressourcer, kapacitet, aktiver eller kritisk leveringsevne.",
+        "Vælg når ansvar for at prioritere begrænsede ressourcer mellem virksomhedens behov skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Bør ikke vælges samtidig med et snævert finansielt ansvar, hvis begge måler samme ressourcestyring.",
+        "Vælg ikke alene for budgetopfølgning, indkøb eller koordinering af mennesker. Der skal være et varigt ansvar for afvejninger mellem konkurrerende behov og begrænsede ressourcer.",
       controlQuestion:
-        "Har rollens selvstændige ansvar for ressourcer eller kapacitet betydning i sig selv, adskilt fra rutinemæssig budgetopfølgning inden for forudbestemte rammer?",
+        "Vil I lægge vægt på ansvar for at prioritere begrænsede ressourcer mellem forskellige behov i virksomheden?",
       assessmentQuestion:
         "Hvilket niveau af ressource- og kapacitetsansvar bærer rollen normalt og varigt?",
       anchor1:
-        "Rollen prioriterer selvstændigt brugen af et lille, tydeligt afgrænset sæt ressourcer eller kapacitet inden for sit eget område, hvor dens valg har begrænset og let korrigerbar effekt.",
+        "Prioritering inden for et lille og tydeligt afgrænset sæt af ressourcer, hvor effekten af valgene er begrænset og let at korrigere.",
       anchor3:
-        "Rollen prioriterer og fordeler selvstændigt etablerede ressourcer eller kapacitet, så eget område fortsætter med at fungere.",
+        "Selvstændig prioritering mellem etablerede behov og begrænsede ressourcer eller kapacitet inden for et område.",
       anchor5:
-        "Rollen forvalter selvstændigt meget betydelige eller forretningskritiske ressourcer, kapacitet eller leveringsevne med beslutninger, der former ressourceprioriteringer uden for eget område.",
+        "Prioritering mellem meget betydelige eller forretningskritiske behov og ressourcer, hvor afvejningerne påvirker flere dele af virksomhedens evne til at levere.",
     },
     "business-customer": {
       name: "Forretnings- og kundeansvar",
       shortUiText:
-        "Rollens ansvar for at skabe, sikre eller udvikle væsentlig forretningsværdi.",
+        "Ansvar for vigtige kunder, indtægter eller forretningsresultater.",
       fullDefinition:
-        "Fanger rollens ansvar for at skabe, sikre eller udvikle væsentlig forretningsværdi gennem en væsentlig kunderelation, indtægtsstrøm, forretningsportefølje eller kommerciel position. Kriteriet måler stabiliteten i dette forretningsansvar, ikke individuel salgspræstation, provision eller forhandlingsevne i sig selv.",
+        "Omfatter et varigt ansvar for at skabe, sikre eller udvikle forretningsværdi gennem for eksempel kunderelationer, indtægtsstrømme, aftaler, forretningsporteføljer eller markedsposition. Kriteriet vedrører ansvar, der indgår i virksomheden. Det vedrører ikke enkeltstående salgsresultater, provision eller dygtighed i en isoleret forhandling.",
       measures:
-        "Ansvar for at skabe, sikre eller udvikle væsentlig forretningsværdi.",
+        "Ansvar for kunderelationer, ansvar for indtægter eller forretningsportefølje, ansvar for forretningsresultat eller markedsposition.",
       notMeasures:
-        "Individuel salgspræstation, provision eller forhandlingsevne i sig selv.",
+        "Kundekontakt i sig selv, individuel salgspræstation, forhandlingsdygtighed i sig selv.",
       whenSuitable:
-        "Når rollen har direkte ansvar for væsentlig kunderelation, indtægtsstrøm, forretningsportefølje eller kommerciel position.",
+        "Vælg når ansvar for kunder, indtægter eller forretningsresultater skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Må ikke automatisk favorisere salgsroller; ansvaret skal være en stabil del af rollen.",
+        "Vælg ikke alene for kundekontakt eller salg. Der skal være et varigt ansvar for kundeværdi, indtægter eller forretningsresultater.",
       controlQuestion:
-        "Har rollens stabile ansvar for forretnings- eller kundeværdi betydning i sig selv, adskilt fra individuel salgspræstation eller forhandlingsevne?",
+        "Er ansvar for kunder, indtægter eller forretningsresultater noget, I vil give særlig vægt i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af forretnings- og kundeansvar bærer rollen normalt og varigt?",
       anchor1:
-        "Rollen understøtter en kunderelation eller forretningsaktivitet inden for en tydeligt afgrænset, etableret kundekonto eller opgave.",
+        "Støtte til en etableret kunderelation eller forretningsaktivitet inden for en afgrænset konto eller et afgrænset område.",
       anchor3:
-        "Rollen har selvstændigt etableret ansvar for en kunderelation, indtægtsstrøm eller forretningsportefølje, der er en stabil del af rollen.",
+        "Selvstændigt og etableret ansvar for en kunderelation, indtægtsstrøm eller forretningsportefølje.",
       anchor5:
-        "Rollen bærer meget betydeligt eller forretningskritisk ansvar for store kunderelationer, indtægter eller kommerciel position med beslutninger, der former virksomhedens retning uden for egen portefølje.",
+        "Ansvar for kunder, indtægter eller forretningsområder med stor betydning for virksomheden og påvirkning på markedsposition eller fremtidig forretning.",
     },
     "compliance-control": {
-      name: "Informations-, sikkerheds- eller regelefterlevelsesansvar",
+      name: "Informations-, sikkerheds- eller efterlevelsesansvar",
       shortUiText:
-        "Rollens formelle ansvar for beskyttelse, kvalitetssikring eller efterlevelseskontrol.",
+        "Formelt ansvar for kontrol, beskyttelse, kvalitetssikring eller efterlevelse af regler.",
       fullDefinition:
-        "Fanger rollens formelle ansvar for beskyttelse, kvalitetssikring, kontrol eller korrekt anvendelse af kritiske krav, for eksempel informationssikkerhed eller regelefterlevelse. Kriteriet måler et separat, formelt kontrolansvar, ikke den generelle risikobevidsthed, enhver rolle forventes at have.",
+        "Omfatter formelt ansvar for at kontrollere, kvalitetssikre eller sikre, at vigtige krav følges, for eksempel inden for informationssikkerhed, kvalitet, sikkerhed eller regelsæt. Kriteriet vedrører ansvar for, at kravene anvendes korrekt. Det vedrører ikke den almindelige pligt til at følge regler eller være risikobevidst.",
       measures:
-        "Ansvar for beskyttelse, kvalitetssikring, kontrol eller korrekt anvendelse af kritiske krav.",
-      notMeasures: "Generel risikobevidsthed.",
+        "Kontrol- og kvalitetssikringsansvar, ansvar for beskyttelse af information eller sikkerhed, ansvar for korrekt anvendelse af krav og regelsæt.",
+      notMeasures:
+        "Almindelig risikobevidsthed, at følge rutiner, som en anden har ansvar for, konsekvensen hvis der opstår fejl.",
       whenSuitable:
-        "Regulerede, sikkerhedskritiske eller datatunge virksomheder med et separat formelt kontrolansvar.",
+        "Vælg når formelt ansvar for kontrol, beskyttelse og efterlevelse skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Vælg kun hvis ansvaret er adskilt fra Risiko og konsekvens.",
+        "Vælg ikke når området kun omfatter at følge etablerede kontrolrutiner. Der skal være et tydeligt ansvar for, at kontroller og krav fungerer.",
       controlQuestion:
-        "Har rollens formelle kontrolansvar betydning i sig selv, adskilt fra den generelle risiko og konsekvens, den også bærer?",
+        "Skal formelt ansvar for kontrol, beskyttelse og efterlevelse vejes ind i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af informations-, sikkerheds- eller regelefterlevelsesansvar bærer rollen normalt og varigt?",
       anchor1:
-        "Rollen følger etablerede kontrolrutiner inden for et tydeligt afgrænset område, uden selvstændigt kontrolansvar.",
+        "Etablerede kontrolrutiner følges inden for et tydeligt afgrænset område, uden selvstændigt kontrolansvar.",
       anchor3:
-        "Rollen har selvstændigt etableret, formelt ansvar for beskyttelse, kvalitetssikring eller efterlevelseskontrol inden for sit eget område.",
+        "Selvstændigt og formelt ansvar for beskyttelse, kvalitetssikring eller efterlevelseskontrol inden for et område.",
       anchor5:
-        "Rollen bærer meget avanceret eller forretningskritisk kontrolansvar, og hvordan den anvender kritiske krav, sætter ofte standarden for efterlevelse uden for eget område.",
+        "Meget avanceret eller forretningskritisk kontrolansvar, hvor fortolkninger og arbejdsmåder styrer, hvordan vigtige krav følges i flere dele af virksomheden.",
     },
     "safety-exposure": {
       name: "Sikkerheds- og eksponeringsforhold",
       shortUiText:
-        "Rollens varige krav om at arbejde i et risikomiljø under beskyttelsesforanstaltninger.",
+        "Varig eksponering for fysiske, kemiske, biologiske eller miljømæssige risici.",
       fullDefinition:
-        "Fanger det varige risikomiljø, rollen arbejder i, og kravet om at arbejde under beskyttelsesforanstaltninger, hvilket omfatter faktisk fysisk, kemisk, biologisk eller miljømæssig eksponering. Kriteriet måler selve arbejdsforholdet, ikke konsekvensen for virksomheden, hvis noget går galt.",
+        "Omfatter tilbagevendende arbejde i miljøer med faktisk fysisk, kemisk, biologisk eller miljømæssig eksponering og krav om beskyttelsesforanstaltninger. Eksempler er støj, farlige stoffer, smitte, højde, varme, kulde og farlige maskiner. Kriteriet vedrører arbejdsforholdet, ikke fysisk anstrengelse eller konsekvensen for virksomheden, hvis noget går galt.",
       measures:
-        "Varigt risikomiljø og krav om arbejde under beskyttelsesforanstaltninger.",
-      notMeasures: "Konsekvens for virksomheden af en fejl.",
+        "Risikomiljø og faktisk eksponering, tilbagevendende behov for beskyttelsesforanstaltninger, særlige sikkerhedsforhold i miljøet.",
+      notMeasures:
+        "Fysisk eller sensorisk anstrengelse i sig selv, formelt sikkerhedsansvar, forretningsmæssig eller organisatorisk risiko.",
       whenSuitable:
-        "Roller med faktisk fysisk, kemisk, biologisk, miljømæssig eller anden eksponering.",
+        "Vælg når særlige sikkerheds- og eksponeringsforhold skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Vælg ikke samtidig med et bredere arbejdsforholdskriterium, der dækker samme eksponering.",
+        "Vælg ikke alene for sikkerhedsansvar eller beslutningsrisiko. Det skal handle om faktisk og varig eksponering i virksomhedens miljøer.",
       controlQuestion:
-        "Har rollens eksponering for et varigt risikomiljø betydning i sig selv, ud over hvad kriteriet fysisk eller sensorisk anstrengelse allerede fanger?",
+        "Er arbejde under særlige sikkerheds- eller eksponeringsforhold noget, I vil tage hensyn til i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af sikkerhed og eksponering arbejder rollen normalt og varigt under?",
       anchor1:
-        "Rollen udsættes enkeltvis for et tydeligt afgrænset sikkerheds- eller eksponeringsforhold på lavt niveau med standardiserede beskyttelsesforanstaltninger.",
+        "Enkeltstående og lav eksponering under tydeligt afgrænsede forhold med standardiserede beskyttelsesforanstaltninger.",
       anchor3:
-        "Rollen arbejder under et etableret, tilbagevendende risikomiljø, der kræver konsekvent brug af beskyttelsesforanstaltninger som en normal del af arbejdet.",
+        "Tilbagevendende eksponering i et etableret risikomiljø, som kræver konsekvent brug af beskyttelsesforanstaltninger.",
       anchor5:
-        "Rollen arbejder under meget krævende eller forretningskritiske eksponeringsforhold, hvor den beskyttelsesstandard, den følger eller sætter, ofte rækker ud over eget nærmeste team.",
+        "Meget krævende eller forretningskritiske eksponeringsforhold, hvor beskyttelse, sikkerhedsrutiner og korrekt adfærd er afgørende for sikker drift.",
     },
     "on-call": {
-      name: "Rådigheds-, beredskabs- og tilgængelighedskrav",
+      name: "Vagt, beredskab og tilgængelighedskrav",
       shortUiText:
-        "Rollens tilbagevendende krav om at være tilgængelig uden for ordinær arbejdstid eller at reagere øjeblikkeligt.",
+        "Tilbagevendende vagt, beredskab eller krav om hurtig tilgængelighed.",
       fullDefinition:
-        "Fanger rollens tilbagevendende krav om at være tilgængelig uden for ordinær arbejdstid, eller at reagere øjeblikkeligt, som en integreret forudsætning for rollen. Kriteriet måler et væsentligt, tilbagevendende rådighedskrav, ikke midlertidig overarbejde, frivillig fleksibilitet eller en generelt høj arbejdsmængde.",
+        "Omfatter tilbagevendende krav om at være tilgængelig eller kunne handle uden for almindelig arbejdstid, eller at kunne svare omgående under en vagt. Kriteriet vedrører planlagt eller forventet beredskab, som er en stabil del af virksomhedens forudsætninger. Det vedrører ikke enkeltstående overarbejde, frivillig fleksibilitet eller midlertidig høj arbejdsbelastning.",
       measures:
-        "Tilbagevendende krav om tilgængelighed uden for ordinær arbejdstid eller øjeblikkelig indsats.",
+        "Vagt og beredskab, krav om hurtig tilgængelighed, tilbagevendende udkald uden for almindelig arbejdstid.",
       notMeasures:
-        "Midlertidigt overarbejde, frivillig fleksibilitet eller høj arbejdsmængde.",
+        "Midlertidigt overarbejde, uformelle forventninger om at svare, generelt høj arbejdsmængde.",
       whenSuitable:
-        "Drift, IT, sundhed, sikkerhed og andre roller, hvor rådighed er en integreret forudsætning for rollen.",
+        "Vælg når vagt, beredskab eller krav om hurtig tilgængelighed skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Bør kun være et selvstændigt kriterium, når rådighed er væsentlig og tilbagevendende.",
+        "Vælg ikke når tilgængelighed kun opstår ved enkeltstående kriser eller mangler en tydelig og tilbagevendende forankring i virksomheden.",
       controlQuestion:
-        "Har rollens tilbagevendende rådighedskrav betydning i sig selv, ud over midlertidigt overarbejde eller en generelt høj arbejdsmængde?",
+        "Er tilbagevendende vagt, beredskab eller krav om hurtig tilgængelighed en arbejdsforudsætning, I vil tage hensyn til i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af rådighed, beredskab og tilgængelighed bærer rollen normalt og varigt?",
       anchor1:
-        "Rollen dækker enkeltvis et tydeligt afgrænset rådighedskrav med lav frekvens.",
+        "Enkeltstående og tydeligt afgrænset beredskab med lav hyppighed.",
       anchor3:
-        "Rollen bærer et etableret, tilbagevendende rådigheds- eller tilgængelighedskrav uden for ordinær arbejdstid som en normal del af rollen.",
+        "Etableret og tilbagevendende beredskab eller tilgængelighed uden for almindelig arbejdstid.",
       anchor5:
-        "Rollen bærer et meget krævende eller forretningskritisk rådighedskrav med hyppig eller øjeblikkelig indsatspligt, som andre rollers tilgængelighed ofte bygges omkring.",
+        "Meget krævende beredskab med hyppig eller omgående udrykningspligt, hvor virksomheden er stærkt afhængig af hurtig tilgængelighed.",
     },
     "irregularity-mobility": {
       name: "Uregelmæssighed, mobilitet og stedbundethed",
       shortUiText:
-        "Rollens varige krav om uregelmæssige tider, omfattende rejseaktivitet eller arbejde på bestemte steder.",
+        "Varige krav om uregelmæssige tider, rejser eller arbejde på bestemte steder.",
       fullDefinition:
-        "Fanger rollens varige krav om uregelmæssig arbejdstid, omfattende rejseaktivitet eller arbejde knyttet til bestemte steder, for eksempel felt-, skifte- eller internationalt arbejde. Kriteriet måler et stabilt, strukturelt forhold ved rollen, ikke enkeltstående rejser, personlige ønsker eller et midlertidigt projekt.",
+        "Omfatter varige krav om uregelmæssig arbejdstid, omfattende rejseaktivitet eller stedbundet arbejde, for eksempel feltarbejde, skifteholdsarbejde eller international tilstedeværelse. Kriteriet vedrører et stabilt og strukturelt forhold i virksomheden. Det vedrører ikke enkeltstående rejser, personlige ønsker eller midlertidige projekter.",
       measures:
-        "Varige krav om uregelmæssige tider, omfattende rejseaktivitet eller arbejde på bestemte steder.",
+        "Uregelmæssig arbejdstid, omfattende og tilbagevendende rejseaktivitet, felt-, skifteholds- eller stedbundet arbejde.",
       notMeasures:
-        "Enkeltstående rejser, personlige ønsker eller midlertidige projekter.",
+        "Enkeltstående tjenesterejser, midlertidige projekter, vagt eller beredskab uden for arbejdstid.",
       whenSuitable:
-        "Feltroller, international virksomhed, skifteholdsarbejde eller høj rejsefrekvens.",
+        "Vælg når uregelmæssige tider, mobilitet eller stedbundethed skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Kan lægges sammen med Rådighed/beredskab kun når begge indgår i samme stabile arbejdsforhold.",
+        "Vælg ikke når kravet er midlertidigt eller forekommer sjældent uden at være en stabil del af virksomhedens forudsætninger.",
       controlQuestion:
-        "Har rollens varige krav om uregelmæssighed eller mobilitet betydning i sig selv, ud over enkeltstående rejser eller et midlertidigt projekt?",
+        "Vil I veje varige krav om uregelmæssige tider, rejser eller stedbundet arbejde ind?",
       assessmentQuestion:
         "Hvilket niveau af uregelmæssighed, mobilitet eller stedbundethed bærer rollen normalt og varigt?",
       anchor1:
-        "Rollen bærer et tilbagevendende, men begrænset krav om uregelmæssige tider, rejseaktivitet eller stedbundet arbejde, for eksempel et regelmæssigt, men sjældent forekommende mønster, der er en varig del af rollen.",
+        "Tilbagevendende, men begrænsede krav om uregelmæssige tider, rejser eller stedbundet arbejde.",
       anchor3:
-        "Rollen bærer et etableret, tilbagevendende mønster af uregelmæssige tider, rejseaktivitet eller stedbundet arbejde som en normal og stabil del af rollen.",
+        "Etableret og tilbagevendende mønster af uregelmæssige tider, rejser eller stedbundet arbejde.",
       anchor5:
-        "Rollen bærer meget omfattende eller forretningskritisk uregelmæssighed, mobilitet eller stedbundethed, for eksempel varige internationale forpligtelser, skifteholds- eller feltforpligtelser, der former, hvordan rollen kan bemandes.",
+        "Meget omfattende krav om skifteholdsarbejde, rejser, feltarbejde eller international tilstedeværelse, som tydeligt påvirker planlægning og bemanding.",
     },
     "restricted-environments": {
       name: "Særlige sikkerheds-, fortroligheds- eller kontrolmiljøer",
       shortUiText:
-        "Rollens krav om at arbejde under særlige adgangs-, kontrol- eller sikkerhedsrestriktioner.",
+        "Arbejde under særlige regler for adgang, fortrolighed, sikkerhed eller kontrol.",
       fullDefinition:
-        "Fanger arbejdsforholdet ved at operere under særlige adgangs-, kontrol- eller sikkerhedsrestriktioner, for eksempel et sikkerhedsgodkendt eller fortrolighedsfølsomt miljø. Kriteriet måler restriktionen, rollen arbejder under, ikke ansvaret for informationssikkerhed i sig selv.",
+        "Omfatter arbejdsforhold med særlige begrænsninger for adgang, fortrolighed, sikkerhed eller kontrol, for eksempel sikkerhedsklassificerede miljøer eller information, der kræver særlig beskyttelse. Kriteriet vedrører de regler og begrænsninger, der gælder i miljøet. Det vedrører ikke ansvar for at udforme, følge op på eller kontrollere informationssikkerhed.",
       measures:
-        "Arbejdsforholdet ved at arbejde under særlige adgangs-, kontrol- eller sikkerhedsrestriktioner.",
-      notMeasures: "Ansvar for informationssikkerhed.",
+        "Særlige adgangsbegrænsninger, fortroligheds- og sikkerhedsrestriktioner, kontrolkrav, der påvirker, hvordan arbejdet kan udføres.",
+      notMeasures:
+        "Formelt ansvar for informationssikkerhed, almindelig tavshedspligt, almindelig risikobevidsthed.",
       whenSuitable:
-        "Sikkerhedsgodkendte, fortrolighedsfølsomme eller strengt kontrollerede miljøer med faktiske begrænsninger.",
+        "Vælg når særlige adgangs-, fortroligheds- eller sikkerhedsrestriktioner skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Brug kun når det er arbejdsmiljøet/forudsætningen, ikke kontrolansvaret, der måles.",
+        "Vælg ikke alene for fortrolig information. Begrænsningerne skal være særlige, tilbagevendende og påvirke, hvordan arbejdet kan udføres.",
       controlQuestion:
-        "Har rollens krav om at arbejde under særlige adgangs- eller sikkerhedsrestriktioner betydning i sig selv, adskilt fra det formelle kontrolansvar, den også kan bære?",
+        "Skal arbejde under særlige adgangs-, fortroligheds- eller sikkerhedsrestriktioner have betydning i synet på ligeværdighed?",
       assessmentQuestion:
         "Hvilket niveau af sikkerheds-, fortroligheds- eller kontrolrestriktion arbejder rollen normalt og varigt under?",
       anchor1:
-        "Rollen arbejder enkeltvis under en tydeligt afgrænset adgangs- eller fortrolighedsrestriktion på lavt niveau.",
+        "Enkeltstående og tydeligt afgrænsede adgangs- eller fortrolighedsrestriktioner på lavt niveau.",
       anchor3:
-        "Rollen arbejder under et etableret, tilbagevendende sæt adgangs-, kontrol- eller sikkerhedsrestriktioner som en normal del af rollen.",
+        "Etablerede og tilbagevendende adgangs-, kontrol- eller sikkerhedsrestriktioner.",
       anchor5:
-        "Rollen arbejder under meget strenge eller forretningskritiske sikkerheds-, fortroligheds- eller kontrolrestriktioner, der former, hvordan rollen og dens omgivelser skal drives.",
+        "Meget strenge eller forretningskritiske sikkerheds-, fortroligheds- eller kontrolrestriktioner, som i høj grad styrer planlægning, gennemførelse og dokumentation.",
     },
   },
 }
