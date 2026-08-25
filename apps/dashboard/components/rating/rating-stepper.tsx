@@ -21,7 +21,6 @@ import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useTranslations } from "next-intl"
 import { DisclosureToggle } from "@/components/disclosure-toggle"
-import { STAGE_EYEBROW_CLASS } from "@/components/stage-eyebrow"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useEffect, useId, useRef, useState } from "react"
 import { assessmentErrorMessage } from "@/lib/assessment-error"
@@ -532,18 +531,15 @@ export function RatingStepper({
                           {anchor.step}
                         </span>
                         <span className="min-w-0 flex-1">
-                          {/* The app's scanned-label treatment, shared with the
-                              stage eyebrows so a scanned label reads the same
-                              wherever one appears. `block` and the bottom
-                              margin are this slot's own layout; the type
-                              treatment is not re-typed. */}
+                          {/* The app's scanned-label treatment: uppercase,
+                              text-xs, tracked, which is the reading floor's
+                              own eyebrow exception. Written out here like the
+                              app's other scanned labels (the approval card,
+                              the compliance dialog, the level-rules panel);
+                              it briefly lived in a shared constant beside the
+                              stage eyebrows, and outlived them. */}
                           {scaleStep === undefined ? null : (
-                            <span
-                              className={cn(
-                                STAGE_EYEBROW_CLASS,
-                                "mb-0.5 block"
-                              )}
-                            >
+                            <span className="mb-0.5 block font-semibold text-muted-foreground text-xs uppercase tracking-wide">
                               {scaleStep.name}
                             </span>
                           )}

@@ -14,7 +14,6 @@ import {
 import { ModelChapterTabs } from "@/components/model/model-chapter-tabs"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SectionTitleRow } from "@/components/section-title-row"
-import { StageEyebrow } from "@/components/stage-eyebrow"
 import { SegmentedProgress } from "@/components/segmented-progress"
 import { useOrganization } from "@/components/org-context"
 import {
@@ -37,9 +36,6 @@ import {
 export function ModelSectionShell({ children }: { children: ReactNode }) {
   const { orgId } = useOrganization()
   const t = useTranslations("dashboard.model.chapters")
-  // The section-level namespace, for the stage label: it names the whole
-  // model area, not this chapter row.
-  const tModel = useTranslations("dashboard.model")
   const tHelp = useTranslations("dashboard.help")
   const pathname = usePathname()
   const data = useQuery(api.evaluationModel.approval.getMethodChecks, { orgId })
@@ -79,7 +75,6 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
           {/* The section's title and its one explainer, with the whole
               model's instrument centred on the page beside them. */}
           <SectionTitleRow
-            eyebrow={<StageEyebrow label={tModel("stageEyebrow")} />}
             heading={t("heading")}
             help={
               <HelpMorphButton label={tHelp("modelProgressLabel")}>

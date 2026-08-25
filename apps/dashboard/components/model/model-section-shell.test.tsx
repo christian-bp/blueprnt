@@ -134,25 +134,15 @@ describe("ModelSectionShell", () => {
     expect(container.querySelector('[data-slot="floating-stack"]')).toBeNull()
   })
 
-  // Deviation 10: the model area names its stage, so a reader who arrives
-  // here knows they are building the method rather than assessing against it.
-  // A scanned label leading the section's own title, on the row it already
-  // has.
-  it("names its stage beside the section title", () => {
+  // THE STAGE LABEL IS GONE. It led this section's title with "Method
+  // building" so a reader knew which half of the method they were in; the
+  // to-do guidance and the section's own identity carry that now (owner
+  // ruling 2026-08-25). Pinned as an absence so it cannot creep back with the
+  // next reading of deviation 10, whose surviving half is the rate route's
+  // link isolation rather than any label.
+  it("names no stage beside the section title", () => {
     const { container } = renderShell()
-    const eyebrow = container.querySelector(
-      '[data-slot="stage-eyebrow"]'
-    ) as HTMLElement
-    expect(eyebrow.textContent).toBe(messages.dashboard.model.stageEyebrow)
-    const tokens = eyebrow.className.split(/\s+/)
-    expect(tokens).toContain("uppercase")
-    expect(tokens).toContain("text-xs")
-    expect(tokens).toContain("tracking-wide")
-    // Same row as the title, leading it: a second line would move every
-    // chapter's content down.
-    const heading = screen.getByRole("heading", { level: 3 })
-    expect(eyebrow.parentElement).toBe(heading.parentElement)
-    expect(eyebrow.nextElementSibling).toBe(heading)
+    expect(container.querySelector('[data-slot="stage-eyebrow"]')).toBeNull()
   })
 
   it("mounts the spine and the chapter row above the chapter's own body", () => {

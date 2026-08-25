@@ -448,75 +448,46 @@ describe("RatePage (completion is the reveal)", () => {
     })
   })
 
-  describe("the stage names itself", () => {
-    const eyebrow = () =>
-      document.querySelector(
-        '[data-slot="stage-eyebrow"]'
-      ) as HTMLElement | null
-
-    it("labels the stepper, the completion panel and the reveal", async () => {
-      // Rating.
-      await renderPage()
-      expect(eyebrow()?.textContent).toBe(t.stageEyebrow)
-      cleanup()
-
-      // Every criterion answered, waiting to be completed.
-      resultFixture = result({ complete: true, ratedCount: 1 })
-      roleFixture = role({
-        ratedCount: 1,
-        ratings: [{ criterionId: "c-scope", value: 3, motivation: null }],
-      })
+  // THE STAGE LABEL IS GONE, in every state this route has.
+  //
+  // It named the stage above the title ("Role assessment") on the reasoning
+  // that a reader should know which half of the method they are in. The to-do
+  // guidance and the surfaces' own identities carry that now, so the label was
+  // signage for a road the reader is already being walked down (owner ruling
+  // 2026-08-25).
+  //
+  // Pinned as an absence rather than deleted quietly: deviation 10's OTHER
+  // half is the link isolation below, which is the firewall's real mechanism,
+  // and a future reader tidying that up should not reach for the eyebrow again
+  // on the theory that the two belong together.
+  it("names no stage above the title, in any state", async () => {
+    const states = [
+      () => {},
+      () => {
+        resultFixture = result({ complete: true, ratedCount: 1 })
+        roleFixture = role({
+          ratedCount: 1,
+          ratings: [{ criterionId: "c-scope", value: 3, motivation: null }],
+        })
+      },
+      () => {
+        resultFixture = result({
+          complete: true,
+          completed: true,
+          ratedCount: 1,
+          score: 74,
+          level: 2,
+          criteria: [],
+        })
+      },
+    ]
+    for (const setUp of states) {
+      setUp()
       install()
       await renderPage()
-      expect(eyebrow()?.textContent).toBe(t.stageEyebrow)
+      expect(document.querySelector('[data-slot="stage-eyebrow"]')).toBeNull()
       cleanup()
-
-      // Completed: the reveal.
-      resultFixture = result({
-        complete: true,
-        completed: true,
-        ratedCount: 1,
-        score: 74,
-        level: 2,
-        criteria: [
-          {
-            criterionId: "c-scope",
-            name: "Scope",
-            weightPoints: 3,
-            value: 3,
-            motivation: null,
-          },
-        ],
-      })
-      install()
-      await renderPage()
-      expect(eyebrow()?.textContent).toBe(t.stageEyebrow)
-    })
-
-    // A SCANNED label, not a sentence: the reading floor's own eyebrow
-    // exception, and the class string this app already uses for its scanned
-    // section labels.
-    it("reads as a scanned label", async () => {
-      await renderPage()
-      const tokens = (eyebrow()?.className ?? "").split(/\s+/)
-      expect(tokens).toContain("uppercase")
-      expect(tokens).toContain("text-xs")
-      expect(tokens).toContain("tracking-wide")
-    })
-
-    // Scanned in TREATMENT, but not hidden from the accessibility tree. The
-    // label was aria-hidden at first, on the reasoning that the surface's own
-    // title already says where you are. That reasoning does not survive the
-    // other surface this label serves: the model shell has no breadcrumb at
-    // all, so hiding it announced the stage to nobody there. One behaviour,
-    // announced on both.
-    it("is announced, not hidden from assistive technology", async () => {
-      await renderPage()
-      expect(eyebrow()?.hasAttribute("aria-hidden")).toBe(false)
-      expect(
-        await screen.findByText(t.stageEyebrow, { ignore: "[aria-hidden]" })
-      ).toBeDefined()
-    })
+    }
   })
 
   // Deviation 10's other half: an assessor mid-assessment is offered no route

@@ -1625,7 +1625,6 @@
       "lockedExplanation": "Vurderingen er låst fordi rollen er arkivert. Arkivering kan ikke angres, så opprett en ny rolle hvis arbeidet skal vurderes på nytt.",
       "modelUnapprovedExplanation": "Evalueringsmodellen må godkjennes før roller kan vurderes.",
       "modelUnapprovedCta": "Gå til kapittelet Godkjenning",
-      "stageEyebrow": "Rollevurdering",
       "scale": {
         "title": "Felles vurderingsskala",
         "meaningsToggle": "Hva trinnene betyr",
@@ -2131,8 +2130,7 @@
         "notApproved": "Ikke godkjent ennå",
         "notDocumented": "Ikke dokumentert",
         "pointBudget": "Poengbudsjett: {points}"
-      },
-      "stageEyebrow": "Metodebygging"
+      }
     },
     "ai": {
       "heading": "AI-assistanse",

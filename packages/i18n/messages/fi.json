@@ -1625,7 +1625,6 @@
       "lockedExplanation": "Arviointi on lukittu, koska rooli on arkistoitu. Arkistointia ei voi perua, joten luo uusi rooli, jos työ pitää arvioida uudelleen.",
       "modelUnapprovedExplanation": "Arviointimalli on hyväksyttävä ennen kuin rooleja voi arvioida.",
       "modelUnapprovedCta": "Siirry Hyväksyntä-lukuun",
-      "stageEyebrow": "Roolin arviointi",
       "scale": {
         "title": "Yhteinen arviointiasteikko",
         "meaningsToggle": "Mitä portaat tarkoittavat",
@@ -2131,8 +2130,7 @@
         "notApproved": "Ei vielä hyväksytty",
         "notDocumented": "Ei dokumentoitu",
         "pointBudget": "Pistebudjetti: {points}"
-      },
-      "stageEyebrow": "Menetelmän rakentaminen"
+      }
     },
     "ai": {
       "heading": "Tekoälyapu",

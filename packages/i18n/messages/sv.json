@@ -1625,7 +1625,6 @@
       "lockedExplanation": "Betygsättningen är låst eftersom rollen är arkiverad. Arkivering kan inte ångras, så skapa en ny roll om arbetet behöver betygsättas igen.",
       "modelUnapprovedExplanation": "Utvärderingsmodellen måste godkännas innan roller kan bedömas.",
       "modelUnapprovedCta": "Gå till kapitlet Godkännande",
-      "stageEyebrow": "Rollbedömning",
       "scale": {
         "title": "Gemensam bedömningsskala",
         "meaningsToggle": "Vad stegen betyder",
@@ -2131,8 +2130,7 @@
         "notApproved": "Inte godkänd ännu",
         "notDocumented": "Inte dokumenterad",
         "pointBudget": "Poängbudget: {points}"
-      },
-      "stageEyebrow": "Metodbyggnad"
+      }
     },
     "ai": {
       "heading": "AI-assistans",

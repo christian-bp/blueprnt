@@ -19,7 +19,6 @@ import Link from "next/link"
 import { use } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
-import { StageEyebrow } from "@/components/stage-eyebrow"
 import { RATE_COLUMN } from "@/lib/rate-column"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { RatingResult } from "@/components/rating/rating-result"
@@ -83,7 +82,6 @@ export default function RatePage(props: {
         {/* The ancestor crumbs are static i18n text; only the role title is
             data, so only it gets a skeleton crumb. */}
         <PageBreadcrumbRow
-          eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
             { label: tNav("roles"), href: "/roles" },
             { skeleton: true },
@@ -135,7 +133,6 @@ export default function RatePage(props: {
     return (
       <div className={RATE_COLUMN}>
         <PageBreadcrumbRow
-          eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
             { label: tNav("roles"), href: "/roles" },
             { label: t("title") },
@@ -163,7 +160,6 @@ export default function RatePage(props: {
     return (
       <div className={RATE_COLUMN}>
         <PageBreadcrumbRow
-          eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
             { label: tNav("roles"), href: "/roles" },
             { label: role.title, href: `/roles/${role.slug}` },
@@ -197,7 +193,6 @@ export default function RatePage(props: {
     return (
       <div className={RATE_COLUMN}>
         <PageBreadcrumbRow
-          eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
             { label: tNav("roles"), href: "/roles" },
             { label: role.title, href: `/roles/${role.slug}` },
@@ -251,7 +246,6 @@ export default function RatePage(props: {
           surface: /work is the level matrix, so its crumb comes off this
           route entirely (deviation 10). */}
         <PageBreadcrumbRow
-          eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
           segments={[
             { label: tNav("roles"), href: "/roles" },
             { label: role.title, href: `/roles/${role.slug}` },
@@ -286,7 +280,6 @@ export default function RatePage(props: {
   return (
     <div className={RATE_COLUMN}>
       <PageBreadcrumbRow
-        eyebrow={<StageEyebrow label={t("stageEyebrow")} />}
         segments={[
           { label: tNav("roles"), href: "/roles" },
           { label: role.title, href: `/roles/${role.slug}` },
