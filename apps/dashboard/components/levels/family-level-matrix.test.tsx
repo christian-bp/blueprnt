@@ -200,6 +200,12 @@ describe("FamilyLevelMatrix zone boundaries", () => {
     minScore: 100 - index * 8,
   }))
 
+  // The zone rule is the 2px one; "after:bg-border" alone would also match
+  // the level rule's after:bg-border/60 and quietly pass on either.
+  const isZoneRuled = (el: Element) => el.className.includes("after:w-0.5")
+  const isLevelRuled = (el: Element) =>
+    el.className.includes("after:bg-border/60")
+
   function renderFull() {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
@@ -239,8 +245,8 @@ describe("FamilyLevelMatrix zone boundaries", () => {
     expect(heads).toHaveLength(LEVEL_COUNT)
     const boundaries = zoneBoundaryIndexes(levelRanges(ALL_LEVELS))
     heads.forEach((head, index) => {
-      const zoned = head.className.includes("after:bg-border")
-      const levelled = head.className.includes("border-border/60")
+      const zoned = isZoneRuled(head)
+      const levelled = isLevelRuled(head)
       if (boundaries.has(index)) {
         expect({ index, zoned, levelled }).toEqual({
           index,
@@ -260,27 +266,84 @@ describe("FamilyLevelMatrix zone boundaries", () => {
   // Unchanged from the level rules: the first column has no neighbour to be
   // separated from, and it still carries the transparent border so its label
   // sits on the same inset as every other column's.
-  it("leaves the first column its spacer and no rule", () => {
+  // The first column has no neighbour on its left to be divided from, and it
+  // still carries the transparent inset so its label sits where every other
+  // column's does.
+  it("leaves the first column its inset and no rule", () => {
     const heads = renderFull()
     const first = heads[0] as HTMLElement
     expect(first.className).toContain("border-transparent")
-    expect(first.className).not.toContain("after:bg-border")
-    expect(first.className).not.toContain("border-border/60")
+    expect(isZoneRuled(first)).toBe(false)
+    expect(isLevelRuled(first)).toBe(false)
   })
 
-  // The rule runs the grid's height, which is the half of the hierarchy that
-  // ink alone could not carry, so the cells under a boundary draw it too.
-  it("carries the rule down through the cells", () => {
+  // THE LINE IS UNBROKEN. Every row type the grid has draws the rule at the
+  // boundary columns: the zone band header, the level header, the family
+  // label rows, and the cell rows. The label rows are the ones that used to
+  // break it, because a single colSpan cell has no left edge at a boundary
+  // to hang a rule on.
+  it("carries the rule through every row type", () => {
     renderFull()
-    const cells = [...document.querySelectorAll("tbody td")] as HTMLElement[]
-    expect(cells).toHaveLength(LEVEL_COUNT)
     const boundaries = zoneBoundaryIndexes(levelRanges(ALL_LEVELS))
-    cells.forEach((cell, index) => {
-      expect({
-        index,
-        ruled: cell.className.includes("after:bg-border"),
-      }).toEqual({ index, ruled: boundaries.has(index) })
-    })
+    const rows = [
+      ...document.querySelectorAll("thead tr, tbody tr"),
+    ] as HTMLElement[]
+    // Only the rows laid out column by column; the zone band row spans three
+    // columns per cell and is pinned separately below.
+    const columnRows = rows.filter(
+      (row) => row.querySelectorAll("th, td").length === LEVEL_COUNT
+    )
+    // level header + one label row + one cell row for the single family.
+    expect(columnRows).toHaveLength(3)
+    for (const row of columnRows) {
+      const cells = [...row.querySelectorAll("th, td")]
+      cells.forEach((cell, index) => {
+        expect({
+          row: row.parentElement?.tagName,
+          index,
+          zoned: isZoneRuled(cell),
+        }).toEqual({
+          row: row.parentElement?.tagName,
+          index,
+          zoned: boundaries.has(index),
+        })
+      })
+    }
+  })
+
+  // The name still heads its row, and still by name: positioning it out of
+  // flow is what stops it setting the first column's width for the whole
+  // grid, and it must not cost the row its accessible heading.
+  it("keeps the family name as the label row's columnheader", () => {
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <FamilyLevelMatrix
+          levels={ALL_LEVELS}
+          rows={[role({ level: 1, familyId: "f1", familyName: "Engineering" })]}
+        />
+      </NextIntlClientProvider>
+    )
+    expect(
+      screen.getByRole("columnheader", { name: "Engineering" })
+    ).toBeDefined()
+    // And the cells that carry the rule beside it are not headings.
+    const labelRow = screen
+      .getByRole("columnheader", { name: "Engineering" })
+      .closest("tr") as HTMLElement
+    expect(labelRow.querySelectorAll("th")).toHaveLength(1)
+    expect(labelRow.querySelectorAll("td")).toHaveLength(LEVEL_COUNT - 1)
+    // OUT OF FLOW, which is the whole reason the row could be split into
+    // cells at all: in flow the name would be the widest thing in the first
+    // column and would set that column's width for the entire grid. jsdom
+    // measures nothing, so the mechanism is what gets pinned.
+    const name = screen.getByText("Engineering")
+    expect(name.className).toContain("absolute")
+    expect(name.className).toContain("whitespace-nowrap")
+    // And the row's height is reserved by the cells, since nothing in it is
+    // in flow to give it one.
+    expect((labelRow.querySelector("th") as HTMLElement).className).toContain(
+      "h-7"
+    )
   })
 
   // Every zone band after the first opens on a boundary by definition, so its
@@ -292,11 +355,11 @@ describe("FamilyLevelMatrix zone boundaries", () => {
     ] as HTMLElement[]
     expect(bands.length).toBeGreaterThan(1)
     bands.forEach((band, index) => {
-      expect({
+      expect({ index, ruled: isZoneRuled(band) }).toEqual({
         index,
-        ruled: band.className.includes("after:bg-border"),
-      }).toEqual({ index, ruled: index > 0 })
-      expect(band.className).not.toContain("border-border/60")
+        ruled: index > 0,
+      })
+      expect(isLevelRuled(band)).toBe(false)
     })
   })
 })

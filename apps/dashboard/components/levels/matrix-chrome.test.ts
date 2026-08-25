@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest"
 import {
   MATRIX_COL_HEADER_CLASS,
   MATRIX_COL_RULE_CLASS,
+  MATRIX_HEAD_INSET_CLASS,
   MATRIX_HEAD_PAD_CLASS,
   MATRIX_WRAPPER_CLASS,
   MATRIX_ZONE_RULE_CLASS,
@@ -50,18 +51,43 @@ describe("matrix chrome", () => {
   })
 
   // TWO ORDERS OF DIVISION, and they must stay distinguishable. The level
-  // rule is the app's border ink at 60%; the zone rule is the same ink at
-  // full strength AND runs the height of the grid instead of hanging from the
-  // header. Ink alone is a difference a reader has to hunt for.
+  // rule is the border ink at 60% and 1px; the zone rule is full ink, 2px,
+  // and runs the height of the grid. Ink alone is a difference a reader has
+  // to hunt for.
   it("draws the zone rule heavier than the level rule", () => {
-    expect(MATRIX_COL_RULE_CLASS).toContain("border-border/60")
-    expect(MATRIX_ZONE_RULE_CLASS).toContain("bg-border")
+    expect(MATRIX_COL_RULE_CLASS).toContain("after:bg-border/60")
+    expect(MATRIX_COL_RULE_CLASS).toContain("after:w-px")
+    expect(MATRIX_ZONE_RULE_CLASS).toContain("after:bg-border")
     expect(MATRIX_ZONE_RULE_CLASS).not.toContain("/60")
-    // It reaches down through the border-spacing gutter to meet the next
-    // row's, which is what turns segments into one line.
+    expect(MATRIX_ZONE_RULE_CLASS).toContain("after:w-0.5")
+    // Only the zone rule bridges the border-spacing to the row below, which
+    // is what turns its segments into one line.
     expect(MATRIX_ZONE_RULE_CLASS).toContain("after:-bottom-2")
-    // And it adds no box, so a boundary column's label does not shift.
-    expect(MATRIX_ZONE_RULE_CLASS).not.toMatch(/(^|\s)border-l/)
+    expect(MATRIX_COL_RULE_CLASS).toContain("after:bottom-0")
+  })
+
+  // EQUAL SPACE ON BOTH SIDES. A rule is a divider, so it belongs in the
+  // gutter between two columns, not on one column's edge. Drawn as a border
+  // it sat 16px from the label on its left and 8px from the label on its
+  // right; both rules are pseudo-elements offset to the midpoint of the 26px
+  // clear space now, and neither adds any box that could shift a label.
+  it("centres both rules in the gutter, never on a cell edge", () => {
+    for (const rule of [MATRIX_COL_RULE_CLASS, MATRIX_ZONE_RULE_CLASS]) {
+      expect(rule).toContain("after:absolute")
+      expect(rule).not.toMatch(/(^|\s)border-/)
+    }
+    // 26px of clear space: the 1px rule lands at -4 (13/12, the closest an
+    // odd width can sit in an even gap), the 2px rule at -5 (exactly 12/12).
+    expect(MATRIX_COL_RULE_CLASS).toContain("after:-left-1")
+    expect(MATRIX_ZONE_RULE_CLASS).toContain("after:-left-[5px]")
+  })
+
+  // The 26px is not an accident either: a header cell insets its content by
+  // 9px on BOTH sides, matching a body cell's border plus p-2, so one offset
+  // centres a rule in the header and in the body alike.
+  it("insets a header cell symmetrically", () => {
+    expect(MATRIX_HEAD_INSET_CLASS).toContain("border-x")
+    expect(MATRIX_HEAD_INSET_CLASS).toContain("border-transparent")
   })
 
   // THE MATRIS TAB GETS NONE. Zones are its VERTICAL axis, already drawn as

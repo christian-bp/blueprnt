@@ -14,7 +14,7 @@ import { ScrollArea } from "@workspace/ui/components/scroll-area"
 import {
   MATRIX_COL_HEADER_CLASS,
   MATRIX_COL_RULE_CLASS,
-  MATRIX_COL_RULE_SPACER_CLASS,
+  MATRIX_HEAD_INSET_CLASS,
   MATRIX_ZONE_RULE_CLASS,
   MATRIX_HEAD_PAD_CLASS,
   MATRIX_WRAPPER_CLASS,
@@ -55,16 +55,15 @@ export function FamilyLevelMatrix({
   // one gutter is not a stronger division, it is a smudge.
   const zoneBoundaries = zoneBoundaryIndexes(ranges)
 
-  // One rule per gutter. The first column carries the spacer alone so its
-  // label sits on the same inset as the rest (a border is 1px of box); a zone
-  // boundary carries the spacer plus the zone rule; every other column
-  // carries the level rule.
-  const levelRuleFor = (index: number): string => {
-    if (index === 0) return MATRIX_COL_RULE_SPACER_CLASS
-    if (zoneBoundaries.has(index)) {
-      return `${MATRIX_COL_RULE_SPACER_CLASS} ${MATRIX_ZONE_RULE_CLASS}`
-    }
-    return MATRIX_COL_RULE_CLASS
+  // ONE RULE PER GUTTER, and only one. The first column has no neighbour on
+  // its left to be divided from; a zone boundary takes the zone rule INSTEAD
+  // of the level rule, because two rules in one gutter is not a stronger
+  // division, it is a smudge.
+  const ruleFor = (index: number): string => {
+    if (index === 0) return ""
+    return zoneBoundaries.has(index)
+      ? MATRIX_ZONE_RULE_CLASS
+      : MATRIX_COL_RULE_CLASS
   }
   // Sections come from ALL the rows' families, not only evaluated ones: a
   // family whose roles are still unevaluated shows as a fully hatched band
@@ -104,7 +103,7 @@ export function FamilyLevelMatrix({
                   key={band.zone}
                   scope="colgroup"
                   colSpan={band.ranges.length}
-                  className={`whitespace-nowrap text-left ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_COL_HEADER_CLASS} ${MATRIX_COL_RULE_SPACER_CLASS} ${bandIndex === 0 ? "" : MATRIX_ZONE_RULE_CLASS}`}
+                  className={`whitespace-nowrap text-left ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_HEAD_INSET_CLASS} ${MATRIX_COL_HEADER_CLASS} ${bandIndex === 0 ? "" : MATRIX_ZONE_RULE_CLASS}`}
                 >
                   <ZoneGroupLabel
                     zone={band.zone}
@@ -125,7 +124,7 @@ export function FamilyLevelMatrix({
               <th
                 key={range.level}
                 scope="col"
-                className={`whitespace-nowrap text-left font-medium text-muted-foreground text-xs uppercase tracking-wide ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_COL_HEADER_CLASS} ${levelRuleFor(index)}`}
+                className={`whitespace-nowrap text-left font-medium text-muted-foreground text-xs uppercase tracking-wide ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_HEAD_INSET_CLASS} ${MATRIX_COL_HEADER_CLASS} ${ruleFor(index)}`}
               >
                 {t("levelRow", { level: range.level })}
               </th>
@@ -135,17 +134,51 @@ export function FamilyLevelMatrix({
         <tbody>
           {families.map((family) => (
             <Fragment key={family.familyId ?? "none"}>
-              {/* The family name gets a full-width row of its own (one line,
-                  never squeezed by a left header column); its level cells
-                  follow beneath. */}
+              {/* The family name gets a row of its own (one line, never
+                  squeezed by a left header column); its level cells follow
+                  beneath.
+
+                  A CELL PER COLUMN, not one cell spanning them all. The
+                  zone rule has to cross this row, and a colSpan cell offers
+                  no left edge at a boundary to hang it on, so the line broke
+                  at every family: eight gaps down a grid whose whole job is
+                  showing one continuous division.
+
+                  The name itself is positioned OUT OF FLOW. In flow it would
+                  be the widest thing in the first column and would set that
+                  column's width for the entire grid, which is the regression
+                  the old colSpan was avoiding; absolute, it contributes no
+                  width and no height, so the row is sized by the explicit
+                  h-7 (the 28px the colSpan row measured) and the columns are
+                  sized by the cells, exactly as before. It stays the row's
+                  columnheader: an absolutely positioned span is still the
+                  cell's text content. */}
               <tr>
-                <th
-                  scope="colgroup"
-                  colSpan={ranges.length}
-                  className="pt-2 text-left font-semibold text-sm"
-                >
-                  {family.familyName ?? tFamily("none")}
-                </th>
+                {ranges.map((range, index) =>
+                  index === 0 ? (
+                    <th
+                      key={range.level}
+                      scope="colgroup"
+                      className={`relative h-7 text-left ${MATRIX_HEAD_INSET_CLASS}`}
+                    >
+                      {/* left-2 against the padding box, which the
+                          transparent border has already moved 1px in: the
+                          name lands on the same 9px inset as every label and
+                          chip in the grid. */}
+                      <span className="absolute bottom-0 left-2 whitespace-nowrap font-semibold text-sm leading-5">
+                        {family.familyName ?? tFamily("none")}
+                      </span>
+                    </th>
+                  ) : (
+                    // A td, not a th: these carry the rule and nothing else,
+                    // and a th would put an empty columnheader in every
+                    // accessibility query the grid answers.
+                    <td
+                      key={range.level}
+                      className={`relative h-7 ${MATRIX_HEAD_INSET_CLASS} ${ruleFor(index)}`}
+                    />
+                  )
+                )}
               </tr>
               <tr>
                 {ranges.map((range, index) => {

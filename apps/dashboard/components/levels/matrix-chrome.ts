@@ -28,46 +28,47 @@ export const MATRIX_COL_HEADER_CLASS =
 // chips in the cells below them (a cell's own border plus its p-2).
 export const MATRIX_HEAD_PAD_CLASS = "px-2 py-1"
 
-// The rule between two level columns, and its invisible twin.
+// THE TWO RULES, both drawn in the GUTTER rather than on a cell edge.
 //
-// The app's plain border ink at the weight the nav rail uses, so it divides
-// without ever competing with the cell borders running alongside it.
+// A border draws at the cell's own left edge, which is not between two
+// columns: measured, the level rule sat 16px from the label on its left and
+// 8px from the label on its right, hugging one column instead of dividing
+// two. A pseudo-element can sit in the 8px border-spacing gutter, where a
+// divider belongs, and it adds no box, so no column's label shifts.
 //
-// It hangs from the HEADER rows. The cells below already carry their own
-// rounded borders inside an 8px gutter, so the body's columns are divided
-// twice over if the rule continues into them; the header block is where one
-// level ran into the next with nothing between them at all.
-//
-// The spacer is not decoration. A border is 1px of box, so giving eleven of
-// twelve columns a left border and not the first pushes every label except
-// the first one 1px right, which is a misalignment of exactly the kind this
-// change exists to remove. The first column takes the same border in
-// transparent, and all twelve labels sit on one inset.
-export const MATRIX_COL_RULE_CLASS = "border-border/60 border-l"
-export const MATRIX_COL_RULE_SPACER_CLASS = "border-l border-transparent"
+// THE OFFSETS ARE THE MIDPOINTS, not nudges. Every cell insets its content by
+// 9px on both sides (1px border + p-2 in the body, and the transparent border
+// plus px-2 in the header, which is what MATRIX_HEAD_INSET_CLASS exists for),
+// so the clear space between two columns' content is 9 + 8 + 9 = 26px. A 1px
+// rule cannot halve an even gap, so the level rule lands 13/12; the zone rule
+// is 2px, which halves it exactly at 12/12, and that is the width the heavier
+// of the two should have carried anyway.
+export const MATRIX_COL_RULE_CLASS =
+  "after:absolute after:top-0 after:bottom-0 after:-left-1 after:w-px after:bg-border/60 after:content-['']"
+
+// Every column header's inset. The transparent borders are not decoration:
+// the left one puts the label on the same 9px inset as the chips in the cell
+// below it, and the right one makes the gutter symmetric around the rule that
+// runs through it (without it the header's clear space is 25px against the
+// body's 26px, and one rule cannot be centred in both).
+export const MATRIX_HEAD_INSET_CLASS = "border-x border-transparent"
 
 // THE ZONE BOUNDARY RULE. FAMILIES MATRIX ONLY.
 //
-// A different ORDER of division from the level rule beside it, and it says so
-// twice over: full border ink rather than the level rule's 60%, and it runs
-// the height of the grid instead of hanging from the header. Ink alone would
-// not have carried it, because 1px at 100% next to 1px at 60% is a difference
-// a reader has to hunt for; extent is what makes the two read as a hierarchy.
+// A different ORDER of division from the level rule, and it says so three
+// ways: full border ink rather than 60%, 2px rather than 1px, and it runs the
+// height of the grid instead of hanging from the header. Ink alone would not
+// have carried it, because 1px at 100% next to 1px at 60% is a difference a
+// reader has to hunt for.
 //
 // Not in the LEVELS x TRACKS matrix, and not by omission. Zones are the
 // vertical axis there, already drawn as row bands, so a vertical rule would
 // divide the tracks, which zones have nothing to do with. This rule means
 // something only where levels run horizontally.
 //
-// A pseudo-element, not a border, for two reasons. A border-separate table
-// puts an 8px gutter between columns, and a border draws at the cell's own
-// edge rather than in that gutter, so the rule would sit hard against the
-// next cell instead of between the two. And the boundary column keeps the
-// transparent spacer, so its label stays on the same 9px inset as every
-// other column's: the rule adds no box at all.
-//
-// -bottom-2 is the border-spacing, not a nudge: each rule reaches down
-// through the gutter to meet the next row's, so the segments close into one
-// line rather than reading as a column of ticks.
+// -bottom-2 is the border-spacing, not a nudge: each segment reaches down
+// through the gutter to meet the next row's, so the rule closes into one line
+// instead of reading as a column of ticks. Every row type carries it, the
+// family label rows included, or the line breaks at every family.
 export const MATRIX_ZONE_RULE_CLASS =
-  "after:-bottom-2 after:-left-1 after:absolute after:top-0 after:w-px after:bg-border after:content-['']"
+  "after:absolute after:top-0 after:-bottom-2 after:-left-[5px] after:w-0.5 after:bg-border after:content-['']"
