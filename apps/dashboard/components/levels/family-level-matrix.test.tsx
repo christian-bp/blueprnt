@@ -188,10 +188,12 @@ describe("FamilyLevelMatrix", () => {
 
 // ZONE BOUNDARIES, on the axis where they mean something.
 //
-// The families view lays levels across, so the place one zone ends and the
-// next begins is a vertical line. It gets a rule of its own, heavier than the
-// rules between levels, and it REPLACES the level rule there: two rules in
-// one gutter is not a stronger division, it is a smudge.
+// The families view lays levels across, so where one zone ends and the next
+// begins is a vertical line. It gets a COLUMN of its own rather than a class
+// on the column after it: the zones have to read as separated groups, and the
+// air that separates them has to sit outside the cells' own visible boxes.
+// Every row type emits that column from one shared list, which is what keeps
+// the line continuous and every cell above and below it aligned.
 describe("FamilyLevelMatrix zone boundaries", () => {
   afterEach(() => cleanup())
 
@@ -200,21 +202,29 @@ describe("FamilyLevelMatrix zone boundaries", () => {
     minScore: 100 - index * 8,
   }))
 
-  // The zone rule is the 2px one; "after:bg-border" alone would also match
-  // the level rule's after:bg-border/60 and quietly pass on either.
   const isZoneRuled = (el: Element) => el.className.includes("after:w-0.5")
   const isLevelRuled = (el: Element) =>
     el.className.includes("after:bg-border/60")
+  // By slot, not by class: "w-3" is a substring of "min-w-32", so a class
+  // match counts every cell in the grid as a boundary and passes on a matrix
+  // that draws none.
+  const isGap = (el: Element) => el.getAttribute("data-slot") === "zone-gap"
 
-  function renderFull() {
+  function renderFull(familyName: string | null = null) {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
-        <FamilyLevelMatrix levels={ALL_LEVELS} rows={[role({ level: 1 })]} />
+        <FamilyLevelMatrix
+          levels={ALL_LEVELS}
+          rows={[
+            role({
+              level: 1,
+              familyId: familyName === null ? null : "f1",
+              familyName,
+            }),
+          ]}
+        />
       </NextIntlClientProvider>
     )
-    return [
-      ...document.querySelectorAll("thead tr:nth-child(2) th"),
-    ] as HTMLElement[]
   }
 
   // Derived from the engine, then stated: the derivation is what keeps the
@@ -240,98 +250,125 @@ describe("FamilyLevelMatrix zone boundaries", () => {
     expect([...zoneBoundaryIndexes(levelRanges(partial))]).toEqual([2])
   })
 
-  it("gives every boundary column the zone rule and not the level rule", () => {
-    const heads = renderFull()
-    expect(heads).toHaveLength(LEVEL_COUNT)
-    const boundaries = zoneBoundaryIndexes(levelRanges(ALL_LEVELS))
-    heads.forEach((head, index) => {
-      const zoned = isZoneRuled(head)
-      const levelled = isLevelRuled(head)
-      if (boundaries.has(index)) {
-        expect({ index, zoned, levelled }).toEqual({
-          index,
-          zoned: true,
-          levelled: false,
-        })
-      } else if (index > 0) {
-        expect({ index, zoned, levelled }).toEqual({
-          index,
-          zoned: false,
-          levelled: true,
-        })
-      }
-    })
+  // THE BOUNDARY IS A COLUMN. Padding could not buy the air: a body cell IS
+  // its visible box, so padding widens the box and pushes its chips
+  // off-centre instead of moving the boxes apart.
+  it("draws the rule on a column of its own, never on a level column", () => {
+    renderFull()
+    const heads = [
+      ...document.querySelectorAll(
+        "thead tr:nth-child(2) th, thead tr:nth-child(2) td"
+      ),
+    ] as HTMLElement[]
+    // Twelve levels plus three boundaries.
+    expect(heads).toHaveLength(LEVEL_COUNT + 3)
+    const gaps = heads.filter(isGap)
+    expect(gaps).toHaveLength(3)
+    // Every gap column carries the rule; no other cell does.
+    for (const head of heads) {
+      expect({
+        gap: isGap(head),
+        zoned: isZoneRuled(head),
+      }).toEqual({ gap: isGap(head), zoned: isGap(head) })
+    }
+    // And a gap column holds nothing but the air and the rule.
+    for (const gap of gaps) {
+      expect(gap.tagName).toBe("TD")
+      expect(gap.textContent).toBe("")
+      expect(gap.getAttribute("aria-hidden")).toBe("true")
+      // THE AIR IS CONTENT, not a class. Auto table layout treats a width on
+      // an empty cell as a suggestion and collapses the column to 0px, which
+      // is what it did; only a child with a real width gives the column a
+      // min-content the algorithm has to honour. jsdom measures nothing, so
+      // the mechanism is what gets pinned.
+      const spacer = gap.firstElementChild as HTMLElement | null
+      expect(spacer).not.toBeNull()
+      expect(spacer?.className).toContain("w-3")
+    }
   })
 
-  // Unchanged from the level rules: the first column has no neighbour to be
-  // separated from, and it still carries the transparent border so its label
-  // sits on the same inset as every other column's.
+  // The level rule is a different order of division and keeps its own
+  // gutters: it never appears where the zone rule already divides, and never
+  // to the left of the first column, which has no neighbour.
+  it("keeps the level rule out of the boundary gutters", () => {
+    renderFull()
+    const cells = [
+      ...document.querySelectorAll(
+        "thead tr:nth-child(2) th, thead tr:nth-child(2) td"
+      ),
+    ] as HTMLElement[]
+    const levelled = cells
+      .map((cell, position) => (isLevelRuled(cell) ? position : null))
+      .filter((position) => position !== null)
+    // Positions in the rendered sequence: every level column except the first
+    // and the three that open a zone (each of which is preceded by a gap).
+    expect(levelled).toEqual([1, 2, 5, 6, 9, 10, 13, 14])
+    expect(cells.filter((c) => isGap(c) && isLevelRuled(c))).toHaveLength(0)
+  })
+
+  // THE LINE IS UNBROKEN. Every row type the grid has emits the boundary
+  // column at the same position: the zone band header, the level header, the
+  // family label rows, and the cell rows.
+  it("carries the rule through every row type", () => {
+    renderFull("Engineering")
+    const rows = [
+      ...document.querySelectorAll("thead tr, tbody tr"),
+    ] as HTMLElement[]
+    // band header + level header + label row + cell row.
+    expect(rows).toHaveLength(4)
+    // COLUMN indexes, not cell positions. The band header spans three levels
+    // per cell, so counting cells says nothing about which column a gap
+    // lands in: this row once carried a colSpan that swallowed the boundary
+    // column beside it, putting its rule three columns off, and a
+    // position-based assertion passed the whole time.
+    const gapColumns = (row: HTMLElement) => {
+      const found: number[] = []
+      let column = 0
+      for (const cell of row.querySelectorAll("th, td")) {
+        if (isGap(cell)) found.push(column)
+        column += (cell as HTMLTableCellElement).colSpan
+      }
+      return found
+    }
+    // Every row agrees, and the grid is twelve levels plus three boundaries.
+    for (const row of rows) {
+      expect(gapColumns(row)).toEqual([3, 7, 11])
+      expect(
+        [...row.querySelectorAll("th, td")].reduce(
+          (total, cell) => total + (cell as HTMLTableCellElement).colSpan,
+          0
+        )
+      ).toBe(LEVEL_COUNT + 3)
+    }
+    // And every one of them draws the rule.
+    for (const row of rows) {
+      const gaps = [...row.querySelectorAll("th, td")].filter(isGap)
+      expect(gaps.every(isZoneRuled)).toBe(true)
+    }
+  })
+
   // The first column has no neighbour on its left to be divided from, and it
   // still carries the transparent inset so its label sits where every other
   // column's does.
   it("leaves the first column its inset and no rule", () => {
-    const heads = renderFull()
-    const first = heads[0] as HTMLElement
+    renderFull()
+    const first = document.querySelector(
+      "thead tr:nth-child(2) th"
+    ) as HTMLElement
     expect(first.className).toContain("border-transparent")
     expect(isZoneRuled(first)).toBe(false)
     expect(isLevelRuled(first)).toBe(false)
-  })
-
-  // THE LINE IS UNBROKEN. Every row type the grid has draws the rule at the
-  // boundary columns: the zone band header, the level header, the family
-  // label rows, and the cell rows. The label rows are the ones that used to
-  // break it, because a single colSpan cell has no left edge at a boundary
-  // to hang a rule on.
-  it("carries the rule through every row type", () => {
-    renderFull()
-    const boundaries = zoneBoundaryIndexes(levelRanges(ALL_LEVELS))
-    const rows = [
-      ...document.querySelectorAll("thead tr, tbody tr"),
-    ] as HTMLElement[]
-    // Only the rows laid out column by column; the zone band row spans three
-    // columns per cell and is pinned separately below.
-    const columnRows = rows.filter(
-      (row) => row.querySelectorAll("th, td").length === LEVEL_COUNT
-    )
-    // level header + one label row + one cell row for the single family.
-    expect(columnRows).toHaveLength(3)
-    for (const row of columnRows) {
-      const cells = [...row.querySelectorAll("th, td")]
-      cells.forEach((cell, index) => {
-        expect({
-          row: row.parentElement?.tagName,
-          index,
-          zoned: isZoneRuled(cell),
-        }).toEqual({
-          row: row.parentElement?.tagName,
-          index,
-          zoned: boundaries.has(index),
-        })
-      })
-    }
   })
 
   // The name still heads its row, and still by name: positioning it out of
   // flow is what stops it setting the first column's width for the whole
   // grid, and it must not cost the row its accessible heading.
   it("keeps the family name as the label row's columnheader", () => {
-    render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <FamilyLevelMatrix
-          levels={ALL_LEVELS}
-          rows={[role({ level: 1, familyId: "f1", familyName: "Engineering" })]}
-        />
-      </NextIntlClientProvider>
-    )
-    expect(
-      screen.getByRole("columnheader", { name: "Engineering" })
-    ).toBeDefined()
-    // And the cells that carry the rule beside it are not headings.
-    const labelRow = screen
-      .getByRole("columnheader", { name: "Engineering" })
-      .closest("tr") as HTMLElement
+    renderFull("Engineering")
+    const heading = screen.getByRole("columnheader", { name: "Engineering" })
+    const labelRow = heading.closest("tr") as HTMLElement
     expect(labelRow.querySelectorAll("th")).toHaveLength(1)
-    expect(labelRow.querySelectorAll("td")).toHaveLength(LEVEL_COUNT - 1)
+    expect(labelRow.querySelectorAll("td")).toHaveLength(LEVEL_COUNT + 2)
     // OUT OF FLOW, which is the whole reason the row could be split into
     // cells at all: in flow the name would be the widest thing in the first
     // column and would set that column's width for the entire grid. jsdom
@@ -341,25 +378,24 @@ describe("FamilyLevelMatrix zone boundaries", () => {
     expect(name.className).toContain("whitespace-nowrap")
     // And the row's height is reserved by the cells, since nothing in it is
     // in flow to give it one.
-    expect((labelRow.querySelector("th") as HTMLElement).className).toContain(
-      "h-7"
-    )
+    expect(heading.className).toContain("h-7")
   })
 
-  // Every zone band after the first opens on a boundary by definition, so its
-  // header takes the same rule rather than the level one.
-  it("opens each zone band on its own rule", () => {
-    renderFull()
-    const bands = [
-      ...document.querySelectorAll("thead tr:first-child th"),
-    ] as HTMLElement[]
-    expect(bands.length).toBeGreaterThan(1)
-    bands.forEach((band, index) => {
-      expect({ index, ruled: isZoneRuled(band) }).toEqual({
-        index,
-        ruled: index > 0,
-      })
-      expect(isLevelRuled(band)).toBe(false)
-    })
+  // The body cells carry no rule of their own: the level rule hangs from the
+  // header, and the zone rule lives in the boundary column beside them. A
+  // rule on the cell would draw inside its own rounded border.
+  it("leaves the cells' own boxes unruled", () => {
+    renderFull("Engineering")
+    const cellRow = [...document.querySelectorAll("tbody tr")].at(
+      -1
+    ) as HTMLElement
+    const boxes = [...cellRow.querySelectorAll("td")].filter(
+      (cell) => !isGap(cell)
+    )
+    expect(boxes).toHaveLength(LEVEL_COUNT)
+    for (const box of boxes) {
+      expect(isZoneRuled(box)).toBe(false)
+      expect(isLevelRuled(box)).toBe(false)
+    }
   })
 })

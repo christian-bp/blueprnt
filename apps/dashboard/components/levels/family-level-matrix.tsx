@@ -6,7 +6,7 @@ import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneConte
 import { useLocale, useTranslations } from "next-intl"
 import { HATCH_CLASS } from "@/components/hatch"
 import { RoleChip } from "@/components/levels/role-chip"
-import { type LevelRoleRow, levelRanges } from "@/lib/levels"
+import { type LevelRange, type LevelRoleRow, levelRanges } from "@/lib/levels"
 import { SPRING } from "@/lib/motion"
 import { ZoneGroupLabel } from "@/components/levels/zone-label"
 import { zoneBands, zoneBoundaryIndexes } from "@/lib/zone-bands"
@@ -15,6 +15,7 @@ import {
   MATRIX_COL_HEADER_CLASS,
   MATRIX_COL_RULE_CLASS,
   MATRIX_HEAD_INSET_CLASS,
+  MATRIX_ZONE_GAP_CLASS,
   MATRIX_ZONE_RULE_CLASS,
   MATRIX_HEAD_PAD_CLASS,
   MATRIX_WRAPPER_CLASS,
@@ -55,16 +56,55 @@ export function FamilyLevelMatrix({
   // one gutter is not a stronger division, it is a smudge.
   const zoneBoundaries = zoneBoundaryIndexes(ranges)
 
-  // ONE RULE PER GUTTER, and only one. The first column has no neighbour on
-  // its left to be divided from; a zone boundary takes the zone rule INSTEAD
-  // of the level rule, because two rules in one gutter is not a stronger
-  // division, it is a smudge.
-  const ruleFor = (index: number): string => {
-    if (index === 0) return ""
+  // ONE COLUMN LIST, and every row type renders from it.
+  //
+  // A zone boundary is a COLUMN here, not a class on the column after it: the
+  // zones have to read as separated groups, and the air that separates them
+  // has to sit outside the cells' own boxes (see MATRIX_ZONE_GAP_CLASS). One
+  // list is also what keeps the four row types aligned by construction; they
+  // used to agree only because three separate index calculations happened to
+  // produce the same answer.
+  const columns: (
+    | { kind: "gap"; key: string }
+    | { kind: "level"; key: string; range: LevelRange; index: number }
+  )[] = ranges.flatMap((range, index) => {
+    const column = {
+      kind: "level" as const,
+      key: `level-${range.level}`,
+      range,
+      index,
+    }
     return zoneBoundaries.has(index)
-      ? MATRIX_ZONE_RULE_CLASS
-      : MATRIX_COL_RULE_CLASS
-  }
+      ? [{ kind: "gap" as const, key: `gap-${range.level}` }, column]
+      : [column]
+  })
+
+  // The level rule, in the gutter to a column's left. The first column has no
+  // neighbour to be divided from, and a column that opens a zone has the gap
+  // column beside it instead: two rules in one boundary is not a stronger
+  // division, it is a smudge.
+  const ruleFor = (index: number): string =>
+    index === 0 || zoneBoundaries.has(index) ? "" : MATRIX_COL_RULE_CLASS
+
+  // The boundary column, in whichever row is asking. Its only job is to hold
+  // the air and draw the rule down the middle of it.
+  const gapCell = (key: string) => (
+    <td
+      key={key}
+      aria-hidden="true"
+      // A named slot, not a class match: "w-3" is a substring of "min-w-32",
+      // so a test keying on the width would count every cell in the grid as
+      // a boundary and pass on a matrix that had none.
+      data-slot="zone-gap"
+      className={`${MATRIX_ZONE_GAP_CLASS} ${MATRIX_ZONE_RULE_CLASS}`}
+    >
+      {/* THE WIDTH HAS TO BE CONTENT, not a class on the cell. Auto table
+          layout treats a width on an empty cell as a suggestion and collapsed
+          this column to 0px; a child with a real width gives the column a
+          min-content of 12px, which the algorithm has to honour. */}
+      <div className="h-px w-3" />
+    </td>
+  )
   // Sections come from ALL the rows' families, not only evaluated ones: a
   // family whose roles are still unevaluated shows as a fully hatched band
   // (the ladder's empty look) instead of vanishing from the view. The cells
@@ -91,8 +131,20 @@ export function FamilyLevelMatrix({
       <table className="w-full border-separate border-spacing-2">
         <thead>
           <tr>
-            {bands.map((band, bandIndex) =>
-              band.span === null ? null : (
+            {columns.map((column) => {
+              if (column.kind === "gap") return gapCell(column.key)
+              // The band's header sits on the first level column of the band
+              // and spans the rest of it. Built from the SAME list as every
+              // other row: interleaving the gaps separately made each band's
+              // colSpan swallow the boundary column beside it, which put this
+              // row's rules in different columns from the rest of the grid.
+              const band = bands.find(
+                (candidate) =>
+                  candidate.span !== null &&
+                  candidate.ranges[0]?.level === column.range.level
+              )
+              if (band === undefined) return null
+              return (
                 // This view already groups the zones AROUND the levels, on
                 // the other axis: the levels are its columns, so a zone is a
                 // colgroup header spanning its three of them. That is the
@@ -100,10 +152,10 @@ export function FamilyLevelMatrix({
                 // name and the morph, the same label the ladder puts above
                 // its groups, instead of the masterdokument's full clause.
                 <th
-                  key={band.zone}
+                  key={column.key}
                   scope="colgroup"
                   colSpan={band.ranges.length}
-                  className={`whitespace-nowrap text-left ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_HEAD_INSET_CLASS} ${MATRIX_COL_HEADER_CLASS} ${bandIndex === 0 ? "" : MATRIX_ZONE_RULE_CLASS}`}
+                  className={`whitespace-nowrap text-left ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_HEAD_INSET_CLASS} ${MATRIX_COL_HEADER_CLASS}`}
                 >
                   <ZoneGroupLabel
                     zone={band.zone}
@@ -111,7 +163,7 @@ export function FamilyLevelMatrix({
                   />
                 </th>
               )
-            )}
+            })}
           </tr>
           <tr>
             {/* ONE LEFT EDGE for the zone label and the level label. The
@@ -120,15 +172,19 @@ export function FamilyLevelMatrix({
                 "Nivå 4" under it and the two rows read as unrelated. Both
                 take the shared inset now, which is also where the chips in
                 the cells below begin. */}
-            {ranges.map((range, index) => (
-              <th
-                key={range.level}
-                scope="col"
-                className={`whitespace-nowrap text-left font-medium text-muted-foreground text-xs uppercase tracking-wide ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_HEAD_INSET_CLASS} ${MATRIX_COL_HEADER_CLASS} ${ruleFor(index)}`}
-              >
-                {t("levelRow", { level: range.level })}
-              </th>
-            ))}
+            {columns.map((column) =>
+              column.kind === "gap" ? (
+                gapCell(column.key)
+              ) : (
+                <th
+                  key={column.key}
+                  scope="col"
+                  className={`whitespace-nowrap text-left font-medium text-muted-foreground text-xs uppercase tracking-wide ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_HEAD_INSET_CLASS} ${MATRIX_COL_HEADER_CLASS} ${ruleFor(column.index)}`}
+                >
+                  {t("levelRow", { level: column.range.level })}
+                </th>
+              )
+            )}
           </tr>
         </thead>
         <tbody>
@@ -154,10 +210,12 @@ export function FamilyLevelMatrix({
                   columnheader: an absolutely positioned span is still the
                   cell's text content. */}
               <tr>
-                {ranges.map((range, index) =>
-                  index === 0 ? (
+                {columns.map((column) =>
+                  column.kind === "gap" ? (
+                    gapCell(column.key)
+                  ) : column.index === 0 ? (
                     <th
-                      key={range.level}
+                      key={column.key}
                       scope="colgroup"
                       className={`relative h-7 text-left ${MATRIX_HEAD_INSET_CLASS}`}
                     >
@@ -174,27 +232,29 @@ export function FamilyLevelMatrix({
                     // and a th would put an empty columnheader in every
                     // accessibility query the grid answers.
                     <td
-                      key={range.level}
-                      className={`relative h-7 ${MATRIX_HEAD_INSET_CLASS} ${ruleFor(index)}`}
+                      key={column.key}
+                      className={`relative h-7 ${MATRIX_HEAD_INSET_CLASS}`}
                     />
                   )
                 )}
               </tr>
               <tr>
-                {ranges.map((range, index) => {
+                {columns.map((column) => {
+                  if (column.kind === "gap") return gapCell(column.key)
                   const cell = family.rows.filter(
-                    (row) => row.level === range.level
+                    (row) => row.level === column.range.level
                   )
                   return (
                     <td
-                      key={range.level}
+                      key={column.key}
                       // relative so the empty-cell hatch can fill the cell via
                       // absolute positioning (see LevelMatrix: a percentage
                       // height on a <td> child does not resolve, absolute
                       // inset-* against the relative cell does).
-                      className={`relative min-w-32 rounded-lg border p-2 align-top ${
-                        zoneBoundaries.has(index) ? MATRIX_ZONE_RULE_CLASS : ""
-                      }`}
+                      // No rule of its own: the level rule hangs from the
+                      // header, and the zone rule lives in the boundary
+                      // column beside this one.
+                      className="relative min-w-32 rounded-lg border p-2 align-top"
                     >
                       {cell.length === 0 ? (
                         <>
