@@ -25,6 +25,13 @@ function row(overrides: Partial<LevelRoleRow>): LevelRoleRow {
     familyId: null,
     familyName: null,
     anchor: null,
+    // Calibration facts: unflagged by default, so a fixture is a role nobody
+    // has to look at unless a test says otherwise.
+    completed: true,
+    calibrated: false,
+    methodDrift: false,
+    profileLimited: false,
+    profileFailures: null,
     ...overrides,
   }
 }

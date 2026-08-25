@@ -62,23 +62,25 @@ att bevara samma blindhet som gäller under betygsättningen.
 
 ## Placeringar att granska
 
-Under vyerna listar "Placeringar att granska" de slutförda placeringar
-som väcker en fråga, och varje rad säger vilken frågan är. Det finns tre sorter.
-En placering som modellens profilkrav höll tillbaka från en högre zon, där
-raden också namnger kriteriet som höll tillbaka den, vad zonen krävde och
-vad rollen fick. En ankarroll vars beräknade nivå skiljer sig från den nivå
-ni kommit överens om för den, med båda nivåerna synliga. Och en roll som
-bedömdes enligt en tidigare version av metoden.
+En placering som väcker en fråga märks på rollen själv: dess bricka i stegen
+och i båda matriserna får en varningsram och ett ord som säger vilken fråga det
+är. Det finns tre sorter. En placering som modellens profilkrav höll tillbaka
+från en högre zon. En ankarroll vars framräknade nivå skiljer sig från den nivå
+ni kommit överens om för den. Och en roll som bedömdes enligt en tidigare
+version av metoden.
 
-Bara den första sorten besvaras här: "Bekräfta placeringen" registrerar att
-en person har tittat på den och står bakom den, med en valfri notering för
-sådant en kollega som läser spåret senare behöver veta. Raden lämnar sedan
-listan. De andra två besvaras där de kommer ifrån, så de tar er till rollen
-eller till dess bedömning; att slutföra en roll igen enligt aktuell metod är
-det som rensar en gammal placering. Listan är tom när inget behöver granskas,
-och den säger det i stället för att försvinna.
+Att öppna rollen visar skälet i ord och svaret på det på samma ställe. En
+tillbakahållen placering besvaras här: "Bekräfta placeringen" registrerar att
+någon har tittat på den och står bakom den, med en valfri notering för sådant
+en kollega som läser spåret senare behöver veta, och märkningen försvinner
+sedan. De andra två besvaras där de kommer ifrån, så de erbjuder ankarrollens
+egen hantering eller dess bedömning; att slutföra en roll igen enligt den
+aktuella metoden är det som rensar en gammal.
 
-Varje bekräftelse registreras i [ändringsloggen](/docs/audit-log) som
+Antalet placeringar som väntar finns i startsidans att göra-lista, så ett
+register som ingen öppnat idag ändå säger hur många de är.
+
+Varje bekräftelse registreras i [händelseloggen](/docs/audit-log) som
 "Bedömning kalibrerad", inklusive om en notering angavs.
 
 ## Relaterat

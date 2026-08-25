@@ -881,14 +881,15 @@ export function PayMappingAnalysis({
                     >
                       {tAnalysis("stepsSheet")}
                     </SheetTrigger>
-                    <SheetContent
-                      side="left"
-                      className="w-full overflow-y-auto p-4 sm:max-w-sm"
-                    >
-                      <SheetHeader className="p-0">
+                    <SheetContent side="left">
+                      <SheetHeader>
                         <SheetTitle>{tAnalysis("stepsSheet")}</SheetTitle>
                       </SheetHeader>
-                      {checklistBody}
+                      {/* The popup clips to its rounded corners, so the BODY
+                          is what scrolls. */}
+                      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+                        {checklistBody}
+                      </div>
                     </SheetContent>
                   </Sheet>
                 </div>

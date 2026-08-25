@@ -353,9 +353,12 @@ export function EmailLogSection() {
           if (!open) setSelectedId(null)
         }}
       >
+        {/* Wider than the default sheet: an email's headers and body need
+            the room. Overrides BOTH halves of the width pair, because the
+            base sets a width and a max together. */}
         <SheetContent
           side="right"
-          className="gap-0 data-[side=right]:sm:max-w-xl"
+          className="sm:w-[min(36rem,calc(100vw-2rem))] sm:max-w-[36rem]"
         >
           {selectedId ? <EmailDetailSheet messageId={selectedId} /> : null}
         </SheetContent>
@@ -425,7 +428,7 @@ function EmailDetailSheet({ messageId }: { messageId: string }) {
         <SheetDescription className="text-balance">{sentAt}</SheetDescription>
       </SheetHeader>
 
-      <div className="flex flex-col gap-5 overflow-y-auto px-4 pb-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-5 py-4">
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
           <dt className="text-muted-foreground">{t("detail.to")}</dt>
           <dd className="min-w-0 break-words">{recipients.join(", ")}</dd>

@@ -30,6 +30,7 @@ import {
   writeAssignment,
 } from "../people/assignments"
 import { deriveResults } from "./compute"
+import { deriveMethodDrift } from "./results"
 
 // The job profile text fields (assessment glossary). purpose and
 // responsibilities are the mandatory core (required before rating).
@@ -212,6 +213,15 @@ export const listRoles = orgQuery({
       // an evaluated role until it is completed (see the home to-do's
       // payMappingReady mirror in lib/todo.ts, which reads this).
       completed: v.boolean(),
+      // The calibration facts the home to-do's "review placements" count folds
+      // (apps/dashboard/lib/calibration-queue.ts). They cost nothing here:
+      // deriveResults already ran above, and the anchor lives on the role
+      // document, so the count needs no query of its own on the home page.
+      level: v.union(v.number(), v.null()),
+      calibrated: v.boolean(),
+      methodDrift: v.boolean(),
+      profileLimited: v.union(v.boolean(), v.null()),
+      anchorExpectedLevel: v.union(v.number(), v.null()),
       familyId: v.union(v.id("roleFamilies"), v.null()),
       familyName: v.union(v.string(), v.null()),
       familySlug: v.union(v.string(), v.null()),
@@ -223,6 +233,14 @@ export const listRoles = orgQuery({
   ),
   handler: async (ctx, { locale }) => {
     const derived = await deriveResults(ctx, ctx.orgId)
+    // The model itself, for method drift. One indexed unique() on a single
+    // document: deriveResults reads the model too, but does not return it, and
+    // threading it out of the engine's input shape to save a document lookup
+    // would couple the two for no measurable gain.
+    const model = await ctx.db
+      .query("models")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+      .unique()
     const holders = await countHoldersByRole(ctx, ctx.orgId)
     const resultByRole = new Map(
       derived.results.map((result) => [result.roleId, result])
@@ -239,6 +257,9 @@ export const listRoles = orgQuery({
     return active.map((role) => {
       const result = resultByRole.get(role._id as string)
       const track = names.get(role.trackKey)
+      // Completion is the reveal (spec 2.4/6): the derived level exists in the
+      // engine either way, and must not leave this wire before it does.
+      const completed = role.assessment !== undefined
       return {
         roleId: role._id,
         title: role.title,
@@ -251,6 +272,14 @@ export const listRoles = orgQuery({
         totalCriteria: derived.totalCriteria,
         profileComplete: isProfileComplete(role),
         completed: role.assessment !== undefined,
+        level: completed ? (result?.level ?? null) : null,
+        calibrated: role.assessment?.calibratedAt !== undefined,
+        methodDrift: deriveMethodDrift(role.assessment, model),
+        profileLimited: completed ? (result?.profileLimited ?? null) : null,
+        anchorExpectedLevel:
+          role.anchorRole === undefined || role.anchorRole.status === "replaced"
+            ? null
+            : role.anchorRole.expectedLevel,
         familyId: role.familyId ?? null,
         familyName:
           role.familyId !== undefined

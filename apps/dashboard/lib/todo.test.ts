@@ -19,6 +19,13 @@ const role = (
   // Open by default (spec 2.4/6: completing is the reveal); tests representing
   // a genuinely finished role override this explicitly.
   completed: false,
+  // Calibration facts: an unflagged role by default, so a fixture is one
+  // nobody has to look at unless a test says otherwise.
+  level: null,
+  calibrated: false,
+  methodDrift: false,
+  profileLimited: false,
+  anchorExpectedLevel: null,
   familyName: "Engineering",
   ...over,
 })
@@ -784,5 +791,85 @@ describe("buildOverviewStats", () => {
     const evaluate = todo.groups.find((g) => g.key === "evaluateRoles")
     expect(describe?.count).toBe(stats.describeCount)
     expect(evaluate?.count).toBe(stats.evaluateCount)
+  })
+})
+
+// The AGGREGATE that replaced the list. The flag lives on the role's chip in
+// /work and the act in its sheet (masterdokument 14.8); this is the only place
+// left that says how many placements are waiting, so a register nobody opened
+// today still surfaces them.
+describe("buildTodo reviewPlacements", () => {
+  function reviewable(over: Partial<Parameters<typeof role>[0]> = {}) {
+    // A finished, placed role: past describe and past evaluate, so it can
+    // reach the review branch at all.
+    return role({
+      profileComplete: true,
+      ratedCount: 9,
+      totalCriteria: 9,
+      completed: true,
+      level: 4,
+      ...over,
+    })
+  }
+
+  function reviewGroup(roles: ReturnType<typeof role>[]) {
+    const todo = buildTodo({
+      roles,
+      ...NO_MODEL,
+      peopleByTitle: PEOPLE_NEUTRAL,
+      payMappingRuns: [],
+    })
+    return todo.groups.find((g) => g.key === "reviewPlacements")
+  }
+
+  it("says nothing when no placement raises a question", () => {
+    expect(reviewGroup([reviewable()])).toBeUndefined()
+  })
+
+  it.each([
+    ["capped", { profileLimited: true }],
+    ["stale", { methodDrift: true }],
+    ["deviating anchor", { anchorExpectedLevel: 2 }],
+  ])("counts a %s placement", (_name, over) => {
+    const group = reviewGroup([reviewable(over)])
+    expect(group?.count).toBe(1)
+    expect(group?.items[0]?.href).toBe("/work")
+  })
+
+  // The count is the FOLD's total, so it can never name a different set of
+  // roles than the ladder marks: one role raising three questions is one
+  // count, and a confirmed cap stops counting.
+  it("counts roles, not questions, and drops what has been answered", () => {
+    expect(
+      reviewGroup([
+        reviewable(),
+        reviewable({ roleId: "a", profileLimited: true }),
+        reviewable({
+          roleId: "b",
+          profileLimited: true,
+          methodDrift: true,
+          anchorExpectedLevel: 2,
+        }),
+        reviewable({ roleId: "c", profileLimited: true, calibrated: true }),
+        reviewable({ roleId: "d", completed: false, profileLimited: true }),
+      ])?.count
+    ).toBe(2)
+  })
+
+  // A role still waiting to be rated belongs to evaluateRoles: it has no
+  // placement to review yet, and a role in two groups is one job counted twice.
+  it("leaves an unfinished role to the evaluate group alone", () => {
+    const todo = buildTodo({
+      roles: [
+        reviewable({ ratedCount: 3, completed: false, profileLimited: true }),
+      ],
+      ...NO_MODEL,
+      peopleByTitle: PEOPLE_NEUTRAL,
+      payMappingRuns: [],
+    })
+    expect(
+      todo.groups.find((g) => g.key === "reviewPlacements")
+    ).toBeUndefined()
+    expect(todo.groups.find((g) => g.key === "evaluateRoles")?.count).toBe(1)
   })
 })

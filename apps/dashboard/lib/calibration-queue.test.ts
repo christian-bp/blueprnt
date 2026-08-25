@@ -1,157 +1,142 @@
 import { describe, expect, it } from "vitest"
 import {
-  type CalibrationInput,
-  calibrationQueue,
+  type CalibrationFacts,
+  calibrationCount,
+  calibrationReason,
 } from "@/lib/calibration-queue"
 
-// A completed, placed, unremarkable assessment: in the ladder, out of the queue.
-function role(overrides: Partial<CalibrationInput> = {}): CalibrationInput {
+// A completed, placed, unremarkable assessment: on the ladder, flagged nowhere.
+function role(overrides: Partial<CalibrationFacts> = {}): CalibrationFacts {
   return {
-    roleId: "r1",
-    slug: "r1",
-    title: "Analyst",
-    trackKey: "IC",
-    trackName: "Individual contributor",
-    score: 60,
-    level: 5,
-    zone: "B",
-    ratedCount: 9,
-    totalCriteria: 9,
-    readyToComplete: false,
-    familyId: null,
-    familyName: null,
-    anchor: null,
     completed: true,
+    level: 5,
     calibrated: false,
     methodDrift: false,
     profileLimited: false,
-    profileFailures: [],
+    anchor: null,
     ...overrides,
   }
 }
 
-describe("calibrationQueue", () => {
-  it("leaves an ordinary completed placement alone", () => {
-    expect(calibrationQueue([role()])).toEqual([])
+describe("calibrationReason", () => {
+  it("leaves an ordinary completed placement unflagged", () => {
+    expect(calibrationReason(role())).toBeNull()
   })
 
   // Class 1: the profile requirements capped the placement, and nobody has
   // said yet whether that is right.
-  it("queues a capped placement, with the requirements that capped it", () => {
-    const queue = calibrationQueue([
-      role({
-        profileLimited: true,
-        profileFailures: [
-          {
-            criterionId: "c1",
-            name: "Scope and impact",
-            required: 4,
-            actual: 3,
-          },
-        ],
-      }),
-    ])
-    expect(queue).toHaveLength(1)
-    expect(queue[0]?.reason).toBe("profileLimited")
-    expect(queue[0]?.failures).toEqual([
-      { criterionId: "c1", name: "Scope and impact", required: 4, actual: 3 },
-    ])
+  it("flags a capped placement", () => {
+    expect(calibrationReason(role({ profileLimited: true }))).toBe(
+      "profileLimited"
+    )
   })
 
-  it("drops a capped placement once it is confirmed", () => {
-    const confirmed = role({ profileLimited: true, calibrated: true })
-    expect(calibrationQueue([confirmed])).toEqual([])
-  })
-
-  // Class 2: an anchor role is the model's own reference point, so a computed
-  // level that differs from the agreed one is a question about the model.
-  it("queues an anchor role whose computed level differs from the agreed one", () => {
-    const queue = calibrationQueue([
-      role({ level: 5, anchor: { expectedLevel: 3, status: "active" } }),
-    ])
-    expect(queue[0]?.reason).toBe("anchorDeviation")
-    expect(queue[0]?.expectedLevel).toBe(3)
-    expect(queue[0]?.row.level).toBe(5)
-  })
-
-  it("leaves an anchor role that landed where it was expected", () => {
+  // Confirming is the act that answers it, so a confirmed cap stops asking.
+  it("stops flagging a capped placement once it is confirmed", () => {
     expect(
-      calibrationQueue([
-        role({ level: 5, anchor: { expectedLevel: 5, status: "active" } }),
-      ])
-    ).toEqual([])
+      calibrationReason(role({ profileLimited: true, calibrated: true }))
+    ).toBeNull()
+  })
+
+  // Class 2: the computed level and the level the organization agreed for its
+  // anchor disagree, which is a question about the MODEL.
+  it("flags an anchor whose computed level left its agreed one", () => {
+    expect(
+      calibrationReason(role({ level: 5, anchor: { expectedLevel: 3 } }))
+    ).toBe("anchorDeviation")
+  })
+
+  it("leaves an anchor sitting where it was agreed alone", () => {
+    expect(
+      calibrationReason(role({ level: 3, anchor: { expectedLevel: 3 } }))
+    ).toBeNull()
   })
 
   // Class 3: the method moved on after the assessment was completed.
-  it("queues a role assessed under a superseded method", () => {
-    const queue = calibrationQueue([role({ methodDrift: true })])
-    expect(queue[0]?.reason).toBe("staleMethod")
+  it("flags a role assessed under a superseded method", () => {
+    expect(calibrationReason(role({ methodDrift: true }))).toBe("staleMethod")
   })
 
-  // Calibrating does NOT clear a stale method: completing the assessment
-  // again is what does, so the row stays until then.
-  it("keeps a stale method queued even when the placement was confirmed", () => {
-    const queue = calibrationQueue([
-      role({ methodDrift: true, calibrated: true }),
-    ])
-    expect(queue[0]?.reason).toBe("staleMethod")
-  })
-
-  // Only a revealed placement can be reviewed: an unlocked role has no
-  // placement yet (completion is the reveal), so it belongs to the pending list.
-  it("never queues an unlocked role, whatever its flags say", () => {
+  // Calibrating does NOT clear a stale method: completing the assessment again
+  // is what does, so the flag stays until then.
+  it("keeps flagging a stale method even when the placement was confirmed", () => {
     expect(
-      calibrationQueue([
-        role({ completed: false, level: null, profileLimited: true }),
+      calibrationReason(role({ methodDrift: true, calibrated: true }))
+    ).toBe("staleMethod")
+  })
+
+  // ONE question per role, answered by the first condition that holds. A role
+  // wearing three markers would be three problems where there is one, and the
+  // order is the order of consequence: what capped the level, then what
+  // disagrees with the model, then what is merely out of date.
+  it("asks the first question only, when a role could raise three", () => {
+    expect(
+      calibrationReason(
         role({
-          roleId: "r2",
-          completed: false,
-          level: null,
+          profileLimited: true,
           methodDrift: true,
+          level: 5,
+          anchor: { expectedLevel: 3 },
+        })
+      )
+    ).toBe("profileLimited")
+  })
+
+  it("falls through to the anchor question once the cap is confirmed", () => {
+    expect(
+      calibrationReason(
+        role({
+          profileLimited: true,
+          calibrated: true,
+          methodDrift: true,
+          level: 5,
+          anchor: { expectedLevel: 3 },
+        })
+      )
+    ).toBe("anchorDeviation")
+  })
+
+  // Completing is the reveal: an assessment still open has no placement for
+  // anyone to have an opinion about, whatever its other flags say.
+  it("flags nothing on an assessment that is not completed", () => {
+    expect(
+      calibrationReason(
+        role({ completed: false, profileLimited: true, methodDrift: true })
+      )
+    ).toBeNull()
+  })
+
+  it("flags nothing on a completed assessment with no level", () => {
+    expect(
+      calibrationReason(role({ level: null, profileLimited: true }))
+    ).toBeNull()
+  })
+})
+
+describe("calibrationCount", () => {
+  // The home to-do's number, and the only aggregate left now that the list is
+  // gone. It counts ROLES, not questions, which is the same thing because a
+  // role raises at most one.
+  it("counts every flagged role once and no unflagged one", () => {
+    expect(
+      calibrationCount([
+        role(),
+        role({ profileLimited: true }),
+        role({ methodDrift: true }),
+        role({ level: 5, anchor: { expectedLevel: 3 } }),
+        role({ completed: false, profileLimited: true }),
+        // Three conditions, one role, one count.
+        role({
+          profileLimited: true,
+          methodDrift: true,
+          level: 5,
+          anchor: { expectedLevel: 3 },
         }),
       ])
-    ).toEqual([])
+    ).toBe(4)
   })
 
-  it("never queues a completed assessment with no level", () => {
-    expect(
-      calibrationQueue([role({ level: null, profileLimited: true })])
-    ).toEqual([])
-  })
-
-  // One row per role. The queue is a list of things to do, and the same role
-  // listed three times reads as three roles.
-  it("lists a role that satisfies several conditions once, by consequence", () => {
-    const queue = calibrationQueue([
-      role({
-        profileLimited: true,
-        methodDrift: true,
-        anchor: { expectedLevel: 1, status: "active" },
-      }),
-    ])
-    expect(queue).toHaveLength(1)
-    expect(queue[0]?.reason).toBe("profileLimited")
-  })
-
-  it("falls to the anchor question when the placement is already confirmed", () => {
-    const queue = calibrationQueue([
-      role({
-        profileLimited: true,
-        calibrated: true,
-        methodDrift: true,
-        anchor: { expectedLevel: 1, status: "active" },
-      }),
-    ])
-    expect(queue).toHaveLength(1)
-    expect(queue[0]?.reason).toBe("anchorDeviation")
-  })
-
-  it("keeps the input order across classes", () => {
-    const queue = calibrationQueue([
-      role({ roleId: "a", methodDrift: true }),
-      role({ roleId: "b", profileLimited: true }),
-      role({ roleId: "c", anchor: { expectedLevel: 1, status: "active" } }),
-    ])
-    expect(queue.map((entry) => entry.row.roleId)).toEqual(["a", "b", "c"])
+  it("counts nothing in an empty register", () => {
+    expect(calibrationCount([])).toBe(0)
   })
 })

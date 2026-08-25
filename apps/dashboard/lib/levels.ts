@@ -1,4 +1,5 @@
 import type { ZoneKey } from "@workspace/core"
+import type { ProfileFailure } from "@/lib/calibration-queue"
 
 // The shape the level Overview components consume. It is a structural subset
 // of a getResults row (assessment/results.ts), so rows can be passed straight
@@ -27,6 +28,15 @@ export interface LevelRoleRow {
   familyId: string | null
   familyName: string | null
   anchor: { expectedLevel: number; status: "active" | "underReview" } | null
+  // The calibration facts the fold reads (lib/calibration-queue.ts). They ride
+  // on the row because the FLAG belongs on the role: a chip marks itself in
+  // the ladder, and the sheet it opens states the reason. They used to be a
+  // separate shape feeding one list, which is why the flag only existed there.
+  completed: boolean
+  calibrated: boolean
+  methodDrift: boolean
+  profileLimited: boolean | null
+  profileFailures: ProfileFailure[] | null
 }
 
 export interface LevelRange {

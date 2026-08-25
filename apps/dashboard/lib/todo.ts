@@ -2,6 +2,7 @@ import {
   Briefcase01Icon,
   ChartColumnIcon,
   Layers01Icon,
+  Stairs01Icon,
   Structure01Icon,
   Tag01Icon,
   Tick02Icon,
@@ -9,6 +10,7 @@ import {
 } from "@hugeicons/core-free-icons"
 import type { IconSvgElement } from "@hugeicons/react"
 import { type MethodCheck, methodBlockersPass } from "@workspace/core"
+import { calibrationReason } from "@/lib/calibration-queue"
 import { chapterHref, modelChapterProgress } from "@/lib/model-chapters"
 
 // Pure derivation of the front-page "To do" from the existing role + method
@@ -23,6 +25,7 @@ export type TodoGroupKey =
   | "classifyPeople"
   | "describeRoles"
   | "evaluateRoles"
+  | "reviewPlacements"
   | "documentCriteria"
   | "approveCriteria"
   | "startPayMapping"
@@ -77,6 +80,7 @@ export type TodoGroup =
   | { key: "classifyPeople"; items: ClassifyItem[]; count: number }
   | { key: "describeRoles"; items: RoleItem[]; count: number }
   | { key: "evaluateRoles"; items: EvaluateItem[]; count: number }
+  | { key: "reviewPlacements"; items: RoleItem[]; count: number }
   | { key: "documentCriteria"; items: CriterionItem[]; count: number }
   | { key: "approveCriteria"; items: CriterionItem[]; count: number }
   | { key: "startPayMapping"; items: StartPayMappingItem[]; count: number }
@@ -96,6 +100,12 @@ type TodoRole = {
   // and the pay-mapping gate (computePayMappingPreconditions) refuses it,
   // until this is true. Sourced from listRoles' own completed field.
   completed: boolean
+  // The calibration facts the review group folds, straight off listRoles.
+  level: number | null
+  calibrated: boolean
+  methodDrift: boolean
+  profileLimited: boolean | null
+  anchorExpectedLevel: number | null
   familyName: string | null
 }
 type TodoMethod = {
@@ -178,6 +188,12 @@ function computeCounts({
 
   const describe: RoleItem[] = []
   const evaluate: EvaluateItem[] = []
+  // Placements a person still has to look at (masterdokument 14.8). The flag
+  // itself lives on the role's chip in /work and the act in its sheet; this is
+  // the AGGREGATE, on the app's one attention surface, so a register nobody
+  // has opened today still says how many are waiting. It replaces the list
+  // section that used to carry that job on /work itself.
+  const review: RoleItem[] = []
   for (const r of roles) {
     const family = r.familyName ?? undefined
     // A fully-rated role whose assessment is not yet completed still needs
@@ -204,6 +220,27 @@ function computeCounts({
         family,
         ratedCount: r.ratedCount,
         totalCriteria: r.totalCriteria,
+      })
+    } else if (
+      calibrationReason({
+        completed: r.completed,
+        level: r.level,
+        calibrated: r.calibrated,
+        methodDrift: r.methodDrift,
+        profileLimited: r.profileLimited,
+        anchor:
+          r.anchorExpectedLevel === null
+            ? null
+            : { expectedLevel: r.anchorExpectedLevel },
+      }) !== null
+    ) {
+      // The SAME fold the chip and the sheet read, so the number here can
+      // never name a different set of roles than the ladder marks.
+      review.push({
+        id: r.roleId,
+        title: r.title,
+        href: "/work",
+        family,
       })
     }
   }
@@ -342,6 +379,7 @@ function computeCounts({
     classify,
     describe,
     evaluate,
+    review,
     documentItems,
     approveItems,
     buildModel,
@@ -389,6 +427,12 @@ export function buildTodo(input: BuildTodoInput): Todo {
       key: "evaluateRoles",
       items: c.evaluate.slice(0, MAX_ITEMS),
       count: c.evaluate.length,
+    })
+  if (c.review.length > 0)
+    groups.push({
+      key: "reviewPlacements",
+      items: c.review.slice(0, MAX_ITEMS),
+      count: c.review.length,
     })
   if (c.documentItems.length > 0)
     groups.push({
@@ -464,6 +508,7 @@ const GROUP_HREF: Record<Exclude<TodoGroupKey, "buildModel">, string> = {
   classifyPeople: "/people/classify",
   describeRoles: "/roles",
   evaluateRoles: "/roles",
+  reviewPlacements: "/work",
   documentCriteria: "/model/method",
   approveCriteria: "/model/method",
   startPayMapping: "/pay-mappings",
@@ -486,6 +531,7 @@ export const GROUP_ICONS: Record<TodoGroupKey, IconSvgElement> = {
   classifyPeople: Tag01Icon,
   describeRoles: Briefcase01Icon,
   evaluateRoles: Briefcase01Icon,
+  reviewPlacements: Stairs01Icon,
   documentCriteria: Layers01Icon,
   approveCriteria: Tick02Icon,
   startPayMapping: ChartColumnIcon,
@@ -504,6 +550,7 @@ export const GROUP_COUNT_IS_QUANTITY: Record<TodoGroupKey, boolean> = {
   classifyPeople: true,
   describeRoles: true,
   evaluateRoles: true,
+  reviewPlacements: true,
   documentCriteria: true,
   approveCriteria: true,
   startPayMapping: false,

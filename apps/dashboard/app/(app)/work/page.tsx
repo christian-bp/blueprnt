@@ -27,7 +27,6 @@ import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { useState } from "react"
-import { CalibrationQueue } from "@/components/levels/calibration-queue"
 import { FamilyFilter } from "@/components/levels/family-filter"
 import { FamilyLevelMatrix } from "@/components/levels/family-level-matrix"
 import { LevelLadder } from "@/components/levels/level-ladder"
@@ -204,19 +203,6 @@ export default function WorkOverviewPage() {
   // put when families are filtered (hidden families leave hatched empty cells
   // rather than collapsing the columns, even when everything is hidden).
   const trackCols = trackColumns(results.rows)
-  // The queue reads the UNFILTERED rows: it is a list of work to do, and a
-  // family filter is a way of looking at the ladder, not a decision that some
-  // placements no longer need reviewing. One node, rendered under every tab, so
-  // a review is never hiding on the view the reader did not pick. It sits
-  // SECOND, between the ladder and the pending list: of the two things below
-  // the ladder it is the one carrying an act.
-  const queue = (
-    <CalibrationQueue
-      orgId={orgId}
-      rows={results.rows}
-      modelApproved={results.approved}
-    />
-  )
   return (
     <div className="flex min-h-0 flex-1 flex-col p-4">
       <div
@@ -298,7 +284,6 @@ export default function WorkOverviewPage() {
                 rows={filteredRows}
                 groupByFamily={grouped}
               />
-              {queue}
               <PendingRoles rows={filteredRows} />
             </TabsContent>
             {/* The matrix panels are flex columns WITHOUT their own scroll:
@@ -316,7 +301,6 @@ export default function WorkOverviewPage() {
                 tracks={trackCols}
                 groupByFamily={grouped}
               />
-              {queue}
               <PendingRoles rows={filteredRows} />
             </TabsContent>
             <TabsContent
@@ -324,7 +308,6 @@ export default function WorkOverviewPage() {
               className="flex min-h-0 flex-1 flex-col gap-4"
             >
               <FamilyLevelMatrix levels={results.levels} rows={filteredRows} />
-              {queue}
               <PendingRoles rows={filteredRows} />
             </TabsContent>
           </Tabs>

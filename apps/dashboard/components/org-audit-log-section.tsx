@@ -594,7 +594,7 @@ export function OrgAuditLogSection() {
           if (!open) setSelectedRow(null)
         }}
       >
-        <SheetContent side="right" className="gap-0">
+        <SheetContent side="right">
           {selectedRow ? (
             <AuditDetailSheet
               row={selectedRow}
@@ -848,7 +848,7 @@ function AuditDetailSheet({
         </SheetDescription>
       </SheetHeader>
 
-      <div className="flex flex-col gap-5 overflow-y-auto px-4 pb-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-5 py-4">
         {/* Meta, as key/value rows: action, what (the subject), who, when,
             category. */}
         <dl className={KV_GRID}>

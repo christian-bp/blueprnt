@@ -1,13 +1,17 @@
-import type { LevelRoleRow } from "@/lib/levels"
-
-// The calibration queue: the three ways a placement can need a human look
-// before the level ladder is taken as settled (spec 6).
+// Calibration: the three ways a placement can need a human look before the
+// level ladder is taken as settled (spec 6, masterdokument 14.8).
 //
-// All three are DERIVED from flags the results wire already carries, never
-// stored: a queue row exists exactly while its condition holds and disappears
-// the moment the condition stops holding, so there is no state to reconcile and
-// nothing to clean up. What a person does about a row is the only thing that is
-// recorded, and only the first class has such an act (confirming the placement);
+// 14.8 asks for the kalibrering-krävs FLAG and the calibration ACT. It does
+// not ask for a list, and the list was the mistake: a section on /work that
+// named roles the reader was already looking at, in a second place, with the
+// act only reachable there. The flag lives on the role now (its chip is
+// marked) and the act lives in the role's own sheet.
+//
+// All three classes are DERIVED from flags the results wire already carries,
+// never stored: a role is flagged exactly while its condition holds and stops
+// being flagged the moment it does not, so there is no state to reconcile and
+// nothing to clean up. What a person DOES about it is the only thing recorded,
+// and only the first class has an act of its own (confirming the placement);
 // the other two are resolved by changing the thing that caused them.
 export type CalibrationReason =
   | "profileLimited"
@@ -16,107 +20,61 @@ export type CalibrationReason =
 
 export interface ProfileFailure {
   criterionId: string
-  // The criterion's display name, resolved on the wire so the queue can say
+  // The criterion's display name, resolved on the wire so the sheet can say
   // WHICH requirement held the role back rather than showing an id.
   name: string
   required: number
   actual: number
 }
 
-export interface CalibrationRow {
-  row: LevelRoleRow
-  reason: CalibrationReason
-  // Only for `profileLimited`: the profile criteria the role fell short on,
-  // with what each required and what the role scored.
-  failures: ProfileFailure[]
-  // Only for `anchorDeviation`: the agreed level beside the computed one.
-  expectedLevel: number | null
-}
-
-// What a row needs to answer the queue's questions, beyond LevelRoleRow. Kept
-// as its own shape so the queue can be fed from the results wire without the
-// ladder's row type growing fields only this surface reads.
-export interface CalibrationInput extends LevelRoleRow {
+// What a role must expose for the fold to classify it. A structural subset of
+// a getResults row, so rows pass straight through, and small enough that
+// listRoles can carry the same fields for the home to-do's count without a
+// second derivation of the same truth.
+export interface CalibrationFacts {
   completed: boolean
+  level: number | null
   calibrated: boolean
   methodDrift: boolean
   profileLimited: boolean | null
-  profileFailures: ProfileFailure[] | null
+  anchor: { expectedLevel: number } | null
 }
 
-// One row per role, in the order the classes are listed below. A role can
-// satisfy more than one condition (a stale method whose placement was also
-// capped); it appears ONCE, under the first condition that holds, because the
-// queue is a list of things to do and the same role listed three times would
-// read as three roles. The order is the order of consequence: a capped
-// placement is a claim about the role's level, a deviating anchor is a claim
-// about the model's calibration, and a stale method is a claim about neither
-// until the assessment is completed again.
-export function calibrationQueue(
-  rows: readonly CalibrationInput[]
-): CalibrationRow[] {
-  const queue: CalibrationRow[] = []
-  for (const row of rows) {
-    // Only a completed, placed assessment can be calibrated: one still open
-    // has no revealed placement to confirm, and completing IS the reveal
-    // (spec 2.4/6).
-    if (!row.completed || row.level === null) continue
-
-    if (row.profileLimited === true && !row.calibrated) {
-      queue.push({
-        row,
-        reason: "profileLimited",
-        failures: row.profileFailures ?? [],
-        expectedLevel: null,
-      })
-      continue
-    }
-    if (row.anchor !== null && row.anchor.expectedLevel !== row.level) {
-      queue.push({
-        row,
-        reason: "anchorDeviation",
-        failures: [],
-        expectedLevel: row.anchor.expectedLevel,
-      })
-      continue
-    }
-    if (row.methodDrift) {
-      queue.push({
-        row,
-        reason: "staleMethod",
-        failures: [],
-        expectedLevel: null,
-      })
-    }
-  }
-  return queue
-}
-
-// The three classes, in the queue's own order of consequence, each with its
-// rows. The queue is grouped rather than flat because the class is the thing
-// that tells a reader WHICH of three questions a row is asking, and because
-// the classes flood at very different rates: re-approving a method moves every
-// completed role into the stale class at once, which as a flat list buried the
-// two classes that carry an act under a wall of the one that does not.
+// THE FOLD: which of the three questions a placement raises, or none.
 //
-// Empty classes are dropped, so a queue with one kind of question renders as
-// one group rather than three headings and two empties.
-export const CALIBRATION_CLASSES = [
-  "profileLimited",
-  "anchorDeviation",
-  "staleMethod",
-] as const satisfies readonly CalibrationReason[]
-
-export interface CalibrationClass {
-  reason: CalibrationReason
-  rows: CalibrationRow[]
+// One function, because the answer is needed in three places now and they must
+// never disagree: the chip that marks the role in the ladder, the sheet that
+// states the reason and offers the act, and the home to-do's count. It used to
+// live inside a list builder, which is why the list was the only place the
+// flag existed.
+//
+// A role satisfying more than one condition answers to the FIRST that holds
+// (the order of consequence): a capped placement is a claim about the role's
+// level, a deviating anchor is a claim about the model's calibration, and a
+// stale method is a claim about neither until the assessment is completed
+// again. One role, one question.
+export function calibrationReason(
+  facts: CalibrationFacts
+): CalibrationReason | null {
+  // Only a completed, placed assessment can be calibrated: one still open has
+  // no revealed placement to confirm, and completing IS the reveal (spec
+  // 2.4/6).
+  if (!facts.completed || facts.level === null) return null
+  if (facts.profileLimited === true && !facts.calibrated) {
+    return "profileLimited"
+  }
+  if (facts.anchor !== null && facts.anchor.expectedLevel !== facts.level) {
+    return "anchorDeviation"
+  }
+  if (facts.methodDrift) return "staleMethod"
+  return null
 }
 
-export function calibrationClasses(
-  queue: readonly CalibrationRow[]
-): CalibrationClass[] {
-  return CALIBRATION_CLASSES.flatMap((reason) => {
-    const rows = queue.filter((entry) => entry.reason === reason)
-    return rows.length === 0 ? [] : [{ reason, rows }]
-  })
+// How many placements are waiting on a person, across a whole register. The
+// home to-do's count, and the only aggregate left now that the list is gone.
+export function calibrationCount(rows: readonly CalibrationFacts[]): number {
+  return rows.reduce(
+    (total, row) => (calibrationReason(row) === null ? total : total + 1),
+    0
+  )
 }

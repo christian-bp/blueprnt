@@ -33,7 +33,12 @@ function baseRole() {
     totalCriteria: 3,
     familyId: null,
     familyName: null,
-    anchorRole: null,
+    anchorRole: null as {
+      expectedLevel: number
+      motivation: string
+      status: "active" | "underReview" | "replaced"
+      reviewedAt: number
+    } | null,
     ratings: [],
   }
 }
@@ -46,6 +51,10 @@ type Result = {
   completed: boolean
   methodDrift?: boolean
   calibrated?: boolean
+  profileLimited?: boolean | null
+  profileFailures?:
+    | { criterionId: string; name: string; required: number; actual: number }[]
+    | null
   ratedCount: number
   totalCriteria: number
   score: number | null
@@ -246,5 +255,127 @@ describe("RoleSheet", () => {
     renderSheet()
     open()
     expect(screen.getByText("This role does not exist.")).toBeTruthy()
+  })
+})
+
+// STATE PRIORITY. The sheet leads with whatever the role most needs from the
+// reader, and a flagged placement REPLACES the evaluation: a role raising a
+// question has one thing to say, and the weighting breakdown under it is what
+// the reader would otherwise scroll past to reach the act.
+describe("RoleSheet state priority", () => {
+  beforeEach(() => install())
+  afterEach(() => cleanup())
+
+  const cal = messages.dashboard.levels.calibration
+  const anchor = messages.dashboard.roles.anchor
+
+  function completed(over: Partial<Result> = {}): Result {
+    return {
+      roleId: "role_1",
+      title: "Engineer",
+      complete: true,
+      completed: true,
+      calibrated: false,
+      methodDrift: false,
+      profileLimited: false,
+      profileFailures: null,
+      ratedCount: 3,
+      totalCriteria: 3,
+      score: 70,
+      level: 4,
+      criteria: [
+        {
+          criterionId: "c1",
+          name: "Scope",
+          weightPoints: 3,
+          value: 4,
+          motivation: null,
+        },
+      ],
+      ...over,
+    }
+  }
+
+  it("replaces the evaluation with the review block for a capped placement", () => {
+    role = baseRole()
+    result = completed({
+      profileLimited: true,
+      profileFailures: [
+        { criterionId: "c1", name: "Scope", required: 4, actual: 3 },
+      ],
+    })
+    renderSheet()
+    open()
+    // Reason before act, and the evidence for it.
+    expect(screen.getByText(cal.profileLimitedReason)).toBeDefined()
+    expect(screen.getByRole("button", { name: cal.confirmCta })).toBeDefined()
+    // The evaluation is GONE, not pushed below the fold.
+    expect(screen.queryByText("Scope")).toBeNull()
+  })
+
+  it("offers anchor management for a deviating anchor", () => {
+    role = {
+      ...baseRole(),
+      anchorRole: {
+        expectedLevel: 2,
+        motivation: "Reference role",
+        status: "active" as const,
+        reviewedAt: 0,
+      },
+    }
+    result = completed({ level: 4 })
+    renderSheet()
+    open()
+    expect(
+      screen.getByText(
+        cal.anchorDeviationReason
+          .replace("{level}", "4")
+          .replace("{expected}", "2")
+      )
+    ).toBeDefined()
+    expect(screen.getByRole("button", { name: anchor.manageCta })).toBeDefined()
+  })
+
+  it("sends a stale placement back to its assessment", () => {
+    role = baseRole()
+    result = completed({ methodDrift: true })
+    renderSheet()
+    open()
+    expect(screen.getByText(cal.staleMethodReason)).toBeDefined()
+    expect(
+      screen.getByRole("link", { name: cal.rateCta }).getAttribute("href")
+    ).toBe("/roles/role_1/rate")
+  })
+
+  // An unflagged ANCHOR manages where you SEE it. The role page's own menu
+  // keeps its shortcut, but a reader who opened this sheet from the ladder
+  // should not have to leave it to change an agreed level.
+  it("offers anchor management on an unflagged anchor role", () => {
+    role = {
+      ...baseRole(),
+      anchorRole: {
+        expectedLevel: 4,
+        motivation: "Reference role",
+        status: "active" as const,
+        reviewedAt: 0,
+      },
+    }
+    result = completed({ level: 4 })
+    renderSheet()
+    open()
+    expect(screen.queryByText(cal.profileLimitedReason)).toBeNull()
+    expect(screen.getByRole("button", { name: anchor.manageCta })).toBeDefined()
+    // And the evaluation it did not replace.
+    expect(screen.getByText("Scope")).toBeDefined()
+  })
+
+  it("shows an unflagged role its contributions and no review block", () => {
+    role = baseRole()
+    result = completed()
+    renderSheet()
+    open()
+    expect(screen.getByText("Scope")).toBeDefined()
+    expect(screen.queryByText(cal.profileLimitedReason)).toBeNull()
+    expect(screen.queryByRole("button", { name: cal.confirmCta })).toBeNull()
   })
 })

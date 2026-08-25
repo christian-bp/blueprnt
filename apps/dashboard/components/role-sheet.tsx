@@ -3,7 +3,9 @@
 import { AnchorIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { buttonVariants } from "@workspace/ui/components/button"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+import { Badge } from "@workspace/ui/components/badge"
+import { Button, buttonVariants } from "@workspace/ui/components/button"
 import {
   Sheet,
   SheetContent,
@@ -30,6 +32,16 @@ import {
   MethodDriftBadge,
 } from "@/components/assessment-status"
 import { DeviationBadge } from "@/components/deviation-badge"
+import { ConfirmPlacementDialog } from "@/components/levels/confirm-placement-dialog"
+import {
+  AnchorDialog,
+  type AnchorRoleInfo,
+} from "@/components/roles/role-anchor-control"
+import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
+import {
+  type CalibrationReason,
+  calibrationReason,
+} from "@/lib/calibration-queue"
 import { useOrganization } from "@/components/org-context"
 import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
 import { ResponsibilitiesList } from "@/components/roles/responsibilities-list"
@@ -102,6 +114,21 @@ function RoleSheetContent({
     roleId,
     locale,
   })
+
+  // THE FLAG (masterdokument 14.8), read from the same fold the chip that
+  // opened this sheet used, so the sheet can never disagree with the marker
+  // the reader just clicked.
+  const reason =
+    result === undefined || result === null
+      ? null
+      : calibrationReason({
+          completed: result.completed,
+          level: result.level,
+          calibrated: result.calibrated,
+          methodDrift: result.methodDrift,
+          profileLimited: result.profileLimited,
+          anchor: role?.anchorRole ?? null,
+        })
 
   // Function and team join into the subtitle, dropping empties so an unset
   // pair never renders as a stray "·" separator.
@@ -218,47 +245,77 @@ function RoleSheetContent({
               </div>
             </section>
 
-            {/* Result: weighting + level + breakdown once COMPLETED (completion-as-
-                reveal, spec 2.4/6), else progress or "ready to read". */}
-            <section className="space-y-3">
-              {result === undefined ? (
-                <div className="flex justify-center py-4">
-                  <Spinner aria-label={t("loading")} />
-                </div>
-              ) : result?.completed &&
+            {/* STATE-PRIORITISED. What this sheet leads with is whatever the
+                role most needs from the reader.
+
+                FLAGGED replaces the evaluation entirely: a role whose
+                placement raises a question has one thing to say, and the
+                weighting breakdown under it is what the reader would have to
+                scroll past to reach the act. The act itself lives here now
+                (14.8 asks for the flag and the act, never a list).
+
+                Otherwise the sheet says only what the ladder row does not: the
+                row already carries the level, the track and the flag, so an
+                unflagged role adds its per-criterion contributions and nothing
+                else. */}
+            {result === undefined ? (
+              <div className="flex justify-center py-4">
+                <Spinner aria-label={t("loading")} />
+              </div>
+            ) : reason !== null && result !== null ? (
+              <ReviewBlock
+                orgId={orgId}
+                roleId={roleId}
+                title={role.title}
+                slug={role.slug}
+                reason={reason}
+                failures={result.profileFailures ?? []}
+                computedLevel={result.level}
+                agreedLevel={role.anchorRole?.expectedLevel ?? null}
+                anchorRole={role.anchorRole}
+                onClose={onClose}
+              />
+            ) : (
+              <section className="space-y-3">
+                {role.anchorRole !== null && (
+                  // Manage the anchor WHERE YOU SEE IT. The role page's own
+                  // menu keeps its shortcut, but a reader who opened this
+                  // sheet because they were looking at the ladder should not
+                  // have to leave it to change an agreed level.
+                  <AnchorManageRow
+                    orgId={orgId}
+                    roleId={roleId}
+                    anchorRole={role.anchorRole}
+                  />
+                )}
+                {result?.completed &&
                 result.complete &&
                 result.level !== null ? (
-                // Level now lives in the header; the body carries only the
-                // per-criterion contribution breakdown. Gated on complete AND
-                // level (not completion alone): a criterion added afterwards
-                // can leave a completed role incomplete again, reading back as
-                // complete=false, level=null while completed stays true
-                // (results.ts), and the breakdown must not render a partial
-                // reveal for that drifted state (mirrors rating-result.tsx).
-                <RoleCriterionBreakdown criteria={result.criteria} />
-              ) : result?.completed ? (
-                // Completed but not readable: say so, instead of falling back to
-                // the "not yet evaluated" line an unrated role gets. The role
-                // WAS evaluated; a criterion arrived afterwards.
-                <CompletedIncompleteNotice />
-              ) : (
-                <div className="space-y-1">
-                  <p className="text-muted-foreground text-sm">
-                    {result?.complete
-                      ? tLevels("readyToComplete")
-                      : tRoles("notEvaluated")}
-                  </p>
-                  {!result?.complete && (
-                    <p className="text-muted-foreground text-sm tabular-nums">
-                      {t("progress", {
-                        rated: role.ratedCount,
-                        total: role.totalCriteria,
-                      })}
+                  <RoleCriterionBreakdown criteria={result.criteria} />
+                ) : result?.completed ? (
+                  // Completed but not readable: say so, instead of falling
+                  // back to the "not yet evaluated" line an unrated role gets.
+                  // The role WAS evaluated; a criterion arrived afterwards.
+                  <CompletedIncompleteNotice />
+                ) : (
+                  <div className="space-y-1">
+                    <p className="text-muted-foreground text-sm">
+                      {result?.complete
+                        ? tLevels("readyToComplete")
+                        : tRoles("notEvaluated")}
                     </p>
-                  )}
-                </div>
-              )}
-            </section>
+                    {!result?.complete && (
+                      <p className="text-muted-foreground text-sm tabular-nums">
+                        {t("progress", {
+                          rated: role.ratedCount,
+                          total: role.totalCriteria,
+                        })}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </section>
+            )}
           </div>
 
           <SheetFooter>
@@ -273,5 +330,179 @@ function RoleSheetContent({
         </>
       )}
     </SheetContent>
+  )
+}
+
+// The review block: the reason in one sentence, then the act.
+//
+// Reason BEFORE act, which is the guidance law and also the only order that
+// works here: "Confirm the placement" means nothing until the reader knows
+// what capped it. The sentences are the ones the retired queue used, per
+// class, so nothing about the three questions was re-worded when the surface
+// moved.
+//
+// Each class gets the act that actually answers it. The capped placement is
+// the only one with an act of its own (confirming it); an anchor deviation is
+// answered by changing what the organization agreed, and a stale method by
+// completing the assessment again.
+function ReviewBlock({
+  orgId,
+  roleId,
+  title,
+  slug,
+  reason,
+  failures,
+  computedLevel,
+  agreedLevel,
+  anchorRole,
+  onClose,
+}: {
+  orgId: string
+  roleId: string
+  title: string
+  slug: string
+  reason: CalibrationReason
+  failures: {
+    criterionId: string
+    name: string
+    required: number
+    actual: number
+  }[]
+  // The two levels the deviation sentence names: what the engine computed, and
+  // what the organization agreed for this anchor.
+  computedLevel: number | null
+  agreedLevel: number | null
+  anchorRole: AnchorRoleInfo | null
+  onClose: () => void
+}) {
+  const t = useTranslations("dashboard.levels.calibration")
+  const tAnchor = useTranslations("dashboard.roles.anchor")
+  const [confirming, setConfirming] = useState(false)
+  const [managing, setManaging] = useState(false)
+
+  return (
+    <section
+      className={cn("space-y-3 rounded-xl border p-4", WARNING_ALERT_CLASS)}
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <h3 className="font-medium text-foreground text-sm">
+          {t(`class.${reason}`)}
+        </h3>
+      </div>
+      {/* The reason, in words. Running text, so it floors at text-sm. */}
+      <p className="text-foreground text-sm leading-relaxed">
+        {reason === "profileLimited"
+          ? t("profileLimitedReason")
+          : reason === "anchorDeviation"
+            ? t("anchorDeviationReason", {
+                level: computedLevel ?? 0,
+                expected: agreedLevel ?? 0,
+              })
+            : t("staleMethodReason")}
+      </p>
+      {failures.length > 0 && reason === "profileLimited" && (
+        // WHICH requirement held the role back: the criterion by name, what
+        // the zone asked of it, and what the role scored. Without these three
+        // the sentence above is a verdict with no evidence.
+        <ul className="flex flex-wrap gap-1">
+          {failures.map((failure) => (
+            <li key={failure.criterionId}>
+              <Badge variant="outline" className="font-normal">
+                {t("profileLimitedFailure", {
+                  name: failure.name,
+                  required: failure.required,
+                  actual: failure.actual,
+                })}
+              </Badge>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="flex flex-wrap gap-2">
+        {reason === "profileLimited" ? (
+          <Button type="button" size="sm" onClick={() => setConfirming(true)}>
+            {t("confirmCta")}
+          </Button>
+        ) : reason === "anchorDeviation" ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => setManaging(true)}
+          >
+            {tAnchor("manageCta")}
+          </Button>
+        ) : (
+          <Link
+            href={`/roles/${slug}/rate`}
+            onClick={onClose}
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+          >
+            {t("rateCta")}
+          </Link>
+        )}
+      </div>
+      <ConfirmPlacementDialog
+        orgId={orgId}
+        target={confirming ? { roleId: roleId as Id<"roles">, title } : null}
+        onOpenChange={(open) => {
+          if (!open) setConfirming(false)
+        }}
+      />
+      <AnchorDialog
+        open={managing}
+        onOpenChange={setManaging}
+        orgId={orgId}
+        roleId={roleId as Id<"roles">}
+        anchorRole={anchorRole}
+      />
+    </section>
+  )
+}
+
+// The anchor's own management, on the surface where the anchor is visible.
+// The role page's actions menu keeps its shortcut; this is the one the reader
+// reaches without leaving the ladder they were reading.
+function AnchorManageRow({
+  orgId,
+  roleId,
+  anchorRole,
+}: {
+  orgId: string
+  roleId: string
+  anchorRole: AnchorRoleInfo
+}) {
+  const t = useTranslations("dashboard.roles.anchor")
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border p-3">
+      <div className="min-w-0 space-y-0.5">
+        <p className="font-medium text-sm">
+          {`${t("expectedLevelLabel")}: ${t("levelOption", {
+            level: anchorRole.expectedLevel,
+          })}`}
+        </p>
+        {anchorRole.motivation.trim().length > 0 && (
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            {anchorRole.motivation}
+          </p>
+        )}
+      </div>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        onClick={() => setOpen(true)}
+      >
+        {t("manageCta")}
+      </Button>
+      <AnchorDialog
+        open={open}
+        onOpenChange={setOpen}
+        orgId={orgId}
+        roleId={roleId as Id<"roles">}
+        anchorRole={anchorRole}
+      />
+    </div>
   )
 }

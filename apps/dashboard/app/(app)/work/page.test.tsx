@@ -43,6 +43,13 @@ function levelRow(overrides: Record<string, unknown>) {
     familyId: null,
     familyName: null,
     anchor: null,
+    // Calibration facts: unflagged by default, so a fixture is a role nobody
+    // has to look at unless a test says otherwise.
+    completed: true,
+    calibrated: false,
+    methodDrift: false,
+    profileLimited: false,
+    profileFailures: null,
     ...overrides,
     // The zone the engine placed the role in. Coherent with the level by
     // default so a test that moves a role does not have to move its zone too;
@@ -196,6 +203,29 @@ describe("WorkOverviewPage", () => {
     renderPage()
     expect(
       screen.getByText(messages.dashboard.levels.groupByFamily)
+    ).toBeDefined()
+  })
+
+  // THE LIST IS GONE. Masterdokument 14.8 asks for the kalibrering-krävs flag
+  // and the calibration act, never a section listing them: the flag lives on
+  // the role's own chip here, the act in the sheet that chip opens, and the
+  // aggregate on the home to-do. A drift pin, because a "Placements to review"
+  // section is exactly the thing a future surface would grow back.
+  it("carries no placements-to-review section", () => {
+    useQueryMock.mockImplementation((ref: string) =>
+      ref === "assessment.results.getResults"
+        ? results([levelRow({ profileLimited: true })])
+        : undefined
+    )
+    renderPage()
+    // The ACT is not here either: it lives in the sheet the chip opens, so a
+    // rebuilt list with confirm buttons on this page fails this line.
+    expect(
+      screen.queryByText(messages.dashboard.levels.calibration.confirmCta)
+    ).toBeNull()
+    // The flag itself is on the role, where the reader is already looking.
+    expect(
+      screen.getByText(messages.dashboard.levels.calibration.cappedMarker)
     ).toBeDefined()
   })
 })
