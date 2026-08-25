@@ -1,0 +1,22 @@
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.test.tsx
+  s_58dd112dc09435::t_c897a0d56c286f 11,615-633,637-660,665-668,678-684,686-688,690-767
+  s_58dd112dc09435::t_c5880086a718ab 634-636,669-677
+  s_58dd112dc09435::t_6751da58ec0807 661-664,685,689
+  s_58dd112dc09435::t_ebe4b52d6440f9 768
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "5773a9e9fc0209f4620900f3e46a77462edaa828",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
