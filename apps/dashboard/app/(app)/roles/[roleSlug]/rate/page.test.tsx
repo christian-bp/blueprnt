@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
-import { Suspense } from "react"
+import { Profiler, Suspense } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 
@@ -610,5 +610,159 @@ describe("RatePage (completion is the reveal)", () => {
     expect(link.getAttribute("href")).toBe("/model/approval")
     // The stepper is not offered at all: the precondition is stated instead.
     expect(screen.queryByText("Scope")).toBeNull()
+  })
+})
+
+// THE ROUTE SETTLES, in every state it has.
+//
+// A route that renders forever is the one defect a screenshot cannot show and
+// a passing assertion cannot catch: the tree is correct, and the browser is on
+// fire. So the pin is on RENDER COUNT, and specifically on its GROWTH after
+// the data has arrived, because a busy loop never stops while a healthy route
+// simply stops.
+//
+// Written after a reported peg on this route turned out to be a wedged dev
+// server and a backgrounded tab, not a loop. It is here because that report
+// could not be answered by any existing test: nothing pinned that this route
+// stops rendering, so the only way to tell a real loop from an artifact was
+// the browser, which is exactly the instrument that was lying.
+//
+// The loading-to-loaded TRANSITION is the part that matters. A harness that
+// hands the page its data on the first render never exercises the moment the
+// queries resolve, which is where a dependency loop would start.
+describe("RatePage settles", () => {
+  // Generous: a healthy mount plus the data arriving costs a handful.
+  const RENDER_CAP = 60
+
+  const CRITERIA = [CRITERION]
+  const RATED = CRITERIA.map((criterion) => ({
+    criterionId: criterion.criterionId,
+    value: 3,
+    motivation: "because",
+  }))
+
+  // Queries answer undefined until `ready`, so every case renders its loading
+  // branch first and then takes the data, exactly as the real client does.
+  let ready = false
+
+  function installGated() {
+    onQuery((ref) => {
+      if (!ready) return undefined
+      if (ref === "assessment.roles.getRoleBySlug") return roleFixture
+      if (ref === "evaluationModel.model.getRatingModel") return modelFixture
+      if (ref === "assessment.results.getRoleResult") return resultFixture
+      if (ref === "assessment.anchorRoles.listAnchorRoles") return []
+      return undefined
+    })
+  }
+
+  async function settleCount() {
+    let renders = 0
+    // A FRESH element per render, never the same one twice: React bails out of
+    // a re-render whose element is referentially identical, which leaves the
+    // page in its loading branch and the assertions with nothing to find.
+    const tree = () => (
+      <Profiler
+        id="rate"
+        onRender={() => {
+          renders += 1
+          // A CAP, so a real loop fails this test instead of hanging the
+          // suite. Without it an unbounded re-render spins inside act() and
+          // the run never returns, which reports as a timeout with no name
+          // on it: the least useful shape a failure can take.
+          if (renders > RENDER_CAP) {
+            throw new Error(
+              `RatePage re-rendered more than ${RENDER_CAP} times: render loop`
+            )
+          }
+        }}
+      >
+        {page()}
+      </Profiler>
+    )
+    let rendered: ReturnType<typeof render> | undefined
+    await act(async () => {
+      rendered = render(tree())
+    })
+    ready = true
+    await act(async () => {
+      rendered?.rerender(tree())
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    })
+    const afterData = renders
+    // A second window with nothing left to do: a loop keeps counting here.
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+    })
+    return { afterData, growth: renders - afterData }
+  }
+
+  beforeEach(() => {
+    ready = false
+    roleFixture = role()
+    resultFixture = result()
+    modelFixture = MODEL
+    installGated()
+  })
+  afterEach(() => {
+    cleanup()
+    ready = false
+  })
+
+  it("settles on a draft with nothing rated yet", async () => {
+    const { growth } = await settleCount()
+    expect(growth).toBe(0)
+    expect(screen.getByText("Scope")).toBeDefined()
+  })
+
+  it("settles on a partial draft", async () => {
+    roleFixture = role({ ratings: RATED, ratedCount: 1 })
+    resultFixture = result({ ratedCount: 1 })
+    const { growth } = await settleCount()
+    expect(growth).toBe(0)
+  })
+
+  // THE OWNER'S STATE: every criterion answered, the assessment still open.
+  // The stepper resumes on the last step, one press from its own ending, so
+  // this is the case where the completion control has to be on screen.
+  it("settles with everything rated and the assessment still open, on the completing step", async () => {
+    roleFixture = role({ ratings: RATED, ratedCount: 1 })
+    resultFixture = result({
+      complete: true,
+      ratedCount: 1,
+      readyToComplete: true,
+    })
+    const { growth } = await settleCount()
+    expect(growth).toBe(0)
+    expect(
+      screen.getByRole("button", { name: new RegExp(t.completeCta) })
+    ).toBeDefined()
+  })
+
+  it("settles on the completed reveal", async () => {
+    roleFixture = role({ ratings: RATED, ratedCount: 1 })
+    resultFixture = result({
+      complete: true,
+      completed: true,
+      ratedCount: 1,
+      score: 70,
+      level: 4,
+    })
+    const { growth } = await settleCount()
+    expect(growth).toBe(0)
+    expect(screen.getByText(t.alreadyCompletedExplanation)).toBeDefined()
+  })
+
+  // Reopened: completed once, now open again with every rating still stored.
+  // Indistinguishable from the owner's state on the wire, and that is the
+  // point: it must resume the same way rather than walk the ladder again.
+  it("settles after a reopen", async () => {
+    roleFixture = role({ ratings: RATED, ratedCount: 1 })
+    resultFixture = result({ complete: true, completed: false, ratedCount: 1 })
+    const { growth } = await settleCount()
+    expect(growth).toBe(0)
+    expect(
+      screen.getByRole("button", { name: new RegExp(t.completeCta) })
+    ).toBeDefined()
   })
 })
