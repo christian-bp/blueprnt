@@ -83,20 +83,19 @@ describe("ModelSectionShell", () => {
   })
   afterEach(() => cleanup())
 
-  // The instrument rides the title row and floats nowhere: over the reader's
-  // data was the cost the float carried. Where on the row is the ladder's
-  // business (see floating-stack.test.tsx).
-  it("places the instrument on the title row", () => {
+  // The instrument rides the BREADCRUMB row and floats nowhere: over the
+  // reader's data was the cost the float carried. It sits opposite the trail,
+  // which is where the kartläggning's analysis journey already puts its own.
+  it("places the instrument on the breadcrumb row", () => {
     const { container } = renderShell()
-    const heading = screen.getByRole("heading", { level: 3 })
+    const row = document.querySelector(
+      '[data-slot="page-breadcrumb-row"]'
+    ) as HTMLElement
     const bar = screen.getByRole("progressbar", { name: m.progressBarLabel })
     const instrument = bar.parentElement as HTMLElement
-    // Same row as the title, positioned against it rather than laid out
-    // after it.
-    const row = heading.closest("div")?.parentElement as HTMLElement
     expect(row.contains(instrument)).toBe(true)
-    expect(row.className).toContain("flex-wrap")
-    expect(instrument.parentElement?.className).toContain("md:ms-auto")
+    // Opposite the trail, not laid out after it: the row splits its ends.
+    expect(row.className).toContain("justify-between")
     expect(container.querySelector('[class*="fixed"]')).toBeNull()
     // The fixture leaves only the approval outstanding: 15 of 16 STEPS, so
     // 94%, not the 75% three closed chapters of four would read as.
@@ -147,15 +146,59 @@ describe("ModelSectionShell", () => {
 
   it("mounts the spine and the chapter row above the chapter's own body", () => {
     const { container } = renderShell()
-    // The title names the model; the instrument opposite it on the same row
-    // carries the reading, with the journey's own figures beside it.
-    const heading = screen.getByRole("heading", { level: 3 })
-    expect(heading.textContent).toBe(m.heading)
+    // THE TRAIL IS THE TITLE. The section carried a heading of its own and no
+    // breadcrumbs, which made it the one area a reader could not place from
+    // its first row; the trail names it now, and the sr-only h1 the row
+    // derives from the last crumb is what assistive tech reads.
+    const heading = screen.getByRole("heading", { level: 1 })
+    expect(heading.textContent).toBe(messages.dashboard.nav.model)
+    expect(heading.className).toContain("sr-only")
+    expect(screen.queryByRole("heading", { level: 3 })).toBeNull()
     expect(container.querySelector(".tabular-nums")?.textContent).toContain(
       "of"
     )
     expect(screen.getByRole("navigation", { name: m.nav })).toBeDefined()
     expect(screen.getByText("chapter body")).toBeDefined()
+  })
+
+  // THE TRAIL, and where it stops.
+  //
+  // "Home > Model", and no chapter. The four chapters navigate by href, but
+  // the nav registry deliberately lists none of them: they are one guided
+  // journey with an in-page tab row, and /work sets the precedent that a
+  // section's tabs are not crumbs (its trail ends at its sub-page, never at
+  // Stege/Matris/Familjer). Crumbing the open chapter here would put this
+  // section's tabs in the trail while /work's stay out of it.
+  it("names the area and stops there, whatever chapter is open", () => {
+    renderShell()
+    const trail = screen.getByRole("navigation", {
+      name: "breadcrumb",
+    }).textContent
+    expect(trail).toContain(messages.dashboard.nav.home)
+    expect(trail).toContain(messages.dashboard.nav.model)
+    for (const chapter of ["criteria", "weighting", "method", "approval"]) {
+      const name = (m as Record<string, string>)[chapter]
+      if (name !== undefined) expect(trail).not.toContain(name)
+    }
+  })
+
+  // The help rides AFTER the last crumb, which is the /work precedent and the
+  // help-after-a-title rule: the trail's last segment is the title it
+  // explains.
+  it("hangs the section's help off the last crumb", () => {
+    renderShell()
+    const row = document.querySelector(
+      '[data-slot="page-breadcrumb-row"]'
+    ) as HTMLElement
+    const help = screen.getByRole("button", {
+      name: messages.dashboard.help.modelProgressLabel,
+    })
+    const nav = screen.getByRole("navigation", { name: "breadcrumb" })
+    expect(row.contains(help)).toBe(true)
+    // After the trail, not inside it and not on the row's far side.
+    expect(
+      nav.compareDocumentPosition(help) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
   })
 
   // The shell reads getMethodChecks from the LAYOUT, so an admin-gated query
@@ -188,7 +231,9 @@ describe("ModelSectionShell", () => {
   it("renders the whole journey row while the checks load", () => {
     checksResult = undefined
     renderShell()
-    expect(screen.getByRole("heading", { name: m.heading })).toBeDefined()
+    expect(
+      screen.getByRole("heading", { name: messages.dashboard.nav.model })
+    ).toBeDefined()
     expect(screen.getByRole("navigation", { name: m.nav })).toBeDefined()
     // No count on any tab: a figure the section does not know yet is one it
     // would have to replace a moment later.

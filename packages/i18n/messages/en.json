@@ -1894,7 +1894,6 @@
         "approval": "Approval",
         "tab": "<num>{position}.</num> {chapter}",
         "nav": "Model chapters",
-        "heading": "Your company's model",
         "progressBarLabel": "Overall model progress",
         "countRich": "<done></done> of <total></total>"
       },

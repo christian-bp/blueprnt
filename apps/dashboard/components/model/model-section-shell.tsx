@@ -13,7 +13,7 @@ import {
 } from "@/components/floating-stack"
 import { ModelChapterTabs } from "@/components/model/model-chapter-tabs"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { SectionTitleRow } from "@/components/section-title-row"
+import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { SegmentedProgress } from "@/components/segmented-progress"
 import { useOrganization } from "@/components/org-context"
 import {
@@ -36,6 +36,7 @@ import {
 export function ModelSectionShell({ children }: { children: ReactNode }) {
   const { orgId } = useOrganization()
   const t = useTranslations("dashboard.model.chapters")
+  const tNav = useTranslations("dashboard.nav")
   const tHelp = useTranslations("dashboard.help")
   const pathname = usePathname()
   const data = useQuery(api.evaluationModel.approval.getMethodChecks, { orgId })
@@ -72,16 +73,26 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
     <ChapterActionSlotProvider>
       <FloatingStackProvider>
         <div className="space-y-4">
-          {/* The section's title and its one explainer, with the whole
-              model's instrument centred on the page beside them. */}
-          <SectionTitleRow
-            heading={t("heading")}
-            help={
+          {/* THE TRAIL IS THE TITLE, as on every other page. This section
+              carried a heading of its own ("Your company's model") and no
+              breadcrumbs at all, which made it the one area a reader could
+              not place from its first row.
+              The trail stops at the AREA. Its four chapters navigate by href,
+              but the nav registry deliberately lists none of them: they are
+              one guided journey with an in-page tab row, and /work sets the
+              precedent that a section's tabs are not crumbs (its trail ends
+              at the sub-page, never at Stege/Matris/Familjer).
+              The help rides after the last crumb and the instrument takes the
+              row's right side, which is where the kartläggning's analysis
+              journey already puts its own. */}
+          <PageBreadcrumbRow
+            segments={[{ label: tNav("model") }]}
+            adornment={
               <HelpMorphButton label={tHelp("modelProgressLabel")}>
                 {tHelp("modelProgressBody")}
               </HelpMorphButton>
             }
-            instrument={
+            actions={
               <SegmentedProgress
                 activeSegment={active}
                 barLabel={t("progressBarLabel")}
