@@ -1,0 +1,58 @@
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_58dd112dc09435::t_af18b87c9b21ac 236-238
+apps/dashboard/components/rating/rating-result.tsx
+  s_58dd112dc09435::t_857edab9c4bd38 16,110
+apps/dashboard/lib/field-label.ts
+  s_58dd112dc09435::t_6264f587192eb1 1-13
+packages/ui/patches/sheet.patch
+  s_58dd112dc09435::t_fca34a19aa5a43 2,7,27-36,49,63,76,88
+apps/dashboard/components/roles/role-criterion-breakdown.tsx
+  s_58dd112dc09435::t_4c585496c83a15 71,109-110
+  s_58dd112dc09435::t_01e463cf3b6a48 12,67-70,72,112-114
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_58dd112dc09435::t_43176ac654a480 126
+  s_58dd112dc09435::t_857edab9c4bd38 36
+packages/ui/src/components/sheet.tsx
+  s_58dd112dc09435::t_d7e18c898c2411 72-80
+  s_58dd112dc09435::t_030072dbfae27b 81
+apps/dashboard/components/assessment-status.test.tsx
+  s_58dd112dc09435::t_24bfe22d8ab3f6 7,31,42-49
+apps/dashboard/components/rating/rating-result.test.tsx
+  s_58dd112dc09435::t_af18b87c9b21ac 130-133
+  s_58dd112dc09435::t_f0907a6b6ae57d 136-138
+packages/ui/scripts/update-shadcn.ts
+  s_58dd112dc09435::t_7a6a3f4328001f 49
+apps/dashboard/components/role-sheet.test.tsx
+  s_58dd112dc09435::t_406255bb38cb09 7,677-678,687-688,690-692,755-759,761,763
+  s_58dd112dc09435::t_9a905c24abf5e5 25,595,642-676,679-685,689,693-695,698-700,704-754,760,762,764-783,785-802
+  s_58dd112dc09435::t_7e241dbefe3446 701-703
+  s_58dd112dc09435::t_a5089bc492d9a8 350-355,386-388
+  s_58dd112dc09435::t_0103270d37f100 596-641
+  s_58dd112dc09435::t_7d2674e6a1e754 696-697
+  s_58dd112dc09435::t_6ca806fb2fc33f 236-239
+  s_58dd112dc09435::t_8e6f139eacab23 119-145,686,784
+apps/dashboard/components/role-sheet.tsx
+  s_58dd112dc09435::t_857edab9c4bd38 27,190
+  s_58dd112dc09435::t_7514895e3653c9 38,207-221,225,231,238
+  s_58dd112dc09435::t_f783e39ec3ddc5 168-177,179
+  s_58dd112dc09435::t_5c7dc5daaf5d57 430-433
+  s_58dd112dc09435::t_f875684738286d 496-505,509,514-515,518,520,522-526,528-537,539-547,549-555
+apps/dashboard/components/assessment-status.tsx
+  s_58dd112dc09435::t_ee985e5d567c18 14-17,19-27,29-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "a932ee9669826d8bfd0166fe7123df3b82cefe69",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
