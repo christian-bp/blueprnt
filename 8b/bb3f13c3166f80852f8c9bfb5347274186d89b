@@ -1,0 +1,22 @@
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_58dd112dc09435::t_1f69e3ed074379 127-143
+apps/dashboard/components/rating/rating-stepper.test.tsx
+  s_58dd112dc09435::t_75a39e949e9167 127-131
+  s_58dd112dc09435::t_649929f50e9781 114-118,122-126,132-142,175-181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "8bbb3f13c3166f80852f8c9bfb5347274186d89b",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
