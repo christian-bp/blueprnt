@@ -1627,7 +1627,6 @@
       "modelUnapprovedCta": "Gå til kapitlet Godkendelse",
       "scale": {
         "title": "Fælles vurderingsskala",
-        "meaningsToggle": "Hvad trinnene betyder",
         "midpointExplanation": "Et gennemtænkt mellemtrin: kravet ligger mellem de to trin omkring det.",
         "step1": {
           "name": "Afgrænset krav",

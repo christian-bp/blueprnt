@@ -1627,7 +1627,6 @@
       "modelUnapprovedCta": "Siirry Hyväksyntä-lukuun",
       "scale": {
         "title": "Yhteinen arviointiasteikko",
-        "meaningsToggle": "Mitä portaat tarkoittavat",
         "midpointExplanation": "Harkittu välivaihe: vaatimus asettuu sen ympärillä olevien kahden portaan väliin.",
         "step1": {
           "name": "Rajattu vaatimus",

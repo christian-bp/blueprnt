@@ -1627,7 +1627,6 @@
       "modelUnapprovedCta": "Gå till kapitlet Godkännande",
       "scale": {
         "title": "Gemensam bedömningsskala",
-        "meaningsToggle": "Vad stegen betyder",
         "midpointExplanation": "Ett genomtänkt mellanläge: kravet ligger mellan de två stegen omkring det.",
         "step1": {
           "name": "Avgränsat krav",

@@ -40,6 +40,7 @@ vi.mock("@/lib/toast", () => ({
 import { RatingStepper } from "@/components/rating/rating-stepper"
 
 const labels = messages.dashboard.rating
+const help = messages.dashboard.help
 
 const CRITERIA = [
   {
@@ -230,40 +231,62 @@ describe("RatingStepper", () => {
     }
   })
 
-  it("makes every step's meaning reachable from the stepper", () => {
+  // ONE affordance for the scale, not two. The meanings were a standing
+  // disclosure beside the scale's title, which left the reader a morph for
+  // what the scale IS and a panel for what its steps mean; the morph layer is
+  // where this app puts read-only depth, so the panel folded into it.
+  const openScaleHelp = () =>
+    fireEvent.click(screen.getByRole("button", { name: help.sharedScaleLabel }))
+
+  it("makes every step's meaning reachable from the scale's own help", () => {
     renderStepper()
+    // Nothing standing: the meanings are behind the morph, and the morph is
+    // the only way to them.
     for (const step of [1, 2, 3, 4, 5] as const) {
       expect(screen.queryByText(labels.scale[`step${step}`].meaning)).toBeNull()
     }
-    fireEvent.click(
-      screen.getByRole("button", { name: labels.scale.meaningsToggle })
-    )
+    expect(screen.queryByRole("button", { name: /steps mean/i })).toBeNull()
+    openScaleHelp()
+    // The boundary sentence the morph already carried is still its opening.
+    expect(screen.getByText(help.sharedScaleBody)).toBeDefined()
     for (const step of [1, 2, 3, 4, 5] as const) {
       expect(
-        screen.getByText(labels.scale[`step${step}`].meaning)
+        screen.getByText(labels.scale[`step${step}`].meaning, { exact: false })
       ).toBeDefined()
     }
   })
 
   it("explains the midpoints on steps 2 and 4 only", () => {
     renderStepper()
-    fireEvent.click(
-      screen.getByRole("button", { name: labels.scale.meaningsToggle })
-    )
-    const explained = screen
-      .getAllByText(labels.scale.midpointExplanation)
-      .map((node) => {
-        const entry = node.closest("dd")
-        return entry?.parentElement?.querySelector("dt")?.textContent
-      })
-    expect(explained).toEqual(["2", "4"])
+    openScaleHelp()
+    const explained = screen.getAllByText(labels.scale.midpointExplanation)
+    expect(explained).toHaveLength(2)
+    // Each note sits inside the step it explains, so the reader never has to
+    // work out which two of the five it belongs to.
+    for (const note of explained) {
+      const line = note.parentElement as HTMLElement
+      expect(line.textContent).toMatch(/^[24]\. /)
+    }
+  })
+
+  // The keycap is a HINT, not a second label. It rides inside the filled
+  // primary button, where the shared Kbd's default 20px block reads as a
+  // label beside the button's own; it steps down a notch at this call site
+  // while staying the app's Kbd rather than a hand-rolled span.
+  it("wears the enter hint smaller than the shared default", () => {
+    renderStepper()
+    const cap = document.querySelector('[data-slot="kbd"]') as HTMLElement
+    expect(cap).not.toBeNull()
+    expect(cap.tagName).toBe("KBD")
+    expect(cap.className).toContain("h-4")
+    expect(cap.className).toContain("min-w-4")
+    // Announced by the button's own label, never read out twice.
+    expect(cap.getAttribute("aria-hidden")).toBe("true")
   })
 
   it("keeps the weighting vocabulary out of the rating view (firewall)", () => {
     const { container } = renderStepper()
-    fireEvent.click(
-      screen.getByRole("button", { name: labels.scale.meaningsToggle })
-    )
+    openScaleHelp()
     const rendered = container.textContent ?? ""
     // The assessor grades requirements, never their consequences: the model's
     // weighting, its budget, the resulting weighting/level and the level's

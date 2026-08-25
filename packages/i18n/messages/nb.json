@@ -1627,7 +1627,6 @@
       "modelUnapprovedCta": "Gå til kapittelet Godkjenning",
       "scale": {
         "title": "Felles vurderingsskala",
-        "meaningsToggle": "Hva trinnene betyr",
         "midpointExplanation": "Et gjennomtenkt mellomtrinn: kravet ligger mellom de to trinnene rundt det.",
         "step1": {
           "name": "Avgrenset krav",

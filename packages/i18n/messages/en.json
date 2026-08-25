@@ -1627,7 +1627,6 @@
       "modelUnapprovedCta": "Go to the Approval chapter",
       "scale": {
         "title": "Shared assessment scale",
-        "meaningsToggle": "What the steps mean",
         "midpointExplanation": "A considered midpoint: the requirement sits between the two steps around it.",
         "step1": {
           "name": "Defined requirement",

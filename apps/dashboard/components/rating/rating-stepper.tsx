@@ -90,7 +90,6 @@ export function RatingStepper({
   const contextPanelId = useId()
   const notCoveredExplanationId = useId()
   const motivationErrorId = useId()
-  const scalePanelId = useId()
 
   // The 1-5 steps mean the same thing on every criterion, so the table is
   // built once here and read both by the option rows (the name) and by the
@@ -165,9 +164,6 @@ export function RatingStepper({
   // never match the remembered one, so both start closed automatically on
   // every step change, including Back.
   const [contextOpenFor, setContextOpenFor] = useState<string | null>(null)
-  // The scale is the same on every criterion, so its panel is not reset per
-  // step: a reader who opened it keeps it open all the way through.
-  const [scaleOpen, setScaleOpen] = useState(false)
   const [motivationErrorFor, setMotivationErrorFor] = useState<string | null>(
     null
   )
@@ -432,58 +428,43 @@ export function RatingStepper({
 
               {/* The shared scale names itself before its steps: the same
                   1-5 steps frame every criterion, and the criterion's own
-                  anchors say what each step means here. */}
+                  anchors say what each step means here.
+
+                  THE MEANINGS LIVE IN THE HELP, not in a disclosure of their
+                  own. They were a standing toggle beside this title, which
+                  made the scale the one concept on the surface explained in
+                  two places: a morph for what the scale IS and a panel for
+                  what its steps mean. The morph layer is where this app puts
+                  read-only depth, so the panel folds into it.
+
+                  Structured content rather than a prose wall, on the zone
+                  morph's precedent (a bolded name, then its lines). Spans
+                  rather than divs because the panel wraps its children in a
+                  paragraph. */}
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
                   <h3 className="font-medium text-sm">{t("scale.title")}</h3>
                   <HelpMorphButton label={tHelp("sharedScaleLabel")}>
-                    {tHelp("sharedScaleBody")}
-                  </HelpMorphButton>
-                  <DisclosureToggle
-                    label={t("scale.meaningsToggle")}
-                    open={scaleOpen}
-                    panelId={scalePanelId}
-                    onToggle={() => setScaleOpen((open) => !open)}
-                    className="ms-auto"
-                  />
-                </div>
-                <AnimatePresence initial={false}>
-                  {scaleOpen ? (
-                    <motion.div
-                      id={scalePanelId}
-                      key="scale"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={SPRING}
-                      className="overflow-hidden"
-                    >
-                      <dl className="space-y-2 pb-1">
+                    <span className="space-y-2">
+                      <span className="block">{tHelp("sharedScaleBody")}</span>
+                      <span className="block space-y-1.5">
                         {scaleSteps.map((entry) => (
-                          <div
-                            key={entry.step}
-                            className="flex gap-3 text-sm leading-relaxed"
-                          >
-                            <dt className="w-3 shrink-0 font-medium text-muted-foreground tabular-nums">
-                              {entry.step}
-                            </dt>
-                            <dd className="min-w-0 flex-1">
-                              <span className="font-medium">{entry.name}</span>{" "}
-                              <span className="text-muted-foreground">
-                                {entry.meaning}
+                          <span key={entry.step} className="block">
+                            <span className="font-medium text-foreground">
+                              {`${entry.step}. ${entry.name}. `}
+                            </span>
+                            {entry.meaning}
+                            {MIDPOINT_STEPS.includes(entry.step) ? (
+                              <span className="block">
+                                {t("scale.midpointExplanation")}
                               </span>
-                              {MIDPOINT_STEPS.includes(entry.step) ? (
-                                <span className="block text-muted-foreground">
-                                  {t("scale.midpointExplanation")}
-                                </span>
-                              ) : null}
-                            </dd>
-                          </div>
+                            ) : null}
+                          </span>
                         ))}
-                      </dl>
-                    </motion.div>
-                  ) : null}
-                </AnimatePresence>
+                      </span>
+                    </span>
+                  </HelpMorphButton>
+                </div>
 
                 <div
                   role="radiogroup"
@@ -642,10 +623,15 @@ export function RatingStepper({
                   {index === criteria.length - 1
                     ? t("completeCta")
                     : t("nextCta")}
+                  {/* Smaller than the shared default at THIS call site: the
+                      keycap sits inside a filled primary button, where the
+                      default 20px block reads as a second label beside a
+                      36px button's own. It is a hint that Enter does this,
+                      so it steps down rather than competing. */}
                   <Kbd
                     data-icon="inline-end"
                     aria-hidden="true"
-                    className="translate-x-0.5"
+                    className="h-4 min-w-4 translate-x-0.5 px-1"
                   >
                     ⏎
                   </Kbd>
