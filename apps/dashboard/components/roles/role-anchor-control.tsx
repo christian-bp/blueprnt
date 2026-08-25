@@ -10,7 +10,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+  FieldTitle,
+} from "@workspace/ui/components/field"
 import { Label } from "@workspace/ui/components/label"
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@workspace/ui/components/radio-group"
 import {
   Select,
   SelectContent,
@@ -39,11 +50,86 @@ export interface AnchorRoleInfo {
   reviewedAt: number
 }
 
+// Name and meaning per status, in the order the cards are offered (the
+// lifecycle's own order: in use, being reconsidered, retired). Compile-time
+// total over the union, so a fourth status cannot be added to AnchorRoleInfo
+// without giving it both a name and a meaning here.
+// `as const satisfies` rather than an annotation: the annotation widens the
+// values to string and the typed-key check on t() goes with it.
 const STATUS_KEYS = {
-  active: "statusActive",
-  underReview: "statusUnderReview",
-  replaced: "statusReplaced",
-} as const
+  active: { name: "statusActive", meaning: "statusActiveMeaning" },
+  underReview: {
+    name: "statusUnderReview",
+    meaning: "statusUnderReviewMeaning",
+  },
+  replaced: { name: "statusReplaced", meaning: "statusReplacedMeaning" },
+} as const satisfies Record<
+  AnchorRoleInfo["status"],
+  { name: string; meaning: string }
+>
+
+const STATUS_ORDER = Object.keys(STATUS_KEYS) as AnchorRoleInfo["status"][]
+
+// Base UI reports the chosen value as the group's generic Value, which the
+// vendored wrapper leaves as `any`. Narrowing through the same record that
+// supplies the labels means the guard can never drift from the union.
+function isAnchorStatus(value: unknown): value is AnchorRoleInfo["status"] {
+  return typeof value === "string" && value in STATUS_KEYS
+}
+
+// THE STATUS IS A CHOICE BETWEEN MEANINGS, not a value to look up.
+//
+// It was a select of three words. A select asks the reader to already know
+// what "Under översyn" does to an anchor, and to discover it by choosing it;
+// the words are the org's bookkeeping vocabulary, not a description of any
+// consequence. The choice cards put each status beside the one sentence that
+// says what it changes, so the decision is readable before it is made.
+//
+// The descriptions state what the code actually does, which is not what the
+// names suggest: under review keeps flagging deviations and only stops being
+// a comparison point for new evaluations.
+function StatusField({
+  status,
+  disabled,
+  onChange,
+}: {
+  status: AnchorRoleInfo["status"]
+  disabled: boolean
+  onChange: (value: AnchorRoleInfo["status"]) => void
+}) {
+  const t = useTranslations("dashboard.roles.anchor")
+  return (
+    <div className="space-y-2">
+      <Label className="text-muted-foreground">{t("statusLabel")}</Label>
+      <RadioGroup
+        value={status}
+        disabled={disabled}
+        onValueChange={(value) => {
+          if (isAnchorStatus(value)) onChange(value)
+        }}
+      >
+        {STATUS_ORDER.map((option) => (
+          <FieldLabel key={option} htmlFor={`anchor-status-${option}`}>
+            <Field orientation="horizontal">
+              <FieldContent>
+                <FieldTitle>{t(STATUS_KEYS[option].name)}</FieldTitle>
+                <FieldDescription>
+                  {t(STATUS_KEYS[option].meaning)}
+                </FieldDescription>
+              </FieldContent>
+              {/* The id lands on Base UI's hidden input rather than on this
+                  span (useLabelableId), which is what makes the card's
+                  htmlFor point at a labelable control instead of at a role
+                  the browser cannot associate. The group owns `disabled`;
+                  it reaches each item through context. */}
+              <RadioGroupItem value={option} id={`anchor-status-${option}`} />
+            </Field>
+          </FieldLabel>
+        ))}
+      </RadioGroup>
+    </div>
+  )
+}
 
 function LevelField({
   level,
@@ -287,36 +373,7 @@ function EditForm({
         disabled={pending}
         onChange={setMotivation}
       />
-      <div className="space-y-2">
-        <Label htmlFor="anchor-status" className="text-muted-foreground">
-          {t("statusLabel")}
-        </Label>
-        <Select
-          value={status}
-          onValueChange={(value) =>
-            setStatus(value as AnchorRoleInfo["status"])
-          }
-          disabled={pending}
-          items={Object.fromEntries(
-            (Object.keys(STATUS_KEYS) as AnchorRoleInfo["status"][]).map(
-              (option) => [option, t(STATUS_KEYS[option])]
-            )
-          )}
-        >
-          <SelectTrigger id="anchor-status" className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {(Object.keys(STATUS_KEYS) as AnchorRoleInfo["status"][]).map(
-              (option) => (
-                <SelectItem key={option} value={option}>
-                  {t(STATUS_KEYS[option])}
-                </SelectItem>
-              )
-            )}
-          </SelectContent>
-        </Select>
-      </div>
+      <StatusField status={status} disabled={pending} onChange={setStatus} />
       <ReviewedLine reviewedAt={anchorRole.reviewedAt} />
       <FormError failed={failed} />
       <DialogFooter>
