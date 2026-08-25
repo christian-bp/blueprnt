@@ -1,0 +1,26 @@
+apps/dashboard/components/levels/family-level-matrix.test.tsx
+  s_58dd112dc09435::t_cf253dd4a3f35a 335-346
+  s_58dd112dc09435::t_e3612f32fcf980 203-208,248-249,269-272,276-277,280-285,288-334,358,360-362
+apps/dashboard/components/levels/family-level-matrix.tsx
+  s_58dd112dc09435::t_f228a8aaf23c02 17,58-66,106,127,137-155,157-181
+apps/dashboard/components/levels/matrix-chrome.test.ts
+  s_58dd112dc09435::t_f8d159f3bb6692 7,54-56,58-60,62-64,66-90
+apps/dashboard/components/levels/matrix-chrome.ts
+  s_58dd112dc09435::t_41f1e886559ceb 31,33-37,39-54,58-62,69-72,74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "21edf52374a453322d88c9783d37e700b9cd003e",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
