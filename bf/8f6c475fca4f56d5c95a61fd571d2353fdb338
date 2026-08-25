@@ -1,0 +1,30 @@
+apps/dashboard/components/levels/matrix-chrome.test.ts
+  s_58dd112dc09435::t_d411948098bf6a 9,55-70,72-86,98-99,101-102,110-112
+  s_58dd112dc09435::t_4913e1ada7a8e2 105-108
+apps/dashboard/components/levels/family-level-matrix.tsx
+  s_58dd112dc09435::t_4913e1ada7a8e2 109
+  s_58dd112dc09435::t_9c2936993e3804 20,92-95,103,110-116,142-186,192-210,229-239,243-302
+apps/dashboard/components/levels/matrix-chrome.ts
+  s_58dd112dc09435::t_f2c35a46b30e8e 78,80-100,102-107
+  s_58dd112dc09435::t_4913e1ada7a8e2 68,70-72,76
+apps/dashboard/components/levels/family-level-matrix.test.tsx
+  s_58dd112dc09435::t_f6b7a04aa50243 380
+  s_58dd112dc09435::t_1c3cf01676f234 205-207,258,269,282-305,307-311,333-338,418
+  s_58dd112dc09435::t_4913e1ada7a8e2 281
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "bf8f6c475fca4f56d5c95a61fd571d2353fdb338",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
