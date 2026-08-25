@@ -34,6 +34,10 @@ const PATCHES = path.join(PKG, "patches")
 // enter the set without a stated reason.
 // frame.tsx is vendored from ReUI (https://reui.io/r/frame.json), not from the
 // shadcn registry, so the update cycle never touches it and it needs no patch.
+// It must also be excluded from the drift scan: it has no shadcn upstream to
+// diff against, so the scan would forever report it undocumented.
+const NON_SHADCN_VENDOR = new Set(["frame"])
+
 const DEVIATIONS: Record<string, string> = {
   avatar: "A brand variant for identity avatars (tinted initials fallback).",
   badge: "A success variant (the email log maps delivered and sent onto it).",
@@ -250,6 +254,7 @@ async function refresh(): Promise<void> {
 
   for (const file of files) {
     const base = file.replace(/\.tsx$/, "")
+    if (NON_SHADCN_VENDOR.has(base)) continue
     if (!existsSync(path.join(SRC, file))) continue
     if (!(await differsFromUpstream(base))) continue
 
