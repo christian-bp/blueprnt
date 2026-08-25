@@ -157,4 +157,47 @@ describe("library content", () => {
       }
     }
   )
+
+  // THE 2026-08-24 REFINEMENT'S SIX PAIRS.
+  //
+  // Five of them sit inside Ansvar och påverkan, where the revisions to 9.2,
+  // 9.4 and 9.5 moved the boundaries: a company selecting two of these has to
+  // be able to say what its own part is, which is exactly what the checklist's
+  // overlapPairs warning asks for.
+  //
+  // Pinned by NAME rather than by count so a pair silently swapped for another
+  // is caught, and symmetric-order-insensitively because the checklist matches
+  // a pair whichever way round the two keys are selected.
+  it("declares the refinement's watch pairs", () => {
+    const has = (a: string, b: string) =>
+      LIBRARY_OVERLAP_PAIRS.some(
+        ([left, right]) =>
+          (left === a && right === b) || (left === b && right === a)
+      )
+    for (const [a, b] of [
+      ["scope-impact", "autonomy-mandate"],
+      ["autonomy-mandate", "people-leadership"],
+      ["autonomy-mandate", "resource-capacity"],
+      ["people-leadership", "resource-capacity"],
+      ["scope-impact", "business-customer"],
+      ["on-call", "irregularity-mobility"],
+    ] as const) {
+      expect(has(a, b), `${a}/${b}`).toBe(true)
+    }
+    // ONE class: the document separates declared overlaps from new watch
+    // pairs, but both mean the same thing to the company and to the
+    // checklist, so the list stays flat.
+    expect(LIBRARY_OVERLAP_PAIRS).toHaveLength(15)
+    // Every key in every pair is a real library key.
+    for (const pair of LIBRARY_OVERLAP_PAIRS) {
+      for (const key of pair) {
+        expect(CRITERIA_LIBRARY_KEYS).toContain(key)
+      }
+    }
+    // No pair repeats, in either direction.
+    const seen = new Set(
+      LIBRARY_OVERLAP_PAIRS.map((pair) => [...pair].sort().join("/"))
+    )
+    expect(seen.size).toBe(LIBRARY_OVERLAP_PAIRS.length)
+  })
 })

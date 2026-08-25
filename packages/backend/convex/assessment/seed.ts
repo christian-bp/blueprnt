@@ -7,6 +7,7 @@ import { resolveContentLocale } from "../evaluationModel/model"
 import {
   DEMO_ANCHOR_ROLES,
   DEMO_BIAS_COMMENT,
+  DEMO_AUTONOMY_MANDATE_OVERLAP_NOTES,
   DEMO_KNOWLEDGE_BREADTH_OVERLAP_NOTES,
   DEMO_RATING_MOTIVATION,
   DEMO_SCOPE_IMPACT_WEIGHT_MOTIVATION,
@@ -102,10 +103,15 @@ export const seedRatedRoles = internalMutation({
           approved: true,
           decidedBy: actorId,
           decidedAt: Date.now(),
-          // Clears the checklist's overlapPairs warning for the demo's one
-          // applicable pair (knowledge-depth/knowledge-breadth).
+          // Clears the checklist's overlapPairs warning for the demo's two
+          // applicable pairs: knowledge-depth/knowledge-breadth, and
+          // scope-impact/autonomy-mandate since the 2026-08-24 refinement.
+          // A pair reads acknowledged once EITHER member carries a note.
           ...(libraryKey === "knowledge-breadth"
             ? { overlapNotes: DEMO_KNOWLEDGE_BREADTH_OVERLAP_NOTES }
+            : {}),
+          ...(libraryKey === "autonomy-mandate"
+            ? { overlapNotes: DEMO_AUTONOMY_MANDATE_OVERLAP_NOTES }
             : {}),
           // Clears the checklist's dimensionWeightBalance warning
           // (responsibility sits over the 40 % threshold under

@@ -518,6 +518,13 @@ export const DEMO_BIAS_COMMENT =
 export const DEMO_KNOWLEDGE_BREADTH_OVERLAP_NOTES =
   "Avgränsat mot kunskapsdjup: bredden mäter integration över flera områden, inte specialistdjupet."
 
+// The demo's SECOND applicable pair, from the 2026-08-24 refinement:
+// scope-impact/autonomy-mandate. The demo selects both, so without a note the
+// checklist would carry a standing overlap warning on a model the demo means
+// to read as finished. The boundary is the document's own for 9.1/9.2.
+export const DEMO_AUTONOMY_MANDATE_OVERLAP_NOTES =
+  "Avgränsat mot scope och påverkan: mandatet mäter utrymmet att välja och besluta, inte hur långt resultatet når."
+
 // Clears the checklist's dimensionWeightBalance warning: under DEMO_WEIGHT_POINTS
 // responsibility carries 11/24 = ~45.8 % of the total weight, over the 40 %
 // threshold, so ONE responsibility criterion needs a documented motivation.

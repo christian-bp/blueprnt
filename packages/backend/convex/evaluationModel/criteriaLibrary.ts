@@ -85,6 +85,26 @@ export const LIBRARY_OVERLAP_PAIRS: readonly (readonly [
   ["scope-impact", "people-leadership"],
   ["risk-consequence", "compliance-control"],
   ["compliance-control", "restricted-environments"],
+  // The six pairs the 2026-08-24 refinement adds (docs/
+  // kriteriebibliotek-forfining-2026-08-24.md). Five of them sit inside
+  // Ansvar och påverkan, which is where the revisions to 9.2, 9.4 and 9.5
+  // moved the boundaries: 9.4 is no longer limited to formal line
+  // management and 9.5 is sharpened onto resource prioritisation, so each
+  // now sits close enough to its neighbours that a company selecting both
+  // has to be able to say what its own part is.
+  //
+  // ONE CLASS, not two. The document distinguishes pairs it had already
+  // declared from new "bevakningspar", but its own definition of an overlap
+  // is the same for both: the company must be able to explain which part of
+  // likvärdighet each criterion captures before selecting both. That is
+  // exactly what this list means and what the checklist asks for, so a
+  // second kind would be a distinction with no consequence anywhere.
+  ["scope-impact", "autonomy-mandate"],
+  ["autonomy-mandate", "people-leadership"],
+  ["autonomy-mandate", "resource-capacity"],
+  ["people-leadership", "resource-capacity"],
+  ["scope-impact", "business-customer"],
+  ["on-call", "irregularity-mobility"],
 ]
 
 // Picker chips per onboarding industry (masterdokument sections 7-10
