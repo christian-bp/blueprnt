@@ -1630,15 +1630,15 @@
         "midpointExplanation": "Ett genomtänkt mellanläge: kravet ligger mellan de två stegen omkring det.",
         "step1": {
           "name": "Avgränsat krav",
-          "meaning": "Kravet är tydligt definierat, lokalt eller begränsat i omfattning. Rollen arbetar huvudsakligen inom etablerade ramar."
+          "meaning": "Kravet är tydligt definierat, lokalt eller begränsat i omfattning. Etablerade ramar och arbetssätt räcker normalt."
         },
         "step2": {
           "name": "Grundläggande till måttligt krav",
-          "meaning": "Kravet förekommer återkommande men inom ett tydligt avgränsat område. Rollen hanterar variationer och enklare avvikelser."
+          "meaning": "Kravet återkommer inom ett tydligt avgränsat område. Variationer och enklare avvikelser behöver hanteras."
         },
         "step3": {
           "name": "Självständigt och etablerat krav",
-          "meaning": "Kravet är en tydlig och återkommande del av rollen. Rollen gör professionella bedömningar inom sitt område."
+          "meaning": "Kravet är en tydlig och återkommande del av området. Professionella bedömningar görs inom etablerade ramar."
         },
         "step4": {
           "name": "Avancerat eller brett krav",
@@ -1646,7 +1646,7 @@
         },
         "step5": {
           "name": "Mycket avancerat, omfattande eller verksamhetskritiskt krav",
-          "meaning": "Kravet har mycket stor omfattning, svårighetsgrad, konsekvens eller strategisk betydelse. Rollen formar ofta riktning, standarder, lösningar eller resultat utanför det egna närmaste området."
+          "meaning": "Kravet har mycket stor omfattning, svårighetsgrad, konsekvens eller strategisk betydelse. Det kan påverka riktning, standarder, lösningar eller resultat även utanför det närmaste området."
         }
       },
       "completeCta": "Slutför bedömningen",
