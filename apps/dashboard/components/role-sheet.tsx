@@ -16,7 +16,7 @@ import {
 } from "@workspace/ui/components/sheet"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
-import { useQuery } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import {
@@ -38,6 +38,7 @@ import {
   type AnchorRoleInfo,
 } from "@/components/roles/role-anchor-control"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
+import { toast } from "@/lib/toast"
 import {
   type CalibrationReason,
   calibrationReason,
@@ -106,6 +107,7 @@ function RoleSheetContent({
   const _tAssessment = useTranslations("assessment")
   const tFamily = useTranslations("dashboard.roles.family")
   const tModel = useTranslations("model")
+  const tAnchor = useTranslations("dashboard.roles.anchor")
   const { orgId } = useOrganization()
   const locale = useLocale()
   const role = useQuery(api.assessment.roles.getRole, { orgId, roleId, locale })
@@ -114,6 +116,12 @@ function RoleSheetContent({
     roleId,
     locale,
   })
+
+  // The anchor as a LIVE reference: null once it has been retired.
+  const liveAnchor =
+    role?.anchorRole != null && role.anchorRole.status !== "replaced"
+      ? role.anchorRole
+      : null
 
   // THE FLAG (masterdokument 14.8), read from the same fold the chip that
   // opened this sheet used, so the sheet can never disagree with the marker
@@ -127,7 +135,12 @@ function RoleSheetContent({
           calibrated: result.calibrated,
           methodDrift: result.methodDrift,
           profileLimited: result.profileLimited,
-          anchor: role?.anchorRole ?? null,
+          // A RETIRED anchor is not a live reference, so it cannot deviate
+          // from anything. getResults already drops a replaced anchor before
+          // the ladder folds it; the sheet reads getRole, which keeps it, so
+          // the same rule has to be applied here or a retired anchor would
+          // flag in the sheet and nowhere else.
+          anchor: liveAnchor,
         })
 
   // Function and team join into the subtitle, dropping empties so an unset
@@ -204,14 +217,21 @@ function RoleSheetContent({
                   />
                   {tLevels("anchorLabel")}
                 </span>
-                {result !== undefined &&
+                {/* A retired anchor says so, and never wears the deviation
+                    chip: "not level 8" is a live claim about a reference this
+                    organization has stopped referring to. */}
+                {role.anchorRole.status === "replaced" ? (
+                  <Badge variant="outline">{tAnchor("statusReplaced")}</Badge>
+                ) : (
+                  result !== undefined &&
                   result !== null &&
                   result.level !== null &&
                   result.level !== role.anchorRole.expectedLevel && (
                     <DeviationBadge
                       agreedLevel={role.anchorRole.expectedLevel}
                     />
-                  )}
+                  )
+                )}
               </div>
             )}
           </SheetHeader>
@@ -272,12 +292,12 @@ function RoleSheetContent({
                 failures={result.profileFailures ?? []}
                 computedLevel={result.level}
                 agreedLevel={role.anchorRole?.expectedLevel ?? null}
-                anchorRole={role.anchorRole}
+                anchorRole={liveAnchor}
                 onClose={onClose}
               />
             ) : (
               <section className="space-y-3">
-                {role.anchorRole !== null && (
+                {liveAnchor !== null && (
                   // Manage the anchor WHERE YOU SEE IT. The role page's own
                   // menu keeps its shortcut, but a reader who opened this
                   // sheet because they were looking at the ladder should not
@@ -285,7 +305,7 @@ function RoleSheetContent({
                   <AnchorManageRow
                     orgId={orgId}
                     roleId={roleId}
-                    anchorRole={role.anchorRole}
+                    anchorRole={liveAnchor}
                   />
                 )}
                 {result?.completed &&
@@ -379,6 +399,25 @@ function ReviewBlock({
   const tAnchor = useTranslations("dashboard.roles.anchor")
   const [confirming, setConfirming] = useState(false)
   const [managing, setManaging] = useState(false)
+  const [pending, setPending] = useState(false)
+  const tToast = useTranslations("dashboard.toast")
+  const updateAnchor = useMutation(api.assessment.anchorRoles.updateAnchorRole)
+
+  // Both decisions are the SAME audited mutation the advanced form calls, with
+  // one field each. Nothing here is a shortcut around the write path; what the
+  // acts remove is the reader having to know which field to set.
+  async function act(patch: { expectedLevel?: number; status?: "replaced" }) {
+    if (pending) return
+    setPending(true)
+    try {
+      await updateAnchor({ orgId, roleId: roleId as Id<"roles">, ...patch })
+      toast.success(tToast("anchorUpdated"))
+    } catch {
+      toast.error(tToast("error"))
+    } finally {
+      setPending(false)
+    }
+  }
 
   return (
     <section
@@ -418,30 +457,69 @@ function ReviewBlock({
           ))}
         </ul>
       )}
-      <div className="flex flex-wrap gap-2">
-        {reason === "profileLimited" ? (
-          <Button type="button" size="sm" onClick={() => setConfirming(true)}>
-            {t("confirmCta")}
-          </Button>
-        ) : reason === "anchorDeviation" ? (
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={() => setManaging(true)}
-          >
-            {tAnchor("manageCta")}
-          </Button>
-        ) : (
-          <Link
+      {reason === "anchorDeviation" ? (
+        // A QUESTION MEETS ANSWERS, not a form.
+        //
+        // The deviation asks one thing: the assessment and the agreement
+        // disagree, so which of them moves? A status select answers that in
+        // bookkeeping vocabulary ("set status to Replaced"), which asks the
+        // reader to translate a decision into a field value and then work out
+        // what the field value does. The three answers are acts, each saying
+        // what it will do before it is pressed.
+        //
+        // The full form survives as the advanced path below: fine control over
+        // level, motivation and status is still reachable, it is just not the
+        // front door to a review.
+        <div className="space-y-2">
+          <AnchorActRow
+            label={tAnchor("alignCta", { level: computedLevel ?? 0 })}
+            consequence={tAnchor("alignConsequence", {
+              level: computedLevel ?? 0,
+            })}
+            pending={pending}
+            onAct={() => act({ expectedLevel: computedLevel ?? 0 })}
+          />
+          <AnchorActRow
+            label={t("rateCta")}
+            consequence={tAnchor("reassessConsequence")}
             href={`/roles/${slug}/rate`}
-            onClick={onClose}
-            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
-          >
-            {t("rateCta")}
-          </Link>
-        )}
-      </div>
+            onNavigate={onClose}
+          />
+          <AnchorActRow
+            label={tAnchor("retireCta")}
+            consequence={tAnchor("retireConsequence")}
+            pending={pending}
+            onAct={() => act({ status: "replaced" })}
+          />
+          {/* The advanced path, deliberately quiet: a review never needs it. */}
+          <div className="pt-1">
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={() => setManaging(true)}
+            >
+              {tAnchor("detailsCta")}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {reason === "profileLimited" ? (
+            <Button type="button" size="sm" onClick={() => setConfirming(true)}>
+              {t("confirmCta")}
+            </Button>
+          ) : (
+            <Link
+              href={`/roles/${slug}/rate`}
+              onClick={onClose}
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+            >
+              {t("rateCta")}
+            </Link>
+          )}
+        </div>
+      )}
       {/* MOUNTED ONLY WHILE OPEN, and that is not a nicety.
           These are Base UI Dialog roots, and this block renders INSIDE an open
           Sheet, which is a dialog itself. Mounting them unconditionally put
@@ -521,6 +599,54 @@ function AnchorManageRow({
           anchorRole={anchorRole}
         />
       )}
+    </div>
+  )
+}
+
+// One answer to the review's question: the act, and what it will do, in that
+// order. The consequence is not decoration — the whole reason the status
+// select failed the reader is that pressing it told them nothing about what
+// would happen (the consequence-before-act law).
+function AnchorActRow({
+  label,
+  consequence,
+  pending,
+  onAct,
+  href,
+  onNavigate,
+}: {
+  label: string
+  consequence: string
+  pending?: boolean
+  onAct?: () => void
+  // A link act (re-evaluating happens on another route) rather than a mutation.
+  href?: string
+  onNavigate?: () => void
+}) {
+  return (
+    <div className="space-y-1 rounded-lg border bg-card p-3">
+      {href === undefined ? (
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          disabled={pending}
+          onClick={onAct}
+        >
+          {label}
+        </Button>
+      ) : (
+        <Link
+          href={href}
+          onClick={onNavigate}
+          className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+        >
+          {label}
+        </Link>
+      )}
+      <p className="text-muted-foreground text-sm leading-relaxed">
+        {consequence}
+      </p>
     </div>
   )
 }

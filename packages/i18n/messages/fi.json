@@ -1163,7 +1163,13 @@
         "statusReplaced": "Korvattu",
         "reviewedAt": "Viimeksi tarkistettu {date}",
         "updateCta": "Tallenna muutokset",
-        "error": "Muutosta ei voitu tallentaa. Yritä uudelleen."
+        "error": "Muutosta ei voitu tallentaa. Yritä uudelleen.",
+        "alignCta": "Päivitä sovittu vaativuustaso arvoon {level}",
+        "alignConsequence": "Arviointi pysyy ja sopimus seuraa sitä. Rooli säilyttää tason {level} eikä sitä enää merkitä.",
+        "reassessConsequence": "Sopimus pysyy ja arviointi tehdään uudelleen. Uudelleenavaaminen piilottaa tuloksen, kunnes viimeistelette sen uudelleen.",
+        "retireCta": "Poista ankkuriroolin käytöstä",
+        "retireConsequence": "Rooli säilyy täsmälleen ennallaan eikä enää toimi vertailukohtana muille rooleille. Sen kalibrointihistoria säilytetään.",
+        "detailsCta": "Muuta tietoja"
       },
       "toolbar": {
         "searchPlaceholder": "Hae nimikkeellä, tiimillä tai toiminnolla",

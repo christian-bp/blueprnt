@@ -1163,7 +1163,13 @@
         "statusReplaced": "Erstattet",
         "reviewedAt": "Sist gjennomgått {date}",
         "updateCta": "Lagre endringer",
-        "error": "Endringen kunne ikke lagres. Prøv igjen."
+        "error": "Endringen kunne ikke lagres. Prøv igjen.",
+        "alignCta": "Oppdater avtalt nivå til {level}",
+        "alignConsequence": "Vurderingen står fast og avtalen følger den. Rollen beholder nivå {level} og flagges ikke lenger.",
+        "reassessConsequence": "Avtalen står fast og vurderingen gjøres på nytt. Å åpne den på nytt skjuler resultatet til dere fullfører den igjen.",
+        "retireCta": "Pensjoner ankerrollen",
+        "retireConsequence": "Rollen blir stående akkurat som den er og slutter å være en referanse andre roller sammenlignes med. Kalibreringshistorikken beholdes.",
+        "detailsCta": "Endre detaljer"
       },
       "toolbar": {
         "searchPlaceholder": "Søk på tittel, team eller funksjon",

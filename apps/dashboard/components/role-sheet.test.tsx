@@ -1,8 +1,14 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { onQuery } from "@/test/convex-mocks"
+import { mockMutation, onQuery } from "@/test/convex-mocks"
 
 vi.mock(
   "convex/react",
@@ -313,7 +319,7 @@ describe("RoleSheet state priority", () => {
     expect(screen.queryByText("Scope")).toBeNull()
   })
 
-  it("offers anchor management for a deviating anchor", () => {
+  it("offers the review's own decisions for a deviating anchor", () => {
     role = {
       ...baseRole(),
       anchorRole: {
@@ -333,7 +339,13 @@ describe("RoleSheet state priority", () => {
           .replace("{expected}", "2")
       )
     ).toBeDefined()
-    expect(screen.getByRole("button", { name: anchor.manageCta })).toBeDefined()
+    // The decisions, not the manage form: the form is the advanced path now.
+    expect(
+      screen.getByRole("button", {
+        name: anchor.alignCta.replace("{level}", "4"),
+      })
+    ).toBeDefined()
+    expect(screen.queryByRole("button", { name: anchor.manageCta })).toBeNull()
   })
 
   it("sends a stale placement back to its assessment", () => {
@@ -444,5 +456,130 @@ describe("RoleSheet close-button reservation", () => {
     expect(
       header.querySelector('[data-slot="badge"], .rounded-full, span')
     ).not.toBeNull()
+  })
+})
+
+// THE REVIEW OFFERS DECISIONS, NOT A FORM.
+//
+// The deviation asks one thing: the assessment and the agreement disagree, so
+// which of them moves? The front door used to be the manage form, where the
+// answer was a status select — bookkeeping vocabulary that asks the reader to
+// translate a decision into a field value and then work out what the value
+// does. Each answer is an act now, and each says what it will do first.
+describe("RoleSheet anchor review acts", () => {
+  const updateAnchor = mockMutation("assessment.anchorRoles.updateAnchorRole")
+  const anchor = messages.dashboard.roles.anchor
+
+  beforeEach(() => {
+    install()
+    updateAnchor.mockReset().mockResolvedValue(null)
+    role = {
+      ...baseRole(),
+      anchorRole: {
+        expectedLevel: 8,
+        motivation: "Reference role",
+        status: "active" as const,
+        reviewedAt: 0,
+      },
+    }
+    result = {
+      roleId: "role_1",
+      title: "Engineer",
+      complete: true,
+      completed: true,
+      calibrated: false,
+      methodDrift: false,
+      profileLimited: false,
+      profileFailures: null,
+      ratedCount: 3,
+      totalCriteria: 3,
+      score: 90,
+      level: 11,
+      criteria: [],
+    }
+  })
+  afterEach(() => cleanup())
+
+  function openSheet() {
+    renderSheet()
+    open()
+  }
+
+  it("offers three answers, each with what it will do", () => {
+    openSheet()
+    const align = anchor.alignCta.replace("{level}", "11")
+    for (const [label, consequence] of [
+      [align, anchor.alignConsequence.replace("{level}", "11")],
+      [
+        messages.dashboard.levels.calibration.rateCta,
+        anchor.reassessConsequence,
+      ],
+      [anchor.retireCta, anchor.retireConsequence],
+    ]) {
+      expect(screen.getByText(label as string)).toBeDefined()
+      expect(screen.getByText(consequence as string)).toBeDefined()
+    }
+  })
+
+  // Answer 1: the assessment is right, so the agreement moves to meet it.
+  it("aligns the agreed level with the computed one", async () => {
+    openSheet()
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: anchor.alignCta.replace("{level}", "11"),
+      })
+    )
+    await waitFor(() => {
+      expect(updateAnchor).toHaveBeenCalledWith({
+        orgId: "org_1",
+        roleId: "role_1",
+        expectedLevel: 11,
+      })
+    })
+  })
+
+  // Answer 3: the role is no longer a good reference. The role itself is
+  // untouched; only its anchor duty ends.
+  it("retires the anchor without touching the role", async () => {
+    openSheet()
+    fireEvent.click(screen.getByRole("button", { name: anchor.retireCta }))
+    await waitFor(() => {
+      expect(updateAnchor).toHaveBeenCalledWith({
+        orgId: "org_1",
+        roleId: "role_1",
+        status: "replaced",
+      })
+    })
+  })
+
+  // The form survives as the advanced path; a review just never needs it.
+  it("keeps the full form reachable behind its own affordance", () => {
+    openSheet()
+    expect(
+      screen.getByRole("button", { name: anchor.detailsCta })
+    ).toBeDefined()
+  })
+
+  // A retired anchor is not a live reference: it cannot deviate from anything,
+  // so it states its retirement instead of wearing the deviation chip, and it
+  // raises no review at all.
+  it("shows a retired anchor its state, never a deviation", () => {
+    role = {
+      ...baseRole(),
+      anchorRole: {
+        expectedLevel: 8,
+        motivation: "Reference role",
+        status: "replaced" as const,
+        reviewedAt: 0,
+      },
+    }
+    openSheet()
+    expect(screen.getByText(anchor.statusReplaced)).toBeDefined()
+    expect(
+      screen.queryByText(
+        messages.dashboard.levels.deviation.replace("{level}", "8")
+      )
+    ).toBeNull()
+    expect(screen.queryByText(anchor.retireCta)).toBeNull()
   })
 })

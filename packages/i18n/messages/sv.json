@@ -1163,7 +1163,13 @@
         "statusReplaced": "Ersatt",
         "reviewedAt": "Senast översedd {date}",
         "updateCta": "Spara ändringar",
-        "error": "Ändringen kunde inte sparas. Försök igen."
+        "error": "Ändringen kunde inte sparas. Försök igen.",
+        "alignCta": "Uppdatera överenskommen nivå till {level}",
+        "alignConsequence": "Bedömningen står fast och överenskommelsen följer den. Rollen behåller nivå {level} och flaggas inte längre.",
+        "reassessConsequence": "Överenskommelsen står fast och bedömningen görs om. Att omvärdera döljer resultatet tills ni slutför den igen.",
+        "retireCta": "Pensionera ankarrollen",
+        "retireConsequence": "Rollen är kvar precis som den är och slutar vara en referens som andra roller jämförs mot. Dess kalibreringshistorik behålls.",
+        "detailsCta": "Ändra detaljer"
       },
       "toolbar": {
         "searchPlaceholder": "Sök på titel, team eller funktion",

@@ -1163,7 +1163,13 @@
         "statusReplaced": "Replaced",
         "reviewedAt": "Last reviewed {date}",
         "updateCta": "Save changes",
-        "error": "The change could not be saved. Try again."
+        "error": "The change could not be saved. Try again.",
+        "alignCta": "Update the agreed level to {level}",
+        "alignConsequence": "The assessment stands and the agreement follows it. The role keeps level {level} and stops being flagged.",
+        "reassessConsequence": "The agreement stands and the assessment is redone. Reopening hides the result until you complete it again.",
+        "retireCta": "Retire as anchor role",
+        "retireConsequence": "The role stays exactly as it is and stops being a reference other roles are compared against. Its calibration history is kept.",
+        "detailsCta": "Change details"
       },
       "toolbar": {
         "searchPlaceholder": "Search by title, team, or function",

@@ -1163,7 +1163,13 @@
         "statusReplaced": "Erstattet",
         "reviewedAt": "Senest gennemgået {date}",
         "updateCta": "Gem ændringer",
-        "error": "Ændringen kunne ikke gemmes. Prøv igen."
+        "error": "Ændringen kunne ikke gemmes. Prøv igen.",
+        "alignCta": "Opdater aftalt niveau til {level}",
+        "alignConsequence": "Vurderingen står fast, og aftalen følger den. Rollen beholder niveau {level} og markeres ikke længere.",
+        "reassessConsequence": "Aftalen står fast, og vurderingen laves om. At genåbne den skjuler resultatet, indtil I afslutter den igen.",
+        "retireCta": "Pensionér ankerrollen",
+        "retireConsequence": "Rollen bliver præcis som den er og holder op med at være en reference, andre roller sammenlignes med. Dens kalibreringshistorik bevares.",
+        "detailsCta": "Ændr detaljer"
       },
       "toolbar": {
         "searchPlaceholder": "Søg på titel, team eller funktion",
