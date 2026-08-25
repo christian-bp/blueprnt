@@ -5,29 +5,30 @@ import type { ZoneKey } from "@workspace/core"
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
 
-// The zones, drawn AROUND the levels instead of between them.
+// The zones, marked around the levels by their LABEL alone.
 //
 // Section 14.5.1 asks for the zones to be clearly visible as visual and
-// explanatory groupings around the levels. They were built as band rows: a
-// header row per zone, stacked between the level rows, each with its own
+// explanatory groupings around the levels. They were built as band rows first:
+// a header row per zone, stacked between the level rows, each with its own
 // collapse control and its own sentences. That reads as four sections of a
 // page rather than as an annotation on one ladder, and it cost the flat
-// twelve-rung list the rhythm that made it legible in the first place.
+// twelve-rung list the rhythm that made it legible.
 //
-// So the ladder is flat again, exactly its pre-zone shape, and the zone is a
-// RAIL: a thin marker down the group's edge spanning its rows, with one small
-// label at the top. Muted ink, never brand: this is structure, not a judgement
-// about the roles inside it, and the brand ink on this page belongs to the
-// level a role actually landed on.
+// A rail down each group's edge came next, and it went the same way: the
+// document asks for the zones to be visible, and the label is what makes them
+// visible. The rail was ours, not the document's, and a marker that adds an
+// inset and a border to every group is the surface doing more than the reader
+// asked for. The title is enough.
 //
-// No collapse. A rail that folded its rows away would be a band row again in
-// everything but shape, and the flat list is short enough to read whole.
-export const ZONE_RAIL_CLASS = "border-muted-foreground/25 border-s-2 ps-4"
+// So a zone is one small label at the top of its levels, and nothing else. No
+// rail, no inset, no collapse: the flat list is short enough to read whole,
+// and the levels underneath keep the exact rhythm they had before zones
+// existed.
 
 // The label's own scale: SCANNED, not read. Same treatment as the app's other
 // group eyebrows (the level-rules panel's per-zone groups), so a zone reads
 // the same wherever it annotates something.
-export const ZONE_RAIL_LABEL_CLASS =
+export const ZONE_GROUP_LABEL_CLASS =
   "font-medium text-muted-foreground text-xs uppercase tracking-wide"
 
 // Letter, short name, and the depth behind the morph.
@@ -40,7 +41,11 @@ export const ZONE_RAIL_LABEL_CLASS =
 // No role count. The level rows underneath each carry their own, and a zone
 // total beside them would be a second number for the reader to reconcile
 // against the three they can already see.
-export function ZoneRailLabel({
+//
+// This is now the WHOLE grouping, on every surface that shows it: the ladder
+// puts it above its three rows, and the two matrices head their zone's
+// columns or rows with it.
+export function ZoneGroupLabel({
   zone,
   content,
 }: {
@@ -50,8 +55,8 @@ export function ZoneRailLabel({
   const t = useTranslations("dashboard.levels")
   return (
     <div className="flex min-w-0 items-center gap-1.5">
-      <span className={ZONE_RAIL_LABEL_CLASS}>{t("zoneLabel", { zone })}</span>
-      <span className={ZONE_RAIL_LABEL_CLASS}>{content.shortName}</span>
+      <span className={ZONE_GROUP_LABEL_CLASS}>{t("zoneLabel", { zone })}</span>
+      <span className={ZONE_GROUP_LABEL_CLASS}>{content.shortName}</span>
       <HelpMorphButton label={content.shortName}>
         <span className="space-y-2">
           <span className="block font-medium text-foreground">

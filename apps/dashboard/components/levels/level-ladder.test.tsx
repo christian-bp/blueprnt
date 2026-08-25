@@ -3,7 +3,6 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { LevelLadder } from "@/components/levels/level-ladder"
-import { ZONE_RAIL_CLASS } from "@/components/levels/zone-rail"
 import {
   type ZoneKey,
   ZONE_KEYS,
@@ -77,11 +76,11 @@ describe("LevelLadder", () => {
   // levels 1-3 are one KIND of role, so it carries the zone's letter, its name
   // and its own description (masterdokument 14.5), not just a divider.
   // The zone is an ANNOTATION around the rows, not a section the ladder is cut
-  // into: a rail down the group's edge and one small label at its top. It
+  // into: one small label at the top of its three rows. It
   // stands the letter and the SHORT name; section 14.5's three columns (the
   // masterdokument's own full name, the character, the typical profile) are
   // what the morph beside it carries.
-  it("labels each zone at the top of its rail, and describes it nowhere", () => {
+  it("labels each zone above its levels, and describes it nowhere", () => {
     renderLadder([role({ roleId: "r1", level: 1 })], false, TWELVE_LEVELS)
     const content = zoneContent("en")
     for (const zone of ZONE_KEYS) {
@@ -96,31 +95,27 @@ describe("LevelLadder", () => {
     }
   })
 
-  // The rail spans exactly its zone's levels: the grouping is structural, so a
-  // reader can read the ladder flat and still see which three rungs are one
-  // kind of role.
-  it("rails exactly the three levels of each zone", () => {
+  // The label groups exactly its zone's levels: the grouping is structural, so
+  // a reader can read the ladder flat and still see which three rungs are one
+  // kind of role. Nothing else marks it, which is the owner's ruling: the
+  // title is enough, and the rail that briefly sat down this edge was ours
+  // rather than section 14.5.1's.
+  it("groups exactly the three levels of each zone under its label", () => {
     renderLadder([], false, TWELVE_LEVELS)
     const content = zoneContent("en")
     for (const zone of ZONE_KEYS) {
       const { from, to } = ZONE_LEVEL_RANGES[zone]
-      const rail = screen
+      const group = screen
         .getByText(content.zones[zone].shortName)
         .closest("section") as HTMLElement
-      // The marker itself, not just the grouping: the zone is supposed to be
-      // VISIBLE around its levels (masterdokument 14.5.1), and a group that
-      // lost its rail would still group its rows correctly while showing the
-      // reader nothing. Asserted as the shared class so the two views cannot
-      // drift into two markers.
-      expect(rail.className).toContain(ZONE_RAIL_CLASS)
-      const levels = [...rail.querySelectorAll("li")].map(
+      const levels = [...group.querySelectorAll("li")].map(
         (row) => row.textContent ?? ""
       )
       expect(levels).toHaveLength(to - from + 1)
       for (let level = from; level <= to; level++) {
         expect(
           levels.some((text) => text.startsWith(`Level ${level}`)),
-          `zone ${zone} rails level ${level}`
+          `zone ${zone} groups level ${level}`
         ).toBe(true)
       }
     }

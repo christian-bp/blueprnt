@@ -8,7 +8,7 @@ import { HATCH_CLASS } from "@/components/hatch"
 import { RoleChip } from "@/components/levels/role-chip"
 import { type LevelRoleRow, levelRanges } from "@/lib/levels"
 import { SPRING } from "@/lib/motion"
-import { ZoneRailLabel } from "@/components/levels/zone-rail"
+import { ZoneGroupLabel } from "@/components/levels/zone-label"
 import { zoneBands } from "@/lib/zone-bands"
 import {
   MATRIX_COL_HEADER_CLASS,
@@ -77,15 +77,15 @@ export function FamilyLevelMatrix({
                 // the other axis: the levels are its columns, so a zone is a
                 // colgroup header spanning its three of them. That is the
                 // form 14.5.1 asks for, so only the label changed: the short
-                // name and the morph, exactly what the ladder's rail carries,
-                // instead of the masterdokument's full clause.
+                // name and the morph, the same label the ladder puts above
+                // its groups, instead of the masterdokument's full clause.
                 <th
                   key={band.zone}
                   scope="colgroup"
                   colSpan={band.ranges.length}
                   className={`whitespace-nowrap px-2 py-1 text-left ${MATRIX_COL_HEADER_CLASS}`}
                 >
-                  <ZoneRailLabel
+                  <ZoneGroupLabel
                     zone={band.zone}
                     content={content.zones[band.zone]}
                   />

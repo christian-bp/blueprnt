@@ -72,10 +72,10 @@ describe("LevelMatrix", () => {
 
   // The matrix bands by zone too, on a row of its own: there is no left column
   // wide enough to carry a zone's description beside twelve level rows.
-  // The matrix keeps a band ROW where the ladder took a rail: a <table>
-  // cannot span a rail down a group's edge without spending a rowspan column
-  // of horizontal width, which is what this view has least of. What it carries
-  // is exactly the rail's label and nothing more.
+  // The matrix keeps a band ROW where the ladder just labels its group: a
+  // <table> has no slot for a label between two rows, because a label between
+  // two rows IS a row here. What it carries is exactly the ladder's own label
+  // and nothing more.
   it("heads each zone's rows with the rail's own label, and nothing else", () => {
     renderMatrix([role({ roleId: "r1", level: 1 })], TWELVE_LEVELS)
     const content = zoneContent("en")

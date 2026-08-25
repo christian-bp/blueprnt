@@ -33,10 +33,7 @@ import { FamilyLevelMatrix } from "@/components/levels/family-level-matrix"
 import { LevelLadder } from "@/components/levels/level-ladder"
 import { LevelMatrix } from "@/components/levels/level-matrix"
 import { PendingRoles } from "@/components/levels/pending-roles"
-import {
-  ZONE_RAIL_CLASS,
-  ZONE_RAIL_LABEL_CLASS,
-} from "@/components/levels/zone-rail"
+import { ZONE_GROUP_LABEL_CLASS } from "@/components/levels/zone-label"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
@@ -128,9 +125,9 @@ export default function WorkOverviewPage() {
               for real; only the short names, counts and chips are bars. */}
             <div className="min-h-0 w-full flex-1 space-y-5 overflow-y-auto">
               {ZONE_KEYS.map((zone) => (
-                <section key={zone} className={ZONE_RAIL_CLASS}>
+                <section key={zone}>
                   <div className="mb-2 flex h-5 items-center gap-1.5">
-                    <span className={ZONE_RAIL_LABEL_CLASS}>
+                    <span className={ZONE_GROUP_LABEL_CLASS}>
                       {t("zoneLabel", { zone })}
                     </span>
                     {/* The short name is content; the help is chrome, but it

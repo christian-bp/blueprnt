@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { HATCH_CLASS } from "@/components/hatch"
 import { RoleChip } from "@/components/levels/role-chip"
-import { ZONE_RAIL_CLASS, ZoneRailLabel } from "@/components/levels/zone-rail"
+import { ZoneGroupLabel } from "@/components/levels/zone-label"
 import { type LevelRoleRow, levelRanges } from "@/lib/levels"
 import { SPRING } from "@/lib/motion"
 import { groupByFamily as groupRowsByFamily } from "@/lib/role-groups"
@@ -22,7 +22,7 @@ import { bandRowsFor, zoneBands } from "@/lib/zone-bands"
 // grouping is an ANNOTATION on the ladder, not a set of sections it is cut
 // into: section 14.5.1 asks for the zones as visual groupings AROUND the
 // levels, and building them as band rows between the levels cost the flat
-// list the rhythm that made it readable. See components/levels/zone-rail.tsx.
+// list the rhythm that made it readable. See components/levels/zone-label.tsx.
 //
 // A role is placed in the zone its OWN row names, never in the one its level
 // implies: placement is the engine's (ADR-0022's placeRole, which may cap a
@@ -95,13 +95,15 @@ export function LevelLadder({
         if (band.span === null) return null
         const bandRows = bandRowsFor(rows, band.zone)
         return (
-          // The zone as an ANNOTATION around its rows: a rail down the edge,
-          // one small label at its top, and the level rows inside exactly as
-          // the flat ladder drew them. No band row, no collapse, no extra row
-          // height. Section 14.5.1 asks for groupings AROUND the levels.
-          <section key={band.zone} className={ZONE_RAIL_CLASS}>
+          // The zone as an ANNOTATION around its rows: one small label at the
+          // top, and the level rows under it exactly as the flat ladder drew
+          // them. No band row, no rail, no inset, no collapse. Section 14.5.1
+          // asks for the zones to be clearly visible; the label is what makes
+          // them visible, and the rail that briefly sat down this edge was
+          // ours rather than the document's.
+          <section key={band.zone}>
             <div className="mb-2">
-              <ZoneRailLabel
+              <ZoneGroupLabel
                 zone={band.zone}
                 content={content.zones[band.zone]}
               />

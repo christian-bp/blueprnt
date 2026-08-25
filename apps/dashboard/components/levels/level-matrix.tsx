@@ -10,7 +10,7 @@ import {
   MATRIX_COL_HEADER_CLASS,
   MATRIX_WRAPPER_CLASS,
 } from "@/components/levels/matrix-chrome"
-import { ZoneRailLabel } from "@/components/levels/zone-rail"
+import { ZoneGroupLabel } from "@/components/levels/zone-label"
 import { type LevelRoleRow, levelRanges } from "@/lib/levels"
 import { SPRING } from "@/lib/motion"
 import { groupByFamily as groupRowsByFamily } from "@/lib/role-groups"
@@ -99,23 +99,19 @@ export function LevelMatrix({
             return (
               <Fragment key={band.zone}>
                 {/* THE MATRIX KEEPS A BAND ROW, stripped to a label.
-                    The ladder draws its zones as a rail down the group's edge,
-                    which is what section 14.5.1 asks for. A <table> cannot
-                    carry that honestly. The two ways to try both cost more
-                    than they give: a rowspan rowgroup column spends horizontal
-                    width on the one view that scrolls sideways and wants every
-                    pixel, and a border on <tbody> is unreliable under
-                    border-collapse. So this stays a row, and carries exactly
-                    what the rail's label carries: letter, short name, and the
-                    depth behind the morph. No description, no count, no
-                    collapse. */}
+                    The ladder puts its zone label above the group's rows,
+                    with nothing else marking it. A <table> has no equivalent
+                    slot: a label between two rows IS a row here. So this stays
+                    a row, and carries exactly what the ladder's label carries
+                    and nothing more: letter, short name, and the depth behind
+                    the morph. No description, no count, no collapse. */}
                 <tr>
                   {/* A td, not a th: the band heads a group of ROWS, and the
                       roles register's family band does the same. A colgroup
                       th would also enter every columnheader query on the
                       surface, which the track headers own. */}
                   <td colSpan={tracks.length + 1} className="pt-2 text-left">
-                    <ZoneRailLabel
+                    <ZoneGroupLabel
                       zone={band.zone}
                       content={content.zones[band.zone]}
                     />

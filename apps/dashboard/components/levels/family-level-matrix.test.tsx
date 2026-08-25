@@ -106,7 +106,7 @@ describe("FamilyLevelMatrix", () => {
     expect(zoneHeader.colSpan).toBe(2)
     // This view groups the zones around the levels on the COLUMN axis
     // already, so only its label changed: the short name and the morph, like
-    // the ladder's rail, instead of the masterdokument's full clause.
+    // the ladder's own group label, instead of the masterdokument's clause.
     expect(zoneHeader.textContent).toContain(
       zoneContent("en").zones.A.shortName
     )
