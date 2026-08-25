@@ -1,0 +1,46 @@
+apps/dashboard/components/levels/family-level-matrix.tsx
+  s_58dd112dc09435::t_6e87bfc4937c42 80
+  s_58dd112dc09435::t_c31d499ebbdb0d 11,88
+  s_58dd112dc09435::t_47abeba82e9c6a 81
+apps/dashboard/content/docs/sv/levels-views.mdx
+  s_58dd112dc09435::t_c9ac4156cd0d5d 28-29
+apps/dashboard/content/docs/da/levels-views.mdx
+  s_58dd112dc09435::t_c9ac4156cd0d5d 28-29
+apps/dashboard/content/docs/nb/levels-views.mdx
+  s_58dd112dc09435::t_c9ac4156cd0d5d 28-29
+apps/dashboard/components/levels/level-ladder.tsx
+  s_58dd112dc09435::t_c31d499ebbdb0d 8,25,98-104,106
+apps/dashboard/components/levels/level-matrix.tsx
+  s_58dd112dc09435::t_c31d499ebbdb0d 13,102-107,114
+apps/dashboard/components/levels/level-matrix.test.tsx
+  s_58dd112dc09435::t_6e87bfc4937c42 75-78
+apps/dashboard/content/docs/en/levels-views.mdx
+  s_58dd112dc09435::t_c9ac4156cd0d5d 27-28
+apps/dashboard/app/(app)/work/page.tsx
+  s_58dd112dc09435::t_3479aafc991e28 36,128,130
+apps/dashboard/content/docs/fi/levels-views.mdx
+  s_58dd112dc09435::t_c9ac4156cd0d5d 29-30
+apps/dashboard/components/levels/family-level-matrix.test.tsx
+  s_58dd112dc09435::t_6e87bfc4937c42 109
+apps/dashboard/components/levels/zone-label.tsx
+  s_58dd112dc09435::t_642ec21dc6d936 1-76
+apps/dashboard/components/levels/level-ladder.test.tsx
+  s_58dd112dc09435::t_6e87bfc4937c42 79,83
+  s_58dd112dc09435::t_4ae02611462625 98-103,108,111,118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "8b7b7bad7ab9b33674885382b2dbf024d1236ede",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
