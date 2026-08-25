@@ -98,8 +98,21 @@ export const MATRIX_ZONE_GAP_CLASS = "w-[11px] p-0"
 // top-0/bottom-0 resolve against the positioned wrapper around the table and
 // give it the table's full height. No measurement, no overlay chasing a
 // spring, and nothing to re-align when the family filter reflows the grid.
+//
+// THE INK IS foreground/15, and its ceiling is arithmetic rather than taste.
+// Measured by painting each colour over the card and reading the pixel, since
+// these tokens compute to oklab() and eyeballing a colour string tells you
+// nothing: the cells' own solid edges sit at 1.26 contrast, the level rule at
+// 1.15, and the dash at the border token sat at 1.26 per dash but 1.11
+// averaged over the line, which is where it disappeared into the paper.
+//
+// foreground/15 reads 1.40 where a dash lands and averages 1.17, so the line
+// is present without ever weighing more than the cell borders it runs beside
+// (1.26). foreground/20 would average 1.25, which is those borders, and the
+// boundary would read as a second grid rather than an annotation on this one.
+// One notch, not two.
 export const MATRIX_ZONE_RULE_CLASS =
-  "pointer-events-none absolute top-0 bottom-0 ml-[5px] w-px text-border"
+  "pointer-events-none absolute top-0 bottom-0 ml-[5px] w-px text-foreground/15"
 
 // 3px on, 4px off: the rhythm the mean marker uses, so the app has one dashed
 // reference line rather than two that nearly match.

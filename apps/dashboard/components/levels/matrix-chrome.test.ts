@@ -60,6 +60,16 @@ describe("matrix chrome", () => {
   // from its ink.
   it("dashes the zone rule and leaves the level rule solid", () => {
     expect(MATRIX_ZONE_RULE_CLASS).toContain("w-px")
+    // THE INK, with its ceiling, measured by painting each colour over the
+    // card and reading the pixel (these tokens compute to oklab, where a
+    // colour string tells you nothing). The cells' own solid edges sit at
+    // 1.26 contrast and the level rule at 1.15; the dash at the border token
+    // averaged 1.11 over its length and disappeared into the paper.
+    // foreground/15 reads 1.40 per dash and averages 1.17. foreground/20
+    // would average 1.25, which IS the cell borders, so the boundary would
+    // stop being an annotation and become a second grid.
+    expect(MATRIX_ZONE_RULE_CLASS).toContain("text-foreground/15")
+    expect(MATRIX_ZONE_RULE_CLASS).not.toContain("text-border")
     expect(MATRIX_ZONE_RULE_CLASS).not.toContain("w-0.5")
     expect(MATRIX_ZONE_RULE_DASH).toContain("repeating-linear-gradient")
     // The app's reference-line rhythm, not the browser's border-dashed one.
