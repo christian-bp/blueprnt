@@ -1,0 +1,23 @@
+apps/dashboard/components/levels/matrix-chrome.test.ts
+  s_58dd112dc09435::t_38ecfe2cad31ab 72
+  s_58dd112dc09435::t_7ef82d1c688a35 63-71
+apps/dashboard/components/levels/matrix-chrome.ts
+  s_58dd112dc09435::t_38ecfe2cad31ab 101
+  s_58dd112dc09435::t_7ef82d1c688a35 102-113,115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "0e1caaa3ca2a9f402f2d444f6b3ff9486e44a7e4",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
