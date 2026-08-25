@@ -1,0 +1,51 @@
+apps/dashboard/components/levels/zone-rail.tsx
+  s_58dd112dc09435::t_a6c0a93cb54ff5 53
+  s_58dd112dc09435::t_79f8b7623878fa 1-52,54-71
+apps/dashboard/content/docs/nb/levels-views.mdx
+  s_58dd112dc09435::t_5b0646845e37de 27-28,31-32
+  s_58dd112dc09435::t_2174f71223caa4 29-30
+apps/dashboard/content/docs/sv/levels-views.mdx
+  s_58dd112dc09435::t_2174f71223caa4 28-31
+apps/dashboard/components/levels/family-level-matrix.tsx
+  s_58dd112dc09435::t_4a72431aec8603 11-12,76-81,86,88-91
+apps/dashboard/content/docs/da/levels-views.mdx
+  s_58dd112dc09435::t_5b0646845e37de 27
+  s_58dd112dc09435::t_2174f71223caa4 28-31
+apps/dashboard/content/docs/en/levels-views.mdx
+  s_58dd112dc09435::t_2174f71223caa4 27-30
+apps/dashboard/components/levels/level-ladder.tsx
+  s_58dd112dc09435::t_47a8f6e3f23bd9 8,93,98-104,109-159
+  s_58dd112dc09435::t_111cbcedf14373 14-17,21-25,27
+apps/dashboard/components/levels/level-ladder.test.tsx
+  s_58dd112dc09435::t_1acc3a70de2602 6,110-115
+  s_58dd112dc09435::t_45134ea6bc7cde 1
+  s_58dd112dc09435::t_27868a6c2cb7f6 79-84,88,90-92,99-102,104,107-109,116-125,129-137
+apps/dashboard/components/levels/level-matrix.test.tsx
+  s_58dd112dc09435::t_45134ea6bc7cde 1
+  s_58dd112dc09435::t_32a7b7637dd4d1 75-79,83
+apps/dashboard/components/levels/level-matrix.tsx
+  s_58dd112dc09435::t_8a90a5a80a520c 6,125-151,153-190
+  s_58dd112dc09435::t_612b5ca3294ff1 13,101-111,117-118,124
+apps/dashboard/components/levels/family-level-matrix.test.tsx
+  s_58dd112dc09435::t_a6c0a93cb54ff5 107-113
+apps/dashboard/app/(app)/work/page.tsx
+  s_58dd112dc09435::t_2048b8ddabaadf 36-39,124-129,131-138,140
+apps/dashboard/content/docs/fi/levels-views.mdx
+  s_58dd112dc09435::t_2174f71223caa4 28-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "a5dc1e1372c6aa8758c0032979ca413729b352ea",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
