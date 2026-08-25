@@ -6,6 +6,7 @@ import {
   MATRIX_COL_RULE_CLASS,
   MATRIX_HEAD_INSET_CLASS,
   MATRIX_ZONE_GAP_CLASS,
+  MATRIX_ZONE_RULE_DASH,
   MATRIX_HEAD_PAD_CLASS,
   MATRIX_WRAPPER_CLASS,
   MATRIX_ZONE_RULE_CLASS,
@@ -51,20 +52,38 @@ describe("matrix chrome", () => {
     expect(text).not.toContain("whitespace-nowrap px-2 py-1 text-left")
   })
 
-  // TWO ORDERS OF DIVISION, and they must stay distinguishable. The level
-  // rule is the border ink at 60% and 1px, in an 8px gutter; the zone rule is
-  // full ink, 2px, and has a column of its own. Ink alone is a difference a
-  // reader has to hunt for.
-  it("draws the zone rule heavier than the level rule", () => {
+  // TWO ORDERS OF DIVISION, distinguished by PATTERN and EXTENT rather than
+  // by weight. The level rule is a solid 1px tick in the header; the zone
+  // rule is a 1px DASHED line running the whole grid. Both are 1px now, so
+  // the dash and the length are what separate them, which is what "less
+  // prominent" asked for: the boundary reads from its continuity instead of
+  // from its ink.
+  it("dashes the zone rule and leaves the level rule solid", () => {
+    expect(MATRIX_ZONE_RULE_CLASS).toContain("w-px")
+    expect(MATRIX_ZONE_RULE_CLASS).not.toContain("w-0.5")
+    expect(MATRIX_ZONE_RULE_DASH).toContain("repeating-linear-gradient")
+    // The app's reference-line rhythm, not the browser's border-dashed one.
+    expect(MATRIX_ZONE_RULE_DASH).toContain("currentColor 0 3px")
+    expect(MATRIX_ZONE_RULE_DASH).toContain("transparent 3px 7px")
+    // The level rule stays solid: a second dashed line would leave the two
+    // orders with only their length to tell them apart.
+    expect(MATRIX_COL_RULE_CLASS).not.toContain("gradient")
     expect(MATRIX_COL_RULE_CLASS).toContain("after:bg-border/60")
-    expect(MATRIX_COL_RULE_CLASS).toContain("after:w-px")
-    expect(MATRIX_ZONE_RULE_CLASS).toContain("after:bg-border")
-    expect(MATRIX_ZONE_RULE_CLASS).not.toContain("/60")
-    expect(MATRIX_ZONE_RULE_CLASS).toContain("after:w-0.5")
-    // Only the zone rule bridges the border-spacing to the row below, which
-    // is what turns its segments into one line.
-    expect(MATRIX_ZONE_RULE_CLASS).toContain("after:-bottom-2")
-    expect(MATRIX_COL_RULE_CLASS).toContain("after:bottom-0")
+  })
+
+  // ONE ELEMENT PER BOUNDARY, spanning the table. A gradient restarts its
+  // phase in every box it paints, and no row here is a multiple of the 7px
+  // period, so a segment per row would break the pattern at every joint.
+  it("draws the zone rule as one full-height element", () => {
+    expect(MATRIX_ZONE_RULE_CLASS).toContain("absolute")
+    expect(MATRIX_ZONE_RULE_CLASS).toContain("top-0")
+    expect(MATRIX_ZONE_RULE_CLASS).toContain("bottom-0")
+    // Placed by its STATIC position, so it needs no measurement to find its
+    // column: left and right stay auto.
+    expect(MATRIX_ZONE_RULE_CLASS).not.toMatch(/(^|\s)-?left-(?!\[)/)
+    expect(MATRIX_ZONE_RULE_CLASS).toContain("ml-[5px]")
+    // And it never eats a click meant for the grid under it.
+    expect(MATRIX_ZONE_RULE_CLASS).toContain("pointer-events-none")
   })
 
   // EQUAL SPACE ON BOTH SIDES, and enough of it that the zones read as
@@ -76,24 +95,21 @@ describe("matrix chrome", () => {
   // label on its left and 8px from the one on its right.
   //
   // The zone rule has a 12px column to itself, so its clear space is
-  // 9 + 8 + 12 + 8 + 9 = 46px, and a 2px rule down the middle of that column
-  // leaves 22px on each side. Neither rule adds a box that could shift a
-  // label.
+  // 9 + 8 + 12 + 8 + 9 = 46px, and a 1px rule 5px into that column leaves
+  // 22px on each side.
   it("centres both rules, and gives the zone boundary its air", () => {
-    for (const rule of [MATRIX_COL_RULE_CLASS, MATRIX_ZONE_RULE_CLASS]) {
-      expect(rule).toContain("after:absolute")
-      expect(rule).not.toMatch(/(^|\s)border-/)
-    }
+    expect(MATRIX_COL_RULE_CLASS).toContain("after:absolute")
+    expect(MATRIX_COL_RULE_CLASS).not.toMatch(/(^|\s)border-/)
     // 1px at the midpoint of an even 26px gap: 13/12, as close as odd sits.
     expect(MATRIX_COL_RULE_CLASS).toContain("after:-left-1")
-    // 2px down the middle of its own 12px column: 5px in, 22px of clear
-    // space on each side.
-    expect(MATRIX_ZONE_GAP_CLASS).toContain("w-3")
+    // 11px of air, with the line 5px into it: 22px of clear space each side.
+    // Odd on purpose: a 1px rule cannot centre in an even column, and at 12px
+    // the boundary measured 22 left against 23 right.
+    expect(MATRIX_ZONE_GAP_CLASS).toContain("w-[11px]")
     expect(MATRIX_ZONE_GAP_CLASS).toContain("p-0")
-    expect(MATRIX_ZONE_RULE_CLASS).toContain("after:left-[5px]")
-    // Positive, not negative: it is centred in its OWN column, not reaching
-    // back into the gutter of the column beside it.
-    expect(MATRIX_ZONE_RULE_CLASS).not.toContain("-left-")
+    // The gap cell is NOT a positioning context: the line has to escape it to
+    // reach the table's full height.
+    expect(MATRIX_ZONE_GAP_CLASS).not.toContain("relative")
   })
 
   // The 26px is not an accident either: a header cell insets its content by

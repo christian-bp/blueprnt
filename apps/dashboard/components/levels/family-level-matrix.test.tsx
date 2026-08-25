@@ -202,7 +202,9 @@ describe("FamilyLevelMatrix zone boundaries", () => {
     minScore: 100 - index * 8,
   }))
 
-  const isZoneRuled = (el: Element) => el.className.includes("after:w-0.5")
+  const zoneRules = () => [
+    ...document.querySelectorAll('[data-slot="zone-rule"]'),
+  ]
   const isLevelRuled = (el: Element) =>
     el.className.includes("after:bg-border/60")
   // By slot, not by class: "w-3" is a substring of "min-w-32", so a class
@@ -253,7 +255,7 @@ describe("FamilyLevelMatrix zone boundaries", () => {
   // THE BOUNDARY IS A COLUMN. Padding could not buy the air: a body cell IS
   // its visible box, so padding widens the box and pushes its chips
   // off-centre instead of moving the boxes apart.
-  it("draws the rule on a column of its own, never on a level column", () => {
+  it("gives the boundary a column of its own", () => {
     renderFull()
     const heads = [
       ...document.querySelectorAll(
@@ -264,14 +266,7 @@ describe("FamilyLevelMatrix zone boundaries", () => {
     expect(heads).toHaveLength(LEVEL_COUNT + 3)
     const gaps = heads.filter(isGap)
     expect(gaps).toHaveLength(3)
-    // Every gap column carries the rule; no other cell does.
-    for (const head of heads) {
-      expect({
-        gap: isGap(head),
-        zoned: isZoneRuled(head),
-      }).toEqual({ gap: isGap(head), zoned: isGap(head) })
-    }
-    // And a gap column holds nothing but the air and the rule.
+    // And a gap column holds nothing but the air.
     for (const gap of gaps) {
       expect(gap.tagName).toBe("TD")
       expect(gap.textContent).toBe("")
@@ -283,8 +278,37 @@ describe("FamilyLevelMatrix zone boundaries", () => {
       // the mechanism is what gets pinned.
       const spacer = gap.firstElementChild as HTMLElement | null
       expect(spacer).not.toBeNull()
-      expect(spacer?.className).toContain("w-3")
+      expect(spacer?.className).toContain("w-[11px]")
     }
+  })
+
+  // ONE LINE PER BOUNDARY, not one segment per row. A dashed gradient
+  // restarts its phase in every box it paints, and no row here is a multiple
+  // of the 7px period, so segments would break the pattern at every joint.
+  it("draws one line per boundary, spanning the whole table", () => {
+    renderFull("Engineering")
+    const rules = zoneRules()
+    // Three boundaries, three lines. Eighteen rows, still three lines.
+    expect(rules).toHaveLength(3)
+    for (const rule of rules) {
+      // Each one lives in a gap cell of the FIRST row, and reaches the
+      // table's height from there.
+      const cell = rule.closest("td") as HTMLElement
+      expect(isGap(cell)).toBe(true)
+      expect(cell.closest("tr")).toBe(document.querySelector("thead tr"))
+      expect(rule.className).toContain("absolute")
+      expect(rule.className).toContain("top-0")
+      expect(rule.className).toContain("bottom-0")
+      // Dashed, in the app's reference-line rhythm.
+      expect((rule as HTMLElement).style.backgroundImage).toContain(
+        "repeating-linear-gradient"
+      )
+    }
+    // The height resolves against a positioned wrapper around the table, not
+    // against the cell it sits in: a cell-bound line would be 32px tall.
+    const wrapper = rules[0]?.closest("table")?.parentElement as HTMLElement
+    expect(wrapper.className).toContain("relative")
+    expect(wrapper.className).toContain("w-max")
   })
 
   // The level rule is a different order of division and keeps its own
@@ -306,10 +330,12 @@ describe("FamilyLevelMatrix zone boundaries", () => {
     expect(cells.filter((c) => isGap(c) && isLevelRuled(c))).toHaveLength(0)
   })
 
-  // THE LINE IS UNBROKEN. Every row type the grid has emits the boundary
-  // column at the same position: the zone band header, the level header, the
-  // family label rows, and the cell rows.
-  it("carries the rule through every row type", () => {
+  // THE COLUMN IS UNBROKEN. Every row type the grid has emits the boundary
+  // column at the same COLUMN index: the zone band header, the level header,
+  // the family label rows, and the cell rows. The line spans them all from
+  // the first, so a row that skipped its gap cell would knock every row below
+  // it sideways and leave the line running through the wrong column.
+  it("carries the boundary column through every row type", () => {
     renderFull("Engineering")
     const rows = [
       ...document.querySelectorAll("thead tr, tbody tr"),
@@ -340,11 +366,6 @@ describe("FamilyLevelMatrix zone boundaries", () => {
         )
       ).toBe(LEVEL_COUNT + 3)
     }
-    // And every one of them draws the rule.
-    for (const row of rows) {
-      const gaps = [...row.querySelectorAll("th, td")].filter(isGap)
-      expect(gaps.every(isZoneRuled)).toBe(true)
-    }
   })
 
   // The first column has no neighbour on its left to be divided from, and it
@@ -356,7 +377,7 @@ describe("FamilyLevelMatrix zone boundaries", () => {
       "thead tr:nth-child(2) th"
     ) as HTMLElement
     expect(first.className).toContain("border-transparent")
-    expect(isZoneRuled(first)).toBe(false)
+    expect(isGap(first)).toBe(false)
     expect(isLevelRuled(first)).toBe(false)
   })
 
@@ -394,7 +415,7 @@ describe("FamilyLevelMatrix zone boundaries", () => {
     )
     expect(boxes).toHaveLength(LEVEL_COUNT)
     for (const box of boxes) {
-      expect(isZoneRuled(box)).toBe(false)
+      expect(box.querySelector('[data-slot="zone-rule"]')).toBeNull()
       expect(isLevelRuled(box)).toBe(false)
     }
   })

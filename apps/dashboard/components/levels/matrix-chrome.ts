@@ -65,23 +65,43 @@ export const MATRIX_HEAD_INSET_CLASS = "border-x border-transparent"
 // is what keeps the line continuous and every cell above and below it aligned
 // by construction rather than by three separate index calculations agreeing.
 //
-// 12px, which is what makes the clear space 22px on each side: a cell insets
+// 11px, which is what makes the clear space 22px on each side: a cell insets
 // its content by 9px, the table's border-spacing adds 8px on each side of the
-// gap column, and a 2px rule down its centre leaves 9 + 8 + 5 = 22. Against
+// gap column, and a 1px rule 5px into it leaves 9 + 8 + 5 = 22 on both. An
+// ODD width, deliberately: a 1px rule cannot sit centred in an even column,
+// and at 12px the boundary measured 22 left against 23 right. Against
 // the 8px standard gutter that reads as a group break rather than a wider
 // line. Nothing else in the grid moves: every column keeps its own 9px inset,
 // because the air is between the columns rather than inside any of them.
-export const MATRIX_ZONE_GAP_CLASS = "relative w-3 p-0"
+export const MATRIX_ZONE_GAP_CLASS = "w-[11px] p-0"
 
-// The rule itself, down the middle of that column. -bottom-2 is the
-// border-spacing, not a nudge: each segment reaches through the gutter to
-// meet the next row's, so the rule closes into one unbroken line instead of
-// reading as a column of ticks. Every row type carries it, the family label
-// rows included, or the line breaks at every family.
+// THE RULE ITSELF: one full-height dashed line per boundary column.
 //
-// Not in the LEVELS x TRACKS matrix, and not by omission. Zones are the
-// vertical axis there, already drawn as row bands, so a vertical rule would
-// divide the tracks, which zones have nothing to do with. This rule means
-// something only where levels run horizontally.
+// DASHED, in the app's reference-line rhythm. This app already has two dashed
+// languages and they mean different things: a dashed BORDER (the dimension
+// frames, the dropzone, the pending-roles panel) says "this container takes
+// something", and a dashed reference LINE (the pay-mapping mean marker) says
+// "this is a quiet mark to read against". A zone boundary is the second, so
+// it borrows that one's mechanism and rhythm rather than inventing a third.
+// A repeating gradient, not border-dashed, for the reason recorded there: CSS
+// gives no control over a border's dash rhythm and the browser default is a
+// coarse pattern that reads as a divider instead of a quiet line.
+//
+// ONE ELEMENT, not a segment per row. A gradient restarts its phase in every
+// box it paints, and the rows here are 24, 28 and 100-odd pixels tall, none of
+// them a multiple of the 7px period, so per-row segments would break the
+// pattern at every joint. A single line has one phase by construction, which
+// the dedicated boundary column now makes possible.
+//
+// It is placed by its STATIC POSITION: left and right stay auto, so the line
+// lands exactly where it would have sat in flow inside its gap cell, while
+// top-0/bottom-0 resolve against the positioned wrapper around the table and
+// give it the table's full height. No measurement, no overlay chasing a
+// spring, and nothing to re-align when the family filter reflows the grid.
 export const MATRIX_ZONE_RULE_CLASS =
-  "after:absolute after:top-0 after:-bottom-2 after:left-[5px] after:w-0.5 after:bg-border after:content-['']"
+  "pointer-events-none absolute top-0 bottom-0 ml-[5px] w-px text-border"
+
+// 3px on, 4px off: the rhythm the mean marker uses, so the app has one dashed
+// reference line rather than two that nearly match.
+export const MATRIX_ZONE_RULE_DASH =
+  "repeating-linear-gradient(to bottom, currentColor 0 3px, transparent 3px 7px)"
