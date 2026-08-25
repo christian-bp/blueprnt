@@ -9,12 +9,13 @@ import { RoleChip } from "@/components/levels/role-chip"
 import { type LevelRoleRow, levelRanges } from "@/lib/levels"
 import { SPRING } from "@/lib/motion"
 import { ZoneGroupLabel } from "@/components/levels/zone-label"
-import { zoneBands } from "@/lib/zone-bands"
+import { zoneBands, zoneBoundaryIndexes } from "@/lib/zone-bands"
 import { ScrollArea } from "@workspace/ui/components/scroll-area"
 import {
   MATRIX_COL_HEADER_CLASS,
   MATRIX_COL_RULE_CLASS,
   MATRIX_COL_RULE_SPACER_CLASS,
+  MATRIX_ZONE_RULE_CLASS,
   MATRIX_HEAD_PAD_CLASS,
   MATRIX_WRAPPER_CLASS,
 } from "@/components/levels/matrix-chrome"
@@ -49,6 +50,22 @@ export function FamilyLevelMatrix({
   // three levels wide has no room for a sentence, and the ladder is where the
   // zone is explained.
   const bands = zoneBands(ranges)
+  // The column indexes where the architecture changes zone. A boundary column
+  // takes the zone rule INSTEAD of the level rule, never both: two rules in
+  // one gutter is not a stronger division, it is a smudge.
+  const zoneBoundaries = zoneBoundaryIndexes(ranges)
+
+  // One rule per gutter. The first column carries the spacer alone so its
+  // label sits on the same inset as the rest (a border is 1px of box); a zone
+  // boundary carries the spacer plus the zone rule; every other column
+  // carries the level rule.
+  const levelRuleFor = (index: number): string => {
+    if (index === 0) return MATRIX_COL_RULE_SPACER_CLASS
+    if (zoneBoundaries.has(index)) {
+      return `${MATRIX_COL_RULE_SPACER_CLASS} ${MATRIX_ZONE_RULE_CLASS}`
+    }
+    return MATRIX_COL_RULE_CLASS
+  }
   // Sections come from ALL the rows' families, not only evaluated ones: a
   // family whose roles are still unevaluated shows as a fully hatched band
   // (the ladder's empty look) instead of vanishing from the view. The cells
@@ -87,7 +104,7 @@ export function FamilyLevelMatrix({
                   key={band.zone}
                   scope="colgroup"
                   colSpan={band.ranges.length}
-                  className={`whitespace-nowrap text-left ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_COL_HEADER_CLASS} ${bandIndex === 0 ? MATRIX_COL_RULE_SPACER_CLASS : MATRIX_COL_RULE_CLASS}`}
+                  className={`whitespace-nowrap text-left ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_COL_HEADER_CLASS} ${MATRIX_COL_RULE_SPACER_CLASS} ${bandIndex === 0 ? "" : MATRIX_ZONE_RULE_CLASS}`}
                 >
                   <ZoneGroupLabel
                     zone={band.zone}
@@ -108,7 +125,7 @@ export function FamilyLevelMatrix({
               <th
                 key={range.level}
                 scope="col"
-                className={`whitespace-nowrap text-left font-medium text-muted-foreground text-xs uppercase tracking-wide ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_COL_HEADER_CLASS} ${index === 0 ? MATRIX_COL_RULE_SPACER_CLASS : MATRIX_COL_RULE_CLASS}`}
+                className={`whitespace-nowrap text-left font-medium text-muted-foreground text-xs uppercase tracking-wide ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_COL_HEADER_CLASS} ${levelRuleFor(index)}`}
               >
                 {t("levelRow", { level: range.level })}
               </th>
@@ -131,7 +148,7 @@ export function FamilyLevelMatrix({
                 </th>
               </tr>
               <tr>
-                {ranges.map((range) => {
+                {ranges.map((range, index) => {
                   const cell = family.rows.filter(
                     (row) => row.level === range.level
                   )
@@ -142,7 +159,9 @@ export function FamilyLevelMatrix({
                       // absolute positioning (see LevelMatrix: a percentage
                       // height on a <td> child does not resolve, absolute
                       // inset-* against the relative cell does).
-                      className="relative min-w-32 rounded-lg border p-2 align-top"
+                      className={`relative min-w-32 rounded-lg border p-2 align-top ${
+                        zoneBoundaries.has(index) ? MATRIX_ZONE_RULE_CLASS : ""
+                      }`}
                     >
                       {cell.length === 0 ? (
                         <>

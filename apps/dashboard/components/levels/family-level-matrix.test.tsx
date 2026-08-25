@@ -4,8 +4,9 @@ import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
 import { FamilyLevelMatrix } from "@/components/levels/family-level-matrix"
-import { type ZoneKey, zoneForLevel } from "@workspace/core"
-import type { LevelRoleRow } from "@/lib/levels"
+import { LEVEL_COUNT, type ZoneKey, zoneForLevel } from "@workspace/core"
+import { levelRanges, type LevelRoleRow } from "@/lib/levels"
+import { zoneBoundaryIndexes } from "@/lib/zone-bands"
 
 const LEVELS = [
   { level: 1, minScore: 80 },
@@ -182,5 +183,120 @@ describe("FamilyLevelMatrix", () => {
       "Level 2",
     ])
     expect(headers.some((label) => label.startsWith("Zone A"))).toBe(true)
+  })
+})
+
+// ZONE BOUNDARIES, on the axis where they mean something.
+//
+// The families view lays levels across, so the place one zone ends and the
+// next begins is a vertical line. It gets a rule of its own, heavier than the
+// rules between levels, and it REPLACES the level rule there: two rules in
+// one gutter is not a stronger division, it is a smudge.
+describe("FamilyLevelMatrix zone boundaries", () => {
+  afterEach(() => cleanup())
+
+  const ALL_LEVELS = Array.from({ length: LEVEL_COUNT }, (_, index) => ({
+    level: index + 1,
+    minScore: 100 - index * 8,
+  }))
+
+  function renderFull() {
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <FamilyLevelMatrix levels={ALL_LEVELS} rows={[role({ level: 1 })]} />
+      </NextIntlClientProvider>
+    )
+    return [
+      ...document.querySelectorAll("thead tr:nth-child(2) th"),
+    ] as HTMLElement[]
+  }
+
+  // Derived from the engine, then stated: the derivation is what keeps the
+  // test honest if the architecture ever moves a boundary, and the literal is
+  // what says where they are today.
+  it("puts a boundary wherever the architecture changes zone", () => {
+    const boundaries = zoneBoundaryIndexes(levelRanges(ALL_LEVELS))
+    expect([...boundaries].sort((a, b) => a - b)).toEqual([3, 6, 9])
+  })
+
+  // THE DISCRIMINATING CASE. With all twelve levels configured, a boundary
+  // every third column and a boundary wherever the zone changes give the same
+  // answer, so neither the code nor the test above can tell a derivation from
+  // a count. A model that configures only some of its levels can: levels 1, 2,
+  // 4 and 5 are zones A, A, B, B, so the only boundary is at index 2, and
+  // counting threes would put it at 3 instead. zone-bands documents exactly
+  // this partial-model case, so it is a real shape, not a contrived one.
+  it("follows the zone, not the column count, on a partial model", () => {
+    const partial = [1, 2, 4, 5].map((level) => ({
+      level,
+      minScore: 100 - level * 8,
+    }))
+    expect([...zoneBoundaryIndexes(levelRanges(partial))]).toEqual([2])
+  })
+
+  it("gives every boundary column the zone rule and not the level rule", () => {
+    const heads = renderFull()
+    expect(heads).toHaveLength(LEVEL_COUNT)
+    const boundaries = zoneBoundaryIndexes(levelRanges(ALL_LEVELS))
+    heads.forEach((head, index) => {
+      const zoned = head.className.includes("after:bg-border")
+      const levelled = head.className.includes("border-border/60")
+      if (boundaries.has(index)) {
+        expect({ index, zoned, levelled }).toEqual({
+          index,
+          zoned: true,
+          levelled: false,
+        })
+      } else if (index > 0) {
+        expect({ index, zoned, levelled }).toEqual({
+          index,
+          zoned: false,
+          levelled: true,
+        })
+      }
+    })
+  })
+
+  // Unchanged from the level rules: the first column has no neighbour to be
+  // separated from, and it still carries the transparent border so its label
+  // sits on the same inset as every other column's.
+  it("leaves the first column its spacer and no rule", () => {
+    const heads = renderFull()
+    const first = heads[0] as HTMLElement
+    expect(first.className).toContain("border-transparent")
+    expect(first.className).not.toContain("after:bg-border")
+    expect(first.className).not.toContain("border-border/60")
+  })
+
+  // The rule runs the grid's height, which is the half of the hierarchy that
+  // ink alone could not carry, so the cells under a boundary draw it too.
+  it("carries the rule down through the cells", () => {
+    renderFull()
+    const cells = [...document.querySelectorAll("tbody td")] as HTMLElement[]
+    expect(cells).toHaveLength(LEVEL_COUNT)
+    const boundaries = zoneBoundaryIndexes(levelRanges(ALL_LEVELS))
+    cells.forEach((cell, index) => {
+      expect({
+        index,
+        ruled: cell.className.includes("after:bg-border"),
+      }).toEqual({ index, ruled: boundaries.has(index) })
+    })
+  })
+
+  // Every zone band after the first opens on a boundary by definition, so its
+  // header takes the same rule rather than the level one.
+  it("opens each zone band on its own rule", () => {
+    renderFull()
+    const bands = [
+      ...document.querySelectorAll("thead tr:first-child th"),
+    ] as HTMLElement[]
+    expect(bands.length).toBeGreaterThan(1)
+    bands.forEach((band, index) => {
+      expect({
+        index,
+        ruled: band.className.includes("after:bg-border"),
+      }).toEqual({ index, ruled: index > 0 })
+      expect(band.className).not.toContain("border-border/60")
+    })
   })
 })

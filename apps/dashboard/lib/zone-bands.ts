@@ -1,4 +1,10 @@
-import { type ZoneKey, ZONE_KEYS, ZONE_LEVEL_RANGES } from "@workspace/core"
+import {
+  LEVEL_COUNT,
+  type ZoneKey,
+  ZONE_KEYS,
+  ZONE_LEVEL_RANGES,
+  zoneForLevel,
+} from "@workspace/core"
 import type { LevelRange, LevelRoleRow } from "@/lib/levels"
 
 // The four zone bands the levels surfaces group into.
@@ -63,6 +69,43 @@ export function zoneBands(ranges: readonly LevelRange[]): ZoneBand[] {
           : { from: first.level, to: last.level },
     }
   })
+}
+
+// WHERE ONE ZONE ENDS AND THE NEXT BEGINS, as column indexes into the levels
+// a matrix lays across its horizontal axis. Index 0 is never a boundary: the
+// first column has no neighbour on its left to be separated from.
+//
+// Derived from the engine's own zone geometry rather than from "every third
+// column", so a model that configures only some of its levels still puts the
+// rule where the ARCHITECTURE changes zone rather than where the count says.
+//
+// Defensive about a level the engine would not recognise: zoneForLevel THROWS
+// on one out of range, and this runs inside render on the page that already
+// went down once from an in-render throw. An unrecognised level simply starts
+// no boundary.
+export function zoneBoundaryIndexes(
+  ranges: readonly LevelRange[]
+): ReadonlySet<number> {
+  const zoneAt = (index: number): ZoneKey | null => {
+    const level = ranges[index]?.level
+    if (
+      level === undefined ||
+      !Number.isInteger(level) ||
+      level < 1 ||
+      level > LEVEL_COUNT
+    ) {
+      return null
+    }
+    return zoneForLevel(level)
+  }
+  const boundaries = new Set<number>()
+  for (let index = 1; index < ranges.length; index += 1) {
+    const here = zoneAt(index)
+    const before = zoneAt(index - 1)
+    if (here !== null && before !== null && here !== before)
+      boundaries.add(index)
+  }
+  return boundaries
 }
 
 // Which band a placed role belongs to.
