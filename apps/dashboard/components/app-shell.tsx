@@ -127,8 +127,20 @@ function AreaChrome({
       )}
       {/* Relative and NON-scrolling: its left edge is the nav/content seam at
           every animation frame, which is what the handle stands on; the
-          scrolling happens one level down in <main>. */}
-      <div className="relative flex min-h-0 flex-1 flex-col">
+          scrolling happens one level down in <main>.
+
+          min-w-0 IS LOAD-BEARING. This is a flex item in a row, so without it
+          its automatic minimum size is its MIN-CONTENT width: one wide table
+          anywhere below then pushes the whole pane wider than the space it
+          was given, and because the pane is what <main> and every page column
+          measure against, a centered column (mx-auto) inside it slides
+          sideways by half the excess. That is exactly what the /work families
+          grid did: mounting its 12-level table grew the pane by 96px and
+          moved the page's breadcrumbs 48px right, on a tab switch, for good.
+          With the floor at 0 the pane keeps the width it was given and wide
+          content scrolls inside its own container, which is where the
+          wide-content rule always meant it to scroll. */}
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         {sidebar !== null && (
           <InnerSidebarHandle
             open={open}

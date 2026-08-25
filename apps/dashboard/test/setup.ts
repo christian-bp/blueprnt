@@ -26,3 +26,30 @@ configure({
   // mounted. It is not content, so no query should ever see it.
   defaultIgnore: "script, style, #recharts_measurement_span",
 })
+
+// jsdom implements no Web Animations API, and Base UI's ScrollArea viewport
+// calls element.getAnimations() from a timer to wait out an in-flight
+// transition before it re-measures. The call lands AFTER the test that
+// rendered the scroll area has finished, so the TypeError arrives with no
+// test to attach it to: vitest reports it as an unhandled error and the run
+// exits non-zero while every assertion passed. That is the worst shape a
+// failure can take, because the summary says green and the process says red.
+//
+// SCOPED TO THAT ONE ELEMENT, deliberately. Defining getAnimations on
+// Element.prototype for everything is not a shim, it is a behaviour change:
+// Base UI's dismissable surfaces branch on whether the method EXISTS, and
+// giving it to them put every dialog, menu and popover on its animated-close
+// path, where jsdom never advances the animation and the surface never
+// unmounts. Twelve unrelated tests failed. The getter hands the method only
+// to the scroll area's own viewport and leaves every other element seeing
+// exactly what it saw before, which is nothing.
+if (!("getAnimations" in Element.prototype)) {
+  Object.defineProperty(Element.prototype, "getAnimations", {
+    configurable: true,
+    get(this: Element) {
+      return this.getAttribute?.("data-slot") === "scroll-area-viewport"
+        ? () => []
+        : undefined
+    },
+  })
+}

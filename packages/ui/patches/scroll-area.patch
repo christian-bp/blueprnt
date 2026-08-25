@@ -1,0 +1,43 @@
+# scroll-area.tsx local deviation
+# An orientation prop for the horizontal bar: upstream expects it passed as a child, but children render inside the Viewport here, so it would scroll away with the content.
+# Regenerate with: bun run ui:refresh-patches
+diff --git a/packages/ui/src/components/scroll-area.tsx b/packages/ui/src/components/scroll-area.tsx
+--- a/packages/ui/src/components/scroll-area.tsx
++++ b/packages/ui/src/components/scroll-area.tsx
+@@ -5,11 +5,25 @@ import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area"
+ 
+ import { cn } from "@workspace/ui/lib/utils"
+ 
++// LOCAL DEVIATION (documented in patches/scroll-area.patch): `orientation`.
++//
++// Upstream renders the vertical scrollbar only and expects a horizontal one to
++// be passed as a CHILD. That works where the scrollbar is portalled; here the
++// children go inside the Viewport, so a scrollbar passed that way scrolls away
++// with the content it is supposed to measure. A horizontally scrolling surface
++// therefore had no affordance at all, which is worse than a missing prop: the
++// reader cannot tell there is more to the right.
++//
++// The prop names which bars this area needs; everything else (the data-slots,
++// the Base UI wiring, the Viewport's focus ring) is untouched.
+ function ScrollArea({
+   className,
+   children,
++  orientation = "vertical",
+   ...props
+-}: ScrollAreaPrimitive.Root.Props) {
++}: ScrollAreaPrimitive.Root.Props & {
++  orientation?: "vertical" | "horizontal" | "both"
++}) {
+   return (
+     <ScrollAreaPrimitive.Root
+       data-slot="scroll-area"
+@@ -22,7 +36,8 @@ function ScrollArea({
+       >
+         {children}
+       </ScrollAreaPrimitive.Viewport>
+-      <ScrollBar />
++      {orientation !== "horizontal" && <ScrollBar />}
++      {orientation !== "vertical" && <ScrollBar orientation="horizontal" />}
+       <ScrollAreaPrimitive.Corner />
+     </ScrollAreaPrimitive.Root>
+   )

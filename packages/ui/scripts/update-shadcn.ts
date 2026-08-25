@@ -47,6 +47,8 @@ const DEVIATIONS: Record<string, string> = {
     "Dialog.Root renders its children open or not, so the accessible header must sit inside DialogContent; beside it, it leaves an sr-only heading in the page on every render.",
   "dropdown-menu":
     "Popup sized to its content; upstream pins it to the trigger width and clips labels.",
+  "scroll-area":
+    "An orientation prop for the horizontal bar: upstream expects it passed as a child, but children render inside the Viewport here, so it would scroll away with the content.",
   select:
     "Trigger may shrink inside form grids; popup sized to its content for the same clipping reason as the dropdown.",
   sheet:

@@ -10,8 +10,12 @@ import { type LevelRoleRow, levelRanges } from "@/lib/levels"
 import { SPRING } from "@/lib/motion"
 import { ZoneGroupLabel } from "@/components/levels/zone-label"
 import { zoneBands } from "@/lib/zone-bands"
+import { ScrollArea } from "@workspace/ui/components/scroll-area"
 import {
   MATRIX_COL_HEADER_CLASS,
+  MATRIX_COL_RULE_CLASS,
+  MATRIX_COL_RULE_SPACER_CLASS,
+  MATRIX_HEAD_PAD_CLASS,
   MATRIX_WRAPPER_CLASS,
 } from "@/components/levels/matrix-chrome"
 import { groupByFamily } from "@/lib/role-groups"
@@ -67,11 +71,11 @@ export function FamilyLevelMatrix({
   )
 
   return (
-    <div className={MATRIX_WRAPPER_CLASS}>
+    <ScrollArea orientation="both" className={MATRIX_WRAPPER_CLASS}>
       <table className="w-full border-separate border-spacing-2">
         <thead>
           <tr>
-            {bands.map((band) =>
+            {bands.map((band, bandIndex) =>
               band.span === null ? null : (
                 // This view already groups the zones AROUND the levels, on
                 // the other axis: the levels are its columns, so a zone is a
@@ -83,7 +87,7 @@ export function FamilyLevelMatrix({
                   key={band.zone}
                   scope="colgroup"
                   colSpan={band.ranges.length}
-                  className={`whitespace-nowrap px-2 py-1 text-left ${MATRIX_COL_HEADER_CLASS}`}
+                  className={`whitespace-nowrap text-left ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_COL_HEADER_CLASS} ${bandIndex === 0 ? MATRIX_COL_RULE_SPACER_CLASS : MATRIX_COL_RULE_CLASS}`}
                 >
                   <ZoneGroupLabel
                     zone={band.zone}
@@ -94,11 +98,17 @@ export function FamilyLevelMatrix({
             )}
           </tr>
           <tr>
-            {ranges.map((range) => (
+            {/* ONE LEFT EDGE for the zone label and the level label. The
+                level header carried no horizontal padding while the zone
+                header carried px-2, so "Zon B" started 8px right of the
+                "Nivå 4" under it and the two rows read as unrelated. Both
+                take the shared inset now, which is also where the chips in
+                the cells below begin. */}
+            {ranges.map((range, index) => (
               <th
                 key={range.level}
                 scope="col"
-                className={`whitespace-nowrap text-left font-medium text-muted-foreground text-xs uppercase tracking-wide ${MATRIX_COL_HEADER_CLASS}`}
+                className={`whitespace-nowrap text-left font-medium text-muted-foreground text-xs uppercase tracking-wide ${MATRIX_HEAD_PAD_CLASS} ${MATRIX_COL_HEADER_CLASS} ${index === 0 ? MATRIX_COL_RULE_SPACER_CLASS : MATRIX_COL_RULE_CLASS}`}
               >
                 {t("levelRow", { level: range.level })}
               </th>
@@ -160,6 +170,6 @@ export function FamilyLevelMatrix({
           ))}
         </tbody>
       </table>
-    </div>
+    </ScrollArea>
   )
 }

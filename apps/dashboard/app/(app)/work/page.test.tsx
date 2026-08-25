@@ -357,6 +357,24 @@ describe("WorkOverviewPage width", () => {
     }
   })
 
+  // IDENTITY, not just an equal class string. A restructure that rebuilt the
+  // chrome per tab would produce the same classes on a different node, and
+  // the reader would see it blink and re-lay out. React keeps one element
+  // only while it stays in one position in the tree.
+  it("keeps the SAME chrome node across tabs", async () => {
+    renderPage()
+    const first = chrome()
+    for (const tab of TABS) {
+      fireEvent.click(
+        screen.getByRole("tab", { name: messages.dashboard.levels[tab] })
+      )
+      await waitFor(() => {
+        expect(screen.getByRole("tabpanel")).toBeDefined()
+      })
+      expect(chrome()).toBe(first)
+    }
+  })
+
   // And the breadcrumbs ride in that same container, so the page's whole top
   // edge holds its position rather than only the tabs.
   it("holds the breadcrumbs in the chrome container too", () => {
@@ -388,18 +406,22 @@ describe("WorkOverviewPage width", () => {
   })
 
   // Full width is the REGION's width, not more than it. The grid scrolls
-  // inside its own wrapper (the table law), so nothing hands a horizontal
-  // scrollbar to the page.
-  it("never lets the page scroll sideways", async () => {
+  // inside its OWN container, in both axes, so nothing hands a scrollbar to
+  // the page. The container is a ScrollArea rather than a bare overflow-auto
+  // because a grid running off the right edge under a hidden overlay
+  // scrollbar looks cropped, not scrollable.
+  it("puts the scroll container on the matrix, in both axes", async () => {
     renderPage()
     const panel = panelFor("viewFamilies")
     await waitFor(() => expect(panel.isConnected).toBe(true))
-    for (const node of [panel, ...panel.querySelectorAll("*")]) {
-      const className = (node as HTMLElement).className
-      if (typeof className !== "string") continue
-      expect(className).not.toContain("overflow-x-visible")
-    }
-    // The scroller is the matrix's own wrapper, inside the panel.
-    expect(panel.querySelector('[class*="overflow-auto"]')).not.toBeNull()
+    const area = panel.querySelector('[data-slot="scroll-area"]')
+    expect(area).not.toBeNull()
+    // The viewport is the scrollport the sticky column headers stick to.
+    expect(
+      area?.querySelector('[data-slot="scroll-area-viewport"] table')
+    ).not.toBeNull()
+    // The bars themselves cannot be pinned here: Base UI mounts a scrollbar
+    // only once it MEASURES overflow, and jsdom measures nothing, so the
+    // orientation is pinned at its source instead (matrix-chrome.test.ts).
   })
 })

@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { Fragment } from "react"
 import { HATCH_CLASS } from "@/components/hatch"
 import { RoleChip } from "@/components/levels/role-chip"
+import { ScrollArea } from "@workspace/ui/components/scroll-area"
 import {
   MATRIX_COL_HEADER_CLASS,
   MATRIX_WRAPPER_CLASS,
@@ -72,7 +73,7 @@ export function LevelMatrix({
   )
 
   return (
-    <div className={MATRIX_WRAPPER_CLASS}>
+    <ScrollArea orientation="both" className={MATRIX_WRAPPER_CLASS}>
       <table className="w-full border-separate border-spacing-2">
         <thead>
           <tr>
@@ -189,6 +190,6 @@ export function LevelMatrix({
           })}
         </tbody>
       </table>
-    </div>
+    </ScrollArea>
   )
 }
