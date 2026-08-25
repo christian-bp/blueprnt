@@ -1,0 +1,32 @@
+apps/dashboard/components/levels/family-level-matrix.test.tsx
+  s_58dd112dc09435::t_67e028f8909873 279-286
+  s_58dd112dc09435::t_fd4954e0465720 208-211
+  s_58dd112dc09435::t_0dd652e2d08538 319-329,331,333-342
+  s_58dd112dc09435::t_5763e0c19b0dd5 191-196,213,216-225,253-278,287-318,332,343-347,354-357,367-369,371,381,384-399
+apps/dashboard/components/levels/family-level-matrix.tsx
+  s_58dd112dc09435::t_4bd66819547881 18,59-76,78-94,99,107,175-187
+  s_58dd112dc09435::t_fd4954e0465720 95-98
+  s_58dd112dc09435::t_c310ab4d39ab2d 213-216,218,235,242-243,245,249
+  s_58dd112dc09435::t_6b4abce87e00f1 100-106,134-147,155,158,166
+  s_58dd112dc09435::t_6a879757078daf 9,236,254-257
+apps/dashboard/components/levels/matrix-chrome.ts
+  s_58dd112dc09435::t_6f28f94335af0c 31,34-37,39-43,54,56-80,87
+apps/dashboard/components/levels/matrix-chrome.test.ts
+  s_58dd112dc09435::t_f96d9319bd10cd 8,55-57,70-82,87,89-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "a6ec5560cf531c258b0087862961bbd3dcdda01d",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
