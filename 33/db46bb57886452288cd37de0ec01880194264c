@@ -1,0 +1,27 @@
+apps/dashboard/content/docs/fi/score-and-levels.mdx
+  s_58dd112dc09435::t_420511d8d2bd98 31-50
+apps/dashboard/content/docs/da/score-and-levels.mdx
+  s_58dd112dc09435::t_420511d8d2bd98 30-49
+apps/dashboard/content/docs/nb/score-and-levels.mdx
+  s_58dd112dc09435::t_420511d8d2bd98 30-49
+apps/dashboard/content/docs/sv/score-and-levels.mdx
+  s_58dd112dc09435::t_420511d8d2bd98 30-49
+apps/dashboard/content/docs/en/score-and-levels.mdx
+  s_58dd112dc09435::t_420511d8d2bd98 30-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "33db46bb57886452288cd37de0ec01880194264c",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
