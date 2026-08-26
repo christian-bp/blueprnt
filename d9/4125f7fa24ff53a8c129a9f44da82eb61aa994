@@ -1,0 +1,19 @@
+apps/dashboard/components/nav-done-mark.tsx
+  s_58dd112dc09435::t_5fcc282c62269b 5-11,14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "d94125f7fa24ff53a8c129a9f44da82eb61aa994",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
