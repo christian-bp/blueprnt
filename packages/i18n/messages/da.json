@@ -1616,6 +1616,7 @@
         "levelLabel": "Niveau",
         "computing": "Beregner resultatet",
         "backToRole": "Tilbage til rollen",
+        "nextRoleCta": "Vurder næste: {title}",
         "scoreOutOf": "{score} / 100",
         "anchorsHeading": "Sammenlignet med jeres ankerroller",
         "anchorLevel": "Niveau {level}",

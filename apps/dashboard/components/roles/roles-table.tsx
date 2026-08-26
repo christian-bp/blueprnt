@@ -81,6 +81,7 @@ export interface RolesTableRow {
   familySlug: string | null
   employeeCount: number
   level: number | null
+  profileComplete: boolean
 }
 
 // MODULE-LEVEL constant: state.grouping keys the grouped-row-model memo, and
@@ -159,7 +160,13 @@ const columns = columnHelper.columns([
   columnHelper.display({
     id: "evaluation",
     enableGlobalFilter: false,
-    cell: ({ row }) => <RoleLevelCell level={row.original.level} />,
+    cell: ({ row }) => (
+      <RoleLevelCell
+        level={row.original.level}
+        slug={row.original.slug}
+        profileComplete={row.original.profileComplete}
+      />
+    ),
   }),
 ])
 

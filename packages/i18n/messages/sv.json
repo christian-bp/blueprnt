@@ -1616,6 +1616,7 @@
         "levelLabel": "Nivå",
         "computing": "Räknar fram resultatet",
         "backToRole": "Tillbaka till rollen",
+        "nextRoleCta": "Betygsätt nästa: {title}",
         "scoreOutOf": "{score} / 100",
         "anchorsHeading": "Jämfört med era ankarroller",
         "anchorLevel": "Nivå {level}",

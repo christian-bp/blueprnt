@@ -123,20 +123,41 @@ export function RoleEmployeesCell({ count }: { count: number }) {
   )
 }
 
-// The evaluation outcome: a role's level once it is fully evaluated, otherwise
-// a muted "not yet evaluated" line (an incomplete or still-computing role has
-// no level yet, the same rule as the overview tables), so a register shows
-// which roles still need evaluating instead of a blank cell.
+// The evaluation outcome, or the one-press way to get one. A rated role shows
+// its level; a role whose profile is ready but whose rating is not links
+// straight into the rate flow (the register is where the next role to rate is
+// found, so the cell that says the work is missing is the cell that starts
+// it, without a trip through the role page); only a role that cannot be rated
+// yet (incomplete profile) shows the muted absence.
 //
 // The number plain, the way the employee count beside it is. A filled brand
 // pill on every evaluated row turned the column into a stripe of colour down
 // the register, which read as a status needing attention rather than as the
-// ordinary outcome it is on a fully evaluated role.
-export function RoleLevelCell({ level }: { level: number | null }) {
+// ordinary outcome it is on a fully evaluated role. The rate link is brand
+// ink because it IS the call to action.
+export function RoleLevelCell({
+  level,
+  slug,
+  profileComplete,
+}: {
+  level: number | null
+  slug: string
+  profileComplete: boolean
+}) {
   const t = useTranslations("dashboard.roles")
-  return level != null ? (
-    <span className="tabular-nums">{level}</span>
-  ) : (
+  const tRating = useTranslations("dashboard.rating")
+  if (level != null) return <span className="tabular-nums">{level}</span>
+  if (profileComplete) {
+    return (
+      <Link
+        href={`/roles/${slug}/rate`}
+        className="block truncate text-brand underline-offset-4 hover:underline"
+      >
+        {tRating("title")}
+      </Link>
+    )
+  }
+  return (
     <span className={cn("block truncate", ABSENT_VALUE)}>
       {t("notEvaluated")}
     </span>

@@ -1616,6 +1616,7 @@
         "levelLabel": "Vaativuustaso",
         "computing": "Lasketaan tulosta",
         "backToRole": "Takaisin rooliin",
+        "nextRoleCta": "Arvioi seuraava: {title}",
         "scoreOutOf": "{score} / 100",
         "anchorsHeading": "Verrattuna ankkurirooleihinne",
         "anchorLevel": "Taso {level}",

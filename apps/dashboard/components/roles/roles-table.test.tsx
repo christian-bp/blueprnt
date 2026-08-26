@@ -41,6 +41,7 @@ function row(overrides: Partial<RolesTableRow>): RolesTableRow {
     familySlug: "engineering",
     employeeCount: 0,
     level: null,
+    profileComplete: true,
     ...overrides,
   }
 }
@@ -197,18 +198,28 @@ describe("RolesTable", () => {
     expect(pushMock).toHaveBeenCalledWith("/roles/r1")
   })
 
-  it("shows the level for an evaluated role and a not-yet-evaluated line otherwise", () => {
+  it("shows the level, the rate link for a waiting role, and the absence line only where rating cannot start", () => {
     renderTable([
       row({ roleId: "r1", title: "Done Role", level: 3 }),
-      row({ roleId: "r2", title: "Todo Role", level: null }),
+      row({ roleId: "r2", slug: "todo-role", title: "Todo Role", level: null }),
+      row({
+        roleId: "r3",
+        title: "Bare Role",
+        level: null,
+        profileComplete: false,
+      }),
     ])
     expect(screen.getByText("3")).toBeDefined()
-    // An unevaluated role is called out, never a blank cell.
+    // A ready-but-unrated role carries the act itself: the register is the
+    // one-press way into the rate flow.
+    const rateLink = screen.getByRole("link", {
+      name: messages.dashboard.rating.title,
+    })
+    expect(rateLink.getAttribute("href")).toBe("/roles/todo-role/rate")
+    expect(rateLink.closest("tr")?.textContent).toContain("Todo Role")
+    // A role that cannot be rated yet is called out, never a blank cell and
+    // never a dead link.
     const marker = screen.getByText(messages.dashboard.roles.notEvaluated)
-    expect(marker.closest("tr")?.textContent).toContain("Todo Role")
-    // The evaluated role carries no marker.
-    expect(
-      screen.getAllByText(messages.dashboard.roles.notEvaluated)
-    ).toHaveLength(1)
+    expect(marker.closest("tr")?.textContent).toContain("Bare Role")
   })
 })

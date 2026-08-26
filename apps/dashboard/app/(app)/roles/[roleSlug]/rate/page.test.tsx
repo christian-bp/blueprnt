@@ -107,6 +107,11 @@ function result(overrides: Record<string, unknown> = {}) {
 let roleFixture: unknown = role()
 let resultFixture: unknown = result()
 let modelFixture: unknown = MODEL
+// The two register reads the reveal's next-role link derives from. Empty by
+// default: most tests are not about the chain, and an empty register means no
+// link and no noise in them.
+let orgRolesFixture: unknown = []
+let orgResultsFixture: unknown = { rows: [] }
 
 // Every query ref this page actually asks for, so a test can assert what it
 // does NOT ask for.
@@ -119,6 +124,8 @@ function install() {
     if (ref === "assessment.roles.getRoleBySlug") return roleFixture
     if (ref === "evaluationModel.model.getRatingModel") return modelFixture
     if (ref === "assessment.results.getRoleResult") return resultFixture
+    if (ref === "assessment.roles.listRoles") return orgRolesFixture
+    if (ref === "assessment.results.getResults") return orgResultsFixture
     if (ref === "assessment.anchorRoles.listAnchorRoles") return []
     return undefined
   })
@@ -160,6 +167,8 @@ describe("RatePage (completion is the reveal)", () => {
     roleFixture = role()
     resultFixture = result()
     modelFixture = MODEL
+    orgRolesFixture = []
+    orgResultsFixture = { rows: [] }
     install()
     setRatingMock.mockReset().mockResolvedValue(null)
     completeAssessmentMock.mockReset().mockResolvedValue(null)
@@ -412,6 +421,88 @@ describe("RatePage (completion is the reveal)", () => {
         orgId: "org-1",
         roleId: "role-1",
       })
+    })
+  })
+
+  // The reveal chains: rating an org is a run of these flows, so the
+  // completed screen offers the next role still waiting for a rating as a
+  // direct link into ITS rate flow, and stays silent when nothing ratable
+  // remains (the current role, incomplete profiles and leveled roles are all
+  // not "next").
+  describe("the reveal's next-role link", () => {
+    const completedResult = () =>
+      result({
+        complete: true,
+        completed: true,
+        ratedCount: 1,
+        score: 74,
+        level: 2,
+        criteria: [
+          {
+            criterionId: "c-scope",
+            name: "Scope",
+            weightPoints: 3,
+            value: 3,
+            motivation: null,
+          },
+        ],
+      })
+    const registerRow = (overrides: Record<string, unknown> = {}) => ({
+      roleId: "role-2",
+      title: "Designer",
+      slug: "designer",
+      familyId: null,
+      familyName: null,
+      profileComplete: true,
+      ...overrides,
+    })
+
+    it("links the next waiting role straight into its rate flow", async () => {
+      resultFixture = completedResult()
+      orgRolesFixture = [
+        // The current role first in register order: it must be skipped, not
+        // offered back to the reader who just finished it.
+        registerRow({ roleId: "role-1", title: "Engineer", slug: "engineer" }),
+        registerRow(),
+      ]
+      orgResultsFixture = { rows: [{ roleId: "role-1", level: 2 }] }
+      install()
+      await renderPage()
+
+      const link = screen.getByRole("link", {
+        name: t.result.nextRoleCta.replace("{title}", "Designer"),
+      })
+      expect(link.getAttribute("href")).toBe("/roles/designer/rate")
+    })
+
+    it("offers nothing when no ratable role remains", async () => {
+      resultFixture = completedResult()
+      orgRolesFixture = [
+        registerRow({ roleId: "role-1", title: "Engineer", slug: "engineer" }),
+        // Not ratable: the profile is not complete.
+        registerRow({
+          roleId: "role-3",
+          slug: "writer",
+          title: "Writer",
+          profileComplete: false,
+        }),
+        // Not waiting: already leveled.
+        registerRow({ roleId: "role-4", slug: "manager", title: "Manager" }),
+      ]
+      orgResultsFixture = {
+        rows: [
+          { roleId: "role-1", level: 2 },
+          { roleId: "role-4", level: 5 },
+        ],
+      }
+      install()
+      await renderPage()
+
+      expect(screen.getByText(t.alreadyCompletedExplanation)).toBeDefined()
+      const rateHrefs = Array.from(document.querySelectorAll("a"))
+        .map((anchorEl) => anchorEl.getAttribute("href") ?? "")
+        .filter((href) => /\/rate$/.test(href))
+      expect(rateHrefs).toEqual([])
     })
   })
 

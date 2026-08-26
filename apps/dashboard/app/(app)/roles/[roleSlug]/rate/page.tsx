@@ -20,6 +20,7 @@ import { use } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { RATE_COLUMN } from "@/lib/rate-column"
+import { groupByFamily } from "@/lib/role-groups"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { RatingResult } from "@/components/rating/rating-result"
 import { RatingStepper } from "@/components/rating/rating-stepper"
@@ -70,6 +71,20 @@ export default function RatePage(props: {
   const result = useQuery(
     api.assessment.results.getRoleResult,
     role != null ? { orgId, roleId: role.roleId, locale } : "skip"
+  )
+  // The reveal's way onward: once THIS assessment is completed, the next role
+  // still waiting for a rating, in the register's own family order, so a
+  // rating session never has to route back through the register per role.
+  // Skipped in every earlier state, so the rating act itself loads nothing
+  // about the rest of the org.
+  const completed = result?.completed === true
+  const orgRoles = useQuery(
+    api.assessment.roles.listRoles,
+    completed ? { orgId, locale } : "skip"
+  )
+  const orgResults = useQuery(
+    api.assessment.results.getResults,
+    completed ? { orgId, locale } : "skip"
   )
   usePageTitle([role?.title, t("title")])
 
@@ -239,6 +254,27 @@ export default function RatePage(props: {
   // the one-press way back into editing. RatingResult is a pure reveal; this
   // host owns the surrounding nav.
   if (result.completed) {
+    // The next role whose rating can start right now: profile ready, no level
+    // yet (still being rated, or rated and not completed). Undefined while
+    // the two register reads are in flight, so the row below simply gains the
+    // link when it resolves (content may extend, nothing shifts).
+    const levelByRole = new Map(
+      (orgResults?.rows ?? []).map((row) => [
+        row.roleId as string,
+        row.level ?? null,
+      ])
+    )
+    const nextRole =
+      orgRoles === undefined || orgResults === undefined
+        ? undefined
+        : groupByFamily(orgRoles)
+            .flatMap((group) => group.rows)
+            .find(
+              (candidate) =>
+                candidate.slug !== role.slug &&
+                candidate.profileComplete &&
+                (levelByRole.get(candidate.roleId as string) ?? null) === null
+            )
     return (
       <div className={RATE_COLUMN}>
         {/* Every state of this route carries the same trail and the same stage
@@ -261,6 +297,20 @@ export default function RatePage(props: {
           </p>
           <RatingResult orgId={orgId} roleId={role.roleId} />
           <div className="flex flex-wrap items-center gap-2">
+            {/* The session's continuation leads the row, filled: rating an
+                org is a run of these flows, and the run's next step should
+                not cost a register round-trip. Silent when nothing ratable
+                remains. */}
+            {nextRole !== undefined && (
+              <Link
+                href={`/roles/${nextRole.slug}/rate`}
+                className={cn(buttonVariants(), "max-w-full")}
+              >
+                <span className="truncate">
+                  {t("result.nextRoleCta", { title: nextRole.title })}
+                </span>
+              </Link>
+            )}
             <ReopenAssessmentButton orgId={orgId} roleId={role.roleId} />
             <Link
               href={`/roles/${role.slug}`}

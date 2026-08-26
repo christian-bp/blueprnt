@@ -292,7 +292,11 @@ export default function FamilyPage(props: {
                       <RoleEmployeesCell count={role.employeeCount} />
                     </TableCell>
                     <TableCell>
-                      <RoleLevelCell level={result?.level ?? null} />
+                      <RoleLevelCell
+                        level={result?.level ?? null}
+                        slug={role.slug}
+                        profileComplete={role.profileComplete}
+                      />
                     </TableCell>
                   </TableRow>
                 )

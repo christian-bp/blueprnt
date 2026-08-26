@@ -1616,6 +1616,7 @@
         "levelLabel": "Level",
         "computing": "Deriving the result",
         "backToRole": "Back to the role",
+        "nextRoleCta": "Rate next: {title}",
         "scoreOutOf": "{score} / 100",
         "anchorsHeading": "Compared with your anchor roles",
         "anchorLevel": "Level {level}",
