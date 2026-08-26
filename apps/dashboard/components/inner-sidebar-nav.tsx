@@ -9,6 +9,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { InnerNavCount } from "@/components/inner-nav-count"
+import { InnerNavDone } from "@/components/inner-nav-done"
 import { deepestMatch, type InnerNavGroup } from "@/lib/navigation"
 
 // The uppercase category title every sidebar group renders above its rows.
@@ -75,6 +76,7 @@ export function InnerSidebarNav({
                   {entry.count !== undefined && (
                     <InnerNavCount id={entry.count} />
                   )}
+                  {entry.done !== undefined && <InnerNavDone id={entry.done} />}
                 </Button>
               )
             })}

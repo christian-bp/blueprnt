@@ -123,24 +123,28 @@ const NAV_AREAS_SOURCE = [
             href: "/model/criteria",
             icon: ListViewIcon,
             adminOnly: false,
+            done: "modelCriteria",
           },
           {
             labelKey: "model.chapters.weighting",
             href: "/model/weighting",
             icon: SlidersHorizontalIcon,
             adminOnly: false,
+            done: "modelWeighting",
           },
           {
             labelKey: "model.chapters.method",
             href: "/model/method",
             icon: File01Icon,
             adminOnly: false,
+            done: "modelMethod",
           },
           {
             labelKey: "model.chapters.approval",
             href: "/model/approval",
             icon: CheckmarkBadge01Icon,
             adminOnly: false,
+            done: "modelApproval",
           },
         ],
       },
@@ -336,6 +340,16 @@ export type InnerNavEntryLabelKey = InnerNavEntrySource["labelKey"]
 // mapping, so a new counter is added THERE and referenced here.
 export type InnerNavCountId = "classifyRemaining" | "evaluateRemaining"
 
+// The live done-marks a guided journey's rows can carry (the quiet tick that
+// says a chapter's own work is finished). Same contract as the counters: ids
+// here, the id-to-derivation mapping in InnerNavDone
+// (components/inner-nav-done.tsx).
+export type InnerNavDoneId =
+  | "modelCriteria"
+  | "modelWeighting"
+  | "modelMethod"
+  | "modelApproval"
+
 // One row in an area's inner sidebar. adminOnly is declared on every entry so
 // no consumer has to remember a default.
 export type InnerNavEntry = {
@@ -344,6 +358,7 @@ export type InnerNavEntry = {
   readonly icon: IconSvgElement
   readonly adminOnly: boolean
   readonly count?: InnerNavCountId
+  readonly done?: InnerNavDoneId
 }
 
 // A group of inner rows under its uppercase category heading. The heading is

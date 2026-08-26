@@ -232,6 +232,7 @@
       "work": "Jobarkitektur",
       "roles": "Roller",
       "rolesRemainingLabel": "{count, plural, one {# rolle tilbage at vurdere} other {# roller tilbage at vurdere}}",
+      "chapterDoneLabel": "Færdig",
       "model": "Model",
       "admin": "Admin",
       "auditLog": "Hændelseslog",

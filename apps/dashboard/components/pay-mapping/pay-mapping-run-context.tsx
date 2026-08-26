@@ -39,6 +39,39 @@ export interface PayMappingRunData {
   runsList: PayMappingRunSummary[] | undefined
 }
 
+// The queue from the shell's own subscriptions, or null while any is still
+// loading. Exported because the run sidebar derives the same queue from the
+// same (client-deduped) subscriptions to mark finished chapters, and a second
+// hand-written assembly there is where the praxis-applicability rule
+// (hasPreviousCompletedRun) would drift.
+export function assembleReviewQueue(
+  run: PayMappingRunDetail | undefined,
+  gap: PayMappingGapResult | undefined,
+  analyses: GroupAnalysis[] | undefined,
+  runsList:
+    | readonly Pick<PayMappingRunSummary, "status" | "referenceDate">[]
+    | undefined
+): ReviewQueue | null {
+  if (
+    run === undefined ||
+    gap === undefined ||
+    analyses === undefined ||
+    runsList === undefined
+  ) {
+    return null
+  }
+  return buildReviewQueue({
+    gap,
+    analyses,
+    collaboration: run.collaboration ?? null,
+    hasPreviousCompletedRun: runsList.some(
+      (candidate) =>
+        candidate.status === "completed" &&
+        candidate.referenceDate < run.referenceDate
+    ),
+  })
+}
+
 interface PayMappingRunContextValue extends PayMappingRunData {
   // Built ONCE here, not per consumer. Two surfaces used to derive it
   // independently from the same inputs, which is the shape a drift bug
@@ -66,26 +99,10 @@ export function PayMappingRunProvider({
   children: ReactNode
 }) {
   const { run, gap, analyses, runsList } = value
-  const queue = useMemo<ReviewQueue | null>(() => {
-    if (
-      run === undefined ||
-      gap === undefined ||
-      analyses === undefined ||
-      runsList === undefined
-    ) {
-      return null
-    }
-    return buildReviewQueue({
-      gap,
-      analyses,
-      collaboration: run.collaboration ?? null,
-      hasPreviousCompletedRun: runsList.some(
-        (candidate) =>
-          candidate.status === "completed" &&
-          candidate.referenceDate < run.referenceDate
-      ),
-    })
-  }, [run, gap, analyses, runsList])
+  const queue = useMemo<ReviewQueue | null>(
+    () => assembleReviewQueue(run, gap, analyses, runsList),
+    [run, gap, analyses, runsList]
+  )
 
   const resolved = useMemo<PayMappingRunContextValue>(
     () => ({ ...value, queue, locked: run?.status === "completed" }),

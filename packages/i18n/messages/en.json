@@ -232,6 +232,7 @@
       "work": "Job architecture",
       "roles": "Roles",
       "rolesRemainingLabel": "{count, plural, one {# role left to evaluate} other {# roles left to evaluate}}",
+      "chapterDoneLabel": "Completed",
       "model": "Model",
       "admin": "Admin",
       "auditLog": "Audit log",

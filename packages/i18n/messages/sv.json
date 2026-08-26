@@ -232,6 +232,7 @@
       "work": "Jobbarkitektur",
       "roles": "Roller",
       "rolesRemainingLabel": "{count, plural, one {# roll kvar att utvärdera} other {# roller kvar att utvärdera}}",
+      "chapterDoneLabel": "Klart",
       "model": "Modell",
       "admin": "Admin",
       "auditLog": "Händelselogg",

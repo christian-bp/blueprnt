@@ -24,7 +24,19 @@ import { onQuery } from "@/test/convex-mocks"
 
 const m = messages.dashboard.payMapping
 
-const RUN = { runId: "run-1", slug: "pay-2026", label: "2026", status: "open" }
+const RUN = {
+  runId: "run-1",
+  slug: "pay-2026",
+  label: "2026",
+  status: "open",
+  referenceDate: 1,
+  // A filled samverkan record: the start chapter's one step is met, so its
+  // row is the one that wears the done-mark below.
+  collaboration: { participants: "HR + facket", description: "Genomgång." },
+}
+// Nothing requires documentation and nothing praxis is done: only the start
+// chapter is finished.
+const GAP = { equalWork: [], womenDominated: [] }
 
 function renderSidebar() {
   return render(
@@ -43,6 +55,8 @@ describe("RunSidebar analysis chapters", () => {
     onQuery((ref) => {
       if (ref === "payMapping.runs.getPayMappingRunBySlug") return RUN
       if (ref === "payMapping.runs.listPayMappingRuns") return [RUN]
+      if (ref === "payMapping.gap.getPayMappingGap") return GAP
+      if (ref === "payMapping.analyses.listGroupAnalyses") return []
       return undefined
     })
   })
@@ -56,8 +70,10 @@ describe("RunSidebar analysis chapters", () => {
       ["equalWork", "equal-work"],
       ["equivalentWork", "equivalent-work"],
     ] as const) {
+      // The name is matched as a prefix: a finished chapter's accessible
+      // name carries the done-mark's sr-only word after its own.
       const link = screen.getByRole("button", {
-        name: m.review.chaptersShort[key],
+        name: new RegExp(`^${m.review.chaptersShort[key]}`),
       })
       expect(link.getAttribute("href")).toBe(
         `/pay-mappings/pay-2026/analysis/${segment}`
@@ -76,6 +92,20 @@ describe("RunSidebar analysis chapters", () => {
     expect(chapter.getAttribute("aria-current")).toBe("page")
     const parent = screen.getByRole("button", { name: m.tabs.analysis })
     expect(parent.getAttribute("aria-current")).toBeNull()
+  })
+
+  // A finished chapter wears the quiet done-mark on its own row: the fixture
+  // meets only the start chapter (samverkan recorded), so exactly one row
+  // ticks, and a chapter with nothing to document never claims to be
+  // finished work.
+  it("marks a finished chapter done, and only that one", () => {
+    renderSidebar()
+    const doneLabel = messages.dashboard.nav.chapterDoneLabel
+    const marks = screen.getAllByText(doneLabel)
+    expect(marks).toHaveLength(1)
+    expect(marks[0]?.closest("a")?.textContent).toContain(
+      m.review.chaptersShort.start
+    )
   })
 
   // Off the analysis section the parent rows behave as before: the open

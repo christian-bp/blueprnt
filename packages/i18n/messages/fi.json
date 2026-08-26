@@ -232,6 +232,7 @@
       "work": "Työarkkitehtuuri",
       "roles": "Roolit",
       "rolesRemainingLabel": "{count, plural, one {# rooli arvioimatta} other {# roolia arvioimatta}}",
+      "chapterDoneLabel": "Valmis",
       "model": "Malli",
       "admin": "Admin",
       "auditLog": "Tapahtumaloki",

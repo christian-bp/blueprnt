@@ -26,15 +26,19 @@ import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Fragment } from "react"
+import { Fragment, useMemo } from "react"
 import { InnerNavHeading } from "@/components/inner-sidebar-nav"
+import { NavDoneMark } from "@/components/nav-done-mark"
 import { useOrganization } from "@/components/org-context"
 import { UpDownChevrons } from "@/components/updown-chevrons"
 import {
   ANALYSIS_CHAPTERS,
+  type AnalysisChapter,
+  chapterProgress,
   chapterSegment,
   currentChapter,
 } from "./analysis-chapters"
+import { assembleReviewQueue } from "./pay-mapping-run-context"
 
 // Sub-pages of one kartläggning (pay-mapping run). `sub` is what the URL's
 // first sub-segment must equal for the row to read as current; `landing` is
@@ -68,6 +72,7 @@ export function payMappingSubPageKey(sub: string | undefined) {
 // whole navigation, so the run pages carry only their breadcrumb above.
 export function RunSidebar() {
   const t = useTranslations("dashboard.payMapping")
+  const tNav = useTranslations("dashboard.nav")
   const pathname = usePathname()
   const { orgId } = useOrganization()
   // /pay-mappings/<slug>[/<sub>...] -> ["pay-mappings", slug, sub?]
@@ -80,7 +85,37 @@ export function RunSidebar() {
     api.payMapping.runs.listPayMappingRuns,
     slug === undefined ? "skip" : { orgId }
   )
+  // The queue behind the chapter done-marks, from the SAME subscriptions the
+  // run shell already holds (the client dedupes them) and the same assembly,
+  // so a row's tick and the instrument can never disagree. getPayMappingGap
+  // returns null only for a cross-org run, unreachable once run resolved
+  // in-org, so null maps to the loading shape as the shell maps it.
+  const gapResult = useQuery(
+    api.payMapping.gap.getPayMappingGap,
+    run == null ? "skip" : { orgId, runId: run.runId }
+  )
+  const analyses = useQuery(
+    api.payMapping.analyses.listGroupAnalyses,
+    run == null ? "skip" : { orgId, runId: run.runId }
+  )
+  const queue = useMemo(
+    () =>
+      assembleReviewQueue(
+        run ?? undefined,
+        gapResult === null ? undefined : gapResult,
+        analyses,
+        runs
+      ),
+    [run, gapResult, analyses, runs]
+  )
   if (slug === undefined) return null
+  // A chapter wears the done-mark once every one of its own steps is met;
+  // an empty chapter (nothing to document) never claims to be finished work.
+  const chapterDone = (chapter: AnalysisChapter) => {
+    if (queue === null) return false
+    const progress = chapterProgress(queue, chapter)
+    return progress.total > 0 && progress.done === progress.total
+  }
   // Swapping the run keeps the visitor on the same sub-page (comparing the
   // same view across years is the point of switching).
   const rest = pathname.split("/").filter(Boolean).slice(2)
@@ -214,6 +249,9 @@ export function RunSidebar() {
                       <span className="truncate">
                         {t(`review.chaptersShort.${chapter}`)}
                       </span>
+                      {chapterDone(chapter) && (
+                        <NavDoneMark label={tNav("chapterDoneLabel")} />
+                      )}
                     </Button>
                   )
                 })}
