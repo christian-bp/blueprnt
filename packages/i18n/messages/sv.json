@@ -1364,7 +1364,6 @@
         "filterRemaining": "Kvarvarande",
         "filterLabel": "Visa",
         "chapterOf": "Kapitel {position} av {total} · {chapter}",
-        "chapterTab": "<num>{position}.</num> {chapter}",
         "duty": {
           "start": "Lagen kräver att arbetsgivaren genomför lönekartläggningen tillsammans med arbetstagarna, normalt genom facket.",
           "praxis": "Lagen kräver att ni går igenom de bestämmelser och den praxis ni tillämpar för löner, och dokumenterar det som visar sig vara ojämställt.",
@@ -1377,7 +1376,6 @@
         },
         "stepsSheet": "Alla steg",
         "stepPosition": "Steg {position} av {total} · {chapter}",
-        "chapterNav": "Analysens kapitel",
         "progressBarLabel": "Hela lönekartläggningens framsteg"
       },
       "overview": {
@@ -1469,7 +1467,8 @@
       },
       "journey": {
         "count": "{done} av {total}",
-        "countRich": "<done></done> av <total></total>"
+        "countRich": "<done></done> av <total></total>",
+        "nextCta": "Nästa: {chapter}"
       },
       "review": {
         "previous": "Föregående",

@@ -1,10 +1,16 @@
 "use client"
 
 import NumberFlow from "@number-flow/react"
+import { buttonVariants } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
-import { ChapterActionSlotProvider } from "@/components/chapter-action-slot"
+import {
+  ChapterActionRow,
+  ChapterActionSlotProvider,
+} from "@/components/chapter-action-slot"
 import {
   FloatingStack,
   FloatingStackProvider,
@@ -15,9 +21,9 @@ import {
   BreadcrumbAside,
 } from "@/components/page-breadcrumb-slots"
 import { SegmentedProgress } from "@/components/segmented-progress"
-import { AnalysisChapterTabs } from "./analysis-chapter-tabs"
 import {
   ANALYSIS_CHAPTERS,
+  chapterHref,
   chapterProgress,
   currentChapter,
 } from "./analysis-chapters"
@@ -62,6 +68,25 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
           key: chapter,
           ...chapterProgress(queue, chapter),
         }))
+  // The journey's continuation, the model section's own rule: once the OPEN
+  // chapter's work is done, the page ends by naming the next chapter, so
+  // finishing a station never leaves the reader to work out from the sidebar
+  // where the review goes on. Only on a finished chapter, only while a next
+  // exists (Likvärdigt arbete is the analysis's end), and only once the queue
+  // is real, so a still-loading chapter never flashes it.
+  const activeIndex =
+    active === undefined ? -1 : ANALYSIS_CHAPTERS.indexOf(active)
+  const activeProgress =
+    activeIndex === -1 || chapters === undefined
+      ? undefined
+      : chapters[activeIndex]
+  const nextChapter =
+    activeIndex === -1 ? undefined : ANALYSIS_CHAPTERS[activeIndex + 1]
+  const showContinuation =
+    activeProgress !== undefined &&
+    activeProgress.total > 0 &&
+    activeProgress.done === activeProgress.total &&
+    nextChapter !== undefined
 
   return (
     // The chapter's own action renders inside the chapter, where its data is,
@@ -95,9 +120,23 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
               total={queue?.progress.overall.total ?? 0}
             />
           </BreadcrumbAside>
-          {/* The journey row: the tabs and this chapter's action. */}
-          <AnalysisChapterTabs />
+          {/* The chapter's own action, at a held height so the body starts
+              at the same Y on every chapter. The chapters themselves are
+              run-sidebar rows. */}
+          <ChapterActionRow />
           {children}
+          {showContinuation && nextChapter !== undefined && (
+            <div className="flex justify-end">
+              <Link
+                href={chapterHref(pathname, nextChapter)}
+                className={cn(buttonVariants())}
+              >
+                {tJourney("nextCta", {
+                  chapter: nameFor.get(nextChapter) ?? nextChapter,
+                })}
+              </Link>
+            </div>
+          )}
         </div>
         {/* The same stack the model section keeps. This section carries no
             pills of its own today, so the rail renders nothing at all. */}

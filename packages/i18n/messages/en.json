@@ -1364,7 +1364,6 @@
         "filterRemaining": "Remaining",
         "filterLabel": "Show",
         "chapterOf": "Chapter {position} of {total} · {chapter}",
-        "chapterTab": "<num>{position}.</num> {chapter}",
         "duty": {
           "start": "The law requires the employer to carry out the pay mapping together with the employees, normally through the union.",
           "praxis": "The law requires you to review the provisions and practice you apply to pay, and to record any that are found to be unequal.",
@@ -1377,7 +1376,6 @@
         },
         "stepsSheet": "All steps",
         "stepPosition": "Step {position} of {total} · {chapter}",
-        "chapterNav": "Analysis chapters",
         "progressBarLabel": "Overall pay mapping progress"
       },
       "overview": {
@@ -1469,7 +1467,8 @@
       },
       "journey": {
         "count": "{done} of {total}",
-        "countRich": "<done></done> of <total></total>"
+        "countRich": "<done></done> of <total></total>",
+        "nextCta": "Next: {chapter}"
       },
       "review": {
         "previous": "Previous",

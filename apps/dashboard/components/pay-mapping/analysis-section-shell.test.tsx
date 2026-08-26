@@ -77,4 +77,48 @@ describe("AnalysisSectionShell", () => {
     expect(screen.getAllByRole("heading")).toHaveLength(1)
     expect(screen.queryByText("Documented")).toBeNull()
   })
+
+  // THE TAB ROW IS GONE: the chapters navigate from the run sidebar, so the
+  // shell's only nav is the breadcrumb trail, and the chapter's action band
+  // holds its place under the title row. Pinned as an absence so the row
+  // cannot creep back beside the sidebar and give the section two switchers.
+  it("draws no chapter tab row, and holds the action band", () => {
+    const { container } = renderShell()
+    expect(screen.getAllByRole("navigation")).toHaveLength(1)
+    expect(container.querySelector('[data-slot="chapter-action"]')).toBeTruthy()
+  })
+
+  // The journey's continuation, the model section's own rule: the pinned
+  // pathname is equal-work and the fixture's equalWork queue is finished, so
+  // the page ends by naming Likvärdigt arbete; the unfinished chapter ahead
+  // of it must never be offered from an unfinished one.
+  it("offers the next chapter once the open chapter's work is done", () => {
+    renderShell()
+    const link = screen.getByRole("link", {
+      name: m.journey.nextCta.replace(
+        "{chapter}",
+        m.review.chaptersShort.equivalentWork
+      ),
+    })
+    expect(link.getAttribute("href")).toBe(
+      "/pay-mappings/pay-2026/analysis/equivalent-work"
+    )
+  })
+
+  it("offers no continuation while the open chapter's work remains", () => {
+    queue.progress.equalWork = { done: 3, total: 5 }
+    try {
+      renderShell()
+      expect(
+        screen.queryByRole("link", {
+          name: m.journey.nextCta.replace(
+            "{chapter}",
+            m.review.chaptersShort.equivalentWork
+          ),
+        })
+      ).toBeNull()
+    } finally {
+      queue.progress.equalWork = { done: 5, total: 5 }
+    }
+  })
 })

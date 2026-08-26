@@ -1364,7 +1364,6 @@
         "filterRemaining": "Gjenstående",
         "filterLabel": "Vis",
         "chapterOf": "Kapittel {position} av {total} · {chapter}",
-        "chapterTab": "<num>{position}.</num> {chapter}",
         "duty": {
           "start": "Loven krever at arbeidsgiveren gjennomfører lønnskartleggingen sammen med arbeidstakerne, normalt gjennom fagforeningen.",
           "praxis": "Loven krever at dere går gjennom bestemmelsene og praksisen dere bruker for lønn, og dokumenterer det som viser seg å være ulikt.",
@@ -1377,7 +1376,6 @@
         },
         "stepsSheet": "Alle steg",
         "stepPosition": "Steg {position} av {total} · {chapter}",
-        "chapterNav": "Analysens kapitler",
         "progressBarLabel": "Hele lønnskartleggingens framdrift"
       },
       "overview": {
@@ -1469,7 +1467,8 @@
       },
       "journey": {
         "count": "{done} av {total}",
-        "countRich": "<done></done> av <total></total>"
+        "countRich": "<done></done> av <total></total>",
+        "nextCta": "Neste: {chapter}"
       },
       "review": {
         "previous": "Forrige",

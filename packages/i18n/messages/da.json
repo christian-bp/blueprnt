@@ -1364,7 +1364,6 @@
         "filterRemaining": "Resterende",
         "filterLabel": "Vis",
         "chapterOf": "Kapitel {position} af {total} · {chapter}",
-        "chapterTab": "<num>{position}.</num> {chapter}",
         "duty": {
           "start": "Loven kræver, at arbejdsgiveren gennemfører lønkortlægningen sammen med medarbejderne, normalt gennem fagforeningen.",
           "praxis": "Loven kræver, at I gennemgår de bestemmelser og den praksis, I anvender for løn, og dokumenterer det, der viser sig at være ulige.",
@@ -1377,7 +1376,6 @@
         },
         "stepsSheet": "Alle trin",
         "stepPosition": "Trin {position} af {total} · {chapter}",
-        "chapterNav": "Analysens kapitler",
         "progressBarLabel": "Hele lønkortlægningens fremdrift"
       },
       "overview": {
@@ -1469,7 +1467,8 @@
       },
       "journey": {
         "count": "{done} af {total}",
-        "countRich": "<done></done> af <total></total>"
+        "countRich": "<done></done> af <total></total>",
+        "nextCta": "Næste: {chapter}"
       },
       "review": {
         "previous": "Forrige",

@@ -18,6 +18,7 @@ import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { BreadcrumbSlotProvider } from "@/components/page-breadcrumb-slots"
 import { usePageTitle } from "@/hooks/use-page-title"
+import { chapterSegment, currentChapter } from "./analysis-chapters"
 import { PayMappingRunProvider } from "./pay-mapping-run-context"
 import { payMappingSubPageKey } from "./run-sidebar"
 
@@ -85,6 +86,7 @@ export function PayMappingRunShell({
   // from the pathname (the shell lives in the persistent [slug] layout, so
   // no page can pass it) keeps the name in the breadcrumb row.
   const [, , sub] = pathname.split("/").filter(Boolean)
+  const analysisChapter = currentChapter(pathname)
   if (run === null) {
     // Match the roles detail precedent: the register crumb above an Empty
     // stating the miss, with the way back as its action.
@@ -122,7 +124,19 @@ export function PayMappingRunShell({
           segments={[
             { label: tNav("payMapping"), href: "/pay-mappings" },
             run === undefined ? { skeleton: true } : { label: run.label },
-            { label: t(`tabs.${payMappingSubPageKey(sub)}`) },
+            // On a chapter page the trail ends at the chapter (the sidebar's
+            // rows are the nav, so the trail titles what is open), with the
+            // Analys crumb linking straight at the first chapter rather than
+            // at the bare segment, whose only content is the redirect there.
+            ...(analysisChapter === undefined
+              ? [{ label: t(`tabs.${payMappingSubPageKey(sub)}`) }]
+              : [
+                  {
+                    label: t("tabs.analysis"),
+                    href: `/pay-mappings/${slug}/analysis/${chapterSegment("start")}`,
+                  },
+                  { label: t(`review.chaptersShort.${analysisChapter}`) },
+                ]),
           ]}
         />
         <PayMappingRunProvider

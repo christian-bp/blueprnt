@@ -26,10 +26,15 @@ import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Fragment } from "react"
 import { InnerNavHeading } from "@/components/inner-sidebar-nav"
 import { useOrganization } from "@/components/org-context"
 import { UpDownChevrons } from "@/components/updown-chevrons"
-import { chapterSegment } from "./analysis-chapters"
+import {
+  ANALYSIS_CHAPTERS,
+  chapterSegment,
+  currentChapter,
+} from "./analysis-chapters"
 
 // Sub-pages of one kartläggning (pay-mapping run). `sub` is what the URL's
 // first sub-segment must equal for the row to read as current; `landing` is
@@ -81,6 +86,7 @@ export function RunSidebar() {
   const rest = pathname.split("/").filter(Boolean).slice(2)
   const subPath = rest.length > 0 ? `/${rest.join("/")}` : ""
   const currentSub = sub ?? ""
+  const analysisChapter = currentChapter(pathname)
 
   return (
     <div className="flex flex-col py-1">
@@ -148,30 +154,70 @@ export function RunSidebar() {
             target === ""
               ? `/pay-mappings/${slug}`
               : `/pay-mappings/${slug}/${target}`
-          const active = currentSub === tab.sub
+          // On a chapter page the chapter's own row is the current one, so
+          // the Analys parent stands down (its landing is never a page of
+          // its own, only the redirect into the first chapter).
+          const active =
+            currentSub === tab.sub &&
+            (tab.sub !== "analysis" || analysisChapter === undefined)
           return (
-            <Button
-              key={tab.labelKey}
-              variant="ghost"
-              className={cn(
-                "w-full justify-start gap-2.5",
-                active
-                  ? "bg-accent font-medium text-accent-foreground"
-                  : "font-normal text-foreground"
-              )}
-              aria-current={active ? "page" : undefined}
-              nativeButton={false}
-              render={<Link href={href} />}
-            >
-              <span className="flex size-4 shrink-0 items-center justify-center [&_svg]:size-3.5">
-                <HugeiconsIcon
-                  icon={tab.icon}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-              </span>
-              <span className="truncate">{t(`tabs.${tab.labelKey}`)}</span>
-            </Button>
+            <Fragment key={tab.labelKey}>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start gap-2.5",
+                  active
+                    ? "bg-accent font-medium text-accent-foreground"
+                    : "font-normal text-foreground"
+                )}
+                aria-current={active ? "page" : undefined}
+                nativeButton={false}
+                render={<Link href={href} />}
+              >
+                <span className="flex size-4 shrink-0 items-center justify-center [&_svg]:size-3.5">
+                  <HugeiconsIcon
+                    icon={tab.icon}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
+                </span>
+                <span className="truncate">{t(`tabs.${tab.labelKey}`)}</span>
+              </Button>
+              {/* The analysis chapters, indented under their section: the
+                  journey's steps navigate from here (the in-page tab row is
+                  gone), always visible so the run's map does not reshape as
+                  the reader moves. The spacer matches the parent icon's box,
+                  so the child labels align with the parent text by
+                  construction. */}
+              {tab.sub === "analysis" &&
+                ANALYSIS_CHAPTERS.map((chapter) => {
+                  const childActive = analysisChapter === chapter
+                  return (
+                    <Button
+                      key={chapter}
+                      variant="ghost"
+                      className={cn(
+                        "w-full justify-start gap-2.5",
+                        childActive
+                          ? "bg-accent font-medium text-accent-foreground"
+                          : "font-normal text-muted-foreground"
+                      )}
+                      aria-current={childActive ? "page" : undefined}
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href={`/pay-mappings/${slug}/analysis/${chapterSegment(chapter)}`}
+                        />
+                      }
+                    >
+                      <span className="size-4 shrink-0" aria-hidden="true" />
+                      <span className="truncate">
+                        {t(`review.chaptersShort.${chapter}`)}
+                      </span>
+                    </Button>
+                  )
+                })}
+            </Fragment>
           )
         })}
       </div>
