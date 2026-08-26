@@ -28,6 +28,7 @@ import { HelpMorphButton } from "@/components/help-morph-button"
 import { useEffect, useId, useRef, useState } from "react"
 import { assessmentErrorMessage } from "@/lib/assessment-error"
 import { SPRING } from "@/lib/motion"
+import { RATE_NEXT_KBD_CLASS } from "@/lib/rate-column"
 import { toast } from "@/lib/toast"
 
 // The "omfattas inte" step: valid only for a workingConditions criterion,
@@ -627,15 +628,10 @@ export function RatingStepper({
                   {index === criteria.length - 1
                     ? t("completeCta")
                     : t("nextCta")}
-                  {/* Smaller than the shared default at THIS call site: the
-                      keycap sits inside a filled primary button, where the
-                      default 20px block reads as a second label beside a
-                      36px button's own. It is a hint that Enter does this,
-                      so it steps down rather than competing. */}
                   <Kbd
                     data-icon="inline-end"
                     aria-hidden="true"
-                    className="h-4 min-w-4 translate-x-0.5 px-1"
+                    className={RATE_NEXT_KBD_CLASS}
                   >
                     ⏎
                   </Kbd>

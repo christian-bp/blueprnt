@@ -19,7 +19,7 @@ import Link from "next/link"
 import { use } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
-import { RATE_COLUMN } from "@/lib/rate-column"
+import { RATE_COLUMN, RATE_NEXT_KBD_CLASS } from "@/lib/rate-column"
 import { groupByFamily } from "@/lib/role-groups"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { RatingResult } from "@/components/rating/rating-result"
@@ -134,7 +134,7 @@ export default function RatePage(props: {
                   <Kbd
                     data-icon="inline-end"
                     aria-hidden="true"
-                    className="translate-x-0.5"
+                    className={RATE_NEXT_KBD_CLASS}
                   >
                     ⏎
                   </Kbd>

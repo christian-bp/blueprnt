@@ -9,6 +9,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { criteriaLibraryContent } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import messages from "@workspace/i18n/messages/en.json"
+import { RATE_NEXT_KBD_CLASS } from "@/lib/rate-column"
 
 const setRatingMock = vi.fn()
 const completeMock = vi.fn()
@@ -298,13 +299,18 @@ describe("RatingStepper", () => {
   // primary button, where the shared Kbd's default 20px block reads as a
   // label beside the button's own; it steps down a notch at this call site
   // while staying the app's Kbd rather than a hand-rolled span.
-  it("wears the enter hint smaller than the shared default", () => {
+  it("wears the enter hint smaller and in the button's own ink", () => {
     renderStepper()
     const cap = document.querySelector('[data-slot="kbd"]') as HTMLElement
     expect(cap).not.toBeNull()
     expect(cap.tagName).toBe("KBD")
-    expect(cap.className).toContain("h-4")
-    expect(cap.className).toContain("min-w-4")
+    // The shared class, token by token on the rendered element: sized down
+    // from the vendored default, and tinted with the filled button's own
+    // foreground rather than the opaque muted chip (the same adaptation the
+    // vendored Kbd already makes on its one filled surface, the tooltip).
+    for (const token of RATE_NEXT_KBD_CLASS.split(/\s+/)) {
+      expect(cap.className.split(/\s+/)).toContain(token)
+    }
     // Announced by the button's own label, never read out twice.
     expect(cap.getAttribute("aria-hidden")).toBe("true")
   })
