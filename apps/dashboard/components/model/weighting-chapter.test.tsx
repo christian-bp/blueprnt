@@ -6,6 +6,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react"
+import { criteriaLibraryContent } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -896,7 +897,11 @@ describe("the Viktning chapter", () => {
   // write path: it asks about one criterion, not a dimension, and clears only
   // on that criterion's own motivation.
   describe("the people-leadership note", () => {
-    const LEADERSHIP = "People and management responsibility"
+    // The library's own name, read rather than re-typed: the sibling
+    // occurrence in approval-card.test.tsx moved with the 2026-08-24 rename
+    // and this one did not, which is what a literal costs.
+    const LEADERSHIP =
+      criteriaLibraryContent("en").criteria["people-leadership"].name
 
     // Four criteria on a budget of 12, with responsibility deliberately UNDER
     // the dominance threshold (4 of 12, or 3 of 12), so the only note in the

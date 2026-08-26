@@ -80,14 +80,21 @@ const KNOWLEDGE_BREADTH =
 // press.
 const KNOWLEDGE_BREADTH_SHORT =
   criteriaLibraryContent("en").criteria["knowledge-breadth"].shortUiText
+// READ FROM THE LIBRARY, never re-typed. This one is asserted ABSENT on the
+// collapsed row, and a hand-copied literal that the library has since moved
+// past stops matching anything: the assertion then passes whatever the row
+// renders, which is the one failure mode a negative assertion has. It held a
+// pre-refinement string and had gone exactly that way.
 const KNOWLEDGE_BREADTH_FULL =
-  "Captures the role's requirement to combine and integrate several competence areas, such as product, data, business and technology, and to understand how they connect. It measures breadth of integration, not the number of people the role works with."
+  criteriaLibraryContent("en").criteria["knowledge-breadth"].fullDefinition
 const ANALYTICAL = "Analytical and problem-solving effort"
 const COMPLEXITY = "Complexity and ambiguity"
-// The library's own one-liner for complexity-ambiguity, so the assertion reads
-// the same string the surface renders from the library module.
+// The library's own one-liner for complexity-ambiguity, read from the library
+// so the claim stays true: it is injected as the fixture's shortUiText and
+// asserted on the card, so a re-typed literal would only ever agree with
+// itself and would say nothing about what the surface renders.
 const COMPLEXITY_SHORT =
-  "The role's requirement to handle uncertainty, multi-faceted questions and unclear frames with qualified judgment."
+  criteriaLibraryContent("en").criteria["complexity-ambiguity"].shortUiText
 
 const COMMUNICATION = "Communication and relationship-demanding work"
 const ANCHOR_LOW = "Follows an established method"

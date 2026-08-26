@@ -511,10 +511,11 @@ export const DEMO_RATING_MOTIVATION =
 export const DEMO_BIAS_COMMENT =
   "Kriteriet bedöms könsneutralt: det mäter rollens krav, inte innehavarens egenskaper."
 
-// Clears the checklist's overlapPairs warning for the demo's one applicable
+// Clears the checklist's overlapPairs warning for the demo's FIRST applicable
 // pair (knowledge-depth + knowledge-breadth, both selected): overlapNotes on
 // either member counts as the pair reviewed (method-checks.ts), so this lands
-// on knowledge-breadth only.
+// on knowledge-breadth only. The 2026-08-24 refinement gave the demo a second
+// applicable pair; its note follows below.
 export const DEMO_KNOWLEDGE_BREADTH_OVERLAP_NOTES =
   "Avgränsat mot kunskapsdjup: bredden mäter integration över flera områden, inte specialistdjupet."
 

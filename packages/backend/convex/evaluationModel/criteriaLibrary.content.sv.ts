@@ -1,16 +1,27 @@
 import type { CriteriaLibraryContent } from "./criteriaLibrary.content.en"
 
-// Swedish content for the criteria library (the masterdokument's sections
-// 5-13.5). Swedish is the substance source locale: criterion names, the
-// section 5 dimension rows, the section 7-10 table cells (measures,
-// notMeasures, whenSuitable, whenNotSuitable), the section 10.1 test
-// question and notMaterialLabel, the section 13.3 shared scale, and the
-// section 13.5 anchors (scope-impact, complexity-ambiguity, risk-consequence)
-// are verbatim from docs/rollvardering-masterdokument.md. Every other field
-// (shortUiText, fullDefinition, controlQuestion, assessmentQuestion, the
-// midpoint captions, and the anchor1/anchor3/anchor5 sets of the remaining
-// 18 criteria) is a faithful Swedish counterpart of criteriaLibraryContentEn,
-// since the masterdokument does not define those per criterion.
+// Swedish content for the criteria library, and the SOURCE the other four
+// locales are derived from.
+//
+// Every field the author's refinement defines is verbatim from
+// docs/kriteriebibliotek-forfining-2026-08-24.md: the 21 criteria's names,
+// shortUiText, fullDefinition, measures, notMeasures, whenSuitable,
+// whenNotSuitable, controlQuestion and anchors 1/3/5, plus the shared scale's
+// five grade names and meanings. Two deviations, both deliberate: the
+// document's "Okcomplicerad" is corrected in analytical-effort's anchor 1, and
+// the explicit step-2/step-4 anchors that section 13.5 of
+// docs/rollvardering-masterdokument.md gives complexity-ambiguity, scope-impact
+// and risk-consequence are kept, since the refinement does not revise them
+// ("om ingen egen ankartext har beslutats"). Four of those six were reframed
+// onto the refinement's subject, changing the grammatical subject only.
+//
+// What the refinement does NOT define stays as it was and still traces to the
+// masterdokument: modelName, the dimension rows, the working-conditions test,
+// the midpoint captions, and each criterion's assessmentQuestion.
+//
+// Direction of derivation matters here: Swedish is the substance source and
+// en/nb/da/fi follow it. criteriaLibrary.content.en.ts is type-DEFINING (every
+// locale implements its CriteriaLibraryContent) without being content-defining.
 export const criteriaLibraryContentSv: CriteriaLibraryContent = {
   modelName: "Rollvärderingsmodell",
   dimensions: {

@@ -99,7 +99,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
         "The requirement is advanced, reaches wider or calls for independent trade-offs where established ways of working are not always enough.",
     },
     "5": {
-      name: "Very advanced, extensive or business-critical requirement",
+      name: "Highly advanced, extensive or business-critical requirement",
       meaning:
         "The requirement carries very great scope, difficulty, consequence or strategic significance. It can shape direction, standards, solutions or results beyond the immediate area.",
     },
@@ -448,7 +448,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       shortUiText:
         "Responsibility for leading people, coordinating activity and creating results through others.",
       fullDefinition:
-        "Covers responsibility for leading and coordinating people or parts of the business in order to create results through others. It can include responsibility for priorities, allocation of work, direction, developing ways of working or coordinating delivery. Formal people responsibility is included when the responsibility also covers employees' goals, development, performance and working environment. The criterion concerns leadership responsibility through others, not specialist influence, project coordination or a large decision mandate of one's own.",
+        "Covers responsibility for leading and coordinating people or parts of the business in order to create results through others. It can include responsibility for priorities, allocation of work, direction, developing ways of working or coordinating delivery. Formal people responsibility is included when the responsibility also covers employees' goals, development, performance and working environment. The criterion concerns leadership responsibility through others, not merely specialist influence, project coordination or a large decision mandate of one's own.",
       measures:
         "Responsibility for leading and coordinating work through others, responsibility for direction, priorities and delivery in a part of the business, responsibility for developing ways of working or capacity through others, formal responsibility for employees' goals, development and performance.",
       notMeasures:

@@ -48,7 +48,7 @@ export const criteriaLibraryContentFi: CriteriaLibraryContent = {
         "Vaatimus on selkeästi määritelty, paikallinen tai laajuudeltaan rajattu. Vakiintuneet puitteet ja toimintatavat riittävät yleensä.",
     },
     "2": {
-      name: "Perustason tai kohtalainen vaatimus",
+      name: "Perustasosta kohtalaiseen ulottuva vaatimus",
       meaning:
         "Vaatimus toistuu selkeästi rajatulla alueella. Vaihtelut ja yksinkertaisemmat poikkeamat on hoidettava.",
     },
