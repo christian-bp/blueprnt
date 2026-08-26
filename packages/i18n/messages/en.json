@@ -1911,6 +1911,7 @@
         "zonesLabel": "Zone profile requirements",
         "zonesDescription": "The lowest step a role must reach on every profile criterion to enter the zone. Leave a zone empty to gate it on the weighting alone.",
         "levelField": "Level {level}",
+        "toggleCta": "Adjust the thresholds",
         "zoneColumn": "Zone",
         "levelColumn": "Level",
         "fromColumn": "From",

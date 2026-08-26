@@ -63,12 +63,17 @@ function install() {
   )
 }
 
-function renderPanel() {
-  return render(
+function renderPanel({ open = true }: { open?: boolean } = {}) {
+  const result = render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <LevelRulesPanel orgId="org-1" />
     </NextIntlClientProvider>
   )
+  // Closed by default; most tests are about the opened content.
+  if (open) {
+    fireEvent.click(screen.getByRole("button", { name: m.toggleCta }))
+  }
+  return result
 }
 
 const levelField = (level: number) =>
@@ -90,6 +95,26 @@ describe("LevelRulesPanel", () => {
   })
   afterEach(() => cleanup())
 
+  // CLOSED BY DEFAULT: the thresholds are the model's most advanced dial,
+  // and standing open they put sixteen inputs between the approval gate and
+  // the reader. The collapsed frame still names itself, carries its help,
+  // and opens on the row's own act.
+  it("opens closed, and reveals the table on the toggle", () => {
+    renderPanel({ open: false })
+    expect(screen.getByText(m.title)).toBeDefined()
+    expect(
+      screen.getByRole("button", {
+        name: messages.dashboard.help.levelThresholdLabel,
+      })
+    ).toBeDefined()
+    expect(
+      screen.queryByLabelText(m.levelField.replace("{level}", "1"))
+    ).toBeNull()
+    expect(screen.queryByRole("button", { name: m.save })).toBeNull()
+    fireEvent.click(screen.getByRole("button", { name: m.toggleCta }))
+    expect(levelField(1).value).toBe("97")
+  })
+
   it("shows every stored threshold and zone rule", () => {
     renderPanel()
     expect(levelField(1).value).toBe("97")
@@ -102,7 +127,7 @@ describe("LevelRulesPanel", () => {
 
   // The reader correcting a ladder is thinking in zones, not in a column of
   // twelve digits.
-  it("groups the levels under their zone's own name", () => {
+  it("groups the levels under their zone label, without the zone's prose name", () => {
     renderPanel()
     const content = zoneContent("en")
     for (const zone of ["A", "D"] as const) {
@@ -111,7 +136,9 @@ describe("LevelRulesPanel", () => {
           messages.dashboard.levels.zoneLabel.replace("{zone}", zone)
         ).length
       ).toBeGreaterThan(0)
-      expect(screen.getByText(content.zones[zone].name)).toBeDefined()
+      // The zone's descriptive name stays off this table: it collided with
+      // the level column and repeated what the zone surfaces already say.
+      expect(screen.queryByText(content.zones[zone].name)).toBeNull()
     }
   })
 
@@ -293,16 +320,14 @@ describe("LevelRulesPanel", () => {
       })
     ).toBeDefined()
 
-    // Structural law, also known before the data: the four zones by name,
-    // and the table's own headers.
-    const content = zoneContent("en")
+    // Structural law, also known before the data: the four zone labels and
+    // the table's own headers.
     for (const zone of ZONE_KEYS) {
       expect(
         screen.getByText(
           messages.dashboard.levels.zoneLabel.replace("{zone}", zone)
         )
       ).toBeDefined()
-      expect(screen.getByText(content.zones[zone].name)).toBeDefined()
     }
     expect(screen.getByText(m.fromColumn)).toBeDefined()
     expect(screen.getByText(m.shareColumn)).toBeDefined()

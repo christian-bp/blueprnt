@@ -1911,6 +1911,7 @@
         "zonesLabel": "Profilkrav per zone",
         "zonesDescription": "Det laveste trin, en rolle skal nå på hvert profilkriterium for at komme ind i zonen. Lad en zone stå tom, så afgøres den alene af vægtningen.",
         "levelField": "Niveau {level}",
+        "toggleCta": "Justér grænserne",
         "zoneColumn": "Zone",
         "levelColumn": "Niveau",
         "fromColumn": "Fra",

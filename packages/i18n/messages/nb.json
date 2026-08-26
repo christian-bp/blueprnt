@@ -1911,6 +1911,7 @@
         "zonesLabel": "Profilkrav per sone",
         "zonesDescription": "Det laveste trinnet en rolle må nå på hvert profilkriterium for å komme inn i sonen. La en sone stå tom, så avgjøres den bare av vektingen.",
         "levelField": "Nivå {level}",
+        "toggleCta": "Juster grensene",
         "zoneColumn": "Sone",
         "levelColumn": "Nivå",
         "fromColumn": "Fra",

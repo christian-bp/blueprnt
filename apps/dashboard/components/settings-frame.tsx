@@ -24,7 +24,10 @@ export function SettingsFrame({
   description?: ReactNode
   // Right-aligned actions under the panel (cancel first, primary last).
   footer?: ReactNode
-  children: ReactNode
+  // Omit for a frame that is only its header: the collapsed state of a
+  // section that opens on demand. An empty white panel under the title would
+  // read as a loading defect, so no children means no panel.
+  children?: ReactNode
   className?: string
 }) {
   return (
@@ -35,9 +38,11 @@ export function SettingsFrame({
           <FrameDescription>{description}</FrameDescription>
         )}
       </FrameHeader>
-      <FramePanel className="p-0">
-        <div className="flex flex-col divide-y divide-border">{children}</div>
-      </FramePanel>
+      {children !== undefined && (
+        <FramePanel className="p-0">
+          <div className="flex flex-col divide-y divide-border">{children}</div>
+        </FramePanel>
+      )}
       {/* Row, actions right: the vendored footer is a column, which would
           stretch a lone button to the panel's full width. */}
       {footer !== undefined && (

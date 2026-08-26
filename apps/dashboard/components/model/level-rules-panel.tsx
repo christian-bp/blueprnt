@@ -10,7 +10,6 @@ import {
   ZONE_KEYS,
   type ZoneKey,
 } from "@workspace/core"
-import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
 import {
   Form,
   FormControl,
@@ -31,8 +30,9 @@ import {
 } from "@workspace/ui/components/table"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
-import { useMemo } from "react"
+import { type ReactNode, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
+import { DisclosureToggle } from "@/components/disclosure-toggle"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SettingsFrame, SettingsRow } from "@/components/settings-frame"
 import { SubmitButton } from "@/components/submit-button"
@@ -77,13 +77,23 @@ export function LevelRulesPanel({
   onSaved?: () => void
 }) {
   const locale = useLocale()
+  // CLOSED BY DEFAULT. The thresholds are the model's most advanced dial and
+  // almost never touched; standing open they put sixteen inputs between the
+  // approval gate and the reader. The frame's title row is the whole
+  // collapsed state, so the section still names itself and carries its help.
+  const [open, setOpen] = useState(false)
+  const titleRow = (
+    <PanelTitle open={open} onToggle={() => setOpen((current) => !current)} />
+  )
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
-  if (model === undefined) return <LevelRulesSkeleton />
   if (model === null) return null
+  if (!open) return <SettingsFrame title={titleRow} />
+  if (model === undefined) return <LevelRulesSkeleton titleRow={titleRow} />
   return (
     <LevelRulesForm
       orgId={orgId}
       onSaved={onSaved}
+      titleRow={titleRow}
       // Keyed on the stored values, so an edit landing from elsewhere (a
       // restore, another operator) re-seeds the form instead of leaving the
       // reader typing into a stale ladder.
@@ -94,24 +104,52 @@ export function LevelRulesPanel({
   )
 }
 
+// The frame title as a full row: the section's name, its concept help, and
+// the open/close act at the row's end. The help sits beside the title (its
+// law), never inside the toggle, which is a button and cannot nest one.
+function PanelTitle({
+  open,
+  onToggle,
+}: {
+  open: boolean
+  onToggle: () => void
+}) {
+  const t = useTranslations("dashboard.model.levelRules")
+  const tHelp = useTranslations("dashboard.help")
+  return (
+    <span className="flex w-full items-center gap-1.5">
+      {t("title")}
+      <HelpMorphButton label={tHelp("levelThresholdLabel")}>
+        {tHelp("levelThresholdBody")}
+      </HelpMorphButton>
+      <span className="ms-auto font-normal">
+        <DisclosureToggle
+          label={t("toggleCta")}
+          open={open}
+          onToggle={onToggle}
+        />
+      </span>
+    </span>
+  )
+}
+
 function LevelRulesForm({
   orgId,
   levelRules,
   zoneProfileRules,
   onSaved,
+  titleRow,
 }: {
   orgId: string
   levelRules: readonly { level: number; minScore: number }[]
   zoneProfileRules: readonly { zone: ZoneKey; minStep: number }[]
   onSaved?: () => void
+  titleRow: ReactNode
 }) {
   const t = useTranslations("dashboard.model.levelRules")
-  const tHelp = useTranslations("dashboard.help")
   const tLevels = useTranslations("dashboard.levels")
   const tToast = useTranslations("dashboard.toast")
   const tv = useTranslations("dashboard.validation")
-  const locale = useLocale()
-  const content = zoneContent(locale)
   const saveLevels = useMutation(api.evaluationModel.approval.updateLevelRules)
   const saveZones = useMutation(
     api.evaluationModel.approval.updateZoneProfileRules
@@ -193,14 +231,7 @@ function LevelRulesForm({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleValid)}>
         <SettingsFrame
-          title={
-            <span className="flex items-center gap-2">
-              {t("title")}
-              <HelpMorphButton label={tHelp("levelThresholdLabel")}>
-                {tHelp("levelThresholdBody")}
-              </HelpMorphButton>
-            </span>
-          }
+          title={titleRow}
           footer={
             <div className="flex flex-wrap items-center justify-end gap-3">
               {/* The precondition in words, beside the act rather than after
@@ -238,7 +269,7 @@ function LevelRulesForm({
             <Table className="table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-40">{t("zoneColumn")}</TableHead>
+                  <TableHead className="w-24">{t("zoneColumn")}</TableHead>
                   <TableHead className="w-20">{t("levelColumn")}</TableHead>
                   <TableHead className="w-24">{t("fromColumn")}</TableHead>
                   <TableHead className="w-14">{t("toColumn")}</TableHead>
@@ -256,9 +287,6 @@ function LevelRulesForm({
                         <TableCell rowSpan={3} className="align-top">
                           <span className="block font-medium text-muted-foreground text-xs uppercase tracking-wide">
                             {tLevels("zoneLabel", { zone })}
-                          </span>
-                          <span className="block text-muted-foreground text-xs">
-                            {content.zones[zone].name}
                           </span>
                         </TableCell>
                       )}
@@ -407,22 +435,12 @@ function RowLabel({ label, help }: { label: string; help: string }) {
 // previous version drew the title and the labels as bars and left out the
 // second row and the whole footer, so the panel grew by a settings row and a
 // button row on arrival, which is the reflow a skeleton exists to prevent.
-function LevelRulesSkeleton() {
+function LevelRulesSkeleton({ titleRow }: { titleRow: ReactNode }) {
   const t = useTranslations("dashboard.model.levelRules")
-  const tHelp = useTranslations("dashboard.help")
   const tLevels = useTranslations("dashboard.levels")
-  const locale = useLocale()
-  const content = zoneContent(locale)
   return (
     <SettingsFrame
-      title={
-        <span className="flex items-center gap-2">
-          {t("title")}
-          <HelpMorphButton label={tHelp("levelThresholdLabel")}>
-            {tHelp("levelThresholdBody")}
-          </HelpMorphButton>
-        </span>
-      }
+      title={titleRow}
       footer={
         <div className="flex flex-wrap items-center justify-end gap-3">
           <p className="max-w-md text-muted-foreground text-sm leading-relaxed">
@@ -445,7 +463,7 @@ function LevelRulesSkeleton() {
         <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-40">{t("zoneColumn")}</TableHead>
+              <TableHead className="w-24">{t("zoneColumn")}</TableHead>
               <TableHead className="w-20">{t("levelColumn")}</TableHead>
               <TableHead className="w-24">{t("fromColumn")}</TableHead>
               <TableHead className="w-14">{t("toColumn")}</TableHead>
@@ -462,9 +480,6 @@ function LevelRulesSkeleton() {
                     <TableCell rowSpan={3} className="align-top">
                       <span className="block font-medium text-muted-foreground text-xs uppercase tracking-wide">
                         {tLevels("zoneLabel", { zone })}
-                      </span>
-                      <span className="block text-muted-foreground text-xs">
-                        {content.zones[zone].name}
                       </span>
                     </TableCell>
                   )}

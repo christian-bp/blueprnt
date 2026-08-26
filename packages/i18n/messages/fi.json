@@ -1911,6 +1911,7 @@
         "zonesLabel": "Vyöhykkeiden profiilivaatimukset",
         "zonesDescription": "Alin porras, joka roolin on saavutettava jokaisella profiilikriteerillä päästäkseen vyöhykkeelle. Jätä vyöhyke tyhjäksi, jos haluat sen määräytyvän pelkän painotuksen mukaan.",
         "levelField": "Taso {level}",
+        "toggleCta": "Muokkaa rajoja",
         "zoneColumn": "Vyöhyke",
         "levelColumn": "Taso",
         "fromColumn": "Alaraja",
