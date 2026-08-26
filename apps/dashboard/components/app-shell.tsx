@@ -61,19 +61,13 @@ export function pageContentClasses(pathname: string): string {
     pathname.startsWith("/docs/") ||
     pathname === "/work"
   if (selfManaged) return "flex h-full min-h-0 w-full flex-col"
-  // One kartläggning's workspace is a data surface: wide tables and plots
-  // earn the wider cap, and a run that changed width from tab to tab read as
-  // two different pages. The model shares it: its dimension columns need more
-  // room than 7xl but still center like every other page.
-  const wide =
-    /^\/pay-mappings\/[^/]+(\/|$)/.test(pathname) ||
-    pathname === "/model" ||
-    pathname.startsWith("/model/")
-  return cn(
-    "mx-auto flex w-full flex-col gap-5",
-    PAGE_PADDING,
-    wide ? "max-w-[85rem]" : "max-w-7xl"
-  )
+  // ONE cap for every routed page. The model and the pay-mapping runs briefly
+  // carried a wider tier of their own, which made moving between areas read
+  // as the page changing size; whatever a surface gains from extra width it
+  // loses in the app no longer holding one line. Surfaces that genuinely
+  // need more than the cap (the family matrix) break out of it explicitly
+  // and put the chrome back, rather than widening their whole area.
+  return cn("mx-auto flex w-full flex-col gap-5", PAGE_PADDING, "max-w-7xl")
 }
 
 // Whether a pathname sits inside one pay-mapping run (the page-owned run

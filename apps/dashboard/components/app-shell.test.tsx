@@ -14,21 +14,25 @@ describe("pageContentClasses", () => {
     expect(classes).toContain("p-4")
   })
 
-  it("gives one run's workspace the wide cap", () => {
-    const classes = pageContentClasses("/pay-mappings/run-2026/analysis")
-    expect(classes).toContain("max-w-[85rem]")
-    expect(classes).not.toContain("max-w-7xl")
-  })
-
-  it("keeps the pay-mappings LIST at the ordinary cap", () => {
-    expect(pageContentClasses("/pay-mappings")).toContain("max-w-7xl")
-  })
-
-  it("gives the model section the wide cap, centered like every page", () => {
-    const classes = pageContentClasses("/model/weighting")
-    expect(classes).toContain("max-w-[85rem]")
-    expect(classes).toContain("mx-auto")
-    expect(classes).toContain("p-4")
+  // ONE cap for every routed page: the model and the pay-mapping runs
+  // briefly carried a wider tier of their own, which made moving between
+  // areas read as the page changing size. Pinned across the routes that used
+  // to differ, so the tier cannot creep back one route at a time.
+  it("holds every routed page to the same cap", () => {
+    for (const path of [
+      "/people",
+      "/pay-mappings",
+      "/pay-mappings/run-2026/analysis",
+      "/model/weighting",
+      "/model/criteria",
+      "/roles",
+    ]) {
+      const classes = pageContentClasses(path)
+      expect(classes, path).toContain("max-w-7xl")
+      expect(classes, path).not.toContain("85rem")
+      expect(classes, path).toContain("mx-auto")
+      expect(classes, path).toContain("p-4")
+    }
   })
 
   it("hands the self-managed routes their whole pane", () => {
