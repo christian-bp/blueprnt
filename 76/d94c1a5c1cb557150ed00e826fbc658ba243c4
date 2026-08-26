@@ -1,0 +1,41 @@
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_9600150c50acb9 1644
+apps/dashboard/content/docs/fi/criteria-and-scale.mdx
+  s_58dd112dc09435::t_9b89671bd97c6e 92
+packages/backend/convex/evaluationModel/criteriaLibrary.content.sv.ts
+  s_58dd112dc09435::t_0b5d42d6be7586 3-24
+apps/dashboard/lib/shared-scale.test.ts
+  s_58dd112dc09435::t_bd2d7ea501b2da 1-43
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_9600150c50acb9 1632
+packages/backend/convex/assessment/devCompany.ts
+  s_58dd112dc09435::t_0b5d42d6be7586 514,517-518
+packages/backend/convex/evaluationModel/criteriaLibrary.content.fi.ts
+  s_58dd112dc09435::t_9600150c50acb9 51
+packages/backend/convex/evaluationModel/criteriaLibrary.content.en.ts
+  s_58dd112dc09435::t_16708402f7347f 451
+  s_58dd112dc09435::t_9600150c50acb9 102
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_998a9ba3ab3722 900-904
+  s_58dd112dc09435::t_a1840342da1acb 9
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_998a9ba3ab3722 83-87,89,92-95,97
+apps/dashboard/content/docs/en/criteria-and-scale.mdx
+  s_58dd112dc09435::t_9b89671bd97c6e 87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "76d94c1a5c1cb557150ed00e826fbc658ba243c4",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
