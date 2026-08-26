@@ -1,0 +1,37 @@
+apps/dashboard/components/model/level-rules-panel.test.tsx
+  s_58dd112dc09435::t_4d6a996d5b8a18 296-297,302,305,307-308
+  s_58dd112dc09435::t_93b58712b6b8e2 110-114,118-138
+  s_58dd112dc09435::t_6ce82a1ad53d62 139-140
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_85410e2ba7e7f9 1914-1918
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_85410e2ba7e7f9 1914-1918
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_85410e2ba7e7f9 1914-1918
+apps/dashboard/components/model/level-rules-panel.tsx
+  s_58dd112dc09435::t_ff1c5602f58eb9 24-31
+  s_58dd112dc09435::t_bb25094551156a 445-489
+  s_58dd112dc09435::t_41123adfe09831 150-153
+  s_58dd112dc09435::t_4c7f987111f86c 363-386
+  s_58dd112dc09435::t_f27f81f539c5ea 232-314
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_85410e2ba7e7f9 1914-1918
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_85410e2ba7e7f9 1914-1918
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "b6c2e3015bb5b339193faf0991e1cdd6c1cb777d",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
