@@ -1,0 +1,37 @@
+apps/dashboard/components/morph-popover.tsx
+  s_58dd112dc09435::t_de6ef7f1e88f74 18-23,99-102,112-113,120,125-132,200-201
+apps/dashboard/components/model/model-section-shell.tsx
+  s_58dd112dc09435::t_477863b113c2ce 13,155-163,170-171
+apps/dashboard/app/(app)/model/approval/page.tsx
+  s_58dd112dc09435::t_a0e94546b8937b 5,7,22-31,80-87
+apps/dashboard/lib/morph-placement.ts
+  s_58dd112dc09435::t_ec214c72316e6e 147-175
+apps/dashboard/components/model/model-section-shell.test.tsx
+  s_58dd112dc09435::t_51bff6a14a8435 186-188,192,194-200
+apps/dashboard/lib/morph-placement.test.ts
+  s_58dd112dc09435::t_a50b74dff5f8cd 6,276-283,285-315
+  s_58dd112dc09435::t_03bd29c4700838 284
+  s_58dd112dc09435::t_cbebaf4d5c55e7 316
+apps/dashboard/components/model/weighting-chapter.test.tsx
+  s_58dd112dc09435::t_6ead2734d03f27 526-528
+apps/dashboard/components/chapter-action-slot.tsx
+  s_58dd112dc09435::t_477863b113c2ce 20-24
+apps/dashboard/components/model/method-panel.tsx
+  s_58dd112dc09435::t_64304f58924502 74,279
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "ffde141e84ce5d8ab16531029f3f470e3541c61c",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
