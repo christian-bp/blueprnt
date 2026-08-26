@@ -13,6 +13,13 @@ import {
   DialogTitle,
 } from "@workspace/ui/components/dialog"
 import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+  FieldTitle,
+} from "@workspace/ui/components/field"
+import {
   Form,
   FormControl,
   FormField,
@@ -20,11 +27,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form"
-import { Textarea } from "@workspace/ui/components/textarea"
 import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group"
+  RadioGroup,
+  RadioGroupItem,
+} from "@workspace/ui/components/radio-group"
+import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation } from "convex/react"
 import { ConvexError } from "convex/values"
 import { useFormatter, useTranslations } from "next-intl"
@@ -59,6 +66,28 @@ export interface MaterialityDecision {
 export interface WorkingConditionsCriterion {
   criterionId: Id<"criteria">
   name: string
+}
+
+// THE ANSWER IS A CHOICE BETWEEN CONSEQUENCES, not a status to look up. The
+// cards wear the SAME words as the column's two answer buttons (the reader
+// arrives here having just pressed one of them), and each carries the one
+// sentence saying what saving it does, which is what made the old bare
+// "Material / Tested, not material" toggle read as the question being asked
+// twice. Compile-time total over the union, the anchor-status idiom.
+const STATUS_CARDS = {
+  active: { name: "yesCta", meaning: "yesMeaning" },
+  testedNotMaterial: { name: "noCta", meaning: "noMeaning" },
+} as const satisfies Record<
+  MaterialityStatus,
+  { name: string; meaning: string }
+>
+
+const STATUS_ORDER = Object.keys(STATUS_CARDS) as MaterialityStatus[]
+
+// Base UI reports the chosen value as the group's generic Value; narrowing
+// through the record that supplies the labels keeps the guard on the union.
+function isMaterialityStatus(value: unknown): value is MaterialityStatus {
+  return typeof value === "string" && value in STATUS_CARDS
 }
 
 const KNOWN_ERROR_KEYS = ["invalidTransition"] as const
@@ -162,29 +191,39 @@ function DecisionForm({
           name="status"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("statusLabel")}</FormLabel>
+              {/* The dialog's description already asks the question, so the
+                  group's label is for the accessibility tree only: a visible
+                  "Answer" over two answers labels the obvious. */}
+              <FormLabel className="sr-only">{t("statusLabel")}</FormLabel>
               <FormControl>
-                <ToggleGroup
-                  variant="outline"
-                  value={field.value ? [field.value] : []}
-                  onValueChange={(groupValue) => {
-                    const next = groupValue[0]
-                    if (next !== undefined) field.onChange(next)
+                <RadioGroup
+                  value={field.value}
+                  onValueChange={(value) => {
+                    if (isMaterialityStatus(value)) field.onChange(value)
                   }}
                 >
-                  <ToggleGroupItem
-                    value="active"
-                    className="data-pressed:border-brand data-pressed:bg-brand data-pressed:text-brand-foreground data-pressed:hover:bg-brand"
-                  >
-                    {t("activeOption")}
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="testedNotMaterial"
-                    className="data-pressed:border-brand data-pressed:bg-brand data-pressed:text-brand-foreground data-pressed:hover:bg-brand"
-                  >
-                    {t("testedNotMaterialOption")}
-                  </ToggleGroupItem>
-                </ToggleGroup>
+                  {STATUS_ORDER.map((option) => (
+                    <FieldLabel key={option} htmlFor={`wc-status-${option}`}>
+                      <Field orientation="horizontal">
+                        <FieldContent>
+                          <FieldTitle>
+                            {t(STATUS_CARDS[option].name)}
+                          </FieldTitle>
+                          <FieldDescription>
+                            {t(STATUS_CARDS[option].meaning)}
+                          </FieldDescription>
+                        </FieldContent>
+                        {/* The id lands on Base UI's hidden input
+                            (useLabelableId), which is what makes the card's
+                            htmlFor point at a labelable control. */}
+                        <RadioGroupItem
+                          value={option}
+                          id={`wc-status-${option}`}
+                        />
+                      </Field>
+                    </FieldLabel>
+                  ))}
+                </RadioGroup>
               </FormControl>
               {removesCriterion && criterion !== null && (
                 // An OFFER, not an errand. The old copy told the reader to go
@@ -271,9 +310,12 @@ function DecisionDialog({
               {tHelp("workingConditionsDecisionBody")}
             </HelpMorphButton>
           </DialogTitle>
-          {/* Both answers, in the order the column asks them and with neither
-              named as the expected one. */}
-          <DialogDescription>{t("description")}</DialogDescription>
+          {/* THE QUESTION IS THE DESCRIPTION: the reader arrives here from
+              one of the column's two answer buttons, and the dialog that
+              followed used to explain itself in the abstract instead of
+              repeating the question just answered, which read as a second,
+              different form. */}
+          <DialogDescription>{t("materialityQuestion")}</DialogDescription>
         </DialogHeader>
         <DecisionForm
           orgId={orgId}

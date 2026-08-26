@@ -97,32 +97,33 @@ describe("en.json language purity", () => {
 // both placeholder families that feed the component, so a future phrase can't
 // reintroduce the bug silently.
 // The working-conditions materiality decision is asked in two places, the
-// Kriterier column's yes/no question and the dialog's status toggle, and they
-// must answer in the SAME words. The dialog's positive option said "Active"
-// (a schema word) in every locale while the column beside it said "material",
-// which left one decision with two vocabularies.
+// Kriterier column's yes/no question and the dialog's choice cards, and they
+// must answer in the SAME words. The dialog once had its own vocabulary (a
+// schema-word "Active" toggle beside a column saying "material"); today it
+// renders yesCta/noCta itself, so column and dialog agree by construction and
+// what is left to guard is that both answers still speak the QUESTION's own
+// term.
 //
-// The stem is taken from each locale's own negative option, which has carried
-// the standardized term since the terminology pass: whatever "tested, not
-// X" says, the positive option and the column's two answers must say X too.
-// Deriving it rather than listing five words per locale means a locale that
-// changes its term stays consistent by construction.
+// The stem is taken from each locale's own negative answer, which has carried
+// the standardized term since the terminology pass: whatever "no, not X"
+// says, the positive answer and the question must say X too. Deriving it
+// rather than listing five words per locale means a locale that changes its
+// term stays consistent by construction. Stemmed so inflections
+// (väsentlig/väsentligt, olennainen/olennaiseksi) all match.
 const MATERIAL_STEM_LENGTH = 6
 
 describe("the materiality decision speaks one vocabulary", () => {
   for (const [locale, messages] of Object.entries({ en, ...locales })) {
-    it(`${locale}.json says the same thing in the dialog and the column`, () => {
+    it(`${locale}.json says the same thing in the question and both answers`, () => {
       const wc = messages.dashboard.model.criteria.workingConditions
-      // "Tested, not material" -> the locale's own term, stemmed so its
-      // inflections (väsentlig/väsentligt, olennainen/olennaiseksi) all match.
-      const term = wc.testedNotMaterialOption
+      const term = wc.noCta
         .split(/[\s,]+/)
         .filter((word) => word.length > 0)
         .at(-1)
       expect(term).toBeDefined()
       const stem = (term ?? "").toLowerCase().slice(0, MATERIAL_STEM_LENGTH)
       expect(stem.length).toBe(MATERIAL_STEM_LENGTH)
-      for (const label of [wc.activeOption, wc.yesCta, wc.noCta]) {
+      for (const label of [wc.materialityQuestion, wc.yesCta]) {
         expect(label.toLowerCase()).toContain(stem)
       }
     })

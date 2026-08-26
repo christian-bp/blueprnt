@@ -912,12 +912,13 @@ describe("the Kriterier chapter", () => {
       expect(addRow()).toBeNull()
     })
 
-    // Which answer the form opened on, read off the toggle the form itself
-    // pressed rather than off a class.
+    // Which answer the form opened on, read off the choice card's own radio
+    // rather than off a class. The card's accessible name is its title plus
+    // its meaning sentence, so the title is matched as a prefix.
     const pressedInDialog = (label: string) =>
       within(screen.getByRole("dialog"))
-        .getByRole("button", { name: label })
-        .getAttribute("aria-pressed")
+        .getByRole("radio", { name: new RegExp(label) })
+        .getAttribute("aria-checked")
 
     // Answering opens the motivation step ON that answer: the column made the
     // decision, the dialog only takes its reason.
@@ -926,8 +927,12 @@ describe("the Kriterier chapter", () => {
       fireEvent.click(answer(wc.noCta) as HTMLElement)
       const dialog = await screen.findByRole("dialog")
       expect(within(dialog).getByText(wc.testHeading)).toBeDefined()
-      expect(pressedInDialog(wc.testedNotMaterialOption)).toBe("true")
-      expect(pressedInDialog(wc.activeOption)).toBe("false")
+      expect(pressedInDialog(wc.noCta)).toBe("true")
+      expect(pressedInDialog(wc.yesCta)).toBe("false")
+      // Each answer wears its consequence, which is what makes the second
+      // look a confirmation instead of the question re-asked bare.
+      expect(within(dialog).getByText(wc.yesMeaning)).toBeDefined()
+      expect(within(dialog).getByText(wc.noMeaning)).toBeDefined()
 
       const motivation = within(dialog).getByRole("textbox")
       fireEvent.change(motivation, {
@@ -962,7 +967,7 @@ describe("the Kriterier chapter", () => {
       renderChapter()
       fireEvent.click(answer(wc.yesCta) as HTMLElement)
       const dialog = await screen.findByRole("dialog")
-      expect(pressedInDialog(wc.activeOption)).toBe("true")
+      expect(pressedInDialog(wc.yesCta)).toBe("true")
       // Nothing to remove and nothing selected, so the offer stays off: it
       // belongs to the answer that collides with a chosen criterion.
       expect(
@@ -1012,7 +1017,7 @@ describe("the Kriterier chapter", () => {
       )
       const dialog = await screen.findByRole("dialog")
       fireEvent.click(
-        within(dialog).getByRole("button", { name: wc.testedNotMaterialOption })
+        within(dialog).getByRole("radio", { name: new RegExp(wc.noCta) })
       )
 
       // Named, not counted: "a criterion is selected" is not something a
@@ -1084,7 +1089,7 @@ describe("the Kriterier chapter", () => {
       )
       const dialog = await screen.findByRole("dialog")
       fireEvent.click(
-        within(dialog).getByRole("button", { name: wc.testedNotMaterialOption })
+        within(dialog).getByRole("radio", { name: new RegExp(wc.noCta) })
       )
       expect(
         within(dialog).queryByRole("button", { name: wc.removeAndSaveCta })
