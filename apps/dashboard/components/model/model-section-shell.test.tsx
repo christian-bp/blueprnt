@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, render, screen, within } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -118,10 +118,6 @@ describe("ModelSectionShell", () => {
       "false",
       "false",
     ])
-    // And NOT on the journey row: an instrument there is the drift back to
-    // the shape the owner rejected.
-    const nav = screen.getByRole("navigation", { name: m.nav })
-    expect(nav.parentElement?.querySelector('[role="progressbar"]')).toBeNull()
     expect(container.querySelectorAll('[role="progressbar"]')).toHaveLength(1)
   })
 
@@ -175,41 +171,47 @@ describe("ModelSectionShell", () => {
     expect(container.querySelector('[data-slot="stage-eyebrow"]')).toBeNull()
   })
 
-  it("mounts the spine and the chapter row above the chapter's own body", () => {
+  it("mounts the spine and the action row above the chapter's own body", () => {
     const { container } = renderShell()
-    // THE TRAIL IS THE TITLE. The section carried a heading of its own and no
-    // breadcrumbs, which made it the one area a reader could not place from
-    // its first row; the trail names it now, and the sr-only h1 the row
-    // derives from the last crumb is what assistive tech reads.
+    // THE TRAIL IS THE TITLE. The chapters are sidebar rows, so each chapter
+    // page's trail ends at the chapter itself and the sr-only h1 the row
+    // derives from the last crumb names the open chapter.
     const heading = screen.getByRole("heading", { level: 1 })
-    expect(heading.textContent).toBe(messages.dashboard.nav.model)
+    expect(heading.textContent).toBe(m.criteria)
     expect(heading.className).toContain("sr-only")
     expect(screen.queryByRole("heading", { level: 3 })).toBeNull()
     expect(container.querySelector(".tabular-nums")?.textContent).toContain(
       "of"
     )
-    expect(screen.getByRole("navigation", { name: m.nav })).toBeDefined()
+    // The chapter's action band holds its place under the title row.
+    expect(container.querySelector('[data-slot="chapter-action"]')).toBeTruthy()
     expect(screen.getByText("chapter body")).toBeDefined()
   })
 
-  // THE TRAIL, and where it stops.
-  //
-  // "Home > Model", and no chapter. The four chapters navigate by href, but
-  // the nav registry deliberately lists none of them: they are one guided
-  // journey with an in-page tab row, and /work sets the precedent that a
-  // section's tabs are not crumbs (its trail ends at its sub-page, never at
-  // Stege/Matris/Familjer). Crumbing the open chapter here would put this
-  // section's tabs in the trail while /work's stay out of it.
-  it("names the area and stops there, whatever chapter is open", () => {
+  // THE TAB ROW IS GONE: the chapters navigate from the sidebar (the nav
+  // registry lists them), so the shell's only nav is the breadcrumb trail.
+  // Pinned as an absence so the row cannot creep back beside the sidebar and
+  // give the section two switchers.
+  it("draws no chapter tab row", () => {
     renderShell()
-    const trail = screen.getByRole("navigation", {
-      name: "breadcrumb",
-    }).textContent
-    expect(trail).toContain(messages.dashboard.nav.home)
-    expect(trail).toContain(messages.dashboard.nav.model)
-    for (const chapter of ["criteria", "weighting", "method", "approval"]) {
-      const name = (m as Record<string, string>)[chapter]
-      if (name !== undefined) expect(trail).not.toContain(name)
+    expect(screen.getAllByRole("navigation")).toHaveLength(1)
+    expect(screen.getByRole("navigation", { name: "breadcrumb" })).toBeDefined()
+  })
+
+  // The trail ends at the open chapter, with the area crumb linking straight
+  // at the first chapter (the /model redirect's own target, so the crumb
+  // never spends a round trip on it).
+  it("titles the page with the open chapter", () => {
+    renderShell()
+    const trail = screen.getByRole("navigation", { name: "breadcrumb" })
+    expect(trail.textContent).toContain(messages.dashboard.nav.model)
+    expect(trail.textContent).toContain(m.criteria)
+    const areaCrumb = within(trail).getByRole("link", {
+      name: messages.dashboard.nav.model,
+    })
+    expect(areaCrumb.getAttribute("href")).toBe("/model/criteria")
+    for (const chapter of ["weighting", "method", "approval"] as const) {
+      expect(trail.textContent).not.toContain(m[chapter])
     }
   })
 
@@ -238,9 +240,8 @@ describe("ModelSectionShell", () => {
   it("renders for an editor member, not just an admin", () => {
     orgRole = "editor"
     renderShell()
-    expect(screen.getByRole("navigation", { name: m.nav })).toBeDefined()
     expect(screen.getByText("chapter body")).toBeDefined()
-    // The first chapter is where /model lands, and its tab is reachable.
+    // The first chapter is where /model lands, and the area crumb reaches it.
     expect(
       screen.getAllByRole("link").map((link) => link.getAttribute("href"))
     ).toContain("/model/criteria")
@@ -259,14 +260,11 @@ describe("ModelSectionShell", () => {
   // The section IS its own skeleton: the title, the four chapter links and
   // the instrument's empty track are all known without the query, so they
   // render for real and only the figures wait.
-  it("renders the whole journey row while the checks load", () => {
+  it("renders the whole title row while the checks load", () => {
     checksResult = undefined
     renderShell()
-    expect(
-      screen.getByRole("heading", { name: messages.dashboard.nav.model })
-    ).toBeDefined()
-    expect(screen.getByRole("navigation", { name: m.nav })).toBeDefined()
-    // No count on any tab: a figure the section does not know yet is one it
+    expect(screen.getByRole("heading", { name: m.criteria })).toBeDefined()
+    // No count on any link: a figure the section does not know yet is one it
     // would have to replace a moment later.
     for (const link of screen.getAllByRole("link")) {
       expect(link.textContent).not.toMatch(/\d+ of \d+/)

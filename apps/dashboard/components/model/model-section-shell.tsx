@@ -9,16 +9,19 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
-import { ChapterActionSlotProvider } from "@/components/chapter-action-slot"
+import {
+  ChapterActionRow,
+  ChapterActionSlotProvider,
+} from "@/components/chapter-action-slot"
 import {
   FloatingStack,
   FloatingStackProvider,
 } from "@/components/floating-stack"
-import { ModelChapterTabs } from "@/components/model/model-chapter-tabs"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { SegmentedProgress } from "@/components/segmented-progress"
 import { useOrganization } from "@/components/org-context"
+import { usePageTitle } from "@/hooks/use-page-title"
 import {
   chapterHref,
   currentChapter,
@@ -45,6 +48,7 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const data = useQuery(api.evaluationModel.approval.getMethodChecks, { orgId })
   const active = currentChapter(pathname)
+  usePageTitle(active === undefined ? tNav("model") : t(active))
 
   // No model yet reads as nothing decided, not as no bar: an org that has not
   // started still has the same four chapters ahead of it, and the empty bar is
@@ -93,20 +97,26 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
     <ChapterActionSlotProvider>
       <FloatingStackProvider>
         <div className="space-y-4">
-          {/* THE TRAIL IS THE TITLE, as on every other page. This section
-              carried a heading of its own ("Your company's model") and no
-              breadcrumbs at all, which made it the one area a reader could
-              not place from its first row.
-              The trail stops at the AREA. Its four chapters navigate by href,
-              but the nav registry deliberately lists none of them: they are
-              one guided journey with an in-page tab row, and /work sets the
-              precedent that a section's tabs are not crumbs (its trail ends
-              at the sub-page, never at Stege/Matris/Familjer).
+          {/* THE TRAIL IS THE TITLE, as on every other page. The chapters
+              are sidebar rows now, so each chapter page's trail ends at the
+              chapter itself, the way People's rows do; the area crumb links
+              at the first chapter directly rather than at /model, whose only
+              content is the redirect there.
               The help rides after the last crumb and the instrument takes the
               row's right side, which is where the kartläggning's analysis
               journey already puts its own. */}
           <PageBreadcrumbRow
-            segments={[{ label: tNav("model") }]}
+            segments={
+              active === undefined
+                ? [{ label: tNav("model") }]
+                : [
+                    {
+                      label: tNav("model"),
+                      href: chapterHref(MODEL_CHAPTERS[0]),
+                    },
+                    { label: t(active) },
+                  ]
+            }
             adornment={
               <HelpMorphButton label={tHelp("modelProgressLabel")}>
                 {tHelp("modelProgressBody")}
@@ -141,8 +151,10 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
               />
             }
           />
-          {/* The journey row: the tabs and this chapter's action. */}
-          <ModelChapterTabs />
+          {/* The chapter's own action, at a held height so the body starts
+              at the same Y on every chapter. The chapters themselves are
+              sidebar rows. */}
+          <ChapterActionRow />
           {children}
           {showContinuation && nextChapter !== undefined && (
             <div className="flex justify-end">

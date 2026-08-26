@@ -5,12 +5,16 @@ import {
   Briefcase01Icon,
   Building01Icon,
   ChartColumnIcon,
+  CheckmarkBadge01Icon,
+  File01Icon,
   Home07Icon,
   Layers01Icon,
+  ListViewIcon,
   Mail01Icon,
   RankingIcon,
   Settings01Icon,
   Shield01Icon,
+  SlidersHorizontalIcon,
   SparklesIcon,
   SquareLock02Icon,
   Tag01Icon,
@@ -105,17 +109,37 @@ const NAV_AREAS_SOURCE = [
     adminOnly: false,
     platformOnly: false,
     placement: "main",
-    // A single row: the model's four chapters stay one guided journey with
-    // its own in-page tab row, so the sidebar carries only the area itself
-    // (every area keeps the inner-sidebar frame).
+    // The four chapters are the area's rows, in the order the work is done:
+    // the same navigation idiom as every other area, with the guided journey
+    // carried by the instrument on the section's title row and the finished
+    // chapter's Next button. /model itself only redirects into the first
+    // chapter, so it is not a row.
     innerNav: [
       {
         labelKey: "nav.model",
         entries: [
           {
-            labelKey: "nav.model",
-            href: "/model",
-            icon: Layers01Icon,
+            labelKey: "model.chapters.criteria",
+            href: "/model/criteria",
+            icon: ListViewIcon,
+            adminOnly: false,
+          },
+          {
+            labelKey: "model.chapters.weighting",
+            href: "/model/weighting",
+            icon: SlidersHorizontalIcon,
+            adminOnly: false,
+          },
+          {
+            labelKey: "model.chapters.method",
+            href: "/model/method",
+            icon: File01Icon,
+            adminOnly: false,
+          },
+          {
+            labelKey: "model.chapters.approval",
+            href: "/model/approval",
+            icon: CheckmarkBadge01Icon,
             adminOnly: false,
           },
         ],

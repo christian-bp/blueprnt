@@ -1873,8 +1873,6 @@
         "weighting": "Painotus",
         "method": "Menetelmä",
         "approval": "Hyväksyntä",
-        "tab": "<num>{position}.</num> {chapter}",
-        "nav": "Mallin luvut",
         "progressBarLabel": "Koko mallin edistyminen",
         "nextCta": "Seuraava: {chapter}",
         "countRich": "<done></done> / <total></total> tehtävää"

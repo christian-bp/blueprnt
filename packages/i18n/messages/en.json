@@ -1873,8 +1873,6 @@
         "weighting": "Weighting",
         "method": "Method",
         "approval": "Approval",
-        "tab": "<num>{position}.</num> {chapter}",
-        "nav": "Model chapters",
         "progressBarLabel": "Overall model progress",
         "nextCta": "Next: {chapter}",
         "countRich": "<done></done> of <total></total> tasks"

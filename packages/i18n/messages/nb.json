@@ -1873,8 +1873,6 @@
         "weighting": "Vekting",
         "method": "Metode",
         "approval": "Godkjenning",
-        "tab": "<num>{position}.</num> {chapter}",
-        "nav": "Modellens kapitler",
         "progressBarLabel": "Hele modellens framdrift",
         "nextCta": "Neste: {chapter}",
         "countRich": "<done></done> av <total></total> oppgaver"

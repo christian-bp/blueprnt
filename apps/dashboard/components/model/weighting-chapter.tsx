@@ -23,7 +23,7 @@ import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
 import { ChapterAction } from "@/components/chapter-action-slot"
-import { CHAPTER_ACTION_BUTTON_SIZE } from "@/components/chapter-tabs"
+import { CHAPTER_ACTION_BUTTON_SIZE } from "@/components/chapter-action-slot"
 import {
   type FloatingPillTone,
   FloatingPill,

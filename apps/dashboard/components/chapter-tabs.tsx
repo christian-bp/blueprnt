@@ -6,14 +6,6 @@ import type { ReactNode } from "react"
 import { ChapterActionSlot } from "@/components/chapter-action-slot"
 import { SPRING } from "@/lib/motion"
 
-// The size EVERY chapter action takes. One size across a section, owned by the
-// row they all sit in rather than chosen per chapter: the actions sit at the
-// same place on every chapter, and a reader moving between them should not
-// meet a control that changes height as they go. Nova's sm, deliberately:
-// these are compact in-row controls beside h-5 pills and tab triggers, the
-// surface the style's sm size exists for.
-export const CHAPTER_ACTION_BUTTON_SIZE = "sm" as const
-
 // One tab in a chapter row: its identity, what it reads as, where it goes, and
 // whether its page is the one open.
 //
