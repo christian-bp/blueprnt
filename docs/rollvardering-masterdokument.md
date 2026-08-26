@@ -238,6 +238,8 @@ När ett kriterium väljs ska systemet lagra:
 
 ## 7. Kriteriebibliotek: Kompetens
 
+> **Ersatt (2026-08-26):** Kriterietexterna i avsnitt 7–10 (definitioner, avgränsningar, lämplighet, kontrollfrågor, ankartexter och överlappningar) är ersatta av den förfinade arbetsversionen i `docs/kriteriebibliotek-forfining-2026-08-24.md`. Biblioteket i koden följer det dokumentet; texterna här är den ursprungliga leveransen och behålls som historik. Dimensionerna, kriterieuppsättningen, skalan och poängsättningen är oförändrade.
+
 ### Dimensionens fråga
 
 > Vilka kunskaper, färdigheter, erfarenheter och kvalifikationer kräver rollen för att kunna utföras på avsett sätt?
@@ -467,6 +469,8 @@ Rollbedömningsvyn ska endast visa:
 Rollbedömningsvyn får inte visa vikt, viktklass, viktmotiv, viktbudget, kriteriernas inbördes prioritering, viktad delpoäng, totalpoäng, preliminär zon, preliminär nivå eller andra rollers resultat.
 
 ### 13.3 Gemensam bedömningsskala 1–5
+
+> **Ersatt (2026-08-26):** Skalans betydelsetexter är ersatta av de komprimerade formuleringarna i `docs/kriteriebibliotek-forfining-2026-08-24.md` (avsnittet ”Skala 1–5”). Nivåerna och benämningarna är oförändrade.
 
 | Nivå | Benämning | Gemensam betydelse |
 |---:|---|---|
