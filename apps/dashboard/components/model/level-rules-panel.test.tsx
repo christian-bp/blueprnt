@@ -107,11 +107,35 @@ describe("LevelRulesPanel", () => {
     const content = zoneContent("en")
     for (const zone of ["A", "D"] as const) {
       expect(
-        screen.getByText(
-          `${messages.dashboard.levels.zoneLabel.replace("{zone}", zone)}: ${content.zones[zone].name}`
-        )
-      ).toBeDefined()
+        screen.getAllByText(
+          messages.dashboard.levels.zoneLabel.replace("{zone}", zone)
+        ).length
+      ).toBeGreaterThan(0)
+      expect(screen.getByText(content.zones[zone].name)).toBeDefined()
     }
+  })
+
+  // Each threshold explains itself by what it produces: the To column and
+  // the share bar are derived live from the field and its neighbours, which
+  // is what makes the bare numbers readable without opening the help.
+  it("derives each level's To bound live, and goes quiet on a broken ordering", () => {
+    renderPanel()
+    const row = (level: number) =>
+      levelField(level).closest("tr") as HTMLTableRowElement
+    // Level 1 runs to the scale's top; the rest end just below the neighbour
+    // above; level 12's span is 0-30 under the default ladder.
+    expect(row(1).textContent).toContain("100")
+    expect(row(2).textContent).toContain("96")
+    expect(row(12).textContent).toContain("30")
+    // Editing a bound moves BOTH the level's own span and the one below it.
+    fireEvent.change(levelField(1), { target: { value: "95" } })
+    expect(row(2).textContent).toContain("94")
+    // A broken ordering claims nothing on either side of the break: an
+    // impossible span would be the form doing the arithmetic wrong, so the
+    // cells go quiet and the validation owns the refusal.
+    fireEvent.change(levelField(1), { target: { value: "80" } })
+    expect(row(1).textContent).toContain("–")
+    expect(row(2).textContent).toContain("–")
   })
 
   // A prefilled edit form: unchanged means nothing to save, and firing anyway
@@ -269,15 +293,19 @@ describe("LevelRulesPanel", () => {
       })
     ).toBeDefined()
 
-    // Structural law, also known before the data: the four zones by name.
+    // Structural law, also known before the data: the four zones by name,
+    // and the table's own headers.
     const content = zoneContent("en")
     for (const zone of ZONE_KEYS) {
       expect(
         screen.getByText(
-          `${messages.dashboard.levels.zoneLabel.replace("{zone}", zone)}: ${content.zones[zone].name}`
+          messages.dashboard.levels.zoneLabel.replace("{zone}", zone)
         )
       ).toBeDefined()
+      expect(screen.getByText(content.zones[zone].name)).toBeDefined()
     }
+    expect(screen.getByText(m.fromColumn)).toBeDefined()
+    expect(screen.getByText(m.shareColumn)).toBeDefined()
 
     // One bar per number the query has yet to answer, and nothing else.
     expect(container.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(

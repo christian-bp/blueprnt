@@ -21,6 +21,14 @@ import {
 } from "@workspace/ui/components/form"
 import { Input } from "@workspace/ui/components/input"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@workspace/ui/components/table"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useMemo } from "react"
@@ -34,7 +42,6 @@ import {
   makeLevelRulesSchema,
 } from "@/lib/level-rules-schemas"
 import { numberInputField } from "@/lib/number-field"
-import { zoneHeading, zoneLevels } from "@/lib/zone-bands"
 import { toast } from "@/lib/toast"
 
 // The level thresholds and the zone profile rules, readable and correctable.
@@ -140,6 +147,10 @@ function LevelRulesForm({
     defaultValues: defaults,
   })
   const { isDirty, isValid, isSubmitting, dirtyFields } = form.formState
+  // Every threshold as currently typed, for the derived To column and the
+  // share bars: a level's span needs both its neighbours, so the whole array
+  // is watched once rather than per field.
+  const watchedLevels = form.watch("levels")
 
   async function handleValid(values: LevelRulesValues) {
     const gestureId = newGestureId()
@@ -218,48 +229,89 @@ function LevelRulesForm({
               />
             }
           >
-            {/* Grouped by zone, in the zones' own words: twelve bare numbers
-                are a column of digits, and the reader who is correcting them
-                is thinking in zones (task 1's content, task 2's ladder). */}
-            <div className="space-y-3">
-              {ZONE_KEYS.map((zone) => (
-                <div key={zone} className="space-y-1.5">
-                  <p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                    {zoneHeading(
-                      tLevels("zoneLabel", { zone }),
-                      content.zones[zone].name
-                    )}
-                  </p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {zoneLevels(zone).map((level) => (
-                      <FormField
-                        key={level}
-                        control={form.control}
-                        name={`levels.${level - 1}` as const}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-muted-foreground text-xs">
-                              {t("levelField", { level })}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                inputMode="numeric"
-                                min={0}
-                                max={SCORE_SCALE_MAX}
-                                className="tabular-nums"
-                                {...numberInputField(field)}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            {/* An interval table, not a grid of bare numbers: each row reads
+                "level 7: from 62 to 68", with the To column derived live from
+                the neighbour above and a bar showing the span's share of the
+                0-100 scale. The number's MEANING (a cut whose span moves with
+                its neighbours) is on the surface instead of reconstructed in
+                the reader's head. */}
+            <Table className="table-fixed">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-40">{t("zoneColumn")}</TableHead>
+                  <TableHead className="w-20">{t("levelColumn")}</TableHead>
+                  <TableHead className="w-24">{t("fromColumn")}</TableHead>
+                  <TableHead className="w-14">{t("toColumn")}</TableHead>
+                  <TableHead>{t("shareColumn")}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Array.from({ length: LEVEL_COUNT }, (_, index) => {
+                  const level = index + 1
+                  const zone = ZONE_KEYS[Math.floor(index / 3)] as ZoneKey
+                  const span = levelSpan(watchedLevels, level)
+                  return (
+                    <TableRow key={level} className="hover:bg-transparent">
+                      {index % 3 === 0 && (
+                        <TableCell rowSpan={3} className="align-top">
+                          <span className="block font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                            {tLevels("zoneLabel", { zone })}
+                          </span>
+                          <span className="block text-muted-foreground text-xs">
+                            {content.zones[zone].name}
+                          </span>
+                        </TableCell>
+                      )}
+                      <TableCell className="text-muted-foreground">
+                        {t("levelField", { level })}
+                      </TableCell>
+                      <TableCell>
+                        <FormField
+                          control={form.control}
+                          name={`levels.${index}` as const}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  inputMode="numeric"
+                                  min={0}
+                                  max={SCORE_SCALE_MAX}
+                                  aria-label={t("levelField", { level })}
+                                  className="w-20 tabular-nums"
+                                  {...numberInputField(field)}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </TableCell>
+                      {/* Derived, and quiet on a broken ordering: a span that
+                          read "62-54" would be the form doing the arithmetic
+                          wrong, so an impossible neighbourhood says nothing
+                          and leaves the refusal to the validation. */}
+                      <TableCell className="text-muted-foreground tabular-nums">
+                        {span === null ? "–" : span.upper}
+                      </TableCell>
+                      <TableCell>
+                        <div className="relative h-1.5 min-w-32 rounded-full bg-brand/10">
+                          {span !== null && (
+                            <div
+                              className="absolute inset-y-0 rounded-full bg-brand/50"
+                              style={{
+                                left: `${span.lower}%`,
+                                width: `${span.upper - span.lower + 1}%`,
+                              }}
+                            />
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
           </SettingsRow>
 
           <SettingsRow
@@ -306,6 +358,30 @@ function LevelRulesForm({
       </form>
     </Form>
   )
+}
+
+// The weighting span a level covers under the thresholds as typed: its own
+// bound up to just below the level above (level 1 runs to the scale's top).
+// Null while a bound is not a number, or when the ordering around the level
+// is broken mid-edit; a break quiets BOTH its sides, because a neighbour
+// below that reaches this level's own bound makes this span's claim untrue
+// too.
+function levelSpan(
+  levels: readonly (number | undefined)[],
+  level: number
+): { lower: number; upper: number } | null {
+  const lower = levels[level - 1]
+  if (typeof lower !== "number" || Number.isNaN(lower)) return null
+  const below = levels[level]
+  if (typeof below === "number" && !Number.isNaN(below) && below >= lower) {
+    return null
+  }
+  if (level === 1) return { lower, upper: SCORE_SCALE_MAX }
+  const above = levels[level - 2]
+  if (typeof above !== "number" || Number.isNaN(above)) return null
+  const upper = above - 1
+  if (upper < lower) return null
+  return { lower, upper }
 }
 
 // A settings row's label with its own depth behind it. The two rows used to
@@ -366,25 +442,51 @@ function LevelRulesSkeleton() {
           <RowLabel label={t("levelsLabel")} help={t("levelsDescription")} />
         }
       >
-        <div className="space-y-3">
-          {ZONE_KEYS.map((zone) => (
-            <div key={zone} className="space-y-1.5">
-              <p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                {zoneHeading(
-                  tLevels("zoneLabel", { zone }),
-                  content.zones[zone].name
-                )}
-              </p>
-              <div className="grid grid-cols-3 gap-2">
-                {zoneLevels(zone).map((level) => (
-                  // Input-height, so the row measures as it will once the
-                  // numbers arrive.
-                  <Skeleton key={level} className="h-9 w-full" />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+        <Table className="table-fixed">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-40">{t("zoneColumn")}</TableHead>
+              <TableHead className="w-20">{t("levelColumn")}</TableHead>
+              <TableHead className="w-24">{t("fromColumn")}</TableHead>
+              <TableHead className="w-14">{t("toColumn")}</TableHead>
+              <TableHead>{t("shareColumn")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: LEVEL_COUNT }, (_, index) => {
+              const level = index + 1
+              const zone = ZONE_KEYS[Math.floor(index / 3)] as ZoneKey
+              return (
+                <TableRow key={level} className="hover:bg-transparent">
+                  {index % 3 === 0 && (
+                    <TableCell rowSpan={3} className="align-top">
+                      <span className="block font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                        {tLevels("zoneLabel", { zone })}
+                      </span>
+                      <span className="block text-muted-foreground text-xs">
+                        {content.zones[zone].name}
+                      </span>
+                    </TableCell>
+                  )}
+                  <TableCell className="text-muted-foreground">
+                    {t("levelField", { level })}
+                  </TableCell>
+                  <TableCell>
+                    {/* Input-height, so the row measures as it will once the
+                        numbers arrive; the To figure and the bar's fill are
+                        data too, so the To cell waits empty and the bar shows
+                        its empty track. */}
+                    <Skeleton className="h-9 w-20" />
+                  </TableCell>
+                  <TableCell className="text-muted-foreground tabular-nums" />
+                  <TableCell>
+                    <div className="relative h-1.5 min-w-32 rounded-full bg-brand/10" />
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
       </SettingsRow>
       <SettingsRow
         label={
