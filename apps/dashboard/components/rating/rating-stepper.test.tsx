@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { criteriaLibraryContent } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import messages from "@workspace/i18n/messages/en.json"
 
 const setRatingMock = vi.fn()
@@ -41,6 +42,10 @@ import { RatingStepper } from "@/components/rating/rating-stepper"
 
 const labels = messages.dashboard.rating
 const help = messages.dashboard.help
+// The shared scale lives in the library and nowhere else, so the assertions
+// read it from there rather than from the message file that used to carry a
+// second copy of it.
+const SCALE = criteriaLibraryContent("en").sharedScale
 
 const CRITERIA = [
   {
@@ -213,10 +218,32 @@ describe("RatingStepper", () => {
   it("names the shared step on every graded option", () => {
     renderStepper()
     for (const step of [1, 2, 3, 4, 5] as const) {
-      const name = labels.scale[`step${step}`].name
+      const name = SCALE[`${step}`].name
       const option = screen.getByText(`Scope anchor ${step}`).closest("button")
       expect(option?.textContent).toContain(name)
     }
+  })
+
+  // THE SCALE HAS ONE HOME, and this is what keeps it that way.
+  //
+  // The five names and meanings used to live twice, here as message keys and
+  // in the library, and the two drifted apart in English and Finnish before
+  // anything compared them. The keys are gone now and the stepper reads the
+  // library, so the duplication cannot come back by accident; this pins that
+  // the rendered names ARE the library's, so re-introducing a second copy and
+  // wiring the surface to it fails here rather than shipping a second
+  // wording.
+  it("renders the library's own grade names, not a second copy", () => {
+    renderStepper()
+    for (const step of [1, 2, 3, 4, 5] as const) {
+      const option = screen
+        .getByText(`Scope anchor ${step}`)
+        .closest("button") as HTMLElement
+      expect(option.textContent).toContain(SCALE[`${step}`].name)
+    }
+    // And the message file no longer carries them at all.
+    const scale = messages.dashboard.rating.scale as Record<string, unknown>
+    expect(Object.keys(scale).sort()).toEqual(["midpointExplanation", "title"])
   })
 
   it("leaves the not-covered option ungraded", () => {
@@ -225,9 +252,7 @@ describe("RatingStepper", () => {
       .getByText(labels.notCoveredOption)
       .closest("button")
     for (const step of [1, 2, 3, 4, 5] as const) {
-      expect(notCovered?.textContent).not.toContain(
-        labels.scale[`step${step}`].name
-      )
+      expect(notCovered?.textContent).not.toContain(SCALE[`${step}`].name)
     }
   })
 
@@ -243,7 +268,7 @@ describe("RatingStepper", () => {
     // Nothing standing: the meanings are behind the morph, and the morph is
     // the only way to them.
     for (const step of [1, 2, 3, 4, 5] as const) {
-      expect(screen.queryByText(labels.scale[`step${step}`].meaning)).toBeNull()
+      expect(screen.queryByText(SCALE[`${step}`].meaning)).toBeNull()
     }
     expect(screen.queryByRole("button", { name: /steps mean/i })).toBeNull()
     openScaleHelp()
@@ -251,7 +276,7 @@ describe("RatingStepper", () => {
     expect(screen.getByText(help.sharedScaleBody)).toBeDefined()
     for (const step of [1, 2, 3, 4, 5] as const) {
       expect(
-        screen.getByText(labels.scale[`step${step}`].meaning, { exact: false })
+        screen.getByText(SCALE[`${step}`].meaning, { exact: false })
       ).toBeDefined()
     }
   })

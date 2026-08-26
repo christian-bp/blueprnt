@@ -1627,27 +1627,7 @@
       "modelUnapprovedCta": "Gå til kapitlet Godkendelse",
       "scale": {
         "title": "Fælles vurderingsskala",
-        "midpointExplanation": "Et gennemtænkt mellemtrin: kravet ligger mellem de to trin omkring det.",
-        "step1": {
-          "name": "Afgrænset krav",
-          "meaning": "Kravet er tydeligt defineret, lokalt eller begrænset i omfang. Etablerede rammer og arbejdsmåder rækker normalt."
-        },
-        "step2": {
-          "name": "Grundlæggende til moderat krav",
-          "meaning": "Kravet er tilbagevendende inden for et tydeligt afgrænset område. Variationer og enklere afvigelser skal håndteres."
-        },
-        "step3": {
-          "name": "Selvstændigt og etableret krav",
-          "meaning": "Kravet er en tydelig og tilbagevendende del af området. Faglige vurderinger foretages inden for etablerede rammer."
-        },
-        "step4": {
-          "name": "Avanceret eller bredt krav",
-          "meaning": "Kravet er avanceret, har bredere rækkevidde eller kræver selvstændige afvejninger, hvor etablerede arbejdsmåder ikke altid rækker."
-        },
-        "step5": {
-          "name": "Meget avanceret, omfattende eller forretningskritisk krav",
-          "meaning": "Kravet har meget stort omfang, sværhedsgrad, konsekvens eller strategisk betydning. Det kan påvirke retning, standarder, løsninger eller resultater også uden for det nærmeste område."
-        }
+        "midpointExplanation": "Et gennemtænkt mellemtrin: kravet ligger mellem de to trin omkring det."
       },
       "completeCta": "Afslut vurderingen",
       "completeExplanation": "Når I afslutter, fastlægges vurderingen, og dens vægtning og niveau vises.",

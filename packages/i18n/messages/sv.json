@@ -1627,27 +1627,7 @@
       "modelUnapprovedCta": "Gå till kapitlet Godkännande",
       "scale": {
         "title": "Gemensam bedömningsskala",
-        "midpointExplanation": "Ett genomtänkt mellanläge: kravet ligger mellan de två stegen omkring det.",
-        "step1": {
-          "name": "Avgränsat krav",
-          "meaning": "Kravet är tydligt definierat, lokalt eller begränsat i omfattning. Etablerade ramar och arbetssätt räcker normalt."
-        },
-        "step2": {
-          "name": "Grundläggande till måttligt krav",
-          "meaning": "Kravet återkommer inom ett tydligt avgränsat område. Variationer och enklare avvikelser behöver hanteras."
-        },
-        "step3": {
-          "name": "Självständigt och etablerat krav",
-          "meaning": "Kravet är en tydlig och återkommande del av området. Professionella bedömningar görs inom etablerade ramar."
-        },
-        "step4": {
-          "name": "Avancerat eller brett krav",
-          "meaning": "Kravet är avancerat, har bredare räckvidd eller kräver självständiga avvägningar där etablerade arbetssätt inte alltid räcker."
-        },
-        "step5": {
-          "name": "Mycket avancerat, omfattande eller verksamhetskritiskt krav",
-          "meaning": "Kravet har mycket stor omfattning, svårighetsgrad, konsekvens eller strategisk betydelse. Det kan påverka riktning, standarder, lösningar eller resultat även utanför det närmaste området."
-        }
+        "midpointExplanation": "Ett genomtänkt mellanläge: kravet ligger mellan de två stegen omkring det."
       },
       "completeCta": "Slutför bedömningen",
       "completeExplanation": "När ni slutför fastställs bedömningen och dess viktning och nivå visas.",

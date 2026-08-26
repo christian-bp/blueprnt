@@ -2,7 +2,10 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { MIDPOINT_STEPS } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
+import {
+  criteriaLibraryContent,
+  MIDPOINT_STEPS,
+} from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import type { DimensionKey } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -19,7 +22,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useMutation } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { DisclosureToggle } from "@/components/disclosure-toggle"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useEffect, useId, useRef, useState } from "react"
@@ -79,6 +82,8 @@ export function RatingStepper({
   criteria: StepperCriterion[]
   ratings: { criterionId: string; value: number; motivation: string | null }[]
 }) {
+  const locale = useLocale()
+  const libraryContent = criteriaLibraryContent(locale)
   const t = useTranslations("dashboard.rating")
   const tHelp = useTranslations("dashboard.help")
   const tToast = useTranslations("dashboard.toast")
@@ -91,37 +96,27 @@ export function RatingStepper({
   const notCoveredExplanationId = useId()
   const motivationErrorId = useId()
 
-  // The 1-5 steps mean the same thing on every criterion, so the table is
-  // built once here and read both by the option rows (the name) and by the
-  // panel (the meaning). "Step" is the glossary's word for a position on this
-  // scale; "grade" is listed there as the term to avoid.
-  const scaleSteps = [
-    {
-      step: 1,
-      name: t("scale.step1.name"),
-      meaning: t("scale.step1.meaning"),
-    },
-    {
-      step: 2,
-      name: t("scale.step2.name"),
-      meaning: t("scale.step2.meaning"),
-    },
-    {
-      step: 3,
-      name: t("scale.step3.name"),
-      meaning: t("scale.step3.meaning"),
-    },
-    {
-      step: 4,
-      name: t("scale.step4.name"),
-      meaning: t("scale.step4.meaning"),
-    },
-    {
-      step: 5,
-      name: t("scale.step5.name"),
-      meaning: t("scale.step5.meaning"),
-    },
-  ]
+  // THE SCALE COMES FROM THE LIBRARY, which is its only home.
+  //
+  // The five grade names and meanings lived twice: here as message keys, and
+  // in the library's own sharedScale, which is what the method surfaces and
+  // the frozen method evidence read. The two had drifted apart in English and
+  // in Finnish, and a reader met one wording on the step and the other in the
+  // docs page that quotes them. Reading the library is what makes that
+  // impossible rather than merely detectable.
+  //
+  // criteriaLibraryContent is a locale-keyed constant, already read
+  // client-side by the model surfaces (check-remedy, method-panel), so this
+  // costs no query and no wait. It carries content only: no weight, no budget,
+  // no outcome, so the assessor firewall is untouched by construction.
+  //
+  // "Step" is the glossary's word for a position on this scale; "grade" is
+  // listed there as the term to avoid.
+  const scaleSteps = ([1, 2, 3, 4, 5] as const).map((step) => ({
+    step,
+    name: libraryContent.sharedScale[`${step}`].name,
+    meaning: libraryContent.sharedScale[`${step}`].meaning,
+  }))
 
   // THE FLOW OPENS AT ITS BEGINNING, every time (owner ruling 2026-08-25).
   //
