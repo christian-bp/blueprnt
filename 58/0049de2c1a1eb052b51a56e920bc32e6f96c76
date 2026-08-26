@@ -1,0 +1,40 @@
+packages/i18n/src/messages.test.ts
+  s_58dd112dc09435::t_ddd43a5749e1e6 100-105,107-112,117,119,126
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_cbbb1db79bbd05 1939,1953-1954
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_cbbb1db79bbd05 1939,1953-1954
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_cbbb1db79bbd05 1939,1953-1954
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_cbbb1db79bbd05 1939,1953-1954
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_cbbb1db79bbd05 1939,1953-1954
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_58dd112dc09435::t_39800d54a1aae1 915-917,920-921,930-935,970,1020,1092
+apps/dashboard/lib/audit-constants.ts
+  s_58dd112dc09435::t_bc9dd240577cb9 198-202
+apps/dashboard/components/model/working-conditions-decision.tsx
+  s_58dd112dc09435::t_412403311d4e96 16-21,31-34
+  s_58dd112dc09435::t_9764825df1289c 71-79,84-92
+  s_58dd112dc09435::t_17c46821944515 313-318
+  s_58dd112dc09435::t_61d9f569a75e4e 194-197,199-202,205-208,212-226
+  s_58dd112dc09435::t_dc6d02c6610dff 80-83,209-211
+  s_58dd112dc09435::t_2ec7bfd04f74e2 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "580049de2c1a1eb052b51a56e920bc32e6f96c76",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
