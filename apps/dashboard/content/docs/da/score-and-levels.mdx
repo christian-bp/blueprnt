@@ -27,6 +27,26 @@ modellen har, er vægtningen. At runde ned betyder, at en rolle først
 når et niveau, når dens vægtning reelt har nået tærsklen, aldrig ved at
 blive rundet op til den.
 
+Et regneeksempel med fire kriterier og dermed et pointbudget på 12:
+
+| Kriterium | Vægtpoint | Vurdering | Bidrag |
+| --- | ---: | ---: | ---: |
+| Kompleksitet og uklarhed | 5 | 4 | 20 |
+| Autonomi og beslutningsmandat | 3 | 5 | 15 |
+| Risiko og konsekvens | 3 | 3 | 9 |
+| Vagt, beredskab og tilgængelighedskrav | 1 | 0 | 0 |
+| **Sum** | **12** | | **44** |
+
+20 × 44 / 12 giver 73,3, så vægtningen er 73. Eksemplet viser to ting.
+Arbejdsforholds-nullet er et ægte svar, ikke et blankt felt: det lægger
+intet til summen, mens kriteriets vægtpoint bliver stående i nævneren,
+så en rolle uden vagtbelastning reelt bærer mindre krav dér. Og
+vægtpointene afgør, hvor langt ét vurderingstrin flytter resultatet: et
+trin på et kriterium med vægt v flytter vægtningen 20 × v divideret med
+budgettet, her cirka 8 point på vægt-5-kriteriet og under 2 på
+vægt-1-kriteriet. Vægtpoint omfordeler de samme 0 til 100; de hæver
+aldrig loftet.
+
 En rolles vægtning vises først, når dens bedømmelse er afsluttet. Indtil da
 viser blueprnt, hvor mange kriterier der er vurderet, i stedet for et
 delvist tal, selv efter at hvert kriterium har fået ét.

@@ -27,6 +27,27 @@ between 0 and 100 however many criteria the model has, is the weighting.
 Rounding down means a role reaches a level only once its weighting has
 genuinely met the threshold, never by rounding up to it.
 
+A worked example, with four criteria and therefore a point budget of
+12:
+
+| Criterion | Weight points | Rating | Contribution |
+| --- | ---: | ---: | ---: |
+| Complexity and ambiguity | 5 | 4 | 20 |
+| Autonomy and decision mandate | 3 | 5 | 15 |
+| Risk and consequence | 3 | 3 | 9 |
+| On-call, standby and availability requirements | 1 | 0 | 0 |
+| **Total** | **12** | | **44** |
+
+20 × 44 / 12 is 73.3, so the weighting is 73. The example shows two
+things. The working-conditions 0 is a real answer, not a blank: it adds
+nothing to the sum while the criterion's weight points stay in the
+divisor, so a role not covered by on-call work genuinely carries less
+requirement there. And the weight points decide how far one rating step
+moves the result: a step on a criterion with weight v moves the
+weighting by 20 × v divided by the budget, here about 8 points on the
+weight-5 criterion and under 2 on the weight-1 criterion. Weight points
+redistribute the same 0 to 100; they never raise the ceiling.
+
 A role's weighting only appears once its assessment is completed. Until
 then, blueprnt shows how many criteria are rated instead of a partial
 number, even after every criterion has one.

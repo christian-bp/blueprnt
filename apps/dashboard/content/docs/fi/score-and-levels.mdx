@@ -28,6 +28,26 @@ on painotus. Alaspäin pyöristäminen tarkoittaa, että rooli saavuttaa
 tason vasta, kun sen painotus todella yltää rajaan, ei koskaan
 pyöristymällä siihen ylöspäin.
 
+Laskuesimerkki neljällä kriteerillä, jolloin pistebudjetti on 12:
+
+| Kriteeri | Painopisteet | Arvio | Panos |
+| --- | ---: | ---: | ---: |
+| Monimutkaisuus ja epäselvyys | 5 | 4 | 20 |
+| Itsenäisyys ja päätösvalta | 3 | 5 | 15 |
+| Riski ja seuraus | 3 | 3 | 9 |
+| Päivystys-, varallaolo- ja tavoitettavuusvaatimukset | 1 | 0 | 0 |
+| **Yhteensä** | **12** | | **44** |
+
+20 × 44 / 12 on 73,3, joten painotus on 73. Esimerkki näyttää kaksi
+asiaa. Työolosuhteiden nolla on todellinen vastaus, ei tyhjä kohta: se
+ei lisää summaan mitään, mutta kriteerin painopisteet pysyvät
+jakajassa, joten rooli ilman päivystyskuormaa kantaa siellä todella
+vähemmän vaatimuksia. Ja painopisteet ratkaisevat, kuinka pitkälle yksi
+arvioaskel siirtää tulosta: askel kriteerillä, jonka paino on v,
+siirtää painotusta 20 × v jaettuna budjetilla, tässä noin 8 pistettä
+paino-5-kriteerillä ja alle 2 paino-1-kriteerillä. Painopisteet jakavat
+samat 0-100 uudelleen; ne eivät koskaan nosta kattoa.
+
 Roolin painotus näkyy vasta, kun sen arviointi on viimeistelty. Siihen asti
 blueprnt näyttää, kuinka monta kriteeriä on arvioitu, osittaisen luvun
 sijaan, myös sen jälkeen kun kaikki kriteerit on arvioitu.

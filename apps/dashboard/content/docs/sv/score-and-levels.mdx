@@ -27,6 +27,26 @@ Nedåtavrundningen betyder att en roll når en nivå först när dess
 viktning verkligen har nått tröskeln, aldrig genom att avrundas upp
 till den.
 
+Ett räkneexempel, med fyra kriterier och därmed en poängbudget på 12:
+
+| Kriterium | Viktpoäng | Betyg | Bidrag |
+| --- | ---: | ---: | ---: |
+| Komplexitet och otydlighet | 5 | 4 | 20 |
+| Autonomi och beslutsmandat | 3 | 5 | 15 |
+| Risk och konsekvens | 3 | 3 | 9 |
+| Jour, beredskap och tillgänglighetskrav | 1 | 0 | 0 |
+| **Summa** | **12** | | **44** |
+
+20 × 44 / 12 blir 73,3, så viktningen är 73. Exemplet visar två saker.
+Arbetsförhållande-nollan är ett äkta svar, inte en blank: den lägger
+ingenting till summan medan kriteriets viktpoäng står kvar i nämnaren,
+så en roll utan jourexponering bär verkligen mindre krav där. Och
+viktpoängen avgör hur långt ett betygssteg flyttar resultatet: ett steg
+på ett kriterium med vikt v flyttar viktningen 20 × v delat med
+budgeten, här ungefär 8 punkter på vikt-5-kriteriet och under 2 på
+vikt-1-kriteriet. Viktpoäng omfördelar samma 0 till 100; de höjer
+aldrig taket.
+
 En rolls viktning visas bara när dess bedömning är slutförd. Fram tills dess
 visar blueprnt hur många kriterier som är betygsatta istället för ett
 partiellt tal, även när alla har fått ett.
