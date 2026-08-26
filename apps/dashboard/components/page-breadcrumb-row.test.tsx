@@ -59,6 +59,33 @@ describe("PageBreadcrumbRow", () => {
     expect(crumbs[0]?.getAttribute("aria-current")).toBe("page")
   })
 
+  // The trail's distance from the header is identical on every page: the
+  // row top-aligns and each side centers inside its own min-h-9 strip, so a
+  // taller aside (a section's journey instrument) grows downward instead of
+  // pushing the crumbs lower than other pages'.
+  it("holds the trail in a constant-height strip whatever the aside holds", () => {
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <PageBreadcrumbRow
+          segments={[{ label: "Roles" }]}
+          actions={<div style={{ height: 60 }}>tall instrument</div>}
+        />
+      </NextIntlClientProvider>
+    )
+    const row = document.querySelector(
+      '[data-slot="page-breadcrumb-row"]'
+    ) as HTMLElement
+    expect(row.className.split(/\s+/)).toContain("items-start")
+    const sides = Array.from(row.children).filter(
+      (child) => child.tagName === "DIV"
+    ) as HTMLElement[]
+    expect(sides).toHaveLength(2)
+    for (const side of sides) {
+      expect(side.className.split(/\s+/)).toContain("min-h-9")
+      expect(side.className.split(/\s+/)).toContain("items-center")
+    }
+  })
+
   it("right-aligns the page actions on the same row", () => {
     renderRow([{ label: "Roles" }], <button type="button">Create role</button>)
     expect(screen.getByRole("button", { name: "Create role" })).toBeTruthy()
