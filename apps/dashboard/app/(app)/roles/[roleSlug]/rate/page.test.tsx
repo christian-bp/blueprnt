@@ -181,6 +181,36 @@ describe("RatePage (completion is the reveal)", () => {
     expect(screen.queryByText(t.result.levelLabel)).toBeNull()
   })
 
+  // The role's name is a HEADING on the flow, not only a crumb: an assessor
+  // mid-stepper reads the surface, and which role is being rated is the one
+  // identity the flow may never lose. Asserted by role, because the crumb
+  // renders the same words as a link and must not satisfy this.
+  it("names the role as a heading, while rating and on the reveal", async () => {
+    await renderPage()
+    expect(screen.getByRole("heading", { name: "Engineer" })).toBeDefined()
+
+    cleanup()
+    resultFixture = result({
+      complete: true,
+      completed: true,
+      ratedCount: 1,
+      score: 74,
+      level: 2,
+      criteria: [
+        {
+          criterionId: "c-scope",
+          name: "Scope",
+          weightPoints: 3,
+          value: 3,
+          motivation: null,
+        },
+      ],
+    })
+    install()
+    await renderPage()
+    expect(screen.getByRole("heading", { name: "Engineer" })).toBeDefined()
+  })
+
   // The firewall, at the wire rather than at the render: an assessor rates
   // against the anchors and must not know how much each criterion counts, so
   // the weighting is not in this client at all. Asserted as "this page never

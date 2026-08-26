@@ -89,6 +89,8 @@ export default function RatePage(props: {
           ]}
         />
         <div className="space-y-4">
+          {/* The role-title heading's own silhouette (text-lg line box). */}
+          <Skeleton className="h-7 w-56 max-w-full" />
           <div className="flex items-center justify-between">
             <Skeleton className="h-4 w-28" />
             <Skeleton className="h-1.5 w-20 rounded-full" />
@@ -253,6 +255,7 @@ export default function RatePage(props: {
           ]}
         />
         <div className="space-y-4">
+          <h2 className="font-semibold text-lg tracking-tight">{role.title}</h2>
           <p className="text-muted-foreground text-sm">
             {t("alreadyCompletedExplanation")}
           </p>
@@ -286,6 +289,10 @@ export default function RatePage(props: {
           { label: t("title") },
         ]}
       />
+      {/* The role's name as the flow's own heading: an assessor mid-stepper
+          reads the surface, not the chrome, so which role is being rated must
+          not live only in a crumb. */}
+      <h2 className="font-semibold text-lg tracking-tight">{role.title}</h2>
       <RatingStepper
         orgId={orgId}
         roleId={role.roleId}
