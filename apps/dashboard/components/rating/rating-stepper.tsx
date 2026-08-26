@@ -540,9 +540,18 @@ export function RatingStepper({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="rating-motivation">
-                  {t("motivationLabel")}
-                </Label>
+                {/* The rule stands beside the label BEFORE any step is chosen:
+                    enforced only as an error after the fact, it read as the
+                    app demanding motivations at random, because which steps
+                    require one was nowhere on the surface. */}
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                  <Label htmlFor="rating-motivation">
+                    {t("motivationLabel")}
+                  </Label>
+                  <span className="text-muted-foreground text-sm">
+                    {t("motivationRule")}
+                  </span>
+                </div>
                 <Textarea
                   id="rating-motivation"
                   value={motivations[current.criterionId] ?? ""}

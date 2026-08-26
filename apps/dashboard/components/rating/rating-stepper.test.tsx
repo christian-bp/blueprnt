@@ -411,6 +411,13 @@ describe("RatingStepper", () => {
     }
   })
 
+  // The rule is STATED, not only enforced: demanded only as an error after
+  // the fact, it read as the app requiring motivations at random.
+  it("states the motivation rule beside the field before any step is chosen", () => {
+    renderStepper()
+    expect(screen.getByText(labels.motivationRule)).toBeDefined()
+  })
+
   it("lets 1, 4 and 5 advance once a motivation is given", async () => {
     for (const value of MOTIVATION_REQUIRED_VALUES) {
       cleanup()

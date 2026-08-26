@@ -1606,6 +1606,7 @@
       "motivationLabel": "Perustelu",
       "motivationPlaceholder": "Miksi tämä arvio?",
       "motivationRequiredError": "Lisää perustelu ennen kuin jatkat.",
+      "motivationRule": "Pakollinen portailla 1, 4 ja 5",
       "backCta": "Takaisin",
       "nextCta": "Seuraava kriteeri",
       "saveError": "Arviota ei voitu tallentaa. Yritä uudelleen.",

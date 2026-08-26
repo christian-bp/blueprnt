@@ -1606,6 +1606,7 @@
       "motivationLabel": "Motivering",
       "motivationPlaceholder": "Varför detta betyg?",
       "motivationRequiredError": "Lägg till en motivering innan du fortsätter.",
+      "motivationRule": "Krävs vid steg 1, 4 och 5",
       "backCta": "Tillbaka",
       "nextCta": "Nästa kriterium",
       "saveError": "Betyget kunde inte sparas. Försök igen.",

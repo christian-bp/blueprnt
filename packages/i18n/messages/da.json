@@ -1606,6 +1606,7 @@
       "motivationLabel": "Begrundelse",
       "motivationPlaceholder": "Hvorfor denne vurdering?",
       "motivationRequiredError": "Tilføj en begrundelse, før du fortsætter.",
+      "motivationRule": "Kræves ved trin 1, 4 og 5",
       "backCta": "Tilbage",
       "nextCta": "Næste kriterium",
       "saveError": "Vurderingen kunne ikke gemmes. Prøv igen.",

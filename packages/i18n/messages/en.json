@@ -1606,6 +1606,7 @@
       "motivationLabel": "Motivation",
       "motivationPlaceholder": "Why this rating?",
       "motivationRequiredError": "Add a motivation before continuing.",
+      "motivationRule": "Required at steps 1, 4 and 5",
       "backCta": "Back",
       "nextCta": "Next criterion",
       "saveError": "The rating could not be saved. Try again.",
