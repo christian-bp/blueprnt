@@ -14,12 +14,10 @@ import { Item, ItemContent, ItemFooter } from "@workspace/ui/components/item"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useQuery } from "convex/react"
 import { AnimatePresence } from "motion/react"
-import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { type ReactNode, useState } from "react"
 import { CHAPTER_GRID_CLASS } from "@/components/model/chapter-grid"
-import { ChapterAction } from "@/components/chapter-action-slot"
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
 import { DimensionFrame } from "@/components/model/dimension-frame"
 import {
@@ -37,14 +35,6 @@ import { chapterHref } from "@/lib/model-chapters"
 const SKELETON_CARDS: Record<DimensionKey, number> = Object.fromEntries(
   DIMENSION_KEYS.map((key) => [key, Math.min(2, DIMENSION_MAX_ACTIVE[key])])
 ) as Record<DimensionKey, number>
-
-const MethodAppendixDownload = dynamic(
-  () =>
-    import("@/components/pdf/method-appendix-download").then(
-      (m) => m.MethodAppendixDownload
-    ),
-  { ssr: false }
-)
 
 // The Metod chapter: each criterion's rationale and bias review.
 //
@@ -81,7 +71,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
   // skeleton's headings and the loaded chapter's from drifting.
   const content = criteriaLibraryContent(locale)
 
-  if (data === undefined) return <MethodPanelSkeleton orgId={orgId} />
+  if (data === undefined) return <MethodPanelSkeleton />
   if (data === null) return null // no model yet; keep layout stable
 
   const target =
@@ -125,11 +115,6 @@ export function MethodPanel({ orgId }: { orgId: string }) {
           still. The progress that used to stand in a block of its own here is
           in the columns now, one count per dimension, where the criteria it
           counts actually are. */}
-      {/* The chapter's own action, rendered here where its data is and
-          portalled up into the tab row. */}
-      <ChapterAction>
-        <MethodAppendixDownload orgId={orgId} />
-      </ChapterAction>
       {data.criteria.length === 0 ? (
         // Never a bare page: the chapter has nothing to document until the
         // first one has been chosen, and it says so with the way back. The
@@ -291,7 +276,7 @@ function DimensionSection({
 // method law (ADR-0021) and their names are locale-keyed library constants, so
 // they never wait on org data; how many criteria each holds, its documentation
 // count, and everything on a card, is exactly what is being waited for.
-function MethodPanelSkeleton({ orgId }: { orgId: string }) {
+function MethodPanelSkeleton() {
   const locale = useLocale()
   const content = criteriaLibraryContent(locale)
   return (
@@ -300,11 +285,6 @@ function MethodPanelSkeleton({ orgId }: { orgId: string }) {
           chapter chrome rather than data, so the row renders in full and the
           columns below it never move when the model lands. The export button
           loads its own data and disables itself until ready. */}
-      {/* The chapter's own action, rendered here where its data is and
-          portalled up into the tab row. */}
-      <ChapterAction>
-        <MethodAppendixDownload orgId={orgId} />
-      </ChapterAction>
       <div className={CHAPTER_GRID_CLASS}>
         {DIMENSION_KEYS.map((key) => (
           <DimensionSection

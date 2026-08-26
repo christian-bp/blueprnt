@@ -3,6 +3,7 @@ import {
   MORPH_VIEWPORT_MARGIN,
   morphPanelPlacement,
   morphStackPlacement,
+  morphPanelVerticalAnchor,
 } from "@/lib/morph-placement"
 
 // The panel's own width at rest: w-[26rem].
@@ -270,5 +271,46 @@ describe("morphStackPlacement", () => {
         expect(box.right, where).toBeLessThanOrEqual(viewportWidth)
       }
     }
+  })
+})
+
+// The overlay panel's vertical flip: down from the trigger's top by
+// preference, up from its bottom when the room below has run out, and the
+// larger side when neither holds the whole panel.
+describe("morphPanelVerticalAnchor", () => {
+  const base = { triggerTop: 100, triggerBottom: 136, viewportHeight: 800 }
+
+  it("grows down while the panel fits below", () => {
+    expect(morphPanelVerticalAnchor({ ...base, panelHeight: 300 })).toBe("down")
+  })
+
+  it("flips up for a trigger at the foot of the page", () => {
+    expect(
+      morphPanelVerticalAnchor({
+        triggerTop: 700,
+        triggerBottom: 736,
+        panelHeight: 300,
+        viewportHeight: 800,
+      })
+    ).toBe("up")
+  })
+
+  it("keeps the side with more room when neither fits whole", () => {
+    expect(
+      morphPanelVerticalAnchor({
+        triggerTop: 500,
+        triggerBottom: 536,
+        panelHeight: 700,
+        viewportHeight: 800,
+      })
+    ).toBe("up")
+    expect(
+      morphPanelVerticalAnchor({
+        triggerTop: 200,
+        triggerBottom: 236,
+        panelHeight: 700,
+        viewportHeight: 800,
+      })
+    ).toBe("down")
   })
 })

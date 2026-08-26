@@ -144,6 +144,35 @@ export function morphPanelPlacement({
   })
 }
 
+// The vertical twin of morphPanelPlacement, for the OVERLAY shape: the panel
+// grows out of the trigger's own rect, downward from its top by preference,
+// and flips to grow upward from its bottom when the room below has run out
+// (a trigger at the foot of a page, where the chapter actions live). Flip
+// only, no vertical pull-in: a shifted panel would detach from the trigger
+// rect the morph grows out of. When neither direction holds the whole panel,
+// the side with more room wins, which keeps the title-bearing edge on screen.
+export type MorphVerticalAnchor = "down" | "up"
+
+export function morphPanelVerticalAnchor({
+  triggerTop,
+  triggerBottom,
+  panelHeight,
+  viewportHeight,
+  margin = MORPH_VIEWPORT_MARGIN,
+}: {
+  triggerTop: number
+  triggerBottom: number
+  panelHeight: number
+  viewportHeight: number
+  margin?: number
+}): MorphVerticalAnchor {
+  if (triggerTop + panelHeight <= viewportHeight - margin) return "down"
+  if (triggerBottom - panelHeight >= margin) return "up"
+  const below = viewportHeight - margin - triggerTop
+  const above = triggerBottom - margin
+  return below >= above ? "down" : "up"
+}
+
 // The vertical shape: a panel STACKED over its trigger, centred on it, rather
 // than sitting to one side. The weight row's step meanings are this one.
 //

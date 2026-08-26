@@ -10,7 +10,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import {
-  ChapterActionRow,
+  ChapterActionSlot,
   ChapterActionSlotProvider,
 } from "@/components/chapter-action-slot"
 import {
@@ -151,21 +151,24 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
               />
             }
           />
-          {/* The chapter's own action, at a held height so the body starts
-              at the same Y on every chapter. The chapters themselves are
-              sidebar rows. */}
-          <ChapterActionRow />
           {children}
-          {showContinuation && nextChapter !== undefined && (
-            <div className="flex justify-end">
+          {/* The chapter's closing row: its own actions (portalled up from
+              the chapter's tree) beside the journey's continuation. One row
+              at the foot rather than a band at the top, so the acts sit
+              where the reader is when the chapter's work ends. It removes
+              itself when the slot is empty AND no continuation is offered,
+              so a chapter with neither carries no strip of held air. */}
+          <div className="flex items-center justify-end gap-2 [&:has(>[data-slot=chapter-action]:empty):not(:has(>a))]:hidden">
+            <ChapterActionSlot />
+            {showContinuation && nextChapter !== undefined && (
               <Link
                 href={chapterHref(nextChapter)}
                 className={cn(buttonVariants())}
               >
                 {t("nextCta", { chapter: t(nextChapter) })}
               </Link>
-            </div>
-          )}
+            )}
+          </div>
         </div>
         <FloatingStack />
       </FloatingStackProvider>

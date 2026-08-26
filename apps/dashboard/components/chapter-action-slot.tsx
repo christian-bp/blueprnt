@@ -17,10 +17,11 @@ const slot = createDomSlot()
 // The size EVERY chapter action takes. One size across a section, owned by
 // the slot they all land in rather than chosen per chapter: the actions sit
 // at the same place on every chapter, and a reader moving between them should
-// not meet a control that changes height as they go. Nova's sm, deliberately:
-// these are compact in-row controls, the surface the style's sm size exists
-// for.
-export const CHAPTER_ACTION_BUTTON_SIZE = "sm" as const
+// not meet a control that changes height as they go. The default size,
+// because the row they land in also carries the journey's own Next button at
+// the design system's default, and a row that steps down at one control
+// reads as a mistake.
+export const CHAPTER_ACTION_BUTTON_SIZE = "default" as const
 
 // Mounted by the section shell, above both the journey row and the chapter.
 export const ChapterActionSlotProvider = slot.Provider
@@ -47,25 +48,4 @@ export function ChapterActionSlot() {
 // row above.
 export function ChapterAction({ children }: { children: ReactNode }) {
   return <slot.Content>{children}</slot.Content>
-}
-
-// The section's action row, mounted by a guided-section shell between the
-// title row and the chapter body. It used to be the right side of the chapter
-// tab row; the chapters navigate from the sidebar now, and this row is what
-// remains of that band.
-//
-// It REMOVES ITSELF while no chapter fills it: the slot's box is an empty
-// element until a chapter portals its control in, so :has/:empty is the
-// band's own knowledge of whether it has a job, and a chapter without an
-// action starts its content a band's height sooner instead of under a strip
-// of held air. The held height was for the in-page tab row's chapter
-// switching; between sidebar pages there is no in-page state change to hold
-// still for. min-h-7 still sizes the band when it does render, so the two
-// chapters that fill it agree on its height.
-export function ChapterActionRow() {
-  return (
-    <div className="flex min-h-7 items-center [&:has(>[data-slot=chapter-action]:empty)]:hidden">
-      <ChapterActionSlot />
-    </div>
-  )
 }

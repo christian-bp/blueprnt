@@ -523,8 +523,9 @@ describe("the Viktning chapter", () => {
       expect(container.querySelector('[data-slot="floating-pill"]')).toBeNull()
       expect((save() as HTMLButtonElement).disabled).toBe(false)
       // Sized by the row's own constant: a chapter action among chapter
-      // actions, not the pill's old compact deviation.
-      expect(save().className.split(/\s+/)).toContain("h-7")
+      // actions, at the closing row's default size beside the journey's
+      // Next button.
+      expect(save().className.split(/\s+/)).toContain("h-8")
     })
 
     // The save and the review travel to the row together; the budget does

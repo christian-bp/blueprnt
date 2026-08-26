@@ -15,7 +15,12 @@ import {
   useState,
 } from "react"
 import { SPRING } from "@/lib/motion"
-import { type MorphPlacement, morphPanelPlacement } from "@/lib/morph-placement"
+import {
+  type MorphPlacement,
+  type MorphVerticalAnchor,
+  morphPanelPlacement,
+  morphPanelVerticalAnchor,
+} from "@/lib/morph-placement"
 
 // A trigger button that morphs into a floating panel (used for the AI
 // assistance surfaces). The discipline follows docs/ui-animation.md and
@@ -91,6 +96,10 @@ export function MorphPopover({
     side: anchor,
     shift: 0,
   })
+  // Whether the panel grows down from the trigger's top (the preference) or
+  // up from its bottom (a trigger near the foot of the page). Same recompute
+  // rhythm as the horizontal placement.
+  const [vertical, setVertical] = useState<MorphVerticalAnchor>("down")
 
   // Measured in a LAYOUT effect, not a passive one: the panel is already in
   // the DOM here, and the correction is committed before the browser paints,
@@ -100,17 +109,25 @@ export function MorphPopover({
   useLayoutEffect(() => {
     if (!open) return
     const trigger = triggerRef.current?.getBoundingClientRect()
-    const panelWidth = contentRef.current?.getBoundingClientRect().width
-    if (trigger === undefined || panelWidth === undefined || panelWidth <= 0) {
+    const panel = contentRef.current?.getBoundingClientRect()
+    if (trigger === undefined || panel === undefined || panel.width <= 0) {
       return
     }
     setPlacement(
       morphPanelPlacement({
         triggerLeft: trigger.left,
         triggerRight: trigger.right,
-        panelWidth,
+        panelWidth: panel.width,
         viewportWidth: window.innerWidth,
         preferred: anchor,
+      })
+    )
+    setVertical(
+      morphPanelVerticalAnchor({
+        triggerTop: trigger.top,
+        triggerBottom: trigger.bottom,
+        panelHeight: panel.height,
+        viewportHeight: window.innerHeight,
       })
     )
   }, [open, anchor])
@@ -180,7 +197,8 @@ export function MorphPopover({
             }}
             transition={SPRING}
             className={cn(
-              "absolute top-0 z-30 overflow-hidden rounded-lg border bg-popover text-popover-foreground shadow-md",
+              "absolute z-30 overflow-hidden rounded-lg border bg-popover text-popover-foreground shadow-md",
+              vertical === "down" ? "top-0" : "bottom-0",
               placement.side === "right" ? "right-0" : "left-0",
               panelClassName
             )}

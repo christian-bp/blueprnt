@@ -2,7 +2,9 @@
 
 import { useReducedMotion } from "motion/react"
 import { useTranslations } from "next-intl"
+import dynamic from "next/dynamic"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { ChapterAction } from "@/components/chapter-action-slot"
 import { ApprovalCard } from "@/components/model/approval-card"
 import { ConsequencePanel } from "@/components/model/consequence-panel"
 import { LevelRulesPanel } from "@/components/model/level-rules-panel"
@@ -17,6 +19,16 @@ import { usePageTitle } from "@/hooks/use-page-title"
 // Kriterier chapter; what this chapter carries is the check row reporting
 // it. No help on the framing line: the approval concept's explainer sits on
 // the card's own title.
+// Loaded on demand: @react-pdf/renderer is the app's heaviest client
+// dependency, and the export is one button pressed rarely.
+const MethodAppendixDownload = dynamic(
+  () =>
+    import("@/components/pdf/method-appendix-download").then(
+      (m) => m.MethodAppendixDownload
+    ),
+  { ssr: false }
+)
+
 export default function ModelApprovalChapterPage() {
   const { orgId } = useOrganization()
   const tChapters = useTranslations("dashboard.model.chapters")
@@ -65,6 +77,14 @@ export default function ModelApprovalChapterPage() {
       <div ref={consequenceRef}>
         <ConsequencePanel orgId={orgId} />
       </div>
+      {/* The metodbilaga export is the approval chapter's own action: the
+          appendix is the evidence document of exactly what approving
+          certifies, so it exports from the gate rather than from the Metod
+          chapter that writes one part of it. Lands in the section's closing
+          row. */}
+      <ChapterAction>
+        <MethodAppendixDownload orgId={orgId} />
+      </ChapterAction>
       <ApprovalCard orgId={orgId} />
       {/* The thresholds under the gate they belong to: they are part of what
           approval certifies, so the surface that edits them sits with the

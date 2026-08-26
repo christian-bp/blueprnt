@@ -183,14 +183,21 @@ describe("ModelSectionShell", () => {
     expect(container.querySelector(".tabular-nums")?.textContent).toContain(
       "of"
     )
-    // The chapter's action band is mounted, and removes itself while no
-    // chapter fills it (the slot's box is empty until a chapter portals its
-    // control in), so an actionless chapter carries no strip of held air.
+    // The chapter's closing row is mounted at the foot, and removes itself
+    // while the slot is empty AND no continuation is offered, so a chapter
+    // with neither carries no strip of held air.
     const slot = container.querySelector('[data-slot="chapter-action"]')
     expect(slot).toBeTruthy()
     expect(slot?.parentElement?.className).toContain(
-      "[&:has(>[data-slot=chapter-action]:empty)]:hidden"
+      "[&:has(>[data-slot=chapter-action]:empty):not(:has(>a))]:hidden"
     )
+    // At the FOOT: the chapter's body renders before the row, so the acts
+    // sit where the reader is when the chapter's work ends.
+    const body = screen.getByText("chapter body")
+    expect(
+      body.compareDocumentPosition(slot as Node) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
     expect(screen.getByText("chapter body")).toBeDefined()
   })
 
