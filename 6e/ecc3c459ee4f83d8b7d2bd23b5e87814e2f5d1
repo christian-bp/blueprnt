@@ -1,0 +1,34 @@
+apps/dashboard/components/model/level-rules-panel.test.tsx
+  s_58dd112dc09435::t_d2c3759f6549c0 66-67,72-76,98-109,113-117,130,139-141,323-324
+  s_58dd112dc09435::t_a4c25e31c9fddf 110-112
+apps/dashboard/components/model/level-rules-panel.tsx
+  s_58dd112dc09435::t_714120a42f04ef 33,35,80-87,90-91,96,107-135,141,147,234,272,438,443,466
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_32ae58f95a0f75 1914
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_32ae58f95a0f75 1914
+apps/dashboard/components/settings-frame.tsx
+  s_58dd112dc09435::t_9d739537c1eff5 27-30,41-45
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_32ae58f95a0f75 1914
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_32ae58f95a0f75 1914
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_32ae58f95a0f75 1914
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "6eecc3c459ee4f83d8b7d2bd23b5e87814e2f5d1",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
