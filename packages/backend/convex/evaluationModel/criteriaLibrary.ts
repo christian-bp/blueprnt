@@ -230,6 +230,27 @@ export function isCriteriaLibraryKey(key: string): key is CriteriaLibraryKey {
 // not leave a consumer explaining a midpoint that no longer exists.
 export const MIDPOINT_STEPS: readonly number[] = [2, 4]
 
+// A criterion's anchor steps from its library entry. Steps 1/3/5 are always
+// defined; 2/4 exist only where the library says something more specific than
+// "a considered midpoint", and the reading surface fills those gaps from the
+// shared midpoints. One assembler for every consumer (the rating wire and the
+// method appendix), so a criterion's scale cannot be put together two ways.
+export function criterionAnchors(entry: {
+  anchor1: string
+  anchor2?: string
+  anchor3: string
+  anchor4?: string
+  anchor5: string
+}): { step: number; text: string }[] {
+  return [
+    { step: 1, text: entry.anchor1 },
+    ...(entry.anchor2 !== undefined ? [{ step: 2, text: entry.anchor2 }] : []),
+    { step: 3, text: entry.anchor3 },
+    ...(entry.anchor4 !== undefined ? [{ step: 4, text: entry.anchor4 }] : []),
+    { step: 5, text: entry.anchor5 },
+  ]
+}
+
 // The library's measures/notMeasures split, joined into the one help-text
 // sentence every consumer actually needs (what the criterion DOES and does
 // NOT cover, in one line): the method-builder wire (method.ts), the rating

@@ -17,7 +17,11 @@ import {
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
-import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
+import {
+  criterionAnchors,
+  criteriaLibraryContent,
+  LIBRARY_DIMENSION,
+} from "./criteriaLibrary"
 import { clampLocale, type ProductContentLocale } from "./localize"
 import {
   dimensionKeyValidator,
@@ -171,27 +175,6 @@ export const seedDefaultModel = internalMutation({
 })
 
 const anchorShape = v.object({ step: v.number(), text: v.string() })
-
-// A criterion's anchor steps from its library entry. Steps 1/3/5 are always
-// defined; 2/4 exist only where the library says something more specific than
-// "a considered midpoint", and the reading surface fills those gaps from the
-// model's shared midpoints. Shared by the two reads below so a criterion's
-// scale cannot be assembled two ways.
-function criterionAnchors(entry: {
-  anchor1: string
-  anchor2?: string
-  anchor3: string
-  anchor4?: string
-  anchor5: string
-}): { step: number; text: string }[] {
-  return [
-    { step: 1, text: entry.anchor1 },
-    ...(entry.anchor2 !== undefined ? [{ step: 2, text: entry.anchor2 }] : []),
-    { step: 3, text: entry.anchor3 },
-    ...(entry.anchor4 !== undefined ? [{ step: 4, text: entry.anchor4 }] : []),
-    { step: 5, text: entry.anchor5 },
-  ]
-}
 
 // What the RATING surface reads, and nothing else.
 //

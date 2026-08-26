@@ -18,9 +18,12 @@ vi.mock("convex/react", () => ({
     modelName: "M",
     pointBudget: 6,
     levelRules: [],
+    zoneProfileRules: [],
+    workingConditions: null,
     criteria: [
       {
         criterionId: "c1",
+        libraryKey: "scope-impact",
         name: "Scope",
         description: "",
         weightPoints: 3,
@@ -60,7 +63,7 @@ describe("MethodAppendixDownload", () => {
     globalThis.URL.createObjectURL = vi.fn(() => "blob:x")
     globalThis.URL.revokeObjectURL = vi.fn()
     renderDownload()
-    fireEvent.click(screen.getByRole("button"))
+    fireEvent.click(screen.getByRole("button", { name: /PDF/i }))
     await waitFor(() => expect(toBlob).toHaveBeenCalled())
   })
 })

@@ -4,7 +4,6 @@ import { useReducedMotion } from "motion/react"
 import { useTranslations } from "next-intl"
 import dynamic from "next/dynamic"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { ChapterAction } from "@/components/chapter-action-slot"
 import { ApprovalCard } from "@/components/model/approval-card"
 import { ConsequencePanel } from "@/components/model/consequence-panel"
 import { LevelRulesPanel } from "@/components/model/level-rules-panel"
@@ -77,14 +76,11 @@ export default function ModelApprovalChapterPage() {
       <div ref={consequenceRef}>
         <ConsequencePanel orgId={orgId} />
       </div>
-      {/* The metodbilaga export is the approval chapter's own action: the
-          appendix is the evidence document of exactly what approving
-          certifies, so it exports from the gate rather than from the Metod
-          chapter that writes one part of it. Lands in the section's closing
-          row. */}
-      <ChapterAction>
-        <MethodAppendixDownload orgId={orgId} />
-      </ChapterAction>
+      {/* The metodbilaga as a surface of its own: the appendix is the
+          evidence document of exactly what approving certifies, so its card
+          (name, status, export) lives on the gate's chapter rather than as a
+          stray button on Metod. */}
+      <MethodAppendixDownload orgId={orgId} />
       <ApprovalCard orgId={orgId} />
       {/* The thresholds under the gate they belong to: they are part of what
           approval certifies, so the surface that edits them sits with the

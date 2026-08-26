@@ -69,6 +69,16 @@ const s = StyleSheet.create({
   },
   tocRowSub: { marginLeft: 14, marginBottom: 3 },
   tocLabel: { fontSize: 11 },
+  cellStep: { width: 16 },
+  note: { fontSize: 9, color: "#555", marginTop: 4, lineHeight: 1.4 },
+  zoneBlock: { marginBottom: 12 },
+  zoneHeading: {
+    fontSize: 10,
+    fontFamily: "Helvetica-Bold",
+    marginBottom: 3,
+  },
+  anchorRow: { flexDirection: "row", marginBottom: 3 },
+  anchorText: { flex: 1, fontSize: 10, color: "#333", lineHeight: 1.4 },
   tocLabelSub: { fontSize: 10, color: "#555" },
   tocPage: { fontSize: 10, color: "#555" },
 })
@@ -81,14 +91,19 @@ export type MethodAppendixLabels = {
   statusTag: string
   methodologyTitle: string
   methodologyBody: string
+  scaleTitle: string
+  midpointNote: string
   criteriaTitle: string
   rationaleTitle: string
-  levelsTitle: string
+  zonesTitle: string
+  materialityTitle: string
   colCriterion: string
   colWeight: string
   colShare: string
   colLevel: string
   colMinScore: string
+  definition: string
+  anchorsLabel: string
   purpose: string
   whyRelevant: string
   overlap: string
@@ -97,8 +112,12 @@ export type MethodAppendixLabels = {
   biasAction: string
   footer: string
   pointBudget: string
+  motivationLabel: string
   riskLabel: (r: "low" | "medium" | "high") => string
   approval: (c: MethodAppendixDoc["criteria"][number]) => string
+  zoneHeading: (zone: MethodAppendixDoc["zones"][number]) => string
+  zoneProfileLine: (minStep: number | null) => string
+  materialityLine: (wc: MethodAppendixDoc["workingConditions"]) => string
 }
 
 // One labelled field on a criterion page: the field name above its value, so a
@@ -155,8 +174,13 @@ export function MethodAppendix({
             label={labels.methodologyTitle}
             page={pageRefs?.methodology}
           />
+          <TocRow label={labels.scaleTitle} page={pageRefs?.scale} />
           <TocRow label={labels.criteriaTitle} page={pageRefs?.criteria} />
-          <TocRow label={labels.levelsTitle} page={pageRefs?.levels} />
+          <TocRow label={labels.zonesTitle} page={pageRefs?.levels} />
+          <TocRow
+            label={labels.materialityTitle}
+            page={pageRefs?.materiality}
+          />
           <TocRow label={labels.rationaleTitle} page={undefined} />
           {doc.criteria.map((c) => (
             <TocRow
@@ -181,6 +205,23 @@ export function MethodAppendix({
           <Text style={s.para}>{doc.biasStatement}</Text>
         </Section>
         <Section
+          title={labels.scaleTitle}
+          onRenderPage={
+            onResolvePage ? (p) => onResolvePage("scale", p) : undefined
+          }
+        >
+          {doc.scaleSteps.map((step) => (
+            <View key={step.step} style={s.row}>
+              <Text style={[s.cellStep, s.label]}>{step.step}</Text>
+              <Text style={s.cellName}>
+                <Text style={s.label}>{step.name}. </Text>
+                {step.meaning}
+              </Text>
+            </View>
+          ))}
+          <Text style={s.note}>{labels.midpointNote}</Text>
+        </Section>
+        <Section
           title={labels.criteriaTitle}
           onRenderPage={
             onResolvePage ? (p) => onResolvePage("criteria", p) : undefined
@@ -201,21 +242,43 @@ export function MethodAppendix({
           ))}
         </Section>
         <Section
-          title={labels.levelsTitle}
+          title={labels.zonesTitle}
           onRenderPage={
             onResolvePage ? (p) => onResolvePage("levels", p) : undefined
           }
         >
-          <View style={s.row}>
-            <Text style={[s.cellName, s.label]}>{labels.colLevel}</Text>
-            <Text style={[s.cellNum, s.label]}>{labels.colMinScore}</Text>
-          </View>
-          {doc.levelRules.map((b) => (
-            <View key={b.level} style={s.row}>
-              <Text style={s.cellName}>{b.level}</Text>
-              <Text style={s.cellNum}>{b.minScore}</Text>
+          {doc.zones.map((zone) => (
+            <View key={zone.key} style={s.zoneBlock}>
+              <Text style={s.zoneHeading}>{labels.zoneHeading(zone)}</Text>
+              <View style={s.row}>
+                <Text style={[s.cellName, s.label]}>{labels.colLevel}</Text>
+                <Text style={[s.cellNum, s.label]}>{labels.colMinScore}</Text>
+              </View>
+              {zone.levels.map((b) => (
+                <View key={b.level} style={s.row}>
+                  <Text style={s.cellName}>{b.level}</Text>
+                  <Text style={s.cellNum}>{b.minScore}</Text>
+                </View>
+              ))}
+              <Text style={s.note}>{labels.zoneProfileLine(zone.minStep)}</Text>
             </View>
           ))}
+        </Section>
+        <Section
+          title={labels.materialityTitle}
+          onRenderPage={
+            onResolvePage ? (p) => onResolvePage("materiality", p) : undefined
+          }
+        >
+          <Text style={s.para}>
+            {labels.materialityLine(doc.workingConditions)}
+          </Text>
+          {doc.workingConditions !== null && (
+            <Field
+              label={labels.motivationLabel}
+              value={doc.workingConditions.motivation}
+            />
+          )}
         </Section>
         {/* One criterion per page: `break` starts each on a fresh page. No
             wrap={false}, so a long rationale paginates instead of overlapping. */}
@@ -232,6 +295,7 @@ export function MethodAppendix({
             />
             <Text style={s.criterionTitle}>{c.name}</Text>
             <View style={s.criterionRule} />
+            <Field label={labels.definition} value={c.description} />
             <Field label={labels.purpose} value={c.purpose} />
             <Field label={labels.whyRelevant} value={c.whyRelevant} />
             {c.overlapNotes !== null && (
@@ -245,6 +309,15 @@ export function MethodAppendix({
             {c.biasAction !== null && (
               <Field label={labels.biasAction} value={c.biasAction} />
             )}
+            <View style={s.field}>
+              <Text style={s.fieldLabel}>{labels.anchorsLabel}</Text>
+              {c.anchors.map((anchor) => (
+                <View key={anchor.step} style={s.anchorRow}>
+                  <Text style={[s.cellStep, s.label]}>{anchor.step}</Text>
+                  <Text style={s.anchorText}>{anchor.text}</Text>
+                </View>
+              ))}
+            </View>
             <Text style={s.approval}>{labels.approval(c)}</Text>
           </View>
         ))}

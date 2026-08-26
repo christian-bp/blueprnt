@@ -7,7 +7,11 @@ import { orgMutation, orgQuery } from "../lib/functions"
 import { reopenApprovalIfSet } from "./approval"
 import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
 import { clampLocale } from "./localize"
-import { dimensionKeyValidator, libraryKeyValidator } from "./tables"
+import {
+  dimensionKeyValidator,
+  libraryKeyValidator,
+  zoneKeyValidator,
+} from "./tables"
 
 // The compliance content fields logged in the audit diff. decidedBy/decidedAt
 // are intentionally excluded: they are redundant with the audit row's own actor
@@ -260,6 +264,20 @@ export const getMethodModel = orgQuery({
       levelRules: v.array(
         v.object({ level: v.number(), minScore: v.number() })
       ),
+      // The zone gates and the materiality decision are method content the
+      // appendix documents; decidedBy stays off the wire (a raw auth id no
+      // surface shows).
+      zoneProfileRules: v.array(
+        v.object({ zone: zoneKeyValidator, minStep: v.number() })
+      ),
+      workingConditions: v.union(
+        v.null(),
+        v.object({
+          status: v.union(v.literal("active"), v.literal("testedNotMaterial")),
+          motivation: v.string(),
+          decidedAt: v.number(),
+        })
+      ),
       progress: v.object({
         documented: v.number(),
         approved: v.number(),
@@ -360,11 +378,21 @@ export const getMethodModel = orgQuery({
 
     const levelRules = [...model.levelRules].sort((a, b) => a.level - b.level)
 
+    const workingConditions =
+      model.workingConditions === undefined
+        ? null
+        : {
+            status: model.workingConditions.status,
+            motivation: model.workingConditions.motivation,
+            decidedAt: model.workingConditions.decidedAt,
+          }
     return {
       modelName: model.name,
       pointBudget: rows.length * 3,
       criteria,
       levelRules,
+      zoneProfileRules: model.zoneProfileRules ?? [],
+      workingConditions,
       progress: { documented, approved, total: rows.length },
       modelApproved: model.approval !== undefined,
     }

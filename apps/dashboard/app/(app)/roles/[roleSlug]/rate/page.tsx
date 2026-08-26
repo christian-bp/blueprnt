@@ -20,29 +20,13 @@ import { use } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { RATE_COLUMN, RATE_NEXT_KBD_CLASS } from "@/lib/rate-column"
+import { resolveAnchorSteps } from "@/lib/anchors"
 import { groupByFamily } from "@/lib/role-groups"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { RatingResult } from "@/components/rating/rating-result"
 import { RatingStepper } from "@/components/rating/rating-stepper"
 import { ReopenAssessmentButton } from "@/components/rating/reopen-assessment-button"
 import { chapterHref } from "@/lib/model-chapters"
-
-// Steps 1-5 are always per-criterion; the library leaves 2/4 undefined when
-// it has nothing more specific to say than "a considered midpoint", and the
-// model's shared midpoints copy fills exactly those gaps.
-function resolveAnchors(
-  criterion: { anchors: { step: number; text: string }[] },
-  midpoints: { step2: string; step4: string }
-): { step: number; text: string }[] {
-  const byStep = new Map(
-    criterion.anchors.map((anchor) => [anchor.step, anchor.text])
-  )
-  return [1, 2, 3, 4, 5].map((step) => {
-    const text = byStep.get(step)
-    if (text !== undefined) return { step, text }
-    return { step, text: step === 2 ? midpoints.step2 : midpoints.step4 }
-  })
-}
 
 export default function RatePage(props: {
   params: Promise<{ roleSlug: string }>
@@ -353,7 +337,7 @@ export default function RatePage(props: {
           measures: criterion.measures,
           notMeasures: criterion.notMeasures,
           dimensionKey: criterion.dimensionKey,
-          anchors: resolveAnchors(criterion, model.midpoints),
+          anchors: resolveAnchorSteps(criterion.anchors, model.midpoints),
         }))}
         ratings={role.ratings}
       />

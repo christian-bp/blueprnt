@@ -34,6 +34,14 @@ const DOC: MethodAppendixDoc = {
       status: "approved",
       decidedByName: "Alex",
       decidedAt: 1_700_000_000_000,
+      anchors: [
+        { step: 1, text: "Anchor one" },
+        { step: 2, text: "Midpoint" },
+        { step: 3, text: "Anchor three" },
+        { step: 4, text: "Midpoint" },
+        { step: 5, text: "Anchor five" },
+      ],
+      libraryKey: "scope-impact",
     },
     {
       criterionId: "c2",
@@ -51,12 +59,48 @@ const DOC: MethodAppendixDoc = {
       status: "documented",
       decidedByName: null,
       decidedAt: null,
+      anchors: [
+        { step: 1, text: "Anchor one" },
+        { step: 2, text: "Midpoint" },
+        { step: 3, text: "Anchor three" },
+        { step: 4, text: "Midpoint" },
+        { step: 5, text: "Anchor five" },
+      ],
+      libraryKey: "complexity-ambiguity",
     },
   ],
-  levelRules: [
-    { level: 1, minScore: 80 },
-    { level: 2, minScore: 60 },
+  scaleSteps: [1, 2, 3, 4, 5].map((step) => ({
+    step,
+    name: `Step ${step}`,
+    meaning: `Meaning ${step}`,
+  })),
+  zones: [
+    {
+      key: "A",
+      name: "Company-wide and strategic roles",
+      levels: [
+        { level: 1, minScore: 97 },
+        { level: 2, minScore: 92 },
+        { level: 3, minScore: 87 },
+      ],
+      minStep: 4,
+    },
+    {
+      key: "B",
+      name: "Leading specialist roles",
+      levels: [
+        { level: 4, minScore: 81 },
+        { level: 5, minScore: 75 },
+        { level: 6, minScore: 69 },
+      ],
+      minStep: null,
+    },
   ],
+  workingConditions: {
+    status: "testedNotMaterial",
+    motivation: "No recurring exposure in any role.",
+    decidedAt: 1_700_000_000_000,
+  },
 }
 
 const LABELS = {
@@ -67,14 +111,19 @@ const LABELS = {
   statusTag: "DRAFT",
   methodologyTitle: "Methodology",
   methodologyBody: "Roles are evaluated criterion by criterion.",
+  scaleTitle: "The shared assessment scale",
+  midpointNote: "Steps 2 and 4 are considered midpoints.",
   criteriaTitle: "Criteria and weights",
   rationaleTitle: "Criterion rationale and bias review",
-  levelsTitle: "Level thresholds",
+  zonesTitle: "Levels and zones",
+  materialityTitle: "The working-conditions materiality test",
   colCriterion: "Criterion",
   colWeight: "Weight",
   colShare: "Share",
   colLevel: "Level",
   colMinScore: "Min score",
+  definition: "Definition",
+  anchorsLabel: "Assessment anchors",
   purpose: "Purpose",
   whyRelevant: "Why relevant",
   overlap: "Overlap",
@@ -83,9 +132,18 @@ const LABELS = {
   biasAction: "Bias mitigation",
   footer: "Method appendix",
   pointBudget: "Point budget: 27",
+  motivationLabel: "Motivation",
   riskLabel: (r: "low" | "medium" | "high") => r,
   approval: (c: MethodAppendixDoc["criteria"][number]) =>
     c.status === "approved" ? "Approved" : "Not approved",
+  zoneHeading: (zone: MethodAppendixDoc["zones"][number]) =>
+    `Zone ${zone.key} · ${zone.name}`,
+  zoneProfileLine: (minStep: number | null) =>
+    minStep === null
+      ? "No profile requirement."
+      : `At least step ${minStep} on every profile criterion.`,
+  materialityLine: (wc: MethodAppendixDoc["workingConditions"]) =>
+    wc === null ? "Not decided yet." : `Decided: ${wc.status}.`,
 }
 
 describe("MethodAppendix (real render)", () => {
@@ -109,6 +167,9 @@ describe("MethodAppendix (real render)", () => {
     ).toBlob()
     // Overview sections land on the first content page (page 2, after the cover).
     expect(pageRefs.methodology).toBeGreaterThan(1)
+    expect(pageRefs.scale).toBeGreaterThan(1)
+    expect(pageRefs.levels).toBeGreaterThan(1)
+    expect(pageRefs.materiality).toBeGreaterThan(1)
     // Each criterion gets its own page, recorded for the contents list.
     const c1 = pageRefs.c1 ?? 0
     const c2 = pageRefs.c2 ?? 0
