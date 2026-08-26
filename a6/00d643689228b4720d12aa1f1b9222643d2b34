@@ -1,0 +1,56 @@
+packages/backend/convex/evaluationModel/method.ts
+  s_58dd112dc09435::t_231ac9389a791a 10-14
+  s_58dd112dc09435::t_19e61cac2d4c3e 267-280,381-388
+  s_58dd112dc09435::t_3724b519c86469 394-395
+packages/i18n/messages/fi.json
+  s_58dd112dc09435::t_c7e9d0549b2a94 2091-2105,2112,2218-2219
+packages/i18n/messages/en.json
+  s_58dd112dc09435::t_c7e9d0549b2a94 2091-2105,2112,2218-2219
+apps/dashboard/lib/pdf/method-appendix-data.test.ts
+  s_58dd112dc09435::t_1e100d1e70d76f 2-5,8-33,36-42,44-48,52,61,64,70,82,88-93,97,104,112,118,120,131-170
+apps/dashboard/lib/pdf/method-appendix-data.ts
+  s_58dd112dc09435::t_4b5ad32b1d4728 1-8,16-21,24,43-58,64-74,79-80,87-92,98-126
+packages/i18n/messages/da.json
+  s_58dd112dc09435::t_c7e9d0549b2a94 2091-2105,2112,2218-2219
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_58dd112dc09435::t_28b5b6a4d7d0d6 23,340
+apps/dashboard/app/(app)/model/approval/page.tsx
+  s_58dd112dc09435::t_c7e9d0549b2a94 79-83
+packages/i18n/messages/sv.json
+  s_58dd112dc09435::t_c7e9d0549b2a94 2091-2105,2112,2218-2219
+apps/dashboard/components/pdf/method-appendix.tsx
+  s_58dd112dc09435::t_28fb6791c2ce6e 72-81,94-95,98-99,105-106,115,118-120,177,179-183,207-223,245,250-263,267-282,298,312-320
+apps/dashboard/components/pdf/method-appendix-download.tsx
+  s_58dd112dc09435::t_3724176d4a9248 6-9,65-71
+  s_58dd112dc09435::t_034805e83989a1 10-11,13-19,28,36-37,45-51,57-64,72-80,90-91,94-95,101-102,111,113-136,178-208
+apps/dashboard/lib/anchors.ts
+  s_58dd112dc09435::t_28b5b6a4d7d0d6 1-17
+packages/backend/convex/evaluationModel/criteriaLibrary.ts
+  s_58dd112dc09435::t_3724176d4a9248 233-253
+packages/i18n/messages/nb.json
+  s_58dd112dc09435::t_c7e9d0549b2a94 2091-2105,2112,2218-2219
+apps/dashboard/components/pdf/method-appendix-download.test.tsx
+  s_58dd112dc09435::t_60994c38c35227 21-22,26
+  s_58dd112dc09435::t_cfbf59b116402d 66
+apps/dashboard/components/pdf/method-appendix-render.test.tsx
+  s_58dd112dc09435::t_7a9ca7521c692f 37-44,62-69,72-97,99-103,114-115,118-119,125-126,135,139-146,170-172
+packages/backend/convex/evaluationModel/model.ts
+  s_58dd112dc09435::t_3724176d4a9248 20
+  s_58dd112dc09435::t_8af75cd26588ec 21-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "a600d643689228b4720d12aa1f1b9222643d2b34",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
