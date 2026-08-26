@@ -125,6 +125,37 @@ describe("ModelSectionShell", () => {
     expect(container.querySelectorAll('[role="progressbar"]')).toHaveLength(1)
   })
 
+  // The journey's continuation: a chapter whose own work is done ends by
+  // naming the next one, so finishing a station never leaves the reader to
+  // work out from the tabs where the build goes on. The fixture's criteria
+  // chapter (the pinned pathname) is complete, so the shell offers Weighting.
+  it("offers the next chapter once the open chapter's work is done", () => {
+    renderShell()
+    const link = screen.getByRole("link", {
+      name: m.nextCta.replace("{chapter}", m.weighting),
+    })
+    expect(link.getAttribute("href")).toBe("/model/weighting")
+  })
+
+  it("offers no continuation while the open chapter's work remains", () => {
+    checksResult = {
+      checks: CHECKS.map((check) =>
+        check.key === "criterionCount"
+          ? { ...check, ok: false, count: 4 }
+          : check
+      ),
+      approval: null,
+      weightsSaved: true,
+      workingConditions: { status: "testedNotMaterial", motivation: "x" },
+    }
+    renderShell()
+    expect(
+      screen.queryByRole("link", {
+        name: m.nextCta.replace("{chapter}", m.weighting),
+      })
+    ).toBeNull()
+  })
+
   // One instrument, and no fixed rail at all on a chapter whose body carries
   // no pill: an empty rail is a fixed element left behind for nothing.
   it("mounts one instrument and no empty rail", () => {

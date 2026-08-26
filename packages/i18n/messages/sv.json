@@ -1876,6 +1876,7 @@
         "tab": "<num>{position}.</num> {chapter}",
         "nav": "Modellens kapitel",
         "progressBarLabel": "Hela modellens framsteg",
+        "nextCta": "Nästa: {chapter}",
         "countRich": "<done></done> av <total></total> moment"
       },
       "consequence": {

@@ -1,9 +1,12 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
+import { buttonVariants } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import NumberFlow from "@number-flow/react"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { ChapterActionSlotProvider } from "@/components/chapter-action-slot"
@@ -17,6 +20,7 @@ import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { SegmentedProgress } from "@/components/segmented-progress"
 import { useOrganization } from "@/components/org-context"
 import {
+  chapterHref,
   currentChapter,
   MODEL_CHAPTERS,
   modelChapterProgress,
@@ -66,6 +70,22 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
   const nameFor = new Map<string, string>(
     MODEL_CHAPTERS.map((chapter) => [chapter, t(chapter)])
   )
+  // The journey's continuation: once the OPEN chapter's own work is done, the
+  // page ends by naming the next chapter, so finishing a station never leaves
+  // the reader to work out from the tabs where the build goes on. Only on a
+  // finished chapter (an unfinished one instructs through its own work), only
+  // while a next exists (Godkännande is the journey's end), and only once the
+  // progress input is real, so a still-loading chapter never flashes it.
+  const activeIndex = active === undefined ? -1 : MODEL_CHAPTERS.indexOf(active)
+  const activeProgress = activeIndex === -1 ? undefined : chapters[activeIndex]
+  const nextChapter =
+    activeIndex === -1 ? undefined : MODEL_CHAPTERS[activeIndex + 1]
+  const showContinuation =
+    data !== undefined &&
+    activeProgress !== undefined &&
+    activeProgress.total > 0 &&
+    activeProgress.done === activeProgress.total &&
+    nextChapter !== undefined
 
   return (
     // Two slots the chapter fills from its own tree: its action, which lands
@@ -124,6 +144,16 @@ export function ModelSectionShell({ children }: { children: ReactNode }) {
           {/* The journey row: the tabs and this chapter's action. */}
           <ModelChapterTabs />
           {children}
+          {showContinuation && nextChapter !== undefined && (
+            <div className="flex justify-end">
+              <Link
+                href={chapterHref(nextChapter)}
+                className={cn(buttonVariants())}
+              >
+                {t("nextCta", { chapter: t(nextChapter) })}
+              </Link>
+            </div>
+          )}
         </div>
         <FloatingStack />
       </FloatingStackProvider>

@@ -1876,6 +1876,7 @@
         "tab": "<num>{position}.</num> {chapter}",
         "nav": "Modellens kapitler",
         "progressBarLabel": "Hele modellens fremdrift",
+        "nextCta": "Næste: {chapter}",
         "countRich": "<done></done> af <total></total> opgaver"
       },
       "consequence": {
