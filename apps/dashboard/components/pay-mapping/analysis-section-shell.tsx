@@ -8,10 +8,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import {
-  ChapterActionRow,
-  ChapterActionSlotProvider,
-} from "@/components/chapter-action-slot"
-import {
   FloatingStack,
   FloatingStackProvider,
 } from "@/components/floating-stack"
@@ -89,59 +85,54 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
     nextChapter !== undefined
 
   return (
-    // The chapter's own action renders inside the chapter, where its data is,
-    // and lands in the tab row above it (ChapterActionSlot).
-    <ChapterActionSlotProvider>
-      <FloatingStackProvider>
-        <div className="space-y-4">
-          {/* The section has no title of its own any more. It had one, and
+    // No chapter-action machinery here: unlike the model section, none of the
+    // analysis chapters carries an action, so the provider and its band were
+    // a held strip of air between the title row and every chapter's content.
+    <FloatingStackProvider>
+      <div className="space-y-4">
+        {/* The section has no title of its own any more. It had one, and
               it said "Documented", which named the section's SUBJECT beside a
               page already titled Analysis and left the reader two headings
               for one thing. Its concept help and its instrument move up to
               that page title, which is what they were always about. */}
-          <BreadcrumbAdornment>
-            <HelpMorphButton label={tHelp("analysisProgressLabel")}>
-              {tHelp("analysisProgressBody")}
-            </HelpMorphButton>
-          </BreadcrumbAdornment>
-          <BreadcrumbAside>
-            <SegmentedProgress
-              activeSegment={active}
-              barLabel={t("progressBarLabel")}
-              done={queue?.progress.overall.done ?? 0}
-              renderTitle={(segment) => nameFor.get(segment.key) ?? segment.key}
-              renderCount={(segment) =>
-                tJourney.rich("countRich", {
-                  done: () => <NumberFlow value={segment.done} />,
-                  total: () => <NumberFlow value={segment.total} />,
-                })
-              }
-              segments={chapters ?? []}
-              total={queue?.progress.overall.total ?? 0}
-            />
-          </BreadcrumbAside>
-          {/* The chapter's own action, at a held height so the body starts
-              at the same Y on every chapter. The chapters themselves are
-              run-sidebar rows. */}
-          <ChapterActionRow />
-          {children}
-          {showContinuation && nextChapter !== undefined && (
-            <div className="flex justify-end">
-              <Link
-                href={chapterHref(pathname, nextChapter)}
-                className={cn(buttonVariants())}
-              >
-                {tJourney("nextCta", {
-                  chapter: nameFor.get(nextChapter) ?? nextChapter,
-                })}
-              </Link>
-            </div>
-          )}
-        </div>
-        {/* The same stack the model section keeps. This section carries no
+        <BreadcrumbAdornment>
+          <HelpMorphButton label={tHelp("analysisProgressLabel")}>
+            {tHelp("analysisProgressBody")}
+          </HelpMorphButton>
+        </BreadcrumbAdornment>
+        <BreadcrumbAside>
+          <SegmentedProgress
+            activeSegment={active}
+            barLabel={t("progressBarLabel")}
+            done={queue?.progress.overall.done ?? 0}
+            renderTitle={(segment) => nameFor.get(segment.key) ?? segment.key}
+            renderCount={(segment) =>
+              tJourney.rich("countRich", {
+                done: () => <NumberFlow value={segment.done} />,
+                total: () => <NumberFlow value={segment.total} />,
+              })
+            }
+            segments={chapters ?? []}
+            total={queue?.progress.overall.total ?? 0}
+          />
+        </BreadcrumbAside>
+        {children}
+        {showContinuation && nextChapter !== undefined && (
+          <div className="flex justify-end">
+            <Link
+              href={chapterHref(pathname, nextChapter)}
+              className={cn(buttonVariants())}
+            >
+              {tJourney("nextCta", {
+                chapter: nameFor.get(nextChapter) ?? nextChapter,
+              })}
+            </Link>
+          </div>
+        )}
+      </div>
+      {/* The same stack the model section keeps. This section carries no
             pills of its own today, so the rail renders nothing at all. */}
-        <FloatingStack />
-      </FloatingStackProvider>
-    </ChapterActionSlotProvider>
+      <FloatingStack />
+    </FloatingStackProvider>
   )
 }

@@ -49,15 +49,22 @@ export function ChapterAction({ children }: { children: ReactNode }) {
   return <slot.Content>{children}</slot.Content>
 }
 
-// The section's action row, mounted by both guided-section shells between the
+// The section's action row, mounted by a guided-section shell between the
 // title row and the chapter body. It used to be the right side of the chapter
 // tab row; the chapters navigate from the sidebar now, and this row is what
-// remains of that band. min-h-7 is the action button's height, held whether
-// or not a chapter offers one, so the content below starts at the same Y on
-// every chapter and switching chapters holds the columns still.
+// remains of that band.
+//
+// It REMOVES ITSELF while no chapter fills it: the slot's box is an empty
+// element until a chapter portals its control in, so :has/:empty is the
+// band's own knowledge of whether it has a job, and a chapter without an
+// action starts its content a band's height sooner instead of under a strip
+// of held air. The held height was for the in-page tab row's chapter
+// switching; between sidebar pages there is no in-page state change to hold
+// still for. min-h-7 still sizes the band when it does render, so the two
+// chapters that fill it agree on its height.
 export function ChapterActionRow() {
   return (
-    <div className="flex min-h-7 items-center">
+    <div className="flex min-h-7 items-center [&:has(>[data-slot=chapter-action]:empty)]:hidden">
       <ChapterActionSlot />
     </div>
   )
