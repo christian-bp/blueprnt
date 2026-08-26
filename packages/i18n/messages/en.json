@@ -1875,7 +1875,7 @@
         "tab": "<num>{position}.</num> {chapter}",
         "nav": "Model chapters",
         "progressBarLabel": "Overall model progress",
-        "countRich": "<done></done> of <total></total>"
+        "countRich": "<done></done> of <total></total> tasks"
       },
       "consequence": {
         "heading": "What approving this would change",

@@ -1875,7 +1875,7 @@
         "tab": "<num>{position}.</num> {chapter}",
         "nav": "Mallin luvut",
         "progressBarLabel": "Koko mallin edistyminen",
-        "countRich": "<done></done> / <total></total>"
+        "countRich": "<done></done> / <total></total> tehtävää"
       },
       "consequence": {
         "heading": "Mitä hyväksyminen muuttaisi",

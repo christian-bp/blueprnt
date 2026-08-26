@@ -1875,7 +1875,7 @@
         "tab": "<num>{position}.</num> {chapter}",
         "nav": "Modellens kapitler",
         "progressBarLabel": "Hele modellens fremdrift",
-        "countRich": "<done></done> af <total></total>"
+        "countRich": "<done></done> af <total></total> opgaver"
       },
       "consequence": {
         "heading": "Hvad en godkendelse ville ændre",
