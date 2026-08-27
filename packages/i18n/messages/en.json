@@ -2102,7 +2102,6 @@
         "anchorsLabel": "Assessment anchors",
         "motivationLabel": "Motivation",
         "statusDraft": "Draft",
-        "statusFinal": "Final",
         "contentsTitle": "Contents",
         "generatedOn": "Generated on {date}",
         "model": "Model: {name}",

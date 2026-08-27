@@ -2102,7 +2102,6 @@
         "anchorsLabel": "Bedömningsankare",
         "motivationLabel": "Motivering",
         "statusDraft": "Utkast",
-        "statusFinal": "Slutgiltig",
         "contentsTitle": "Innehåll",
         "generatedOn": "Genererad den {date}",
         "model": "Modell: {name}",

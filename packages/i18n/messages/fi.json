@@ -2102,7 +2102,6 @@
         "anchorsLabel": "Arviointiankkurit",
         "motivationLabel": "Perustelu",
         "statusDraft": "Luonnos",
-        "statusFinal": "Lopullinen",
         "contentsTitle": "Sisältö",
         "generatedOn": "Luotu {date}",
         "model": "Malli: {name}",

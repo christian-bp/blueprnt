@@ -10,7 +10,6 @@ import {
 import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
 import { ZONE_KEYS } from "@workspace/core"
 import { pdf } from "@react-pdf/renderer"
-import { Badge } from "@workspace/ui/components/badge"
 import {
   Card,
   CardAction,
@@ -188,10 +187,14 @@ export function MethodAppendixDownload({ orgId }: { orgId: string }) {
           </HelpMorphButton>
         </CardTitle>
         <CardAction className="flex items-center gap-2">
-          {data != null && (
-            <Badge variant={final ? "success" : "outline"}>
-              {final ? t("statusFinal") : t("statusDraft")}
-            </Badge>
+          {/* Only the DRAFT state speaks, as a muted word: it is the caveat
+              worth knowing before sharing the export. A final document is
+              the ordinary end-state and needs no announcement (the PDF's own
+              cover still carries its stamp). */}
+          {data != null && !final && (
+            <span className="text-muted-foreground text-sm">
+              {t("statusDraft")}
+            </span>
           )}
           <SubmitButton
             type="button"

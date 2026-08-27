@@ -2102,7 +2102,6 @@
         "anchorsLabel": "Vurderingsankere",
         "motivationLabel": "Begrunnelse",
         "statusDraft": "Utkast",
-        "statusFinal": "Endelig",
         "contentsTitle": "Innhold",
         "generatedOn": "Generert den {date}",
         "model": "Modell: {name}",
