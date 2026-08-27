@@ -179,10 +179,12 @@ export function MethodAppendixDownload({ orgId }: { orgId: string }) {
     // the export as the card's action. A bare "download as PDF" button said
     // how without saying what.
     <Card>
-      {/* Centred rather than the vendor's top-aligned header: that default is
-          for a header whose title has a description under it, and this one is
-          a single line beside a button. Overridden here, at the call site,
-          because the deviation belongs to this card's own shape. */}
+      {/* A ONE-ROW header, centred. Both overrides exist because the vendor
+          header is shaped for a title with a description under it: it
+          top-aligns, and its action spans two grid rows. With no description
+          the action's span invents an empty second row, which left the title
+          sitting in the short first row while the button spanned both. The
+          action is held to one row and the row centres. */}
       <CardHeader className="items-center">
         <CardTitle className="flex items-center gap-1.5">
           {t("docTitle")}
@@ -190,7 +192,7 @@ export function MethodAppendixDownload({ orgId }: { orgId: string }) {
             {tHelp("methodAppendixBody")}
           </HelpMorphButton>
         </CardTitle>
-        <CardAction className="flex items-center gap-2 self-center">
+        <CardAction className="row-span-1 flex items-center gap-2 self-center">
           {/* Only the DRAFT state speaks, as a muted word: it is the caveat
               worth knowing before sharing the export. A final document is
               the ordinary end-state and needs no announcement (the PDF's own
