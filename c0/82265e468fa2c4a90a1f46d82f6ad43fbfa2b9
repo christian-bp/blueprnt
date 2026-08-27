@@ -1,0 +1,19 @@
+apps/dashboard/components/pdf/method-appendix-download.tsx
+  s_58dd112dc09435::t_5521c607ff30b9 190-197
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "c082265e468fa2c4a90a1f46d82f6ad43fbfa2b9",
+  "prompts": {},
+  "sessions": {
+    "s_58dd112dc09435": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fa9234c9-9d34-4ad4-8b39-9870c21b9cac",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
