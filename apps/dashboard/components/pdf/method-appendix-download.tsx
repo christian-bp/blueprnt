@@ -179,14 +179,18 @@ export function MethodAppendixDownload({ orgId }: { orgId: string }) {
     // the export as the card's action. A bare "download as PDF" button said
     // how without saying what.
     <Card>
-      <CardHeader>
+      {/* Centred rather than the vendor's top-aligned header: that default is
+          for a header whose title has a description under it, and this one is
+          a single line beside a button. Overridden here, at the call site,
+          because the deviation belongs to this card's own shape. */}
+      <CardHeader className="items-center">
         <CardTitle className="flex items-center gap-1.5">
           {t("docTitle")}
           <HelpMorphButton label={tHelp("methodAppendixLabel")}>
             {tHelp("methodAppendixBody")}
           </HelpMorphButton>
         </CardTitle>
-        <CardAction className="flex items-center gap-2">
+        <CardAction className="flex items-center gap-2 self-center">
           {/* Only the DRAFT state speaks, as a muted word: it is the caveat
               worth knowing before sharing the export. A final document is
               the ordinary end-state and needs no announcement (the PDF's own
