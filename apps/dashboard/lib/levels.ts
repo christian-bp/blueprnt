@@ -1,4 +1,4 @@
-import type { ZoneKey } from "@workspace/core"
+import { SCORE_SCALE_MAX, type ZoneKey } from "@workspace/core"
 import type { ProfileFailure } from "@/lib/calibration-queue"
 
 // The shape the level Overview components consume. It is a structural subset
@@ -47,8 +47,9 @@ export interface LevelRange {
 
 // The closed [min,max] weighting range each level covers, derived from the
 // model's level thresholds (minScore is the inclusive lower bound). Level 1 is
-// the highest level and tops out at 100; every other level's max is one below
-// the next-higher level's minScore. Pure so it stays unit-testable.
+// the highest level and tops out at the scale's own ceiling; every other
+// level's max is one below the next-higher level's minScore. Pure so it stays
+// unit-testable.
 export function levelRanges(
   levels: { level: number; minScore: number }[]
 ): LevelRange[] {
@@ -58,7 +59,7 @@ export function levelRanges(
     return {
       level: threshold.level,
       min: threshold.minScore,
-      max: prevLevel ? prevLevel.minScore - 1 : 100,
+      max: prevLevel ? prevLevel.minScore - 1 : SCORE_SCALE_MAX,
     }
   })
 }
