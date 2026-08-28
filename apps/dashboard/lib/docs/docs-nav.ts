@@ -45,6 +45,7 @@ export const DOCS_NAV: DocsSection[] = [
     pages: [
       "evaluating-a-role",
       "score-and-levels",
+      "levels-and-zones",
       "adjusting-a-rating",
       "levels-views",
     ],
