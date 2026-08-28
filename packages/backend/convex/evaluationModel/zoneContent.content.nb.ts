@@ -40,7 +40,7 @@ export const zoneContentNb: ZoneContent = {
       shortName: "Profesjonell kjerne",
       name: "Profesjonelle og støttende roller med mer avgrenset påvirkning",
       character:
-        "Har tydelige og relevante krav, men normalt mer avgrenset rekkevidde, lavere beslutningsnivå eller mer etablerte rammer.",
+        "Har tydelige og relevante krav, men normalt mer avgrenset rekkevidde, lavere beslutningsmyndighet eller mer etablerte rammer.",
       typicalProfile:
         "Profesjonelle roller, koordinerende roller, administrativ støtte og operative roller.",
       summary: "Tydelige og relevante, men normalt mer avgrensede, rollekrav.",

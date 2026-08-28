@@ -103,7 +103,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Är djup specialistkunskap ett område ni vill lägga särskild vikt vid i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av specialistkunskapsdjup kräver rollen normalt och varaktigt?",
+        "Vilken grad av specialistkunskapsdjup kräver rollen normalt och varaktigt?",
       anchor1:
         "Etablerad och väldokumenterad fackkunskap inom ett tydligt avgränsat område. Kända metoder räcker för välbekanta frågor.",
       anchor3:
@@ -128,7 +128,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Är förmågan att förena flera kunskapsområden central för hur verksamheten skapar värde?",
       assessmentQuestion:
-        "Vilken nivå av tvärdisciplinär bredd kräver rollen normalt och varaktigt?",
+        "Vilken grad av tvärdisciplinär bredd kräver rollen normalt och varaktigt?",
       anchor1:
         "Ett huvudsakligt kunskapsområde används. Kopplingar till andra områden behövs sällan.",
       anchor3:
@@ -152,7 +152,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Ska obligatoriska legitimationer, behörigheter eller certifieringar få genomslag i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av formell kvalifikation, legitimation eller certifiering kräver rollen normalt och varaktigt?",
+        "Vilken grad av formell kvalifikation, legitimation eller certifiering kräver rollen normalt och varaktigt?",
       anchor1:
         "Inget obligatoriskt krav, eller ett grundläggande och tydligt avgränsat krav med begränsad förnyelse eller omfattning.",
       anchor3:
@@ -177,7 +177,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Vill ni väga in hur mycket verksamhets- och branschkunskap som behövs inom olika områden?",
       assessmentQuestion:
-        "Vilken nivå av domän- och verksamhetskunskap kräver rollen normalt och varaktigt?",
+        "Vilken grad av domän- och verksamhetskunskap kräver rollen normalt och varaktigt?",
       anchor1:
         "Kunskap om en tydligt avgränsad produkt-, process- eller kundkontext.",
       anchor3:
@@ -202,7 +202,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Är kvalificerad rådgivning och professionellt omdöme något ni vill ge tyngd i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av rådgivnings- och omdömeskompetens kräver rollen normalt och varaktigt?",
+        "Vilken grad av rådgivnings- och omdömeskompetens kräver rollen normalt och varaktigt?",
       anchor1:
         "Underlag eller okomplicerade råd inom ett tydligt avgränsat område, med stöd av etablerad vägledning.",
       anchor3:
@@ -227,7 +227,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Vill ni ta hänsyn till graden av otydlighet och svårighetsgrad i de frågor verksamheten behöver hantera?",
       assessmentQuestion:
-        "Vilken nivå av komplexitet och otydlighet hanterar rollen normalt och varaktigt?",
+        "Vilken grad av komplexitet och otydlighet hanterar rollen normalt och varaktigt?",
       anchor1:
         "Tydligt definierade frågor, etablerade metoder och förutsägbara situationer.",
       anchor2:
@@ -256,7 +256,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Ska omfattningen av systematiskt analys- och problemlösningsarbete få betydelse i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av analytisk och problemlösande ansträngning bär rollen normalt och varaktigt?",
+        "Vilken grad av analytisk och problemlösande ansträngning bär rollen normalt och varaktigt?",
       anchor1:
         "Okomplicerad analys eller felsökning i en tydligt avgränsad fråga, enligt etablerade steg.",
       anchor3:
@@ -281,7 +281,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Ska kvalificerad kommunikation, förhandling och hantering av motstridiga intressen få betydelse i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av kommunikations- och relationsansträngning bär rollen normalt och varaktigt?",
+        "Vilken grad av kommunikations- och relationsansträngning bär rollen normalt och varaktigt?",
       anchor1:
         "Tydligt avgränsad och till största delen rutinmässig kommunikation med etablerade motparter.",
       anchor3:
@@ -306,7 +306,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Vill ni väga in krav på att hantera flera samtidiga flöden och prioritera löpande?",
       assessmentQuestion:
-        "Vilken nivå av operativ intensitet och simultankrav bär rollen normalt och varaktigt?",
+        "Vilken grad av operativ intensitet och simultankrav bär rollen normalt och varaktigt?",
       anchor1:
         "Ett flöde eller en uppgift i taget inom en tydligt avgränsad rytm.",
       anchor3:
@@ -331,7 +331,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Ska återkommande fysisk belastning, precision eller uthållig koncentration få betydelse i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av fysisk eller sensorisk ansträngning bär rollen normalt och varaktigt?",
+        "Vilken grad av fysisk eller sensorisk ansträngning bär rollen normalt och varaktigt?",
       anchor1:
         "Lätta och tillfälliga fysiska eller sensoriska krav inom en tydligt avgränsad uppgift.",
       anchor3:
@@ -384,7 +384,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Ska graden av självständigt beslutsmandat få betydelse i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av autonomi och beslutsmandat har rollen normalt och varaktigt?",
+        "Vilken grad av autonomi och beslutsmandat har rollen normalt och varaktigt?",
       anchor1:
         "Begränsat mandat att välja mellan tydligt angivna alternativ inom etablerade instruktioner.",
       anchor3:
@@ -409,7 +409,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Är skillnader i de följder fel eller brister kan få relevanta att väga in i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av risk och konsekvens bär rollens beslut och arbete normalt och varaktigt?",
+        "Vilken grad av risk och konsekvens bär rollens beslut och arbete normalt och varaktigt?",
       anchor1:
         "Fel eller brister har normalt begränsade och lätt korrigerbara följder inom ett avgränsat område.",
       anchor2:
@@ -438,7 +438,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Ska ansvar för att leda människor eller verksamhetsdelar genom andra få betydelse i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av personal- och ledningsansvar bär rollen normalt och varaktigt?",
+        "Vilken grad av personal- och ledningsansvar bär rollen normalt och varaktigt?",
       anchor1:
         "Begränsat ansvar för att samordna andras arbete inom ett tydligt avgränsat område. Inget varaktigt ansvar för riktning, leverans eller medarbetares utveckling.",
       anchor3:
@@ -463,7 +463,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Vill ni lägga vikt vid ansvar för att prioritera begränsade resurser mellan olika behov i verksamheten?",
       assessmentQuestion:
-        "Vilken nivå av resurs- och kapacitetsansvar bär rollen normalt och varaktigt?",
+        "Vilken grad av resurs- och kapacitetsansvar bär rollen normalt och varaktigt?",
       anchor1:
         "Prioritering inom en liten och tydligt avgränsad uppsättning resurser, där effekten av valen är begränsad och lätt att korrigera.",
       anchor3:
@@ -487,7 +487,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Är ansvar för kunder, intäkter eller affärsresultat något ni vill ge särskild tyngd i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av affärs- och kundansvar bär rollen normalt och varaktigt?",
+        "Vilken grad av affärs- och kundansvar bär rollen normalt och varaktigt?",
       anchor1:
         "Stöd till en etablerad kundrelation eller affärsaktivitet inom ett avgränsat konto eller område.",
       anchor3:
@@ -512,7 +512,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Ska formellt ansvar för kontroll, skydd och regelefterlevnad vägas in i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av informations-, säkerhets- eller regelefterlevnadsansvar bär rollen normalt och varaktigt?",
+        "Vilken grad av informations-, säkerhets- eller regelefterlevnadsansvar bär rollen normalt och varaktigt?",
       anchor1:
         "Etablerade kontrollrutiner följs inom ett tydligt avgränsat område, utan självständigt kontrollansvar.",
       anchor3:
@@ -537,7 +537,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Är arbete under särskilda säkerhets- eller exponeringsförhållanden något ni vill ta hänsyn till i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av säkerhet och exponering arbetar rollen normalt och varaktigt under?",
+        "Vilken grad av säkerhet och exponering arbetar rollen normalt och varaktigt under?",
       anchor1:
         "Enstaka och låg exponering under tydligt avgränsade förhållanden med standardiserade skyddsåtgärder.",
       anchor3:
@@ -562,7 +562,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Är återkommande jour, beredskap eller krav på snabb tillgänglighet en arbetsförutsättning ni vill ta hänsyn till i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av jour, beredskap och tillgänglighet bär rollen normalt och varaktigt?",
+        "Vilken grad av jour, beredskap och tillgänglighet bär rollen normalt och varaktigt?",
       anchor1: "Enstaka och tydligt avgränsad beredskap med låg frekvens.",
       anchor3:
         "Etablerad och återkommande beredskap eller tillgänglighet utanför ordinarie arbetstid.",
@@ -586,7 +586,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Vill ni väga in varaktiga krav på oregelbundna tider, resor eller platsbundet arbete?",
       assessmentQuestion:
-        "Vilken nivå av oregelbundenhet, mobilitet eller platsbundenhet bär rollen normalt och varaktigt?",
+        "Vilken grad av oregelbundenhet, mobilitet eller platsbundenhet bär rollen normalt och varaktigt?",
       anchor1:
         "Återkommande men begränsade krav på oregelbundna tider, resor eller platsbundet arbete.",
       anchor3:
@@ -611,7 +611,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
       controlQuestion:
         "Ska arbete under särskilda åtkomst-, sekretess- eller säkerhetsrestriktioner få betydelse i synen på likvärdighet?",
       assessmentQuestion:
-        "Vilken nivå av säkerhets-, sekretess- eller kontrollrestriktion arbetar rollen normalt och varaktigt under?",
+        "Vilken grad av säkerhets-, sekretess- eller kontrollrestriktion arbetar rollen normalt och varaktigt under?",
       anchor1:
         "Enstaka och tydligt avgränsade åtkomst- eller sekretessrestriktioner på låg nivå.",
       anchor3:

@@ -49,6 +49,40 @@ in the same change.
 
 ## Content and localization
 
+- [x] **Cross-locale read of the criteria library and the zone content.** Done
+  2026-08-28 under the in-house ownership policy: nb, da and fi read against sv
+  and en, criterion by criterion. Fixed: a Norwegian misspelling on a
+  working-conditions criterion (5 occurrences), a neuter-agreement error and a
+  stutter; 26 missing Danish startkommas, a criterion renamed from a weight
+  metaphor that collided with the weight-points term, and a dimension whose
+  Danish word meant influence exerted rather than impact borne; a Finnish false
+  friend where a person's reachability was rendered as stock availability, a
+  reversed subject and object that inverted a guidance sentence, a partitive
+  agreement error, the deprecated gender-marked term for a manager in a
+  pay-equity product, and one mandate concept that had fragmented into four
+  words. Three zone descriptions had reintroduced the locale's own LEVEL word
+  in the text that renders beside the numbered ladder, which en and sv had
+  deliberately avoided; the Finnish module's own header states the rule its
+  text was breaking.
+
+  Found in the same pass and fixed across en, sv, nb and da: twenty of the
+  twenty-one assessment questions opened with the locale's level word for a
+  question whose answer is a step, which CLAUDE.md forbids conflating. That was
+  an authoring defect in the source pair that the derived locales had copied
+  faithfully; fi was the only locale that had avoided it.
+
+- [ ] **Decide what the remaining native-review entries mean.** The entries
+  below predate the in-house ownership policy (decision 2026-08-21), which
+  states that there is no native reviewer and that the agent authoring a string
+  owns its production quality in every locale. They are therefore asking for a
+  reviewer the policy says does not exist. Either read each namespace under the
+  policy the way the criteria library was just read, or retire them as
+  superseded. The 2026-08-28 pass did NOT reach any of them: it covered the
+  criteria library, the zone content and the role-evaluation program's own
+  strings, not 2FA, account settings, organization settings, the role-slug
+  error, the compliance-dialog acknowledgements, the overview greeting and
+  to-do, the side card and charts, or the CRUD toasts.
+
 - [ ] **Native review of machine-translated locale drafts.** The 2FA strings in
   `sv.json`, `nb.json`, `da.json`, `fi.json` (and any other drafts flagged in
   commits) were machine-drafted from English. Have a native speaker review

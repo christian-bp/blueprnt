@@ -24,7 +24,7 @@ export const zoneContentFi: ZoneContent = {
       character:
         "Roolilla on laaja, pysyvä ja usein poikkitoiminnallinen vaikutus olennaiseen osaan liiketoimintaa.",
       typicalProfile:
-        "Toimintoa johtavat roolit, kokeneet esihenkilöt ja johtavat asiantuntijat, joilla on merkittävä valtuutus tai vastuu seurauksista.",
+        "Toimintoa johtavat roolit, kokeneet esihenkilöt ja johtavat asiantuntijat, joilla on merkittävä päätösvalta tai vastuu seurauksista.",
       summary: "Laaja ja pysyvä vaikutus olennaiseen osaan liiketoimintaa.",
     },
     C: {
@@ -40,7 +40,7 @@ export const zoneContentFi: ZoneContent = {
       shortName: "Ammatillinen ydin",
       name: "Ammatilliset roolit ja tukiroolit, joiden vaikutus on rajatumpi",
       character:
-        "Roolilla on selkeät ja relevantit vaatimukset, mutta tavallisesti rajatumpi vaikutusalue, matalampi päätöstaso tai vakiintuneemmat raamit.",
+        "Roolilla on selkeät ja relevantit vaatimukset, mutta tavallisesti rajatumpi vaikutusalue, matalampi päätösvalta tai vakiintuneemmat raamit.",
       typicalProfile:
         "Ammatilliset roolit, koordinoivat roolit, hallinnollinen tuki ja operatiiviset roolit.",
       summary:
@@ -62,7 +62,7 @@ export const zoneContentFi: ZoneContent = {
       upper: {
         label: "Vyöhykkeen yläosa",
         meaning:
-          "Rooli on arkkitehtuurin ylimmällä tasolla. Sen yläpuolella ei ole vyöhykettä, ja roolin vaikutusalue, monimutkaisuus, vastuu ja seuraukset ovat suurimmat, mitä malli kuvaa.",
+          "Rooli on arkkitehtuurin huipulla. Sen yläpuolella ei ole vyöhykettä, ja roolin vaikutusalue, monimutkaisuus, vastuu ja seuraukset ovat suurimmat, mitä malli kuvaa.",
       },
     },
     B: {

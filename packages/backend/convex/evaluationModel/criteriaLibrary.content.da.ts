@@ -24,7 +24,7 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       why: "Synliggør krævende arbejde, selv når rollen mangler formel ledelsesmagt.",
     },
     responsibility: {
-      name: "Ansvar og indflydelse",
+      name: "Ansvar og påvirkning",
       question:
         "Hvilken rækkevidde, hvilket mandat og hvilke konsekvenser har rollen?",
       why: "Fanger ansvar for beslutninger, resultater, risiko, mennesker, kvalitet og forretning.",
@@ -74,7 +74,7 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
   },
   criteria: {
     "knowledge-depth": {
-      name: "Videnstyngde og specialistniveau",
+      name: "Vidensdybde og specialistniveau",
       shortUiText: "Dyb specialistviden inden for et afgrænset fagområde.",
       fullDefinition:
         "Omfatter dyb faglig viden, specialistmetoder og relevant erfaring inden for ét hovedområde. Kriteriet vedrører, hvor avanceret viden skal være for at håndtere vanskelige spørgsmål inden for området. Det vedrører ikke videnbredde, formelle autorisationer, virksomhedskontekst eller rådgivning som selvstændigt område.",
@@ -83,13 +83,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Antallet af vidensområder, formel eksamen eller certificering i sig selv, viden om en bestemt branche eller organisation i sig selv, beslutningsmandat eller individuel præstation.",
       whenSuitable:
-        "Vælg når dyb specialistviden inden for et fagområde skal have særlig betydning i synet på ligeværdighed.",
+        "Vælg, når dyb specialistviden inden for et fagområde skal have særlig betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene for uddannelseskrav, bredt samarbejde mellem flere fagområder eller rådgivning. Vurder i stedet, om et af de nærliggende kriterier bedre fanger det, virksomheden vil prioritere.",
       controlQuestion:
         "Er dyb specialistviden et område, I vil lægge særlig vægt på i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af specialistvidensdybde kræver rollen normalt og varigt?",
+        "Hvilken grad af specialistvidensdybde kræver rollen normalt og varigt?",
       anchor1:
         "Etableret og veldokumenteret faglig viden inden for et tydeligt afgrænset område. Kendte metoder rækker til velkendte spørgsmål.",
       anchor3:
@@ -108,13 +108,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Dyb specialistviden inden for ét område, antal møder, interessenter eller kontaktflader, organisatorisk rækkevidde.",
       whenSuitable:
-        "Vælg når helhedssyn og evnen til at forene flere vidensområder skal have betydning i synet på ligeværdighed.",
+        "Vælg, når helhedssyn og evnen til at forene flere vidensområder skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene for mange kontaktflader. Handler det først og fremmest om dyb faglig viden inden for ét område, rammer 7.1 bedre.",
       controlQuestion:
         "Er evnen til at forene flere vidensområder central for, hvordan virksomheden skaber værdi?",
       assessmentQuestion:
-        "Hvilket niveau af tværfaglig bredde kræver rollen normalt og varigt?",
+        "Hvilken grad af tværfaglig bredde kræver rollen normalt og varigt?",
       anchor1:
         "Ét hovedvidensområde anvendes. Koblinger til andre områder er sjældent nødvendige.",
       anchor3:
@@ -133,13 +133,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Generelt uddannelsesniveau, frivillige kurser, prestigefyldt eksamen uden krav om godkendelse.",
       whenSuitable:
-        "Vælg når obligatoriske autorisationer, godkendelser eller certificeringer skal have betydning i synet på ligeværdighed.",
+        "Vælg, når obligatoriske autorisationer, godkendelser eller certificeringer skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Vælg ikke når uddannelse først og fremmest er en vej til viden, som 7.1 Videnstyngde og specialistniveau allerede fanger.",
+        "Vælg ikke, når uddannelse først og fremmest er en vej til viden, som 7.1 Vidensdybde og specialistniveau allerede fanger.",
       controlQuestion:
         "Skal obligatoriske autorisationer, godkendelser eller certificeringer slå igennem i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af formel kvalifikation, autorisation eller certificering kræver rollen normalt og varigt?",
+        "Hvilken grad af formel kvalifikation, autorisation eller certificering kræver rollen normalt og varigt?",
       anchor1:
         "Intet obligatorisk krav, eller et grundlæggende og tydeligt afgrænset krav med begrænset fornyelse eller omfang.",
       anchor3:
@@ -158,13 +158,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Almen faglig dygtighed, almindeligt organisationskendskab, formel godkendelse.",
       whenSuitable:
-        "Vælg når specifik viden om virksomhedens sammenhæng skal have betydning i synet på ligeværdighed.",
+        "Vælg, når specifik viden om virksomhedens sammenhæng skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Vælg ikke når generel faglig viden og almindelig introduktion rækker til at forstå virksomhedens sammenhæng.",
+        "Vælg ikke, når generel faglig viden og almindelig introduktion rækker til at forstå virksomhedens sammenhæng.",
       controlQuestion:
         "Vil I veje ind, hvor meget virksomheds- og branchekendskab der er brug for inden for forskellige områder?",
       assessmentQuestion:
-        "Hvilket niveau af domæne- og forretningsviden kræver rollen normalt og varigt?",
+        "Hvilken grad af domæne- og forretningsviden kræver rollen normalt og varigt?",
       anchor1:
         "Viden om en tydeligt afgrænset produkt-, proces- eller kundekontekst.",
       anchor3:
@@ -183,13 +183,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Formelt beslutningsmandat, at dele generel information, specialistviden i sig selv.",
       whenSuitable:
-        "Vælg når kvalificeret rådgivning og faglig vurdering skal have særlig betydning i synet på ligeværdighed.",
+        "Vælg, når kvalificeret rådgivning og faglig vurdering skal have særlig betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene for videndeling eller rutinemæssige svar. Rådgivningen skal have tydelig betydning for valg eller beslutninger.",
       controlQuestion:
         "Er kvalificeret rådgivning og faglig vurdering noget, I vil give vægt i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af rådgivnings- og vurderingskompetence kræver rollen normalt og varigt?",
+        "Hvilken grad af rådgivnings- og vurderingskompetence kræver rollen normalt og varigt?",
       anchor1:
         "Grundlag eller ukomplicerede råd inden for et tydeligt afgrænset område, med støtte i etableret vejledning.",
       anchor3:
@@ -208,13 +208,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Omfanget af analysearbejde, høj arbejdsmængde eller tempo, specialistviden i sig selv.",
       whenSuitable:
-        "Vælg når håndtering af vanskelige, uklare eller mangesidede spørgsmål skal have betydning i synet på ligeværdighed.",
+        "Vælg, når håndtering af vanskelige, uklare eller mangesidede spørgsmål skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene for omfattende analyse eller mange samtidige opgaver. Disse fanges af henholdsvis 8.2 og 8.4, hvis de vælges.",
       controlQuestion:
         "Vil I tage hensyn til graden af uklarhed og sværhedsgrad i de spørgsmål, virksomheden skal håndtere?",
       assessmentQuestion:
-        "Hvilket niveau af kompleksitet og uklarhed håndterer rollen normalt og varigt?",
+        "Hvilken grad af kompleksitet og uklarhed håndterer rollen normalt og varigt?",
       anchor1:
         "Tydeligt definerede spørgsmål, etablerede metoder og forudsigelige situationer.",
       anchor2:
@@ -237,13 +237,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Uklarhed i selve problemet, specialistviden i sig selv, midlertidig høj arbejdsmængde.",
       whenSuitable:
-        "Vælg når systematisk analyse- og problemløsningsarbejde skal have betydning i synet på ligeværdighed.",
+        "Vælg, når systematisk analyse- og problemløsningsarbejde skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene for uklare spørgsmål. Der skal være et tilbagevendende og tydeligt element af analyse, fejlfinding eller diagnostik.",
       controlQuestion:
         "Skal omfanget af systematisk analyse- og problemløsningsarbejde have betydning i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af analytisk og problemløsende indsats bærer rollen normalt og varigt?",
+        "Hvilken grad af analytisk og problemløsende indsats bærer rollen normalt og varigt?",
       anchor1:
         "Ukompliceret analyse eller fejlfinding i et tydeligt afgrænset spørgsmål efter etablerede trin.",
       anchor3:
@@ -262,13 +262,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Antal kontakter eller møder, kunde- eller indtægtsansvar, organisatorisk rækkevidde.",
       whenSuitable:
-        "Vælg når kvalificeret kommunikation, forhandling og håndtering af modstridende interesser skal have betydning i synet på ligeværdighed.",
+        "Vælg, når kvalificeret kommunikation, forhandling og håndtering af modstridende interesser skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene for mange møder eller kundekontakter. Sværhedsgraden i kommunikationen skal være det, der prioriteres.",
       controlQuestion:
         "Skal kvalificeret kommunikation, forhandling og håndtering af modstridende interesser have betydning i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af kommunikations- og relationsindsats bærer rollen normalt og varigt?",
+        "Hvilken grad af kommunikations- og relationsindsats bærer rollen normalt og varigt?",
       anchor1:
         "Tydeligt afgrænset og hovedsagelig rutinemæssig kommunikation med etablerede modparter.",
       anchor3:
@@ -287,13 +287,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Midlertidig høj arbejdsbelastning, underbemanding, kompleksitet i selve sagen.",
       whenSuitable:
-        "Vælg når håndtering og prioritering af flere samtidige strømme skal have betydning i synet på ligeværdighed.",
+        "Vælg, når håndtering og prioritering af flere samtidige strømme skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke for at kompensere for midlertidige arbejdsspidser eller ressourcemangel. Kravet skal være en varig del af virksomhedens arbejdsmåde.",
       controlQuestion:
         "Vil I veje krav om at håndtere flere samtidige strømme og prioritere løbende ind?",
       assessmentQuestion:
-        "Hvilket niveau af operationel intensitet og samtidighedskrav bærer rollen normalt og varigt?",
+        "Hvilken grad af operationel intensitet og samtidighedskrav bærer rollen normalt og varigt?",
       anchor1:
         "Én strøm eller én opgave ad gangen inden for en tydeligt afgrænset rytme.",
       anchor3:
@@ -312,13 +312,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Risikomiljø eller eksponering, almindelig stress, konsekvenser af fejl.",
       whenSuitable:
-        "Vælg når fysisk belastning, præcision eller sensorisk koncentration skal have betydning i synet på ligeværdighed.",
+        "Vælg, når fysisk belastning, præcision eller sensorisk koncentration skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene for risiko i arbejdsmiljøet. Er eksponering og beskyttelsesforanstaltninger det centrale, passer 10.1 bedre.",
       controlQuestion:
         "Skal tilbagevendende fysisk belastning, præcision eller vedvarende koncentration have betydning i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af fysisk eller sensorisk anstrengelse bærer rollen normalt og varigt?",
+        "Hvilken grad af fysisk eller sensorisk anstrengelse bærer rollen normalt og varigt?",
       anchor1:
         "Lette og enkeltstående fysiske eller sensoriske krav inden for en tydeligt afgrænset opgave.",
       anchor3:
@@ -336,7 +336,7 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Formelt personaleansvar, beslutningsmandat, ressource- eller budgetansvar i sig selv.",
       whenSuitable:
-        "Vælg når rækkevidden af resultater og påvirkning skal have betydning i synet på ligeværdighed.",
+        "Vælg, når rækkevidden af resultater og påvirkning skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene for titel, ledelsesniveau, budgetstørrelse eller beslutningsret. Vurder, om et af de separate ansvarskriterier bedre fanger det, der skal prioriteres.",
       controlQuestion:
@@ -365,13 +365,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Rækkevidden af resultater eller påvirkning, konsekvensen af forkerte beslutninger, personale-, ressource- eller kundeansvar i sig selv, virksomhedens interne godkendelsesprocesser eller former for samråd.",
       whenSuitable:
-        "Vælg når selvstændigt beslutningsmandat skal have betydning i synet på ligeværdighed.",
+        "Vælg, når selvstændigt beslutningsmandat skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke for at beskrive, hvor langt beslutningens effekt når, hvilke følger en fejl kan få, eller hvilken type ansvar beslutningen angår. Det fanges af andre ansvarskriterier, hvis de vælges.",
       controlQuestion:
         "Skal graden af selvstændigt beslutningsmandat have betydning i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af autonomi og beslutningsmandat har rollen normalt og varigt?",
+        "Hvilken grad af autonomi og beslutningsmandat har rollen normalt og varigt?",
       anchor1:
         "Begrænset mandat til at vælge mellem tydeligt angivne alternativer inden for etablerede instrukser.",
       anchor3:
@@ -390,13 +390,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Individets oplevede stress, budgetstørrelse i sig selv, formelt kontrolansvar.",
       whenSuitable:
-        "Vælg når forskelle i mulige følger af fejl og mangler skal have betydning i synet på ligeværdighed.",
+        "Vælg, når forskelle i mulige følger af fejl og mangler skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke for at beskrive, hvor presset eller krævende noget opleves. Vurder den saglige og mulige følge, hvis noget går galt.",
       controlQuestion:
         "Er forskelle i de følger, fejl eller mangler kan få, relevante at veje ind i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af risiko og konsekvens bærer rollens beslutninger og arbejde normalt og varigt?",
+        "Hvilken grad af risiko og konsekvens bærer rollens beslutninger og arbejde normalt og varigt?",
       anchor1:
         "Fejl eller mangler har normalt begrænsede og let korrigerbare følger inden for et afgrænset område.",
       anchor2:
@@ -419,13 +419,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Specialistindflydelse uden ansvar for andres arbejde eller for en del af virksomheden, midlertidig koordinering af enkeltopgaver, projektledelse uden varigt ansvar for mennesker eller en del af virksomheden, eget beslutningsmandat uden ansvar for at skabe resultater gennem andre.",
       whenSuitable:
-        "Vælg når ansvar for at lede mennesker eller dele af virksomheden gennem andre skal have betydning i synet på ligeværdighed.",
+        "Vælg, når ansvar for at lede mennesker eller dele af virksomheden gennem andre skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene fordi koordinering, specialiststøtte eller projektledelse forekommer. Der skal være et varigt ansvar for retning, prioriteringer, leverance eller udvikling gennem andre.",
       controlQuestion:
         "Skal ansvar for at lede mennesker eller dele af virksomheden gennem andre have betydning i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af personale- og ledelsesansvar bærer rollen normalt og varigt?",
+        "Hvilken grad af personale- og ledelsesansvar bærer rollen normalt og varigt?",
       anchor1:
         "Begrænset ansvar for at koordinere andres arbejde inden for et tydeligt afgrænset område. Intet varigt ansvar for retning, leverance eller medarbejdernes udvikling.",
       anchor3:
@@ -444,13 +444,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Ledelse eller udvikling af mennesker, rutinemæssig budgetopfølgning, indkøb inden for små faste rammer, forretningsresultat i sig selv.",
       whenSuitable:
-        "Vælg når ansvar for at prioritere begrænsede ressourcer mellem virksomhedens behov skal have betydning i synet på ligeværdighed.",
+        "Vælg, når ansvar for at prioritere begrænsede ressourcer mellem virksomhedens behov skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene for budgetopfølgning, indkøb eller koordinering af mennesker. Der skal være et varigt ansvar for afvejninger mellem konkurrerende behov og begrænsede ressourcer.",
       controlQuestion:
         "Vil I lægge vægt på ansvar for at prioritere begrænsede ressourcer mellem forskellige behov i virksomheden?",
       assessmentQuestion:
-        "Hvilket niveau af ressource- og kapacitetsansvar bærer rollen normalt og varigt?",
+        "Hvilken grad af ressource- og kapacitetsansvar bærer rollen normalt og varigt?",
       anchor1:
         "Prioritering inden for et lille og tydeligt afgrænset sæt af ressourcer, hvor effekten af valgene er begrænset og let at korrigere.",
       anchor3:
@@ -469,13 +469,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Kundekontakt i sig selv, individuel salgspræstation, forhandlingsdygtighed i sig selv.",
       whenSuitable:
-        "Vælg når ansvar for kunder, indtægter eller forretningsresultater skal have betydning i synet på ligeværdighed.",
+        "Vælg, når ansvar for kunder, indtægter eller forretningsresultater skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene for kundekontakt eller salg. Der skal være et varigt ansvar for kundeværdi, indtægter eller forretningsresultater.",
       controlQuestion:
         "Er ansvar for kunder, indtægter eller forretningsresultater noget, I vil give særlig vægt i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af forretnings- og kundeansvar bærer rollen normalt og varigt?",
+        "Hvilken grad af forretnings- og kundeansvar bærer rollen normalt og varigt?",
       anchor1:
         "Støtte til en etableret kunderelation eller forretningsaktivitet inden for en afgrænset konto eller et afgrænset område.",
       anchor3:
@@ -494,13 +494,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Almindelig risikobevidsthed, at følge rutiner, som en anden har ansvar for, konsekvensen hvis der opstår fejl.",
       whenSuitable:
-        "Vælg når formelt ansvar for kontrol, beskyttelse og efterlevelse skal have betydning i synet på ligeværdighed.",
+        "Vælg, når formelt ansvar for kontrol, beskyttelse og efterlevelse skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Vælg ikke når området kun omfatter at følge etablerede kontrolrutiner. Der skal være et tydeligt ansvar for, at kontroller og krav fungerer.",
+        "Vælg ikke, når området kun omfatter at følge etablerede kontrolrutiner. Der skal være et tydeligt ansvar for, at kontroller og krav fungerer.",
       controlQuestion:
         "Skal formelt ansvar for kontrol, beskyttelse og efterlevelse vejes ind i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af informations-, sikkerheds- eller regelefterlevelsesansvar bærer rollen normalt og varigt?",
+        "Hvilken grad af informations-, sikkerheds- eller regelefterlevelsesansvar bærer rollen normalt og varigt?",
       anchor1:
         "Etablerede kontrolrutiner følges inden for et tydeligt afgrænset område, uden selvstændigt kontrolansvar.",
       anchor3:
@@ -519,13 +519,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Fysisk eller sensorisk anstrengelse i sig selv, formelt sikkerhedsansvar, forretningsmæssig eller organisatorisk risiko.",
       whenSuitable:
-        "Vælg når særlige sikkerheds- og eksponeringsforhold skal have betydning i synet på ligeværdighed.",
+        "Vælg, når særlige sikkerheds- og eksponeringsforhold skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene for sikkerhedsansvar eller beslutningsrisiko. Det skal handle om faktisk og varig eksponering i virksomhedens miljøer.",
       controlQuestion:
         "Er arbejde under særlige sikkerheds- eller eksponeringsforhold noget, I vil tage hensyn til i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af sikkerhed og eksponering arbejder rollen normalt og varigt under?",
+        "Hvilken grad af sikkerhed og eksponering arbejder rollen normalt og varigt under?",
       anchor1:
         "Enkeltstående og lav eksponering under tydeligt afgrænsede forhold med standardiserede beskyttelsesforanstaltninger.",
       anchor3:
@@ -544,13 +544,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Midlertidigt overarbejde, uformelle forventninger om at svare, generelt høj arbejdsmængde.",
       whenSuitable:
-        "Vælg når vagt, beredskab eller krav om hurtig tilgængelighed skal have betydning i synet på ligeværdighed.",
+        "Vælg, når vagt, beredskab eller krav om hurtig tilgængelighed skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Vælg ikke når tilgængelighed kun opstår ved enkeltstående kriser eller mangler en tydelig og tilbagevendende forankring i virksomheden.",
+        "Vælg ikke, når tilgængelighed kun opstår ved enkeltstående kriser eller mangler en tydelig og tilbagevendende forankring i virksomheden.",
       controlQuestion:
         "Er tilbagevendende vagt, beredskab eller krav om hurtig tilgængelighed en arbejdsforudsætning, I vil tage hensyn til i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af rådighed, beredskab og tilgængelighed bærer rollen normalt og varigt?",
+        "Hvilken grad af rådighed, beredskab og tilgængelighed bærer rollen normalt og varigt?",
       anchor1:
         "Enkeltstående og tydeligt afgrænset beredskab med lav hyppighed.",
       anchor3:
@@ -569,13 +569,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Enkeltstående tjenesterejser, midlertidige projekter, vagt eller beredskab uden for arbejdstid.",
       whenSuitable:
-        "Vælg når uregelmæssige tider, mobilitet eller stedbundethed skal have betydning i synet på ligeværdighed.",
+        "Vælg, når uregelmæssige tider, mobilitet eller stedbundethed skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
-        "Vælg ikke når kravet er midlertidigt eller forekommer sjældent uden at være en stabil del af virksomhedens forudsætninger.",
+        "Vælg ikke, når kravet er midlertidigt eller forekommer sjældent uden at være en stabil del af virksomhedens forudsætninger.",
       controlQuestion:
         "Vil I veje varige krav om uregelmæssige tider, rejser eller stedbundet arbejde ind?",
       assessmentQuestion:
-        "Hvilket niveau af uregelmæssighed, mobilitet eller stedbundethed bærer rollen normalt og varigt?",
+        "Hvilken grad af uregelmæssighed, mobilitet eller stedbundethed bærer rollen normalt og varigt?",
       anchor1:
         "Tilbagevendende, men begrænsede krav om uregelmæssige tider, rejser eller stedbundet arbejde.",
       anchor3:
@@ -594,13 +594,13 @@ export const criteriaLibraryContentDa: CriteriaLibraryContent = {
       notMeasures:
         "Formelt ansvar for informationssikkerhed, almindelig tavshedspligt, almindelig risikobevidsthed.",
       whenSuitable:
-        "Vælg når særlige adgangs-, fortroligheds- eller sikkerhedsrestriktioner skal have betydning i synet på ligeværdighed.",
+        "Vælg, når særlige adgangs-, fortroligheds- eller sikkerhedsrestriktioner skal have betydning i synet på ligeværdighed.",
       whenNotSuitable:
         "Vælg ikke alene for fortrolig information. Begrænsningerne skal være særlige, tilbagevendende og påvirke, hvordan arbejdet kan udføres.",
       controlQuestion:
         "Skal arbejde under særlige adgangs-, fortroligheds- eller sikkerhedsrestriktioner have betydning i synet på ligeværdighed?",
       assessmentQuestion:
-        "Hvilket niveau af sikkerheds-, fortroligheds- eller kontrolrestriktion arbejder rollen normalt og varigt under?",
+        "Hvilken grad af sikkerheds-, fortroligheds- eller kontrolrestriktion arbejder rollen normalt og varigt under?",
       anchor1:
         "Enkeltstående og tydeligt afgrænsede adgangs- eller fortrolighedsrestriktioner på lavt niveau.",
       anchor3:

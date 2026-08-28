@@ -89,7 +89,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Er dyp spesialistkunnskap et område dere vil legge særlig vekt på i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av spesialistkunnskapsdybde krever rollen normalt og varig?",
+        "Hvilken grad av spesialistkunnskapsdybde krever rollen normalt og varig?",
       anchor1:
         "Etablert og veldokumentert fagkunnskap innenfor et tydelig avgrenset område. Kjente metoder er nok for velkjente spørsmål.",
       anchor3:
@@ -114,7 +114,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Er evnen til å forene flere kunnskapsområder sentral for hvordan virksomheten skaper verdi?",
       assessmentQuestion:
-        "Hvilket nivå av tverrfaglig bredde krever rollen normalt og varig?",
+        "Hvilken grad av tverrfaglig bredde krever rollen normalt og varig?",
       anchor1:
         "Ett hovedområde for kunnskap brukes. Koblinger til andre områder trengs sjelden.",
       anchor3:
@@ -139,7 +139,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Skal obligatoriske autorisasjoner, godkjenninger eller sertifiseringer slå gjennom i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av formell kvalifikasjon, autorisasjon eller sertifisering krever rollen normalt og varig?",
+        "Hvilken grad av formell kvalifikasjon, autorisasjon eller sertifisering krever rollen normalt og varig?",
       anchor1:
         "Ingen obligatoriske krav, eller et grunnleggende og tydelig avgrenset krav med begrenset fornyelse eller omfang.",
       anchor3:
@@ -164,7 +164,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Vil dere veie inn hvor mye virksomhets- og bransjekunnskap som trengs innenfor ulike områder?",
       assessmentQuestion:
-        "Hvilket nivå av domene- og virksomhetskunnskap krever rollen normalt og varig?",
+        "Hvilken grad av domene- og virksomhetskunnskap krever rollen normalt og varig?",
       anchor1:
         "Kunnskap om en tydelig avgrenset produkt-, prosess- eller kundekontekst.",
       anchor3:
@@ -189,7 +189,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Er kvalifisert rådgivning og faglig vurdering noe dere vil gi vekt i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av rådgivnings- og vurderingskompetanse krever rollen normalt og varig?",
+        "Hvilken grad av rådgivnings- og vurderingskompetanse krever rollen normalt og varig?",
       anchor1:
         "Grunnlag eller ukompliserte råd innenfor et tydelig avgrenset område, med støtte i etablert veiledning.",
       anchor3:
@@ -214,7 +214,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Vil dere ta hensyn til graden av uklarhet og vanskelighet i spørsmålene virksomheten må håndtere?",
       assessmentQuestion:
-        "Hvilket nivå av kompleksitet og uklarhet håndterer rollen normalt og varig?",
+        "Hvilken grad av kompleksitet og uklarhet håndterer rollen normalt og varig?",
       anchor1:
         "Tydelig definerte spørsmål, etablerte metoder og forutsigbare situasjoner.",
       anchor2:
@@ -243,7 +243,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Skal omfanget av systematisk analyse- og problemløsningsarbeid ha betydning i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av analytisk og problemløsende innsats bærer rollen normalt og varig?",
+        "Hvilken grad av analytisk og problemløsende innsats bærer rollen normalt og varig?",
       anchor1:
         "Ukomplisert analyse eller feilsøking i et tydelig avgrenset spørsmål, etter etablerte trinn.",
       anchor3:
@@ -268,7 +268,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Skal kvalifisert kommunikasjon, forhandling og håndtering av motstridende interesser ha betydning i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av kommunikasjons- og relasjonsinnsats bærer rollen normalt og varig?",
+        "Hvilken grad av kommunikasjons- og relasjonsinnsats bærer rollen normalt og varig?",
       anchor1:
         "Tydelig avgrenset og i hovedsak rutinemessig kommunikasjon med etablerte motparter.",
       anchor3:
@@ -293,7 +293,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Vil dere veie inn krav om å håndtere flere samtidige strømmer og prioritere løpende?",
       assessmentQuestion:
-        "Hvilket nivå av operativ intensitet og samtidighetskrav bærer rollen normalt og varig?",
+        "Hvilken grad av operativ intensitet og samtidighetskrav bærer rollen normalt og varig?",
       anchor1:
         "Én strøm eller én oppgave om gangen innenfor en tydelig avgrenset rytme.",
       anchor3:
@@ -310,15 +310,15 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       measures:
         "Fysisk og ergonomisk belastning, presisjonskrav, utholdende konsentrasjon med sansene.",
       notMeasures:
-        "Risikomiljø eller eksponering, allmenn stress, konsekvenser av feil.",
+        "Risikomiljø eller eksponering, allment stress, konsekvenser av feil.",
       whenSuitable:
         "Velg når fysisk belastning, presisjon eller sensorisk konsentrasjon skal ha betydning i synet på likeverdighet.",
       whenNotSuitable:
-        "Velg ikke bare for risiko i arbeidsmiljøet. Er eksponering og verneetiltak det sentrale, passer 10.1 bedre.",
+        "Velg ikke bare for risiko i arbeidsmiljøet. Er eksponering og vernetiltak det sentrale, passer 10.1 bedre.",
       controlQuestion:
         "Skal tilbakevendende fysisk belastning, presisjon eller utholdende konsentrasjon ha betydning i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av fysisk eller sensorisk anstrengelse bærer rollen normalt og varig?",
+        "Hvilken grad av fysisk eller sensorisk anstrengelse bærer rollen normalt og varig?",
       anchor1:
         "Lette og enkeltstående fysiske eller sensoriske krav innenfor en tydelig avgrenset oppgave.",
       anchor3:
@@ -371,7 +371,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Skal graden av selvstendig beslutningsmandat ha betydning i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av autonomi og beslutningsmandat har rollen normalt og varig?",
+        "Hvilken grad av autonomi og beslutningsmandat har rollen normalt og varig?",
       anchor1:
         "Begrenset mandat til å velge mellom tydelig angitte alternativer innenfor etablerte instrukser.",
       anchor3:
@@ -384,7 +384,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       shortUiText:
         "Alvoret i mulige følger av feil, mangler eller feilaktige beslutninger.",
       fullDefinition:
-        "Omfatter hvilke følger feil, mangler eller feilaktige beslutninger kan få for for eksempel kunder, kvalitet, økonomi, sikkerhet, informasjon, etterlevelse og tillit. Kriteriet gjelder følgen dersom noe går galt. Det gjelder ikke hvem som har det formelle ansvaret for å kontrollere at regler eller vern fungerer.",
+        "Omfatter hvilke følger feil, mangler eller feilaktige beslutninger kan få for eksempelvis kunder, kvalitet, økonomi, sikkerhet, informasjon, etterlevelse og tillit. Kriteriet gjelder følgen dersom noe går galt. Det gjelder ikke hvem som har det formelle ansvaret for å kontrollere at regler eller vern fungerer.",
       measures:
         "Konsekvenser for kunde, kvalitet og leveranse, konsekvenser for sikkerhet, informasjon og etterlevelse, økonomiske og omdømmemessige følger.",
       notMeasures:
@@ -396,7 +396,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Er forskjeller i de følgene feil eller mangler kan få relevante å veie inn i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av risiko og konsekvens bærer rollens beslutninger og arbeid normalt og varig?",
+        "Hvilken grad av risiko og konsekvens bærer rollens beslutninger og arbeid normalt og varig?",
       anchor1:
         "Feil eller mangler har normalt begrensede og lett korrigerbare følger innenfor et avgrenset område.",
       anchor2:
@@ -425,7 +425,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Skal ansvar for å lede mennesker eller virksomhetsdeler gjennom andre ha betydning i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av personal- og ledelsesansvar bærer rollen normalt og varig?",
+        "Hvilken grad av personal- og ledelsesansvar bærer rollen normalt og varig?",
       anchor1:
         "Begrenset ansvar for å samordne andres arbeid innenfor et tydelig avgrenset område. Ikke noe varig ansvar for retning, leveranse eller medarbeidernes utvikling.",
       anchor3:
@@ -450,7 +450,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Vil dere legge vekt på ansvar for å prioritere begrensede ressurser mellom ulike behov i virksomheten?",
       assessmentQuestion:
-        "Hvilket nivå av ressurs- og kapasitetsansvar bærer rollen normalt og varig?",
+        "Hvilken grad av ressurs- og kapasitetsansvar bærer rollen normalt og varig?",
       anchor1:
         "Prioritering innenfor et lite og tydelig avgrenset sett av ressurser, der effekten av valgene er begrenset og lett å korrigere.",
       anchor3:
@@ -475,7 +475,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Er ansvar for kunder, inntekter eller forretningsresultat noe dere vil gi særlig vekt i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av forretnings- og kundeansvar bærer rollen normalt og varig?",
+        "Hvilken grad av forretnings- og kundeansvar bærer rollen normalt og varig?",
       anchor1:
         "Støtte til en etablert kunderelasjon eller forretningsaktivitet innenfor en avgrenset konto eller et avgrenset område.",
       anchor3:
@@ -500,7 +500,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Skal formelt ansvar for kontroll, vern og etterlevelse veies inn i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av informasjons-, sikkerhets- eller regeletterlevelsesansvar bærer rollen normalt og varig?",
+        "Hvilken grad av informasjons-, sikkerhets- eller regeletterlevelsesansvar bærer rollen normalt og varig?",
       anchor1:
         "Etablerte kontrollrutiner følges innenfor et tydelig avgrenset område, uten selvstendig kontrollansvar.",
       anchor3:
@@ -513,9 +513,9 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       shortUiText:
         "Varig eksponering for fysiske, kjemiske, biologiske eller miljømessige risikoer.",
       fullDefinition:
-        "Omfatter tilbakevendende arbeid i miljøer med faktisk fysisk, kjemisk, biologisk eller miljømessig eksponering og krav om verneetiltak. Eksempler er støy, farlige stoffer, smitte, høyde, varme, kulde og farlige maskiner. Kriteriet gjelder arbeidsforholdet, ikke fysisk anstrengelse eller konsekvensen for virksomheten dersom noe går galt.",
+        "Omfatter tilbakevendende arbeid i miljøer med faktisk fysisk, kjemisk, biologisk eller miljømessig eksponering og krav om vernetiltak. Eksempler er støy, farlige stoffer, smitte, høyde, varme, kulde og farlige maskiner. Kriteriet gjelder arbeidsforholdet, ikke fysisk anstrengelse eller konsekvensen for virksomheten dersom noe går galt.",
       measures:
-        "Risikomiljø og faktisk eksponering, tilbakevendende behov for verneetiltak, særlige sikkerhetsforhold i miljøet.",
+        "Risikomiljø og faktisk eksponering, tilbakevendende behov for vernetiltak, særlige sikkerhetsforhold i miljøet.",
       notMeasures:
         "Fysisk eller sensorisk anstrengelse i seg selv, formelt sikkerhetsansvar, forretningsmessig eller organisatorisk risiko.",
       whenSuitable:
@@ -525,11 +525,11 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Er arbeid under særlige sikkerhets- eller eksponeringsforhold noe dere vil ta hensyn til i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av sikkerhet og eksponering arbeider rollen normalt og varig under?",
+        "Hvilken grad av sikkerhet og eksponering arbeider rollen normalt og varig under?",
       anchor1:
-        "Enkeltstående og lav eksponering under tydelig avgrensede forhold med standardiserte verneetiltak.",
+        "Enkeltstående og lav eksponering under tydelig avgrensede forhold med standardiserte vernetiltak.",
       anchor3:
-        "Tilbakevendende eksponering i et etablert risikomiljø som krever konsekvent bruk av verneetiltak.",
+        "Tilbakevendende eksponering i et etablert risikomiljø som krever konsekvent bruk av vernetiltak.",
       anchor5:
         "Svært krevende eller virksomhetskritiske eksponeringsforhold der vern, sikkerhetsrutiner og korrekt opptreden er avgjørende for sikker drift.",
     },
@@ -550,7 +550,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Er tilbakevendende vakt, beredskap eller krav om rask tilgjengelighet en arbeidsforutsetning dere vil ta hensyn til i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av beredskapsvakt, hjemmevakt og tilgjengelighet bærer rollen normalt og varig?",
+        "Hvilken grad av beredskapsvakt, hjemmevakt og tilgjengelighet bærer rollen normalt og varig?",
       anchor1: "Enkeltstående og tydelig avgrenset beredskap med lav frekvens.",
       anchor3:
         "Etablert og tilbakevendende beredskap eller tilgjengelighet utenfor ordinær arbeidstid.",
@@ -574,7 +574,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Vil dere veie inn varige krav om uregelmessige tider, reiser eller stedbundet arbeid?",
       assessmentQuestion:
-        "Hvilket nivå av uregelmessighet, mobilitet eller stedbundethet bærer rollen normalt og varig?",
+        "Hvilken grad av uregelmessighet, mobilitet eller stedbundethet bærer rollen normalt og varig?",
       anchor1:
         "Tilbakevendende, men begrensede krav om uregelmessige tider, reiser eller stedbundet arbeid.",
       anchor3:
@@ -599,7 +599,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
       controlQuestion:
         "Skal arbeid under særlige tilgangs-, taushets- eller sikkerhetsrestriksjoner ha betydning i synet på likeverdighet?",
       assessmentQuestion:
-        "Hvilket nivå av sikkerhets-, konfidensialitets- eller kontrollrestriksjon arbeider rollen normalt og varig under?",
+        "Hvilken grad av sikkerhets-, konfidensialitets- eller kontrollrestriksjon arbeider rollen normalt og varig under?",
       anchor1:
         "Enkeltstående og tydelig avgrensede tilgangs- eller taushetsrestriksjoner på lavt nivå.",
       anchor3:

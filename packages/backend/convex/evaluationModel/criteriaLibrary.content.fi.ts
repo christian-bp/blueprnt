@@ -21,12 +21,12 @@ export const criteriaLibraryContentFi: CriteriaLibraryContent = {
       name: "Ponnistus ja monimutkaisuus",
       question:
         "Kuinka vaikea, epäselvä, analyyttisesti, viestinnällisesti tai fyysisesti vaativa rooli on?",
-      why: "Tekee vaativan työn näkyväksi myös silloin, kun roolilla ei ole muodollista esimiesvaltaa.",
+      why: "Tekee vaativan työn näkyväksi myös silloin, kun roolilla ei ole muodollista esihenkilövaltaa.",
     },
     responsibility: {
       name: "Vastuu ja vaikutus",
       question:
-        "Kuinka laaja vaikutusalue, millainen valtuutus ja millaiset seuraukset roolilla on?",
+        "Kuinka laaja vaikutusalue, millainen päätösvalta ja millaiset seuraukset roolilla on?",
       why: "Kuvaa vastuuta päätöksistä, tuloksista, riskeistä, ihmisistä, laadusta ja liiketoiminnasta.",
     },
     workingConditions: {
@@ -337,7 +337,7 @@ export const criteriaLibraryContentFi: CriteriaLibraryContent = {
       whenSuitable:
         "Valitse, kun tulosten ja vaikutusten ulottuvuutta halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Älä valitse pelkästään nimikkeen, esimiestason, budjetin koon tai päätösvallan vuoksi. Arvioi, kattaako jokin erillisistä vastuukriteereistä paremmin sen, mitä halutaan painottaa.",
+        "Älä valitse pelkästään nimikkeen, esihenkilötason, budjetin koon tai päätösvallan vuoksi. Arvioi, kattaako jokin erillisistä vastuukriteereistä paremmin sen, mitä halutaan painottaa.",
       controlQuestion:
         "Onko teille olennaista ottaa huomioon, kuinka laajalle tulokset ja vaikutukset toiminnassa ulottuvat?",
       assessmentQuestion:
@@ -365,17 +365,17 @@ export const criteriaLibraryContentFi: CriteriaLibraryContent = {
       whenSuitable:
         "Valitse, kun itsenäistä päätösvaltaa halutaan painottaa samanarvoisuuden arvioinnissa.",
       whenNotSuitable:
-        "Älä valitse kuvaamaan sitä, kuinka laajalle päätöksen vaikutus ulottuu, mitä seurauksia virheellä voi olla tai minkätyyppistä vastuuta päätös koskee. Ne kattavat muut vastuukriteerit, jos ne valitaan.",
+        "Älä valitse kuvaamaan sitä, kuinka laajalle päätöksen vaikutus ulottuu, mitä seurauksia virheellä voi olla tai minkätyyppistä vastuuta päätös koskee. Muut vastuukriteerit kattavat ne, jos ne valitaan.",
       controlQuestion:
         "Halutaanko itsenäisen päätösvallan asteen vaikuttaa samanarvoisuuden arviointiin?",
       assessmentQuestion:
         "Millaista itsenäisyyttä ja päätösvaltaa roolilla on normaalisti ja pysyvästi?",
       anchor1:
-        "Rajallinen valtuus valita selkeästi määriteltyjen vaihtoehtojen välillä vakiintuneiden ohjeiden puitteissa.",
+        "Rajallinen päätösvalta valita selkeästi määriteltyjen vaihtoehtojen välillä vakiintuneiden ohjeiden puitteissa.",
       anchor3:
-        "Itsenäinen valtuus tehdä vakiintuneita punnintoja, priorisoida vaihtoehtojen välillä ja tehdä päätöksiä määritellyllä alueella.",
+        "Itsenäinen päätösvalta tehdä vakiintuneita punnintoja, priorisoida vaihtoehtojen välillä ja tehdä päätöksiä määritellyllä alueella.",
       anchor5:
-        "Erittäin laaja valtuus tehdä punnintoja ja päätöksiä, jotka asettavat suunnan, periaatteet tai painotukset toiminnan useille osille.",
+        "Erittäin laaja päätösvalta tehdä punnintoja ja päätöksiä, jotka asettavat suunnan, periaatteet tai painotukset toiminnan useille osille.",
     },
     "risk-consequence": {
       name: "Riski ja seuraus",
@@ -394,7 +394,7 @@ export const criteriaLibraryContentFi: CriteriaLibraryContent = {
       controlQuestion:
         "Onko virheiden tai puutteiden mahdollisten seurausten eroilla merkitystä samanarvoisuuden arvioinnissa?",
       assessmentQuestion:
-        "Millaista riskiä ja seurauksia roolin päätökset ja työ normaalisti ja pysyvästi kantavat?",
+        "Millaisia riskejä ja seurauksia roolin päätökset ja työ normaalisti ja pysyvästi kantavat?",
       anchor1:
         "Virheillä tai puutteilla on yleensä rajalliset ja helposti korjattavat seuraukset rajatulla alueella.",
       anchor2:
@@ -548,7 +548,7 @@ export const criteriaLibraryContentFi: CriteriaLibraryContent = {
       controlQuestion:
         "Onko toistuva päivystys, varallaolo tai nopean tavoitettavuuden vaatimus työn edellytys, jonka haluatte ottaa huomioon samanarvoisuuden arvioinnissa?",
       assessmentQuestion:
-        "Millaista päivystystä, valmiutta ja saatavuutta rooli normaalisti ja pysyvästi kantaa?",
+        "Millaista päivystystä, valmiutta ja tavoitettavuutta rooli normaalisti ja pysyvästi kantaa?",
       anchor1: "Satunnaista ja selkeästi rajattua varallaoloa harvoin.",
       anchor3:
         "Vakiintunutta ja toistuvaa varallaoloa tai tavoitettavuutta säännöllisen työajan ulkopuolella.",

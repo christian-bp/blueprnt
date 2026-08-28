@@ -125,7 +125,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Is deep specialist knowledge an area you want to give particular weight in your view of equivalence?",
       assessmentQuestion:
-        "What level of specialist knowledge depth does this role normally and lastingly require?",
+        "What degree of specialist knowledge depth does this role normally and lastingly require?",
       anchor1:
         "Established and well-documented professional knowledge within a clearly bounded area. Known methods are enough for familiar questions.",
       anchor3:
@@ -150,7 +150,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Is the ability to unite several knowledge areas central to how the business creates value?",
       assessmentQuestion:
-        "What level of cross-disciplinary breadth does this role normally and lastingly require?",
+        "What degree of cross-disciplinary breadth does this role normally and lastingly require?",
       anchor1:
         "One main knowledge area is used. Connections to other areas are rarely needed.",
       anchor3:
@@ -174,7 +174,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Should mandatory licences, authorisations or certifications carry through into your view of equivalence?",
       assessmentQuestion:
-        "What level of formal qualification, licensing or certification does this role normally and lastingly require?",
+        "What degree of formal qualification, licensing or certification does this role normally and lastingly require?",
       anchor1:
         "No mandatory requirement, or a basic and clearly bounded requirement with limited renewal or scope.",
       anchor3:
@@ -199,7 +199,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Do you want to weigh in how much business and industry knowledge different areas need?",
       assessmentQuestion:
-        "What level of domain and business knowledge does this role normally and lastingly require?",
+        "What degree of domain and business knowledge does this role normally and lastingly require?",
       anchor1:
         "Knowledge of a clearly bounded product, process or customer context.",
       anchor3:
@@ -224,7 +224,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Is qualified advice and professional judgment something you want to give weight in your view of equivalence?",
       assessmentQuestion:
-        "What level of advisory and judgment competence does this role normally and lastingly require?",
+        "What degree of advisory and judgment competence does this role normally and lastingly require?",
       anchor1:
         "Background material or uncomplicated advice within a clearly bounded area, supported by established guidance.",
       anchor3:
@@ -249,7 +249,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Do you want to take account of the degree of ambiguity and difficulty in the questions the business has to handle?",
       assessmentQuestion:
-        "What level of complexity and ambiguity does this role normally and lastingly handle?",
+        "What degree of complexity and ambiguity does this role normally and lastingly handle?",
       anchor1:
         "Clearly defined questions, established methods and predictable situations.",
       anchor2:
@@ -278,7 +278,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Should the extent of systematic analysis and problem-solving work carry weight in your view of equivalence?",
       assessmentQuestion:
-        "What level of analytical and problem-solving effort does this role normally and lastingly carry?",
+        "What degree of analytical and problem-solving effort does this role normally and lastingly carry?",
       anchor1:
         "Uncomplicated analysis or troubleshooting in a clearly bounded question, following established steps.",
       anchor3:
@@ -303,7 +303,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Should qualified communication, negotiation and handling conflicting interests carry weight in your view of equivalence?",
       assessmentQuestion:
-        "What level of communication and relationship effort does this role normally and lastingly carry?",
+        "What degree of communication and relationship effort does this role normally and lastingly carry?",
       anchor1:
         "Clearly bounded and largely routine communication with established counterparts.",
       anchor3:
@@ -328,7 +328,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Do you want to weigh in requirements to handle several simultaneous flows and prioritise continuously?",
       assessmentQuestion:
-        "What level of operational intensity and simultaneous demands does this role normally and lastingly carry?",
+        "What degree of operational intensity and simultaneous demands does this role normally and lastingly carry?",
       anchor1:
         "One flow or one task at a time within a clearly bounded rhythm.",
       anchor3:
@@ -353,7 +353,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Should recurring physical load, precision or sustained concentration carry weight in your view of equivalence?",
       assessmentQuestion:
-        "What level of physical or sensory effort does this role normally and lastingly carry?",
+        "What degree of physical or sensory effort does this role normally and lastingly carry?",
       anchor1:
         "Light and occasional physical or sensory demands within a clearly bounded task.",
       anchor3:
@@ -406,7 +406,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Should the degree of independent decision mandate carry weight in your view of equivalence?",
       assessmentQuestion:
-        "What level of autonomy and decision mandate does this role normally and lastingly hold?",
+        "What degree of autonomy and decision mandate does this role normally and lastingly hold?",
       anchor1:
         "Limited mandate to choose between clearly stated alternatives within established instructions.",
       anchor3:
@@ -431,7 +431,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Are differences in the consequences errors or shortcomings can have relevant to weigh into your view of equivalence?",
       assessmentQuestion:
-        "What level of risk and consequence does this role's decisions and work normally and lastingly carry?",
+        "What degree of risk and consequence does this role's decisions and work normally and lastingly carry?",
       anchor1:
         "Errors or shortcomings normally have limited and easily corrected consequences within a bounded area.",
       anchor2:
@@ -460,7 +460,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Should responsibility for leading people or parts of the business through others carry weight in your view of equivalence?",
       assessmentQuestion:
-        "What level of people and management responsibility does this role normally and lastingly carry?",
+        "What degree of people and management responsibility does this role normally and lastingly carry?",
       anchor1:
         "Limited responsibility for coordinating others' work within a clearly bounded area. No lasting responsibility for direction, delivery or employees' development.",
       anchor3:
@@ -485,7 +485,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Do you want to give weight to responsibility for prioritising limited resources between different needs in the business?",
       assessmentQuestion:
-        "What level of resource and capacity responsibility does this role normally and lastingly carry?",
+        "What degree of resource and capacity responsibility does this role normally and lastingly carry?",
       anchor1:
         "Prioritisation within a small and clearly bounded set of resources, where the effect of the choices is limited and easy to correct.",
       anchor3:
@@ -510,7 +510,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Is responsibility for customers, revenue or business results something you want to give particular weight in your view of equivalence?",
       assessmentQuestion:
-        "What level of business and customer responsibility does this role normally and lastingly carry?",
+        "What degree of business and customer responsibility does this role normally and lastingly carry?",
       anchor1:
         "Support to an established customer relationship or business activity within a bounded account or area.",
       anchor3:
@@ -535,7 +535,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Should formal responsibility for control, protection and compliance be weighed into your view of equivalence?",
       assessmentQuestion:
-        "What level of information, security or regulatory compliance responsibility does this role normally and lastingly carry?",
+        "What degree of information, security or regulatory compliance responsibility does this role normally and lastingly carry?",
       anchor1:
         "Established control routines are followed within a clearly bounded area, without independent control responsibility.",
       anchor3:
@@ -560,7 +560,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Is work under special safety or exposure conditions something you want to take into account in your view of equivalence?",
       assessmentQuestion:
-        "What level of safety and exposure does this role normally and lastingly work under?",
+        "What degree of safety and exposure does this role normally and lastingly work under?",
       anchor1:
         "Occasional and low exposure under clearly bounded conditions with standardised protective measures.",
       anchor3:
@@ -585,7 +585,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Is recurring on-call duty, standby or rapid availability a working condition you want to take into account in your view of equivalence?",
       assessmentQuestion:
-        "What level of on-call, standby and availability does this role normally and lastingly carry?",
+        "What degree of on-call, standby and availability does this role normally and lastingly carry?",
       anchor1: "Occasional and clearly bounded standby at low frequency.",
       anchor3:
         "Established and recurring standby or availability outside ordinary working hours.",
@@ -609,7 +609,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Do you want to weigh in lasting requirements for irregular hours, travel or place-bound work?",
       assessmentQuestion:
-        "What level of irregularity, mobility or location-boundedness does this role normally and lastingly carry?",
+        "What degree of irregularity, mobility or location-boundedness does this role normally and lastingly carry?",
       anchor1:
         "Recurring but limited requirements for irregular hours, travel or place-bound work.",
       anchor3:
@@ -634,7 +634,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
       controlQuestion:
         "Should work under special access, confidentiality or security restrictions carry weight in your view of equivalence?",
       assessmentQuestion:
-        "What level of security, confidentiality or control restriction does this role normally and lastingly work under?",
+        "What degree of security, confidentiality or control restriction does this role normally and lastingly work under?",
       anchor1:
         "Occasional and clearly bounded access or confidentiality restrictions at a low level.",
       anchor3:
