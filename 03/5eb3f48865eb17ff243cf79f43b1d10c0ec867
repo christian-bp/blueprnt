@@ -1,0 +1,23 @@
+docs/superpowers/analysis/lonekartlaggning-progress-tracker.html
+  s_99882331cf8b8c::t_56555c0b07277c 497-498
+  s_99882331cf8b8c::t_c734492fe1e104 261
+  s_99882331cf8b8c::t_52daf4765bc8c8 210,222,300,348
+docs/superpowers/plans/2026-08-28-role-evaluation-phase-6-content-closure.md
+  s_99882331cf8b8c::t_9313cc1b8f1c6f 1-152
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "035eb3f48865eb17ff243cf79f43b1d10c0ec867",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
