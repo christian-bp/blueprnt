@@ -24,6 +24,7 @@ export const DOCS_NAV: DocsSection[] = [
       "weighting-and-point-budget",
       "ai-weighting-review",
       "method-documentation",
+      "model-approval",
       "method-appendix-pdf",
     ],
   },

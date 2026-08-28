@@ -77,96 +77,11 @@ hyväksynnän ja avaa mallin oman hyväksynnän uudelleen.
 
 ## Mallin hyväksyminen
 
-Kun kriteerinne on dokumentoitu, itse malli hyväksytään erillisessä
-vaiheessa: [Hyväksyntä-luku](/model/approval) käy läpi kahdentoista
-kohdan tarkistuslistan kahdessa ryhmässä, Pakolliset tarkistukset ja
-Suositellut, ennen kuin "Hyväksy malli" toimii. Yhdeksän pakollista
-kohtaa kattavat dimensiokattavuuden, työolosuhdepäätöksen, kriteerien
-määrän ja dimensiorajat, täydelliset ankkuriasteikot, että jokainen
-kriteeri on dokumentoitu ja hyväksytty, tasapainoisen pistebudjetin,
-sekä kelvolliset taso- ja vyöhykeprofiilisäännöt; kolme suositeltua
-kohtaa (perustelematon hallitseva dimensio, perustelematon
-henkilöstöjohtamisen paino, tarkastamaton päällekkäisyys) näytetään
-myös, mutta ne eivät koskaan estä hyväksyntää.
-
-Jokaisen vielä täyttymättömän kohdan alla on rivi, joka kertoo mitä tehdä
-ja missä, sekä linkki siihen lukuun, jolle työ kuuluu. Rivi on
-täsmällinen aina kun tarkistus tuntee yksityiskohdat: hallitseva
-ulottuvuus nimetään yhdessä painotusosuutensa kanssa, päällekkäiset
-kriteerit nimetään pareittain ja dokumentointikohta laskee jäljellä
-olevat kriteerit. Läpäisevät kohdat eivät sano mitään. Kaksi kohtaa ei
-nimeä lukua, koska ne korjataan juuri tässä luvussa: osiossa
-"Vaativuustasorajat" tarkistuslistan alla.
-
-Hyväksyminen on se, mikä ylipäätään mahdollistaa roolien arvioinnin
-(katso [Roolin arviointi](/docs/evaluating-a-role)); kortti näyttää
-sitten, kuka sen hyväksyi ja milloin. Jokainen menetelmään vaikuttava
-muutos sen jälkeen, kuten kriteerin valitseminen, uudelleenpainottaminen
-tai taso- tai vyöhykeprofiilisääntöjen muuttaminen, avaa hyväksynnän
-automaattisesti uudelleen; uudelleenhyväksyminen on silloin vain yksi
-klikkaus, kun tarkistuslista on taas vihreä. Yksittäisen kriteerin oman
-perustelun ja vinoumien arvioinnin hyväksyminen ei itsessään avaa
-mallin hyväksyntää uudelleen; nämä kaksi ovat erillisiä.
-
-Jokainen hyväksyntä tallentaa myös mallin täsmälleen sellaisena kuin se
-hyväksyttiin. Kun hyväksyntä on avattu uudelleen ja malli todella
-eroaa tallennetusta tilasta, Hyväksyntä-luvun
-"Palauta viimeksi hyväksyttyyn" palauttaa sen tilan: kriteerien
-valinnan, niiden painot ja painotusten perustelut, kunkin kriteerin
-perustelun, vinoumien arvioinnin ja hyväksynnän, työolosuhdepäätöksen
-sekä taso- ja vyöhykeprofiilisäännöt. Vahvistus luettelee ensin jokaisen
-muutoksen, joka perutaan, mukaan lukien jokaisen poistettavan kriteerin
-yhdessä siihen liittyvien arviointien kanssa ja jokaisen palaavan
-kriteerin, jonka osalta jokainen rooli on silloin arvioitava uudelleen.
-Vain viimeksi hyväksytty tila tallennetaan, joten palautus palaa aina
-siihen; malli pysyy hyväksyntää vailla myös jälkeenpäin, ja
-uudelleenhyväksyminen on sama yksi klikkaus.
-
-## Mitä hyväksyminen muuttaisi
-
-Kun malli on hyväksytty aiemmin ja uusi hyväksyntä siirtäisi rooleja toisille
-vaativuustasoille, Hyväksyntä-luku alkaa osiolla "Mitä hyväksyminen
-muuttaisi", tarkistuslistan yläpuolella. Se vertaa nykyisiä sijoituksia
-viimeksi hyväksyttyyn menetelmään: montako viimeisteltyä sijoitusta siirtyisi,
-montako roolia kummallakin puolella on kussakin vyöhykkeessä, mitkä roolit
-siirtyisivät ja miltä tasolta mille, sekä saman liikkeen koottuna
-rooliperheittäin ja sukupuolijakauman mukaan (naisvaltaiset, miesvaltaiset,
-sekaroolit ja roolit, joihin ei ole sijoitettu ketään, pelkkinä lukuina). Jos
-rooleja siirtyy enemmän kuin lista näyttää, se kertoo montako lisää.
-
-Paneeli näkyy vain kun sillä on jotain sanottavaa. Mallilla, jota ei ole
-koskaan hyväksytty, ei ole vertailukohtaa, eikä sellaista muutosta, joka ei siirrä
-ketään, raportoida. Se siirtää rooleja, ei henkilöitä: kenenkään palkka ei muutu
-tässä.
-
-Kaikki seuraukset eivät ole siirtymiä tasolta toiselle. Jos menetelmä on
-saanut uuden kriteerin, jokaiselta roolilta, jonka arviointi on jo
-viimeistelty, puuttuu sen arvio, eikä roolia siksi voi sijoittaa lainkaan
-ennen kuin joku arvioi sen: paneeli
-kertoo, kuinka moni rooli menettäisi vaativuustasonsa, ja kukin niistä näkyy
-listassa muodossa "Vaativuustasolta 6 pois". Peilikuva tapahtuu myös, kun
-rooli, jota ei voitu sijoittaa hyväksytyllä menetelmällä, voidaan sijoittaa
-nyt. Nämä kaksi lasketaan erikseen niistä rooleista, jotka vain siirtyvät
-toiselle tasolle, joten nämä kolme lukua eivät koskaan kuvaa samaa roolia kahdesti.
-
-Vyöhyketaulukko laskee vain viimeistellyt sijoitukset, samat roolit joita
-muukin paneeli koskee.
-
-## Vaativuustasorajojen korjaaminen
-
-Tarkistuslistan alla "Vaativuustasorajat" näyttää, mistä painotuksesta
-kukin kahdestatoista tasosta alkaa, ryhmiteltynä sen vyöhykkeen alle johon ne
-kuuluvat, sekä profiilivaatimuksen, jonka kukin vyöhyke asettaa. Molempia
-voi muuttaa. Lukujen on laskettava tasojen laskiessa, alimman tason on
-alettava nollasta jotta jokainen rooli sijoittuu jonnekin, eikä mikään
-vyöhyke saa vaatia roolilta enempää kuin sen yläpuolinen; näitä rikkova luku
-merkitään omalle kentälleen ennen kuin voitte tallentaa. Tyhjäksi jätetty
-vyöhyke määräytyy pelkän painotuksen mukaan.
-
-Tallentaminen avaa mallin hyväksynnän uudelleen, minkä osio kertoo oman
-tallennuspainikkeensa vieressä: rajat ovat osa hyväksyttyä kokonaisuutta,
-joten tarkistuslista on allekirjoitettava uudelleen. Muutos kirjataan
-muutoslokiin, ja kaikki roolit sijoitetaan uusien lukujen mukaan heti.
+Kriteerien dokumentointi on tämän luvun työ. Itse mallin hyväksyminen on
+oma vaiheensa omassa luvussaan, ja juuri se tekee arvioinnin ylipäätään
+mahdolliseksi. Yksittäisen kriteerin perustelun ja vinoumatarkastelun
+hyväksyminen ei sinänsä avaa mallin hyväksyntää uudelleen; nämä kaksi
+ovat erillisiä. Katso [Mallin hyväksyminen](/docs/model-approval).
 
 ## Aiheeseen liittyvää
 
