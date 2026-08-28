@@ -1,0 +1,33 @@
+apps/dashboard/content/docs/en/criteria-library.mdx
+  s_99882331cf8b8c::t_010c845fb34864 1-89
+apps/dashboard/content/docs/sv/criteria-library.mdx
+  s_99882331cf8b8c::t_010c845fb34864 1-89
+apps/dashboard/content/docs/nb/criteria-library.mdx
+  s_99882331cf8b8c::t_010c845fb34864 1-89
+apps/dashboard/content/docs/fi/criteria-library.mdx
+  s_99882331cf8b8c::t_010c845fb34864 1-88
+apps/dashboard/content/docs/da/criteria-library.mdx
+  s_99882331cf8b8c::t_010c845fb34864 1-89
+apps/dashboard/lib/docs/docs-guards.test.ts
+  s_99882331cf8b8c::t_a235f76a1f61c3 712-725,728,732,749-750
+  s_99882331cf8b8c::t_8dc885e8a95755 9-13,703-711,726-727,729-731,733-748,751-754
+  s_99882331cf8b8c::t_18b597e1a9f71c 755
+apps/dashboard/lib/docs/docs-nav.ts
+  s_99882331cf8b8c::t_9976a8671a53e7 24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "9b910a2912acb797de9ead025190ca0b18177853",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
