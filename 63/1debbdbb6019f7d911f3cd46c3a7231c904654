@@ -1,0 +1,20 @@
+apps/dashboard/lib/levels.ts
+  s_99882331cf8b8c::t_b11ba697d36a7a 51-52
+  s_99882331cf8b8c::t_fc32ef3515dfad 1,50,62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "631debbdbb6019f7d911f3cd46c3a7231c904654",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
