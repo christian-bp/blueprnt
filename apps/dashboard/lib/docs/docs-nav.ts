@@ -21,6 +21,7 @@ export const DOCS_NAV: DocsSection[] = [
     pages: [
       "model-overview",
       "criteria-and-scale",
+      "criteria-library",
       "weighting-and-point-budget",
       "ai-weighting-review",
       "method-documentation",

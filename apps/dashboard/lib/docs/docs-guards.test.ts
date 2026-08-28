@@ -6,7 +6,11 @@ import {
   ASSISTANT_PROMPT_LOCALES,
   assistantSystemPrompt,
 } from "@workspace/backend/convex/assistant/knowledge"
-import { REGISTERED_LIBRARY_LOCALES } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
+import {
+  CRITERIA_LIBRARY_KEYS,
+  criteriaLibraryContent,
+  REGISTERED_LIBRARY_LOCALES,
+} from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import da from "@workspace/i18n/messages/da.json"
 import en from "@workspace/i18n/messages/en.json"
 import fi from "@workspace/i18n/messages/fi.json"
@@ -694,5 +698,58 @@ describe("guard 11: writing style", () => {
       }
     }
     expect(offenders).toEqual([])
+  })
+})
+
+describe("guard 12: the criteria library reference names every criterion", () => {
+  // The library reference page is the only surface outside the picker that
+  // lists the criteria, and it is written FROM the library's own name and
+  // short text rather than paraphrasing them. Nothing else notices when the
+  // library gains, loses or renames a criterion: the page would simply go
+  // quietly out of date in five locales, and the assistant would answer from
+  // it. Each locale is checked against its OWN content, so a name that was
+  // translated in the library but not on the page fails too.
+  // The page's entry form: a bullet whose bold lead is the criterion's own
+  // name. Matched as the ENTRY rather than anywhere in the text, because the
+  // overlap list repeats the same names further down and would otherwise let
+  // a criterion dropped from its dimension pass as present.
+  const entryNames = (locale: string): Set<string> => {
+    const names = new Set<string>()
+    for (const line of rawOf(locale, "criteria-library").split("\n")) {
+      const lead = /^- \*\*(.+?)\.\*\* /.exec(line)
+      if (lead !== null) names.add(lead[1] as string)
+    }
+    return names
+  }
+
+  it("every library criterion has its own entry, in every locale", () => {
+    const missing: string[] = []
+    for (const locale of routing.locales) {
+      const entries = entryNames(locale)
+      const content = criteriaLibraryContent(locale)
+      for (const key of CRITERIA_LIBRARY_KEYS) {
+        const name = content.criteria[key].name
+        if (!entries.has(name)) missing.push(`${locale}/${key}: ${name}`)
+      }
+    }
+    expect(missing).toEqual([])
+  })
+
+  it("the page carries no criterion the library does not have", () => {
+    // The reverse direction: a criterion removed from the library must not
+    // survive as a bullet. Bold-led bullets are the page's entry form, so a
+    // leftover entry is one whose bold lead matches no library name.
+    const strays: string[] = []
+    for (const locale of routing.locales) {
+      const names = new Set(
+        CRITERIA_LIBRARY_KEYS.map(
+          (key) => criteriaLibraryContent(locale).criteria[key].name
+        )
+      )
+      for (const name of entryNames(locale)) {
+        if (!names.has(name)) strays.push(`${locale}: ${name}`)
+      }
+    }
+    expect(strays).toEqual([])
   })
 })
