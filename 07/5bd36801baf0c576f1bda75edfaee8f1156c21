@@ -1,0 +1,39 @@
+apps/dashboard/content/docs/en/levels-and-zones.mdx
+  s_99882331cf8b8c::t_933f7ea588604c 1-99
+apps/dashboard/content/docs/fi/levels-views.mdx
+  s_99882331cf8b8c::t_e64e73a0507a56 31-32
+apps/dashboard/content/docs/sv/levels-views.mdx
+  s_99882331cf8b8c::t_e64e73a0507a56 31-32
+apps/dashboard/content/docs/en/levels-views.mdx
+  s_99882331cf8b8c::t_e64e73a0507a56 30-31
+apps/dashboard/content/docs/nb/levels-views.mdx
+  s_99882331cf8b8c::t_e64e73a0507a56 30-31
+apps/dashboard/content/docs/da/levels-views.mdx
+  s_99882331cf8b8c::t_e64e73a0507a56 31-32
+apps/dashboard/content/docs/da/levels-and-zones.mdx
+  s_99882331cf8b8c::t_933f7ea588604c 1-96
+apps/dashboard/content/docs/fi/levels-and-zones.mdx
+  s_99882331cf8b8c::t_933f7ea588604c 1-104
+apps/dashboard/content/docs/nb/levels-and-zones.mdx
+  s_99882331cf8b8c::t_933f7ea588604c 1-96
+apps/dashboard/content/docs/sv/levels-and-zones.mdx
+  s_99882331cf8b8c::t_933f7ea588604c 1-96
+apps/dashboard/lib/docs/docs-nav.ts
+  s_99882331cf8b8c::t_933f7ea588604c 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "075bd36801baf0c576f1bda75edfaee8f1156c21",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
