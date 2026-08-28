@@ -6,12 +6,14 @@ Kod-identifierare (Convex-tabeller, typer, funktioner) skrivs på engelska. Ordl
 
 Varje ordlista har en sektion **Översättningssträngar (i18n)** med svenska + engelska för de mest använda begreppen, så att domändokumenten också fungerar som källa för översättningarna. Nyckelformatet är bibliotek-neutralt (punktnamnrymd, t.ex. `model.criterion`); svenska är standardspråk, engelska är andraspråk.
 
-Terminologi (ADR-0014, 2026-08-05): **Nivå** (kod `level`) är rollens beräknade tyngd, tidigare Band. **Senioritet** (kod `seniority`) är individens senioritet inom rollens track, tidigare Nivå. **Steg** (kod `step`) är ett läge på kriteriets 0 till 5-bedömningsskala, tidigare nivå. Äldre ADR-texter behåller sina ursprungliga ord.
+Terminologi (ADR-0014, 2026-08-05): **Nivå** (kod `level`) är rollens beräknade tyngd, tidigare Band. **Senioritet** (kod `seniority`) är individens senioritet inom rollens track, tidigare Nivå. **Steg** (kod `step`) är ett läge på kriteriets bedömningsskala, tidigare nivå. Äldre ADR-texter behåller sina ursprungliga ord.
+
+Terminologi (ADR-0021/0022, 2026-08-18): bedömningsskalan är **1 till 5**; 0 finns bara på ett aktivt arbetsförhållandekriterium och betyder att rollen inte omfattas. **Dimension** är en av metodens fyra fasta värderingsdimensioner och aldrig ett kriterium. **Zon** (kod `zone`) är en av fyra grupper om tre nivåer, A högst och D lägst, strukturlag och aldrig ett bedömningsfält. **Profilkriterium** är ett kriterium viktat till 4 eller 5, härlett och aldrig lagrat. Mallen är pensionerad: **kriteriebiblioteket** ersatte den.
 
 ## Kontexter
 
 - [Konton (accounts)](./docs/contexts/accounts/CONTEXT.md) — organisationer (tenants), medlemmar och behörighetsroller. Bygger på Better Auth-organisationer.
-- [Värderingsmodell (evaluation-model)](./docs/contexts/evaluation-model/CONTEXT.md) — den konfigurerbara jobbarkitekturen + poängmodellen: kriterier, viktpoäng (poängbudget), track/senioritet, nivåindelning, mallar; live-omräkning (ingen versionering i V1).
+- [Värderingsmodell (evaluation-model)](./docs/contexts/evaluation-model/CONTEXT.md) — den konfigurerbara jobbarkitekturen + poängmodellen: kriterier ur biblioteket, viktpoäng (poängbudget), track/senioritet, nivåindelning i tolv nivåer och fyra zoner, godkännande som status; live-omräkning (ingen versionering i V1).
 - [Värdering (assessment)](./docs/contexts/assessment/CONTEXT.md) — roller och deras blindade värderingar: betyg, totalpoäng, nivåutfall, kalibrering.
 
 - **Personer (people)** — medarbetare (dataminimerade persondata) och koppling medarbetare↔roll (rollplacering med individens senioritet, ADR-0005). Byggd; ordlista under docs/contexts/ saknas ännu.

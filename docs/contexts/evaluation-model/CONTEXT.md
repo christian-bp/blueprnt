@@ -46,12 +46,32 @@ _Undvik_: Viktskala, Betydelseskala (utgångna), Maxpoäng (det är rollpoängen
 Den härledda procentvikten per kriterium: viktpoäng delat med summan av alla viktpoäng. Visas som en konsekvens av prioriteringen och matas aldrig in; fri procentviktning finns inte.
 _Undvik_: Procentvikt (säg "andel"), Vikt i procent
 
-**Mall** *(kod: Template)*:
-En återanvändbar förkonfigurerad modell — kriterier, ankare, viktpoäng, track-schema, nivåtrösklar — anpassad till en jobb-/organisationstyp (t.ex. SaaS/tech, kommersiell, G&A, operations). En organisation startar från en mall (eller tomt) och anpassar sedan; dess modell är oberoende därefter.
-_Undvik_: Modell (en mall är startförkonfigurationen; organisationens redigerbara kopia är modellen)
+**Dimension** *(kod: Dimension)*:
+En av metodens fyra fasta värderingsdimensioner (kompetens, ansträngning och komplexitet, ansvar och påverkan, arbetsförhållanden), vilka direktiv (EU) 2023/970 namnger. Strukturlag: aldrig konfigurerbar, aldrig fler eller färre. Varje kriterium tillhör exakt en.
+_Undvik_: Kriterium (ett kriterium tillhör en dimension, det är inte en)
+
+**Kriteriebibliotek** *(kod: Criteria library)* (ersatte Mall/Template, ADR-0021):
+Den kontrollerade katalogen med 21 kriterier som varje organisation väljer sina 6 till 8 ur, under dimensionstaken 2/2/3/1. Definition, ankare och kontrollfråga är bibliotekets och identiska i varje organisation. Det finns ingen förkonfigurerad startmodell längre: en ny organisation börjar tom och bygger genom att välja.
+_Undvik_: Mall (utgången term, ADR-0021)
+
+**Zon** *(kod: Zone)* (ADR-0022):
+En av fyra grupper av närliggande nivåer: A är nivå 1 till 3, B är 4 till 6, C är 7 till 9, D är 10 till 12. Strukturlag, aldrig konfigurerbar. Zonen är den kvalitativa karaktär flera nivåer delar; den betygsätts aldrig och är aldrig ett bedömningsfält.
+_Undvik_: Nivå (zonen grupperar nivåer, den är ingen nivå), Band
+
+**Profilkriterium** *(kod: Profile criterion)* (ADR-0022):
+Ett kriterium som organisationen viktat till 4 eller 5, alltså ett av dem den förklarat mest värdedrivande. Härleds, lagras aldrig. Ett arbetsförhållandekriterium är aldrig profilkriterium oavsett vikt, eftersom dess 0 betyder att rollen inte omfattas.
+_Undvik_: Tungt kriterium
+
+**Profilkrav** *(kod: Zone profile rule)* (ADR-0022):
+Det lägsta steg en zon kräver på varje profilkriterium. Kan bara sänka en placering, aldrig lyfta en: en roll vars viktning når zonen men vars profil inte gör det hålls på den underliggande zonens översta nivå och flaggas för kalibrering.
+_Undvik_: Nivåoverride (ingen sådan finns)
+
+**Modellgodkännande** *(kod: Model approval)* (ADR-0023):
+En status, utkast eller godkänd, som grindar bedömning: ingen roll kan värderas mot en icke godkänd metod. En tolvpunktschecklista måste passera först, varje metodpåverkande ändring öppnar godkännandet igen, och det senast godkända tillståndet kan återställas. Ingen versionering; kartläggningens frysta ögonblicksbild är den enda frysningen (ADR-0002 består).
+_Undvik_: Modellversion
 
 **Nivåtröskel** *(kod: Level threshold)* (tidigare Bandtröskel/Band threshold, ADR-0014):
-Lägsta poäng för en nivå, som heltal på den normaliserade 0 till 100-poängskalan. Konfigurerbar per nivå; definierar var poäng → nivå. (Nivå 1 = högst.)
+Lägsta poäng för en av de tolv nivåerna, som heltal på den normaliserade 0 till 100-poängskalan. Konfigurerbar per nivå; definierar var poäng → nivå. (Nivå 1 = högst.)
 _Undvik_: Gränsvärde, Intervallgräns
 
 **Modell** *(kod: Model)*:

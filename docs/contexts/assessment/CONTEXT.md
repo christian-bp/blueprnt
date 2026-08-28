@@ -21,6 +21,10 @@ _Undvik_: Bedömning (godtagbar synonym), Granskning
 En värdering vars alla kriterier är betygsatta och som någon har slutfört. Slutförandet är sista steget i bedömningsflödet, inte ett separat ärende: samma tryck sparar det sista betyget och avslöjar poängen och nivån (beslut 14, 2026-08-24; tidigare "låst bedömning", där "låsning" togs bokstavligt fast författaren menade fastställa). Innan dess finns inget resultat någonstans. Att **omvärdera** öppnar bedömningen igen med ett tryck, behåller alla betyg och döljer resultatet tills den slutförs på nytt; både slutförande och omvärdering loggas var för sig i ändringsloggen.
 _Undvik_: Låst bedömning (utgången term, beslut 14), Låsning, Upplåsning
 
+**Metoddrift** *(kod: Method drift)*:
+En bedömning som slutfördes innan modellen senast godkändes, alltså gjordes under andra regler. Härleds av motorn (slutförd-tidpunkt mot godkänd-tidpunkt), lagras aldrig. Resultatet står kvar; flaggan ber en människa titta på det.
+_Undvik_: Ogiltig bedömning (den är giltig, bara bedömd enligt en tidigare metod)
+
 **Betyg** *(kod: Rating)*:
 Det råa 0–5 en bedömare ger en roll på ett kriterium, bedömt mot kriteriets ankartext. Det enda som matas in för hand.
 _Undvik_: Poäng (poäng är den viktade totalen), Grad
