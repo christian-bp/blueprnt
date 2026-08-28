@@ -5,7 +5,13 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react"
-import { LEVEL_COUNT, ZONE_KEYS } from "@workspace/core"
+import {
+  DEFAULT_LEVEL_RULES,
+  DEFAULT_ZONE_PROFILE_RULES,
+  LEVEL_COUNT,
+  SCORE_SCALE_MAX,
+  ZONE_KEYS,
+} from "@workspace/core"
 import { zoneContent } from "@workspace/backend/convex/evaluationModel/zoneContent"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
@@ -34,26 +40,17 @@ const saveZones = mockMutation(
 const m = messages.dashboard.model.levelRules
 const v = messages.dashboard.validation
 
-// The default ladder: twelve levels, minScore falling as the level rises,
-// bottom at 0.
-const LEVEL_RULES = [
-  { level: 1, minScore: 97 },
-  { level: 2, minScore: 92 },
-  { level: 3, minScore: 87 },
-  { level: 4, minScore: 81 },
-  { level: 5, minScore: 75 },
-  { level: 6, minScore: 69 },
-  { level: 7, minScore: 62 },
-  { level: 8, minScore: 55 },
-  { level: 9, minScore: 48 },
-  { level: 10, minScore: 40 },
-  { level: 11, minScore: 31 },
-  { level: 12, minScore: 0 },
-]
-const ZONE_RULES = [
-  { zone: "A", minStep: 4 },
-  { zone: "B", minStep: 3 },
-]
+// The real seeded ladder, read from the engine rather than hand-copied: a
+// fixture claiming to BE the defaults silently stops being them at the next
+// retune, and the panel's whole job is rendering what the model actually holds.
+const LEVEL_RULES = DEFAULT_LEVEL_RULES.map((rule) => ({
+  level: rule.level,
+  minScore: rule.minScore,
+}))
+const ZONE_RULES = DEFAULT_ZONE_PROFILE_RULES.map((rule) => ({
+  zone: rule.zone,
+  minStep: rule.minStep,
+}))
 
 let model: unknown = { levelRules: LEVEL_RULES, zoneProfileRules: ZONE_RULES }
 
@@ -150,10 +147,13 @@ describe("LevelRulesPanel", () => {
     const row = (level: number) =>
       levelField(level).closest("tr") as HTMLTableRowElement
     // Level 1 runs to the scale's top; the rest end just below the neighbour
-    // above; level 12's span is 0-30 under the default ladder.
-    expect(row(1).textContent).toContain("100")
-    expect(row(2).textContent).toContain("96")
-    expect(row(12).textContent).toContain("30")
+    // above. Read off the real ladder rather than transcribed, so a retune
+    // moves the expectation with the panel instead of failing it.
+    const toBound = (level: number) =>
+      String((LEVEL_RULES[level - 2]?.minScore ?? SCORE_SCALE_MAX + 1) - 1)
+    expect(row(1).textContent).toContain(String(SCORE_SCALE_MAX))
+    expect(row(2).textContent).toContain(toBound(2))
+    expect(row(12).textContent).toContain(toBound(12))
     // Editing a bound moves BOTH the level's own span and the one below it.
     fireEvent.change(levelField(1), { target: { value: "95" } })
     expect(row(2).textContent).toContain("94")

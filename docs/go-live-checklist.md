@@ -338,10 +338,15 @@ starting V2:
 - [ ] **Calibrate `DEFAULT_LEVEL_RULES` and `DEFAULT_ZONE_PROFILE_RULES`
   against real data.** Both (`packages/core/src/zones.ts`) are the starting
   points every model's `levelRules`/`zoneProfileRules` seed from at creation,
-  translated from the Excel prototype at a different weight spread
-  (`docs/contexts/evaluation-model/standardmall.md`); uncalibrated level and
+  and the current table is in `docs/contexts/evaluation-model/standardmall.md`.
+  The ladder is a progressive design (the gap between thresholds widens toward
+  the top) that has not yet met an organisation's own anchor roles;
+  masterdokumentet §14.2 requires exactly that anchoring, and forbids fitting
+  the numbers so the resulting distribution looks even. Uncalibrated level and
   zone-profile rules yield unreliable comparable-work groupings and zone
   placements. Best done with the real salary data the V2 import brings.
+  Retuning also moves the derived level of the demo fixture's anchor role;
+  `devCompany.test.ts` fails until `DEMO_ANCHOR_ROLES` is re-agreed with it.
 - [ ] **Rename the compliance fields to spec** (`overlapNotes`→`overlapWithOthers`,
   `decidedBy`→`decisionMaker`, `decidedAt`→`date`). The Method UI now uses the
   current names, so the rename touches `evaluationModel/tables.ts`, `method.ts`,

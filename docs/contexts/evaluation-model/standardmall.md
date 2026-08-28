@@ -42,23 +42,29 @@ Varje kriterium har dessutom en 0–5-ankarskala (textbeskrivningar per betyg). 
 
 Rollens totalpoäng = **20 × Σ(betyg × viktpoäng) / Σ(viktpoäng)**, avrundad nedåt till heltal. Max är alltid 100 oavsett antal kriterier, så nivåtrösklarna behåller sin innebörd när kriterier läggs till eller tas bort. Nedåtavrundningen gör jämförelsen mot heltalströsklar exakt: visad poäng ≥ tröskel om och endast om den oavrundade poängen är det.
 
-## Standard-nivåtrösklar (7 nivåer, seedas i standardmallen)
+## Standard-nivåtrösklar (12 nivåer, seedas i standardmallen)
 
-Nivå 1 = högst; tröskel = lägsta poäng (inklusive) som heltal på 0 till 100-skalan. Förvalen är Excel-prototypens trösklar översatta till andel av max (530/540 → 98 osv.):
+Nivå 1 = högst; tröskel = lägsta poäng (inklusive) som heltal på 0 till 100-skalan. Nivåerna är grupperade i fyra zoner som är strukturlag, aldrig konfiguration (ADR-0022).
 
-| Nivå | Minpoäng |
-| --- | --- |
-| Nivå 1 | 98 |
-| Nivå 2 | 83 |
-| Nivå 3 | 74 |
-| Nivå 4 | 63 |
-| Nivå 5 | 53 |
-| Nivå 6 | 41 |
-| Nivå 7 | 0 |
+| Zon | Nivå | Minpoäng | Poängintervall | Bredd |
+| --- | --- | --- | --- | --- |
+| A | Nivå 1 | 97 | 97 till 100 | 4 |
+| A | Nivå 2 | 86 | 86 till 96 | 11 |
+| A | Nivå 3 | 77 | 77 till 85 | 9 |
+| B | Nivå 4 | 69 | 69 till 76 | 8 |
+| B | Nivå 5 | 62 | 62 till 68 | 7 |
+| B | Nivå 6 | 56 | 56 till 61 | 6 |
+| C | Nivå 7 | 50 | 50 till 55 | 6 |
+| C | Nivå 8 | 45 | 45 till 49 | 5 |
+| C | Nivå 9 | 40 | 40 till 44 | 5 |
+| D | Nivå 10 | 35 | 35 till 39 | 5 |
+| D | Nivå 11 | 30 | 30 till 34 | 5 |
+| D | Nivå 12 | 0 | 0 till 29 | 30 |
 
-- **Kalibrering återstår:** viktspridningen ändras med nya skalan (5:1 mot prototypens 18:8), så rollfördelningen blir inte identisk med prototypens. Trösklarna ska kalibreras mot verklig data före lansering.
+- **Trösklarna är progressiva:** avståndet mellan nivåerna växer uppåt, så en förflyttning till de högsta nivåerna kräver en successivt större förändring i rollens samlade viktning, medan de lägre nivåerna ligger tätt nog att skilja roller som faktiskt skiljer sig åt.
+- **Upplösning:** en nivå rymmer exakt så många hela viktningspoäng som den är bred, och en differentierad viktning når varje en av dem. En viktning vars poäng har en gemensam delare når bara var n:te, så en orörd modell där alla kriterier ligger kvar på vikt 3 löser upp en tredjedel så fint (33 möjliga viktningar i stället för 81). Golvet är dessutom 20, inte 0: betyget 1 på varje kriterium ger redan 20, så nivå 12:s nominella 30 poäng är i praktiken 20 till 29.
 - Excelns alternativa **10-bandskolumn** (källdokumentets ord; vi säger nivå sedan ADR-0014) användes medvetet **inte** (historisk anteckning; prototypens exakta totaler på 540-skalan kan inte längre reproduceras).
-- **Kompetensmatrisens nivåbeskrivningar täcker Nivå 1–6**; Nivå 7 saknar beskrivande text. (Öppet: skriv en Nivå 7-beskrivning, den lägsta instegsnivån, eller dokumentera medvetet att den saknas.)
+- **Kompetensmatrisens nivåbeskrivningar täcker sex nivåer** och skrevs för den gamla sjunivåstegen. (Öppet: skriv nivåbeskrivningar för tolvnivåstegen, eller dokumentera medvetet att zonbeskrivningarna i ADR-0022 bär den rollen.)
 
 ## Track-schema
 

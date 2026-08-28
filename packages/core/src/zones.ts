@@ -61,20 +61,36 @@ export interface ZoneProfileRule {
   minStep: number
 }
 
-// Starting points to be calibrated against anchor roles before launch; the
-// spread is tighter at the top like the previous seven-level defaults.
+// Progressive thresholds: the gap between one level's opening and the next
+// widens toward the top, so climbing into the highest levels takes a
+// successively larger change in the role's whole weighting, while the lower
+// levels stay close enough together to separate roles that genuinely differ.
+// Level 1 is the exception in width rather than in gap: it opens 11 points
+// above level 2 like the rule says, and then the scale's ceiling closes it
+// four points later.
+//
+// A level covers exactly as many whole weighting points as it is wide, and a
+// differentiated weighting reaches every one of them (a model whose weights
+// share a common factor reaches only every nth, which is why an untouched
+// all-3 allocation resolves a third as finely). The widths below therefore ARE
+// the resolution each level has to work with: 4, 11, 9, 8, 7, 6, 6, 5, 5, 5, 5.
+//
+// Still to be calibrated against anchor roles before launch, which is the
+// method's own instruction: thresholds are anchored in the zone descriptions
+// and representative anchor roles, never fitted so the resulting distribution
+// looks even.
 export const DEFAULT_LEVEL_RULES: readonly LevelRule[] = [
   { level: 1, minScore: 97 },
-  { level: 2, minScore: 92 },
-  { level: 3, minScore: 87 },
-  { level: 4, minScore: 81 },
-  { level: 5, minScore: 75 },
-  { level: 6, minScore: 69 },
-  { level: 7, minScore: 62 },
-  { level: 8, minScore: 55 },
-  { level: 9, minScore: 48 },
-  { level: 10, minScore: 40 },
-  { level: 11, minScore: 31 },
+  { level: 2, minScore: 86 },
+  { level: 3, minScore: 77 },
+  { level: 4, minScore: 69 },
+  { level: 5, minScore: 62 },
+  { level: 6, minScore: 56 },
+  { level: 7, minScore: 50 },
+  { level: 8, minScore: 45 },
+  { level: 9, minScore: 40 },
+  { level: 10, minScore: 35 },
+  { level: 11, minScore: 30 },
   { level: 12, minScore: 0 },
 ]
 

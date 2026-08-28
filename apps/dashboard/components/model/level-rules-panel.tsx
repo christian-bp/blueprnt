@@ -261,9 +261,9 @@ function LevelRulesForm({
             }
           >
             {/* An interval table, not a grid of bare numbers: each row reads
-                "level 7: from 62 to 68", with the To column derived live from
-                the neighbour above and a bar showing the span's share of the
-                0-100 scale. The number's MEANING (a cut whose span moves with
+                "level 7: from 50 to 55" under the shipped defaults, with the To
+                column derived live from the neighbour above and a bar showing
+                the span's share of the 0-100 scale. The number's MEANING (a cut whose span moves with
                 its neighbours) is on the surface instead of reconstructed in
                 the reader's head. */}
             <Table className="table-fixed">

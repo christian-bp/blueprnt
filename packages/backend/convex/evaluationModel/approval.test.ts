@@ -371,7 +371,7 @@ describe("the model writes are member-level", () => {
     )
     await asEditor.mutation(api.evaluationModel.approval.updateLevelRules, {
       orgId,
-      // Level 1 stays strictly above level 2 (92 by default), so the rules
+      // Level 1 stays strictly above level 2 (86 by default), so the rules
       // remain valid while the edit is real.
       levelRules: (
         await asEditor.query(api.evaluationModel.model.getModel, { orgId })
@@ -598,7 +598,7 @@ describe("updateLevelRules", () => {
     await asAdmin.mutation(api.evaluationModel.approval.approveModel, {
       orgId,
     })
-    // Level 1's minScore must stay strictly above level 2's (92, the
+    // Level 1's minScore must stay strictly above level 2's (86, the
     // default): 99 keeps the rules valid while still being a real edit.
     const nextRules = model.levelRules.map((rule) =>
       rule.level === 1 ? { ...rule, minScore: 99 } : rule
@@ -934,7 +934,7 @@ describe("restoreApprovedModel", () => {
       await asAdmin.mutation(api.evaluationModel.approval.approveModel, {
         orgId,
       })
-      // Level 1's minScore must stay strictly above level 2's (92, the
+      // Level 1's minScore must stay strictly above level 2's (86, the
       // default): 99 keeps the rules valid while still being a real edit, the
       // same edit updateLevelRules' own test makes.
       await asAdmin.mutation(api.evaluationModel.approval.updateLevelRules, {

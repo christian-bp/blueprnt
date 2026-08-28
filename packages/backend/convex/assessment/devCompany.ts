@@ -551,13 +551,17 @@ export const DEMO_WEIGHT_POINTS: Record<DemoLibraryKey, WeightPoints> = {
 
 // Anchor-role designations, mirroring the production demo org. Keyed by role
 // title; seedRatedRoles stamps status "active" and reviewedAt at seed time.
-// expectedLevel is on the new 1-12 scale (ADR-0022).
+// expectedLevel is on the new 1-12 scale (ADR-0022), and must match the level
+// the engine derives for the title under DEMO_WEIGHT_POINTS: a seeded demo
+// whose own anchor deviates would open with a calibration flag on a model
+// nobody has touched. Retuning DEFAULT_LEVEL_RULES moves the derived level, so
+// this value moves with it; devCompany.test.ts fails when the two drift apart.
 export const DEMO_ANCHOR_ROLES: Record<
   string,
   { expectedLevel: number; motivation: string }
 > = {
   "Technical Solutions Architect": {
-    expectedLevel: 6,
+    expectedLevel: 4,
     motivation:
       "Det är en tung roll både kunskapsmässigt och personal som kräver både en ledarskapsförmåga samt specialistkompetens inom domän.",
   },

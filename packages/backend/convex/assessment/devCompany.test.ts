@@ -9,10 +9,12 @@ import {
   type RatingValue,
   scoreRole,
   type WeightPoints,
+  ZONE_LEVEL_RANGES,
 } from "@workspace/core"
 import { describe, expect, it } from "vitest"
 import { LIBRARY_DIMENSION } from "../evaluationModel/criteriaLibrary"
 import {
+  DEMO_ANCHOR_ROLES,
   DEMO_SELECTED_KEYS,
   DEMO_WEIGHT_POINTS,
   DEV_COMPANY,
@@ -140,12 +142,30 @@ describe("devCompany ratings", () => {
     }
     // Spread across several levels, not all clustered in one.
     expect(Object.keys(dist).length).toBeGreaterThanOrEqual(4)
-    // The demo reaches its actual top level under flat weighting, and the CEO
-    // is what sits there; pinning the absolute level (not just "top
-    // occupied") catches a retune that silently moves the ceiling.
+    // The CEO tops the flat-weighted ladder, and at an ABSOLUTE level, not
+    // merely at whichever level happens to be the highest occupied one. The
+    // absolute pin is what catches a threshold retune moving the ceiling; a
+    // top-occupied comparison derives the ceiling from the same distribution
+    // it is checking and therefore holds no matter where the ladder moves.
     const topLevel = Math.min(...Object.keys(dist).map(Number))
     expect(levelByTitle.CEO).toBe(topLevel)
-    expect(dist[topLevel]).toBeGreaterThanOrEqual(1)
+    expect(topLevel).toBe(3)
+  })
+
+  it("agrees with the engine on every anchor role's level", () => {
+    // An anchor role's agreed level IS the calibration reference, so a seeded
+    // demo whose own anchor deviates opens with an amber deviation badge and
+    // the three-act anchor panel on a model nobody has touched. The agreed
+    // level is a human judgement and the derived one moves with the ladder,
+    // so the two can only stay together by being checked: a DEFAULT_LEVEL_RULES
+    // retune fails here and the fixture is re-agreed in the same change.
+    const anchors = Object.entries(DEMO_ANCHOR_ROLES)
+    expect(anchors.length).toBeGreaterThan(0)
+    for (const [title, anchor] of anchors) {
+      expect(ALL_TITLES, title).toContain(title)
+      const { level } = evaluate(RATINGS_BY_TITLE[title] ?? [], DEMO_WEIGHTS)
+      expect(anchor.expectedLevel, title).toBe(level)
+    }
   })
 
   it("keeps the demo weight points on the exact point budget", () => {
@@ -166,34 +186,51 @@ describe("devCompany ratings", () => {
     // point breaks this.
     expect(dist).toEqual({
       2: 1,
-      4: 1,
-      5: 3,
-      6: 2,
-      7: 6,
-      8: 6,
-      9: 6,
-      10: 11,
-      11: 3,
-      12: 1,
+      3: 1,
+      4: 5,
+      5: 6,
+      6: 5,
+      7: 5,
+      8: 8,
+      9: 5,
+      10: 2,
+      11: 2,
     })
     expect(levelByTitle.CEO).toBe(2)
-    expect(levelByTitle["Content Delivery Manager"]).toBe(7)
-    expect(levelByTitle["Software Developer"]).toBe(10)
+    expect(levelByTitle["Content Delivery Manager"]).toBe(5)
+    expect(levelByTitle["Software Developer"]).toBe(8)
   })
 
-  it("never lets the zone profile cap a seeded title under the demo weighting", () => {
+  it("caps exactly the three heads sharing the EXEC_HEAD vector", () => {
     // complexity-ambiguity and scope-impact are the demo's only profile
-    // criteria (weight >= 4, non-workingConditions) under DEMO_WEIGHT_POINTS.
-    // Every title's own rating on both clears its score-implied zone's
-    // floor, so evaluate()'s route through placeRole never actually caps
-    // anyone here; this pins that fact so a future rating or weight edit
-    // that silently starts capping a title is caught.
-    for (const title of ALL_TITLES) {
-      const { profileLimited } = evaluate(
+    // criteria (weight >= 4, non-workingConditions) under DEMO_WEIGHT_POINTS,
+    // and zone A demands step 4 on both. The three functional heads share one
+    // rating vector: scope-impact 5 carries them to a weighting of 79, which
+    // reaches zone A, while their complexity-ambiguity of 3 does not, so
+    // placeRole holds them at zone B's top level and flags them. Head of
+    // Finance is a functional head too and is NOT capped: its own vector rates
+    // complexity 4, so zone A admits it. That is the profile rule doing its
+    // job (a high total alone must not buy zone A),
+    // and it is the demo org's worked example of a placement a person is
+    // asked to look at. Pinned by name so a rating or weight edit that
+    // silently starts or stops capping a title is caught.
+    const capped = ALL_TITLES.filter(
+      (title) =>
+        evaluate(RATINGS_BY_TITLE[title] ?? [], DEMO_WEIGHTS).profileLimited
+    )
+    expect(capped.sort()).toEqual([
+      "Head of HR",
+      "Head of Product",
+      "Head of Sales & Marketing",
+    ])
+    for (const title of capped) {
+      const { score, zone, level } = evaluate(
         RATINGS_BY_TITLE[title] ?? [],
         DEMO_WEIGHTS
       )
-      expect(profileLimited, title).toBe(false)
+      expect(score, title).toBe(79)
+      expect(zone, title).toBe("B")
+      expect(level, title).toBe(4)
     }
   })
 
@@ -220,10 +257,18 @@ describe("devCompany ratings", () => {
     expect(ceoBase.score).toBeGreaterThan(archBase.score)
     // Technical weighting narrows the gap rather than inverting it: the CEO
     // is also maxed on two of the three heavily-weighted criteria, so the
-    // CEO's score still edges up, but not enough to cross a level boundary,
-    // while the architect's technical peak rises far more and climbs a
-    // level outright.
-    expect(ceoTech.level).toBe(ceoBase.level)
+    // CEO's weighting still edges up. It costs a level anyway, and through
+    // the profile rather than the total: the baseline is flat, so it has no
+    // profile criteria at all, while the technical weighting makes all three
+    // knowledge/complexity criteria weight 5, and knowledge-breadth is the
+    // CEO's one non-max rating. Zone A's step 4 refuses it, so the CEO lands
+    // at zone B's top. The architect's technical peak meanwhile lifts the
+    // total enough to climb a level outright.
+    expect(ceoTech.score).toBeGreaterThan(ceoBase.score)
+    expect(ceoBase.profileLimited).toBe(false)
+    expect(ceoTech.profileLimited).toBe(true)
+    expect(ceoTech.level).toBe(ZONE_LEVEL_RANGES.B.from)
+    expect(ceoTech.level).toBeGreaterThan(ceoBase.level)
     expect(archTech.score).toBeGreaterThan(archBase.score)
     expect(archTech.level).toBeLessThan(archBase.level)
     expect(archTech.score - archBase.score).toBeGreaterThan(

@@ -80,8 +80,8 @@ const DOC: MethodAppendixDoc = {
       name: "Company-wide and strategic roles",
       levels: [
         { level: 1, minScore: 97 },
-        { level: 2, minScore: 92 },
-        { level: 3, minScore: 87 },
+        { level: 2, minScore: 86 },
+        { level: 3, minScore: 77 },
       ],
       minStep: 4,
     },
@@ -89,9 +89,9 @@ const DOC: MethodAppendixDoc = {
       key: "B",
       name: "Leading specialist roles",
       levels: [
-        { level: 4, minScore: 81 },
-        { level: 5, minScore: 75 },
-        { level: 6, minScore: 69 },
+        { level: 4, minScore: 69 },
+        { level: 5, minScore: 62 },
+        { level: 6, minScore: 56 },
       ],
       minStep: null,
     },

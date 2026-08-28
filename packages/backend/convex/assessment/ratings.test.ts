@@ -115,7 +115,7 @@ describe("setRating", () => {
     // Re-rating the 8th criterion (safety-exposure, the model's one
     // workingConditions criterion: the only one 0 is legal on) from 5 to 0
     // drops the normalized score from 100 to floor(20 * 105 / 24) = 87
-    // (neutral 3 weight points, like every activated criterion): Level 3.
+    // (neutral 3 weight points, like every activated criterion): Level 2.
     await asAdmin.mutation(api.assessment.ratings.setRating, {
       orgId,
       roleId,
@@ -142,7 +142,7 @@ describe("setRating", () => {
       })
       expect(shifts[1]?.payload).toMatchObject({
         roleId,
-        changes: { level: { from: 1, to: 3 } },
+        changes: { level: { from: 1, to: 2 } },
       })
       const changes = await ctx.db
         .query("auditLog")
