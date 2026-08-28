@@ -1,0 +1,183 @@
+apps/dashboard/content/docs/sv/evaluating-a-role.mdx
+  s_99882331cf8b8c::t_020f461611715c 50-52
+apps/dashboard/content/docs/en/collaboration.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 7
+apps/dashboard/content/docs/nb/roles-register.mdx
+  s_99882331cf8b8c::t_6c8cf111dd056e 20-25
+apps/dashboard/content/docs/nb/evaluating-a-role.mdx
+  s_99882331cf8b8c::t_020f461611715c 51-53
+apps/dashboard/content/docs/fi/roles-register.mdx
+  s_99882331cf8b8c::t_6c8cf111dd056e 20-25
+apps/dashboard/content/docs/nb/troubleshooting-model-and-evaluation.mdx
+  s_99882331cf8b8c::t_60b843ba462bf0 100-107
+apps/dashboard/content/docs/da/method-documentation.mdx
+  s_99882331cf8b8c::t_b35165f4e905c5 95-96
+apps/dashboard/content/docs/nb/glossary.mdx
+  s_99882331cf8b8c::t_b7b60b6addc16f 196-201
+apps/dashboard/content/docs/fi/method-appendix-pdf.mdx
+  s_99882331cf8b8c::t_bd815407bbbf4f 16-17,20-22,25-36
+  s_99882331cf8b8c::t_115b3b57d9c2a0 49-54
+apps/dashboard/content/docs/nb/rules-and-practice.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 7
+apps/dashboard/content/docs/da/troubleshooting-model-and-evaluation.mdx
+  s_99882331cf8b8c::t_60b843ba462bf0 98-105
+apps/dashboard/content/docs/fi/ai-weighting-review.mdx
+  s_99882331cf8b8c::t_a2e0b62b108ad2 7,14
+apps/dashboard/content/docs/fi/glossary.mdx
+  s_99882331cf8b8c::t_b7b60b6addc16f 207-212
+apps/dashboard/content/docs/sv/troubleshooting-model-and-evaluation.mdx
+  s_99882331cf8b8c::t_60b843ba462bf0 100-107
+apps/dashboard/content/docs/fi/rules-and-practice.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 8
+apps/dashboard/content/docs/da/model-overview.mdx
+  s_99882331cf8b8c::t_1e12275ebbba55 18-23
+apps/dashboard/content/docs/en/rules-and-practice.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 8
+packages/i18n/messages/fi.json
+  s_99882331cf8b8c::t_c97d9e26fda7fa 2781
+apps/dashboard/content/docs/en/ai-weighting-review.mdx
+  s_99882331cf8b8c::t_a2e0b62b108ad2 7,14
+apps/dashboard/content/docs/nb/collaboration.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 8
+apps/dashboard/content/docs/fi/equivalent-work.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 8
+apps/dashboard/content/docs/fi/weighting-and-point-budget.mdx
+  s_99882331cf8b8c::t_a2e0b62b108ad2 11-12,45,58-59
+apps/dashboard/content/docs/nb/adjusting-a-rating.mdx
+  s_99882331cf8b8c::t_020f461611715c 37-39
+apps/dashboard/content/docs/nb/model-overview.mdx
+  s_99882331cf8b8c::t_1e12275ebbba55 17-22
+apps/dashboard/content/docs/da/equivalent-work.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 8
+apps/dashboard/content/docs/nb/equal-work.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 7
+apps/dashboard/content/docs/da/collaboration.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 8
+apps/dashboard/content/docs/nb/ai-weighting-review.mdx
+  s_99882331cf8b8c::t_a2e0b62b108ad2 7,14
+apps/dashboard/content/docs/en/navigating-the-app.mdx
+  s_99882331cf8b8c::t_e3358d9e55a199 86-87
+apps/dashboard/content/docs/en/equal-work.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 7
+apps/dashboard/content/docs/da/ai-weighting-review.mdx
+  s_99882331cf8b8c::t_a2e0b62b108ad2 7,14
+apps/dashboard/content/docs/fi/adjusting-a-rating.mdx
+  s_99882331cf8b8c::t_d6101c4dac2bc8 41
+  s_99882331cf8b8c::t_020f461611715c 39-40
+apps/dashboard/content/docs/en/glossary.mdx
+  s_99882331cf8b8c::t_b7b60b6addc16f 191-195
+apps/dashboard/content/docs/en/adjusting-a-rating.mdx
+  s_99882331cf8b8c::t_020f461611715c 36-38
+apps/dashboard/content/docs/en/model-overview.mdx
+  s_99882331cf8b8c::t_1e12275ebbba55 17-22
+apps/dashboard/content/docs/nb/equivalent-work.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 7
+apps/dashboard/content/docs/fi/navigating-the-app.mdx
+  s_99882331cf8b8c::t_e3358d9e55a199 87-88
+apps/dashboard/content/docs/da/method-appendix-pdf.mdx
+  s_99882331cf8b8c::t_bd815407bbbf4f 16-17,20-21,24-33
+  s_99882331cf8b8c::t_115b3b57d9c2a0 46-51
+apps/dashboard/content/docs/nb/navigating-the-app.mdx
+  s_99882331cf8b8c::t_e3358d9e55a199 87-88
+apps/dashboard/content/docs/nb/method-documentation.mdx
+  s_99882331cf8b8c::t_b35165f4e905c5 93-94
+apps/dashboard/content/docs/sv/rules-and-practice.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 7
+packages/i18n/messages/nb.json
+  s_99882331cf8b8c::t_c97d9e26fda7fa 2781
+apps/dashboard/content/docs/en/weighting-and-point-budget.mdx
+  s_99882331cf8b8c::t_a2e0b62b108ad2 11-12,42-43,55-56
+apps/dashboard/content/docs/en/roles-register.mdx
+  s_99882331cf8b8c::t_6c8cf111dd056e 20-25
+apps/dashboard/content/docs/da/roles-register.mdx
+  s_99882331cf8b8c::t_6c8cf111dd056e 20-25
+apps/dashboard/content/docs/fi/equal-work.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 8
+apps/dashboard/content/docs/sv/method-documentation.mdx
+  s_99882331cf8b8c::t_b35165f4e905c5 92-93
+apps/dashboard/content/docs/en/evaluating-a-role.mdx
+  s_99882331cf8b8c::t_020f461611715c 49-51
+apps/dashboard/content/docs/da/navigating-the-app.mdx
+  s_99882331cf8b8c::t_e3358d9e55a199 87-88
+packages/i18n/messages/da.json
+  s_99882331cf8b8c::t_c97d9e26fda7fa 2781
+apps/dashboard/content/docs/en/troubleshooting-model-and-evaluation.mdx
+  s_99882331cf8b8c::t_60b843ba462bf0 94,97-102
+apps/dashboard/content/docs/sv/navigating-the-app.mdx
+  s_99882331cf8b8c::t_e3358d9e55a199 85-86
+apps/dashboard/content/docs/sv/collaboration.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 7
+apps/dashboard/content/docs/fi/evaluating-a-role.mdx
+  s_99882331cf8b8c::t_020f461611715c 54-56
+apps/dashboard/content/docs/da/rules-and-practice.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 8
+apps/dashboard/content/docs/da/adjusting-a-rating.mdx
+  s_99882331cf8b8c::t_020f461611715c 36-38
+apps/dashboard/content/docs/sv/equivalent-work.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 7
+apps/dashboard/content/docs/sv/roles-register.mdx
+  s_99882331cf8b8c::t_6c8cf111dd056e 20-25
+apps/dashboard/content/docs/da/equal-work.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 7
+apps/dashboard/content/docs/fi/collaboration.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 8
+apps/dashboard/content/docs/sv/ai-weighting-review.mdx
+  s_99882331cf8b8c::t_a2e0b62b108ad2 7,14
+apps/dashboard/content/docs/fi/troubleshooting-model-and-evaluation.mdx
+  s_99882331cf8b8c::t_60b843ba462bf0 101-109
+apps/dashboard/content/docs/sv/method-appendix-pdf.mdx
+  s_99882331cf8b8c::t_115b3b57d9c2a0 45-50
+  s_99882331cf8b8c::t_bd815407bbbf4f 15-16,19-21,23-32
+apps/dashboard/content/docs/en/method-appendix-pdf.mdx
+  s_99882331cf8b8c::t_115b3b57d9c2a0 45-50
+  s_99882331cf8b8c::t_bd815407bbbf4f 16-17,20-21,23-33
+apps/dashboard/content/docs/sv/weighting-and-point-budget.mdx
+  s_99882331cf8b8c::t_a2e0b62b108ad2 11-12,42,55-56
+apps/dashboard/content/docs/da/evaluating-a-role.mdx
+  s_99882331cf8b8c::t_020f461611715c 50-52
+apps/dashboard/content/docs/da/glossary.mdx
+  s_99882331cf8b8c::t_b7b60b6addc16f 203-207
+apps/dashboard/content/docs/fi/model-overview.mdx
+  s_99882331cf8b8c::t_1e12275ebbba55 19-24
+apps/dashboard/content/docs/sv/model-overview.mdx
+  s_99882331cf8b8c::t_1e12275ebbba55 17-22
+apps/dashboard/content/docs/sv/equal-work.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 7
+apps/dashboard/content/docs/sv/glossary.mdx
+  s_99882331cf8b8c::t_b7b60b6addc16f 196-201
+apps/dashboard/content/docs/sv/adjusting-a-rating.mdx
+  s_99882331cf8b8c::t_020f461611715c 36-38
+apps/dashboard/content/docs/en/equivalent-work.mdx
+  s_99882331cf8b8c::t_7ddbf596f539f7 7
+packages/i18n/messages/en.json
+  s_99882331cf8b8c::t_c97d9e26fda7fa 2781
+apps/dashboard/content/docs/nb/method-appendix-pdf.mdx
+  s_99882331cf8b8c::t_bd815407bbbf4f 15-16,19-21,24-34
+  s_99882331cf8b8c::t_115b3b57d9c2a0 47-52
+packages/i18n/messages/sv.json
+  s_99882331cf8b8c::t_c97d9e26fda7fa 2781
+apps/dashboard/content/docs/da/weighting-and-point-budget.mdx
+  s_99882331cf8b8c::t_a2e0b62b108ad2 11-12,43,56-57
+apps/dashboard/content/docs/nb/weighting-and-point-budget.mdx
+  s_99882331cf8b8c::t_a2e0b62b108ad2 11-12,43,56-57
+apps/dashboard/content/docs/fi/method-documentation.mdx
+  s_99882331cf8b8c::t_b35165f4e905c5 98-99
+apps/dashboard/content/docs/en/method-documentation.mdx
+  s_99882331cf8b8c::t_b35165f4e905c5 93-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "6eea69293144c2d0c7807da5b772e326c8addbc9",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
