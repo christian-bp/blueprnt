@@ -1,0 +1,25 @@
+docs/contexts/assessment/CONTEXT.md
+  s_99882331cf8b8c::t_7bb8f9e77039f2 24-27
+packages/backend/convex/assistant/knowledge.ts
+  s_99882331cf8b8c::t_eeeae83204ad8f 156,335-336,340-346
+CONTEXT-MAP.md
+  s_99882331cf8b8c::t_e6286b73934025 9-11,16
+docs/contexts/evaluation-model/CONTEXT.md
+  s_99882331cf8b8c::t_7bb8f9e77039f2 49-71,74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "8bd27aad18c2cc59ac3a00d4a271104c9eb10515",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
