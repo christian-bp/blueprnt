@@ -1,0 +1,26 @@
+packages/core/src/scoring.fixtures.ts
+  s_99882331cf8b8c::t_8727ea1065e1e1 8-11,15,27-33,44
+packages/core/src/results.test.ts
+  s_99882331cf8b8c::t_8727ea1065e1e1 4-5,18-19,65,88-89,105-106
+packages/core/src/scoring.test.ts
+  s_99882331cf8b8c::t_3c770ec9fcc5d2 193-196
+  s_99882331cf8b8c::t_e05416f6c2b8df 169,176-192,197-203
+  s_99882331cf8b8c::t_6ac655e4d5b546 10
+  s_99882331cf8b8c::t_8727ea1065e1e1 4-5,15,17-20,37,97-98,106,119,123,127,130,153,170-175,226,228,236,245,247,311
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "b126d3739d530bb621aaf729389104a46a84f5e0",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
