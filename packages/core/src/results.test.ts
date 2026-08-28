@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 import { computeResults } from "./results"
 import {
-  STANDARD_CRITERIA,
-  STANDARD_THRESHOLDS,
+  FIXTURE_CRITERIA,
+  FIXTURE_THRESHOLDS,
   allRated,
 } from "./scoring.fixtures"
 import type { CriterionWeight, RoleRatings } from "./types"
@@ -15,8 +15,8 @@ describe("computeResults", () => {
       { roleId: "r-none", ratings: [] },
     ]
     const results = computeResults({
-      criteria: STANDARD_CRITERIA,
-      thresholds: STANDARD_THRESHOLDS,
+      criteria: FIXTURE_CRITERIA,
+      thresholds: FIXTURE_THRESHOLDS,
       zoneProfileRules: [],
       roles,
     })
@@ -62,7 +62,7 @@ describe("computeResults", () => {
   it("never treats a zero-criteria model as complete", () => {
     const results = computeResults({
       criteria: [],
-      thresholds: STANDARD_THRESHOLDS,
+      thresholds: FIXTURE_THRESHOLDS,
       zoneProfileRules: [],
       roles: [{ roleId: "r1", ratings: [] }],
     })
@@ -85,8 +85,8 @@ describe("computeResults", () => {
       { criterionId: "ghost", value: 5 as const },
     ]
     const results = computeResults({
-      criteria: STANDARD_CRITERIA,
-      thresholds: STANDARD_THRESHOLDS,
+      criteria: FIXTURE_CRITERIA,
+      thresholds: FIXTURE_THRESHOLDS,
       zoneProfileRules: [],
       roles: [{ roleId: "r1", ratings }],
     })
@@ -102,8 +102,8 @@ describe("computeResults", () => {
       { criterionId: "scope", value: 3 as const },
     ]
     const results = computeResults({
-      criteria: STANDARD_CRITERIA,
-      thresholds: STANDARD_THRESHOLDS,
+      criteria: FIXTURE_CRITERIA,
+      thresholds: FIXTURE_THRESHOLDS,
       zoneProfileRules: [],
       roles: [{ roleId: "r1", ratings }],
     })

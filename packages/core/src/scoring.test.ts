@@ -1,22 +1,23 @@
 import { describe, expect, it } from "vitest"
 import { assignLevel, criterionShares, scoreRole } from "./scoring"
 import {
-  STANDARD_CRITERIA,
-  STANDARD_THRESHOLDS,
+  FIXTURE_CRITERIA,
+  FIXTURE_THRESHOLDS,
   allRated,
 } from "./scoring.fixtures"
 import type { CriterionWeight, RatingInput } from "./types"
 import type { WeightPoints } from "./weighting"
+import { DEFAULT_LEVEL_RULES, LEVEL_COUNT, SCORE_SCALE_MAX } from "./zones"
 
 describe("scoreRole", () => {
   it("scores uniform ratings at exactly 20 x rating, regardless of allocation", () => {
     // raw = r * sum(points), so the normalization cancels the allocation.
-    // 1 is the floor for STANDARD_CRITERIA (none of it is workingConditions);
+    // 1 is the floor for FIXTURE_CRITERIA (none of it is workingConditions);
     // the WC-only 0 floor is covered by its own tests below.
-    expect(scoreRole(allRated(5), STANDARD_CRITERIA)).toBe(100)
-    expect(scoreRole(allRated(4), STANDARD_CRITERIA)).toBe(80)
-    expect(scoreRole(allRated(3), STANDARD_CRITERIA)).toBe(60)
-    expect(scoreRole(allRated(1), STANDARD_CRITERIA)).toBe(20)
+    expect(scoreRole(allRated(5), FIXTURE_CRITERIA)).toBe(100)
+    expect(scoreRole(allRated(4), FIXTURE_CRITERIA)).toBe(80)
+    expect(scoreRole(allRated(3), FIXTURE_CRITERIA)).toBe(60)
+    expect(scoreRole(allRated(1), FIXTURE_CRITERIA)).toBe(20)
   })
 
   it("scores a mixed standardmall role to the hand-computed golden", () => {
@@ -33,7 +34,7 @@ describe("scoreRole", () => {
       { criterionId: "people", value: 1 },
       { criterionId: "formal", value: 1 },
     ]
-    expect(scoreRole(ratings, STANDARD_CRITERIA)).toBe(51)
+    expect(scoreRole(ratings, FIXTURE_CRITERIA)).toBe(51)
   })
 
   it("floors the normalized score (never rounds up past a threshold)", () => {
@@ -93,8 +94,8 @@ describe("scoreRole", () => {
       { criterionId: "ghost", value: 5 },
     ]
     // raw = 25, total points 27: 20 * 25 / 27 = 18.51 -> 18.
-    expect(scoreRole(only, STANDARD_CRITERIA)).toBe(18)
-    expect(scoreRole(withGhost, STANDARD_CRITERIA)).toBe(18)
+    expect(scoreRole(only, FIXTURE_CRITERIA)).toBe(18)
+    expect(scoreRole(withGhost, FIXTURE_CRITERIA)).toBe(18)
   })
 
   it("throws on a duplicate rating for the same criterion", () => {
@@ -102,7 +103,7 @@ describe("scoreRole", () => {
       { criterionId: "scope", value: 2 },
       { criterionId: "scope", value: 3 },
     ]
-    expect(() => scoreRole(ratings, STANDARD_CRITERIA)).toThrow(/duplicate/)
+    expect(() => scoreRole(ratings, FIXTURE_CRITERIA)).toThrow(/duplicate/)
   })
 
   it("throws on a duplicate criterion in the model", () => {
@@ -115,18 +116,18 @@ describe("scoreRole", () => {
 
   it("throws when a rating value is outside 0-5", () => {
     const bad = [{ criterionId: "scope", value: 6 }] as unknown as RatingInput[]
-    expect(() => scoreRole(bad, STANDARD_CRITERIA)).toThrow(/out of range/)
+    expect(() => scoreRole(bad, FIXTURE_CRITERIA)).toThrow(/out of range/)
     const negative = [
       { criterionId: "scope", value: -1 },
     ] as unknown as RatingInput[]
-    expect(() => scoreRole(negative, STANDARD_CRITERIA)).toThrow(/out of range/)
+    expect(() => scoreRole(negative, FIXTURE_CRITERIA)).toThrow(/out of range/)
   })
 
   it("throws on a 0 rating for a non-working-conditions criterion", () => {
-    // "scope" is dimensionKey responsibility in STANDARD_CRITERIA: 0 is only
+    // "scope" is dimensionKey responsibility in FIXTURE_CRITERIA: 0 is only
     // ever valid for a workingConditions criterion.
     const ratings: RatingInput[] = [{ criterionId: "scope", value: 0 }]
-    expect(() => scoreRole(ratings, STANDARD_CRITERIA)).toThrow(/out of range/)
+    expect(() => scoreRole(ratings, FIXTURE_CRITERIA)).toThrow(/out of range/)
   })
 
   it("scores a working-conditions 0 as a real zero contribution, not a rejection", () => {
@@ -149,7 +150,7 @@ describe("scoreRole", () => {
     const ratings: RatingInput[] = [
       { criterionId: "ghost", value: 0 },
     ] as unknown as RatingInput[]
-    expect(scoreRole(ratings, STANDARD_CRITERIA)).toBe(0)
+    expect(scoreRole(ratings, FIXTURE_CRITERIA)).toBe(0)
   })
 
   it("throws on weight points outside the 1-5 scale", () => {
@@ -165,13 +166,41 @@ describe("scoreRole", () => {
 })
 
 describe("assignLevel", () => {
-  it("maps the 0-100 default thresholds with inclusive lower bounds", () => {
-    expect(assignLevel(100, STANDARD_THRESHOLDS)).toBe(1)
-    expect(assignLevel(98, STANDARD_THRESHOLDS)).toBe(1)
-    expect(assignLevel(97, STANDARD_THRESHOLDS)).toBe(2)
-    expect(assignLevel(83, STANDARD_THRESHOLDS)).toBe(2)
-    expect(assignLevel(82, STANDARD_THRESHOLDS)).toBe(3)
-    expect(assignLevel(0, STANDARD_THRESHOLDS)).toBe(7)
+  it("reads a minScore as the inclusive lower bound of its level", () => {
+    expect(assignLevel(100, FIXTURE_THRESHOLDS)).toBe(1)
+    expect(assignLevel(98, FIXTURE_THRESHOLDS)).toBe(1)
+    expect(assignLevel(97, FIXTURE_THRESHOLDS)).toBe(2)
+    expect(assignLevel(83, FIXTURE_THRESHOLDS)).toBe(2)
+    expect(assignLevel(82, FIXTURE_THRESHOLDS)).toBe(3)
+    expect(assignLevel(0, FIXTURE_THRESHOLDS)).toBe(7)
+  })
+
+  it("places every whole weighting on the shipped default ladder", () => {
+    // The synthetic ladder above proves the RULE; this proves the ladder the
+    // product actually seeds. Walking 0 to 100 catches the two ways a retune
+    // can go wrong and a per-value spot check cannot: a gap (some weighting
+    // reaching no level, which would throw) and a level nobody can reach.
+    const seen = new Set<number>()
+    for (let score = 0; score <= SCORE_SCALE_MAX; score++) {
+      const level = assignLevel(score, [...DEFAULT_LEVEL_RULES])
+      expect(level, `score ${score}`).toBeGreaterThanOrEqual(1)
+      expect(level, `score ${score}`).toBeLessThanOrEqual(LEVEL_COUNT)
+      seen.add(level)
+    }
+    expect(seen.size).toBe(LEVEL_COUNT)
+    // Each level opens exactly at its own minScore and not one point below.
+    for (const rule of DEFAULT_LEVEL_RULES) {
+      expect(
+        assignLevel(rule.minScore, [...DEFAULT_LEVEL_RULES]),
+        `level ${rule.level}`
+      ).toBe(rule.level)
+      if (rule.minScore > 0) {
+        expect(
+          assignLevel(rule.minScore - 1, [...DEFAULT_LEVEL_RULES]),
+          `level ${rule.level} floor`
+        ).toBe(rule.level + 1)
+      }
+    }
   })
 
   it("breaks minScore ties toward the lowest level number (highest level)", () => {
@@ -194,9 +223,9 @@ describe("assignLevel", () => {
   })
 
   it("throws on a negative or non-finite score", () => {
-    expect(() => assignLevel(-1, STANDARD_THRESHOLDS)).toThrow(/invalid score/)
+    expect(() => assignLevel(-1, FIXTURE_THRESHOLDS)).toThrow(/invalid score/)
     expect(() =>
-      assignLevel(Number.POSITIVE_INFINITY, STANDARD_THRESHOLDS)
+      assignLevel(Number.POSITIVE_INFINITY, FIXTURE_THRESHOLDS)
     ).toThrow(/invalid score/)
   })
 })
@@ -204,7 +233,7 @@ describe("assignLevel", () => {
 describe("criterionShares", () => {
   it("splits an all-equal rating purely by weight points", () => {
     // every value 3 => contribution_i = 3 * w_i => share_i = w_i / sum(w).
-    const shares = criterionShares(allRated(3), STANDARD_CRITERIA)
+    const shares = criterionShares(allRated(3), FIXTURE_CRITERIA)
     const byId = new Map(shares.map((s) => [s.criterionId, s]))
     expect(byId.get("scope")?.share).toBeCloseTo(5 / 27, 10)
     expect(byId.get("formal")?.share).toBeCloseTo(1 / 27, 10)
@@ -213,9 +242,9 @@ describe("criterionShares", () => {
   })
 
   it("returns one entry per criterion, in input order", () => {
-    const shares = criterionShares(allRated(4), STANDARD_CRITERIA)
+    const shares = criterionShares(allRated(4), FIXTURE_CRITERIA)
     expect(shares.map((s) => s.criterionId)).toEqual(
-      STANDARD_CRITERIA.map((c) => c.criterionId)
+      FIXTURE_CRITERIA.map((c) => c.criterionId)
     )
   })
 
@@ -279,7 +308,7 @@ describe("criterionShares", () => {
     // legal to construct; criterionShares itself has no opinion on how many
     // workingConditions criteria a real model may carry (that cap belongs to
     // method validation, not scoring).
-    const criteria: CriterionWeight[] = STANDARD_CRITERIA.map((criterion) => ({
+    const criteria: CriterionWeight[] = FIXTURE_CRITERIA.map((criterion) => ({
       ...criterion,
       dimensionKey: "workingConditions",
     }))
