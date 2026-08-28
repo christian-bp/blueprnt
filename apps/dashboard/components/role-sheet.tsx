@@ -29,6 +29,7 @@ import {
   MethodDriftBadge,
 } from "@/components/assessment-status"
 import { DeviationBadge } from "@/components/deviation-badge"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { ConfirmPlacementDialog } from "@/components/levels/confirm-placement-dialog"
 import {
   AnchorDialog,
@@ -46,6 +47,16 @@ import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakd
 import { ResponsibilitiesList } from "@/components/roles/responsibilities-list"
 import { LevelBadge } from "@/components/level-badge"
 import { TrackBadge } from "@/components/track-badge"
+
+// Each review reason is ABOUT a concept, and the block's heading is the one
+// place in the app where that concept is named with room for its help. The
+// map is total over the reasons so a new one does not compile until it says
+// which concept a reader would need explained.
+const REVIEW_HELP = {
+  profileLimited: "profileRequirement",
+  anchorDeviation: "anchorRole",
+  staleMethod: "methodDrift",
+} as const satisfies Record<CalibrationReason, string>
 
 interface RoleSheetContextValue {
   openRole: (roleId: string) => void
@@ -358,6 +369,7 @@ function ReviewBlock({
 }) {
   const t = useTranslations("dashboard.levels.calibration")
   const tAnchor = useTranslations("dashboard.roles.anchor")
+  const tHelp = useTranslations("dashboard.help")
   const [confirming, setConfirming] = useState(false)
   const [pending, setPending] = useState(false)
   const tToast = useTranslations("dashboard.toast")
@@ -384,8 +396,15 @@ function ReviewBlock({
       className={cn("space-y-3 rounded-xl border p-4", WARNING_ALERT_CLASS)}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <h3 className="font-medium text-foreground text-sm">
+        <h3 className="flex items-center gap-1.5 font-medium text-foreground text-sm">
           {t(`class.${reason}`)}
+          {/* The concept this block is about, explained on the block's own
+              heading: the profile requirement that capped it, the anchor role
+              it deviates from, or the method it was assessed under. One
+              popover per heading, and the heading changes with the reason. */}
+          <HelpMorphButton label={tHelp(`${REVIEW_HELP[reason]}Label`)}>
+            {tHelp(`${REVIEW_HELP[reason]}Body`)}
+          </HelpMorphButton>
         </h3>
       </div>
       {/* The reason, in words. Running text, so it floors at text-sm. */}

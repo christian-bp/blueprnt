@@ -148,6 +148,7 @@ function LevelRulesForm({
 }) {
   const t = useTranslations("dashboard.model.levelRules")
   const tLevels = useTranslations("dashboard.levels")
+  const tHelp = useTranslations("dashboard.help")
   const tToast = useTranslations("dashboard.toast")
   const tv = useTranslations("dashboard.validation")
   const saveLevels = useMutation(api.evaluationModel.approval.updateLevelRules)
@@ -256,6 +257,7 @@ function LevelRulesForm({
             label={
               <RowLabel
                 label={t("levelsLabel")}
+                helpLabel={t("levelsLabel")}
                 help={t("levelsDescription")}
               />
             }
@@ -344,7 +346,11 @@ function LevelRulesForm({
 
           <SettingsRow
             label={
-              <RowLabel label={t("zonesLabel")} help={t("zonesDescription")} />
+              <RowLabel
+                label={t("zonesLabel")}
+                helpLabel={tHelp("profileRequirementLabel")}
+                help={tHelp("profileRequirementBody")}
+              />
             }
           >
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -417,11 +423,23 @@ function levelSpan(
 // carries a title, a title help, sixteen inputs and a consequence sentence is
 // the descriptive prose the text-minimal law moves. The strings keep their
 // keys: the morph renders them, nothing was re-authored.
-function RowLabel({ label, help }: { label: string; help: string }) {
+function RowLabel({
+  label,
+  helpLabel,
+  help,
+}: {
+  label: string
+  // The help panel's own title, which is not always the row's label: the zone
+  // row's concept is the profile requirement, and its help now comes from the
+  // shared dashboard.help namespace so it sits under the body-length cap the
+  // panel's own namespace escaped.
+  helpLabel: string
+  help: string
+}) {
   return (
     <span className="flex items-center gap-1.5">
       {label}
-      <HelpMorphButton label={label}>{help}</HelpMorphButton>
+      <HelpMorphButton label={helpLabel}>{help}</HelpMorphButton>
     </span>
   )
 }
@@ -438,6 +456,7 @@ function RowLabel({ label, help }: { label: string; help: string }) {
 function LevelRulesSkeleton({ titleRow }: { titleRow: ReactNode }) {
   const t = useTranslations("dashboard.model.levelRules")
   const tLevels = useTranslations("dashboard.levels")
+  const tHelp = useTranslations("dashboard.help")
   return (
     <SettingsFrame
       title={titleRow}
@@ -457,7 +476,11 @@ function LevelRulesSkeleton({ titleRow }: { titleRow: ReactNode }) {
     >
       <SettingsRow
         label={
-          <RowLabel label={t("levelsLabel")} help={t("levelsDescription")} />
+          <RowLabel
+            label={t("levelsLabel")}
+            helpLabel={t("levelsLabel")}
+            help={t("levelsDescription")}
+          />
         }
       >
         <Table className="table-fixed">
@@ -505,7 +528,11 @@ function LevelRulesSkeleton({ titleRow }: { titleRow: ReactNode }) {
       </SettingsRow>
       <SettingsRow
         label={
-          <RowLabel label={t("zonesLabel")} help={t("zonesDescription")} />
+          <RowLabel
+            label={t("zonesLabel")}
+            helpLabel={tHelp("profileRequirementLabel")}
+            help={tHelp("profileRequirementBody")}
+          />
         }
       >
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

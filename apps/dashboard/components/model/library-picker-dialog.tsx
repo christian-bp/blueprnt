@@ -35,6 +35,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { useId, useRef, useState } from "react"
 import { cn } from "@workspace/ui/lib/utils"
 import { DisclosureToggle } from "@/components/disclosure-toggle"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import { formatNames } from "@/lib/list-format"
 import { modelErrorKey } from "@/lib/model-errors"
@@ -76,6 +77,7 @@ export function LibraryPickerDialog({
   // The chapter's own chip wording: a chip means the same thing on the row it
   // is chosen from as it would anywhere else in the chapter.
   const tCriteria = useTranslations("dashboard.model.criteria")
+  const tHelp = useTranslations("dashboard.help")
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
   const locale = useLocale()
@@ -191,6 +193,9 @@ export function LibraryPickerDialog({
                 max: DIMENSION_MAX_ACTIVE[dimensionKey],
               })}
             </Badge>
+            <HelpMorphButton label={tHelp("criterionSelectionLabel")}>
+              {tHelp("criterionSelectionBody")}
+            </HelpMorphButton>
           </DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>

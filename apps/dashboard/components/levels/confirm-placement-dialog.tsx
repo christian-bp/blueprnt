@@ -26,6 +26,7 @@ import { useTranslations } from "next-intl"
 import { useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { SubmitButton } from "@/components/submit-button"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import {
   type CalibrationNoteValues,
   makeCalibrationNoteSchema,
@@ -53,6 +54,7 @@ function ConfirmPlacementForm({
   onClose: () => void
 }) {
   const t = useTranslations("dashboard.levels.calibration")
+  const tHelp = useTranslations("dashboard.help")
   const tToast = useTranslations("dashboard.toast")
   const tv = useTranslations("dashboard.validation")
   const calibrate = useMutation(api.assessment.completion.calibrateAssessment)
@@ -83,7 +85,12 @@ function ConfirmPlacementForm({
   return (
     <>
       <DialogHeader>
-        <DialogTitle>{t("dialogTitle", { title })}</DialogTitle>
+        <DialogTitle className="flex items-center gap-1.5">
+          {t("dialogTitle", { title })}
+          <HelpMorphButton label={tHelp("calibrationLabel")}>
+            {tHelp("calibrationBody")}
+          </HelpMorphButton>
+        </DialogTitle>
         <DialogDescription>{t("dialogDescription")}</DialogDescription>
       </DialogHeader>
       {/* No panel chrome of its own: the dialog is the panel. */}
