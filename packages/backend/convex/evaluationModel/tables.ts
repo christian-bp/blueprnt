@@ -190,11 +190,28 @@ export const models = defineTable({
   // history, which is what keeps ADR-0023's no-versioning stand. Optional: a
   // model approved before this field existed simply has none, and its restore
   // control stays hidden until the next approval writes one.
-  lastApprovedModel: v.optional(modelEvidenceValidator),
+  lastApprovedModel: v.optional(
+    v.object({
+      ...modelEvidenceFields,
+      // TRANSITIONAL, delete with the migration below. ADR-0024 made the
+      // ladder and the zone gates method law, so a buffer written before that
+      // still carries its own copies and a narrowed validator refuses the
+      // whole document at push time. Tolerated only until
+      // dropRetiredLevelRules has run on every deployment; unlike the
+      // pay-mapping run's identically-named fields, these carry nothing worth
+      // restoring, because there is no longer anything for them to restore TO.
+      levelRules: v.optional(v.array(levelRuleShape)),
+      zoneProfileRules: v.optional(v.array(zoneProfileRuleShape)),
+    })
+  ),
   // Working conditions rules: status and rationale for whether workingConditions
   // is material in this model (ADR-0022); only one workingConditions criterion
   // can be active per model (section 6.1).
   workingConditions: v.optional(workingConditionsShape),
+  // TRANSITIONAL, delete with the migration below. The pre-ADR-0024 copies on
+  // the model document itself, same reason as the two inside the buffer.
+  levelRules: v.optional(v.array(levelRuleShape)),
+  zoneProfileRules: v.optional(v.array(zoneProfileRuleShape)),
 }).index("by_org", ["orgId"])
 
 // A pure selection row (ADR-0021 addendum, decision 8): no stored texts at

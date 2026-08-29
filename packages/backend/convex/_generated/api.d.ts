@@ -72,6 +72,7 @@ import type * as evaluationModel_criteriaLibrary from "../evaluationModel/criter
 import type * as evaluationModel_evidence from "../evaluationModel/evidence.js";
 import type * as evaluationModel_localize from "../evaluationModel/localize.js";
 import type * as evaluationModel_method from "../evaluationModel/method.js";
+import type * as evaluationModel_migrations from "../evaluationModel/migrations.js";
 import type * as evaluationModel_model from "../evaluationModel/model.js";
 import type * as evaluationModel_tables from "../evaluationModel/tables.js";
 import type * as evaluationModel_trackSchema from "../evaluationModel/trackSchema.js";
@@ -187,6 +188,7 @@ declare const fullApi: ApiFromModules<{
   "evaluationModel/evidence": typeof evaluationModel_evidence;
   "evaluationModel/localize": typeof evaluationModel_localize;
   "evaluationModel/method": typeof evaluationModel_method;
+  "evaluationModel/migrations": typeof evaluationModel_migrations;
   "evaluationModel/model": typeof evaluationModel_model;
   "evaluationModel/tables": typeof evaluationModel_tables;
   "evaluationModel/trackSchema": typeof evaluationModel_trackSchema;
