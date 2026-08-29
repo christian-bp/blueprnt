@@ -138,17 +138,31 @@ in the same change.
 - [ ] **Native review of the ADR-0014 terminology strings (Nivå/Senioritet/Steg).** Every key the ADR-0014 change renamed or rewrote carries machine-drafted nb/da/fi values (sv/en reviewed in-house); review them from that change's i18n diff rather than any fixed list. Among others it spans `dashboard.levels.*`, `dashboard.overview.widgets.levels.*`, the `dashboard.model.editor.*` step scale, `dashboard.rating.result.*`, `dashboard.roles.anchor.*`, `dashboard.payMapping.gap.*`, the `dashboard.help.*` level/seniority/step explanations, `model.level`/`model.seniority`/`model.step`, the audit event/field labels, the "track" loanword normalization, and the seeded standardTemplate content. Pay particular attention to the fi short form (`Taso {level}` on numbered labels: `assessment.levelNumbered`, `dashboard.levels.levelRow`, the gap and deviation chips; long `Vaativuustaso` in prose), nb `Trinn`, da `Trin`, and the seniority help copy. Have a native speaker review before launch.
 - [ ] **Label the audit payload field `count`.** Every other payload field now
   resolves to a `dashboard.auditLog.fields.*` label; `count` deliberately does
-  not, so the `ai.suggestionConfirmed` flat-stat line is the one place the audit
-  detail still prints a raw payload key. It was left unlabelled on purpose: two
-  unrelated events write it with two different meanings, `ai.suggestionConfirmed`
-  (`model.weightReview`: weight moves applied) and `roleFamily.removed` (roles
-  moved out of the removed family). The latter carries a `changes` map, so it
-  renders as a diff and hides `count` today, but the label namespace is shared,
-  so one string would have to fit both. Make the cross-surface wording decision
-  (one neutral term, or split into per-event flat-stat keys), then ship the
-  label in all five locales and register `count` in `OTHER_AUDIT_FIELDS`
-  (`apps/dashboard/lib/audit-labels.test.ts`).
-- [ ] **Docs corpus alignment to the masterdokument world.** At least 8 MDX
+  not, so it is the one place the audit detail still prints a raw payload key,
+  against the standing rule in CLAUDE.md that no surface ever shows one.
+
+  Re-counted 2026-08-29, because this entry understated its own scope. SIX
+  events write `count`, not two: `model.created`, `roleFamily.removed`,
+  `criterion.deactivated`, `model.restored`, and the two `model.updated`
+  variants (`weights.rebalanced` and `model.weightReview`). The first four all
+  carry a `changes` map AND an `items` array, so they render as a diff or an
+  item count and hide `count` entirely. Only the two `model.updated` variants
+  surface it, and in both it means the same thing: criteria whose weight moved.
+
+  That makes the decision narrower than it looked, and it is a real fork.
+  Either one neutral label ("Count" / "Antal"), correct for all six and
+  uninformative in the two that show it; or a precise label for what actually
+  renders ("Criteria changed" / "Ändrade kriterier"), which would be wrong if
+  one of the four hiding events ever started surfacing it, since `fieldLabel`
+  resolves by field name and has no event context. Left for the owner: a vague
+  label shipped in five locales is harder to walk back than this entry. Once
+  decided, ship it in all five locales and register `count` in
+  `OTHER_AUDIT_FIELDS` (`apps/dashboard/lib/audit-labels.test.ts`).
+- [x] **Docs corpus alignment to the masterdokument world.** Done 2026-08-28 by
+  phase 6 task 1, re-verified 2026-08-29: no page in any of the five locales
+  mentions a 0-5 scale, and `criteria-and-scale.mdx` describes the library
+  picker rather than a free-text criterion form. Original entry kept for the
+  record: At least 8 MDX
   pages x 5 locales (`criteria-and-scale`, `evaluating-a-role`,
   `score-and-levels`, `key-concepts`, `glossary`, `model-overview`,
   `anchor-roles`, `method-appendix-pdf`, under
@@ -350,14 +364,16 @@ bias-review UI, the metodbilaga export, the verbatim anchor texts, the
 `PLAN-V1.md` four-factor prose) are closed. These remain, and none of them block
 starting V2:
 
-- [x] **Level-rule editing UI (E2 configurability).** Shipped as the Level
-  thresholds section on the Godkannande chapter
-  (`components/model/level-rules-panel.tsx`, fas 5): twelve thresholds grouped
-  by zone plus the four zone profile requirements, with the engine's own rules
-  stated on the field that breaks them and a save that says it reopens the
-  approval. Both `levelRulesValid` and `zoneProfileMonotonic` now route their
-  checklist remedy to that section, so the two checks are reachable from the UI
-  rather than only from the database.
+- [x] **Level-rule editing UI (E2 configurability).** SUPERSEDED, not shipped.
+  It was built as the Level thresholds section on the Godkannande chapter (fas
+  5) and then removed entirely by ADR-0024 (2026-08-29), which made the twelve
+  thresholds and the four zone profile requirements method law in
+  `packages/core`. The panel, its schema fields and the two approval checks
+  that existed only to validate what it could write (`levelRulesValid`,
+  `zoneProfileMonotonic`) are all deleted. The audit requirement asked for
+  configurability; the answer is that level rules are deliberately not
+  configurable, so there is nothing left to build here. See ADR-0024 for the
+  recorded deviation from the masterdokument's §14.2/§14.7.
 - [x] **Calibration queue UI (spec section 6).** Shipped on the levels
   surface (`components/levels/calibration-queue.tsx`, fas 5): the derived
   queue lists the three classes with the reason in words per row, and
