@@ -36,8 +36,6 @@ const CHECKS = [
   { key: "anchorsComplete", level: "blocker", ok: true },
   { key: "documentationComplete", level: "blocker", ok: true },
   { key: "weightBudget", level: "blocker", ok: true, count: 6 },
-  { key: "levelRulesValid", level: "blocker", ok: true },
-  { key: "zoneProfileMonotonic", level: "blocker", ok: true },
   { key: "dimensionWeightBalance", level: "warning", ok: true },
   // No people-leadership criterion in this fixture, so the engine reports
   // that obligation as not applying and the weighting chapter does not count

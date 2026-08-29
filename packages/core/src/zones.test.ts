@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest"
 import type { DimensionKey } from "./dimensions"
 import type { LevelRule, PlacementCriterion } from "./zones"
 import {
-  DEFAULT_LEVEL_RULES,
-  DEFAULT_ZONE_PROFILE_RULES,
+  LEVEL_RULES,
+  ZONE_PROFILE_RULES,
   LEVEL_COUNT,
   placeRole,
   profileCriteria,
@@ -34,23 +34,21 @@ describe("zone structure", () => {
   })
 
   it("ships twelve default level rules, strictly ordered, floored at zero", () => {
-    expect(DEFAULT_LEVEL_RULES).toHaveLength(LEVEL_COUNT)
-    expect(DEFAULT_LEVEL_RULES.map((rule) => rule.level)).toEqual([
+    expect(LEVEL_RULES).toHaveLength(LEVEL_COUNT)
+    expect(LEVEL_RULES.map((rule) => rule.level)).toEqual([
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
     ])
-    for (let i = 1; i < DEFAULT_LEVEL_RULES.length; i++) {
-      expect((DEFAULT_LEVEL_RULES[i] as LevelRule).minScore).toBeLessThan(
-        (DEFAULT_LEVEL_RULES[i - 1] as LevelRule).minScore
+    for (let i = 1; i < LEVEL_RULES.length; i++) {
+      expect((LEVEL_RULES[i] as LevelRule).minScore).toBeLessThan(
+        (LEVEL_RULES[i - 1] as LevelRule).minScore
       )
     }
-    expect((DEFAULT_LEVEL_RULES[11] as LevelRule).minScore).toBe(0)
-    expect((DEFAULT_LEVEL_RULES[0] as LevelRule).minScore).toBeLessThanOrEqual(
-      100
-    )
+    expect((LEVEL_RULES[11] as LevelRule).minScore).toBe(0)
+    expect((LEVEL_RULES[0] as LevelRule).minScore).toBeLessThanOrEqual(100)
   })
 
   it("ships default profile rules for the two upper zones only", () => {
-    expect(DEFAULT_ZONE_PROFILE_RULES).toEqual([
+    expect(ZONE_PROFILE_RULES).toEqual([
       { zone: "A", minStep: 4 },
       { zone: "B", minStep: 3 },
     ])

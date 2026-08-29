@@ -22,11 +22,7 @@ vi.mock("convex/react", () => ({
         ? updateMock
         : vi.fn(),
   useQuery: (ref: unknown) =>
-    ref === "evaluationModel.model.getModel"
-      ? { levelRules: [80, 60, 40, 20] }
-      : ref === "assessment.anchorRoles.listAnchorRoles"
-        ? []
-        : undefined,
+    ref === "assessment.anchorRoles.listAnchorRoles" ? [] : undefined,
 }))
 
 vi.mock("@workspace/backend/convex/_generated/api", () => ({

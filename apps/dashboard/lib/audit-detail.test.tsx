@@ -460,14 +460,17 @@ describe("formatAuditDetail", () => {
           count: 2,
           items: [{ libraryKey: "a", label: "A", changes: {} }],
           changes: {
-            levelRules: { from: "12 rules, top 97", to: "12 rules, top 90" },
+            motivation: {
+              from: "Reviewed again.",
+              to: "Tested, not material.",
+            },
           },
         },
         {},
         labels,
         fieldLabel
       )
-    ).toBe("2 items; LevelRules: 12 rules, top 97 → 12 rules, top 90")
+    ).toBe("2 items; Motivation: Reviewed again. → Tested, not material.")
   })
 
   // A deactivation's row used to fall to the generic bulk branch, whose count
@@ -532,7 +535,7 @@ describe("formatAuditDetail", () => {
     ).toBe("Scope and impact: Budget: 24 → 21; 2 items")
   })
 
-  it("renders a rules-only model.restored without a zero item count", () => {
+  it("renders a decision-only model.restored without a zero item count", () => {
     expect(
       formatAuditDetail(
         "model.restored",
@@ -541,14 +544,17 @@ describe("formatAuditDetail", () => {
           count: 0,
           items: [],
           changes: {
-            levelRules: { from: "12 rules, top 97", to: "12 rules, top 90" },
+            motivation: {
+              from: "Reviewed again.",
+              to: "Tested, not material.",
+            },
           },
         },
         {},
         labels,
         fieldLabel
       )
-    ).toBe("LevelRules: 12 rules, top 97 → 12 rules, top 90")
+    ).toBe("Motivation: Reviewed again. → Tested, not material.")
   })
 
   it("renders a criteria-only model.restored as the item count alone", () => {

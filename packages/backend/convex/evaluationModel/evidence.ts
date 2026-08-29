@@ -1,4 +1,3 @@
-import type { LevelRule, ZoneProfileRule } from "@workspace/core"
 import { v } from "convex/values"
 import type { Doc } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
@@ -111,8 +110,6 @@ export async function buildModelEvidence(
         decidedAt: row.decidedAt,
       }
     }),
-    levelRules: model?.levelRules ?? [],
-    zoneProfileRules: model?.zoneProfileRules ?? [],
     workingConditions: model?.workingConditions,
     // Approval can be legitimately absent, not just as a defensive fallback:
     // a method-affecting edit reopens approval (reopenApprovalIfSet) without
@@ -121,24 +118,6 @@ export async function buildModelEvidence(
     // freeze this state. ADR-0023 accepts it as visible-never-prevented.
     approval: model?.approval,
   }
-}
-
-// Compact technical summaries for a level/zone-profile rules diff's from/to
-// values, not localized prose: an array-valued changes entry renders as an
-// opaque complexValue placeholder (formatChanges/changeEntries), which would
-// make every rules change read identically. Level 1 is the highest (house
-// convention), so "top" is its minScore.
-export function summarizeLevelRules(rules: readonly LevelRule[]): string {
-  const top = rules.find((rule) => rule.level === 1)?.minScore
-  return `${rules.length} rules, top ${top ?? 0}`
-}
-
-export function summarizeZoneProfileRules(
-  rules: readonly ZoneProfileRule[]
-): string {
-  if (rules.length === 0) return "0 rules"
-  const detail = rules.map((rule) => `${rule.zone}>=${rule.minStep}`).join(", ")
-  return `${rules.length} rules: ${detail}`
 }
 
 // One scalar side of a restore change. Never an object or array: both consumers
@@ -187,12 +166,11 @@ export const RESTORE_CRITERION_AUDIT_FIELDS = [
   "approved",
 ] as const
 
-export const RESTORE_MODEL_AUDIT_FIELDS = [
-  "status",
-  "motivation",
-  "levelRules",
-  "zoneProfileRules",
-] as const
+// The model-level fields a restore can move. The ladder and the zone gates are
+// method law in packages/core, so no restore can ever put them back to
+// something else; what a buffer carries of the model itself is the
+// working-conditions decision.
+export const RESTORE_MODEL_AUDIT_FIELDS = ["status", "motivation"] as const
 
 // The criterion fields compared between the live row and the buffer, and how
 // each one reads as a scalar. decidedBy/decidedAt are deliberately excluded
@@ -272,20 +250,6 @@ export function modelRestoreChanges(
   const bufferMotivation = buffer.workingConditions?.motivation ?? null
   if (liveMotivation !== bufferMotivation) {
     changes.motivation = { from: liveMotivation, to: bufferMotivation }
-  }
-  const liveLevelRules = summarizeLevelRules(model.levelRules)
-  const bufferLevelRules = summarizeLevelRules(
-    buffer.levelRules ?? model.levelRules
-  )
-  if (liveLevelRules !== bufferLevelRules) {
-    changes.levelRules = { from: liveLevelRules, to: bufferLevelRules }
-  }
-  const liveZoneRules = summarizeZoneProfileRules(model.zoneProfileRules)
-  const bufferZoneRules = summarizeZoneProfileRules(
-    buffer.zoneProfileRules ?? model.zoneProfileRules
-  )
-  if (liveZoneRules !== bufferZoneRules) {
-    changes.zoneProfileRules = { from: liveZoneRules, to: bufferZoneRules }
   }
   return changes
 }

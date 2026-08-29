@@ -487,7 +487,6 @@ export const FIELD_DISPLAY_ORDER = [
   "expiresAt",
   "archivedAt",
   "orgId",
-  "levelRules",
   // Person diff fields (person.* events); country/archivedAt are already above.
   "department",
   "employmentType",

@@ -35,7 +35,11 @@ export const MODEL_MAX_CRITERIA = 8
 export const DIMENSION_WEIGHT_WARNING_SHARE = 0.4
 
 // Ratings are 1-5. The value 0 exists only for a working-conditions
-// criterion and means "the role is not covered by the defined condition".
+// criterion and means "the role is not covered by the defined condition". It
+// is a MARKER, not a score: scoreRole drops the criterion from both sides of
+// its quotient rather than scoring the role low on it.
+export const NOT_COVERED = 0
+
 export function assertValidRatingValue(
   value: number,
   dimensionKey: DimensionKey

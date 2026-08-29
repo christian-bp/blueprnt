@@ -29,8 +29,6 @@ function checks(
     { key: "anchorsComplete", ok: true },
     { key: "documentationComplete", ok: true },
     { key: "weightBudget", ok: true, count: 6 },
-    { key: "levelRulesValid", ok: true },
-    { key: "zoneProfileMonotonic", ok: true },
     { key: "dimensionWeightBalance", ok: true },
     // The owner's own model: no people-leadership criterion selected, so the
     // engine reports that obligation as not applying at all.
@@ -349,9 +347,6 @@ describe("CHECK_CHAPTER and its remedies", () => {
       // null stays legal as a reviewed decision, but nothing claims it today.
       expect(chapter === null || MODEL_CHAPTERS.includes(chapter)).toBe(true)
     }
-    // The two the level-rules surface closed.
-    expect(CHECK_CHAPTER.levelRulesValid).toBe("approval")
-    expect(CHECK_CHAPTER.zoneProfileMonotonic).toBe("approval")
   })
 
   // In every locale, because a denial left in one locale is the same defect.
@@ -361,23 +356,16 @@ describe("CHECK_CHAPTER and its remedies", () => {
       const localeMessages = allMessages[locale]
       const localeRemedies = localeMessages.dashboard.model.method
         .remedies as Record<string, string>
-      // The name the panel on this chapter actually renders as its title, read
-      // from the same message file the remedy is read from. A blacklist of
-      // denial PHRASES was tried here first and is not a pin: it passes any
-      // wording nobody thought to list, and it proved it by passing a planted
-      // "det gar inte att ratta i appen annu" that meant exactly what the
-      // listed phrase meant. This is the positive claim instead, and a denial
-      // cannot satisfy it in any wording.
-      const sectionTitle = (
-        localeMessages.dashboard.model.levelRules as Record<string, string>
-      ).title
-      if (sectionTitle === undefined) throw new Error("no levelRules.title")
+      // Every check's fix lives on another chapter, so every remedy carries
+      // the link to it. A blacklist of denial PHRASES was tried here first and
+      // is not a pin: it passes any wording nobody thought to list, and it
+      // proved it by passing a planted "det gar inte att ratta i appen annu"
+      // that meant exactly what the listed phrase meant. This is the positive
+      // claim instead, and a denial cannot satisfy it in any wording.
       for (const key of METHOD_CHECK_KEYS) {
         const text = localeRemedies[key]
         if (text === undefined) continue
-        // Either it links to the chapter that fixes it, or the fix is on this
-        // chapter and it names the section by the section's own title.
-        const directs = text.includes("<link>") || text.includes(sectionTitle)
+        const directs = text.includes("<link>")
         expect({ key, directs }).toEqual({ key, directs: true })
       }
     }
@@ -390,12 +378,9 @@ describe("CHECK_CHAPTER and its remedies", () => {
       const text = (remedies as Record<string, string>)[key]
       if (text === undefined) continue
       const chapter = CHECK_CHAPTER[key]
-      // The two on THIS chapter name their section instead of linking to the
-      // route the reader is already on.
-      const selfHosted = chapter === "approval"
       expect({ key, linked: text.includes("<link>") }).toEqual({
         key,
-        linked: chapter !== null && !selfHosted,
+        linked: chapter !== null,
       })
     }
   })

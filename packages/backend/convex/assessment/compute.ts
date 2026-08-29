@@ -1,12 +1,14 @@
 import {
+  computeResults,
   type CriterionWeight,
+  LEVEL_RULES,
   type LevelThreshold,
   type RatingValue,
   type RoleRatings,
   type RoleResult,
   type WeightPoints,
+  ZONE_PROFILE_RULES,
   type ZoneProfileRule,
-  computeResults,
 } from "@workspace/core"
 import type { Doc } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
@@ -71,17 +73,16 @@ export async function readResultInputs(
     weightPoints: row.weightPoints as WeightPoints,
   }))
 
-  // Level rules live on the model document (ADR-0006): no extra read on the
-  // hottest path in the app (this runs twice per result-affecting mutation).
-  // The engine's own ComputeInput field is still named `thresholds`
-  // (packages/core is untouched by this rename; see @workspace/core#LevelThreshold).
-  const thresholds: LevelThreshold[] = model.levelRules.map((row) => ({
-    level: row.level,
-    minScore: row.minScore,
+  // The ladder and the zone gates are method law (ADR-0024): one set for every
+  // organization, read straight from the engine rather than from the document.
+  // Copied rather than passed by reference because the engine's inputs are
+  // mutable arrays and the constants are the product's, not one caller's. The
+  // engine's own ComputeInput field is still named `thresholds`.
+  const thresholds: LevelThreshold[] = LEVEL_RULES.map((rule) => ({
+    level: rule.level,
+    minScore: rule.minScore,
   }))
-  // Zone profile rules live on the model document too (ADR-0022); decoupled
-  // from the stored document shape the same way thresholds is above.
-  const zoneProfileRules: ZoneProfileRule[] = model.zoneProfileRules.map(
+  const zoneProfileRules: ZoneProfileRule[] = ZONE_PROFILE_RULES.map(
     (rule) => ({
       zone: rule.zone,
       minStep: rule.minStep,

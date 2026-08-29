@@ -100,7 +100,6 @@ function loaded(roles: Array<Record<string, unknown>> = ROLES) {
         name: "Model",
         criteria: [],
         tracks: TRACKS,
-        levelRules: [{ level: 1, minScore: 0 }],
       }
     }
     return undefined

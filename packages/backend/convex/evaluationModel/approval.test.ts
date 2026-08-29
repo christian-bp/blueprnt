@@ -123,7 +123,7 @@ describe("approveModel", () => {
         workingConditionsShare: number
       }
       expect(payload.criteriaCount).toBe(6)
-      expect(payload.checksPassed).toBe(12)
+      expect(payload.checksPassed).toBe(10)
       // HEALTHY_KEYS: 2 criteria per dimension (competence/effort/
       // responsibility) at the neutral weight 3 each, 0 workingConditions;
       // 6/18 = 33.33% rounds to 33 for each of the three, 0 for the fourth.
@@ -277,14 +277,14 @@ async function addEditor(
 }
 
 describe("getMethodChecks", () => {
-  it("returns the twelve checks, approval, and working-conditions state", async () => {
+  it("returns the ten checks, approval, and working-conditions state", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedApprovableModel(t)
     const before = await asAdmin.query(
       api.evaluationModel.approval.getMethodChecks,
       { orgId }
     )
-    expect(before?.checks).toHaveLength(12)
+    expect(before?.checks).toHaveLength(10)
     expect(before?.checks.every((c) => c.ok)).toBe(true)
     expect(before?.approval).toBeNull()
     expect(before?.workingConditions?.status).toBe("testedNotMaterial")
@@ -356,7 +356,7 @@ describe("getMethodChecks", () => {
 // work. An editor builds, weights, documents and approves it exactly as an
 // admin does, and the surface offers them every control.
 describe("the model writes are member-level", () => {
-  it("lets an editor decide materiality, edit the rules and approve", async () => {
+  it("lets an editor decide materiality and approve", async () => {
     const t = initConvexTest()
     const { orgId } = await seedApprovableModel(t)
     const asEditor = await addEditor(t, orgId, "editor2@acme.se")
@@ -367,25 +367,6 @@ describe("the model writes are member-level", () => {
         orgId,
         status: "testedNotMaterial",
         motivation: "Inga roller bar sarskilda arbetsforhallanden.",
-      }
-    )
-    await asEditor.mutation(api.evaluationModel.approval.updateLevelRules, {
-      orgId,
-      // Level 1 stays strictly above level 2 (86 by default), so the rules
-      // remain valid while the edit is real.
-      levelRules: (
-        await asEditor.query(api.evaluationModel.model.getModel, { orgId })
-      )?.levelRules.map((rule) =>
-        rule.level === 1 ? { ...rule, minScore: 99 } : rule
-      ) as { level: number; minScore: number }[],
-    })
-    await asEditor.mutation(
-      api.evaluationModel.approval.updateZoneProfileRules,
-      {
-        orgId,
-        zoneProfileRules: (
-          await asEditor.query(api.evaluationModel.model.getModel, { orgId })
-        )?.zoneProfileRules as { zone: "A" | "B"; minStep: number }[],
       }
     )
     await asEditor.mutation(api.evaluationModel.approval.approveModel, {
@@ -588,111 +569,6 @@ describe("setWorkingConditionsDecision", () => {
       // identical resubmission wrote nothing new.
       expect(rows).toHaveLength(1)
     })
-  })
-})
-
-describe("updateLevelRules", () => {
-  it("validates, applies, reopens approval, and audits a level-rules diff with a level.shift wrap", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, model } = await seedApprovableModel(t)
-    await asAdmin.mutation(api.evaluationModel.approval.approveModel, {
-      orgId,
-    })
-    // Level 1's minScore must stay strictly above level 2's (86, the
-    // default): 99 keeps the rules valid while still being a real edit.
-    const nextRules = model.levelRules.map((rule) =>
-      rule.level === 1 ? { ...rule, minScore: 99 } : rule
-    )
-    await asAdmin.mutation(api.evaluationModel.approval.updateLevelRules, {
-      orgId,
-      levelRules: nextRules,
-    })
-    await t.run(async (ctx) => {
-      const modelDoc = await ctx.db
-        .query("models")
-        .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .unique()
-      expect(modelDoc?.approval).toBeUndefined()
-      expect(modelDoc?.levelRules.find((r) => r.level === 1)?.minScore).toBe(99)
-      const rows = await ctx.db
-        .query("auditLog")
-        .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "model.levelRulesUpdated")
-        )
-        .collect()
-      expect(rows).toHaveLength(1)
-      const payload = rows[0]?.payload as {
-        changes: { levelRules: { from: string; to: string } }
-      }
-      expect(payload.changes.levelRules.from).toMatch(/^12 rules, top/)
-      expect(payload.changes.levelRules.to).toBe("12 rules, top 99")
-    })
-  })
-
-  it("refuses invalid level rules with invalidInput", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, model } = await seedApprovableModel(t)
-    const broken = model.levelRules.slice(0, 11) // only 11 entries, not 12
-    await expect(
-      asAdmin.mutation(api.evaluationModel.approval.updateLevelRules, {
-        orgId,
-        levelRules: broken,
-      })
-    ).rejects.toThrow(/errors\.invalidInput/)
-  })
-})
-
-describe("updateZoneProfileRules", () => {
-  it("validates, applies, reopens approval, and audits a zone-profile diff", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedApprovableModel(t)
-    await asAdmin.mutation(api.evaluationModel.approval.approveModel, {
-      orgId,
-    })
-    await asAdmin.mutation(
-      api.evaluationModel.approval.updateZoneProfileRules,
-      {
-        orgId,
-        zoneProfileRules: [
-          { zone: "A", minStep: 5 },
-          { zone: "B", minStep: 3 },
-        ],
-      }
-    )
-    await t.run(async (ctx) => {
-      const modelDoc = await ctx.db
-        .query("models")
-        .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .unique()
-      expect(modelDoc?.approval).toBeUndefined()
-      expect(modelDoc?.zoneProfileRules).toEqual([
-        { zone: "A", minStep: 5 },
-        { zone: "B", minStep: 3 },
-      ])
-      const rows = await ctx.db
-        .query("auditLog")
-        .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "model.zoneProfileRulesUpdated")
-        )
-        .collect()
-      expect(rows).toHaveLength(1)
-    })
-  })
-
-  it("refuses non-monotonic zone-profile rules with invalidInput", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedApprovableModel(t)
-    await expect(
-      asAdmin.mutation(api.evaluationModel.approval.updateZoneProfileRules, {
-        orgId,
-        // B gated MORE leniently required than A is backwards: B's minStep
-        // (5) exceeds A's (3), violating the non-increasing walk A -> D.
-        zoneProfileRules: [
-          { zone: "A", minStep: 3 },
-          { zone: "B", minStep: 5 },
-        ],
-      })
-    ).rejects.toThrow(/errors\.invalidInput/)
   })
 })
 
@@ -928,24 +804,6 @@ describe("restoreApprovedModel", () => {
       expect(await flagOf(asAdmin, orgId)).toBe(true)
     })
 
-    it("is true when a level rule moved", async () => {
-      const t = initConvexTest()
-      const { orgId, asAdmin, model } = await seedApprovableModel(t)
-      await asAdmin.mutation(api.evaluationModel.approval.approveModel, {
-        orgId,
-      })
-      // Level 1's minScore must stay strictly above level 2's (86, the
-      // default): 99 keeps the rules valid while still being a real edit, the
-      // same edit updateLevelRules' own test makes.
-      await asAdmin.mutation(api.evaluationModel.approval.updateLevelRules, {
-        orgId,
-        levelRules: model.levelRules.map((rule) =>
-          rule.level === 1 ? { ...rule, minScore: 99 } : rule
-        ),
-      })
-      expect(await flagOf(asAdmin, orgId)).toBe(true)
-    })
-
     // Every per-criterion field the restore writes, driven off the exported
     // list itself: a field added to COMPARED_CRITERION_FIELDS without a value
     // here fails the coverage assertion below, and one the comparison ignores
@@ -1021,8 +879,7 @@ describe("restoreApprovedModel", () => {
       expect(first?.biasRisk).toBe("low")
       expect(first?.approved).toBe(true)
       expect(first?.decidedBy).toBeDefined()
-      // The model's own rules and materiality decision ride along.
-      expect(buffer.levelRules).toHaveLength(12)
+      // The model's materiality decision rides along.
       expect(buffer.workingConditions?.status).toBe("testedNotMaterial")
     })
   })
@@ -1454,60 +1311,3 @@ describe("restoreApprovedModel writes what the diff promised", () => {
 // list. A minScore outside 0-100 or a minStep outside the 1-5 rating scale
 // would otherwise be stored and then be permanently unsatisfiable, with no
 // check ever saying why.
-describe("updateLevelRules / updateZoneProfileRules bounds", () => {
-  async function seeded(t: ReturnType<typeof initConvexTest>) {
-    const { orgId, asAdmin } = await seedApprovableModel(t)
-    const model = await asAdmin.query(api.evaluationModel.model.getModel, {
-      orgId,
-    })
-    if (model === null) throw new Error("no model")
-    return { orgId, asAdmin, levelRules: model.levelRules }
-  }
-
-  it.each([
-    ["above the scale", 101],
-    ["below the scale", -1],
-    ["not a whole number", 42.5],
-  ])("refuses a minScore %s", async (_name, minScore) => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, levelRules } = await seeded(t)
-    await expect(
-      asAdmin.mutation(api.evaluationModel.approval.updateLevelRules, {
-        orgId,
-        levelRules: levelRules.map((rule) =>
-          rule.level === 1 ? { level: 1, minScore } : rule
-        ),
-      })
-    ).rejects.toThrow(/errors\.invalidInput/)
-  })
-
-  it.each([
-    ["above the rating scale", 9],
-    ["below the rating scale", 0],
-    ["not a whole number", 3.5],
-  ])("refuses a minStep %s", async (_name, minStep) => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seeded(t)
-    await expect(
-      asAdmin.mutation(api.evaluationModel.approval.updateZoneProfileRules, {
-        orgId,
-        zoneProfileRules: [{ zone: "A", minStep }],
-      })
-    ).rejects.toThrow(/errors\.invalidInput/)
-  })
-
-  it("accepts the ends of both scales", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, levelRules } = await seeded(t)
-    await asAdmin.mutation(api.evaluationModel.approval.updateLevelRules, {
-      orgId,
-      levelRules: levelRules.map((rule) =>
-        rule.level === 1 ? { level: 1, minScore: 100 } : rule
-      ),
-    })
-    await asAdmin.mutation(
-      api.evaluationModel.approval.updateZoneProfileRules,
-      { orgId, zoneProfileRules: [{ zone: "A", minStep: 5 }] }
-    )
-  })
-})

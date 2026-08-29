@@ -259,8 +259,6 @@ describe("organization settings", () => {
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard",
-        levelRules: [],
-        zoneProfileRules: [],
       })
       const libraryKeys = [
         "knowledge-depth",
@@ -306,8 +304,6 @@ describe("organization settings", () => {
       await ctx.db.insert("models", {
         orgId,
         name: "Standard",
-        levelRules: [],
-        zoneProfileRules: [],
       })
     })
     await asAdmin.mutation(api.accounts.organization.completeOnboarding, {
@@ -381,8 +377,6 @@ describe("organization settings", () => {
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard",
-        levelRules: [],
-        zoneProfileRules: [],
       })
       const libraryKeys = [
         "knowledge-depth",

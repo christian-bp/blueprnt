@@ -90,7 +90,6 @@ function modelFixture() {
       { key: "IC", name: "Individual Contributor", order: 1 },
       { key: "Lead", name: "Lead", order: 2 },
     ],
-    levelRules: [],
   }
 }
 

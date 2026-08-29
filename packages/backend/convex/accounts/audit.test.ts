@@ -312,8 +312,6 @@ describe("accounts.audit.getAuditLogPage (browse)", () => {
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard model",
-        levelRules: [],
-        zoneProfileRules: [],
       })
       const criterionId = await ctx.db.insert("criteria", {
         orgId,

@@ -17,36 +17,42 @@ the latter.
 
 ## The weighting formula
 
-For every criterion, multiply its rating (1 to 5, or 0 for a
-working-conditions criterion the role is not covered by) by that
-criterion's weight points, then add those results together across every
-criterion. Divide that sum by the total of all the criteria's weight
-points: this is the weighted mean rating. Multiply the weighted mean by
-20 and round down to the nearest whole number. That final number, always
-between 0 and 100 however many criteria the model has, is the weighting.
-Rounding down means a role reaches a level only once its weighting has
-genuinely met the threshold, never by rounding up to it.
+For every criterion the role is measured on, multiply its rating, 1 to
+5, by that criterion's weight points, then add those results together.
+Divide that sum by the total of those criteria's weight points: this is
+the weighted mean rating. Multiply the weighted mean by 20 and round
+down to the nearest whole number. That final number, always between 0
+and 100 however many criteria the model has, is the weighting. Rounding
+down means a role reaches a level only once its weighting has genuinely
+met the threshold, never by rounding up to it.
+
+A working-conditions criterion the role is not covered by is rated 0,
+and a 0 is a marker rather than a rating: the criterion leaves both the
+sum and the divisor, so the role is weighted on the criteria that
+actually apply to it.
 
 A worked example, with four criteria and therefore a point budget of
-12:
+12, one of which the role is not covered by:
 
 | Criterion | Weight points | Rating | Contribution |
 | --- | ---: | ---: | ---: |
 | Complexity and ambiguity | 5 | 4 | 20 |
 | Autonomy and decision mandate | 3 | 5 | 15 |
 | Risk and consequence | 3 | 3 | 9 |
-| On-call, standby and availability requirements | 1 | 0 | 0 |
-| **Total** | **12** | | **44** |
+| On-call, standby and availability requirements | 1 | Not covered | excluded |
+| **Total measured** | **11** | | **44** |
 
-20 × 44 / 12 is 73.3, so the weighting is 73. The example shows two
-things. The working-conditions 0 is a real answer, not a blank: it adds
-nothing to the sum while the criterion's weight points stay in the
-divisor, so a role not covered by on-call work genuinely carries less
-requirement there. And the weight points decide how far one rating step
-moves the result: a step on a criterion with weight v moves the
-weighting by 20 × v divided by the budget, here about 8 points on the
-weight-5 criterion and under 2 on the weight-1 criterion. Weight points
-redistribute the same 0 to 100; they never raise the ceiling.
+20 × 44 / 11 is exactly 80, so the weighting is 80. The example shows
+two things. A role is never scored down for a requirement it does not
+carry: counting the 0 while leaving its weight point in the divisor
+would have given 73 here, and with a heavier working-conditions
+criterion it would put a ceiling on the scale, so that a role rated 5 on
+everything it is measured on could not reach the top levels at all. And
+the weight points decide how far one rating step moves the result: a
+step on a criterion with weight v moves the weighting by 20 × v divided
+by the divisor, here about 9 points on the weight-5 criterion and about
+5 on each weight-3 one. Weight points redistribute the same 0 to 100;
+they never raise the ceiling.
 
 A role's weighting only appears once its assessment is completed. Until
 then, blueprnt shows how many criteria are rated instead of a partial

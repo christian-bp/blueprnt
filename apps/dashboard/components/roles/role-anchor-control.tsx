@@ -2,6 +2,7 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+import { LEVEL_COUNT } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -29,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
@@ -396,9 +396,10 @@ function EditForm({
   )
 }
 
-// Loads the level options when open; renders the designate or edit form. The
-// edit form is keyed by reviewedAt so a concurrent admin's update remounts it
-// with fresh values instead of overwriting silently.
+// Renders the designate or edit form. The level options are the architecture's
+// twelve levels (method law, not a per-org setting), so the dialog opens with
+// them already known. The edit form is keyed by reviewedAt so a concurrent
+// admin's update remounts it with fresh values instead of overwriting silently.
 export function AnchorDialog({
   open,
   onOpenChange,
@@ -413,12 +414,8 @@ export function AnchorDialog({
   anchorRole: AnchorRoleInfo | null
 }) {
   const t = useTranslations("dashboard.roles.anchor")
-  const model = useQuery(
-    api.evaluationModel.model.getModel,
-    open ? { orgId } : "skip"
-  )
   const levelOptions = Array.from(
-    { length: model?.levelRules.length ?? 0 },
+    { length: LEVEL_COUNT },
     (_, index) => index + 1
   )
   const close = () => onOpenChange(false)
@@ -429,11 +426,7 @@ export function AnchorDialog({
         <DialogHeader>
           <DialogTitle>{t("heading")}</DialogTitle>
         </DialogHeader>
-        {model === undefined ? (
-          <div className="flex justify-center py-6">
-            <Spinner aria-label={t("heading")} />
-          </div>
-        ) : anchorRole === null ? (
+        {anchorRole === null ? (
           <DesignateForm
             orgId={orgId}
             roleId={roleId}

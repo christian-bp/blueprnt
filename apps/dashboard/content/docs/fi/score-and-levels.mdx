@@ -17,9 +17,8 @@ jälkimmäisestä.
 
 ## Painotuksen kaava
 
-Kertokaa jokaisen kriteerin arvio (1-5, tai 0 työolosuhdekriteerille,
-jonka piiriin rooli ei kuulu) sen painopisteillä, ja laskekaa tulokset
-yhteen kaikkien kriteerien kesken. Jakakaa tämä summa kaikkien
+Kertokaa jokaisen kriteerin, jolla roolia mitataan, arvio 1-5 sen
+painopisteillä, ja laskekaa tulokset yhteen. Jakakaa tämä summa näiden
 kriteerien painopisteiden yhteismäärällä: tämä on painotettu
 keskiarvo. Kertokaa painotettu keskiarvo 20:llä ja pyöristäkää
 alaspäin lähimpään kokonaislukuun. Tämä lopullinen luku, aina 0:n ja
@@ -28,25 +27,33 @@ on painotus. Alaspäin pyöristäminen tarkoittaa, että rooli saavuttaa
 tason vasta, kun sen painotus todella yltää rajaan, ei koskaan
 pyöristymällä siihen ylöspäin.
 
-Laskuesimerkki neljällä kriteerillä, jolloin pistebudjetti on 12:
+Työolosuhdekriteeri, jonka piiriin rooli ei kuulu, saa arvion 0, ja 0
+on merkintä eikä arvio: kriteeri poistuu sekä summasta että jakajasta,
+joten rooli painotetaan niillä kriteereillä, jotka sitä todella
+koskevat.
+
+Laskuesimerkki neljällä kriteerillä, jolloin pistebudjetti on 12 ja
+yhden piiriin rooli ei kuulu:
 
 | Kriteeri | Painopisteet | Arvio | Panos |
 | --- | ---: | ---: | ---: |
 | Monimutkaisuus ja epäselvyys | 5 | 4 | 20 |
 | Itsenäisyys ja päätösvalta | 3 | 5 | 15 |
 | Riski ja seuraus | 3 | 3 | 9 |
-| Päivystys-, varallaolo- ja tavoitettavuusvaatimukset | 1 | 0 | 0 |
-| **Yhteensä** | **12** | | **44** |
+| Päivystys-, varallaolo- ja tavoitettavuusvaatimukset | 1 | Ei koske roolia | jätetään pois |
+| **Yhteensä mitattu** | **11** | | **44** |
 
-20 × 44 / 12 on 73,3, joten painotus on 73. Esimerkki näyttää kaksi
-asiaa. Työolosuhteiden nolla on todellinen vastaus, ei tyhjä kohta: se
-ei lisää summaan mitään, mutta kriteerin painopisteet pysyvät
-jakajassa, joten rooli ilman päivystyskuormaa kantaa siellä todella
-vähemmän vaatimuksia. Ja painopisteet ratkaisevat, kuinka pitkälle yksi
-arvioaskel siirtää tulosta: askel kriteerillä, jonka paino on v,
-siirtää painotusta 20 × v jaettuna budjetilla, tässä noin 8 pistettä
-paino-5-kriteerillä ja alle 2 paino-1-kriteerillä. Painopisteet jakavat
-samat 0-100 uudelleen; ne eivät koskaan nosta kattoa.
+20 × 44 / 11 on tasan 80, joten painotus on 80. Esimerkki näyttää kaksi
+asiaa. Roolia ei koskaan lasketa alaspäin vaatimuksesta, jota se ei
+kanna: nollan laskeminen mukaan ja sen painopisteen jättäminen jakajaan
+olisi antanut tässä 73:n, ja raskaammalla työolosuhdekriteerillä se
+asettaa asteikolle katon, jolloin rooli, joka saa arvion 5 kaikesta
+millä sitä mitataan, ei yllä ylimmille tasoille lainkaan. Ja
+painopisteet ratkaisevat, kuinka pitkälle yksi arvioaskel siirtää
+tulosta: askel kriteerillä, jonka paino on v, siirtää painotusta
+20 × v jaettuna jakajalla, tässä noin 9 pistettä paino-5-kriteerillä ja
+noin 5 kummallakin paino-3-kriteerillä. Painopisteet jakavat samat
+0-100 uudelleen; ne eivät koskaan nosta kattoa.
 
 Roolin painotus näkyy vasta, kun sen arviointi on viimeistelty. Siihen asti
 blueprnt näyttää, kuinka monta kriteeriä on arvioitu, osittaisen luvun

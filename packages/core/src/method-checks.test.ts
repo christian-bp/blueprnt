@@ -8,7 +8,6 @@ import {
   weightWarnings,
 } from "./method-checks"
 import type { WeightPoints } from "./weighting"
-import { DEFAULT_LEVEL_RULES, DEFAULT_ZONE_PROFILE_RULES } from "./zones"
 
 function criterion(
   overrides: Partial<MethodCheckCriterion> & { criterionId: string }
@@ -60,20 +59,18 @@ function healthyInput(): MethodCheckInput {
     ],
     workingConditions: { status: "testedNotMaterial", hasMotivation: true },
     overlapPairs: [],
-    levelRules: [...DEFAULT_LEVEL_RULES],
-    zoneProfileRules: [...DEFAULT_ZONE_PROFILE_RULES],
   }
 }
 
 describe("validateMethod", () => {
-  it("passes a healthy model and returns all twelve checks", () => {
+  it("passes a healthy model and returns all ten checks", () => {
     const checks = validateMethod(healthyInput())
-    expect(checks).toHaveLength(12)
+    expect(checks).toHaveLength(10)
     expect(checks.every((check) => check.ok)).toBe(true)
     expect(methodBlockersPass(checks)).toBe(true)
   })
 
-  it("returns the twelve checks in a stable order", () => {
+  it("returns the ten checks in a stable order", () => {
     const checks = validateMethod(healthyInput())
     expect(checks.map((check) => check.key)).toEqual([
       "dimensionCoverage",
@@ -83,8 +80,6 @@ describe("validateMethod", () => {
       "anchorsComplete",
       "documentationComplete",
       "weightBudget",
-      "levelRulesValid",
-      "zoneProfileMonotonic",
       "dimensionWeightBalance",
       "peopleLeadershipWeight",
       "overlapPairs",
@@ -337,57 +332,6 @@ describe("validateMethod", () => {
       input.criteria[0] = { ...first, weightPoints: 7 as WeightPoints }
       expect(
         validateMethod(input).find((c) => c.key === "weightBudget")?.ok
-      ).toBe(false)
-    })
-  })
-
-  describe("levelRulesValid", () => {
-    it("requires exactly twelve entries", () => {
-      const input = healthyInput()
-      input.levelRules = input.levelRules.slice(0, 11)
-      expect(
-        validateMethod(input).find((c) => c.key === "levelRulesValid")?.ok
-      ).toBe(false)
-    })
-
-    it("rejects a minScore that is not strictly decreasing with level", () => {
-      const input = healthyInput()
-      input.levelRules = input.levelRules.map((rule, index) =>
-        index === 5 ? { ...rule, minScore: 100 } : rule
-      )
-      expect(
-        validateMethod(input).find((c) => c.key === "levelRulesValid")?.ok
-      ).toBe(false)
-    })
-
-    it("rejects level 12 not flooring at zero", () => {
-      const input = healthyInput()
-      input.levelRules = input.levelRules.map((rule) =>
-        rule.level === 12 ? { ...rule, minScore: 1 } : rule
-      )
-      expect(
-        validateMethod(input).find((c) => c.key === "levelRulesValid")?.ok
-      ).toBe(false)
-    })
-  })
-
-  describe("zoneProfileMonotonic", () => {
-    it("is ok with an empty rules list", () => {
-      const input = healthyInput()
-      input.zoneProfileRules = []
-      expect(
-        validateMethod(input).find((c) => c.key === "zoneProfileMonotonic")?.ok
-      ).toBe(true)
-    })
-
-    it("rejects a higher zone gated more leniently than a lower one", () => {
-      const input = healthyInput()
-      input.zoneProfileRules = [
-        { zone: "A", minStep: 2 },
-        { zone: "B", minStep: 3 },
-      ]
-      expect(
-        validateMethod(input).find((c) => c.key === "zoneProfileMonotonic")?.ok
       ).toBe(false)
     })
   })

@@ -2,6 +2,7 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+import { LEVEL_COUNT } from "@workspace/core"
 import {
   AnchorIcon,
   InformationCircleIcon,
@@ -99,13 +100,6 @@ export function RoleEvaluationCard({
     locale,
   })
   const completed = result?.completed ?? false
-  // The level-position scale needs the level count; only the completed view
-  // uses it.
-  const model = useQuery(
-    api.evaluationModel.model.getModel,
-    showResult && completed ? { orgId, locale } : "skip"
-  )
-  const levelCount = model?.levelRules.length ?? 0
   // The level leads with the engine-computed outcome for every role (ADR-0002).
   // An anchor role additionally flags a deviation when its computed level
   // differs from the agreed level: the score is primary, the anchor is a
@@ -233,9 +227,9 @@ export function RoleEvaluationCard({
                       </div>
                     </div>
                   )}
-                  {heroLevel != null && levelCount > 0 && (
+                  {heroLevel != null && (
                     <div className="flex gap-1" aria-hidden="true">
-                      {Array.from({ length: levelCount }, (_, i) => i + 1).map(
+                      {Array.from({ length: LEVEL_COUNT }, (_, i) => i + 1).map(
                         (b) => (
                           <div
                             key={b}

@@ -1,13 +1,15 @@
 import {
-  isWomenDominated,
-  type LevelThreshold,
+  computeResults,
   type CriterionWeight,
+  isWomenDominated,
+  LEVEL_RULES,
+  type LevelThreshold,
   type RoleResult,
   type WeightPoints,
+  ZONE_KEYS,
+  ZONE_PROFILE_RULES,
   type ZoneKey,
   type ZoneProfileRule,
-  ZONE_KEYS,
-  computeResults,
 } from "@workspace/core"
 import { v } from "convex/values"
 import type { Doc } from "../_generated/dataModel"
@@ -273,16 +275,17 @@ export const getConsequenceAnalysis = orgQuery({
 
     const nowResults = computeResults(inputs)
     const { criteria, added, removed } = approvedCriteria(inputs, buffer)
-    const thresholds: LevelThreshold[] = (buffer.levelRules ?? []).map(
-      (rule) => ({ level: rule.level, minScore: rule.minScore })
+    // Both runs place against the same ladder and the same zone gates, because
+    // both are method law (ADR-0024). What the diff compares is therefore the
+    // CRITERIA and the WEIGHTS, which is all approving can actually move.
+    const thresholds: LevelThreshold[] = LEVEL_RULES.map((rule) => ({
+      level: rule.level,
+      minScore: rule.minScore,
+    }))
+    const zoneProfileRules: ZoneProfileRule[] = ZONE_PROFILE_RULES.map(
+      (rule) => ({ zone: rule.zone, minStep: rule.minStep })
     )
-    const zoneProfileRules: ZoneProfileRule[] = (
-      buffer.zoneProfileRules ?? []
-    ).map((rule) => ({ zone: rule.zone, minStep: rule.minStep }))
-    // A buffer written before the level rules joined the evidence has no
-    // thresholds to score against; there is nothing to compare rather than a
-    // comparison against an empty ladder.
-    if (criteria.length === 0 || thresholds.length === 0) return empty
+    if (criteria.length === 0) return empty
     const approvedResults = computeResults({
       criteria,
       thresholds,

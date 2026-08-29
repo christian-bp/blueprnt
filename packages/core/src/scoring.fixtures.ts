@@ -28,7 +28,7 @@ export const FIXTURE_CRITERIA: CriterionWeight[] = [
 // and computeResults. Deliberately NOT the product's ladder, which ADR-0022
 // fixes at twelve levels in four zones: the engine takes any strictly
 // decreasing set floored at 0, and a shorter one keeps these goldens readable.
-// The real defaults are DEFAULT_LEVEL_RULES (zones.ts), covered in
+// The real defaults are LEVEL_RULES (zones.ts), covered in
 // scoring.test.ts against their own boundaries.
 export const FIXTURE_THRESHOLDS: LevelThreshold[] = [
   { level: 1, minScore: 98 },

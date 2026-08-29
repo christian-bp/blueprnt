@@ -23,8 +23,6 @@ export const APPROVAL_REOPEN_CAUSES = [
   AUDIT_EVENTS.criterionReopened,
   AUDIT_EVENTS.modelUpdated,
   AUDIT_EVENTS.modelWorkingConditionsDecided,
-  AUDIT_EVENTS.modelLevelRulesUpdated,
-  AUDIT_EVENTS.modelZoneProfileRulesUpdated,
 ] as const
 
 export type ApprovalReopenCause = (typeof APPROVAL_REOPEN_CAUSES)[number]

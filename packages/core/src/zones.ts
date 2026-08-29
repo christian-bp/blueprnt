@@ -22,17 +22,6 @@ export const SCORE_SCALE_MAX = 100
 
 // The bounds of a zone's profile requirement.
 //
-// A minStep is a rating on a PROFILE criterion, and profile criteria are the
-// weight-4-or-5 ones that are NOT working conditions, so their ratings run 1
-// to 5: assertValidRatingValue's 0 exists only for a working-conditions
-// criterion, which by definition is never a profile criterion. The engine
-// itself places no bound on minStep, so these are the SCALE's bounds rather
-// than a rule of the placement, and they live here because the client's form
-// gate and the backend's own re-validation both need them and had drifted into
-// disagreeing about which scale they came from.
-export const MIN_STEP_FLOOR = 1
-export const MIN_STEP_CEILING = 5
-
 // from = the zone's highest level, to = its lowest.
 export const ZONE_LEVEL_RANGES: Record<ZoneKey, { from: number; to: number }> =
   {
@@ -75,11 +64,14 @@ export interface ZoneProfileRule {
 // all-3 allocation resolves a third as finely). The widths below therefore ARE
 // the resolution each level has to work with: 4, 11, 9, 8, 7, 6, 6, 5, 5, 5, 5.
 //
-// Still to be calibrated against anchor roles before launch, which is the
-// method's own instruction: thresholds are anchored in the zone descriptions
-// and representative anchor roles, never fitted so the resulting distribution
-// looks even.
-export const DEFAULT_LEVEL_RULES: readonly LevelRule[] = [
+// METHOD LAW, not a default: nothing in the product edits these, and no
+// organization carries its own copy. The masterdokument's own calibration
+// process (its section 14.7) anchors thresholds in an organization's anchor
+// roles, so freezing them is a recorded deviation (ADR-0024) taken because an
+// UNcalibrated dial over the method's architecture is worse than a calibrated
+// constant. Retuning them stays a code change with a consequence analysis,
+// never a customer setting.
+export const LEVEL_RULES: readonly LevelRule[] = [
   { level: 1, minScore: 97 },
   { level: 2, minScore: 86 },
   { level: 3, minScore: 77 },
@@ -94,7 +86,7 @@ export const DEFAULT_LEVEL_RULES: readonly LevelRule[] = [
   { level: 12, minScore: 0 },
 ]
 
-export const DEFAULT_ZONE_PROFILE_RULES: readonly ZoneProfileRule[] = [
+export const ZONE_PROFILE_RULES: readonly ZoneProfileRule[] = [
   { zone: "A", minStep: 4 },
   { zone: "B", minStep: 3 },
 ]

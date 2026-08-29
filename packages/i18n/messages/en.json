@@ -126,11 +126,7 @@
       "maxLength": "This field is too long.",
       "slug": "Use lowercase letters, numbers, and hyphens.",
       "passwordsMatch": "Passwords must match.",
-      "emailUnchanged": "Enter a different email address.",
-      "levelDecreasing": "Must be lower than the level above it.",
-      "levelBottomZero": "The lowest level must open at 0.",
-      "zoneMonotonic": "Cannot ask more than the zone above it.",
-      "scoreRange": "A whole number between 0 and 100."
+      "emailUnchanged": "Enter a different email address."
     },
     "toast": {
       "error": "Something went wrong. Try again.",
@@ -194,7 +190,6 @@
       "workingConditionsDecided": "Working conditions decision saved",
       "assessmentCompleted": "Assessment completed",
       "placementConfirmed": "Placement confirmed",
-      "thresholdsSaved": "Level thresholds saved",
       "assessmentReopened": "Assessment reopened",
       "weightMotivationSaved": "Motivation saved"
     },
@@ -783,8 +778,6 @@
         "budget": "Point budget",
         "count": "Count",
         "change": "Change type",
-        "levelRules": "Level thresholds",
-        "zoneProfileRules": "Zone profile rules",
         "criteriaCount": "Criteria",
         "checksPassed": "Checks passed",
         "causeEvent": "Reopened by",
@@ -1601,7 +1594,7 @@
       "notMeasuresLabel": "Does not measure",
       "anchorGroupLabel": "Rating for {name}",
       "notCoveredOption": "The role is not covered by this working condition.",
-      "notCoveredExplanation": "Choose this when the role is never exposed to what this criterion measures.",
+      "notCoveredExplanation": "Choose this when the role is never exposed to what this criterion measures. The role is then weighted on its other criteria only.",
       "motivationLabel": "Motivation",
       "motivationPlaceholder": "Why this rating?",
       "motivationRequiredError": "Add a motivation before continuing.",
@@ -1621,6 +1614,7 @@
         "anchorLevel": "Level {level}",
         "farFromAnchors": "This result is at least two levels from the nearest anchor role. Validate the assessment manually before approving.",
         "contributionShare": "{share}%",
+        "notCovered": "Not covered",
         "breakdownLabel": "Contribution"
       },
       "lockedExplanation": "The rating is locked because the role is archived. Archiving cannot be undone, so create a new role if this work needs to be rated again.",
@@ -1903,23 +1897,6 @@
         "groupUp": "{count} up",
         "groupDown": "{count} down"
       },
-      "levelRules": {
-        "title": "Level thresholds",
-        "levelsLabel": "Where each level opens",
-        "levelsDescription": "A role reaches a level when its weighting is at least this number. Level 1 is the highest, so the numbers fall as the levels descend, and level 12 opens at 0 so every role places somewhere.",
-        "zonesLabel": "Zone profile requirements",
-        "levelField": "Level {level}",
-        "toggleCta": "Adjust the thresholds",
-        "zoneColumn": "Zone",
-        "levelColumn": "Level",
-        "fromColumn": "From",
-        "toColumn": "To",
-        "shareColumn": "Share of scale",
-        "zoneField": "Zone {zone}",
-        "reopensApproval": "Saving reopens the model's approval: the thresholds are part of what was approved, so the checklist has to be signed off again.",
-        "save": "Save thresholds",
-        "invalid": "These rules were not saved. Check that the numbers fall as the levels descend and that no zone asks more than the zone above it."
-      },
       "review": {
         "cta": "Open the dashboard"
       },
@@ -2061,8 +2038,6 @@
           "anchorsComplete": "Every criterion has a complete anchor scale",
           "documentationComplete": "Every criterion documented and approved",
           "weightBudget": "Weight points balanced to the budget",
-          "levelRulesValid": "Level thresholds are valid",
-          "zoneProfileMonotonic": "Zone profile rules are consistent",
           "dimensionWeightBalance": "No dimension dominates the weighting unexplained",
           "peopleLeadershipWeight": "People leadership's weight is motivated",
           "overlapPairs": "Overlapping criteria are reviewed"
@@ -2075,8 +2050,6 @@
           "anchorsComplete": "A criterion is missing steps on its evaluation scale. Remove it and choose it again in <link>{chapter}</link>.",
           "documentationComplete": "{count, plural, =1 {# criterion is} other {# criteria are}} still undocumented or unapproved. Open Document on each in <link>{chapter}</link>.",
           "weightBudget": "The weight points do not add up to the budget. Balance them and save in <link>{chapter}</link>.",
-          "levelRulesValid": "The model's level thresholds are not a valid 1 to 12 scale. Correct them in Level thresholds, below this checklist.",
-          "zoneProfileMonotonic": "The model's zone profile rules are not consistent. Correct them in Level thresholds, below this checklist.",
           "dimensionWeightBalance": "{dimensions} carries a dominant share of the weighting with no recorded reason. Motivate it in <link>{chapter}</link>, or move weight points to another dimension.",
           "peopleLeadershipWeight": "{criterion} carries a heavy weight with no recorded reason. Motivate it in <link>{chapter}</link>, or lower its weight points.",
           "overlapPairs": "Overlapping criteria: {pairs}. Note the overlap on either criterion of a pair in <link>{chapter}</link>."
@@ -2164,7 +2137,7 @@
       "pendingLevelLabel": "Why does a role have no level yet?",
       "pendingLevelBody": "A role gets a level only once its assessment is completed. Until then it has no weighting and no level, so it waits here.",
       "contributionLabel": "What do the bars and percentages show?",
-      "contributionBody": "Each criterion's share of this role's weighting: your rating times its weight in the model, adding up to 100%. The bars are scaled to the biggest contributor.",
+      "contributionBody": "Each criterion's share of this role's weighting: rating times weight, adding up to 100%. A criterion the role is not covered by is left out entirely, never counted as a low rating.",
       "twoFactorLabel": "What is two-step verification?",
       "twoFactorBody": "A second check at sign-in besides your password: a code from an authenticator app or your email. A stolen password alone then cannot open your account. Required for everyone.",
       "changeEmailLabel": "How does changing your email work?",
@@ -2229,9 +2202,7 @@
       "criterionSelectionLabel": "How many criteria can we choose?",
       "criterionSelectionBody": "Between 6 and 8, with at most 2 competence, 2 effort, 3 responsibility and 1 working conditions. The picker refuses one past a cap rather than warning about it later.",
       "methodDriftLabel": "What does an earlier method mean?",
-      "methodDriftBody": "The assessment was completed before the model was last approved, so it was made under different rules. The result still stands; the flag asks a person to look at it.",
-      "levelThresholdLabel": "What is a level threshold?",
-      "levelThresholdBody": "The weighting a role must reach to sit at a level, and the profile step a zone gates on. They decide where every role lands, so changing one re-places the whole ladder."
+      "methodDriftBody": "The assessment was completed before the model was last approved, so it was made under different rules. The result still stands; the flag asks a person to look at it."
     },
     "widgetCard": {
       "expand": "Expand"

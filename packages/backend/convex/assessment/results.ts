@@ -1,3 +1,4 @@
+import { LEVEL_RULES } from "@workspace/core"
 import { v } from "convex/values"
 import type { Doc } from "../_generated/dataModel"
 import {
@@ -167,15 +168,13 @@ export const getResults = orgQuery({
             .collect()
     const content = criteriaLibraryContent(clampLocale(locale))
     const criterionNames = criterionNameMap(criteriaRows, content)
-    const levels =
-      model === null
-        ? []
-        : [...model.levelRules]
-            .sort((a, b) => a.level - b.level)
-            .map((threshold) => ({
-              level: threshold.level,
-              minScore: threshold.minScore,
-            }))
+    // The ladder is method law (ADR-0024), so it is the same for every
+    // organization and does not depend on the model existing. It stays on the
+    // wire because every level surface draws its bands from it and would
+    // otherwise re-derive the architecture client-side.
+    const levels = [...LEVEL_RULES]
+      .sort((a, b) => a.level - b.level)
+      .map((rule) => ({ level: rule.level, minScore: rule.minScore }))
 
     const roleRows = await ctx.db
       .query("roles")

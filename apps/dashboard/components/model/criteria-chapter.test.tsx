@@ -140,8 +140,6 @@ function makeModel(
     midpoints: { step2: "", step4: "" },
     dimensions: DIMENSIONS,
     tracks: [],
-    levelRules: [{ level: 1, minScore: 100 }],
-    zoneProfileRules: [],
   }
 }
 

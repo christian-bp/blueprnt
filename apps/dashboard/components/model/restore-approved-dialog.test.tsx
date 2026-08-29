@@ -26,7 +26,6 @@ const PREVIEW = {
   diff: {
     changes: {
       motivation: { from: "Reviewed again.", to: "Tested, not material." },
-      levelRules: { from: "12 rules, top 97", to: "12 rules, top 90" },
     },
     criteria: [
       {
@@ -106,11 +105,10 @@ describe("RestoreApprovedDialog", () => {
     expect(screen.getByText("Low")).toBeDefined()
   })
 
-  it("lists the model-level rules and decisions it puts back", () => {
+  it("lists the model-level decisions it puts back", () => {
     renderDialog()
     expect(screen.getByText("Rules and decisions")).toBeDefined()
     expect(screen.getByText("Motivation")).toBeDefined()
-    expect(screen.getByText("Level thresholds")).toBeDefined()
     expect(screen.getByText("Tested, not material.")).toBeDefined()
   })
 

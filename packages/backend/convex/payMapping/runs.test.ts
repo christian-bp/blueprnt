@@ -1,7 +1,7 @@
 import { BASE_PRAXIS_AREA_KEYS, TRACK_SENIORITIES } from "@workspace/constants"
 import {
-  DEFAULT_LEVEL_RULES,
-  DEFAULT_ZONE_PROFILE_RULES,
+  LEVEL_RULES,
+  ZONE_PROFILE_RULES,
   LEVEL_COUNT,
   NEUTRAL_WEIGHT_POINTS,
 } from "@workspace/core"
@@ -305,10 +305,10 @@ describe("startPayMappingRun", () => {
     // never left the calibrate-before-launch defaults in this fixture.
     expect(frozen.levelRules).toHaveLength(12)
     expect(frozen.levelRules).toEqual(
-      DEFAULT_LEVEL_RULES.map((r) => ({ level: r.level, minScore: r.minScore }))
+      LEVEL_RULES.map((r) => ({ level: r.level, minScore: r.minScore }))
     )
     expect(frozen.zoneProfileRules).toEqual(
-      DEFAULT_ZONE_PROFILE_RULES.map((r) => ({
+      ZONE_PROFILE_RULES.map((r) => ({
         zone: r.zone,
         minStep: r.minStep,
       }))
@@ -1973,10 +1973,6 @@ describe("the run's level grouping and exclusion seam", () => {
     })
 
     const { levels, rows } = await t.run(async (ctx) => {
-      const model = await ctx.db
-        .query("models")
-        .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .unique()
       const run = await ctx.db
         .query("payMappingRuns")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
@@ -1986,7 +1982,7 @@ describe("the run's level grouping and exclusion seam", () => {
         .query("payMappingSnapshotRows")
         .withIndex("by_run", (q) => q.eq("orgId", orgId).eq("runId", run._id))
         .collect()
-      return { levels: model?.levelRules ?? [], rows: snapshot }
+      return { levels: run.frozenModel.levelRules ?? [], rows: snapshot }
     })
 
     // The architecture is twelve levels (ADR-0022), and the run's own frozen
@@ -1996,14 +1992,6 @@ describe("the run's level grouping and exclusion seam", () => {
     expect(levels.map((rule) => rule.level).sort((a, b) => a - b)).toEqual(
       Array.from({ length: LEVEL_COUNT }, (_, index) => index + 1)
     )
-    const frozenRules = await t.run(async (ctx) => {
-      const run = await ctx.db
-        .query("payMappingRuns")
-        .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .first()
-      return run?.frozenModel.levelRules ?? []
-    })
-    expect(frozenRules).toHaveLength(LEVEL_COUNT)
 
     // Every frozen row carries a real level, inside the architecture's range,
     // and it is the level the engine placed the role at rather than anything

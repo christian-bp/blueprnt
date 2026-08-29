@@ -114,8 +114,10 @@ describe("setRating", () => {
 
     // Re-rating the 8th criterion (safety-exposure, the model's one
     // workingConditions criterion: the only one 0 is legal on) from 5 to 0
-    // drops the normalized score from 100 to floor(20 * 105 / 24) = 87
-    // (neutral 3 weight points, like every activated criterion): Level 2.
+    // says the role is NOT COVERED by the condition, so the criterion leaves
+    // both sides of the quotient: 20 * 105 / 21 = 100 still, Level 1
+    // unchanged, and therefore no second level.shift. The old rule scored the
+    // 0 and dropped the role to 87, which penalized it for not being exposed.
     await asAdmin.mutation(api.assessment.ratings.setRating, {
       orgId,
       roleId,
@@ -135,14 +137,10 @@ describe("setRating", () => {
           q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
-      expect(shifts).toHaveLength(2)
+      expect(shifts).toHaveLength(1)
       expect(shifts[0]?.payload).toMatchObject({
         roleId,
         changes: { level: { from: null, to: 1 } },
-      })
-      expect(shifts[1]?.payload).toMatchObject({
-        roleId,
-        changes: { level: { from: 1, to: 2 } },
       })
       const changes = await ctx.db
         .query("auditLog")
@@ -170,6 +168,31 @@ describe("setRating", () => {
           value: { from: null, to: 5 },
           motivation: { from: null, to: "Top of the scale" },
         },
+      })
+    })
+
+    // Rating the same criterion 1 puts the role back inside the condition, so
+    // the criterion re-enters both sides at its own low step:
+    // floor(20 * (105 + 3) / 24) = 90, Level 2. That IS a shift, and it is
+    // the counterpart of the act above: a 0 is a marker, a 1 is a rating.
+    await asAdmin.mutation(api.assessment.ratings.setRating, {
+      orgId,
+      roleId,
+      criterionId: lastCriterion.criterionId,
+      value: 1,
+      motivation: "Bounded standby, one week in six.",
+    })
+    await t.run(async (ctx) => {
+      const shifts = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "level.shift")
+        )
+        .collect()
+      expect(shifts).toHaveLength(2)
+      expect(shifts[1]?.payload).toMatchObject({
+        roleId,
+        changes: { level: { from: 1, to: 2 } },
       })
     })
 

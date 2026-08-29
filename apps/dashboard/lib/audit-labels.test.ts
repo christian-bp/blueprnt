@@ -167,11 +167,6 @@ const OTHER_AUDIT_FIELDS = [
   // that payloadStats picks up alongside items/budget.
   "count",
   "change",
-  // model.created create-changes (MODEL_AUDIT_FIELDS also has "name", already
-  // covered by the person/role "name" field above).
-  "levelRules",
-  // model.zoneProfileRulesUpdated diff field (evaluationModel/approval.ts).
-  "zoneProfileRules",
   // model.approved flat-stat fields (evaluationModel/approval.ts): the
   // dimension shares are rounded percentage integers, flattened to one
   // field per dimension (never a nested object; payloadStats only picks up

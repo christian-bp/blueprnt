@@ -1,4 +1,4 @@
-import { assertValidRatingValue } from "./dimensions"
+import { assertValidRatingValue, NOT_COVERED } from "./dimensions"
 import { isWeightPoints } from "./weighting"
 import type {
   CriterionShare,
@@ -28,13 +28,29 @@ export function assertUniqueCriteria(criteria: CriterionIdentity[]): void {
 }
 
 // Normalized weighted score on the fixed 0-100 scale (ADR-0004):
-// floor(20 * sum(rating * weightPoints) / sum(weightPoints)). Normalizing
-// over the model's own point sum keeps the scale independent of the
-// criterion count, so level thresholds stay meaningful when criteria are
-// added or removed. Flooring keeps the comparison against integer level
-// thresholds exact: floored >= T iff unfloored >= T for integer T. All
-// inputs are small integers, so the float quotient is exact whenever the
-// true quotient is an integer and the floor is safe.
+// floor(20 * sum(rating * weightPoints) / sum(weightPoints)), summed over the
+// criteria the role is actually MEASURED on. Normalizing over the point sum
+// keeps the scale independent of the criterion count, so level thresholds
+// stay meaningful when criteria are added or removed. Flooring keeps the
+// comparison against integer level thresholds exact: floored >= T iff
+// unfloored >= T for integer T. All inputs are small integers, so the float
+// quotient is exact whenever the true quotient is an integer and the floor is
+// safe.
+//
+// A rating of 0 is NOT a low score: it is only legal on a working-conditions
+// criterion (assertValidRatingValue) and it means the role is not covered by
+// the defined condition. Such a criterion therefore leaves BOTH sides of the
+// quotient, so the role is measured only on what applies to it. Counting the
+// 0 in the numerator while leaving its weight in the denominator would
+// penalize a role for not being exposed, which is the opposite of what the
+// criterion's own definition says, and it capped the scale: at a
+// working-conditions weight of 3 a role rated 5 on everything it is measured
+// on reached 85, so the top two levels were unreachable for it. The excluded
+// role now lands on the level its own profile earns, and an exposed role
+// moves above or below that depending on how demanding its conditions are.
+// Consequence, and it is the intended one: the remaining criteria's shares
+// rise proportionally for that role, because a criterion that does not apply
+// cannot hold a share of what does.
 //
 // Ratings for unknown criterion ids are ignored (orphan safety: the backend
 // cleans up on criterion removal; the engine tolerates strays), including
@@ -68,7 +84,18 @@ export function scoreRole(
     const criterion = criterionById.get(rating.criterionId)
     if (criterion === undefined) continue
     assertValidRatingValue(rating.value, criterion.dimensionKey)
+    if (rating.value === NOT_COVERED) {
+      totalPoints -= criterion.weightPoints
+      continue
+    }
     raw += rating.value * criterion.weightPoints
+  }
+  // The dimension caps allow at most one working-conditions criterion, so a
+  // real model can never lose its whole denominator here. A caller that hands
+  // in nothing but an uncovered criterion has asked for the score of a role
+  // measured on nothing, which has no answer.
+  if (totalPoints === 0) {
+    throw new Error("every criterion is uncovered; nothing to score against")
   }
   return Math.floor((20 * raw) / totalPoints)
 }

@@ -3,7 +3,12 @@ import {
   PRAXIS_AREA_KEYS,
   type PraxisAreaKey,
 } from "@workspace/constants"
-import { methodBlockersPass, validateMethod } from "@workspace/core"
+import {
+  LEVEL_RULES,
+  methodBlockersPass,
+  validateMethod,
+  ZONE_PROFILE_RULES,
+} from "@workspace/core"
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import type {
@@ -284,7 +289,22 @@ export const startPayMappingRun = orgMutation({
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .unique()
     const freezeLocale = await resolveContentLocale(ctx, ctx.orgId)
-    const frozenModel = await buildModelEvidence(ctx, model, freezeLocale)
+    // The run freezes the ladder and the zone gates it is actually placed
+    // under. They are method law and no longer live on the model document
+    // (ADR-0024), so they are added HERE rather than by the shared evidence
+    // builder: retuning the constants later must not rewrite what an
+    // already-signed kartläggning says it measured.
+    const frozenModel = {
+      ...(await buildModelEvidence(ctx, model, freezeLocale)),
+      levelRules: LEVEL_RULES.map((rule) => ({
+        level: rule.level,
+        minScore: rule.minScore,
+      })),
+      zoneProfileRules: ZONE_PROFILE_RULES.map((rule) => ({
+        zone: rule.zone,
+        minStep: rule.minStep,
+      })),
+    }
 
     // Derive level/score for every role once, index by roleId.
     const derived = await deriveResults(ctx, ctx.orgId)

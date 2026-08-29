@@ -7,11 +7,7 @@ import { orgMutation, orgQuery } from "../lib/functions"
 import { reopenApprovalIfSet } from "./approval"
 import { criteriaLibraryContent, LIBRARY_DIMENSION } from "./criteriaLibrary"
 import { clampLocale } from "./localize"
-import {
-  dimensionKeyValidator,
-  libraryKeyValidator,
-  zoneKeyValidator,
-} from "./tables"
+import { dimensionKeyValidator, libraryKeyValidator } from "./tables"
 
 // The compliance content fields logged in the audit diff. decidedBy/decidedAt
 // are intentionally excluded: they are redundant with the audit row's own actor
@@ -261,15 +257,10 @@ export const getMethodModel = orgQuery({
           decidedAt: v.union(v.number(), v.null()),
         })
       ),
-      levelRules: v.array(
-        v.object({ level: v.number(), minScore: v.number() })
-      ),
-      // The zone gates and the materiality decision are method content the
-      // appendix documents; decidedBy stays off the wire (a raw auth id no
-      // surface shows).
-      zoneProfileRules: v.array(
-        v.object({ zone: zoneKeyValidator, minStep: v.number() })
-      ),
+      // The ladder and the zone gates are method law in packages/core, so the
+      // appendix reads them there rather than over the wire. The materiality
+      // decision IS org content and travels; decidedBy stays off the wire (a
+      // raw auth id no surface shows).
       workingConditions: v.union(
         v.null(),
         v.object({
@@ -376,8 +367,6 @@ export const getMethodModel = orgQuery({
       })
     }
 
-    const levelRules = [...model.levelRules].sort((a, b) => a.level - b.level)
-
     const workingConditions =
       model.workingConditions === undefined
         ? null
@@ -390,8 +379,6 @@ export const getMethodModel = orgQuery({
       modelName: model.name,
       pointBudget: rows.length * 3,
       criteria,
-      levelRules,
-      zoneProfileRules: model.zoneProfileRules ?? [],
       workingConditions,
       progress: { documented, approved, total: rows.length },
       modelApproved: model.approval !== undefined,

@@ -1,8 +1,4 @@
-import {
-  DEFAULT_LEVEL_RULES,
-  DEFAULT_ZONE_PROFILE_RULES,
-  DIMENSION_KEYS,
-} from "@workspace/core"
+import { DIMENSION_KEYS } from "@workspace/core"
 import { v } from "convex/values"
 import {
   internalMutation,
@@ -27,7 +23,6 @@ import {
   dimensionKeyValidator,
   libraryKeyValidator,
   trackKeyValidator,
-  zoneKeyValidator,
 } from "./tables"
 import { TRACK_KEYS, trackName } from "./trackSchema"
 
@@ -59,25 +54,6 @@ export async function resolveContentLocale(
   return clampLocale(settings?.language)
 }
 
-// The calibrate-before-launch defaults (packages/core), copied into plain
-// mutable arrays for storage. Used by BOTH createDefaultModel and
-// seedDefaultModel so a fresh model (interactive or seeded) always starts
-// from the same starting point. Nothing in the product edits
-// levelRules/zoneProfileRules, so this is the only place their values are
-// set.
-function defaultLevelRules() {
-  return DEFAULT_LEVEL_RULES.map((rule) => ({
-    level: rule.level,
-    minScore: rule.minScore,
-  }))
-}
-function defaultZoneProfileRules() {
-  return DEFAULT_ZONE_PROFILE_RULES.map((rule) => ({
-    zone: rule.zone,
-    minStep: rule.minStep,
-  }))
-}
-
 // Seeds an empty draft model shell: a name from the library content's
 // modelName (org-locale), the default level/zone rules, and NO criteria (the
 // library picker is the only way in, ADR-0021 addendum). There is no
@@ -92,8 +68,6 @@ export const createDefaultModel = orgMutation({
     const modelId = await ctx.db.insert("models", {
       orgId: ctx.orgId,
       name: content.modelName,
-      levelRules: defaultLevelRules(),
-      zoneProfileRules: defaultZoneProfileRules(),
     })
     await ctx.audit.log({
       type: AUDIT_EVENTS.modelCreated,
@@ -103,10 +77,7 @@ export const createDefaultModel = orgMutation({
         locale,
         name: content.modelName,
         changes: buildCreateChanges(
-          {
-            name: content.modelName,
-            levelRules: defaultLevelRules(),
-          },
+          { name: content.modelName },
           MODEL_AUDIT_FIELDS
         ),
         count: 0,
@@ -145,8 +116,6 @@ export const seedDefaultModel = internalMutation({
     const modelId = await ctx.db.insert("models", {
       orgId,
       name: content.modelName,
-      levelRules: defaultLevelRules(),
-      zoneProfileRules: defaultZoneProfileRules(),
     })
 
     await logAudit(ctx, {
@@ -160,10 +129,7 @@ export const seedDefaultModel = internalMutation({
         locale: seedLocale,
         name: content.modelName,
         changes: buildCreateChanges(
-          {
-            name: content.modelName,
-            levelRules: defaultLevelRules(),
-          },
+          { name: content.modelName },
           MODEL_AUDIT_FIELDS
         ),
         count: 0,
@@ -303,12 +269,6 @@ export const getModel = orgQuery({
           order: v.number(),
         })
       ),
-      levelRules: v.array(
-        v.object({ level: v.number(), minScore: v.number() })
-      ),
-      zoneProfileRules: v.array(
-        v.object({ zone: zoneKeyValidator, minStep: v.number() })
-      ),
     })
   ),
   handler: async (ctx, { locale }) => {
@@ -357,9 +317,6 @@ export const getModel = orgQuery({
       name: content.dimensions[key].name,
     }))
 
-    const levelRules = [...model.levelRules].sort((a, b) => a.level - b.level)
-    const zoneProfileRules = [...model.zoneProfileRules]
-
     return {
       modelId: model._id,
       name: model.name,
@@ -369,14 +326,6 @@ export const getModel = orgQuery({
       midpoints: content.midpoints,
       dimensions,
       tracks,
-      levelRules: levelRules.map((rule) => ({
-        level: rule.level,
-        minScore: rule.minScore,
-      })),
-      zoneProfileRules: zoneProfileRules.map((rule) => ({
-        zone: rule.zone,
-        minStep: rule.minStep,
-      })),
     }
   },
 })

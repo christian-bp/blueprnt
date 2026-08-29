@@ -1,6 +1,6 @@
 import {
-  DEFAULT_LEVEL_RULES,
-  DEFAULT_ZONE_PROFILE_RULES,
+  LEVEL_RULES,
+  ZONE_PROFILE_RULES,
   DIMENSION_MAX_ACTIVE,
   type DimensionKey,
   MODEL_MAX_CRITERIA,
@@ -21,11 +21,11 @@ import {
   RATINGS_BY_TITLE,
 } from "./devCompany"
 
-const THRESHOLDS = DEFAULT_LEVEL_RULES.map((t) => ({
+const THRESHOLDS = LEVEL_RULES.map((t) => ({
   level: t.level,
   minScore: t.minScore,
 }))
-const ZONE_PROFILE_RULES = DEFAULT_ZONE_PROFILE_RULES.map((rule) => ({
+const ZONE_RULES = ZONE_PROFILE_RULES.map((rule) => ({
   zone: rule.zone,
   minStep: rule.minStep,
 }))
@@ -50,7 +50,7 @@ function evaluate(ratings: readonly number[], weights: Record<string, number>) {
     ratings: ratingInputs,
     criteria,
     levelRules: THRESHOLDS,
-    zoneProfileRules: ZONE_PROFILE_RULES,
+    zoneProfileRules: ZONE_RULES,
   })
   return {
     score,
@@ -149,7 +149,7 @@ describe("devCompany ratings", () => {
     // it is checking and therefore holds no matter where the ladder moves.
     const topLevel = Math.min(...Object.keys(dist).map(Number))
     expect(levelByTitle.CEO).toBe(topLevel)
-    expect(topLevel).toBe(3)
+    expect(topLevel).toBe(2)
   })
 
   it("agrees with the engine on every anchor role's level", () => {
@@ -157,7 +157,7 @@ describe("devCompany ratings", () => {
     // demo whose own anchor deviates opens with an amber deviation badge and
     // the three-act anchor panel on a model nobody has touched. The agreed
     // level is a human judgement and the derived one moves with the ladder,
-    // so the two can only stay together by being checked: a DEFAULT_LEVEL_RULES
+    // so the two can only stay together by being checked: a LEVEL_RULES
     // retune fails here and the fixture is re-agreed in the same change.
     const anchors = Object.entries(DEMO_ANCHOR_ROLES)
     expect(anchors.length).toBeGreaterThan(0)
@@ -185,11 +185,10 @@ describe("devCompany ratings", () => {
     // 8-criterion, 12-level scale; a drift in any rating vector or weight
     // point breaks this.
     expect(dist).toEqual({
-      2: 1,
-      3: 1,
-      4: 5,
-      5: 6,
-      6: 5,
+      2: 2,
+      4: 6,
+      5: 7,
+      6: 3,
       7: 5,
       8: 8,
       9: 5,
@@ -201,37 +200,44 @@ describe("devCompany ratings", () => {
     expect(levelByTitle["Software Developer"]).toBe(8)
   })
 
-  it("caps exactly the three heads sharing the EXEC_HEAD vector", () => {
+  it("caps exactly the titles whose profile falls short of their weighting", () => {
     // complexity-ambiguity and scope-impact are the demo's only profile
-    // criteria (weight >= 4, non-workingConditions) under DEMO_WEIGHT_POINTS,
-    // and zone A demands step 4 on both. The three functional heads share one
-    // rating vector: scope-impact 5 carries them to a weighting of 79, which
-    // reaches zone A, while their complexity-ambiguity of 3 does not, so
-    // placeRole holds them at zone B's top level and flags them. Head of
-    // Finance is a functional head too and is NOT capped: its own vector rates
-    // complexity 4, so zone A admits it. That is the profile rule doing its
-    // job (a high total alone must not buy zone A),
-    // and it is the demo org's worked example of a placement a person is
-    // asked to look at. Pinned by name so a rating or weight edit that
-    // silently starts or stops capping a title is caught.
+    // criteria (weight >= 4, non-workingConditions) under DEMO_WEIGHT_POINTS;
+    // zone A demands step 4 on both and zone B step 3. The three functional
+    // heads share one rating vector: scope-impact 5 carries them to a
+    // weighting of 82, which reaches zone A, while their complexity-ambiguity
+    // of 3 does not, so placeRole holds them at zone B's top level. Head of
+    // Finance is a functional head too and is NOT capped: its own vector
+    // rates complexity 4, so zone A admits it. Account Manager is the zone-B
+    // case of the same rule: 57 reaches zone B, its complexity-ambiguity of 2
+    // does not, and it is held at zone C's top. That is the profile rule
+    // doing its job (a high total alone must not buy a zone), and it is the
+    // demo org's worked example of a placement a person is asked to look at.
+    // Pinned by name so a rating or weight edit that silently starts or stops
+    // capping a title is caught.
     const capped = ALL_TITLES.filter(
       (title) =>
         evaluate(RATINGS_BY_TITLE[title] ?? [], DEMO_WEIGHTS).profileLimited
     )
     expect(capped.sort()).toEqual([
+      "Account Manager",
       "Head of HR",
       "Head of Product",
       "Head of Sales & Marketing",
     ])
-    for (const title of capped) {
+    const heads = capped.filter((title) => title.startsWith("Head of"))
+    for (const title of heads) {
       const { score, zone, level } = evaluate(
         RATINGS_BY_TITLE[title] ?? [],
         DEMO_WEIGHTS
       )
-      expect(score, title).toBe(79)
+      expect(score, title).toBe(82)
       expect(zone, title).toBe("B")
       expect(level, title).toBe(4)
     }
+    expect(
+      evaluate(RATINGS_BY_TITLE["Account Manager"] ?? [], DEMO_WEIGHTS)
+    ).toMatchObject({ score: 57, zone: "C", level: 7 })
   })
 
   it("re-weighting toward technical criteria moves the levels", () => {
@@ -255,16 +261,15 @@ describe("devCompany ratings", () => {
     )
     // Default: the CEO outranks the complexity/knowledge-peaked architect.
     expect(ceoBase.score).toBeGreaterThan(archBase.score)
-    // Technical weighting narrows the gap rather than inverting it: the CEO
-    // is also maxed on two of the three heavily-weighted criteria, so the
-    // CEO's weighting still edges up. It costs a level anyway, and through
-    // the profile rather than the total: the baseline is flat, so it has no
-    // profile criteria at all, while the technical weighting makes all three
-    // knowledge/complexity criteria weight 5, and knowledge-breadth is the
-    // CEO's one non-max rating. Zone A's step 4 refuses it, so the CEO lands
+    // Technical weighting taxes the CEO on both channels. On the total,
+    // because knowledge-breadth is the CEO's one non-max rating and the
+    // technical weighting puts weight 5 on it. On the profile, because the
+    // flat baseline has no profile criteria at all while the technical
+    // weighting makes all three knowledge/complexity criteria weight 5, and
+    // zone A's step 4 then refuses that same non-max rating, so the CEO lands
     // at zone B's top. The architect's technical peak meanwhile lifts the
     // total enough to climb a level outright.
-    expect(ceoTech.score).toBeGreaterThan(ceoBase.score)
+    expect(ceoTech.score).toBeLessThan(ceoBase.score)
     expect(ceoBase.profileLimited).toBe(false)
     expect(ceoTech.profileLimited).toBe(true)
     expect(ceoTech.level).toBe(ZONE_LEVEL_RANGES.B.from)

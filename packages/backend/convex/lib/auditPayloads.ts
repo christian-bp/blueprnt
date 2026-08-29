@@ -285,7 +285,7 @@ export interface AuditPayloads {
     count: number
     items: AuditItem[]
   }
-  // Flat stats only (ADR-0023): the twelve checks themselves are re-derivable
+  // Flat stats only (ADR-0023): the ten checks themselves are re-derivable
   // live from current state (validateMethod), so the approval row need not
   // carry a changes diff, only how many criteria and checks it covered, plus
   // a dimension-shares snapshot (each a rounded percentage 0-100, flattened
@@ -311,8 +311,6 @@ export interface AuditPayloads {
   // (e.g. "12 rules, top 97"), never the raw rule arrays: an array-valued
   // changes entry renders as an opaque complexValue placeholder, which would
   // make every rules edit read identically in the log.
-  "model.levelRulesUpdated": { modelId: string; changes: Changes }
-  "model.zoneProfileRulesUpdated": { modelId: string; changes: Changes }
   // causeEvent is the coded AuditEvent that triggered the reopen (resolved via
   // resolveCodedValue, reusing the dashboard.auditLog.events.* labels rather
   // than inventing new wording). Deliberately NOT named "cause": that key is
@@ -325,7 +323,7 @@ export interface AuditPayloads {
   // list, so the trail and the preview can never disagree: `changes` is the
   // model-level diff (materiality decision, level/zone-profile rules, the
   // rules as compact summary strings for the same reason
-  // model.levelRulesUpdated uses them), and `items[]` is one entry per
+  // model.updated uses them), and `items[]` is one entry per
   // criterion the restore moved. Each item is keyed by libraryKey, not a
   // criterionId: a removed criterion's row is deleted by this same mutation
   // and a returning one has no row yet, so the id would dangle or not exist.

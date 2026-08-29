@@ -31,8 +31,6 @@ const CHECKS = [
   { key: "anchorsComplete", level: "blocker", ok: true },
   { key: "documentationComplete", level: "blocker", ok: true },
   { key: "weightBudget", level: "blocker", ok: true, count: 6 },
-  { key: "levelRulesValid", level: "blocker", ok: true },
-  { key: "zoneProfileMonotonic", level: "blocker", ok: true },
   { key: "dimensionWeightBalance", level: "warning", ok: true },
   { key: "peopleLeadershipWeight", level: "warning", ok: true, applies: false },
   { key: "overlapPairs", level: "warning", ok: true },

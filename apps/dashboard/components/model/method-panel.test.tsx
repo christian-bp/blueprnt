@@ -98,12 +98,11 @@ const METHOD_MODEL = {
       decidedAt: null,
     },
   ],
-  levelRules: [],
   progress: { documented: 2, approved: 1, total: 3 },
   modelApproved: false,
 }
 
-// The engine's twelve checks, as the chapter reads them: overlapPairs and the
+// The engine's ten checks, as the chapter reads them: overlapPairs and the
 // materiality decision are what this surface reads, so the rest stay green.
 function methodChecks(
   pairs: string[][],

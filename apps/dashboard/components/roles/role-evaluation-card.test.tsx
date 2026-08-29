@@ -96,13 +96,11 @@ const designated: AnchorRoleInfo = {
   reviewedAt: 1_700_000_000_000,
 }
 
-// getRoleResult drives the view; getModel/listAnchorRoles back the dialog when
-// an admin opens it.
+// getRoleResult drives the view; listAnchorRoles backs the dialog when an
+// admin opens it.
 function setResult(next: Result | null | undefined) {
   onQuery((ref) => {
     if (ref === "assessment.results.getRoleResult") return next
-    if (ref === "evaluationModel.model.getModel")
-      return { levelRules: [80, 60, 40, 20] }
     if (ref === "assessment.anchorRoles.listAnchorRoles") return []
     return undefined
   })

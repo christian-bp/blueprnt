@@ -1,3 +1,4 @@
+import { LEVEL_RULES } from "@workspace/core"
 import { describe, expect, it } from "vitest"
 import type {
   MethodAppendixLibrary,
@@ -33,14 +34,6 @@ const ZONE_NAMES = { A: "Zone A name", B: "B", C: "C", D: "D" } as const
 const base: MethodModel = {
   modelName: "Standard model",
   pointBudget: 6,
-  levelRules: Array.from({ length: 12 }, (_, index) => ({
-    level: index + 1,
-    minScore: Math.max(0, 97 - index * 9),
-  })),
-  zoneProfileRules: [
-    { zone: "A", minStep: 4 },
-    { zone: "B", minStep: 3 },
-  ],
   workingConditions: {
     status: "testedNotMaterial",
     motivation: "No recurring exposure.",
@@ -154,6 +147,15 @@ describe("assembleMethodAppendix", () => {
     expect(doc.zones[0]?.minStep).toBe(4)
     expect(doc.zones[1]?.minStep).toBe(3)
     expect(doc.zones[2]?.minStep).toBeNull()
+    // The printed numbers are the method's own ladder, read from packages/core
+    // rather than from anything the org can supply: an appendix that documents
+    // a different ladder than the engine places on is not evidence.
+    expect(doc.zones.flatMap((zone) => zone.levels)).toEqual(
+      LEVEL_RULES.map((rule) => ({
+        level: rule.level,
+        minScore: rule.minScore,
+      }))
+    )
   })
 
   it("carries the scale and the materiality decision through", () => {

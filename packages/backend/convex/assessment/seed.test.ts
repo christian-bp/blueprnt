@@ -277,7 +277,7 @@ describe("assessment/seed.seedRatedRoles", () => {
       expect(model.approval?.approvedBy).toBe(FOUNDER_AUTH_ID)
       expect(model.approval?.approvedAt).toBeGreaterThan(0)
 
-      // Every one of the twelve checks (blockers AND warnings) comes back
+      // Every one of the ten checks (blockers AND warnings) comes back
       // ok, using the SAME engine input builder approveModel/getMethodChecks
       // consume: the seed satisfies its own method law, not a bypass that
       // would leave the Method tab's checklist showing red/amber rows on a

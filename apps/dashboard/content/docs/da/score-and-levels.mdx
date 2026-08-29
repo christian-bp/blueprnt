@@ -16,36 +16,42 @@ for det sidste.
 
 ## Vægtningsformlen
 
-For hvert kriterium multipliceres dets vurdering (1 til 5, eller 0 for
-et arbejdsforholdskriterium, rollen ikke er omfattet af) med det
-kriteriums vægtpoint, og resultaterne lægges derefter sammen på tværs
-af alle kriterier. Divider den sum med summen af alle kriteriernes
-vægtpoint: dette er den vægtede gennemsnitsvurdering. Multiplicer det
+For hvert kriterium, rollen måles på, multipliceres dets vurdering, 1
+til 5, med det kriteriums vægtpoint, og resultaterne lægges derefter
+sammen. Divider den sum med summen af de kriteriers vægtpoint: dette er
+den vægtede gennemsnitsvurdering. Multiplicer det
 vægtede gennemsnit med 20, og rund ned til nærmeste hele tal. Det
 endelige tal, altid mellem 0 og 100 uanset hvor mange kriterier
 modellen har, er vægtningen. At runde ned betyder, at en rolle først
 når et niveau, når dens vægtning reelt har nået tærsklen, aldrig ved at
 blive rundet op til den.
 
-Et regneeksempel med fire kriterier og dermed et pointbudget på 12:
+Et arbejdsforholdskriterium, rollen ikke er omfattet af, får
+vurderingen 0, og et 0 er en markering snarere end en vurdering:
+kriteriet forlader både summen og nævneren, så rollen vægtes på de
+kriterier, der reelt gælder den.
+
+Et regneeksempel med fire kriterier og dermed et pointbudget på 12,
+hvoraf ét rollen ikke er omfattet af:
 
 | Kriterium | Vægtpoint | Vurdering | Bidrag |
 | --- | ---: | ---: | ---: |
 | Kompleksitet og uklarhed | 5 | 4 | 20 |
 | Autonomi og beslutningsmandat | 3 | 5 | 15 |
 | Risiko og konsekvens | 3 | 3 | 9 |
-| Vagt, beredskab og tilgængelighedskrav | 1 | 0 | 0 |
-| **Sum** | **12** | | **44** |
+| Vagt, beredskab og tilgængelighedskrav | 1 | Ikke omfattet | udelades |
+| **Sum målt** | **11** | | **44** |
 
-20 × 44 / 12 giver 73,3, så vægtningen er 73. Eksemplet viser to ting.
-Arbejdsforholds-nullet er et ægte svar, ikke et blankt felt: det lægger
-intet til summen, mens kriteriets vægtpoint bliver stående i nævneren,
-så en rolle uden vagtbelastning reelt bærer mindre krav dér. Og
-vægtpointene afgør, hvor langt ét vurderingstrin flytter resultatet: et
-trin på et kriterium med vægt v flytter vægtningen 20 × v divideret med
-budgettet, her cirka 8 point på vægt-5-kriteriet og under 2 på
-vægt-1-kriteriet. Vægtpoint omfordeler de samme 0 til 100; de hæver
-aldrig loftet.
+20 × 44 / 11 giver præcis 80, så vægtningen er 80. Eksemplet viser to
+ting. En rolle trækkes aldrig ned for et krav, den ikke bærer: at tælle
+nullet med og lade dets vægtpoint blive stående i nævneren ville have
+givet 73 her, og med et tungere arbejdsforholdskriterium sætter det et
+loft over skalaen, så en rolle med vurderingen 5 på alt, den måles på,
+slet ikke når de øverste niveauer. Og vægtpointene afgør, hvor langt ét
+vurderingstrin flytter resultatet: et trin på et kriterium med vægt v
+flytter vægtningen 20 × v divideret med nævneren, her cirka 9 point på
+vægt-5-kriteriet og cirka 5 på hvert vægt-3-kriterium. Vægtpoint
+omfordeler de samme 0 til 100; de hæver aldrig loftet.
 
 En rolles vægtning vises først, når dens bedømmelse er afsluttet. Indtil da
 viser blueprnt, hvor mange kriterier der er vurderet, i stedet for et

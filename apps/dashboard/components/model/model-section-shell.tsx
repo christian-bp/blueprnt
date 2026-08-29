@@ -37,7 +37,7 @@ import {
 // a skeleton on a chapter switch.
 //
 // One query for all four chapters' progress. getMethodChecks already carries
-// everything the derivation needs (the twelve checks, the materiality one
+// everything the derivation needs (the ten checks, the materiality one
 // among them, and the approval), so the section's standing readout costs one
 // subscription rather than one per chapter.
 export function ModelSectionShell({ children }: { children: ReactNode }) {

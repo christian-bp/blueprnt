@@ -126,11 +126,7 @@
       "maxLength": "Fältet är för långt.",
       "slug": "Använd små bokstäver, siffror och bindestreck.",
       "passwordsMatch": "Lösenorden måste matcha.",
-      "emailUnchanged": "Ange en annan e-postadress.",
-      "levelDecreasing": "Måste vara lägre än nivån ovanför.",
-      "levelBottomZero": "Den lägsta nivån måste börja vid 0.",
-      "zoneMonotonic": "Kan inte kräva mer än zonen ovanför.",
-      "scoreRange": "Ett heltal mellan 0 och 100."
+      "emailUnchanged": "Ange en annan e-postadress."
     },
     "toast": {
       "error": "Något gick fel. Försök igen.",
@@ -194,7 +190,6 @@
       "workingConditionsDecided": "Beslut om arbetsförhållanden sparat",
       "assessmentCompleted": "Bedömningen slutförd",
       "placementConfirmed": "Placeringen bekräftad",
-      "thresholdsSaved": "Nivågränserna sparade",
       "assessmentReopened": "Bedömningen öppnad igen",
       "weightMotivationSaved": "Motivering sparad"
     },
@@ -783,8 +778,6 @@
         "budget": "Poängbudget",
         "count": "Antal",
         "change": "Typ av ändring",
-        "levelRules": "Nivågränser",
-        "zoneProfileRules": "Zonprofilregler",
         "criteriaCount": "Kriterier",
         "checksPassed": "Godkända kontroller",
         "causeEvent": "Återöppnad av",
@@ -1601,7 +1594,7 @@
       "notMeasuresLabel": "Mäter inte",
       "anchorGroupLabel": "Betyg för {name}",
       "notCoveredOption": "Rollen omfattas inte av det här arbetsförhållandet.",
-      "notCoveredExplanation": "Välj det här när rollen aldrig är exponerad för det som kriteriet mäter.",
+      "notCoveredExplanation": "Välj det här när rollen aldrig utsätts för det kriteriet mäter. Rollen viktas då enbart på sina övriga kriterier.",
       "motivationLabel": "Motivering",
       "motivationPlaceholder": "Varför detta betyg?",
       "motivationRequiredError": "Lägg till en motivering innan du fortsätter.",
@@ -1621,6 +1614,7 @@
         "anchorLevel": "Nivå {level}",
         "farFromAnchors": "Resultatet ligger minst två nivåer från närmaste ankarroll. Validera bedömningen manuellt innan godkännande.",
         "contributionShare": "{share}%",
+        "notCovered": "Omfattas ej",
         "breakdownLabel": "Bidrag"
       },
       "lockedExplanation": "Betygsättningen är låst eftersom rollen är arkiverad. Arkivering kan inte ångras, så skapa en ny roll om arbetet behöver betygsättas igen.",
@@ -1903,23 +1897,6 @@
         "groupUp": "{count} upp",
         "groupDown": "{count} ned"
       },
-      "levelRules": {
-        "title": "Nivågränser",
-        "levelsLabel": "Var varje nivå börjar",
-        "levelsDescription": "En roll når en nivå när dess viktning är minst det här talet. Nivå 1 är högst, så talen sjunker när nivåerna går nedåt, och nivå 12 börjar vid 0 så att varje roll hamnar någonstans.",
-        "zonesLabel": "Profilkrav per zon",
-        "levelField": "Nivå {level}",
-        "toggleCta": "Justera gränserna",
-        "zoneColumn": "Zon",
-        "levelColumn": "Nivå",
-        "fromColumn": "Från",
-        "toColumn": "Till",
-        "shareColumn": "Del av skalan",
-        "zoneField": "Zon {zone}",
-        "reopensApproval": "Att spara öppnar modellens godkännande igen: gränserna är en del av det som godkändes, så checklistan måste signeras på nytt.",
-        "save": "Spara gränserna",
-        "invalid": "Reglerna kunde inte sparas. Kontrollera att talen sjunker när nivåerna går nedåt och att ingen zon kräver mer än zonen ovanför."
-      },
       "review": {
         "cta": "Öppna dashboarden"
       },
@@ -2061,8 +2038,6 @@
           "anchorsComplete": "Varje kriterium har en komplett ankarskala",
           "documentationComplete": "Varje kriterium dokumenterat och godkänt",
           "weightBudget": "Viktpoäng balanserade mot budgeten",
-          "levelRulesValid": "Nivågränserna är giltiga",
-          "zoneProfileMonotonic": "Zonprofilreglerna är konsekventa",
           "dimensionWeightBalance": "Ingen dimension dominerar viktningen utan motivering",
           "peopleLeadershipWeight": "Personalledarskapets vikt är motiverad",
           "overlapPairs": "Överlappande kriterier är granskade"
@@ -2075,8 +2050,6 @@
           "anchorsComplete": "Ett kriterium saknar steg på sin bedömningsskala. Ta bort det och välj det på nytt i <link>{chapter}</link>.",
           "documentationComplete": "{count, plural, =1 {# kriterium är} other {# kriterier är}} ännu inte dokumenterade och godkända. Öppna Dokumentera på vart och ett i <link>{chapter}</link>.",
           "weightBudget": "Viktpoängen går inte ihop med budgeten. Balansera dem och spara i <link>{chapter}</link>.",
-          "levelRulesValid": "Modellens nivågränser är inte en giltig skala 1 till 12. Rätta dem under Nivågränser, nedanför den här checklistan.",
-          "zoneProfileMonotonic": "Modellens profilkrav per zon hänger inte ihop. Rätta dem under Nivågränser, nedanför den här checklistan.",
           "dimensionWeightBalance": "{dimensions} bär en dominerande andel av viktningen utan dokumenterat skäl. Motivera det i <link>{chapter}</link>, eller flytta viktpoäng till en annan dimension.",
           "peopleLeadershipWeight": "{criterion} har en hög vikt utan dokumenterat skäl. Motivera den i <link>{chapter}</link>, eller sänk dess viktpoäng.",
           "overlapPairs": "Överlappande kriterier: {pairs}. Notera överlappningen på ettdera kriteriet i paret i <link>{chapter}</link>."
@@ -2164,7 +2137,7 @@
       "pendingLevelLabel": "Varför har en roll ingen nivå ännu?",
       "pendingLevelBody": "En roll får en nivå först när dess bedömning är slutförd. Fram till dess har den ingen viktning och ingen nivå, så den väntar här.",
       "contributionLabel": "Vad visar staplarna och procenten?",
-      "contributionBody": "Varje kriteriums andel av rollens viktning: ditt betyg gånger kriteriets vikt i modellen, summerat till 100%. Staplarna skalas mot den största bidragsgivaren.",
+      "contributionBody": "Varje kriteriums andel av rollens viktning: betyg gånger vikt, tillsammans 100 %. Ett kriterium rollen inte omfattas av räknas inte alls, aldrig som ett lågt betyg.",
       "twoFactorLabel": "Vad är tvåstegsverifiering?",
       "twoFactorBody": "En andra kontroll vid inloggning utöver lösenordet: en kod från en autentiseringsapp eller din e-post. Ett stulet lösenord räcker då inte för att öppna kontot. Krävs för alla.",
       "changeEmailLabel": "Hur fungerar e-postbyte?",
@@ -2229,9 +2202,7 @@
       "criterionSelectionLabel": "Hur många kriterier får vi välja?",
       "criterionSelectionBody": "Mellan 6 och 8, med högst 2 kompetens, 2 ansträngning, 3 ansvar och 1 arbetsförhållanden. Väljaren avvisar ett kriterium över taket i stället för att varna om det efteråt.",
       "methodDriftLabel": "Vad betyder en tidigare metod?",
-      "methodDriftBody": "Bedömningen slutfördes innan modellen senast godkändes, så den gjordes under andra regler. Resultatet står kvar; flaggan ber en människa titta på det.",
-      "levelThresholdLabel": "Vad är en nivågräns?",
-      "levelThresholdBody": "Viktningen en roll måste nå för att ligga på en nivå, och profilsteget en zon kräver. De avgör var varje roll hamnar, så en ändring placerar om hela stegen."
+      "methodDriftBody": "Bedömningen slutfördes innan modellen senast godkändes, så den gjordes under andra regler. Resultatet står kvar; flaggan ber en människa titta på det."
     },
     "widgetCard": {
       "expand": "Förstora"

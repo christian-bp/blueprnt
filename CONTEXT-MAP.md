@@ -26,5 +26,5 @@ Tvärgående moduler utan egen ordlista: **platform** (plattformsadmin, ADR-0009
 ## Relationer
 
 - **Konton → allt**: varje post hör till en organisation (tenant). Convex-funktioner upprätthåller org-scoping.
-- **Värderingsmodell → Värdering**: en värdering använder organisationens **aktuella** modell (kriterier, viktpoäng, track/senioritetsschema, nivåtrösklar). Poäng och nivå härleds live från sparade betyg + aktuell modell (ingen versionering i V1).
+- **Värderingsmodell → Värdering**: en värdering använder organisationens **aktuella** modell (kriterier, viktpoäng, track/senioritetsschema) mot metodens fasta nivåtrösklar och zonprofilkrav (ADR-0024). Poäng och nivå härleds live från sparade betyg + aktuell modell (ingen versionering i V1).
 - **Värdering → Värderingsmodell**: en roll bär en track hämtad från modellens jobbarkitektur-vokabulär. Senioriteterna i schemat är referensdata för V2:s rollplacering (senioriteten sätts på individen, ADR-0005).

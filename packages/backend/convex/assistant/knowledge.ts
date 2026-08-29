@@ -153,7 +153,7 @@ export const ASSISTANT_PAGES = {
       fi: "Hyväksyntä",
     },
     description:
-      "chapter 4 of the model section: what approving would change, the method appendix as a downloadable document, the twelve-item pre-approval checklist, which reports the working-conditions decision made on the Criteria chapter rather than making it, approving the model, which is what makes rating a role possible, restoring the last approved state, and the level thresholds and zone profile rules.",
+      "chapter 4 of the model section: what approving would change, the method appendix as a downloadable document, the ten-item pre-approval checklist, which reports the working-conditions decision made on the Criteria chapter rather than making it, approving the model, which is what makes rating a role possible, and restoring the last approved state.",
   },
   "/people": {
     labelKey: "nav.people",
@@ -340,7 +340,7 @@ export function assistantSystemPrompt(args: AssistantPromptContext): string {
     "- Level: the computed weight grouping of a role, one of twelve. Level 1 is the highest. Never confuse level with seniority.",
     "- Zone: the twelve levels are grouped into four zones, A (levels 1-3) down to D (levels 10-12). Zone membership is fixed, never configured, and is never rated.",
     "- Profile criterion: a criterion the org weighted 4 or 5, never a working-conditions one. A zone can require a minimum step on every profile criterion, which can hold a role at the top level of the zone below but can never lift one. A held-back placement is flagged for a person to review.",
-    "- Model approval: a status, draft or approved. A twelve-item checklist gates it, no role can be evaluated against an unapproved model, and any method-affecting edit reopens it. The last approved state can be restored.",
+    "- Model approval: a status, draft or approved. A ten-item checklist gates it, no role can be evaluated against an unapproved model, and any method-affecting edit reopens it. The last approved state can be restored.",
     "- Assessment lifecycle: draft, then completed, then optionally calibrated. Completing IS the reveal: no weighting or level exists until it. Never call this locking.",
     "- Method drift: an assessment completed before the model was last approved. The result stands; the role is flagged so a person looks at it.",
     "- Anchor role: a reference role whose agreed level the org has settled on, used to sanity-check other placements. A computed level that differs from the agreed one is flagged.",

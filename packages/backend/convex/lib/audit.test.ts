@@ -315,8 +315,6 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
     status: "active",
     changes: {},
   },
-  "model.levelRulesUpdated": { modelId: "model-1", changes: {} },
-  "model.zoneProfileRulesUpdated": { modelId: "model-1", changes: {} },
   "model.approvalReopened": {
     modelId: "model-1",
     causeEvent: "criterion.activated",
@@ -520,8 +518,6 @@ const EXPECTED_SUBJECTS: { [E in AuditEvent]: AuditSubject | undefined } = {
   "criterion.deactivated": undefined,
   "model.approved": undefined,
   "model.workingConditionsDecided": undefined,
-  "model.levelRulesUpdated": undefined,
-  "model.zoneProfileRulesUpdated": undefined,
   "model.approvalReopened": undefined,
   "model.restored": undefined,
   "role.assessmentCompleted": { kind: "role", id: "role-1" },

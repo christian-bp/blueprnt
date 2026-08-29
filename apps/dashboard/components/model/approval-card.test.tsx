@@ -21,8 +21,6 @@ const ALL_GREEN_CHECKS = [
   { key: "anchorsComplete", level: "blocker", ok: true },
   { key: "documentationComplete", level: "blocker", ok: true },
   { key: "weightBudget", level: "blocker", ok: true },
-  { key: "levelRulesValid", level: "blocker", ok: true },
-  { key: "zoneProfileMonotonic", level: "blocker", ok: true },
   { key: "dimensionWeightBalance", level: "warning", ok: true },
   { key: "peopleLeadershipWeight", level: "warning", ok: true },
   { key: "overlapPairs", level: "warning", ok: true },
@@ -232,11 +230,11 @@ describe("ApprovalCard", () => {
     const rowFor = (label: string) =>
       screen.getByText(label).closest("li") as HTMLElement
 
-    it("groups the twelve into required and recommended, each naming itself", () => {
+    it("groups the ten into required and recommended, each naming itself", () => {
       const { container } = renderChecks(ALL_GREEN_CHECKS)
       const required = within(groupOf(m.requiredChecks))
       const recommended = within(groupOf(m.recommendedChecks))
-      expect(required.getAllByRole("listitem")).toHaveLength(9)
+      expect(required.getAllByRole("listitem")).toHaveLength(7)
       expect(recommended.getAllByRole("listitem")).toHaveLength(3)
       // Membership, not just the counts: a blocker in the recommended group
       // would keep both numbers right.
@@ -627,7 +625,6 @@ describe("ApprovalCard", () => {
   // the two warnings were unactionable, and one of them named no surface that
   // could answer it at all.
   describe("remedy lines", () => {
-    const remedies = messages.dashboard.model.method.remedies
     const checks = messages.dashboard.model.method.checks
 
     // The remedy sits in the same <li> as its finding, and a chapter LINK
@@ -724,16 +721,6 @@ describe("ApprovalCard", () => {
       expect(rowText(checks.dimensionCoverage)).toContain(
         "Effort and complexity and Responsibility and impact"
       )
-    })
-
-    // Nothing in the app edits the level or zone-profile rules, so their
-    // remedy points at no chapter rather than at one that cannot fix it.
-    it("offers no chapter link where no chapter can fix it", () => {
-      failing("levelRulesValid")
-      expect(rowText(checks.levelRulesValid)).toContain(
-        remedies.levelRulesValid
-      )
-      expect(screen.queryByRole("link")).toBeNull()
     })
 
     // An editor cannot approve, but the instructions are exactly what tells

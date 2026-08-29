@@ -1,6 +1,6 @@
 # Värderingsmodell (evaluation-model)
 
-Den konfigurerbara jobbarkitekturen och poängmodellen som en organisation definierar: kriterierna och deras vikter, track/senioritetsschemat, nivåtrösklarna samt mallarna bakom dem.
+Den konfigurerbara jobbarkitekturen och poängmodellen som en organisation definierar: kriterierna och deras vikter samt track/senioritetsschemat. Nivåtrösklarna och zonernas profilkrav är metodlag och konfigureras inte (ADR-0024).
 
 Grundprincip: **track beskriver rollen; nivån värderar den; senioriteten beskriver individen.** Ordningen är alltid: beskriv rollen (track) → värdera mot kriterierna → nivån faller ut sist. Senioriteten är medarbetarens senioritet inom rollens track och sätts vid rollplaceringen (V2, ADR-0005), aldrig på rollen. Den pedagogiska förklaringen av modellen finns i [track-level-band.md](./track-level-band.md) (läs dess repo-anmärkning: senioritetsdelen är reviderad och termerna är omdöpta, ADR-0014).
 
@@ -58,24 +58,28 @@ _Undvik_: Mall (utgången term, ADR-0021)
 En av fyra grupper av närliggande nivåer: A är nivå 1 till 3, B är 4 till 6, C är 7 till 9, D är 10 till 12. Strukturlag, aldrig konfigurerbar. Zonen är den kvalitativa karaktär flera nivåer delar; den betygsätts aldrig och är aldrig ett bedömningsfält.
 _Undvik_: Nivå (zonen grupperar nivåer, den är ingen nivå), Band
 
+**Omfattas ej** *(kod: Not covered)* (ADR-0025):
+Betygsvärdet 0, som bara finns på ett aktivt arbetsförhållandekriterium och betyder att rollen inte omfattas av det definierade villkoret. Det är en markering, inte ett betyg: kriteriet lämnar både täljaren och nämnaren i viktningen, så rollen viktas enbart på de kriterier den faktiskt mäts på.
+_Undvik_: Betyg 0, Lägsta betyg (0 är inget steg på skalan)
+
 **Profilkriterium** *(kod: Profile criterion)* (ADR-0022):
 Ett kriterium som organisationen viktat till 4 eller 5, alltså ett av dem den förklarat mest värdedrivande. Härleds, lagras aldrig. Ett arbetsförhållandekriterium är aldrig profilkriterium oavsett vikt, eftersom dess 0 betyder att rollen inte omfattas.
 _Undvik_: Tungt kriterium
 
-**Profilkrav** *(kod: Zone profile rule)* (ADR-0022):
-Det lägsta steg en zon kräver på varje profilkriterium. Kan bara sänka en placering, aldrig lyfta en: en roll vars viktning når zonen men vars profil inte gör det hålls på den underliggande zonens översta nivå och flaggas för kalibrering.
+**Profilkrav** *(kod: Zone profile rule)* (ADR-0022, fast sedan ADR-0024):
+Det lägsta steg en zon kräver på varje profilkriterium: zon A steg 4, zon B steg 3, zon C och D inget. Metodlag, aldrig konfigurerbar. Kan bara sänka en placering, aldrig lyfta en: en roll vars viktning når zonen men vars profil inte gör det hålls på den underliggande zonens översta nivå och flaggas för kalibrering.
 _Undvik_: Nivåoverride (ingen sådan finns)
 
 **Modellgodkännande** *(kod: Model approval)* (ADR-0023):
-En status, utkast eller godkänd, som grindar bedömning: ingen roll kan värderas mot en icke godkänd metod. En tolvpunktschecklista måste passera först, varje metodpåverkande ändring öppnar godkännandet igen, och det senast godkända tillståndet kan återställas. Ingen versionering; kartläggningens frysta ögonblicksbild är den enda frysningen (ADR-0002 består).
+En status, utkast eller godkänd, som grindar bedömning: ingen roll kan värderas mot en icke godkänd metod. En tiopunktschecklista måste passera först, varje metodpåverkande ändring öppnar godkännandet igen, och det senast godkända tillståndet kan återställas. Ingen versionering; kartläggningens frysta ögonblicksbild är den enda frysningen (ADR-0002 består).
 _Undvik_: Modellversion
 
-**Nivåtröskel** *(kod: Level threshold)* (tidigare Bandtröskel/Band threshold, ADR-0014):
-Lägsta poäng för en av de tolv nivåerna, som heltal på den normaliserade 0 till 100-poängskalan. Konfigurerbar per nivå; definierar var poäng → nivå. (Nivå 1 = högst.)
+**Nivåtröskel** *(kod: Level threshold)* (tidigare Bandtröskel/Band threshold, ADR-0014; fast sedan ADR-0024):
+Lägsta poäng för en av de tolv nivåerna, som heltal på den normaliserade 0 till 100-poängskalan; definierar var poäng → nivå. (Nivå 1 = högst.) Metodlag i `packages/core`, aldrig konfigurerbar: trappan är progressiv och identisk i varje organisation.
 _Undvik_: Gränsvärde, Intervallgräns
 
 **Modell** *(kod: Model)*:
-En organisations levande värderingskonfiguration — kriterier, ankare, viktpoäng, track-schema, nivåtrösklar. Det finns **en** aktiv modell per organisation (V1: ingen versionering). När modellen ändras räknas alla rollers poäng/nivå om direkt — poäng och nivå **härleds** från sparade betyg + aktuell modell.
+En organisations levande värderingskonfiguration — kriterier, ankare, viktpoäng, track-schema. Det finns **en** aktiv modell per organisation (V1: ingen versionering). När modellen ändras räknas alla rollers poäng/nivå om direkt — poäng och nivå **härleds** från sparade betyg + aktuell modell.
 _Undvik_: Mall (mallen är startförkonfigurationen; modellen är organisationens levande, redigerbara konfiguration), Modellversion (ingen versionering i V1)
 
 **Händelselogg** *(kod: Audit log)*:
@@ -124,7 +128,7 @@ Etikettsordval är förslag, bekräftas med användaren. `model.*`-nycklarna är
 - **Nivånumrering är inverterad**: Nivå 1 = högst; högre nivånummer = lägre tyngd. Säg detta uttryckligen i UI och text.
 - **Track/senioritet vs nivå-orsakssamband**: en rolls track/senioritet *bestämmer inte* dess nivå — nivån kommer enbart från poängen. De korrelerar men är inte kausala.
 - **Track-guardrails** (Excelns min/max per (track, senioritet) per kriterium): **pensionerade ur V1:s betygsflöde** (ADR-0005) — de var definierade per senioritet och har inget fäste när rollen saknar senioritet. Intervallen ligger kvar som referensdata i standardmall.md för V2 (t.ex. placeringsstöd).
-- **Egna kriterier (full konfiguration)**: HR kan skapa egna kriterier utöver standardmallen, med egna 0–5-ankare, och anpassa kriterier/ankare/viktpoäng/nivåtrösklar fritt. Även egna kriterier viktas med **viktpoäng inom poängbudgeten** (nya kriterier startar på 3) — aldrig fria siffervikter eller procentsatser.
+- **Egna kriterier (full konfiguration)**: HR kan skapa egna kriterier utöver standardmallen, med egna 0–5-ankare, och anpassa kriterier/ankare/viktpoäng fritt. Även egna kriterier viktas med **viktpoäng inom poängbudgeten** (nya kriterier startar på 3) — aldrig fria siffervikter eller procentsatser.
 - **Live-omräkning (V1-beslut)**: ingen modellversionering i V1 — en levande modell per organisation, och ändringar räknar om alla rollers poäng/nivå direkt (härleds från sparade betyg + aktuell modell). Avviker medvetet från briefens versioneringskrav; konsekvens: roller kan tyst byta nivå vid modelländring. Spårbarhet löses med en **händelselogg** (ingår i V1). Se ADR-0002.
 - **Rollfamiljens granularitet**: granulariteten bestäms per organisation (Software Developer eller bredare Software Engineering). Sedan 2026-06-06 är rollfamiljen en egen entitet med frivillig tillhörighet per roll. Samma sak gäller rollerna själva (ADR-0005): skiljer sig seniorens arbete åt på riktigt blir det en egen roll ("Senior System Developer"), annars är det samma roll och senioriteten bor hos individen.
 - **Mallinnehållets språk**: mallseedade, orörda rader (kriterier via templateKey, tracks/senioriteter via key) lokaliseras vid läsning till UI-språket (sv/en, fallback en). Egna och AI-skapade kriterier visas som de författats. När E2-redigering ändrar en mallrad rensas templateKey och organisationen äger texten (beslut 2026-06-05).

@@ -10,21 +10,14 @@ import {
 } from "./dimensions"
 import { assertUniqueCriteria } from "./scoring"
 import { budgetDelta, isWeightPoints, type WeightPoints } from "./weighting"
-import {
-  LEVEL_COUNT,
-  SCORE_SCALE_MAX,
-  type LevelRule,
-  PROFILE_WEIGHT_FLOOR,
-  ZONE_KEYS,
-  type ZoneProfileRule,
-} from "./zones"
+import { PROFILE_WEIGHT_FLOOR } from "./zones"
 
 // The pre-approval checklist and the weighting warnings as one pure rule
 // set. Both the approval mutation (blockers refuse) and the builder UI (live
 // checklist) consume the same results, so the two can never disagree. The
 // engine returns structured findings only; the frontend translates.
 
-// The twelve checks, in the order validateMethod returns them. Exported as a
+// The ten checks, in the order validateMethod returns them. Exported as a
 // const array (not just the union type) so a Convex wire validator can be
 // built from it with a compile-time drift guard, the same pattern DIMENSION_KEYS
 // and ZONE_KEYS already use.
@@ -36,8 +29,6 @@ export const METHOD_CHECK_KEYS = [
   "anchorsComplete",
   "documentationComplete",
   "weightBudget",
-  "levelRulesValid",
-  "zoneProfileMonotonic",
   "dimensionWeightBalance",
   "peopleLeadershipWeight",
   "overlapPairs",
@@ -65,8 +56,6 @@ export interface MethodCheckInput {
     hasMotivation: boolean
   } | null
   overlapPairs: readonly (readonly [string, string])[]
-  levelRules: LevelRule[]
-  zoneProfileRules: ZoneProfileRule[]
 }
 
 export interface MethodCheck {
@@ -87,41 +76,6 @@ export interface MethodCheck {
 }
 
 export const PEOPLE_LEADERSHIP_LIBRARY_KEY = "people-leadership"
-
-// Twelve entries, levels exactly 1-12 with no duplicates, minScore strictly
-// decreasing as level ascends (level 1 highest), level 12 flooring at 0, and
-// the top entry at or below 100.
-function levelRulesAreValid(levelRules: readonly LevelRule[]): boolean {
-  if (levelRules.length !== LEVEL_COUNT) return false
-  const sorted = [...levelRules].sort((a, b) => a.level - b.level)
-  let previousMinScore: number | undefined
-  for (const [index, rule] of sorted.entries()) {
-    if (rule.level !== index + 1) return false
-    if (previousMinScore !== undefined && rule.minScore >= previousMinScore) {
-      return false
-    }
-    previousMinScore = rule.minScore
-  }
-  const first = sorted[0]
-  const last = sorted[sorted.length - 1]
-  if (first === undefined || last === undefined) return false
-  return last.minScore === 0 && first.minScore <= SCORE_SCALE_MAX
-}
-
-// Walking configured zones A -> D, a zone's minStep must never exceed an
-// earlier (higher) zone's: a higher zone is never gated more leniently than
-// a lower one. Zones without a rule are skipped; an empty list is ok.
-function zoneProfileIsMonotonic(rules: readonly ZoneProfileRule[]): boolean {
-  const minStepByZone = new Map(rules.map((rule) => [rule.zone, rule.minStep]))
-  let previous: number | undefined
-  for (const zone of ZONE_KEYS) {
-    const minStep = minStepByZone.get(zone)
-    if (minStep === undefined) continue
-    if (previous !== undefined && minStep > previous) return false
-    previous = minStep
-  }
-  return true
-}
 
 export function validateMethod(input: MethodCheckInput): MethodCheck[] {
   // Boundary guards: a cast at the storage edge must never reach the
@@ -177,9 +131,6 @@ export function validateMethod(input: MethodCheckInput): MethodCheck[] {
   const budgetExact =
     weightsValid &&
     budgetDelta(input.criteria.map((criterion) => criterion.weightPoints)) === 0
-
-  const levelRulesOk = levelRulesAreValid(input.levelRules)
-  const zoneProfileOk = zoneProfileIsMonotonic(input.zoneProfileRules)
 
   const shares = dimensionWeightShares(input.criteria)
   const unbalanced = DIMENSION_KEYS.filter(
@@ -264,16 +215,6 @@ export function validateMethod(input: MethodCheckInput): MethodCheck[] {
       level: "blocker",
       ok: budgetExact,
       count: total,
-    },
-    {
-      key: "levelRulesValid",
-      level: "blocker",
-      ok: levelRulesOk,
-    },
-    {
-      key: "zoneProfileMonotonic",
-      level: "blocker",
-      ok: zoneProfileOk,
     },
     {
       key: "dimensionWeightBalance",

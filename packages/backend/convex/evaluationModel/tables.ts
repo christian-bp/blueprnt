@@ -161,8 +161,6 @@ export const modelEvidenceFields = {
       decidedAt: v.optional(v.number()),
     })
   ),
-  levelRules: v.optional(v.array(levelRuleShape)),
-  zoneProfileRules: v.optional(v.array(zoneProfileRuleShape)),
   workingConditions: v.optional(workingConditionsShape),
   approval: v.optional(modelApprovalShape),
 }
@@ -197,14 +195,6 @@ export const models = defineTable({
   // is material in this model (ADR-0022); only one workingConditions criterion
   // can be active per model (section 6.1).
   workingConditions: v.optional(workingConditionsShape),
-  // Level rules: an aggregate of the model (ADR-0006), always exactly 12
-  // entries (level 1-12, Level 1 = highest; ADR-0022's four zones derive from
-  // this range and are never stored). minScore is the lowest inclusive score
-  // on the normalized 0-100 scale (ADR-0004/ADR-0021).
-  levelRules: v.array(levelRuleShape),
-  // Zone profile rules: each zone's minimum profile-criterion step for a role
-  // to place there (ADR-0022); zones with no rule (C, D) admit unconditionally.
-  zoneProfileRules: v.array(zoneProfileRuleShape),
 }).index("by_org", ["orgId"])
 
 // A pure selection row (ADR-0021 addendum, decision 8): no stored texts at

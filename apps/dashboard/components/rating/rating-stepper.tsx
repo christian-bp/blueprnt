@@ -6,7 +6,7 @@ import {
   criteriaLibraryContent,
   MIDPOINT_STEPS,
 } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
-import type { DimensionKey } from "@workspace/core"
+import { type DimensionKey, NOT_COVERED } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -30,10 +30,6 @@ import { assessmentErrorMessage } from "@/lib/assessment-error"
 import { SPRING } from "@/lib/motion"
 import { RATE_NEXT_KBD_CLASS } from "@/lib/rate-column"
 import { toast } from "@/lib/toast"
-
-// The "omfattas inte" step: valid only for a workingConditions criterion,
-// never one of the five graded anchor steps.
-const NOT_COVERED_STEP = 0
 
 export interface StepperCriterion {
   criterionId: Id<"criteria">
@@ -232,10 +228,7 @@ export function RatingStepper({
   // workingConditions criterion: a qualitatively different answer from the
   // graded steps, not a sixth degree of them.
   const displayAnchors = isWorkingConditions
-    ? [
-        ...current.anchors,
-        { step: NOT_COVERED_STEP, text: t("notCoveredOption") },
-      ]
+    ? [...current.anchors, { step: NOT_COVERED, text: t("notCoveredOption") }]
     : current.anchors
   const trimmedMotivation = (motivations[current.criterionId] ?? "").trim()
   const motivationRequired = selected === 1 || selected === 4 || selected === 5
@@ -469,7 +462,7 @@ export function RatingStepper({
                 >
                   {displayAnchors.map((anchor) => {
                     const isSelected = selected === anchor.step
-                    const isNotCovered = anchor.step === NOT_COVERED_STEP
+                    const isNotCovered = anchor.step === NOT_COVERED
                     const scaleStep = scaleSteps.find(
                       (entry) => entry.step === anchor.step
                     )

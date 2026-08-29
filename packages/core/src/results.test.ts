@@ -212,14 +212,16 @@ describe("computeResults", () => {
         },
       ],
     })
-    // raw = 0*5 + 5*3 = 15; totalPoints 8; score = floor(20*15/8) = 37, which
-    // is level 1 (zone A). wc carries 5 of the model's 8 weight points (the
-    // majority) but is always profile-exempt, and knowledge sits under the
-    // weight-4 profile floor, so the profile is empty: nothing gates, despite
-    // wc's own rating of 0.
+    // wc is rated 0, so the role is not covered by it and it leaves both
+    // sides: raw = 5*3 = 15; totalPoints 8 - 5 = 3; score = floor(20*15/3) =
+    // 100, level 1 (zone A). The majority of the model's weight sitting on a
+    // criterion the role is not measured on therefore costs it nothing, which
+    // is the point. wc is also always profile-exempt, and knowledge sits
+    // under the weight-4 profile floor, so the profile is empty and nothing
+    // gates the placement either.
     expect(results[0]).toMatchObject({
       complete: true,
-      score: 37,
+      score: 100,
       zone: "A",
       profileLimited: false,
       profileFailures: [],

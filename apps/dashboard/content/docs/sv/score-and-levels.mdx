@@ -16,36 +16,42 @@ senare.
 
 ## Viktningsformeln
 
-För varje kriterium multiplicerar ni dess betyg (1 till 5, eller 0 för
-ett arbetsförhållandekriterium rollen inte omfattas av) med det
-kriteriets viktpoäng, och lägger sedan ihop resultaten över alla
-kriterier. Dela den summan med summan av alla kriteriers viktpoäng: det
-är det viktade medelbetyget. Multiplicera medelbetyget med 20 och
+För varje kriterium rollen mäts på multiplicerar ni dess betyg, 1 till
+5, med det kriteriets viktpoäng, och lägger sedan ihop resultaten. Dela
+den summan med summan av de kriteriernas viktpoäng: det är det viktade
+medelbetyget. Multiplicera medelbetyget med 20 och
 avrunda nedåt till närmaste heltal. Det slutliga talet, alltid mellan 0
 och 100 oavsett hur många kriterier modellen har, är viktningen.
 Nedåtavrundningen betyder att en roll når en nivå först när dess
 viktning verkligen har nått tröskeln, aldrig genom att avrundas upp
 till den.
 
-Ett räkneexempel, med fyra kriterier och därmed en poängbudget på 12:
+Ett arbetsförhållandekriterium som rollen inte omfattas av får betyget
+0, och en 0 är en markering snarare än ett betyg: kriteriet lämnar både
+summan och nämnaren, så rollen viktas på de kriterier som faktiskt
+gäller den.
+
+Ett räkneexempel, med fyra kriterier och därmed en poängbudget på 12,
+varav ett rollen inte omfattas av:
 
 | Kriterium | Viktpoäng | Betyg | Bidrag |
 | --- | ---: | ---: | ---: |
 | Komplexitet och otydlighet | 5 | 4 | 20 |
 | Autonomi och beslutsmandat | 3 | 5 | 15 |
 | Risk och konsekvens | 3 | 3 | 9 |
-| Jour, beredskap och tillgänglighetskrav | 1 | 0 | 0 |
-| **Summa** | **12** | | **44** |
+| Jour, beredskap och tillgänglighetskrav | 1 | Omfattas ej | utesluts |
+| **Summa mätt** | **11** | | **44** |
 
-20 × 44 / 12 blir 73,3, så viktningen är 73. Exemplet visar två saker.
-Arbetsförhållande-nollan är ett äkta svar, inte en blank: den lägger
-ingenting till summan medan kriteriets viktpoäng står kvar i nämnaren,
-så en roll utan jourexponering bär verkligen mindre krav där. Och
-viktpoängen avgör hur långt ett betygssteg flyttar resultatet: ett steg
-på ett kriterium med vikt v flyttar viktningen 20 × v delat med
-budgeten, här ungefär 8 punkter på vikt-5-kriteriet och under 2 på
-vikt-1-kriteriet. Viktpoäng omfördelar samma 0 till 100; de höjer
-aldrig taket.
+20 × 44 / 11 blir exakt 80, så viktningen är 80. Exemplet visar två
+saker. En roll dras aldrig ned för ett krav den inte bär: att räkna
+nollan och låta dess viktpoäng stå kvar i nämnaren hade gett 73 här,
+och med ett tyngre arbetsförhållandekriterium sätter det ett tak på
+skalan, så att en roll med betyget 5 på allt den mäts på inte når de
+översta nivåerna alls. Och viktpoängen avgör hur långt ett betygssteg
+flyttar resultatet: ett steg på ett kriterium med vikt v flyttar
+viktningen 20 × v delat med nämnaren, här ungefär 9 punkter på
+vikt-5-kriteriet och ungefär 5 på vardera vikt-3-kriterium. Viktpoäng
+omfördelar samma 0 till 100; de höjer aldrig taket.
 
 En rolls viktning visas bara när dess bedömning är slutförd. Fram tills dess
 visar blueprnt hur många kriterier som är betygsatta istället för ett

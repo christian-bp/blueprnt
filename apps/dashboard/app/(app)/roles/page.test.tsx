@@ -45,7 +45,6 @@ function modelFixture() {
     name: "Standard",
     criteria: [],
     tracks: [{ key: "IC", name: "Individual contributor", order: 1 }],
-    levelRules: [],
   }
 }
 

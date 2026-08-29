@@ -270,8 +270,6 @@ describe("betterAuth/seed.removeOrganizationsForUserEmail + accounts/mirrors.rem
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard",
-        levelRules: [{ level: 1, minScore: 98 }],
-        zoneProfileRules: [{ zone: "A", minStep: 4 }],
       })
       await ctx.db.insert("criteria", {
         orgId,
@@ -390,8 +388,6 @@ describe("devReset.wipeAppTables", () => {
       await ctx.db.insert("models", {
         orgId: "ba_org_seed",
         name: "Standard",
-        levelRules: [],
-        zoneProfileRules: [],
       })
       await ctx.db.insert("roles", {
         orgId: "ba_org_seed",

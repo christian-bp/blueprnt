@@ -4,9 +4,6 @@ import {
   type MethodCheckCriterion,
   type MethodCheckInput,
   methodBlockersPass,
-  MIN_STEP_CEILING,
-  MIN_STEP_FLOOR,
-  SCORE_SCALE_MAX,
   validateMethod,
   type WeightPoints,
 } from "@workspace/core"
@@ -28,18 +25,14 @@ import {
   type RestorableCriterion,
   restorableCriteria,
   restoreWouldChange,
-  summarizeLevelRules,
-  summarizeZoneProfileRules,
 } from "./evidence"
 import { clampLocale } from "./localize"
 import { filled } from "./method"
 import { resolveContentLocale } from "./model"
 import {
   dimensionKeyValidator,
-  levelRuleShape,
   methodCheckKeyValidator,
   workingConditionsShape,
-  zoneProfileRuleShape,
 } from "./tables"
 
 // The model approval lifecycle and the materiality decision (ADR-0023): a
@@ -90,8 +83,6 @@ export async function buildMethodCheckInput(
     criteria,
     workingConditions,
     overlapPairs: LIBRARY_OVERLAP_PAIRS,
-    levelRules: model.levelRules,
-    zoneProfileRules: model.zoneProfileRules,
   }
 }
 
@@ -192,7 +183,7 @@ async function requireModel(
   return model
 }
 
-// The twelve checks over the wire (wire-safe shapes: criterionIds already
+// The ten checks over the wire (wire-safe shapes: criterionIds already
 // strings, pairs as two-string-tuple arrays) plus the current approval and
 // working-conditions decision state, so the dashboard's approval card and its
 // working-conditions control never need a second query.
@@ -336,7 +327,7 @@ export const getMethodChecks = orgQuery({
   },
 })
 
-// Runs the twelve checks; any blocker not ok refuses with methodBlocked.
+// Runs the ten checks; any blocker not ok refuses with methodBlocked.
 // Already-approved refuses with invalidTransition (re-approving is not a
 // no-op: it would silently re-stamp approvedBy/approvedAt without a method
 // change, and every genuine method change already reopens approval via
@@ -476,126 +467,6 @@ export const setWorkingConditionsDecision = orgMutation({
           "status",
           "motivation",
         ]),
-      },
-    })
-    return null
-  },
-})
-
-// Validated by the SAME engine checks the approval gate uses
-// (levelRulesValid), run against a candidate input so a bad edit is refused
-// before it is ever stored. Reopens approval (a rules change can move
-// levels) and wraps a level-shift diff (placeRole/scoreRole depend on
-// levelRules).
-// A minScore is a point on the normalized 0-100 weighting scale, and a minStep
-// a point on the 1-5 rating scale. The engine's own checks constrain the SHAPE
-// of each list (twelve levels, strictly decreasing, bottom at 0; zone steps
-// non-increasing A -> D) but not the range of an individual number, so a value
-// outside its scale would be stored and then be permanently unsatisfiable: a
-// zone gated at step 9 admits nobody, and no check would ever say why. Bounded
-// here, matching the client's own gate, with the client staying the
-// convenience and this the authority.
-const MIN_SCORE_FLOOR = 0
-const MIN_SCORE_CEILING = SCORE_SCALE_MAX
-
-function assertInRange(
-  values: readonly number[],
-  floor: number,
-  ceiling: number
-): void {
-  for (const value of values) {
-    if (!Number.isInteger(value) || value < floor || value > ceiling) {
-      throw appError(ERROR_CODES.invalidInput)
-    }
-  }
-}
-
-export const updateLevelRules = orgMutation({
-  args: { levelRules: v.array(levelRuleShape) },
-  returns: v.null(),
-  handler: async (ctx, { levelRules }) => {
-    assertInRange(
-      levelRules.map((rule) => rule.minScore),
-      MIN_SCORE_FLOOR,
-      MIN_SCORE_CEILING
-    )
-    const model = await requireModel(ctx, ctx.orgId)
-    const candidate = await buildMethodCheckInput(ctx, model)
-    const checks = validateMethod({ ...candidate, levelRules })
-    const check = checks.find((c) => c.key === "levelRulesValid")
-    if (check === undefined || !check.ok) {
-      throw appError(ERROR_CODES.invalidInput)
-    }
-    const previous = summarizeLevelRules(model.levelRules)
-    const before = await deriveResults(ctx, ctx.orgId)
-    await ctx.db.patch(model._id, { levelRules })
-    await reopenApprovalIfSet(ctx, model, AUDIT_EVENTS.modelLevelRulesUpdated)
-    const after = await deriveResults(ctx, ctx.orgId)
-    await ctx.audit.levelShifts({
-      before: before.results,
-      after: after.results,
-      cause: {
-        event: AUDIT_EVENTS.modelLevelRulesUpdated,
-        entityId: model._id,
-      },
-    })
-    await ctx.audit.log({
-      type: AUDIT_EVENTS.modelLevelRulesUpdated,
-      payload: {
-        modelId: model._id,
-        changes: {
-          levelRules: { from: previous, to: summarizeLevelRules(levelRules) },
-        },
-      },
-    })
-    return null
-  },
-})
-
-// Mirrors updateLevelRules for the zone-profile rules (zoneProfileMonotonic).
-export const updateZoneProfileRules = orgMutation({
-  args: { zoneProfileRules: v.array(zoneProfileRuleShape) },
-  returns: v.null(),
-  handler: async (ctx, { zoneProfileRules }) => {
-    assertInRange(
-      zoneProfileRules.map((rule) => rule.minStep),
-      MIN_STEP_FLOOR,
-      MIN_STEP_CEILING
-    )
-    const model = await requireModel(ctx, ctx.orgId)
-    const candidate = await buildMethodCheckInput(ctx, model)
-    const checks = validateMethod({ ...candidate, zoneProfileRules })
-    const check = checks.find((c) => c.key === "zoneProfileMonotonic")
-    if (check === undefined || !check.ok) {
-      throw appError(ERROR_CODES.invalidInput)
-    }
-    const previous = summarizeZoneProfileRules(model.zoneProfileRules)
-    const before = await deriveResults(ctx, ctx.orgId)
-    await ctx.db.patch(model._id, { zoneProfileRules })
-    await reopenApprovalIfSet(
-      ctx,
-      model,
-      AUDIT_EVENTS.modelZoneProfileRulesUpdated
-    )
-    const after = await deriveResults(ctx, ctx.orgId)
-    await ctx.audit.levelShifts({
-      before: before.results,
-      after: after.results,
-      cause: {
-        event: AUDIT_EVENTS.modelZoneProfileRulesUpdated,
-        entityId: model._id,
-      },
-    })
-    await ctx.audit.log({
-      type: AUDIT_EVENTS.modelZoneProfileRulesUpdated,
-      payload: {
-        modelId: model._id,
-        changes: {
-          zoneProfileRules: {
-            from: previous,
-            to: summarizeZoneProfileRules(zoneProfileRules),
-          },
-        },
       },
     })
     return null
@@ -751,8 +622,6 @@ export const restoreApprovedModel = orgMutation({
 
     await ctx.db.patch(model._id, {
       workingConditions: buffer.workingConditions,
-      levelRules: buffer.levelRules ?? model.levelRules,
-      zoneProfileRules: buffer.zoneProfileRules ?? model.zoneProfileRules,
     })
 
     const after = await deriveResults(ctx, ctx.orgId)

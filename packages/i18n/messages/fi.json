@@ -126,11 +126,7 @@
       "maxLength": "Kenttä on liian pitkä.",
       "slug": "Käytä pieniä kirjaimia, numeroita ja väliviivoja.",
       "passwordsMatch": "Salasanojen on täsmättävä.",
-      "emailUnchanged": "Anna eri sähköpostiosoite.",
-      "levelDecreasing": "Oltava pienempi kuin yläpuolinen taso.",
-      "levelBottomZero": "Alimman tason on alettava nollasta.",
-      "zoneMonotonic": "Ei voi vaatia enempää kuin yläpuolinen vyöhyke.",
-      "scoreRange": "Kokonaisluku väliltä 0-100."
+      "emailUnchanged": "Anna eri sähköpostiosoite."
     },
     "toast": {
       "error": "Jokin meni vikaan. Yritä uudelleen.",
@@ -194,7 +190,6 @@
       "workingConditionsDecided": "Työolosuhteiden päätös tallennettu",
       "assessmentCompleted": "Arviointi viimeistelty",
       "placementConfirmed": "Sijoitus vahvistettu",
-      "thresholdsSaved": "Vaativuustasorajat tallennettu",
       "assessmentReopened": "Arviointi avattu uudelleen",
       "weightMotivationSaved": "Perustelu tallennettu"
     },
@@ -783,8 +778,6 @@
         "budget": "Pistebudjetti",
         "count": "Määrä",
         "change": "Muutoksen tyyppi",
-        "levelRules": "Vaativuustasorajat",
-        "zoneProfileRules": "Vyöhykeprofiilisäännöt",
         "criteriaCount": "Kriteerit",
         "checksPassed": "Läpäistyt tarkistukset",
         "causeEvent": "Uudelleenavauksen syy",
@@ -1601,7 +1594,7 @@
       "notMeasuresLabel": "Ei mittaa",
       "anchorGroupLabel": "Arvio: {name}",
       "notCoveredOption": "Rooli ei kuulu tämän työolosuhteen piiriin.",
-      "notCoveredExplanation": "Valitse tämä, kun rooli ei koskaan altistu sille, mitä kriteeri mittaa.",
+      "notCoveredExplanation": "Valitse tämä, kun rooli ei koskaan altistu sille, mitä kriteeri mittaa. Rooli painotetaan silloin vain muiden kriteeriensä perusteella.",
       "motivationLabel": "Perustelu",
       "motivationPlaceholder": "Miksi tämä arvio?",
       "motivationRequiredError": "Lisää perustelu ennen kuin jatkat.",
@@ -1621,6 +1614,7 @@
         "anchorLevel": "Taso {level}",
         "farFromAnchors": "Tulos on vähintään kaksi vaativuustasoa lähimmästä ankkuriroolista. Validoi arviointi manuaalisesti ennen hyväksyntää.",
         "contributionShare": "{share}%",
+        "notCovered": "Ei koske roolia",
         "breakdownLabel": "Osuus"
       },
       "lockedExplanation": "Arviointi on lukittu, koska rooli on arkistoitu. Arkistointia ei voi perua, joten luo uusi rooli, jos työ pitää arvioida uudelleen.",
@@ -1903,23 +1897,6 @@
         "groupUp": "{count} ylös",
         "groupDown": "{count} alas"
       },
-      "levelRules": {
-        "title": "Vaativuustasorajat",
-        "levelsLabel": "Mistä kukin taso alkaa",
-        "levelsDescription": "Rooli yltää tasolle, kun sen painotus on vähintään tämä luku. Taso 1 on korkein, joten luvut laskevat tasojen laskiessa, ja taso 12 alkaa nollasta, jotta jokainen rooli sijoittuu jonnekin.",
-        "zonesLabel": "Vyöhykkeiden profiilivaatimukset",
-        "levelField": "Taso {level}",
-        "toggleCta": "Muokkaa rajoja",
-        "zoneColumn": "Vyöhyke",
-        "levelColumn": "Taso",
-        "fromColumn": "Alaraja",
-        "toColumn": "Yläraja",
-        "shareColumn": "Osuus asteikosta",
-        "zoneField": "Vyöhyke {zone}",
-        "reopensApproval": "Tallentaminen avaa mallin hyväksynnän uudelleen: rajat ovat osa hyväksyttyä kokonaisuutta, joten tarkistuslista on allekirjoitettava uudelleen.",
-        "save": "Tallenna rajat",
-        "invalid": "Sääntöjä ei voitu tallentaa. Tarkista, että luvut laskevat tasojen laskiessa eikä mikään vyöhyke vaadi enempää kuin sen yläpuolinen."
-      },
       "review": {
         "cta": "Avaa hallintapaneeli"
       },
@@ -2061,8 +2038,6 @@
           "anchorsComplete": "Jokaisella kriteerillä on täydellinen ankkuriasteikko",
           "documentationComplete": "Jokainen kriteeri on dokumentoitu ja hyväksytty",
           "weightBudget": "Painopisteet on tasapainotettu budjettiin",
-          "levelRulesValid": "Vaativuustasorajat ovat kelvollisia",
-          "zoneProfileMonotonic": "Vyöhykeprofiilisäännöt ovat johdonmukaisia",
           "dimensionWeightBalance": "Yksikään ulottuvuus ei hallitse painotusta ilman perustelua",
           "peopleLeadershipWeight": "Henkilöstöjohtamisen paino on perusteltu",
           "overlapPairs": "Päällekkäiset kriteerit on käyty läpi"
@@ -2075,8 +2050,6 @@
           "anchorsComplete": "Yhdeltä kriteeriltä puuttuu portaita arviointiasteikolta. Poista se ja valitse uudelleen luvussa <link>{chapter}</link>.",
           "documentationComplete": "{count, plural, =1 {# kriteeri on} other {# kriteeriä on}} yhä dokumentoimatta ja hyväksymättä. Avaa Dokumentoi kunkin kohdalla luvussa <link>{chapter}</link>.",
           "weightBudget": "Painopisteet eivät täsmää budjettiin. Tasapainota ne ja tallenna luvussa <link>{chapter}</link>.",
-          "levelRulesValid": "Mallin vaativuustasojen rajat eivät muodosta kelvollista asteikkoa 1-12. Korjaa ne kohdassa Vaativuustasorajat, tämän tarkistuslistan alapuolella.",
-          "zoneProfileMonotonic": "Mallin vyöhykkeiden profiilivaatimukset eivät ole johdonmukaiset. Korjaa ne kohdassa Vaativuustasorajat, tämän tarkistuslistan alapuolella.",
           "dimensionWeightBalance": "{dimensions} kantaa hallitsevan osan painotuksesta ilman kirjattua syytä. Perustele se luvussa <link>{chapter}</link> tai siirrä painopisteitä toiseen ulottuvuuteen.",
           "peopleLeadershipWeight": "{criterion} saa suuren painon ilman kirjattua syytä. Perustele se luvussa <link>{chapter}</link> tai laske sen painopisteitä.",
           "overlapPairs": "Päällekkäiset kriteerit: {pairs}. Kirjaa päällekkäisyys jommallekummalle parin kriteerille luvussa <link>{chapter}</link>."
@@ -2164,7 +2137,7 @@
       "pendingLevelLabel": "Miksi roolilla ei vielä ole vaativuustasoa?",
       "pendingLevelBody": "Rooli saa vaativuustason vasta, kun sen arviointi on viimeistelty. Siihen asti sillä ei ole painotusta eikä tasoa, joten se odottaa täällä.",
       "contributionLabel": "Mitä palkit ja prosentit näyttävät?",
-      "contributionBody": "Kunkin kriteerin osuus roolin painotuksesta: arviosi kerrottuna kriteerin painolla mallissa, yhteensä 100%. Palkit skaalataan suurimpaan osuuteen.",
+      "contributionBody": "Kunkin kriteerin osuus roolin painotuksesta: arvio kertaa paino, yhteensä 100 %. Kriteeri, joka ei koske roolia, jää kokonaan pois, eikä sitä koskaan lasketa matalaksi arvioksi.",
       "twoFactorLabel": "Mitä kaksivaiheinen vahvistus tarkoittaa?",
       "twoFactorBody": "Toinen tarkistus kirjautumisessa salasanan lisäksi: koodi todennussovelluksesta tai sähköpostistasi. Varastettu salasana ei silloin yksin avaa tiliä. Pakollinen kaikille.",
       "changeEmailLabel": "Miten sähköpostiosoitteen vaihto toimii?",
@@ -2229,9 +2202,7 @@
       "criterionSelectionLabel": "Kuinka monta kriteeriä voimme valita?",
       "criterionSelectionBody": "Kuudesta kahdeksaan, enintään 2 osaamista, 2 ponnistusta, 3 vastuuta ja 1 työolosuhteet. Valitsin hylkää katon ylittävän kriteerin sen sijaan että varoittaisi jälkikäteen.",
       "methodDriftLabel": "Mitä aiempi menetelmä tarkoittaa?",
-      "methodDriftBody": "Arviointi viimeisteltiin ennen mallin viimeisintä hyväksyntää, joten se tehtiin eri säännöillä. Tulos on voimassa; merkintä pyytää ihmistä katsomaan sitä.",
-      "levelThresholdLabel": "Mikä on vaativuustason raja?",
-      "levelThresholdBody": "Painotus, joka roolin on saavutettava ollakseen tasolla, ja profiiliporras, jonka vyöhyke vaatii. Ne ratkaisevat mihin kukin rooli päätyy, joten muutos sijoittaa koko tikkaat uudelleen."
+      "methodDriftBody": "Arviointi viimeisteltiin ennen mallin viimeisintä hyväksyntää, joten se tehtiin eri säännöillä. Tulos on voimassa; merkintä pyytää ihmistä katsomaan sitä."
     },
     "widgetCard": {
       "expand": "Suurenna"

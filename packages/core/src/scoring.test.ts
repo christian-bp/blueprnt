@@ -7,7 +7,7 @@ import {
 } from "./scoring.fixtures"
 import type { CriterionWeight, RatingInput } from "./types"
 import type { WeightPoints } from "./weighting"
-import { DEFAULT_LEVEL_RULES, LEVEL_COUNT, SCORE_SCALE_MAX } from "./zones"
+import { LEVEL_RULES, LEVEL_COUNT, SCORE_SCALE_MAX } from "./zones"
 
 describe("scoreRole", () => {
   it("scores uniform ratings at exactly 20 x rating, regardless of allocation", () => {
@@ -130,7 +130,11 @@ describe("scoreRole", () => {
     expect(() => scoreRole(ratings, FIXTURE_CRITERIA)).toThrow(/out of range/)
   })
 
-  it("scores a working-conditions 0 as a real zero contribution, not a rejection", () => {
+  // A 0 means the role is NOT COVERED by the condition, so the criterion
+  // leaves both sides of the quotient and the role is scored on what it is
+  // actually measured on. Scoring the 0 as a low value instead (40 here)
+  // penalized a role for not being exposed and put a ceiling on the scale.
+  it("drops an uncovered working-conditions criterion from both sides", () => {
     const criteria: CriterionWeight[] = [
       { criterionId: "wc", dimensionKey: "workingConditions", weightPoints: 3 },
       { criterionId: "knowledge", dimensionKey: "competence", weightPoints: 3 },
@@ -139,8 +143,59 @@ describe("scoreRole", () => {
       { criterionId: "wc", value: 0 },
       { criterionId: "knowledge", value: 4 },
     ]
-    // raw = 0*3 + 4*3 = 12; totalPoints 6; score = floor(20*12/6) = 40.
-    expect(scoreRole(ratings, criteria)).toBe(40)
+    // raw = 4*3 = 12; totalPoints 6 - 3 = 3; score = floor(20*12/3) = 80.
+    expect(scoreRole(ratings, criteria)).toBe(80)
+  })
+
+  // The ceiling the exclusion exists to remove: with the 0 counted, a role
+  // rated 5 on every criterion it is measured on reached 85 and could never
+  // enter the top two levels. It now reaches the scale's own maximum.
+  it("lets an uncovered role still reach the top of the scale", () => {
+    const criteria: CriterionWeight[] = [
+      { criterionId: "wc", dimensionKey: "workingConditions", weightPoints: 3 },
+      ...Array.from({ length: 6 }, (_, index) => ({
+        criterionId: `c${index}`,
+        dimensionKey: "competence" as const,
+        weightPoints: 3 as const,
+      })),
+    ]
+    const ratings: RatingInput[] = criteria.map((criterion) => ({
+      criterionId: criterion.criterionId,
+      value: criterion.criterionId === "wc" ? 0 : 5,
+    }))
+    expect(scoreRole(ratings, criteria)).toBe(100)
+  })
+
+  // An exposed role is measured around its own profile rather than under it:
+  // rated at the step the rest of its profile sits on, it scores the same as
+  // the uncovered role, and moves up or down from there.
+  it("places a covered role symmetrically around the uncovered score", () => {
+    const criteria: CriterionWeight[] = [
+      { criterionId: "wc", dimensionKey: "workingConditions", weightPoints: 3 },
+      ...Array.from({ length: 6 }, (_, index) => ({
+        criterionId: `c${index}`,
+        dimensionKey: "competence" as const,
+        weightPoints: 3 as const,
+      })),
+    ]
+    const rest: RatingInput[] = criteria
+      .filter((criterion) => criterion.criterionId !== "wc")
+      .map((criterion) => ({ criterionId: criterion.criterionId, value: 4 }))
+    const scoreAt = (value: 0 | 3 | 4 | 5) =>
+      scoreRole([...rest, { criterionId: "wc", value }], criteria)
+    expect(scoreAt(0)).toBe(80)
+    expect(scoreAt(4)).toBe(80)
+    expect(scoreAt(3)).toBe(77)
+    expect(scoreAt(5)).toBe(82)
+  })
+
+  it("refuses a role whose every criterion is uncovered", () => {
+    const criteria: CriterionWeight[] = [
+      { criterionId: "wc", dimensionKey: "workingConditions", weightPoints: 3 },
+    ]
+    expect(() =>
+      scoreRole([{ criterionId: "wc", value: 0 }], criteria)
+    ).toThrow(/uncovered/)
   })
 
   it("skips validation for an orphaned rating (unknown criterion id)", () => {
@@ -182,21 +237,21 @@ describe("assignLevel", () => {
     // reaching no level, which would throw) and a level nobody can reach.
     const seen = new Set<number>()
     for (let score = 0; score <= SCORE_SCALE_MAX; score++) {
-      const level = assignLevel(score, [...DEFAULT_LEVEL_RULES])
+      const level = assignLevel(score, [...LEVEL_RULES])
       expect(level, `score ${score}`).toBeGreaterThanOrEqual(1)
       expect(level, `score ${score}`).toBeLessThanOrEqual(LEVEL_COUNT)
       seen.add(level)
     }
     expect(seen.size).toBe(LEVEL_COUNT)
     // Each level opens exactly at its own minScore and not one point below.
-    for (const rule of DEFAULT_LEVEL_RULES) {
+    for (const rule of LEVEL_RULES) {
       expect(
-        assignLevel(rule.minScore, [...DEFAULT_LEVEL_RULES]),
+        assignLevel(rule.minScore, [...LEVEL_RULES]),
         `level ${rule.level}`
       ).toBe(rule.level)
       if (rule.minScore > 0) {
         expect(
-          assignLevel(rule.minScore - 1, [...DEFAULT_LEVEL_RULES]),
+          assignLevel(rule.minScore - 1, [...LEVEL_RULES]),
           `level ${rule.level} floor`
         ).toBe(rule.level + 1)
       }

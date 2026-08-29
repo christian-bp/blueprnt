@@ -3,7 +3,13 @@
 // the DRAFT/FINAL status. No React, no i18n, no side effects, so it is fully
 // unit-testable. The library inputs are passed in rather than imported, so
 // the assembly stays a function of its arguments.
-import { ZONE_KEYS, ZONE_LEVEL_RANGES, type ZoneKey } from "@workspace/core"
+import {
+  LEVEL_RULES,
+  ZONE_KEYS,
+  ZONE_LEVEL_RANGES,
+  ZONE_PROFILE_RULES,
+  type ZoneKey,
+} from "@workspace/core"
 import { resolveAnchorSteps } from "@/lib/anchors"
 
 type BiasRisk = "low" | "medium" | "high"
@@ -12,8 +18,6 @@ type Status = "notStarted" | "inProgress" | "documented" | "approved"
 export type MethodModel = {
   modelName: string
   pointBudget: number
-  levelRules: readonly { level: number; minScore: number }[]
-  zoneProfileRules: readonly { zone: ZoneKey; minStep: number }[]
   workingConditions: {
     status: "active" | "testedNotMaterial"
     motivation: string
@@ -84,11 +88,14 @@ export function assembleMethodAppendix(
     model.progress.total > 0 && model.progress.approved === model.progress.total
       ? "final"
       : "draft"
+  // The ladder and the zone gates are method law (packages/core), not org
+  // content, so the appendix documents the constants rather than a copy of
+  // them travelling alongside the org's own criteria.
   const minStepByZone = new Map(
-    model.zoneProfileRules.map((rule) => [rule.zone, rule.minStep])
+    ZONE_PROFILE_RULES.map((rule) => [rule.zone, rule.minStep])
   )
   const ruleByLevel = new Map(
-    model.levelRules.map((rule) => [rule.level, rule.minScore])
+    LEVEL_RULES.map((rule) => [rule.level, rule.minScore])
   )
   return {
     status,

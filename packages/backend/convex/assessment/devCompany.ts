@@ -554,7 +554,7 @@ export const DEMO_WEIGHT_POINTS: Record<DemoLibraryKey, WeightPoints> = {
 // expectedLevel is on the new 1-12 scale (ADR-0022), and must match the level
 // the engine derives for the title under DEMO_WEIGHT_POINTS: a seeded demo
 // whose own anchor deviates would open with a calibration flag on a model
-// nobody has touched. Retuning DEFAULT_LEVEL_RULES moves the derived level, so
+// nobody has touched. Retuning LEVEL_RULES moves the derived level, so
 // this value moves with it; devCompany.test.ts fails when the two drift apart.
 export const DEMO_ANCHOR_ROLES: Record<
   string,

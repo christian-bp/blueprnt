@@ -2,7 +2,11 @@ import type { PayGapReason } from "@workspace/constants"
 import { defineTable } from "convex/server"
 import type { Infer } from "convex/values"
 import { v } from "convex/values"
-import { levelRuleShape, modelEvidenceFields } from "../evaluationModel/tables"
+import {
+  levelRuleShape,
+  modelEvidenceFields,
+  zoneProfileRuleShape,
+} from "../evaluationModel/tables"
 
 // Lifecycle status of a pay-mapping run. Shared by the table definition and
 // every wire shape that carries a run's status (runs.ts), so the 4-literal
@@ -71,6 +75,14 @@ export const payMappingRuns = defineTable({
   // validating, since frozen evidence is never migrated.
   frozenModel: v.object({
     ...modelEvidenceFields,
+    // The ladder and the zone gates the run was actually placed under. They
+    // live HERE and not in the shared evidence shape, because the model
+    // document stopped carrying them when they became method law (ADR-0024):
+    // a buffered copy of a constant can never differ from it, but a frozen
+    // run's copy must, since retuning the constant later must not rewrite
+    // what an already-signed kartläggning says it measured.
+    levelRules: v.optional(v.array(levelRuleShape)),
+    zoneProfileRules: v.optional(v.array(zoneProfileRuleShape)),
     // Superseded by levelRules; no longer populated by startPayMappingRun.
     // Kept only so a pre-cutover frozen run's stored array still validates.
     levelThresholds: v.optional(v.array(levelRuleShape)),

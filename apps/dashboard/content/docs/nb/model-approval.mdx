@@ -1,16 +1,15 @@
 ---
 title: Godkjenne modellen
-description: Konsekvenspanelet, metodevedlegget, de tolv kontrollene, å gjenopprette det sist godkjente, og nivågrensene.
+description: Konsekvenspanelet, metodevedlegget, de ti kontrollene, og å gjenopprette det sist godkjente.
 section: model
 ---
 
 [Godkjenning](/model/approval) er modellens siste kapittel, og det som
 gjør vurdering mulig: ingen rolle kan vurderes mot en metode ingen har
-godkjent. Kapittelet gjengir fire ting i rekkefølge. Hva en godkjenning
+godkjent. Kapittelet gjengir tre ting i rekkefølge. Hva en godkjenning
 ville endre kommer først, når det finnes noe å si. Så metodevedlegget,
 dokumentet som er beviset for det godkjenningen bekrefter. Så
-godkjenningskortet selv, med sine tolv kontroller. Så nivågrensene, som
-avgjør hvor hver rolle havner.
+godkjenningskortet selv, med sine ti kontroller.
 
 ## Hva en godkjenning ville endre
 
@@ -54,12 +53,12 @@ lese før dere bekrefter det. Hva dokumentet inneholder står på
 
 Når kriteriene deres er dokumentert, godkjennes selve modellen i et eget
 trinn: [kapittelet Godkjenning](/model/approval) kjører en sjekkliste
-med tolv punkter i to grupper, Obligatoriske kontroller og Anbefalte,
-før "Godkjenn modell" fungerer. De ni obligatoriske punktene dekker
+med ti punkter i to grupper, Obligatoriske kontroller og Anbefalte,
+før "Godkjenn modell" fungerer. De sju obligatoriske punktene dekker
 dimensjonsdekning, arbeidsforholdsbeslutningen, antall kriterier og
 dimensjonstak, komplette ankerskalaer, at hvert kriterium er dokumentert
-og godkjent, et balansert vektbudsjett, samt gyldige nivå- og
-soneprofilregler; tre anbefalte punkter (en umotivert dominerende
+og godkjent, samt et balansert vektbudsjett; tre anbefalte punkter (en
+umotivert dominerende
 dimensjon, en umotivert vekt for personalledelse, et ikke-gjennomgått
 overlapp) vises også, men blokkerer aldri godkjenningen.
 
@@ -68,16 +67,14 @@ dere skal gjøre og hvor, med en lenke inn i kapittelet som eier arbeidet.
 Linjen er konkret der kontrollen kjenner detaljene: den dominerende
 dimensjonen navngis sammen med sin andel av vektingen, de overlappende
 kriteriene navngis parvis, og dokumentasjonspunktet teller kriteriene som
-gjenstår. Punkter som er grønne, sier ingenting. To punkter navngir ikke
-noe kapittel, siden de rettes på nettopp dette: avsnittet
-"Nivågrenser" under sjekklisten.
+gjenstår. Punkter som er grønne, sier ingenting.
 
 Å godkjenne er det som gjør at roller i det hele tatt kan vurderes (se
 [Vurdere en rolle](/docs/evaluating-a-role)); kortet viser deretter
 hvem som godkjente det og når. Enhver metodepåvirkende endring
-etterpå, som å velge et kriterium, vekte om, eller endre nivå- eller
-soneprofilregler, åpner godkjenningen automatisk igjen; å godkjenne på
-nytt er da bare ett klikk når sjekklisten er grønn igjen. Å godkjenne
+etterpå, som å velge et kriterium, vekte om, eller endre
+arbeidsforholdsbeslutningen, åpner godkjenningen automatisk igjen; å
+godkjenne på nytt er da bare ett klikk når sjekklisten er grønn igjen. Å godkjenne
 et enkelt kriteriums egen begrunnelse og bias-gjennomgang åpner ikke i
 seg selv modellens godkjenning igjen; de to er separate.
 
@@ -86,29 +83,14 @@ Mens godkjenningen er gjenåpnet, og modellen faktisk skiller seg fra
 den lagrede tilstanden, legger "Tilbakestill til sist godkjente"
 i Godkjenning-kapittelet den tilstanden tilbake: kriterieutvalget, vektene
 og vektbegrunnelsene deres, hvert kriteriums begrunnelse,
-bias-gjennomgang og signering, arbeidsforholdsbeslutningen, samt nivå- og
-soneprofilreglene. Bekreftelsen lister først hver endring som
+bias-gjennomgang og signering, samt arbeidsforholdsbeslutningen.
+Bekreftelsen lister først hver endring som
 tilbakestilles, inkludert hvert kriterium som fjernes sammen med
 vurderingene som følger med det, og hvert kriterium som kommer tilbake,
 som hver rolle da må vurderes på nytt. Bare den sist godkjente
 tilstanden lagres, så en tilbakestilling går alltid tilbake til den;
 modellen forblir åpen for godkjenning etterpå, og å godkjenne på nytt er
 det samme ene klikket.
-
-## Rette nivågrensene
-
-Under sjekklisten viser "Nivågrenser" hvilken vekting hvert av de tolv
-nivåene starter ved, gruppert under sonen de hører til, og profilkravet hver
-sone stiller. Begge kan endres. Tallene må synke når nivåene går nedover,
-det laveste nivået må starte på 0 slik at hver rolle havner et sted, og ingen
-sone får kreve mer av en rolle enn sonen over; et tall som bryter med noe av
-dette merkes på sitt eget felt før dere kan lagre. En sone som står tom
-avgjøres bare av vektingen.
-
-Å lagre åpner modellens godkjenning igjen, som avsnittet sier ved siden av sin
-egen lagreknapp: grensene er en del av det som ble godkjent, så sjekklisten må
-signeres på nytt. Endringen registreres i endringsloggen, og alle roller
-plasseres på nytt mot de nye tallene umiddelbart.
 
 ## Relatert
 

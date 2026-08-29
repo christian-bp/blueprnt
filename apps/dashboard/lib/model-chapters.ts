@@ -60,21 +60,19 @@ export function currentChapter(pathname: string): ModelChapter | undefined {
 }
 
 // Where a failing check is FIXED: the chapter whose own controls satisfy it.
-// The approval checklist reports the twelve verdicts but owns none of the work,
+// The approval checklist reports the ten verdicts but owns none of the work,
 // so a row that fails has to be able to say where the work is, and a reader who
 // has to guess which of four chapters a verdict belongs to is being told they
 // are wrong without being told what to do.
 //
-// A total Record over MethodCheckKey, not a lookup with a default: a thirteenth
+// A total Record over MethodCheckKey, not a lookup with a default: an eleventh
 // check must not compile until someone decides where its remedy lives, the same
 // guard idiom AUDIT_SUBJECTS uses in the backend.
 //
 // `null` stays available as the reviewed decision that a check has NO in-app
-// remedy, and nothing claims it today. It used to hold the level and
-// zone-profile rules, on the reasoning that nothing in the app edited them;
-// the Level thresholds section on the Godkannande chapter does, so both point
-// there now. A check whose remedy exists must never say it does not: that line
-// is read at exactly the moment the surface below it would fix the problem.
+// remedy, and nothing claims it today. A check whose remedy exists must never
+// say it does not: that line is read at exactly the moment the surface below it
+// would fix the problem.
 export const CHECK_CHAPTER: Record<MethodCheckKey, ModelChapter | null> = {
   dimensionCoverage: "criteria",
   // The materiality decision is asked on the Kriterier chapter's fourth column.
@@ -86,9 +84,6 @@ export const CHECK_CHAPTER: Record<MethodCheckKey, ModelChapter | null> = {
   anchorsComplete: "criteria",
   documentationComplete: "method",
   weightBudget: "weighting",
-  // Both are corrected by the Level thresholds section on this same chapter.
-  levelRulesValid: "approval",
-  zoneProfileMonotonic: "approval",
   dimensionWeightBalance: "weighting",
   peopleLeadershipWeight: "weighting",
   overlapPairs: "method",

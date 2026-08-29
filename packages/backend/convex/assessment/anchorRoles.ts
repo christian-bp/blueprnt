@@ -1,3 +1,4 @@
+import { LEVEL_COUNT } from "@workspace/core"
 import { v } from "convex/values"
 import { trackKeyValidator } from "../evaluationModel/tables"
 import {
@@ -35,7 +36,7 @@ async function levelCount(
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
     .unique()
   if (model === null) throw appError(ERROR_CODES.notFound)
-  return model.levelRules.length
+  return LEVEL_COUNT
 }
 
 function validateExpectedLevel(expectedLevel: number, levels: number) {

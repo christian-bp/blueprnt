@@ -21,7 +21,7 @@ async function seedReadyOrganization(t: ReturnType<typeof initConvexTest>) {
 }
 
 describe("createDefaultModel", () => {
-  it("creates an empty model with default level/zone rules and audits it", async () => {
+  it("creates an empty model and audits it", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)
 
@@ -34,13 +34,11 @@ describe("createDefaultModel", () => {
     await t.run(async (ctx) => {
       const model = await ctx.db.get(modelId)
       expect(model?.name).toBe("Rollvärderingsmodell") // sv library content
-      expect(model?.levelRules).toHaveLength(12)
-      expect(model?.levelRules.find((r) => r.level === 1)?.minScore).toBe(97)
-      expect(model?.levelRules.find((r) => r.level === 12)?.minScore).toBe(0)
-      expect(model?.zoneProfileRules).toEqual([
-        { zone: "A", minStep: 4 },
-        { zone: "B", minStep: 3 },
-      ])
+      // The ladder and the zone gates are method law (ADR-0024): a created
+      // model carries neither, and the engine's own constants are what every
+      // placement reads. Their VALUES are pinned in packages/core, not here.
+      expect(model).not.toHaveProperty("levelRules")
+      expect(model).not.toHaveProperty("zoneProfileRules")
       expect(model?.approval).toBeUndefined()
       expect(model?.workingConditions).toBeUndefined()
 
@@ -71,7 +69,6 @@ describe("createDefaultModel", () => {
         from: null,
         to: "Rollvärderingsmodell",
       })
-      expect(payload.changes.levelRules.from).toBeNull()
     })
   })
 
@@ -149,7 +146,8 @@ describe("evaluationModel/model.seedDefaultModel", () => {
         .collect()
       expect(models).toHaveLength(1)
       expect(models[0]?.name).toBe("Rollvärderingsmodell")
-      expect(models[0]?.levelRules).toHaveLength(12)
+      // The ladder is method law in packages/core, never a stored per-org copy.
+      expect(models[0]).not.toHaveProperty("levelRules")
 
       const criteria = await ctx.db
         .query("criteria")
@@ -276,8 +274,6 @@ describe("getModel", () => {
     expect(weightPoints.reduce((sum, p) => sum + p, 0)).toBe(24)
     expect(result?.approval).toBeNull()
     expect(result?.workingConditions).toBeNull()
-    expect(result?.levelRules).toHaveLength(12)
-    expect(result?.zoneProfileRules).toHaveLength(2)
     expect(result?.tracks).toHaveLength(3)
     expect(result?.dimensions).toHaveLength(4)
     expect(result?.midpoints.step2.length).toBeGreaterThan(0)

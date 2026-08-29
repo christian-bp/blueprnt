@@ -28,7 +28,7 @@ import { WARNING_TEXT_CLASS } from "@/lib/alert-tone"
 import { methodErrorMessage } from "@/lib/method-error"
 import { toast } from "@/lib/toast"
 
-// One line of the twelve-item gate.
+// One line of the ten-item gate.
 //
 // A passing row RECEDES and a failing one LEADS: the reader of this chapter is
 // looking for what is left, and a checklist that shouts every settled item as

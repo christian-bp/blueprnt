@@ -836,10 +836,14 @@ describe("model edits shift levels live", () => {
 
   it("deactivateCriterion deletes its ratings and shifts the level", async () => {
     const t = initConvexTest()
-    // first rated 5, last rated 0 (workingConditions dimension), rest 3.
+    // first rated 5, last rated 1 (the workingConditions criterion, carrying a
+    // real but bounded requirement), rest 3. A 1 and not a 0: a 0 means the
+    // role is not covered, so scoreRole already leaves that criterion out of
+    // the quotient and removing it from the model moves nothing. Deactivating
+    // a criterion the role IS measured on is what shifts a level.
     const { orgId, asAdmin, model, roleId } = await seedRatedOrganization(
       t,
-      (index) => (index === 0 ? 5 : index === 7 ? 0 : 3)
+      (index) => (index === 0 ? 5 : index === 7 ? 1 : 3)
     )
     const target = model.criteria[7]
     if (target === undefined) throw new Error("seed")

@@ -41,8 +41,6 @@ export const AUDIT_EVENTS = {
   criterionDeactivated: "criterion.deactivated",
   modelApproved: "model.approved",
   modelWorkingConditionsDecided: "model.workingConditionsDecided",
-  modelLevelRulesUpdated: "model.levelRulesUpdated",
-  modelZoneProfileRulesUpdated: "model.zoneProfileRulesUpdated",
   modelApprovalReopened: "model.approvalReopened",
   modelRestored: "model.restored",
   assessmentCompleted: "role.assessmentCompleted",
@@ -199,8 +197,6 @@ const AUDIT_SUBJECTS: {
   // filtering the org's log to the "model" category, not by a subject index.
   "model.approved": null,
   "model.workingConditionsDecided": null,
-  "model.levelRulesUpdated": null,
-  "model.zoneProfileRulesUpdated": null,
   "model.approvalReopened": null,
   "model.restored": null,
   "role.assessmentCompleted": (payload) => ({
@@ -537,7 +533,7 @@ export const ANCHOR_AUDIT_FIELDS = [
 
 // The model document fields diffed on create (level rules ride on the model
 // row, ADR-0006).
-export const MODEL_AUDIT_FIELDS = ["name", "levelRules"] as const
+export const MODEL_AUDIT_FIELDS = ["name"] as const
 
 // The organization settings fields diffed on settingsUpdated.
 export const SETTINGS_AUDIT_FIELDS = [

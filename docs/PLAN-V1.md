@@ -9,7 +9,7 @@ blueprnt gör om en HR-avdelnings ad hoc-rollvärdering till en dokumenterad, re
 **Designprincip (topprioritet, beslut 2026-06-05): enkelhet för användaren.** Det ska aldrig vara krångligt att komma igång eller att använda applikationen: färre steg, färre obligatoriska fält, vettiga förval, och data som kan härledas (t.ex. antal anställda från importerade medarbetare) frågas aldrig efter. Varje nytt flöde prövas mot den här principen.
 
 V1 lyckas när en HR-användare kan:
-1. utgå från en **standardmall** och anpassa kriterier, viktpoäng och nivåtrösklar efter sitt företag,
+1. utgå från **kriteriebiblioteket** och anpassa kriterier och viktpoäng efter sitt företag (nivåtrösklarna är metodlag, ADR-0024),
 2. registrera roller och **betygsätta** dem (0–5) mot ankartexter, utan att se vikter,
 3. få **poäng** uträknad och **nivå** föreslagen automatiskt,
 4. se en tydlig **nivåöversikt** och använda den som beslutsunderlag,
@@ -64,7 +64,7 @@ packages/ui       shadcn/ui (finns)
 ## 4. Epics
 
 - **E1 — Konton & organisation:** Better Auth-org (= organisation), HR-only, roller Admin/Editor, org-scoping i alla funktioner, samt grundläggande företagssetup (namn, land, valuta, språk, antal anställda, bransch).
-- **E2 — Modellkonfiguration:** kriterier + ankare + hjälptexter, viktpoäng med poängbudget (1–5, summa = antal kriterier × 3; ADR-0004), nivåtrösklar, track-schema, **standardmall** (förifylld), egna kriterier, samt **kriterieurvalsprotokoll** & **bias-granskning** per kriterium (lätt compliance-ställning, nivå 2).
+- **E2 — Modellkonfiguration:** kriterier + ankare + hjälptexter, viktpoäng med poängbudget (1–5, summa = antal kriterier × 3; ADR-0004), track-schema, **standardmall** (förifylld), egna kriterier, samt **kriterieurvalsprotokoll** & **bias-granskning** per kriterium (lätt compliance-ställning, nivå 2).
 - **E3 — Roller & värdering:** rollregister/jobbprofil, **blindat** betygsflöde mot ankare, frivillig motivering.
 - **E4 — Poäng & nivå-motor:** `packages/core`, live-omräkning, nivåutfall (alltid uträknat — ingen manuell override).
 - **E5 — Resultat & analys:** resultatvy (poäng + nivå), nivåöversikt, **progressionsvy** (roller skapade / bedömda / nivåsatta — briefens §8), grundläggande analys (**överlapp, avvikare, nivåfördelning** — briefens 4.4), jämförelse av roller, export CSV/Excel, samt exporterbar **metodbilaga** (kriterier, betydelser, kriterieurvalsprotokoll, bias-granskning; formulering: "biasreducerande", aldrig "biasfri").
@@ -138,7 +138,7 @@ Avancerad marknads-benchmarking; komplex kompmodellering (bonus/equity/TCC); sto
 
     **Uppdaterat 2026-06-07 (ADR-0005):** roller är inte längre nivåroller. En `role` bär titel + track (ingen senioritet på rollen); senioriteten är individens, satt per `personAssignments` (V2), och nivån beräknas av motorn. Hierarkin ovan ska läsas rollfamilj → roll → (V2) medarbetare-med-senioritet.
 
-15. ~~**Viktning**~~ → **Avgjort (2026-06-06, ADR-0004):** viktning med **poängbudget** ersätter den 7-gradiga betydelseskalan med dolda Excel-vikter. Kriterier viktas med synliga **viktpoäng 1–5** (neutral 3) där summan alltid är exakt **antal kriterier × 3**; andelen per kriterium är härledd visning. Rollens totalpoäng normaliseras till **0–100** (20 × Σ(betyg × viktpoäng) / Σ(viktpoäng), avrundad nedåt) så nivåtrösklarna är stabila oavsett antal kriterier; standardmallens trösklar seedas som tolv nivåer, 97/86/77/69/62/56/50/45/40/35/30/0 (ADR-0022; kalibreras vidare mot ankarroller före lansering). AI-viktgranskningen föreslår **balanserade flyttar** (varje flytt är i sig nollsumma, HR kan bekräfta valfri delmängd). Källdokument: docs/contexts/evaluation-model/viktning-poangbudget.md.
+15. ~~**Viktning**~~ → **Avgjort (2026-06-06, ADR-0004):** viktning med **poängbudget** ersätter den 7-gradiga betydelseskalan med dolda Excel-vikter. Kriterier viktas med synliga **viktpoäng 1–5** (neutral 3) där summan alltid är exakt **antal kriterier × 3**; andelen per kriterium är härledd visning. Rollens totalpoäng normaliseras till **0–100** (20 × Σ(betyg × viktpoäng) / Σ(viktpoäng), avrundad nedåt) så nivåtrösklarna är stabila oavsett antal kriterier; trösklarna är tolv nivåer, 97/86/77/69/62/56/50/45/40/35/30/0, fasta i `packages/core` och inte konfigurerbara (ADR-0022, ADR-0024). AI-viktgranskningen föreslår **balanserade flyttar** (varje flytt är i sig nollsumma, HR kan bekräfta valfri delmängd). Källdokument: docs/contexts/evaluation-model/viktning-poangbudget.md.
 
 16. ~~**Senioritet på roll eller individ**~~ → **Avgjort (2026-06-07, ADR-0005):** en roll bär bara **track**; **senioriteten hör till individen** inom rollens track och sätts vid V2:s rollplacering ("System Developer" är IC; Bo kan vara IC1 och Axel IC4 i samma roll). Värderingsobjektet blir därmed rollen som helhet, vilket matchar lönekartläggningens "lika arbete"-grupper; skiljer sig seniorens arbete åt blir det en egen roll. Track-guardrails (per senioritet) pensioneras ur V1:s betygsflöde; senioritetsdefinitionerna består som referensdata. Reviderar källdokumentet track-level-band.md (se dess repo-anmärkning).
 

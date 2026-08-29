@@ -100,8 +100,6 @@ describe("getOnboardingStatus", () => {
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard",
-        levelRules: [],
-        zoneProfileRules: [],
       })
       const libraryKeys = [
         "knowledge-depth",

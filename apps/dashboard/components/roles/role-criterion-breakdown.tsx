@@ -3,6 +3,7 @@
 import {
   criterionShares,
   type DimensionKey,
+  NOT_COVERED,
   type RatingValue,
   type WeightPoints,
 } from "@workspace/core"
@@ -88,10 +89,23 @@ export function RoleCriterionBreakdown({
                 biggest driver. */}
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-sm">{row.name}</span>
-              <span className="shrink-0 font-medium text-sm tabular-nums">
-                {tResult("contributionShare", {
-                  share: Math.round(row.share * 100),
-                })}
+              {/* A criterion the role is not covered by is not part of the
+                  weighting at all (scoreRole drops it from both sides), so it
+                  says so instead of printing a 0% that would read as
+                  "measured, contributed nothing". The bar track stays, at the
+                  zero width it would have had, so the row keeps its height. */}
+              <span
+                className={
+                  row.value === NOT_COVERED
+                    ? "shrink-0 text-muted-foreground text-sm"
+                    : "shrink-0 font-medium text-sm tabular-nums"
+                }
+              >
+                {row.value === NOT_COVERED
+                  ? tResult("notCovered")
+                  : tResult("contributionShare", {
+                      share: Math.round(row.share * 100),
+                    })}
               </span>
             </div>
             {/* Thinner, softer fill (primary/80) so the rows read calmly; the

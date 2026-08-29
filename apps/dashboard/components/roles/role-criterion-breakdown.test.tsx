@@ -7,6 +7,8 @@ import {
   RoleCriterionBreakdown,
 } from "@/components/roles/role-criterion-breakdown"
 
+const labels = messages.dashboard.rating.result
+
 // contributions: Scope 15, Complexity 20, People 2 -> total 37
 const CRITERIA: BreakdownCriterion[] = [
   {
@@ -66,7 +68,10 @@ describe("RoleCriterionBreakdown", () => {
     expect(screen.getByText("100%")).toBeTruthy()
   })
 
-  it("shows 0% for every criterion when all ratings are 0", () => {
+  // A 0 says the role is not covered, so the criterion is not part of the
+  // weighting at all (ADR-0025). The row says so instead of printing a 0%
+  // that would read as "measured, contributed nothing".
+  it("marks an uncovered criterion instead of showing it a 0% share", () => {
     // 0 is only ever a legal rating on a workingConditions criterion; the
     // dimension is overridden here purely so the fixture can express it (a
     // real model never has three, but criterionShares has no opinion on
@@ -78,7 +83,21 @@ describe("RoleCriterionBreakdown", () => {
         value: 0,
       }))
     )
-    expect(screen.getAllByText("0%")).toHaveLength(3)
+    expect(screen.getAllByText(labels.notCovered)).toHaveLength(3)
+    expect(screen.queryByText("0%")).toBeNull()
+  })
+
+  it("keeps the percentage on the criteria the role IS measured on", () => {
+    renderBreakdown([
+      { ...(CRITERIA[0] as BreakdownCriterion) },
+      {
+        ...(CRITERIA[1] as BreakdownCriterion),
+        dimensionKey: "workingConditions",
+        value: 0,
+      },
+    ])
+    expect(screen.getByText("100%")).toBeTruthy()
+    expect(screen.getByText(labels.notCovered)).toBeTruthy()
   })
 
   it("renders a criterion's motivation when present", () => {
