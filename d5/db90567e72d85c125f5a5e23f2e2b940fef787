@@ -1,0 +1,19 @@
+docs/go-live-checklist.md
+  s_99882331cf8b8c::t_97ce1cc6e0dcbe 141-165,367-376
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "d5db90567e72d85c125f5a5e23f2e2b940fef787",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
