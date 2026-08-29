@@ -341,6 +341,8 @@ in the same change.
 
 - [ ] **Assistant: revisit the word-cadence flush rate under real load.** `ASSISTANT_FLUSH_INTERVAL_MS` is 40ms so replies appear word by word (the whole visible typing flow rides on it; the client deliberately has no animation). That is ~25 snapshot writes per second per streaming reply, each rewriting the message's parts array. Fine at V1 scale; at many concurrent streaming users, either raise the interval (the flow gets chunkier per step) or move the hot path off per-flush document rewrites before this becomes the deployment's dominant write load.
 
+- [ ] **A schema narrowing ships with a migration, not a dev reset.** ADR-0024 removed `levelRules` and `zoneProfileRules` from the `models` document, and the change was validated on dev by running `db:reset`. That cleared the offending rows instead of exercising the path a deployed database takes, so the defect surfaced twice: first as a dev push loop, then as a failed production deploy where the same fields sat on the document AND inside the `lastApprovedModel` buffer. A reset is a legitimate dev shortcut for a NEW field; it is the wrong tool for a REMOVED one, because it destroys exactly the documents that prove whether the narrowing is safe. Before go-live, decide whether this becomes a written rule in CLAUDE.md (widen, migrate, narrow, with the migration deleted only after every deployment has run it) and whether the repo takes a migrations framework rather than hand-written one-shot mutations. Convex's inferred schema lags writes, so it is evidence a migration ran and never proof; the migration's own return value is.
+
 ## V1 conformance follow-ups (from the 2026-07-01 audit)
 
 Re-verified 2026-07-03: the audit's build/copy/doc gaps (the rationale +
