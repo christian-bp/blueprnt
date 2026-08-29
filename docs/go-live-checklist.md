@@ -186,6 +186,40 @@ in the same change.
 
 ## Security and compliance
 
+- [ ] **Run a full security audit before go-live.** The product handles salary
+  and identity data for named employees under GDPR, so it needs one deliberate
+  security pass rather than the incidental checks scattered through this list.
+  Scope it to cover, at minimum:
+
+  - **Authentication and session.** Better Auth configuration, mandatory 2FA,
+    session lifetime and revocation, the change-email two-hop flow, password
+    reset, and the seeded founder accounts (see Auth and access above).
+  - **Authorization.** Every Convex function is meant to be org-scoped and
+    fail-closed; verify that as a property rather than per function, including
+    the internal functions and the platform-admin surface. Confirm no query
+    returns another organization's rows under any argument.
+  - **Dangerous surfaces.** `seed.ts` (`seedProduction`, `resetDatabase`) and
+    `devReset.ts` (`wipeAppTables`). `resetDatabase` carries the
+    SITE_URL-localhost guard; `wipeAppTables` carries only a COMMENT saying it
+    must be reached through it, so a direct `convex run --prod` against the
+    internal mutation would wipe production. A comment is not a guard.
+  - **PII boundaries.** The ADR-0013 audit-diff rules, the erasure paths (app
+    user and employee), pseudonymize-in-snapshot, the samverkan participant
+    names with no erasure hook, and the AI prompt firewall's no-PII claim.
+  - **Data at the edges.** Import parsing on hostile files, the export
+    boundary once M8 exists, file/logo upload content-type handling, and the
+    docs surface's missing server-side session check (Auth and access above).
+  - **Dependencies and secrets.** An OSV-Scanner pass over `bun.lock`, the
+    pinned `@convex-dev/rag` alpha, environment-variable handling, and whether
+    any credential has ever been committed or pasted into a shared channel.
+  - **Rate limiting and abuse.** The AI request surfaces, the assistant's
+    per-user cap, and any unauthenticated route.
+
+  Decide who runs it. An external penetration test and an internal review
+  answer different questions, and the GDPR and NIS2 posture may want both; ISO
+  27001 is table stakes in this market. Record the outcome and its date here,
+  and re-run the audit after any change to the auth, tenancy or erasure paths.
+
 - [ ] **Re-check the CRA / security hardening plan.** Cross-reference
   `docs/superpowers/specs/2026-06-26-cra-hardening-design.md` and confirm its
   go-live items are done.

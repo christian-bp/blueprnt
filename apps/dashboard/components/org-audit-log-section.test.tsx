@@ -313,3 +313,58 @@ describe("OrgAuditLogSection stories", () => {
     expect(dataRows()).toHaveLength(3)
   })
 })
+
+// The action column's heading and its values share one left edge. The column
+// indents its content by a reserved chevron box so it cannot jog as stories
+// open, and the heading was missing that box, so "Åtgärd" sat 22px left of
+// every value under it. Asserted through the rendered DOM rather than by
+// trusting the shared constant, because the constant only helps while all
+// three call sites actually use it.
+describe("OrgAuditLogSection column alignment", () => {
+  beforeEach(() => {
+    browseRows = [LONE_ROW]
+    searchRows = null
+    loading = false
+  })
+  afterEach(() => cleanup())
+
+  const slotOf = (cell: Element | null) =>
+    cell?.querySelector(".size-4.shrink-0") ?? null
+
+  it("indents the action heading by the same chevron box as its cells", () => {
+    renderLog()
+    const heading = screen.getByRole("columnheader", { name: log.table.action })
+    expect(
+      slotOf(heading),
+      "the heading reserves the chevron box"
+    ).not.toBeNull()
+
+    const row = dataRows()[0]
+    expect(row).toBeDefined()
+    // The action cell is the fourth column: when, who, category, action.
+    const actionCell = row?.querySelectorAll("td")[3] ?? null
+    expect(
+      slotOf(actionCell),
+      "the cell reserves the chevron box"
+    ).not.toBeNull()
+
+    // Same box AND same row wrapper, so the two indents are the same width.
+    expect(slotOf(heading)?.className).toBe(slotOf(actionCell)?.className)
+    expect(
+      (slotOf(heading)?.parentElement as HTMLElement | null)?.className
+    ).toBe((slotOf(actionCell)?.parentElement as HTMLElement | null)?.className)
+  })
+
+  it("keeps the skeleton on the same edge as the data it stands in for", () => {
+    loading = true
+    renderLog()
+    const skeletonRow = document.querySelector("tbody tr")
+    const skeletonAction = skeletonRow?.querySelectorAll("td")[3] ?? null
+    expect(
+      slotOf(skeletonAction),
+      "the skeleton reserves it too"
+    ).not.toBeNull()
+    const heading = screen.getByRole("columnheader", { name: log.table.action })
+    expect(slotOf(skeletonAction)?.className).toBe(slotOf(heading)?.className)
+  })
+})

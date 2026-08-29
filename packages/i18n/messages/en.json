@@ -876,8 +876,6 @@
         "criterionDeactivated": "Criterion deactivated",
         "modelApproved": "Model approved",
         "modelWorkingConditionsDecided": "Working conditions decision saved",
-        "modelLevelRulesUpdated": "Level thresholds updated",
-        "modelZoneProfileRulesUpdated": "Zone profile rules updated",
         "modelApprovalReopened": "Model approval reopened",
         "modelRestored": "Model restored to last approved",
         "roleAssessmentCompleted": "Assessment completed",

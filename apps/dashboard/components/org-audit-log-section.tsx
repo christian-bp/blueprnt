@@ -98,6 +98,17 @@ type Category = (typeof CATEGORIES)[number]
 // (one constant, so the three can never drift apart).
 const PAGE_SIZE = AUDIT_LOG_PAGE_SIZE
 
+// The action column leads with a fixed chevron box on EVERY row, present or
+// empty, so the column cannot jog as stories open and close. Its HEADING and
+// its SKELETON have to carry the same box, or the text under one of them
+// starts 22px (size-4 plus the gap) off from the text under the others: the
+// heading sat left of every value beneath it until this was shared. One
+// constant per part rather than the same classes written at three call sites,
+// so the three left edges cannot drift apart again.
+const ACTION_ROW_CLASS = "flex items-center gap-1.5"
+const ACTION_CHEVRON_SLOT_CLASS =
+  "flex size-4 shrink-0 items-center justify-center"
+
 // A single enriched audit row, as returned by both the browse and search
 // queries. `names` is a per-row id -> display-name map for that row's payload.
 type AuditRow = {
@@ -378,7 +389,12 @@ export function OrgAuditLogSection() {
         <TableHead className="w-44">{t("table.when")}</TableHead>
         <TableHead className="w-40">{t("table.who")}</TableHead>
         <TableHead className="w-32">{t("table.category")}</TableHead>
-        <TableHead className="w-48">{t("table.action")}</TableHead>
+        <TableHead className="w-48">
+          <span className={ACTION_ROW_CLASS}>
+            <span className={ACTION_CHEVRON_SLOT_CLASS} aria-hidden="true" />
+            {t("table.action")}
+          </span>
+        </TableHead>
         <TableHead>{t("table.details")}</TableHead>
       </TableRow>
     </TableHeader>
@@ -500,8 +516,11 @@ export function OrgAuditLogSection() {
                   // text jumps its width to the right on the skeleton-to-data
                   // swap, which is the reflow the box exists to prevent.
                   content: (
-                    <span className="flex items-center gap-1.5">
-                      <span className="size-4 shrink-0" aria-hidden="true" />
+                    <span className={ACTION_ROW_CLASS}>
+                      <span
+                        className={ACTION_CHEVRON_SLOT_CLASS}
+                        aria-hidden="true"
+                      />
                       <Skeleton className="h-4 w-28" />
                     </span>
                   ),
@@ -701,11 +720,13 @@ function AuditLogRow({
         ) : null}
       </TableCell>
       <TableCell>
-        <span className="flex items-center gap-1.5">
+        <span className={ACTION_ROW_CLASS}>
           {/* The chevron's box is on EVERY row, empty where there is no
               chevron, so an ordinary row's action text starts at the same x as
-              a story's and the column does not jog as stories open and close. */}
-          <span className="flex size-4 shrink-0 items-center justify-center">
+              a story's and the column does not jog as stories open and close.
+              The heading and the skeleton carry the same box; see the class
+              constants for why the spec lives in one place. */}
+          <span className={ACTION_CHEVRON_SLOT_CLASS}>
             {/* The shared glyph, not a second copy of its spec: this row
                 cannot use DisclosureToggle because the whole <TableRow> is
                 already the button and a nested <button> would be invalid. */}

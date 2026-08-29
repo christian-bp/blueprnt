@@ -876,8 +876,6 @@
         "criterionDeactivated": "Kriteeri poistettu käytöstä",
         "modelApproved": "Malli hyväksytty",
         "modelWorkingConditionsDecided": "Työolosuhteiden päätös tallennettu",
-        "modelLevelRulesUpdated": "Vaativuustasorajat päivitetty",
-        "modelZoneProfileRulesUpdated": "Vyöhykeprofiilisäännöt päivitetty",
         "modelApprovalReopened": "Mallin hyväksyntä avattu uudelleen",
         "modelRestored": "Malli palautettu viimeksi hyväksyttyyn",
         "roleAssessmentCompleted": "Arviointi viimeistelty",

@@ -90,6 +90,28 @@ describe("audit log event labels", () => {
     expect(missing).toEqual([])
   })
 
+  // The other direction, which nothing checked: retiring an event used to
+  // leave its label behind. ADR-0024 deleted model.levelRulesUpdated and
+  // model.zoneProfileRulesUpdated and their two strings survived in all five
+  // locales, unreachable and describing a surface that no longer exists.
+  it("has no org event label without an event to label", () => {
+    const labels = en.dashboard.auditLog.events as Record<string, string>
+    const live = new Set(Object.values(AUDIT_EVENTS).map(orgEventKey))
+    const orphans = Object.keys(labels).filter((key) => !live.has(key))
+    expect(orphans).toEqual([])
+  })
+
+  it("has no platform event label without an event to label", () => {
+    const labels = en.dashboard.admin.auditLog.events as Record<string, string>
+    const live = new Set(
+      Object.values(PLATFORM_AUDIT_EVENTS).map((type) =>
+        type.replace("platform.", "")
+      )
+    )
+    const orphans = Object.keys(labels).filter((key) => !live.has(key))
+    expect(orphans).toEqual([])
+  })
+
   it("every platform audit event has a label in dashboard.admin.auditLog.events", () => {
     const labels = en.dashboard.admin.auditLog.events as Record<string, string>
     const missing = Object.values(PLATFORM_AUDIT_EVENTS).filter(
