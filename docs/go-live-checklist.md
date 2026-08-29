@@ -136,28 +136,24 @@ in the same change.
 - [ ] **Native review of the dashboard side-card + chart strings.** `dashboard.overview.chart.*`, `dashboard.overview.modelReadiness.*`, and `dashboard.overview.gettingStarted.*` (sv/nb/da/fi) were machine-drafted from English. Have a native speaker review before launch.
 - [ ] **Native review of the CRUD toast strings.** `dashboard.toast.*` (sv/nb/da/fi) were machine-drafted from English (sv authored in-house). Have a native speaker review before launch.
 - [ ] **Native review of the ADR-0014 terminology strings (Nivå/Senioritet/Steg).** Every key the ADR-0014 change renamed or rewrote carries machine-drafted nb/da/fi values (sv/en reviewed in-house); review them from that change's i18n diff rather than any fixed list. Among others it spans `dashboard.levels.*`, `dashboard.overview.widgets.levels.*`, the `dashboard.model.editor.*` step scale, `dashboard.rating.result.*`, `dashboard.roles.anchor.*`, `dashboard.payMapping.gap.*`, the `dashboard.help.*` level/seniority/step explanations, `model.level`/`model.seniority`/`model.step`, the audit event/field labels, the "track" loanword normalization, and the seeded standardTemplate content. Pay particular attention to the fi short form (`Taso {level}` on numbered labels: `assessment.levelNumbered`, `dashboard.levels.levelRow`, the gap and deviation chips; long `Vaativuustaso` in prose), nb `Trinn`, da `Trin`, and the seniority help copy. Have a native speaker review before launch.
-- [ ] **Label the audit payload field `count`.** Every other payload field now
-  resolves to a `dashboard.auditLog.fields.*` label; `count` deliberately does
-  not, so it is the one place the audit detail still prints a raw payload key,
-  against the standing rule in CLAUDE.md that no surface ever shows one.
+- [x] **Label the audit payload field `count`.** Already done, and this entry
+  was stale twice over: `count` resolves to a label in all five locales
+  ("Count" / "Antal" / "Antall" / "Antal" / "Määrä") and is registered in
+  `OTHER_AUDIT_FIELDS` (`apps/dashboard/lib/audit-labels.test.ts`), which fails
+  if the string is removed. Verified 2026-08-29 by deleting the `en` label and
+  watching the coverage test fail. The neutral term was the choice made.
 
-  Re-counted 2026-08-29, because this entry understated its own scope. SIX
-  events write `count`, not two: `model.created`, `roleFamily.removed`,
-  `criterion.deactivated`, `model.restored`, and the two `model.updated`
-  variants (`weights.rebalanced` and `model.weightReview`). The first four all
-  carry a `changes` map AND an `items` array, so they render as a diff or an
-  item count and hide `count` entirely. Only the two `model.updated` variants
-  surface it, and in both it means the same thing: criteria whose weight moved.
-
-  That makes the decision narrower than it looked, and it is a real fork.
-  Either one neutral label ("Count" / "Antal"), correct for all six and
-  uninformative in the two that show it; or a precise label for what actually
-  renders ("Criteria changed" / "Ändrade kriterier"), which would be wrong if
-  one of the four hiding events ever started surfacing it, since `fieldLabel`
-  resolves by field name and has no event context. Left for the owner: a vague
-  label shipped in five locales is harder to walk back than this entry. Once
-  decided, ship it in all five locales and register `count` in
-  `OTHER_AUDIT_FIELDS` (`apps/dashboard/lib/audit-labels.test.ts`).
+  Kept for the record, since the entry's own description of the field was
+  wrong: SIX events write `count`, not two. `model.created`,
+  `roleFamily.removed`, `criterion.deactivated` and `model.restored` all carry
+  a `changes` map, and the detail sheet renders flat stats only when there are
+  no diff entries, so those four never surface it. The two that do are
+  `model.updated` / `weights.rebalanced` (criteria whose weight moved, beside
+  `budget`) and `ai.suggestionConfirmed` / `model.weightReview` (beside
+  `appliedCount`, `totalMoves` and `skippedCount`, which have their own more
+  specific labels). Both surface it in the SHEET, never in the table cell:
+  `detailText` returns the item count for the first and an empty string for
+  the second.
 - [x] **Docs corpus alignment to the masterdokument world.** Done 2026-08-28 by
   phase 6 task 1, re-verified 2026-08-29: no page in any of the five locales
   mentions a 0-5 scale, and `criteria-and-scale.mdx` describes the library
