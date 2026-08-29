@@ -1,0 +1,27 @@
+apps/dashboard/content/docs/fi/what-is-pay-mapping.mdx
+  s_99882331cf8b8c::t_05b39922f8e687 16-17
+apps/dashboard/content/docs/sv/what-is-pay-mapping.mdx
+  s_99882331cf8b8c::t_05b39922f8e687 14-15
+apps/dashboard/content/docs/nb/what-is-pay-mapping.mdx
+  s_99882331cf8b8c::t_05b39922f8e687 14-15
+apps/dashboard/content/docs/en/what-is-pay-mapping.mdx
+  s_99882331cf8b8c::t_05b39922f8e687 14-15
+apps/dashboard/content/docs/da/what-is-pay-mapping.mdx
+  s_99882331cf8b8c::t_05b39922f8e687 15-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "3f4e0dc5a504091a5e6d1e01c972a23c9a94f6e0",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
