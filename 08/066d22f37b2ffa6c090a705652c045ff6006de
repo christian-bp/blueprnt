@@ -1,0 +1,28 @@
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.test.tsx
+  s_99882331cf8b8c::t_ba9118e3602801 352,459,503,541
+apps/dashboard/test/setup.ts
+  s_99882331cf8b8c::t_89a7a099c12128 18
+  s_99882331cf8b8c::t_8410f7520eac59 19-26
+apps/dashboard/components/model/restore-approved-dialog.test.tsx
+  s_99882331cf8b8c::t_89a7a099c12128 1-7
+  s_99882331cf8b8c::t_ba9118e3602801 150,160
+apps/dashboard/components/model/approval-card.test.tsx
+  s_99882331cf8b8c::t_89a7a099c12128 7
+  s_99882331cf8b8c::t_ba9118e3602801 451
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "08066d22f37b2ffa6c090a705652c045ff6006de",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
