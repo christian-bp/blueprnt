@@ -1,0 +1,23 @@
+apps/dashboard/lib/todo.ts
+  s_99882331cf8b8c::t_ec6c06d6107c1c 463-469
+apps/dashboard/lib/todo.test.ts
+  s_99882331cf8b8c::t_21e996d5ca224f 952
+  s_99882331cf8b8c::t_8f80e6ad8c87f7 859-873,891-951,953-954
+  s_99882331cf8b8c::t_562cb4c16014ac 955
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "3ee9be2ca71b02920df7921d89132e85e1415e57",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
