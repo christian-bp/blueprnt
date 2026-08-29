@@ -27,6 +27,33 @@ in the same change.
   (`wipeAppTables`) must not be runnable against production data. Remove them or
   guard them behind an environment check that is impossible to satisfy in
   production.
+
+  These stay as dev tooling by decision (2026-08-29); the work is to keep them
+  OFF production, and that does not happen by itself, because `convex deploy`
+  ships every function under `convex/`. Verified against the live production
+  function spec on 2026-08-29, so this is an inventory to act on rather than
+  one to re-derive:
+
+  | Function | Deployed to prod | Guard |
+  | --- | --- | --- |
+  | `seed.js:resetDatabase` | yes, internal | `assertResettable` (SITE_URL must be localhost) |
+  | `seed.js:seedDevOrganization` | yes, internal | `assertResettable` |
+  | `seed.js:seedProduction` | yes, internal | `confirm: "wipe-and-seed"` + password length; deliberately runnable on prod |
+  | `seed.js:seedDevUser` | yes, internal | none |
+  | `seed.js:removeDevUser` | yes, internal | none |
+  | `seed.js:removeDevOrganizations` | yes, internal | none |
+  | `devReset.js:wipeAppTables` | yes, internal | none, only a comment saying it must be reached through `resetDatabase` |
+
+  All are `internal`, so none is internet-reachable: this is blast radius, not
+  an open door. But `bunx convex run --prod devReset:wipeAppTables '{}'` takes
+  no arguments, asks nothing, and deletes every app row (paged at 500 per
+  table, so repeat calls finish the job). Anyone holding a deploy key,
+  including CI, can do that by accident. If the answer at go-live is "delete
+  the dev tooling from the deployed code", the four unguarded entries above are
+  the list; if it is "guard them", note that `assertResettable` lives in
+  `seed.ts`, which is `"use node"`, so sharing it with the default-runtime
+  `devReset.ts` means moving it to `lib/` rather than importing across the
+  runtime boundary.
 - [ ] **Reset pre-launch data.** Clear dev/demo organizations, users, and seeded
   content from the production deployment so launch starts clean.
 - [ ] **Clear or backfill before the slug schema deploys.** `roles` and
