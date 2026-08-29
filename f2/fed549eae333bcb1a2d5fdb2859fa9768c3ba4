@@ -1,0 +1,27 @@
+packages/backend/convex/evaluationModel/tables.ts
+  s_99882331cf8b8c::t_236bb0d5add5e7 193-206,211-214
+packages/backend/convex/evaluationModel/migrations.test.ts
+  s_99882331cf8b8c::t_9dcd00629540f2 1-2,4-28,35-136
+  s_99882331cf8b8c::t_81af62bcb0ffae 3
+  s_99882331cf8b8c::t_74c2a31e4de934 29-34
+packages/backend/convex/evaluationModel/migrations.ts
+  s_99882331cf8b8c::t_8ad3d0392c10c7 1-76
+packages/backend/convex/_generated/api.d.ts
+  s_99882331cf8b8c::t_e265a429e4e2d2 75,191
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "f2fed549eae333bcb1a2d5fdb2859fa9768c3ba4",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
