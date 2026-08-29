@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
@@ -141,7 +147,7 @@ describe("RestoreApprovedDialog", () => {
   it("calls restoreApprovedModel with the org and toasts success", async () => {
     renderDialog()
     fireEvent.click(screen.getByRole("button", { name: "Restore" }))
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(restoreMutation).toHaveBeenCalledWith({ orgId: "org1" })
       expect(vi.mocked(toast.success)).toHaveBeenCalledWith("Model restored")
     })
@@ -151,7 +157,7 @@ describe("RestoreApprovedDialog", () => {
     restoreMutation.mockRejectedValue(new Error("boom"))
     renderDialog()
     fireEvent.click(screen.getByRole("button", { name: "Restore" }))
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(vi.mocked(toast.error)).toHaveBeenCalled()
     })
     expect(screen.getByRole("button", { name: "Restore" })).toBeDefined()

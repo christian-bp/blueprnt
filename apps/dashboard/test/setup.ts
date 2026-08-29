@@ -15,6 +15,15 @@ import { configure } from "@testing-library/react"
 // This is the floor under the whole suite, not a fix for a specific race: a
 // gesture that can miss its target still has to be made retry-safe where it is
 // written (see test/menu.ts).
+//
+// The floor covers Testing Library's utilities ONLY. `vi.waitFor` keeps its
+// own 1000ms default and sits outside this budget, which is how one dialog
+// test failed a full parallel run while passing alone: a real-timer wait for a
+// rejected mutation ran out of a second under 295 concurrent files. A wait on
+// real timers therefore uses `waitFor` from @testing-library/react. The
+// remaining `vi.waitFor` calls are in tests that drive fake timers, where the
+// budget is spent against a clock the test advances itself and the two
+// utilities are not interchangeable.
 configure({
   asyncUtilTimeout: 5000,
   // Recharts measures label widths by writing the text into a hidden span it

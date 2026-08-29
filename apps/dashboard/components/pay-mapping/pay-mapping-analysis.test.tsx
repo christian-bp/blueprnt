@@ -349,7 +349,7 @@ describe("PayMappingAnalysis", () => {
     window.history.pushState({}, "", "/analysis?step=equalWork:sales")
     try {
       renderSummary()
-      await vi.waitFor(() => {
+      await waitFor(() => {
         const row = checklistRowFor("Sales")
         expect(row?.getAttribute("aria-current")).toBe("true")
       })
@@ -456,7 +456,7 @@ describe("PayMappingAnalysis", () => {
     fireEvent.click(screen.getByRole("button", { name: t.findingNone }))
     fireEvent.click(screen.getByRole("button", { name: t.markDoneNext }))
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(upsertMock).toHaveBeenCalled()
     })
     // collectiveAgreements is already done in the fixture: the advance
@@ -500,7 +500,7 @@ describe("PayMappingAnalysis", () => {
     const primary = await screen.findByRole("button", { name: t.markDoneNext })
     fireEvent.click(primary)
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(upsertMock).toHaveBeenCalled()
     })
     // The QA card is now open (its heading is the bare role title; the
@@ -538,7 +538,7 @@ describe("PayMappingAnalysis", () => {
     })
     fireEvent.click(primary)
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(upsertMock).toHaveBeenCalled()
     })
     await expectGatePanel()

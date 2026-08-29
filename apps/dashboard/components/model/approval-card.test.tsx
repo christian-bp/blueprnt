@@ -4,6 +4,7 @@ import {
   render,
   screen,
   within,
+  waitFor,
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -447,7 +448,7 @@ describe("ApprovalCard", () => {
     }
     renderCard()
     fireEvent.click(screen.getByRole("button", { name: "Approve model" }))
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(vi.mocked(toast.success)).toHaveBeenCalledWith("Model approved")
     })
   })
