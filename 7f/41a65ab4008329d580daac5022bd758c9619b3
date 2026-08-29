@@ -1,0 +1,26 @@
+apps/dashboard/components/org-audit-log-section.test.tsx
+  s_99882331cf8b8c::t_5278b04b1cdc6e 316-336,341-345,350-362,367-370
+  s_99882331cf8b8c::t_f73d50bdc2897f 337-340,346-349,363-366
+apps/dashboard/components/org-audit-log-section.tsx
+  s_99882331cf8b8c::t_492407494a414f 101-111,392-397,519-523,723,726-729
+docs/go-live-checklist.md
+  s_99882331cf8b8c::t_961176607bb847 189-222
+apps/dashboard/lib/audit-labels.test.ts
+  s_99882331cf8b8c::t_2d42cdf6b39f50 93-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "7f41a65ab4008329d580daac5022bd758c9619b3",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
