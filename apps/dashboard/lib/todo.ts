@@ -460,15 +460,13 @@ export function buildTodo(input: BuildTodoInput): Todo {
     })
   }
 
-  const total =
-    (c.buildModel !== null ? 1 : 0) +
-    (c.totalPeople === 0 ? 1 : 0) +
-    c.classify.length +
-    c.describe.length +
-    c.evaluate.length +
-    c.documentItems.length +
-    c.approveItems.length +
-    (startPayMapping ? 1 : 0)
+  // Derived from the groups themselves, never re-listed. A hand-written sum
+  // over the same eight sources is a second copy of the list above, and it
+  // silently lost reviewPlacements: the front page said "1 thing to do" while
+  // rendering two groups. Every group already carries the count it contributes
+  // (the full length, not the MAX_ITEMS-capped preview), so the reduce is the
+  // same number by construction, and a new group cannot ship uncounted.
+  const total = groups.reduce((sum, group) => sum + group.count, 0)
   return { groups, total }
 }
 

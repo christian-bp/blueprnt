@@ -856,6 +856,21 @@ describe("buildTodo reviewPlacements", () => {
     ).toBe(2)
   })
 
+  // The defect this block did not catch: every test above read the GROUP's
+  // count, and the front page reads todo.total, which hand-listed the eight
+  // other sources and left this one out. It said "1 thing to do" while
+  // rendering two groups.
+  it("counts its roles in the total, not only in its own group", () => {
+    const todo = buildTodo({
+      roles: [reviewable({ roleId: "a", profileLimited: true })],
+      ...NO_MODEL,
+      peopleByTitle: PEOPLE_NEUTRAL,
+      payMappingRuns: [],
+    })
+    expect(todo.groups.find((g) => g.key === "reviewPlacements")?.count).toBe(1)
+    expect(todo.total).toBe(1)
+  })
+
   // A role still waiting to be rated belongs to evaluateRoles: it has no
   // placement to review yet, and a role in two groups is one job counted twice.
   it("leaves an unfinished role to the evaluate group alone", () => {
@@ -871,5 +886,70 @@ describe("buildTodo reviewPlacements", () => {
       todo.groups.find((g) => g.key === "reviewPlacements")
     ).toBeUndefined()
     expect(todo.groups.find((g) => g.key === "evaluateRoles")?.count).toBe(1)
+  })
+})
+
+// The invariant that makes the group above impossible to lose again: the
+// total is the groups' own counts summed, so it can never name a different
+// amount of work than the list beside it. Asserted over fixtures that
+// exercise every group rather than one, because the defect was a group
+// falling out of a second hand-written list, not a wrong count.
+describe("buildTodo total agrees with its groups", () => {
+  const CASES: [string, Parameters<typeof buildTodo>[0]][] = [
+    [
+      "an empty org",
+      { roles: [], ...NO_MODEL, peopleByTitle: [], payMappingRuns: OPEN_RUN },
+    ],
+    [
+      "unclassified people and roles to describe",
+      {
+        roles: [role({ roleId: "r1" }), role({ roleId: "r2" })],
+        ...NO_MODEL,
+        peopleByTitle: [
+          { title: "A", people: [{ currentAssignment: null }] },
+          { title: "B", people: [{ currentAssignment: null }] },
+        ],
+        payMappingRuns: OPEN_RUN,
+      },
+    ],
+    [
+      "placements to review beside roles to evaluate",
+      {
+        roles: [
+          role({
+            roleId: "reviewable",
+            profileComplete: true,
+            ratedCount: 9,
+            totalCriteria: 9,
+            completed: true,
+            level: 4,
+            profileLimited: true,
+          }),
+          role({
+            roleId: "unrated",
+            profileComplete: true,
+            ratedCount: 3,
+            totalCriteria: 9,
+          }),
+        ],
+        ...NO_MODEL,
+        peopleByTitle: PEOPLE_NEUTRAL,
+        payMappingRuns: OPEN_RUN,
+      },
+    ],
+  ]
+
+  it.each(CASES)("holds for %s", (_name, input) => {
+    const todo = buildTodo(input)
+    expect(todo.total).toBe(
+      todo.groups.reduce((sum, group) => sum + group.count, 0)
+    )
+  })
+
+  // Not vacuous: at least one case has to produce more than one group, or the
+  // assertion above passes on an empty list forever.
+  it("covers a fixture with several groups at once", () => {
+    const counts = CASES.map(([, input]) => buildTodo(input).groups.length)
+    expect(Math.max(...counts)).toBeGreaterThan(1)
   })
 })
