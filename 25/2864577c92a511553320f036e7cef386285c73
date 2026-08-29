@@ -1,0 +1,21 @@
+packages/backend/convex/evaluationModel/tables.ts
+  s_99882331cf8b8c::t_6ca02ec5db890d 193
+docs/go-live-checklist.md
+  s_99882331cf8b8c::t_db0cf97f9fa204 344-345
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "252864577c92a511553320f036e7cef386285c73",
+  "prompts": {},
+  "sessions": {
+    "s_99882331cf8b8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "191990a4-cc67-4d03-8160-452859b089d6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
