@@ -1,0 +1,22 @@
+packages/core/src/pay-analysis.test.ts
+  s_7fda332a23d6c0::t_167a0187e8992a 8
+  s_7fda332a23d6c0::t_a73f49f2c8e1c3 228-253
+packages/core/src/pay-analysis.ts
+  s_7fda332a23d6c0::t_32b2ee65eddb2d 26-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "17f067a2dedb132a096bea2e83395ad99d09f6b0",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
