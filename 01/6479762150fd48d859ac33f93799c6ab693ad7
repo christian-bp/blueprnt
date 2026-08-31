@@ -1,0 +1,29 @@
+docs/superpowers/analysis/lonekartlaggning-progress-tracker.html
+  s_7fda332a23d6c0::t_49fb6f73984f9d 384-385
+  s_7fda332a23d6c0::t_23edc8772dd140 392-393
+  s_7fda332a23d6c0::t_e7fddfe63d2ee8 479
+  s_7fda332a23d6c0::t_e6cba18b662286 501-502
+  s_7fda332a23d6c0::t_046dcfe0fbf458 231
+  s_7fda332a23d6c0::t_3e874a83c319ff 205,207,209-210
+  s_7fda332a23d6c0::t_22e49d1b14e5d9 303
+  s_7fda332a23d6c0::t_a0bf75d5d34e95 432-433,435-443,446
+  s_7fda332a23d6c0::t_d357a65f6eb1c9 364
+  s_7fda332a23d6c0::t_9cb0e4d8f18ffd 223-224
+  s_7fda332a23d6c0::t_697cf718d45384 290
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "016479762150fd48d859ac33f93799c6ab693ad7",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
