@@ -480,6 +480,7 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
     targetKind: "group",
     targetLabel: "SWE · Senior",
   },
+  "payMapping.reportExported": { runId: "run-1" },
 }
 
 // The expected subject per fixture above: the canonical primary entity, or
@@ -547,6 +548,7 @@ const EXPECTED_SUBJECTS: { [E in AuditEvent]: AuditSubject | undefined } = {
   "payMapping.noteCreated": { kind: "payMappingRun", id: "run-1" },
   "payMapping.noteUpdated": { kind: "payMappingRun", id: "run-1" },
   "payMapping.noteDeleted": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.reportExported": { kind: "payMappingRun", id: "run-1" },
 }
 
 describe("subjectForEvent", () => {

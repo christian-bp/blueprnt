@@ -467,6 +467,11 @@ export interface AuditPayloads {
     targetKind: ActionTargetKind
     targetLabel: string
   }
+  // The export-boundary log (ADR-0011 p.3): the trail records THAT the
+  // statutory report left the system, keyed to its run. Pure marker payload
+  // (mirrors runReopened): the document's contents are the frozen run itself,
+  // so nothing else belongs here.
+  "payMapping.reportExported": { runId: string }
 }
 
 // Admin audit payloads, keyed 1:1 by every PLATFORM_AUDIT_EVENTS value. Also

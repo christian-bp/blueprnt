@@ -1036,6 +1036,28 @@ describe("getPayMappingRunBySlug", () => {
     expect(paid[0]?.components).toEqual([])
     expect(paid[0]?.birthDate).toBe("1990-01-01")
     expect(paid[0]?.ftePercent).toBe(100)
+
+    // The report's method section reads the frozen criteria: a name +
+    // weightPoints projection of the frozen evidence, in evidence order,
+    // with no other evidence field leaking onto the wire.
+    const storedRun = await t.run(async (ctx) =>
+      ctx.db
+        .query("payMappingRuns")
+        .withIndex("by_org_slug", (q) => q.eq("orgId", orgId).eq("slug", slug))
+        .first()
+    )
+    const evidence = [...(storedRun?.frozenModel.criteria ?? [])].sort(
+      (a, b) =>
+        (a.order ?? Number.POSITIVE_INFINITY) -
+        (b.order ?? Number.POSITIVE_INFINITY)
+    )
+    expect(evidence.length).toBeGreaterThan(0)
+    expect(result?.frozenCriteria).toEqual(
+      evidence.map((criterion) => ({
+        name: criterion.name,
+        weightPoints: criterion.weightPoints,
+      }))
+    )
   })
 
   it("returns null for an unknown slug", async () => {

@@ -557,6 +557,13 @@ export const getPayMappingRunBySlug = orgQuery({
         v.object({ participants: v.string(), description: v.string() }),
         v.null()
       ),
+      // The frozen model's criteria, name + weight only: the report's method
+      // section cites the method the run was actually computed under
+      // (ADR-0008 reproducibility), never the live model. Ordered as the
+      // frozen evidence orders them.
+      frozenCriteria: v.array(
+        v.object({ name: v.string(), weightPoints: v.number() })
+      ),
     })
   ),
   handler: async (ctx, { slug }) => {
@@ -578,6 +585,16 @@ export const getPayMappingRunBySlug = orgQuery({
       referenceDate: run.referenceDate,
       populationCount: run.populationCount,
       collaboration: run.collaboration ?? null,
+      frozenCriteria: [...run.frozenModel.criteria]
+        .sort(
+          (a, b) =>
+            (a.order ?? Number.POSITIVE_INFINITY) -
+            (b.order ?? Number.POSITIVE_INFINITY)
+        )
+        .map((criterion) => ({
+          name: criterion.name,
+          weightPoints: criterion.weightPoints,
+        })),
       rows: rows.map((r) => ({
         personPublicId: r.personPublicId,
         displayName: r.displayName,
