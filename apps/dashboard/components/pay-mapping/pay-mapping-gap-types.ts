@@ -257,6 +257,20 @@ export function groupLabel(group: {
     .join(" · ")
 }
 
+// The group a work-layer record is anchored to, as display text. A
+// person-targeted record still reads by its GROUP (the group key is the only
+// display value the target carries; the person's own name lives in the
+// detail view, never denormalized here). A comparison reads by the job it
+// compares AGAINST: that is the row the reader documented. Shared by the
+// actions overview and the report assembly so the derivation cannot drift.
+export function targetGroupLabel(target: ActionTargetWire): string {
+  const key =
+    target.kind === "comparison" ? target.comparisonKey : target.groupKey
+  // A group key is roleTitle|level (ADR-0017), so the title alone names it.
+  const [roleTitle] = key.split("|")
+  return groupLabel({ roleTitle: roleTitle ?? null, seniority: null })
+}
+
 // A member's FTE-adjusted base salary and total compensation: the SAME
 // derivation the backend engine uses (gap.ts), shared here so no view can
 // silently diverge from the engine's numbers (e.g. by forgetting the
@@ -342,4 +356,8 @@ export interface PayMappingRunDetail {
   // null until set. Participant names are statutory documentation content
   // on the run, never audited (see setPayMappingCollaboration).
   collaboration: { participants: string; description: string } | null
+  // The frozen model's criteria (name + weight points, evidence order): the
+  // report's method section cites the method the run was computed under,
+  // never the live model (ADR-0008).
+  frozenCriteria: { name: string; weightPoints: number }[]
 }

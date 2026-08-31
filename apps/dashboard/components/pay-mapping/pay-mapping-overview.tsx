@@ -211,12 +211,19 @@ function ClockStat({ org }: { org: OrgAggregate | undefined }) {
 // The whole frozen population: the standard shadcn gender donut with the
 // prominent headcount and count/share rows beside it. Every frozen row has a
 // gender, so the donut total IS the survey population.
-function WholeSurveyStat({
+// Exported (like QuartileStat) because the PDF export mounts it off-screen
+// and captures its SVG, so the document shows the app's own chart.
+// `animate` exists for that capture: recharts' mount animation runs on
+// requestAnimationFrame, which never fires in a hidden or minimized tab, so
+// an animated chart captured there would still be at its empty first frame.
+export function WholeSurveyStat({
   population,
   countLabel,
+  animate = true,
 }: {
   population: GenderTally | undefined
   countLabel: string
+  animate?: boolean
 }) {
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
   const marks = useGenderMarks()
@@ -284,6 +291,7 @@ function WholeSurveyStat({
             dataKey="value"
             nameKey="key"
             innerRadius={expanded ? 80 : 40}
+            isAnimationActive={animate}
           >
             {data.map((d) => (
               <Cell key={d.key} fill={d.fill} {...genderMarkBorder(d.swatch)} />
@@ -312,7 +320,15 @@ function WholeSurveyStat({
 // the standard shadcn horizontal stacked bar chart, the upper quartile on
 // top. Headcounts only, so no masking applies; exact counts on hover, the
 // concept lives in the widget's help.
-function QuartileStat({ quartiles }: { quartiles: GenderTally[] | undefined }) {
+// `animate` mirrors WholeSurveyStat's: off only for the PDF export's
+// off-screen capture, where the animation's rAF never fires.
+export function QuartileStat({
+  quartiles,
+  animate = true,
+}: {
+  quartiles: GenderTally[] | undefined
+  animate?: boolean
+}) {
   const expanded = useWidgetExpanded()
   const t = useTranslations("dashboard.payMapping.overview.quartiles")
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
@@ -383,6 +399,7 @@ function QuartileStat({ quartiles }: { quartiles: GenderTally[] | undefined }) {
             fill={marks.men}
             {...genderMarkBorder("men")}
             radius={[BAR_RADIUS, 0, 0, BAR_RADIUS]}
+            isAnimationActive={animate}
           />
           <Bar
             dataKey="women"
@@ -390,6 +407,7 @@ function QuartileStat({ quartiles }: { quartiles: GenderTally[] | undefined }) {
             fill={marks.women}
             {...genderMarkBorder("women")}
             radius={[0, BAR_RADIUS, BAR_RADIUS, 0]}
+            isAnimationActive={animate}
           />
         </BarChart>
       </ChartCanvas>

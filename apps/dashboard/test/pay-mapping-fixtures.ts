@@ -5,6 +5,7 @@ import type {
   ExcludedGroupsWire,
   GapGroup,
   GapMetric,
+  PayMappingGapResult,
   PayMappingRunDetail,
 } from "@/components/pay-mapping/pay-mapping-gap-types"
 import type { PayMappingRunSummary } from "@/components/pay-mapping/pay-mapping-run-context"
@@ -64,6 +65,7 @@ export function makeRunDetail(
     populationCount: 6,
     rows: [],
     collaboration: null,
+    frozenCriteria: [],
     ...overrides,
   }
 }
@@ -92,6 +94,30 @@ export function makeExcluded(
     singletonCount: 0,
     genderPure: [],
     reverse: [],
+    ...overrides,
+  }
+}
+
+// A whole gap result with empty groupings: the shape a test overrides from.
+export function makeGapResult(
+  overrides: Partial<PayMappingGapResult> = {}
+): PayMappingGapResult {
+  return {
+    currency: "SEK",
+    org: {
+      womenCount: 3,
+      menCount: 3,
+      womenMeanComp: 90000,
+      menMeanComp: 100000,
+      gapPct: 10,
+      flag: "elevated",
+    },
+    equalWork: [],
+    excluded: makeExcluded(),
+    equivalentWork: [],
+    womenDominated: [],
+    population: { women: 3, men: 3 },
+    quartiles: [],
     ...overrides,
   }
 }

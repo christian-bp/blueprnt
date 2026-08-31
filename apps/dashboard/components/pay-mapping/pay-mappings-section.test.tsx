@@ -48,8 +48,11 @@ vi.mock("motion/react", () => {
 vi.mock("convex/react", () => ({
   useQuery: (...args: unknown[]) => queryMock(...args),
   // StartPayMappingDialog (rendered as the header action and, when empty, the
-  // empty-state CTA) calls useMutation; these tests never submit it.
+  // empty-state CTA) calls useMutation; these tests never submit it. The row
+  // menu's download holds a Convex client for its one-shot fetch; never
+  // clicked here.
   useMutation: () => vi.fn(),
+  useConvex: () => ({ query: vi.fn() }),
 }))
 
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
@@ -65,6 +68,16 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 
 vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org-1", name: "Acme", role: "admin" }),
+}))
+
+// The row menu's PDF export: stubbed so a list test never mounts the export
+// machinery (recharts capture host, react-pdf) just to render rows.
+vi.mock("@/components/pay-mapping/pay-mapping-report-export", () => ({
+  usePayMappingReportExport: () => ({
+    busy: false,
+    exportReport: vi.fn(),
+    captureHost: null,
+  }),
 }))
 
 vi.mock("next/navigation", () => ({

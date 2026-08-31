@@ -11,16 +11,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
-import { useMutation } from "convex/react"
+import { Spinner } from "@workspace/ui/components/spinner"
+import { useConvex, useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { toast } from "@/lib/toast"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { RenamePayMappingDialog } from "@/components/pay-mapping/rename-pay-mapping-dialog"
+import { usePayMappingReportExport } from "./pay-mapping-report-export"
 
 // Per-row actions for the pay-mappings list (the row-actions convention: one
 // trailing "..." trigger, a destructive item confirmed via an AlertDialog).
-// Renaming (any status: the label is the document's title, not part of the
+// Downloading the statutory PDF (the run page's export, reachable from the
+// list: the data is fetched one-shot on click, never subscribed per row),
+// renaming (any status: the label is the document's title, not part of the
 // frozen evidence) and deleting: a hard delete of the run, its frozen
 // snapshot, and its documentation (backend: deletePayMappingRun). Any run
 // status is deletable pre-launch (CLAUDE.md "No legacy before launch"); the
@@ -29,18 +33,78 @@ import { RenamePayMappingDialog } from "@/components/pay-mapping/rename-pay-mapp
 export function PayMappingRunActions({
   orgId,
   runId,
+  slug,
   label,
 }: {
   orgId: string
   runId: Id<"payMappingRuns">
+  slug: string
   label: string
 }) {
   const t = useTranslations("dashboard.payMapping.table")
+  const tReport = useTranslations("dashboard.payMapping.report")
   const tToast = useTranslations("dashboard.toast")
+  const convex = useConvex()
   const deleteRun = useMutation(api.payMapping.runs.deletePayMappingRun)
+  const { busy, exportReport, captureHost } = usePayMappingReportExport()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
   const [pending, setPending] = useState(false)
+
+  // The same export the report page runs, fed by one-shot queries instead
+  // of the run workspace's subscriptions: the menu is closed by the time
+  // the work runs, so the row's trigger carries the busy spinner.
+  async function onDownload() {
+    try {
+      const run = await convex.query(
+        api.payMapping.runs.getPayMappingRunBySlug,
+        {
+          orgId,
+          slug,
+        }
+      )
+      const [gap, analyses, actions, notes, runsList] = await Promise.all([
+        convex.query(api.payMapping.gap.getPayMappingGap, { orgId, runId }),
+        convex.query(api.payMapping.analyses.listGroupAnalyses, {
+          orgId,
+          runId,
+        }),
+        convex.query(api.payMapping.actions.listActions, { orgId, runId }),
+        convex.query(api.payMapping.notes.listNotes, { orgId, runId }),
+        convex.query(api.payMapping.runs.listPayMappingRuns, { orgId }),
+      ])
+      if (run === null || gap === null) {
+        toast.error(tToast("error"))
+        return
+      }
+      const previousRun =
+        runsList
+          .filter(
+            (candidate) =>
+              candidate.status === "completed" &&
+              candidate.referenceDate < run.referenceDate
+          )
+          .sort((a, b) => b.referenceDate - a.referenceDate)[0] ?? null
+      const previous =
+        previousRun === null
+          ? null
+          : {
+              runLabel: previousRun.label,
+              referenceDate: previousRun.referenceDate,
+              actions: await convex.query(api.payMapping.actions.listActions, {
+                orgId,
+                runId: previousRun.runId,
+              }),
+              gap: await convex.query(api.payMapping.gap.getPayMappingGap, {
+                orgId,
+                runId: previousRun.runId,
+              }),
+            }
+      await exportReport({ run, gap, analyses, actions, notes, previous })
+    } catch {
+      toast.error(tToast("error"))
+    }
+  }
 
   return (
     <>
@@ -52,13 +116,21 @@ export function PayMappingRunActions({
               variant="ghost"
               size="icon"
               aria-label={t("rowActionsLabel", { label })}
+              disabled={busy}
               className="shrink-0 text-muted-foreground hover:text-foreground"
             />
           }
         >
-          <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
+          {busy ? (
+            <Spinner />
+          ) : (
+            <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
+          )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={onDownload}>
+            {tReport("downloadReport")}
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setRenameOpen(true)}>
             {t("renameCta")}
           </DropdownMenuItem>
@@ -70,6 +142,7 @@ export function PayMappingRunActions({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      {captureHost}
 
       <RenamePayMappingDialog
         orgId={orgId}

@@ -48,9 +48,9 @@ import { DocumentationMenu, documentationFor } from "./documentation-controls"
 import {
   type ActionStatus,
   type ActionTargetWire,
-  groupLabel,
   type PayMappingActionWire,
   type PayMappingNoteWire,
+  targetGroupLabel,
 } from "./pay-mapping-gap-types"
 import { chapterSegment } from "./analysis-chapters"
 import { usePayMappingRun } from "./pay-mapping-run-context"
@@ -61,19 +61,6 @@ const DUE_WINDOW_DAYS = 30
 // One shared constant sizes the pager AND the loading skeleton, so the
 // table never grows when the first page arrives.
 const PAGE_SIZE = 25
-
-// The group a record is anchored to, as display text. A person-targeted
-// record still reads by its GROUP (the group key is the only display value
-// the target carries; the person's own name lives in the detail view,
-// never denormalized here). A comparison reads by the job it compares
-// AGAINST: that is the row the reader documented.
-function targetGroupLabel(target: ActionTargetWire): string {
-  const key =
-    target.kind === "comparison" ? target.comparisonKey : target.groupKey
-  // A group key is roleTitle|level (ADR-0017), so the title alone names it.
-  const [roleTitle] = key.split("|")
-  return groupLabel({ roleTitle: roleTitle ?? null, seniority: null })
-}
 
 // Whether a record belongs to the lika arbete flow or the women-dominated
 // chapter: the overview's "type of comparison" filter, and the deep link

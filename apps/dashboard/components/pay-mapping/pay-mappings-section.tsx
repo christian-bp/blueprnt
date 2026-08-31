@@ -424,6 +424,7 @@ export function PayMappingsSection() {
                           <PayMappingRunActions
                             orgId={orgId}
                             runId={run.runId as Id<"payMappingRuns">}
+                            slug={run.slug}
                             label={run.label}
                           />
                         </div>
