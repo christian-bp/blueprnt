@@ -472,6 +472,10 @@ export interface AuditPayloads {
   // (mirrors runReopened): the document's contents are the frozen run itself,
   // so nothing else belongs here.
   "payMapping.reportExported": { runId: string }
+  // The machine-readable key-figures export leaves through the same boundary
+  // as the report and carries the same marker payload: the figures are
+  // derived from the frozen run, so the run id is the whole record.
+  "payMapping.metricsExported": { runId: string }
 }
 
 // Admin audit payloads, keyed 1:1 by every PLATFORM_AUDIT_EVENTS value. Also

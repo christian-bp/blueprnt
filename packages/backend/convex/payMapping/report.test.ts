@@ -61,6 +61,28 @@ describe("payMapping report export log", () => {
     expect(audits[0]?.payload).toEqual({ runId })
   })
 
+  it("writes the metrics export's own audit row at the same boundary", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t)
+
+    await asHr.mutation(api.payMapping.report.logPayMappingMetricsExport, {
+      orgId,
+      runId,
+    })
+
+    const audits = await t.run((ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "payMapping.metricsExported")
+        )
+        .collect()
+    )
+    expect(audits).toHaveLength(1)
+    expect(audits[0]?.subject).toEqual({ kind: "payMappingRun", id: runId })
+    expect(audits[0]?.payload).toEqual({ runId })
+  })
+
   it("rejects a run id from another org", async () => {
     const t = initConvexTest()
     const { runId } = await seedRun(t)

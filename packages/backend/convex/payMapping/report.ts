@@ -24,3 +24,21 @@ export const logPayMappingReportExport = orgMutation({
     return null
   },
 })
+
+// The key-figures export (the Excel workbook) crosses the same boundary
+// under the same rule: logged before the file is handed over, its own event
+// so the trail says WHICH document left.
+export const logPayMappingMetricsExport = orgMutation({
+  args: { runId: v.id("payMappingRuns") },
+  returns: v.null(),
+  handler: async (ctx, { runId }) => {
+    const run = await ctx.db.get(runId)
+    if (run === null || run.orgId !== ctx.orgId)
+      throw appError(ERROR_CODES.notFound)
+    await ctx.audit.log({
+      type: AUDIT_EVENTS.payMappingMetricsExported,
+      payload: { runId },
+    })
+    return null
+  },
+})
