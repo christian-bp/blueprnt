@@ -357,6 +357,21 @@ in the same change.
   `dashboard.help.payGapScatterMeansBody` (the sentence explaining the two
   average lines the equal-work scatter draws) is machine-drafted too and
   belongs in this review.
+- [ ] **Decide the documentation stance for green (under-threshold) equal-work
+  groups.** DO's supervision practice (Kriminalvården DO 2022/498 and the
+  2023 myndighets-decisions) treats an identified-but-unresolved pay
+  difference as itself a deficiency. Our completion gate forces a stated
+  conclusion for every flagged group and every women-dominated comparison,
+  but groups under the 5% threshold ship in the report with figures and a
+  status word only, no written conclusion (the thresholds are presented as
+  prioritisation, per the kravbild). Decide before go-live: require a
+  lightweight klarmarkering for green groups too, or keep the prioritisation
+  model and its stated rationale. See docs/lonekartlaggning-rapport-kravbild.md
+  section 7 item 5. The sakliga-skäl note helper was already sharpened
+  (2026-08-31), grounded in DO's CURRENT supervision practice (the 2022-2023
+  tillsynsbeslut and DO's guidance: bare market/collective-agreement
+  references are insufficient; NmD Ä 1-09 is the still-standing precedent
+  behind that line); no further copy work pending on that part.
 - [ ] **Gate `deletePayMappingRun` on run status.** The mutation currently
   hard-deletes a run (and its snapshot rows + group analyses) regardless of
   `status`, including a `completed` run, which is the statutory kartläggning
@@ -370,15 +385,15 @@ in the same change.
   person's assignments are read twice in one mutation. Fine at today's org
   sizes; before onboarding a large org, collapse the two loops so each
   person's assignments are fetched once.
-- [ ] **Implement kartlaggning access + export logging in the export slice.**
-  ADR-0011 section 3 (Atkomst- och exportloggning) decided that views and
-  exports of a kartlaggning get logged, but the first snapshot slice shipped
-  without it (see the ADR's 2026-07-13 update): the change-log requirement is
-  already covered by the domain audit trail, and the real value is at the
-  export boundary, which does not exist yet. Guide Modul 9 / line 735 covers
-  the same requirement. Before go-live, build this logging in the future
-  export/report module (guide Modul 8) at the point data leaves the system,
-  not as a per-view log on the detail page.
+- [x] **Implement kartlaggning access + export logging in the export slice.**
+  Done 2026-08-31 with the report slice: every PDF export writes a
+  `payMapping.reportExported` audit row (subject-keyed to the run) via
+  `logPayMappingReportExport`, called BEFORE the file is handed to the
+  browser (`payMapping/report.ts`, `pay-mapping-report-download.tsx`), so a
+  download the trail missed cannot happen. Remaining scope for FUTURE export
+  formats: the XLSX/JSON archive package and any Art. 9 filing must log at
+  their own boundaries the same way (new event keys, same pattern); per-view
+  logging stays deliberately unbuilt per the ADR's 2026-07-13 update.
 
 - [ ] **Wire `bun run docs:sync` into the production deploy flow.** The docs
   search index (the `@convex-dev/rag` component, ADR-0020) is populated by
@@ -527,29 +542,23 @@ suite covers them before go-live:
   ADR-0013 a `title` value reaches the audit trail, where erasure tombstones it
   like any other identity field, so a name hidden in a title is erasable.
 
-- [ ] **P1 gender-gap small-cell masking: enforce the export minimums at the
-  Art. 9 boundary.** In-app, the gap engine (`packages/core/pay-gap.ts` +
-  `payMapping/gap.ts`, ADR-0012 amendment 2026-07-16) computes a gap for every
-  group with at least 1 woman AND 1 man; ⚪ insufficient now means only that a
-  gender is missing. This is deliberate: the app is HR-only and HR already sees
-  every individual salary, so a 4-person floor protected nothing in-app while
-  making small orgs' analyses unusable. But the SAME `getPayMappingGap`
-  aggregate will feed the Art. 9 export (M8), where the data leaves the HR
-  context. Before that export ships, apply the full small-cell minimums at the
-  export boundary: mask any group mean/gap where total < 4 OR `womenCount < 2`
-  OR `menCount < 2` (a 1-person "mean" is an individual's salary). This lives
-  in the export slice, not the engine; the in-app view keeps the loose rule.
-  Not an in-app blocker.
+- [x] **P1 gender-gap small-cell masking: enforce the export minimums at the
+  Art. 9 boundary.** Done 2026-08-31 in the report slice, at the boundary and
+  not in the engine, exactly as decided: `exportMasksGenderMeans` /
+  `exportMasksWholeGroupMean` (`pay-mapping-report-data.ts`) mask any
+  per-gender group mean/gap where total < 4 OR `womenCount < 2` OR
+  `menCount < 2`, and any whole-group mean (the women-dominated comparison's
+  measure, which has no per-gender leg) below 4 people; the report's method
+  section states the rule and the masked-group count openly. The in-app view
+  keeps the loose rule. Any FUTURE export (XLSX, Art. 9 filing) must route
+  its figures through these same helpers rather than restating the minimums.
 
-- [ ] **Report methodology note for entry-condition-excluded groups (M8).**
-  ADR-0015's entry conditions silently drop singleton groups and route
-  gender-pure and women-ahead groups out of the primary lika arbete flow;
-  none of them appear in the report's equal-work section. So the statutory
-  documentation stays honest, the M8 report must carry an aggregate
-  methodology note ("N groups excluded for lacking a comparison basis": the
-  wire already exposes `excluded.singletonCount` plus the gender-pure and
-  reverse lists from `getPayMappingGap`). Belongs to the report slice, not
-  the engine. Not an in-app blocker.
+- [x] **Report methodology note for entry-condition-excluded groups (M8).**
+  Done 2026-08-31: the report's "Metod och avgränsningar" section carries the
+  coverage note (singleton, gender-pure and women-ahead counts with what each
+  exclusion means) plus the masking note, built from `excluded` on
+  `getPayMappingGap` (`pay-mapping-report-data.ts` `method`, the
+  `coverageNote`/`maskingNote` labels in all locales).
 
 - [ ] **Chunk the remaining org-scaled single-transaction writes.** Per the
   CLAUDE.md scalability rule, write paths whose work grows with org size must

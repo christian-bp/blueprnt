@@ -86,6 +86,8 @@ Detta bekräftar wizard-tanken och ger den kanoniska kapitelordningen: praxis ->
 
 ## 9. EU:s lönetransparensdirektiv (2023/970) [osäkert]
 
+> **Uppdatering 2026-08-31:** avsnittet nedan speglar kunskapsläget i juli 2026. Aktuellt, primärkällsverifierat läge (regeringens paus står kvar, kommissionen avvisade omförhandling, inget överträdelseärende ännu) och rapportens hela kravbild finns i `lonekartlaggning-rapport-kravbild.md`.
+
 Läget är i rörelse och källorna delvis motstridiga:
 - SOU 2024:40 (maj 2024) föreslog implementering; lagrådsremiss beslutades 15 januari 2026 med föreslaget ikraftträdande 1 juli 2026.
 - Regeringens FAQ (senare) säger att regeringen **för närvarande inte avser att lämna en proposition**, anser direktivet för administrativt betungande och verkar för uppskov och omförhandling; samtidigt har DO fått fortsatt förberedelseuppdrag. Implementeringen har alltså INTE skett på utsatt tid, och innehåll/tidpunkt är osäkra.
