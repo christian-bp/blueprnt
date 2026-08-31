@@ -65,6 +65,14 @@ vi.mock("@/components/pay-mapping/pay-mapping-report-export", () => ({
   }),
 }))
 
+const exportMetricsMock = vi.fn(async () => {})
+vi.mock("@/components/pay-mapping/pay-mapping-metrics-export", () => ({
+  usePayMappingMetricsExport: () => ({
+    busy: false,
+    exportMetrics: exportMetricsMock,
+  }),
+}))
+
 import { PayMappingRunActions } from "@/components/pay-mapping/pay-mapping-run-actions"
 import { openMenu } from "@/test/menu"
 
@@ -96,6 +104,7 @@ describe("PayMappingRunActions", () => {
     deleteRunMock.mockReset()
     queryMock.mockClear()
     exportReportMock.mockClear()
+    exportMetricsMock.mockClear()
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
   })
@@ -126,6 +135,24 @@ describe("PayMappingRunActions", () => {
     expect(queryMock).toHaveBeenCalledWith("runs.getBySlug", {
       orgId: "org-1",
       slug: "lonekartlaggning-2026",
+    })
+    expect(vi.mocked(toast.error)).not.toHaveBeenCalled()
+  })
+
+  it("downloads the key figures from the row menu with the lean fetch", async () => {
+    renderActions()
+    await openRowMenu()
+    fireEvent.click(
+      screen.getByRole("menuitem", {
+        name: messages.dashboard.payMapping.report.downloadMetrics,
+      })
+    )
+
+    await waitFor(() => {
+      expect(exportMetricsMock).toHaveBeenCalledWith({
+        run: RUN_DETAIL,
+        gap: GAP,
+      })
     })
     expect(vi.mocked(toast.error)).not.toHaveBeenCalled()
   })

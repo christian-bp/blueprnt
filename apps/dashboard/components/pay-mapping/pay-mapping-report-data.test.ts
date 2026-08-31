@@ -11,11 +11,13 @@ import type {
   PayMappingNoteWire,
   WomenDominatedGroupWire,
 } from "./pay-mapping-gap-types"
+import type { PayMappingSnapshotRow } from "./pay-mapping-gap-types"
 import {
   assemblePayMappingReport,
   computeHeaderBreaks,
   exportMasksGenderMeans,
   exportMasksWholeGroupMean,
+  orgVariablePayStats,
   type ReportFormatters,
 } from "./pay-mapping-report-data"
 
@@ -463,6 +465,51 @@ describe("assemblePayMappingReport", () => {
     expect(doc.summary.womenShareOfMenMeanPct).toBe("P90")
     // The median share follows the population-spread masking floor.
     expect(doc.summary.womenShareOfMenMedianPct).toBeNull()
+    // One priced woman and no priced men: every variable-pay figure sits
+    // under the per-gender floor and masks.
+    expect(doc.summary.variableShareWomenPct).toBeNull()
+    expect(doc.summary.variableShareMenPct).toBeNull()
+    expect(doc.summary.variableWomenShareOfMenMeanPct).toBeNull()
+    expect(doc.summary.variableWomenShareOfMenMedianPct).toBeNull()
+  })
+
+  it("orgVariablePayStats: shares over everyone, amounts among receivers, floors per gender", () => {
+    const row = (
+      index: number,
+      gender: "Kvinna" | "Man",
+      bonus: number
+    ): PayMappingSnapshotRow => ({
+      personPublicId: `p${gender}${index}`,
+      displayName: `Person ${index}`,
+      erased: false,
+      gender,
+      roleTitle: "SWE",
+      trackKey: "ic",
+      seniority: "Senior",
+      level: 3,
+      basicMonthly: 40000,
+      components: bonus === 0 ? [] : [{ kind: "bonus", monthlyAmount: bonus }],
+    })
+    const stats = orgVariablePayStats([
+      // Three of five women receive (below the 4-receiver floor).
+      row(0, "Kvinna", 2000),
+      row(1, "Kvinna", 2000),
+      row(2, "Kvinna", 2000),
+      row(3, "Kvinna", 0),
+      row(4, "Kvinna", 0),
+      // Four of five men receive.
+      row(5, "Man", 1000),
+      row(6, "Man", 1000),
+      row(7, "Man", 1000),
+      row(8, "Man", 1000),
+      row(9, "Man", 0),
+    ])
+    expect(stats.womenSharePct).toBe(60)
+    expect(stats.menSharePct).toBe(80)
+    expect(stats.womenMean).toBeNull()
+    expect(stats.womenMedian).toBeNull()
+    expect(stats.menMean).toBe(1000)
+    expect(stats.menMedian).toBe(1000)
   })
 
   it("computeHeaderBreaks marks rows that start a later page, never a table's first row", () => {

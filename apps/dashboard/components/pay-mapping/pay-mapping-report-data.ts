@@ -293,6 +293,13 @@ export interface PayMappingReportDoc {
     // template convention; 100 = parity). Median follows the spread floor.
     womenShareOfMenMeanPct: string | null
     womenShareOfMenMedianPct: string | null
+    // The variable-pay pair: the share of each gender receiving any pay
+    // component beyond basic salary, and women's amounts as a percent of
+    // men's among receivers, all under the population per-gender floor.
+    variableShareWomenPct: string | null
+    variableShareMenPct: string | null
+    variableWomenShareOfMenMeanPct: string | null
+    variableWomenShareOfMenMedianPct: string | null
     equalWorkGroups: number
     equalWorkRequired: number
     equalWorkDocumented: number
@@ -367,7 +374,7 @@ function analysisFor(
 // A group's priced frozen members. An equal-work-shaped group (a role title)
 // matches by title + level (the engine's own identity test); a per-level
 // group (null title) spans every priced row on its level.
-function memberRows(
+export function memberRows(
   rows: PayMappingSnapshotRow[],
   group: { roleTitle: string | null; level: number | null }
 ): PayMappingSnapshotRow[] {
@@ -380,7 +387,13 @@ function memberRows(
   )
 }
 
-function medianGapPct(women: number | null, men: number | null): number | null {
+// Signed gap from two per-gender figures: positive when men earn more. The
+// one formula every derived gap in the report layer shares (medians here,
+// the workbook's tables in the metrics module).
+export function signedGapPctOf(
+  women: number | null,
+  men: number | null
+): number | null {
   if (women === null || men === null || men === 0) return null
   return ((men - women) / men) * 100
 }
@@ -400,7 +413,7 @@ function baseMedianText(
   const men = genderStats(
     members.filter((row) => row.gender === "Man").map(fteBaseMonthly)
   )
-  const gap = medianGapPct(women?.median ?? null, men?.median ?? null)
+  const gap = signedGapPctOf(women?.median ?? null, men?.median ?? null)
   return {
     women: women === null ? null : formatters.money(women.median),
     men: men === null ? null : formatters.money(men.median),
@@ -540,6 +553,56 @@ function populationSpreadNums(values: number[]): ReportSpreadNums | null {
     return null
   }
   return { p10, q1, median, q3, p90 }
+}
+
+// The organization-level variable-pay figures, shared by the report's
+// summary page and the key-figures workbook so the two can never disagree:
+// the share of each gender receiving any pay component beyond basic salary
+// (over that gender's priced headcount), and the mean/median amounts among
+// receivers. Raw numbers; a null is masked under the population per-gender
+// floor (shares included: with a tiny gender the share itself attributes a
+// pay component to identifiable individuals).
+export interface OrgVariablePayStats {
+  womenSharePct: number | null
+  menSharePct: number | null
+  womenMean: number | null
+  menMean: number | null
+  womenMedian: number | null
+  menMedian: number | null
+}
+
+export function orgVariablePayStats(
+  pricedRows: PayMappingSnapshotRow[]
+): OrgVariablePayStats {
+  const variable = (row: PayMappingSnapshotRow) =>
+    fteTotalMonthly(row) - fteBaseMonthly(row)
+  const gender = (value: "Kvinna" | "Man") =>
+    pricedRows.filter((row) => row.gender === value)
+  const stats = (rows: PayMappingSnapshotRow[]) => {
+    if (rows.length < EXPORT_MIN_GROUP_SIZE) {
+      return { sharePct: null, mean: null, median: null }
+    }
+    const receivers = rows.map(variable).filter((value) => value > 0)
+    const sharePct = (receivers.length / rows.length) * 100
+    if (receivers.length < EXPORT_MIN_GROUP_SIZE) {
+      return { sharePct, mean: null, median: null }
+    }
+    return {
+      sharePct,
+      mean: receivers.reduce((sum, value) => sum + value, 0) / receivers.length,
+      median: percentileOf(receivers, 50),
+    }
+  }
+  const women = stats(gender("Kvinna"))
+  const men = stats(gender("Man"))
+  return {
+    womenSharePct: women.sharePct,
+    menSharePct: men.sharePct,
+    womenMean: women.mean,
+    menMean: men.mean,
+    womenMedian: women.median,
+    menMedian: men.median,
+  }
 }
 
 function spreadText(
@@ -784,7 +847,8 @@ export function assemblePayMappingReport(input: {
   // floor because a small gender's median is closer to an individual salary.
   const orgWomenMedian = womenSpreadNums?.median ?? null
   const orgMenMedian = menSpreadNums?.median ?? null
-  const orgMedianGap = medianGapPct(orgWomenMedian, orgMenMedian)
+  const orgMedianGap = signedGapPctOf(orgWomenMedian, orgMenMedian)
+  const variablePay = orgVariablePayStats(pricedRows)
 
   const orgPrevious =
     previous !== null &&
@@ -860,6 +924,22 @@ export function assemblePayMappingReport(input: {
         gap.org.menMeanComp
       ),
       womenShareOfMenMedianPct: shareOfMenPct(orgWomenMedian, orgMenMedian),
+      variableShareWomenPct:
+        variablePay.womenSharePct === null
+          ? null
+          : formatters.pct(variablePay.womenSharePct),
+      variableShareMenPct:
+        variablePay.menSharePct === null
+          ? null
+          : formatters.pct(variablePay.menSharePct),
+      variableWomenShareOfMenMeanPct: shareOfMenPct(
+        variablePay.womenMean,
+        variablePay.menMean
+      ),
+      variableWomenShareOfMenMedianPct: shareOfMenPct(
+        variablePay.womenMedian,
+        variablePay.menMedian
+      ),
       equalWorkGroups: equalWork.length,
       equalWorkRequired: equalWork.filter(
         (row) => row.flag === "critical" || row.flag === "elevated"

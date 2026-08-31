@@ -149,6 +149,11 @@ const LABELS: PayMappingReportLabels = {
   summaryPriced: "with a recorded salary",
   summaryWomenShareMean: "Women's average pay as a share of men's",
   summaryWomenShareMedian: "Women's median pay as a share of men's",
+  summaryVariableShareWomen: "Share of women with variable pay",
+  summaryVariableShareMen: "Share of men with variable pay",
+  summaryVariableWomenShareMean: "Women's variable pay share of men's (mean)",
+  summaryVariableWomenShareMedian:
+    "Women's variable pay share of men's (median)",
   summaryGroupsShown: "Groups in the within-group comparison",
   summaryGroupsRequired: "of which require documented reasons",
   summaryGroupsDocumented: "of which marked complete",

@@ -18,6 +18,7 @@ import { useState } from "react"
 import { toast } from "@/lib/toast"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { RenamePayMappingDialog } from "@/components/pay-mapping/rename-pay-mapping-dialog"
+import { usePayMappingMetricsExport } from "./pay-mapping-metrics-export"
 import { usePayMappingReportExport } from "./pay-mapping-report-export"
 
 // Per-row actions for the pay-mappings list (the row-actions convention: one
@@ -46,7 +47,13 @@ export function PayMappingRunActions({
   const tToast = useTranslations("dashboard.toast")
   const convex = useConvex()
   const deleteRun = useMutation(api.payMapping.runs.deletePayMappingRun)
-  const { busy, exportReport, captureHost } = usePayMappingReportExport()
+  const {
+    busy: reportBusy,
+    exportReport,
+    captureHost,
+  } = usePayMappingReportExport()
+  const { busy: metricsBusy, exportMetrics } = usePayMappingMetricsExport()
+  const busy = reportBusy || metricsBusy
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
   const [pending, setPending] = useState(false)
@@ -106,6 +113,27 @@ export function PayMappingRunActions({
     }
   }
 
+  // The key-figures export needs only the frozen run and its gap aggregate.
+  async function onDownloadMetrics() {
+    try {
+      const run = await convex.query(
+        api.payMapping.runs.getPayMappingRunBySlug,
+        { orgId, slug }
+      )
+      const gap = await convex.query(api.payMapping.gap.getPayMappingGap, {
+        orgId,
+        runId,
+      })
+      if (run === null || gap === null) {
+        toast.error(tToast("error"))
+        return
+      }
+      await exportMetrics({ run, gap })
+    } catch {
+      toast.error(tToast("error"))
+    }
+  }
+
   return (
     <>
       <DropdownMenu>
@@ -130,6 +158,9 @@ export function PayMappingRunActions({
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={onDownload}>
             {tReport("downloadReport")}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onDownloadMetrics}>
+            {tReport("downloadMetrics")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setRenameOpen(true)}>
             {t("renameCta")}

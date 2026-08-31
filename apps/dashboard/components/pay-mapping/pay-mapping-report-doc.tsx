@@ -211,6 +211,12 @@ export type PayMappingReportLabels = {
   summaryPriced: string
   summaryWomenShareMean: string
   summaryWomenShareMedian: string
+  // The variable-pay pair (the share receiving pay components beyond basic
+  // salary, and women's amounts as a share of men's among receivers).
+  summaryVariableShareWomen: string
+  summaryVariableShareMen: string
+  summaryVariableWomenShareMean: string
+  summaryVariableWomenShareMedian: string
   summaryGroupsShown: string
   summaryGroupsRequired: string
   summaryGroupsDocumented: string
@@ -793,6 +799,28 @@ export function PayMappingReportPdf({
             label={labels.summaryWomenShareMedian}
             value={summary.womenShareOfMenMedianPct}
             labels={labels}
+          />
+          <SummaryRow
+            label={labels.summaryVariableShareWomen}
+            value={summary.variableShareWomenPct}
+            labels={labels}
+          />
+          <SummaryRow
+            label={labels.summaryVariableShareMen}
+            value={summary.variableShareMenPct}
+            labels={labels}
+          />
+          <SummaryRow
+            label={labels.summaryVariableWomenShareMean}
+            value={summary.variableWomenShareOfMenMeanPct}
+            labels={labels}
+            indent
+          />
+          <SummaryRow
+            label={labels.summaryVariableWomenShareMedian}
+            value={summary.variableWomenShareOfMenMedianPct}
+            labels={labels}
+            indent
           />
           <Text style={s.summaryBand}>{labels.equalWorkTitle}</Text>
           <SummaryRow

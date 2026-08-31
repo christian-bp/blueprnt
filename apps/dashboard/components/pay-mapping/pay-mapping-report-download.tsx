@@ -4,7 +4,12 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useOrganization } from "@/components/org-context"
-import { ReportCardChrome, ReportDownloadButton } from "./pay-mapping-report"
+import { usePayMappingMetricsExport } from "./pay-mapping-metrics-export"
+import {
+  MetricsDownloadButton,
+  ReportCardChrome,
+  ReportDownloadButton,
+} from "./pay-mapping-report"
 import { usePayMappingReportExport } from "./pay-mapping-report-export"
 import { usePayMappingRun } from "./pay-mapping-run-context"
 
@@ -46,6 +51,7 @@ export function PayMappingReportDownload() {
       : { orgId, runId: previousRun.runId }
   )
   const { busy, exportReport, captureHost } = usePayMappingReportExport()
+  const { busy: metricsBusy, exportMetrics } = usePayMappingMetricsExport()
 
   const ready =
     run !== undefined &&
@@ -100,6 +106,15 @@ export function PayMappingReportDownload() {
                 {t("cardDraft")}
               </span>
             )}
+            <MetricsDownloadButton
+              busy={metricsBusy}
+              disabled={run === undefined || gap === undefined}
+              onClick={() => {
+                if (run !== undefined && gap !== undefined) {
+                  void exportMetrics({ run, gap })
+                }
+              }}
+            />
             <ReportDownloadButton
               busy={busy}
               disabled={!ready}

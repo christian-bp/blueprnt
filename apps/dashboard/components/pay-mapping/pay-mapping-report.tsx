@@ -62,6 +62,32 @@ export function ReportDownloadButton({
   )
 }
 
+// The machine-readable key-figures export beside the report: the secondary
+// action, outline so the statutory document stays the primary read.
+export function MetricsDownloadButton({
+  busy,
+  disabled,
+  onClick,
+}: {
+  busy: boolean
+  disabled: boolean
+  onClick?: () => void
+}) {
+  const t = useTranslations("dashboard.payMapping.report")
+  return (
+    <SubmitButton
+      type="button"
+      variant="outline"
+      size={CHAPTER_ACTION_BUTTON_SIZE}
+      isSubmitting={busy}
+      disabled={disabled}
+      {...(onClick === undefined ? {} : { onClick })}
+    >
+      {t("downloadMetrics")}
+    </SubmitButton>
+  )
+}
+
 // The dynamic import's loading state renders the card's REAL chrome (title,
 // help, download button: all static i18n), so nothing shifts when the wired
 // card mounts. The button starts disabled exactly like the loaded card's
@@ -69,7 +95,14 @@ export function ReportDownloadButton({
 // flash either.
 function ReportCardShell() {
   return (
-    <ReportCardChrome action={<ReportDownloadButton busy={false} disabled />} />
+    <ReportCardChrome
+      action={
+        <>
+          <MetricsDownloadButton busy={false} disabled />
+          <ReportDownloadButton busy={false} disabled />
+        </>
+      }
+    />
   )
 }
 

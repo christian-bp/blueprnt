@@ -70,13 +70,19 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org-1", name: "Acme", role: "admin" }),
 }))
 
-// The row menu's PDF export: stubbed so a list test never mounts the export
+// The row menu's exports: stubbed so a list test never mounts the export
 // machinery (recharts capture host, react-pdf) just to render rows.
 vi.mock("@/components/pay-mapping/pay-mapping-report-export", () => ({
   usePayMappingReportExport: () => ({
     busy: false,
     exportReport: vi.fn(),
     captureHost: null,
+  }),
+}))
+vi.mock("@/components/pay-mapping/pay-mapping-metrics-export", () => ({
+  usePayMappingMetricsExport: () => ({
+    busy: false,
+    exportMetrics: vi.fn(),
   }),
 }))
 
