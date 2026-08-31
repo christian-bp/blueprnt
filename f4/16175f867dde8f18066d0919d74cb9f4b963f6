@@ -1,0 +1,33 @@
+apps/dashboard/components/pay-mapping/pay-mapping-metrics-export.test.tsx
+  s_7fda332a23d6c0::t_a9835ffc9d1786 113,195,211-213,266-291
+apps/dashboard/components/pay-mapping/pay-mapping-report-data.ts
+  s_7fda332a23d6c0::t_929bb3605f0402 390-396,416,850
+apps/dashboard/components/pay-mapping/pay-mapping-metrics-export.ts
+  s_7fda332a23d6c0::t_6e886b346069d1 7,24,89-92,94,97-99,107,166-168,170,190,250-256,284-287,331-334,356,391-392,399-400,419,432,450-453,457-460
+packages/i18n/messages/da.json
+  s_7fda332a23d6c0::t_24e1b104e9a970 1418-1419
+packages/i18n/messages/en.json
+  s_7fda332a23d6c0::t_af028e6d8091ab 1409,1412,1414,1418-1419,1423
+packages/i18n/messages/fi.json
+  s_7fda332a23d6c0::t_ae19859363aeed 1418-1419
+packages/i18n/messages/nb.json
+  s_7fda332a23d6c0::t_620d8e43a97ff3 1418-1419
+packages/i18n/messages/sv.json
+  s_7fda332a23d6c0::t_b30b4ce78469a9 1418-1419
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "f416175f867dde8f18066d0919d74cb9f4b963f6",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
