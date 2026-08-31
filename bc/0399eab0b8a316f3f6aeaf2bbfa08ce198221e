@@ -1,0 +1,29 @@
+packages/backend/convex/lib/auditPayloads.ts
+  s_7fda332a23d6c0::t_05f829969d1aa7 475-478
+packages/backend/convex/lib/audit.ts
+  s_7fda332a23d6c0::t_904ddef76565ba 74
+  s_7fda332a23d6c0::t_0bcfa6845dd7d1 286-289
+packages/backend/convex/payMapping/report.test.ts
+  s_7fda332a23d6c0::t_06aa5f0dd6f982 64-85
+packages/backend/convex/lib/audit.test.ts
+  s_7fda332a23d6c0::t_82ce91a3b869f7 484
+  s_7fda332a23d6c0::t_e0eff734ee6887 553
+packages/backend/convex/payMapping/report.ts
+  s_7fda332a23d6c0::t_9ecd25bc0986b5 27-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "bc0399eab0b8a316f3f6aeaf2bbfa08ce198221e",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
