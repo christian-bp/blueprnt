@@ -1,0 +1,33 @@
+apps/dashboard/lib/chart-capture.ts
+  s_7fda332a23d6c0::t_c513e8d6721f40 115-116
+  s_7fda332a23d6c0::t_eb90c34bb03d9d 132-137,142
+  s_7fda332a23d6c0::t_def63d9708bb86 160
+  s_7fda332a23d6c0::t_bf0ea90e2946b4 1-44,54-58,66-90,93-114,117-127,181
+  s_7fda332a23d6c0::t_eb2d6a1d289c25 153-159,161-162
+  s_7fda332a23d6c0::t_b4f2226990bc2a 45-53,59-65
+  s_7fda332a23d6c0::t_5b015bf10cfeea 91-92
+  s_7fda332a23d6c0::t_5af6a90970aa4f 128-131,138-141,143-152
+  s_7fda332a23d6c0::t_c750c5e1cdf447 163-180
+apps/dashboard/lib/chart-capture.test.ts
+  s_7fda332a23d6c0::t_cf88b8fd105c0a 50-52
+  s_7fda332a23d6c0::t_e9c7f6a261be6a 91-94,99-100,107
+  s_7fda332a23d6c0::t_0427d7e9c9c6a2 1-24,28-49,53-66,68-90,108
+  s_7fda332a23d6c0::t_9dc2199d3f97dd 95-98,101-106
+  s_7fda332a23d6c0::t_7638e6bb53fe4a 25-27,67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "825f17b990d21fa038fc33456a6101f32e4c7519",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
