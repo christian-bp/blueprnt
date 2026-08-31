@@ -1,0 +1,25 @@
+apps/dashboard/components/pdf/method-appendix-download.test.tsx
+  s_7fda332a23d6c0::t_8e58a2c8297b38 10
+apps/dashboard/components/pdf/branded-document.tsx
+  s_7fda332a23d6c0::t_fa347e65655db9 61-70,72,74-76
+  s_7fda332a23d6c0::t_67de75c504ffef 179,184-187,197-214
+  s_7fda332a23d6c0::t_c1061857d35f29 107-113
+  s_7fda332a23d6c0::t_0d48b8d2eab296 4-5,8,18-22
+  s_7fda332a23d6c0::t_94172abae9a97c 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "07bb940cebd1ae6d2496f25f39c3ecb9aaf543e8",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
