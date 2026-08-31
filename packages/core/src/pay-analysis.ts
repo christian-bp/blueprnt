@@ -23,6 +23,27 @@ export interface GenderStats {
   stdDev: number
 }
 
+// The p:th percentile (0-100) with linear interpolation between ranks, the
+// convention Excel/SCB-style pay statistics use. Null for an empty list.
+// Shared by the report's population spread table and the per-group P10-P90
+// span, so the two can never compute a percentile differently.
+export function percentileOf(
+  values: readonly number[],
+  p: number
+): number | null {
+  if (values.length === 0) return null
+  const sorted = [...values].sort((a, b) => a - b)
+  if (sorted.length === 1) return sorted[0] as number
+  const rank = (p / 100) * (sorted.length - 1)
+  const lower = Math.floor(rank)
+  const upper = Math.ceil(rank)
+  const weight = rank - lower
+  return (
+    (sorted[lower] as number) * (1 - weight) +
+    (sorted[upper] as number) * weight
+  )
+}
+
 export function genderStats(values: readonly number[]): GenderStats | null {
   if (values.length === 0) return null
   const sorted = [...values].sort((a, b) => a - b)

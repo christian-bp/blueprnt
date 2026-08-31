@@ -5,6 +5,7 @@ import {
   diffVsMenMean,
   flagWomenBehind,
   genderStats,
+  percentileOf,
 } from "./pay-analysis"
 
 describe("genderStats", () => {
@@ -222,5 +223,31 @@ describe("diffVsMenMean", () => {
 
   it("nulls the pct when the men mean is 0", () => {
     expect(diffVsMenMean(1000, 0)).toEqual({ kr: 1000, pct: null })
+  })
+})
+
+describe("percentileOf", () => {
+  it("interpolates linearly between ranks", () => {
+    const values = [10, 20, 30, 40, 50]
+    expect(percentileOf(values, 0)).toBe(10)
+    expect(percentileOf(values, 50)).toBe(30)
+    expect(percentileOf(values, 100)).toBe(50)
+    expect(percentileOf(values, 25)).toBe(20)
+    // P10 of five values: rank 0.4 => 10 + 0.4 * (20 - 10).
+    expect(percentileOf(values, 10)).toBe(14)
+    expect(percentileOf(values, 90)).toBe(46)
+  })
+
+  it("matches the median convention for even counts", () => {
+    expect(percentileOf([10, 20, 30, 40], 50)).toBe(25)
+  })
+
+  it("handles empty and single-value lists", () => {
+    expect(percentileOf([], 50)).toBeNull()
+    expect(percentileOf([42], 10)).toBe(42)
+  })
+
+  it("is order-independent", () => {
+    expect(percentileOf([50, 10, 40, 20, 30], 90)).toBe(46)
   })
 })
