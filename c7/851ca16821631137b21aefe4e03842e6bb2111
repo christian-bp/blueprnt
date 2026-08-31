@@ -1,0 +1,26 @@
+docs/lonekartlaggning-rapport-kravbild.md
+  s_7fda332a23d6c0::t_16634f9954c2dd 80
+docs/superpowers/analysis/lonekartlaggning-progress-tracker.html
+  s_7fda332a23d6c0::t_0aa3c38181f307 401
+  s_7fda332a23d6c0::t_0a6ecee57d2ae3 433
+  s_7fda332a23d6c0::t_c95a5b60f90391 501-502
+  s_7fda332a23d6c0::t_7fdb802624456c 224
+  s_7fda332a23d6c0::t_56a22019984b74 290
+  s_7fda332a23d6c0::t_9febc6ecaf3daf 442
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "c7851ca16821631137b21aefe4e03842e6bb2111",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
