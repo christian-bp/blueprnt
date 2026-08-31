@@ -1,0 +1,27 @@
+packages/backend/.agents/skills/convex-create-component/references/advanced-patterns.md
+  s_7fda332a23d6c0::t_e16beec10a8ae8 50-51,54-56,58-65
+packages/backend/convex/_generated/ai/guidelines.md
+  s_7fda332a23d6c0::t_e16beec10a8ae8 3,47,261
+packages/backend/convex/_generated/ai/ai-files.state.json
+  s_7fda332a23d6c0::t_e16beec10a8ae8 2,5
+packages/backend/.agents/skills/convex-agent/SKILL.md
+  s_7fda332a23d6c0::t_e16beec10a8ae8 10,14-15,17-18,22-23
+packages/backend/skills-lock.json
+  s_7fda332a23d6c0::t_e16beec10a8ae8 26,62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "ce93d31e21556e85b4c9818e212e766d4b5cec4f",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
