@@ -1,0 +1,89 @@
+apps/dashboard/components/pay-mapping/pay-mapping-metrics-export.test.tsx
+  s_7fda332a23d6c0::t_665ae7a2682ec2 1-52,54-233
+  s_7fda332a23d6c0::t_6cd803db77db14 53
+  s_7fda332a23d6c0::t_f0d958e020ec13 237-292
+  s_7fda332a23d6c0::t_51dac751c9728b 234-236
+apps/dashboard/components/pay-mapping/pay-mapping-report-render.test.tsx
+  s_7fda332a23d6c0::t_8ccb73086f1fc3 152-156
+packages/i18n/messages/sv.json
+  s_7fda332a23d6c0::t_ec8bc65cf834b1 884-885
+  s_7fda332a23d6c0::t_0dba08d9b5e704 1407
+  s_7fda332a23d6c0::t_a576d8f066a8f7 1408-1410
+  s_7fda332a23d6c0::t_b2dcef12ae3cdf 1411-1422
+apps/dashboard/components/pay-mapping/pay-mapping-report-doc.tsx
+  s_7fda332a23d6c0::t_318c8b9640d7ab 214-219,803-824
+apps/dashboard/components/pay-mapping/pay-mapping-report.tsx
+  s_7fda332a23d6c0::t_f518eb6e7220c9 65-90
+  s_7fda332a23d6c0::t_75b3848e15532d 98-105
+apps/dashboard/components/pay-mapping/pay-mappings-section.test.tsx
+  s_7fda332a23d6c0::t_c823cc628ea434 73,82-85
+  s_7fda332a23d6c0::t_4fc5598a278888 86-87
+apps/dashboard/components/pay-mapping/pay-mapping-report-data.test.ts
+  s_7fda332a23d6c0::t_68599e3a934d20 14,20,468-512
+packages/i18n/messages/en.json
+  s_7fda332a23d6c0::t_841cd6aa8a788f 1411-1422
+  s_7fda332a23d6c0::t_b28e8f2e5f5978 1408-1410
+  s_7fda332a23d6c0::t_a8603d2565a95d 884-885
+  s_7fda332a23d6c0::t_40a532a586b08b 1407
+packages/i18n/messages/fi.json
+  s_7fda332a23d6c0::t_9bc5603cfa99b4 884-885
+  s_7fda332a23d6c0::t_3efd6393546ed4 1411-1422
+  s_7fda332a23d6c0::t_c7d2efaa97283b 1407
+  s_7fda332a23d6c0::t_5a7d17578fcef7 1408-1410
+apps/dashboard/components/pay-mapping/pay-mapping-report-download.tsx
+  s_7fda332a23d6c0::t_ad811256b57532 7-12
+  s_7fda332a23d6c0::t_1e7ace8c85c430 54
+  s_7fda332a23d6c0::t_83f9260a6d460d 109-117
+apps/dashboard/package.json
+  s_7fda332a23d6c0::t_c0d26a0219a38e 33
+packages/i18n/messages/da.json
+  s_7fda332a23d6c0::t_3f0cc548bf56f2 884-885
+  s_7fda332a23d6c0::t_66429b18f1267e 1408-1410
+  s_7fda332a23d6c0::t_ace474d4e5abef 1407
+  s_7fda332a23d6c0::t_2ab0266cd834ed 1411-1422
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.test.tsx
+  s_7fda332a23d6c0::t_eaf310f2b2ba8a 68-75
+  s_7fda332a23d6c0::t_32fc7eb6e53d7e 156-158
+  s_7fda332a23d6c0::t_e03784057af5b9 107
+  s_7fda332a23d6c0::t_ed6377cd635e73 142-155
+  s_7fda332a23d6c0::t_9f4865107b2952 159
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.tsx
+  s_7fda332a23d6c0::t_87a6add6b50cf9 55-56
+  s_7fda332a23d6c0::t_46f5a100e37d61 21
+  s_7fda332a23d6c0::t_2de9081a5c5cb6 164
+  s_7fda332a23d6c0::t_d9aebc15c84b6b 162-163
+  s_7fda332a23d6c0::t_e2c102a293b0f6 116-136
+  s_7fda332a23d6c0::t_2692e4b65965cd 50-54
+apps/dashboard/components/pay-mapping/pay-mapping-report-data.ts
+  s_7fda332a23d6c0::t_0da1e3fa3864fb 377
+  s_7fda332a23d6c0::t_8f89f4b785d9e0 296-302,552-601,845,921-936
+packages/i18n/messages/nb.json
+  s_7fda332a23d6c0::t_601716be13f243 1407
+  s_7fda332a23d6c0::t_c1f5a07a698f8a 1408-1410
+  s_7fda332a23d6c0::t_4e7f773ebb36b8 1411-1422
+  s_7fda332a23d6c0::t_29e0cd6feecaeb 884-885
+bun.lock
+  s_7fda332a23d6c0::t_b7a659f2df0922 33,465-468,1131-1134,1149-1150,1169-1176,1189-1192,1195-1198,1219-1220,1271-1272,1291-1292,1299-1302,1449-1450,1469-1470,1535-1536,1547-1548,1579-1580,1583-1584,1587-1588,1673-1674,1677-1678,1685-1686,1743-1744,1779-1780,1791-1792,1795-1796,1825-1826,1831-1856,2013-2014,2105-2106,2151-2152,2195-2198,2255-2256,2273,2277-2278,2293-2294,2379-2380,2393-2394,2399-2400,2455-2456,2471,2513-2514,2533-2534,2583-2586,2629-2632,2637-2638,2661-2662,2677-2678,2681-2682,2689-2690,2707-2708,2711-2712,2723-2724,2733-2734,2743-2744,2879-2882,2895-2896,2899-2902,2957-2960,2966-2969
+apps/dashboard/components/pay-mapping/pay-mapping-metrics-export.ts
+  s_7fda332a23d6c0::t_2692e4b65965cd 97,150-152
+  s_7fda332a23d6c0::t_1e4a572eb6d7fd 1-96,98-149,153-313,320,331-332,335
+  s_7fda332a23d6c0::t_eea9e9cc4c2171 314-319,321-330,333-334,336-479
+apps/dashboard/components/pay-mapping/pay-mapping-report-export.tsx
+  s_7fda332a23d6c0::t_1852dca94a0c5d 241-244
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "69f2de8862fd263890a04cc58a4264daa4b70706",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
