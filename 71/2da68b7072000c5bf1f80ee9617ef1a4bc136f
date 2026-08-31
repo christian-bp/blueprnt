@@ -1,0 +1,63 @@
+apps/dashboard/components/pay-mapping/pay-mapping-report.tsx
+  s_7fda332a23d6c0::t_75b3848e15532d 98-105
+  s_7fda332a23d6c0::t_f518eb6e7220c9 65-90
+apps/dashboard/components/pay-mapping/pay-mappings-section.test.tsx
+  s_7fda332a23d6c0::t_c823cc628ea434 73,82-85
+  s_7fda332a23d6c0::t_4fc5598a278888 86-87
+apps/dashboard/components/pay-mapping/pay-mapping-metrics-export.ts
+  s_7fda332a23d6c0::t_2692e4b65965cd 103,162-164
+  s_7fda332a23d6c0::t_1e4a572eb6d7fd 1-102,104-161,165-335
+packages/i18n/messages/en.json
+  s_7fda332a23d6c0::t_40a532a586b08b 1407
+  s_7fda332a23d6c0::t_a8603d2565a95d 884-885
+apps/dashboard/components/pay-mapping/pay-mapping-report-download.tsx
+  s_7fda332a23d6c0::t_ad811256b57532 7-12
+  s_7fda332a23d6c0::t_1e7ace8c85c430 54
+  s_7fda332a23d6c0::t_83f9260a6d460d 109-117
+packages/i18n/messages/sv.json
+  s_7fda332a23d6c0::t_ec8bc65cf834b1 884-885
+  s_7fda332a23d6c0::t_0dba08d9b5e704 1407
+packages/i18n/messages/nb.json
+  s_7fda332a23d6c0::t_601716be13f243 1407
+  s_7fda332a23d6c0::t_29e0cd6feecaeb 884-885
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.test.tsx
+  s_7fda332a23d6c0::t_eaf310f2b2ba8a 68-75
+  s_7fda332a23d6c0::t_e03784057af5b9 107
+  s_7fda332a23d6c0::t_ed6377cd635e73 142-155
+  s_7fda332a23d6c0::t_32fc7eb6e53d7e 156-158
+  s_7fda332a23d6c0::t_9f4865107b2952 159
+apps/dashboard/components/pay-mapping/pay-mapping-metrics-export.test.tsx
+  s_7fda332a23d6c0::t_6cd803db77db14 53
+  s_7fda332a23d6c0::t_665ae7a2682ec2 1-52,54-233
+packages/i18n/messages/fi.json
+  s_7fda332a23d6c0::t_9bc5603cfa99b4 884-885
+  s_7fda332a23d6c0::t_c7d2efaa97283b 1407
+packages/i18n/messages/da.json
+  s_7fda332a23d6c0::t_ace474d4e5abef 1407
+  s_7fda332a23d6c0::t_3f0cc548bf56f2 884-885
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.tsx
+  s_7fda332a23d6c0::t_87a6add6b50cf9 55-56
+  s_7fda332a23d6c0::t_d9aebc15c84b6b 162-163
+  s_7fda332a23d6c0::t_e2c102a293b0f6 116-136
+  s_7fda332a23d6c0::t_2692e4b65965cd 50-54
+  s_7fda332a23d6c0::t_46f5a100e37d61 21
+  s_7fda332a23d6c0::t_2de9081a5c5cb6 164
+apps/dashboard/components/pay-mapping/pay-mapping-report-data.ts
+  s_7fda332a23d6c0::t_0da1e3fa3864fb 370
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "712da68b7072000c5bf1f80ee9617ef1a4bc136f",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
