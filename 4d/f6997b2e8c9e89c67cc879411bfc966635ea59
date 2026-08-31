@@ -1,0 +1,46 @@
+docs/lonekartlaggning-rapport-kravbild.md
+  s_7fda332a23d6c0::t_bc09f7cb92a86e 5-6
+  s_7fda332a23d6c0::t_4ba7523b3f4d2b 89
+  s_7fda332a23d6c0::t_53ddaf6f6f2cbd 140-155
+  s_7fda332a23d6c0::t_3ea706876f2e62 57
+  s_7fda332a23d6c0::t_348d455081c7ba 109,111,113,115,117,119-121,124-125
+  s_7fda332a23d6c0::t_a82a02ec4f0ab9 80
+  s_7fda332a23d6c0::t_cf406b34c50ced 58
+  s_7fda332a23d6c0::t_65788acc4ad0fb 108,110,112,114,116,118
+  s_7fda332a23d6c0::t_b81bdf573b95b2 94-100,102-106
+  s_7fda332a23d6c0::t_6210c0e5e64cdd 122-123
+  s_7fda332a23d6c0::t_69b7e5e5f5cf20 83-84
+  s_7fda332a23d6c0::t_48415da691ce08 85-86
+  s_7fda332a23d6c0::t_6e84ee3f2e7bc2 87-88
+  s_7fda332a23d6c0::t_9e837b3a4c25e5 1-4,7-51,56,59-79,81-82,90-93,107,126-139
+  s_7fda332a23d6c0::t_e8912ad013233a 101
+  s_7fda332a23d6c0::t_f836059c3d8b62 52-55
+docs/adr/0026-pdf-stack-react-pdf-behalls.md
+  s_7fda332a23d6c0::t_1c9ac7a9755922 31-44
+  s_7fda332a23d6c0::t_c72fe128aef495 1-30
+docs/lonekartlaggning-process-och-kravbild.md
+  s_7fda332a23d6c0::t_86d90545efe278 89-90
+docs/go-live-checklist.md
+  s_7fda332a23d6c0::t_af143256127004 371-374
+  s_7fda332a23d6c0::t_a7e4fa88b056c0 360-370
+  s_7fda332a23d6c0::t_a84930a688b811 388-396
+  s_7fda332a23d6c0::t_5ff596e1eb4f57 556-561
+  s_7fda332a23d6c0::t_ddf2d351f6f47a 545-554
+  s_7fda332a23d6c0::t_4c638366897989 555
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "4df6997b2e8c9e89c67cc879411bfc966635ea59",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
