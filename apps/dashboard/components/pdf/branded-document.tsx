@@ -1,10 +1,11 @@
 // Reusable branded PDF kit built on @react-pdf/renderer. This is the app-wide
 // foundation for exportable documents; per-document templates (e.g. the
 // metodbilaga) compose these primitives. All strings are passed in as props so
-// this layer stays i18n-free. Charts (future): embed via react-pdf-charts (SVG,
-// isAnimationActive={false}) or a rasterized PNG; not used by the metodbilaga.
+// this layer stays i18n-free. Charts: rasterized PNGs of the app's own
+// charts with hand-drawn SVG fallbacks (see the pay-mapping report).
 import {
   Document,
+  Font,
   Image,
   Page,
   StyleSheet,
@@ -13,6 +14,12 @@ import {
 } from "@react-pdf/renderer"
 import type { ReactNode } from "react"
 import { WORDMARK_DATA_URI } from "@/lib/pdf/wordmark"
+
+// No hyphenation, in any document built on this kit: the default splits
+// mid-word with an inserted hyphen, which broke money ranges ("53 523 -" /
+// "kr–89 863 kr") inside table cells. Word-boundary wrapping is right for
+// every string these documents carry.
+Font.registerHyphenationCallback((word) => [word])
 
 export const BRAND = "#f43f5e"
 
@@ -51,11 +58,22 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica-Bold",
     marginTop: 6,
   },
-  sectionTitle: {
-    fontSize: 12,
-    fontFamily: "Helvetica-Bold",
+  // Chapter typography: at most three heading levels in a document, each a
+  // clear size step above the next (16 / 12 / 10 against 10pt body), with
+  // more space before a heading than after it. The chapter number is the
+  // one brand accent (a transition marker, not title text).
+  sectionTitleRow: {
+    flexDirection: "row",
+    gap: 8,
     marginTop: 16,
-    marginBottom: 6,
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontFamily: "Helvetica-Bold",
+  },
+  sectionNumber: {
+    color: BRAND,
   },
   footer: {
     position: "absolute",
@@ -86,7 +104,13 @@ export function BrandedPage({
   children: ReactNode
 }) {
   return (
-    <Page size="A4" style={styles.page}>
+    // A running-header page starts its content BELOW the fixed logo (top 60
+    // + ~19pt wordmark height): the default 64pt top padding let a page
+    // break drop a full-width line straight through the wordmark.
+    <Page
+      size="A4"
+      style={runningHeader ? [styles.page, { paddingTop: 88 }] : styles.page}
+    >
       {/* Running header: a small wordmark top-right on every page of this Page.
           Enabled for content pages; the cover is a separate Page without it so
           its full logo is not doubled. */}
@@ -152,10 +176,15 @@ export function Cover({
 
 export function Section({
   title,
+  number,
   onRenderPage,
   children,
 }: {
   title: string
+  // Chapter number, shown before the title in the brand ink. A separate
+  // Text (not part of the title string) because the title renders through a
+  // render prop, which must return a plain string.
+  number?: string
   onRenderPage?: (page: number) => void
   children: ReactNode
 }) {
@@ -165,17 +194,24 @@ export function Section({
     // so long content is allowed to break across pages rather than being kept
     // together.
     <View>
-      {/* render (not a static child) lets a caller capture the page this title
-          lands on, for a page-numbered table of contents. Returning the title
-          string is layout-safe; an empty capturer element writes an invalid
-          coordinate in the browser build. */}
-      <Text
-        style={styles.sectionTitle}
-        render={({ pageNumber }) => {
-          onRenderPage?.(pageNumber)
-          return title
-        }}
-      />
+      <View style={styles.sectionTitleRow}>
+        {number !== undefined && (
+          <Text style={[styles.sectionTitle, styles.sectionNumber]}>
+            {number}
+          </Text>
+        )}
+        {/* render (not a static child) lets a caller capture the page this
+            title lands on, for a page-numbered table of contents. Returning
+            the title string is layout-safe; an empty capturer element writes
+            an invalid coordinate in the browser build. */}
+        <Text
+          style={styles.sectionTitle}
+          render={({ pageNumber }) => {
+            onRenderPage?.(pageNumber)
+            return title
+          }}
+        />
+      </View>
       {children}
     </View>
   )

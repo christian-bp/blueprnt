@@ -7,6 +7,7 @@ import messages from "@workspace/i18n/messages/en.json"
 const toBlob = vi.fn(async () => new Blob(["x"], { type: "application/pdf" }))
 vi.mock("@react-pdf/renderer", () => ({
   pdf: () => ({ toBlob }),
+  Font: { registerHyphenationCallback: () => {} },
   StyleSheet: { create: (s: unknown) => s },
   Document: ({ children }: { children: unknown }) => children,
   Page: ({ children }: { children: unknown }) => children,
