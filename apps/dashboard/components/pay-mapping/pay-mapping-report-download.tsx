@@ -1,23 +1,27 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
+import { Badge } from "@workspace/ui/components/badge"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useOrganization } from "@/components/org-context"
 import { usePayMappingMetricsExport } from "./pay-mapping-metrics-export"
 import {
+  MetricsDocumentPanel,
   MetricsDownloadButton,
-  ReportCardChrome,
+  ReportDocumentPanel,
   ReportDownloadButton,
+  ReportsFrame,
 } from "./pay-mapping-report"
 import { usePayMappingReportExport } from "./pay-mapping-report-export"
 import { usePayMappingRun } from "./pay-mapping-run-context"
 
-// The report page's export card: gathers the run context and the
+// The report page's export frame: gathers the run context and the
 // previous-run subscriptions, and hands them to the shared export hook
 // (pay-mapping-report-export.tsx, also behind the runs list's row menu).
-// The card is the document's surface: name, concept help, live draft
-// status, and the export as its action.
+// The frame is the documents' surface: a panel per downloadable document,
+// each with its identity on the left and its export on the right, and the
+// run's draft status in the frame header.
 export function PayMappingReportDownload() {
   const t = useTranslations("dashboard.payMapping.report")
   const { orgId } = useOrganization()
@@ -96,16 +100,26 @@ export function PayMappingReportDownload() {
 
   return (
     <>
-      {/* One-row centred header, the metodbilaga card's anatomy: the export
-          is the card's action, the DRAFT caveat the only status word. */}
-      <ReportCardChrome
-        action={
-          <>
-            {run !== undefined && !final && (
-              <span className="text-muted-foreground text-sm">
-                {t("cardDraft")}
-              </span>
-            )}
+      {/* The DRAFT caveat is the frame's only status word, worn as the
+          header's chip (the runs list's status-badge convention). */}
+      <ReportsFrame
+        status={
+          run !== undefined && !final ? (
+            <Badge variant="outline">{t("cardDraft")}</Badge>
+          ) : undefined
+        }
+      >
+        <ReportDocumentPanel
+          action={
+            <ReportDownloadButton
+              busy={busy}
+              disabled={!ready}
+              onClick={onExport}
+            />
+          }
+        />
+        <MetricsDocumentPanel
+          action={
             <MetricsDownloadButton
               busy={metricsBusy}
               disabled={run === undefined || gap === undefined}
@@ -115,14 +129,9 @@ export function PayMappingReportDownload() {
                 }
               }}
             />
-            <ReportDownloadButton
-              busy={busy}
-              disabled={!ready}
-              onClick={onExport}
-            />
-          </>
-        }
-      />
+          }
+        />
+      </ReportsFrame>
       {captureHost}
     </>
   )
