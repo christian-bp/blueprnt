@@ -1,0 +1,85 @@
+apps/dashboard/components/pay-mapping/pay-mapping-archive-export.test.tsx
+  s_7fda332a23d6c0::t_18a1129e06919d 6
+  s_7fda332a23d6c0::t_756b8a4968de60 83-100
+  s_7fda332a23d6c0::t_ff287038f79f47 70,109-110,112-113,118-138,178,218,231-238
+  s_7fda332a23d6c0::t_90e47cde622186 2-3,5,7-69,71-82,101-108,111,114-117,139-142,182-217,219-230,239-251
+  s_7fda332a23d6c0::t_d4c33291536653 1,4,143-147
+  s_7fda332a23d6c0::t_d11ae17481713f 148-177,179-181
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.test.tsx
+  s_7fda332a23d6c0::t_35ea90a885d711 76-84,127,185-197
+  s_7fda332a23d6c0::t_17911c10fd8c52 198-202
+apps/dashboard/components/pay-mapping/pay-mapping-report-download.tsx
+  s_7fda332a23d6c0::t_e552dfd23fb9ec 89-91,93,102-118,120-124,127,133-137
+  s_7fda332a23d6c0::t_8953a49d3f59d3 23-26
+  s_7fda332a23d6c0::t_2ca14c36fc28af 69-73
+  s_7fda332a23d6c0::t_509b04f0d3c818 9,12-13
+  s_7fda332a23d6c0::t_9295bce3dc15df 154,163,172,181-189,192
+  s_7fda332a23d6c0::t_aa38a4708f759a 138
+packages/i18n/messages/da.json
+  s_7fda332a23d6c0::t_9bc0f81fff34f6 1423,1426,2348
+  s_7fda332a23d6c0::t_f58fd04f648dab 886-887,1422,1424-1425,2346-2347
+apps/dashboard/components/pay-mapping/pay-mapping-report.tsx
+  s_7fda332a23d6c0::t_30bdacd98dda77 140-186
+  s_7fda332a23d6c0::t_e6810dd2dd6b9b 285-286
+  s_7fda332a23d6c0::t_908713d5012f77 5
+  s_7fda332a23d6c0::t_050d4a45857698 287
+packages/i18n/messages/en.json
+  s_7fda332a23d6c0::t_9bc0f81fff34f6 1423,1426,2348
+  s_7fda332a23d6c0::t_f58fd04f648dab 886-887,1422,1424-1425,2346-2347
+packages/i18n/messages/sv.json
+  s_7fda332a23d6c0::t_f58fd04f648dab 886-887,1422,1424-1425,2346-2347
+  s_7fda332a23d6c0::t_9bc0f81fff34f6 1423,1426,2348
+apps/dashboard/package.json
+  s_7fda332a23d6c0::t_d001f015fc73fe 35
+packages/i18n/messages/fi.json
+  s_7fda332a23d6c0::t_9bc0f81fff34f6 1423,1426,2348
+  s_7fda332a23d6c0::t_f58fd04f648dab 886-887,1422,1424-1425,2346-2347
+packages/i18n/messages/nb.json
+  s_7fda332a23d6c0::t_9bc0f81fff34f6 1423,1426,2348
+  s_7fda332a23d6c0::t_f58fd04f648dab 886-887,1422,1424-1425,2346-2347
+apps/dashboard/components/pay-mapping/pay-mapping-archive-export.ts
+  s_7fda332a23d6c0::t_8dcc7ab8ea9a9e 22-26,38-46,59-60,64,70-73,132-133,144
+  s_7fda332a23d6c0::t_01574025bb813a 1-7,9-21,27-37,47-58,61-63,65-69,74-86,88-100,104-131,134-143,145-173
+  s_7fda332a23d6c0::t_d14d52eaa91c82 101-103
+  s_7fda332a23d6c0::t_4d0008a152e620 8,87
+apps/dashboard/lib/export-file-name.ts
+  s_7fda332a23d6c0::t_32eec4501b427c 1-10
+apps/dashboard/components/pay-mapping/pay-mappings-section.test.tsx
+  s_7fda332a23d6c0::t_0a84ce9d2722cd 88-94
+apps/dashboard/components/pay-mapping/pay-mapping-report-download.test.tsx
+  s_7fda332a23d6c0::t_35ea90a885d711 70,81,96-98,143
+apps/dashboard/components/pay-mapping/pay-mapping-report-export.tsx
+  s_7fda332a23d6c0::t_694ad2b0055b4c 134-141
+  s_7fda332a23d6c0::t_c6b97c9c40ec26 171,174
+  s_7fda332a23d6c0::t_4d0008a152e620 17,103,105-106
+  s_7fda332a23d6c0::t_31268d424280b2 618
+  s_7fda332a23d6c0::t_d001f015fc73fe 100-102,104,107-108,574
+  s_7fda332a23d6c0::t_160da2a9518289 176-199,201-228,231-232,234,236-390,392-406,408-420,422-493,495-514,521-526,529-535,537-546
+  s_7fda332a23d6c0::t_62b9ef1d58f891 536,547-556,564-565
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.tsx
+  s_7fda332a23d6c0::t_3424c2e1409e03 24,27-30,64-68,74,84-128,132-145,215-217,232
+  s_7fda332a23d6c0::t_ef093e5327a62c 79,81-83
+  s_7fda332a23d6c0::t_3aa38caa8f645a 199-200
+apps/dashboard/components/pay-mapping/pay-mapping-metrics-export.ts
+  s_7fda332a23d6c0::t_e6803f37f75d5b 421-428,441-495,502,525
+  s_7fda332a23d6c0::t_d001f015fc73fe 409-411,413-414,515
+  s_7fda332a23d6c0::t_4d0008a152e620 10,412
+bun.lock
+  s_7fda332a23d6c0::t_2da5390c43449f 35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "0e583f07c13ec16dcf34f69b0193085e21043869",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
