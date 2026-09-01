@@ -5,7 +5,10 @@ import {
   makeGapResult,
   makeRunDetail,
 } from "@/test/pay-mapping-fixtures"
-import type { PayMappingActionWire } from "./pay-mapping-gap-types"
+import type {
+  PayMappingActionWire,
+  PayMappingNoteWire,
+} from "./pay-mapping-gap-types"
 import { assemblePayMappingReport } from "./pay-mapping-report-data"
 import {
   PayMappingReportPdf,
@@ -106,12 +109,48 @@ function buildDoc(problemText = "Unexplained gap") {
         ownerName: "HR Person",
         plannedDate: 1_700_000_000_000,
         estimatedCost: 42000,
+        estimatedCostUnit: "oneOff",
         priority: "high",
         status: "notStarted",
+        erased: false,
         createdAt: 1,
       },
+      // An erasure-tombstoned person-targeted action (ADR-0027): free text
+      // cleared, recurring cost unit; the template renders the marker.
+      {
+        actionId: "a2" as PayMappingActionWire["actionId"],
+        target: {
+          kind: "person",
+          scope: "equalWork",
+          groupKey: "SWE|3",
+          personPublicId: "p1",
+        },
+        problem: "",
+        plannedAction: "",
+        reason: null,
+        ownerUserId: "u1",
+        ownerName: "HR Person",
+        plannedDate: 1_700_000_000_000,
+        estimatedCost: 500,
+        estimatedCostUnit: "perMonth",
+        priority: "medium",
+        status: "inProgress",
+        erased: true,
+        createdAt: 2,
+      },
     ],
-    notes: [],
+    notes: [
+      {
+        noteId: "n1" as PayMappingNoteWire["noteId"],
+        target: { kind: "group", scope: "equalWork", groupKey: "SWE|3" },
+        text: "",
+        noteType: "discussionNeeded",
+        erased: true,
+        createdBy: "u1",
+        createdByName: "HR Person",
+        createdAt: 3,
+      },
+    ],
     previous: {
       runLabel: "Pay mapping 2025",
       referenceDate: 1_680_000_000_000,
@@ -125,6 +164,8 @@ function buildDoc(problemText = "Unexplained gap") {
       pct: (value) => `${value}%`,
       signedPct: (value) => `${value > 0 ? "+" : ""}${value}%`,
       date: (epochMs) => new Date(epochMs).toISOString().slice(0, 10),
+      costUnitSuffix: (unit) =>
+        unit === null || unit === "oneOff" ? "" : `/${unit}`,
     },
   })
 }
@@ -274,6 +315,7 @@ const LABELS: PayMappingReportLabels = {
   maskingNote: "Small cells masked (0 groups).",
   measuresNote: "FTE-adjusted monthly amounts in SEK.",
   maskedCell: "-",
+  erasedContent: "Content removed when the person was erased.",
 }
 
 // A real 1x1 PNG: the captured-chart path must decode actual image data.

@@ -1869,7 +1869,7 @@ describe("deletePayMappingRun", () => {
     expect(JSON.stringify(payload)).not.toContain("Kvinna")
   })
 
-  it("deletes a run in any status, pre-launch (a completed run is still deletable)", async () => {
+  it("refuses to delete a completed run (the statutory evidence document)", async () => {
     const t = initConvexTest()
     const { orgId, runId, asHr } = await seedRun(t, noRequiredGroupRows)
     await setCollaboration(asHr, orgId, runId)
@@ -1879,6 +1879,31 @@ describe("deletePayMappingRun", () => {
       runId,
     })
 
+    await expect(
+      asHr.mutation(api.payMapping.runs.deletePayMappingRun, {
+        orgId,
+        runId,
+      })
+    ).rejects.toThrow(/errors.payMappingRunCompleted/)
+
+    const run = await t.run((ctx) => ctx.db.get(runId))
+    expect(run).not.toBeNull()
+  })
+
+  it("deletes a completed run after it is reopened (the deliberate two-step path)", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, noRequiredGroupRows)
+    await setCollaboration(asHr, orgId, runId)
+    await markPraxisAreasDone(asHr, orgId, runId, BASE_PRAXIS_AREA_KEYS)
+    await asHr.mutation(api.payMapping.runs.completePayMappingRun, {
+      orgId,
+      runId,
+    })
+
+    await asHr.mutation(api.payMapping.runs.reopenPayMappingRun, {
+      orgId,
+      runId,
+    })
     await asHr.mutation(api.payMapping.runs.deletePayMappingRun, {
       orgId,
       runId,
@@ -2060,12 +2085,12 @@ describe("the run's level grouping and exclusion seam", () => {
     // enter a gap group; without a second priced row the groupings below are
     // empty and the loops assert nothing.
     await t.run(async (ctx) => {
-      const unpaid = await ctx.db
+      const orgPeople = await ctx.db
         .query("people")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .filter((q) => q.eq(q.field("gender"), "Man"))
-        .first()
-      if (unpaid === null) throw new Error("seed: unpaid person")
+        .collect()
+      const unpaid = orgPeople.find((p) => p.gender === "Man")
+      if (unpaid === undefined) throw new Error("seed: unpaid person")
       await ctx.db.insert("payRecords", {
         orgId,
         personId: unpaid._id,

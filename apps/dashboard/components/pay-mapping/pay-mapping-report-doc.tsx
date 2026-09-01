@@ -318,6 +318,8 @@ export type PayMappingReportLabels = {
   // The action target kind marker for non-group targets (individual,
   // comparison); a group target renders no marker.
   targetKindLabel: (kind: "person" | "comparison") => string
+  // Rendered in place of free text on erasure-tombstoned rows (ADR-0027).
+  erasedContent: string
   statusLabel: (status: ActionStatus) => string
   priorityLabel: (priority: ActionPriority) => string
   actionTotalsLine: string
@@ -1367,10 +1369,18 @@ export function PayMappingReportPdf({
                         )}
                       </View>
                       <View style={{ flex: 3 }}>
-                        <Text style={s.tableText}>{action.problem}</Text>
-                        <Text style={[s.tableText, { color: "#555" }]}>
-                          {action.plannedAction}
-                        </Text>
+                        {action.erased ? (
+                          <Text style={[s.tableText, { color: "#555" }]}>
+                            {labels.erasedContent}
+                          </Text>
+                        ) : (
+                          <>
+                            <Text style={s.tableText}>{action.problem}</Text>
+                            <Text style={[s.tableText, { color: "#555" }]}>
+                              {action.plannedAction}
+                            </Text>
+                          </>
+                        )}
                         {action.reason !== null && (
                           <Text style={[s.tableText, { color: "#555" }]}>
                             {labels.reasonsLabel}:{" "}
@@ -1428,7 +1438,9 @@ export function PayMappingReportPdf({
                       {labels.noteTypeLabel(note.noteType)}
                     </Text>
                     <View style={{ flex: 3 }}>
-                      <Text style={s.tableText}>{note.text}</Text>
+                      <Text style={s.tableText}>
+                        {note.erased ? labels.erasedContent : note.text}
+                      </Text>
                       <Text style={[s.tableText, { color: "#555" }]}>
                         {note.authorName}, {note.date}
                       </Text>
@@ -1480,7 +1492,9 @@ export function PayMappingReportPdf({
                         text={action.label}
                       />
                       <Text style={[{ flex: 3 }, s.tableText]}>
-                        {action.plannedAction}
+                        {action.erased
+                          ? labels.erasedContent
+                          : action.plannedAction}
                       </Text>
                       <Text style={[s.cellMoney, s.tableText]}>
                         {action.plannedDate}

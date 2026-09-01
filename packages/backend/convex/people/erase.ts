@@ -10,7 +10,10 @@ import {
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation } from "../lib/functions"
-import { pseudonymizePersonInSnapshots } from "../payMapping/erasure"
+import {
+  pseudonymizePersonInSnapshots,
+  tombstonePersonInWorkLayer,
+} from "../payMapping/erasure"
 
 // Shared hard-delete body. Deletes payRecords, then personAssignments, then the
 // people row, in child-first order, then pseudonymizes the person inside the two
@@ -72,6 +75,12 @@ export async function erasePersonRecords(
   // 4. Pseudonymize the person inside any frozen kartläggning snapshot
   //    (ADR-0011): the row stays, identity is tombstoned, aggregate kept.
   await pseudonymizePersonInSnapshots(ctx, orgId, personPublicId)
+
+  // 4b. Tombstone the person's work-layer rows (ADR-0027): person-targeted
+  //     actions and notes keep their structure (status, cost, target) for the
+  //     statutory evaluation, but the user-written free text, which can name
+  //     the person, is cleared and the rows flagged as erased.
+  await tombstonePersonInWorkLayer(ctx, orgId, personPublicId)
 
   // 5. Tombstone the person's identity values inside the retained audit trail
   //    (ADR-0013): person.* diffs record name/gender/employee number/birth

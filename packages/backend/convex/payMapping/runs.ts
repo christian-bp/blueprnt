@@ -756,17 +756,6 @@ export const setPayMappingCollaboration = orgMutation({
   },
 })
 
-// Hard-deletes a pay-mapping run and every child row that references it,
-// child-first: payMappingSnapshotRows, payMappingGroupAnalyses,
-// payMappingActions and payMappingNotes are the tables that carry a runId
-// (payMapping/tables.ts's by_run indexes); deleting the parent row first
-// would strand them. Pre-launch
-// (CLAUDE.md "No legacy before launch"): any run status is deletable, not
-// only draft/active ones -- the frontend's confirm dialog carries the
-// "cannot be undone" warning instead of a server-side status gate. The
-// audit payload carries the run's own label (org content, never person
-// PII) and the population count, mirroring runStarted's flat-stat shape;
-// runId is never rendered as a raw value (payloadStats drops any "*Id" key).
 // Rename a pay mapping. The run is route-exposed, so the slug is regenerated
 // from the new label (CLAUDE.md: routes resolve by (orgId, slug), never a raw
 // id) and any open link to the old slug stops resolving; the run's _id, and so
@@ -805,6 +794,17 @@ export const renamePayMappingRun = orgMutation({
   },
 })
 
+// Hard-deletes a pay-mapping run and every child row that references it,
+// child-first: payMappingSnapshotRows, payMappingGroupAnalyses,
+// payMappingActions and payMappingNotes are the tables that carry a runId
+// (payMapping/tables.ts's by_run indexes); deleting the parent row first
+// would strand them. A completed run is the statutory kartläggning evidence
+// document and cannot be deleted directly: reopening it first (its own
+// audited step) is the deliberate two-step path, so an evidence document
+// never disappears in one gesture. The audit payload carries the run's own
+// label (org content, never person PII) and the population count, mirroring
+// runStarted's flat-stat shape; runId is never rendered as a raw value
+// (payloadStats drops any "*Id" key).
 export const deletePayMappingRun = orgMutation({
   args: { runId: v.id("payMappingRuns") },
   returns: v.null(),
@@ -812,6 +812,8 @@ export const deletePayMappingRun = orgMutation({
     const run = await ctx.db.get(runId)
     if (run === null || run.orgId !== ctx.orgId)
       throw appError(ERROR_CODES.notFound)
+    if (run.status === "completed")
+      throw appError(ERROR_CODES.payMappingRunCompleted)
 
     const snapshotRows = await ctx.db
       .query("payMappingSnapshotRows")

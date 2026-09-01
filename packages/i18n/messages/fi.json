@@ -1197,6 +1197,7 @@
         "deleteCta": "Poista palkkakartoitus",
         "deleteDialogTitle": "Poistetaanko {label}?",
         "deleteDialogDescription": "Palkkakartoitus, sen jäädytetty tilannekuva ja dokumentaatio poistetaan pysyvästi. Tätä ei voi kumota.",
+        "deleteCompletedDescription": "Valmistunut palkkakartoitus on lakisääteinen dokumentaatio, eikä sitä voi poistaa. Avaa se ensin uudelleen, jos sinun on todella poistettava se.",
         "deleteConfirm": "Poista",
         "deleteCancel": "Peruuta"
       },
@@ -1271,6 +1272,17 @@
         "ownerPlaceholder": "Valitse henkilö",
         "plannedDate": "Suunniteltu päivä",
         "estimatedCost": "Arvioitu kustannus",
+        "erasedContent": "Sisältö poistettiin henkilön tietojen poistamisen yhteydessä.",
+        "costUnitLabel": "Yksikkö",
+        "costUnit": {
+          "oneOff": "Kertasumma",
+          "perMonth": "Kuukaudessa",
+          "perYear": "Vuodessa"
+        },
+        "costUnitSuffix": {
+          "perMonth": "/kk",
+          "perYear": "/v"
+        },
         "noteText": "Merkintä",
         "noteTypeLabel": "Tyyppi",
         "save": "Tallenna",

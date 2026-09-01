@@ -1,4 +1,4 @@
-import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+import type { Doc, Id } from "@workspace/backend/convex/_generated/dataModel"
 import { fteTotalMonthlyComp, type PayGapReason } from "@workspace/constants"
 import type { GenderTally, PayGapFlag } from "@workspace/core"
 
@@ -163,6 +163,21 @@ export type ActionStatus = "notStarted" | "inProgress" | "done"
 export type ActionPriority = "high" | "medium" | "low"
 export type NoteType = "objectiveReason" | "discussionNeeded" | "noActionNeeded"
 
+// The recurrence a cost figure is expressed in, from the backend validator
+// (type-only import keeps Convex out of the client bundle); the value list
+// below feeds the select options and is drift-guarded against the union.
+export type CostUnit = Doc<"payMappingActions">["estimatedCostUnit"] & string
+export const COST_UNITS = [
+  "oneOff",
+  "perMonth",
+  "perYear",
+] as const satisfies readonly CostUnit[]
+type _CostUnitsComplete = CostUnit extends (typeof COST_UNITS)[number]
+  ? true
+  : never
+const _assertCostUnits: _CostUnitsComplete = true
+void _assertCostUnits
+
 // listActions' wire shape: a formal remediation action (åtgärd, DL 3 kap.
 // 11 §). ownerName resolves at read time, so an erased or renamed owner
 // never leaves a stale name frozen on the row.
@@ -176,8 +191,13 @@ export interface PayMappingActionWire {
   ownerName: string
   plannedDate: number
   estimatedCost: number | null
+  // Null exactly when estimatedCost is (the mutations enforce the pairing).
+  estimatedCostUnit: CostUnit | null
   priority: ActionPriority
   status: ActionStatus
+  // ADR-0027: the row was erasure-tombstoned (free text cleared); surfaces
+  // render the tombstone marker instead of the empty strings.
+  erased: boolean
   createdAt: number
 }
 
@@ -188,6 +208,8 @@ export interface PayMappingNoteWire {
   target: ActionTargetWire
   text: string
   noteType: NoteType
+  // ADR-0027: erasure-tombstoned, see PayMappingActionWire.erased.
+  erased: boolean
   createdBy: string
   createdByName: string
   createdAt: number
@@ -341,10 +363,14 @@ export function membersOf(
 // Structural subset of getPayMappingRunBySlug's return shape, kept local
 // (like RoleProfile in role-profile-card.tsx) rather than importing the
 // generated query type.
+// The run's lifecycle status, derived from the backend schema so the wire
+// shapes cannot drift from the validator's literal list.
+export type PayMappingRunStatus = Doc<"payMappingRuns">["status"]
+
 export interface PayMappingRunDetail {
   runId: Id<"payMappingRuns">
   label: string
-  status: "active" | "paused" | "underReview" | "completed"
+  status: PayMappingRunStatus
   // The freeze time (epoch ms): the scatter computes age/tenure at this
   // frozen date, never the live clock.
   referenceDate: number

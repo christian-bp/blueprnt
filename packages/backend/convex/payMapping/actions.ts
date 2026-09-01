@@ -12,6 +12,7 @@ import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import {
   actionTargetValidator,
+  costUnitValidator,
   payGapReasonValidator,
   payMappingActionPriorityValidator,
   payMappingActionStatusValidator,
@@ -52,8 +53,12 @@ const actionShape = v.object({
   ownerName: v.string(),
   plannedDate: v.number(),
   estimatedCost: v.union(v.number(), v.null()),
+  estimatedCostUnit: v.union(costUnitValidator, v.null()),
   priority: payMappingActionPriorityValidator,
   status: payMappingActionStatusValidator,
+  // ADR-0027: the row was erasure-tombstoned (free text cleared); surfaces
+  // render the tombstone marker instead of the empty strings.
+  erased: v.boolean(),
   createdAt: v.number(),
 })
 
@@ -88,8 +93,10 @@ export const listActions = orgQuery({
       ownerName: nameById.get(a.ownerUserId) ?? "unknown",
       plannedDate: a.plannedDate,
       estimatedCost: a.estimatedCost ?? null,
+      estimatedCostUnit: a.estimatedCostUnit ?? null,
       priority: a.priority,
       status: a.status,
+      erased: a.erased ?? false,
       createdAt: a.createdAt,
     }))
   },
@@ -124,6 +131,7 @@ const actionContentArgs = {
   ownerUserId: v.string(),
   plannedDate: v.number(),
   estimatedCost: v.optional(v.number()),
+  estimatedCostUnit: v.optional(costUnitValidator),
   priority: payMappingActionPriorityValidator,
 }
 
@@ -163,6 +171,9 @@ export const createAction = orgMutation({
       plannedDate: content.plannedDate,
       ...(content.estimatedCost !== undefined
         ? { estimatedCost: content.estimatedCost }
+        : {}),
+      ...(content.estimatedCostUnit !== undefined
+        ? { estimatedCostUnit: content.estimatedCostUnit }
         : {}),
       priority: content.priority,
       status: "notStarted" as const,
@@ -204,6 +215,11 @@ export const updateAction = orgMutation({
     // (setActionStatus below).
     if (run.status === "completed")
       throw appError(ERROR_CODES.payMappingRunCompleted)
+    // A tombstoned row's content is never rewritten (ADR-0027): new text
+    // under the standing tombstone marker would render as erased forever
+    // (the row-level guard also covers a re-target to a group, which the
+    // target validation below would otherwise let through).
+    if (action.erased) throw appError(ERROR_CODES.invalidInput)
     if (content.problem.trim() === "" || content.plannedAction.trim() === "")
       throw appError(ERROR_CODES.invalidInput)
     assertActionNumbersValid(content)
@@ -226,6 +242,7 @@ export const updateAction = orgMutation({
       ownerUserId: content.ownerUserId,
       plannedDate: content.plannedDate,
       estimatedCost: content.estimatedCost,
+      estimatedCostUnit: content.estimatedCostUnit,
       priority: content.priority,
     }
     await ctx.db.patch(actionId, next)
@@ -251,7 +268,8 @@ export const updateAction = orgMutation({
       action.problem !== next.problem ||
       action.plannedAction !== next.plannedAction ||
       action.ownerUserId !== next.ownerUserId ||
-      (action.estimatedCost ?? null) !== (content.estimatedCost ?? null)
+      (action.estimatedCost ?? null) !== (content.estimatedCost ?? null) ||
+      (action.estimatedCostUnit ?? null) !== (content.estimatedCostUnit ?? null)
     await ctx.audit.log({
       type: AUDIT_EVENTS.payMappingActionUpdated,
       payload: {

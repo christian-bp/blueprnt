@@ -1197,6 +1197,7 @@
         "deleteCta": "Slet lønkortlægning",
         "deleteDialogTitle": "Slet {label}?",
         "deleteDialogDescription": "Lønkortlægningen, dens frosne øjebliksbillede og dens dokumentation slettes permanent. Det kan ikke fortrydes.",
+        "deleteCompletedDescription": "En afsluttet lønkortlægning er den lovpligtige dokumentation og kan ikke slettes. Genåbn den først, hvis du virkelig har brug for at slette den.",
         "deleteConfirm": "Slet",
         "deleteCancel": "Annuller"
       },
@@ -1271,6 +1272,17 @@
         "ownerPlaceholder": "Vælg en person",
         "plannedDate": "Planlagt dato",
         "estimatedCost": "Beregnet omkostning",
+        "erasedContent": "Indholdet blev fjernet, da personen blev slettet.",
+        "costUnitLabel": "Enhed",
+        "costUnit": {
+          "oneOff": "Engangsbeløb",
+          "perMonth": "Pr. måned",
+          "perYear": "Pr. år"
+        },
+        "costUnitSuffix": {
+          "perMonth": "/md.",
+          "perYear": "/år"
+        },
         "noteText": "Notat",
         "noteTypeLabel": "Type",
         "save": "Gem",

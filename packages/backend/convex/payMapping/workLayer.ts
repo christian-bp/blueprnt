@@ -84,6 +84,12 @@ export function validateTarget(
     )
     if (person === undefined || equalWorkGroupKey(person) !== target.groupKey)
       throw appError(ERROR_CODES.notFound)
+    // An erased person takes no NEW documentation, and a tombstoned row's
+    // content cannot be rewritten (both paths revalidate their target here):
+    // the erasure hook (ADR-0027) is a one-time sweep, so free text written
+    // against the dead pseudonym AFTER it would never be scrubbed. Status
+    // moves and deletion skip target validation and stay open.
+    if (person.erased) throw appError(ERROR_CODES.invalidInput)
   }
 
   return { targetLabel: groupKeyLabel(target.groupKey) }
@@ -141,6 +147,7 @@ const PLANNED_DATE_MAX = Date.UTC(2100, 0, 1)
 export function assertActionNumbersValid(content: {
   plannedDate: number
   estimatedCost?: number
+  estimatedCostUnit?: string
 }): void {
   if (
     !Number.isFinite(content.plannedDate) ||
@@ -152,6 +159,14 @@ export function assertActionNumbersValid(content: {
   if (
     content.estimatedCost !== undefined &&
     (!Number.isFinite(content.estimatedCost) || content.estimatedCost < 0)
+  ) {
+    throw appError(ERROR_CODES.invalidInput)
+  }
+  // A cost is meaningless without its recurrence, and a unit without a cost
+  // is a stray: the pair travels together or not at all.
+  if (
+    (content.estimatedCost !== undefined) !==
+    (content.estimatedCostUnit !== undefined)
   ) {
     throw appError(ERROR_CODES.invalidInput)
   }

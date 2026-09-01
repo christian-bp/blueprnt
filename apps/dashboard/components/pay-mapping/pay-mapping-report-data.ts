@@ -18,6 +18,7 @@ import { genderStats, percentileOf } from "@workspace/core"
 import type {
   ActionPriority,
   ActionStatus,
+  CostUnit,
   GapGroup,
   GapMetric,
   GroupAnalysis,
@@ -76,6 +77,9 @@ export interface ReportFormatters {
   pct: (value: number) => string
   signedPct: (value: number) => string
   date: (epochMs: number) => string
+  // "/mo" style recurrence suffix for a cost figure; empty for a lump sum,
+  // so money(x) + costUnitSuffix(unit) is the one composition everywhere.
+  costUnitSuffix: (unit: CostUnit | null) => string
 }
 
 // One metric's cells as display text; null renders as the masked/absent dash.
@@ -179,6 +183,9 @@ export interface ReportActionRow {
   cost: string | null
   priority: ActionPriority
   status: ActionStatus
+  // ADR-0027: erasure-tombstoned row; the template renders the tombstone
+  // marker instead of the (cleared) free text.
+  erased: boolean
 }
 
 export interface ReportNoteRow {
@@ -188,6 +195,8 @@ export interface ReportNoteRow {
   text: string
   authorName: string
   date: string
+  // ADR-0027: erasure-tombstoned, see ReportActionRow.erased.
+  erased: boolean
 }
 
 export interface ReportPraxisRow {
@@ -214,6 +223,8 @@ export interface ReportPreviousEvaluation {
     status: ActionStatus
     plannedDate: string
     cost: string | null
+    // ADR-0027: erasure-tombstoned, see ReportActionRow.erased.
+    erased: boolean
   }[]
 }
 
@@ -770,18 +781,29 @@ export function assemblePayMappingReport(input: {
       cost:
         action.estimatedCost === null
           ? null
-          : formatters.money(action.estimatedCost),
+          : formatters.money(action.estimatedCost) +
+            formatters.costUnitSuffix(action.estimatedCostUnit),
       priority: action.priority,
       status: action.status,
+      erased: action.erased,
     }))
-  const costTotal = actions.reduce(
-    (sum, action) => sum + (action.estimatedCost ?? 0),
-    0
-  )
+  // Costs sum per recurrence unit: a lump sum and a monthly figure cannot
+  // share one total, so the totals line enumerates the units that occur.
+  const costByUnit = { oneOff: 0, perMonth: 0, perYear: 0 }
+  for (const action of actions) {
+    if (action.estimatedCost !== null)
+      costByUnit[action.estimatedCostUnit ?? "oneOff"] += action.estimatedCost
+  }
+  const costParts = (Object.keys(costByUnit) as CostUnit[])
+    .filter((unit) => costByUnit[unit] > 0)
+    .map(
+      (unit) =>
+        formatters.money(costByUnit[unit]) + formatters.costUnitSuffix(unit)
+    )
   const actionTotals = {
     count: actions.length,
     cost: actions.some((action) => action.estimatedCost !== null)
-      ? formatters.money(costTotal)
+      ? costParts.join(", ") || formatters.money(0)
       : null,
     notStarted: actions.filter((a) => a.status === "notStarted").length,
     inProgress: actions.filter((a) => a.status === "inProgress").length,
@@ -795,6 +817,7 @@ export function assemblePayMappingReport(input: {
     text: note.text,
     authorName: note.createdByName,
     date: formatters.date(note.createdAt),
+    erased: note.erased,
   }))
 
   const praxis: ReportPraxisRow[] = BASE_PRAXIS_AREA_KEYS.map((key) => {
@@ -826,7 +849,9 @@ export function assemblePayMappingReport(input: {
             cost:
               action.estimatedCost === null
                 ? null
-                : formatters.money(action.estimatedCost),
+                : formatters.money(action.estimatedCost) +
+                  formatters.costUnitSuffix(action.estimatedCostUnit),
+            erased: action.erased,
           })),
         }
 

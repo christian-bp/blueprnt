@@ -160,6 +160,7 @@ const baseAction = (ownerUserId: string) => ({
   ownerUserId,
   plannedDate: Date.UTC(2026, 11, 1),
   estimatedCost: 42000,
+  estimatedCostUnit: "oneOff" as const,
   priority: "high" as const,
 })
 
@@ -391,6 +392,24 @@ describe("payMapping actions", () => {
         estimatedCost: Number.POSITIVE_INFINITY,
       })
     ).rejects.toThrow(/errors.invalidInput/)
+    // The cost/unit pair travels together: either half alone is invalid.
+    await expect(
+      asHr.mutation(api.payMapping.actions.createAction, {
+        orgId,
+        runId,
+        ...baseAction(userId),
+        estimatedCostUnit: undefined,
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+    await expect(
+      asHr.mutation(api.payMapping.actions.createAction, {
+        orgId,
+        runId,
+        ...baseAction(userId),
+        estimatedCost: undefined,
+        estimatedCostUnit: "perMonth",
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
   })
 
   it("diffs a re-target as an arrow and marks detail-only edits, without leaking the text", async () => {
@@ -442,6 +461,64 @@ describe("payMapping actions", () => {
     expect(second.changes).toEqual({
       targetKind: { from: "group", to: "person" },
     })
+  })
+
+  it("re-validates the cost/unit pairing on update, and stripping both removes them", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, runId, asHr } = await seedRun(t)
+    const actionId = await asHr.mutation(api.payMapping.actions.createAction, {
+      orgId,
+      runId,
+      ...baseAction(userId),
+    })
+
+    // Half the pair alone never lands, in either direction.
+    await expect(
+      asHr.mutation(api.payMapping.actions.updateAction, {
+        orgId,
+        actionId,
+        ...baseAction(userId),
+        estimatedCostUnit: undefined,
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+    await expect(
+      asHr.mutation(api.payMapping.actions.updateAction, {
+        orgId,
+        actionId,
+        ...baseAction(userId),
+        estimatedCost: undefined,
+        estimatedCostUnit: "perYear",
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+
+    // A unit change alone is a detail edit (cost is never in the trail).
+    await asHr.mutation(api.payMapping.actions.updateAction, {
+      orgId,
+      actionId,
+      ...baseAction(userId),
+      estimatedCostUnit: "perMonth",
+    })
+    let list = await asHr.query(api.payMapping.actions.listActions, {
+      orgId,
+      runId,
+    })
+    expect(list[0]?.estimatedCost).toBe(42000)
+    expect(list[0]?.estimatedCostUnit).toBe("perMonth")
+
+    // Stripping the pair together removes both from the stored row.
+    await asHr.mutation(api.payMapping.actions.updateAction, {
+      orgId,
+      actionId,
+      ...baseAction(userId),
+      estimatedCost: undefined,
+      estimatedCostUnit: undefined,
+    })
+    list = await asHr.query(api.payMapping.actions.listActions, {
+      orgId,
+      runId,
+    })
+    expect(list[0]?.estimatedCost).toBeNull()
+    expect(list[0]?.estimatedCostUnit).toBeNull()
   })
 
   it("locks creation, content edits and deletes on a completed run, but keeps status moves open", async () => {

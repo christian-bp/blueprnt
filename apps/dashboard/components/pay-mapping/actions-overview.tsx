@@ -48,6 +48,8 @@ import { DocumentationMenu, documentationFor } from "./documentation-controls"
 import {
   type ActionStatus,
   type ActionTargetWire,
+  COST_UNITS,
+  type CostUnit,
   type PayMappingActionWire,
   type PayMappingNoteWire,
   targetGroupLabel,
@@ -134,6 +136,9 @@ const NOTE_SKELETON_COLUMNS: TableSkeletonColumn[] = [
 export function PayMappingActionsOverview() {
   const t = useTranslations("dashboard.payMapping.actions")
   const tOverview = useTranslations("dashboard.payMapping.actionsOverview")
+  // "/mo" style recurrence suffix; a lump sum carries none.
+  const costUnitSuffix = (unit: CostUnit | null) =>
+    unit === null || unit === "oneOff" ? "" : t(`costUnitSuffix.${unit}`)
   const tToolbar = useTranslations("dashboard.payMapping.toolbar")
   const tToast = useTranslations("dashboard.toast")
   const format = useFormatter()
@@ -226,12 +231,19 @@ export function PayMappingActionsOverview() {
 
   const totals = useMemo(() => {
     if (actions === undefined || notes === undefined) return undefined
+    // Costs sum per unit: a lump sum and a monthly figure cannot share one
+    // total, so the strip shows one figure per recurrence that occurs.
+    const costByUnit = { oneOff: 0, perMonth: 0, perYear: 0 }
+    for (const a of actions) {
+      if (a.estimatedCost !== null)
+        costByUnit[a.estimatedCostUnit ?? "oneOff"] += a.estimatedCost
+    }
     return {
       total: actions.length,
       notStarted: actions.filter((a) => a.status === "notStarted").length,
       inProgress: actions.filter((a) => a.status === "inProgress").length,
       done: actions.filter((a) => a.status === "done").length,
-      cost: actions.reduce((sum, a) => sum + (a.estimatedCost ?? 0), 0),
+      costByUnit,
       notes: notes.length,
       discussion: notes.filter((n) => n.noteType === "discussionNeeded").length,
     }
@@ -306,15 +318,28 @@ export function PayMappingActionsOverview() {
         {totals !== undefined && currency !== "" && (
           <span className="ml-auto flex items-center gap-1.5">
             {tOverview("costLabel")}
-            <span className="font-semibold tabular-nums">
-              {/* The roll-up moves as costs are edited elsewhere: a live
-                  number, so it rolls like its sibling counts. */}
-              {costFormat === null ? (
-                money(totals.cost, currency)
-              ) : (
-                <NumberFlow value={totals.cost} format={costFormat} />
-              )}
-            </span>
+            {/* One figure per recurrence that occurs (mixed units cannot
+                share a sum); all-zero keeps the single lump-sum zero. */}
+            {COST_UNITS.filter(
+              (unit, _, list) =>
+                totals.costByUnit[unit] > 0 ||
+                (unit === "oneOff" &&
+                  list.every((u) => totals.costByUnit[u] === 0))
+            ).map((unit) => (
+              <span key={unit} className="font-semibold tabular-nums">
+                {/* The roll-up moves as costs are edited elsewhere: a live
+                    number, so it rolls like its sibling counts. */}
+                {costFormat === null ? (
+                  money(totals.costByUnit[unit], currency)
+                ) : (
+                  <NumberFlow
+                    value={totals.costByUnit[unit]}
+                    format={costFormat}
+                  />
+                )}
+                {costUnitSuffix(unit)}
+              </span>
+            ))}
           </span>
         )}
       </div>
@@ -577,12 +602,23 @@ export function PayMappingActionsOverview() {
                               </Link>
                             </TableCell>
                             <TableCell>
-                              <div className="truncate">{action.problem}</div>
-                              {/* The planned action rides under the problem
-                                  (an eighth column would not fit). */}
-                              <div className="truncate text-muted-foreground text-xs">
-                                {action.plannedAction}
-                              </div>
+                              {action.erased ? (
+                                <div className="truncate text-muted-foreground italic">
+                                  {t("erasedContent")}
+                                </div>
+                              ) : (
+                                <>
+                                  <div className="truncate">
+                                    {action.problem}
+                                  </div>
+                                  {/* The planned action rides under the
+                                      problem (an eighth column would not
+                                      fit). */}
+                                  <div className="truncate text-muted-foreground text-xs">
+                                    {action.plannedAction}
+                                  </div>
+                                </>
+                              )}
                             </TableCell>
                             <TableCell className="truncate">
                               {action.ownerName}
@@ -595,7 +631,8 @@ export function PayMappingActionsOverview() {
                             <TableCell className="text-right tabular-nums">
                               {action.estimatedCost === null || currency === ""
                                 ? "-"
-                                : money(action.estimatedCost, currency)}
+                                : money(action.estimatedCost, currency) +
+                                  costUnitSuffix(action.estimatedCostUnit)}
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center">
@@ -610,6 +647,7 @@ export function PayMappingActionsOverview() {
                                   notes={own.notes}
                                   currency={currency}
                                   locked={locked}
+                                  erasedTarget={action.erased}
                                 />
                               </div>
                             </TableCell>
@@ -711,7 +749,13 @@ export function PayMappingActionsOverview() {
                             </Link>
                           </TableCell>
                           <TableCell className="truncate">
-                            {note.text}
+                            {note.erased ? (
+                              <span className="text-muted-foreground italic">
+                                {t("erasedContent")}
+                              </span>
+                            ) : (
+                              note.text
+                            )}
                           </TableCell>
                           <TableCell className="truncate">
                             {note.createdByName}

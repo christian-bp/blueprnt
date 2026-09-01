@@ -1197,6 +1197,7 @@
         "deleteCta": "Slett lønnskartlegging",
         "deleteDialogTitle": "Slette {label}?",
         "deleteDialogDescription": "Lønnskartleggingen, det frosne øyeblikksbildet og dokumentasjonen slettes permanent. Dette kan ikke angres.",
+        "deleteCompletedDescription": "En fullført lønnskartlegging er den lovpålagte dokumentasjonen og kan ikke slettes. Gjenåpne den først om du virkelig må slette den.",
         "deleteConfirm": "Slett",
         "deleteCancel": "Avbryt"
       },
@@ -1271,6 +1272,17 @@
         "ownerPlaceholder": "Velg en person",
         "plannedDate": "Planlagt dato",
         "estimatedCost": "Beregnet kostnad",
+        "erasedContent": "Innholdet ble fjernet da personen ble slettet.",
+        "costUnitLabel": "Enhet",
+        "costUnit": {
+          "oneOff": "Engangsbeløp",
+          "perMonth": "Per måned",
+          "perYear": "Per år"
+        },
+        "costUnitSuffix": {
+          "perMonth": "/mnd",
+          "perYear": "/år"
+        },
         "noteText": "Notat",
         "noteTypeLabel": "Type",
         "save": "Lagre",

@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import messages from "@workspace/i18n/messages/en.json"
+import { ConvexError } from "convex/values"
 import { NextIntlClientProvider } from "next-intl"
 import { toast } from "@/lib/toast"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -87,7 +88,10 @@ import { openMenu } from "@/test/menu"
 
 const labels = messages.dashboard.payMapping.table
 
-function renderActions(label = "Lonekartlaggning 2026") {
+function renderActions(
+  label = "Lonekartlaggning 2026",
+  status: "active" | "completed" = "active"
+) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <PayMappingRunActions
@@ -95,6 +99,7 @@ function renderActions(label = "Lonekartlaggning 2026") {
         runId={"run-1" as Id<"payMappingRuns">}
         slug="lonekartlaggning-2026"
         label={label}
+        status={status}
       />
     </NextIntlClientProvider>
   )
@@ -294,5 +299,35 @@ describe("PayMappingRunActions", () => {
     // The failed delete must not close the dialog: the user can retry
     // without re-opening it from the row menu.
     expect(screen.getByRole("alertdialog")).toBeDefined()
+  })
+
+  it("states the reopen-first precondition for a completed run and disables the confirm", async () => {
+    renderActions("Lonekartlaggning 2026", "completed")
+    await openRowMenu()
+    fireEvent.click(screen.getByRole("menuitem", { name: labels.deleteCta }))
+
+    expect(screen.getByText(labels.deleteCompletedDescription)).toBeDefined()
+    const confirm = screen.getByRole("button", {
+      name: labels.deleteConfirm,
+    }) as HTMLButtonElement
+    expect(confirm.disabled).toBe(true)
+    fireEvent.click(confirm)
+    expect(deleteRunMock).not.toHaveBeenCalled()
+  })
+
+  it("maps the server's completed-run refusal to the precondition text (completed in another tab)", async () => {
+    deleteRunMock.mockRejectedValue(
+      new ConvexError({ code: "errors.payMappingRunCompleted" })
+    )
+    renderActions()
+    await openRowMenu()
+    fireEvent.click(screen.getByRole("menuitem", { name: labels.deleteCta }))
+    fireEvent.click(screen.getByRole("button", { name: labels.deleteConfirm }))
+
+    await waitFor(() => {
+      expect(vi.mocked(toast.error)).toHaveBeenCalledWith(
+        labels.deleteCompletedDescription
+      )
+    })
   })
 })

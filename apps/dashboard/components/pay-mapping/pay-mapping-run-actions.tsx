@@ -18,10 +18,12 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useConvex, useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { isRunCompletedError } from "@/lib/pay-mapping-errors"
 import { toast } from "@/lib/toast"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { RenamePayMappingDialog } from "@/components/pay-mapping/rename-pay-mapping-dialog"
 import { usePayMappingArchiveExport } from "./pay-mapping-archive-export"
+import type { PayMappingRunStatus } from "./pay-mapping-gap-types"
 import { usePayMappingMetricsExport } from "./pay-mapping-metrics-export"
 import type { ReportVariant } from "./pay-mapping-report-doc"
 import {
@@ -35,24 +37,28 @@ import {
 // list: the data is fetched one-shot on click, never subscribed per row),
 // renaming (any status: the label is the document's title, not part of the
 // frozen evidence) and deleting: a hard delete of the run, its frozen
-// snapshot, and its documentation (backend: deletePayMappingRun). Any run
-// status is deletable pre-launch (CLAUDE.md "No legacy before launch"); the
-// confirm dialog below carries the "cannot be undone" warning instead of a
-// server-side status gate.
+// snapshot, and its documentation (backend: deletePayMappingRun). A completed
+// run is the statutory evidence document, so the server refuses to delete it
+// and the dialog states the reopen-first precondition in words instead of a
+// live confirm; the catch still maps the server's refusal to the same text
+// for the race where the run completes in another tab.
 export function PayMappingRunActions({
   orgId,
   runId,
   slug,
   label,
+  status,
 }: {
   orgId: string
   runId: Id<"payMappingRuns">
   slug: string
   label: string
+  status: PayMappingRunStatus
 }) {
   const t = useTranslations("dashboard.payMapping.table")
   const tReport = useTranslations("dashboard.payMapping.report")
   const tToast = useTranslations("dashboard.toast")
+  const completed = status === "completed"
   const convex = useConvex()
   const deleteRun = useMutation(api.payMapping.runs.deletePayMappingRun)
   const {
@@ -243,9 +249,14 @@ export function PayMappingRunActions({
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
         title={t("deleteDialogTitle", { label })}
-        description={t("deleteDialogDescription")}
+        description={
+          completed
+            ? t("deleteCompletedDescription")
+            : t("deleteDialogDescription")
+        }
         confirmLabel={t("deleteConfirm")}
         cancelLabel={t("deleteCancel")}
+        confirmDisabled={completed}
         pending={pending}
         onConfirm={async () => {
           setPending(true)
@@ -253,7 +264,11 @@ export function PayMappingRunActions({
             await deleteRun({ orgId, runId })
             toast.success(tToast("payMappingDeleted"))
           } catch (error) {
-            toast.error(tToast("error"))
+            toast.error(
+              isRunCompletedError(error)
+                ? t("deleteCompletedDescription")
+                : tToast("error")
+            )
             throw error
           } finally {
             setPending(false)

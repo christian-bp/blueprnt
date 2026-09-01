@@ -97,6 +97,7 @@ export function DocumentationMenu({
   notes,
   currency,
   locked,
+  erasedTarget = false,
   notesOnly = false,
 }: {
   runId: Id<"payMappingRuns">
@@ -106,6 +107,10 @@ export function DocumentationMenu({
   notes: PayMappingNoteWire[]
   currency: string
   locked: boolean
+  // ADR-0027: the target's person is erased (or the record tombstoned), so
+  // content writes are refused by the server (validateTarget); the edit
+  // items disable, while delete stays open as the recovery path.
+  erasedTarget?: boolean
   // The deep-dive's gender-pure groups carry no statutory finding, so they
   // take notes but never a formal action (the backend rejects one); the
   // menu must not offer what the server will refuse.
@@ -161,13 +166,16 @@ export function DocumentationMenu({
         <DropdownMenuContent align="end">
           {!notesOnly && (
             <DropdownMenuItem
-              disabled={locked}
+              disabled={locked || erasedTarget}
               onClick={() => setActionOpen(true)}
             >
               {existingAction === undefined ? t("createTitle") : t("editTitle")}
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem disabled={locked} onClick={() => setNoteOpen(true)}>
+          <DropdownMenuItem
+            disabled={locked || erasedTarget}
+            onClick={() => setNoteOpen(true)}
+          >
             {existingNote === undefined
               ? t("createNoteTitle")
               : t("editNoteTitle")}

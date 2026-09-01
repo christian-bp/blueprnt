@@ -242,6 +242,32 @@ export const payMappingActionStatusValidator = v.union(
   v.literal("done")
 )
 
+// The unit an action's estimated cost is expressed in (rapportkravbilden
+// §7.2): DO's minimum states action costs as kr/month or kr/year, and a
+// lump sum (training, a one-time adjustment) is the third real case. The
+// currency stays the run's own; this is only the recurrence. The mutations
+// require a unit exactly when a cost is present.
+export const costUnitValidator = v.union(
+  v.literal("oneOff"),
+  v.literal("perMonth"),
+  v.literal("perYear")
+)
+
+// The units as a VALUE for consumers that need the list (the dashboard's
+// select options and unit labels), mirroring ACTION_TARGET_KINDS.
+export const COST_UNITS = ["oneOff", "perMonth", "perYear"] as const
+export type CostUnit = (typeof COST_UNITS)[number]
+
+// Compile-time drift guard, same pattern as the target kinds above.
+type CostUnitFromValidator = Infer<typeof costUnitValidator>
+type _CostUnitsExact = CostUnitFromValidator extends CostUnit
+  ? CostUnit extends CostUnitFromValidator
+    ? true
+    : never
+  : never
+const _assertCostUnitsMatch: _CostUnitsExact = true
+void _assertCostUnitsMatch
+
 export const payMappingActionPriorityValidator = v.union(
   v.literal("high"),
   v.literal("medium"),
@@ -254,6 +280,10 @@ export const payMappingActionPriorityValidator = v.union(
 // an org budget figure. ownerUserId is a system user, resolved to a name at
 // read time (never frozen in). Status updates stay allowed after the run
 // completes (the plan runs over years); content edits lock with the run.
+// Person-targeted rows are erasure-tombstoned, never deleted (ADR-0027):
+// tombstonePersonInWorkLayer clears the free text and sets `erased`, keeping
+// the row so the statutory action-plan evaluation stays truthful; by_org_person
+// is that hook's bounded lookup (only person-kind targets carry the field).
 export const payMappingActions = defineTable({
   orgId: v.string(),
   runId: v.id("payMappingRuns"),
@@ -264,11 +294,16 @@ export const payMappingActions = defineTable({
   ownerUserId: v.string(),
   plannedDate: v.number(), // epoch ms (day precision)
   estimatedCost: v.optional(v.number()),
+  // Present exactly when estimatedCost is (enforced by the mutations).
+  estimatedCostUnit: v.optional(costUnitValidator),
   priority: payMappingActionPriorityValidator,
   status: payMappingActionStatusValidator,
+  erased: v.optional(v.boolean()),
   createdBy: v.string(), // actorId
   createdAt: v.number(),
-}).index("by_run", ["orgId", "runId"])
+})
+  .index("by_run", ["orgId", "runId"])
+  .index("by_org_person", ["orgId", "target.personPublicId"])
 
 // An informal note (notering, Iteration 2 note 5): free-text context that is
 // NOT a formal action. Fully locked once the run completes. The deep-dive's
@@ -286,9 +321,12 @@ export const payMappingNotes = defineTable({
   target: actionTargetValidator,
   text: v.string(),
   noteType: payMappingNoteTypeValidator,
+  erased: v.optional(v.boolean()),
   createdBy: v.string(), // actorId
   createdAt: v.number(),
-}).index("by_run", ["orgId", "runId"])
+})
+  .index("by_run", ["orgId", "runId"])
+  .index("by_org_person", ["orgId", "target.personPublicId"])
 
 // One documentation entry for an equal-work (lika) or equivalent-work
 // (likvärdigt)/women-dominated group, or (scope "praxis") a

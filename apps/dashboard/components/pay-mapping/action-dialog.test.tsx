@@ -60,8 +60,10 @@ const EXISTING: PayMappingActionWire = {
   ownerName: "HR Person",
   plannedDate: Date.UTC(2026, 11, 1),
   estimatedCost: 42000,
+  estimatedCostUnit: "oneOff",
   priority: "high",
   status: "notStarted",
+  erased: false,
   createdAt: 1,
 }
 
@@ -70,6 +72,7 @@ const EXISTING_NOTE: PayMappingNoteWire = {
   target: TARGET,
   text: "Discuss with the union",
   noteType: "discussionNeeded",
+  erased: false,
   createdBy: "u1",
   createdByName: "HR Person",
   createdAt: 1,

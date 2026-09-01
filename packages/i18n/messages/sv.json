@@ -1197,6 +1197,7 @@
         "deleteCta": "Ta bort lönekartläggning",
         "deleteDialogTitle": "Ta bort {label}?",
         "deleteDialogDescription": "Lönekartläggningen, dess frysta ögonblicksbild och dess dokumentation tas bort permanent. Detta kan inte ångras.",
+        "deleteCompletedDescription": "En slutförd lönekartläggning är den lagstadgade dokumentationen och kan inte raderas. Återöppna den först om du verkligen behöver radera den.",
         "deleteConfirm": "Ta bort",
         "deleteCancel": "Avbryt"
       },
@@ -1271,6 +1272,17 @@
         "ownerPlaceholder": "Välj en person",
         "plannedDate": "Planerat datum",
         "estimatedCost": "Beräknad kostnad",
+        "erasedContent": "Innehållet togs bort när personen raderades.",
+        "costUnitLabel": "Enhet",
+        "costUnit": {
+          "oneOff": "Engångsbelopp",
+          "perMonth": "Per månad",
+          "perYear": "Per år"
+        },
+        "costUnitSuffix": {
+          "perMonth": "/mån",
+          "perYear": "/år"
+        },
         "noteText": "Notering",
         "noteTypeLabel": "Typ",
         "save": "Spara",

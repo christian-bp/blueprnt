@@ -111,8 +111,10 @@ function action(
     // Two weeks after the run's reference date: inside the 30-day window.
     plannedDate: Date.UTC(2026, 6, 15),
     estimatedCost: 40000,
+    estimatedCostUnit: "oneOff",
     priority: "high",
     status: "notStarted",
+    erased: false,
     createdAt: 1,
     ...overrides,
   }
@@ -124,6 +126,7 @@ function note(overrides: Partial<PayMappingNoteWire> = {}): PayMappingNoteWire {
     target: { kind: "group", scope: "equalWork", groupKey: "SWE|3" },
     text: "Discuss with the union",
     noteType: "discussionNeeded",
+    erased: false,
     createdBy: "u1",
     createdByName: "Alice Admin",
     createdAt: Date.UTC(2026, 6, 2),
@@ -327,5 +330,55 @@ describe("PayMappingActionsOverview", () => {
       screen.getByText(mo.discussionCount.replace("{count}", "1"))
     ).toBeDefined()
     expect(screen.getByText("Discuss with the union")).toBeDefined()
+  })
+
+  it("renders the tombstone marker in place of an erased record's free text (ADR-0027)", () => {
+    renderOverview({
+      actions: [action({ erased: true, problem: "", plannedAction: "" })],
+      notes: [note({ erased: true, text: "" })],
+    })
+    // One marker per tombstoned record (the action row and the note row),
+    // and none of the cleared free text.
+    expect(screen.getAllByText(m.erasedContent)).toHaveLength(2)
+    expect(screen.queryByText("Unexplained gap")).toBeNull()
+  })
+
+  it("splits the cost roll-up per recurrence unit, suffixing the recurring parts", () => {
+    renderOverview({
+      actions: [
+        action({ estimatedCost: 10000, estimatedCostUnit: "oneOff" }),
+        action({
+          actionId: "a2" as PayMappingActionWire["actionId"],
+          estimatedCost: 500,
+          estimatedCostUnit: "perMonth",
+        }),
+        action({
+          actionId: "a3" as PayMappingActionWire["actionId"],
+          estimatedCost: 60000,
+          estimatedCostUnit: "perYear",
+        }),
+      ],
+      notes: [],
+    })
+    // Expected figures via the same Intl path the NumberFlow stand-in uses
+    // (currency formatting inserts non-breaking spaces a literal would miss).
+    const sek = (value: number) =>
+      new Intl.NumberFormat("en", {
+        style: "currency",
+        currency: "SEK",
+        maximumFractionDigits: 0,
+      }).format(value)
+    const chips = (text: string) =>
+      screen.getAllByText(
+        (_, el) => el?.tagName === "SPAN" && el.textContent === text
+      )
+    // The lump sum carries no suffix; the recurring buckets carry theirs.
+    expect(chips(sek(10000)).length).toBeGreaterThan(0)
+    expect(
+      chips(`${sek(500)}${m.costUnitSuffix.perMonth}`).length
+    ).toBeGreaterThan(0)
+    expect(
+      chips(`${sek(60000)}${m.costUnitSuffix.perYear}`).length
+    ).toBeGreaterThan(0)
   })
 })

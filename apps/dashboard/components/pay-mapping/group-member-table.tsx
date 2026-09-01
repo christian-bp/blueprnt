@@ -361,6 +361,7 @@ export function GroupMemberTable({
                                 notes={own.notes}
                                 currency={currency}
                                 locked={documentation.locked}
+                                erasedTarget={row.erased}
                               />
                             </>
                           )

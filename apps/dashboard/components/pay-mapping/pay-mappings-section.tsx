@@ -49,6 +49,7 @@ import { useEffect, useMemo, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
+import type { PayMappingRunStatus } from "@/components/pay-mapping/pay-mapping-gap-types"
 import { PayMappingRunActions } from "@/components/pay-mapping/pay-mapping-run-actions"
 import { StartPayMappingDialog } from "@/components/pay-mapping/start-pay-mapping-dialog"
 import {
@@ -76,7 +77,7 @@ export interface PayMappingRunRow {
   runId: string
   slug: string
   label: string
-  status: "active" | "paused" | "underReview" | "completed"
+  status: PayMappingRunStatus
   referenceDate: number
   initiatedByName: string
   populationCount: number
@@ -426,6 +427,7 @@ export function PayMappingsSection() {
                             runId={run.runId as Id<"payMappingRuns">}
                             slug={run.slug}
                             label={run.label}
+                            status={run.status}
                           />
                         </div>
                       </TableCell>

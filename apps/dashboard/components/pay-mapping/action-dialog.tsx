@@ -40,10 +40,11 @@ import { useOrganization } from "@/components/org-context"
 import { SubmitButton } from "@/components/submit-button"
 import { toast } from "@/lib/toast"
 import type { ValidationT } from "@/lib/validation"
-import type {
-  ActionPriority,
-  ActionTargetWire,
-  PayMappingActionWire,
+import {
+  type ActionPriority,
+  type ActionTargetWire,
+  COST_UNITS,
+  type PayMappingActionWire,
 } from "./pay-mapping-gap-types"
 
 const PRIORITIES: ActionPriority[] = ["high", "medium", "low"]
@@ -60,6 +61,8 @@ function makeActionSchema(t: ValidationT) {
     ownerUserId: z.string().min(1, t("required")),
     plannedDate: z.string().min(1, t("required")),
     estimatedCost: z.number().nonnegative().optional(),
+    // Always set (defaults to oneOff), submitted only alongside a cost.
+    estimatedCostUnit: z.enum(COST_UNITS),
     priority: z.enum(["high", "medium", "low"]),
   })
 }
@@ -137,6 +140,7 @@ function ActionDialogForm({
       ownerUserId: action?.ownerUserId ?? "",
       plannedDate: action === undefined ? "" : msToIso(action.plannedDate),
       estimatedCost: action?.estimatedCost ?? undefined,
+      estimatedCostUnit: action?.estimatedCostUnit ?? "oneOff",
       priority: action?.priority ?? "medium",
     }),
     [action]
@@ -160,7 +164,10 @@ function ActionDialogForm({
       plannedDate: isoToMs(values.plannedDate),
       ...(values.estimatedCost === undefined
         ? {}
-        : { estimatedCost: values.estimatedCost }),
+        : {
+            estimatedCost: values.estimatedCost,
+            estimatedCostUnit: values.estimatedCostUnit,
+          }),
       priority: values.priority,
     }
     try {
@@ -346,6 +353,39 @@ function ActionDialogForm({
                       {...currencyInputField(field)}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="estimatedCostUnit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("costUnitLabel")}</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    items={Object.fromEntries(
+                      COST_UNITS.map((unit) => [unit, t(`costUnit.${unit}`)])
+                    )}
+                  >
+                    <FormControl>
+                      <SelectTrigger
+                        className="w-full"
+                        aria-label={t("costUnitLabel")}
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {COST_UNITS.map((unit) => (
+                        <SelectItem key={unit} value={unit}>
+                          {t(`costUnit.${unit}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

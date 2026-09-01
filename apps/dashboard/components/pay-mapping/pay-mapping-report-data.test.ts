@@ -31,6 +31,8 @@ const formatters: ReportFormatters = {
   pct: (value) => `P${value}`,
   signedPct: (value) => `S${value}`,
   date: (epochMs) => `D${epochMs}`,
+  costUnitSuffix: (unit) =>
+    unit === null || unit === "oneOff" ? "" : `/${unit}`,
 }
 
 function makeWomenDominated(
@@ -74,8 +76,10 @@ function makeAction(
     ownerName: "HR Person",
     plannedDate: 1000,
     estimatedCost: 42000,
+    estimatedCostUnit: "oneOff",
     priority: "high",
     status: "notStarted",
+    erased: false,
     createdAt: 1,
     ...overrides,
   }
@@ -284,6 +288,7 @@ describe("assemblePayMappingReport", () => {
           },
           text: "Discuss next samverkan",
           noteType: "discussionNeeded",
+          erased: false,
           createdBy: "u1",
           createdByName: "HR Person",
           createdAt: 2000,

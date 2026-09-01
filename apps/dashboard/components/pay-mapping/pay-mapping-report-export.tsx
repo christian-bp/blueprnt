@@ -191,6 +191,10 @@ export function usePayMappingReportExport(): {
         signedPct: (value) => signedPercentText(value, format),
         date: (epochMs) =>
           format.dateTime(new Date(epochMs), { dateStyle: "medium" }),
+        costUnitSuffix: (unit) =>
+          unit === null || unit === "oneOff"
+            ? ""
+            : tActions(`costUnitSuffix.${unit}`),
       },
     })
     // The union variant's data-level masking (person-targeted action
@@ -441,6 +445,7 @@ export function usePayMappingReportExport(): {
       colPriority: tActions("priorityLabel"),
       colActionStatus: t("colStatus"),
       targetKindLabel: (kind) => tActions(`targetKind.${kind}`),
+      erasedContent: tActions("erasedContent"),
       statusLabel: (status) => tActions(`status.${status}`),
       priorityLabel: (priority) => tActions(`priority.${priority}`),
       actionTotalsLine:

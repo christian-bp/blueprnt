@@ -19,6 +19,9 @@ const noteShape = v.object({
   target: actionTargetValidator,
   text: v.string(),
   noteType: payMappingNoteTypeValidator,
+  // ADR-0027: the row was erasure-tombstoned (free text cleared); surfaces
+  // render the tombstone marker instead of the empty string.
+  erased: v.boolean(),
   createdBy: v.string(),
   createdByName: v.string(),
   createdAt: v.number(),
@@ -49,6 +52,7 @@ export const listNotes = orgQuery({
       target: n.target,
       text: n.text,
       noteType: n.noteType,
+      erased: n.erased ?? false,
       createdBy: n.createdBy,
       createdByName: nameById.get(n.createdBy) ?? "unknown",
       createdAt: n.createdAt,
@@ -119,6 +123,10 @@ export const updateNote = orgMutation({
     if (run === null) throw appError(ERROR_CODES.notFound)
     if (run.status === "completed")
       throw appError(ERROR_CODES.payMappingRunCompleted)
+    // A tombstoned row's content is never rewritten (ADR-0027): new text
+    // under the standing tombstone marker would render as erased forever,
+    // and the one-time erasure sweep would never scrub it.
+    if (note.erased) throw appError(ERROR_CODES.invalidInput)
     if (text.trim() === "") throw appError(ERROR_CODES.invalidInput)
 
     const trimmed = text.trim()

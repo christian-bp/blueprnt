@@ -59,8 +59,10 @@ function action(
     ownerName: "HR Person",
     plannedDate: Date.UTC(2026, 11, 1),
     estimatedCost: null,
+    estimatedCostUnit: null,
     priority: "high",
     status: "notStarted",
+    erased: false,
     createdAt: 1,
     ...overrides,
   }
@@ -72,6 +74,7 @@ function note(overrides: Partial<PayMappingNoteWire> = {}): PayMappingNoteWire {
     target: GROUP_TARGET,
     text: "Discuss",
     noteType: "discussionNeeded",
+    erased: false,
     createdBy: "u1",
     createdByName: "HR Person",
     createdAt: 1,

@@ -1197,6 +1197,7 @@
         "deleteCta": "Delete pay mapping",
         "deleteDialogTitle": "Delete {label}?",
         "deleteDialogDescription": "The pay mapping, its frozen snapshot, and its documentation are permanently deleted. This cannot be undone.",
+        "deleteCompletedDescription": "A completed pay mapping is the statutory documentation and cannot be deleted. Reopen it first if you really need to delete it.",
         "deleteConfirm": "Delete",
         "deleteCancel": "Cancel"
       },
@@ -1271,6 +1272,17 @@
         "ownerPlaceholder": "Select a person",
         "plannedDate": "Planned date",
         "estimatedCost": "Estimated cost",
+        "erasedContent": "Content removed when the person was erased.",
+        "costUnitLabel": "Unit",
+        "costUnit": {
+          "oneOff": "One-off amount",
+          "perMonth": "Per month",
+          "perYear": "Per year"
+        },
+        "costUnitSuffix": {
+          "perMonth": "/mo",
+          "perYear": "/yr"
+        },
         "noteText": "Note",
         "noteTypeLabel": "Type",
         "save": "Save",
