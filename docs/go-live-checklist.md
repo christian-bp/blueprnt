@@ -298,31 +298,28 @@ in the same change.
   the shared variants themselves (a darker text token or a stronger tint) so
   every destructive/success badge passes AA without a per-surface override,
   with a visual regression pass across their usages.
-- [ ] **Decide the erasure path for samverkan participant names
-  (`payMappingRuns.collaboration.participants`).** The collaboration record
-  (`setPayMappingCollaboration`) stores free-text participant names as
-  statutory samverkansredogörelse content, but no erasure or anonymization
-  path touches it (`erasePersonAsOrg` only hard-deletes `people`,
-  `payRecords`, and `personAssignments`). Decide before go-live whether to add
-  an erasure/anonymization hook for these names or record an explicit ADR
-  exception, and implement whichever is decided.
-- [ ] **Decide the erasure path for person- and pair-targeted actions and
-  notes (`payMappingActions`/`payMappingNotes`).** A record whose target is
-  `person` or `pair` carries the employee's `personPublicId` plus
-  user-authored free text (`problem`, `plannedAction`, note `text`) and an
-  optional `estimatedCost` (on a person-targeted action effectively that
-  individual's planned raise), and `erasePersonRecords` does not touch these
-  tables. The structured link is safe (the publicId becomes a dead pseudonym
-  once the `people` row and snapshot identity are gone, and the overview
-  never denormalizes a name), but the free text can name the person and no
-  hook can reach it today: neither table is indexable by person without a
-  new index. Decide before go-live: (a) add the index + a hook that
-  hard-deletes or tombstones person/pair-targeted rows on erasure, or (b)
-  record an explicit ADR exception, mirroring the collaboration-participants
-  entry above. Consider also whether `estimatedCost` should be allowed on
-  person targets at all (restricting it to group targets removes the
-  salary-adjacent half of the problem). ADR-0015 §7 carries the matching
-  raderingsförbehåll.
+- [x] **Decide the erasure path for samverkan participant names
+  (`payMappingRuns.collaboration.participants`).** DECIDED 2026-09-01
+  (owner): recorded ADR exception, no hook. ADR-0027 documents the basis:
+  the samverkansredogörelse is statutory documentation content (DL 3:14),
+  retained under the legal-obligation exemption from erasure (GDPR art.
+  17.3 b); the names are representatives acting in their role, HR can edit
+  the free text manually, and a name-matching tombstone over free text would
+  be unreliable. The future structured-samverkan build (rapportkravbilden
+  gap 3) carries proper per-participant erasure when it lands.
+- [x] **Decide the erasure path for person-targeted actions and notes
+  (`payMappingActions`/`payMappingNotes`).** DECIDED AND BUILT 2026-09-01
+  (owner): tombstone hook, per ADR-0027. `tombstonePersonInWorkLayer`
+  (called from `erasePersonRecords`) clears the free text outright and flags
+  the rows `erased` via the new `by_org_person` indexes on
+  `target.personPublicId`; structure (status, cost, dates) and the person
+  key as a dead pseudonym remain so the statutory action-plan evaluation is
+  not falsified, and every surface renders a localized tombstone marker in
+  place of the text. `estimatedCost` stays allowed on person targets: after
+  tombstoning it hangs on the dead pseudonym only, and the union export
+  already masks it at the boundary. Only `person`-kind targets carry a
+  person reference (the old "pair" kind is gone; `comparison` is
+  group-vs-group). ADR-0015 §7's raderingsförbehåll is closed.
 - [ ] **Native review of the Iteration 2 pay-mapping strings (nb/da/fi).**
   The 2026-08-06 analysis-views rebuild added ~140 keys per locale
   (`dashboard.payMapping.detail/scatter/crossLevel/actions/actionsOverview/
@@ -357,27 +354,26 @@ in the same change.
   `dashboard.help.payGapScatterMeansBody` (the sentence explaining the two
   average lines the equal-work scatter draws) is machine-drafted too and
   belongs in this review.
-- [ ] **Decide the documentation stance for green (under-threshold) equal-work
-  groups.** DO's supervision practice (Kriminalvården DO 2022/498 and the
-  2023 myndighets-decisions) treats an identified-but-unresolved pay
-  difference as itself a deficiency. Our completion gate forces a stated
-  conclusion for every flagged group and every women-dominated comparison,
-  but groups under the 5% threshold ship in the report with figures and a
-  status word only, no written conclusion (the thresholds are presented as
-  prioritisation, per the kravbild). Decide before go-live: require a
-  lightweight klarmarkering for green groups too, or keep the prioritisation
-  model and its stated rationale. See docs/lonekartlaggning-rapport-kravbild.md
-  section 7 item 5. The sakliga-skäl note helper was already sharpened
+- [x] **Decide the documentation stance for green (under-threshold) equal-work
+  groups.** DECIDED 2026-09-01 (owner): keep the prioritisation model, no
+  klarmarkering and no written conclusion for green groups. The owner's
+  rationale: green groups are already done; the application exists to lift
+  the groups that are not green. The report keeps showing figures and the
+  status word for every group, and the intro text keeps stating the
+  prioritisation rationale, which is the documented stance DO sees. See
+  docs/lonekartlaggning-rapport-kravbild.md section 7 item 5 (decision
+  recorded there too). The sakliga-skäl note helper was already sharpened
   (2026-08-31), grounded in DO's CURRENT supervision practice (the 2022-2023
   tillsynsbeslut and DO's guidance: bare market/collective-agreement
   references are insufficient; NmD Ä 1-09 is the still-standing precedent
   behind that line); no further copy work pending on that part.
-- [ ] **Gate `deletePayMappingRun` on run status.** The mutation currently
-  hard-deletes a run (and its snapshot rows + group analyses) regardless of
-  `status`, including a `completed` run, which is the statutory kartläggning
-  evidence document. Decide the go-live policy (e.g. block deleting completed
-  runs, or require a separate unlock step) and add the corresponding
-  server-side status gate.
+- [x] **Gate `deletePayMappingRun` on run status.** DECIDED AND BUILT
+  2026-09-01 (owner): the server refuses to delete a `completed` run
+  (`errors.payMappingRunCompleted`); the deliberate two-step path is Reopen
+  (its own audited step) then delete. The row menu's dialog states the
+  reopen-first precondition in words and disables the confirm for a
+  completed run, and the catch maps the server's refusal to the same text
+  for the completed-in-another-tab race.
 - [ ] **Collapse the double per-person assignment query in
   `startPayMappingRun`.** `computePayMappingPreconditions` (the gate) and the
   freeze loop right after it each run their own per-person
@@ -417,11 +413,11 @@ in the same change.
   supports AI SDK 7, and re-run the search evaluation from ADR-0020 against
   it before switching.
 
-- [ ] **Assistant: decide the retention policy for archived assistant threads.** ADR-0018 stage-gates this decision: auto-delete after N days vs keep until user erasure. Implement the chosen policy before onboarding real organizations.
+- [x] **Assistant: decide the retention policy for archived assistant threads.** DECIDED AND BUILT 2026-09-01 (owner): an archived thread is hard-deleted 90 days after its last activity (switching back into it reactivates it and resets the clock). A daily cron starts the bounded, self-rescheduling sweep (`pruneArchivedThreads` over the new `by_status_lastMessageAt` index, sharing the user-erasure walk's child-first drain), ADR-0018 records the policy, and the assistant-privacy guide page states it in every locale.
 
 - [ ] **Assistant: revisit the simple per-user hourly message cap.** The V1 cost guard is a naive 30 messages per user per hour. If real usage shows abuse patterns or if per-org token budgets become policy, upgrade to @convex-dev/rate-limiter.
 
-- [ ] **Assistant: decide a spend cap / circuit breaker for assistant AI usage.** The `aiUsageEvents`/`aiUsageMonthly` rows already exist, but nothing enforces a ceiling today (the per-message output token cap only bounds a single reply). Options: a Mistral account budget alarm, or an internal cap read from the monthly rollup that refuses new generations once an org crosses it.
+- [ ] **Assistant: spend cap / circuit breaker for assistant AI usage.** DECIDED 2026-09-01 (owner): deferred until real usage exists; the per-user hourly message cap (30/h) plus the per-message output token cap are the launch guards. The entry stays open as the revisit trigger: when real usage data shows sustained cost or an org-level abuse pattern, build the internal cap read from `aiUsageMonthly` that refuses new generations once an org crosses its ceiling (surfaced as an i18n error code, never silent).
 
 - [ ] **Admin AI usage: bound `usageByOrgDaily`'s month read.** The daily chart's query (`convex/platform/aiUsage.ts`) collects every `aiUsageEvents` row platform-wide for the selected month; the window rides the creation-time index but is not paginated, so it grows with total cross-org event volume. Fine at V1 scale; before onboarding many active organizations, either aggregate into a daily rollup table or paginate the read.
 
