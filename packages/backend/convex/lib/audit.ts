@@ -73,6 +73,7 @@ export const AUDIT_EVENTS = {
   payMappingReportExported: "payMapping.reportExported",
   payMappingMetricsExported: "payMapping.metricsExported",
   payMappingUnionReportExported: "payMapping.unionReportExported",
+  payMappingArchiveExported: "payMapping.archiveExported",
 } as const
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS]
@@ -289,6 +290,10 @@ const AUDIT_SUBJECTS: {
     id: payload.runId,
   }),
   "payMapping.unionReportExported": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.archiveExported": (payload) => ({
     kind: "payMappingRun",
     id: payload.runId,
   }),

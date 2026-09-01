@@ -479,6 +479,9 @@ export interface AuditPayloads {
   // The union report (the masked samverkan variant) leaves through the same
   // boundary with its own event kind, so the trail says WHICH document left.
   "payMapping.unionReportExported": { runId: string }
+  // The archive package (ADR-0011 p.4: PDF + workbook + data.json in one
+  // ZIP) is ONE handling and logs one row, not one per inner file.
+  "payMapping.archiveExported": { runId: string }
 }
 
 // Admin audit payloads, keyed 1:1 by every PLATFORM_AUDIT_EVENTS value. Also

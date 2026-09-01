@@ -83,6 +83,45 @@ describe("payMapping report export log", () => {
     expect(audits[0]?.payload).toEqual({ runId })
   })
 
+  it("writes ONE archive-export audit row for the whole package", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t)
+
+    await asHr.mutation(api.payMapping.report.logPayMappingArchiveExport, {
+      orgId,
+      runId,
+    })
+
+    const audits = await t.run((ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "payMapping.archiveExported")
+        )
+        .collect()
+    )
+    expect(audits).toHaveLength(1)
+    expect(audits[0]?.subject).toEqual({ kind: "payMappingRun", id: runId })
+    expect(audits[0]?.payload).toEqual({ runId })
+  })
+
+  it("rejects an archive export for a run id from another org", async () => {
+    const t = initConvexTest()
+    const { runId } = await seedRun(t)
+    const { orgId: otherOrg, userId: otherUser } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "hr3@other.se", name: "Other HR", role: "admin" }
+    )
+    const asOther = t.withIdentity({ subject: otherUser })
+
+    await expect(
+      asOther.mutation(api.payMapping.report.logPayMappingArchiveExport, {
+        orgId: otherOrg,
+        runId,
+      })
+    ).rejects.toThrow(/errors.notFound/)
+  })
+
   it("writes the union report export's own audit row at the same boundary", async () => {
     const t = initConvexTest()
     const { orgId, runId, asHr } = await seedRun(t)
