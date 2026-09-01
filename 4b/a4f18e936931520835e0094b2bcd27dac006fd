@@ -1,0 +1,25 @@
+docs/lonekartlaggning-facklig-rapport-kravbild.md
+  s_7fda332a23d6c0::t_3487671cdd89f4 1-42,44-49,51-52,54-79
+  s_7fda332a23d6c0::t_cf85899b471ebd 43
+  s_7fda332a23d6c0::t_24f50b6a763d9e 50
+  s_7fda332a23d6c0::t_7dbf5c1eea9633 53
+docs/superpowers/analysis/lonekartlaggning-progress-tracker.html
+  s_7fda332a23d6c0::t_05568c06c91414 224,290,433,443,501
+  s_7fda332a23d6c0::t_aa391cbec97f2c 502
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "4ba4f18e936931520835e0094b2bcd27dac006fd",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
