@@ -67,6 +67,7 @@ vi.mock("./pay-mapping-overview", () => ({
 const logExport = vi.fn(async () => null)
 const logUnionExport = vi.fn(async () => null)
 const logMetricsExport = vi.fn(async () => null)
+const logArchiveExport = vi.fn(async () => null)
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
   api: {
     payMapping: {
@@ -77,6 +78,7 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
         logPayMappingReportExport: "report.log",
         logPayMappingUnionReportExport: "report.logUnion",
         logPayMappingMetricsExport: "report.logMetrics",
+        logPayMappingArchiveExport: "report.logArchive",
       },
     },
   },
@@ -91,7 +93,9 @@ vi.mock("convex/react", () => ({
       ? logUnionExport
       : ref === "report.logMetrics"
         ? logMetricsExport
-        : logExport,
+        : ref === "report.logArchive"
+          ? logArchiveExport
+          : logExport,
 }))
 
 vi.mock("@/components/org-context", () => ({
@@ -136,6 +140,7 @@ describe("PayMappingReportDownload", () => {
     logExport.mockClear()
     logUnionExport.mockClear()
     logMetricsExport.mockClear()
+    logArchiveExport.mockClear()
     captureSvgToPng.mockClear()
     rasterize = false
     gapOverrides = {}

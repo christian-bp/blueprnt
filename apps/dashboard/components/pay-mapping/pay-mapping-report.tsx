@@ -2,6 +2,7 @@
 
 import {
   Download01Icon,
+  FileZipIcon,
   Pdf01Icon,
   Xls01Icon,
 } from "@hugeicons/core-free-icons"
@@ -136,6 +137,53 @@ export function UnionDocumentPanel({ action }: { action: ReactNode }) {
 // document, and the full label would crowd the half-width row. The full
 // name stays as the accessible name (it contains the visible text, so the
 // label-in-name rule holds); the runs list's row menu keeps the long labels.
+// The archive package's panel (ADR-0011 p.4): the whole kartläggning as
+// one retained bundle, its retention advice carried by its help.
+export function ArchiveDocumentPanel({ action }: { action: ReactNode }) {
+  const t = useTranslations("dashboard.payMapping.report")
+  const tHelp = useTranslations("dashboard.help")
+  return (
+    <ReportPanel
+      icon={FileZipIcon}
+      title={t("archiveTitle")}
+      help={
+        <HelpMorphButton label={tHelp("archivePackageLabel")}>
+          {tHelp("archivePackageBody")}
+        </HelpMorphButton>
+      }
+      description={t("archiveDescription")}
+      action={action}
+    />
+  )
+}
+
+// The archive export: outline like the other secondary documents.
+export function ArchiveDownloadButton({
+  busy,
+  disabled,
+  onClick,
+}: {
+  busy: boolean
+  disabled: boolean
+  onClick?: () => void
+}) {
+  const t = useTranslations("dashboard.payMapping.report")
+  return (
+    <SubmitButton
+      type="button"
+      variant="outline"
+      size={CHAPTER_ACTION_BUTTON_SIZE}
+      isSubmitting={busy}
+      disabled={disabled}
+      aria-label={t("downloadArchive")}
+      {...(onClick === undefined ? {} : { onClick })}
+    >
+      <HugeiconsIcon icon={Download01Icon} strokeWidth={2} />
+      {t("download")}
+    </SubmitButton>
+  )
+}
+
 export function ReportDownloadButton({
   busy,
   disabled,
@@ -233,6 +281,9 @@ function ReportCardShell() {
       />
       <MetricsDocumentPanel
         action={<MetricsDownloadButton busy={false} disabled />}
+      />
+      <ArchiveDocumentPanel
+        action={<ArchiveDownloadButton busy={false} disabled />}
       />
     </ReportsFrame>
   )

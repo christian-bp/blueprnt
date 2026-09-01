@@ -6,8 +6,11 @@ import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { useOrganization } from "@/components/org-context"
+import { usePayMappingArchiveExport } from "./pay-mapping-archive-export"
 import { usePayMappingMetricsExport } from "./pay-mapping-metrics-export"
 import {
+  ArchiveDocumentPanel,
+  ArchiveDownloadButton,
   MetricsDocumentPanel,
   MetricsDownloadButton,
   ReportDocumentPanel,
@@ -17,7 +20,10 @@ import {
   UnionDownloadButton,
 } from "./pay-mapping-report"
 import type { ReportVariant } from "./pay-mapping-report-doc"
-import { usePayMappingReportExport } from "./pay-mapping-report-export"
+import {
+  type ReportExportData,
+  usePayMappingReportExport,
+} from "./pay-mapping-report-export"
 import { usePayMappingRun } from "./pay-mapping-run-context"
 
 // The report page's export frame: gathers the run context and the
@@ -60,6 +66,11 @@ export function PayMappingReportDownload() {
   )
   const { busy, exportReport, captureHost } = usePayMappingReportExport()
   const { busy: metricsBusy, exportMetrics } = usePayMappingMetricsExport()
+  const {
+    busy: archiveBusy,
+    exportArchive,
+    captureHost: archiveCaptureHost,
+  } = usePayMappingArchiveExport()
 
   const ready =
     run !== undefined &&
@@ -75,8 +86,11 @@ export function PayMappingReportDownload() {
   // Which PDF variant is mid-export: the hook's busy covers both, so the
   // spinner needs its own record of whose button was pressed.
   const [activeVariant, setActiveVariant] = useState<ReportVariant | null>(null)
+  // One export at a time: the renders are heavy and each button shows its
+  // own spinner, so every other action waits.
+  const anyBusy = busy || metricsBusy || archiveBusy
 
-  async function onExport(variant: ReportVariant) {
+  function collectExportData(): ReportExportData | null {
     if (
       run === undefined ||
       gap === undefined ||
@@ -85,32 +99,41 @@ export function PayMappingReportDownload() {
       notes === undefined ||
       previousRun === undefined
     ) {
-      return
+      return null
     }
+    return {
+      run,
+      gap,
+      analyses,
+      actions,
+      notes,
+      previous:
+        previousRun === null
+          ? null
+          : {
+              runLabel: previousRun.label,
+              referenceDate: previousRun.referenceDate,
+              actions: previousActions ?? [],
+              gap: previousGap ?? null,
+            },
+    }
+  }
+
+  async function onExport(variant: ReportVariant) {
+    const data = collectExportData()
+    if (data === null) return
     setActiveVariant(variant)
     try {
-      await exportReport(
-        {
-          run,
-          gap,
-          analyses,
-          actions,
-          notes,
-          previous:
-            previousRun === null
-              ? null
-              : {
-                  runLabel: previousRun.label,
-                  referenceDate: previousRun.referenceDate,
-                  actions: previousActions ?? [],
-                  gap: previousGap ?? null,
-                },
-        },
-        variant
-      )
+      await exportReport(data, variant)
     } finally {
       setActiveVariant(null)
     }
+  }
+
+  async function onExportArchive() {
+    const data = collectExportData()
+    if (data === null) return
+    await exportArchive(data)
   }
 
   return (
@@ -128,7 +151,7 @@ export function PayMappingReportDownload() {
           action={
             <ReportDownloadButton
               busy={busy && activeVariant === "statutory"}
-              disabled={!ready || busy}
+              disabled={!ready || anyBusy}
               onClick={() => void onExport("statutory")}
             />
           }
@@ -137,7 +160,7 @@ export function PayMappingReportDownload() {
           action={
             <UnionDownloadButton
               busy={busy && activeVariant === "union"}
-              disabled={!ready || busy}
+              disabled={!ready || anyBusy}
               onClick={() => void onExport("union")}
             />
           }
@@ -146,7 +169,7 @@ export function PayMappingReportDownload() {
           action={
             <MetricsDownloadButton
               busy={metricsBusy}
-              disabled={run === undefined || gap === undefined}
+              disabled={run === undefined || gap === undefined || anyBusy}
               onClick={() => {
                 if (run !== undefined && gap !== undefined) {
                   void exportMetrics({ run, gap })
@@ -155,8 +178,18 @@ export function PayMappingReportDownload() {
             />
           }
         />
+        <ArchiveDocumentPanel
+          action={
+            <ArchiveDownloadButton
+              busy={archiveBusy}
+              disabled={!ready || anyBusy}
+              onClick={() => void onExportArchive()}
+            />
+          }
+        />
       </ReportsFrame>
       {captureHost}
+      {archiveCaptureHost}
     </>
   )
 }

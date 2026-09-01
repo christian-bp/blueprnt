@@ -21,9 +21,13 @@ import { useState } from "react"
 import { toast } from "@/lib/toast"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { RenamePayMappingDialog } from "@/components/pay-mapping/rename-pay-mapping-dialog"
+import { usePayMappingArchiveExport } from "./pay-mapping-archive-export"
 import { usePayMappingMetricsExport } from "./pay-mapping-metrics-export"
 import type { ReportVariant } from "./pay-mapping-report-doc"
-import { usePayMappingReportExport } from "./pay-mapping-report-export"
+import {
+  type ReportExportData,
+  usePayMappingReportExport,
+} from "./pay-mapping-report-export"
 
 // Per-row actions for the pay-mappings list (the row-actions convention: one
 // trailing "..." trigger, a destructive item confirmed via an AlertDialog).
@@ -57,72 +61,88 @@ export function PayMappingRunActions({
     captureHost,
   } = usePayMappingReportExport()
   const { busy: metricsBusy, exportMetrics } = usePayMappingMetricsExport()
+  const {
+    busy: archiveBusy,
+    exportArchive,
+    captureHost: archiveCaptureHost,
+  } = usePayMappingArchiveExport()
   // The export hooks report busy only once the export itself runs; the
   // one-shot fetch phase before it would otherwise leave the trigger
   // enabled, letting a second (possibly different-variant) export start
   // mid-flight. `exporting` covers the whole span from click to handover.
   const [exporting, setExporting] = useState(false)
-  const busy = reportBusy || metricsBusy || exporting
+  const busy = reportBusy || metricsBusy || archiveBusy || exporting
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
   const [pending, setPending] = useState(false)
 
-  // The same export the report page runs, fed by one-shot queries instead
+  // The same exports the report page runs, fed by one-shot queries instead
   // of the run workspace's subscriptions: the menu is closed by the time
-  // the work runs, so the row's trigger carries the busy spinner. The
-  // variant picks which PDF (the statutory documentation or the masked
-  // union report); the fetch is identical.
+  // the work runs, so the row's trigger carries the busy spinner. Both PDF
+  // variants and the archive share this fetch: everything the assembly
+  // consumes, by the row's slug and id.
+  async function fetchExportData(): Promise<ReportExportData | null> {
+    const run = await convex.query(api.payMapping.runs.getPayMappingRunBySlug, {
+      orgId,
+      slug,
+    })
+    const [gap, analyses, actions, notes, runsList] = await Promise.all([
+      convex.query(api.payMapping.gap.getPayMappingGap, { orgId, runId }),
+      convex.query(api.payMapping.analyses.listGroupAnalyses, {
+        orgId,
+        runId,
+      }),
+      convex.query(api.payMapping.actions.listActions, { orgId, runId }),
+      convex.query(api.payMapping.notes.listNotes, { orgId, runId }),
+      convex.query(api.payMapping.runs.listPayMappingRuns, { orgId }),
+    ])
+    if (run === null || gap === null) {
+      toast.error(tToast("error"))
+      return null
+    }
+    const previousRun =
+      runsList
+        .filter(
+          (candidate) =>
+            candidate.status === "completed" &&
+            candidate.referenceDate < run.referenceDate
+        )
+        .sort((a, b) => b.referenceDate - a.referenceDate)[0] ?? null
+    const previous =
+      previousRun === null
+        ? null
+        : {
+            runLabel: previousRun.label,
+            referenceDate: previousRun.referenceDate,
+            actions: await convex.query(api.payMapping.actions.listActions, {
+              orgId,
+              runId: previousRun.runId,
+            }),
+            gap: await convex.query(api.payMapping.gap.getPayMappingGap, {
+              orgId,
+              runId: previousRun.runId,
+            }),
+          }
+    return { run, gap, analyses, actions, notes, previous }
+  }
+
   async function onDownload(variant: ReportVariant = "statutory") {
     setExporting(true)
     try {
-      const run = await convex.query(
-        api.payMapping.runs.getPayMappingRunBySlug,
-        {
-          orgId,
-          slug,
-        }
-      )
-      const [gap, analyses, actions, notes, runsList] = await Promise.all([
-        convex.query(api.payMapping.gap.getPayMappingGap, { orgId, runId }),
-        convex.query(api.payMapping.analyses.listGroupAnalyses, {
-          orgId,
-          runId,
-        }),
-        convex.query(api.payMapping.actions.listActions, { orgId, runId }),
-        convex.query(api.payMapping.notes.listNotes, { orgId, runId }),
-        convex.query(api.payMapping.runs.listPayMappingRuns, { orgId }),
-      ])
-      if (run === null || gap === null) {
-        toast.error(tToast("error"))
-        return
-      }
-      const previousRun =
-        runsList
-          .filter(
-            (candidate) =>
-              candidate.status === "completed" &&
-              candidate.referenceDate < run.referenceDate
-          )
-          .sort((a, b) => b.referenceDate - a.referenceDate)[0] ?? null
-      const previous =
-        previousRun === null
-          ? null
-          : {
-              runLabel: previousRun.label,
-              referenceDate: previousRun.referenceDate,
-              actions: await convex.query(api.payMapping.actions.listActions, {
-                orgId,
-                runId: previousRun.runId,
-              }),
-              gap: await convex.query(api.payMapping.gap.getPayMappingGap, {
-                orgId,
-                runId: previousRun.runId,
-              }),
-            }
-      await exportReport(
-        { run, gap, analyses, actions, notes, previous },
-        variant
-      )
+      const data = await fetchExportData()
+      if (data !== null) await exportReport(data, variant)
+    } catch {
+      toast.error(tToast("error"))
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  async function onDownloadArchive() {
+    setExporting(true)
+    try {
+      const data = await fetchExportData()
+      if (data !== null) await exportArchive(data)
     } catch {
       toast.error(tToast("error"))
     } finally {
@@ -176,8 +196,8 @@ export function PayMappingRunActions({
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {/* Both exports behind one Download level: the submenu names WHICH
-              document, mirroring the report page's two panels. */}
+          {/* Every export behind one Download level: the submenu names WHICH
+              document, mirroring the report page's panels. */}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               {tReport("download")}
@@ -191,6 +211,9 @@ export function PayMappingRunActions({
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onDownloadMetrics}>
                 {tReport("downloadMetricsItem")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => void onDownloadArchive()}>
+                {tReport("downloadArchiveItem")}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
@@ -206,6 +229,7 @@ export function PayMappingRunActions({
         </DropdownMenuContent>
       </DropdownMenu>
       {captureHost}
+      {archiveCaptureHost}
 
       <RenamePayMappingDialog
         orgId={orgId}

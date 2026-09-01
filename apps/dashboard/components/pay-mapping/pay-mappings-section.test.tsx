@@ -85,6 +85,13 @@ vi.mock("@/components/pay-mapping/pay-mapping-metrics-export", () => ({
     exportMetrics: vi.fn(),
   }),
 }))
+vi.mock("@/components/pay-mapping/pay-mapping-archive-export", () => ({
+  usePayMappingArchiveExport: () => ({
+    busy: false,
+    exportArchive: vi.fn(),
+    captureHost: null,
+  }),
+}))
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),

@@ -7,6 +7,7 @@ import type { Workbook } from "exceljs"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { useOrganization } from "@/components/org-context"
+import { exportFileLabel } from "@/lib/export-file-name"
 import { toast } from "@/lib/toast"
 import type {
   GapGroup,
@@ -405,12 +406,26 @@ export async function buildMetricsWorkbook(
 // The export flow, shared by the report page and the runs list's row menu:
 // assemble, build the workbook, log at the boundary BEFORE the file is
 // handed over (the same rule as the PDF), then download.
+// The standalone download's file name, shared with the archive package so
+// the bundled workbook and the standalone one can never drift apart.
+export function metricsFileName(label: string): string {
+  return `${exportFileLabel(label)}-nyckeltal.xlsx`
+}
+
 export function usePayMappingMetricsExport(): {
   busy: boolean
   exportMetrics: (data: {
     run: PayMappingRunDetail
     gap: PayMappingGapResult
   }) => Promise<void>
+  // The workbook alone, without the boundary log and the download: the
+  // archive package builds the SAME workbook through this seam, so the
+  // bundled file can never diverge from the standalone one. The caller owns
+  // busy state and its own boundary event.
+  renderWorkbookBuffer: (data: {
+    run: PayMappingRunDetail
+    gap: PayMappingGapResult
+  }) => Promise<ArrayBuffer>
 } {
   const t = useTranslations("dashboard.payMapping.report")
   const tGap = useTranslations("dashboard.payMapping.gap")
@@ -423,61 +438,68 @@ export function usePayMappingMetricsExport(): {
   )
   const [busy, setBusy] = useState(false)
 
+  async function renderWorkbookBuffer(data: {
+    run: PayMappingRunDetail
+    gap: PayMappingGapResult
+  }): Promise<ArrayBuffer> {
+    const metrics = assemblePayMappingMetrics({ ...data, locale })
+    const quartileLabels = [
+      t("quartile1"),
+      t("quartile2"),
+      t("quartile3"),
+      t("quartile4"),
+    ]
+    const workbook = await buildMetricsWorkbook(metrics, {
+      sheetTitle: t("metricsSheetTitle"),
+      statusTag: metrics.status === "final" ? t("tagFinal") : t("tagDraft"),
+      referenceDateLine: t("referenceDateLine", {
+        date: format.dateTime(new Date(metrics.referenceDate), {
+          dateStyle: "medium",
+        }),
+      }),
+      generatedOn: tAppendix("generatedOn", {
+        date: format.dateTime(new Date(), { dateStyle: "medium" }),
+      }),
+      maskedNoteOrg: t("metricsMaskedNoteOrg", {
+        min: EXPORT_MIN_GROUP_SIZE,
+      }),
+      maskedNoteGroups: t("metricsMaskedNote", {
+        min: EXPORT_MIN_GROUP_SIZE,
+        perGender: EXPORT_MIN_PER_GENDER,
+      }),
+      coverageNote: t("metricsCoverageNote", {
+        singletons: metrics.coverage.singletonGroups,
+        singleGender: metrics.coverage.singleGenderGroups,
+      }),
+      signNote: t("metricsSignNote"),
+      colWomen: tGap("columns.women"),
+      colMen: tGap("columns.men"),
+      colGapPct: t("colGapPct"),
+      colGroup: tGap("columns.group"),
+      colLevel: tGap("columns.level"),
+      meanTotal: t("metricsMeanTotal"),
+      medianTotal: t("metricsMedianTotal"),
+      variableShare: t("metricsVariableShare"),
+      variableMean: t("metricsVariableMean"),
+      variableMedian: t("metricsVariableMedian"),
+      quartilesTitle: t("quartilesTitle"),
+      quartileRow: (index) => quartileLabels[index] ?? "",
+      basePay: t("metricsBasePay"),
+      totalPay: t("metricsTotalPay"),
+      variablePay: t("metricsVariablePay"),
+      equalWorkTitle: t("equalWorkTitle"),
+      levelsTitle: t("levelsTitle"),
+    })
+    return (await workbook.xlsx.writeBuffer()) as ArrayBuffer
+  }
+
   async function exportMetrics(data: {
     run: PayMappingRunDetail
     gap: PayMappingGapResult
   }): Promise<void> {
     setBusy(true)
     try {
-      const metrics = assemblePayMappingMetrics({ ...data, locale })
-      const quartileLabels = [
-        t("quartile1"),
-        t("quartile2"),
-        t("quartile3"),
-        t("quartile4"),
-      ]
-      const workbook = await buildMetricsWorkbook(metrics, {
-        sheetTitle: t("metricsSheetTitle"),
-        statusTag: metrics.status === "final" ? t("tagFinal") : t("tagDraft"),
-        referenceDateLine: t("referenceDateLine", {
-          date: format.dateTime(new Date(metrics.referenceDate), {
-            dateStyle: "medium",
-          }),
-        }),
-        generatedOn: tAppendix("generatedOn", {
-          date: format.dateTime(new Date(), { dateStyle: "medium" }),
-        }),
-        maskedNoteOrg: t("metricsMaskedNoteOrg", {
-          min: EXPORT_MIN_GROUP_SIZE,
-        }),
-        maskedNoteGroups: t("metricsMaskedNote", {
-          min: EXPORT_MIN_GROUP_SIZE,
-          perGender: EXPORT_MIN_PER_GENDER,
-        }),
-        coverageNote: t("metricsCoverageNote", {
-          singletons: metrics.coverage.singletonGroups,
-          singleGender: metrics.coverage.singleGenderGroups,
-        }),
-        signNote: t("metricsSignNote"),
-        colWomen: tGap("columns.women"),
-        colMen: tGap("columns.men"),
-        colGapPct: t("colGapPct"),
-        colGroup: tGap("columns.group"),
-        colLevel: tGap("columns.level"),
-        meanTotal: t("metricsMeanTotal"),
-        medianTotal: t("metricsMedianTotal"),
-        variableShare: t("metricsVariableShare"),
-        variableMean: t("metricsVariableMean"),
-        variableMedian: t("metricsVariableMedian"),
-        quartilesTitle: t("quartilesTitle"),
-        quartileRow: (index) => quartileLabels[index] ?? "",
-        basePay: t("metricsBasePay"),
-        totalPay: t("metricsTotalPay"),
-        variablePay: t("metricsVariablePay"),
-        equalWorkTitle: t("equalWorkTitle"),
-        levelsTitle: t("levelsTitle"),
-      })
-      const buffer = await workbook.xlsx.writeBuffer()
+      const buffer = await renderWorkbookBuffer(data)
       try {
         await logExport({ orgId, runId: data.run.runId })
       } catch {
@@ -490,7 +512,7 @@ export function usePayMappingMetricsExport(): {
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = `${data.run.label}-nyckeltal.xlsx`
+      a.download = metricsFileName(data.run.label)
       document.body.appendChild(a)
       a.click()
       a.remove()
@@ -500,5 +522,5 @@ export function usePayMappingMetricsExport(): {
     }
   }
 
-  return { busy, exportMetrics }
+  return { busy, exportMetrics, renderWorkbookBuffer }
 }

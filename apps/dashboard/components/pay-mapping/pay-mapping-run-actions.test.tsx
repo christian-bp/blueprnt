@@ -73,6 +73,15 @@ vi.mock("@/components/pay-mapping/pay-mapping-metrics-export", () => ({
   }),
 }))
 
+const exportArchiveMock = vi.fn(async () => {})
+vi.mock("@/components/pay-mapping/pay-mapping-archive-export", () => ({
+  usePayMappingArchiveExport: () => ({
+    busy: false,
+    exportArchive: exportArchiveMock,
+    captureHost: null,
+  }),
+}))
+
 import { PayMappingRunActions } from "@/components/pay-mapping/pay-mapping-run-actions"
 import { openMenu } from "@/test/menu"
 
@@ -115,6 +124,7 @@ describe("PayMappingRunActions", () => {
     queryMock.mockClear()
     exportReportMock.mockClear()
     exportMetricsMock.mockClear()
+    exportArchiveMock.mockClear()
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
   })
@@ -167,6 +177,24 @@ describe("PayMappingRunActions", () => {
       expect(exportReportMock).toHaveBeenCalledWith(
         expect.objectContaining({ run: RUN_DETAIL, gap: GAP }),
         "union"
+      )
+    })
+    expect(vi.mocked(toast.error)).not.toHaveBeenCalled()
+  })
+
+  it("downloads the archive package through the shared fetch", async () => {
+    renderActions()
+    await openRowMenu()
+    await openDownloadSubmenu()
+    fireEvent.click(
+      screen.getByRole("menuitem", {
+        name: messages.dashboard.payMapping.report.downloadArchiveItem,
+      })
+    )
+
+    await waitFor(() => {
+      expect(exportArchiveMock).toHaveBeenCalledWith(
+        expect.objectContaining({ run: RUN_DETAIL, gap: GAP })
       )
     })
     expect(vi.mocked(toast.error)).not.toHaveBeenCalled()

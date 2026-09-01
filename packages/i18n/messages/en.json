@@ -883,7 +883,8 @@
         "roleAssessmentCalibrated": "Assessment calibrated",
         "payMappingReportExported": "Pay mapping report exported",
         "payMappingMetricsExported": "Pay mapping key figures exported",
-        "payMappingUnionReportExported": "Union report exported"
+        "payMappingUnionReportExported": "Union report exported",
+        "payMappingArchiveExported": "Archive package exported"
       },
       "ai": {
         "weightReview": "Weight review: {count} applied",
@@ -1418,6 +1419,11 @@
         "unionPurpose": "This report presents figures at group level only. Information about an individual employee's pay is provided separately when needed, in which case the confidentiality and damages rules in sections 21, 22 and 56 of the Swedish Co-Determination Act apply (ch. 3 § 12 of the Discrimination Act). Gender-split figures are shown only for groups of at least {min} people with at least {perGender} per gender; other values are masked under this tool's precautionary rule.",
         "downloadUnion": "Download union report",
         "downloadUnionItem": "Union report (PDF)",
+        "archiveTitle": "Archive package",
+        "archiveDescription": "The report and the key figures in one package for archiving, with checksums (ZIP).",
+        "downloadArchive": "Download archive package",
+        "downloadArchiveItem": "Archive package (ZIP)",
+        "archiveNotice": "Archive package for the statutory pay-mapping documentation (Swedish Discrimination Act ch. 3 §§ 8-14). The manifest lists the package's files with SHA-256 checksums so their integrity can be verified. Keep the package for at least five years.",
         "metricsSheetTitle": "Key figures",
         "metricsMeanTotal": "Average pay (total compensation)",
         "metricsMedianTotal": "Median pay (total compensation)",
@@ -2337,7 +2343,9 @@
       "payMappingReportLabel": "What is the documentation report?",
       "payMappingReportBody": "A PDF with the statutory written documentation of this pay mapping: collaboration, practices, both pay comparisons, measures and method. Draft until the pay mapping is completed.",
       "unionReportLabel": "What is the union report?",
-      "unionReportBody": "A masked group-level basis for union cooperation under ch. 3 §§ 11-12 of the Discrimination Act. Before sharing, check that no action free text names an individual."
+      "unionReportBody": "A masked group-level basis for union cooperation under ch. 3 §§ 11-12 of the Discrimination Act. Before sharing, check that no action free text names an individual.",
+      "archivePackageLabel": "What is the archive package?",
+      "archivePackageBody": "The whole mapping as one retention copy: the report and the key figures, with checksums for verification. Keep it for at least five years; supervision requests past years' documentation."
     },
     "widgetCard": {
       "expand": "Expand"

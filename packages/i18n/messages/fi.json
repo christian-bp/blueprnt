@@ -883,7 +883,8 @@
         "roleAssessmentCalibrated": "Arviointi kalibroitu",
         "payMappingReportExported": "Palkkakartoitusraportti viety",
         "payMappingMetricsExported": "Palkkakartoituksen tunnusluvut viety",
-        "payMappingUnionReportExported": "Ammattiliittoraportti viety"
+        "payMappingUnionReportExported": "Ammattiliittoraportti viety",
+        "payMappingArchiveExported": "Arkistopaketti viety"
       },
       "ai": {
         "weightReview": "Painotusten tarkistus: {count} käytetty",
@@ -1418,6 +1419,11 @@
         "unionPurpose": "Raportissa esitetään tiedot vain ryhmätasolla. Tiedot yksittäisen työntekijän palkasta annetaan tarvittaessa erikseen, jolloin sovelletaan Ruotsin myötämääräämislain 21, 22 ja 56 §:n salassapito- ja vahingonkorvaussääntöjä (syrjintälain 3 luvun 12 §). Sukupuolittain jaotellut arvot näytetään vain ryhmille, joissa on vähintään {min} henkilöä ja vähintään {perGender} kummastakin sukupuolesta; muut arvot peitetään työkalun varovaisuusperiaatteen mukaisesti.",
         "downloadUnion": "Lataa ammattiliittoraportti",
         "downloadUnionItem": "Ammattiliittoraportti (PDF)",
+        "archiveTitle": "Arkistopaketti",
+        "archiveDescription": "Raportti ja tunnusluvut yhtenä pakettina arkistointia varten, tarkistussummin (ZIP).",
+        "downloadArchive": "Lataa arkistopaketti",
+        "downloadArchiveItem": "Arkistopaketti (ZIP)",
+        "archiveNotice": "Arkistopaketti lakisääteistä palkkakartoitusdokumentaatiota varten (Ruotsin syrjintälain 3 luvun 8-14 §). Manifesti luettelee paketin tiedostot SHA-256-tarkistussummineen, jotta sisältö voidaan varmentaa. Säilytä paketti vähintään viisi vuotta.",
         "metricsSheetTitle": "Tunnusluvut",
         "metricsMeanTotal": "Keskipalkka (kokonaiskorvaus)",
         "metricsMedianTotal": "Mediaanipalkka (kokonaiskorvaus)",
@@ -2337,7 +2343,9 @@
       "payMappingReportLabel": "Mikä on dokumentaatioraportti?",
       "payMappingReportBody": "PDF, joka sisältää kartoituksen lakisääteisen kirjallisen dokumentaation: yhteistoiminta, käytännöt, molemmat palkkavertailut, toimenpiteet ja menetelmä. Luonnos, kunnes kartoitus on valmis.",
       "unionReportLabel": "Mikä on ammattiliittoraportti?",
-      "unionReportBody": "Peitetty ryhmätason aineisto yhteistoimintaan ammattiliittojen kanssa syrjintälain 3 luvun 11-12 §:n mukaisesti. Tarkista ennen jakamista, ettei toimenpiteiden vapaa teksti nimeä yksittäisiä henkilöitä."
+      "unionReportBody": "Peitetty ryhmätason aineisto yhteistoimintaan ammattiliittojen kanssa syrjintälain 3 luvun 11-12 §:n mukaisesti. Tarkista ennen jakamista, ettei toimenpiteiden vapaa teksti nimeä yksittäisiä henkilöitä.",
+      "archivePackageLabel": "Mikä on arkistopaketti?",
+      "archivePackageBody": "Koko kartoitus yhtenä säilytyskappaleena: raportti ja tunnusluvut tarkistussummineen. Säilytä paketti vähintään viisi vuotta; valvonnassa pyydetään aiempien vuosien dokumentaatiota jälkikäteen."
     },
     "widgetCard": {
       "expand": "Suurenna"

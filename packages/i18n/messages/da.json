@@ -883,7 +883,8 @@
         "roleAssessmentCalibrated": "Vurdering kalibreret",
         "payMappingReportExported": "Lønkortlægningsrapport eksporteret",
         "payMappingMetricsExported": "Lønkortlægningens nøgletal eksporteret",
-        "payMappingUnionReportExported": "Fagforeningsrapport eksporteret"
+        "payMappingUnionReportExported": "Fagforeningsrapport eksporteret",
+        "payMappingArchiveExported": "Arkivpakke eksporteret"
       },
       "ai": {
         "weightReview": "Vægtgennemgang: {count} anvendt",
@@ -1418,6 +1419,11 @@
         "unionPurpose": "Rapporten viser kun oplysninger på gruppeniveau. Oplysninger om en enkelt medarbejders løn gives ved behov separat, og i så fald gælder reglerne om tavshedspligt og erstatning i 21, 22 og 56 §§ i den svenske medbestemmelseslov (3 kap. 12 § i diskrimineringsloven). Kønsopdelte værdier vises kun for grupper med mindst {min} personer og mindst {perGender} pr. køn; øvrige værdier maskeres efter værktøjets forsigtighedsregel.",
         "downloadUnion": "Hent fagforeningsrapport",
         "downloadUnionItem": "Fagforeningsrapport (PDF)",
+        "archiveTitle": "Arkivpakke",
+        "archiveDescription": "Rapport og nøgletal i én pakke til arkivering, med kontrolsummer (ZIP).",
+        "downloadArchive": "Hent arkivpakke",
+        "downloadArchiveItem": "Arkivpakke (ZIP)",
+        "archiveNotice": "Arkivpakke til den lovpligtige lønkortlægningsdokumentation (den svenske diskrimineringslov 3 kap. 8-14 §§). Manifestet angiver pakkens filer med SHA-256-kontrolsummer, så indholdet kan verificeres. Opbevar pakken i mindst fem år.",
         "metricsSheetTitle": "Nøgletal",
         "metricsMeanTotal": "Gennemsnitsløn (samlet løn)",
         "metricsMedianTotal": "Medianløn (samlet løn)",
@@ -2337,7 +2343,9 @@
       "payMappingReportLabel": "Hvad er dokumentationsrapporten?",
       "payMappingReportBody": "En PDF med kortlægningens lovpligtige skriftlige dokumentation: samarbejde, praksis, begge lønsammenligninger, tiltag og metode. Udkast, indtil kortlægningen er afsluttet.",
       "unionReportLabel": "Hvad er fagforeningsrapporten?",
-      "unionReportBody": "Et maskeret grundlag på gruppeniveau for samarbejdet med fagforeningerne efter 3 kap. 11-12 §§ i diskrimineringsloven. Kontroller før deling, at fritekst i tiltag ikke nævner enkeltpersoner."
+      "unionReportBody": "Et maskeret grundlag på gruppeniveau for samarbejdet med fagforeningerne efter 3 kap. 11-12 §§ i diskrimineringsloven. Kontroller før deling, at fritekst i tiltag ikke nævner enkeltpersoner.",
+      "archivePackageLabel": "Hvad er arkivpakken?",
+      "archivePackageBody": "Hele kortlægningen som ét bevaringseksemplar: rapporten og nøgletallene, med kontrolsummer til verificering. Opbevar pakken i mindst fem år; tilsynet beder om dokumentationen for enkelte år bagefter."
     },
     "widgetCard": {
       "expand": "Forstør"
