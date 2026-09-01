@@ -1,0 +1,21 @@
+docs/superpowers/analysis/lonekartlaggning-progress-tracker.html
+  s_7fda332a23d6c0::t_9e45b786464638 438
+  s_7fda332a23d6c0::t_d4495dc9d98518 224,402,446
+  s_7fda332a23d6c0::t_e50ca7380d13e1 290,433,501-502
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "a9f82dca1eb87ed047a2a9432bf275e394cc7abd",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
