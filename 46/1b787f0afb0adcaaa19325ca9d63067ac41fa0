@@ -1,0 +1,178 @@
+packages/i18n/messages/fi.json
+  s_7fda332a23d6c0::t_c9e8acb85b52b9 1200
+  s_7fda332a23d6c0::t_463948200e69b9 1276-1285
+  s_7fda332a23d6c0::t_6ed13b9a43ae50 1275
+packages/i18n/messages/nb.json
+  s_7fda332a23d6c0::t_91f1833b5da6ee 1200
+  s_7fda332a23d6c0::t_649126826d380a 1276-1285
+  s_7fda332a23d6c0::t_1cce285048ab38 1275
+apps/dashboard/components/pay-mapping/pay-mapping-gap-types.ts
+  s_7fda332a23d6c0::t_c55cc592b7f99b 366-368
+  s_7fda332a23d6c0::t_4e4551efbbebcb 369,373
+  s_7fda332a23d6c0::t_210a65bf29f4b1 166-180
+  s_7fda332a23d6c0::t_12642efde94ed5 194-195
+  s_7fda332a23d6c0::t_9db14014ee2d1e 1
+  s_7fda332a23d6c0::t_a3e655a9debeff 198-200,211-212
+apps/dashboard/components/pay-mapping/pay-mapping-report-doc.tsx
+  s_7fda332a23d6c0::t_80bdab42d8d47d 1373-1383
+  s_7fda332a23d6c0::t_2a10c2e2485673 1442
+  s_7fda332a23d6c0::t_9eb8c285cd0ec2 321-322
+  s_7fda332a23d6c0::t_91603d4fb8cedb 1441,1443
+  s_7fda332a23d6c0::t_8c280babb5a04e 1372,1495-1497
+apps/dashboard/components/pay-mapping/action-dialog.test.tsx
+  s_7fda332a23d6c0::t_59791f21ae5771 66
+  s_7fda332a23d6c0::t_8be76ea733a079 63
+  s_7fda332a23d6c0::t_e724c0ed51b62c 75
+packages/backend/convex/_generated/api.d.ts
+  s_7fda332a23d6c0::t_0f6f7d53b3382f 93,210
+apps/dashboard/components/pay-mapping/documentation-controls.test.tsx
+  s_7fda332a23d6c0::t_59791f21ae5771 65,77
+  s_7fda332a23d6c0::t_8be76ea733a079 62
+apps/dashboard/components/pay-mapping/group-member-table.tsx
+  s_7fda332a23d6c0::t_5414ec6533568a 364
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.test.tsx
+  s_7fda332a23d6c0::t_21fe123599c140 303-332
+  s_7fda332a23d6c0::t_5e09c9f6113bc5 91-94,102
+  s_7fda332a23d6c0::t_05a6c4a8e6e3e8 10
+packages/i18n/messages/da.json
+  s_7fda332a23d6c0::t_37869936d578c4 1200
+  s_7fda332a23d6c0::t_e02cf3835ca2c0 1276-1285
+  s_7fda332a23d6c0::t_fb81f5498402e3 1275
+apps/dashboard/components/pay-mapping/pay-mapping-report-render.test.tsx
+  s_7fda332a23d6c0::t_8be76ea733a079 112
+  s_7fda332a23d6c0::t_e724c0ed51b62c 115
+  s_7fda332a23d6c0::t_8da2fee3b0de91 118-152
+  s_7fda332a23d6c0::t_a8c9a4a40e5088 318
+  s_7fda332a23d6c0::t_26aa960150feac 167-168
+  s_7fda332a23d6c0::t_90e4d6f139b49e 8-11
+packages/backend/convex/payMapping/runs.ts
+  s_7fda332a23d6c0::t_43a603284d744f 797-807,815-816
+apps/dashboard/components/pay-mapping/pay-mappings-section.tsx
+  s_7fda332a23d6c0::t_3a2e0e120c19f8 430
+  s_7fda332a23d6c0::t_968eee18ed6bb3 52
+  s_7fda332a23d6c0::t_cde97731e9067c 80
+packages/backend/convex/payMapping/tables.ts
+  s_7fda332a23d6c0::t_fb95ab30b5ab85 283-286,301,304-306
+  s_7fda332a23d6c0::t_81b75773161e79 245-270
+  s_7fda332a23d6c0::t_e4d9e7cb5616ab 324,327-329
+  s_7fda332a23d6c0::t_69c932a1b5fb0c 297-298
+packages/backend/convex/payMapping/actions.ts
+  s_7fda332a23d6c0::t_460cbc2e57cc91 245
+  s_7fda332a23d6c0::t_a603c698a3e79e 59-61
+  s_7fda332a23d6c0::t_6a572876e73a52 175-177
+  s_7fda332a23d6c0::t_bf350baa82b65f 218-222
+  s_7fda332a23d6c0::t_14a3370b267857 99
+  s_7fda332a23d6c0::t_5ff773419180ee 15,56,96,271-272
+  s_7fda332a23d6c0::t_25f58dd8f3e8e6 134
+packages/backend/convex/people/erase.ts
+  s_7fda332a23d6c0::t_8a90a15a1c2b13 13-16
+  s_7fda332a23d6c0::t_b481fdd7e16bd6 79-83
+  s_7fda332a23d6c0::t_3ce7f0b056950e 84
+packages/backend/convex/payMapping/notes.ts
+  s_7fda332a23d6c0::t_bd18a4cc23733e 126-129
+  s_7fda332a23d6c0::t_be5264d9a8bbc0 22-24
+  s_7fda332a23d6c0::t_496bde986c417c 55
+docs/adr/0027-raderingsvagar-i-arbetslagret.md
+  s_7fda332a23d6c0::t_934c1f0fb86118 1-36
+  s_7fda332a23d6c0::t_38e4245c83b0ad 37-39
+packages/backend/convex/payMapping/migrations.ts
+  s_7fda332a23d6c0::t_fb627071a02730 6-10,14-23,25,34-38
+  s_7fda332a23d6c0::t_3af3246ca83d83 1-5,13,24,26-33,39-40
+  s_7fda332a23d6c0::t_de5fdce513fd8a 11-12
+packages/i18n/messages/en.json
+  s_7fda332a23d6c0::t_3f7ecdb3b27e76 1276-1285
+  s_7fda332a23d6c0::t_a2ebcefe1be263 1275
+  s_7fda332a23d6c0::t_f55736c3785819 1200
+packages/backend/convex/payMapping/actions.test.ts
+  s_7fda332a23d6c0::t_9029da9954bdb9 163
+  s_7fda332a23d6c0::t_377dcc064af1f7 395-412
+  s_7fda332a23d6c0::t_2d639fb1a1084c 466-521
+  s_7fda332a23d6c0::t_1f950d314073da 522-523
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.tsx
+  s_7fda332a23d6c0::t_b8a980316ea03d 252-256,259,267-271
+  s_7fda332a23d6c0::t_a4b2897aaed7f7 40-44,50,56,61
+  s_7fda332a23d6c0::t_b921f802a2c427 21,26
+apps/dashboard/components/pay-mapping/actions-overview.tsx
+  s_7fda332a23d6c0::t_01ccf755aae09e 51-52,139-141
+  s_7fda332a23d6c0::t_12a199dd40249a 606-621
+  s_7fda332a23d6c0::t_3b2b2d6e94ddd1 321-322,329-342
+  s_7fda332a23d6c0::t_7da6c60dd82b9b 753-758
+  s_7fda332a23d6c0::t_90aa7dcbec794d 752
+  s_7fda332a23d6c0::t_b4903c5c9a8e35 323-328,605
+  s_7fda332a23d6c0::t_dae467a5d18ea9 634-635
+  s_7fda332a23d6c0::t_5414ec6533568a 650
+  s_7fda332a23d6c0::t_7299e9db92d4b0 234-240,246
+packages/backend/convex/payMapping/runs.test.ts
+  s_7fda332a23d6c0::t_39c474c2ddfe30 1872,1882-1906
+  s_7fda332a23d6c0::t_7a15bc469a86e5 2088,2091-2093
+packages/backend/convex/payMapping/erasure.ts
+  s_7fda332a23d6c0::t_c3225693cfc928 50-54
+  s_7fda332a23d6c0::t_8ef0c5a3edfa51 26-42,49,55-56,63-66
+  s_7fda332a23d6c0::t_86b278253fe3a4 43-48,57-62
+apps/dashboard/components/pay-mapping/action-dialog.tsx
+  s_7fda332a23d6c0::t_291877da93c22e 64-65
+  s_7fda332a23d6c0::t_293fc37c81e3a1 360-365,373-388
+  s_7fda332a23d6c0::t_97ad850b66fc52 143
+  s_7fda332a23d6c0::t_86f7405ede7edf 167-170
+  s_7fda332a23d6c0::t_5b3760a5bcbe4b 366-372
+  s_7fda332a23d6c0::t_76311bf10c263f 43-47
+  s_7fda332a23d6c0::t_ccff6a31e2dc09 389-392
+packages/backend/convex/payMapping/migrations.test.ts
+  s_7fda332a23d6c0::t_5ac1001763ba8e 27-28
+  s_7fda332a23d6c0::t_b3cea2debfbce8 30-33
+  s_7fda332a23d6c0::t_b6150a154420fd 1-26,29,34-92
+packages/backend/convex/payMapping/erasure.test.ts
+  s_7fda332a23d6c0::t_78c201730abd34 332-440,448-482,493-506
+  s_7fda332a23d6c0::t_cb58e6cd9cf19c 441-447
+  s_7fda332a23d6c0::t_984cd1ac064cc7 165-196,203
+  s_7fda332a23d6c0::t_4826afdb213ace 5
+  s_7fda332a23d6c0::t_636704d8238512 237-331
+  s_7fda332a23d6c0::t_5157c6775e5b86 483-492
+packages/i18n/messages/sv.json
+  s_7fda332a23d6c0::t_9a117e78f4b3da 1200
+  s_7fda332a23d6c0::t_616ee678ccfc6d 1276-1285
+  s_7fda332a23d6c0::t_fb6e3771931dd9 1275
+apps/dashboard/components/pay-mapping/pay-mapping-report-data.test.ts
+  s_7fda332a23d6c0::t_e724c0ed51b62c 291
+  s_7fda332a23d6c0::t_0a7e69e3f6c0f2 82
+  s_7fda332a23d6c0::t_8be76ea733a079 34-35,79
+packages/backend/convex/payMapping/workLayer.ts
+  s_7fda332a23d6c0::t_50ddd561c76ab4 87-92
+  s_7fda332a23d6c0::t_6d9547aa71a5a1 150,165-169
+  s_7fda332a23d6c0::t_f3117456d082ca 170-172
+apps/dashboard/components/pay-mapping/documentation-controls.tsx
+  s_7fda332a23d6c0::t_c130b044db4de7 100,110-113,169,175-178
+apps/dashboard/components/pay-mapping/pay-mapping-report-data.ts
+  s_7fda332a23d6c0::t_acd826c0652a49 198-199
+  s_7fda332a23d6c0::t_cc50e24f328a0c 788
+  s_7fda332a23d6c0::t_5ee435216aed64 820
+  s_7fda332a23d6c0::t_aa6637f3a1bdeb 80-82,784-785,790-802,806,852-853
+  s_7fda332a23d6c0::t_0afc340f73b127 854
+  s_7fda332a23d6c0::t_c00231e2d41a43 226-227
+  s_7fda332a23d6c0::t_6242fe1ddbd867 186-188
+  s_7fda332a23d6c0::t_2c3680498a763a 21
+apps/dashboard/components/pay-mapping/actions-overview.test.tsx
+  s_7fda332a23d6c0::t_e6898ab38f24dc 334-362,373-375,383
+  s_7fda332a23d6c0::t_b7a265bebe5749 363-372,376-382
+  s_7fda332a23d6c0::t_8be76ea733a079 114
+  s_7fda332a23d6c0::t_59791f21ae5771 117,129
+apps/dashboard/components/pay-mapping/pay-mapping-report-export.tsx
+  s_7fda332a23d6c0::t_a527e0959de1f3 448
+  s_7fda332a23d6c0::t_b8c5712c1f7b38 194-197
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "461b787f0afb0adcaaa19325ca9d63067ac41fa0",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
