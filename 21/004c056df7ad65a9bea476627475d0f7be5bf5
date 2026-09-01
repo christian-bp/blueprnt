@@ -1,0 +1,50 @@
+packages/i18n/messages/en.json
+  s_7fda332a23d6c0::t_ec50f61e65f304 1406,1408-1409
+  s_7fda332a23d6c0::t_3bcfb586131ebc 1407
+  s_7fda332a23d6c0::t_afab27f6e6a4c4 1412-1413
+packages/i18n/messages/sv.json
+  s_7fda332a23d6c0::t_3bcfb586131ebc 1407
+  s_7fda332a23d6c0::t_afab27f6e6a4c4 1412-1413
+  s_7fda332a23d6c0::t_ec50f61e65f304 1406,1408-1409
+packages/i18n/messages/nb.json
+  s_7fda332a23d6c0::t_3bcfb586131ebc 1407
+  s_7fda332a23d6c0::t_ec50f61e65f304 1406,1408-1409
+  s_7fda332a23d6c0::t_afab27f6e6a4c4 1412-1413
+apps/dashboard/components/pay-mapping/pay-mapping-report-download.tsx
+  s_7fda332a23d6c0::t_1a50b5566b0776 103-122,132-134
+  s_7fda332a23d6c0::t_ec34a724fa93f4 4,10,12,14,19,22-24
+packages/i18n/messages/fi.json
+  s_7fda332a23d6c0::t_afab27f6e6a4c4 1412-1413
+  s_7fda332a23d6c0::t_ec50f61e65f304 1406,1408-1409
+  s_7fda332a23d6c0::t_3bcfb586131ebc 1407
+packages/i18n/messages/da.json
+  s_7fda332a23d6c0::t_afab27f6e6a4c4 1412-1413
+  s_7fda332a23d6c0::t_3bcfb586131ebc 1407
+  s_7fda332a23d6c0::t_ec50f61e65f304 1406,1408-1409
+apps/dashboard/components/pay-mapping/pay-mapping-report.tsx
+  s_7fda332a23d6c0::t_f80da3f9e8ee70 43
+  s_7fda332a23d6c0::t_374a537995aaca 10-14,23-42,44-47,52,54-58,60-65,69-72,76-84,88,90-106,108-111,144-145,172-176,179-186,201-202
+  s_7fda332a23d6c0::t_21cfdd34d3590b 107
+  s_7fda332a23d6c0::t_40692cb85c3fdc 166
+  s_7fda332a23d6c0::t_936b005ab943fd 89
+  s_7fda332a23d6c0::t_36d0016aee65f9 4-9,20
+  s_7fda332a23d6c0::t_332cfe7ddddece 48-51,53,59,66-68,73-75
+  s_7fda332a23d6c0::t_d4650c6283d29f 115-118,135,139
+  s_7fda332a23d6c0::t_babbd45867ac4f 163,167
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "21004c056df7ad65a9bea476627475d0f7be5bf5",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
