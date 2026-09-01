@@ -1,0 +1,38 @@
+CLAUDE.md
+  s_7fda332a23d6c0::t_5fbdb148809386 44
+docs/superpowers/analysis/lonekartlaggning-progress-tracker.html
+  s_7fda332a23d6c0::t_5deac2f8ca7ef6 480
+  s_7fda332a23d6c0::t_05ab6d1833f5bd 502-503
+  s_7fda332a23d6c0::t_1db751523cabdb 449,461-462
+  s_7fda332a23d6c0::t_b8dc19a9cbe3a9 224
+docs/adr/0015-instegsvillkor-och-atgardslager.md
+  s_7fda332a23d6c0::t_c499b2a077130a 15
+docs/lonekartlaggning-rapport-kravbild.md
+  s_7fda332a23d6c0::t_f8545f572a31ff 98
+  s_7fda332a23d6c0::t_7fdbe8ba567adf 106
+  s_7fda332a23d6c0::t_f20d1107e67b0c 101
+  s_7fda332a23d6c0::t_58200a9af36408 100
+docs/go-live-checklist.md
+  s_7fda332a23d6c0::t_35f35173de062d 420
+  s_7fda332a23d6c0::t_cf871d170cc951 310-322
+  s_7fda332a23d6c0::t_6c6706ed4a872c 357-365
+  s_7fda332a23d6c0::t_c6bd3091a99997 416
+  s_7fda332a23d6c0::t_b3fc7916d62a07 301-309
+  s_7fda332a23d6c0::t_cbea68e5602663 370-376
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "78aa861b0340b05ebb9cb7286b667968300629ec",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
