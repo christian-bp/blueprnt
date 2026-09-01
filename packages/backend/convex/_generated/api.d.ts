@@ -90,7 +90,6 @@ import type * as payMapping_actions from "../payMapping/actions.js";
 import type * as payMapping_analyses from "../payMapping/analyses.js";
 import type * as payMapping_erasure from "../payMapping/erasure.js";
 import type * as payMapping_gap from "../payMapping/gap.js";
-import type * as payMapping_migrations from "../payMapping/migrations.js";
 import type * as payMapping_notes from "../payMapping/notes.js";
 import type * as payMapping_orgGap from "../payMapping/orgGap.js";
 import type * as payMapping_report from "../payMapping/report.js";
@@ -207,7 +206,6 @@ declare const fullApi: ApiFromModules<{
   "payMapping/analyses": typeof payMapping_analyses;
   "payMapping/erasure": typeof payMapping_erasure;
   "payMapping/gap": typeof payMapping_gap;
-  "payMapping/migrations": typeof payMapping_migrations;
   "payMapping/notes": typeof payMapping_notes;
   "payMapping/orgGap": typeof payMapping_orgGap;
   "payMapping/report": typeof payMapping_report;
