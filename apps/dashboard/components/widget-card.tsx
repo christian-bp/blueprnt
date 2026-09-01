@@ -241,9 +241,12 @@ export function WidgetCard({
           border-t + bg-muted/50 chrome for footers that ARE a distinct band
           (a frame's pagination foot), which read as a broken seam under a
           stat figure. Neutralized here, and pt-0 restores the column rhythm
-          the card had before the footer slot went tonal. */}
+          the card had before the footer slot went tonal. mt-auto pins the
+          two lines to the card's bottom edge: in a strip the grid stretches
+          every card to the tallest one's height, and without the pin a
+          shorter card's text sat higher than its neighbours'. */}
       {(footer !== undefined || note !== undefined) && (
-        <CardFooter className="flex-col items-start gap-0.5 border-t-0 bg-transparent pt-0 text-sm">
+        <CardFooter className="mt-auto flex-col items-start gap-0.5 border-t-0 bg-transparent pt-0 text-sm">
           {footer !== undefined && (
             <div className="flex w-full min-w-0 items-center gap-1.5 font-medium">
               <span className="truncate">{footer}</span>
