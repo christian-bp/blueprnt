@@ -1473,7 +1473,7 @@
         "findingFound": "En brist har konstaterats.",
         "findingPending": "Ännu inte granskat.",
         "equalWorkTitle": "Lika arbete",
-        "equalWorkIntro": "Kvinnor och män som utför lika arbete, grupperade efter faktiska arbetsuppgifter (roll och nivå). Varje skillnad analyseras oavsett storlek; statuströsklarna ordnar uppmärksamheten och är ingen rättslig gräns. Medelvärdena är FTE-justerad grundlön. Grupper markerade † flaggas på total ersättning.",
+        "equalWorkIntro": "Kvinnor och män som utför lika arbete, grupperade efter faktiska arbetsuppgifter (roll och nivå). Varje skillnad analyseras oavsett storlek; statuströsklarna ordnar uppmärksamheten och är ingen rättslig gräns. Medelvärdena är FTE-justerad grundlön. Grupper markerade * flaggas på total ersättning.",
         "tccLine": "Total ersättning: kvinnor {womenMean}, män {menMean}, skillnad {gapPct} ({gapKr}).",
         "colWomenMean": "Medel kvinnor",
         "colMenMean": "Medel män",

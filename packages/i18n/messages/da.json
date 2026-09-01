@@ -1473,7 +1473,7 @@
         "findingFound": "En mangel er konstateret.",
         "findingPending": "Endnu ikke gennemgået.",
         "equalWorkTitle": "Lige arbejde",
-        "equalWorkIntro": "Kvinder og mænd, der udfører lige arbejde, grupperet efter faktiske arbejdsopgaver (rolle og niveau). Hver forskel analyseres uanset størrelse; statustærsklerne ordner opmærksomheden og er ingen retlig grænse. Gennemsnittene er FTE-justeret grundløn. Grupper markeret † flages på samlet løn.",
+        "equalWorkIntro": "Kvinder og mænd, der udfører lige arbejde, grupperet efter faktiske arbejdsopgaver (rolle og niveau). Hver forskel analyseres uanset størrelse; statustærsklerne ordner opmærksomheden og er ingen retlig grænse. Gennemsnittene er FTE-justeret grundløn. Grupper markeret * flages på samlet løn.",
         "tccLine": "Samlet løn: kvinder {womenMean}, mænd {menMean}, forskel {gapPct} ({gapKr}).",
         "colWomenMean": "Snit kvinder",
         "colMenMean": "Snit mænd",

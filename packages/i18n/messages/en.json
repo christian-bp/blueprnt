@@ -1473,7 +1473,7 @@
         "findingFound": "A deficiency was found.",
         "findingPending": "Not yet reviewed.",
         "equalWorkTitle": "Equal work",
-        "equalWorkIntro": "Women and men performing equal work, grouped by what they actually do (role and level). Every difference is analysed regardless of size; the status thresholds order attention and are not a legal floor. Averages are FTE-adjusted base salary. Groups marked † are flagged on total compensation.",
+        "equalWorkIntro": "Women and men performing equal work, grouped by what they actually do (role and level). Every difference is analysed regardless of size; the status thresholds order attention and are not a legal floor. Averages are FTE-adjusted base salary. Groups marked * are flagged on total compensation.",
         "tccLine": "Total compensation: women {womenMean}, men {menMean}, difference {gapPct} ({gapKr}).",
         "colWomenMean": "Avg women",
         "colMenMean": "Avg men",

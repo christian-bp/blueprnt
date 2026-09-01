@@ -1473,7 +1473,7 @@
         "findingFound": "Puute on todettu.",
         "findingPending": "Ei vielä tarkastettu.",
         "equalWorkTitle": "Sama työ",
-        "equalWorkIntro": "Naiset ja miehet, jotka tekevät samaa työtä, ryhmiteltyinä todellisten työtehtävien mukaan (rooli ja taso). Jokainen ero analysoidaan sen koosta riippumatta; tilakynnykset ohjaavat huomiota eivätkä ole oikeudellinen raja. Keskiarvot ovat FTE-korjattua peruspalkkaa. Merkillä † merkityt ryhmät on liputettu kokonaiskorvauksen perusteella.",
+        "equalWorkIntro": "Naiset ja miehet, jotka tekevät samaa työtä, ryhmiteltyinä todellisten työtehtävien mukaan (rooli ja taso). Jokainen ero analysoidaan sen koosta riippumatta; tilakynnykset ohjaavat huomiota eivätkä ole oikeudellinen raja. Keskiarvot ovat FTE-korjattua peruspalkkaa. Merkillä * merkityt ryhmät on liputettu kokonaiskorvauksen perusteella.",
         "tccLine": "Kokonaiskorvaus: naiset {womenMean}, miehet {menMean}, ero {gapPct} ({gapKr}).",
         "colWomenMean": "Keskiarvo naiset",
         "colMenMean": "Keskiarvo miehet",

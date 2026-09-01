@@ -249,7 +249,7 @@ const LABELS: PayMappingReportLabels = {
   flagLabel: (flag) => flag,
   levelText: (level) => (level === null ? "-" : String(level)),
   levelRowLabel: (level) => (level === null ? "-" : `Level ${level}`),
-  tccDrivenMarker: "†",
+  tccDrivenMarker: "*",
   tccLine: (metric) =>
     `Total comp: ${metric.womenMean ?? "-"} / ${metric.menMean ?? "-"} (${metric.gapPct ?? "-"})`,
   medianShort: "md",
