@@ -204,6 +204,11 @@ export interface ReportPreviousEvaluation {
   note: string | null
   actions: {
     id: string
+    // The target kind rides along even though the statutory table does not
+    // print it: the union variant masks a person- or pair-targeted cost in
+    // THIS table exactly like in the current run's (the amount is that
+    // individual's planned adjustment, whichever year it belongs to).
+    kind: "group" | "person" | "comparison"
     label: string
     plannedAction: string
     status: ActionStatus
@@ -813,6 +818,7 @@ export function assemblePayMappingReport(input: {
           note: previousRow?.note ?? null,
           actions: previous.actions.map((action) => ({
             id: action.actionId,
+            kind: action.target.kind,
             label: targetGroupLabel(action.target),
             plannedAction: action.plannedAction,
             status: action.status,
@@ -969,6 +975,36 @@ export function assemblePayMappingReport(input: {
       genderPureCount: gap.excluded.genderPure.length,
       reverseCount: gap.excluded.reverse.length,
     },
+  }
+}
+
+// The union variant of the assembled document (facklig rapport, DL 3 kap.
+// 11-12 §§; kravbild docs/lonekartlaggning-facklig-rapport-kravbild.md §5):
+// the same statutory content at group level, with the individual-adjacent
+// details taken out at the data layer. A person- or pair-targeted action's
+// cost is in practice that individual's planned adjustment, so it masks per
+// row while the cost roll-up (actionTotals, already computed) keeps it; the
+// SAME rule covers the previous year's evaluation table, whose rows carry
+// their target kind for exactly this. Internal working notes leave the
+// document entirely; the template also skips the notes subsection, and
+// emptying the rows here keeps the doc honest for any consumer that reads
+// data rather than layout. The owner column is a layout concern (the
+// template's union flag drops it).
+export function unionReportDoc(doc: PayMappingReportDoc): PayMappingReportDoc {
+  const maskCost = <T extends { kind: string; cost: string | null }>(
+    action: T
+  ): T => (action.kind === "group" ? action : { ...action, cost: null })
+  return {
+    ...doc,
+    actions: doc.actions.map(maskCost),
+    previousEvaluation:
+      doc.previousEvaluation === null
+        ? null
+        : {
+            ...doc.previousEvaluation,
+            actions: doc.previousEvaluation.actions.map(maskCost),
+          },
+    notes: [],
   }
 }
 

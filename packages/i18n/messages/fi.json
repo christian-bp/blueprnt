@@ -882,7 +882,8 @@
         "roleAssessmentReopened": "Arviointi avattu uudelleen",
         "roleAssessmentCalibrated": "Arviointi kalibroitu",
         "payMappingReportExported": "Palkkakartoitusraportti viety",
-        "payMappingMetricsExported": "Palkkakartoituksen tunnusluvut viety"
+        "payMappingMetricsExported": "Palkkakartoituksen tunnusluvut viety",
+        "payMappingUnionReportExported": "Ammattiliittoraportti viety"
       },
       "ai": {
         "weightReview": "Painotusten tarkistus: {count} käytetty",
@@ -1411,6 +1412,12 @@
         "downloadMetrics": "Lataa tunnusluvut (Excel)",
         "downloadReportItem": "Raportti (PDF)",
         "downloadMetricsItem": "Tunnusluvut (Excel)",
+        "unionTitle": "Ammattiliittoraportti",
+        "unionDescription": "Peitetty ryhmätason aineisto yhteistoimintaan ammattiliittojen kanssa (PDF).",
+        "unionSubtitle": "Aineisto yhteistoimintaan Ruotsin syrjintälain 3 luvun 11-12 §:n mukaisesti",
+        "unionPurpose": "Raportissa esitetään tiedot vain ryhmätasolla. Tiedot yksittäisen työntekijän palkasta annetaan tarvittaessa erikseen, jolloin sovelletaan Ruotsin myötämääräämislain 21, 22 ja 56 §:n salassapito- ja vahingonkorvaussääntöjä (syrjintälain 3 luvun 12 §). Sukupuolittain jaotellut arvot näytetään vain ryhmille, joissa on vähintään {min} henkilöä ja vähintään {perGender} kummastakin sukupuolesta; muut arvot peitetään työkalun varovaisuusperiaatteen mukaisesti.",
+        "downloadUnion": "Lataa ammattiliittoraportti",
+        "downloadUnionItem": "Ammattiliittoraportti (PDF)",
         "metricsSheetTitle": "Tunnusluvut",
         "metricsMeanTotal": "Keskipalkka (kokonaiskorvaus)",
         "metricsMedianTotal": "Mediaanipalkka (kokonaiskorvaus)",
@@ -2328,7 +2335,9 @@
       "methodDriftLabel": "Mitä aiempi menetelmä tarkoittaa?",
       "methodDriftBody": "Arviointi viimeisteltiin ennen mallin viimeisintä hyväksyntää, joten se tehtiin eri säännöillä. Tulos on voimassa; merkintä pyytää ihmistä katsomaan sitä.",
       "payMappingReportLabel": "Mikä on dokumentaatioraportti?",
-      "payMappingReportBody": "PDF, joka sisältää kartoituksen lakisääteisen kirjallisen dokumentaation: yhteistoiminta, käytännöt, molemmat palkkavertailut, toimenpiteet ja menetelmä. Luonnos, kunnes kartoitus on valmis."
+      "payMappingReportBody": "PDF, joka sisältää kartoituksen lakisääteisen kirjallisen dokumentaation: yhteistoiminta, käytännöt, molemmat palkkavertailut, toimenpiteet ja menetelmä. Luonnos, kunnes kartoitus on valmis.",
+      "unionReportLabel": "Mikä on ammattiliittoraportti?",
+      "unionReportBody": "Peitetty ryhmätason aineisto yhteistoimintaan ammattiliittojen kanssa syrjintälain 3 luvun 11-12 §:n mukaisesti. Tarkista ennen jakamista, ettei toimenpiteiden vapaa teksti nimeä yksittäisiä henkilöitä."
     },
     "widgetCard": {
       "expand": "Suurenna"

@@ -882,7 +882,8 @@
         "roleAssessmentReopened": "Assessment reopened",
         "roleAssessmentCalibrated": "Assessment calibrated",
         "payMappingReportExported": "Pay mapping report exported",
-        "payMappingMetricsExported": "Pay mapping key figures exported"
+        "payMappingMetricsExported": "Pay mapping key figures exported",
+        "payMappingUnionReportExported": "Union report exported"
       },
       "ai": {
         "weightReview": "Weight review: {count} applied",
@@ -1411,6 +1412,12 @@
         "downloadMetrics": "Download key figures (Excel)",
         "downloadReportItem": "Report (PDF)",
         "downloadMetricsItem": "Key figures (Excel)",
+        "unionTitle": "Union report",
+        "unionDescription": "Masked group-level basis for cooperation with the unions (PDF).",
+        "unionSubtitle": "Basis for cooperation under ch. 3 §§ 11-12 of the Swedish Discrimination Act",
+        "unionPurpose": "This report presents figures at group level only. Information about an individual employee's pay is provided separately when needed, in which case the confidentiality and damages rules in sections 21, 22 and 56 of the Swedish Co-Determination Act apply (ch. 3 § 12 of the Discrimination Act). Gender-split figures are shown only for groups of at least {min} people with at least {perGender} per gender; other values are masked under this tool's precautionary rule.",
+        "downloadUnion": "Download union report",
+        "downloadUnionItem": "Union report (PDF)",
         "metricsSheetTitle": "Key figures",
         "metricsMeanTotal": "Average pay (total compensation)",
         "metricsMedianTotal": "Median pay (total compensation)",
@@ -2328,7 +2335,9 @@
       "methodDriftLabel": "What does an earlier method mean?",
       "methodDriftBody": "The assessment was completed before the model was last approved, so it was made under different rules. The result still stands; the flag asks a person to look at it.",
       "payMappingReportLabel": "What is the documentation report?",
-      "payMappingReportBody": "A PDF with the statutory written documentation of this pay mapping: collaboration, practices, both pay comparisons, measures and method. Draft until the pay mapping is completed."
+      "payMappingReportBody": "A PDF with the statutory written documentation of this pay mapping: collaboration, practices, both pay comparisons, measures and method. Draft until the pay mapping is completed.",
+      "unionReportLabel": "What is the union report?",
+      "unionReportBody": "A masked group-level basis for union cooperation under ch. 3 §§ 11-12 of the Discrimination Act. Before sharing, check that no action free text names an individual."
     },
     "widgetCard": {
       "expand": "Expand"

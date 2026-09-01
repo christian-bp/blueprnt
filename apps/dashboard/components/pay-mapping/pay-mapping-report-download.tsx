@@ -4,6 +4,7 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
+import { useState } from "react"
 import { useOrganization } from "@/components/org-context"
 import { usePayMappingMetricsExport } from "./pay-mapping-metrics-export"
 import {
@@ -12,7 +13,10 @@ import {
   ReportDocumentPanel,
   ReportDownloadButton,
   ReportsFrame,
+  UnionDocumentPanel,
+  UnionDownloadButton,
 } from "./pay-mapping-report"
+import type { ReportVariant } from "./pay-mapping-report-doc"
 import { usePayMappingReportExport } from "./pay-mapping-report-export"
 import { usePayMappingRun } from "./pay-mapping-run-context"
 
@@ -68,8 +72,11 @@ export function PayMappingReportDownload() {
       (previousActions !== undefined && previousGap !== undefined))
 
   const final = run !== undefined && run.status === "completed"
+  // Which PDF variant is mid-export: the hook's busy covers both, so the
+  // spinner needs its own record of whose button was pressed.
+  const [activeVariant, setActiveVariant] = useState<ReportVariant | null>(null)
 
-  async function onExport() {
+  async function onExport(variant: ReportVariant) {
     if (
       run === undefined ||
       gap === undefined ||
@@ -80,22 +87,30 @@ export function PayMappingReportDownload() {
     ) {
       return
     }
-    await exportReport({
-      run,
-      gap,
-      analyses,
-      actions,
-      notes,
-      previous:
-        previousRun === null
-          ? null
-          : {
-              runLabel: previousRun.label,
-              referenceDate: previousRun.referenceDate,
-              actions: previousActions ?? [],
-              gap: previousGap ?? null,
-            },
-    })
+    setActiveVariant(variant)
+    try {
+      await exportReport(
+        {
+          run,
+          gap,
+          analyses,
+          actions,
+          notes,
+          previous:
+            previousRun === null
+              ? null
+              : {
+                  runLabel: previousRun.label,
+                  referenceDate: previousRun.referenceDate,
+                  actions: previousActions ?? [],
+                  gap: previousGap ?? null,
+                },
+        },
+        variant
+      )
+    } finally {
+      setActiveVariant(null)
+    }
   }
 
   return (
@@ -112,9 +127,18 @@ export function PayMappingReportDownload() {
         <ReportDocumentPanel
           action={
             <ReportDownloadButton
-              busy={busy}
-              disabled={!ready}
-              onClick={onExport}
+              busy={busy && activeVariant === "statutory"}
+              disabled={!ready || busy}
+              onClick={() => void onExport("statutory")}
+            />
+          }
+        />
+        <UnionDocumentPanel
+          action={
+            <UnionDownloadButton
+              busy={busy && activeVariant === "union"}
+              disabled={!ready || busy}
+              onClick={() => void onExport("union")}
             />
           }
         />

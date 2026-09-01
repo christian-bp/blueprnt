@@ -882,7 +882,8 @@
         "roleAssessmentReopened": "Bedömning öppnad igen",
         "roleAssessmentCalibrated": "Bedömning kalibrerad",
         "payMappingReportExported": "Lönekartläggningsrapport exporterad",
-        "payMappingMetricsExported": "Lönekartläggningens nyckeltal exporterade"
+        "payMappingMetricsExported": "Lönekartläggningens nyckeltal exporterade",
+        "payMappingUnionReportExported": "Facklig rapport exporterad"
       },
       "ai": {
         "weightReview": "Viktgenomgång: {count} tillämpade",
@@ -1411,6 +1412,12 @@
         "downloadMetrics": "Ladda ner nyckeltal (Excel)",
         "downloadReportItem": "Rapport (PDF)",
         "downloadMetricsItem": "Nyckeltal (Excel)",
+        "unionTitle": "Facklig rapport",
+        "unionDescription": "Maskerat gruppnivåunderlag för samverkan med facket (PDF).",
+        "unionSubtitle": "Underlag för samverkan enligt 3 kap. 11-12 §§ diskrimineringslagen",
+        "unionPurpose": "Rapporten redovisar enbart uppgifter på gruppnivå. Uppgifter om enskilda arbetstagares lön lämnas vid behov separat, varvid reglerna om tystnadsplikt och skadestånd i 21, 22 och 56 §§ medbestämmandelagen gäller (3 kap. 12 § diskrimineringslagen). Könsuppdelade värden visas endast för grupper med minst {min} personer och minst {perGender} per kön; övriga värden är maskerade enligt verktygets försiktighetsprincip.",
+        "downloadUnion": "Ladda ner facklig rapport",
+        "downloadUnionItem": "Facklig rapport (PDF)",
         "metricsSheetTitle": "Nyckeltal",
         "metricsMeanTotal": "Medellön (total ersättning)",
         "metricsMedianTotal": "Medianlön (total ersättning)",
@@ -2328,7 +2335,9 @@
       "methodDriftLabel": "Vad betyder en tidigare metod?",
       "methodDriftBody": "Bedömningen slutfördes innan modellen senast godkändes, så den gjordes under andra regler. Resultatet står kvar; flaggan ber en människa titta på det.",
       "payMappingReportLabel": "Vad är dokumentationsrapporten?",
-      "payMappingReportBody": "En PDF med kartläggningens lagstadgade skriftliga dokumentation: samverkan, praxis, båda lönejämförelserna, åtgärder och metod. Utkast tills kartläggningen är slutförd."
+      "payMappingReportBody": "En PDF med kartläggningens lagstadgade skriftliga dokumentation: samverkan, praxis, båda lönejämförelserna, åtgärder och metod. Utkast tills kartläggningen är slutförd.",
+      "unionReportLabel": "Vad är den fackliga rapporten?",
+      "unionReportBody": "Ett maskerat gruppnivåunderlag för samverkan med facket enligt 3 kap. 11-12 §§ diskrimineringslagen. Kontrollera före delning att åtgärdernas fritext inte namnger enskilda."
     },
     "widgetCard": {
       "expand": "Förstora"

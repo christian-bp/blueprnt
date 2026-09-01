@@ -36,11 +36,13 @@ import {
   EXPORT_MIN_GROUP_SIZE,
   EXPORT_MIN_PER_GENDER,
   type ReportPreviousInput,
+  unionReportDoc,
 } from "./pay-mapping-report-data"
 import {
   PayMappingReportPdf,
   type PayMappingReportLabels,
   type ReportChartImages,
+  type ReportVariant,
 } from "./pay-mapping-report-doc"
 
 // The capture host pins the LIGHT theme's chart tokens (globals.css :root)
@@ -115,7 +117,10 @@ export interface ReportExportData {
 // its tree, or the chart capture silently falls back to the vector charts.
 export function usePayMappingReportExport(): {
   busy: boolean
-  exportReport: (data: ReportExportData) => Promise<void>
+  exportReport: (
+    data: ReportExportData,
+    variant?: ReportVariant
+  ) => Promise<void>
   captureHost: ReactNode
 } {
   const t = useTranslations("dashboard.payMapping.report")
@@ -133,6 +138,9 @@ export function usePayMappingReportExport(): {
   const locale = useLocale()
   const { orgId } = useOrganization()
   const logExport = useMutation(api.payMapping.report.logPayMappingReportExport)
+  const logUnionExport = useMutation(
+    api.payMapping.report.logPayMappingUnionReportExport
+  )
   const [busy, setBusy] = useState(false)
   // While set, the off-screen capture host renders the app's own charts
   // with this data so the export can rasterize them.
@@ -142,7 +150,10 @@ export function usePayMappingReportExport(): {
   } | null>(null)
   const captureHostRef = useRef<HTMLDivElement | null>(null)
 
-  async function exportReport(data: ReportExportData): Promise<void> {
+  async function exportReport(
+    data: ReportExportData,
+    variant: ReportVariant = "statutory"
+  ): Promise<void> {
     const { run, gap, analyses, actions, notes, previous } = data
     setBusy(true)
     try {
@@ -151,7 +162,7 @@ export function usePayMappingReportExport(): {
         currency === null
           ? format.number(Math.round(value))
           : formatMoney(value, currency, locale)
-      const doc = assemblePayMappingReport({
+      const assembled = assemblePayMappingReport({
         run,
         gap,
         analyses,
@@ -166,6 +177,10 @@ export function usePayMappingReportExport(): {
             format.dateTime(new Date(epochMs), { dateStyle: "medium" }),
         },
       })
+      // The union variant's data-level masking (person-targeted action
+      // costs, notes) happens on the assembled doc, so both variants share
+      // one assembly and can never diverge in their figures.
+      const doc = variant === "union" ? unionReportDoc(assembled) : assembled
 
       // The app's own shadcn charts (the population donut and the quartile
       // stack), rasterized off-screen: the capture host mounts with the
@@ -208,9 +223,23 @@ export function usePayMappingReportExport(): {
         t("quartile3"),
         t("quartile4"),
       ]
+      const union = variant === "union"
       const labels: PayMappingReportLabels = {
-        docTitle: t("docTitle"),
-        footer: t("docTitle"),
+        docTitle: union ? t("unionTitle") : t("docTitle"),
+        footer: union ? t("unionTitle") : t("docTitle"),
+        // The union cover states its legal ground and purpose: no
+        // individual-level data, separate disclosure under MBL
+        // tystnadsplikt when needed, and the masking thresholds (stated as
+        // this tool's own conservative choice, never a standard).
+        ...(union
+          ? {
+              coverSubtitle: t("unionSubtitle"),
+              coverPurpose: t("unionPurpose", {
+                min: EXPORT_MIN_GROUP_SIZE,
+                perGender: EXPORT_MIN_PER_GENDER,
+              }),
+            }
+          : {}),
         contentsTitle: tAppendix("contentsTitle"),
         statusTag: doc.status === "final" ? t("tagFinal") : t("tagDraft"),
         generatedOn: tAppendix("generatedOn", {
@@ -470,6 +499,7 @@ export function usePayMappingReportExport(): {
           <PayMappingReportPdf
             doc={doc}
             labels={labels}
+            variant={variant}
             chartImages={chartImages}
             headerBreaks={headerBreaks}
             onResolvePage={(id, page) => {
@@ -492,6 +522,7 @@ export function usePayMappingReportExport(): {
         <PayMappingReportPdf
           doc={doc}
           labels={labels}
+          variant={variant}
           chartImages={chartImages}
           pageRefs={pageRefs}
           headerBreaks={headerBreaks}
@@ -503,7 +534,9 @@ export function usePayMappingReportExport(): {
       // not happen. Generation stayed local; nothing has left the browser
       // yet.
       try {
-        await logExport({ orgId, runId: run.runId })
+        await (union
+          ? logUnionExport({ orgId, runId: run.runId })
+          : logExport({ orgId, runId: run.runId }))
       } catch {
         toast.error(t("logFailed"))
         return
@@ -512,7 +545,9 @@ export function usePayMappingReportExport(): {
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = `${run.label}-lonekartlaggning.pdf`
+      a.download = union
+        ? `${run.label}-facklig-rapport.pdf`
+        : `${run.label}-lonekartlaggning.pdf`
       document.body.appendChild(a)
       a.click()
       a.remove()

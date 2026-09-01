@@ -193,6 +193,12 @@ const s = StyleSheet.create({
 
 export type PayMappingReportLabels = {
   docTitle: string
+  // The union variant's cover extras: a subtitle naming the document's legal
+  // ground and a purpose paragraph (no individual data; MBL tystnadsplikt on
+  // separate disclosure; the masking thresholds). Absent on the statutory
+  // document, whose title carries the whole identity.
+  coverSubtitle?: string
+  coverPurpose?: string
   footer: string
   contentsTitle: string
   statusTag: string
@@ -652,6 +658,8 @@ function SummaryRow({
   )
 }
 
+export type ReportVariant = "statutory" | "union"
+
 export function PayMappingReportPdf({
   doc,
   labels,
@@ -660,6 +668,7 @@ export function PayMappingReportPdf({
   onRowPage,
   headerBreaks,
   chartImages,
+  variant = "statutory",
 }: {
   doc: PayMappingReportDoc
   labels: PayMappingReportLabels
@@ -670,6 +679,13 @@ export function PayMappingReportPdf({
   // so leaving it out of a pass would settle the layout for a document that
   // is not the one shipped.
   chartImages?: ReportChartImages
+  // The union variant (facklig rapport, DL 3 kap. 11-12 §§): the same
+  // chapters at group level, minus the internal working notes and the
+  // action owner column (kravbild: docs/
+  // lonekartlaggning-facklig-rapport-kravbild.md §5). Data-level masking
+  // (person-targeted action costs) is the assembly transform's job
+  // (unionReportDoc), not this flag's.
+  variant?: ReportVariant
 } & RowPaginationProps) {
   const resolve = (id: string) =>
     onResolvePage ? (page: number) => onResolvePage(id, page) : undefined
@@ -701,12 +717,18 @@ export function PayMappingReportPdf({
         <Cover
           docTitle={labels.docTitle}
           metaLines={[
+            ...(labels.coverSubtitle === undefined
+              ? []
+              : [labels.coverSubtitle]),
             doc.runLabel,
             labels.referenceDateLine,
             labels.generatedOn,
           ]}
           statusTag={labels.statusTag}
         />
+        {labels.coverPurpose !== undefined && (
+          <Text style={s.para}>{labels.coverPurpose}</Text>
+        )}
         <View style={s.contents}>
           <Text style={s.contentsTitle}>{labels.contentsTitle}</Text>
           <TocRow
@@ -1299,7 +1321,7 @@ export function PayMappingReportPdf({
             <Text style={s.para}>{labels.noActions}</Text>
           ) : (
             <View>
-              <ActionsHeader labels={labels} />
+              <ActionsHeader labels={labels} showOwner={variant !== "union"} />
               {doc.actions.map((action, index) => (
                 <View key={action.id}>
                   {/* The Sysarb-style scope band: actions grouped by which
@@ -1321,7 +1343,10 @@ export function PayMappingReportPdf({
                     }
                   >
                     {headerBreaks?.has(`actions:${action.id}`) && (
-                      <ActionsHeader labels={labels} />
+                      <ActionsHeader
+                        labels={labels}
+                        showOwner={variant !== "union"}
+                      />
                     )}
                     <View style={s.row}>
                       <View style={s.cellGroup}>
@@ -1353,9 +1378,11 @@ export function PayMappingReportPdf({
                           </Text>
                         )}
                       </View>
-                      <Text style={[s.cellMoney, s.tableText]}>
-                        {action.ownerName}
-                      </Text>
+                      {variant !== "union" && (
+                        <Text style={[s.cellMoney, s.tableText]}>
+                          {action.ownerName}
+                        </Text>
+                      )}
                       <Text style={[s.cellMoney, s.tableText]}>
                         {action.plannedDate}
                       </Text>
@@ -1377,31 +1404,39 @@ export function PayMappingReportPdf({
           {doc.actionTotals.count > 0 && (
             <Text style={s.note}>{labels.actionTotalsLine}</Text>
           )}
-          <Text style={s.subHeading} minPresenceAhead={60}>
-            {labels.notesTitle}
-          </Text>
-          {doc.notes.length === 0 ? (
-            <Text style={s.para}>{labels.noNotes}</Text>
-          ) : (
-            doc.notes.map((note) => (
-              // Atomic only while bounded; see BREAKABLE_ROW_TEXT_LENGTH.
-              <View
-                key={note.id}
-                style={s.row}
-                wrap={note.text.length > BREAKABLE_ROW_TEXT_LENGTH}
-              >
-                <Text style={[s.cellGroup, s.tableText]}>{note.label}</Text>
-                <Text style={[s.cellMoney, s.tableText]}>
-                  {labels.noteTypeLabel(note.noteType)}
-                </Text>
-                <View style={{ flex: 3 }}>
-                  <Text style={s.tableText}>{note.text}</Text>
-                  <Text style={[s.tableText, { color: "#555" }]}>
-                    {note.authorName}, {note.date}
-                  </Text>
-                </View>
-              </View>
-            ))
+          {/* Internal working notes never enter the union variant: free text
+              with a real risk of names in running prose, and no statutory or
+              union-side requirement points at them (kravbild §5 p 7). The
+              whole subsection goes, not an empty "no notes" claim. */}
+          {variant !== "union" && (
+            <>
+              <Text style={s.subHeading} minPresenceAhead={60}>
+                {labels.notesTitle}
+              </Text>
+              {doc.notes.length === 0 ? (
+                <Text style={s.para}>{labels.noNotes}</Text>
+              ) : (
+                doc.notes.map((note) => (
+                  // Atomic only while bounded; see BREAKABLE_ROW_TEXT_LENGTH.
+                  <View
+                    key={note.id}
+                    style={s.row}
+                    wrap={note.text.length > BREAKABLE_ROW_TEXT_LENGTH}
+                  >
+                    <Text style={[s.cellGroup, s.tableText]}>{note.label}</Text>
+                    <Text style={[s.cellMoney, s.tableText]}>
+                      {labels.noteTypeLabel(note.noteType)}
+                    </Text>
+                    <View style={{ flex: 3 }}>
+                      <Text style={s.tableText}>{note.text}</Text>
+                      <Text style={[s.tableText, { color: "#555" }]}>
+                        {note.authorName}, {note.date}
+                      </Text>
+                    </View>
+                  </View>
+                ))
+              )}
+            </>
           )}
         </Section>
       </BrandedPage>
@@ -1587,14 +1622,27 @@ function WdComparisonRow({
   )
 }
 
-function ActionsHeader({ labels }: { labels: PayMappingReportLabels }) {
+function ActionsHeader({
+  labels,
+  showOwner = true,
+}: {
+  labels: PayMappingReportLabels
+  // The union variant drops the owner column (internal work allocation is
+  // not samverkan information); the header and the rows take the flag
+  // together so the columns can never disagree.
+  showOwner?: boolean
+}) {
   return (
     <View style={s.headerRow} minPresenceAhead={40}>
       <Text style={[s.cellGroup, s.label, s.tableText]}>{labels.colGroup}</Text>
       <Text style={[{ flex: 3 }, s.label, s.tableText]}>
         {labels.colAction}
       </Text>
-      <Text style={[s.cellMoney, s.label, s.tableText]}>{labels.colOwner}</Text>
+      {showOwner && (
+        <Text style={[s.cellMoney, s.label, s.tableText]}>
+          {labels.colOwner}
+        </Text>
+      )}
       <Text style={[s.cellMoney, s.label, s.tableText]}>{labels.colDate}</Text>
       <Text style={[s.cellMoney, s.label, s.tableText]}>{labels.colCost}</Text>
       <Text style={[s.cellNum, s.label, s.tableText]}>

@@ -62,13 +62,36 @@ vi.mock("./pay-mapping-overview", () => ({
   QuartileStat: () => <svg aria-hidden="true" className="recharts-surface" />,
 }))
 
+// One mock per boundary mutation, resolved by the string refs below: the
+// union test must be able to assert WHICH event the export logged.
 const logExport = vi.fn(async () => null)
+const logUnionExport = vi.fn(async () => null)
+const logMetricsExport = vi.fn(async () => null)
+vi.mock("@workspace/backend/convex/_generated/api", () => ({
+  api: {
+    payMapping: {
+      runs: { listPayMappingRuns: "runs.list" },
+      actions: { listActions: "actions.list" },
+      gap: { getPayMappingGap: "gap.get" },
+      report: {
+        logPayMappingReportExport: "report.log",
+        logPayMappingUnionReportExport: "report.logUnion",
+        logPayMappingMetricsExport: "report.logMetrics",
+      },
+    },
+  },
+}))
 vi.mock("convex/react", () => ({
   // listPayMappingRuns resolves to an empty org history (no previous run);
   // the previous-actions query is then skipped and must answer undefined.
   useQuery: (_query: unknown, args: unknown) =>
     args === "skip" ? undefined : [],
-  useMutation: () => logExport,
+  useMutation: (ref: unknown) =>
+    ref === "report.logUnion"
+      ? logUnionExport
+      : ref === "report.logMetrics"
+        ? logMetricsExport
+        : logExport,
 }))
 
 vi.mock("@/components/org-context", () => ({
@@ -111,6 +134,8 @@ describe("PayMappingReportDownload", () => {
     cleanup()
     toBlob.mockClear()
     logExport.mockClear()
+    logUnionExport.mockClear()
+    logMetricsExport.mockClear()
     captureSvgToPng.mockClear()
     rasterize = false
     gapOverrides = {}
@@ -136,6 +161,42 @@ describe("PayMappingReportDownload", () => {
     const logOrder = logExport.mock.invocationCallOrder[0] ?? 0
     const downloadOrder = createObjectURL.mock.invocationCallOrder[0] ?? 0
     expect(logOrder).toBeLessThan(downloadOrder)
+  })
+
+  it("exports the union variant with its own boundary event, doc transform and cover", async () => {
+    const createObjectURL = vi.fn(() => "blob:x")
+    globalThis.URL.createObjectURL = createObjectURL
+    globalThis.URL.revokeObjectURL = vi.fn()
+    renderDownload()
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: messages.dashboard.payMapping.report.downloadUnion,
+      })
+    )
+    await waitFor(() => expect(createObjectURL).toHaveBeenCalled())
+    // The union export writes the UNION boundary event, never the
+    // statutory one: the trail must say which document left.
+    expect(logUnionExport).toHaveBeenCalledWith({
+      orgId: "org1",
+      runId: "run-1",
+    })
+    expect(logExport).not.toHaveBeenCalled()
+    // The template renders the union variant of the transformed doc: the
+    // internal notes are gone at the data level and the cover carries the
+    // union identity and purpose.
+    const element = lastPdfElement as {
+      props?: {
+        variant?: string
+        doc?: { notes: unknown[] }
+        labels?: { docTitle?: string; coverPurpose?: string }
+      }
+    }
+    expect(element?.props?.variant).toBe("union")
+    expect(element?.props?.doc?.notes).toEqual([])
+    expect(element?.props?.labels?.docTitle).toBe(
+      messages.dashboard.payMapping.report.unionTitle
+    )
+    expect(element?.props?.labels?.coverPurpose).toContain("21, 22 and 56")
   })
 
   it("rasterizes the app charts off-screen and hands them to the template", async () => {

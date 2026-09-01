@@ -882,7 +882,8 @@
         "roleAssessmentReopened": "Vurdering genåbnet",
         "roleAssessmentCalibrated": "Vurdering kalibreret",
         "payMappingReportExported": "Lønkortlægningsrapport eksporteret",
-        "payMappingMetricsExported": "Lønkortlægningens nøgletal eksporteret"
+        "payMappingMetricsExported": "Lønkortlægningens nøgletal eksporteret",
+        "payMappingUnionReportExported": "Fagforeningsrapport eksporteret"
       },
       "ai": {
         "weightReview": "Vægtgennemgang: {count} anvendt",
@@ -1411,6 +1412,12 @@
         "downloadMetrics": "Download nøgletal (Excel)",
         "downloadReportItem": "Rapport (PDF)",
         "downloadMetricsItem": "Nøgletal (Excel)",
+        "unionTitle": "Fagforeningsrapport",
+        "unionDescription": "Maskeret grundlag på gruppeniveau for samarbejdet med fagforeningerne (PDF).",
+        "unionSubtitle": "Grundlag for samarbejde efter 3 kap. 11-12 §§ i den svenske diskrimineringslov",
+        "unionPurpose": "Rapporten viser kun oplysninger på gruppeniveau. Oplysninger om en enkelt medarbejders løn gives ved behov separat, og i så fald gælder reglerne om tavshedspligt og erstatning i 21, 22 og 56 §§ i den svenske medbestemmelseslov (3 kap. 12 § i diskrimineringsloven). Kønsopdelte værdier vises kun for grupper med mindst {min} personer og mindst {perGender} pr. køn; øvrige værdier maskeres efter værktøjets forsigtighedsregel.",
+        "downloadUnion": "Hent fagforeningsrapport",
+        "downloadUnionItem": "Fagforeningsrapport (PDF)",
         "metricsSheetTitle": "Nøgletal",
         "metricsMeanTotal": "Gennemsnitsløn (samlet løn)",
         "metricsMedianTotal": "Medianløn (samlet løn)",
@@ -2328,7 +2335,9 @@
       "methodDriftLabel": "Hvad betyder en tidligere metode?",
       "methodDriftBody": "Bedømmelsen blev afsluttet, før modellen sidst blev godkendt, så den blev lavet under andre regler. Resultatet står ved magt; flaget beder et menneske se på det.",
       "payMappingReportLabel": "Hvad er dokumentationsrapporten?",
-      "payMappingReportBody": "En PDF med kortlægningens lovpligtige skriftlige dokumentation: samarbejde, praksis, begge lønsammenligninger, tiltag og metode. Udkast, indtil kortlægningen er afsluttet."
+      "payMappingReportBody": "En PDF med kortlægningens lovpligtige skriftlige dokumentation: samarbejde, praksis, begge lønsammenligninger, tiltag og metode. Udkast, indtil kortlægningen er afsluttet.",
+      "unionReportLabel": "Hvad er fagforeningsrapporten?",
+      "unionReportBody": "Et maskeret grundlag på gruppeniveau for samarbejdet med fagforeningerne efter 3 kap. 11-12 §§ i diskrimineringsloven. Kontroller før deling, at fritekst i tiltag ikke nævner enkeltpersoner."
     },
     "widgetCard": {
       "expand": "Forstør"

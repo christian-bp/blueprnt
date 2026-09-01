@@ -112,6 +112,26 @@ export function MetricsDocumentPanel({ action }: { action: ReactNode }) {
   )
 }
 
+// The union report's panel (facklig rapport): the masked samverkan variant
+// of the documentation, its concept explained by its own help.
+export function UnionDocumentPanel({ action }: { action: ReactNode }) {
+  const t = useTranslations("dashboard.payMapping.report")
+  const tHelp = useTranslations("dashboard.help")
+  return (
+    <ReportPanel
+      icon={Pdf01Icon}
+      title={t("unionTitle")}
+      help={
+        <HelpMorphButton label={tHelp("unionReportLabel")}>
+          {tHelp("unionReportBody")}
+        </HelpMorphButton>
+      }
+      description={t("unionDescription")}
+      action={action}
+    />
+  )
+}
+
 // The panel buttons say only "Download": the panel already names the
 // document, and the full label would crowd the half-width row. The full
 // name stays as the accessible name (it contains the visible text, so the
@@ -133,6 +153,34 @@ export function ReportDownloadButton({
       isSubmitting={busy}
       disabled={disabled}
       aria-label={t("downloadReport")}
+      {...(onClick === undefined ? {} : { onClick })}
+    >
+      <HugeiconsIcon icon={Download01Icon} strokeWidth={2} />
+      {t("download")}
+    </SubmitButton>
+  )
+}
+
+// The union report's export: outline like the key figures, so the statutory
+// document stays the page's one primary action.
+export function UnionDownloadButton({
+  busy,
+  disabled,
+  onClick,
+}: {
+  busy: boolean
+  disabled: boolean
+  onClick?: () => void
+}) {
+  const t = useTranslations("dashboard.payMapping.report")
+  return (
+    <SubmitButton
+      type="button"
+      variant="outline"
+      size={CHAPTER_ACTION_BUTTON_SIZE}
+      isSubmitting={busy}
+      disabled={disabled}
+      aria-label={t("downloadUnion")}
       {...(onClick === undefined ? {} : { onClick })}
     >
       <HugeiconsIcon icon={Download01Icon} strokeWidth={2} />
@@ -179,6 +227,9 @@ function ReportCardShell() {
     <ReportsFrame>
       <ReportDocumentPanel
         action={<ReportDownloadButton busy={false} disabled />}
+      />
+      <UnionDocumentPanel
+        action={<UnionDownloadButton busy={false} disabled />}
       />
       <MetricsDocumentPanel
         action={<MetricsDownloadButton busy={false} disabled />}

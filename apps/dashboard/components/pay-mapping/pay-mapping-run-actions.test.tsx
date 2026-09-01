@@ -131,21 +131,43 @@ describe("PayMappingRunActions", () => {
     )
 
     await waitFor(() => {
-      expect(exportReportMock).toHaveBeenCalledWith({
-        run: RUN_DETAIL,
-        gap: GAP,
-        analyses: [],
-        actions: [],
-        notes: [],
-        // An empty run history: no earlier completed run to evaluate.
-        previous: null,
-      })
+      expect(exportReportMock).toHaveBeenCalledWith(
+        {
+          run: RUN_DETAIL,
+          gap: GAP,
+          analyses: [],
+          actions: [],
+          notes: [],
+          // An empty run history: no earlier completed run to evaluate.
+          previous: null,
+        },
+        "statutory"
+      )
     })
     // The run detail is fetched by the row's slug (the id is not a route
     // key), everything else by the run id.
     expect(queryMock).toHaveBeenCalledWith("runs.getBySlug", {
       orgId: "org-1",
       slug: "lonekartlaggning-2026",
+    })
+    expect(vi.mocked(toast.error)).not.toHaveBeenCalled()
+  })
+
+  it("downloads the union report through the same fetch with the union variant", async () => {
+    renderActions()
+    await openRowMenu()
+    await openDownloadSubmenu()
+    fireEvent.click(
+      screen.getByRole("menuitem", {
+        name: messages.dashboard.payMapping.report.downloadUnionItem,
+      })
+    )
+
+    await waitFor(() => {
+      expect(exportReportMock).toHaveBeenCalledWith(
+        expect.objectContaining({ run: RUN_DETAIL, gap: GAP }),
+        "union"
+      )
     })
     expect(vi.mocked(toast.error)).not.toHaveBeenCalled()
   })

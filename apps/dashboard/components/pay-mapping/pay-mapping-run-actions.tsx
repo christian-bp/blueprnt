@@ -22,6 +22,7 @@ import { toast } from "@/lib/toast"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { RenamePayMappingDialog } from "@/components/pay-mapping/rename-pay-mapping-dialog"
 import { usePayMappingMetricsExport } from "./pay-mapping-metrics-export"
+import type { ReportVariant } from "./pay-mapping-report-doc"
 import { usePayMappingReportExport } from "./pay-mapping-report-export"
 
 // Per-row actions for the pay-mappings list (the row-actions convention: one
@@ -56,15 +57,23 @@ export function PayMappingRunActions({
     captureHost,
   } = usePayMappingReportExport()
   const { busy: metricsBusy, exportMetrics } = usePayMappingMetricsExport()
-  const busy = reportBusy || metricsBusy
+  // The export hooks report busy only once the export itself runs; the
+  // one-shot fetch phase before it would otherwise leave the trigger
+  // enabled, letting a second (possibly different-variant) export start
+  // mid-flight. `exporting` covers the whole span from click to handover.
+  const [exporting, setExporting] = useState(false)
+  const busy = reportBusy || metricsBusy || exporting
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
   const [pending, setPending] = useState(false)
 
   // The same export the report page runs, fed by one-shot queries instead
   // of the run workspace's subscriptions: the menu is closed by the time
-  // the work runs, so the row's trigger carries the busy spinner.
-  async function onDownload() {
+  // the work runs, so the row's trigger carries the busy spinner. The
+  // variant picks which PDF (the statutory documentation or the masked
+  // union report); the fetch is identical.
+  async function onDownload(variant: ReportVariant = "statutory") {
+    setExporting(true)
     try {
       const run = await convex.query(
         api.payMapping.runs.getPayMappingRunBySlug,
@@ -110,14 +119,20 @@ export function PayMappingRunActions({
                 runId: previousRun.runId,
               }),
             }
-      await exportReport({ run, gap, analyses, actions, notes, previous })
+      await exportReport(
+        { run, gap, analyses, actions, notes, previous },
+        variant
+      )
     } catch {
       toast.error(tToast("error"))
+    } finally {
+      setExporting(false)
     }
   }
 
   // The key-figures export needs only the frozen run and its gap aggregate.
   async function onDownloadMetrics() {
+    setExporting(true)
     try {
       const run = await convex.query(
         api.payMapping.runs.getPayMappingRunBySlug,
@@ -134,6 +149,8 @@ export function PayMappingRunActions({
       await exportMetrics({ run, gap })
     } catch {
       toast.error(tToast("error"))
+    } finally {
+      setExporting(false)
     }
   }
 
@@ -166,8 +183,11 @@ export function PayMappingRunActions({
               {tReport("download")}
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              <DropdownMenuItem onClick={onDownload}>
+              <DropdownMenuItem onClick={() => void onDownload()}>
                 {tReport("downloadReportItem")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => void onDownload("union")}>
+                {tReport("downloadUnionItem")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onDownloadMetrics}>
                 {tReport("downloadMetricsItem")}

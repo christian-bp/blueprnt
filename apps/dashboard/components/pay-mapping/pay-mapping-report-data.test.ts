@@ -19,6 +19,7 @@ import {
   exportMasksWholeGroupMean,
   orgVariablePayStats,
   type ReportFormatters,
+  unionReportDoc,
 } from "./pay-mapping-report-data"
 
 // Marker formatters: assertions read the raw figure back out of the marker,
@@ -548,5 +549,66 @@ describe("assemblePayMappingReport", () => {
       "equalWork:Dev|1": 5,
     })
     expect(breaks.size).toBe(0)
+  })
+
+  // The union variant's data-level masking (kravbild
+  // docs/lonekartlaggning-facklig-rapport-kravbild.md §5): individual-adjacent
+  // details leave the doc, the group-level statutory content stays.
+  it("masks person-targeted action costs, drops notes, keeps everything else", () => {
+    const doc = assemble({})
+    // The fixture's person action carries no cost; give every row one so the
+    // per-kind masking is observable.
+    const withCosts = {
+      ...doc,
+      actions: doc.actions.map((action) => ({ ...action, cost: "10 000 kr" })),
+    }
+    const union = unionReportDoc(withCosts)
+
+    const group = union.actions.find((action) => action.kind === "group")
+    const person = union.actions.find((action) => action.kind === "person")
+    expect(group?.cost).toBe("10 000 kr")
+    // A person-targeted cost is in practice that individual's planned
+    // adjustment: masked per row, carried only by the roll-up.
+    expect(person?.cost).toBeNull()
+    expect(union.actionTotals).toEqual(withCosts.actionTotals)
+
+    // Internal working notes never enter the union document.
+    expect(doc.notes.length).toBeGreaterThan(0)
+    expect(union.notes).toEqual([])
+
+    // The statutory group-level content is untouched.
+    expect(union.equalWork).toEqual(doc.equalWork)
+    expect(union.summary).toEqual(doc.summary)
+    expect(union.collaboration).toEqual(doc.collaboration)
+  })
+
+  it("masks the previous year's person-targeted costs by the same rule", () => {
+    const doc = assemble({ withPrevious: true })
+    const previous = doc.previousEvaluation
+    expect(previous).not.toBeNull()
+    if (previous === null) throw new Error("unreachable")
+    const base = previous.actions[0]
+    if (base === undefined) throw new Error("unreachable")
+    // The fixture's prior action is group-targeted; recast one row per kind
+    // with a cost so the per-kind rule is observable in the OTHER table too
+    // (last year's person cost is still an individual's adjustment).
+    const withKinds = {
+      ...doc,
+      previousEvaluation: {
+        ...previous,
+        actions: [
+          { ...base, kind: "group" as const, cost: "M1000" },
+          {
+            ...base,
+            id: "prev-person",
+            kind: "person" as const,
+            cost: "M2000",
+          },
+        ],
+      },
+    }
+    const union = unionReportDoc(withKinds)
+    expect(union.previousEvaluation?.actions[0]?.cost).toBe("M1000")
+    expect(union.previousEvaluation?.actions[1]?.cost).toBeNull()
   })
 })
