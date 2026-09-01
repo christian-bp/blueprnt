@@ -42,3 +42,21 @@ export const logPayMappingMetricsExport = orgMutation({
     return null
   },
 })
+
+// The union report (the masked samverkan variant, DL 3 kap. 11-12 §§)
+// crosses the same boundary under the same rule, with its own event kind so
+// the trail says which document was handed over.
+export const logPayMappingUnionReportExport = orgMutation({
+  args: { runId: v.id("payMappingRuns") },
+  returns: v.null(),
+  handler: async (ctx, { runId }) => {
+    const run = await ctx.db.get(runId)
+    if (run === null || run.orgId !== ctx.orgId)
+      throw appError(ERROR_CODES.notFound)
+    await ctx.audit.log({
+      type: AUDIT_EVENTS.payMappingUnionReportExported,
+      payload: { runId },
+    })
+    return null
+  },
+})

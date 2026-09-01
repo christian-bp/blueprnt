@@ -476,6 +476,9 @@ export interface AuditPayloads {
   // as the report and carries the same marker payload: the figures are
   // derived from the frozen run, so the run id is the whole record.
   "payMapping.metricsExported": { runId: string }
+  // The union report (the masked samverkan variant) leaves through the same
+  // boundary with its own event kind, so the trail says WHICH document left.
+  "payMapping.unionReportExported": { runId: string }
 }
 
 // Admin audit payloads, keyed 1:1 by every PLATFORM_AUDIT_EVENTS value. Also
