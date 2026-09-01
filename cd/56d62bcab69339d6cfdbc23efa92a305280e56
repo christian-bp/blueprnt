@@ -1,0 +1,20 @@
+docs/lonekartlaggning-samsignering-beslutsunderlag.md
+  s_7fda332a23d6c0::t_ed8acf01b0b77a 1-2,4-27,29,35-42
+  s_7fda332a23d6c0::t_e50ca7380d13e1 3,28,30-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "cd56d62bcab69339d6cfdbc23efa92a305280e56",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
