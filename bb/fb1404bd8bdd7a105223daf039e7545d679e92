@@ -1,0 +1,47 @@
+apps/dashboard/content/docs/da/assistant-privacy.mdx
+  s_7fda332a23d6c0::t_4e3e0f3b266f82 36-42
+apps/dashboard/content/docs/en/assistant-privacy.mdx
+  s_7fda332a23d6c0::t_33a350c9cf2a68 33-39
+packages/backend/convex/assistant/erase.ts
+  s_7fda332a23d6c0::t_33463a4055fbd2 3-4,8,15-45,57-61,71-94
+  s_e52995251c9695::t_e7fedf325d574c 95-97
+packages/backend/convex/assistant/tables.ts
+  s_7fda332a23d6c0::t_123321f4871e25 31-33
+packages/backend/convex/crons.ts
+  s_7fda332a23d6c0::t_78d8d2dc044f84 14-23
+apps/dashboard/content/docs/sv/assistant-privacy.mdx
+  s_7fda332a23d6c0::t_d8cf845715c229 35-41
+docs/adr/0018-assistent-som-chatt.md
+  s_7fda332a23d6c0::t_77200bf72357f8 21
+apps/dashboard/content/docs/nb/assistant-privacy.mdx
+  s_7fda332a23d6c0::t_b2ff7b71bc4264 36-42
+packages/backend/convex/assistant/erase.test.ts
+  s_7fda332a23d6c0::t_614ab1e91f4bb4 3
+  s_7fda332a23d6c0::t_4096be986a239b 199-299
+apps/dashboard/content/docs/fi/assistant-privacy.mdx
+  s_7fda332a23d6c0::t_c590a29302b507 37-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "bbfb1404bd8bdd7a105223daf039e7545d679e92",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_e52995251c9695": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5a26ae0a-c4f7-4d51-be28-e34b82bc7457",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
