@@ -19,6 +19,7 @@ import {
 } from "@/components/org-context"
 import { ClassificationFooter } from "@/components/people/classification-footer"
 import { RunFactsFooter } from "@/components/pay-mapping/run-facts-footer"
+import { PayMappingRunsNav } from "@/components/pay-mapping/pay-mapping-runs-nav"
 import { RunSidebar } from "@/components/pay-mapping/run-sidebar"
 import { TodoFooter } from "@/components/todo-footer"
 import { RoleSheetProvider } from "@/components/role-sheet"
@@ -162,7 +163,11 @@ function ShellContent({ children }: { children: ReactNode }) {
     pathname === "/assistant" ? null : run ? (
       <RunSidebar />
     ) : groups.length > 0 ? (
-      <InnerSidebarNav groups={groups} />
+      <InnerSidebarNav groups={groups}>
+        {/* The register's runs as child rows under its single registry row;
+            inside a run the RunSidebar branch above owns the pane. */}
+        {area?.id === "payMappings" ? <PayMappingRunsNav /> : null}
+      </InnerSidebarNav>
     ) : null
   // The sidebar's bottom blocks: an area's own block where one carries real
   // information (the run's frozen key figures, the people area's

@@ -30,10 +30,15 @@ export function InnerNavHeading({ children }: { children: ReactNode }) {
 export function InnerSidebarNav({
   groups,
   onNavigate,
+  children,
 }: {
   groups: InnerNavGroup[]
   // The mobile nav sheet closes itself when a row is chosen.
   onNavigate?: () => void
+  // Data-driven rows an area appends AFTER its registry rows (the
+  // pay-mappings register lists its runs here). The registry itself stays
+  // static and framework-free; anything queried lives in the caller.
+  children?: ReactNode
 }) {
   const t = useTranslations("dashboard")
   const pathname = usePathname()
@@ -83,6 +88,7 @@ export function InnerSidebarNav({
           </div>
         </div>
       ))}
+      {children}
     </nav>
   )
 }
