@@ -9,6 +9,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { Spinner } from "@workspace/ui/components/spinner"
@@ -156,12 +159,21 @@ export function PayMappingRunActions({
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={onDownload}>
-            {tReport("downloadReport")}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={onDownloadMetrics}>
-            {tReport("downloadMetrics")}
-          </DropdownMenuItem>
+          {/* Both exports behind one Download level: the submenu names WHICH
+              document, mirroring the report page's two panels. */}
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              {tReport("download")}
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem onClick={onDownload}>
+                {tReport("downloadReportItem")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onDownloadMetrics}>
+                {tReport("downloadMetricsItem")}
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
           <DropdownMenuItem onClick={() => setRenameOpen(true)}>
             {t("renameCta")}
           </DropdownMenuItem>

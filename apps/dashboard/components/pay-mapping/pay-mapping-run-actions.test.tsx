@@ -99,6 +99,16 @@ function openRowMenu(label = "Lonekartlaggning 2026") {
   )
 }
 
+// The exports live one level down, behind the Download submenu; its trigger
+// is itself a menu item the shared open gesture works on.
+async function openDownloadSubmenu() {
+  await openMenu(
+    screen.getByRole("menuitem", {
+      name: messages.dashboard.payMapping.report.download,
+    })
+  )
+}
+
 describe("PayMappingRunActions", () => {
   beforeEach(() => {
     deleteRunMock.mockReset()
@@ -113,9 +123,10 @@ describe("PayMappingRunActions", () => {
   it("downloads the report from the row menu, fed by one-shot queries", async () => {
     renderActions()
     await openRowMenu()
+    await openDownloadSubmenu()
     fireEvent.click(
       screen.getByRole("menuitem", {
-        name: messages.dashboard.payMapping.report.downloadReport,
+        name: messages.dashboard.payMapping.report.downloadReportItem,
       })
     )
 
@@ -142,9 +153,10 @@ describe("PayMappingRunActions", () => {
   it("downloads the key figures from the row menu with the lean fetch", async () => {
     renderActions()
     await openRowMenu()
+    await openDownloadSubmenu()
     fireEvent.click(
       screen.getByRole("menuitem", {
-        name: messages.dashboard.payMapping.report.downloadMetrics,
+        name: messages.dashboard.payMapping.report.downloadMetricsItem,
       })
     )
 
@@ -161,9 +173,10 @@ describe("PayMappingRunActions", () => {
     queryMock.mockRejectedValueOnce(new Error("offline"))
     renderActions()
     await openRowMenu()
+    await openDownloadSubmenu()
     fireEvent.click(
       screen.getByRole("menuitem", {
-        name: messages.dashboard.payMapping.report.downloadReport,
+        name: messages.dashboard.payMapping.report.downloadReportItem,
       })
     )
 
