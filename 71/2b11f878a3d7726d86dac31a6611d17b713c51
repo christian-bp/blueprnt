@@ -1,0 +1,19 @@
+apps/dashboard/components/widget-card.tsx
+  s_7fda332a23d6c0::t_310548c57a62d7 244-247,249
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "712b11f878a3d7726d86dac31a6611d17b713c51",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
