@@ -1,0 +1,23 @@
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.tsx
+  s_7fda332a23d6c0::t_ac5499318d4cc1 162-176
+  s_7fda332a23d6c0::t_595d62950ff06d 12-14
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.test.tsx
+  s_7fda332a23d6c0::t_445240c0ff2f4d 102-111
+  s_7fda332a23d6c0::t_1e8f4a8a21c6da 126,129,156,159,176,179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "333692f1ed759b369f1976abb29cf2771847f966",
+  "prompts": {},
+  "sessions": {
+    "s_7fda332a23d6c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "29b61995-eb01-401f-b633-f8528dd3f4ec",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
