@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 import { internal } from "../_generated/api"
-import { ERASE_BATCH } from "./erase"
+import { ERASE_BATCH, RETENTION_DAYS } from "./erase"
 import { initConvexTest } from "../testing.helpers"
 
 describe("assistant erasure", () => {
@@ -193,6 +193,107 @@ describe("assistant erasure", () => {
       const threads = await ctx.db.query("assistantThreads").collect()
       expect(threads).toHaveLength(1)
       expect(threads[0].userId).toBe("user-2")
+    })
+  })
+})
+
+describe("archived-thread retention (ADR-0018)", () => {
+  const DAY = 24 * 60 * 60 * 1000
+
+  it("prunes archived threads past the retention window, keeps recent and active ones", async () => {
+    const t = initConvexTest()
+    const now = Date.now()
+    const seedThread = (
+      status: "active" | "archived",
+      lastMessageAt: number
+    ) => ({
+      orgId: "org1",
+      userId: "user-1",
+      status,
+      lastMessageAt,
+    })
+    const { oldArchived } = await t.run(async (ctx) => {
+      const oldArchived = await ctx.db.insert(
+        "assistantThreads",
+        seedThread("archived", now - (RETENTION_DAYS + 1) * DAY)
+      )
+      await ctx.db.insert("assistantMessages", {
+        orgId: "org1",
+        userId: "user-1",
+        threadId: oldArchived,
+        role: "user",
+        status: "complete",
+        parts: [{ type: "text", text: "old" }],
+      })
+      // Archived but inside the window: stays.
+      await ctx.db.insert(
+        "assistantThreads",
+        seedThread("archived", now - (RETENTION_DAYS - 1) * DAY)
+      )
+      // Older than the window but still ACTIVE: retention never touches the
+      // open conversation.
+      await ctx.db.insert(
+        "assistantThreads",
+        seedThread("active", now - (RETENTION_DAYS + 30) * DAY)
+      )
+      return { oldArchived }
+    })
+
+    vi.useFakeTimers()
+    try {
+      await t.mutation(internal.assistant.erase.pruneArchivedThreads, {})
+      await t.finishAllScheduledFunctions(vi.runAllTimers)
+    } finally {
+      vi.useRealTimers()
+    }
+
+    await t.run(async (ctx) => {
+      expect(await ctx.db.get(oldArchived)).toBeNull()
+      const threads = await ctx.db.query("assistantThreads").collect()
+      expect(threads).toHaveLength(2)
+      expect(threads.map((thread) => thread.status).sort()).toEqual([
+        "active",
+        "archived",
+      ])
+      // The pruned thread's messages went with it (child-first).
+      const messages = await ctx.db.query("assistantMessages").collect()
+      expect(messages).toHaveLength(0)
+    })
+  })
+
+  it("drains a message load past ERASE_BATCH across self-rescheduled passes", async () => {
+    const t = initConvexTest()
+    const now = Date.now()
+    await t.run(async (ctx) => {
+      const threadId = await ctx.db.insert("assistantThreads", {
+        orgId: "org1",
+        userId: "user-1",
+        status: "archived",
+        lastMessageAt: now - (RETENTION_DAYS + 5) * DAY,
+      })
+      for (let i = 0; i < ERASE_BATCH + 5; i += 1) {
+        await ctx.db.insert("assistantMessages", {
+          orgId: "org1",
+          userId: "user-1",
+          threadId,
+          role: "user",
+          status: "complete",
+          parts: [{ type: "text", text: `m${i}` }],
+        })
+      }
+    })
+
+    vi.useFakeTimers()
+    try {
+      await t.mutation(internal.assistant.erase.pruneArchivedThreads, {})
+      await t.finishAllScheduledFunctions(vi.runAllTimers)
+    } finally {
+      vi.useRealTimers()
+    }
+
+    await t.run(async (ctx) => {
+      expect(await ctx.db.query("assistantThreads").collect()).toHaveLength(0)
+      expect(await ctx.db.query("assistantMessages").collect()).toHaveLength(0)
     })
   })
 })

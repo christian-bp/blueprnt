@@ -28,6 +28,9 @@ export const assistantThreads = defineTable({
   // thread was first created).
   .index("by_org_user_lastMessageAt", ["orgId", "userId", "lastMessageAt"])
   .index("by_user", ["userId"])
+  // The retention cron's org-agnostic sweep (erase.ts): all archived
+  // threads whose last activity predates the cutoff, oldest first.
+  .index("by_status_lastMessageAt", ["status", "lastMessageAt"])
 
 // The chart kinds the assistant can display. A chart part stores ONLY the
 // kind: the client renders from live org data through the app's own chart

@@ -11,4 +11,14 @@ crons.interval(
   {}
 )
 
+// Archived assistant threads age out RETENTION_DAYS after their last
+// activity (ADR-0018, owner decision 2026-09-01); the sweep is bounded and
+// self-rescheduling, so the daily tick only has to start it.
+crons.interval(
+  "prune archived assistant threads",
+  { hours: 24 },
+  internal.assistant.erase.pruneArchivedThreads,
+  {}
+)
+
 export default crons

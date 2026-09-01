@@ -18,7 +18,7 @@ ADR-0003 slog fast att AI används som inbäddad assistans i flödet, inte som c
 
 5. Chattmeddelanden är konversationstelemetri, inte användarinitierade ändringar av granskningsbart domäntillstånd: inga auditrader skrivs. VARJE generering loggas i aiUsageEvents (kind "assistant.chat"), även stoppade genereringar när leverantören rapporterat förbrukning, så AI-användningen har ett tätt kvitto precis som övriga AI-flöden.
 
-6. Chattinnehåll är raderbart användardata från dag ett: radering av en användare hårdraderar alla trådar och meddelanden (schemalagd, chunkad). Användaren instrueras i UI och systemprompt att inte dela persondata; retentionspolicy för arkiverade trådar avgörs före lansering (go-live-checklistan).
+6. Chattinnehåll är raderbart användardata från dag ett: radering av en användare hårdraderar alla trådar och meddelanden (schemalagd, chunkad). Användaren instrueras i UI och systemprompt att inte dela persondata; retentionspolicyn för arkiverade trådar avgjordes 2026-09-01 (ägarbeslut): en arkiverad tråd hårdraderas av ett dagligt, chunkat jobb 90 dagar efter sin senaste aktivitet (att byta tillbaka in i tråden återaktiverar den och nollställer klockan), i linje med minimal-PII-principen.
 
 ## Konsekvenser
 
