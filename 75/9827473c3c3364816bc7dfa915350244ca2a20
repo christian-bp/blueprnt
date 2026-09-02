@@ -1,0 +1,27 @@
+apps/dashboard/components/pay-mapping/equal-work-detail.tsx
+  s_26838696f43ddf::t_bf649c70ad0d56 290
+apps/dashboard/components/pay-mapping/review-group-step.tsx
+  s_26838696f43ddf::t_bf649c70ad0d56 41-42,480-503
+apps/dashboard/components/pay-mapping/group-member-table.tsx
+  s_26838696f43ddf::t_bf649c70ad0d56 67-73,77,79-80,84,146,151-155,176-177,290-295,341-346
+apps/dashboard/components/pay-mapping/review-group-step.test.tsx
+  s_26838696f43ddf::t_bf649c70ad0d56 403-448
+apps/dashboard/components/pay-mapping/group-member-table.test.tsx
+  s_26838696f43ddf::t_bf649c70ad0d56 116-128,155,190,209,221-237,239,257,279,288,298,320,331,348
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "759827473c3c3364816bc7dfa915350244ca2a20",
+  "prompts": {},
+  "sessions": {
+    "s_26838696f43ddf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4ea41fa8-c68a-430e-a203-a176741bf01c",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
