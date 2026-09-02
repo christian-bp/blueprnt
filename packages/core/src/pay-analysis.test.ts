@@ -123,11 +123,11 @@ describe("classifyEqualWorkGroup", () => {
     expect(men.outcome).toBe("genderPure")
   })
 
-  it("shows a group where the women trail on base salary", () => {
+  it("shows a group where the women trail on total compensation", () => {
     const result = group({ womenBase: [90000], menBase: [100000] })
     expect(result.outcome).toBe("shown")
-    expect(result.tccDriven).toBe(false)
-    expect(result.base.gapPct).toBeCloseTo(10, 5)
+    expect(result.baseDriven).toBe(false)
+    expect(result.tcc.gapPct).toBeCloseTo(10, 5)
     expect(result.flag).toBe("elevated")
   })
 
@@ -138,7 +138,7 @@ describe("classifyEqualWorkGroup", () => {
     expect(result.flag).toBe("ok")
   })
 
-  it("admits a bonus-driven gap as tccDriven (base equal, tcc behind)", () => {
+  it("admits a bonus-driven gap on total compensation, not as baseDriven", () => {
     const result = group({
       womenBase: [50000],
       menBase: [50000],
@@ -146,27 +146,31 @@ describe("classifyEqualWorkGroup", () => {
       menTcc: [60000],
     })
     expect(result.outcome).toBe("shown")
-    expect(result.tccDriven).toBe(true)
+    expect(result.baseDriven).toBe(false)
     expect(result.base.gapPct).toBeCloseTo(0, 5)
     expect(result.tcc.gapPct).toBeCloseTo(16.666, 2)
     // The flag comes from the severest metric: the 16.7% tcc gap.
     expect(result.flag).toBe("critical")
   })
 
-  it("flags on the severest metric even when base admits the group", () => {
+  it("flags on the severest metric even when total comp admits the group", () => {
     const result = group({
-      womenBase: [96000],
+      womenBase: [80000],
       menBase: [100000],
       womenTcc: [96000],
-      menTcc: [120000],
+      menTcc: [100000],
     })
     expect(result.outcome).toBe("shown")
-    expect(result.tccDriven).toBe(false)
-    // base gap 4% would be ok; the 20% tcc gap carries the flag.
+    expect(result.baseDriven).toBe(false)
+    // tcc gap 4% would be ok; the 20% base gap carries the flag.
     expect(result.flag).toBe("critical")
   })
 
-  it("treats a base-behind, tcc-ahead group as shown on the base gap", () => {
+  // A pure total-comp condition would hide a gap in the fixed pay that the
+  // women's variable pay happens to cover: the mirror of the bonus-driven
+  // blind spot. Such a group is admitted on the base gap and marked so its
+  // finding reads the measure it was admitted on.
+  it("admits a base-behind, tcc-ahead group as baseDriven", () => {
     const result = group({
       womenBase: [90000],
       menBase: [100000],
@@ -174,7 +178,7 @@ describe("classifyEqualWorkGroup", () => {
       menTcc: [110000],
     })
     expect(result.outcome).toBe("shown")
-    expect(result.tccDriven).toBe(false)
+    expect(result.baseDriven).toBe(true)
     expect(result.flag).toBe("elevated")
   })
 

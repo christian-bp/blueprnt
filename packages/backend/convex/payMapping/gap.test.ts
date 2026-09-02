@@ -133,7 +133,7 @@ describe("getPayMappingGap", () => {
     // No components seeded, so total comp mirrors base salary.
     expect(group?.tcc.gapPct).toBeCloseTo(10, 5)
     expect(group?.flag).toBe("elevated")
-    expect(group?.tccDriven).toBe(false)
+    expect(group?.baseDriven).toBe(false)
   })
 
   it("groups equivalent-work by level across different roles", async () => {
@@ -374,10 +374,10 @@ describe("getPayMappingGap", () => {
     expect(result?.excluded.singletonCount).toBe(1)
   })
 
-  it("admits a bonus-driven gap as tccDriven", async () => {
+  it("admits a bonus-driven gap on total compensation, the primary measure", async () => {
     const t = initConvexTest()
     // Equal base salary; the men carry a 10k monthly bonus => base gap 0,
-    // tcc gap 16.7% => shown, tccDriven, flagged from the tcc metric.
+    // tcc gap 16.7% => shown on the primary measure, flagged from it.
     const { orgId, runId, asHr } = await seedRun(t, [
       {
         gender: "Kvinna",
@@ -403,10 +403,46 @@ describe("getPayMappingGap", () => {
 
     expect(result?.equalWork).toHaveLength(1)
     const group = result?.equalWork[0]
-    expect(group?.tccDriven).toBe(true)
+    expect(group?.baseDriven).toBe(false)
     expect(group?.base.gapPct).toBeCloseTo(0, 5)
     expect(group?.tcc.gapPct).toBeCloseTo(16.666, 2)
     expect(group?.flag).toBe("critical")
+  })
+
+  it("admits a gap hidden in the fixed pay as baseDriven", async () => {
+    const t = initConvexTest()
+    // The women's base trails by 10%, and their commission covers it: total
+    // comp is level, so a pure total-comp condition would drop the group.
+    // It is admitted on the base gap and marked baseDriven (ADR-0028).
+    const { orgId, runId, asHr } = await seedRun(t, [
+      {
+        gender: "Kvinna",
+        roleTitle: "Sales",
+        seniority: "Mid",
+        level: 2,
+        basicMonthly: 45000,
+        components: [{ kind: "commission", monthlyAmount: 5000 }],
+      },
+      {
+        gender: "Man",
+        roleTitle: "Sales",
+        seniority: "Mid",
+        level: 2,
+        basicMonthly: 50000,
+      },
+    ])
+
+    const result = await asHr.query(api.payMapping.gap.getPayMappingGap, {
+      orgId,
+      runId,
+    })
+
+    expect(result?.equalWork).toHaveLength(1)
+    const group = result?.equalWork[0]
+    expect(group?.baseDriven).toBe(true)
+    expect(group?.base.gapPct).toBeCloseTo(10, 5)
+    expect(group?.tcc.gapPct).toBeCloseTo(0, 5)
+    expect(group?.flag).toBe("elevated")
   })
 
   it("excludes null-level priced rows from equivalentWork but classifies them for equal work", async () => {

@@ -171,7 +171,8 @@ describe("assemblePayMappingReport", () => {
             seniority: "Senior",
             level: 3,
             basicMonthly: 45000,
-            components: [],
+            // The medians read total compensation: her bonus counts.
+            components: [{ kind: "bonus", monthlyAmount: 5000 }],
           },
           {
             personPublicId: "p2",
@@ -301,7 +302,12 @@ describe("assemblePayMappingReport", () => {
             actions: [makeAction({ status: "inProgress" })],
             gap: makeGapResult({
               equalWork: [
-                makeGapGroup({ metric: { gapPct: 12, gapKr: 12000 } }),
+                // Year-over-year reads the primary measure (total comp),
+                // never the base gap beside it.
+                makeGapGroup({
+                  base: { gapPct: 9, gapKr: 9000 },
+                  tcc: { gapPct: 12, gapKr: 12000 },
+                }),
                 makeGapGroup({
                   key: "Dev|1",
                   roleTitle: "Dev",
@@ -322,14 +328,15 @@ describe("assemblePayMappingReport", () => {
     const doc = assemble({ withPrevious: true })
     const [swe, qa] = doc.equalWork
     expect(swe?.masked).toBe(false)
-    expect(swe?.base.womenMean).toBe("M90000")
-    expect(swe?.base.gapPct).toBe("P10")
+    // The table's figures are total compensation, the primary measure.
+    expect(swe?.tcc.womenMean).toBe("M90000")
+    expect(swe?.tcc.gapPct).toBe("P10")
     expect(swe?.reasons).toEqual(["experience", "performance"])
     expect(swe?.done).toBe(true)
     // 1 woman / 3 men: in-app shows the figures, the export masks them.
     expect(qa?.masked).toBe(true)
-    expect(qa?.base.womenMean).toBeNull()
-    expect(qa?.base.gapPct).toBeNull()
+    expect(qa?.tcc.womenMean).toBeNull()
+    expect(qa?.tcc.gapPct).toBeNull()
     // QA (per-gender), level 2 (per-gender, per-level table) and the
     // 3-person Clerk group (whole-group), counted as distinct group keys.
     expect(doc.method.maskedGroupCount).toBe(3)
@@ -395,10 +402,11 @@ describe("assemblePayMappingReport", () => {
   it("carries medians, year-over-year figures, spread and the excluded lists", () => {
     const doc = assemble({ withPrevious: true })
     const swe = doc.equalWork[0]
-    // Median computed from the frozen rows through the shared engine stats:
-    // one priced woman at 45000, no priced man.
-    expect(swe?.baseMedian.women).toBe("M45000")
-    expect(swe?.baseMedian.men).toBeNull()
+    // Median computed from the frozen rows through the shared engine stats,
+    // on total compensation: one priced woman at 45000 + 5000 bonus, no
+    // priced man.
+    expect(swe?.tccMedian.women).toBe("M50000")
+    expect(swe?.tccMedian.men).toBeNull()
     // The previous run had the same group at a 12% mean gap.
     expect(swe?.previousGapPct).toBe("P12")
     // The previous run's Dev group was 1W/1M: its gap is masked at the
@@ -408,7 +416,7 @@ describe("assemblePayMappingReport", () => {
     expect(dev?.previousGapPct).toBeNull()
     // A masked row masks its medians and its year-over-year figure too.
     const qa = doc.equalWork[1]
-    expect(qa?.baseMedian.women).toBeNull()
+    expect(qa?.tccMedian.women).toBeNull()
     expect(qa?.previousGapPct).toBeNull()
     // Org-level year-over-year line from the previous gap aggregate.
     expect(doc.orgPrevious).toEqual({
@@ -449,11 +457,11 @@ describe("assemblePayMappingReport", () => {
     // would render a level where women are ahead identically to one where
     // they are behind.
     const reversed = doc.equivalentWorkLevels.find((row) => row.key === "3")
-    expect(reversed?.base.gapPct).toBe("S-8")
-    expect(reversed?.base.gapKr).toBe("M-3000")
+    expect(reversed?.tcc.gapPct).toBe("S-8")
+    expect(reversed?.tcc.gapKr).toBe("M-3000")
     // Equal work stays unsigned: direction is carried by the section split
     // (the women-ahead list), never by a sign.
-    expect(doc.equalWork[0]?.base.gapPct).toBe("P10")
+    expect(doc.equalWork[0]?.tcc.gapPct).toBe("P10")
   })
 
   it("derives the summary key figures from the sections they summarize", () => {

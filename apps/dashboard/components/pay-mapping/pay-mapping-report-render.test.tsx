@@ -249,9 +249,9 @@ const LABELS: PayMappingReportLabels = {
   flagLabel: (flag) => flag,
   levelText: (level) => (level === null ? "-" : String(level)),
   levelRowLabel: (level) => (level === null ? "-" : `Level ${level}`),
-  tccDrivenMarker: "*",
-  tccLine: (metric) =>
-    `Total comp: ${metric.womenMean ?? "-"} / ${metric.menMean ?? "-"} (${metric.gapPct ?? "-"})`,
+  baseDrivenMarker: "*",
+  baseLine: (metric) =>
+    `Base salary: ${metric.womenMean ?? "-"} / ${metric.menMean ?? "-"} (${metric.gapPct ?? "-"})`,
   medianShort: "md",
   prevYearLine: (gapPct) => `Previous year: ${gapPct}.`,
   reasonsLabel: "Objective reasons",

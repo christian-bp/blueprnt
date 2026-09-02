@@ -149,10 +149,10 @@ function GapCard({
 // against age or tenure answers the question this step actually asks the
 // documenter, which is whether something objective explains the difference; a
 // lane per gender only restated the averages the badges above already carry.
-// One chart family across both chapters also means one place to improve. The group's primary
-// metric leads (base salary, or total comp for a tccDriven group); the
-// other metric rides along as a muted parallel line, and the table always
-// carries both columns.
+// One chart family across both chapters also means one place to improve.
+// The group's primary metric leads (total comp, or base salary for a
+// baseDriven group); the other metric earns a badge only when it changes
+// the picture, and the table always carries both columns.
 export function EqualWorkDetail({
   group,
   rows,
@@ -182,12 +182,12 @@ export function EqualWorkDetail({
   const tHelp = useTranslations("dashboard.help")
 
   const primary = primaryGapMetric(group)
-  const secondary = group.tccDriven ? group.base : group.tcc
+  const secondary = group.baseDriven ? group.tcc : group.base
   // The badge form of the label, without the sentence colon the line
   // version carries.
-  const secondaryPrefix = group.tccDriven
-    ? t("summary.baseBadge")
-    : t("summary.tccBadge")
+  const secondaryPrefix = group.baseDriven
+    ? t("summary.tccBadge")
+    : t("summary.baseBadge")
   // The second measure earns its place only when it says something the
   // first one does not: a different flag (its gap crosses a threshold the
   // primary does not) or the opposite direction. Otherwise it restates the
@@ -251,16 +251,16 @@ export function EqualWorkDetail({
         </div>
       </div>
       {/* This group's members only, drawn on the SAME measure the badges
-          above state (base salary, or total comp for a tccDriven group) with
-          that measure's own averages as the two reference lines. All three
-          have to agree: a card reading "SEK 84,000 on average" over a line
-          labelled "Women's avg" sitting at 98,333 is one screen contradicting
-          itself. */}
+          above state (total comp, or base salary for a baseDriven group)
+          with that measure's own averages as the two reference lines. All
+          three have to agree: a card reading "SEK 84,000 on average" over a
+          line labelled "Women's avg" sitting at 98,333 is one screen
+          contradicting itself. */}
       <PayMappingScatter
         rows={membersOf(rows, group)}
         currency={currency}
         referenceDateMs={referenceDateMs}
-        yMetric={group.tccDriven ? "total" : "base"}
+        yMetric={group.baseDriven ? "base" : "total"}
         means={{ women: primary.womenMean, men: primary.menMean }}
         title={tScatter("titleEqualWork")}
       />

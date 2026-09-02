@@ -1,6 +1,6 @@
 # Instegsvillkor för analysvyerna och åtgärdslagret
 
-**Status:** accepterad (2026-08-06)
+**Status:** accepterad (2026-08-06). §5 ersatt av ADR-0028 (2026-09-02): total ersättning är primärt mått, grundlön parallellt, `baseDriven` speglar `tccDriven`; övriga punkter består.
 
 Utlöst av produktnoteringarna "Systemnoteringar – Iteration 2" (2026-08-06, fem noteringar). Ändrar hur P1-vyn för lika arbete presenterar och gate-ar sina grupper (en avgränsad ändring av ADR-0012), gör grundlön till gruppernas primära mått, inför tvärnivå-kontrollen för likvärdigt arbete och beslutar datamodellen för åtgärder och noteringar (M7). Masterplanen med skivindelning: `docs/superpowers/plans/2026-08-06-iteration-2-analysis-views-rebuild.md`.
 

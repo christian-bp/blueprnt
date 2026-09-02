@@ -47,7 +47,7 @@ export function makeGapGroup(
     base: makeGapMetric({ ...metric, ...base }),
     tcc: makeGapMetric({ ...metric, ...tcc }),
     flag: "elevated",
-    tccDriven: false,
+    baseDriven: false,
     ...rest,
   }
 }

@@ -275,8 +275,8 @@ export type PayMappingReportLabels = {
   flagLabel: (flag: PayGapFlag) => string
   levelText: (level: number | null) => string
   levelRowLabel: (level: number | null) => string
-  tccDrivenMarker: string
-  tccLine: (metric: ReportMetricText) => string
+  baseDrivenMarker: string
+  baseLine: (metric: ReportMetricText) => string
   medianShort: string
   prevYearLine: (gapPct: string) => string
   reasonsLabel: string
@@ -519,7 +519,7 @@ function GroupTableRow({
   continuationHeader?: boolean
 }) {
   const labelText = `${showLabel ?? row.label}${
-    row.tccDriven ? ` ${labels.tccDrivenMarker}` : ""
+    row.baseDriven ? ` ${labels.baseDrivenMarker}` : ""
   }`
   return (
     <View>
@@ -540,40 +540,40 @@ function GroupTableRow({
           <Text style={[s.cellCount, s.tableText]}>{row.womenCount}</Text>
           <Text style={[s.cellCount, s.tableText]}>{row.menCount}</Text>
           <MeanMedianCell
-            mean={row.base.womenMean}
-            median={row.baseMedian.women}
+            mean={row.tcc.womenMean}
+            median={row.tccMedian.women}
             style={[s.cellMoney]}
             labels={labels}
           />
           <MeanMedianCell
-            mean={row.base.menMean}
-            median={row.baseMedian.men}
+            mean={row.tcc.menMean}
+            median={row.tccMedian.men}
             style={[s.cellMoney]}
             labels={labels}
           />
           <MeanMedianCell
-            mean={row.base.gapPct}
-            median={row.baseMedian.gapPct}
+            mean={row.tcc.gapPct}
+            median={row.tccMedian.gapPct}
             style={[s.cellNum]}
             labels={labels}
           />
           <Text style={[s.cellMoney, s.tableText]}>
-            {cell(row.base.gapKr, labels)}
+            {cell(row.tcc.gapKr, labels)}
           </Text>
           <Text style={[s.cellStatus, s.tableText]}>
             {labels.flagLabel(row.flag)}
           </Text>
         </View>
-        {/* A tccDriven group's flag comes from total compensation, so the
-            figures that justify the status must be in the document, not only
-            the base columns beside it. The previous mapping's gap rides in
+        {/* A baseDriven group's flag comes from base salary, so the figures
+            that justify the status must be in the document, not only the
+            total-comp columns beside it. The previous mapping's gap rides in
             the same meta block (year-over-year figures, the
             published-document convention). Both suppressed when the row is
             masked. */}
-        {!row.masked && (row.tccDriven || row.previousGapPct !== null) && (
+        {!row.masked && (row.baseDriven || row.previousGapPct !== null) && (
           <View style={s.docBlock}>
-            {row.tccDriven && (
-              <Text style={s.docText}>{labels.tccLine(row.tcc)}</Text>
+            {row.baseDriven && (
+              <Text style={s.docText}>{labels.baseLine(row.base)}</Text>
             )}
             {row.previousGapPct !== null && (
               <Text style={s.docText}>

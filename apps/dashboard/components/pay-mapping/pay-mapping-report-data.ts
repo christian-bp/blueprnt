@@ -107,12 +107,14 @@ export interface ReportGroupRow {
   menCount: number
   // Export-boundary masking applied to this row's means/gaps.
   masked: boolean
-  base: ReportMetricText
-  baseMedian: ReportMedianText
+  // The table's figures: total comp (the primary measure) with its medians,
+  // and base salary beside it for the baseDriven meta line.
   tcc: ReportMetricText
+  tccMedian: ReportMedianText
+  base: ReportMetricText
   flag: PayGapFlag
-  tccDriven: boolean
-  // The same group's mean base-salary gap in the PREVIOUS completed
+  baseDriven: boolean
+  // The same group's mean total-comp gap in the PREVIOUS completed
   // kartläggning, when that run had the group (year-over-year figures in the
   // tables, the near-universal convention in published documents).
   previousGapPct: string | null
@@ -414,9 +416,9 @@ export function signedGapPctOf(
   return ((men - women) / men) * 100
 }
 
-// The per-gender base-salary medians for a group, computed from the frozen
+// The per-gender total-comp medians for a group, computed from the frozen
 // rows through the shared engine statistics (never a second median formula).
-function baseMedianText(
+function tccMedianText(
   members: PayMappingSnapshotRow[],
   masked: boolean,
   formatters: ReportFormatters,
@@ -424,10 +426,10 @@ function baseMedianText(
 ): ReportMedianText {
   if (masked) return { women: null, men: null, gapPct: null }
   const women = genderStats(
-    members.filter((row) => row.gender === "Kvinna").map(fteBaseMonthly)
+    members.filter((row) => row.gender === "Kvinna").map(fteTotalMonthly)
   )
   const men = genderStats(
-    members.filter((row) => row.gender === "Man").map(fteBaseMonthly)
+    members.filter((row) => row.gender === "Man").map(fteTotalMonthly)
   )
   const gap = signedGapPctOf(women?.median ?? null, men?.median ?? null)
   return {
@@ -475,16 +477,16 @@ function groupRow(
     womenCount: group.womenCount,
     menCount: group.menCount,
     masked,
-    base: metricText(group.base, masked, formatters, signed),
-    baseMedian: baseMedianText(
+    tcc: metricText(group.tcc, masked, formatters, signed),
+    tccMedian: tccMedianText(
       memberRows(rows, group),
       masked,
       formatters,
       signed
     ),
-    tcc: metricText(group.tcc, masked, formatters, signed),
+    base: metricText(group.base, masked, formatters, signed),
     flag: group.flag,
-    tccDriven: group.tccDriven,
+    baseDriven: group.baseDriven,
     previousGapPct:
       masked || previousGapPct === null ? null : pct(previousGapPct),
     reasons: analysis?.reasons ?? [],
@@ -659,7 +661,7 @@ export function assemblePayMappingReport(input: {
 
   const pricedRows = run.rows.filter((row) => row.basicMonthly !== null)
 
-  // The previous run's mean base-salary gap per group key, for the
+  // The previous run's mean total-comp gap per group key, for the
   // year-over-year figure on rows whose group existed last time. The wire
   // value is never export-masked, so the export rule is applied HERE on the
   // PREVIOUS group's own counts: a gap computed from a below-minimum group
@@ -674,7 +676,7 @@ export function assemblePayMappingReport(input: {
     ]) {
       previousGapByKey.set(
         group.key,
-        exportMasksGenderMeans(group) ? null : group.base.gapPct
+        exportMasksGenderMeans(group) ? null : group.tcc.gapPct
       )
     }
   }

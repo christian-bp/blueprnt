@@ -19,10 +19,10 @@ export interface GapMetric {
 // Structural subset of getPayMappingGap's per-group result (the pay-gap
 // aggregate for an equalWork/equivalentWork group). Shared by the overview
 // headline, the analysis gap tables, and the run shell so all consumers use
-// the same shape without importing runtime values from each other. Base
-// salary is the primary measure, total comp rides alongside; the flag is
-// the severest of the two directional flags; tccDriven marks a group
-// admitted on the total-comp gap alone (ADR-0015).
+// the same shape without importing runtime values from each other. Total
+// comp is the primary measure, base salary rides alongside; the flag is
+// the severest of the two directional flags; baseDriven marks a group
+// admitted on the base-salary gap alone (ADR-0015, measure per ADR-0028).
 export interface GapGroup {
   key: string
   roleTitle: string | null
@@ -33,17 +33,17 @@ export interface GapGroup {
   base: GapMetric
   tcc: GapMetric
   flag: PayGapFlag
-  tccDriven: boolean
+  baseDriven: boolean
 }
 
-// The group's primary display measure: base salary (grundlön), except for a
-// tccDriven group, whose finding lives in total comp. Every finding
-// sentence, bar pair, and attention sort reads this one helper so the
-// primary metric can never drift between surfaces.
+// The group's primary display measure: total comp, except for a baseDriven
+// group, whose finding lives in base salary (grundlön). Every badge, plot,
+// member diff and attention sort reads this one helper so the primary
+// metric can never drift between surfaces.
 export function primaryGapMetric(
-  group: Pick<GapGroup, "base" | "tcc" | "tccDriven">
+  group: Pick<GapGroup, "base" | "tcc" | "baseDriven">
 ): GapMetric {
-  return group.tccDriven ? group.tcc : group.base
+  return group.baseDriven ? group.base : group.tcc
 }
 
 // A gender-pure (2+ members, one gender) equal-work group: out of the

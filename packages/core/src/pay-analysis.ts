@@ -120,7 +120,8 @@ export function flagWomenBehind(
 
 // Which surface a comparison group belongs to (ADR-0015, Iteration 2 notes
 // 1-3). "shown": the primary lika arbete flow (both genders, and the women
-// trail on base salary, or on total comp for a tccDriven group). "reverse":
+// trail on total comp, or on base salary for a baseDriven group; ADR-0028).
+// "reverse":
 // both genders but the women lead on both metrics; the low-key info view.
 // "genderPure": 2+ members of one gender; the opt-in deep-dive. "singleton":
 // fewer than 2 members; silently dropped everywhere, including the gate.
@@ -128,10 +129,12 @@ export type EqualWorkOutcome = "shown" | "reverse" | "genderPure" | "singleton"
 
 export interface EqualWorkClassification {
   outcome: EqualWorkOutcome
-  // True when the group is shown on the total-comp gap alone (base gap is
-  // zero or reversed): the base-only entry condition would hide a
-  // bonus-driven gap, so total comp also admits (ADR-0015).
-  tccDriven: boolean
+  // True when the group is shown on the base-salary gap alone (the
+  // total-comp gap is zero or reversed): a pure total-comp condition would
+  // hide a gap in the fixed pay that the women's variable pay happens to
+  // cover, so base salary also admits, and the group's finding reads the
+  // measure it was admitted on (ADR-0028).
+  baseDriven: boolean
   base: MetricComparison
   tcc: MetricComparison
   // The severest of the two metrics' directional flags: a finding on either
@@ -174,7 +177,7 @@ export function classifyEqualWorkGroup(input: {
           : "reverse"
   return {
     outcome,
-    tccDriven: outcome === "shown" && (base.gapPct ?? 0) <= 0,
+    baseDriven: outcome === "shown" && (tcc.gapPct ?? 0) <= 0,
     base,
     tcc,
     flag,

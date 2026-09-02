@@ -47,8 +47,8 @@ import {
 
 // One rendered member row: FTE-adjusted values (comparisons are always
 // like-for-like) plus the diff against the men's mean on the group's
-// PRIMARY metric (base salary, or total comp for a tccDriven group), so the
-// columns always agree with the group's own finding sentence and dot plot.
+// PRIMARY metric (total comp, or base salary for a baseDriven group), so
+// the columns always agree with the group's own badges and dot plot.
 export interface MemberRow {
   personPublicId: string
   name: string
@@ -67,13 +67,13 @@ export interface MemberRow {
 // Pure: members -> rendered rows. Exported for direct unit testing.
 export function buildMemberRows(
   members: PayMappingSnapshotRow[],
-  group: Pick<GapGroup, "base" | "tcc" | "tccDriven">
+  group: Pick<GapGroup, "base" | "tcc" | "baseDriven">
 ): MemberRow[] {
   const menMean = primaryGapMetric(group).menMean
   return members.map((row) => {
     const base = fteBaseMonthly(row)
     const tcc = fteTotalMonthly(row)
-    const primary = group.tccDriven ? tcc : base
+    const primary = group.baseDriven ? base : tcc
     const diff = menMean === null ? null : diffVsMenMean(primary, menMean)
     return {
       personPublicId: row.personPublicId,
@@ -130,7 +130,8 @@ const columns = columnHelper.columns([
 // The individual member table (Iteration 2 notes 3-4): one row per frozen
 // member with FTE-adjusted base salary and total comp, plus the signed
 // difference against the men's mean on the group's primary metric. Default
-// sort: the women first, lowest paid on top; every heading re-sorts freely.
+// sort: the women first, lowest total comp on top; every heading re-sorts
+// freely.
 // Client pagination at PAGE_SIZE rows, with a name search above the table.
 export function GroupMemberTable({
   group,
@@ -174,10 +175,11 @@ export function GroupMemberTable({
     return data.filter((row) => row.name.toLowerCase().includes(needle))
   }, [data, query])
 
-  // Default order: women first, then lowest base salary on top.
+  // Default order: women first, then lowest total comp (the primary
+  // measure) on top.
   const [sorting, setSorting] = useState<SortingState>([
     { id: "gender", desc: false },
-    { id: "base", desc: false },
+    { id: "tcc", desc: false },
   ])
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -203,7 +205,7 @@ export function GroupMemberTable({
   // First click sorts ascending, the next flips to descending; a sort change
   // resets to the first page (table anatomy). The state is REPLACED with the
   // clicked column (never merged): the default is a two-column sort (gender,
-  // then base), and toggleSorting would only flip that entry in place.
+  // then total comp), and toggleSorting would only flip that entry in place.
   function sortableHead(id: string, label: string, className?: string) {
     const column = table.getColumn(id)
     const sorted = column?.getIsSorted() ?? false

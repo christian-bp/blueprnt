@@ -385,9 +385,9 @@ export function usePayMappingReportExport(): {
       levelText: (level) => (level === null ? "-" : String(level)),
       levelRowLabel: (level) =>
         level === null ? "-" : tGap("levelLabel", { level }),
-      tccDrivenMarker: "*",
-      tccLine: (metric) =>
-        t("tccLine", {
+      baseDrivenMarker: "*",
+      baseLine: (metric) =>
+        t("baseLine", {
           womenMean: metric.womenMean ?? t("maskedCell"),
           menMean: metric.menMean ?? t("maskedCell"),
           gapPct: metric.gapPct ?? t("maskedCell"),

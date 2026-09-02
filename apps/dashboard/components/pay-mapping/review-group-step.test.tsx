@@ -70,18 +70,18 @@ const GROUP_LESS: GapGroup = makeGapGroup({
   flag: "critical",
 })
 
-// Admitted on the total-comp gap alone (ADR-0015): base salaries are level,
-// the men's bonuses open a 10% tcc gap.
-const GROUP_TCC_DRIVEN: GapGroup = makeGapGroup({
+// Admitted on the base-salary gap alone (ADR-0028): total comp is level,
+// the women's commission covers a 10% base gap.
+const GROUP_BASE_DRIVEN: GapGroup = makeGapGroup({
   key: "sales|2|mid",
   roleTitle: "Sales",
   seniority: "Mid",
   level: 2,
   womenCount: 2,
   menCount: 3,
-  base: { womenMean: 100_000, menMean: 100_000, gapPct: 0, gapKr: 0 },
-  tcc: { womenMean: 90_000, menMean: 100_000, gapPct: 10, gapKr: 10_000 },
-  tccDriven: true,
+  base: { womenMean: 90_000, menMean: 100_000, gapPct: 10, gapKr: 10_000 },
+  tcc: { womenMean: 100_000, menMean: 100_000, gapPct: 0, gapKr: 0 },
+  baseDriven: true,
   flag: "elevated",
 })
 
@@ -165,6 +165,7 @@ type StepOverrides = Partial<{
   analysis: GroupAnalysis | undefined
   // The equivalent-work step's per-comparison documentation rows.
   comparisonAnalyses: GroupAnalysis[]
+  rows: PayMappingSnapshotRow[]
   locked: boolean
   requiresDocumentation: boolean
   animated: boolean
@@ -183,7 +184,7 @@ function renderEqualWorkStep(group: GapGroup, overrides: StepOverrides = {}) {
         analysis={overrides.analysis}
         runId={RUN_ID}
         locked={overrides.locked ?? false}
-        rows={ROWS}
+        rows={overrides.rows ?? ROWS}
         currency="SEK"
         referenceDateMs={Date.UTC(2026, 6, 1)}
         actions={[]}
@@ -214,7 +215,7 @@ function renderWdStep(
         comparisonAnalyses={overrides.comparisonAnalyses ?? []}
         runId={RUN_ID}
         locked={overrides.locked ?? false}
-        rows={ROWS}
+        rows={overrides.rows ?? ROWS}
         currency="SEK"
         referenceDateMs={Date.UTC(2026, 6, 1)}
         actions={[]}
@@ -279,9 +280,9 @@ describe("ReviewGroupStep", () => {
     })
 
     it("badges the second measure only when it changes the picture", () => {
-      // Admitted on a 4% base gap (elevated), but the 20% tcc gap is what
-      // makes the group critical: the sentence must name the metric behind
-      // the flag, or the red badge sits next to a sentence about 4%.
+      // Admitted on a 4% total-comp gap, but the 20% base gap is what makes
+      // the group critical: the figures must name the measure behind the
+      // flag, or the red badge sits next to a 4%.
       renderEqualWorkStep(
         makeGapGroup({
           key: "ops|2|mid",
@@ -291,26 +292,26 @@ describe("ReviewGroupStep", () => {
           womenCount: 2,
           menCount: 3,
           base: {
-            womenMean: 96_000,
-            menMean: 100_000,
-            gapPct: 4,
-            gapKr: 4_000,
-          },
-          tcc: {
             womenMean: 80_000,
             menMean: 100_000,
             gapPct: 20,
             gapKr: 20_000,
           },
-          tccDriven: false,
+          tcc: {
+            womenMean: 96_000,
+            menMean: 100_000,
+            gapPct: 4,
+            gapKr: 4_000,
+          },
+          baseDriven: false,
           flag: "critical",
         })
       )
       expect(
-        // The base gap is 4% (elevated) but total comp is 20% (critical),
-        // so the second measure earns its badge: it is the one behind the
-        // red flag.
-        screen.getByText("Total comp")
+        // Total comp is 4% apart but base salary 20% (critical), so the
+        // second measure earns its badge: it is the one behind the red
+        // flag.
+        screen.getByText("Base")
       ).toBeDefined()
     })
   })
@@ -346,12 +347,14 @@ describe("ReviewGroupStep", () => {
     })
 
     it("badges a second measure that tells a different story", () => {
-      // Total comp is 10% apart while the base salaries are identical: the
-      // difference is entirely in the variable pay, which is exactly what
-      // the documenter needs to know. So this one earns its badge.
-      renderEqualWorkStep(GROUP_TCC_DRIVEN)
+      // Base salary is 10% apart while total comp is level: the women's
+      // variable pay covers a gap in the fixed pay, which is exactly what
+      // the documenter needs to know. The group states its figures in base
+      // salary (the measure it was admitted on), and total comp earns the
+      // second badge.
+      renderEqualWorkStep(GROUP_BASE_DRIVEN)
       expect(screen.getByText(`-${sek(10_000)}`)).toBeDefined()
-      expect(screen.getByText("Base")).toBeDefined()
+      expect(screen.getByText("Total comp")).toBeDefined()
     })
 
     it("leaves out a second measure that only restates the first", () => {

@@ -57,9 +57,9 @@ function renderedNames(): string[] {
 }
 
 describe("buildMemberRows", () => {
-  it("FTE-adjusts base and tcc, and diffs against the men's base mean", () => {
+  it("FTE-adjusts base and tcc, and diffs against the men's tcc mean", () => {
     const group = makeGapGroup({
-      base: { womenMean: 50000, menMean: 100000, gapPct: 50, gapKr: 50000 },
+      tcc: { womenMean: 60000, menMean: 110000, gapPct: 45.45, gapKr: 50000 },
     })
     const rows = buildMemberRows(
       [
@@ -79,22 +79,29 @@ describe("buildMemberRows", () => {
     expect(row?.base).toBe(50000)
     expect(row?.tcc).toBe(60000)
     expect(row?.ftePercent).toBe(50)
-    // Diff on the PRIMARY metric (base): 50k - 100k men mean.
+    // Diff on the PRIMARY metric (total comp): 60k - 110k men mean.
     expect(row?.diffKr).toBe(-50000)
-    expect(row?.diffPct).toBe(-50)
+    expect(row?.diffPct).toBeCloseTo(-45.45, 1)
   })
 
-  it("diffs against the men's tcc mean for a tccDriven group", () => {
+  it("diffs against the men's base mean for a baseDriven group", () => {
     const group = makeGapGroup({
-      base: { womenMean: 100000, menMean: 100000, gapPct: 0, gapKr: 0 },
-      tcc: { womenMean: 100000, menMean: 110000, gapPct: 9.09, gapKr: 10000 },
-      tccDriven: true,
+      base: { womenMean: 90000, menMean: 100000, gapPct: 10, gapKr: 10000 },
+      tcc: { womenMean: 110000, menMean: 110000, gapPct: 0, gapKr: 0 },
+      baseDriven: true,
     })
     const rows = buildMemberRows(
-      [memberRow({ gender: "Kvinna", basicMonthly: 100000 })],
+      [
+        memberRow({
+          gender: "Kvinna",
+          basicMonthly: 90000,
+          components: [{ kind: "commission", monthlyAmount: 20000 }],
+        }),
+      ],
       group
     )
-    // The member's tcc (100k, no components) against the men's tcc mean 110k.
+    // The member's base (90k) against the men's base mean 100k, not her
+    // total comp (110k) against theirs.
     expect(rows[0]?.diffKr).toBe(-10000)
   })
 
@@ -163,18 +170,32 @@ describe("GroupMemberTable", () => {
     )
   }
 
-  it("defaults to women first, lowest base salary on top, and scopes to the group's members", () => {
-    renderTable({ group: GROUP, rows: ROWS, currency: "SEK" })
-    expect(renderedNames()).toEqual(["Anna", "Wilma", "Erik", "Mats"])
+  it("defaults to women first, lowest total comp on top, and scopes to the group's members", () => {
+    renderTable({
+      group: GROUP,
+      rows: [
+        ...ROWS,
+        // A bonus lifts her above Wilma on total comp while her base is the
+        // lowest: the default order reads the primary measure.
+        memberRow({
+          displayName: "Beata",
+          gender: "Kvinna",
+          basicMonthly: 85000,
+          components: [{ kind: "bonus", monthlyAmount: 12000 }],
+        }),
+      ],
+      currency: "SEK",
+    })
+    expect(renderedNames()).toEqual(["Anna", "Wilma", "Beata", "Erik", "Mats"])
     expect(screen.queryByText("Other")).toBeNull()
   })
 
-  it("re-sorts freely: the base heading flips to descending across genders, the name heading sorts alphabetically", () => {
+  it("re-sorts freely: the total comp heading flips to descending across genders, the name heading sorts alphabetically", () => {
     renderTable({ group: GROUP, rows: ROWS, currency: "SEK" })
-    // Base already participates in the default sort (ascending), so the
-    // first click flips it to descending, now across both genders.
+    // Total comp already participates in the default sort (ascending), so
+    // the first click flips it to descending, now across both genders.
     fireEvent.click(
-      screen.getByRole("button", { name: m.detail.columns.basePay })
+      screen.getByRole("button", { name: m.detail.columns.totalComp })
     )
     expect(renderedNames()).toEqual(["Mats", "Erik", "Wilma", "Anna"])
     // A fresh column starts ascending and replaces the sort entirely.
@@ -220,7 +241,11 @@ describe("GroupMemberTable", () => {
   // so its height is what a reader scrolls past to reach the chart and the
   // form under it. A 30-person group at 25 rows pushed both off the screen.
   it("shows a short page and pages the rest", () => {
-    renderTable({ group: GROUP, rows: manyMembers(30), currency: "SEK" })
+    renderTable({
+      group: GROUP,
+      rows: manyMembers(30),
+      currency: "SEK",
+    })
     expect(renderedNames()).toHaveLength(5)
     expect(screen.getByRole("navigation")).toBeDefined()
   })
@@ -234,7 +259,11 @@ describe("GroupMemberTable", () => {
   // them: the search is. It narrows on the name, which is the only thing that
   // tells rows in an equal-work group apart (they share a role by definition).
   it("narrows to the searched name and reports how many matched", () => {
-    renderTable({ group: GROUP, rows: manyMembers(30), currency: "SEK" })
+    renderTable({
+      group: GROUP,
+      rows: manyMembers(30),
+      currency: "SEK",
+    })
     fireEvent.change(screen.getByLabelText(m.detail.searchPlaceholder), {
       target: { value: "Person 07" },
     })
@@ -251,13 +280,21 @@ describe("GroupMemberTable", () => {
   // The count is chrome the reader did not ask for until they start
   // narrowing, and a group that fits on a page should carry none of it.
   it("hides the count until the search is narrowing", () => {
-    renderTable({ group: GROUP, rows: manyMembers(30), currency: "SEK" })
+    renderTable({
+      group: GROUP,
+      rows: manyMembers(30),
+      currency: "SEK",
+    })
     expect(screen.queryByText(/of 30 people/)).toBeNull()
   })
 
   // An empty table under its own headings reads as a load that failed.
   it("says so in the table when nothing matches", () => {
-    renderTable({ group: GROUP, rows: manyMembers(30), currency: "SEK" })
+    renderTable({
+      group: GROUP,
+      rows: manyMembers(30),
+      currency: "SEK",
+    })
     fireEvent.change(screen.getByLabelText(m.detail.searchPlaceholder), {
       target: { value: "nobody" },
     })
@@ -269,7 +306,11 @@ describe("GroupMemberTable", () => {
   // Page 3 of a 30-person group has nothing on it once the search narrows to
   // two matches, so a stale page index would show an empty table.
   it("returns to the first page when the search narrows", () => {
-    renderTable({ group: GROUP, rows: manyMembers(30), currency: "SEK" })
+    renderTable({
+      group: GROUP,
+      rows: manyMembers(30),
+      currency: "SEK",
+    })
     fireEvent.click(screen.getByRole("button", { name: m.toolbar.next }))
     fireEvent.change(screen.getByLabelText(m.detail.searchPlaceholder), {
       target: { value: "Person 0" },

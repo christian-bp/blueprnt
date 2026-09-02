@@ -3,7 +3,6 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import type { PayGapReason } from "@workspace/constants"
-import { flagWomenBehind, type PayGapFlag } from "@workspace/core"
 import { useMutation } from "convex/react"
 import { ConvexError } from "convex/values"
 import { useFormatter, useTranslations } from "next-intl"
@@ -57,52 +56,15 @@ function isDocumentationRequiredError(error: unknown): boolean {
   )
 }
 
-// The equal-work finding sentence's variant key + raw interpolation numbers.
-// Every group that reaches this step passed the ADR-0015 entry conditions
-// (both genders, women trailing on the primary metric), so the variants
-// reduce to "less" (base salary), "lessTcc" (a tccDriven group's finding
-// lives in total comp), "lessTccWorse" (admitted on the base gap, but the
-// TCC gap is what sets the group's severest-of-two flag: the sentence must
-// name the metric behind the flag, or a red badge sits next to a sentence
-// about a smaller gap), and a defensive "none" for a gapless edge. A pure
-// data-selector, deliberately never touching next-intl's own
-// translate-function type: threading THAT type through an explicit
-// parameter elsewhere in this file triggered a real "Type instantiation is
-// excessively deep" compiler error (it is a deeply generic overload set
-// keyed to the whole message JSON, meant to be called in place, not passed
-// around). The gaps are left as raw signed percents (not yet formatted, and
-// not yet abs'd): the render site turns them into the ICU string via its own
-// percentText, right where it calls the real, precisely-typed tFinding.
-const FLAG_RANK: Record<PayGapFlag, number> = {
-  critical: 3,
-  elevated: 2,
-  ok: 1,
-  insufficient: 0,
-}
-
-function equalWorkFindingVariant(group: GapGroup): {
-  key: "none" | "less" | "lessTcc" | "lessTccWorse"
-  women: number
-  men: number
-  gapPct: number | null
-  tccGapPct: number | null
-} {
-  const { womenCount: women, menCount: men } = group
+// Whether an equal-work group has nothing measurable to report on its
+// primary metric. Every group that reaches this step passed the ADR-0015
+// entry conditions (both genders, women trailing on one of the measures),
+// so this is a defensive edge (a gapless or masked primary) rather than a
+// variant: the figures themselves live in EqualWorkDetail's badges, and the
+// sentence exists only for the case where there are no figures to badge.
+function hasNoMeasurableGap(group: GapGroup): boolean {
   const { gapPct } = primaryGapMetric(group)
-  const tccGapPct = group.tcc.gapPct
-  if (gapPct === null || gapPct <= 0)
-    return { key: "none", women, men, gapPct, tccGapPct }
-  if (group.tccDriven) return { key: "lessTcc", women, men, gapPct, tccGapPct }
-  const tccSetsFlag =
-    FLAG_RANK[flagWomenBehind(women, men, group.tcc.gapPct)] >
-    FLAG_RANK[flagWomenBehind(women, men, group.base.gapPct)]
-  return {
-    key: tccSetsFlag ? "lessTccWorse" : "less",
-    women,
-    men,
-    gapPct,
-    tccGapPct,
-  }
+  return gapPct === null || gapPct <= 0
 }
 
 interface ReviewGroupStepCommonProps {
@@ -415,7 +377,7 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
             // there are no figures to badge, so words are the only way to
             // say that nothing was found. Skipping this would leave the
             // step's most reassuring result as a blank space.
-            equalWorkFindingVariant(props.group).key === "none" ? (
+            hasNoMeasurableGap(props.group) ? (
               <p className="text-base text-muted-foreground">
                 {tFinding("none", {
                   women: props.group.womenCount,

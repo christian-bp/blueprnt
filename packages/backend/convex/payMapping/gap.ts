@@ -40,11 +40,12 @@ const gapMetricShape = v.object({
   gapKr: v.union(v.number(), v.null()),
 })
 
-// One gender-gap group in the wire shape (ADR-0015): base salary is the
-// primary measure, total comp rides alongside, the flag is the severest of
-// the two directional (women-behind) flags, and tccDriven marks a group
-// admitted on the total-comp gap alone. roleTitle/seniority are populated
-// for equal-work groups only (null for equivalent-work).
+// One gender-gap group in the wire shape (ADR-0015, measure per ADR-0028):
+// total comp is the primary measure, base salary rides alongside, the flag
+// is the severest of the two directional (women-behind) flags, and
+// baseDriven marks a group admitted on the base-salary gap alone.
+// roleTitle/seniority are populated for equal-work groups only (null for
+// equivalent-work).
 const gapGroupShape = v.object({
   key: v.string(),
   roleTitle: v.union(v.string(), v.null()),
@@ -55,7 +56,7 @@ const gapGroupShape = v.object({
   base: gapMetricShape,
   tcc: gapMetricShape,
   flag: flagShape,
-  tccDriven: v.boolean(),
+  baseDriven: v.boolean(),
 })
 
 // A gender-pure (2+ members, one gender) equal-work group: out of the
@@ -188,7 +189,7 @@ function toGapGroup(bucket: Bucket, classification: EqualWorkClassification) {
     base: masked ? MASKED_METRIC : classification.base,
     tcc: masked ? MASKED_METRIC : classification.tcc,
     flag: classification.flag as PayGapFlag,
-    tccDriven: classification.tccDriven,
+    baseDriven: classification.baseDriven,
   }
 }
 
@@ -206,9 +207,9 @@ type GapGroupWire = ReturnType<typeof toGapGroup>
 
 const NO_COMPONENTS: { monthlyAmount: number }[] = []
 
-// FTE-adjusted monthly base salary (grundlön), the primary group measure
-// (ADR-0015). basicMonthly is non-null here (callers filter priced rows
-// first).
+// FTE-adjusted monthly base salary (grundlön), the group measure that rides
+// alongside total comp (ADR-0028). basicMonthly is non-null here (callers
+// filter priced rows first).
 function baseComp(row: SnapshotRow): number {
   return fteTotalMonthlyComp(
     row.basicMonthly ?? 0,
@@ -245,8 +246,8 @@ export function buildGapAggregates(rows: SnapshotRow[]): {
   priced: SnapshotRow[]
   currency: string | null
   // The primary lika arbete flow: groups that pass the ADR-0015 entry
-  // conditions (both genders present, women trailing on base salary or, for
-  // a tccDriven group, on total comp).
+  // conditions (both genders present, women trailing on total comp or, for
+  // a baseDriven group, on base salary).
   equalWork: GapGroupWire[]
   excluded: {
     singletonCount: number
