@@ -98,6 +98,7 @@ const labels = {
   createdMarker: "Created",
   weightingConfirmed: "Weighting confirmed",
   noteMarker: "Note written",
+  emptyValue: "Empty",
 }
 
 // Stub resolver: upper-cases the field name so tests can tell labels apart from
@@ -323,6 +324,36 @@ describe("formatChanges", () => {
     expect(
       formatChanges({ team: { from: "Core", to: undefined } }, fieldLabel)
     ).toBe("Team: Core → ")
+  })
+
+  it("renders emptyLabel in place of a value cleared to nothing, when provided", () => {
+    expect(
+      formatChanges(
+        { team: { from: "Core", to: undefined } },
+        fieldLabel,
+        "…",
+        undefined,
+        undefined,
+        undefined,
+        "Empty"
+      )
+    ).toBe("Team: Core → Empty")
+  })
+
+  it("leaves a first-time set (empty from) alone even when emptyLabel is provided", () => {
+    // emptyLabel only applies to the arrow branch (a real change with an
+    // empty `to`), never the "label: to" first-time-set branch.
+    expect(
+      formatChanges(
+        { archivedAt: { from: null, to: null } },
+        fieldLabel,
+        "…",
+        undefined,
+        undefined,
+        undefined,
+        "Empty"
+      )
+    ).toBe("ArchivedAt: ")
   })
 
   it("renders a complex value as label + placeholder, never [object Object]", () => {
@@ -712,6 +743,19 @@ describe("formatAuditDetail", () => {
     ).toBe("System Developer (3 → 2)")
   })
 
+  it("renders emptyValue instead of a bare trailing arrow when level.to is cleared", () => {
+    const names = { r1: "System Developer" }
+    expect(
+      formatAuditDetail(
+        "level.shift",
+        { roleId: "r1", changes: { level: { from: 3, to: null } } },
+        names,
+        labels,
+        fieldLabel
+      )
+    ).toBe(`System Developer (3 → ${labels.emptyValue})`)
+  })
+
   it("renders level.shift with just the role when no level change is present", () => {
     const names = { r1: "System Developer" }
     expect(
@@ -880,6 +924,42 @@ describe("formatAuditDetail", () => {
         fieldLabel
       )
     ).toBe("Title: Dev → Lead")
+  })
+
+  it("renders the emptyValue label for a cleared field, not a bare trailing arrow (person.unarchived)", () => {
+    expect(
+      formatAuditDetail(
+        "person.unarchived",
+        {
+          personId: "p1",
+          changes: { archivedAt: { from: 1753776000000, to: null } },
+        },
+        {},
+        labels,
+        fieldLabel,
+        undefined,
+        undefined,
+        (epochMs) => `DATE(${epochMs})`
+      )
+    ).toBe(`ArchivedAt: DATE(1753776000000) → ${labels.emptyValue}`)
+  })
+
+  it("renders a first-time set with no emptyValue text (person.archived)", () => {
+    expect(
+      formatAuditDetail(
+        "person.archived",
+        {
+          personId: "p1",
+          changes: { archivedAt: { from: null, to: 1753776000000 } },
+        },
+        {},
+        labels,
+        fieldLabel,
+        undefined,
+        undefined,
+        (epochMs) => `DATE(${epochMs})`
+      )
+    ).toBe("ArchivedAt: DATE(1753776000000)")
   })
 
   it("renders assignment.set as the assigned role name (never the raw id)", () => {
@@ -1738,6 +1818,22 @@ describe("sectionKind", () => {
     expect(
       sectionKind("role.archived", [{ isSet: true, to: "2026-01-01" }])
     ).toBe("update")
+  })
+
+  it("treats person.archived as an update, not a creation", () => {
+    // Its only change is archivedAt set from null, which would otherwise infer
+    // as a creation.
+    expect(
+      sectionKind("person.archived", [{ isSet: true, to: "2026-01-01" }])
+    ).toBe("update")
+  })
+
+  it("treats person.unarchived as an update, not a removal", () => {
+    // Its only change is archivedAt cleared to null, which would otherwise
+    // infer as a removal and head the section "Removed".
+    expect(sectionKind("person.unarchived", [{ isSet: false, to: "" }])).toBe(
+      "update"
+    )
   })
 
   it("infers from the entries for other events", () => {

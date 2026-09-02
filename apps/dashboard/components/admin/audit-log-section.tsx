@@ -247,7 +247,8 @@ export function AuditLogSection() {
           undefined,
           boolLabel,
           valueLabel,
-          dateLabel
+          dateLabel,
+          t("detail.emptyValue")
         )
       : formatStats(payload, fieldLabel, valueLabel)
   }

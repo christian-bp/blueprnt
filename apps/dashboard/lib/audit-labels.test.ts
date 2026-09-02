@@ -228,6 +228,8 @@ const OTHER_AUDIT_FIELDS = [
   "peopleUnchanged",
   "salariesImported",
   "skippedRows",
+  "peopleArchived",
+  "peopleReactivated",
   "suggested",
   "skipped",
   "unmatchedTitles",

@@ -344,6 +344,7 @@ export function OrgAuditLogSection() {
         createdMarker: t("detail.createdMarker"),
         weightingConfirmed: t("details.weightingConfirmed"),
         noteMarker: t("details.noteMarker"),
+        emptyValue: t("detail.emptyValue"),
       },
       fieldLabel,
       boolLabel,

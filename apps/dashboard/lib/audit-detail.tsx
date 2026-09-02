@@ -35,6 +35,9 @@ export function formatAuditValue(value: unknown): string {
 // joined with "; ". Complex (object/array) values are not dumped inline; the
 // entry shows the field label plus a `complexValue` placeholder so the dense
 // table cell stays readable (the detail sheet renders the full JSON instead).
+// When a real change clears `to` to nothing (e.g. archivedAt set to null on
+// unarchive), `emptyLabel` renders in its place so the entry never trails off
+// after a bare arrow; omitted, the entry ends at the arrow exactly as before.
 export function formatChanges(
   changes: Record<string, { from: unknown; to: unknown }>,
   fieldLabel: (field: string) => string,
@@ -50,7 +53,10 @@ export function formatChanges(
   valueLabel?: (field: string, value: string) => string | undefined,
   // Formats an AUDIT_DATE_FIELDS epoch-ms value as a localized date, so a
   // timestamp field never renders as a raw millisecond count.
-  dateLabel?: (epochMs: number) => string
+  dateLabel?: (epochMs: number) => string,
+  // Localized label for a value cleared to nothing (a real change whose `to`
+  // is empty). Optional so callers without i18n keep the raw (blank) behavior.
+  emptyLabel?: string
 ): ReactNode {
   const valueText = (field: string, value: unknown) => {
     if (typeof value === "boolean" && boolLabel) return boolLabel(value)
@@ -106,7 +112,7 @@ export function formatChanges(
         {sep}
         {label}: {fromText}
         <ChangeArrow />
-        {toText}
+        {toText.trim() === "" ? (emptyLabel ?? toText) : toText}
       </Fragment>
     )
   })
@@ -508,6 +514,8 @@ export const FIELD_DISPLAY_ORDER = [
   "peopleUnchanged",
   "salariesImported",
   "skippedRows",
+  "peopleArchived",
+  "peopleReactivated",
   "suggested",
   "skipped",
   "unmatchedTitles",
@@ -564,7 +572,12 @@ export function sectionKind(
   entries: Array<{ isSet: boolean; to: string }>
 ): "create" | "remove" | "update" {
   if (type.endsWith(".removed") || type.endsWith(".discarded")) return "remove"
-  if (type === "role.archived") return "update"
+  if (
+    type === "role.archived" ||
+    type === "person.archived" ||
+    type === "person.unarchived"
+  )
+    return "update"
   if (
     type.endsWith(".created") ||
     type === "anchorRole.designated" ||
@@ -748,6 +761,10 @@ export type AuditDetailLabels = {
   // record that one was written at all, and a row that dropped it would say a
   // placement was confirmed while hiding that the confirmer explained why.
   noteMarker: string
+  // A real change whose `to` is cleared to nothing (e.g. archivedAt set to
+  // null on unarchive): rendered in place of the empty value, so the row
+  // never trails off after a bare arrow.
+  emptyValue: string
 }
 
 // Turns an audit event + its (id-resolved) names into a human-readable one-line
@@ -832,7 +849,8 @@ export function formatAuditDetail(
             undefined,
             boolLabel,
             valueLabel,
-            dateLabel
+            dateLabel,
+            labels.emptyValue
           )}
         </>
       )
@@ -840,14 +858,21 @@ export function formatAuditDetail(
     case "level.shift": {
       const base = roleName(p.roleId)
       const level = changes?.level
-      return level != null && (level.from != null || level.to != null) ? (
+      if (level == null || (level.from == null && level.to == null)) {
+        return base
+      }
+      const fromText = formatAuditValue(level.from)
+      const toRaw = formatAuditValue(level.to)
+      const toText =
+        fromText.trim() !== "" && toRaw.trim() === ""
+          ? labels.emptyValue
+          : toRaw
+      return (
         <>
-          {base} ({formatAuditValue(level.from)}
+          {base} ({fromText}
           <ChangeArrow />
-          {formatAuditValue(level.to)})
+          {toText})
         </>
-      ) : (
-        base
       )
     }
     case "roleFamily.created":
@@ -872,7 +897,8 @@ export function formatAuditDetail(
               undefined,
               boolLabel,
               valueLabel,
-              dateLabel
+              dateLabel,
+              labels.emptyValue
             )}
           </>
         )
@@ -903,7 +929,8 @@ export function formatAuditDetail(
             undefined,
             boolLabel,
             valueLabel,
-            dateLabel
+            dateLabel,
+            labels.emptyValue
           )}
         </>
       ) : (
@@ -919,7 +946,8 @@ export function formatAuditDetail(
             undefined,
             boolLabel,
             valueLabel,
-            dateLabel
+            dateLabel,
+            labels.emptyValue
           )
         : ""
     case "organization.created":
@@ -955,7 +983,8 @@ export function formatAuditDetail(
               undefined,
               boolLabel,
               valueLabel,
-              dateLabel
+              dateLabel,
+              labels.emptyValue
             )
       const repaired = bulkCount > 0 ? labels.itemsChanged(bulkCount) : null
       if (budget === null && repaired === null) return name
@@ -1002,7 +1031,8 @@ export function formatAuditDetail(
         undefined,
         boolLabel,
         valueLabel,
-        dateLabel
+        dateLabel,
+        labels.emptyValue
       )
       return criteriaPart === "" ? (
         changesPart
@@ -1055,7 +1085,8 @@ export function formatAuditDetail(
             undefined,
             boolLabel,
             valueLabel,
-            dateLabel
+            dateLabel,
+            labels.emptyValue
           )}
         </>
       )
@@ -1094,7 +1125,8 @@ export function formatAuditDetail(
             undefined,
             boolLabel,
             valueLabel,
-            dateLabel
+            dateLabel,
+            labels.emptyValue
           )}
         </>
       )
@@ -1113,7 +1145,8 @@ export function formatAuditDetail(
           undefined,
           boolLabel,
           valueLabel,
-          dateLabel
+          dateLabel,
+          labels.emptyValue
         )
       return formatStats(p, fieldLabel, valueLabel)
     }
