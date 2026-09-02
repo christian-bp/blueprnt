@@ -1,0 +1,104 @@
+apps/dashboard/components/people/bulk-reactivate-people-dialog.tsx
+  s_a5a0b8b07c8eab::t_6be6b27f7a9090 1-136
+apps/dashboard/components/people/bulk-archive-people-dialog.test.tsx
+  s_a5a0b8b07c8eab::t_66448314bfacde 1-94
+apps/dashboard/components/people/person-actions-menu.tsx
+  s_a5a0b8b07c8eab::t_c8ba57dc53ff3c 51-53
+  s_a5a0b8b07c8eab::t_f288eac1d5f27f 28-30
+  s_a5a0b8b07c8eab::t_d3d5d6d8f7c815 14,26-27,35,40,43,57
+  s_a5a0b8b07c8eab::t_2e50b3fd9c8f29 79-83
+  s_a5a0b8b07c8eab::t_0f82c6a89d8639 84
+  s_a5a0b8b07c8eab::t_23b1fb0bd6d0b1 111
+  s_a5a0b8b07c8eab::t_6981233aa581db 103-108
+  s_a5a0b8b07c8eab::t_201d87785f92e6 109-110
+apps/dashboard/components/people/bulk-reactivate-people-dialog.test.tsx
+  s_a5a0b8b07c8eab::t_acbff6afc419dd 42-46,51-52,57
+  s_a5a0b8b07c8eab::t_634004a6437d36 83-91,93-110
+  s_a5a0b8b07c8eab::t_4affea48c6b35b 8
+  s_a5a0b8b07c8eab::t_2b145475a00401 92
+  s_a5a0b8b07c8eab::t_ed9880d53e8f0d 1-7,9-41,47-50,53-56,58-82,111
+apps/dashboard/components/people/people-section.tsx
+  s_a5a0b8b07c8eab::t_2f6fd425fca532 799-801
+  s_a5a0b8b07c8eab::t_ac218bdffcba30 118-122
+  s_a5a0b8b07c8eab::t_640c41b58183a5 830-831,835,837-843
+  s_a5a0b8b07c8eab::t_bf0f56e6dcee60 56
+  s_a5a0b8b07c8eab::t_ea22fd3499d245 741-752
+  s_a5a0b8b07c8eab::t_c854d258e484ed 274
+  s_a5a0b8b07c8eab::t_186eaf9b747fb6 58
+  s_a5a0b8b07c8eab::t_1569064dee1a5a 75
+  s_a5a0b8b07c8eab::t_856945fb5a1275 216
+  s_a5a0b8b07c8eab::t_10baa474d07a63 273
+  s_a5a0b8b07c8eab::t_32d2e4f9ec2123 376-377
+  s_a5a0b8b07c8eab::t_72f290c6b27b6c 829,832-834,836,844
+  s_a5a0b8b07c8eab::t_c0a7d358f0ca5b 215
+  s_a5a0b8b07c8eab::t_7f120847e20a61 369-370
+  s_a5a0b8b07c8eab::t_5bd23591ee8203 234-237
+  s_a5a0b8b07c8eab::t_0eaac770e927be 123
+  s_a5a0b8b07c8eab::t_e744991eb51b77 590-605
+  s_a5a0b8b07c8eab::t_277814e15a3600 630-632,634,636
+  s_a5a0b8b07c8eab::t_d11055c6de14f9 303-305
+  s_a5a0b8b07c8eab::t_9480cd0dcb3f30 76-80
+  s_a5a0b8b07c8eab::t_633a6166427c6d 420-421
+  s_a5a0b8b07c8eab::t_e4dd29b2e876f6 97
+  s_a5a0b8b07c8eab::t_10c75158a7b740 98
+  s_a5a0b8b07c8eab::t_6112edc1a8ed2f 371-375,378
+  s_a5a0b8b07c8eab::t_1928e6541e6e6b 240-257
+  s_a5a0b8b07c8eab::t_f47193a018d138 616-629,633,635,637-638
+  s_a5a0b8b07c8eab::t_ca08b6186d2f6d 225-229
+  s_a5a0b8b07c8eab::t_7ac6adc6d41b43 22
+  s_a5a0b8b07c8eab::t_bd640617355aac 379-381
+  s_a5a0b8b07c8eab::t_a56af81c56a87b 753
+apps/dashboard/components/people/person-detail.tsx
+  s_a5a0b8b07c8eab::t_9238aa18e949de 263-282,302
+  s_a5a0b8b07c8eab::t_7d6a43c248e62b 102-104
+  s_a5a0b8b07c8eab::t_84ac10bfb78c8d 13,31,40
+apps/dashboard/components/people/archive-person-dialog.tsx
+  s_a5a0b8b07c8eab::t_fd4580f1c81e65 1-118
+apps/dashboard/components/people/bulk-archive-people-dialog.tsx
+  s_a5a0b8b07c8eab::t_798df121373024 40-41
+  s_a5a0b8b07c8eab::t_3e26eadf29cd0e 1-39,42-147
+apps/dashboard/components/people/person-actions-menu.test.tsx
+  s_a5a0b8b07c8eab::t_f615b26a56dbae 21-22,28-29,40-44
+  s_a5a0b8b07c8eab::t_e0bb06fa972822 100-101
+  s_a5a0b8b07c8eab::t_34cbbe6085913c 210-256
+  s_a5a0b8b07c8eab::t_cde1b6f6f22281 106-109,112-117,126,128
+  s_a5a0b8b07c8eab::t_91316cc00cf2d8 68-69,85
+apps/dashboard/components/people/people-section.test.tsx
+  s_a5a0b8b07c8eab::t_c5749bc2e98c4a 1023-1028,1030-1032
+  s_a5a0b8b07c8eab::t_5e931e254bdf03 773-776,778-784,801,805-806
+  s_a5a0b8b07c8eab::t_fac39dd46b59df 962-965,970-984,992-994,997-998,1002,1004-1007,1010-1013,1029,1033-1034
+  s_a5a0b8b07c8eab::t_09f6a11082254b 180-199
+  s_a5a0b8b07c8eab::t_ab1ad99b57f810 1066
+  s_a5a0b8b07c8eab::t_487b9da9bcdaee 60
+  s_a5a0b8b07c8eab::t_4519ad9240298b 61
+  s_a5a0b8b07c8eab::t_7fc017b02cfae7 827-842,864-869,871-873,884,928-948
+  s_a5a0b8b07c8eab::t_af5c1051389f1b 200,899,927
+  s_a5a0b8b07c8eab::t_94448f33c17600 269-270,272-279
+  s_a5a0b8b07c8eab::t_7eadedde9c9c6e 798-799,802
+  s_a5a0b8b07c8eab::t_1d24fd68f9c754 843-863,870,874-883,885-898,900-926
+  s_a5a0b8b07c8eab::t_87903d5a7438b3 161
+  s_a5a0b8b07c8eab::t_17fe600e5ccddc 950-961,966-969,985-991,995-996,999-1001,1003,1008-1009,1014-1022,1035,1068
+  s_a5a0b8b07c8eab::t_e1107e4d2a5ff9 601-606,608-612,614,619-620,622-624,626-632,636-639,641-646,657-660,662-668,677-680,682-687,702-705,707-711,714,716,719
+  s_a5a0b8b07c8eab::t_b935243582ec3e 162-179
+  s_a5a0b8b07c8eab::t_91cca12158537e 66-87
+  s_a5a0b8b07c8eab::t_f3c5be0e94e358 1036-1065,1067
+  s_a5a0b8b07c8eab::t_8fa3d13e959e63 268
+  s_a5a0b8b07c8eab::t_3a16c567033b78 201
+  s_a5a0b8b07c8eab::t_fb6b577895b24b 949
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "c7186591a3103d735d8fbd13a13c0beacbaa4d07",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
