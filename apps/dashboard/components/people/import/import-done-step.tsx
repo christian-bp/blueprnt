@@ -5,6 +5,7 @@ import {
   UserCheck01Icon,
   UserEdit01Icon,
   UserMinus01Icon,
+  UserSwitchIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { useTranslations } from "next-intl"
@@ -21,11 +22,31 @@ export function ImportDoneStep({ result }: { result: ImportResultCounts }) {
   const t = useTranslations("dashboard.people.import.done")
   const router = useRouter()
 
+  // The two lifecycle rows show only when they happened, so an ordinary
+  // import's done screen is unchanged.
   const rows = [
     { key: "created", icon: UserAdd01Icon, value: result.created },
     { key: "updated", icon: UserEdit01Icon, value: result.updated },
     { key: "unchanged", icon: UserCheck01Icon, value: result.unchanged },
     { key: "skipped", icon: UserMinus01Icon, value: result.skipped },
+    ...(result.reactivated > 0
+      ? [
+          {
+            key: "reactivated" as const,
+            icon: UserSwitchIcon,
+            value: result.reactivated,
+          },
+        ]
+      : []),
+    ...(result.archived > 0
+      ? [
+          {
+            key: "archived" as const,
+            icon: UserMinus01Icon,
+            value: result.archived,
+          },
+        ]
+      : []),
   ] as const
 
   return (

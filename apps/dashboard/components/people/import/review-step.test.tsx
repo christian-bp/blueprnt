@@ -104,8 +104,10 @@ const OK_PREVIEW = {
   validation: EMPTY_VALIDATION,
   skippedRows: 0,
   diff: {
-    people: { created: 2, updated: 0, unchanged: 0 },
+    people: { created: 2, updated: 0, unchanged: 0, returning: 0 },
     updatedPeople: [],
+    returningPeople: [],
+    missingFromFile: [],
     nameMismatches: [],
     salary: {
       newEntries: 2,
@@ -129,6 +131,8 @@ const OK_RESULT = {
   peopleCreated: 2,
   peopleUpdated: 0,
   peopleUnchanged: 0,
+  peopleArchived: 0,
+  peopleReactivated: 0,
   salariesImported: 2,
   skippedRows: 0,
   validation: {
@@ -183,6 +187,8 @@ function renderReviewStep({
     updated: number
     unchanged: number
     skipped: number
+    reactivated: number
+    archived: number
   }) => void
   blockingError?: string[] | null
 } = {}) {
@@ -344,6 +350,8 @@ describe("ReviewStep — confirm (success)", () => {
         updated: 0,
         unchanged: 0,
         skipped: 0,
+        reactivated: 0,
+        archived: 0,
       })
     })
     expect(toast.success).not.toHaveBeenCalled()
@@ -561,7 +569,7 @@ describe("ReviewStep — change preview", () => {
     previewImportMock.mockResolvedValueOnce({
       ...OK_PREVIEW,
       diff: {
-        people: { created: 1, updated: 1, unchanged: 3 },
+        people: { created: 1, updated: 1, unchanged: 3, returning: 0 },
         updatedPeople: [
           {
             externalRef: "E001",
@@ -569,6 +577,8 @@ describe("ReviewStep — change preview", () => {
             changes: [{ field: "department", from: "Ekonomi", to: "HR" }],
           },
         ],
+        returningPeople: [],
+        missingFromFile: [],
         nameMismatches: [],
         salary: {
           newEntries: 1,
@@ -698,6 +708,108 @@ describe("ReviewStep — change preview", () => {
     await clickConfirm()
     await waitFor(() => {
       expect(importPayrollMock).toHaveBeenCalledOnce()
+    })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Returning and missing people, the archive-leavers checkbox
+// ---------------------------------------------------------------------------
+
+describe("ReviewStep: leavers and returners", () => {
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+    previewImportMock.mockResolvedValue(OK_PREVIEW)
+  })
+
+  const c = messages.dashboard.people.import.review.changes
+
+  it("renders the returning and missing rows with their counts and lists", async () => {
+    previewImportMock.mockResolvedValueOnce({
+      ...OK_PREVIEW,
+      diff: {
+        ...OK_PREVIEW.diff,
+        people: { created: 2, updated: 0, unchanged: 0, returning: 1 },
+        returningPeople: [{ externalRef: "E009", displayName: "Rita Return" }],
+        missingFromFile: [
+          { externalRef: "E100", displayName: "Lars Leaver" },
+          { externalRef: "E101", displayName: "Mia Missing" },
+        ],
+      },
+    })
+    renderReviewStep()
+    await screen.findByText("Rita Return")
+    expect(screen.getByTestId("returning-people").textContent).toContain("E009")
+    const missing = screen.getByTestId("missing-people")
+    expect(missing.textContent).toContain(c.missingTitle)
+    expect(missing.textContent).toContain("Lars Leaver")
+    expect(missing.textContent).toContain("Mia Missing")
+    const checkbox = screen.getByRole("checkbox", {
+      name: "Archive these 2 employees",
+    })
+    expect(checkbox.getAttribute("aria-checked")).toBe("false")
+  })
+
+  it("renders neither list when there is nothing returning or missing", async () => {
+    renderReviewStep()
+    await waitFor(() => expect(previewImportMock).toHaveBeenCalled())
+    expect(screen.queryByTestId("returning-people")).toBeNull()
+    expect(screen.queryByTestId("missing-people")).toBeNull()
+  })
+
+  it("omits archiveMissing unless the checkbox is ticked", async () => {
+    previewImportMock.mockResolvedValueOnce({
+      ...OK_PREVIEW,
+      diff: {
+        ...OK_PREVIEW.diff,
+        missingFromFile: [{ externalRef: "E100", displayName: "Lars Leaver" }],
+      },
+    })
+    importPayrollMock.mockResolvedValue(OK_RESULT)
+    renderReviewStep()
+    await screen.findByText("Lars Leaver")
+    await clickConfirm()
+    await waitFor(() => expect(importPayrollMock).toHaveBeenCalled())
+    expect(importPayrollMock.mock.calls[0]?.[0]).not.toHaveProperty(
+      "archiveMissing"
+    )
+  })
+
+  it("passes archiveMissing: true when the checkbox is ticked", async () => {
+    previewImportMock.mockResolvedValueOnce({
+      ...OK_PREVIEW,
+      diff: {
+        ...OK_PREVIEW.diff,
+        missingFromFile: [{ externalRef: "E100", displayName: "Lars Leaver" }],
+      },
+    })
+    importPayrollMock.mockResolvedValue(OK_RESULT)
+    renderReviewStep()
+    await screen.findByText("Lars Leaver")
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: "Archive this employee" })
+    )
+    await clickConfirm()
+    await waitFor(() => expect(importPayrollMock).toHaveBeenCalled())
+    expect(importPayrollMock.mock.calls[0]?.[0]).toMatchObject({
+      archiveMissing: true,
+    })
+  })
+
+  it("passes the reactivated and archived counts to onImportSuccess", async () => {
+    importPayrollMock.mockResolvedValue({
+      ...OK_RESULT,
+      peopleArchived: 3,
+      peopleReactivated: 1,
+    })
+    const onImportSuccess = vi.fn()
+    renderReviewStep({ onImportSuccess })
+    await clickConfirm()
+    await waitFor(() => expect(onImportSuccess).toHaveBeenCalled())
+    expect(onImportSuccess.mock.calls[0]?.[0]).toMatchObject({
+      archived: 3,
+      reactivated: 1,
     })
   })
 })

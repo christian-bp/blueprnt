@@ -8,6 +8,8 @@ import {
   UserAdd01Icon,
   UserCheck01Icon,
   UserEdit01Icon,
+  UserMinus01Icon,
+  UserSwitchIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
@@ -27,6 +29,7 @@ import { useTranslations } from "next-intl"
 import { useEffect, useRef, useState } from "react"
 import { WARNING_ALERT_CLASS } from "@/lib/alert-tone"
 import { toast } from "@/lib/toast"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import { WizardFooter } from "@/components/wizard-footer"
 import { SubmitButton } from "@/components/submit-button"
@@ -64,7 +67,7 @@ export function buildColumnMap(
   return pairs
 }
 
-// The change-summary grid's group/row shape: static i18n keys and icons only
+// The change-summary stack's group/row shape: static i18n keys and icons only
 // (the count is looked up separately), so it renders identically whether the
 // dry-run preview is still loading or has landed.
 const CHANGE_GROUPS = [
@@ -74,6 +77,8 @@ const CHANGE_GROUPS = [
       { key: "newPeople", icon: UserAdd01Icon },
       { key: "updatedPeople", icon: UserEdit01Icon },
       { key: "unchangedPeople", icon: UserCheck01Icon },
+      { key: "returningPeople", icon: UserSwitchIcon },
+      { key: "missingPeople", icon: UserMinus01Icon },
     ],
   },
   {
@@ -90,7 +95,13 @@ const CHANGE_GROUPS = [
 // typed (not imported from the backend) so this stays a plain view helper.
 function countForKey(
   diff: {
-    people: { created: number; updated: number; unchanged: number }
+    people: {
+      created: number
+      updated: number
+      unchanged: number
+      returning: number
+    }
+    missingFromFile: readonly unknown[]
     salary: {
       newEntries: number
       changedSameYear: number
@@ -106,6 +117,10 @@ function countForKey(
       return diff.people.updated
     case "unchangedPeople":
       return diff.people.unchanged
+    case "returningPeople":
+      return diff.people.returning
+    case "missingPeople":
+      return diff.missingFromFile.length
     case "salaryNew":
       return diff.salary.newEntries
     case "salaryChanged":
@@ -136,6 +151,48 @@ function FromTo({ from, to }: { from?: string; to: string }) {
       )}
       <span>{to}</span>
     </span>
+  )
+}
+
+// A capped list of people named by number, for the returning and missing
+// lists; the same Show-all reveal as the updated-people cards.
+function PersonRefList({
+  people,
+  showAll,
+  onShowAll,
+  showAllLabel,
+}: {
+  people: ReadonlyArray<{ externalRef: string; displayName: string }>
+  showAll: boolean
+  onShowAll: () => void
+  showAllLabel: string
+}) {
+  const shown = showAll ? people : people.slice(0, UPDATED_PEOPLE_SHOWN)
+  return (
+    <div className="space-y-2">
+      <ul className="divide-y rounded-md border text-sm">
+        {shown.map((person) => (
+          <li
+            key={person.externalRef}
+            className="flex items-center justify-between gap-2 px-3 py-2"
+          >
+            <span className="font-medium">{person.displayName}</span>
+            <span className="font-mono text-muted-foreground">
+              {person.externalRef}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {!showAll && people.length > UPDATED_PEOPLE_SHOWN && (
+        <button
+          type="button"
+          className="text-muted-foreground text-sm underline-offset-4 hover:underline"
+          onClick={onShowAll}
+        >
+          {showAllLabel}
+        </button>
+      )}
+    </div>
   )
 }
 
@@ -217,6 +274,14 @@ export function ReviewStep({
   const [updateMismatchedAnyway, setUpdateMismatchedAnyway] = useState(false)
   // The updated-people list starts capped; Show all reveals the rest.
   const [showAllUpdated, setShowAllUpdated] = useState(false)
+  const tHelp = useTranslations("dashboard.help")
+  // Leavers are archived only on an explicit tick (default off), so a partial
+  // file can never archive the rest of the register by accident.
+  const [archiveMissing, setArchiveMissing] = useState(false)
+  const [showAllReturning, setShowAllReturning] = useState(false)
+  const [showAllMissing, setShowAllMissing] = useState(false)
+  const returningPeople = changePreview?.diff?.returningPeople ?? []
+  const missingFromFile = changePreview?.diff?.missingFromFile ?? []
   const previewRanRef = useRef(false)
   // biome-ignore lint/correctness/useExhaustiveDependencies: fire once on mount
   useEffect(() => {
@@ -265,6 +330,11 @@ export function ReviewStep({
           ? { skipExternalRefs: skippedMismatchRefs }
           : {}),
         ...(Object.keys(basisMap).length > 0 ? { basisMap } : {}),
+        // Leavers archive only on the explicit tick; the arg is omitted
+        // otherwise, like every other optional arg.
+        ...(archiveMissing && missingFromFile.length > 0
+          ? { archiveMissing: true }
+          : {}),
       })
       if (result.ok) {
         // The done screen is the completion feedback (no toast needed).
@@ -273,9 +343,11 @@ export function ReviewStep({
           updated: result.peopleUpdated,
           unchanged: result.peopleUnchanged,
           skipped: result.skippedRows,
+          reactivated: result.peopleReactivated,
+          archived: result.peopleArchived,
         })
       } else {
-        // Required fields were not mapped — surface the blocking list.
+        // Required fields were not mapped: surface the blocking list.
         onImportEnd(result.validation.blocking)
       }
     } catch {
@@ -320,11 +392,13 @@ export function ReviewStep({
           <div className="space-y-4">
             {/* Grouped icon rows, the done screen's visual language, so the
                 before (this preview) and after (the result) read the same.
-                Headers, icons, and row labels are static i18n and always
-                render for real; only the count is a skeleton while the
-                dry-run preview loads, so loading and loaded read as the
-                same layout. */}
-            <div className="grid gap-4 sm:grid-cols-2">
+                One column: every group (Employees, Salaries) is a full-width
+                block stacked under the last, so the step reads as one calm
+                column rather than a grid. Headers, icons, and row labels are
+                static i18n and always render for real; only the count is a
+                skeleton while the dry-run preview loads, so loading and
+                loaded read as the same layout. */}
+            <div className="space-y-4">
               {CHANGE_GROUPS.map(({ group, lines }) => (
                 <div key={group}>
                   <h4 className="mb-2 font-medium text-muted-foreground text-xs">
@@ -362,7 +436,7 @@ export function ReviewStep({
 
             {/* Who changes, field by field, so updating is a knowing act.
                 Only once the preview has landed (extends below the summary
-                grid rather than shifting it). */}
+                stack rather than shifting it). */}
             {changePreview !== null &&
               changePreview.diff !== null &&
               changePreview.diff.updatedPeople.length > 0 && (
@@ -405,6 +479,27 @@ export function ReviewStep({
                     )}
                 </div>
               )}
+
+            {/* Archived people the file brings back. Once the preview has
+                landed (extends below rather than shifting what is already
+                shown), and only when there is at least one. */}
+            {changePreview !== null &&
+              changePreview.diff !== null &&
+              returningPeople.length > 0 && (
+                <div data-testid="returning-people">
+                  <h4 className="mb-2 font-medium text-muted-foreground text-xs">
+                    {tChanges("returningPeople")}
+                  </h4>
+                  <PersonRefList
+                    people={returningPeople}
+                    showAll={showAllReturning}
+                    onShowAll={() => setShowAllReturning(true)}
+                    showAllLabel={tChanges("showAll", {
+                      count: returningPeople.length,
+                    })}
+                  />
+                </div>
+              )}
           </div>
         )}
       </div>
@@ -441,6 +536,45 @@ export function ReviewStep({
               />
               <Label htmlFor="import-mismatched-anyway" className="font-medium">
                 {tChanges("mismatchImportAnyway")}
+              </Label>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Active people the file does not mention. Archiving is an explicit,
+          reversible choice (default off): a partial file must never archive
+          the rest of the register. Same amber tone as the mismatch guard. */}
+      {missingFromFile.length > 0 && (
+        <Alert className={WARNING_ALERT_CLASS} data-testid="missing-people">
+          <div className="flex items-center gap-1.5">
+            <AlertTitle>{tChanges("missingTitle")}</AlertTitle>
+            <HelpMorphButton label={tHelp("archivedPersonLabel")}>
+              {tHelp("archivedPersonBody")}
+            </HelpMorphButton>
+          </div>
+          <AlertDescription>
+            <p>{tChanges("missingBody")}</p>
+            <div className="mt-2">
+              <PersonRefList
+                people={missingFromFile}
+                showAll={showAllMissing}
+                onShowAll={() => setShowAllMissing(true)}
+                showAllLabel={tChanges("showAll", {
+                  count: missingFromFile.length,
+                })}
+              />
+            </div>
+            <div className="mt-3 flex items-center gap-2">
+              <Checkbox
+                id="import-archive-missing"
+                checked={archiveMissing}
+                onCheckedChange={(checked) =>
+                  setArchiveMissing(checked === true)
+                }
+              />
+              <Label htmlFor="import-archive-missing" className="font-medium">
+                {tChanges("archiveMissing", { count: missingFromFile.length })}
               </Label>
             </div>
           </AlertDescription>

@@ -12,7 +12,21 @@ vi.mock("next/navigation", () => ({
 const m = messages.dashboard.people.import.done
 
 function renderDone(
-  result = { created: 5, updated: 2, unchanged: 3, skipped: 1 } as const
+  result: {
+    created: number
+    updated: number
+    unchanged: number
+    skipped: number
+    reactivated: number
+    archived: number
+  } = {
+    created: 5,
+    updated: 2,
+    unchanged: 3,
+    skipped: 1,
+    reactivated: 0,
+    archived: 0,
+  }
 ) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
@@ -47,5 +61,28 @@ describe("ImportDoneStep", () => {
     renderDone()
     fireEvent.click(screen.getByTestId("go-to-classify"))
     expect(pushMock).toHaveBeenCalledWith("/people/classify")
+  })
+
+  it("hides the reactivated and archived rows at zero", () => {
+    renderDone()
+    expect(screen.queryByTestId("done-reactivated")).toBeNull()
+    expect(screen.queryByTestId("done-archived")).toBeNull()
+  })
+
+  it("shows the reactivated and archived rows when above zero", () => {
+    renderDone({
+      created: 0,
+      updated: 0,
+      unchanged: 9,
+      skipped: 0,
+      reactivated: 1,
+      archived: 4,
+    })
+    const reactivated = screen.getByTestId("done-reactivated")
+    expect(reactivated.textContent).toContain(m.reactivated)
+    expect(reactivated.textContent).toContain("1")
+    const archived = screen.getByTestId("done-archived")
+    expect(archived.textContent).toContain(m.archived)
+    expect(archived.textContent).toContain("4")
   })
 })

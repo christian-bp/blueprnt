@@ -48,6 +48,9 @@ export interface ImportResultCounts {
   // Existing people whose incoming data matched what is already stored.
   unchanged: number
   skipped: number
+  // Archived people the file brought back, and leavers archived on request.
+  reactivated: number
+  archived: number
 }
 
 // Wizard flow state.
