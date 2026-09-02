@@ -112,6 +112,9 @@ export interface NormalizedImportRow {
 export interface BaselinePerson {
   stored: StoredPersonValues
   latestSalary: SalaryValues | null
+  // Set when the stored person is archived (a leaver). A row matching them
+  // returns them to the active register; they are never "missing".
+  archivedAt?: number
 }
 
 // One changed field, stringified for display (the client localizes the field
@@ -122,14 +125,33 @@ export interface FieldChange {
   to: string
 }
 
+// A person named by employee number and display name, for the review step's
+// returning and missing-from-file lists.
+export interface ImportPersonRef {
+  externalRef: string
+  displayName: string
+}
+
 export interface ImportPreviewDiff {
-  people: { created: number; updated: number; unchanged: number }
+  people: {
+    created: number
+    updated: number
+    unchanged: number
+    // Rows whose stored person is archived: the import reactivates them.
+    // Counted IN ADDITION to updated/unchanged (which describe their fields).
+    returning: number
+  }
   // Every person whose stored fields would change, with the per-field diff.
   updatedPeople: Array<{
     externalRef: string
     displayName: string
     changes: FieldChange[]
   }>
+  // Archived people the file brings back.
+  returningPeople: ImportPersonRef[]
+  // Active people with an employee number that the file does not mention.
+  // The import archives them only when the caller asks (archiveMissing).
+  missingFromFile: ImportPersonRef[]
   // Same employee number, different name: likely a reused/typoed number.
   nameMismatches: Array<{
     externalRef: string
@@ -159,14 +181,21 @@ function display(value: unknown): string {
 }
 
 // Computes what the import WOULD do, using the same patch/idempotency rules
-// the import itself applies.
+// the import itself applies. presentExternalRefs is the file's full set of
+// employee numbers, hard-skipped rows included (import.ts's
+// fileExternalRefs): a superset of rows' own refs, so a row that failed
+// validation (e.g. an unparsable salary cell) still counts as present and is
+// never listed as missing. Omitting it keeps today's rows-only behaviour.
 export function diffImport(
   rows: NormalizedImportRow[],
-  baselineByRef: Map<string, BaselinePerson>
+  baselineByRef: Map<string, BaselinePerson>,
+  presentExternalRefs?: Iterable<string>
 ): ImportPreviewDiff {
   const diff: ImportPreviewDiff = {
-    people: { created: 0, updated: 0, unchanged: 0 },
+    people: { created: 0, updated: 0, unchanged: 0, returning: 0 },
     updatedPeople: [],
+    returningPeople: [],
+    missingFromFile: [],
     nameMismatches: [],
     salary: {
       newEntries: 0,
@@ -175,14 +204,24 @@ export function diffImport(
       changedDetails: [],
     },
   }
+  const incomingRefs = new Set<string>()
 
   for (const row of rows) {
+    incomingRefs.add(row.externalRef)
     const baseline = baselineByRef.get(row.externalRef)
 
     if (baseline === undefined) {
       diff.people.created += 1
       if (row.salary !== null) diff.salary.newEntries += 1
       continue
+    }
+
+    if (baseline.archivedAt !== undefined) {
+      diff.people.returning += 1
+      diff.returningPeople.push({
+        externalRef: row.externalRef,
+        displayName: row.person.displayName,
+      })
     }
 
     const patch = personImportPatch(baseline.stored, row.person)
@@ -229,6 +268,25 @@ export function diffImport(
         diff.salary.newEntries += 1
       }
     }
+  }
+
+  // Presence includes the caller's fuller ref set (e.g. hard-skipped rows),
+  // on top of the rows this diff actually walked.
+  for (const ref of presentExternalRefs ?? []) {
+    incomingRefs.add(ref)
+  }
+
+  // Active people the file does not mention. Computed over the FULL row set
+  // (the caller passes rows before any user-elected skip) union presentRefs,
+  // so a row HR leaves out as a name mismatch, or a row a bad cell knocked
+  // out of the rows list, still counts as present and is never archived.
+  for (const [externalRef, baseline] of baselineByRef) {
+    if (baseline.archivedAt !== undefined) continue
+    if (incomingRefs.has(externalRef)) continue
+    diff.missingFromFile.push({
+      externalRef,
+      displayName: baseline.stored.displayName ?? "",
+    })
   }
 
   return diff

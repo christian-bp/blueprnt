@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
+import { PEOPLE_ARCHIVE_CHUNK_SIZE } from "@workspace/constants"
 import { api, components, internal } from "../_generated/api"
 import { IMPORT_CHUNK_SIZE } from "./importDiff"
 import { addEditorMember, initConvexTest } from "../testing.helpers"
@@ -254,6 +255,8 @@ describe("importPayroll (happy path)", () => {
       expect(auditPayload.peopleUnchanged).toBe(0)
       expect(auditPayload.salariesImported).toBe(116)
       expect(auditPayload.skippedRows).toBe(2)
+      expect(auditPayload.peopleArchived).toBe(0)
+      expect(auditPayload.peopleReactivated).toBe(0)
 
       // No PII in the audit payload.
       expect(auditPayload).not.toHaveProperty("displayName")
@@ -1094,6 +1097,7 @@ describe("previewImport", () => {
       created: 2,
       updated: 0,
       unchanged: 0,
+      returning: 0,
     })
     expect(preview.diff?.salary.newEntries).toBe(2)
     expect(preview.diff?.nameMismatches).toEqual([])
@@ -1119,6 +1123,7 @@ describe("previewImport", () => {
       created: 1,
       updated: 1,
       unchanged: 1,
+      returning: 0,
     })
 
     // Anna's field diff names the changed field with both values.
@@ -1342,5 +1347,266 @@ describe("importPayroll (basis + components + employmentType)", () => {
       expect(pay).toHaveLength(1)
       expect(pay[0]?.basicMonthly).toBe(40000) // 480000 / 12
     })
+  })
+})
+
+describe("importPayroll (leavers and returners)", () => {
+  // Only Anna: Bo is missing from this file.
+  const ANNA_ONLY_CSV = simpleCsv([
+    "1;Anna;Svensson;Kvinna;Controller;50000;2026",
+  ])
+
+  async function importV1(
+    asAdmin: ReturnType<ReturnType<typeof initConvexTest>["withIdentity"]>,
+    orgId: string
+  ) {
+    return asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: V1_CSV,
+      columnMap: SIMPLE_MAP,
+    })
+  }
+
+  async function auditPayloads(
+    t: ReturnType<typeof initConvexTest>,
+    orgId: string,
+    type: string
+  ) {
+    return t.run(async (ctx) =>
+      (
+        await ctx.db
+          .query("auditLog")
+          .withIndex("by_org_type", (q) =>
+            q.eq("orgId", orgId).eq("type", type)
+          )
+          .collect()
+      ).map((row) => row.payload as Record<string, unknown>)
+    )
+  }
+
+  it("does not archive anyone without the flag, and reports zero", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    await importV1(asAdmin, orgId)
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: ANNA_ONLY_CSV,
+      columnMap: SIMPLE_MAP,
+    })
+    expect(result.peopleArchived).toBe(0)
+    expect(result.peopleReactivated).toBe(0)
+
+    const list = await asAdmin.query(api.people.people.listPeople, { orgId })
+    expect(list).toHaveLength(2)
+  })
+
+  it("archives exactly the active people missing from the file when asked", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    await importV1(asAdmin, orgId)
+    // A manually added person has no employee number and can never be
+    // "missing from the file".
+    await asAdmin.mutation(api.people.people.createPerson, {
+      orgId,
+      displayName: "Manuell Person",
+      gender: "Man",
+    })
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: ANNA_ONLY_CSV,
+      columnMap: SIMPLE_MAP,
+      archiveMissing: true,
+    })
+    expect(result.ok).toBe(true)
+    expect(result.peopleArchived).toBe(1)
+
+    const active = await asAdmin.query(api.people.people.listPeople, { orgId })
+    expect(active.map((p) => p.displayName).sort()).toEqual([
+      "Anna Svensson",
+      "Manuell Person",
+    ])
+    const all = await asAdmin.query(api.people.people.listPeople, {
+      orgId,
+      includeArchived: true,
+    })
+    const bo = all.find((p) => p.displayName === "Bo Karlsson")
+    expect(typeof bo?.archivedAt).toBe("number")
+
+    const archivedRows = await auditPayloads(t, orgId, "person.archived")
+    expect(archivedRows).toHaveLength(1)
+    const imported = await auditPayloads(t, orgId, "people.imported")
+    expect(imported[imported.length - 1]).toMatchObject({
+      peopleArchived: 1,
+      peopleReactivated: 0,
+    })
+  })
+
+  it("reactivates a returning archived person and counts it", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    await importV1(asAdmin, orgId)
+    const before = await asAdmin.query(api.people.people.listPeople, { orgId })
+    const bo = before.find((p) => p.displayName === "Bo Karlsson")
+    await asAdmin.mutation(api.people.people.archivePerson, {
+      orgId,
+      personId: bo?.personId as NonNullable<typeof bo>["personId"],
+    })
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: V1_CSV,
+      columnMap: SIMPLE_MAP,
+    })
+    expect(result.peopleReactivated).toBe(1)
+    expect(result.peopleArchived).toBe(0)
+
+    const active = await asAdmin.query(api.people.people.listPeople, { orgId })
+    expect(active).toHaveLength(2)
+    const imported = await auditPayloads(t, orgId, "people.imported")
+    expect(imported[imported.length - 1]).toMatchObject({
+      peopleReactivated: 1,
+    })
+  })
+
+  it("never archives a row HR skipped as a name mismatch", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    await importV1(asAdmin, orgId)
+
+    // Bo's number with a different name: the review step skips this row.
+    const renamed = simpleCsv([
+      "1;Anna;Svensson;Kvinna;Controller;50000;2026",
+      "2;Britt;Karlsson;Kvinna;Tekniker;40000;2026",
+    ])
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: renamed,
+      columnMap: SIMPLE_MAP,
+      skipExternalRefs: ["2"],
+      archiveMissing: true,
+    })
+    expect(result.peopleArchived).toBe(0)
+    expect(result.skippedRows).toBe(1)
+
+    const active = await asAdmin.query(api.people.people.listPeople, { orgId })
+    expect(active.map((p) => p.displayName).sort()).toEqual([
+      "Anna Svensson",
+      "Bo Karlsson",
+    ])
+  })
+
+  it("archives across the chunk bound and sets the progress total to rows plus leavers", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const leaverCount = PEOPLE_ARCHIVE_CHUNK_SIZE + 1
+    const lines = ["Id;Fornamn;Kon;Manadslon;Befattning;Fodelsedatum"]
+    for (let i = 1; i <= leaverCount; i++) {
+      lines.push(`L${i};Leaver${i};Man;3${i};Utvecklare;1990-01-01`)
+    }
+    lines.push("S1;Stayer;Man;40000;Utvecklare;1990-01-01")
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: lines.join("\n"),
+      columnMap: DATE_FORMS_MAP,
+      payYear: 2026,
+    })
+
+    const stayerOnly = [
+      "Id;Fornamn;Kon;Manadslon;Befattning;Fodelsedatum",
+      "S1;Stayer;Man;40000;Utvecklare;1990-01-01",
+    ].join("\n")
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: stayerOnly,
+      columnMap: DATE_FORMS_MAP,
+      payYear: 2026,
+      archiveMissing: true,
+    })
+    expect(result.peopleArchived).toBe(leaverCount)
+
+    const active = await asAdmin.query(api.people.people.listPeople, { orgId })
+    expect(active.map((p) => p.displayName)).toEqual(["Stayer"])
+    const archivedRows = await auditPayloads(t, orgId, "person.archived")
+    expect(archivedRows).toHaveLength(leaverCount)
+    // The ephemeral progress row is gone; while it lived its total was
+    // rows + leavers (asserted through the chunk mutation below).
+    await t.run(async (ctx) => {
+      const progress = await ctx.db
+        .query("importProgress")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(progress).toBeNull()
+    })
+  })
+
+  it("archiveChunk writes progress as processedBefore + ids against the given total", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, asAdmin } = await seedOrg(t)
+    await importV1(asAdmin, orgId)
+    const people = await asAdmin.query(api.people.people.listPeople, { orgId })
+    const ids = people.map((p) => p.personId)
+
+    const chunk = await t.mutation(internal.people.importHelpers.archiveChunk, {
+      orgId,
+      actorId: userId,
+      importId: "run-1",
+      personIds: ids,
+      processedBefore: 3,
+      total: 5,
+    })
+    expect(chunk).toEqual({ archived: 2 })
+    const progress = await asAdmin.query(
+      api.people.importHelpers.getImportProgress,
+      { orgId, importId: "run-1" }
+    )
+    expect(progress).toEqual({ processed: 5, total: 5 })
+  })
+
+  it("never archives an active person whose row hard-skips (e.g. an unparsable salary cell)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    await importV1(asAdmin, orgId)
+
+    // Bo's row is present but unparsable (basicMonthly="abc" trips
+    // unparsableMoney, a hard-skip code): his employee number is still in
+    // the file, so he must not be treated as a leaver.
+    const bosSalaryBroken = simpleCsv([
+      "1;Anna;Svensson;Kvinna;Controller;50000;2026",
+      "2;Bo;Karlsson;Man;Tekniker;abc;2026",
+    ])
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: bosSalaryBroken,
+      columnMap: SIMPLE_MAP,
+      archiveMissing: true,
+    })
+    expect(result.peopleArchived).toBe(0)
+    expect(result.skippedRows).toBe(1)
+
+    const active = await asAdmin.query(api.people.people.listPeople, { orgId })
+    expect(active.map((p) => p.displayName).sort()).toEqual([
+      "Anna Svensson",
+      "Bo Karlsson",
+    ])
+  })
+
+  it("previewImport never lists a hard-skipped active person as missing from the file", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    await importV1(asAdmin, orgId)
+
+    const bosSalaryBroken = simpleCsv([
+      "1;Anna;Svensson;Kvinna;Controller;50000;2026",
+      "2;Bo;Karlsson;Man;Tekniker;abc;2026",
+    ])
+    const preview = await asAdmin.action(api.people.import.previewImport, {
+      orgId,
+      csvText: bosSalaryBroken,
+      columnMap: SIMPLE_MAP,
+    })
+    expect(preview.diff?.missingFromFile).toEqual([])
   })
 })

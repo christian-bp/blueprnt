@@ -5,6 +5,7 @@ import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import type { AuditPayloads } from "../lib/auditPayloads"
 import { orgQuery } from "../lib/functions"
 import {
+  archivePeopleCore,
   personImportOptionalArgs,
   upsertPersonByExternalRefCore,
 } from "./people"
@@ -24,10 +25,12 @@ export const getOrgCurrency = internalQuery({
   },
 })
 
-// The stored side of previewImport's dry-run diff: every active person that
-// carries an externalRef (the import upsert key), with the import-diffable
-// fields and the newest pay record's values. Bounded by headcount, same as
-// listPeopleByTitle. Called by the previewImport action via ctx.runQuery.
+// The stored side of previewImport's dry-run diff: every person that carries
+// an externalRef (the import upsert key), archived ones included (the diff
+// needs them to tell a returning person from a new one), with the
+// import-diffable fields and the newest pay record's values. Bounded by
+// headcount, same as listPeopleByTitle. Called by the previewImport action
+// via ctx.runQuery.
 export const getImportBaseline = internalQuery({
   args: { orgId: v.string() },
   returns: v.array(
@@ -51,6 +54,7 @@ export const getImportBaseline = internalQuery({
           v.literal("hourly")
         )
       ),
+      archivedAt: v.optional(v.number()),
       latestSalary: v.union(
         v.object({
           payYear: v.number(),
@@ -70,7 +74,7 @@ export const getImportBaseline = internalQuery({
         .query("people")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
-    ).filter((p) => p.archivedAt === undefined && p.externalRef !== undefined)
+    ).filter((p) => p.externalRef !== undefined)
 
     const result = []
     for (const person of people) {
@@ -109,6 +113,9 @@ export const getImportBaseline = internalQuery({
         ...(person.employmentType !== undefined
           ? { employmentType: person.employmentType }
           : {}),
+        ...(person.archivedAt !== undefined
+          ? { archivedAt: person.archivedAt }
+          : {}),
         latestSalary:
           latest !== null
             ? {
@@ -121,6 +128,24 @@ export const getImportBaseline = internalQuery({
       })
     }
     return result
+  },
+})
+
+// Every active person that carries an employee number: the set the import
+// subtracts the file's rows from to find leavers. Bounded by headcount.
+export const getActiveExternalRefs = internalQuery({
+  args: { orgId: v.string() },
+  returns: v.array(
+    v.object({ personId: v.id("people"), externalRef: v.string() })
+  ),
+  handler: async (ctx, { orgId }) => {
+    const people = await ctx.db
+      .query("people")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .collect()
+    return people
+      .filter((p) => p.archivedAt === undefined && p.externalRef !== undefined)
+      .map((p) => ({ personId: p._id, externalRef: p.externalRef ?? "" }))
   },
 })
 
@@ -137,6 +162,8 @@ export const logImportCompleted = internalMutation({
     peopleUnchanged: v.number(),
     salariesImported: v.number(),
     skippedRows: v.number(),
+    peopleArchived: v.number(),
+    peopleReactivated: v.number(),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -146,6 +173,8 @@ export const logImportCompleted = internalMutation({
       peopleUnchanged: args.peopleUnchanged,
       salariesImported: args.salariesImported,
       skippedRows: args.skippedRows,
+      peopleArchived: args.peopleArchived,
+      peopleReactivated: args.peopleReactivated,
     }
     await logAudit(ctx, {
       orgId: args.orgId,
@@ -231,27 +260,33 @@ export const importChunk = internalMutation({
     peopleCreated: v.number(),
     peopleUpdated: v.number(),
     peopleUnchanged: v.number(),
+    peopleReactivated: v.number(),
     salariesImported: v.number(),
   }),
   handler: async (ctx, args) => {
     let peopleCreated = 0
     let peopleUpdated = 0
     let peopleUnchanged = 0
+    let peopleReactivated = 0
     let salariesImported = 0
 
     for (const row of args.rows) {
-      const { personId, outcome } = await upsertPersonByExternalRefCore(ctx, {
-        orgId: args.orgId,
-        actorId: args.actorId,
-        externalRef: row.externalRef,
-        ...row.person,
-      })
+      const { personId, outcome, reactivated } =
+        await upsertPersonByExternalRefCore(ctx, {
+          orgId: args.orgId,
+          actorId: args.actorId,
+          externalRef: row.externalRef,
+          ...row.person,
+        })
       if (outcome === "created") {
         peopleCreated += 1
       } else if (outcome === "updated") {
         peopleUpdated += 1
       } else {
         peopleUnchanged += 1
+      }
+      if (reactivated) {
+        peopleReactivated += 1
       }
 
       if (row.salary === null) continue
@@ -275,7 +310,43 @@ export const importChunk = internalMutation({
       total: args.total,
     })
 
-    return { peopleCreated, peopleUpdated, peopleUnchanged, salariesImported }
+    return {
+      peopleCreated,
+      peopleUpdated,
+      peopleUnchanged,
+      peopleReactivated,
+      salariesImported,
+    }
+  },
+})
+
+// One chunk of the import's leaver archiving, committed as ONE transaction
+// together with its progress write, exactly like importChunk. The action
+// drives chunks of PEOPLE_ARCHIVE_CHUNK_SIZE sequentially after the row
+// chunks, so the importing screen keeps counting past the last row.
+export const archiveChunk = internalMutation({
+  args: {
+    orgId: v.string(),
+    actorId: v.string(),
+    importId: v.string(),
+    personIds: v.array(v.id("people")),
+    processedBefore: v.number(),
+    total: v.number(),
+  },
+  returns: v.object({ archived: v.number() }),
+  handler: async (ctx, args) => {
+    const { archived } = await archivePeopleCore(ctx, {
+      orgId: args.orgId,
+      actorId: args.actorId,
+      personIds: args.personIds,
+    })
+    await setImportProgressCore(ctx, {
+      orgId: args.orgId,
+      importId: args.importId,
+      processed: args.processedBefore + args.personIds.length,
+      total: args.total,
+    })
+    return { archived }
   },
 })
 

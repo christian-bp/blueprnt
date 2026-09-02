@@ -20,11 +20,13 @@ import {
 import {
   DEFAULT_BASIS_BY_FIELD,
   PAY_COMPONENT_KINDS,
+  PEOPLE_ARCHIVE_CHUNK_SIZE,
   normalizeEmploymentType,
   toMonthly,
   type PayBasis,
 } from "@workspace/constants"
 import { internal } from "../_generated/api"
+import type { Id } from "../_generated/dataModel"
 import { action, type ActionCtx } from "../_generated/server"
 import { requireOrgMemberAction } from "../lib/functions"
 import {
@@ -80,6 +82,10 @@ const importResultValidator = v.object({
   peopleUnchanged: v.number(),
   salariesImported: v.number(),
   skippedRows: v.number(),
+  // Leavers archived because the caller asked (archiveMissing), and archived
+  // people the file brought back (always).
+  peopleArchived: v.number(),
+  peopleReactivated: v.number(),
   validation: validationValidator,
 })
 
@@ -129,6 +135,10 @@ type PreparedImport =
   | {
       kind: "ready"
       normalized: NormalizedImportRow[]
+      // Every employee number appearing anywhere in the file, hard-skipped
+      // rows included: a superset of normalized's refs. Presence for leaver
+      // detection ("archiveMissing") and the preview's missingFromFile list.
+      fileExternalRefs: string[]
       skippedRows: number
       validation: NormalizedValidation
       headers: string[]
@@ -294,6 +304,19 @@ async function prepareImport(
     ftePercentCol !== undefined &&
     classifyColumn(rows.map((r) => r[ftePercentCol] ?? "")).fraction === true
 
+  // Every employee number in the file, whether its row imports or gets
+  // hard-skipped: a failed salary cell or a duplicate id is not a departure,
+  // so leaver detection must see this person as present regardless. A row
+  // whose externalRef cell is blank/unreadable contributes nothing (it can
+  // never match a stored person).
+  const fileExternalRefs: string[] = []
+  for (const row of rows) {
+    const ref = (
+      externalRefCol !== undefined ? (row[externalRefCol] ?? "") : ""
+    ).trim()
+    if (ref) fileExternalRefs.push(ref)
+  }
+
   const normalized: NormalizedImportRow[] = []
   for (let rowIdx = 0; rowIdx < rows.length; rowIdx++) {
     if (skippedRowIndices.has(rowIdx)) continue
@@ -428,6 +451,7 @@ async function prepareImport(
   return {
     kind: "ready",
     normalized,
+    fileExternalRefs,
     skippedRows: skippedRowIndices.size,
     validation: normalizedValidation,
     headers,
@@ -453,6 +477,8 @@ async function prepareImport(
 //               rows import instead of being skipped as unresolvedGender.
 //   skipExternalRefs - Rows to leave out entirely (person AND salary), e.g.
 //               the review step's name-mismatch guard. Counted as skipped.
+//   archiveMissing - Archive every active person with an employee number
+//               that the file does not mention. Off by default.
 //   basisMap  - Optional canonical-field-key -> "monthly"|"annual" map, so the
 //               wizard can tell the ingest an annual-flavoured column (e.g. an
 //               annual bonus) needs dividing by 12. Falls back to
@@ -473,6 +499,9 @@ export const importPayroll = action({
     // array-of-pairs shape (Convex-serializable without non-ASCII record keys).
     genderOverrides: v.optional(v.array(v.array(v.string()))),
     skipExternalRefs: v.optional(v.array(v.string())),
+    // Archive every active person with an employee number that the file
+    // does not mention. Off by default: the review step's checkbox sets it.
+    archiveMissing: v.optional(v.boolean()),
     // Identifies this run in the importProgress table so the wizard's
     // importing screen never shows a stale row from an earlier run.
     importId: v.optional(v.string()),
@@ -497,6 +526,8 @@ export const importPayroll = action({
         peopleUnchanged: 0,
         salariesImported: 0,
         skippedRows: 0,
+        peopleArchived: 0,
+        peopleReactivated: 0,
         validation: prepared.validation,
       }
     }
@@ -512,15 +543,37 @@ export const importPayroll = action({
     let peopleUpdated = 0
     let peopleUnchanged = 0
     let salariesImported = 0
+    let peopleReactivated = 0
+    let peopleArchived = 0
+
+    // The leaver set is computed BEFORE the rows land so the progress total
+    // is known up front. Presence is judged on fileExternalRefs: every
+    // employee number anywhere in the file, hard-skipped rows (duplicateId,
+    // unparsableMoney, negativeValue, ...) and user-elected skips included.
+    // A row HR leaves out as a name mismatch, or a row a bad salary cell
+    // knocked out, is still in the file, so that person is never a leaver.
+    // A person created by this import is by definition present.
+    const toArchive: Id<"people">[] = []
+    if (args.archiveMissing === true) {
+      const active = await ctx.runQuery(
+        internal.people.importHelpers.getActiveExternalRefs,
+        { orgId: args.orgId }
+      )
+      const present = new Set(prepared.fileExternalRefs)
+      for (const person of active) {
+        if (!present.has(person.externalRef)) toArchive.push(person.personId)
+      }
+    }
+    const total = rows.length + toArchive.length
 
     // Live progress for the importing screen: 0/total up front (the setup
     // state), then each chunk writes its own committed count in the same
-    // transaction as its rows.
+    // transaction as its rows or its archived leavers.
     await ctx.runMutation(internal.people.importHelpers.setImportProgress, {
       orgId: args.orgId,
       importId,
       processed: 0,
-      total: rows.length,
+      total,
     })
 
     // One shared stamp for the whole run, so every chunk's salaries carry
@@ -541,7 +594,7 @@ export const importPayroll = action({
           importId,
           effectiveAt,
           processedBefore: start,
-          total: rows.length,
+          total,
           rows: rows.slice(start, start + IMPORT_CHUNK_SIZE),
         }
       )
@@ -549,15 +602,37 @@ export const importPayroll = action({
       peopleUpdated += chunk.peopleUpdated
       peopleUnchanged += chunk.peopleUnchanged
       salariesImported += chunk.salariesImported
+      peopleReactivated += chunk.peopleReactivated
     }
 
-    // All rows processed: show the final count while the post-loop steps
+    // Leavers, in the same bounded-chunk shape, continuing the progress
+    // count past the last row.
+    for (
+      let start = 0;
+      start < toArchive.length;
+      start += PEOPLE_ARCHIVE_CHUNK_SIZE
+    ) {
+      const chunk = await ctx.runMutation(
+        internal.people.importHelpers.archiveChunk,
+        {
+          orgId: args.orgId,
+          actorId,
+          importId,
+          personIds: toArchive.slice(start, start + PEOPLE_ARCHIVE_CHUNK_SIZE),
+          processedBefore: rows.length + start,
+          total,
+        }
+      )
+      peopleArchived += chunk.archived
+    }
+
+    // Everything processed: show the final count while the post-loop steps
     // (profile save, employee count, audit, classification) run.
     await ctx.runMutation(internal.people.importHelpers.setImportProgress, {
       orgId: args.orgId,
       importId,
-      processed: rows.length,
-      total: rows.length,
+      processed: total,
+      total,
     })
 
     // Save the import mapping profile for the next re-import.
@@ -600,6 +675,8 @@ export const importPayroll = action({
       peopleUnchanged,
       salariesImported,
       skippedRows,
+      peopleArchived,
+      peopleReactivated,
     })
 
     // Run classification suggestions for the freshly imported people
@@ -622,6 +699,8 @@ export const importPayroll = action({
       peopleUnchanged,
       salariesImported,
       skippedRows,
+      peopleArchived,
+      peopleReactivated,
       validation: prepared.validation,
     }
   },
@@ -649,6 +728,11 @@ const nameMismatchValidator = v.object({
   incomingName: v.string(),
 })
 
+const importPersonRefValidator = v.object({
+  externalRef: v.string(),
+  displayName: v.string(),
+})
+
 const salaryChangeDetailValidator = v.object({
   externalRef: v.string(),
   displayName: v.string(),
@@ -662,8 +746,11 @@ const importDiffValidator = v.object({
     created: v.number(),
     updated: v.number(),
     unchanged: v.number(),
+    returning: v.number(),
   }),
   updatedPeople: v.array(updatedPersonValidator),
+  returningPeople: v.array(importPersonRefValidator),
+  missingFromFile: v.array(importPersonRefValidator),
   nameMismatches: v.array(nameMismatchValidator),
   salary: v.object({
     newEntries: v.number(),
@@ -727,8 +814,15 @@ export const previewImport = action({
     )
     const baselineByRef = new Map<string, BaselinePerson>(
       baseline.map((person) => {
-        const { latestSalary, externalRef, ...stored } = person
-        return [externalRef, { stored, latestSalary }]
+        const { latestSalary, externalRef, archivedAt, ...stored } = person
+        return [
+          externalRef,
+          {
+            stored,
+            latestSalary,
+            ...(archivedAt !== undefined ? { archivedAt } : {}),
+          },
+        ]
       })
     )
 
@@ -736,7 +830,11 @@ export const previewImport = action({
       ok: true,
       validation: prepared.validation,
       skippedRows: prepared.skippedRows,
-      diff: diffImport(prepared.normalized, baselineByRef),
+      diff: diffImport(
+        prepared.normalized,
+        baselineByRef,
+        prepared.fileExternalRefs
+      ),
     }
   },
 })

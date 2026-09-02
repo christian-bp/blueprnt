@@ -117,7 +117,12 @@ describe("diffImport salary categories", () => {
     ])
 
     const diff = diffImport(rows, byRef)
-    expect(diff.people).toEqual({ created: 1, updated: 0, unchanged: 4 })
+    expect(diff.people).toEqual({
+      created: 1,
+      updated: 0,
+      unchanged: 4,
+      returning: 0,
+    })
     // new person + first salary + a new year all append as new entries.
     expect(diff.salary.newEntries).toBe(3)
     expect(diff.salary.identical).toBe(1)
@@ -131,5 +136,115 @@ describe("diffImport salary categories", () => {
         to: 52000,
       },
     ])
+  })
+})
+
+describe("diffImport leavers and returners", () => {
+  const row = (
+    externalRef: string,
+    displayName: string
+  ): NormalizedImportRow => ({
+    externalRef,
+    person: { displayName, gender: "Kvinna" },
+    salary: null,
+  })
+  const active = (displayName: string): BaselinePerson => ({
+    stored: { displayName, gender: "Kvinna" },
+    latestSalary: null,
+  })
+  const archived = (displayName: string): BaselinePerson => ({
+    stored: { displayName, gender: "Kvinna" },
+    latestSalary: null,
+    archivedAt: 1_700_000_000_000,
+  })
+
+  it("counts and lists an archived baseline person present in the file as returning", () => {
+    const diff = diffImport(
+      [row("1", "Anna Svensson")],
+      new Map([["1", archived("Anna Svensson")]])
+    )
+    expect(diff.people).toEqual({
+      created: 0,
+      updated: 0,
+      unchanged: 1,
+      returning: 1,
+    })
+    expect(diff.returningPeople).toEqual([
+      { externalRef: "1", displayName: "Anna Svensson" },
+    ])
+    expect(diff.missingFromFile).toEqual([])
+  })
+
+  it("a returning person with changed fields is both returning and updated", () => {
+    const diff = diffImport(
+      [row("1", "Anna Berg")],
+      new Map([["1", archived("Anna Svensson")]])
+    )
+    expect(diff.people).toEqual({
+      created: 0,
+      updated: 1,
+      unchanged: 0,
+      returning: 1,
+    })
+  })
+
+  it("lists active baseline people absent from the file, in baseline order", () => {
+    const diff = diffImport(
+      [row("2", "Bo Karlsson")],
+      new Map([
+        ["1", active("Anna Svensson")],
+        ["2", active("Bo Karlsson")],
+        ["3", active("Cesar Lind")],
+      ])
+    )
+    expect(diff.people).toEqual({
+      created: 0,
+      updated: 0,
+      unchanged: 1,
+      returning: 0,
+    })
+    expect(diff.missingFromFile).toEqual([
+      { externalRef: "1", displayName: "Anna Svensson" },
+      { externalRef: "3", displayName: "Cesar Lind" },
+    ])
+  })
+
+  it("never lists an already-archived person as missing", () => {
+    const diff = diffImport(
+      [row("2", "Bo Karlsson")],
+      new Map([
+        ["1", archived("Anna Svensson")],
+        ["2", active("Bo Karlsson")],
+      ])
+    )
+    expect(diff.missingFromFile).toEqual([])
+    expect(diff.people.returning).toBe(0)
+  })
+
+  it("keeps the existing counts when there are no leavers or returners", () => {
+    const diff = diffImport(
+      [row("1", "Anna Svensson"), row("9", "Ny Person")],
+      new Map([["1", active("Anna Svensson")]])
+    )
+    expect(diff.people).toEqual({
+      created: 1,
+      updated: 0,
+      unchanged: 1,
+      returning: 0,
+    })
+    expect(diff.returningPeople).toEqual([])
+    expect(diff.missingFromFile).toEqual([])
+  })
+
+  it("never lists a person named only by presentExternalRefs (e.g. a hard-skipped row) as missing", () => {
+    const diff = diffImport(
+      [row("2", "Bo Karlsson")],
+      new Map([
+        ["1", active("Anna Svensson")],
+        ["2", active("Bo Karlsson")],
+      ]),
+      ["1"]
+    )
+    expect(diff.missingFromFile).toEqual([])
   })
 })
