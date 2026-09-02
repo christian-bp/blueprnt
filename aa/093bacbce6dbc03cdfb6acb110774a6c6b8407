@@ -1,0 +1,48 @@
+packages/backend/convex/people/people.test.ts
+  s_a5a0b8b07c8eab::t_91d9974f53953d 942-1084,1086-1104,1106-1107,1109-1116
+  s_a5a0b8b07c8eab::t_0ecab9da05b989 1085,1105,1108
+  s_a5a0b8b07c8eab::t_e8b1f53bc50264 2
+  s_a5a0b8b07c8eab::t_ede173fec90802 742-817
+packages/constants/src/index.ts
+  s_a5a0b8b07c8eab::t_faddec39fc422d 14
+packages/constants/src/people.ts
+  s_a5a0b8b07c8eab::t_cde100df4c7745 1-6
+packages/backend/convex/people/people.ts
+  s_a5a0b8b07c8eab::t_d66b1a8458ed9d 197
+  s_a5a0b8b07c8eab::t_0da4f1842daf21 198,540-618
+  s_a5a0b8b07c8eab::t_8d6957d0314f10 310
+  s_a5a0b8b07c8eab::t_eebc68b2d3ecc0 149-151
+  s_a5a0b8b07c8eab::t_57674a3e706c1a 212-214,240-244
+  s_a5a0b8b07c8eab::t_54462a0afc6132 237-238
+  s_a5a0b8b07c8eab::t_c797ccf0aaf034 1
+  s_a5a0b8b07c8eab::t_579702d1cb937b 200-211,215-216
+  s_a5a0b8b07c8eab::t_99434a27a8526d 268
+  s_a5a0b8b07c8eab::t_8367f59361a41c 199
+packages/backend/convex/lib/audit.test.ts
+  s_a5a0b8b07c8eab::t_4a156da022a34c 536
+  s_a5a0b8b07c8eab::t_2fe1a8509456c4 415-416
+  s_a5a0b8b07c8eab::t_7dd6327c9368af 398
+packages/backend/convex/lib/auditPayloads.ts
+  s_a5a0b8b07c8eab::t_cd1c2d6676ec54 355
+  s_a5a0b8b07c8eab::t_9dd08a3b5bf373 374-377
+packages/backend/convex/lib/audit.ts
+  s_a5a0b8b07c8eab::t_aeeb040167135c 222
+  s_a5a0b8b07c8eab::t_69f1679552769f 1038,1040
+  s_a5a0b8b07c8eab::t_f3b9f874838f2a 52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "aa093bacbce6dbc03cdfb6acb110774a6c6b8407",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
