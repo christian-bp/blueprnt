@@ -10,6 +10,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { SeniorityBadge } from "@/components/track-badge"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import {
@@ -27,7 +28,7 @@ import {
 } from "@workspace/ui/components/empty"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useQuery } from "convex/react"
-import { useLocale, useTranslations } from "next-intl"
+import { useFormatter, useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { AddSalaryDialog } from "@/components/people/add-salary-dialog"
 import {
@@ -36,6 +37,7 @@ import {
 } from "@/components/people/pay-comparison-section"
 import { PersonActionsMenu } from "@/components/people/person-actions-menu"
 import { SalaryRowActions } from "@/components/people/salary-row-actions"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import type { Crumb } from "@/components/page-breadcrumb"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
@@ -97,6 +99,9 @@ export function PersonDetail({ publicId }: { publicId: string }) {
   const t = useTranslations("dashboard.people.detail")
   const tSalaryForm = useTranslations("dashboard.people.salaryForm")
   const tNav = useTranslations("dashboard.nav")
+  const tPeople = useTranslations("dashboard.people")
+  const tHelp = useTranslations("dashboard.help")
+  const format = useFormatter()
   const { orgId } = useOrganization()
   const locale = useLocale()
   // Amounts render as locale-aware currency (e.g. "94 500 kr" in Swedish,
@@ -255,7 +260,26 @@ export function PersonDetail({ publicId }: { publicId: string }) {
               controls. */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>{t("identityHeading")}</CardTitle>
+              <div className="flex flex-wrap items-center gap-2">
+                <CardTitle>{t("identityHeading")}</CardTitle>
+                {/* The lifecycle state, with its date, and the concept help
+                    anchored on the card title (never floating). Absent on an
+                    active person: the common case carries no lifecycle chrome. */}
+                {person.archivedAt !== null && (
+                  <>
+                    <Badge variant="outline">
+                      {tPeople("archivedOn", {
+                        date: format.dateTime(new Date(person.archivedAt), {
+                          dateStyle: "medium",
+                        }),
+                      })}
+                    </Badge>
+                    <HelpMorphButton label={tHelp("archivedPersonLabel")}>
+                      {tHelp("archivedPersonBody")}
+                    </HelpMorphButton>
+                  </>
+                )}
+              </div>
               <PersonActionsMenu
                 person={{
                   personId: person.personId,
@@ -275,6 +299,7 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                       }
                     : null
                 }
+                archivedAt={person.archivedAt}
               />
             </CardHeader>
             <CardContent className="space-y-6">

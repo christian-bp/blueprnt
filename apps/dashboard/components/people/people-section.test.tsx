@@ -57,11 +57,34 @@ import {
 import { toast } from "@/lib/toast"
 
 const eraseMock = mockMutation("people.erase.erasePersonAsOrg")
+const archiveMock = mockMutation("people.people.archivePeople")
+const unarchiveMock = mockMutation("people.people.unarchivePerson")
 const m = messages.dashboard.people
 
 // Fixtures
 
-const PEOPLE = [
+// One shared shape for every listPeople fixture row, so an array mixing
+// people from different fixtures (e.g. PEOPLE_WITH_ARCHIVED) stays a single
+// element type instead of a union TypeScript widens per-literal.
+type PersonFixture = {
+  personId: string
+  publicId: string
+  displayName: string
+  gender: "Man" | "Kvinna" | null
+  department: string | null
+  ftePercent: number | null
+  externalRef: string | null
+  birthDate: string | null
+  employmentStartDate: string | null
+  country: string | null
+  isManager: boolean | null
+  statisticalCode: string | null
+  archivedAt: number | null
+  roleId: string | null
+  senioritySource: "suggested" | "confirmed" | null
+}
+
+const PEOPLE: PersonFixture[] = [
   {
     personId: "p1",
     publicId: "pub-p1",
@@ -135,6 +158,47 @@ const MANY_PEOPLE = Array.from({ length: 30 }, (_, i) => ({
   senioritySource: null,
 }))
 
+const ARCHIVED_PERSON: PersonFixture = {
+  personId: "p9",
+  publicId: "pub-p9",
+  displayName: "Zara Archived",
+  gender: "Kvinna",
+  department: "Engineering",
+  ftePercent: 100,
+  externalRef: "99",
+  birthDate: null,
+  employmentStartDate: null,
+  country: null,
+  isManager: null,
+  statisticalCode: null,
+  archivedAt: 1_756_000_000_000,
+  roleId: null,
+  senioritySource: null,
+}
+const PEOPLE_WITH_ARCHIVED = [...PEOPLE, ARCHIVED_PERSON]
+
+// A second archived person, for the tests that need more than one archived
+// row selected at once (pluralizing the reactivate/delete labels, deleting a
+// multi-row selection).
+const ARCHIVED_PERSON_2: PersonFixture = {
+  personId: "p10",
+  publicId: "pub-p10",
+  displayName: "Yara Archived",
+  gender: "Man",
+  department: "Product",
+  ftePercent: 90,
+  externalRef: "100",
+  birthDate: null,
+  employmentStartDate: null,
+  country: null,
+  isManager: null,
+  statisticalCode: null,
+  archivedAt: 1_756_000_000_000,
+  roleId: null,
+  senioritySource: null,
+}
+const PEOPLE_WITH_TWO_ARCHIVED = [...PEOPLE, ARCHIVED_PERSON, ARCHIVED_PERSON_2]
+
 // listRoles options for the role filter (only role1 has people here).
 const ROLES = [
   {
@@ -201,10 +265,18 @@ const BY_TITLE: ClassifyTitleGroup[] = [
 
 function queryRouter(
   ref: string,
-  people = PEOPLE,
-  byTitle = BY_TITLE
+  people: PersonFixture[] = PEOPLE,
+  byTitle = BY_TITLE,
+  args?: unknown
 ): unknown {
-  if (ref === "people.people.listPeople") return people
+  if (ref === "people.people.listPeople") {
+    const includeArchived =
+      (args as { includeArchived?: boolean } | undefined)?.includeArchived ===
+      true
+    return includeArchived
+      ? people
+      : people.filter((p) => p.archivedAt === null)
+  }
   if (ref === "people.classificationQueries.listPeopleByTitle") return byTitle
   if (ref === "assessment.roles.listRoles") return ROLES
   return []
@@ -526,29 +598,52 @@ describe("PeopleSection", () => {
     // by a fixed string.
     const CTA = /^Delete \d+ employees?$/
 
-    it("hides the delete button entirely until something is selected", () => {
-      onQuery((ref) => queryRouter(ref))
+    // The delete (bulk erase) action lives only in the archived view; with
+    // nothing selected neither it nor reactivate appear there.
+    it("hides the delete and reactivate buttons entirely until something is selected", async () => {
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_ARCHIVED, BY_TITLE, args)
+      )
       renderSection()
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
       expect(screen.queryByRole("button", { name: CTA })).toBeNull()
+      expect(screen.queryByRole("button", { name: /^Reactivate/ })).toBeNull()
       expect(screen.queryByText(/employees? selected/)).toBeNull()
     })
 
     // Erasing people is irreversible and admin-only, so an editor never gets
-    // the bulk control. Selection itself stays: it is what the register's own
-    // rows offer, and nothing else about the page is admin's.
-    it("offers no bulk delete to an editor, however many rows are selected", () => {
+    // the bulk control, however many archived rows are selected.
+    it("offers no bulk delete to an editor, however many archived rows are selected", async () => {
       orgRole = "editor"
-      onQuery((ref) => queryRouter(ref))
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_TWO_ARCHIVED, BY_TITLE, args)
+      )
       renderSection()
-      selectRow("Alice Svensson")
-      selectRow("Bob Larsson")
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
+      selectRow("Zara Archived")
+      selectRow("Yara Archived")
       expect(screen.queryByRole("button", { name: CTA })).toBeNull()
     })
 
-    it("selects a single row and puts the count in the button label", () => {
-      onQuery((ref) => queryRouter(ref))
+    it("selects a single archived row and puts the count in the delete button label", async () => {
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_ARCHIVED, BY_TITLE, args)
+      )
       renderSection()
-      selectRow("Alice Svensson")
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
+      selectRow("Zara Archived")
       expect(
         screen.getByRole("button", { name: "Delete 1 employee" })
       ).toBeDefined()
@@ -559,11 +654,18 @@ describe("PeopleSection", () => {
       expect(live.getAttribute("aria-live")).toBe("polite")
     })
 
-    it("pluralizes the button label as the selection grows", () => {
-      onQuery((ref) => queryRouter(ref))
+    it("pluralizes the delete button label as the selection grows", async () => {
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_TWO_ARCHIVED, BY_TITLE, args)
+      )
       renderSection()
-      selectRow("Alice Svensson")
-      selectRow("Bob Larsson")
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
+      selectRow("Zara Archived")
+      selectRow("Yara Archived")
       expect(
         screen.getByRole("button", { name: "Delete 2 employees" })
       ).toBeDefined()
@@ -572,10 +674,17 @@ describe("PeopleSection", () => {
       ).toBeNull()
     })
 
-    it("puts the delete button in the filter row at the same height as the other controls", () => {
-      onQuery((ref) => queryRouter(ref))
+    it("puts the delete button in the filter row at the same height as the other controls", async () => {
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_ARCHIVED, BY_TITLE, args)
+      )
       renderSection()
-      selectRow("Alice Svensson")
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
+      selectRow("Zara Archived")
       const search = screen.getByLabelText(m.toolbar.searchPlaceholder)
       const button = screen.getByRole("button", { name: "Delete 1 employee" })
       // The button shares the toolbar with the search field rather than
@@ -590,17 +699,24 @@ describe("PeopleSection", () => {
       expect(button.className).toContain("h-8")
     })
 
-    it("puts the delete button last, hard against the right edge", () => {
-      onQuery((ref) => queryRouter(ref))
+    it("puts the delete button last, hard against the right edge", async () => {
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_ARCHIVED, BY_TITLE, args)
+      )
       renderSection()
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
       // Narrow the table so the result count renders beside the button.
       fireEvent.change(screen.getByLabelText(m.toolbar.searchPlaceholder), {
-        target: { value: "Alice" },
+        target: { value: "Zara" },
       })
-      selectRow("Alice Svensson")
+      selectRow("Zara Archived")
       const button = screen.getByRole("button", { name: "Delete 1 employee" })
       const count = screen.getByText(
-        m.toolbar.resultCount.replace("{shown}", "1").replace("{total}", "3")
+        m.toolbar.resultCount.replace("{shown}", "1").replace("{total}", "1")
       )
       // Both live in the row's right-aligned group, the button after the count.
       const rightGroup = button.parentElement
@@ -654,11 +770,18 @@ describe("PeopleSection", () => {
       expect(screen.getByText("1 employee selected")).toBeDefined()
     })
 
-    it("deletes exactly the selected people, one call each, then clears the selection", async () => {
-      onQuery((ref) => queryRouter(ref))
+    it("deletes exactly the selected archived people, one call each, then clears the selection", async () => {
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_TWO_ARCHIVED, BY_TITLE, args)
+      )
       renderSection()
-      selectRow("Alice Svensson")
-      selectRow("Bob Larsson")
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
+      selectRow("Zara Archived")
+      selectRow("Yara Archived")
       fireEvent.click(screen.getByRole("button", { name: CTA }))
       fireEvent.change(screen.getByLabelText(m.bulk.confirmLabel), {
         target: { value: "DELETE" },
@@ -672,12 +795,15 @@ describe("PeopleSection", () => {
 
       await waitFor(() => expect(toast.success).toHaveBeenCalled())
       expect(eraseMock).toHaveBeenCalledTimes(2)
+      // The effective selection follows the filtered row model's order
+      // (unsorted, i.e. fixture order), not click order.
       expect(eraseMock.mock.calls.map((c) => c[0])).toEqual([
-        { orgId: "org1", personId: "p1" },
-        { orgId: "org1", personId: "p2" },
+        { orgId: "org1", personId: "p9" },
+        { orgId: "org1", personId: "p10" },
       ])
       // The dialog closed and the selection reset. The fixture query still
-      // returns all three people, so a stale selection would still count here.
+      // returns both archived people, so a stale selection would still count
+      // here.
       await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull())
       expect(screen.queryByRole("button", { name: CTA })).toBeNull()
     })
@@ -697,6 +823,248 @@ describe("PeopleSection", () => {
         document.querySelectorAll('[data-slot="checkbox"][aria-hidden="true"]')
           .length
       ).toBeGreaterThan(0)
+    })
+
+    const ARCHIVE_CTA = /^Archive \d+ employees?$/
+
+    it("offers bulk archive to an editor once an active person is selected", () => {
+      orgRole = "editor"
+      onQuery((ref) => queryRouter(ref))
+      renderSection()
+      expect(screen.queryByRole("button", { name: ARCHIVE_CTA })).toBeNull()
+      selectRow("Alice Svensson")
+      expect(
+        screen.getByRole("button", { name: "Archive 1 employee" })
+      ).toBeDefined()
+      expect(screen.queryByRole("button", { name: CTA })).toBeNull()
+      orgRole = "admin"
+    })
+
+    // The active view offers only Archive, never a delete button, for any
+    // role: an archived person is the only one that can be deleted, and only
+    // from the archived view.
+    it("offers only the archive action in the active view, never a delete button, even for admin", () => {
+      onQuery((ref) => queryRouter(ref))
+      renderSection()
+      selectRow("Alice Svensson")
+      expect(
+        screen.getByRole("button", { name: "Archive 1 employee" })
+      ).toBeDefined()
+      expect(screen.queryByRole("button", { name: CTA })).toBeNull()
+      // The Button component (packages/ui/src/components/button.tsx) sets no
+      // data-variant attribute, so there is no DOM signal to assert the
+      // archive button carries the default (filled) rather than the outline
+      // variant; per the brief this case is left unchecked here.
+    })
+
+    const REACTIVATE_CTA = "Reactivate 1 employee"
+    const DELETE_ONE = "Delete 1 employee"
+
+    it("archived view: offers reactivate then (for admin) delete, last against the edge", async () => {
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_ARCHIVED, BY_TITLE, args)
+      )
+      renderSection()
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
+      selectRow("Zara Archived")
+      const reactivateButton = screen.getByRole("button", {
+        name: REACTIVATE_CTA,
+      })
+      const deleteButton = screen.getByRole("button", { name: DELETE_ONE })
+      expect(reactivateButton).toBeDefined()
+      expect(
+        reactivateButton.compareDocumentPosition(deleteButton) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+      // The active view's archive action never appears in this view.
+      expect(screen.queryByRole("button", { name: ARCHIVE_CTA })).toBeNull()
+    })
+
+    it("archived view: offers no delete button to an editor", async () => {
+      orgRole = "editor"
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_ARCHIVED, BY_TITLE, args)
+      )
+      renderSection()
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
+      selectRow("Zara Archived")
+      expect(screen.getByRole("button", { name: REACTIVATE_CTA })).toBeDefined()
+      expect(screen.queryByRole("button", { name: DELETE_ONE })).toBeNull()
+      orgRole = "admin"
+    })
+
+    it("reactivates the selected archived person, toasts, and clears the selection", async () => {
+      unarchiveMock.mockReset().mockResolvedValue(null)
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_ARCHIVED, BY_TITLE, args)
+      )
+      renderSection()
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
+      selectRow("Zara Archived")
+      fireEvent.click(screen.getByRole("button", { name: REACTIVATE_CTA }))
+      fireEvent.click(
+        screen.getByRole("button", { name: m.bulkReactivate.confirm })
+      )
+      await waitFor(() => expect(toast.success).toHaveBeenCalled())
+      expect(unarchiveMock).toHaveBeenCalledTimes(1)
+      expect(unarchiveMock.mock.calls[0]?.[0]).toEqual({
+        orgId: "org1",
+        personId: "p9",
+      })
+      await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull())
+      expect(screen.queryByRole("button", { name: REACTIVATE_CTA })).toBeNull()
+    })
+
+    it("archives the selected active people in one chunk, toasts, and clears the selection", async () => {
+      archiveMock.mockReset().mockResolvedValue({ archived: 2 })
+      onQuery((ref) => queryRouter(ref))
+      renderSection()
+      selectRow("Alice Svensson")
+      selectRow("Bob Larsson")
+      fireEvent.click(screen.getByRole("button", { name: ARCHIVE_CTA }))
+      fireEvent.click(
+        screen.getByRole("button", { name: m.bulkArchive.confirm })
+      )
+      await waitFor(() => expect(toast.success).toHaveBeenCalled())
+      expect(archiveMock).toHaveBeenCalledTimes(1)
+      expect(archiveMock.mock.calls[0]?.[0]).toEqual({
+        orgId: "org1",
+        personIds: ["p1", "p2"],
+      })
+      await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull())
+      expect(screen.queryByRole("button", { name: ARCHIVE_CTA })).toBeNull()
+    })
+  })
+
+  describe("status filter", () => {
+    it("shows active people only by default and no badge", () => {
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_ARCHIVED, BY_TITLE, args)
+      )
+      renderSection()
+      expect(screen.queryByText("Zara Archived")).toBeNull()
+      expect(screen.queryByText(m.archivedBadge)).toBeNull()
+      expect(screen.queryByText(/of \d+ people/)).toBeNull()
+    })
+
+    // The status control has two states only: no "All" option remains once
+    // the active view only archives and the archived view reactivates or
+    // deletes (a mixed view would offer both actions on the same rows).
+    it("offers exactly two status options, with no All", async () => {
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_ARCHIVED, BY_TITLE, args)
+      )
+      renderSection()
+      fireEvent.click(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel })
+      )
+      const options = await screen.findAllByRole("option")
+      expect(options.map((option) => option.textContent)).toEqual([
+        m.toolbar.statusActive,
+        m.toolbar.statusArchived,
+      ])
+    })
+
+    it("narrows to archived people, with the badge, and no result count without another filter", async () => {
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_ARCHIVED, BY_TITLE, args)
+      )
+      renderSection()
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
+      expect(screen.queryByText("Alice Svensson")).toBeNull()
+      expect(screen.getByText(m.archivedBadge)).toBeDefined()
+      // The mode is a view switch, not a filter: with nothing else narrowing
+      // the archived view, the "N of M" result count stays hidden.
+      expect(screen.queryByText(/of \d+ people/)).toBeNull()
+    })
+
+    it("shows the archived-empty state when there are no archived people, with no clear-filters button", async () => {
+      onQuery((ref, args) => queryRouter(ref, PEOPLE, BY_TITLE, args))
+      renderSection()
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText(m.archivedEmpty)
+      expect(
+        screen.queryByRole("button", { name: m.toolbar.clearFilters })
+      ).toBeNull()
+    })
+
+    // clearFilters never touches the status view switch: a search narrowed
+    // to nothing in the archived view clears back to the archived view's
+    // own population, not back to the active view.
+    it("clearing filters keeps the archived view; only the search narrows away", async () => {
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_ARCHIVED, BY_TITLE, args)
+      )
+      renderSection()
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
+      fireEvent.change(
+        screen.getByPlaceholderText(m.toolbar.searchPlaceholder),
+        {
+          target: { value: "nobody" },
+        }
+      )
+      expect(screen.queryByText("Zara Archived")).toBeNull()
+      fireEvent.click(
+        screen.getByRole("button", { name: m.toolbar.clearFilters })
+      )
+      await screen.findByText("Zara Archived")
+      expect(screen.queryByText("Alice Svensson")).toBeNull()
+    })
+
+    // The two populations offer different department options (only the
+    // archived person is in Engineering there), so a department chosen under
+    // one view could silently narrow the other to rows it never meant to
+    // filter. Switching the status control clears it back to "All".
+    it("resets the department filter when the status view switches away and back", async () => {
+      onQuery((ref, args) =>
+        queryRouter(ref, PEOPLE_WITH_ARCHIVED, BY_TITLE, args)
+      )
+      renderSection()
+      const departmentCombobox = screen.getByRole("combobox", {
+        name: m.columns.department,
+      })
+      await pickSelectOption(departmentCombobox, "Engineering")
+      expect(screen.getByText("Alice Svensson")).toBeDefined()
+      expect(screen.queryByText("Bob Larsson")).toBeNull()
+
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusArchived
+      )
+      await screen.findByText("Zara Archived")
+
+      await pickSelectOption(
+        screen.getByRole("combobox", { name: m.toolbar.statusLabel }),
+        m.toolbar.statusActive
+      )
+      await screen.findByText("Alice Svensson")
+      expect(screen.getByText("Bob Larsson")).toBeDefined()
+      expect(
+        screen.getByRole("combobox", { name: m.columns.department }).textContent
+      ).toBe(m.toolbar.departmentAll)
     })
   })
 })

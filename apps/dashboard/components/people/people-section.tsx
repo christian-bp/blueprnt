@@ -19,6 +19,7 @@ import {
   useTable,
 } from "@tanstack/react-table"
 import { api } from "@workspace/backend/convex/_generated/api"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
@@ -52,7 +53,9 @@ import { NoMatchesEmpty } from "@/components/no-matches-empty"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { AddPersonDialog } from "@/components/people/add-person-dialog"
+import { BulkArchivePeopleDialog } from "@/components/people/bulk-archive-people-dialog"
 import { BulkDeletePeopleDialog } from "@/components/people/bulk-delete-people-dialog"
+import { BulkReactivatePeopleDialog } from "@/components/people/bulk-reactivate-people-dialog"
 import { SuggestedRoleBadge } from "@/components/suggested-role-badge"
 import {
   FrameTable,
@@ -69,9 +72,12 @@ import {
 import { onSelectValue } from "@/lib/select"
 import { selectionState } from "@/lib/selection"
 
-// The people list surface. Displays active (non-archived) people imported from
-// payroll as a searchable, filterable, paginated data table (the shadcn data
-// table recipe on @tanstack/react-table, same as the role register).
+// The people list surface. Displays active people by default; the status
+// switch swaps to the archived view. The active view only archives; the
+// archived view reactivates or (admin) deletes, so the destructive action
+// never appears next to the active register. People are imported from
+// payroll into a searchable, filterable, paginated data table (the shadcn
+// data table recipe on @tanstack/react-table, same as the role register).
 // Classification is still DONE on the Classify tab; here it only surfaces as a
 // role filter (over every created role) and, while narrowing by role, a
 // "Suggested" badge on people whose assignment is not yet confirmed.
@@ -88,6 +94,8 @@ export interface PeopleTableRow {
   // drives the role filter, and senioritySource flags a still-suggested assignment.
   roleId: string | null
   senioritySource: "suggested" | "confirmed" | null
+  // Set when the person has left; the status view switch and the badge read it.
+  archivedAt: number | null
 }
 
 // The people list's free-text search: case-insensitive substring over the
@@ -106,6 +114,12 @@ export function matchesPersonQuery(
 }
 
 const PAGE_SIZE = 25
+
+// The status is a view switch, not a filter: "active" (the default) asks the
+// server for active people only, "archived" loads archived people too and the
+// rows memo below keeps only the mode's population. The active view only
+// archives; the archived view reactivates or (admin) deletes.
+type StatusFilter = "active" | "archived"
 
 // v9 registers features explicitly: an API is absent unless its feature is
 // here, and each row-model slot follows the feature it belongs to.
@@ -198,6 +212,8 @@ export function PeopleSection() {
   const tToolbar = useTranslations("dashboard.people.toolbar")
   const tGender = useTranslations("dashboard.people.gender")
   const tBulk = useTranslations("dashboard.people.bulk")
+  const tBulkArchive = useTranslations("dashboard.people.bulkArchive")
+  const tBulkReactivate = useTranslations("dashboard.people.bulkReactivate")
   const { orgId, role } = useOrganization()
   // Erasing people is irreversible and admin-only (people/erase.ts), so the
   // bulk control is hidden from an editor for the same reason the per-person
@@ -206,24 +222,39 @@ export function PeopleSection() {
   const canErase = role === "admin"
   const locale = useLocale()
 
-  const people = useQuery(api.people.people.listPeople, { orgId })
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("active")
+  const people = useQuery(
+    api.people.people.listPeople,
+    statusFilter === "active" ? { orgId } : { orgId, includeArchived: true }
+  )
   // All created roles are the role-filter options (not just roles that happen
   // to have people), so the filter always offers the full set.
   const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
 
+  // Keeps ONLY the current mode's population: listPeople has no
+  // archived-only query, so the archived view's query loads both active and
+  // archived people and this filter is what actually narrows it down to the
+  // archived ones.
   const rows = useMemo<PeopleTableRow[]>(() => {
     if (people === undefined) return []
-    return people.map((person) => ({
-      personId: String(person.personId),
-      publicId: person.publicId,
-      name: person.displayName,
-      gender: person.gender ?? null,
-      department: person.department ?? null,
-      ftePercent: person.ftePercent ?? null,
-      roleId: person.roleId !== null ? String(person.roleId) : null,
-      senioritySource: person.senioritySource,
-    }))
-  }, [people])
+    return people
+      .filter((person) =>
+        statusFilter === "archived"
+          ? person.archivedAt !== null
+          : person.archivedAt === null
+      )
+      .map((person) => ({
+        personId: String(person.personId),
+        publicId: person.publicId,
+        name: person.displayName,
+        gender: person.gender ?? null,
+        department: person.department ?? null,
+        ftePercent: person.ftePercent ?? null,
+        roleId: person.roleId !== null ? String(person.roleId) : null,
+        senioritySource: person.senioritySource,
+        archivedAt: person.archivedAt,
+      }))
+  }, [people, statusFilter])
 
   const [globalFilter, setGlobalFilter] = useState("")
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -239,6 +270,8 @@ export function PeopleSection() {
   // EFFECTIVE selection below is what any action reads.
   const [selected, setSelected] = useState<Set<string>>(() => new Set())
   const [bulkOpen, setBulkOpen] = useState(false)
+  const [bulkArchiveOpen, setBulkArchiveOpen] = useState(false)
+  const [bulkReactivateOpen, setBulkReactivateOpen] = useState(false)
 
   const table = useTable({
     features,
@@ -267,6 +300,9 @@ export function PeopleSection() {
   const shown = table.getFilteredRowModel().rows.length
   const pageRows = table.getRowModel().rows.map((row) => row.original)
   const pageCount = table.getPageCount()
+  // The status is a view switch, not a filter: it never contributes here, so
+  // switching between the active and archived views never shows the "N of M"
+  // result count on its own.
   const filtersActive = globalFilter.trim() !== "" || columnFilters.length > 0
   const departmentFilter =
     (table.getColumn("department")?.getFilterValue() as string | undefined) ??
@@ -330,6 +366,19 @@ export function PeopleSection() {
     resetPage()
   }
 
+  // The status select drives the query (archived rows are only loaded when
+  // asked for) and the rows memo's mode filter; it is a view switch, not a
+  // column filter. Switching it clears the column filters (department,
+  // role, gender, FTE), because their options differ between the active and
+  // archived populations: a department chosen under one view could silently
+  // narrow the other view to zero rows. The search text is not a column
+  // filter here and stays as typed.
+  function setStatus(value: StatusFilter) {
+    setStatusFilter(value)
+    setColumnFilters([])
+    resetPage()
+  }
+
   // Distinct departments for the filter options, sorted for a stable list.
   const departments = useMemo(
     () =>
@@ -368,6 +417,8 @@ export function PeopleSection() {
     setPagination((p) => (p.pageIndex === 0 ? p : { ...p, pageIndex: 0 }))
   }
 
+  // The status view switch is untouched here: clearing filters narrows back
+  // to everything the current view shows, not back to the active view.
   function clearFilters() {
     setGlobalFilter("")
     setColumnFilters([])
@@ -536,6 +587,22 @@ export function PeopleSection() {
           </SelectContent>
         </Select>
       )}
+      <Select
+        items={{
+          active: tToolbar("statusActive"),
+          archived: tToolbar("statusArchived"),
+        }}
+        value={statusFilter}
+        onValueChange={onSelectValue((value: StatusFilter) => setStatus(value))}
+      >
+        <SelectTrigger aria-label={tToolbar("statusLabel")}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="active">{tToolbar("statusActive")}</SelectItem>
+          <SelectItem value="archived">{tToolbar("statusArchived")}</SelectItem>
+        </SelectContent>
+      </Select>
       {/* The right-aligned end of the filter row: the result count, then the
           bulk action last so it sits hard against the right edge. Grouping
           them means the pair wraps together on a narrow viewport instead of
@@ -546,11 +613,29 @@ export function PeopleSection() {
             {tToolbar("resultCount", { shown, total: rows.length })}
           </span>
         )}
-        {/* Appears only once something is selected, and takes the default
-            Button size so it matches the height of the search field and the
-            filter selects beside it (never a hand-picked size). Its label
-            carries the count, so no separate counter text is needed. */}
-        {selectedCount > 0 && canErase && (
+        {/* The active view's only action: archiving is reversible and not
+            admin-gated, so both roles see it. Because rows is mode-filtered,
+            the effective selection is entirely active people here. The
+            default (filled) variant, since it is the view's only action. */}
+        {statusFilter === "active" && selectedCount > 0 && (
+          <Button type="button" onClick={() => setBulkArchiveOpen(true)}>
+            {tBulkArchive("cta", { count: selectedCount })}
+          </Button>
+        )}
+        {/* The archived view's actions: reactivate first, then (admin-only)
+            the destructive delete, hard against the right edge. Takes the
+            default Button size so it matches the height of the search field
+            and the filter selects beside it (never a hand-picked size). */}
+        {statusFilter === "archived" && selectedCount > 0 && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setBulkReactivateOpen(true)}
+          >
+            {tBulkReactivate("cta", { count: selectedCount })}
+          </Button>
+        )}
+        {statusFilter === "archived" && selectedCount > 0 && canErase && (
           <Button
             type="button"
             variant="destructive"
@@ -653,6 +738,19 @@ export function PeopleSection() {
               {t("import.cta")}
             </Link>
           </Empty>
+        ) : statusFilter === "archived" && rows.length === 0 ? (
+          // The archived view's own empty state: no clear-filters button (a
+          // filter can never be why this view is empty; there is nothing to
+          // narrow) and no import link (importing never lands someone here).
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia>
+                <Medallion icon={UserMultiple02Icon} size="lg" />
+              </EmptyMedia>
+              <EmptyTitle>{tTabs("people")}</EmptyTitle>
+              <EmptyDescription>{t("archivedEmpty")}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : shown === 0 ? (
           <NoMatchesEmpty
             title={tTabs("people")}
@@ -698,6 +796,9 @@ export function PeopleSection() {
                           row.senioritySource === "suggested" && (
                             <SuggestedRoleBadge />
                           )}
+                        {row.archivedAt !== null && (
+                          <Badge variant="outline">{t("archivedBadge")}</Badge>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
@@ -725,6 +826,22 @@ export function PeopleSection() {
           onDeleted={() => setSelected(new Set())}
         />
       )}
+
+      {/* rows is mode-filtered, so the effective selection under either
+          dialog's own view is entirely active or entirely archived. */}
+      <BulkArchivePeopleDialog
+        open={bulkArchiveOpen}
+        onOpenChange={setBulkArchiveOpen}
+        personIds={[...selection.effective]}
+        onArchived={() => setSelected(new Set())}
+      />
+
+      <BulkReactivatePeopleDialog
+        open={bulkReactivateOpen}
+        onOpenChange={setBulkReactivateOpen}
+        personIds={[...selection.effective]}
+        onReactivated={() => setSelected(new Set())}
+      />
     </div>
   )
 }

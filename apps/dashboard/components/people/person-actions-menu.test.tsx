@@ -18,11 +18,15 @@ vi.mock("@/lib/toast", () => ({
 
 const assignMock = vi.fn()
 const eraseMock = vi.fn()
+const archiveMock = vi.fn()
+const unarchiveMock = vi.fn()
 
 vi.mock("convex/react", () => ({
   useMutation: (ref: unknown) => {
     if (ref === "people.assignments.assignPersonToRole") return assignMock
     if (ref === "people.erase.erasePersonAsOrg") return eraseMock
+    if (ref === "people.people.archivePerson") return archiveMock
+    if (ref === "people.people.unarchivePerson") return unarchiveMock
     return vi.fn()
   },
 }))
@@ -33,7 +37,11 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
         assignPersonToRole: "people.assignments.assignPersonToRole",
       },
       erase: { erasePersonAsOrg: "people.erase.erasePersonAsOrg" },
-      people: { updatePerson: "people.people.updatePerson" },
+      people: {
+        updatePerson: "people.people.updatePerson",
+        archivePerson: "people.people.archivePerson",
+        unarchivePerson: "people.people.unarchivePerson",
+      },
     },
   },
 }))
@@ -57,7 +65,8 @@ function renderMenu(
   currentAssignment: { roleId: string; seniority: string } | null = {
     roleId: "role1",
     seniority: "IC3",
-  }
+  },
+  archivedAt: number | null = null
 ) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
@@ -73,6 +82,7 @@ function renderMenu(
         }}
         roles={ROLES}
         currentAssignment={currentAssignment}
+        archivedAt={archivedAt}
       />
     </NextIntlClientProvider>
   )
@@ -87,12 +97,23 @@ describe("PersonActionsMenu", () => {
     orgRole = "admin"
     assignMock.mockReset().mockResolvedValue("a1")
     eraseMock.mockReset()
+    archiveMock.mockReset()
+    unarchiveMock.mockReset()
     vi.mocked(toast.success).mockReset()
   })
   afterEach(() => cleanup())
 
-  it("opens the erase dialog from the destructive item", async () => {
+  // Erasure is offered only on an archived person, so an active record is
+  // never erased without first passing through the archive: not even an
+  // admin sees the destructive item on an active person's menu.
+  it("shows no delete item for an active person even as admin", async () => {
     renderMenu()
+    await openActionsMenu()
+    expect(screen.queryByRole("menuitem", { name: m.erase.trigger })).toBeNull()
+  })
+
+  it("opens the erase dialog from the destructive item on an archived person", async () => {
+    renderMenu(undefined, 1_756_000_000_000)
     await openActionsMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: m.erase.trigger }))
     expect(screen.getByRole("alertdialog")).toBeDefined()
@@ -102,9 +123,9 @@ describe("PersonActionsMenu", () => {
   // disabled: absence is how this app treats an admin-only thing everywhere
   // else, and a destructive item standing permanently dead in every person's
   // menu would be noise on the common case.
-  it("offers no erasure to an editor, and still offers the edit", async () => {
+  it("offers no erasure to an editor on an archived person, and still offers the edit", async () => {
     orgRole = "editor"
-    renderMenu()
+    renderMenu(undefined, 1_756_000_000_000)
     await openActionsMenu()
     expect(screen.queryByRole("menuitem", { name: m.erase.trigger })).toBeNull()
     expect(
@@ -185,5 +206,52 @@ describe("PersonActionsMenu", () => {
         })
       )
     })
+  })
+
+  it("archives an active person from the menu and toasts", async () => {
+    archiveMock.mockReset().mockResolvedValue(null)
+    renderMenu()
+    await openActionsMenu()
+    fireEvent.click(screen.getByRole("menuitem", { name: m.archive.trigger }))
+    const dialog = screen.getByRole("alertdialog")
+    expect(dialog.textContent).toContain("Archive Alex Doe?")
+    fireEvent.click(screen.getByRole("button", { name: m.archive.confirm }))
+    await waitFor(() =>
+      expect(archiveMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        personId: "p1",
+      })
+    )
+    await waitFor(() => expect(toast.success).toHaveBeenCalled())
+  })
+
+  it("reactivates an archived person from the menu", async () => {
+    unarchiveMock.mockReset().mockResolvedValue(null)
+    renderMenu(undefined, 1_756_000_000_000)
+    await openActionsMenu()
+    expect(
+      screen.queryByRole("menuitem", { name: m.archive.trigger })
+    ).toBeNull()
+    fireEvent.click(
+      screen.getByRole("menuitem", { name: m.archive.reactivateTrigger })
+    )
+    fireEvent.click(
+      screen.getByRole("button", { name: m.archive.reactivateConfirm })
+    )
+    await waitFor(() =>
+      expect(unarchiveMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        personId: "p1",
+      })
+    )
+  })
+
+  it("offers archive to an editor", async () => {
+    orgRole = "editor"
+    renderMenu()
+    await openActionsMenu()
+    expect(
+      screen.getByRole("menuitem", { name: m.archive.trigger })
+    ).toBeDefined()
   })
 })
