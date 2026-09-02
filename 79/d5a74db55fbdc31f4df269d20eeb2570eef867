@@ -1,0 +1,79 @@
+docs/adr/0015-instegsvillkor-och-atgardslager.md
+  s_26838696f43ddf::t_9a661547f18621 3
+packages/core/src/pay-analysis.ts
+  s_26838696f43ddf::t_36e2ad0b0ed100 123-124,132-137,180
+apps/dashboard/content/docs/da/equal-work.mdx
+  s_26838696f43ddf::t_3050289a015aa4 40-48
+apps/dashboard/components/pay-mapping/group-member-table.tsx
+  s_26838696f43ddf::t_dbe9ad0c736b16 50-51,133-134,178-179,182,208
+  s_26838696f43ddf::t_d7bd53566d85e7 70,76
+apps/dashboard/components/pay-mapping/group-member-table.test.tsx
+  s_26838696f43ddf::t_fc73b465119370 60,62,82,84,87,89-91,94-100,103-104,173-189,193,195-196,198
+  s_26838696f43ddf::t_44a338bc3b6320 244-248,262-266,283-287,293-297,309-313
+docs/adr/0028-total-ersattning-primart-matt.md
+  s_26838696f43ddf::t_9de1883709259e 1-26
+packages/backend/convex/payMapping/gap.ts
+  s_26838696f43ddf::t_1404acb6d2323f 43-48,59,192,210-212,249-250
+apps/dashboard/components/pay-mapping/equal-work-detail.tsx
+  s_26838696f43ddf::t_dbe9ad0c736b16 152-155
+  s_26838696f43ddf::t_1105de9d3258ad 185,188-190,254-258,263
+apps/dashboard/content/docs/en/equal-work.mdx
+  s_26838696f43ddf::t_3050289a015aa4 39-48
+packages/backend/convex/payMapping/gap.test.ts
+  s_26838696f43ddf::t_47464940088408 136,377,380,406,412-445
+  s_26838696f43ddf::t_f2c1da56c40d36 446-447
+apps/dashboard/components/pay-mapping/pay-mapping-report-data.test.ts
+  s_26838696f43ddf::t_f438373c4f198a 305-310
+  s_26838696f43ddf::t_33fa2806ace74c 174-175,331-333,338-339,405-409,419,460-461,464
+packages/i18n/messages/sv.json
+  s_26838696f43ddf::t_f2d26d51594138 1477-1478,1515
+apps/dashboard/components/pay-mapping/pay-mapping-report-render.test.tsx
+  s_26838696f43ddf::t_33fa2806ace74c 252-254
+apps/dashboard/content/docs/sv/equal-work.mdx
+  s_26838696f43ddf::t_3050289a015aa4 40-49
+packages/i18n/messages/en.json
+  s_26838696f43ddf::t_f2d26d51594138 1477-1478,1515
+packages/i18n/messages/nb.json
+  s_26838696f43ddf::t_f2d26d51594138 1477-1478,1515
+packages/core/src/pay-analysis.test.ts
+  s_26838696f43ddf::t_8fdae17b1cb7bb 126,129-130,141,149,156,158,161,164-165,169-173,181
+apps/dashboard/test/pay-mapping-fixtures.ts
+  s_26838696f43ddf::t_8c4bf410fb96d4 50
+apps/dashboard/components/pay-mapping/pay-mapping-gap-types.ts
+  s_26838696f43ddf::t_1105de9d3258ad 22-25,36,39-42,44,46
+apps/dashboard/components/pay-mapping/pay-mapping-report-data.ts
+  s_26838696f43ddf::t_8c4bf410fb96d4 110-111,113-114,116-117,419,421,429,432,480-481,487,489,664,679
+packages/i18n/messages/fi.json
+  s_26838696f43ddf::t_f2d26d51594138 1477-1478,1515
+apps/dashboard/components/pay-mapping/review-group-step.tsx
+  s_26838696f43ddf::t_f43e4f13175170 59-65,67,380
+packages/i18n/messages/da.json
+  s_26838696f43ddf::t_f2d26d51594138 1477-1478,1515
+apps/dashboard/content/docs/fi/equal-work.mdx
+  s_26838696f43ddf::t_3050289a015aa4 43-52
+apps/dashboard/components/pay-mapping/review-group-step.test.tsx
+  s_26838696f43ddf::t_d7beb4daa154ac 168,187,218
+  s_26838696f43ddf::t_a4c8c00514f765 73-75,82-84,283-285,300-306,311-314,350-355,357
+apps/dashboard/components/pay-mapping/pay-mapping-report-doc.tsx
+  s_26838696f43ddf::t_8c4bf410fb96d4 278-279,522,543-544,549-550,555-556,561,567-569,573,575-576
+apps/dashboard/content/docs/nb/equal-work.mdx
+  s_26838696f43ddf::t_3050289a015aa4 41-50
+apps/dashboard/components/pay-mapping/pay-mapping-report-export.tsx
+  s_26838696f43ddf::t_8c4bf410fb96d4 388-390
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "79d5a74db55fbdc31f4df269d20eeb2570eef867",
+  "prompts": {},
+  "sessions": {
+    "s_26838696f43ddf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4ea41fa8-c68a-430e-a203-a176741bf01c",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
