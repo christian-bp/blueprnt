@@ -285,6 +285,12 @@ in the same change.
   Verify it against Convex's per-transaction read/write limits and convert it
   to the batched-action pattern (mirror `people/import`) before onboarding an
   org above ~1000 employees.
+- [ ] **Cap the import preview's missing-from-file list.** `diffImport`'s
+  `missingFromFile` (`people/importDiff.ts`) is bounded by headcount, not by
+  the file: a partial-department import at 10k people ships ~9,700
+  `{externalRef, displayName}` entries over `previewImport` and the review
+  step's Show-all mounts them all. Before large-org onboarding, return the
+  first N plus a total and render "and N more" in `review-step.tsx`.
 - [ ] **Fix the shared destructive/success Badge tint contrast (app-wide).**
   The shared `Badge` `destructive` and `success` variants
   (`packages/ui/src/components/badge.tsx`) render `text-destructive`/
