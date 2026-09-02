@@ -183,7 +183,11 @@ export function LibraryPickerDialog({
         <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} aria-hidden="true" />
         {tCriteria("addCta")}
       </DialogTrigger>
-      <DialogContent>
+      {/* Wider than a form dialog: every row carries a definition, two fit
+          paragraphs and a control question, and at the vendor width that
+          prose wrapped into a column too narrow to compare rows across. The
+          list keeps its own scroll so the title and Close stay put. */}
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-2">
             {t("title", { dimension: dimensionName })}

@@ -646,6 +646,18 @@ describe("the Kriterier chapter", () => {
     expect(within(row).queryByText(KNOWLEDGE_BREADTH_FULL)).toBeNull()
   })
 
+  // The picker is a reading surface (a definition, two fit paragraphs and a
+  // control question per row), so it opens wider than the vendor default a
+  // form dialog gets. Asserted against the vendor class the same way the
+  // clamps are: tailwind-merge drops the base width for the later one.
+  it("opens the picker wider than the vendor dialog default", async () => {
+    renderChapter()
+    await openPicker("Competence")
+    const dialog = screen.getByRole("dialog")
+    expect(dialog.className).toContain("sm:max-w-2xl")
+    expect(dialog.className).not.toContain("sm:max-w-sm")
+  })
+
   // The one-liner must never clip: line-clamp-none overrides
   // ItemDescription's own two-line clamp, asserted against the vendor base
   // the same way the title's is, below.
