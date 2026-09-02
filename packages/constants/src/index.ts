@@ -11,6 +11,7 @@ export {
   defaultLanguageFor,
 } from "./countries"
 export { MAX_ASSIGNMENTS_PER_MUTATION } from "./assignments"
+export { PEOPLE_ARCHIVE_CHUNK_SIZE } from "./people"
 export { AUDIT_LOG_PAGE_SIZE } from "./auditLog"
 export { EMAIL_TEMPLATE_KEYS, type EmailTemplateKey } from "./email"
 export {

@@ -352,6 +352,7 @@ export interface AuditPayloads {
   "person.created": { personId: string; changes: Changes }
   "person.updated": { personId: string; changes: Changes }
   "person.archived": { personId: string; changes: Changes }
+  "person.unarchived": { personId: string; changes: Changes }
   // GDPR: the row written AT erasure carries no identity value at all (it is
   // built from PERSON_ERASURE_AUDIT_FIELDS); personId is the internal key only.
   "person.erased": { personId: string; changes: Changes }
@@ -370,6 +371,10 @@ export interface AuditPayloads {
     peopleUnchanged: number
     salariesImported: number
     skippedRows: number
+    // Leavers archived on request (archiveMissing) and archived people the
+    // file brought back. Counts only, never ids.
+    peopleArchived: number
+    peopleReactivated: number
   }
   "payMapping.runStarted": {
     runId: string

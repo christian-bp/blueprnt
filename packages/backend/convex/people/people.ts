@@ -1,3 +1,4 @@
+import { PEOPLE_ARCHIVE_CHUNK_SIZE } from "@workspace/constants"
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
@@ -145,6 +146,9 @@ export async function upsertPersonByExternalRefCore(
 ): Promise<{
   personId: Id<"people">
   outcome: "created" | "updated" | "unchanged"
+  // True when the matched person was archived and this write brought them
+  // back: the file says they are employed, so the archive flag is wrong data.
+  reactivated: boolean
 }> {
   const existing = await ctx.db
     .query("people")
@@ -190,7 +194,26 @@ export async function upsertPersonByExternalRefCore(
       },
     })
 
-    return { personId, outcome: "created" as const }
+    return { personId, outcome: "created" as const, reactivated: false }
+  }
+
+  // A returning leaver: the file lists them, so they are active again. Done
+  // before the field patch so the reactivation row and any field diff both
+  // land, in that order, in the same transaction.
+  const reactivated = existing.archivedAt !== undefined
+  if (reactivated) {
+    await ctx.db.patch(existing._id, { archivedAt: undefined })
+    await logAudit(ctx, {
+      orgId: args.orgId,
+      type: AUDIT_EVENTS.personUnarchived,
+      actorId: args.actorId,
+      payload: {
+        personId: existing._id,
+        changes: {
+          archivedAt: { from: existing.archivedAt ?? null, to: null },
+        },
+      },
+    })
   }
 
   // Update path: compute the patch via the shared import-diff rule (also
@@ -211,9 +234,14 @@ export async function upsertPersonByExternalRefCore(
     employmentType: args.employmentType,
   })
 
-  // No changes: no write, no audit row.
+  // No changes: no write, no audit row. (A reactivation, if any, already
+  // wrote its own patch and audit row above.)
   if (Object.keys(patch).length === 0) {
-    return { personId: existing._id, outcome: "unchanged" as const }
+    return {
+      personId: existing._id,
+      outcome: "unchanged" as const,
+      reactivated,
+    }
   }
 
   await ctx.db.patch(existing._id, patch)
@@ -237,7 +265,7 @@ export async function upsertPersonByExternalRefCore(
     },
   })
 
-  return { personId: existing._id, outcome: "updated" as const }
+  return { personId: existing._id, outcome: "updated" as const, reactivated }
 }
 
 // Internal upsert used by the payroll-import path (single row; the chunked
@@ -279,6 +307,7 @@ export const upsertPersonByExternalRef = internalMutation({
       v.literal("updated"),
       v.literal("unchanged")
     ),
+    reactivated: v.boolean(),
   }),
   handler: (ctx, args) => upsertPersonByExternalRefCore(ctx, args),
 })
@@ -507,4 +536,83 @@ export const archivePerson = orgMutation({
 
     return null
   },
+})
+
+export const unarchivePerson = orgMutation({
+  args: { personId: v.id("people") },
+  returns: v.null(),
+  handler: async (ctx, { personId }) => {
+    const person = await requireOwnPerson(ctx, personId)
+    // Already active: no-op.
+    if (person.archivedAt === undefined) return null
+
+    const from = person.archivedAt
+    // Patching a field to undefined removes it, which is the "active" state
+    // every consumer filters on (archivedAt === undefined).
+    await ctx.db.patch(personId, { archivedAt: undefined })
+
+    await ctx.audit.log({
+      type: AUDIT_EVENTS.personUnarchived,
+      payload: {
+        personId,
+        changes: { archivedAt: { from, to: null } },
+      },
+    })
+
+    return null
+  },
+})
+
+// Archives up to PEOPLE_ARCHIVE_CHUNK_SIZE people of the caller's org in ONE
+// transaction. Shared by the register's batch mutation below and the payroll
+// import's leaver chunk (importHelpers.archiveChunk), so both write the same
+// per-person person.archived rows. Already-archived ids are skipped silently
+// (a re-run finishes idempotently); an unknown or cross-org id fails the whole
+// chunk closed, like requireOwnPerson does for a single person.
+export async function archivePeopleCore(
+  ctx: MutationCtx,
+  args: {
+    orgId: string
+    actorId: string
+    personIds: Id<"people">[]
+    gestureId?: string
+  }
+): Promise<{ archived: number }> {
+  if (args.personIds.length > PEOPLE_ARCHIVE_CHUNK_SIZE) {
+    throw appError(ERROR_CODES.invalidInput)
+  }
+  const archivedAt = Date.now()
+  let archived = 0
+  for (const personId of args.personIds) {
+    const person = await ctx.db.get(personId)
+    if (person === null || person.orgId !== args.orgId) {
+      throw appError(ERROR_CODES.notFound)
+    }
+    if (person.archivedAt !== undefined) continue
+    await ctx.db.patch(personId, { archivedAt })
+    await logAudit(ctx, {
+      orgId: args.orgId,
+      type: AUDIT_EVENTS.personArchived,
+      actorId: args.actorId,
+      payload: {
+        personId,
+        changes: { archivedAt: { from: null, to: archivedAt } },
+      },
+      ...(args.gestureId !== undefined ? { gestureId: args.gestureId } : {}),
+    })
+    archived += 1
+  }
+  return { archived }
+}
+
+export const archivePeople = orgMutation({
+  args: { personIds: v.array(v.id("people")) },
+  returns: v.object({ archived: v.number() }),
+  handler: (ctx, { personIds }) =>
+    archivePeopleCore(ctx, {
+      orgId: ctx.orgId,
+      actorId: ctx.authUserId,
+      personIds,
+      ...(ctx.gestureId !== undefined ? { gestureId: ctx.gestureId } : {}),
+    }),
 })

@@ -49,6 +49,7 @@ export const AUDIT_EVENTS = {
   personCreated: "person.created",
   personUpdated: "person.updated",
   personArchived: "person.archived",
+  personUnarchived: "person.unarchived",
   personErased: "person.erased",
   assignmentSet: "assignment.set",
   classificationSuggested: "classification.suggested",
@@ -218,6 +219,7 @@ const AUDIT_SUBJECTS: {
   "person.created": (payload) => ({ kind: "person", id: payload.personId }),
   "person.updated": (payload) => ({ kind: "person", id: payload.personId }),
   "person.archived": (payload) => ({ kind: "person", id: payload.personId }),
+  "person.unarchived": (payload) => ({ kind: "person", id: payload.personId }),
   "person.erased": (payload) => ({ kind: "person", id: payload.personId }),
   "assignment.set": (payload) => ({ kind: "role", id: payload.roleId }),
   "classification.suggested": null,
@@ -1033,8 +1035,9 @@ const _assertPersonPayloadsAreFlat: [
   FlatPersonPayload<AuditPayloads["person.created"]>,
   FlatPersonPayload<AuditPayloads["person.updated"]>,
   FlatPersonPayload<AuditPayloads["person.archived"]>,
+  FlatPersonPayload<AuditPayloads["person.unarchived"]>,
   FlatPersonPayload<AuditPayloads["person.erased"]>,
-] = [true, true, true, true]
+] = [true, true, true, true, true]
 void _assertPersonPayloadsAreFlat
 
 // GDPR erasure, person side: pseudonymizes every audit row ABOUT an erased

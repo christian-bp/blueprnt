@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { PEOPLE_ARCHIVE_CHUNK_SIZE } from "@workspace/constants"
 import { api, internal, components } from "../_generated/api"
 import { addEditorMember, initConvexTest } from "../testing.helpers"
 
@@ -738,6 +739,82 @@ describe("upsertPersonByExternalRef", () => {
       expect(updated).toHaveLength(0)
     })
   })
+
+  it("reactivates an archived person with the same employee number and audits it", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, asAdmin } = await seedOrg(t)
+    const first = await asAdmin.mutation(
+      internal.people.people.upsertPersonByExternalRef,
+      {
+        orgId,
+        actorId: userId,
+        externalRef: "E-7",
+        displayName: "Anna Svensson",
+        gender: "Kvinna",
+      }
+    )
+    await asAdmin.mutation(api.people.people.archivePerson, {
+      orgId,
+      personId: first.personId,
+    })
+
+    const again = await asAdmin.mutation(
+      internal.people.people.upsertPersonByExternalRef,
+      {
+        orgId,
+        actorId: userId,
+        externalRef: "E-7",
+        displayName: "Anna Svensson",
+        gender: "Kvinna",
+      }
+    )
+    expect(again.personId).toBe(first.personId)
+    expect(again.outcome).toBe("unchanged")
+    expect(again.reactivated).toBe(true)
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(first.personId)
+      expect(person?.archivedAt).toBeUndefined()
+      const unarchived = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.unarchived")
+        )
+        .collect()
+      expect(unarchived).toHaveLength(1)
+      // No field changed, so no person.updated row rides along.
+      const updated = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.updated")
+        )
+        .collect()
+      expect(updated).toHaveLength(0)
+    })
+  })
+
+  it("reports reactivated: false on an active person", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, asAdmin } = await seedOrg(t)
+    await asAdmin.mutation(internal.people.people.upsertPersonByExternalRef, {
+      orgId,
+      actorId: userId,
+      externalRef: "E-8",
+      displayName: "Bo Karlsson",
+      gender: "Man",
+    })
+    const again = await asAdmin.mutation(
+      internal.people.people.upsertPersonByExternalRef,
+      {
+        orgId,
+        actorId: userId,
+        externalRef: "E-8",
+        displayName: "Bo Karlsson",
+        gender: "Man",
+      }
+    )
+    expect(again.reactivated).toBe(false)
+  })
 })
 
 describe("archivePerson", () => {
@@ -859,6 +936,181 @@ describe("archivePerson", () => {
         personId: personAId,
       })
     ).rejects.toThrow(/errors.notFound/)
+  })
+})
+
+describe("unarchivePerson", () => {
+  it("clears archivedAt and writes a person.unarchived audit row", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Bo Karlsson", gender: "Man" }
+    )
+    await asAdmin.mutation(api.people.people.archivePerson, {
+      orgId,
+      personId,
+    })
+
+    await asAdmin.mutation(api.people.people.unarchivePerson, {
+      orgId,
+      personId,
+    })
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.archivedAt).toBeUndefined()
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.unarchived")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      const payload = rows[0]?.payload as {
+        personId: string
+        changes: { archivedAt: { from: number | null; to: number | null } }
+      }
+      expect(payload.personId).toBe(personId)
+      expect(typeof payload.changes.archivedAt.from).toBe("number")
+      expect(payload.changes.archivedAt.to).toBeNull()
+    })
+  })
+
+  it("is a no-op on an active person (no audit row)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Bo Karlsson", gender: "Man" }
+    )
+
+    await asAdmin.mutation(api.people.people.unarchivePerson, {
+      orgId,
+      personId,
+    })
+
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.unarchived")
+        )
+        .collect()
+      expect(rows).toHaveLength(0)
+    })
+  })
+
+  it("is performed by an editor", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { asEditor } = await addEditorMember(t, orgId, "editor@acme.se")
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Bo Karlsson", gender: "Man" }
+    )
+    await asAdmin.mutation(api.people.people.archivePerson, {
+      orgId,
+      personId,
+    })
+
+    await asEditor.mutation(api.people.people.unarchivePerson, {
+      orgId,
+      personId,
+    })
+
+    const list = await asAdmin.query(api.people.people.listPeople, { orgId })
+    expect(list.map((p) => p.displayName)).toEqual(["Bo Karlsson"])
+  })
+})
+
+describe("archivePeople", () => {
+  async function createMany(
+    asAdmin: Awaited<ReturnType<typeof seedOrg>>["asAdmin"],
+    orgId: string,
+    count: number
+  ) {
+    const ids = []
+    for (let i = 0; i < count; i++) {
+      const { personId } = await asAdmin.mutation(
+        api.people.people.createPerson,
+        { orgId, displayName: `Person ${i}`, gender: "Man" }
+      )
+      ids.push(personId)
+    }
+    return ids
+  }
+
+  it("archives every active id, skips already-archived ones, one audit row each", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const ids = await createMany(asAdmin, orgId, 3)
+    await asAdmin.mutation(api.people.people.archivePerson, {
+      orgId,
+      personId: ids[0] as (typeof ids)[number],
+    })
+
+    const result = await asAdmin.mutation(api.people.people.archivePeople, {
+      orgId,
+      personIds: ids,
+    })
+    expect(result).toEqual({ archived: 2 })
+
+    await t.run(async (ctx) => {
+      for (const id of ids) {
+        const person = await ctx.db.get(id)
+        expect(typeof person?.archivedAt).toBe("number")
+      }
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.archived")
+        )
+        .collect()
+      // One from the single archive above, two from the batch.
+      expect(rows).toHaveLength(3)
+    })
+  })
+
+  it("rejects more ids than the chunk bound", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const ids = await createMany(asAdmin, orgId, PEOPLE_ARCHIVE_CHUNK_SIZE + 1)
+
+    await expect(
+      asAdmin.mutation(api.people.people.archivePeople, {
+        orgId,
+        personIds: ids,
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(ids[0] as (typeof ids)[number])
+      expect(person?.archivedAt).toBeUndefined()
+    })
+  })
+
+  it("throws notFound for a cross-org id and archives nothing", async () => {
+    const t = initConvexTest()
+    const { orgId: orgA, asAdmin: asAdminA } = await seedOrg(t, "hr-a@acme.se")
+    const { orgId: orgB, asAdmin: asAdminB } = await seedOrg(t, "hr-b@beta.se")
+    const [ownId] = await createMany(asAdminA, orgA, 1)
+    const [foreignId] = await createMany(asAdminB, orgB, 1)
+
+    await expect(
+      asAdminA.mutation(api.people.people.archivePeople, {
+        orgId: orgA,
+        personIds: [
+          ownId as NonNullable<typeof ownId>,
+          foreignId as NonNullable<typeof foreignId>,
+        ],
+      })
+    ).rejects.toThrow(/errors.notFound/)
+
+    await t.run(async (ctx) => {
+      const own = await ctx.db.get(ownId as NonNullable<typeof ownId>)
+      expect(own?.archivedAt).toBeUndefined()
+    })
   })
 })
 

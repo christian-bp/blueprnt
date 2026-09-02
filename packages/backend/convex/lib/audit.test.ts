@@ -395,6 +395,7 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
   "person.created": { personId: "person-1", changes: {} },
   "person.updated": { personId: "person-1", changes: {} },
   "person.archived": { personId: "person-1", changes: {} },
+  "person.unarchived": { personId: "person-1", changes: {} },
   "person.erased": { personId: "person-1", changes: {} },
   "assignment.set": { personId: "person-1", roleId: "role-1", changes: {} },
   "classification.suggested": {
@@ -411,6 +412,8 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
     peopleUnchanged: 0,
     salariesImported: 0,
     skippedRows: 0,
+    peopleArchived: 0,
+    peopleReactivated: 0,
   },
   "payMapping.runStarted": {
     runId: "run-1",
@@ -530,6 +533,7 @@ const EXPECTED_SUBJECTS: { [E in AuditEvent]: AuditSubject | undefined } = {
   "person.created": { kind: "person", id: "person-1" },
   "person.updated": { kind: "person", id: "person-1" },
   "person.archived": { kind: "person", id: "person-1" },
+  "person.unarchived": { kind: "person", id: "person-1" },
   "person.erased": { kind: "person", id: "person-1" },
   "assignment.set": { kind: "role", id: "role-1" },
   "classification.suggested": undefined,
