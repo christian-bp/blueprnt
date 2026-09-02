@@ -42,8 +42,20 @@ export function paddedTickDomain(
   const paddedLow = floor === undefined ? low - pad : Math.max(floor, low - pad)
   const paddedHigh = high + pad
   const step = niceStep((paddedHigh - paddedLow) / (tickCount - 1), integer)
-  const domainLow = Math.floor(paddedLow / step) * step
-  const domainHigh = Math.ceil(paddedHigh / step) * step
+  let domainLow = Math.floor(paddedLow / step) * step
+  let domainHigh = Math.ceil(paddedHigh / step) * step
+  // Rounding outward can leave an extreme a sliver inside the bound (a
+  // padded value that lands just past a step boundary), which still reads
+  // as sitting on the edge; step out once more until each extreme has at
+  // least half a step of room. The floor is never crossed.
+  if (
+    low - domainLow < step / 2 &&
+    (floor === undefined || domainLow > floor)
+  ) {
+    domainLow =
+      floor === undefined ? domainLow - step : Math.max(floor, domainLow - step)
+  }
+  if (domainHigh - high < step / 2) domainHigh += step
   const ticks: number[] = []
   for (let value = domainLow; value <= domainHigh; value += step) {
     ticks.push(roundOff(value))

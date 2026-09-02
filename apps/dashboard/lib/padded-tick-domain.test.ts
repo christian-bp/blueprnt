@@ -22,6 +22,15 @@ describe("paddedTickDomain", () => {
     expect(frame.ticks.at(-1)).toBe(frame.domain[1])
   })
 
+  // Rounding outward can leave an extreme a sliver inside the bound when the
+  // padded value lands just past a step boundary: 98 333 over a 97 500 tick
+  // still reads as sitting on the floor. The window then steps out once more.
+  it("keeps at least half a step between an extreme and the window's edge", () => {
+    const frame = paddedTickDomain([98_333, 106_208])
+    expect(frame.domain).toEqual([95_000, 107_500])
+    expect(frame.ticks[0]).toBe(95_000)
+  })
+
   // Every tick is a multiple of one step, so the axis reads as a scale rather
   // than as the data's own numbers.
   it("spaces the ticks evenly from the low bound to the high bound", () => {
