@@ -1,0 +1,21 @@
+apps/dashboard/components/model/criteria-chapter.test.tsx
+  s_26838696f43ddf::t_ecf7bf508a36a7 649-660
+apps/dashboard/components/model/library-picker-dialog.tsx
+  s_26838696f43ddf::t_f146c57e589201 186-190
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "2b0e032188df9308d19c682cce210678c4bb7b1f",
+  "prompts": {},
+  "sessions": {
+    "s_26838696f43ddf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4ea41fa8-c68a-430e-a203-a176741bf01c",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
