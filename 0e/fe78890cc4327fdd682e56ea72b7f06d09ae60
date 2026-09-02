@@ -1,0 +1,22 @@
+package.json
+  s_a5a0b8b07c8eab::t_8372da1deed074 37,44
+  s_a5a0b8b07c8eab::t_7810dfbaf65c8a 34
+bun.lock
+  s_a5a0b8b07c8eab::t_6e503d84ce556d 247,251,259,491,1559,2169,2311
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "0efe78890cc4327fdd682e56ea72b7f06d09ae60",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
