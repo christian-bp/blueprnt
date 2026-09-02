@@ -1,0 +1,21 @@
+apps/dashboard/lib/padded-tick-domain.ts
+  s_26838696f43ddf::t_083582e1055473 45-58
+apps/dashboard/lib/padded-tick-domain.test.ts
+  s_26838696f43ddf::t_36ff73463f604c 25-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "602613aa4cc39f09d804e7d2c332bb1f502afa1c",
+  "prompts": {},
+  "sessions": {
+    "s_26838696f43ddf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4ea41fa8-c68a-430e-a203-a176741bf01c",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
