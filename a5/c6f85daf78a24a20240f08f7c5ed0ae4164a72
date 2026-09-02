@@ -1,0 +1,154 @@
+apps/dashboard/content/docs/sv/importing-people.mdx
+  s_a5a0b8b07c8eab::t_5d46a4f8699cde 56
+  s_a5a0b8b07c8eab::t_cefd6e33212757 55
+  s_a5a0b8b07c8eab::t_bf50233d53ba43 53-54,57,61-62
+apps/dashboard/content/docs/fi/person-details-and-salary.mdx
+  s_a5a0b8b07c8eab::t_387d57ea4381c8 28-29,34
+  s_a5a0b8b07c8eab::t_0a5f8b4825c52a 30-33
+apps/dashboard/content/docs/sv/erasing-a-person.mdx
+  s_a5a0b8b07c8eab::t_120430aa50d0fd 10
+  s_a5a0b8b07c8eab::t_79495546fea08c 39-42
+  s_a5a0b8b07c8eab::t_da63d9a6d22f2d 29-30
+  s_a5a0b8b07c8eab::t_942611b04344ac 11-14
+apps/dashboard/content/docs/da/people-register.mdx
+  s_a5a0b8b07c8eab::t_0e4b6c35462627 47-54,58
+  s_a5a0b8b07c8eab::t_a00cb61e436869 29-30,36-46
+  s_a5a0b8b07c8eab::t_833460191f239b 22-23
+  s_a5a0b8b07c8eab::t_956eb8b770b08c 55-57
+  s_a5a0b8b07c8eab::t_73f1ba61f4f29a 21
+apps/dashboard/content/docs/da/importing-people.mdx
+  s_a5a0b8b07c8eab::t_b89c6111081ec3 57
+  s_a5a0b8b07c8eab::t_9c59a3d81531f5 54-56,58-59,63-64
+apps/dashboard/content/docs/da/glossary.mdx
+  s_a5a0b8b07c8eab::t_3757e10a8c6638 59-60
+  s_a5a0b8b07c8eab::t_19f9403aa50fdd 52-58,61
+apps/dashboard/content/docs/en/erasing-a-person.mdx
+  s_a5a0b8b07c8eab::t_048fa21bcdceaf 38-39
+  s_a5a0b8b07c8eab::t_1ea0c7c7ad8d42 29-31
+  s_a5a0b8b07c8eab::t_adfb99387dda11 9-11
+  s_a5a0b8b07c8eab::t_4590295806167f 40-41
+  s_a5a0b8b07c8eab::t_d96f2a0160c89f 12-13
+  s_a5a0b8b07c8eab::t_a400803926a40c 28
+apps/dashboard/content/docs/nb/people-register.mdx
+  s_a5a0b8b07c8eab::t_f4fb49998e8685 22-23
+  s_a5a0b8b07c8eab::t_becaaa9b417f58 55-58
+  s_a5a0b8b07c8eab::t_5b1cd336eccbe0 43
+  s_a5a0b8b07c8eab::t_5a465aef265147 21
+  s_a5a0b8b07c8eab::t_3698e743f127a7 29-30,36,38-42,44-45
+  s_a5a0b8b07c8eab::t_181277561347b9 47-54,59
+  s_a5a0b8b07c8eab::t_5d1372d005b116 46
+apps/dashboard/content/docs/fi/importing-people.mdx
+  s_a5a0b8b07c8eab::t_780db06328cef9 63
+  s_a5a0b8b07c8eab::t_4c8128d99f20c6 62
+  s_a5a0b8b07c8eab::t_eb4106bf0fe5c9 59-61,64,68-69
+apps/dashboard/content/docs/sv/people-register.mdx
+  s_a5a0b8b07c8eab::t_e0f64fd9e93ac8 47-54,59
+  s_a5a0b8b07c8eab::t_5bdbded3a8ef47 55-58
+  s_a5a0b8b07c8eab::t_ec4bef2b2262d0 29-30,36-42,44-46
+  s_a5a0b8b07c8eab::t_379201a2971903 22-23
+  s_a5a0b8b07c8eab::t_dc2df3567e60a8 43
+  s_a5a0b8b07c8eab::t_1125bff5e1d267 28
+apps/dashboard/content/docs/en/importing-people.mdx
+  s_a5a0b8b07c8eab::t_b4cd72b744eef9 53
+  s_a5a0b8b07c8eab::t_f6733d52826f90 50-52,54,58
+apps/dashboard/content/docs/sv/glossary.mdx
+  s_a5a0b8b07c8eab::t_85d8c47c524f1a 60-61
+  s_a5a0b8b07c8eab::t_30c839a176e059 53-59,62
+apps/dashboard/content/docs/nb/person-details-and-salary.mdx
+  s_a5a0b8b07c8eab::t_e8ee92ef79ef2d 28-29
+  s_a5a0b8b07c8eab::t_873f008ef2b8a4 25-26,30
+  s_a5a0b8b07c8eab::t_49591bc9ece4cf 27
+apps/dashboard/content/docs/fi/gdpr-and-erasure.mdx
+  s_a5a0b8b07c8eab::t_b1a10de472c680 24-32
+  s_a5a0b8b07c8eab::t_257589f3224c93 8-10
+  s_a5a0b8b07c8eab::t_875ff1702a8bfe 18-21
+  s_a5a0b8b07c8eab::t_a4d4a84cdeeac8 33
+apps/dashboard/content/docs/nb/erasing-a-person.mdx
+  s_a5a0b8b07c8eab::t_087a113c2616fe 38-41
+  s_a5a0b8b07c8eab::t_e32be65659d159 28-29
+  s_a5a0b8b07c8eab::t_8f44df2bdbbc34 10-13
+apps/dashboard/content/docs/fi/glossary.mdx
+  s_a5a0b8b07c8eab::t_6ac22e9ef603ff 62
+  s_a5a0b8b07c8eab::t_8fbcc74c676042 56-61,65
+  s_a5a0b8b07c8eab::t_54e9cfd742d63c 63-64
+apps/dashboard/content/docs/en/person-details-and-salary.mdx
+  s_a5a0b8b07c8eab::t_d5f15370408cfe 23-24,28
+  s_a5a0b8b07c8eab::t_f3ae7bafa4a118 25-27
+apps/dashboard/content/docs/sv/gdpr-and-erasure.mdx
+  s_a5a0b8b07c8eab::t_c3e8bb373b7376 18-21
+  s_a5a0b8b07c8eab::t_1f6d69b35981fb 8-10
+  s_a5a0b8b07c8eab::t_234bdf142f9b9d 24-31
+  s_a5a0b8b07c8eab::t_c2f0ef743c4360 32
+apps/dashboard/content/docs/nb/glossary.mdx
+  s_a5a0b8b07c8eab::t_8a1998cc5e3421 59-60
+  s_a5a0b8b07c8eab::t_1504b4f38f50b1 52-58,61
+apps/dashboard/content/docs/en/gdpr-and-erasure.mdx
+  s_a5a0b8b07c8eab::t_4e59001966e61a 18-20
+  s_a5a0b8b07c8eab::t_2fcf5b2ddc8cf1 23-30
+  s_a5a0b8b07c8eab::t_12c54890b10528 8-10
+  s_a5a0b8b07c8eab::t_437f145dac80f6 31
+apps/dashboard/content/docs/nb/gdpr-and-erasure.mdx
+  s_a5a0b8b07c8eab::t_5225c6499811fd 18-21
+  s_a5a0b8b07c8eab::t_6fc315ba41f2a7 8-10
+  s_a5a0b8b07c8eab::t_401fb173afe338 24-31
+  s_a5a0b8b07c8eab::t_70ee0ca562021b 32
+apps/dashboard/content/docs/sv/person-details-and-salary.mdx
+  s_a5a0b8b07c8eab::t_28e6ca3f56a8be 29
+  s_a5a0b8b07c8eab::t_d84a990dd537ec 30-31
+  s_a5a0b8b07c8eab::t_de042ed789842b 27-28,32
+apps/dashboard/content/docs/fi/people-register.mdx
+  s_a5a0b8b07c8eab::t_bcfd8d40fe9b0d 22-23
+  s_a5a0b8b07c8eab::t_51b7346808f8b5 21
+  s_a5a0b8b07c8eab::t_91753092688dd2 51-52
+  s_a5a0b8b07c8eab::t_3e3eb58123af17 49-50,53-56,61
+  s_a5a0b8b07c8eab::t_98598cd0c98257 29-31,38-48
+  s_a5a0b8b07c8eab::t_d011815f94a06f 57-60
+apps/dashboard/content/docs/da/person-details-and-salary.mdx
+  s_a5a0b8b07c8eab::t_872359adfed301 26-27,31
+  s_a5a0b8b07c8eab::t_3f640189fca5c2 28-30
+apps/dashboard/content/docs/da/gdpr-and-erasure.mdx
+  s_a5a0b8b07c8eab::t_f94db3b29d4d48 8-9
+  s_a5a0b8b07c8eab::t_9d0b19269aee3f 24-31
+  s_a5a0b8b07c8eab::t_7693ec98c0bba1 18-21
+  s_a5a0b8b07c8eab::t_2cfd479bcc115a 32
+apps/dashboard/content/docs/nb/importing-people.mdx
+  s_a5a0b8b07c8eab::t_9ad3fc9d57e677 55
+  s_a5a0b8b07c8eab::t_0563bf882a9449 53-54,57,61-62
+  s_a5a0b8b07c8eab::t_ef3efc7efb0cc9 56
+apps/dashboard/content/docs/fi/erasing-a-person.mdx
+  s_a5a0b8b07c8eab::t_4bb1ee62145b8a 40-43
+  s_a5a0b8b07c8eab::t_743aa52e862158 10-14
+  s_a5a0b8b07c8eab::t_8df197b9d4ddd6 29-31
+apps/dashboard/content/docs/da/erasing-a-person.mdx
+  s_a5a0b8b07c8eab::t_c0a1b40d1574c0 29-30
+  s_a5a0b8b07c8eab::t_bd45ecb5126303 11-14
+  s_a5a0b8b07c8eab::t_9e8fcb78d2769e 10
+  s_a5a0b8b07c8eab::t_4bc8412da434c4 39-42
+apps/dashboard/content/docs/en/glossary.mdx
+  s_a5a0b8b07c8eab::t_fda1021dea9690 59-60
+  s_a5a0b8b07c8eab::t_3916ed96408107 52-58,61
+apps/dashboard/content/docs/en/people-register.mdx
+  s_a5a0b8b07c8eab::t_6b2290f48968d4 28-33
+  s_a5a0b8b07c8eab::t_9bc21485483811 20
+  s_a5a0b8b07c8eab::t_a24c4472f6935b 52-56
+  s_a5a0b8b07c8eab::t_25e5f83b3865ff 35,40-44
+  s_a5a0b8b07c8eab::t_2c27818e20f26f 21-22
+  s_a5a0b8b07c8eab::t_59867c28dc97a2 46-51,57
+  s_a5a0b8b07c8eab::t_cb0e9917bb8f0a 45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "a5c6f85daf78a24a20240f08f7c5ed0ae4164a72",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
