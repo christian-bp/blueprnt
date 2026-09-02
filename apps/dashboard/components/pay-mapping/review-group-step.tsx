@@ -423,19 +423,15 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
                 })}
               </p>
             ) : null
-          ) : // No lead sentences. "X is women-dominated (100% women)" became
-          // the share badge on the heading, and "16 equally or lower
-          // valued jobs earn more on average" restated the table directly
-          // below it, which lists exactly those jobs with the difference
-          // in its own column.
-          props.group.comparisons.length === 0 ? (
-            // Stated in words, because there is no table to speak for
-            // it: this is the compliance-positive result, and a blank
-            // space would read as something failing to load.
-            <p className="text-base text-muted-foreground">
-              {tGap("noComparators")}
-            </p>
           ) : (
+            // No lead sentences. "X is women-dominated (100% women)" became
+            // the share badge on the heading, and "16 equally or lower
+            // valued jobs earn more on average" restated the table directly
+            // below it, which lists exactly those jobs with the difference
+            // in its own column. A group with no comparator never reaches
+            // this step: nothing out-earns it, so it owes no answer, and
+            // the chapter lists only groups that do (the report states the
+            // result).
             <>
               <ComparatorTable
                 baseline={props.group}

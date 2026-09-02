@@ -1371,6 +1371,7 @@
         "filterRemaining": "Remaining",
         "filterLabel": "Show",
         "chapterOf": "Chapter {position} of {total} · {chapter}",
+        "equivalentWorkClear": "No equally or lower valued group out-earns a women-dominated one.",
         "duty": {
           "start": "The law requires the employer to carry out the pay mapping together with the employees, normally through the union.",
           "praxis": "The law requires you to review the provisions and practice you apply to pay, and to record any that are found to be unequal.",

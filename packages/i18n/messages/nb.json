@@ -1371,6 +1371,7 @@
         "filterRemaining": "Gjenstående",
         "filterLabel": "Vis",
         "chapterOf": "Kapittel {position} av {total} · {chapter}",
+        "equivalentWorkClear": "Ingen likeverdig eller lavere verdsatt gruppe er høyere lønnet enn noen kvinnedominert gruppe.",
         "duty": {
           "start": "Loven krever at arbeidsgiveren gjennomfører lønnskartleggingen sammen med arbeidstakerne, normalt gjennom fagforeningen.",
           "praxis": "Loven krever at dere går gjennom bestemmelsene og praksisen dere bruker for lønn, og dokumenterer det som viser seg å være ulikt.",

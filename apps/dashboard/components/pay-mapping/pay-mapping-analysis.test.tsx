@@ -121,10 +121,11 @@ function womenDominatedGroup(
 
 // SALES (critical) and SWE (elevated) both require documentation and sit in
 // the queue; QA (ok flag) never does, checklist/finish only. WD-1 has a
-// comparator (a required queue step); WD-2 has none (checklist-only, free
-// klarmarkering). Flat checklist order (see pay-mapping-analysis.tsx's own
-// flatRows): start, payPolicy, collectiveAgreements, benefits, payPractices,
-// SWE, Sales, QA, Nurse (wd-1), Receptionist (wd-2).
+// comparator (a required queue step); WD-2 has none, so nobody out-earns
+// it: it is not a step at all (the report states it), and never a row. Flat
+// checklist order (see pay-mapping-analysis.tsx's own flatRows): start,
+// payPolicy, collectiveAgreements, benefits, payPractices, SWE, Sales, QA,
+// Nurse (wd-1).
 const GAP: PayMappingGapResult = {
   currency: "SEK",
   org: {
@@ -230,12 +231,21 @@ const ANALYSES_ALL_DONE: GroupAnalysis[] = [
 ]
 
 // Everything in the checklist's own flat order is done except the very LAST
-// row (Receptionist / wd-2): marking that one done via "mark done and
-// continue" has nothing left to advance to, so it must land back on the
-// gate panel.
+// row (Nurse / wd-1), whose one comparison is explained but not yet marked
+// done: marking it done via "mark done and continue" has nothing left to
+// advance to, so it must land back on the gate panel.
 const ANALYSES_ALL_DONE_EXCEPT_LAST: GroupAnalysis[] = [
-  ...ANALYSES_ALL_DONE,
+  ...ANALYSES_ALL_DONE.filter((analysis) => analysis.groupKey !== "wd-1"),
   groupDone("equalWork", "qa"),
+  {
+    scope: "equivalentWork",
+    groupKey: "wd-1",
+    comparisonKey: COMPARISON.key,
+    reasons: ["experience"],
+    note: null,
+    done: false,
+    finding: null,
+  },
 ]
 
 function renderSummary(
@@ -435,14 +445,28 @@ describe("PayMappingAnalysis", () => {
     ).toBeDefined()
   })
 
-  it("selects a non-queue equivalent-work group with free klarmarkering (primary enabled without documentation)", async () => {
+  // A women-dominated group that no equally or lower valued group
+  // out-earns has nothing to answer: it was a row with a sentence and a free
+  // "mark done", which is a step that asks for nothing. The report states
+  // the result; the chapter lists only the groups that owe an answer.
+  it("lists only the women-dominated groups that need an answer", () => {
     renderSummary({ chapter: "equivalentWork" })
-    fireEvent.click(checklistRowFor("Receptionist") as HTMLElement)
-    await screen.findByRole("heading", { name: "Receptionist", level: 4 })
-    const primary = (await screen.findByRole("button", {
-      name: t.markDoneNext,
-    })) as HTMLButtonElement
-    expect(primary.disabled).toBe(false)
+    expect(checklistRowFor("Nurse")).toBeDefined()
+    expect(checklistRowFor("Receptionist")).toBeUndefined()
+  })
+
+  it("states the chapter's clear result when no women-dominated group needs an answer", () => {
+    renderSummary({
+      chapter: "equivalentWork",
+      gap: {
+        ...GAP,
+        womenDominated: GAP.womenDominated.filter(
+          (group) => group.comparisons.length === 0
+        ),
+      },
+    })
+    expect(screen.getByText(tAnalysis.equivalentWorkClear)).toBeDefined()
+    expect(checklistRowFor("Receptionist")).toBeUndefined()
   })
 
   it("advances the pane to the next remaining step after marking one done, skipping an already-done row", async () => {
@@ -527,12 +551,9 @@ describe("PayMappingAnalysis", () => {
       run: { ...RUN, collaboration: COLLABORATION_FILLED },
       analyses: ANALYSES_ALL_DONE_EXCEPT_LAST,
     })
-    // The gate is already met here (QA and Receptionist sit outside the
-    // queue), so the pane already shows the gate panel before this click;
-    // select Receptionist explicitly to mark it done, which still has
-    // nothing left to advance to.
-    fireEvent.click(checklistRowFor("Receptionist") as HTMLElement)
-    await screen.findByRole("heading", { name: "Receptionist", level: 4 })
+    // Nurse is the last remaining row and the chapter opens on it; marking
+    // it done has nothing left to advance to.
+    await screen.findByRole("heading", { name: "Nurse", level: 4 })
     const primary = await screen.findByRole("button", {
       name: t.markDoneNext,
     })
@@ -544,7 +565,7 @@ describe("PayMappingAnalysis", () => {
     await expectGatePanel()
     expect(
       screen
-        .queryByText("Receptionist")
+        .queryByText("Nurse")
         ?.closest("button")
         ?.getAttribute("aria-current")
     ).not.toBe("true")
@@ -603,12 +624,12 @@ describe("PayMappingAnalysis", () => {
     fireEvent.click(checklistRowFor(t.praxis.payPolicy.title) as HTMLElement)
     await screen.findByText(t.praxis.payPolicy.question)
     // Pay policy is the second row of the checklist's flat order (start
-    // comes first), out of ten.
+    // comes first), out of nine.
     expect(
       screen.getByText(
         tAnalysis.stepPosition
           .replace("{position}", "2")
-          .replace("{total}", "10")
+          .replace("{total}", "9")
           .replace("{chapter}", t.chapters.praxis)
       )
     ).toBeDefined()
@@ -644,9 +665,7 @@ describe("PayMappingAnalysis", () => {
     }
     cleanup()
     renderSummary({ chapter: "equivalentWork" })
-    for (const label of ["Nurse", "Receptionist"]) {
-      expect(checklistRowFor(label)).toBeDefined()
-    }
+    expect(checklistRowFor("Nurse")).toBeDefined()
     cleanup()
     renderSummary({ chapter: "equalWork" })
     // The gap/status details live in the opened card, never in the row: the
@@ -669,10 +688,10 @@ describe("PayMappingAnalysis", () => {
   })
 
   // The invariant that makes a group disappearing from the UI a test
-  // failure rather than a silent loss: every group the engine produced is
-  // reachable somewhere on this surface, and the ones that never reach a
-  // comparison are accounted for in words.
-  it("renders every group the engine produced, or accounts for it in words", () => {
+  // failure rather than a silent loss: every group that owes an answer is
+  // reachable on this surface. A women-dominated group nobody out-earns
+  // owes none and is the report's to state, not a row.
+  it("renders every group that owes an answer", () => {
     renderSummary({
       chapter: "equivalentWork",
       gap: {
@@ -693,10 +712,10 @@ describe("PayMappingAnalysis", () => {
         }),
       },
     })
-    // The two women-dominated groups are reachable on their chapter page.
-    for (const label of ["Nurse", "Receptionist"]) {
-      expect(checklistRowFor(label)).toBeDefined()
-    }
+    // The women-dominated group with a comparator is reachable on its
+    // chapter page; the one without is not a step.
+    expect(checklistRowFor("Nurse")).toBeDefined()
+    expect(checklistRowFor("Receptionist")).toBeUndefined()
     cleanup()
     // The three shown equal-work groups on theirs.
     renderSummary({ chapter: "equalWork" })
@@ -714,7 +733,7 @@ describe("PayMappingAnalysis", () => {
         key: `wd-${index}`,
         roleTitle: `Group ${index}`,
         seniority: null,
-        comparisons: index === 0 ? [COMPARISON] : [],
+        comparisons: [COMPARISON],
       })
     )
     renderSummary({

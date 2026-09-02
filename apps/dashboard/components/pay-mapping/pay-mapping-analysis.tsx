@@ -52,16 +52,18 @@ import { type ReviewQueue, type ReviewStep, stepKey } from "./review-queue"
 import { ReviewStartStep } from "./review-start-step"
 
 // The pane's own open target: a real queue step (its group's real
-// requiresDocumentation applies) or a non-queue group looked up by scope+key
-// (an "ok"-flag equalWork group or a zero-comparator equivalentWork group,
-// neither of which occupies a queue index). Only "start" |
-// "praxis" | "group" | "extraGroup" are ever SET below: "chapterIntro" and
-// "finish" are part of ReviewStep's own type (so the switch in
-// renderOpenStep stays exhaustive over it) but the checklist has no intro or
-// finale row to open either from.
+// requiresDocumentation applies) or a non-queue equal-work group looked up
+// by key (an "ok"-flag group, which is listed and documentable but occupies
+// no queue index). Equal work only: a women-dominated group outside the
+// queue is one that no equally or lower valued group out-earns, and that is
+// not a step at all (the report states it), so the chapter never lists it.
+// Only "start" | "praxis" | "group" | "extraGroup" are ever SET below:
+// "chapterIntro" and "finish" are part of ReviewStep's own type (so the
+// switch in renderOpenStep stays exhaustive over it) but the checklist has
+// no intro or finale row to open either from.
 type OpenStep =
   | ReviewStep
-  | { kind: "extraGroup"; scope: "equalWork" | "equivalentWork"; key: string }
+  | { kind: "extraGroup"; scope: "equalWork"; key: string }
   | null
 
 // Whether opening a step should move the page, given where the pane's top
@@ -85,31 +87,36 @@ export function shouldScrollPaneIntoView(
   return paneTop < 0 || paneTop > viewportHeight
 }
 
-// Finds a group's OWN queue step by scope+key, if it has one (an
-// equalWork/equivalentWork group that requires documentation and therefore
-// occupies a queue index); a group without one is a non-queue row, opened as
-// an "extraGroup" instead (see OpenStep above).
+// Finds an equal-work group's OWN queue step by key, if it has one (a group
+// that requires documentation and therefore occupies a queue index); a group
+// without one is a non-queue row, opened as an "extraGroup" instead (see
+// OpenStep above).
 function findQueueGroupStep(
   queue: ReviewQueue,
-  scope: "equalWork" | "equivalentWork",
   key: string
 ): ReviewStep | undefined {
   return queue.steps.find(
     (step) =>
-      step.kind === "group" && step.scope === scope && step.group.key === key
+      step.kind === "group" &&
+      step.scope === "equalWork" &&
+      step.group.key === key
   )
 }
 
-// A group row's own OpenStep, whether or not it occupies a queue index: pure
-// (takes the queue explicitly, like findQueueGroupStep above) so both the
-// checklist's row-building code and its click handlers share one derivation.
+// An equal-work group row's own OpenStep, whether or not it occupies a queue
+// index: pure (takes the queue explicitly, like findQueueGroupStep above) so
+// both the checklist's row-building code and its click handlers share one
+// derivation.
 function groupOpenStep(
   queue: ReviewQueue,
-  scope: "equalWork" | "equivalentWork",
   key: string
 ): Exclude<OpenStep, null> {
   return (
-    findQueueGroupStep(queue, scope, key) ?? { kind: "extraGroup", scope, key }
+    findQueueGroupStep(queue, key) ?? {
+      kind: "extraGroup",
+      scope: "equalWork",
+      key,
+    }
   )
 }
 
@@ -205,16 +212,25 @@ export function PayMappingAnalysis({
     if (separator === -1) return
     const scope = param.slice(0, separator)
     const key = param.slice(separator + 1)
-    if (scope !== "equalWork" && scope !== "equivalentWork") return
-    const exists =
-      scope === "equalWork"
-        ? gap.equalWork.some((group) => group.key === key)
-        : gap.womenDominated.some((group) => group.key === key)
-    if (!exists) return
+    // An equivalent-work group resolves through the queue alone: a
+    // women-dominated group with no step (nothing out-earns it) is not on
+    // this surface, so a link to it is ignored like an unknown key.
+    const target: OpenStep =
+      scope === "equalWork" && gap.equalWork.some((group) => group.key === key)
+        ? groupOpenStep(queue, key)
+        : scope === "equivalentWork"
+          ? (queue.steps.find(
+              (step) =>
+                step.kind === "group" &&
+                step.scope === "equivalentWork" &&
+                step.group.key === key
+            ) ?? null)
+          : null
+    if (target === null) return
     // Open the chapter too, or a deep link would select a row inside a
     // collapsed chapter (rung 1 is single-open).
     requestPaneFocus()
-    setSelected(groupOpenStep(queue, scope, key))
+    setSelected(target)
   }, [queue, gap, requestPaneFocus])
 
   // Moves focus onto the right pane the moment its content actually
@@ -356,7 +372,7 @@ export function PayMappingAnalysis({
       currentGap,
       currentAnalyses
     )
-    const openStepForRow = groupOpenStep(currentQueue, "equalWork", group.key)
+    const openStepForRow = groupOpenStep(currentQueue, group.key)
     return {
       id: openStepId(openStepForRow),
       label: groupLabel(group),
@@ -366,35 +382,35 @@ export function PayMappingAnalysis({
     }
   })
 
-  const equivalentWorkRows: ChecklistRow[] = currentGap.womenDominated.map(
-    (group) => {
-      const done = stepDoneFor(
-        { kind: "group", scope: "equivalentWork", group },
-        currentGap,
-        currentAnalyses
-      )
-      const openStepForRow = groupOpenStep(
-        currentQueue,
-        "equivalentWork",
-        group.key
-      )
-      return {
-        id: openStepId(openStepForRow),
-        label: groupLabel(group),
-        srStatus: srStatusFor(done),
-        done,
-        openStep: openStepForRow,
-      }
+  // The queue's own equivalent-work steps, and only those: a women-dominated
+  // group enters the queue exactly when an equally or lower valued group
+  // out-earns it, and one that nothing out-earns has no answer to give. It
+  // was listed anyway, as a row carrying one sentence and a free "mark
+  // done", which is a step that asks for nothing; the report is where that
+  // result is stated. Reading the queue rather than filtering the gap again
+  // keeps this list and the chapter's "N of M" on one predicate.
+  const equivalentWorkRows: ChecklistRow[] = currentQueue.steps.flatMap(
+    (step) => {
+      if (step.kind !== "group" || step.scope !== "equivalentWork") return []
+      const done = stepDoneFor(step, currentGap, currentAnalyses)
+      return [
+        {
+          id: openStepId(step),
+          label: groupLabel(step.group),
+          srStatus: srStatusFor(done),
+          done,
+          openStep: step,
+        },
+      ]
     }
   )
 
   // The checklist's own flat order (start, then praxis, then every
   // equalWork row, then every equivalentWork row): exactly the row order
   // rendered below, and the order advanceAfter walks forward from. Not
-  // buildReviewQueue's own steps array: that array excludes every non-queue
-  // group (an "ok"-flag equalWork group, a zero-comparator equivalentWork
-  // group), while the checklist -- and therefore "what's next" -- covers
-  // those too.
+  // buildReviewQueue's own steps array: that array excludes the non-queue
+  // equal-work groups (an "ok"-flag group), while the checklist -- and
+  // therefore "what's next" -- covers those too.
   const flatRows: ChecklistRow[] = [
     startRow,
     ...praxisRows,
@@ -506,61 +522,18 @@ export function PayMappingAnalysis({
 
   function renderOpenStep(open: Exclude<OpenStep, null>): ReactNode {
     if (open.kind === "extraGroup") {
-      if (open.scope === "equalWork") {
-        const group = currentGap.equalWork.find(
-          (candidate) => candidate.key === open.key
-        )
-        if (group === undefined) return null
-        const analysis = currentAnalyses.find(
-          (a) => a.scope === "equalWork" && a.groupKey === group.key
-        )
-        return (
-          <ReviewGroupStep
-            scope="equalWork"
-            group={group}
-            analysis={analysis}
-            runId={currentRun.runId}
-            locked={locked}
-            rows={currentRun.rows}
-            currency={currency}
-            referenceDateMs={currentRun.referenceDate}
-            actions={actions}
-            notes={notes}
-            requiresDocumentation={equalWorkGroupRequiresDocumentation(
-              group.flag
-            )}
-            animated={false}
-            headingLevel="h4"
-            onNext={() => advanceAfter(open)}
-          />
-        )
-      }
-      const group = currentGap.womenDominated.find(
+      const group = currentGap.equalWork.find(
         (candidate) => candidate.key === open.key
       )
       if (group === undefined) return null
-      // The GROUP's own row, never one of its comparison rows: since the
-      // reasons moved per comparison, this query matches both kinds and the
-      // group's klarmarkering lives only on the row without a comparison key.
       const analysis = currentAnalyses.find(
-        (a) =>
-          a.scope === "equivalentWork" &&
-          a.groupKey === group.key &&
-          a.comparisonKey === null
-      )
-      const comparisonAnalyses = currentAnalyses.filter(
-        (a) =>
-          a.scope === "equivalentWork" &&
-          a.groupKey === group.key &&
-          a.comparisonKey !== null
+        (a) => a.scope === "equalWork" && a.groupKey === group.key
       )
       return (
         <ReviewGroupStep
-          scope="equivalentWork"
+          scope="equalWork"
           group={group}
-          equivalentWork={currentGap.equivalentWork}
           analysis={analysis}
-          comparisonAnalyses={comparisonAnalyses}
           runId={currentRun.runId}
           locked={locked}
           rows={currentRun.rows}
@@ -568,8 +541,8 @@ export function PayMappingAnalysis({
           referenceDateMs={currentRun.referenceDate}
           actions={actions}
           notes={notes}
-          requiresDocumentation={womenDominatedGroupRequiresDocumentation(
-            group.comparisons.length
+          requiresDocumentation={equalWorkGroupRequiresDocumentation(
+            group.flag
           )}
           animated={false}
           headingLevel="h4"
@@ -907,16 +880,30 @@ export function PayMappingAnalysis({
                       {renderOpenStep(openStep)}
                     </div>
                   ) : (
-                    // Reached by advancing past the last remaining row in
-                    // this chapter: the in-flow way to finish, so the user
-                    // who has just documented the last thing does not have
-                    // to go looking for the button. The run's Overview
-                    // carries the same panel as the reliable home, which is
-                    // where someone who is not mid-flow will look.
-                    <PayMappingCompletionPanel
-                      queue={currentQueue}
-                      run={currentRun}
-                    />
+                    <div className="space-y-3">
+                      {/* Stated in words, because there is no row to speak
+                          for it: an equivalent-work chapter with nothing
+                          to answer is the compliance-positive result, and
+                          a pane holding only the completion panel would
+                          read as a chapter that failed to load. */}
+                      {chapter === "equivalentWork" &&
+                        chapterRows.length === 0 && (
+                          <p className="text-base text-muted-foreground">
+                            {tAnalysis("equivalentWorkClear")}
+                          </p>
+                        )}
+                      {/* Reached by advancing past the last remaining row
+                          in this chapter: the in-flow way to finish, so the
+                          user who has just documented the last thing does
+                          not have to go looking for the button. The run's
+                          Overview carries the same panel as the reliable
+                          home, which is where someone who is not mid-flow
+                          will look. */}
+                      <PayMappingCompletionPanel
+                        queue={currentQueue}
+                        run={currentRun}
+                      />
+                    </div>
                   )}
                 </CardContent>
               </Card>
