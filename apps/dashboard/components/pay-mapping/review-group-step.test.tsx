@@ -400,6 +400,52 @@ describe("ReviewGroupStep", () => {
     })
   })
 
+  describe("women-dominated roster", () => {
+    // The group's own members, matching WD_GROUP_ONE's identity.
+    const NURSES: PayMappingSnapshotRow[] = [
+      {
+        personPublicId: "n1",
+        displayName: "Nadia Nurse",
+        erased: false,
+        gender: "Kvinna",
+        roleTitle: "Nurse",
+        trackKey: "IC",
+        seniority: "Senior",
+        level: 3,
+        basicMonthly: 40_000,
+        components: [],
+        currency: "SEK",
+        payYear: 2026,
+      },
+    ]
+
+    // Per-person actions were reachable only under equal work, so a
+    // documenter who found the person to act on in THIS chapter had to go and
+    // look them up in the other. The roster mirrors equal work's: behind a
+    // disclosure under the plot, with each person's documentation menu.
+    it("keeps the group's own members behind a disclosure under the plot, with per-person documentation", () => {
+      renderWdStep(WD_GROUP_ONE, { rows: NURSES })
+      const chart = screen.getByText(m.scatter.titleEquivalentWork)
+      const disclosure = screen.getByText(m.gap.groupMembers)
+      expect(
+        chart.compareDocumentPosition(disclosure) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy()
+      // Closed: the comparator table above is on screen, the roster is not.
+      expect(screen.queryByText("Nadia Nurse")).toBeNull()
+
+      fireEvent.click(disclosure)
+      const table = screen.getByText("Nadia Nurse").closest("table")
+      if (table === null) throw new Error("member row outside a table")
+      expect(
+        within(table).getByText(m.detail.columns.documentation)
+      ).toBeDefined()
+      // Compared with other groups, not within itself: no in-group
+      // difference column here.
+      expect(within(table).queryByText(m.detail.columns.diffVsMen)).toBeNull()
+    })
+  })
+
   describe("women-dominated finding sentence", () => {
     it("badges the women's share instead of stating it in a sentence", () => {
       // The share is what admitted the group to this chapter, so it stays;

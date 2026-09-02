@@ -113,6 +113,19 @@ describe("buildMemberRows", () => {
     expect(rows[0]?.diffKr).toBeNull()
     expect(rows[0]?.diffPct).toBeNull()
   })
+
+  // A women-dominated group (the equivalent-work chapter) is compared with
+  // OTHER groups, not within itself; there is no in-group men's mean to diff
+  // against, and often no men at all.
+  it("carries no difference without an in-group comparison", () => {
+    const rows = buildMemberRows(
+      [memberRow({ gender: "Kvinna", basicMonthly: 40000 })],
+      undefined
+    )
+    expect(rows[0]?.base).toBe(40000)
+    expect(rows[0]?.diffKr).toBeNull()
+    expect(rows[0]?.diffPct).toBeNull()
+  })
 })
 
 describe("GroupMemberTable", () => {
@@ -139,6 +152,7 @@ describe("GroupMemberTable", () => {
   it("marks gender with the point mark the plot above it uses", () => {
     const { container } = renderTable({
       group: GROUP,
+      metrics: GROUP,
       rows: ROWS,
       currency: "SEK",
     })
@@ -173,6 +187,7 @@ describe("GroupMemberTable", () => {
   it("defaults to women first, lowest total comp on top, and scopes to the group's members", () => {
     renderTable({
       group: GROUP,
+      metrics: GROUP,
       rows: [
         ...ROWS,
         // A bonus lifts her above Wilma on total comp while her base is the
@@ -191,7 +206,7 @@ describe("GroupMemberTable", () => {
   })
 
   it("re-sorts freely: the total comp heading flips to descending across genders, the name heading sorts alphabetically", () => {
-    renderTable({ group: GROUP, rows: ROWS, currency: "SEK" })
+    renderTable({ group: GROUP, metrics: GROUP, rows: ROWS, currency: "SEK" })
     // Total comp already participates in the default sort (ascending), so
     // the first click flips it to descending, now across both genders.
     fireEvent.click(
@@ -203,8 +218,25 @@ describe("GroupMemberTable", () => {
     expect(renderedNames()).toEqual(["Anna", "Erik", "Mats", "Wilma"])
   })
 
+  // The difference column exists only where the group has a men's mean of
+  // its own to diff against (equal work). A women-dominated group's table
+  // lists its members against the comparator groups shown above it, and a
+  // column of dashes would be a heading with nothing under it.
+  it("omits the difference column when the group carries no metrics", () => {
+    const { key, roleTitle, seniority, level } = GROUP
+    renderTable({
+      group: { key, roleTitle, seniority, level },
+      rows: ROWS,
+      currency: "SEK",
+    })
+    expect(screen.queryByText(m.detail.columns.diffVsMen)).toBeNull()
+    expect(screen.getByText(m.detail.columns.basePay)).toBeDefined()
+    expect(screen.getByText(m.detail.columns.totalComp)).toBeDefined()
+    expect(renderedNames()).toEqual(["Anna", "Wilma", "Erik", "Mats"])
+  })
+
   it("renders the difference as one column carrying both kr and percent", () => {
-    renderTable({ group: GROUP, rows: ROWS, currency: "SEK" })
+    renderTable({ group: GROUP, metrics: GROUP, rows: ROWS, currency: "SEK" })
     // Two separate columns pushed the documentation control off the
     // analysis pane's visible width, so the difference reads as one value.
     const cells = Array.from(document.querySelectorAll("td")).map(
@@ -222,6 +254,7 @@ describe("GroupMemberTable", () => {
   it("marks part-time rows with their FTE share next to the grossed-up base", () => {
     renderTable({
       group: GROUP,
+      metrics: GROUP,
       rows: [
         memberRow({
           displayName: "Petra",
@@ -243,6 +276,7 @@ describe("GroupMemberTable", () => {
   it("shows a short page and pages the rest", () => {
     renderTable({
       group: GROUP,
+      metrics: GROUP,
       rows: manyMembers(30),
       currency: "SEK",
     })
@@ -251,7 +285,7 @@ describe("GroupMemberTable", () => {
   })
 
   it("renders no pagination for a group that fits on one page", () => {
-    renderTable({ group: GROUP, rows: ROWS, currency: "SEK" })
+    renderTable({ group: GROUP, metrics: GROUP, rows: ROWS, currency: "SEK" })
     expect(screen.queryByRole("navigation")).toBeNull()
   })
 
@@ -261,6 +295,7 @@ describe("GroupMemberTable", () => {
   it("narrows to the searched name and reports how many matched", () => {
     renderTable({
       group: GROUP,
+      metrics: GROUP,
       rows: manyMembers(30),
       currency: "SEK",
     })
@@ -282,6 +317,7 @@ describe("GroupMemberTable", () => {
   it("hides the count until the search is narrowing", () => {
     renderTable({
       group: GROUP,
+      metrics: GROUP,
       rows: manyMembers(30),
       currency: "SEK",
     })
@@ -292,6 +328,7 @@ describe("GroupMemberTable", () => {
   it("says so in the table when nothing matches", () => {
     renderTable({
       group: GROUP,
+      metrics: GROUP,
       rows: manyMembers(30),
       currency: "SEK",
     })
@@ -308,6 +345,7 @@ describe("GroupMemberTable", () => {
   it("returns to the first page when the search narrows", () => {
     renderTable({
       group: GROUP,
+      metrics: GROUP,
       rows: manyMembers(30),
       currency: "SEK",
     })

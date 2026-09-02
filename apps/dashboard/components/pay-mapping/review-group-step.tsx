@@ -38,6 +38,8 @@ import {
 import { ComparatorTable } from "./comparator-table"
 import { ComparisonReasonsPanel } from "./comparison-reasons-panel"
 import { EqualWorkDetail } from "./equal-work-detail"
+import { EvidenceDisclosure } from "./evidence-disclosure"
+import { GroupMemberTable } from "./group-member-table"
 import { WomenDominatedScatter } from "./women-dominated-underlying-data"
 import { ReviewStepActions } from "./review-step-actions"
 
@@ -475,6 +477,30 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
                 referenceDateMs={referenceDateMs}
                 highlightComparisonKey={selectedComparison}
               />
+              {/* The group's own roster, collapsed under the plot exactly
+                  as under equal work: the person a documenter decides to
+                  act on is found HERE, and the per-row menu is where the
+                  action goes. Its members only: the comparators' people
+                  are on the plot above, and this group is compared with
+                  them, not within itself, so the table carries no in-group
+                  difference column. */}
+              <EvidenceDisclosure
+                label={tGap("groupMembers")}
+                count={props.group.headcount}
+              >
+                <GroupMemberTable
+                  group={props.group}
+                  rows={rows}
+                  currency={currency}
+                  documentation={{
+                    runId,
+                    scope: "equivalentWork",
+                    actions,
+                    notes,
+                    locked,
+                  }}
+                />
+              </EvidenceDisclosure>
             </>
           )}
         </div>

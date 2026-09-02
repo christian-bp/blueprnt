@@ -287,6 +287,7 @@ export function EqualWorkDetail({
           </p>
           <GroupMemberTable
             group={group}
+            metrics={group}
             rows={rows}
             currency={currency}
             {...(documentation === undefined

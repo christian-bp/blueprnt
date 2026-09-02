@@ -64,16 +64,24 @@ export interface MemberRow {
   diffPct: number | null
 }
 
+// The group's own figures, which give each member a difference against the
+// men's mean on the group's primary metric. An equal-work group carries
+// them; a women-dominated group (the equivalent-work chapter) is compared
+// with OTHER groups, has no in-group men's mean and often no men at all,
+// so it passes none and the table lists pay without a difference.
+export type MemberMetrics = Pick<GapGroup, "base" | "tcc" | "baseDriven">
+
 // Pure: members -> rendered rows. Exported for direct unit testing.
 export function buildMemberRows(
   members: PayMappingSnapshotRow[],
-  group: Pick<GapGroup, "base" | "tcc" | "baseDriven">
+  metrics: MemberMetrics | undefined
 ): MemberRow[] {
-  const menMean = primaryGapMetric(group).menMean
+  const menMean =
+    metrics === undefined ? null : primaryGapMetric(metrics).menMean
   return members.map((row) => {
     const base = fteBaseMonthly(row)
     const tcc = fteTotalMonthly(row)
-    const primary = group.baseDriven ? base : tcc
+    const primary = metrics?.baseDriven ? base : tcc
     const diff = menMean === null ? null : diffVsMenMean(primary, menMean)
     return {
       personPublicId: row.personPublicId,
@@ -135,11 +143,16 @@ const columns = columnHelper.columns([
 // Client pagination at PAGE_SIZE rows, with a name search above the table.
 export function GroupMemberTable({
   group,
+  metrics,
   rows,
   currency,
   documentation,
 }: {
-  group: GapGroup
+  // The group's identity: who its members are, and the key their
+  // documentation targets.
+  group: Pick<GapGroup, "key" | "roleTitle" | "seniority" | "level">
+  // Present, the table carries the difference column (see MemberMetrics).
+  metrics?: MemberMetrics
   rows: PayMappingSnapshotRow[]
   currency: string
   // Omitted by surfaces that render the table read-only (the deep-dive's
@@ -160,8 +173,8 @@ export function GroupMemberTable({
   const money = useMoney()
 
   const data = useMemo(
-    () => buildMemberRows(membersOf(rows, group), group),
-    [rows, group]
+    () => buildMemberRows(membersOf(rows, group), metrics),
+    [rows, group, metrics]
   )
 
   // Free-text over the member's own name, which is the only thing that
@@ -274,11 +287,12 @@ export function GroupMemberTable({
               {/* One combined difference column: two separate ones pushed
                   the documentation control past the analysis pane's visible
                   width, and the kr and percent read better together. */}
-              {sortableHead(
-                "diffKr",
-                t("columns.diffVsMen"),
-                "w-40 text-right"
-              )}
+              {metrics !== undefined &&
+                sortableHead(
+                  "diffKr",
+                  t("columns.diffVsMen"),
+                  "w-40 text-right"
+                )}
               {documentation !== undefined && (
                 <TableHead className="w-28">
                   {t("columns.documentation")}
@@ -324,10 +338,12 @@ export function GroupMemberTable({
                   <TableCell className="text-right tabular-nums">
                     {money(row.tcc, currency)}
                   </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {diff.kr}
-                    {diff.pct === "-" ? "" : ` (${diff.pct})`}
-                  </TableCell>
+                  {metrics !== undefined && (
+                    <TableCell className="text-right tabular-nums">
+                      {diff.kr}
+                      {diff.pct === "-" ? "" : ` (${diff.pct})`}
+                    </TableCell>
+                  )}
                   {documentation !== undefined && (
                     <TableCell>
                       {/* Fixed-height flex slot: a row gaining documentation
