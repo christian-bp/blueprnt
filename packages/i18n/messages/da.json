@@ -165,6 +165,10 @@
       "salaryDeleted": "Lønpost slettet",
       "personErased": "Medarbejder slettet",
       "peopleErased": "{count, plural, one {# medarbejder slettet} other {# medarbejdere slettet}}",
+      "peopleArchived": "{count, plural, one {# medarbejder arkiveret} other {# medarbejdere arkiveret}}",
+      "personArchived": "Medarbejder arkiveret",
+      "personReactivated": "Medarbejder genaktiveret",
+      "peopleReactivated": "{count, plural, one {# medarbejder genaktiveret} other {# medarbejdere genaktiveret}}",
       "personCreated": "Medarbejder tilføjet",
       "personUpdated": "Medarbejder opdateret",
       "roleTrackChanged": "Tracket er ændret. {count, plural, one {# persons senioritet skal} other {# personers senioritet skal}} bekræftes igen.",
@@ -242,6 +246,9 @@
       "empty": "Ingen medarbejdere importeret endnu.",
       "suggestedBadge": "Foreslået",
       "suggestedBadgeTooltip": "Rollen er ikke bekræftet endnu. Bekræft den på Klassificér-siden.",
+      "archivedBadge": "Arkiveret",
+      "archivedOn": "Arkiveret {date}",
+      "archivedEmpty": "Ingen arkiverede medarbejdere.",
       "columns": {
         "name": "Navn",
         "gender": "Køn",
@@ -262,7 +269,10 @@
         "genderAll": "Alle køn",
         "fteAll": "Alle stillinger",
         "fteFull": "Fuldtid",
-        "ftePart": "Deltid"
+        "ftePart": "Deltid",
+        "statusLabel": "Status",
+        "statusActive": "Aktive medarbejdere",
+        "statusArchived": "Arkiverede medarbejdere"
       },
       "tabs": {
         "people": "Register",
@@ -398,6 +408,8 @@
           "updated": "Eksisterende personer opdateret",
           "unchanged": "Allerede opdateret",
           "skipped": "Oversprungne rækker",
+          "reactivated": "Tilbagevendte personer genaktiveret",
+          "archived": "Personer arkiveret",
           "goToClassify": "Gå til klassificering"
         },
         "review": {
@@ -421,7 +433,12 @@
             "previewFailed": "Forhåndsvisningen af ændringer kunne ikke indlæses. Du kan stadig importere.",
             "mismatchTitle": "Kontrollér disse medarbejdernumre",
             "mismatchBody": "Disse medarbejdernumre findes allerede med et andet navn. Det kan betyde et genbrugt nummer eller en tastefejl, så rækkerne springes over, medmindre du vælger at opdatere dem.",
-            "mismatchImportAnyway": "Opdater disse medarbejdere alligevel"
+            "mismatchImportAnyway": "Opdater disse medarbejdere alligevel",
+            "returningPeople": "Vender tilbage (genaktiveres)",
+            "missingPeople": "Mangler i filen",
+            "missingTitle": "Medarbejdere der mangler i filen",
+            "missingBody": "Disse medarbejdere er aktive i registret, men findes ikke i denne fil. De forbliver aktive, medmindre du arkiverer dem nedenfor.",
+            "archiveMissing": "{count, plural, one {Arkivér denne medarbejder} other {Arkivér disse # medarbejdere}}"
           }
         },
         "discard": {
@@ -527,6 +544,18 @@
         "cancel": "Annuller",
         "error": "Medarbejderen kunne ikke slettes. Prøv igen."
       },
+      "archive": {
+        "trigger": "Arkivér medarbejder",
+        "reactivateTrigger": "Genaktivér medarbejder",
+        "title": "Arkivér {name}?",
+        "reactivateTitle": "Genaktivér {name}?",
+        "description": "Medarbejderen forlader det aktive register, klassificeringen, lønkortlægningerne og antallene. Historikken bevares, og personen kan genaktiveres.",
+        "reactivateDescription": "Medarbejderen vender tilbage til det aktive register, klassificeringen og kommende lønkortlægninger.",
+        "confirm": "Arkivér",
+        "reactivateConfirm": "Genaktivér",
+        "cancel": "Annuller",
+        "error": "Medarbejderen kunne ikke opdateres. Prøv igen."
+      },
       "bulk": {
         "selectAll": "Vælg alle medarbejdere på denne side",
         "selectRow": "Vælg {name}",
@@ -538,6 +567,22 @@
         "confirm": "Slet permanent",
         "progress": "<done></done> / <total></total>",
         "error": "Medarbejderne kunne ikke slettes. Prøv igen."
+      },
+      "bulkArchive": {
+        "cta": "{count, plural, one {Arkivér # medarbejder} other {Arkivér # medarbejdere}}",
+        "dialogTitle": "Arkivér valgte medarbejdere?",
+        "dialogDescription": "{count, plural, one {# medarbejder forlader} other {# medarbejdere forlader}} det aktive register, klassificeringen, lønkortlægningerne og antallene. Historikken bevares, og de kan genaktiveres.",
+        "confirm": "Arkivér",
+        "progress": "<done></done> / <total></total>",
+        "error": "Medarbejderne kunne ikke arkiveres. Prøv igen."
+      },
+      "bulkReactivate": {
+        "cta": "{count, plural, one {Genaktivér # medarbejder} other {Genaktivér # medarbejdere}}",
+        "dialogTitle": "Genaktivér valgte medarbejdere?",
+        "dialogDescription": "{count, plural, one {# medarbejder vender tilbage} other {# medarbejdere vender tilbage}} til det aktive register, klassificeringen og kommende lønkortlægninger.",
+        "confirm": "Genaktivér",
+        "progress": "<done></done> / <total></total>",
+        "error": "Medarbejderne kunne ikke genaktiveres. Prøv igen."
       }
     },
     "classify": {
@@ -731,6 +776,8 @@
         "peopleUnchanged": "Uændrede medarbejdere",
         "salariesImported": "Importerede lønninger",
         "skippedRows": "Oversprungne rækker",
+        "peopleArchived": "Arkiverede medarbejdere",
+        "peopleReactivated": "Genaktiverede medarbejdere",
         "suggested": "Foreslået",
         "skipped": "Oversprunget",
         "unmatchedTitles": "Titler uden match",
@@ -851,6 +898,7 @@
         "personCreated": "Person tilføjet",
         "personUpdated": "Person opdateret",
         "personArchived": "Person arkiveret",
+        "personUnarchived": "Person genaktiveret",
         "personErased": "Person slettet",
         "assignmentSet": "Tildeling opdateret",
         "classificationSuggested": "Klassifikationsforslag beregnet",
@@ -2355,7 +2403,9 @@
       "unionReportLabel": "Hvad er fagforeningsrapporten?",
       "unionReportBody": "Et maskeret grundlag på gruppeniveau for samarbejdet med fagforeningerne efter 3 kap. 11-12 §§ i diskrimineringsloven. Kontroller før deling, at fritekst i tiltag ikke nævner enkeltpersoner.",
       "archivePackageLabel": "Hvad er arkivpakken?",
-      "archivePackageBody": "Hele kortlægningen som ét bevaringseksemplar: rapporten og nøgletallene, med kontrolsummer til verificering. Opbevar pakken i mindst fem år; tilsynet beder om dokumentationen for enkelte år bagefter."
+      "archivePackageBody": "Hele kortlægningen som ét bevaringseksemplar: rapporten og nøgletallene, med kontrolsummer til verificering. Opbevar pakken i mindst fem år; tilsynet beder om dokumentationen for enkelte år bagefter.",
+      "archivedPersonLabel": "Hvad betyder arkivering?",
+      "archivedPersonBody": "En arkiveret medarbejder er stoppet og bevares med sin historik, uden for klassificering, lønkortlægninger og antal. Arkivering kan fortrydes, sletning kan ikke."
     },
     "widgetCard": {
       "expand": "Forstør"

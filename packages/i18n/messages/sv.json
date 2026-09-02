@@ -165,6 +165,10 @@
       "salaryDeleted": "Lönepost borttagen",
       "personErased": "Anställd raderad",
       "peopleErased": "{count, plural, one {# anställd raderad} other {# anställda raderade}}",
+      "peopleArchived": "{count, plural, one {# anställd arkiverad} other {# anställda arkiverade}}",
+      "personArchived": "Anställd arkiverad",
+      "personReactivated": "Anställd återaktiverad",
+      "peopleReactivated": "{count, plural, one {# anställd återaktiverad} other {# anställda återaktiverade}}",
       "personCreated": "Anställd tillagd",
       "personUpdated": "Anställd uppdaterad",
       "roleTrackChanged": "Tracket har ändrats. {count, plural, one {# persons senioritet behöver} other {# personers senioritet behöver}} bekräftas på nytt.",
@@ -242,6 +246,9 @@
       "empty": "Inga medarbetare importerade än.",
       "suggestedBadge": "Föreslagen",
       "suggestedBadgeTooltip": "Rollen är inte bekräftad än. Bekräfta den på sidan Klassificera.",
+      "archivedBadge": "Arkiverad",
+      "archivedOn": "Arkiverad {date}",
+      "archivedEmpty": "Inga arkiverade anställda.",
       "columns": {
         "name": "Namn",
         "gender": "Kön",
@@ -262,7 +269,10 @@
         "genderAll": "Alla kön",
         "fteAll": "Alla omfattningar",
         "fteFull": "Heltid",
-        "ftePart": "Deltid"
+        "ftePart": "Deltid",
+        "statusLabel": "Status",
+        "statusActive": "Aktiva anställda",
+        "statusArchived": "Arkiverade anställda"
       },
       "tabs": {
         "people": "Register",
@@ -398,6 +408,8 @@
           "updated": "Befintliga personer uppdaterade",
           "unchanged": "Redan uppdaterade",
           "skipped": "Överhoppade rader",
+          "reactivated": "Återkommande personer återaktiverade",
+          "archived": "Personer arkiverade",
           "goToClassify": "Gå till klassificering"
         },
         "review": {
@@ -421,7 +433,12 @@
             "previewFailed": "Förhandsgranskningen av ändringar kunde inte laddas. Du kan ändå importera.",
             "mismatchTitle": "Kontrollera dessa anställningsnummer",
             "mismatchBody": "Dessa anställningsnummer finns redan med ett annat namn. Det kan betyda ett återanvänt nummer eller ett skrivfel, så raderna hoppas över om du inte väljer att uppdatera dem.",
-            "mismatchImportAnyway": "Uppdatera dessa anställda ändå"
+            "mismatchImportAnyway": "Uppdatera dessa anställda ändå",
+            "returningPeople": "Återkommer (återaktiveras)",
+            "missingPeople": "Saknas i filen",
+            "missingTitle": "Anställda som saknas i filen",
+            "missingBody": "Dessa anställda är aktiva i registret men finns inte i den här filen. De förblir aktiva om du inte arkiverar dem nedan.",
+            "archiveMissing": "{count, plural, one {Arkivera den här anställda} other {Arkivera dessa # anställda}}"
           }
         },
         "discard": {
@@ -527,6 +544,18 @@
         "cancel": "Avbryt",
         "error": "Den anställda kunde inte raderas. Försök igen."
       },
+      "archive": {
+        "trigger": "Arkivera anställd",
+        "reactivateTrigger": "Återaktivera anställd",
+        "title": "Arkivera {name}?",
+        "reactivateTitle": "Återaktivera {name}?",
+        "description": "Den anställda lämnar det aktiva registret, klassificeringen, lönekartläggningarna och antalen. Historiken behålls och personen kan återaktiveras.",
+        "reactivateDescription": "Den anställda återgår till det aktiva registret, klassificeringen och kommande lönekartläggningar.",
+        "confirm": "Arkivera",
+        "reactivateConfirm": "Återaktivera",
+        "cancel": "Avbryt",
+        "error": "Den anställda kunde inte uppdateras. Försök igen."
+      },
       "bulk": {
         "selectAll": "Markera alla anställda på den här sidan",
         "selectRow": "Markera {name}",
@@ -538,6 +567,22 @@
         "confirm": "Radera permanent",
         "progress": "<done></done> / <total></total>",
         "error": "De anställda kunde inte raderas. Försök igen."
+      },
+      "bulkArchive": {
+        "cta": "{count, plural, one {Arkivera # anställd} other {Arkivera # anställda}}",
+        "dialogTitle": "Arkivera markerade anställda?",
+        "dialogDescription": "{count, plural, one {# anställd lämnar} other {# anställda lämnar}} det aktiva registret, klassificeringen, lönekartläggningarna och antalen. Historiken behålls och de kan återaktiveras.",
+        "confirm": "Arkivera",
+        "progress": "<done></done> / <total></total>",
+        "error": "De anställda kunde inte arkiveras. Försök igen."
+      },
+      "bulkReactivate": {
+        "cta": "{count, plural, one {Återaktivera # anställd} other {Återaktivera # anställda}}",
+        "dialogTitle": "Återaktivera markerade anställda?",
+        "dialogDescription": "{count, plural, one {# anställd återgår} other {# anställda återgår}} till det aktiva registret, klassificeringen och kommande lönekartläggningar.",
+        "confirm": "Återaktivera",
+        "progress": "<done></done> / <total></total>",
+        "error": "De anställda kunde inte återaktiveras. Försök igen."
       }
     },
     "classify": {
@@ -731,6 +776,8 @@
         "peopleUnchanged": "Oförändrade anställda",
         "salariesImported": "Importerade löner",
         "skippedRows": "Överhoppade rader",
+        "peopleArchived": "Arkiverade anställda",
+        "peopleReactivated": "Återaktiverade anställda",
         "suggested": "Föreslagna",
         "skipped": "Överhoppade",
         "unmatchedTitles": "Titlar utan träff",
@@ -851,6 +898,7 @@
         "personCreated": "Person tillagd",
         "personUpdated": "Person uppdaterad",
         "personArchived": "Person arkiverad",
+        "personUnarchived": "Person återaktiverad",
         "personErased": "Person raderad",
         "assignmentSet": "Tilldelning uppdaterad",
         "classificationSuggested": "Klassificeringsförslag beräknade",
@@ -2355,7 +2403,9 @@
       "unionReportLabel": "Vad är den fackliga rapporten?",
       "unionReportBody": "Ett maskerat gruppnivåunderlag för samverkan med facket enligt 3 kap. 11-12 §§ diskrimineringslagen. Kontrollera före delning att åtgärdernas fritext inte namnger enskilda.",
       "archivePackageLabel": "Vad är arkivpaketet?",
-      "archivePackageBody": "Hela kartläggningen som ett bevarandeexemplar: rapporten och nyckeltalen, med kontrollsummor för verifiering. Bevara paketet i minst fem år; DO:s tillsyn begär dokumentationen för enskilda år i efterhand."
+      "archivePackageBody": "Hela kartläggningen som ett bevarandeexemplar: rapporten och nyckeltalen, med kontrollsummor för verifiering. Bevara paketet i minst fem år; DO:s tillsyn begär dokumentationen för enskilda år i efterhand.",
+      "archivedPersonLabel": "Vad betyder arkivering?",
+      "archivedPersonBody": "En arkiverad anställd har slutat och behålls med sin historik, utanför klassificering, lönekartläggningar och antal. Arkivering kan ångras, radering kan det inte."
     },
     "widgetCard": {
       "expand": "Förstora"

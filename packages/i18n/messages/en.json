@@ -165,6 +165,10 @@
       "salaryDeleted": "Salary record deleted",
       "personErased": "Employee deleted",
       "peopleErased": "{count, plural, one {# employee deleted} other {# employees deleted}}",
+      "peopleArchived": "{count, plural, one {# employee archived} other {# employees archived}}",
+      "personArchived": "Employee archived",
+      "personReactivated": "Employee reactivated",
+      "peopleReactivated": "{count, plural, one {# employee reactivated} other {# employees reactivated}}",
       "personCreated": "Employee added",
       "personUpdated": "Employee updated",
       "roleTrackChanged": "Track changed. {count, plural, one {# person's seniority needs} other {# people's seniority needs}} re-confirming.",
@@ -242,6 +246,9 @@
       "empty": "No employees imported yet.",
       "suggestedBadge": "Suggested",
       "suggestedBadgeTooltip": "This role is not confirmed yet. Confirm it on the Classify page.",
+      "archivedBadge": "Archived",
+      "archivedOn": "Archived {date}",
+      "archivedEmpty": "No archived employees.",
       "columns": {
         "name": "Name",
         "gender": "Gender",
@@ -262,7 +269,10 @@
         "genderAll": "All genders",
         "fteAll": "All FTE",
         "fteFull": "Full-time",
-        "ftePart": "Part-time"
+        "ftePart": "Part-time",
+        "statusLabel": "Status",
+        "statusActive": "Active employees",
+        "statusArchived": "Archived employees"
       },
       "tabs": {
         "people": "Directory",
@@ -402,6 +412,8 @@
           "updated": "Existing people updated",
           "unchanged": "Already up to date",
           "skipped": "Rows skipped",
+          "reactivated": "Returning people reactivated",
+          "archived": "People archived",
           "goToClassify": "Go to classification"
         },
         "review": {
@@ -425,7 +437,12 @@
             "previewFailed": "The change preview could not be loaded. You can still import.",
             "mismatchTitle": "Check these employee numbers",
             "mismatchBody": "These employee numbers already exist with a different name. This can mean a reused number or a typo, so the rows are skipped unless you choose to update them.",
-            "mismatchImportAnyway": "Update these employees anyway"
+            "mismatchImportAnyway": "Update these employees anyway",
+            "returningPeople": "Returning (reactivated)",
+            "missingPeople": "Missing from the file",
+            "missingTitle": "Employees missing from the file",
+            "missingBody": "These employees are active in the register but not in this file. They stay active unless you archive them below.",
+            "archiveMissing": "{count, plural, one {Archive this employee} other {Archive these # employees}}"
           }
         },
         "discard": {
@@ -527,6 +544,18 @@
         "cancel": "Cancel",
         "error": "The employee could not be deleted. Try again."
       },
+      "archive": {
+        "trigger": "Archive employee",
+        "reactivateTrigger": "Reactivate employee",
+        "title": "Archive {name}?",
+        "reactivateTitle": "Reactivate {name}?",
+        "description": "The employee leaves the active register, classification, pay mappings and counts. Their history is kept, and they can be reactivated.",
+        "reactivateDescription": "The employee returns to the active register, classification and future pay mappings.",
+        "confirm": "Archive",
+        "reactivateConfirm": "Reactivate",
+        "cancel": "Cancel",
+        "error": "The employee could not be updated. Try again."
+      },
       "bulk": {
         "selectAll": "Select all employees on this page",
         "selectRow": "Select {name}",
@@ -538,6 +567,22 @@
         "confirm": "Delete permanently",
         "progress": "<done></done> / <total></total>",
         "error": "The employees could not be deleted. Try again."
+      },
+      "bulkArchive": {
+        "cta": "{count, plural, one {Archive # employee} other {Archive # employees}}",
+        "dialogTitle": "Archive selected employees?",
+        "dialogDescription": "{count, plural, one {# employee leaves} other {# employees leave}} the active register, classification, pay mappings and counts. Their history is kept, and they can be reactivated.",
+        "confirm": "Archive",
+        "progress": "<done></done> / <total></total>",
+        "error": "The employees could not be archived. Try again."
+      },
+      "bulkReactivate": {
+        "cta": "{count, plural, one {Reactivate # employee} other {Reactivate # employees}}",
+        "dialogTitle": "Reactivate selected employees?",
+        "dialogDescription": "{count, plural, one {# employee returns} other {# employees return}} to the active register, classification and future pay mappings.",
+        "confirm": "Reactivate",
+        "progress": "<done></done> / <total></total>",
+        "error": "The employees could not be reactivated. Try again."
       }
     },
     "classify": {
@@ -731,6 +776,8 @@
         "peopleUnchanged": "Unchanged employees",
         "salariesImported": "Salaries imported",
         "skippedRows": "Skipped rows",
+        "peopleArchived": "Archived employees",
+        "peopleReactivated": "Reactivated employees",
         "suggested": "Suggested",
         "skipped": "Skipped",
         "unmatchedTitles": "Unmatched titles",
@@ -851,6 +898,7 @@
         "personCreated": "Person added",
         "personUpdated": "Person updated",
         "personArchived": "Person archived",
+        "personUnarchived": "Person reactivated",
         "personErased": "Person erased",
         "assignmentSet": "Assignment updated",
         "classificationSuggested": "Classification suggestions computed",
@@ -2355,7 +2403,9 @@
       "unionReportLabel": "What is the union report?",
       "unionReportBody": "A masked group-level basis for union cooperation under ch. 3 §§ 11-12 of the Discrimination Act. Before sharing, check that no action free text names an individual.",
       "archivePackageLabel": "What is the archive package?",
-      "archivePackageBody": "The whole mapping as one retention copy: the report and the key figures, with checksums for verification. Keep it for at least five years; supervision requests past years' documentation."
+      "archivePackageBody": "The whole mapping as one retention copy: the report and the key figures, with checksums for verification. Keep it for at least five years; supervision requests past years' documentation.",
+      "archivedPersonLabel": "What does archiving mean?",
+      "archivedPersonBody": "An archived employee has left and is kept with their history, outside classification, pay mappings and counts. Archiving can be undone; deleting cannot."
     },
     "widgetCard": {
       "expand": "Expand"

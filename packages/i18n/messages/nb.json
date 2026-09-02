@@ -165,6 +165,10 @@
       "salaryDeleted": "Lønnsoppføring slettet",
       "personErased": "Ansatt slettet",
       "peopleErased": "{count, plural, one {# ansatt slettet} other {# ansatte slettet}}",
+      "peopleArchived": "{count, plural, one {# ansatt arkivert} other {# ansatte arkivert}}",
+      "personArchived": "Ansatt arkivert",
+      "personReactivated": "Ansatt reaktivert",
+      "peopleReactivated": "{count, plural, one {# ansatt reaktivert} other {# ansatte reaktivert}}",
       "personCreated": "Ansatt lagt til",
       "personUpdated": "Ansatt oppdatert",
       "roleTrackChanged": "Tracket er endret. {count, plural, one {# persons senioritet må} other {# personers senioritet må}} bekreftes på nytt.",
@@ -242,6 +246,9 @@
       "empty": "Ingen ansatte importert ennå.",
       "suggestedBadge": "Foreslått",
       "suggestedBadgeTooltip": "Rollen er ikke bekreftet ennå. Bekreft den på Klassifiser-siden.",
+      "archivedBadge": "Arkivert",
+      "archivedOn": "Arkivert {date}",
+      "archivedEmpty": "Ingen arkiverte ansatte.",
       "columns": {
         "name": "Navn",
         "gender": "Kjønn",
@@ -262,7 +269,10 @@
         "genderAll": "Alle kjønn",
         "fteAll": "Alle stillingsandeler",
         "fteFull": "Heltid",
-        "ftePart": "Deltid"
+        "ftePart": "Deltid",
+        "statusLabel": "Status",
+        "statusActive": "Aktive ansatte",
+        "statusArchived": "Arkiverte ansatte"
       },
       "tabs": {
         "people": "Register",
@@ -398,6 +408,8 @@
           "updated": "Eksisterende personer oppdatert",
           "unchanged": "Allerede oppdatert",
           "skipped": "Rader hoppet over",
+          "reactivated": "Personer som kom tilbake reaktivert",
+          "archived": "Personer arkivert",
           "goToClassify": "Gå til klassifisering"
         },
         "review": {
@@ -421,7 +433,12 @@
             "previewFailed": "Forhåndsvisningen av endringer kunne ikke lastes. Du kan likevel importere.",
             "mismatchTitle": "Kontroller disse ansattnumrene",
             "mismatchBody": "Disse ansattnumrene finnes allerede med et annet navn. Det kan bety et gjenbrukt nummer eller en skrivefeil, så radene hoppes over med mindre du velger å oppdatere dem.",
-            "mismatchImportAnyway": "Oppdater disse ansatte likevel"
+            "mismatchImportAnyway": "Oppdater disse ansatte likevel",
+            "returningPeople": "Kommer tilbake (reaktiveres)",
+            "missingPeople": "Mangler i filen",
+            "missingTitle": "Ansatte som mangler i filen",
+            "missingBody": "Disse ansatte er aktive i registeret, men finnes ikke i denne filen. De forblir aktive med mindre du arkiverer dem nedenfor.",
+            "archiveMissing": "{count, plural, one {Arkiver denne ansatte} other {Arkiver disse # ansatte}}"
           }
         },
         "discard": {
@@ -527,6 +544,18 @@
         "cancel": "Avbryt",
         "error": "Den ansatte kunne ikke slettes. Prøv igjen."
       },
+      "archive": {
+        "trigger": "Arkiver ansatt",
+        "reactivateTrigger": "Reaktiver ansatt",
+        "title": "Arkivere {name}?",
+        "reactivateTitle": "Reaktivere {name}?",
+        "description": "Den ansatte forlater det aktive registeret, klassifiseringen, lønnskartleggingene og antallene. Historikken beholdes, og personen kan reaktiveres.",
+        "reactivateDescription": "Den ansatte går tilbake til det aktive registeret, klassifiseringen og kommende lønnskartlegginger.",
+        "confirm": "Arkiver",
+        "reactivateConfirm": "Reaktiver",
+        "cancel": "Avbryt",
+        "error": "Den ansatte kunne ikke oppdateres. Prøv igjen."
+      },
       "bulk": {
         "selectAll": "Velg alle ansatte på denne siden",
         "selectRow": "Velg {name}",
@@ -538,6 +567,22 @@
         "confirm": "Slett permanent",
         "progress": "<done></done> / <total></total>",
         "error": "De ansatte kunne ikke slettes. Prøv igjen."
+      },
+      "bulkArchive": {
+        "cta": "{count, plural, one {Arkiver # ansatt} other {Arkiver # ansatte}}",
+        "dialogTitle": "Arkivere valgte ansatte?",
+        "dialogDescription": "{count, plural, one {# ansatt forlater} other {# ansatte forlater}} det aktive registeret, klassifiseringen, lønnskartleggingene og antallene. Historikken beholdes, og de kan reaktiveres.",
+        "confirm": "Arkiver",
+        "progress": "<done></done> / <total></total>",
+        "error": "De ansatte kunne ikke arkiveres. Prøv igjen."
+      },
+      "bulkReactivate": {
+        "cta": "{count, plural, one {Reaktiver # ansatt} other {Reaktiver # ansatte}}",
+        "dialogTitle": "Reaktivere valgte ansatte?",
+        "dialogDescription": "{count, plural, one {# ansatt går tilbake} other {# ansatte går tilbake}} til det aktive registeret, klassifiseringen og kommende lønnskartlegginger.",
+        "confirm": "Reaktiver",
+        "progress": "<done></done> / <total></total>",
+        "error": "De ansatte kunne ikke reaktiveres. Prøv igjen."
       }
     },
     "classify": {
@@ -731,6 +776,8 @@
         "peopleUnchanged": "Uendrede ansatte",
         "salariesImported": "Importerte lønninger",
         "skippedRows": "Overhoppede rader",
+        "peopleArchived": "Arkiverte ansatte",
+        "peopleReactivated": "Reaktiverte ansatte",
         "suggested": "Foreslått",
         "skipped": "Hoppet over",
         "unmatchedTitles": "Titler uten treff",
@@ -851,6 +898,7 @@
         "personCreated": "Person lagt til",
         "personUpdated": "Person oppdatert",
         "personArchived": "Person arkivert",
+        "personUnarchived": "Person reaktivert",
         "personErased": "Person slettet",
         "assignmentSet": "Tildeling oppdatert",
         "classificationSuggested": "Klassifiseringsforslag beregnet",
@@ -2355,7 +2403,9 @@
       "unionReportLabel": "Hva er fagforeningsrapporten?",
       "unionReportBody": "Et maskert underlag på gruppenivå for samarbeid med fagforeningene etter 3 kap. 11-12 §§ i diskrimineringsloven. Kontroller før deling at tiltakenes fritekst ikke navngir enkeltpersoner.",
       "archivePackageLabel": "Hva er arkivpakken?",
-      "archivePackageBody": "Hele kartleggingen som ett bevaringseksemplar: rapporten og nøkkeltallene, med kontrollsummer for verifisering. Oppbevar pakken i minst fem år; tilsynet ber om dokumentasjonen for enkeltår i ettertid."
+      "archivePackageBody": "Hele kartleggingen som ett bevaringseksemplar: rapporten og nøkkeltallene, med kontrollsummer for verifisering. Oppbevar pakken i minst fem år; tilsynet ber om dokumentasjonen for enkeltår i ettertid.",
+      "archivedPersonLabel": "Hva betyr arkivering?",
+      "archivedPersonBody": "En arkivert ansatt har sluttet og beholdes med historikken sin, utenfor klassifisering, lønnskartlegginger og antall. Arkivering kan angres, sletting kan ikke."
     },
     "widgetCard": {
       "expand": "Forstørr"

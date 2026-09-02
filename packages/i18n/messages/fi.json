@@ -165,6 +165,10 @@
       "salaryDeleted": "Palkkatietue poistettu",
       "personErased": "Työntekijä poistettu",
       "peopleErased": "{count, plural, one {# työntekijä poistettu} other {# työntekijää poistettu}}",
+      "peopleArchived": "{count, plural, one {# työntekijä arkistoitu} other {# työntekijää arkistoitu}}",
+      "personArchived": "Työntekijä arkistoitu",
+      "personReactivated": "Työntekijä palautettu aktiiviseksi",
+      "peopleReactivated": "{count, plural, one {# työntekijä palautettu aktiiviseksi} other {# työntekijää palautettu aktiivisiksi}}",
       "personCreated": "Työntekijä lisätty",
       "personUpdated": "Työntekijä päivitetty",
       "roleTrackChanged": "Track muutettu. {count, plural, one {# henkilön senioriteetti on} other {# henkilön senioriteetti on}} vahvistettava uudelleen.",
@@ -242,6 +246,9 @@
       "empty": "Ei tuotuja työntekijöitä vielä.",
       "suggestedBadge": "Ehdotettu",
       "suggestedBadgeTooltip": "Roolia ei ole vielä vahvistettu. Vahvista se Luokittele-sivulla.",
+      "archivedBadge": "Arkistoitu",
+      "archivedOn": "Arkistoitu {date}",
+      "archivedEmpty": "Ei arkistoituja työntekijöitä.",
       "columns": {
         "name": "Nimi",
         "gender": "Sukupuoli",
@@ -262,7 +269,10 @@
         "genderAll": "Kaikki sukupuolet",
         "fteAll": "Kaikki työajat",
         "fteFull": "Kokoaikainen",
-        "ftePart": "Osa-aikainen"
+        "ftePart": "Osa-aikainen",
+        "statusLabel": "Tila",
+        "statusActive": "Aktiiviset työntekijät",
+        "statusArchived": "Arkistoidut työntekijät"
       },
       "tabs": {
         "people": "Rekisteri",
@@ -398,6 +408,8 @@
           "updated": "Nykyisiä henkilöitä päivitetty",
           "unchanged": "Jo ajan tasalla",
           "skipped": "Ohitetut rivit",
+          "reactivated": "Palanneita henkilöitä palautettu aktiivisiksi",
+          "archived": "Henkilöitä arkistoitu",
           "goToClassify": "Siirry luokitteluun"
         },
         "review": {
@@ -421,7 +433,12 @@
             "previewFailed": "Muutosten esikatselua ei voitu ladata. Voit silti tuoda.",
             "mismatchTitle": "Tarkista nämä työntekijänumerot",
             "mismatchBody": "Nämä työntekijänumerot ovat jo olemassa eri nimellä. Se voi tarkoittaa uudelleenkäytettyä numeroa tai kirjoitusvirhettä, joten rivit ohitetaan, ellet valitse niiden päivittämistä.",
-            "mismatchImportAnyway": "Päivitä nämä työntekijät silti"
+            "mismatchImportAnyway": "Päivitä nämä työntekijät silti",
+            "returningPeople": "Palaavat (palautetaan aktiivisiksi)",
+            "missingPeople": "Puuttuvat tiedostosta",
+            "missingTitle": "Tiedostosta puuttuvat työntekijät",
+            "missingBody": "Nämä työntekijät ovat aktiivisia rekisterissä, mutta eivät ole tässä tiedostossa. He pysyvät aktiivisina, ellet arkistoi heitä alla.",
+            "archiveMissing": "{count, plural, one {Arkistoi tämä työntekijä} other {Arkistoi nämä # työntekijää}}"
           }
         },
         "discard": {
@@ -527,6 +544,18 @@
         "cancel": "Peruuta",
         "error": "Työntekijää ei voitu poistaa. Yritä uudelleen."
       },
+      "archive": {
+        "trigger": "Arkistoi työntekijä",
+        "reactivateTrigger": "Palauta työntekijä aktiiviseksi",
+        "title": "Arkistoidaanko {name}?",
+        "reactivateTitle": "Palautetaanko {name} aktiiviseksi?",
+        "description": "Työntekijä poistuu aktiivisesta rekisteristä, luokittelusta, palkkakartoituksista ja lukumääristä. Historia säilyy, ja henkilön voi palauttaa aktiiviseksi.",
+        "reactivateDescription": "Työntekijä palaa aktiiviseen rekisteriin, luokitteluun ja tuleviin palkkakartoituksiin.",
+        "confirm": "Arkistoi",
+        "reactivateConfirm": "Palauta aktiiviseksi",
+        "cancel": "Peruuta",
+        "error": "Työntekijää ei voitu päivittää. Yritä uudelleen."
+      },
       "bulk": {
         "selectAll": "Valitse kaikki tämän sivun työntekijät",
         "selectRow": "Valitse {name}",
@@ -538,6 +567,22 @@
         "confirm": "Poista pysyvästi",
         "progress": "<done></done> / <total></total>",
         "error": "Työntekijöitä ei voitu poistaa. Yritä uudelleen."
+      },
+      "bulkArchive": {
+        "cta": "{count, plural, one {Arkistoi # työntekijä} other {Arkistoi # työntekijää}}",
+        "dialogTitle": "Arkistoidaanko valitut työntekijät?",
+        "dialogDescription": "{count, plural, one {# työntekijä poistuu} other {# työntekijää poistuu}} aktiivisesta rekisteristä, luokittelusta, palkkakartoituksista ja lukumääristä. Historia säilyy, ja heidät voi palauttaa aktiivisiksi.",
+        "confirm": "Arkistoi",
+        "progress": "<done></done> / <total></total>",
+        "error": "Työntekijöitä ei voitu arkistoida. Yritä uudelleen."
+      },
+      "bulkReactivate": {
+        "cta": "{count, plural, one {Palauta # työntekijä aktiiviseksi} other {Palauta # työntekijää aktiivisiksi}}",
+        "dialogTitle": "Palautetaanko valitut työntekijät aktiivisiksi?",
+        "dialogDescription": "{count, plural, one {# työntekijä palaa} other {# työntekijää palaa}} aktiiviseen rekisteriin, luokitteluun ja tuleviin palkkakartoituksiin.",
+        "confirm": "Palauta aktiiviseksi",
+        "progress": "<done></done> / <total></total>",
+        "error": "Työntekijöitä ei voitu palauttaa aktiivisiksi. Yritä uudelleen."
       }
     },
     "classify": {
@@ -731,6 +776,8 @@
         "peopleUnchanged": "Muuttumattomat työntekijät",
         "salariesImported": "Tuodut palkat",
         "skippedRows": "Ohitetut rivit",
+        "peopleArchived": "Arkistoidut työntekijät",
+        "peopleReactivated": "Aktiivisiksi palautetut työntekijät",
         "suggested": "Ehdotetut",
         "skipped": "Ohitetut",
         "unmatchedTitles": "Täsmäämättömät nimikkeet",
@@ -851,6 +898,7 @@
         "personCreated": "Henkilö lisätty",
         "personUpdated": "Henkilö päivitetty",
         "personArchived": "Henkilö arkistoitu",
+        "personUnarchived": "Henkilö palautettu aktiiviseksi",
         "personErased": "Henkilö poistettu",
         "assignmentSet": "Tehtävä päivitetty",
         "classificationSuggested": "Luokitteluehdotukset laskettu",
@@ -2355,7 +2403,9 @@
       "unionReportLabel": "Mikä on ammattiliittoraportti?",
       "unionReportBody": "Peitetty ryhmätason aineisto yhteistoimintaan ammattiliittojen kanssa syrjintälain 3 luvun 11-12 §:n mukaisesti. Tarkista ennen jakamista, ettei toimenpiteiden vapaa teksti nimeä yksittäisiä henkilöitä.",
       "archivePackageLabel": "Mikä on arkistopaketti?",
-      "archivePackageBody": "Koko kartoitus yhtenä säilytyskappaleena: raportti ja tunnusluvut tarkistussummineen. Säilytä paketti vähintään viisi vuotta; valvonnassa pyydetään aiempien vuosien dokumentaatiota jälkikäteen."
+      "archivePackageBody": "Koko kartoitus yhtenä säilytyskappaleena: raportti ja tunnusluvut tarkistussummineen. Säilytä paketti vähintään viisi vuotta; valvonnassa pyydetään aiempien vuosien dokumentaatiota jälkikäteen.",
+      "archivedPersonLabel": "Mitä arkistointi tarkoittaa?",
+      "archivedPersonBody": "Arkistoitu työntekijä on lähtenyt ja säilyy historioineen luokittelun, palkkakartoitusten ja lukumäärien ulkopuolella. Arkistoinnin voi kumota, poistoa ei."
     },
     "widgetCard": {
       "expand": "Suurenna"
