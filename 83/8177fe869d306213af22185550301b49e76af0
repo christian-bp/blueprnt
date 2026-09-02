@@ -1,0 +1,41 @@
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.tsx
+  s_26838696f43ddf::t_8c42ed8df2844a 115-119
+  s_26838696f43ddf::t_1e737d212f4e37 90-93,100-102,106-109
+  s_26838696f43ddf::t_cf0f6d358c5bc4 375,385-404,411-413
+  s_26838696f43ddf::t_a91507b37850ef 215-229,233
+  s_26838696f43ddf::t_f05fa94b0947b3 55-63,66
+  s_26838696f43ddf::t_eddc9f5c76e7f8 525,530,534,544-545
+  s_26838696f43ddf::t_8a2b38fd9ad712 883-906
+packages/i18n/messages/en.json
+  s_26838696f43ddf::t_2d1bace38ab799 1374
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.test.tsx
+  s_26838696f43ddf::t_109c96749e2f23 627,632
+  s_26838696f43ddf::t_8c42ed8df2844a 238
+  s_26838696f43ddf::t_c9f484bcd649ca 124-128,234-236,240-248,448-452,454-469,554-556,568,668,691-694,715-718,736
+packages/i18n/messages/sv.json
+  s_26838696f43ddf::t_2d1bace38ab799 1374
+packages/i18n/messages/nb.json
+  s_26838696f43ddf::t_2d1bace38ab799 1374
+packages/i18n/messages/da.json
+  s_26838696f43ddf::t_2d1bace38ab799 1374
+packages/i18n/messages/fi.json
+  s_26838696f43ddf::t_2d1bace38ab799 1374
+apps/dashboard/components/pay-mapping/review-group-step.tsx
+  s_26838696f43ddf::t_82260e5ed2bc67 427-434
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "838177fe869d306213af22185550301b49e76af0",
+  "prompts": {},
+  "sessions": {
+    "s_26838696f43ddf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4ea41fa8-c68a-430e-a203-a176741bf01c",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
