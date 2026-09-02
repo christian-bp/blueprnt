@@ -1,0 +1,28 @@
+docs/superpowers/plans/2026-09-02-leaver-archiving.md
+  s_a5a0b8b07c8eab::t_9a1fc176426b92 1640
+  s_a5a0b8b07c8eab::t_8b1e3d35b99d81 1651
+  s_a5a0b8b07c8eab::t_5e9cc5c93a2940 423
+  s_a5a0b8b07c8eab::t_8cdbdc9d83dd58 1-422,424-1412,1414-1639,1641-1650,1652-3398
+  s_a5a0b8b07c8eab::t_acd3837ed0cb03 1413
+docs/superpowers/specs/2026-09-02-leaver-archiving-design.md
+  s_a5a0b8b07c8eab::t_60efc07f001a50 1-291,294-351
+  s_a5a0b8b07c8eab::t_cfa3809c884832 292-293
+docs/go-live-checklist.md
+  s_a5a0b8b07c8eab::t_4224f63b88882d 288-293
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "5d3c7ca0c6d838b969b496b46c383b8726404617",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
