@@ -18,28 +18,45 @@ personer per side, med sidenavigering når det er flere og et
 sidestørrelsesvalg på 25, 50 eller 100. En person hvis
 rolle eller senioritet fortsatt er et ubekreftet forslag, viser et
 "Foreslått"-merke ved siden av; merkets verktøytips forklarer at rollen
-ikke er bekreftet enda og kobler ideen til siden Klassifiser.
+ikke er bekreftet enda og kobler ideen til siden Klassifiser. En person
+som har sluttet vises med merket "Arkivert" ved navnet og vises bare
+når statusvelgeren viser arkiverte ansatte.
 
 ## Søke og filtrere
 
 Søkefeltet matcher på navn eller avdeling. Separate filter begrenser
 etter avdeling, rolle, kjønn og stillingsandel (alle ansatte, bare
-heltid, eller bare deltid); rollefilteret lister hver rolle dere har
+heltid eller bare deltid), og en statusvelger viser enten aktive ansatte
+(standard) eller arkiverte ansatte; rollefilteret lister hver rolle dere har
 opprettet, ikke bare roller som allerede har personer. En person uten
 tildelt rolle matcher ikke noe spesifikt rollefilter, bare "Alle
 roller". Når dere søker eller filtrerer, vises et resultatantall som
 "12 av 40 ansatte", sammen med en måte å fjerne filtrene på.
 
-## Merke rader og massesletting
+## Velge rader
 
-Å krysse av rader merker dem; avmerkingsboksen i toppen merker bare
-personene som for øyeblikket er synlige på siden, men markeringen deres
-beholdes når dere bytter side eller filtrerer, så en markering kan
-omfatte flere personer enn de som vises på skjermen samtidig. Når noe er
-merket, vises en slettehandling for administratorer, som angir hvor
-mange ansatte som er merket; den sletter permanent alle merkede, over alle sider, ikke bare
-de synlige. Se [Slette en person](/docs/erasing-a-person) for hva dette
-gjør og hvordan det bekreftes.
+Ved å huke av rader velger dere dem; overskriftens avkrysningsboks velger bare
+personene som vises på siden, men valget deres beholdes når dere blar eller
+filtrerer, så det kan omfatte flere personer enn de som er synlige samtidig.
+Hva valget kan gjøre avhenger av visningen. Blant aktive ansatte er den
+eneste handlingen å arkivere dem. Blant arkiverte ansatte kan dere reaktivere
+dem eller, som administrator, slette dem permanent; se
+[Slette en person](/docs/erasing-a-person) for hva det gjør og hvordan det
+bekreftes.
+
+## Arkivere ansatte som har sluttet
+
+Den som har forlatt organisasjonen arkiveres, ikke slettes: velg radene og
+velg arkiveringshandlingen som oppgir hvor mange ansatte som er valgt.
+Dialogen sier hva arkivering innebærer og arkiverer dem i omganger med en
+løpende telling. En arkivert person forlater det aktive registeret,
+klassifiseringen, lønnskartleggingene og antallene, beholder
+lønnshistorikken og rolletildelingen sin, og kan reaktiveres fra sin egen
+side. Arkivering er åpen for alle medlemmer. Sletting er bare mulig for en
+arkivert ansatt, fra den arkiverte visningen eller fra personens egen
+side, og bare for en administrator. En lønnsimport kan også arkivere
+personer som mangler i filen; se
+[Importere ansatte](/docs/importing-people).
 
 ## Legge til og importere
 

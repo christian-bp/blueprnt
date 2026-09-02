@@ -47,10 +47,15 @@ this has been verified against and how their numbers and dates are read.
    that reuses an existing employee number under a different name is flagged
    as a likely mistake and is skipped by default unless you choose to update
    that employee anyway.
+   The review also lists people the file brings back (archived employees
+   who are reactivated because the file lists them) and active employees
+   who are missing from the file. Missing employees stay active unless you
+   tick "Archive these N employees"; the box is off by default, so a file
+   covering only part of the organization never archives the rest.
 
 After you confirm, the import runs and reports live progress, then a final
 count of how many people were created, updated, already up to date, or
-skipped.
+skipped, plus how many were reactivated or archived when that happened.
 
 ## After importing
 

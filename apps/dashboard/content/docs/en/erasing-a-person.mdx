@@ -6,7 +6,11 @@ section: people
 
 Erasing an employee is a true, permanent deletion, not an archive: it
 exists for the [GDPR right to erasure](/docs/gdpr-and-erasure), so there
-is no way to undo it or bring the person back afterward.
+is no way to undo it or bring the person back afterward. Someone who has
+simply left the organization is archived first; deleting is offered only
+for an archived person, from the archived view of the
+[people register](/docs/people-register) or from their own page, so an
+active record is never erased by accident.
 
 Their salary records and role assignments are deleted outright. Where
 their identity still appears afterward, in the audit trail or in the
@@ -21,19 +25,20 @@ Only an admin can erase a person, so the controls below appear for
 admins alone. An editor who needs an erasure asks an admin to do it; see
 [Members and roles](/docs/members-and-roles).
 
-From that person's actions menu, choose "Delete employee". The dialog asks
-you to type a confirmation word before the delete button turns on: the
-person's own employee number if they have one, otherwise the word "DELETE".
+Once the person is archived, choose "Delete employee" from their actions
+menu. The dialog asks you to type a confirmation word before the delete
+button turns on: the person's own employee number if they have one,
+otherwise the word "DELETE".
 Typing anything else simply leaves the action disabled, rather than showing
 an error. Confirming deletes the person together with every salary record
 and role assignment they have.
 
 ## Erasing several at once
 
-Select rows on the [people register](/docs/people-register), then choose
-the delete action naming how many employees are selected; this also asks
-you to type "DELETE" to confirm. The
-people are erased one at a time, with a live progress count. If something
+Switch the [people register](/docs/people-register) to archived employees,
+select rows, then choose the delete action naming how many employees are
+selected; this also asks you to type "DELETE" to confirm. The people are
+erased one at a time, with a live progress count. If something
 interrupts it partway through, whoever was already erased stays erased;
 confirming again finishes whoever is left.
 

@@ -7,7 +7,11 @@ section: people
 Henkilön poistaminen on todellinen, pysyvä poisto, ei arkistointi:
 se on olemassa [GDPR:n oikeutta tulla unohdetuksi](/docs/gdpr-and-erasure)
 varten, niin sitä ei voi kumota tai tuoda henkilöä takaisin
-jälkikäteen.
+jälkikäteen. Pelkästään lähtenyt henkilö arkistoidaan ensin; poisto
+tarjotaan vain arkistoidulle henkilölle,
+[henkilörekisterin](/docs/people-register) arkistoidusta näkymästä tai
+omalta sivulta, joten aktiivista tietuetta ei koskaan poisteta
+vahingossa.
 
 Henkilön palkkatietueet ja tehtävät poistetaan välittömästi. Jos
 hänen identiteettinsä näkyy siitä huolimatta myöhemmin, esimerkiksi
@@ -22,8 +26,9 @@ Vain admin voi poistaa henkilön, joten alla olevat toiminnot näkyvät vain
 admineille. Muokkaaja, joka tarvitsee poiston, pyytää adminia tekemään
 sen; katso [Jäsenet ja roolit](/docs/members-and-roles).
 
-Valitkaa kyseisen henkilön toimintovalikosta "Poista työntekijä".
-Lomake pyytää kirjoittamaan vahvistussanan ennen kuin poistopainike
+Kun henkilö on arkistoitu, valitkaa hänen toimintovalikostaan "Poista
+työntekijä". Lomake pyytää kirjoittamaan vahvistussanan ennen kuin
+poistopainike
 aktivoituu: henkilön oman henkilönumeron, jos hänellä on sellainen,
 muuten sanan "DELETE". Muun kirjoittaminen jättää toiminnon
 yksinkertaisesti pois käytöstä, virheilmoituksen näyttämisen sijaan.
@@ -32,9 +37,10 @@ palkkatietueidensa ja tehtäviensä kanssa.
 
 ## Usean poistaminen kerralla
 
-Valitkaa rivejä [henkilörekisteristä](/docs/people-register), ja
-valitkaa sitten poistotoiminto, joka nimeää kuinka monta työntekijää
-on valittu; tämä pyytää myös kirjoittamaan "DELETE" vahvistukseksi.
+Vaihtakaa [henkilörekisteri](/docs/people-register) näyttämään
+arkistoidut työntekijät, valitkaa rivit ja valitkaa sitten
+poistotoiminto, joka kertoo valittujen työntekijöiden määrän; tämä
+pyytää myös kirjoittamaan "DELETE" vahvistukseksi.
 Henkilöt poistetaan yksi kerrallaan, ja etenemä näkyy
 reaaliaikaisena laskurina. Jos jokin keskeyttää kesken, jo poistetut
 pysyvät poistettuina; uudelleen vahvistaminen viimeistelee loput.

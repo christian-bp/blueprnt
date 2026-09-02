@@ -17,27 +17,44 @@ with paging controls once there are more and a page-size choice of 25, 50,
 or 100. A person whose role or seniority
 is still an unconfirmed suggestion shows a "Suggested" badge next to it;
 hovering the badge explains that the role is not confirmed yet and points
-you to the Classify page to confirm it.
+you to the Classify page to confirm it. A person who has left shows an
+"Archived" badge next to their name and appears only when the status
+control shows archived employees.
 
 ## Searching and filtering
 
 The search field matches by name or department. Separate filters narrow by
 department, role, gender, and FTE (all employees, full-time only, or
-part-time only); the role filter lists every role you have created, not only
-roles that already have people. A person with no role assigned matches no
-specific role filter, only "All roles". Once you search or filter, a result
-count such as "12 of 40 people" appears, along with a way to clear the
-filters.
+part-time only), and a status control shows either active employees (the
+default) or archived employees; the role filter lists every role you have
+created, not only roles that already have people. A person with no role
+assigned matches no specific role filter, only "All roles". Once you search
+or filter, a result count such as "12 of 40 people" appears, along with a
+way to clear the filters.
 
-## Selecting rows and bulk delete
+## Selecting rows
 
 Checking rows selects them; the header checkbox only selects the people
 currently visible on the page, but your selection is kept as you page or
 filter, so a selection can span more people than are on screen at once.
-Once anything is selected, a delete action appears for admins, naming how
-many employees are selected; it permanently deletes everyone selected,
-across every page, not just the visible ones. See [Erasing a person](/docs/erasing-a-person) for what this
-does and how it is confirmed.
+What the selection can do depends on the view. Among active employees the
+only action is to archive them. Among archived employees you can reactivate
+them, or, as an admin, delete them permanently; see
+[Erasing a person](/docs/erasing-a-person) for what that does and how it is
+confirmed.
+
+## Archiving employees who have left
+
+Someone who has left the organization is archived, not deleted: select their
+rows and choose the archive action naming how many employees are selected.
+The dialog states what archiving does and archives them in batches with a
+live count. An archived person leaves the active register, classification,
+pay mappings and counts, keeps their salary history and role assignment, and
+can be reactivated from their own page. Archiving is open to every member.
+Deleting is possible only for an archived employee, from the archived view
+or from the person's own page, and only for an admin. A payroll import can
+also archive people who are missing from the file; see
+[Importing people](/docs/importing-people).
 
 ## Adding and importing
 

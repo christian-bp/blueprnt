@@ -18,29 +18,44 @@ personer per side, med sidenavigation, når der er flere, og et
 sidestørrelsesvalg på 25, 50 eller 100. En person,
 hvis rolle eller senioritet stadig er et ubekræftet forslag, viser et
 mærke "Foreslået" ved siden af; mærkets hjælpetekst forklarer, at rollen
-ikke er bekræftet endnu, og henviser til Klassificér-siden.
+ikke er bekræftet endnu, og henviser til Klassificér-siden. En person,
+der er stoppet, vises med mærket "Arkiveret" ved navnet og vises kun,
+når statusvælgeren viser arkiverede medarbejdere.
 
 ## Søgning og filtrering
 
 Søgefeltet matcher på navn eller afdeling. Separate filtre begrænser
 efter afdeling, rolle, køn og stilling (alle medarbejdere, kun
-fuldtid, eller kun deltid); rollefilteret viser hver rolle, I har
+fuldtid eller kun deltid), og en statusvælger viser enten aktive medarbejdere
+(standard) eller arkiverede medarbejdere; rollefilteret viser hver rolle, I har
 oprettet, ikke kun roller, der allerede har personer. En person uden
 tildelt rolle matcher ikke noget specifikt rollefilter, kun "Alle
 roller". Når I søger eller filtrerer, vises et resultatantal, som "12
 af 40 medarbejdere", sammen med en måde at rydde filtrene på.
 
-## At vælge rækker og masseslette
+## At vælge rækker
 
-At afkrydse rækker vælger dem; hovedafkrydsningsboksen vælger kun de
-personer, der aktuelt er synlige på siden, men jeres valg bevares, når
-I skifter side eller filtrerer, så et valg kan spænde over flere
-personer, end der er på skærmen på én gang. Når noget er valgt, vises
-en slethandling for admins, der navngiver hvor mange medarbejdere er
-valgt; den
-sletter permanent alle valgte, på tværs af alle sider, ikke kun de
-synlige. Se [Slet en person](/docs/erasing-a-person) for hvad dette
-gør, og hvordan det bekræftes.
+Ved at markere rækker vælger I dem; overskriftens afkrydsningsfelt vælger
+kun de personer, der vises på siden, men jeres valg bevares, når I bladrer
+eller filtrerer, så det kan omfatte flere personer, end der er synlige på én
+gang. Hvad valget kan gøre, afhænger af visningen. Blandt aktive
+medarbejdere er den eneste handling at arkivere dem. Blandt arkiverede
+medarbejdere kan I genaktivere dem eller, som admin, slette dem permanent;
+se [Slet en person](/docs/erasing-a-person) for, hvad det gør, og
+hvordan det bekræftes.
+
+## Arkivér medarbejdere, der er stoppet
+
+Den, der har forladt organisationen, arkiveres, ikke slettes: vælg rækkerne
+og vælg arkiveringshandlingen, der angiver hvor mange medarbejdere der er
+valgt. Dialogen siger, hvad arkivering betyder, og arkiverer dem i omgange
+med en løbende optælling. En arkiveret person forlader det aktive register,
+klassificeringen, lønkortlægningerne og antallene, beholder sin lønhistorik
+og rolletildeling og kan genaktiveres fra sin egen side. Arkivering er åben
+for alle medlemmer. Sletning er kun mulig for en arkiveret medarbejder,
+fra den arkiverede visning eller fra personens egen side, og kun for en
+admin. En lønimport kan også arkivere personer, der mangler i filen; se
+[Importér medarbejdere](/docs/importing-people).
 
 ## At tilføje og importere
 

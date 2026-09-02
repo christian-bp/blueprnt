@@ -18,30 +18,47 @@ mukaan ja näyttää 25 henkilöä sivua kohden, sivutuksella kun niitä on
 enemmän, ja sivukoon valinnalla 25, 50 tai 100. Henkilö, jonka rooli tai senioriteetti on vielä
 vahvistamaton ehdotus, näyttää "Ehdotettu"-merkin sen vierellä;
 merkin vihjeteksti selittää, että roolia ei ole vielä vahvistettu, ja
-linkittää ajatuksen Luokittele-sivulle.
+linkittää ajatuksen Luokittele-sivulle. Lähtenyt henkilö näkyy nimensä
+vieressä merkillä "Arkistoitu" ja näkyy vain, kun tilavalitsin näyttää
+arkistoidut työntekijät.
 
 ## Hakeminen ja suodattaminen
 
 Hakukenttä täsmää nimeen tai osastoon. Erilliset suodattimet
 rajaavat osaston, roolin, sukupuolen ja työajan mukaan (kaikki
-työntekijät, vain kokoaikaiset tai vain osa-aikaiset); roolisuodatin
+työntekijät, vain kokoaikaiset tai vain osa-aikaiset), ja tilavalitsin
+näyttää joko aktiiviset työntekijät (oletus) tai arkistoidut työntekijät;
+roolisuodatin
 listaa joka roolin, jonka olette luoneet, ei vain rooleja, joilla on
 jo henkilöitä. Henkilö, jolla ei ole roolia, ei täsmää mihinkään
 tiettyyn roolisuodattimeen, vain "Kaikki roolit" -vaihtoehtoon. Kun
 haette tai suodatatte, tulosmäärä kuten "12/40 työntekijää" tulee
 näkyviin, sen tyhjentämistavan vierellä.
 
-## Rivien valitseminen ja joukkopoisto
+## Rivien valinta
 
-Rivien valintaruutujen merkitseminen valitsee ne; otsikon
-valintaruutu valitsee vain sivulla nyt näkyvät henkilöt, mutta
-valintanne säilyy sivua vaihtaessa tai suodattaessa, niin valinta voi
-kattaa enemmän henkilöitä kuin näytöllä on kerralla. Kun mitä tahansa
-on valittu, poistotoiminto tulee näkyviin ylläpitäjille, nimeten
-kuinka monta työntekijää on valittu; se poistaa pysyvästi kaikki valitut, kaikilta
-sivuilta, ei vain näkyvät. Katso
-[Henkilön poistaminen](/docs/erasing-a-person), mitä tämä tekee ja
-miten se vahvistetaan.
+Rivit valitaan valintaruuduista; otsikkorivin ruutu valitsee vain sivulla
+näkyvät henkilöt, mutta valintanne säilyy sivuja ja suodattimia vaihdettaessa,
+joten se voi kattaa enemmän henkilöitä kuin näytöllä kerralla näkyy. Se,
+mitä valinnalle voi tehdä, riippuu näkymästä. Aktiivisten työntekijöiden
+joukossa ainoa toiminto on arkistointi. Arkistoitujen työntekijöiden joukossa
+heidät voi palauttaa aktiivisiksi tai admin-oikeuksin poistaa pysyvästi;
+katso [Henkilön poistaminen](/docs/erasing-a-person), mitä se tekee ja miten
+se vahvistetaan.
+
+## Lähteneiden työntekijöiden arkistointi
+
+Organisaatiosta lähtenyt henkilö arkistoidaan, ei poisteta: valitkaa rivit ja
+valitkaa arkistointitoiminto, joka kertoo valittujen työntekijöiden määrän.
+Valintaikkuna kertoo, mitä arkistointi tekee, ja arkistoi heidät erissä
+laskurin päivittyessä. Arkistoitu henkilö poistuu aktiivisesta rekisteristä,
+luokittelusta, palkkakartoituksista ja lukumääristä, säilyttää
+palkkahistoriansa ja roolinsa ja voidaan palauttaa aktiiviseksi omalta
+sivultaan. Arkistointi on avoin kaikille jäsenille. Poistaminen on
+mahdollista vain arkistoidulle työntekijälle, arkistoidusta näkymästä
+tai henkilön omalta sivulta, ja vain admin-oikeuksin. Palkkatuonti voi
+myös arkistoida tiedostosta puuttuvat
+henkilöt; katso [Henkilöiden tuonti](/docs/importing-people).
 
 ## Lisääminen ja tuonti
 

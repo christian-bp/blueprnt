@@ -19,29 +19,44 @@ ett sidstorleksval på 25, 50 eller 100. En
 person vars roll eller senioritet fortfarande är ett obekräftat förslag
 visar en "Föreslagen"-märkning bredvid; märkningens ledtext förklarar
 att rollen inte är bekräftad än och kopplar idén till sidan
-Klassificera.
+Klassificera. En person som har slutat visas med brickan "Arkiverad" vid
+namnet och syns bara när statusväljaren visar arkiverade anställda.
 
 ## Söka och filtrera
 
 Sökfältet matchar på namn eller avdelning. Separata filter begränsar
-efter avdelning, roll, kön och sysselsättningsgrad (alla anställda,
-bara heltid, eller bara deltid); rollfiltret listar varje roll ni har
+efter avdelning, roll, kön och omfattning (alla anställda, bara heltid
+eller bara deltid), och en statusväljare visar antingen aktiva anställda
+(förvalet) eller arkiverade anställda; rollfiltret listar varje roll ni har
 skapat, inte bara roller som redan har personer. En person utan
 tilldelad roll matchar inget specifikt rollfilter, bara "Alla roller".
 När ni söker eller filtrerar visas ett resultatantal som "12 av 40
 anställda", tillsammans med ett sätt att rensa filtren.
 
-## Markera rader och massradering
+## Markera rader
 
-Att kryssa i rader markerar dem; rubrikkryssrutan markerar bara de
-personer som just nu syns på sidan, men er markering behålls när ni
-byter sida eller filtrerar, så en markering kan omfatta fler personer
-än de som syns på skärmen samtidigt. När något är markerat visas en
-raderingsåtgärd för administratörer, som anger hur många anställda som
-är markerade; den
-raderar permanent alla markerade, över alla sidor, inte bara de synliga.
-Se [Radera en anställd](/docs/erasing-a-person) för vad detta gör och
-hur det bekräftas.
+Genom att bocka i rader markerar ni dem; rubrikens kryssruta markerar bara
+de personer som visas på sidan, men markeringen behålls när ni bläddrar eller
+filtrerar, så den kan omfatta fler personer än de som syns samtidigt. Vad
+markeringen kan göra beror på vyn. Bland aktiva anställda är den enda
+åtgärden att arkivera dem. Bland arkiverade anställda kan ni återaktivera
+dem eller, som administratör, radera dem permanent; se
+[Radera en anställd](/docs/erasing-a-person) för vad det gör och hur det
+bekräftas.
+
+## Arkivera anställda som har slutat
+
+Den som har lämnat organisationen arkiveras, inte raderas: markera raderna
+och välj arkiveringsåtgärden som anger hur många anställda som är markerade.
+Dialogen säger vad arkivering innebär och arkiverar dem i omgångar med en
+löpande räkning. En arkiverad person lämnar det aktiva registret,
+klassificeringen, lönekartläggningarna och antalen, behåller sin
+lönehistorik och rolltilldelning, och kan återaktiveras från sin egen sida.
+Arkivering är öppen för alla medlemmar. Radering är möjlig bara för en
+arkiverad anställd, från den arkiverade vyn eller från personens egen
+sida, och bara för en administratör. En löneimport kan också arkivera
+personer som saknas i filen; se
+[Importera medarbetare](/docs/importing-people).
 
 ## Lägga till och importera
 
