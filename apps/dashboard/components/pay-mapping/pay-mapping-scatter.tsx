@@ -40,6 +40,7 @@ import {
   moneyAxisWidth,
   TOOLTIP_APPEAR,
 } from "@/lib/chart-style"
+import { paddedTickDomain } from "@/lib/padded-tick-domain"
 import {
   fteBaseMonthly,
   fteTotalMonthly,
@@ -76,36 +77,6 @@ const MEAN_LABEL_POSITION = {
   women: "insideBottomLeft",
   men: "insideTopRight",
 } as const
-
-// The Y axis, widened to contain the average lines as well as the dots.
-//
-// An auto domain fits the DOTS, and recharts silently drops a reference line
-// that falls outside it. The averages come from the engine's group figures,
-// which count everyone, while the plot can only draw people who also have a
-// birth date (or start date): one omitted high earner is enough to put the
-// men's average above every dot on screen, and the line for it would just not
-// be there. The flat group is the same trap without any missing data, since
-// identical pay collapses the domain to a single value.
-//
-// Recharts takes a function per bound, so this widens the fitted domain
-// instead of replacing it: the dots keep their own framing whenever the means
-// already sit inside.
-export function meanAwareYDomain(
-  means: ScatterMeans | undefined
-): [YBound, YBound] {
-  const values = [means?.women, means?.men].filter(
-    (value): value is number => value !== null && value !== undefined
-  )
-  if (values.length === 0) return ["auto", "auto"]
-  const low = Math.min(...values)
-  const high = Math.max(...values)
-  return [
-    (dataMin: number) => Math.min(dataMin, low),
-    (dataMax: number) => Math.max(dataMax, high),
-  ]
-}
-
-type YBound = "auto" | ((value: number) => number)
 
 // The scatter's X axis: age (from birthDate) or tenure (from
 // employmentStartDate), both whole years at the run's frozen referenceDate.
@@ -507,15 +478,31 @@ export function PayMappingScatter({
     )
   }
 
-  // Sized to the money labels this plot will actually draw, from every value
-  // the axis can reach: the points it plots plus the averages it draws lines
-  // for, which the domain widens to include.
-  const axisWidth = moneyAxisWidth(
-    [
-      ...points.map((point) => point.y),
-      ...(means === undefined ? [] : [means.women, means.men]),
-    ].filter((value): value is number => value !== null),
-    (value) => money(value, currency)
+  // Both axes step OUT from the data to round ticks (paddedTickDomain), so no
+  // one sits on the plot's edge: with two people in a group, one at each
+  // extreme, a fitted axis put one on the top edge and one on the bottom
+  // under labels that were their own salaries. The window is built over
+  // EVERY point (not only the shown ones) so toggling a key never reframes
+  // the plot, and over the averages too: they count everyone in the group,
+  // including people the plot cannot draw (no birth date), so an average can
+  // sit past every dot, and recharts silently drops a reference line outside
+  // the axis window. A flat group (identical pay) gets a window of its own
+  // rather than a collapsed axis.
+  const yFrame = paddedTickDomain([
+    ...points.map((point) => point.y),
+    ...(means === undefined ? [] : [means.women, means.men]).filter(
+      (value): value is number => value !== null
+    ),
+  ])
+  // Whole years, never below zero: a "48.5" tick between two people aged 48
+  // and 50 is an age nobody is, and a tenure cannot be negative.
+  const xFrame = paddedTickDomain(
+    points.map((point) => point.x),
+    { integer: true, floor: 0 }
+  )
+  // Sized to the money labels this plot will actually draw.
+  const axisWidth = moneyAxisWidth(yFrame.ticks, (value) =>
+    money(value, currency)
   )
 
   const shown = points.filter((point) => !pointHidden(point))
@@ -558,11 +545,17 @@ export function PayMappingScatter({
             margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
           >
             <CartesianGrid vertical={false} />
+            {/* interval={0}: the tick count is already sized for the plot by
+                paddedTickDomain, so recharts' own culling (by measured label
+                width) has nothing to add and would only thin a scale that
+                was chosen to be read whole. */}
             <XAxis
               type="number"
               dataKey="x"
               name={t(xMode)}
-              domain={["auto", "auto"]}
+              domain={xFrame.domain}
+              ticks={xFrame.ticks}
+              interval={0}
               tickLine={false}
               axisLine={false}
               tickMargin={8}
@@ -570,7 +563,9 @@ export function PayMappingScatter({
             <YAxis
               type="number"
               dataKey="y"
-              domain={meanAwareYDomain(means)}
+              domain={yFrame.domain}
+              ticks={yFrame.ticks}
+              interval={0}
               tickLine={false}
               axisLine={false}
               tickMargin={8}

@@ -5,7 +5,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { PayMappingSnapshotRow } from "./pay-mapping-gap-types"
 import {
   buildScatterPoints,
-  meanAwareYDomain,
   PayMappingScatter,
   type ScatterPoint,
   type ScatterXMode,
@@ -123,33 +122,6 @@ describe("buildScatterPoints", () => {
   })
 })
 
-describe("meanAwareYDomain", () => {
-  // Recharts drops a reference line that falls outside the axis domain, and
-  // an auto domain is fitted to the DOTS. The averages count everyone in the
-  // group, including the people the plot cannot draw (no birth date, no start
-  // date), so an average can legitimately sit above or below every dot: this
-  // is what keeps that line on the chart instead of silently missing.
-  it("widens the fitted domain to reach an average outside the dots", () => {
-    const [low, high] = meanAwareYDomain({ women: 30_000, men: 60_000 })
-    expect(typeof low === "function" && low(40_000)).toBe(30_000)
-    expect(typeof high === "function" && high(50_000)).toBe(60_000)
-  })
-
-  it("leaves the dots' own framing alone when the averages sit inside it", () => {
-    const [low, high] = meanAwareYDomain({ women: 38_000, men: 39_000 })
-    expect(typeof low === "function" && low(30_000)).toBe(30_000)
-    expect(typeof high === "function" && high(50_000)).toBe(50_000)
-  })
-
-  it("stays on the auto domain when there are no averages to fit", () => {
-    expect(meanAwareYDomain(undefined)).toEqual(["auto", "auto"])
-    expect(meanAwareYDomain({ women: null, men: null })).toEqual([
-      "auto",
-      "auto",
-    ])
-  })
-})
-
 const ROWS: PayMappingSnapshotRow[] = [
   row({ displayName: "Alex Doe", gender: "Kvinna" }),
   row({ displayName: "Bo Berg", gender: "Man" }),
@@ -179,6 +151,36 @@ function renderScatter(
       />
     </NextIntlClientProvider>
   )
+}
+
+// The rendered axes and dots, read back from the SVG recharts draws.
+function axisTicks(axis: "xAxis" | "yAxis"): SVGTextElement[] {
+  return [
+    ...document.querySelectorAll<SVGTextElement>(
+      `.recharts-${axis}-tick-labels .recharts-cartesian-axis-tick-value`
+    ),
+  ]
+}
+function yTickLabels(): string[] {
+  return axisTicks("yAxis").map((node) => node.textContent ?? "")
+}
+function xTickLabels(): string[] {
+  return axisTicks("xAxis").map((node) => node.textContent ?? "")
+}
+function yTickYs(): number[] {
+  return axisTicks("yAxis").map((node) => Number(node.getAttribute("y")))
+}
+// Each dot's pointer target is a transparent circle centred on the mark.
+function dotCenterYs(): number[] {
+  return [
+    ...document.querySelectorAll<SVGCircleElement>(
+      'circle[fill="transparent"]'
+    ),
+  ].map((node) => Number(node.getAttribute("cy")))
+}
+// "SEK 44,471" -> 44471, whatever the locale puts around the digits.
+function moneyValue(label: string): number {
+  return Number(label.replace(/[^\d]/g, ""))
 }
 
 describe("PayMappingScatter", () => {
@@ -277,6 +279,59 @@ describe("PayMappingScatter", () => {
     renderScatter()
     expect(screen.queryByText(m.womenMean)).toBeNull()
     expect(screen.queryByText(m.menMean)).toBeNull()
+  })
+
+  // The averages count everyone in the group, including the people the plot
+  // cannot draw (no birth date), so an average can legitimately sit below
+  // every dot. Recharts drops a reference line outside the axis window; the
+  // window is built from the averages as well as the dots so it never does.
+  it("keeps an average outside the dots on the chart", () => {
+    renderScatter({ means: { women: 30_000, men: 60_000 } })
+    expect(screen.getByText(m.womenMean)).toBeDefined()
+    expect(screen.getByText(m.menMean)).toBeDefined()
+    const tickValues = yTickLabels().map(moneyValue)
+    expect(Math.min(...tickValues)).toBeLessThanOrEqual(30_000)
+    expect(Math.max(...tickValues)).toBeGreaterThanOrEqual(60_000)
+  })
+
+  // Two people, one at each extreme: fitted to the raw values they sat on the
+  // plot's top and bottom edges under tick labels that were the values
+  // themselves. The window steps out to a round tick past each of them.
+  it("frames the two extremes inside the plot, on round ticks", () => {
+    renderScatter({
+      rows: [
+        row({
+          displayName: "Alex Doe",
+          gender: "Kvinna",
+          basicMonthly: 44_471,
+        }),
+        row({ displayName: "Bo Berg", gender: "Man", basicMonthly: 52_442 }),
+      ],
+      means: { women: 44_471, men: 52_442 },
+    })
+    const tickValues = yTickLabels().map(moneyValue)
+    expect(tickValues).not.toContain(44_471)
+    expect(tickValues).not.toContain(52_442)
+    expect(Math.min(...tickValues)).toBeLessThan(44_471)
+    expect(Math.max(...tickValues)).toBeGreaterThan(52_442)
+    // And on screen: the dots sit strictly between the outermost ticks.
+    const tickYs = yTickYs()
+    const dotYs = dotCenterYs()
+    expect(dotYs).toHaveLength(2)
+    expect(Math.min(...dotYs)).toBeGreaterThan(Math.min(...tickYs))
+    expect(Math.max(...dotYs)).toBeLessThan(Math.max(...tickYs))
+  })
+
+  // Ages and years of service are whole numbers; a "48.5" tick between two
+  // people aged 48 and 50 is a number nobody is.
+  it("labels the x axis in whole years, one past each extreme", () => {
+    renderScatter({
+      rows: [
+        row({ displayName: "Alex Doe", birthDate: "1978-01-01" }),
+        row({ displayName: "Bo Berg", gender: "Man", birthDate: "1976-01-01" }),
+      ],
+    })
+    expect(xTickLabels()).toEqual(["47", "48", "49", "50", "51"])
   })
 
   // A masked or single-gender group reports a null mean; that side simply has
