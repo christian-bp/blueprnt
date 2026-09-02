@@ -1,0 +1,106 @@
+packages/i18n/messages/en.json
+  s_a5a0b8b07c8eab::t_4e1eab1408d8aa 415-416
+  s_a5a0b8b07c8eab::t_4ccccb465b06fb 440-445
+  s_a5a0b8b07c8eab::t_1af75e8975a236 558,578-585
+  s_a5a0b8b07c8eab::t_4f2120bda9ba10 168
+  s_a5a0b8b07c8eab::t_cdb569358213e7 548-557
+  s_a5a0b8b07c8eab::t_5412c601d135a6 272-274
+  s_a5a0b8b07c8eab::t_f16eded04d7181 250
+  s_a5a0b8b07c8eab::t_ddeb4157d02bfb 2406-2408
+  s_a5a0b8b07c8eab::t_852cf37f20fc57 275
+  s_a5a0b8b07c8eab::t_be03ea5f826d61 779-780
+  s_a5a0b8b07c8eab::t_5a3933c2a08ecc 169-170
+  s_a5a0b8b07c8eab::t_bc4818d89bab67 251
+  s_a5a0b8b07c8eab::t_cdf0e4c795fc9b 547,570-577
+  s_a5a0b8b07c8eab::t_d22c37b9f3fbec 171
+  s_a5a0b8b07c8eab::t_fd5538431d7d94 249
+  s_a5a0b8b07c8eab::t_6d349aaa8a03c3 901
+packages/i18n/messages/sv.json
+  s_a5a0b8b07c8eab::t_da8bc3c035f191 249
+  s_a5a0b8b07c8eab::t_99e6b6af33f1ac 169-170
+  s_a5a0b8b07c8eab::t_1e4be7f022ab24 547
+  s_a5a0b8b07c8eab::t_5e406ba9d13a02 2406-2408
+  s_a5a0b8b07c8eab::t_b1bfc41c0f4119 548-557
+  s_a5a0b8b07c8eab::t_2a0999e9259aef 171
+  s_a5a0b8b07c8eab::t_41df1a0118e167 558,578-585
+  s_a5a0b8b07c8eab::t_da70cb4ab2ce07 275
+  s_a5a0b8b07c8eab::t_e640e4143e8467 436-441
+  s_a5a0b8b07c8eab::t_bfc20b29b0ead1 168
+  s_a5a0b8b07c8eab::t_a197fcf7e547f4 411-412
+  s_a5a0b8b07c8eab::t_89d239234c9ae9 251
+  s_a5a0b8b07c8eab::t_1b7d6bdd5646bd 250
+  s_a5a0b8b07c8eab::t_24d0f3210b6fb3 272-274
+  s_a5a0b8b07c8eab::t_0c3233b6256f31 570-577
+  s_a5a0b8b07c8eab::t_38187292fd6309 901
+  s_a5a0b8b07c8eab::t_e39eb11240e6bc 779-780
+packages/i18n/messages/da.json
+  s_a5a0b8b07c8eab::t_8be84855ab57ff 168
+  s_a5a0b8b07c8eab::t_fd68e1f516a040 171
+  s_a5a0b8b07c8eab::t_5056f7327f9764 558,578-585
+  s_a5a0b8b07c8eab::t_fbf06e3823c47c 250
+  s_a5a0b8b07c8eab::t_a270452c8cd406 547
+  s_a5a0b8b07c8eab::t_3b826b595e4494 275
+  s_a5a0b8b07c8eab::t_5100774d04af75 411-412
+  s_a5a0b8b07c8eab::t_a82e23d60e2724 901
+  s_a5a0b8b07c8eab::t_8feab503c31ba7 548-557
+  s_a5a0b8b07c8eab::t_42297c0a451e22 2406-2408
+  s_a5a0b8b07c8eab::t_89766c252703ce 436-441
+  s_a5a0b8b07c8eab::t_0d0ae4b39d567f 169-170
+  s_a5a0b8b07c8eab::t_ff1db50786a6ac 570-577
+  s_a5a0b8b07c8eab::t_24069fb0620898 779-780
+  s_a5a0b8b07c8eab::t_0312d6d68e0b33 249
+  s_a5a0b8b07c8eab::t_c5834173babcef 272-274
+  s_a5a0b8b07c8eab::t_ba87b6be358f3b 251
+packages/i18n/messages/fi.json
+  s_a5a0b8b07c8eab::t_61b4ad4f52c6bd 436-441
+  s_a5a0b8b07c8eab::t_a70609dbc16df1 249
+  s_a5a0b8b07c8eab::t_62e1ed3e5194b4 251
+  s_a5a0b8b07c8eab::t_f94ce9bdc66e9d 901
+  s_a5a0b8b07c8eab::t_04464b73153588 570-577
+  s_a5a0b8b07c8eab::t_dd1f56c139bad3 275
+  s_a5a0b8b07c8eab::t_1b175a89eb6943 272-274
+  s_a5a0b8b07c8eab::t_4d854a55e3bddb 558,578-585
+  s_a5a0b8b07c8eab::t_6e57d76fee782c 2406-2408
+  s_a5a0b8b07c8eab::t_e1b6e2e0e77d39 779-780
+  s_a5a0b8b07c8eab::t_6e78a299220e15 548-557
+  s_a5a0b8b07c8eab::t_6fd88804a8387a 547
+  s_a5a0b8b07c8eab::t_1c974479afaa6a 169-170
+  s_a5a0b8b07c8eab::t_58982191d9b0dc 171
+  s_a5a0b8b07c8eab::t_1af6ac3bd34f43 411-412
+  s_a5a0b8b07c8eab::t_2c80e7956944c5 168
+  s_a5a0b8b07c8eab::t_d7d003b6f867ac 250
+packages/i18n/messages/nb.json
+  s_a5a0b8b07c8eab::t_6cdb24d4b6e6da 436-441
+  s_a5a0b8b07c8eab::t_985855e87c62a3 168
+  s_a5a0b8b07c8eab::t_020362075d3b8b 250
+  s_a5a0b8b07c8eab::t_84129d0378cec6 779-780
+  s_a5a0b8b07c8eab::t_d86e6b042f4b4e 272-274
+  s_a5a0b8b07c8eab::t_aaa87a76b6dfa3 249
+  s_a5a0b8b07c8eab::t_a09523451540be 547
+  s_a5a0b8b07c8eab::t_77e8794337e936 548-557
+  s_a5a0b8b07c8eab::t_0c0fae4dacddf7 570-577
+  s_a5a0b8b07c8eab::t_099b18bf929d49 558,578-585
+  s_a5a0b8b07c8eab::t_6e22a8baf2c300 901
+  s_a5a0b8b07c8eab::t_ed04fd485493ce 169-170
+  s_a5a0b8b07c8eab::t_16cf682586da67 2406-2408
+  s_a5a0b8b07c8eab::t_bc60ea0d0c46d9 251
+  s_a5a0b8b07c8eab::t_f772c2f71621d1 411-412
+  s_a5a0b8b07c8eab::t_94cdf824145d15 171
+  s_a5a0b8b07c8eab::t_b2af175e501ef1 275
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "6d6e346c1e24b56b3c23638f42f3868d841e3b60",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
