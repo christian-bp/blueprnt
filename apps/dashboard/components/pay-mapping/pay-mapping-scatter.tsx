@@ -33,6 +33,7 @@ import {
 } from "@/components/gender-mark"
 import { WidgetCard } from "@/components/widget-card"
 import { ChartCanvas, ChartCanvasSkeleton } from "@/components/chart-canvas"
+import { useBasePayFormat } from "@/hooks/use-base-pay-format"
 import { useMoney } from "@/hooks/use-money"
 import {
   CHART_TOOLTIP_MOTION,
@@ -44,6 +45,7 @@ import { paddedTickDomain } from "@/lib/padded-tick-domain"
 import {
   fteBaseMonthly,
   fteTotalMonthly,
+  isHourlyRow,
   type PayMappingSnapshotRow,
 } from "./pay-mapping-gap-types"
 
@@ -170,6 +172,7 @@ export function ScatterTooltipContent({
   const tGap = useTranslations("dashboard.payMapping.gap")
   const tGender = useTranslations("dashboard.people.gender")
   const money = useMoney()
+  const basePayFormat = useBasePayFormat()
   const { row } = point
   const variable = row.components.reduce((sum, c) => sum + c.monthlyAmount, 0)
   // From the ROW, not from point.y: the axis may be drawing base salary, and a
@@ -214,6 +217,9 @@ export function ScatterTooltipContent({
           <dt className="text-muted-foreground">{t("basic")}</dt>
           <dd className="tabular-nums">
             {money(row.basicMonthly ?? 0, currency)}
+            {isHourlyRow(row) &&
+              row.basicAmount !== undefined &&
+              ` (${basePayFormat(row.basicAmount, "hourly", currency)})`}
           </dd>
         </div>
         {variable > 0 && (

@@ -344,6 +344,9 @@ export type PayMappingReportLabels = {
   coverageNote: string
   maskingNote: string
   measuresNote: string
+  // The hourly-pay conversion-factor line: null when the run has no
+  // hourly-paid rows, so the method section states nothing to convert.
+  hourlyNote: string | null
   maskedCell: string
 }
 
@@ -1549,6 +1552,9 @@ export function PayMappingReportPdf({
           </View>
           <Text style={s.note}>{labels.pointBudgetLine}</Text>
           <Text style={s.note}>{labels.measuresNote}</Text>
+          {labels.hourlyNote !== null && (
+            <Text style={s.note}>{labels.hourlyNote}</Text>
+          )}
           <Text style={s.note}>{labels.statisticsNote}</Text>
           <Text style={s.note}>{labels.individualNote}</Text>
           <Text style={s.note}>{labels.coverageNote}</Text>

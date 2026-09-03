@@ -15,6 +15,7 @@ import type { PayGapReason, PraxisAreaKey } from "@workspace/constants"
 import { BASE_PRAXIS_AREA_KEYS } from "@workspace/constants"
 import type { PayGapFlag } from "@workspace/core"
 import { genderStats, percentileOf } from "@workspace/core"
+import type { useTranslations } from "next-intl"
 import type {
   ActionPriority,
   ActionStatus,
@@ -34,6 +35,7 @@ import {
   fteBaseMonthly,
   fteTotalMonthly,
   groupLabel,
+  isHourlyRow,
   rowInGroup,
   targetGroupLabel,
 } from "./pay-mapping-gap-types"
@@ -334,6 +336,10 @@ export interface PayMappingReportDoc {
   }
   notes: ReportNoteRow[]
   previousEvaluation: ReportPreviousEvaluation | null
+  // The run's resolved full-time hours per month at freeze time (the method
+  // section's conversion-factor note), mirrored from PayMappingRunDetail so
+  // the template need not thread the run itself through.
+  fullTimeHoursDefault: number
   method: {
     criteria: { name: string; weightPoints: number; sharePct: string }[]
     pointBudget: number
@@ -341,6 +347,11 @@ export interface PayMappingReportDoc {
     singletonCount: number
     genderPureCount: number
     reverseCount: number
+    // Priced rows paid hourly, and among those, the count whose own
+    // hoursPerMonth differs from the run's full-time default (the method
+    // note's "N people with a value of their own" clause).
+    hourlyRowCount: number
+    ownHoursCount: number
   }
 }
 
@@ -862,6 +873,16 @@ export function assemblePayMappingReport(input: {
     0
   )
 
+  // The method note's conversion-factor line: how many priced rows were paid
+  // hourly, and how many of those carried their own hours rather than the
+  // run's full-time default.
+  const hourlyRows = pricedRows.filter(isHourlyRow)
+  const ownHoursCount = hourlyRows.filter(
+    (row) =>
+      row.hoursPerMonth !== undefined &&
+      row.hoursPerMonth !== run.fullTimeHoursDefault
+  ).length
+
   // Org-level medians over the priced population's total compensation (the
   // same measure the org mean uses); population-level like the mean, so
   // never masked, but a gender with no priced rows has no median.
@@ -987,6 +1008,7 @@ export function assemblePayMappingReport(input: {
     actionTotals,
     notes: noteRows,
     previousEvaluation,
+    fullTimeHoursDefault: run.fullTimeHoursDefault,
     method: {
       criteria: run.frozenCriteria.map((criterion) => ({
         name: criterion.name,
@@ -1001,6 +1023,8 @@ export function assemblePayMappingReport(input: {
       singletonCount: gap.excluded.singletonCount,
       genderPureCount: gap.excluded.genderPure.length,
       reverseCount: gap.excluded.reverse.length,
+      hourlyRowCount: hourlyRows.length,
+      ownHoursCount,
     },
   }
 }
@@ -1033,6 +1057,24 @@ export function unionReportDoc(doc: PayMappingReportDoc): PayMappingReportDoc {
           },
     notes: [],
   }
+}
+
+// The method section's hourly-conversion note: null when the run has no
+// hourly rows (nothing to explain), otherwise the sentence naming the run's
+// full-time hours default and how many hourly rows carried their own value.
+// Pure so the gating condition (hourlyRowCount, not ownHoursCount) and the
+// argument mapping (hours <- fullTimeHoursDefault, count <- ownHoursCount)
+// are pinned once and shared by every renderer (the export hook, and any
+// future consumer) instead of re-derived inline.
+export function hourlyNoteLabel(
+  doc: Pick<PayMappingReportDoc, "fullTimeHoursDefault" | "method">,
+  t: ReturnType<typeof useTranslations<"dashboard.payMapping.report">>
+): string | null {
+  if (doc.method.hourlyRowCount === 0) return null
+  return t("hourlyNote", {
+    hours: doc.fullTimeHoursDefault,
+    count: doc.method.ownHoursCount,
+  })
 }
 
 // The continuation-header derivation for the multi-pass render: given where

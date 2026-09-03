@@ -36,6 +36,7 @@ import {
   computeHeaderBreaks,
   EXPORT_MIN_GROUP_SIZE,
   EXPORT_MIN_PER_GENDER,
+  hourlyNoteLabel,
   type ReportPreviousInput,
   unionReportDoc,
 } from "./pay-mapping-report-data"
@@ -494,6 +495,7 @@ export function usePayMappingReportExport(): {
       measuresNote: t("measuresNote", {
         currency: doc.currency ?? "-",
       }),
+      hourlyNote: hourlyNoteLabel(doc, t),
       maskedCell: t("maskedCell"),
     }
 

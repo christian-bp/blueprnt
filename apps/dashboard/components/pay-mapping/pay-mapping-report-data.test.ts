@@ -1,3 +1,5 @@
+import messages from "@workspace/i18n/messages/en.json"
+import { createTranslator } from "next-intl"
 import { describe, expect, it } from "vitest"
 import {
   makeExcluded,
@@ -17,10 +19,17 @@ import {
   computeHeaderBreaks,
   exportMasksGenderMeans,
   exportMasksWholeGroupMean,
+  hourlyNoteLabel,
   orgVariablePayStats,
   type ReportFormatters,
   unionReportDoc,
 } from "./pay-mapping-report-data"
+
+const tReport = createTranslator({
+  locale: "en",
+  messages,
+  namespace: "dashboard.payMapping.report",
+})
 
 // Marker formatters: assertions read the raw figure back out of the marker,
 // so a wrong number and a missing formatting call both fail loudly. The
@@ -397,6 +406,116 @@ describe("assemblePayMappingReport", () => {
         sharePct: `P${(2 / 6) * 100}`,
       },
     ])
+  })
+
+  // The method note's conversion-factor line: hourlyRowCount covers every
+  // priced hourly row, ownHoursCount only those whose hoursPerMonth differs
+  // from the run's full-time default.
+  it("counts hourly-paid rows and those with their own hours for the method note", () => {
+    const hourlyRow = (
+      overrides: Partial<PayMappingSnapshotRow>
+    ): PayMappingSnapshotRow => ({
+      personPublicId: "p1",
+      displayName: "Anna",
+      erased: false,
+      gender: "Kvinna",
+      roleTitle: "SWE",
+      trackKey: "ic",
+      seniority: "Senior",
+      level: 3,
+      basicMonthly: 30000,
+      components: [],
+      basis: "hourly",
+      basicAmount: 200,
+      hoursPerMonth: 150,
+      ...overrides,
+    })
+    const doc = assemblePayMappingReport({
+      run: makeRunDetail({
+        fullTimeHoursDefault: 165,
+        rows: [
+          hourlyRow({ personPublicId: "p1", hoursPerMonth: 150 }),
+          hourlyRow({ personPublicId: "p2", hoursPerMonth: 165 }),
+        ],
+      }),
+      gap: makeGapResult(),
+      analyses: [],
+      actions: [],
+      notes: [],
+      previous: null,
+      formatters,
+    })
+    expect(doc.method.hourlyRowCount).toBe(2)
+    expect(doc.method.ownHoursCount).toBe(1)
+    expect(doc.fullTimeHoursDefault).toBe(165)
+  })
+
+  it("assembles no hourly rows for a run with none", () => {
+    const doc = assemblePayMappingReport({
+      run: makeRunDetail({ fullTimeHoursDefault: 165 }),
+      gap: makeGapResult(),
+      analyses: [],
+      actions: [],
+      notes: [],
+      previous: null,
+      formatters,
+    })
+    expect(doc.method.hourlyRowCount).toBe(0)
+  })
+
+  it("hourlyNoteLabel is null when the run has no hourly rows", () => {
+    const doc = assemblePayMappingReport({
+      run: makeRunDetail({ fullTimeHoursDefault: 165 }),
+      gap: makeGapResult(),
+      analyses: [],
+      actions: [],
+      notes: [],
+      previous: null,
+      formatters,
+    })
+    expect(doc.method.hourlyRowCount).toBe(0)
+    expect(hourlyNoteLabel(doc, tReport)).toBeNull()
+  })
+
+  it("hourlyNoteLabel names the run's full-time hours default and the own-hours count, through the real en catalog", () => {
+    const hourlyRow = (
+      overrides: Partial<PayMappingSnapshotRow>
+    ): PayMappingSnapshotRow => ({
+      personPublicId: "p1",
+      displayName: "Anna",
+      erased: false,
+      gender: "Kvinna",
+      roleTitle: "SWE",
+      trackKey: "ic",
+      seniority: "Senior",
+      level: 3,
+      basicMonthly: 30000,
+      components: [],
+      basis: "hourly",
+      basicAmount: 200,
+      hoursPerMonth: 150,
+      ...overrides,
+    })
+    const doc = assemblePayMappingReport({
+      run: makeRunDetail({
+        fullTimeHoursDefault: 165,
+        rows: [
+          hourlyRow({ personPublicId: "p1", hoursPerMonth: 150 }),
+          hourlyRow({ personPublicId: "p2", hoursPerMonth: 165 }),
+        ],
+      }),
+      gap: makeGapResult(),
+      analyses: [],
+      actions: [],
+      notes: [],
+      previous: null,
+      formatters,
+    })
+    expect(doc.method.hourlyRowCount).toBe(2)
+    expect(doc.method.ownHoursCount).toBe(1)
+    expect(hourlyNoteLabel(doc, tReport)).toBe(
+      "Hourly pay is converted to full-time-equivalent monthly pay using 165 full-time hours per month (1 person with a value of their own)."
+    )
   })
 
   it("carries medians, year-over-year figures, spread and the excluded lists", () => {

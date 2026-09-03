@@ -175,6 +175,32 @@ describe("GroupMemberTable", () => {
     }
   })
 
+  // An hourly-paid member carries a state chip in the name cell, so the
+  // reader knows the pay figure beside it was converted; a monthly row
+  // carries none.
+  it("marks an hourly-paid row with the Hourly badge, and a monthly row with none", () => {
+    renderTable({
+      group: GROUP,
+      metrics: GROUP,
+      rows: [
+        memberRow({
+          displayName: "Hourly Hanna",
+          gender: "Kvinna",
+          basis: "hourly",
+        }),
+        memberRow({ displayName: "Monthly Mona", gender: "Kvinna" }),
+      ],
+      currency: "SEK",
+    })
+    const cellOf = (name: string) =>
+      screen.getByText(name).closest("td") as HTMLElement
+    expect(within(cellOf("Hourly Hanna")).getByText(m.hourlyChip)).toBeDefined()
+    expect(within(cellOf("Monthly Mona")).queryByText(m.hourlyChip)).toBeNull()
+    // The name keeps truncating: the badge sits in a block flex wrapper
+    // beside it, never inflating the cell's own line box.
+    expect(screen.getByText("Hourly Hanna").className).toContain("truncate")
+  })
+
   function manyMembers(count: number) {
     return Array.from({ length: count }, (_, i) =>
       memberRow({
@@ -267,6 +293,44 @@ describe("GroupMemberTable", () => {
     })
     expect(
       screen.getByText(m.detail.fteShare.replace("{fte}", "50"))
+    ).toBeDefined()
+  })
+
+  // An hourly row's base figure is a rate, never FTE-adjusted, so the FTE
+  // suffix beside it would misdescribe the figure; a monthly row at the same
+  // share still carries it.
+  it("omits the FTE suffix on an hourly row's base figure, but keeps it on a monthly row", () => {
+    renderTable({
+      group: GROUP,
+      metrics: GROUP,
+      rows: [
+        memberRow({
+          displayName: "Hilda Hourly",
+          gender: "Kvinna",
+          basis: "hourly",
+          ftePercent: 75,
+        }),
+        memberRow({
+          displayName: "Maja Monthly",
+          gender: "Kvinna",
+          basicMonthly: 45000,
+          ftePercent: 75,
+        }),
+      ],
+      currency: "SEK",
+    })
+    const cellOf = (name: string) =>
+      screen.getByText(name).closest("tr") as HTMLElement
+    expect(within(cellOf("Hilda Hourly")).getByText(m.hourlyChip)).toBeDefined()
+    expect(
+      within(cellOf("Hilda Hourly")).queryByText(
+        m.detail.fteShare.replace("{fte}", "75")
+      )
+    ).toBeNull()
+    expect(
+      within(cellOf("Maja Monthly")).getByText(
+        m.detail.fteShare.replace("{fte}", "75")
+      )
     ).toBeDefined()
   })
 

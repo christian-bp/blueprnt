@@ -1,6 +1,7 @@
 "use client"
 
 import { diffVsMenMean } from "@workspace/core"
+import { Badge } from "@workspace/ui/components/badge"
 import {
   Table,
   TableBody,
@@ -38,6 +39,7 @@ import {
   fteBaseMonthly,
   fteTotalMonthly,
   type GapGroup,
+  isHourlyRow,
   membersOf,
   type PayMappingActionWire,
   type PayMappingNoteWire,
@@ -62,6 +64,7 @@ export interface MemberRow {
   ftePercent: number | null
   diffKr: number | null
   diffPct: number | null
+  hourly: boolean
 }
 
 // The group's own figures, which give each member a difference against the
@@ -96,6 +99,7 @@ export function buildMemberRows(
       ftePercent: row.ftePercent ?? null,
       diffKr: diff?.kr ?? null,
       diffPct: diff?.pct ?? null,
+      hourly: isHourlyRow(row),
     }
   })
 }
@@ -169,6 +173,7 @@ export function GroupMemberTable({
   const t = useTranslations("dashboard.payMapping.detail")
   const tGender = useTranslations("dashboard.people.gender")
   const tToolbar = useTranslations("dashboard.payMapping.toolbar")
+  const tPayMapping = useTranslations("dashboard.payMapping")
   const format = useFormatter()
   const money = useMoney()
 
@@ -309,8 +314,20 @@ export function GroupMemberTable({
               return (
                 // biome-ignore lint/suspicious/noArrayIndexKey: frozen rows, no stable id on the wire
                 <TableRow key={index}>
-                  <TableCell className="truncate font-medium">
-                    {row.erased ? t("erased") : row.name}
+                  <TableCell className="font-medium">
+                    {/* Block flex wrapper: an inline-flex Badge directly in
+                        the cell inflates the line box and desyncs the
+                        skeleton rows (skeleton-parity rule). */}
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span className="truncate">
+                        {row.erased ? t("erased") : row.name}
+                      </span>
+                      {row.hourly && (
+                        <Badge variant="outline">
+                          {tPayMapping("hourlyChip")}
+                        </Badge>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     <span className="flex items-center gap-1.5">
@@ -328,12 +345,16 @@ export function GroupMemberTable({
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
                     {money(row.base, currency)}
-                    {row.ftePercent !== null && row.ftePercent < 100 && (
-                      <span className="text-muted-foreground">
-                        {" "}
-                        {t("fteShare", { fte: row.ftePercent })}
-                      </span>
-                    )}
+                    {/* An hourly row's base figure is a rate, never
+                        FTE-adjusted, so the FTE suffix would misdescribe it. */}
+                    {!row.hourly &&
+                      row.ftePercent !== null &&
+                      row.ftePercent < 100 && (
+                        <span className="text-muted-foreground">
+                          {" "}
+                          {t("fteShare", { fte: row.ftePercent })}
+                        </span>
+                      )}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
                     {money(row.tcc, currency)}

@@ -758,6 +758,30 @@ describe("ScatterTooltipContent", () => {
     expect(screen.queryByText("SEK 50,000")).toBeNull()
   })
 
+  // The basic line is the one per-person surface that shows a base figure:
+  // for an hourly row it keeps the normalized monthly base and appends the
+  // raw rate in parentheses, so the reader never mistakes the monthly figure
+  // for an hourly one. A monthly row shows no parenthetical at all.
+  it("appends the raw rate to the basic line for an hourly row, and shows none for a monthly one", () => {
+    const point: ScatterPoint = {
+      x: 5,
+      y: 40000,
+      woman: true,
+      row: row({ basicMonthly: 40000, basis: "hourly", basicAmount: 195 }),
+    }
+    renderTooltip(point)
+    expect(screen.getByText("SEK 40,000 (SEK 195/h)")).toBeDefined()
+    cleanup()
+    renderTooltip({
+      x: 5,
+      y: 40000,
+      woman: true,
+      row: row({ basicMonthly: 40000 }),
+    })
+    expect(screen.getAllByText("SEK 40,000")).toHaveLength(2)
+    expect(screen.queryByText(/\/h/)).toBeNull()
+  })
+
   it("omits the variable line when there is no variable pay", () => {
     const point: ScatterPoint = {
       x: 5,

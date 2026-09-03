@@ -314,6 +314,7 @@ const LABELS: PayMappingReportLabels = {
   coverageNote: "0 singletons, 0 single-gender, 0 reverse.",
   maskingNote: "Small cells masked (0 groups).",
   measuresNote: "FTE-adjusted monthly amounts in SEK.",
+  hourlyNote: null,
   maskedCell: "-",
   erasedContent: "Content removed when the person was erased.",
 }
@@ -359,6 +360,27 @@ describe("PayMappingReportPdf (real render)", () => {
     const short = await pageCount(DOC)
     const long = await pageCount(buildDoc("word ".repeat(2400).trim()))
     expect(long).toBeGreaterThan(short + 1)
+  })
+
+  // The rendered PDF's text is glyph-encoded (embedded font, no literal
+  // ASCII in the stream), so presence is asserted by content growth rather
+  // than a text search: a real added note line grows the rendered output,
+  // a null note (no hourly-paid rows in the run) adds nothing.
+  it("renders the method section's hourly note only when one is given", async () => {
+    const withoutNote = await pdf(
+      <PayMappingReportPdf doc={DOC} labels={LABELS} />
+    ).toBlob()
+    const withNote = await pdf(
+      <PayMappingReportPdf
+        doc={DOC}
+        labels={{
+          ...LABELS,
+          hourlyNote:
+            "Hourly pay is converted to full-time-equivalent monthly pay using 165 full-time hours per month (1 person with a value of their own).",
+        }}
+      />
+    ).toBlob()
+    expect(withNote.size).toBeGreaterThan(withoutNote.size)
   })
 
   it("captures every section's page number in a first pass", async () => {
