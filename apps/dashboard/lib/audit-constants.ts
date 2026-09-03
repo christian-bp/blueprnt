@@ -5,6 +5,7 @@ import {
 import { criteriaLibraryContent } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import type { ActionTargetKind } from "@workspace/backend/convex/payMapping/tables"
 import type {
+  BasePayBasis,
   CountryKey,
   EmploymentType,
   IndustryKey,
@@ -266,6 +267,13 @@ export const SALARY_SOURCE_VALUE_KEYS: Record<SalarySource, string> = {
   manual: "auditLog.values.source.manual",
 }
 
+// pay.* `basis` (people/tables.ts basePayBasis): labeled where the salary
+// dialog labels the same choice, so the diff reads "Pay basis: Hourly pay".
+export const SALARY_BASIS_VALUE_KEYS: Record<BasePayBasis, string> = {
+  monthly: "people.salaryForm.basis.monthly",
+  hourly: "people.salaryForm.basis.hourly",
+}
+
 // role `trackKey`: the fixed V1 tracks (ADR-0006). The labels are the same
 // in every locale by design (the Nordic convention keeps these English), but
 // they still live in i18n like every other displayed string.
@@ -378,6 +386,7 @@ const CODED_FIELD_DOMAINS: Record<string, Record<string, string>> = {
   employmentType: EMPLOYMENT_TYPE_VALUE_KEYS,
   gender: GENDER_VALUE_KEYS,
   source: SALARY_SOURCE_VALUE_KEYS,
+  basis: SALARY_BASIS_VALUE_KEYS,
   trackKey: TRACK_VALUE_KEYS,
   kind: AI_KIND_VALUE_KEYS,
   priority: ACTION_PRIORITY_VALUE_KEYS,

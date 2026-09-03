@@ -16,6 +16,7 @@ import {
   PAY_GAP_REASON_VALUE_KEYS,
   PRAXIS_AREA_VALUE_KEYS,
   resolveCodedValue,
+  SALARY_BASIS_VALUE_KEYS,
   SALARY_SOURCE_VALUE_KEYS,
   SCOPE_VALUE_KEYS,
   SENIORITY_SOURCE_VALUE_KEYS,
@@ -235,6 +236,9 @@ describe("resolveCodedValue", () => {
     expect(resolveCodedValue("source", "import", translate)).toBe(
       SALARY_SOURCE_VALUE_KEYS.import
     )
+    expect(resolveCodedValue("basis", "hourly", translate)).toBe(
+      SALARY_BASIS_VALUE_KEYS.hourly
+    )
     expect(resolveCodedValue("trackKey", "IC", translate)).toBe(
       TRACK_VALUE_KEYS.IC
     )
@@ -280,6 +284,43 @@ describe("resolveCodedValue", () => {
     expect(
       resolveCodedValue("scope", "equalWork", () => undefined)
     ).toBeUndefined()
+  })
+})
+
+// Reads a dot path off the real en catalog (e.g. "people.salaryForm.basis.hourly"
+// -> en.dashboard.people.salaryForm.basis.hourly), mirroring the resolver a real
+// caller builds from useTranslations("dashboard"). Used only for the test below,
+// which exercises the real catalog end to end rather than a stub, so a `basis`
+// diff is checked against the exact wording a user sees.
+function realDashboardString(key: string): string | undefined {
+  const node = key
+    .split(".")
+    .reduce<unknown>(
+      (acc, part) =>
+        acc && typeof acc === "object"
+          ? (acc as Record<string, unknown>)[part]
+          : undefined,
+      en.dashboard
+    )
+  return typeof node === "string" ? node : undefined
+}
+
+describe("pay.salarySet basis change (real catalog)", () => {
+  it("renders the label 'Pay basis' and the value 'Hourly pay', never the raw code", () => {
+    const realFieldLabel = (field: string) =>
+      realDashboardString(`auditLog.fields.${field}`) ?? field
+    const realValueLabel = (field: string, value: string) =>
+      resolveCodedValue(field, value, realDashboardString)
+
+    expect(
+      formatChanges(
+        { basis: { from: null, to: "hourly" } },
+        realFieldLabel,
+        undefined,
+        undefined,
+        realValueLabel
+      )
+    ).toBe("Pay basis: Hourly pay")
   })
 })
 

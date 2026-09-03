@@ -26,6 +26,7 @@ import { WEIGHT_MOTIVATION_AUDIT_FIELDS } from "@workspace/backend/convex/evalua
 import { APPROVAL_REOPEN_CAUSES } from "@workspace/backend/convex/evaluationModel/approvalCauses"
 import { ACTION_TARGET_KINDS } from "@workspace/backend/convex/payMapping/tables"
 import {
+  BASE_PAY_BASES,
   COUNTRY_KEYS,
   EMPLOYMENT_TYPES,
   INDUSTRY_KEYS,
@@ -56,6 +57,7 @@ import {
   PAY_GAP_REASON_VALUE_KEYS,
   PLATFORM_AUDIT_FILTER_CATEGORIES,
   PRAXIS_AREA_VALUE_KEYS,
+  SALARY_BASIS_VALUE_KEYS,
   SALARY_SOURCE_VALUE_KEYS,
   SCOPE_VALUE_KEYS,
   SENIORITY_SOURCE_VALUE_KEYS,
@@ -230,6 +232,9 @@ const OTHER_AUDIT_FIELDS = [
   "skippedRows",
   "peopleArchived",
   "peopleReactivated",
+  // people.imported flat-stat field (auditPayloads.ts): the count of imported
+  // rows read as hourly pay, alongside salariesImported.
+  "hourlyPay",
   "suggested",
   "skipped",
   "unmatchedTitles",
@@ -420,6 +425,9 @@ describe("audit log value labels", () => {
     expect(Object.keys(SALARY_SOURCE_VALUE_KEYS).sort()).toEqual(
       [...SALARY_SOURCES].sort()
     )
+    expect(Object.keys(SALARY_BASIS_VALUE_KEYS).sort()).toEqual(
+      [...BASE_PAY_BASES].sort()
+    )
     expect(Object.keys(TRACK_VALUE_KEYS).sort()).toEqual(
       Object.keys(TRACK_SENIORITIES).sort()
     )
@@ -450,6 +458,7 @@ describe("audit log value labels", () => {
       ...Object.values(GENDER_VALUE_KEYS),
       ...Object.values(INDUSTRY_VALUE_KEYS),
       ...Object.values(SALARY_SOURCE_VALUE_KEYS),
+      ...Object.values(SALARY_BASIS_VALUE_KEYS),
       ...Object.values(TRACK_VALUE_KEYS),
       ...Object.values(AI_KIND_VALUE_KEYS),
       ...Object.values(CAUSE_EVENT_VALUE_KEYS),

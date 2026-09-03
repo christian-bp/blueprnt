@@ -498,10 +498,12 @@ export const FIELD_DISPLAY_ORDER = [
   "employmentType",
   "employmentStartDate",
   "ftePercent",
+  "fullTimeHoursPerMonth",
   "isManager",
   "statisticalCode",
   // Pay diff fields (pay.* events); currency is already above.
   "payYear",
+  "basis",
   "source",
   // Assignment diff fields (assignment.set).
   "roleId",
@@ -516,6 +518,7 @@ export const FIELD_DISPLAY_ORDER = [
   "skippedRows",
   "peopleArchived",
   "peopleReactivated",
+  "hourlyPay",
   "suggested",
   "skipped",
   "unmatchedTitles",

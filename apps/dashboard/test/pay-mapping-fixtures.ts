@@ -62,6 +62,7 @@ export function makeRunDetail(
     label: "Pay mapping 2026",
     status: "active",
     referenceDate: Date.UTC(2026, 6, 1),
+    fullTimeHoursDefault: 165,
     populationCount: 6,
     rows: [],
     collaboration: null,

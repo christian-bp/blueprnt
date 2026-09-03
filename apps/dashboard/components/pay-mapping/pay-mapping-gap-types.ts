@@ -1,5 +1,9 @@
 import type { Doc, Id } from "@workspace/backend/convex/_generated/dataModel"
-import { fteTotalMonthlyComp, type PayGapReason } from "@workspace/constants"
+import {
+  type BasePayBasis,
+  fteTotalMonthlyComp,
+  type PayGapReason,
+} from "@workspace/constants"
 import type { GenderTally, PayGapFlag } from "@workspace/core"
 
 // Re-exported for the overview widgets.
@@ -259,6 +263,11 @@ export interface PayMappingSnapshotRow {
   seniority: string
   level: number | null
   basicMonthly: number | null
+  // The frozen raw figure, its basis and the full-time hours used to derive
+  // basicMonthly. Present exactly when basicMonthly is non-null.
+  basis?: BasePayBasis
+  basicAmount?: number
+  hoursPerMonth?: number
   components: { kind: string; monthlyAmount: number }[]
   birthDate?: string
   employmentStartDate?: string
@@ -293,19 +302,33 @@ export function targetGroupLabel(target: ActionTargetWire): string {
   return groupLabel({ roleTitle: roleTitle ?? null, seniority: null })
 }
 
+// Whether a frozen row's base pay was entered as an hourly rate: the one
+// check every basis-aware surface reads, so the comparison never drifts.
+export function isHourlyRow(
+  row: Pick<PayMappingSnapshotRow, "basis">
+): boolean {
+  return row.basis === "hourly"
+}
+
 // A member's FTE-adjusted base salary and total compensation: the SAME
 // derivation the backend engine uses (gap.ts), shared here so no view can
 // silently diverge from the engine's numbers (e.g. by forgetting the
 // empty components array in the base case).
 export function fteBaseMonthly(row: PayMappingSnapshotRow): number {
-  return fteTotalMonthlyComp(row.basicMonthly ?? 0, [], row.ftePercent)
+  return fteTotalMonthlyComp(
+    row.basicMonthly ?? 0,
+    [],
+    row.ftePercent,
+    row.basis ?? "monthly"
+  )
 }
 
 export function fteTotalMonthly(row: PayMappingSnapshotRow): number {
   return fteTotalMonthlyComp(
     row.basicMonthly ?? 0,
     row.components,
-    row.ftePercent
+    row.ftePercent,
+    row.basis ?? "monthly"
   )
 }
 
@@ -374,6 +397,9 @@ export interface PayMappingRunDetail {
   // The freeze time (epoch ms): the scatter computes age/tenure at this
   // frozen date, never the live clock.
   referenceDate: number
+  // The organization's resolved full-time hours per month at freeze time (the
+  // report's method note). A row's own hoursPerMonth wins when it differs.
+  fullTimeHoursDefault: number
   // The frozen headcount. Same field the run list reports, so the overview's
   // population card compares like with like across mappings.
   populationCount: number
