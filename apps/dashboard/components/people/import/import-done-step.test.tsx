@@ -19,6 +19,7 @@ function renderDone(
     skipped: number
     reactivated: number
     archived: number
+    hourlyPay: number
   } = {
     created: 5,
     updated: 2,
@@ -26,6 +27,7 @@ function renderDone(
     skipped: 1,
     reactivated: 0,
     archived: 0,
+    hourlyPay: 0,
   }
 ) {
   return render(
@@ -77,6 +79,7 @@ describe("ImportDoneStep", () => {
       skipped: 0,
       reactivated: 1,
       archived: 4,
+      hourlyPay: 0,
     })
     const reactivated = screen.getByTestId("done-reactivated")
     expect(reactivated.textContent).toContain(m.reactivated)
@@ -84,5 +87,25 @@ describe("ImportDoneStep", () => {
     const archived = screen.getByTestId("done-archived")
     expect(archived.textContent).toContain(m.archived)
     expect(archived.textContent).toContain("4")
+  })
+
+  it("hides the hourlyPay row at zero", () => {
+    renderDone()
+    expect(screen.queryByTestId("done-hourlyPay")).toBeNull()
+  })
+
+  it("shows the hourlyPay row when above zero", () => {
+    renderDone({
+      created: 0,
+      updated: 0,
+      unchanged: 9,
+      skipped: 0,
+      reactivated: 0,
+      archived: 0,
+      hourlyPay: 2,
+    })
+    const hourlyPay = screen.getByTestId("done-hourlyPay")
+    expect(hourlyPay.textContent).toContain(m.hourlyPay)
+    expect(hourlyPay.textContent).toContain("2")
   })
 })

@@ -5,6 +5,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react"
+import { HOURLY_NOTICE_CODES } from "@workspace/constants"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
@@ -811,5 +812,315 @@ describe("ReviewStep: leavers and returners", () => {
       archived: 3,
       reactivated: 1,
     })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Hourly pay group
+// ---------------------------------------------------------------------------
+
+describe("ReviewStep: hourly pay", () => {
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+    previewImportMock.mockResolvedValue(OK_PREVIEW)
+  })
+
+  const mHourly = messages.dashboard.people.import.review.hourly
+
+  // A promise whose resolution is controlled from the test, so a mocked
+  // previewImport call can be left pending (simulating a rerun in flight),
+  // resolved out of order relative to another pending call, or rejected (a
+  // failed rerun).
+  function createDeferred<T>() {
+    let resolve!: (value: T) => void
+    let reject!: (reason?: unknown) => void
+    const promise = new Promise<T>((res, rej) => {
+      resolve = res
+      reject = rej
+    })
+    return { promise, resolve, reject }
+  }
+
+  const HOURLY_PREVIEW = {
+    ...OK_PREVIEW,
+    hourlyPay: {
+      interpreted: [{ externalRef: "H1", displayName: "Maria Karlsson" }],
+      total: 2,
+      notices: [
+        {
+          code: "hourlyLooksMonthly" as const,
+          ref: { externalRef: "H9", displayName: "X" },
+        },
+      ],
+    },
+    ownHoursCount: 1,
+  }
+
+  it("has a review.hourly.notice label for every HOURLY_NOTICE_CODES entry, and no other", () => {
+    const noticeLabels = mHourly.notice as Record<string, string>
+    for (const code of HOURLY_NOTICE_CODES) {
+      expect(typeof noticeLabels[code]).toBe("string")
+    }
+    expect(Object.keys(noticeLabels).sort()).toEqual(
+      [...HOURLY_NOTICE_CODES].sort()
+    )
+  })
+
+  it("renders the hourly pay group with the interpreted count row, Maria's name, the own-hours row, and the notice's person", async () => {
+    previewImportMock.mockResolvedValueOnce(HOURLY_PREVIEW)
+    renderReviewStep()
+
+    const group = await screen.findByTestId("hourly-pay")
+    expect(group.textContent).toContain(mHourly.heading)
+    expect(group.textContent).toContain("Maria Karlsson")
+    expect(group.textContent).toContain("1")
+
+    const notices = screen.getByTestId("hourly-notices")
+    expect(notices.textContent).toContain("X")
+  })
+
+  it("checks the interpret-hourly checkbox by default", async () => {
+    previewImportMock.mockResolvedValueOnce(HOURLY_PREVIEW)
+    renderReviewStep()
+    await screen.findByTestId("hourly-pay")
+    const checkbox = screen.getByRole("checkbox", {
+      name: mHourly.interpretToggle,
+    })
+    expect(checkbox.getAttribute("aria-checked")).toBe("true")
+  })
+
+  it("omits interpretHourly from the mount preview call (default on, like every other default arg)", async () => {
+    previewImportMock.mockResolvedValueOnce(HOURLY_PREVIEW)
+    renderReviewStep()
+    await screen.findByTestId("hourly-pay")
+    const call = previewImportMock.mock.calls[0]?.[0] as Record<string, unknown>
+    expect("interpretHourly" in call).toBe(false)
+  })
+
+  it("unchecking re-runs the preview with interpretHourly: false", async () => {
+    previewImportMock.mockResolvedValueOnce(HOURLY_PREVIEW)
+    renderReviewStep()
+    await screen.findByTestId("hourly-pay")
+
+    previewImportMock.mockResolvedValueOnce({
+      ...HOURLY_PREVIEW,
+      hourlyPay: { ...HOURLY_PREVIEW.hourlyPay, total: 0, notices: [] },
+      ownHoursCount: 0,
+    })
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: mHourly.interpretToggle })
+    )
+
+    await waitFor(() => {
+      expect(previewImportMock).toHaveBeenCalledTimes(2)
+    })
+    const secondCall = previewImportMock.mock.calls[1]?.[0] as Record<
+      string,
+      unknown
+    >
+    expect(secondCall.interpretHourly).toBe(false)
+  })
+
+  it("confirming with the box unchecked calls importPayroll with interpretHourly: false", async () => {
+    previewImportMock.mockResolvedValueOnce(HOURLY_PREVIEW)
+    renderReviewStep()
+    await screen.findByTestId("hourly-pay")
+
+    previewImportMock.mockResolvedValueOnce({
+      ...HOURLY_PREVIEW,
+      hourlyPay: { ...HOURLY_PREVIEW.hourlyPay, total: 0, notices: [] },
+      ownHoursCount: 0,
+    })
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: mHourly.interpretToggle })
+    )
+    await waitFor(() => expect(previewImportMock).toHaveBeenCalledTimes(2))
+
+    importPayrollMock.mockResolvedValueOnce(OK_RESULT)
+    await clickConfirm()
+    await waitFor(() => expect(importPayrollMock).toHaveBeenCalledOnce())
+    const call = importPayrollMock.mock.calls[0]?.[0] as Record<string, unknown>
+    expect(call.interpretHourly).toBe(false)
+  })
+
+  it("confirming with the box checked omits interpretHourly from importPayroll", async () => {
+    previewImportMock.mockResolvedValueOnce(HOURLY_PREVIEW)
+    importPayrollMock.mockResolvedValueOnce(OK_RESULT)
+    renderReviewStep()
+    await screen.findByTestId("hourly-pay")
+
+    await clickConfirm()
+    await waitFor(() => expect(importPayrollMock).toHaveBeenCalledOnce())
+    const call = importPayrollMock.mock.calls[0]?.[0] as Record<string, unknown>
+    expect("interpretHourly" in call).toBe(false)
+  })
+
+  it("renders no group when hourlyPay.total is 0, there are no notices, and ownHoursCount is 0", async () => {
+    previewImportMock.mockResolvedValueOnce({
+      ...OK_PREVIEW,
+      hourlyPay: { interpreted: [], total: 0, notices: [] },
+      ownHoursCount: 0,
+    })
+    renderReviewStep()
+    await waitFor(() => expect(previewImportMock).toHaveBeenCalled())
+    expect(screen.queryByTestId("hourly-pay")).toBeNull()
+  })
+
+  it("passes hourlyPay to onImportSuccess", async () => {
+    importPayrollMock.mockResolvedValueOnce({ ...OK_RESULT, hourlyPay: 2 })
+    const onImportSuccess = vi.fn()
+    renderReviewStep({ onImportSuccess })
+    await clickConfirm()
+    await waitFor(() => expect(onImportSuccess).toHaveBeenCalled())
+    expect(onImportSuccess.mock.calls[0]?.[0]).toMatchObject({ hourlyPay: 2 })
+  })
+
+  it("keeps the hourly-pay group and its checkbox mounted while a toggle-triggered rerun is in flight", async () => {
+    previewImportMock.mockResolvedValueOnce(HOURLY_PREVIEW)
+    renderReviewStep()
+    await screen.findByTestId("hourly-pay")
+
+    const { promise, resolve } = createDeferred<typeof HOURLY_PREVIEW>()
+    previewImportMock.mockReturnValueOnce(promise)
+
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: mHourly.interpretToggle })
+    )
+    await waitFor(() => expect(previewImportMock).toHaveBeenCalledTimes(2))
+
+    // The rerun is in flight: the group and its checkbox never leave the
+    // DOM, and the previous preview's rows stay visible (no reflow, no
+    // focus loss for the checkbox HR just clicked). Confirm cannot be
+    // clicked against a preview that is mid-replacement, and the group's
+    // count cells revert to a skeleton.
+    const group = screen.getByTestId("hourly-pay")
+    expect(group).toBeDefined()
+    expect(
+      screen.getByRole("checkbox", { name: mHourly.interpretToggle })
+    ).toBeDefined()
+    expect(group.textContent).toContain("Maria Karlsson")
+    expect(
+      (screen.getByTestId("confirm-button") as HTMLButtonElement).disabled
+    ).toBe(true)
+    expect(group.querySelector('[data-slot="skeleton"]')).not.toBeNull()
+
+    resolve({
+      ...HOURLY_PREVIEW,
+      hourlyPay: { interpreted: [], total: 0, notices: [] },
+      ownHoursCount: 0,
+    })
+    await waitFor(() =>
+      expect(
+        screen.getByRole("checkbox", { name: mHourly.interpretToggle })
+      ).toBeDefined()
+    )
+    await waitFor(() =>
+      expect(
+        (screen.getByTestId("confirm-button") as HTMLButtonElement).disabled
+      ).toBe(false)
+    )
+    const groupAfter = screen.getByTestId("hourly-pay")
+    expect(groupAfter.querySelector('[data-slot="skeleton"]')).toBeNull()
+    expect(groupAfter.textContent).not.toContain("Maria Karlsson")
+    expect(groupAfter.textContent).toContain("0 amounts are read as hourly pay")
+  })
+
+  it("applies only the latest request's response when an earlier request's response arrives later (out-of-order)", async () => {
+    previewImportMock.mockResolvedValueOnce(HOURLY_PREVIEW)
+    renderReviewStep()
+    await screen.findByTestId("hourly-pay")
+
+    const earlier = createDeferred<typeof HOURLY_PREVIEW>()
+    const later = createDeferred<typeof HOURLY_PREVIEW>()
+    previewImportMock.mockReturnValueOnce(earlier.promise)
+    previewImportMock.mockReturnValueOnce(later.promise)
+
+    const checkbox = screen.getByRole("checkbox", {
+      name: mHourly.interpretToggle,
+    })
+    // Two toggles in quick succession fire two overlapping preview requests.
+    fireEvent.click(checkbox)
+    fireEvent.click(checkbox)
+    await waitFor(() => expect(previewImportMock).toHaveBeenCalledTimes(3))
+
+    const staleResult = {
+      ...HOURLY_PREVIEW,
+      hourlyPay: {
+        interpreted: [{ externalRef: "STALE", displayName: "Stale Person" }],
+        total: 9,
+        notices: [],
+      },
+      ownHoursCount: 9,
+    }
+    const latestResult = {
+      ...HOURLY_PREVIEW,
+      hourlyPay: {
+        interpreted: [{ externalRef: "LATEST", displayName: "Latest Person" }],
+        total: 3,
+        notices: [],
+      },
+      ownHoursCount: 3,
+    }
+
+    // Resolve the LATER request first, then the EARLIER (now stale) request:
+    // an out-of-order arrival. The stale response must be dropped so the
+    // later request's result is what stays on screen.
+    later.resolve(latestResult)
+    await waitFor(() =>
+      expect(screen.getByTestId("hourly-pay").textContent).toContain(
+        "Latest Person"
+      )
+    )
+    earlier.resolve(staleResult)
+
+    // Give the dropped response's microtask a turn, then assert it changed
+    // nothing.
+    await new Promise((r) => setTimeout(r, 0))
+    expect(screen.getByTestId("hourly-pay").textContent).toContain(
+      "Latest Person"
+    )
+    expect(screen.getByTestId("hourly-pay").textContent).not.toContain(
+      "Stale Person"
+    )
+  })
+
+  it("keeps the group and checkbox mounted, reverts the checkbox, and toasts when a rerun's request fails", async () => {
+    previewImportMock.mockResolvedValueOnce(HOURLY_PREVIEW)
+    renderReviewStep()
+    await screen.findByTestId("hourly-pay")
+
+    const { promise, reject } = createDeferred<typeof HOURLY_PREVIEW>()
+    previewImportMock.mockReturnValueOnce(promise)
+
+    const checkbox = screen.getByRole("checkbox", {
+      name: mHourly.interpretToggle,
+    })
+    fireEvent.click(checkbox)
+    await waitFor(() => expect(previewImportMock).toHaveBeenCalledTimes(2))
+    // Optimistically unchecked while the rerun is in flight.
+    expect(checkbox.getAttribute("aria-checked")).toBe("false")
+
+    reject(new Error("network"))
+    await waitFor(() => expect(toast.error).toHaveBeenCalledOnce())
+
+    // A failed rerun never swaps the group for the previewFailed message: the
+    // group, its checkbox, and the previous preview's rows and counts all
+    // stay on screen, and the checkbox reverts to match what is shown.
+    const group = screen.getByTestId("hourly-pay")
+    expect(group).toBeDefined()
+    expect(group.textContent).toContain("Maria Karlsson")
+    expect(group.querySelector('[data-slot="skeleton"]')).toBeNull()
+    // The previewFailed message never replaces the group on a failed rerun
+    // (only a failed MOUNT preview, with no previous preview, shows it).
+    expect(
+      screen.queryByText(
+        messages.dashboard.people.import.review.changes.previewFailed
+      )
+    ).toBeNull()
+    const checkboxAfter = screen.getByRole("checkbox", {
+      name: mHourly.interpretToggle,
+    })
+    expect(checkboxAfter.getAttribute("aria-checked")).toBe("true")
   })
 })

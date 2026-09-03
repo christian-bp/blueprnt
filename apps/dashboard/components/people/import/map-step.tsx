@@ -2,6 +2,7 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
+  BASIS_SELECT_FIELD_KEYS,
   CANONICAL_FIELDS,
   type CanonicalFieldKey,
   defaultBasis,
@@ -32,14 +33,6 @@ import { onSelectValue } from "@/lib/select"
 
 // Sentinel value used in the Select to represent "ignore this column".
 const IGNORE_VALUE = "__ignore__"
-
-// Canonical field keys whose stored value is a money amount; these are the
-// only fields that get a monthly/annual basis toggle in the table. Typed as
-// Set<string> (not Set<CanonicalFieldKey>) so it also accepts the plain
-// string keys syncBasisMap reads out of a Record<string, number> mapping.
-const MONEY_FIELD_KEYS: Set<string> = new Set(
-  CANONICAL_FIELDS.filter((f) => f.shape === "money").map((f) => f.key)
-)
 
 // ---------------------------------------------------------------------------
 // Pure helpers (exported for testing)
@@ -172,7 +165,7 @@ export function syncBasisMap(
 ): Record<string, PayBasis> {
   const next: Record<string, PayBasis> = {}
   for (const [fieldKey, columnIndex] of Object.entries(mapping)) {
-    if (!MONEY_FIELD_KEYS.has(fieldKey)) continue
+    if (!BASIS_SELECT_FIELD_KEYS.has(fieldKey)) continue
     next[fieldKey] =
       prev[fieldKey] ?? defaultBasis(fieldKey, headers[columnIndex] ?? "")
   }
@@ -301,15 +294,35 @@ export function MapStep({
         </p>
       )}
 
-      {/* Mapping table: one row per CSV column */}
+      {/* Mapping table: one row per CSV column. table-fixed with widths
+          declared on the header cells (CLAUDE.md's table anatomy): under the
+          default auto layout the table sized itself to the sum of its
+          columns' natural content widths, which came out WIDER than the
+          scroll wrapper, so the last column's right padding (and the last
+          few pixels of its select) fell outside the visible area and were
+          clipped at the wrapper's edge, no matter how much padding that
+          column carried. Fixed layout forces the table to the wrapper's own
+          width; the sample column is the one flexible column (its cell
+          already truncates), so it is the one that shrinks to make the
+          other three columns' declared widths fit. */}
       <div className="overflow-x-auto rounded-md border">
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead>{tMap("column")}</TableHead>
+              {/* w-64: wide enough for most CSV headers plus their mapped
+                  field's sub-label; a longer combination (e.g. a long
+                  header mapped to "Employment start date") truncates on
+                  the cell below rather than overflowing into the next
+                  column, with the full text reachable via its title. */}
+              <TableHead className="w-64">{tMap("column")}</TableHead>
               <TableHead>{tMap("sample")}</TableHead>
-              <TableHead>{tMap("mappedTo")}</TableHead>
-              <TableHead>{tMap("basisHeader")}</TableHead>
+              <TableHead className="w-48">{tMap("mappedTo")}</TableHead>
+              {/* w-40 fits the basis select's min-w-[130px] plus this
+                  column's own left padding (p-2) and right padding (pr-4,
+                  wider than the default p-2 so the select's inset from the
+                  table's right edge matches the "Mapped to" select's inset
+                  from its own neighbor). */}
+              <TableHead className="w-40 pr-4">{tMap("basisHeader")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -320,6 +333,13 @@ export function MapStep({
               const currentFieldLabel = currentFieldKey
                 ? tFields(currentFieldKey as Parameters<typeof tFields>[0])
                 : null
+              // The primary label this row shows for its column: a headerless
+              // file shows a localized positional label instead of the
+              // synthesized technical name. Also doubles as the cell's title,
+              // so the full text is reachable on hover once it truncates.
+              const columnLabel = parsed.headerless
+                ? tMap("columnNumber", { number: columnIndex + 1 })
+                : header
 
               return (
                 <TableRow
@@ -327,20 +347,19 @@ export function MapStep({
                   key={columnIndex}
                   data-testid={`map-column-${columnIndex}`}
                 >
-                  {/* CSV column header name; a headerless file shows a
-                      localized positional label instead of the synthesized
-                      technical name. */}
+                  {/* CSV column header name, plus its mapped field's
+                      sub-label when set, on one line: truncates instead of
+                      overflowing into the sample column now that the table
+                      is fixed-layout, with the full text on the title. */}
                   <TableCell>
-                    <span className="font-medium text-sm">
-                      {parsed.headerless
-                        ? tMap("columnNumber", { number: columnIndex + 1 })
-                        : header}
-                    </span>
-                    {currentFieldLabel !== null && (
-                      <span className="ml-2 text-muted-foreground text-xs">
-                        {currentFieldLabel}
-                      </span>
-                    )}
+                    <div title={columnLabel} className="min-w-0 truncate">
+                      <span className="font-medium text-sm">{columnLabel}</span>
+                      {currentFieldLabel !== null && (
+                        <span className="ml-2 text-muted-foreground text-xs">
+                          {currentFieldLabel}
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
 
                   {/* Sample values from first few data rows. Truncated so a
@@ -404,11 +423,12 @@ export function MapStep({
 
                   {/* Monthly/annual basis toggle: only for money-shaped
                       fields. The cell renders empty (not omitted) for other
-                      rows so every row keeps the same column count; the
-                      table uses the default auto layout, not table-fixed. */}
-                  <TableCell>
+                      rows so every row keeps the same column count. pr-4
+                      matches the header cell's extra right inset; the
+                      column's own width comes from the header (table-fixed). */}
+                  <TableCell className="pr-4">
                     {currentFieldKey &&
-                    MONEY_FIELD_KEYS.has(currentFieldKey) ? (
+                    BASIS_SELECT_FIELD_KEYS.has(currentFieldKey) ? (
                       <Select
                         value={
                           basisMap[currentFieldKey] ??

@@ -159,6 +159,12 @@ describe("syncBasisMap", () => {
     const result = syncBasisMap({ bonus: 0 }, headers, { bonus: "monthly" })
     expect(result.bonus).toBe("monthly")
   })
+
+  it("never emits a hourlyRate entry (fixed hourly basis, no select)", () => {
+    const headers = ["Timlön"]
+    const result = syncBasisMap({ hourlyRate: 0 }, headers, {})
+    expect(result.hourlyRate).toBeUndefined()
+  })
 })
 
 // ---------------------------------------------------------------------------
@@ -315,6 +321,74 @@ describe("MapStep: column-first rendering", () => {
     const prev = { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 }
     const next = assignColumnToField(prev, 4, "department")
     expect(next.department).toBe(4)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// MapStep: hourly-rate column (fixed basis, no select)
+// ---------------------------------------------------------------------------
+describe("MapStep: hourly-rate column", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
+  it("renders no basis trigger for a column mapped to hourlyRate", () => {
+    renderMapStep({
+      mapping: {
+        externalRef: 0,
+        title: 1,
+        gender: 2,
+        basicMonthly: 3,
+        hourlyRate: 4,
+      },
+    })
+    // basicMonthly has no fixed basis: it still gets its basis trigger.
+    expect(screen.getByTestId("map-column-3-basis-trigger")).toBeDefined()
+    // hourlyRate has a fixed hourly basis: no select renders for its column.
+    expect(screen.queryByTestId("map-column-4-basis-trigger")).toBeNull()
+  })
+
+  // Regression: the basis column's cells need a wider right inset than the
+  // default p-2, or the select sits flush against the table's right edge
+  // with only a single cell's padding (half the gap between two adjacent
+  // columns' selects).
+  // Regression: under the default auto table layout, the table sized itself
+  // wider than its scroll wrapper (the sum of the columns' natural content
+  // widths exceeded the container), so the last column's own padding fell
+  // outside the visible area no matter how wide it was. table-fixed with
+  // declared header widths keeps the table inside its wrapper; the sample
+  // column is the one flexible column that shrinks to make room.
+  it("uses a fixed table layout with declared column widths, and keeps the basis column's extra right padding", () => {
+    renderMapStep({
+      mapping: {
+        externalRef: 0,
+        title: 1,
+        gender: 2,
+        basicMonthly: 3,
+      },
+    })
+    const table = screen.getByRole("table")
+    expect(table.className).toContain("table-fixed")
+
+    const columnHeader = screen.getByText(m.map.column).closest("th")
+    expect(columnHeader?.className).toContain("w-64")
+    const mappedToHeader = screen.getByText(m.map.mappedTo).closest("th")
+    expect(mappedToHeader?.className).toContain("w-48")
+    const basisHeader = screen.getByText(m.map.basisHeader).closest("th")
+    expect(basisHeader?.className).toContain("w-40")
+    expect(basisHeader?.className).toContain("pr-4")
+
+    const bodyCell = screen
+      .getByTestId("map-column-3-basis-trigger")
+      .closest("td")
+    expect(bodyCell?.className).toContain("pr-4")
+
+    // The CSV-column cell's header+sub-label wrapper truncates on one line
+    // instead of overflowing into the sample column now that the column has
+    // a fixed width, with the full name reachable on its title.
+    const columnCell = screen.getByText("EmployeeID").closest("div")
+    expect(columnCell?.className).toContain("truncate")
+    expect(columnCell?.getAttribute("title")).toBe("EmployeeID")
   })
 })
 

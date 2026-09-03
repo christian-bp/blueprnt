@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  CoinsDollarIcon,
   UserAdd01Icon,
   UserCheck01Icon,
   UserEdit01Icon,
@@ -44,6 +45,15 @@ export function ImportDoneStep({ result }: { result: ImportResultCounts }) {
             key: "archived" as const,
             icon: UserMinus01Icon,
             value: result.archived,
+          },
+        ]
+      : []),
+    ...(result.hourlyPay > 0
+      ? [
+          {
+            key: "hourlyPay" as const,
+            icon: CoinsDollarIcon,
+            value: result.hourlyPay,
           },
         ]
       : []),

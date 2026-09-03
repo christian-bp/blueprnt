@@ -51,6 +51,8 @@ export interface ImportResultCounts {
   // Archived people the file brought back, and leavers archived on request.
   reactivated: number
   archived: number
+  // Rows written with the hourly basis (dedicated column or pay-form interpretation).
+  hourlyPay: number
 }
 
 // Wizard flow state.

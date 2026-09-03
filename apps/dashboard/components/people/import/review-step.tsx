@@ -13,6 +13,7 @@ import {
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import { HOURLY_NOTICE_CODES } from "@workspace/constants"
 import type { PayBasis } from "@workspace/import"
 import {
   Alert,
@@ -245,6 +246,7 @@ export function ReviewStep({
   const tImport = useTranslations("dashboard.people.import")
   const tFields = useTranslations("dashboard.people.import.fields")
   const tChanges = useTranslations("dashboard.people.import.review.changes")
+  const tHourly = useTranslations("dashboard.people.import.review.hourly")
   const tToast = useTranslations("dashboard.toast")
   const { orgId } = useOrganization()
 
@@ -282,11 +284,45 @@ export function ReviewStep({
   const [showAllMissing, setShowAllMissing] = useState(false)
   const returningPeople = changePreview?.diff?.returningPeople ?? []
   const missingFromFile = changePreview?.diff?.missingFromFile ?? []
+  // Whether an hourly-typed row's base-pay cell is read as an hourly rate
+  // when no dedicated hourly-rate column is mapped; on by default. HR's
+  // checkbox reruns the preview so what this step shows always matches what
+  // confirm would do.
+  const [interpretHourly, setInterpretHourly] = useState(true)
+  // The interpretHourly value the currently-shown changePreview was actually
+  // computed with. Only diverges from interpretHourly while a rerun is in
+  // flight; if that rerun's request fails, interpretHourly is reverted to
+  // this value so the checkbox never disagrees with the preview on screen.
+  const [shownInterpretHourly, setShownInterpretHourly] = useState(true)
+  const [showAllInterpreted, setShowAllInterpreted] = useState(false)
+  const [showAllNotice, setShowAllNotice] = useState<Record<string, boolean>>(
+    {}
+  )
   const previewRanRef = useRef(false)
-  // biome-ignore lint/correctness/useExhaustiveDependencies: fire once on mount
-  useEffect(() => {
-    if (previewRanRef.current) return
-    previewRanRef.current = true
+  // Whether a preview request is in flight (initial load or a toggle-
+  // triggered rerun). Count cells show a skeleton on this OR changePreview
+  // being null; the previous preview's rows and the hourly group itself stay
+  // mounted throughout, so a rerun never unmounts something HR just clicked.
+  const [previewLoading, setPreviewLoading] = useState(false)
+  // Guards against an earlier request's response landing after a later one
+  // (e.g. two checkbox toggles in quick succession): only the response whose
+  // sequence number is still current is applied; a stale one is dropped.
+  const previewSeqRef = useRef(0)
+
+  // Runs the dry-run preview with the given hourly-interpretation choice.
+  // Does NOT clear changePreview: the previous preview (and anything mounted
+  // from it, notably the hourly-pay checkbox HR just toggled) stays on
+  // screen, with count cells reverting to their skeleton via previewLoading,
+  // until the new result lands. The checkbox handler calls this the same way
+  // the mount effect does, so a toggle is just another preview run.
+  function runPreview(interpret: boolean) {
+    const seq = ++previewSeqRef.current
+    // Captured now: whether there is already a landed preview to fall back
+    // to if THIS request fails. A failed mount (no previous preview) keeps
+    // today's behavior (the previewFailed message); a failed rerun keeps the
+    // previous preview mounted instead of replacing it with that message.
+    const hadPreviousPreview = changePreview !== null
+    setPreviewLoading(true)
     const genderOverridePairs = Object.entries(genderOverrides)
     previewImport({
       orgId,
@@ -296,10 +332,43 @@ export function ReviewStep({
         ? { genderOverrides: genderOverridePairs }
         : {}),
       ...(Object.keys(basisMap).length > 0 ? { basisMap } : {}),
+      ...(interpret ? {} : { interpretHourly: false }),
     })
-      .then(setChangePreview)
-      .catch(() => setPreviewFailed(true))
+      .then((result) => {
+        // A later toggle already superseded this request: drop it.
+        if (previewSeqRef.current !== seq) return
+        setChangePreview(result)
+        setShownInterpretHourly(interpret)
+        setPreviewFailed(false)
+        setPreviewLoading(false)
+      })
+      .catch(() => {
+        if (previewSeqRef.current !== seq) return
+        setPreviewLoading(false)
+        if (!hadPreviousPreview) {
+          setPreviewFailed(true)
+          return
+        }
+        // A failed rerun: keep the previous preview mounted (never null it,
+        // never show the previewFailed message over it) and revert the
+        // checkbox to the value that preview was actually computed with, so
+        // it never disagrees with what is shown.
+        setInterpretHourly(shownInterpretHourly)
+        toast.error(tToast("error"))
+      })
+  }
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: fire once on mount
+  useEffect(() => {
+    if (previewRanRef.current) return
+    previewRanRef.current = true
+    runPreview(true)
   }, [])
+
+  function handleInterpretChange(next: boolean) {
+    setInterpretHourly(next)
+    runPreview(next)
+  }
 
   const nameMismatches = changePreview?.diff?.nameMismatches ?? []
   const skippedMismatchRefs =
@@ -335,6 +404,9 @@ export function ReviewStep({
         ...(archiveMissing && missingFromFile.length > 0
           ? { archiveMissing: true }
           : {}),
+        // Same toggle the preview used; omitted when on, like every other
+        // default arg.
+        ...(interpretHourly ? {} : { interpretHourly: false }),
       })
       if (result.ok) {
         // The done screen is the completion feedback (no toast needed).
@@ -345,6 +417,7 @@ export function ReviewStep({
           skipped: result.skippedRows,
           reactivated: result.peopleReactivated,
           archived: result.peopleArchived,
+          hourlyPay: result.hourlyPay,
         })
       } else {
         // Required fields were not mapped: surface the blocking list.
@@ -356,6 +429,23 @@ export function ReviewStep({
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const hourly = changePreview?.hourlyPay
+  const ownHoursCount = changePreview?.ownHoursCount ?? 0
+  // The group shows whenever there is something to say: rows read as hourly,
+  // a soft notice, someone with their own hours, or the toggle switched off
+  // (so an unchecked box never silently disappears).
+  const showHourlyGroup =
+    hourly !== undefined &&
+    (hourly.total > 0 ||
+      hourly.notices.length > 0 ||
+      ownHoursCount > 0 ||
+      !interpretHourly)
+
+  // Notices for one code, in the fixed HOURLY_NOTICE_CODES order.
+  function noticesByCode(code: (typeof HOURLY_NOTICE_CODES)[number]) {
+    return hourly?.notices.filter((n) => n.code === code) ?? []
   }
 
   return (
@@ -419,7 +509,7 @@ export function ReviewStep({
                           />
                           <span className="text-sm">{tChanges(key)}</span>
                         </span>
-                        {changePreview === null ? (
+                        {changePreview === null || previewLoading ? (
                           <Skeleton className="h-5 w-6" />
                         ) : (
                           <span className="font-medium font-mono text-sm">
@@ -433,6 +523,119 @@ export function ReviewStep({
                 </div>
               ))}
             </div>
+
+            {/* Which amounts are read as hourly pay, and the toggle to turn
+                that reading off. Extends below the change-summary stack
+                (never reflows it); the group (including the checkbox HR just
+                clicked) stays mounted through a toggle-triggered rerun, with
+                only its count cells reverting to a skeleton. */}
+            {hourly !== undefined && showHourlyGroup && (
+              <div data-testid="hourly-pay">
+                <h4 className="mb-2 font-medium text-muted-foreground text-xs">
+                  {tHourly("heading")}
+                </h4>
+                <div className="divide-y rounded-md border">
+                  <div className="space-y-2 px-3 py-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="flex items-center gap-2">
+                        <HugeiconsIcon
+                          icon={CoinsDollarIcon}
+                          strokeWidth={2}
+                          className="size-4 shrink-0 text-muted-foreground"
+                          aria-hidden="true"
+                        />
+                        <span className="text-sm">
+                          {tHourly("interpreted", {
+                            count: hourly.interpreted.length,
+                          })}
+                        </span>
+                      </span>
+                      {changePreview === null || previewLoading ? (
+                        <Skeleton className="h-5 w-6" />
+                      ) : (
+                        <span className="font-medium font-mono text-sm">
+                          {hourly.interpreted.length}
+                        </span>
+                      )}
+                    </div>
+                    {hourly.interpreted.length > 0 && (
+                      <PersonRefList
+                        people={hourly.interpreted}
+                        showAll={showAllInterpreted}
+                        onShowAll={() => setShowAllInterpreted(true)}
+                        showAllLabel={tChanges("showAll", {
+                          count: hourly.interpreted.length,
+                        })}
+                      />
+                    )}
+                    {/* htmlFor association, not a wrapping label (a wrapping
+                        label toggles twice). */}
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="import-interpret-hourly"
+                        checked={interpretHourly}
+                        onCheckedChange={(checked) =>
+                          handleInterpretChange(checked === true)
+                        }
+                      />
+                      <Label
+                        htmlFor="import-interpret-hourly"
+                        className="font-medium"
+                      >
+                        {tHourly("interpretToggle")}
+                      </Label>
+                    </div>
+                  </div>
+                  {ownHoursCount > 0 && (
+                    <div className="flex items-center justify-between gap-2 px-3 py-2">
+                      <span className="text-sm">
+                        {tHourly("ownHours", { count: ownHoursCount })}
+                      </span>
+                      {changePreview === null || previewLoading ? (
+                        <Skeleton className="h-5 w-6" />
+                      ) : (
+                        <span className="font-medium font-mono text-sm">
+                          {ownHoursCount}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {hourly.notices.length > 0 && (
+                  <Alert className="mt-3" data-testid="hourly-notices">
+                    <AlertTitle>{tHourly("noticesTitle")}</AlertTitle>
+                    <AlertDescription>
+                      {/* One block per notice code present, in a fixed code
+                          order. */}
+                      {HOURLY_NOTICE_CODES.filter(
+                        (code) => noticesByCode(code).length > 0
+                      ).map((code) => (
+                        <div key={code} className="mt-2">
+                          <p>
+                            {tHourly(`notice.${code}`, {
+                              count: noticesByCode(code).length,
+                            })}
+                          </p>
+                          <PersonRefList
+                            people={noticesByCode(code).map((n) => n.ref)}
+                            showAll={showAllNotice[code] === true}
+                            onShowAll={() =>
+                              setShowAllNotice((prev) => ({
+                                ...prev,
+                                [code]: true,
+                              }))
+                            }
+                            showAllLabel={tChanges("showAll", {
+                              count: noticesByCode(code).length,
+                            })}
+                          />
+                        </div>
+                      ))}
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            )}
 
             {/* Who changes, field by field, so updating is a knowing act.
                 Only once the preview has landed (extends below the summary
@@ -590,7 +793,11 @@ export function ReviewStep({
           isSubmitting={isSubmitting}
           // The confirm waits for the change preview (it defines the
           // mismatch skip list); a failed preview does not block importing.
-          disabled={changePreview === null && !previewFailed}
+          // Also waits out a toggle-triggered rerun, so HR can never confirm
+          // against a preview that is mid-replacement.
+          disabled={
+            (changePreview === null && !previewFailed) || previewLoading
+          }
           onClick={handleConfirm}
           data-testid="confirm-button"
         >
