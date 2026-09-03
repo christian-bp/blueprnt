@@ -1,0 +1,114 @@
+packages/backend/convex/lib/audit.ts
+  s_a5a0b8b07c8eab::t_09ba8107bdb47b 605
+  s_a5a0b8b07c8eab::t_b79219e7f7682b 567
+  s_a5a0b8b07c8eab::t_5fa5dea7bb4889 640
+  s_a5a0b8b07c8eab::t_9ba31bbd9face5 707-714
+packages/backend/convex/people/people.test.ts
+  s_a5a0b8b07c8eab::t_3ec02036ae2f14 641-670
+  s_a5a0b8b07c8eab::t_b84c8f35bf6d9d 2-5
+  s_a5a0b8b07c8eab::t_524fe3d236408b 372-448
+  s_a5a0b8b07c8eab::t_1e6186536fda88 956-1011
+  s_a5a0b8b07c8eab::t_d4ccef0f65e452 449-475,671,1012
+packages/backend/convex/lib/auditPayloads.ts
+  s_a5a0b8b07c8eab::t_6cdb931a6a65e5 378-380
+packages/backend/convex/people/pay.test.ts
+  s_a5a0b8b07c8eab::t_be31e66e60fec2 1052-1053,1061-1062
+  s_a5a0b8b07c8eab::t_e99b6b24a74357 684-685,712,714
+  s_a5a0b8b07c8eab::t_b3b5b508c90e4f 579,588-589,607-609,612-613,618,622,626
+  s_a5a0b8b07c8eab::t_a39723f38757d0 790-791
+  s_a5a0b8b07c8eab::t_47953f2722fcf3 921-922,931-932
+  s_a5a0b8b07c8eab::t_bd56fccfbe0436 74-75,87-88,105
+  s_a5a0b8b07c8eab::t_1a447d7fab8b3d 730-731
+  s_a5a0b8b07c8eab::t_fab908b54f113d 1084-1085
+  s_a5a0b8b07c8eab::t_06af31a7620328 272-273,285-286,299
+  s_a5a0b8b07c8eab::t_f035220f683897 507-508,518-519
+  s_a5a0b8b07c8eab::t_cb1c2abb489406 124-125
+  s_a5a0b8b07c8eab::t_c7f1782da872ef 808-809
+  s_a5a0b8b07c8eab::t_fc3c28ecea74ca 213-214
+  s_a5a0b8b07c8eab::t_f371181bdc14fb 1136-1137
+  s_a5a0b8b07c8eab::t_9f1de77ab3528c 443-444
+  s_a5a0b8b07c8eab::t_9787089eafa40e 1111-1112
+  s_a5a0b8b07c8eab::t_3ae7957966db3a 562-563
+  s_a5a0b8b07c8eab::t_4bf67e0ce0e9a1 1040,1169-1240,1242-1257,1259-1263,1265-1293
+  s_a5a0b8b07c8eab::t_0fd968487eaaeb 377-378,387-388,397-398
+  s_a5a0b8b07c8eab::t_1ebd54d6492ae6 168-169,179-180,190,194
+  s_a5a0b8b07c8eab::t_89319b8d743129 314-315,330
+  s_a5a0b8b07c8eab::t_f77b60790a365f 250-251
+  s_a5a0b8b07c8eab::t_2c9056bd520fca 146-147
+  s_a5a0b8b07c8eab::t_b02796d962d118 232-233
+  s_a5a0b8b07c8eab::t_4ebe3fb082b6fe 990-1039
+  s_a5a0b8b07c8eab::t_a07f6680b7820f 1241
+  s_a5a0b8b07c8eab::t_7eb52bec331a8a 358-359
+  s_a5a0b8b07c8eab::t_521dbee179264e 1258,1264
+  s_a5a0b8b07c8eab::t_3018c38020aaa7 640-641,659-661,663-664,667,670
+  s_a5a0b8b07c8eab::t_3aae7ded9b59ca 467-468,477-478
+  s_a5a0b8b07c8eab::t_e112c2158ec53b 849-850
+  s_a5a0b8b07c8eab::t_7c070d22f1286c 1041
+  s_a5a0b8b07c8eab::t_3b4872cc05e69b 1294
+packages/backend/convex/accounts/tables.ts
+  s_a5a0b8b07c8eab::t_515e98a532ad61 48-51
+packages/backend/convex/lib/audit.test.ts
+  s_a5a0b8b07c8eab::t_2d4b43aa95702d 417
+packages/backend/convex/people/pay.ts
+  s_a5a0b8b07c8eab::t_8ae10d0f628800 2
+  s_a5a0b8b07c8eab::t_29d8f068fb5f03 127
+  s_a5a0b8b07c8eab::t_285dc93ecf85d3 3-7,21-25,27,94-99,101,104,125-126,128-133,139-142,145,156-157,162-163,178,192-193,201,206,243,251,275,291,322-323,335,360-361,399-401,407,437-446,448-461,497-501,506-507,509-514,517,519-520,524,613-614,616,626-628
+  s_a5a0b8b07c8eab::t_d4f8a5165de9fd 447
+  s_a5a0b8b07c8eab::t_879319e3811c25 274
+packages/backend/convex/people/erase.test.ts
+  s_a5a0b8b07c8eab::t_76366e0e4d3f85 611-612
+  s_a5a0b8b07c8eab::t_77cb1fdfd8c95b 384-385
+  s_a5a0b8b07c8eab::t_3bf36c5d0a37c5 523-524,532-533
+  s_a5a0b8b07c8eab::t_d35d18a217cfff 97-98
+packages/backend/convex/people/schema.test.ts
+  s_a5a0b8b07c8eab::t_ff4494fad05608 71-72,80
+packages/backend/convex/people/tables.ts
+  s_a5a0b8b07c8eab::t_553b2d44fb30be 30-34
+  s_a5a0b8b07c8eab::t_ea1dd5bdba1e52 4-8
+  s_a5a0b8b07c8eab::t_727ff3eca2f197 90-92,100-107
+packages/backend/convex/people/fullTimeHours.ts
+  s_a5a0b8b07c8eab::t_21fcf5130354ce 28-31
+  s_a5a0b8b07c8eab::t_c760b03a8b9494 1-20,22-25,27,33,35-53
+  s_a5a0b8b07c8eab::t_cdb13ff7a488c5 21,26,32,34
+packages/backend/convex/people/fullTimeHours.test.ts
+  s_a5a0b8b07c8eab::t_612ec51809ec17 1-10,12-16,18-31,33-34
+  s_a5a0b8b07c8eab::t_d8f56f9347a494 11,17,32
+packages/backend/convex/people/people.ts
+  s_a5a0b8b07c8eab::t_029abf2559b731 183-185
+  s_a5a0b8b07c8eab::t_158723438b8056 298
+  s_a5a0b8b07c8eab::t_7edac7b7bb1291 340
+  s_a5a0b8b07c8eab::t_cd1448618a7077 47-53
+  s_a5a0b8b07c8eab::t_844b799809cddb 29
+  s_a5a0b8b07c8eab::t_dc29fe3b580512 242
+  s_a5a0b8b07c8eab::t_84ae8e33dac473 1-4
+  s_a5a0b8b07c8eab::t_39ce14227d1c5b 462
+  s_a5a0b8b07c8eab::t_64fb085a339499 509-525
+  s_a5a0b8b07c8eab::t_dea79c6038f502 373
+  s_a5a0b8b07c8eab::t_50ccba0b5e7382 526
+packages/backend/convex/_generated/api.d.ts
+  s_e8af42353780b5::t_22a949baf88d5b 106,110,224,228
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "c3a5e19cad96bf89a71ffe9d2c37503aa4309e9d",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_e8af42353780b5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a7f4054e6d442ae5e",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
