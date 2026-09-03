@@ -1,0 +1,76 @@
+apps/dashboard/components/people/import/import-wizard.tsx
+  s_a5a0b8b07c8eab::t_4432ff446620d6 54-55
+apps/dashboard/components/people/import/review-step.tsx
+  s_a5a0b8b07c8eab::t_bbb0f17490a18a 434-450
+  s_a5a0b8b07c8eab::t_0790a31574eb7f 798-800
+  s_a5a0b8b07c8eab::t_bf9e9317769efd 16
+  s_a5a0b8b07c8eab::t_80dbadbdee5ce1 287-291,297-300,311-312,318,335,359-365,368-371
+  s_a5a0b8b07c8eab::t_6708ce07e3839a 320-324,341-342,348-357
+  s_a5a0b8b07c8eab::t_3a02cedb91f2c5 302-310,313-317,319,325,337-340,343-347,358
+  s_a5a0b8b07c8eab::t_ae2ac0e8aeba92 292-296
+  s_a5a0b8b07c8eab::t_6ee7ad59b1a3f3 512
+  s_a5a0b8b07c8eab::t_90bc6a73c359ee 553-559
+  s_a5a0b8b07c8eab::t_d00a7cf79dd86c 594-600
+  s_a5a0b8b07c8eab::t_d10c3de7c9c736 796-797
+  s_a5a0b8b07c8eab::t_bddaa113d374b5 407-409,420
+  s_a5a0b8b07c8eab::t_265b7a95b1205b 249
+  s_a5a0b8b07c8eab::t_686b0c401a4214 527-528,532-552,560-593,601-638
+  s_a5a0b8b07c8eab::t_3f15b22d340079 529-531
+  s_a5a0b8b07c8eab::t_af81d2869ee3c9 372
+  s_a5a0b8b07c8eab::t_5c02a73f7f2263 639
+apps/dashboard/components/people/import/map-step.test.tsx
+  s_a5a0b8b07c8eab::t_17eccfffd62d52 355-361,370-373,375-380
+  s_a5a0b8b07c8eab::t_5d5e736ddcaf3a 374,385-391
+  s_a5a0b8b07c8eab::t_b7f3ed9a8a89c2 162-167
+  s_a5a0b8b07c8eab::t_1a0796abb06508 350-354,362-369,381-384
+  s_a5a0b8b07c8eab::t_7fb96b739c98e9 327-349,392
+  s_a5a0b8b07c8eab::t_9a45be6bd4f7e5 393-394
+apps/dashboard/components/people/import/import-done-step.test.tsx
+  s_a5a0b8b07c8eab::t_1f1b58c1559c01 22,30
+  s_a5a0b8b07c8eab::t_bb63088bf7772e 82,91-110
+apps/dashboard/components/people/import/map-step.tsx
+  s_a5a0b8b07c8eab::t_75591becc7fa0a 312-317
+  s_a5a0b8b07c8eab::t_39afc34aefb3e5 325
+  s_a5a0b8b07c8eab::t_fd9990be90ad1f 168
+  s_a5a0b8b07c8eab::t_655d56d7b82c0a 297-307,309,319-324
+  s_a5a0b8b07c8eab::t_82057f4c7ed583 429
+  s_a5a0b8b07c8eab::t_c4dbfd131638c8 356
+  s_a5a0b8b07c8eab::t_3bdba30c451336 336-342,350-353,355,357-362
+  s_a5a0b8b07c8eab::t_c6fb932cab3e2c 5
+  s_a5a0b8b07c8eab::t_73ddc0aa6ed0da 426-428
+  s_a5a0b8b07c8eab::t_fa6a4db3bf46e2 431
+apps/dashboard/components/people/import/import-done-step.tsx
+  s_a5a0b8b07c8eab::t_bc4657d9fa9027 51-55
+  s_a5a0b8b07c8eab::t_844a2a3fd717b5 4
+  s_a5a0b8b07c8eab::t_6462231bc165b0 56-59
+apps/dashboard/components/people/import/review-step.test.tsx
+  s_a5a0b8b07c8eab::t_d42d0c6366ce5e 8
+  s_a5a0b8b07c8eab::t_b1d962d4f2fa28 817-821,823-830,845-859,870-977
+  s_a5a0b8b07c8eab::t_0c5fcd67a9388f 1114-1120
+  s_a5a0b8b07c8eab::t_e9826d7ae1cea6 1010,1025-1026
+  s_a5a0b8b07c8eab::t_be624bba6db265 860-869
+  s_a5a0b8b07c8eab::t_8b42870f7c6782 978-993,999-1001,1007-1009,1011-1016,1027-1058,1060-1086,1125
+  s_a5a0b8b07c8eab::t_069d22a9984b28 831,835-836,839,841,843-844
+  s_a5a0b8b07c8eab::t_e6938b6bea70ab 994-998,1002-1006,1017-1024
+  s_a5a0b8b07c8eab::t_b62ed7e5e6ed53 1087-1113,1121-1124
+  s_a5a0b8b07c8eab::t_bd0cd6ca473dba 822
+  s_a5a0b8b07c8eab::t_55178fb1266840 832-834,837-838,840,842
+  s_a5a0b8b07c8eab::t_0790a31574eb7f 1059
+  s_a5a0b8b07c8eab::t_e0c6b2a4863c0b 1126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "66f184af13cdea499887cc97004b40463572eb78",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
