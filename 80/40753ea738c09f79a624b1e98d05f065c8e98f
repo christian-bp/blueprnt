@@ -1,0 +1,87 @@
+packages/backend/convex/people/importHourly.ts
+  s_a5a0b8b07c8eab::t_23f76657517bf9 4,11
+  s_a5a0b8b07c8eab::t_d3766875da03df 1-3,5-10,12-39,41-42,44-51,53-56,63-85,89
+  s_a5a0b8b07c8eab::t_45868cc35805f4 40,43,52
+  s_a5a0b8b07c8eab::t_67c24645269396 57-62,86-88
+packages/backend/convex/people/import.test.ts
+  s_a5a0b8b07c8eab::t_b3aa30b2b7eeac 1619-1631,1637-1762,1768-1921
+  s_a5a0b8b07c8eab::t_67223b79803505 328-329
+  s_a5a0b8b07c8eab::t_3284d28323739b 1150-1151
+  s_a5a0b8b07c8eab::t_a4851aa1d9d852 488-489,1263-1264,1301-1302,1323-1324,1353-1354
+  s_a5a0b8b07c8eab::t_8babd1d223409a 2019
+  s_a5a0b8b07c8eab::t_67c24645269396 1632-1636,1763-1767
+  s_a5a0b8b07c8eab::t_24ea15b81ef556 1922-2018,2020-2110,2163
+  s_a5a0b8b07c8eab::t_df25f18de282cb 6
+  s_a5a0b8b07c8eab::t_3a782a0c7393d1 2111-2162
+  s_a5a0b8b07c8eab::t_10c5158c64132e 2164
+packages/backend/convex/people/importDiff.ts
+  s_a5a0b8b07c8eab::t_31654f69a9909c 71-72,83-84
+  s_a5a0b8b07c8eab::t_ded398b3a15345 268-272
+  s_a5a0b8b07c8eab::t_09896fdfc0fe42 16
+  s_a5a0b8b07c8eab::t_c962022d1b8e69 176-177
+  s_a5a0b8b07c8eab::t_8c49c8c67ce07e 1
+  s_a5a0b8b07c8eab::t_f6cdc90adb069b 33
+packages/backend/convex/people/import.ts
+  s_a5a0b8b07c8eab::t_a7f6970a70b264 977-978
+  s_a5a0b8b07c8eab::t_65ae68d4b0e38d 842-849,854-855,877,879-891,898-901,911-912
+  s_a5a0b8b07c8eab::t_458e7b93027b35 784
+  s_a5a0b8b07c8eab::t_1e116a69c9d0dd 100-102
+  s_a5a0b8b07c8eab::t_3fb6224772ced0 431-457,460,499-511,517,519,550-551
+  s_a5a0b8b07c8eab::t_f7ad54729d16dd 647-650
+  s_a5a0b8b07c8eab::t_01b9f87b316eca 149-162,177-178
+  s_a5a0b8b07c8eab::t_ed8c75b6380b99 709
+  s_a5a0b8b07c8eab::t_687a153e30492f 15,23,28,40,44-49
+  s_a5a0b8b07c8eab::t_486d6dff622353 108-112,114
+  s_a5a0b8b07c8eab::t_81cbbd7f38c574 365-373
+  s_a5a0b8b07c8eab::t_67c24645269396 512-516,529-531
+  s_a5a0b8b07c8eab::t_ee46116dbde213 24
+  s_a5a0b8b07c8eab::t_d9ef19c8382b88 931-934
+  s_a5a0b8b07c8eab::t_b9e6614f0e393e 309-310
+  s_a5a0b8b07c8eab::t_b80193fefbadfa 275-284,287-288
+  s_a5a0b8b07c8eab::t_170129ef21af1f 809
+  s_a5a0b8b07c8eab::t_883315f04c23ef 605-608,629
+  s_a5a0b8b07c8eab::t_db6ea4bff03695 878
+packages/backend/convex/people/importHourly.test.ts
+  s_a5a0b8b07c8eab::t_0e6d5328635175 1-84,101-191,197-201,207-249
+  s_a5a0b8b07c8eab::t_2ee926edc4160e 85-100
+  s_a5a0b8b07c8eab::t_67c24645269396 192-196,202-206
+packages/backend/convex/people/importHelpers.ts
+  s_a5a0b8b07c8eab::t_acf72d87034338 276,284
+  s_a5a0b8b07c8eab::t_30b0caeea6b29c 7,14,16-20,22-27
+  s_a5a0b8b07c8eab::t_6593b891c881d1 106-107
+  s_a5a0b8b07c8eab::t_e46fd3196d7ab5 46
+  s_a5a0b8b07c8eab::t_5da2f16e19f82f 241-242
+  s_a5a0b8b07c8eab::t_31f43d6ab831d9 64-65
+  s_a5a0b8b07c8eab::t_cb97681ba920db 335
+  s_a5a0b8b07c8eab::t_79bf335cd718c2 175,187
+  s_a5a0b8b07c8eab::t_1cefffbdcb262c 316-318
+  s_a5a0b8b07c8eab::t_4bfe838f39f173 130-131
+  s_e52995251c9695::t_9da79027a90b64 108
+packages/backend/convex/people/importDiff.test.ts
+  s_a5a0b8b07c8eab::t_b2bb597f9240e2 83,88-94,99,103-105,118,121,125,145-146
+  s_a5a0b8b07c8eab::t_3cceb3bb3ff39e 56-57,67-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "8040753ea738c09f79a624b1e98d05f065c8e98f",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_e52995251c9695": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5a26ae0a-c4f7-4d51-be28-e34b82bc7457",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
