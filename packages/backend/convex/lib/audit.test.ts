@@ -414,6 +414,7 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
     skippedRows: 0,
     peopleArchived: 0,
     peopleReactivated: 0,
+    hourlyPay: 0,
   },
   "payMapping.runStarted": {
     runId: "run-1",

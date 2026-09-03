@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest"
-import { PEOPLE_ARCHIVE_CHUNK_SIZE } from "@workspace/constants"
+import {
+  FULL_TIME_HOURS_MAX,
+  PEOPLE_ARCHIVE_CHUNK_SIZE,
+} from "@workspace/constants"
 import { api, internal, components } from "../_generated/api"
 import { addEditorMember, initConvexTest } from "../testing.helpers"
 
@@ -366,6 +369,110 @@ describe("updatePerson", () => {
       })
     ).rejects.toThrow(/errors.invalidInput/)
   })
+
+  it("stores fullTimeHoursPerMonth, clears it with null, and diffs both", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Anna Svensson", gender: "Kvinna" }
+    )
+
+    await asAdmin.mutation(api.people.people.updatePerson, {
+      orgId,
+      personId,
+      fullTimeHoursPerMonth: 150,
+    })
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.fullTimeHoursPerMonth).toBe(150)
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.updated")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      const changes = (
+        rows[0]?.payload as { changes?: Record<string, unknown> } | undefined
+      )?.changes
+      expect(changes?.fullTimeHoursPerMonth).toEqual({ from: null, to: 150 })
+    })
+
+    await asAdmin.mutation(api.people.people.updatePerson, {
+      orgId,
+      personId,
+      fullTimeHoursPerMonth: null,
+    })
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.fullTimeHoursPerMonth).toBeUndefined()
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.updated")
+        )
+        .collect()
+      expect(rows).toHaveLength(2)
+      const changes = (
+        rows[1]?.payload as { changes?: Record<string, unknown> } | undefined
+      )?.changes
+      expect(changes?.fullTimeHoursPerMonth).toEqual({ from: 150, to: null })
+    })
+  })
+
+  it("rejects fullTimeHoursPerMonth outside (0, FULL_TIME_HOURS_MAX]", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Anna Svensson", gender: "Kvinna" }
+    )
+
+    for (const bad of [0, -1, FULL_TIME_HOURS_MAX + 1]) {
+      await expect(
+        asAdmin.mutation(api.people.people.updatePerson, {
+          orgId,
+          personId,
+          fullTimeHoursPerMonth: bad,
+        })
+      ).rejects.toThrow(/errors.invalidInput/)
+    }
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.fullTimeHoursPerMonth).toBeUndefined()
+    })
+  })
+
+  it("accepts fullTimeHoursPerMonth exactly at FULL_TIME_HOURS_MAX and stores it with one audit row", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Anna Svensson", gender: "Kvinna" }
+    )
+
+    await asAdmin.mutation(api.people.people.updatePerson, {
+      orgId,
+      personId,
+      fullTimeHoursPerMonth: FULL_TIME_HOURS_MAX,
+    })
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.fullTimeHoursPerMonth).toBe(FULL_TIME_HOURS_MAX)
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.updated")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+    })
+  })
 })
 
 describe("listPeople / getPersonByPublicId", () => {
@@ -530,6 +637,37 @@ describe("listPeople / getPersonByPublicId", () => {
       publicId: publicIdA,
     })
     expect(result).toBeNull()
+  })
+
+  it("getPersonByPublicId returns fullTimeHoursPerMonth (null when unset)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Carla", gender: "Kvinna" }
+    )
+    const list = await asAdmin.query(api.people.people.listPeople, { orgId })
+    const publicId = list[0]?.publicId
+    if (publicId === undefined) throw new Error("publicId missing")
+
+    const unset = await asAdmin.query(api.people.people.getPersonByPublicId, {
+      orgId,
+      publicId,
+    })
+    expect(unset?.fullTimeHoursPerMonth).toBeNull()
+
+    await asAdmin.mutation(api.people.people.updatePerson, {
+      orgId,
+      personId,
+      fullTimeHoursPerMonth: 172.5,
+    })
+
+    const result = await asAdmin.query(api.people.people.getPersonByPublicId, {
+      orgId,
+      publicId,
+    })
+    expect(result?.fullTimeHoursPerMonth).toBe(172.5)
   })
 })
 
@@ -814,6 +952,63 @@ describe("upsertPersonByExternalRef", () => {
       }
     )
     expect(again.reactivated).toBe(false)
+  })
+
+  it("stores fullTimeHoursPerMonth on insert and patches it on change", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seedOrg(t)
+
+    const { personId, outcome } = await t.mutation(
+      internal.people.people.upsertPersonByExternalRef,
+      {
+        orgId,
+        actorId: userId,
+        externalRef: "EMP-200",
+        displayName: "Nils Svensson",
+        gender: "Man",
+        fullTimeHoursPerMonth: 165,
+      }
+    )
+    expect(outcome).toBe("created")
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.fullTimeHoursPerMonth).toBe(165)
+    })
+
+    const { outcome: outcomeAgain } = await t.mutation(
+      internal.people.people.upsertPersonByExternalRef,
+      {
+        orgId,
+        actorId: userId,
+        externalRef: "EMP-200",
+        displayName: "Nils Svensson",
+        gender: "Man",
+        fullTimeHoursPerMonth: 172.5,
+      }
+    )
+    expect(outcomeAgain).toBe("updated")
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.fullTimeHoursPerMonth).toBe(172.5)
+      const updated = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.updated")
+        )
+        .collect()
+      expect(updated).toHaveLength(1)
+      const payload = updated[0]?.payload as Record<string, unknown>
+      const changes = payload?.changes as Record<
+        string,
+        { from: unknown; to: unknown }
+      >
+      expect(changes?.fullTimeHoursPerMonth).toEqual({
+        from: 165,
+        to: 172.5,
+      })
+    })
   })
 })
 

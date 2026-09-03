@@ -1,5 +1,10 @@
 import { v } from "convex/values"
-import { fteTotalMonthlyComp, totalMonthlyComp } from "@workspace/constants"
+import type { BasePayBasis } from "@workspace/constants"
+import {
+  fteTotalMonthlyComp,
+  normalizedMonthlyBase,
+  totalMonthlyComp,
+} from "@workspace/constants"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
 import { internalMutation } from "../_generated/server"
@@ -13,7 +18,13 @@ import {
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { assignmentActiveAt, loadRoleAssignments } from "./assignments"
+import {
+  type OrgPayDefaults,
+  readOrgPayDefaults,
+  resolveFullTimeHours,
+} from "./fullTimeHours"
 import { sameSalaryValues } from "./importDiff"
+import { basePayBasis } from "./tables"
 
 // The pay record active at `asOf`: the row with the greatest effectiveAt
 // that is <= asOf. The single source of this selection rule: getCurrentSalary
@@ -80,11 +91,17 @@ const payRecordFields = {
   personId: v.id("people"),
   payYear: v.number(),
   source: v.union(v.literal("import"), v.literal("manual")),
+  // The figure as recorded and its basis.
+  basis: basePayBasis,
+  basicAmount: v.number(),
+  // Derived: the full-time-equivalent monthly base (normalizedMonthlyBase
+  // with the person's resolved full-time hours). Computed on read, never
+  // stored, so a corrected hours default reaches every record at once.
   basicMonthly: v.number(),
+  hoursPerMonth: v.number(),
   currency: v.string(),
   components: v.array(payComponentValidator),
-  // Derived: basicMonthly + sum(components[*].monthlyAmount). Computed on read,
-  // never stored, so it stays consistent without a migration.
+  // Derived: basicMonthly + sum(components[*].monthlyAmount).
   totalMonthlyComp: v.number(),
   effectiveAt: v.number(),
   createdAt: v.number(),
@@ -105,16 +122,27 @@ const salaryHistoryShape = v.object({
   ),
 })
 
-function toPayRecordShape(doc: Doc<"payRecords">) {
+function toPayRecordShape(
+  doc: Doc<"payRecords">,
+  hours: { hoursPerMonth: number }
+) {
+  const basicMonthly = normalizedMonthlyBase(
+    doc.basicAmount,
+    doc.basis,
+    hours.hoursPerMonth
+  )
   return {
     payRecordId: doc._id,
     personId: doc.personId,
     payYear: doc.payYear,
     source: doc.source,
-    basicMonthly: doc.basicMonthly,
+    basis: doc.basis,
+    basicAmount: doc.basicAmount,
+    basicMonthly,
+    hoursPerMonth: hours.hoursPerMonth,
     currency: doc.currency,
     components: doc.components,
-    totalMonthlyComp: totalMonthlyComp(doc.basicMonthly, doc.components),
+    totalMonthlyComp: totalMonthlyComp(basicMonthly, doc.components),
     effectiveAt: doc.effectiveAt,
     createdAt: doc.createdAt,
   }
@@ -125,12 +153,14 @@ function toPayRecordShape(doc: Doc<"payRecords">) {
 // history is preserved and returned by getSalaryHistory.
 //
 // Audit: pay.salarySet with an AMOUNT-FREE payload (GDPR). Only payYear,
-// source, and currency are captured in the changes diff.
+// source, currency, and basis (coded, not an amount) are captured in the
+// changes diff.
 export const setSalary = orgMutation({
   args: {
     personId: v.id("people"),
     payYear: v.number(),
-    basicMonthly: v.number(),
+    basis: basePayBasis,
+    basicAmount: v.number(),
     currency: v.string(),
     components: v.array(payComponentValidator),
     effectiveAt: v.optional(v.number()),
@@ -145,7 +175,7 @@ export const setSalary = orgMutation({
     const orgCurrency = await requireOrgCurrency(ctx)
     if (
       args.currency !== orgCurrency ||
-      args.basicMonthly < 0 ||
+      args.basicAmount < 0 ||
       args.components.some((component) => component.monthlyAmount < 0)
     ) {
       throw appError(ERROR_CODES.invalidInput)
@@ -159,7 +189,8 @@ export const setSalary = orgMutation({
       personId: args.personId,
       payYear: args.payYear,
       source: "manual",
-      basicMonthly: args.basicMonthly,
+      basis: args.basis,
+      basicAmount: args.basicAmount,
       currency: args.currency,
       components: args.components,
       effectiveAt,
@@ -167,11 +198,12 @@ export const setSalary = orgMutation({
     })
 
     // GDPR: the audit payload contains ONLY non-sensitive fields. Salary
-    // amounts (basicMonthly, components) are never stored in the audit trail.
+    // amounts (basicAmount, components) are never stored in the audit trail.
     const snapshot: Record<string, unknown> = {
       payYear: args.payYear,
       source: "manual",
       currency: args.currency,
+      basis: args.basis,
     }
 
     await ctx.audit.log({
@@ -208,6 +240,7 @@ export const deleteSalary = orgMutation({
       payYear: record.payYear,
       source: record.source,
       currency: record.currency,
+      basis: record.basis,
     }
     await ctx.audit.log({
       type: AUDIT_EVENTS.salaryDeleted,
@@ -215,7 +248,7 @@ export const deleteSalary = orgMutation({
         personId: record.personId,
         changes: buildChanges(
           snapshot,
-          { payYear: null, source: null, currency: null },
+          { payYear: null, source: null, currency: null, basis: null },
           [...PAY_AUDIT_FIELDS]
         ),
       },
@@ -238,7 +271,8 @@ export async function appendSalaryCore(
     actorId: string
     personId: Id<"people">
     payYear: number
-    basicMonthly: number
+    basis: BasePayBasis
+    basicAmount: number
     currency: string
     components: { kind: string; monthlyAmount: number }[]
     effectiveAt?: number
@@ -254,7 +288,7 @@ export async function appendSalaryCore(
   // upstream; this is the write-path backstop so a payRecord's derived
   // basic/variable split can never go negative).
   if (
-    args.basicMonthly < 0 ||
+    args.basicAmount < 0 ||
     args.components.some((component) => component.monthlyAmount < 0)
   ) {
     throw appError(ERROR_CODES.invalidInput)
@@ -285,7 +319,8 @@ export async function appendSalaryCore(
     personId: args.personId,
     payYear: args.payYear,
     source: "import",
-    basicMonthly: args.basicMonthly,
+    basis: args.basis,
+    basicAmount: args.basicAmount,
     currency: args.currency,
     components: args.components,
     effectiveAt,
@@ -297,6 +332,7 @@ export async function appendSalaryCore(
     payYear: args.payYear,
     source: "import",
     currency: args.currency,
+    basis: args.basis,
   }
 
   await logAudit(ctx, {
@@ -321,7 +357,8 @@ export const appendSalary = internalMutation({
     actorId: v.string(),
     personId: v.id("people"),
     payYear: v.number(),
-    basicMonthly: v.number(),
+    basis: basePayBasis,
+    basicAmount: v.number(),
     currency: v.string(),
     components: v.array(payComponentValidator),
     effectiveAt: v.optional(v.number()),
@@ -359,12 +396,15 @@ export const getSalaryHistory = orgQuery({
       )
       .collect()
 
+    const org = await readOrgPayDefaults(ctx, ctx.orgId)
+    const hours = resolveFullTimeHours(person, org)
+
     // Sort most recent effectiveAt first.
     rows.sort((a, b) => b.effectiveAt - a.effectiveAt)
     return rows.map((row) => {
       const active = assignmentActiveAt(assignments, row.effectiveAt)
       return {
-        ...toPayRecordShape(row),
+        ...toPayRecordShape(row, hours),
         assignment:
           active !== null
             ? { roleId: active.roleId, seniority: active.seniority }
@@ -394,7 +434,31 @@ export const getCurrentSalary = orgQuery({
       .collect()
 
     const current = payRecordAt(rows, asOf)
-    return current !== null ? toPayRecordShape(current) : null
+    if (current === null) return null
+
+    const org = await readOrgPayDefaults(ctx, ctx.orgId)
+    const hours = resolveFullTimeHours(person, org)
+    return toPayRecordShape(current, hours)
+  },
+})
+
+// What the salary dialog needs before a figure is typed: the currency the
+// amount is in and the full-time hours the derived monthly line multiplies
+// an hourly rate by.
+export const getPayDefaults = orgQuery({
+  args: { personId: v.id("people") },
+  returns: v.object({
+    currency: v.string(),
+    hoursPerMonth: v.number(),
+  }),
+  handler: async (ctx, { personId }) => {
+    const person = await requireOwnPerson(ctx, personId)
+    const org = await readOrgPayDefaults(ctx, ctx.orgId)
+    const hours = resolveFullTimeHours(person, org)
+    return {
+      currency: org.currency,
+      hoursPerMonth: hours.hoursPerMonth,
+    }
   },
 })
 
@@ -430,24 +494,34 @@ const payComparisonShape = v.union(
 
 // One person's dot for the pay-comparison chart. All amounts are FTE-adjusted
 // (the chart's like-for-like basis, decision #3): basic and variable are each
-// grossed to full-time via the shared fteTotalMonthlyComp helper, and variable
-// is the remainder so the two always sum to the plotted total. The name travels
-// with the point so the tooltip can label the person.
+// grossed to full-time via the shared fteTotalMonthlyComp helper (an hourly
+// record's figure is already a full-time one, so fteTotalMonthlyComp skips
+// the division for it), and variable is the remainder so the two always sum
+// to the plotted total. The name travels with the point so the tooltip can
+// label the person.
 function comparisonPoint(
   person: Doc<"people">,
   record: Doc<"payRecords">,
   seniority: string,
-  isSelf: boolean
+  isSelf: boolean,
+  org: OrgPayDefaults
 ) {
+  const { hoursPerMonth } = resolveFullTimeHours(person, org)
+  const basicMonthly = normalizedMonthlyBase(
+    record.basicAmount,
+    record.basis,
+    hoursPerMonth
+  )
   const amount = Math.round(
     fteTotalMonthlyComp(
-      record.basicMonthly,
+      basicMonthly,
       record.components,
-      person.ftePercent
+      person.ftePercent,
+      record.basis
     )
   )
   const basic = Math.round(
-    fteTotalMonthlyComp(record.basicMonthly, [], person.ftePercent)
+    fteTotalMonthlyComp(basicMonthly, [], person.ftePercent, record.basis)
   )
   return {
     publicId: person.publicId,
@@ -536,8 +610,10 @@ export const getRolePayComparison = orgQuery({
       }))
     )
 
+    const org = await readOrgPayDefaults(ctx, ctx.orgId)
+
     const points: Array<ReturnType<typeof comparisonPoint>> = [
-      comparisonPoint(person, ownRecord, active.seniority, true),
+      comparisonPoint(person, ownRecord, active.seniority, true, org),
     ]
     let excludedCount = 0
     for (const { assignment, peer, record } of peerData) {
@@ -547,7 +623,9 @@ export const getRolePayComparison = orgQuery({
         excludedCount += 1
         continue
       }
-      points.push(comparisonPoint(peer, record, assignment.seniority, false))
+      points.push(
+        comparisonPoint(peer, record, assignment.seniority, false, org)
+      )
     }
 
     return {

@@ -375,6 +375,9 @@ export interface AuditPayloads {
     // file brought back. Counts only, never ids.
     peopleArchived: number
     peopleReactivated: number
+    // Rows written with the hourly basis (from a dedicated column or by the
+    // pay-form interpretation). Count only.
+    hourlyPay: number
   }
   "payMapping.runStarted": {
     runId: string

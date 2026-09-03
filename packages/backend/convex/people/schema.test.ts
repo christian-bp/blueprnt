@@ -68,7 +68,8 @@ describe("people schema", () => {
         personId,
         payYear: 2024,
         source: "import",
-        basicMonthly: 45_000,
+        basis: "monthly",
+        basicAmount: 45_000,
         currency: "SEK",
         components: [],
         effectiveAt: 1_700_000_000_000,
@@ -76,7 +77,7 @@ describe("people schema", () => {
       })
       const doc = await ctx.db.get(id)
       expect(doc?._id).toBe(id)
-      expect(doc?.basicMonthly).toBe(45_000)
+      expect(doc?.basicAmount).toBe(45_000)
     })
   })
 

@@ -1,4 +1,7 @@
-import { PEOPLE_ARCHIVE_CHUNK_SIZE } from "@workspace/constants"
+import {
+  FULL_TIME_HOURS_MAX,
+  PEOPLE_ARCHIVE_CHUNK_SIZE,
+} from "@workspace/constants"
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
@@ -23,6 +26,7 @@ export const personImportOptionalArgs = {
   birthDate: v.optional(v.string()),
   employmentStartDate: v.optional(v.string()),
   ftePercent: v.optional(v.number()),
+  fullTimeHoursPerMonth: v.optional(v.number()),
   country: v.optional(v.string()),
   isManager: v.optional(v.boolean()),
   statisticalCode: v.optional(v.string()),
@@ -40,7 +44,13 @@ export const personImportOptionalArgs = {
 }
 
 // The optional person fields shared by createPerson and upsertPersonByExternalRef.
-const optionalPersonArgs = {
+// fullTimeHoursPerMonth is excluded: it is import/edit-only (derived; the
+// add-person dialog has no field for it), even though it lives in
+// personImportOptionalArgs for the import and edit paths.
+const {
+  fullTimeHoursPerMonth: _createExcludesFullTimeHoursPerMonth,
+  ...optionalPersonArgs
+} = {
   externalRef: v.optional(v.string()),
   ...personImportOptionalArgs,
 }
@@ -170,6 +180,9 @@ export async function upsertPersonByExternalRefCore(
         ? { employmentStartDate: args.employmentStartDate }
         : {}),
       ...(args.ftePercent !== undefined ? { ftePercent: args.ftePercent } : {}),
+      ...(args.fullTimeHoursPerMonth !== undefined
+        ? { fullTimeHoursPerMonth: args.fullTimeHoursPerMonth }
+        : {}),
       ...(args.country !== undefined ? { country: args.country } : {}),
       ...(args.isManager !== undefined ? { isManager: args.isManager } : {}),
       ...(args.statisticalCode !== undefined
@@ -226,6 +239,7 @@ export async function upsertPersonByExternalRefCore(
     birthDate: args.birthDate,
     employmentStartDate: args.employmentStartDate,
     ftePercent: args.ftePercent,
+    fullTimeHoursPerMonth: args.fullTimeHoursPerMonth,
     country: args.country,
     isManager: args.isManager,
     statisticalCode: args.statisticalCode,
@@ -281,6 +295,7 @@ export const upsertPersonByExternalRef = internalMutation({
     birthDate: v.optional(v.string()),
     employmentStartDate: v.optional(v.string()),
     ftePercent: v.optional(v.number()),
+    fullTimeHoursPerMonth: v.optional(v.number()),
     country: v.optional(v.string()),
     isManager: v.optional(v.boolean()),
     statisticalCode: v.optional(v.string()),
@@ -322,6 +337,7 @@ const personFields = {
   birthDate: v.union(v.string(), v.null()),
   employmentStartDate: v.union(v.string(), v.null()),
   ftePercent: v.union(v.number(), v.null()),
+  fullTimeHoursPerMonth: v.union(v.number(), v.null()),
   country: v.union(v.string(), v.null()),
   isManager: v.union(v.boolean(), v.null()),
   statisticalCode: v.union(v.string(), v.null()),
@@ -354,6 +370,7 @@ function toPersonShape(person: Doc<"people">) {
     birthDate: person.birthDate ?? null,
     employmentStartDate: person.employmentStartDate ?? null,
     ftePercent: person.ftePercent ?? null,
+    fullTimeHoursPerMonth: person.fullTimeHoursPerMonth ?? null,
     country: person.country ?? null,
     isManager: person.isManager ?? null,
     statisticalCode: person.statisticalCode ?? null,
@@ -442,6 +459,7 @@ export const updatePerson = orgMutation({
     department: v.optional(v.string()),
     employmentStartDate: v.optional(v.string()),
     ftePercent: v.optional(v.union(v.number(), v.null())),
+    fullTimeHoursPerMonth: v.optional(v.union(v.number(), v.null())),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -487,6 +505,24 @@ export const updatePerson = orgMutation({
     if (args.ftePercent !== undefined) {
       const ftePercent = args.ftePercent === null ? undefined : args.ftePercent
       if (ftePercent !== person.ftePercent) patch.ftePercent = ftePercent
+    }
+    if (args.fullTimeHoursPerMonth !== undefined) {
+      if (
+        args.fullTimeHoursPerMonth !== null &&
+        !(
+          args.fullTimeHoursPerMonth > 0 &&
+          args.fullTimeHoursPerMonth <= FULL_TIME_HOURS_MAX
+        )
+      ) {
+        throw appError(ERROR_CODES.invalidInput)
+      }
+      const fullTimeHoursPerMonth =
+        args.fullTimeHoursPerMonth === null
+          ? undefined
+          : args.fullTimeHoursPerMonth
+      if (fullTimeHoursPerMonth !== person.fullTimeHoursPerMonth) {
+        patch.fullTimeHoursPerMonth = fullTimeHoursPerMonth
+      }
     }
 
     // Nothing actually changed: no write, no audit row.

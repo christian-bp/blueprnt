@@ -564,6 +564,7 @@ export const SETTINGS_AUDIT_FIELDS = [
   "language",
   "employeeCount",
   "industry",
+  "fullTimeHoursPerMonth",
 ] as const
 
 // The job profile fields captured when a role is created (createRole and the
@@ -601,6 +602,7 @@ export const PERSON_AUDIT_FIELDS = [
   "title",
   "employmentStartDate",
   "ftePercent",
+  "fullTimeHoursPerMonth",
   "country",
   "isManager",
   "statisticalCode",
@@ -635,6 +637,7 @@ const PERSON_AUDIT_FIELD_KIND: Record<
   title: "identity",
   employmentStartDate: "structural",
   ftePercent: "structural",
+  fullTimeHoursPerMonth: "structural",
   country: "structural",
   isManager: "structural",
   statisticalCode: "structural",
@@ -701,8 +704,14 @@ export const ERASED_FIELD_VALUE = "erased"
 
 // The pay-record fields diffed on salarySet/salaryDeleted. AMOUNT-FREE by
 // design (GDPR): the trail records the year/source/currency of a pay change,
-// never the amount (Role != Person; people/pay.ts).
-export const PAY_AUDIT_FIELDS = ["payYear", "source", "currency"] as const
+// never the amount (Role != Person; people/pay.ts). `basis` is the coded
+// monthly/hourly basis; the amount itself is never diffed.
+export const PAY_AUDIT_FIELDS = [
+  "payYear",
+  "source",
+  "currency",
+  "basis",
+] as const
 
 // The assignment fields diffed on assignment.set (people/assignments.ts). roleId
 // is the internal key; the audit-log query resolves it to the role title for the

@@ -45,6 +45,10 @@ export const organizations = defineTable({
   // Never asked in onboarding; derived in V2 from imported employees (decided 2026-06-05).
   employeeCount: v.optional(v.number()),
   industry: v.optional(v.string()),
+  // The organization's default monthly hours that count as full time, used
+  // to turn hourly pay into a monthly figure for everyone without a value of
+  // their own. Unset means the country default (defaultFullTimeHoursFor).
+  fullTimeHoursPerMonth: v.optional(v.number()),
   // Set once by completeOnboarding when the wizard finishes; the gate trusts
   // this, never inferred state.
   onboardingCompletedAt: v.optional(v.number()),

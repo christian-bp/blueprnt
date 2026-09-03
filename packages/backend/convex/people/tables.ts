@@ -1,6 +1,11 @@
 import { defineTable } from "convex/server"
 import { v } from "convex/values"
 
+// The basis a base-pay figure is recorded in (mirrors @workspace/constants
+// BASE_PAY_BASES). Exported so pay.ts, the import chunk validator and the
+// pay-mapping snapshot table share one validator.
+export const basePayBasis = v.union(v.literal("monthly"), v.literal("hourly"))
+
 // Person registry: one row per individual in the org. Holds identity and
 // HR-structural attributes only (Role != Person; GDPR). Salary/performance
 // fields never live here. archivedAt is a leaver soft-archive, NOT erasure:
@@ -22,6 +27,11 @@ export const people = defineTable({
   employmentStartDate: v.optional(v.string()),
   // Full-time equivalent as a percentage, e.g. 100 = full time, 80 = 80 %.
   ftePercent: v.optional(v.number()),
+  // The monthly hours that count as full time for THIS person, when their
+  // agreement differs from the organization's default (resolveFullTimeHours
+  // in people/fullTimeHours.ts: person, then organization, then the country
+  // default). Positive, decimals allowed, at most FULL_TIME_HOURS_MAX.
+  fullTimeHoursPerMonth: v.optional(v.number()),
   // ISO 3166-1 alpha-2 country code of the work location, e.g. "SE".
   country: v.optional(v.string()),
   isManager: v.optional(v.boolean()),
@@ -77,8 +87,9 @@ export const personAssignments = defineTable({
 
 // Annual pay record per person. One row per (person, payYear, source). Total
 // compensation for pay-gap analysis under the EU Pay Transparency Directive
-// is derived as basicMonthly + sum(components[*].monthlyAmount); the derived
-// value is never stored (computed on read by totalMonthlyComp in pay.ts).
+// is derived as normalizedMonthlyBase(basicAmount, basis, hours) +
+// sum(components[*].monthlyAmount); the derived value is never stored
+// (computed on read by totalMonthlyComp in pay.ts).
 export const payRecords = defineTable({
   orgId: v.string(),
   personId: v.id("people"),
@@ -86,9 +97,14 @@ export const payRecords = defineTable({
   payYear: v.number(),
   // Whether this record came from a payroll import or was entered manually.
   source: v.union(v.literal("import"), v.literal("manual")),
-  // Monthly basic salary (fast lön) in the org's currency. This is the Art. 9
-  // basic-salary component, distinct from variable/bonus/benefit components.
-  basicMonthly: v.number(),
+  // The base-pay figure AS RECORDED (a monthly salary or an hourly rate) and
+  // its basis. This is the Art. 9 basic-salary component, distinct from the
+  // variable/bonus/benefit components. The full-time-equivalent monthly
+  // figure the analysis reads is derived on read (normalizedMonthlyBase with
+  // the person's resolved full-time hours) and stored only inside a run's
+  // frozen snapshot (ADR-0011, ADR-0029).
+  basis: basePayBasis,
+  basicAmount: v.number(),
   // ISO 4217 currency code, e.g. "SEK".
   currency: v.string(),
   // Extensible list of additional monthly compensation components beyond basic

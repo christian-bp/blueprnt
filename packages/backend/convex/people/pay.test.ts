@@ -71,7 +71,8 @@ describe("setSalary", () => {
       orgId,
       personId,
       payYear: 2024,
-      basicMonthly: 50000,
+      basis: "monthly",
+      basicAmount: 50000,
       currency: "SEK",
       components: [],
     })
@@ -83,7 +84,8 @@ describe("setSalary", () => {
       expect(row?.personId).toBe(personId)
       expect(row?.payYear).toBe(2024)
       expect(row?.source).toBe("manual")
-      expect(row?.basicMonthly).toBe(50000)
+      expect(row?.basis).toBe("monthly")
+      expect(row?.basicAmount).toBe(50000)
       expect(row?.currency).toBe("SEK")
       expect(row?.components).toEqual([])
       expect(row?.effectiveAt).toBeTypeOf("number")
@@ -100,7 +102,7 @@ describe("setSalary", () => {
       expect(payload?.personId).toBe(personId)
 
       // GDPR: the audit payload must NEVER contain salary amounts.
-      expect(payload?.basicMonthly).toBeUndefined()
+      expect(payload?.basicAmount).toBeUndefined()
       expect(payload?.components).toBeUndefined()
     })
   })
@@ -119,7 +121,8 @@ describe("setSalary", () => {
       orgId,
       personId,
       payYear: 2024,
-      basicMonthly: 60000,
+      basis: "monthly",
+      basicAmount: 60000,
       currency: "SEK",
       components: inputComponents,
     })
@@ -140,7 +143,8 @@ describe("setSalary", () => {
       orgId,
       personId,
       payYear: 2023,
-      basicMonthly: 45000,
+      basis: "monthly",
+      basicAmount: 45000,
       currency: "SEK",
       components: [],
       effectiveAt: ts,
@@ -161,7 +165,8 @@ describe("setSalary", () => {
       orgId,
       personId,
       payYear: 2023,
-      basicMonthly: 45000,
+      basis: "monthly",
+      basicAmount: 45000,
       currency: "SEK",
       components: [],
       effectiveAt: 1_000,
@@ -171,7 +176,8 @@ describe("setSalary", () => {
       orgId,
       personId,
       payYear: 2024,
-      basicMonthly: 50000,
+      basis: "monthly",
+      basicAmount: 50000,
       currency: "SEK",
       components: [],
       effectiveAt: 2_000,
@@ -181,11 +187,11 @@ describe("setSalary", () => {
       // Both rows must exist — the first is never overwritten.
       const firstRow = await ctx.db.get(first)
       expect(firstRow).not.toBeNull()
-      expect(firstRow?.basicMonthly).toBe(45000)
+      expect(firstRow?.basicAmount).toBe(45000)
 
       const secondRow = await ctx.db.get(second)
       expect(secondRow).not.toBeNull()
-      expect(secondRow?.basicMonthly).toBe(50000)
+      expect(secondRow?.basicAmount).toBe(50000)
 
       // Two distinct rows in the DB.
       expect(first).not.toBe(second)
@@ -204,7 +210,8 @@ describe("setSalary", () => {
         orgId: orgB,
         personId: personAId,
         payYear: 2024,
-        basicMonthly: 50000,
+        basis: "monthly",
+        basicAmount: 50000,
         currency: "SEK",
         components: [],
       })
@@ -222,7 +229,8 @@ describe("setSalary", () => {
         orgId,
         personId,
         payYear: 2026,
-        basicMonthly: 50000,
+        basis: "monthly",
+        basicAmount: 50000,
         currency: "EUR",
         components: [],
       })
@@ -239,7 +247,8 @@ describe("setSalary", () => {
         orgId,
         personId,
         payYear: 2026,
-        basicMonthly: 50000,
+        basis: "monthly",
+        basicAmount: 50000,
         currency: "SEK",
         components: [{ kind: "variable", monthlyAmount: -100 }],
       })
@@ -260,7 +269,8 @@ describe("appendSalary (internal, import path)", () => {
         actorId: userId,
         personId,
         payYear: 2024,
-        basicMonthly: 55000,
+        basis: "monthly",
+        basicAmount: 55000,
         currency: "SEK",
         components: [],
         effectiveAt: 1_700_000_000_000,
@@ -272,7 +282,8 @@ describe("appendSalary (internal, import path)", () => {
       const row = await ctx.db.get(payRecordId)
       expect(row).not.toBeNull()
       expect(row?.source).toBe("import")
-      expect(row?.basicMonthly).toBe(55000)
+      expect(row?.basis).toBe("monthly")
+      expect(row?.basicAmount).toBe(55000)
       expect(row?.effectiveAt).toBe(1_700_000_000_000)
 
       const auditRows = await ctx.db
@@ -285,7 +296,7 @@ describe("appendSalary (internal, import path)", () => {
       const payload = auditRows[0]?.payload as Record<string, unknown>
 
       // GDPR: no salary amounts in the audit trail.
-      expect(payload?.basicMonthly).toBeUndefined()
+      expect(payload?.basicAmount).toBeUndefined()
       expect(payload?.components).toBeUndefined()
     })
   })
@@ -300,7 +311,8 @@ describe("appendSalary (internal, import path)", () => {
       actorId: userId,
       personId,
       payYear: 2026,
-      basicMonthly: 55000,
+      basis: "monthly" as const,
+      basicAmount: 55000,
       currency: "SEK",
       components: [{ kind: "targetBonus", monthlyAmount: 1000 }],
     }
@@ -315,7 +327,7 @@ describe("appendSalary (internal, import path)", () => {
     // A changed value still appends (real pay history).
     const raised = await t.mutation(internal.people.pay.appendSalary, {
       ...base,
-      basicMonthly: 57500,
+      basicAmount: 57500,
     })
     expect(raised.created).toBe(true)
 
@@ -343,7 +355,8 @@ describe("appendSalary (internal, import path)", () => {
         actorId: userBId,
         personId: personAId,
         payYear: 2024,
-        basicMonthly: 50000,
+        basis: "monthly",
+        basicAmount: 50000,
         currency: "SEK",
         components: [],
       })
@@ -361,7 +374,8 @@ describe("getSalaryHistory", () => {
       orgId,
       personId,
       payYear: 2022,
-      basicMonthly: 40000,
+      basis: "monthly",
+      basicAmount: 40000,
       currency: "SEK",
       components: [],
       effectiveAt: 1_000,
@@ -370,7 +384,8 @@ describe("getSalaryHistory", () => {
       orgId,
       personId,
       payYear: 2024,
-      basicMonthly: 50000,
+      basis: "monthly",
+      basicAmount: 50000,
       currency: "SEK",
       components: [{ kind: "variable", monthlyAmount: 2000 }],
       effectiveAt: 3_000,
@@ -379,7 +394,8 @@ describe("getSalaryHistory", () => {
       orgId,
       personId,
       payYear: 2023,
-      basicMonthly: 45000,
+      basis: "monthly",
+      basicAmount: 45000,
       currency: "SEK",
       components: [],
       effectiveAt: 2_000,
@@ -424,7 +440,8 @@ describe("getSalaryHistory", () => {
       orgId: orgA,
       personId: personAId,
       payYear: 2024,
-      basicMonthly: 50000,
+      basis: "monthly",
+      basicAmount: 50000,
       currency: "SEK",
       components: [],
     })
@@ -447,7 +464,8 @@ describe("getCurrentSalary", () => {
       orgId,
       personId,
       payYear: 2022,
-      basicMonthly: 40000,
+      basis: "monthly",
+      basicAmount: 40000,
       currency: "SEK",
       components: [],
       effectiveAt: 1_000,
@@ -456,7 +474,8 @@ describe("getCurrentSalary", () => {
       orgId,
       personId,
       payYear: 2023,
-      basicMonthly: 45000,
+      basis: "monthly",
+      basicAmount: 45000,
       currency: "SEK",
       components: [{ kind: "bonus", monthlyAmount: 3000 }],
       effectiveAt: 2_000,
@@ -485,7 +504,8 @@ describe("getCurrentSalary", () => {
       orgId,
       personId,
       payYear: 2023,
-      basicMonthly: 45000,
+      basis: "monthly",
+      basicAmount: 45000,
       currency: "SEK",
       components: [],
       effectiveAt: 1_000,
@@ -495,7 +515,8 @@ describe("getCurrentSalary", () => {
       orgId,
       personId,
       payYear: 2024,
-      basicMonthly: 60000,
+      basis: "monthly",
+      basicAmount: 60000,
       currency: "SEK",
       components: [],
       effectiveAt: 5_000,
@@ -538,7 +559,8 @@ describe("getCurrentSalary", () => {
       orgId: orgA,
       personId: personAId,
       payYear: 2024,
-      basicMonthly: 50000,
+      basis: "monthly",
+      basicAmount: 50000,
       currency: "SEK",
       components: [],
       effectiveAt: 1_000,
@@ -554,7 +576,7 @@ describe("getCurrentSalary", () => {
 })
 
 describe("GDPR: pay.salarySet audit payload is amount-free", () => {
-  it("setSalary audit row contains no basicMonthly or components amounts", async () => {
+  it("setSalary audit row contains no basicAmount or components amounts", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
     const personId = await seedPerson(orgId, asAdmin)
@@ -563,7 +585,8 @@ describe("GDPR: pay.salarySet audit payload is amount-free", () => {
       orgId,
       personId,
       payYear: 2024,
-      basicMonthly: 99999,
+      basis: "monthly",
+      basicAmount: 99999,
       currency: "SEK",
       components: [
         { kind: "variable", monthlyAmount: 20000 },
@@ -581,22 +604,26 @@ describe("GDPR: pay.salarySet audit payload is amount-free", () => {
       expect(auditRows).toHaveLength(1)
 
       const payload = auditRows[0]?.payload as Record<string, unknown>
-      const changes = payload?.changes as Record<string, unknown> | undefined
+      const changes = payload?.changes as
+        | Record<string, { from: unknown; to: unknown }>
+        | undefined
 
       // Top-level payload must not expose amounts.
-      expect(payload).not.toHaveProperty("basicMonthly")
+      expect(payload?.basicAmount).toBeUndefined()
+      expect(payload).not.toHaveProperty("basicAmount")
       expect(payload).not.toHaveProperty("components")
       expect(payload).not.toHaveProperty("totalMonthlyComp")
 
       // The changes diff must not expose amounts either.
-      expect(changes).not.toHaveProperty("basicMonthly")
+      expect(changes).not.toHaveProperty("basicAmount")
       expect(changes).not.toHaveProperty("components")
       expect(changes).not.toHaveProperty("totalMonthlyComp")
 
-      // Non-sensitive fields are captured.
+      // Non-sensitive fields are captured, basis (coded) included.
       expect(changes).toHaveProperty("payYear")
       expect(changes).toHaveProperty("source")
       expect(changes).toHaveProperty("currency")
+      expect(changes?.basis?.to).toBe("monthly")
     })
   })
 
@@ -610,7 +637,8 @@ describe("GDPR: pay.salarySet audit payload is amount-free", () => {
       actorId: userId,
       personId,
       payYear: 2024,
-      basicMonthly: 88888,
+      basis: "monthly",
+      basicAmount: 88888,
       currency: "EUR",
       components: [
         { kind: "variable", monthlyAmount: 15000 },
@@ -628,14 +656,18 @@ describe("GDPR: pay.salarySet audit payload is amount-free", () => {
       expect(auditRows).toHaveLength(1)
 
       const payload = auditRows[0]?.payload as Record<string, unknown>
-      const changes = payload?.changes as Record<string, unknown> | undefined
+      const changes = payload?.changes as
+        | Record<string, { from: unknown; to: unknown }>
+        | undefined
 
-      expect(payload).not.toHaveProperty("basicMonthly")
+      expect(payload?.basicAmount).toBeUndefined()
+      expect(payload).not.toHaveProperty("basicAmount")
       expect(payload).not.toHaveProperty("components")
       expect(payload).not.toHaveProperty("totalMonthlyComp")
-      expect(changes).not.toHaveProperty("basicMonthly")
+      expect(changes).not.toHaveProperty("basicAmount")
       expect(changes).not.toHaveProperty("components")
       expect(changes).not.toHaveProperty("totalMonthlyComp")
+      expect(changes?.basis?.to).toBe("monthly")
     })
   })
 })
@@ -649,7 +681,8 @@ describe("deleteSalary", () => {
       orgId,
       personId,
       payYear: 2024,
-      basicMonthly: 50000,
+      basis: "monthly",
+      basicAmount: 50000,
       currency: "SEK",
       components: [],
     })
@@ -676,8 +709,9 @@ describe("deleteSalary", () => {
         { from: unknown; to: unknown }
       >
       expect(changes?.payYear).toEqual({ from: 2024, to: null })
+      expect(changes?.basis).toEqual({ from: "monthly", to: null })
       // GDPR: never the amounts.
-      expect(changes).not.toHaveProperty("basicMonthly")
+      expect(changes).not.toHaveProperty("basicAmount")
     })
   })
 
@@ -693,7 +727,8 @@ describe("deleteSalary", () => {
       orgId,
       personId,
       payYear: 2024,
-      basicMonthly: 50000,
+      basis: "monthly",
+      basicAmount: 50000,
       currency: "SEK",
       components: [],
     })
@@ -752,7 +787,8 @@ describe("getSalaryHistory role/seniority join", () => {
       orgId,
       personId,
       payYear: 2025,
-      basicMonthly: 50000,
+      basis: "monthly",
+      basicAmount: 50000,
       currency: "SEK",
       components: [],
       effectiveAt: 1500,
@@ -769,7 +805,8 @@ describe("getSalaryHistory role/seniority join", () => {
       orgId,
       personId,
       payYear: 2026,
-      basicMonthly: 60000,
+      basis: "monthly",
+      basicAmount: 60000,
       currency: "SEK",
       components: [],
       effectiveAt: 2500,
@@ -809,7 +846,8 @@ describe("getSalaryHistory role/seniority join", () => {
       orgId,
       personId,
       payYear: 2025,
-      basicMonthly: 50000,
+      basis: "monthly",
+      basicAmount: 50000,
       currency: "SEK",
       components: [],
       effectiveAt: 500,
@@ -880,7 +918,8 @@ describe("getRolePayComparison", () => {
       orgId,
       personId: peerId,
       payYear: 2026,
-      basicMonthly: 40000,
+      basis: "monthly",
+      basicAmount: 40000,
       currency: "SEK",
       components: [],
     })
@@ -889,7 +928,8 @@ describe("getRolePayComparison", () => {
       orgId,
       personId,
       payYear: 2026,
-      basicMonthly: 55000,
+      basis: "monthly",
+      basicAmount: 55000,
       currency: "SEK",
       components: [{ kind: "variable", monthlyAmount: 5000 }],
     })
@@ -947,6 +987,58 @@ describe("getRolePayComparison", () => {
     }
   })
 
+  it("computes the hourly point without FTE division, beside a monthly peer's own division", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    const roleId = await seedRoleWithAssignment(orgId, asAdmin, personId)
+    await t.run(async (ctx) => {
+      await ctx.db.patch(personId, { ftePercent: 50 })
+    })
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2026,
+      basis: "hourly",
+      basicAmount: 195,
+      currency: "SEK",
+      components: [],
+    })
+
+    const { personId: peerId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Bo Berg", gender: "Man", ftePercent: 80 }
+    )
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: peerId,
+      roleId,
+      seniority: "IC2",
+      senioritySource: "confirmed",
+    })
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId: peerId,
+      payYear: 2026,
+      basis: "monthly",
+      basicAmount: 40000,
+      currency: "SEK",
+      components: [],
+    })
+
+    const result = await asAdmin.query(api.people.pay.getRolePayComparison, {
+      orgId,
+      personId,
+    })
+    if (result.status !== "ready") throw new Error("expected ready")
+    const self = result.points.find((p) => p.isSelf)
+    const peer = result.points.find((p) => !p.isSelf)
+    // Hourly: 195 x 165h (se country default) = 32175, no FTE division.
+    expect(self?.amount).toBe(32175)
+    // Monthly peer: 40000 grossed up from 80% FTE.
+    expect(peer?.amount).toBe(50000)
+  })
+
   it("uses each person's latest payYear record", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
@@ -957,7 +1049,8 @@ describe("getRolePayComparison", () => {
       orgId,
       personId,
       payYear: 2024,
-      basicMonthly: 40000,
+      basis: "monthly",
+      basicAmount: 40000,
       currency: "SEK",
       components: [],
     })
@@ -965,7 +1058,8 @@ describe("getRolePayComparison", () => {
       orgId,
       personId,
       payYear: 2026,
-      basicMonthly: 48000,
+      basis: "monthly",
+      basicAmount: 48000,
       currency: "SEK",
       components: [],
     })
@@ -987,7 +1081,8 @@ describe("getRolePayComparison", () => {
       orgId,
       personId,
       payYear: 2026,
-      basicMonthly: 50000,
+      basis: "monthly",
+      basicAmount: 50000,
       currency: "SEK",
       components: [],
     })
@@ -1013,7 +1108,8 @@ describe("getRolePayComparison", () => {
         personId: eurPeer,
         payYear: 2026,
         source: "import",
-        basicMonthly: 4000,
+        basis: "monthly",
+        basicAmount: 4000,
         currency: "EUR",
         components: [],
         effectiveAt: 1_700_000_000_000,
@@ -1037,7 +1133,8 @@ describe("getRolePayComparison", () => {
       orgId,
       personId: archivedPeer,
       payYear: 2026,
-      basicMonthly: 70000,
+      basis: "monthly",
+      basicAmount: 70000,
       currency: "SEK",
       components: [],
     })
@@ -1067,5 +1164,131 @@ describe("getRolePayComparison", () => {
       personId,
     })
     expect(result).toEqual({ status: "unclassified" })
+  })
+})
+
+describe("hourly pay", () => {
+  it("derives the monthly figure from the org's country default when nothing else is set", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t) // country se -> 165 h
+    const personId = await seedPerson(orgId, asAdmin)
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2026,
+      basis: "hourly",
+      basicAmount: 195,
+      currency: "SEK",
+      components: [],
+    })
+    const history = await asAdmin.query(api.people.pay.getSalaryHistory, {
+      orgId,
+      personId,
+    })
+    expect(history[0]).toMatchObject({
+      basis: "hourly",
+      basicAmount: 195,
+      basicMonthly: 32175,
+      totalMonthlyComp: 32175,
+      hoursPerMonth: 165,
+    })
+  })
+
+  it("uses the organization default over the country, and the person's value over both", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2026,
+      basis: "hourly",
+      basicAmount: 200,
+      currency: "SEK",
+      components: [],
+    })
+    await t.run(async (ctx) => {
+      const org = await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (org) await ctx.db.patch(org._id, { fullTimeHoursPerMonth: 160 })
+    })
+    let current = await asAdmin.query(api.people.pay.getCurrentSalary, {
+      orgId,
+      personId,
+      asOf: Date.now() + 1000,
+    })
+    expect(current).toMatchObject({
+      basicMonthly: 32000,
+      hoursPerMonth: 160,
+    })
+
+    await t.run(async (ctx) => {
+      await ctx.db.patch(personId, { fullTimeHoursPerMonth: 150 })
+    })
+    current = await asAdmin.query(api.people.pay.getCurrentSalary, {
+      orgId,
+      personId,
+      asOf: Date.now() + 1000,
+    })
+    expect(current).toMatchObject({
+      basicMonthly: 30000,
+      hoursPerMonth: 150,
+    })
+  })
+
+  it("rejects a negative amount at the validator", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    await expect(
+      asAdmin.mutation(api.people.pay.setSalary, {
+        orgId,
+        personId,
+        payYear: 2026,
+        basis: "hourly",
+        basicAmount: -1,
+        currency: "SEK",
+        components: [],
+      })
+    ).rejects.toThrow()
+  })
+
+  it("getPayDefaults names the currency and the resolved hours", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    expect(
+      await asAdmin.query(api.people.pay.getPayDefaults, { orgId, personId })
+    ).toEqual({ currency: "SEK", hoursPerMonth: 165 })
+  })
+
+  it("a basis change with the same figure is a real new record, not a duplicate", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, userId } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    const first = await t.mutation(internal.people.pay.appendSalary, {
+      orgId,
+      actorId: userId,
+      personId,
+      payYear: 2026,
+      basis: "monthly",
+      basicAmount: 195,
+      currency: "SEK",
+      components: [],
+    })
+    const second = await t.mutation(internal.people.pay.appendSalary, {
+      orgId,
+      actorId: userId,
+      personId,
+      payYear: 2026,
+      basis: "hourly",
+      basicAmount: 195,
+      currency: "SEK",
+      components: [],
+    })
+    expect(first.created).toBe(true)
+    expect(second.created).toBe(true)
   })
 })
