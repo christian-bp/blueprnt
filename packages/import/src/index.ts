@@ -1,5 +1,6 @@
 export {
   ANNUAL_HINT,
+  BASIS_SELECT_FIELD_KEYS,
   CANONICAL_FIELDS,
   defaultBasis,
   fold,
@@ -25,6 +26,7 @@ export type { DetectedMapping } from "./detect"
 export {
   parseMoney,
   parseCurrency,
+  parseNumber,
   parsePercent,
   parseGender,
   parseDate,

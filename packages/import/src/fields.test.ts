@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
+  BASIS_SELECT_FIELD_KEYS,
   CANONICAL_FIELDS,
   defaultBasis,
   fold,
@@ -228,5 +229,72 @@ describe("defaultBasis", () => {
     expect(defaultBasis("basicMonthly", "Gross Salary (per month)")).toBe(
       "monthly"
     )
+  })
+})
+
+describe("hourly pay fields", () => {
+  const hourlyRate = CANONICAL_FIELDS.find((f) => f.key === "hourlyRate")
+  const hours = CANONICAL_FIELDS.find((f) => f.key === "fullTimeHoursPerMonth")
+
+  it("hourlyRate is an optional money field with a fixed hourly basis", () => {
+    expect(hourlyRate).toMatchObject({
+      tier: "optional",
+      shape: "money",
+      fixedBasis: "hourly",
+    })
+  })
+
+  it("matches the Nordic and English hourly-rate headers", () => {
+    for (const header of [
+      "Timlön",
+      "Timlon",
+      "Timelønn",
+      "Timeløn",
+      "Timeloenn",
+      "Hourly rate",
+      "Hourly wage",
+      "Tuntipalkka",
+    ]) {
+      const { exact, substring } = matchesSynonym(
+        fold(header),
+        hourlyRate?.synonyms ?? []
+      )
+      expect(exact || substring, header).toBe(true)
+    }
+  })
+
+  it("fullTimeHoursPerMonth is an optional number field matched by header only", () => {
+    expect(hours).toMatchObject({ tier: "optional", shape: "number" })
+    for (const header of [
+      "Heltidstimmar",
+      "Heltidstimmar per månad",
+      "Full-time hours",
+      "Hours per month",
+      "Heltidstimer",
+      "Fuldtidstimer",
+      "Kokoaikatunnit",
+    ]) {
+      const { exact, substring } = matchesSynonym(
+        fold(header),
+        hours?.synonyms ?? []
+      )
+      expect(exact || substring, header).toBe(true)
+    }
+  })
+
+  it("never claims a working-time column (weekly hours or an FTE share)", () => {
+    for (const header of ["Arbetstid", "Arbeidstid", "Arbejdstid", "Työaika"]) {
+      const { exact, substring } = matchesSynonym(
+        fold(header),
+        hours?.synonyms ?? []
+      )
+      expect(exact || substring, header).toBe(false)
+    }
+  })
+
+  it("BASIS_SELECT_FIELD_KEYS holds every money field except the fixed-basis one", () => {
+    expect(BASIS_SELECT_FIELD_KEYS.has("basicMonthly")).toBe(true)
+    expect(BASIS_SELECT_FIELD_KEYS.has("bonus")).toBe(true)
+    expect(BASIS_SELECT_FIELD_KEYS.has("hourlyRate")).toBe(false)
   })
 })

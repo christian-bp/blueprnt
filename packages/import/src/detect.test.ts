@@ -437,3 +437,19 @@ describe("detectColumns content-only ambiguity guards (CO-AMB)", () => {
     expect(map.birthDate).toBeUndefined()
   })
 })
+
+describe("detectColumns: hourly-rate and full-time-hours headers", () => {
+  it("maps Timlön to hourlyRate and Heltidstimmar to fullTimeHoursPerMonth, leaves Arbetstid unmapped", () => {
+    const headers =
+      "Anstnr;Kon;Befattning;Lön;Timlön;Heltidstimmar;Arbetstid".split(";")
+    const rows = [
+      "114;Kvinna;Butikssäljare;29 500;;;40".split(";"),
+      "115;Man;Butikssäljare;165;165;165;40".split(";"),
+    ]
+    const result = detectColumns({ headers, rows })
+    expect(result.map.basicMonthly?.columnIndex).toBe(3)
+    expect(result.map.hourlyRate?.columnIndex).toBe(4)
+    expect(result.map.fullTimeHoursPerMonth?.columnIndex).toBe(5)
+    expect(result.unmappedColumns).toContain(6)
+  })
+})

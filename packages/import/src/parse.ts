@@ -113,6 +113,21 @@ export function parseMoney(v: string): number | null {
 }
 
 /**
+ * Parse a plain decimal (an hours figure, a count): dot or comma decimal, an
+ * optional trailing "h". Never scales (unlike parsePercent's fraction mode)
+ * and rejects negatives, percent signs and any other trailing word.
+ * Examples: "162,5" -> 162.5, "165 h" -> 165, "80 %" -> null.
+ */
+export function parseNumber(v: string): number | null {
+  const trimmed = v.trim()
+  if (!trimmed) return null
+  const cleaned = trimmed.replace(/\s*h$/i, "").trim().replace(",", ".")
+  if (!/^\d+(\.\d+)?$/.test(cleaned)) return null
+  const n = Number(cleaned)
+  return Number.isFinite(n) ? n : null
+}
+
+/**
  * Parse a raw currency code to an uppercase string.
  * Example: " SEK " -> "SEK"
  */

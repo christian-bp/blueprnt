@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import {
   parseMoney,
   parseCurrency,
+  parseNumber,
   parsePercent,
   parseGender,
   parseDate,
@@ -619,5 +620,21 @@ describe("parseStringId and parseIntId safe-integer guard (Plan A)", () => {
 
   it("parseIntId still parses a safe integer (lock)", () => {
     expect(parseIntId("10042")).toBe(10042)
+  })
+})
+
+describe("parseNumber", () => {
+  it("reads dot and comma decimals and a trailing h", () => {
+    expect(parseNumber("162.5")).toBe(162.5)
+    expect(parseNumber("162,5")).toBe(162.5)
+    expect(parseNumber("165")).toBe(165)
+    expect(parseNumber("165 h")).toBe(165)
+  })
+  it("never scales a fraction and rejects anything else", () => {
+    expect(parseNumber("0.8")).toBe(0.8)
+    expect(parseNumber("80 %")).toBeNull()
+    expect(parseNumber("abc")).toBeNull()
+    expect(parseNumber("")).toBeNull()
+    expect(parseNumber("-5")).toBeNull()
   })
 })

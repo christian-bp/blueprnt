@@ -12,6 +12,7 @@ import type {
 const ROW_CODES: RowIssueCode[] = [
   "duplicateId",
   "unparsableMoney",
+  "unparsableHourlyRate",
   "nonNumericCode",
   "unresolvedGender",
   "genderNameMismatch",
@@ -45,6 +46,7 @@ describe("issue code inventory", () => {
     expect(ROW_ISSUE_SEVERITY.fractionScaled).toBe("notice")
     expect(ROW_ISSUE_SEVERITY.ambiguousDate).toBe("notice")
     expect(ROW_ISSUE_SEVERITY.genderNameMismatch).toBe("notice")
+    expect(ROW_ISSUE_SEVERITY.unparsableHourlyRate).toBe("notice")
     // Errors block until the file is fixed (or the value assigned in-app).
     expect(ROW_ISSUE_SEVERITY.duplicateId).toBe("error")
     expect(ROW_ISSUE_SEVERITY.unparsableMoney).toBe("error")

@@ -524,6 +524,85 @@ describe("validateImport — issues: negativeValue (ENC-24)", () => {
   })
 })
 
+describe("validateImport: issues: hourlyRate unparsableHourlyRate/negativeValue", () => {
+  const HOURLY_HEADERS = ["Anstnr", "Kon", "Befattning", "Lon", "Timlön"]
+  const hourlyMapping: DetectedMapping = {
+    map: {
+      externalRef: { columnIndex: 0, confidence: 1 },
+      gender: { columnIndex: 1, confidence: 1 },
+      title: { columnIndex: 2, confidence: 1 },
+      basicMonthly: { columnIndex: 3, confidence: 1 },
+      hourlyRate: { columnIndex: 4, confidence: 1 },
+    },
+    unmappedColumns: [],
+  }
+
+  it("reports the soft unparsableHourlyRate (never the hard unparsableMoney) for an unparseable hourlyRate cell", () => {
+    const rows = [["114", "Kvinna", "Analyst", "52000", "abc"]]
+    const result = validateImport(
+      { headers: HOURLY_HEADERS, rows },
+      hourlyMapping,
+      {}
+    )
+    expect(
+      result.issues
+        .filter((i) => i.code === "unparsableHourlyRate")
+        .map((i) => i.row)
+    ).toContain(0)
+    expect(
+      result.issues.filter((i) => i.code === "unparsableMoney")
+    ).toHaveLength(0)
+  })
+
+  it.each(["-", "n/a"])(
+    "a placeholder cell %j raises the soft unparsableHourlyRate and no hard code",
+    (placeholder) => {
+      const rows = [["114", "Kvinna", "Analyst", "52000", placeholder]]
+      const result = validateImport(
+        { headers: HOURLY_HEADERS, rows },
+        hourlyMapping,
+        {}
+      )
+      expect(
+        result.issues
+          .filter((i) => i.code === "unparsableHourlyRate")
+          .map((i) => i.row)
+      ).toContain(0)
+      expect(
+        result.issues.filter(
+          (i) => i.code === "unparsableMoney" || i.code === "negativeValue"
+        )
+      ).toHaveLength(0)
+    }
+  )
+
+  it("reports negativeValue for a negative hourlyRate cell", () => {
+    const rows = [["114", "Kvinna", "Analyst", "52000", "-195"]]
+    const result = validateImport(
+      { headers: HOURLY_HEADERS, rows },
+      hourlyMapping,
+      {}
+    )
+    expect(
+      result.issues.filter((i) => i.code === "negativeValue").map((i) => i.row)
+    ).toContain(0)
+  })
+
+  it("raises nothing for a blank hourlyRate cell", () => {
+    const rows = [["114", "Kvinna", "Analyst", "52000", ""]]
+    const result = validateImport(
+      { headers: HOURLY_HEADERS, rows },
+      hourlyMapping,
+      {}
+    )
+    expect(
+      result.issues.filter(
+        (i) => i.code === "unparsableMoney" || i.code === "negativeValue"
+      )
+    ).toHaveLength(0)
+  })
+})
+
 describe("validateImport — mojibake / ragged / noDelimiter signals", () => {
   it("flags mojibake when 2+ headers contain double-encoding sequences (ENC-04)", () => {
     const headers = ["KÃ¶n", "LÃ¶n", "Namn"]

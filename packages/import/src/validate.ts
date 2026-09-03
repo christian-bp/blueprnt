@@ -19,6 +19,7 @@ import type { TokenizeResult, TokenizeSignals } from "./tokenize"
 export type RowIssueCode =
   | "duplicateId"
   | "unparsableMoney"
+  | "unparsableHourlyRate"
   | "nonNumericCode"
   | "unresolvedGender"
   | "genderNameMismatch"
@@ -43,6 +44,10 @@ export type RowIssueSeverity = "error" | "notice"
 export const ROW_ISSUE_SEVERITY: Record<RowIssueCode, RowIssueSeverity> = {
   duplicateId: "error",
   unparsableMoney: "error",
+  // hourlyRate is optional: an unparsable cell there (e.g. a placeholder
+  // like "-" left over from a monthly-paid row) never removes the person,
+  // it just reads as absent so the row falls through to the base-pay rules.
+  unparsableHourlyRate: "notice",
   nonNumericCode: "error",
   unresolvedGender: "error",
   genderNameMismatch: "notice",
@@ -127,6 +132,45 @@ function isNegativeMoney(raw: string): boolean {
 }
 
 /**
+ * Non-blank-cell money validation shared by every money field that gets a
+ * per-cell unparsable/negativeValue check (basicMonthly, hourlyRate):
+ * negative or parenthesized values report negativeValue (always hard: a
+ * negative rate or salary is never right) regardless of the field; anything
+ * else parseMoney rejects reports the caller's unparsableCode, which is a
+ * hard skip for the required basicMonthly column (unparsableMoney) but a
+ * soft notice for the optional hourlyRate column (unparsableHourlyRate),
+ * since a placeholder cell there must not remove a monthly-paid person.
+ * Returns at most one issue.
+ */
+function moneyCellIssues(
+  rowIdx: number,
+  fieldKey: CanonicalFieldKey,
+  raw: string,
+  unparsableCode: "unparsableMoney" | "unparsableHourlyRate" = "unparsableMoney"
+): RowIssue[] {
+  if (raw === "") return []
+  if (isNegativeMoney(raw)) {
+    return [
+      {
+        row: rowIdx,
+        code: "negativeValue",
+        detail: `${fieldKey} cell "${raw}" is a negative or parenthesized value`,
+      },
+    ]
+  }
+  if (parseMoney(raw) === null) {
+    return [
+      {
+        row: rowIdx,
+        code: unparsableCode,
+        detail: `${fieldKey} cell "${raw}" is not a parseable money value`,
+      },
+    ]
+  }
+  return []
+}
+
+/**
  * A column is fractional when classifyColumn reports fraction: true, meaning
  * every non-blank cell parsed to a finite number <= 1.0. Delegates to the
  * engine's own column classifier so this check and classifyColumn can never
@@ -193,6 +237,7 @@ export function validateImport(
 
   const externalRefCol = colOf("externalRef")
   const basicMonthlyCol = colOf("basicMonthly")
+  const hourlyRateCol = colOf("hourlyRate")
   const statisticalCodeCol = colOf("statisticalCode")
   const genderCol = colOf("gender")
   const firstNameCol = colOf("firstName")
@@ -240,24 +285,23 @@ export function validateImport(
       }
     }
 
-    // unparsableMoney / negativeValue: non-blank basicMonthly cell.
+    // unparsableMoney / negativeValue: non-blank basicMonthly cell (hard: the
+    // required column). unparsableHourlyRate / negativeValue: non-blank
+    // hourlyRate cell (soft for an unparsable cell: the optional column).
     if (basicMonthlyCol !== undefined) {
-      const raw = cell(basicMonthlyCol)
-      if (raw !== "") {
-        if (isNegativeMoney(raw)) {
-          issues.push({
-            row: rowIdx,
-            code: "negativeValue",
-            detail: `basicMonthly cell "${raw}" is a negative or parenthesized value`,
-          })
-        } else if (parseMoney(raw) === null) {
-          issues.push({
-            row: rowIdx,
-            code: "unparsableMoney",
-            detail: `basicMonthly cell "${raw}" is not a parseable money value`,
-          })
-        }
-      }
+      issues.push(
+        ...moneyCellIssues(rowIdx, "basicMonthly", cell(basicMonthlyCol))
+      )
+    }
+    if (hourlyRateCol !== undefined) {
+      issues.push(
+        ...moneyCellIssues(
+          rowIdx,
+          "hourlyRate",
+          cell(hourlyRateCol),
+          "unparsableHourlyRate"
+        )
+      )
     }
 
     // nonNumericCode: statisticalCode cell that is non-numeric when the field is mapped.

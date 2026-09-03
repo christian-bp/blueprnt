@@ -92,6 +92,19 @@ describe("pipeline: fortnox-sv (regression companion to DC-16)", () => {
   })
 })
 
+describe("pipeline: visma-sv-hourly (mixed Lön column by pay form)", () => {
+  it("maps the pay-form and hours columns and reports no blocking or money issues", () => {
+    const { mapping, validation } = runCsv("visma-sv-hourly.csv")
+    for (const key of REQUIRED) expect(mapping.map[key]).toBeDefined()
+    expect(mapping.map.employmentType).toBeDefined()
+    expect(mapping.map.fullTimeHoursPerMonth).toBeDefined()
+    expect(validation.blocking).toHaveLength(0)
+    expect(
+      validation.issues.filter((i) => i.code === "unparsableMoney")
+    ).toHaveLength(0)
+  })
+})
+
 describe("pipeline: binary.xlsx (A1, A4 invalidFileFormat)", () => {
   it("returns invalidFileFormat blocking, not missing-columns", () => {
     const text = read("binary.xlsx")

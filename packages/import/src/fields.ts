@@ -13,6 +13,9 @@ export type ValueShape =
   | "gender"
   | "boolean"
   | "employmentType"
+  // A plain decimal (hours, counts): parsed by parseNumber, never scaled,
+  // never detected from values.
+  | "number"
 
 export type FieldDef = {
   key: CanonicalFieldKey
@@ -20,6 +23,9 @@ export type FieldDef = {
   shape: ValueShape
   /** Pre-folded header candidates across sv/nb/da/fi/en. */
   synonyms: string[]
+  /** A money field whose basis is fixed by definition (an hourly rate is per
+   *  hour); such a field gets no monthly/annual select. */
+  fixedBasis?: "hourly"
 }
 
 // Letters that NFD does not decompose to a base ASCII letter. Substituted
@@ -344,6 +350,41 @@ const FIELDS = [
     ],
   },
   {
+    key: "hourlyRate",
+    tier: "optional",
+    shape: "money",
+    fixedBasis: "hourly",
+    // sv timlön, nb timelønn, da timeløn (both fold with o-slash -> o), fi tuntipalkka.
+    synonyms: [
+      "timlon",
+      "timelon",
+      "timelonn",
+      "timeloenn",
+      "timeloen",
+      "hourlyrate",
+      "hourlywage",
+      "hourlypay",
+      "tuntipalkka",
+    ],
+  },
+  {
+    key: "fullTimeHoursPerMonth",
+    tier: "optional",
+    shape: "number",
+    // Deliberately NOT arbetstid/arbeidstid/arbejdstid/tyoaika: those columns
+    // are as often weekly hours or an FTE share.
+    synonyms: [
+      "heltidstimmar",
+      "heltidstimmarpermanad",
+      "fulltimehours",
+      "fulltimehourspermonth",
+      "hourspermonth",
+      "heltidstimer",
+      "fuldtidstimer",
+      "kokoaikatunnit",
+    ],
+  },
+  {
     key: "employmentType",
     tier: "recommended",
     shape: "employmentType",
@@ -395,6 +436,15 @@ export const CANONICAL_FIELDS: readonly FieldDef[] = FIELDS.map((f) => ({
 })) as unknown as readonly FieldDef[]
 
 export type CanonicalFieldKey = (typeof FIELDS)[number]["key"]
+
+// The money fields that get the Map step's monthly/annual select: every
+// money-shaped field without a fixed basis. One set for the Map step and
+// its basis-map sync, so a fixed-basis field can never grow a select.
+export const BASIS_SELECT_FIELD_KEYS: ReadonlySet<string> = new Set(
+  CANONICAL_FIELDS.filter(
+    (f) => f.shape === "money" && f.fixedBasis === undefined
+  ).map((f) => f.key)
+)
 
 // Folded header fragments that imply an annual figure regardless of the field
 // (e.g. an "Årslön" column mapped to base salary). Used to seed the Map-step
