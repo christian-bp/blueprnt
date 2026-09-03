@@ -39,6 +39,17 @@ a percentage. When every value in a column is 1.0 or less, blueprnt scales
 the whole column to a percentage and shows a notice explaining that it did
 so, so the change is visible rather than silent.
 
+## One salary column for monthly and hourly pay
+
+The most common Swedish payroll layout carries one "Lön" column: a monthly
+salary for monthly-paid people and an hourly rate for hourly-paid people,
+with the pay form recorded in a separate employment-type column. blueprnt
+reads that shared column by employment type, so an hourly-typed row's
+amount is read as an hourly rate rather than a monthly salary; see
+[Importing people](/docs/importing-people) for the checkbox that lets you
+switch that reading off, and for mapping a dedicated Hourly rate column
+when your export has one.
+
 ## Formats you need to adjust before importing
 
 A handful of formats are not read: spreadsheet files (XLSX, XLS, ODS)

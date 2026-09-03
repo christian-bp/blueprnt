@@ -83,15 +83,27 @@ så dere kan rette det i kildefilen og laste opp på nytt.
 
 Problemer som blokkerer importen til de fikses (i kildefilen, eller,
 for et uløst kjønn, tildelt direkte i appen): en duplisert ansatt-ID,
-en ulesbar lønnsverdi, en ikke-numerisk statistikkkode (lønnseksporter
-merker noen ganger kolonnen Yrkeskode eller SSYK), et kjønn som ikke
-kunne leses, en negativ lønnsverdi, og en rad med feil antall kolonner.
+en ulesbar eller negativ lønnsverdi, en negativ timelønn, en
+ikke-numerisk statistikkkode (lønnseksporter merker noen ganger
+kolonnen Yrkeskode eller SSYK), et kjønn som ikke kunne leses, og en
+rad med feil antall kolonner.
 
-Problemer vist under "Bra å vite" som ikke blokkerer noe: en
-navnebasert kjønnsgjetting som ikke stemmer med den angitte verdien
-(som kan være en falsk positiv), en stillingsandelverdi lest som en
-andel og skalert til en prosentsats, og en dato uten entydig rekkefølge,
-lest som dag/måned.
+Problemer vist under "Bra å vite" som ikke blokkerer noe: en ulesbar
+timelønnsverdi, som tolkes som manglende slik at raden faller tilbake
+på lønnskolonnens regler, en navnebasert kjønnsgjetting som ikke
+stemmer med den angitte verdien (som kan være en falsk positiv), en
+stillingsandelverdi lest som en andel og skalert til en prosentsats, og
+en dato uten entydig rekkefølge, lest som dag/måned.
+
+Tre videre merknader, listet under "Verdt en titt" i importens
+gjennomgangssteg, blokkerer heller aldri noe: en timesats som ser ut
+som en månedslønn, en månedslønn som ser ut som en timesats på en rad
+som er timelønnet eller mangler ansettelsesform helt, og en rad som
+bærer et beløp i både lønnskolonnen og en egen Timelønn-kolonne.
+Kontroller ansettelsesform-kolonnen når et beløp ser ut til å ha feil
+form, tilordne en egen Timelønn-kolonne når eksporten deres har en,
+eller fjern haken fra "Tolk beløp for timelønnede som timelønn" på
+gjennomgangssteget hvis tolkningen er feil for mange rader på én gang.
 
 Manglende obligatoriske felt blokkerer også importen til hvert av dem
 er tilordnet en kolonne på forrige steg; manglende anbefalte felt bare

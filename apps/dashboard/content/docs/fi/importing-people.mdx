@@ -35,15 +35,20 @@ ja päivämäärät luetaan.
    rahasarakkeelle, ovatko sen arvot kuukausi- vai vuositasolla;
    blueprnt arvaa järkevän oletuksen sarakkeen otsikosta, mutta
    voitte muuttaa sen, ja valintanne muistetaan seuraavaa tuontia
-   varten.
+   varten. Kaksi muuta valinnaista saraketta koskevat tuntipalkkaa:
+   Tuntipalkka, joka luetaan tuntisummana ilman omaa
+   kuukausi/vuosi-valintaa, ja Kokoaikatunnit kuukaudessa, henkilön oma
+   arvo, joka syrjäyttää organisaation oletuksen.
 3. **Tarkista**: tarkastelkaa, kuinka kattavasti pakolliset,
    suositellut ja valinnaiset kentät on täytetty, ja korjatkaa sitten
    tietolaatuongelmat. Kahdennettu työntekijä-ID, lukukelvoton tai
-   negatiivinen palkka-arvo, rivi, jossa on väärä määrä sarakkeita, tai
-   määrittämätön sukupuoli ohittaa koko rivin; määrittämättömän
+   negatiivinen palkka-arvo, negatiivinen tuntipalkka, rivi, jossa on
+   väärä määrä sarakkeita, tai määrittämätön sukupuoli ohittaa koko rivin; määrittämättömän
    sukupuolen voi sen sijaan asettaa tässä rivi kerrallaan, muuttamatta
    mitään muuta tiedostossa. Muut
-   ongelmat, kuten työaikasarake, joka luettiin osuutena ja
+   ongelmat, kuten lukukelvoton tuntipalkka-arvo (joka luetaan
+   puuttuvaksi, jolloin rivi noudattaa sen sijaan palkkasarakkeen
+   sääntöjä), työaikasarake, joka luettiin osuutena ja
    skaalattiin prosenteiksi, tai päivämäärä, joka luettiin päivä
    ensin -muodossa koska se voisi tarkoittaa joko päivää tai
    kuukautta, ovat vain tiedoksi eivätkä pysäytä tuontia. Jos ongelma
@@ -62,11 +67,21 @@ ja päivämäärät luetaan.
    tiedostosta. Puuttuvat pysyvät aktiivisina, ellette valitse "Arkistoi nämä
    N työntekijää"; valinta on oletuksena pois päältä, joten vain osan
    organisaatiosta kattava tiedosto ei koskaan arkistoi muita.
+   Rivi, jonka työsuhdemuoto on tuntityö, saa palkkasarakkeen summansa
+   luetuksi tuntipalkaksi; tarkistusvaihe luettelee nämä rivit otsikon
+   "Tuntipalkka" alla valintaruudulla "Tulkitse tuntityöntekijöiden
+   summat tuntipalkaksi", oletuksena päällä, joten voitte kytkeä
+   tulkinnan pois juuri tästä tuonnista. Kolme katsomisen arvoista
+   huomautusta, joista mikään ei estä mitään, merkitsevät tuntipalkkaa,
+   joka näyttää kuukausipalkalta, kuukausipalkkaa, joka näyttää
+   tuntipalkalta, ja riviä, jolla on sekä kuukausipalkkasumma että oma
+   tuntipalkkasumma.
 
 Vahvistuksen jälkeen tuonti käynnistyy ja näyttää edistymisen
 reaaliajassa, sitten lopullisen määrän siitä, kuinka monta henkilöä
 luotiin, päivitettiin, oli jo ajan tasalla tai ohitettiin, sekä kuinka
-moni palautettiin aktiiviseksi tai arkistoitiin, kun niin tapahtui.
+moni palautettiin aktiiviseksi tai arkistoitiin, kun niin tapahtui, ja
+kuinka monta tuntipalkkatietuetta tallennettiin.
 
 ## Tuonnin jälkeen
 

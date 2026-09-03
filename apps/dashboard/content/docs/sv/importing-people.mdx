@@ -31,19 +31,24 @@ system detta är verifierat mot och hur deras tal och datum läses.
    övrig ersättning). För varje lönekolumn väljer ni om värdena gäller
    per månad eller per år; blueprnt gissar ett rimligt standardval
    utifrån kolumnrubriken, men ni kan ändra det, och ert val kommas
-   ihåg till nästa gång ni importerar.
+   ihåg till nästa gång ni importerar. Två ytterligare valfria kolumner
+   täcker timlön: Timlön, läst som ett timbelopp utan eget val mellan
+   per månad eller per år, och Heltidstimmar per månad, ett eget värde
+   för personen som går före organisationens standardvärde.
 3. **Kontrollera**: granska hur väl de obligatoriska, rekommenderade
    och valfria fälten är täckta, och åtgärda sedan eventuella
    datakvalitetsproblem. Ett dubblerat anställnings-ID, ett oläsbart
-   eller negativt lönevärde, en rad med fel antal kolumner, eller ett
-   olöst kön hoppar över den raden helt; ett olöst kön kan istället
+   eller negativt lönevärde, en negativ timlön, en rad med fel antal
+   kolumner, eller ett olöst kön hoppar över den raden helt; ett olöst kön kan istället
    sättas här, en rad i taget, utan att ändra något annat i filen.
-   Andra problem, som en sysselsättningsgradskolumn läst som en andel
-   och skalad till procent, eller ett datum läst dag-först eftersom det
-   kunde betyda antingen dag eller månad, är bara informativa och
-   stoppar inte importen. Om ett problem finns i själva källfilen,
-   åtgärda det där och välj "Ladda upp en korrigerad fil" för att börja
-   om från Ladda upp med en ren kopia.
+   Andra problem, som ett oläsbart timlönevärde (som tolkas som saknat,
+   så att raden faller tillbaka på lönekolumnens regler), en
+   sysselsättningsgradskolumn läst som en andel och skalad till
+   procent, eller ett datum läst dag-först eftersom det kunde betyda
+   antingen dag eller månad, är bara informativa och stoppar inte
+   importen. Om ett problem finns i själva källfilen, åtgärda det där
+   och välj "Ladda upp en korrigerad fil" för att börja om från Ladda
+   upp med en ren kopia.
 4. **Granska**: se exakt vad importen kommer att skapa, uppdatera eller
    lämna oförändrat, för både personer och löneposter, innan ni
    bekräftar. En rad som återanvänder ett befintligt
@@ -55,11 +60,20 @@ system detta är verifierat mot och hur deras tal och datum läses.
    anställda som saknas i filen. De som saknas förblir aktiva om ni inte
    bockar i "Arkivera dessa N anställda"; rutan är av som förval, så en fil
    som bara täcker en del av organisationen arkiverar aldrig resten.
+   En rad vars anställningsform är timanställd får sitt belopp i
+   lönekolumnen läst som en timlön; granskningssteget listar de raderna
+   under "Timlön" med kryssrutan "Tolka belopp för timanställda som
+   timlön", förvald på, så ni kan stänga av tolkningen för just den här
+   importen. Tre noteringar värda en titt, ingen av dem blockerande,
+   flaggar en timlön som ser ut som en månadslön, en månadslön som ser
+   ut som en timlön, och en rad som bär både ett månadslönebelopp och
+   ett eget timlönebelopp.
 
 När ni har bekräftat körs importen och rapporterar live-förlopp, och
 sedan ett slutligt antal för hur många personer som skapades,
 uppdaterades, redan var aktuella eller hoppades över, samt hur många som
-återaktiverades eller arkiverades när det skedde.
+återaktiverades eller arkiverades när det skedde, och hur många
+timlöneposter som sparades.
 
 ## Efter importen
 

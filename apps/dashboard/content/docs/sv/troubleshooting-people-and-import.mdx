@@ -84,16 +84,27 @@ så att ni kan rätta det i källfilen och ladda upp på nytt.
 
 Problem som blockerar importen tills de åtgärdas (i källfilen, eller,
 för ett olöst kön, tilldelat direkt i appen): ett dubblerat
-anställnings-ID, ett oläsbart lönevärde, en icke-numerisk statistikkod
-(löneexporter märker ibland kolumnen Yrkeskod eller SSYK), ett kön som
-inte kunde läsas, ett negativt lönevärde, och en rad med fel antal
-kolumner.
+anställnings-ID, ett oläsbart eller negativt lönevärde, en negativ
+timlön, en icke-numerisk statistikkod (löneexporter märker ibland
+kolumnen Yrkeskod eller SSYK), ett kön som inte kunde läsas, och en rad
+med fel antal kolumner.
 
-Problem visade under "Bra att veta" som inte blockerar något: en
-namnbaserad könsgissning som inte stämmer med det angivna värdet (som
-kan vara en falsk positiv), ett sysselsättningsgradsvärde läst som en
-andel och skalat till en procentsats, och ett datum utan entydig
-ordning, läst som dag/månad.
+Problem visade under "Bra att veta" som inte blockerar något: ett
+oläsbart timlönevärde, som tolkas som saknat så att raden faller
+tillbaka på lönekolumnens regler, en namnbaserad könsgissning som inte
+stämmer med det angivna värdet (som kan vara en falsk positiv), ett
+sysselsättningsgradsvärde läst som en andel och skalat till en
+procentsats, och ett datum utan entydig ordning, läst som dag/månad.
+
+Tre ytterligare noteringar, listade under "Värt en titt" i importens
+granskningssteg, blockerar heller aldrig något: en timlön som ser ut
+som en månadslön, en månadslön som ser ut som en timlön på en rad som
+är timanställd eller saknar anställningsform helt, och en rad som bär
+ett belopp i både lönekolumnen och en egen Timlön-kolumn. Kontrollera
+anställningsformskolumnen när ett belopp ser ut att ha fel form, mappa
+en egen Timlön-kolumn när er export har en sådan, eller bocka ur "Tolka
+belopp för timanställda som timlön" på granskningssteget om tolkningen
+är fel för många rader på en gång.
 
 Saknade obligatoriska fält blockerar också importen tills vart och ett
 av dem är mappat till en kolumn på föregående steg; saknade

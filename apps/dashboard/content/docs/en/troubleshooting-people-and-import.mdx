@@ -77,15 +77,27 @@ can fix it in the source file and upload again.
 
 Issues that block the import until fixed (in the source file, or in the
 case of an unresolved gender, assigned directly in the app): a duplicate
-employee ID, an unreadable salary value, a non-numeric statistical code
-(payroll exports sometimes label the column Occupation Code or SSYK), a
-gender that could not be read, a negative salary value, and a row with the
-wrong number of columns.
+employee ID, an unreadable or negative salary value, a negative hourly
+rate, a non-numeric statistical code (payroll exports sometimes label the
+column Occupation Code or SSYK), a gender that could not be read, and a
+row with the wrong number of columns.
 
-Issues shown under "Good to know" that do not block anything: a
-name-based gender guess that disagrees with the supplied value (which can
-be a false positive), an FTE value read as a fraction and scaled to a
-percentage, and a date with no unambiguous order, read as day/month.
+Issues shown under "Good to know" that do not block anything: an
+unreadable hourly rate, read as absent so the row falls back to the
+salary column's rules, a name-based gender guess that disagrees with the
+supplied value (which can be a false positive), an FTE value read as a
+fraction and scaled to a percentage, and a date with no unambiguous
+order, read as day/month.
+
+Three further notices, listed under "Worth a look" in the import's Review
+step, never block anything either: an hourly rate that looks like a
+monthly salary, a monthly salary that looks like an hourly rate on a row
+that is hourly-typed or has no employment type at all, and a row that
+carries an amount in both the salary column and a dedicated Hourly rate
+column. Check the employment-type column when a rate looks like the
+wrong basis, map a dedicated Hourly rate column when your export has one,
+or untick "Read amounts for hourly-paid people as hourly pay" on the
+Review step if the interpretation is wrong for many rows at once.
 
 Missing required fields also block the import until every one of them is
 mapped to a column on the previous step; missing recommended fields only

@@ -82,16 +82,28 @@ gælder, så I kan rette det i kildefilen og uploade igen.
 
 Problemer, der blokerer importen, indtil de er rettet (i kildefilen,
 eller i tilfælde af et uafklaret køn, tildelt direkte i appen): et
-duplikeret medarbejder-ID, en ulæselig lønværdi, en ikke-numerisk
-statistisk kode (lønsystemer benævner nogle gange kolonnen Occupation
-Code eller SSYK), et køn, der ikke kunne læses, en negativ lønværdi, og
-en række med det forkerte antal kolonner.
+duplikeret medarbejder-ID, en ulæselig eller negativ lønværdi, en
+negativ timeløn, en ikke-numerisk statistisk kode (lønsystemer
+benævner nogle gange kolonnen Occupation Code eller SSYK), et køn, der
+ikke kunne læses, og en række med det forkerte antal kolonner.
 
-Problemer vist under "Godt at vide", der ikke blokerer noget: et
-navnebaseret kønsgæt, der er uenigt med den angivne værdi (hvilket kan
-være et falsk positiv), en FTE-værdi læst som en brøkdel og skaleret
-til en procentdel, og en dato med ingen utvetydig orden, læst som
-dag/måned.
+Problemer vist under "Godt at vide", der ikke blokerer noget: en
+ulæselig timelønsværdi, der læses som manglende, så rækken falder
+tilbage på lønkolonnens regler, et navnebaseret kønsgæt, der er uenigt
+med den angivne værdi (hvilket kan være et falsk positiv), en
+FTE-værdi læst som en brøkdel og skaleret til en procentdel, og en
+dato med ingen utvetydig orden, læst som dag/måned.
+
+Tre yderligere bemærkninger, listet under "Værd et kig" i importens
+gennemgangstrin, blokerer heller aldrig noget: en timesats, der ligner
+en månedsløn, en månedsløn, der ligner en timesats på en række, der er
+timelønnet eller helt mangler ansættelsesform, og en række, der bærer
+et beløb i både lønkolonnen og en egen Timeløn-kolonne. Kontroller
+ansættelsesform-kolonnen, når et beløb ser ud til at have den forkerte
+form, tilknyt en egen Timeløn-kolonne, når jeres eksport har en, eller
+fjern kryds ved "Tolk beløb for timelønnede som timeløn" på
+gennemgangstrinnet, hvis fortolkningen er forkert for mange rækker på
+én gang.
 
 Manglende obligatoriske felter blokerer også importen, indtil hvert af
 dem er tilknyttet en kolonne på det forrige trin; manglende anbefalede

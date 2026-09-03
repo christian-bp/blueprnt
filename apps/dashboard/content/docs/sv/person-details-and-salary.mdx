@@ -14,7 +14,10 @@ lön: lön finns bara här, på personens egen sida.
 ## Identitet och klassificering
 
 Sidan visar anställningsnummer, startdatum, avdelning,
-sysselsättningsgrad, och personens nuvarande roll och senioritet. Välj
+sysselsättningsgrad, och personens nuvarande roll och senioritet;
+heltidstimmar per månad ansluter också, men bara när personen har ett
+eget värde, satt från "Redigera anställd" snarare än lämnat till
+organisationens standardvärde. Välj
 "Redigera anställd" i åtgärdsmenyn för att ändra något av detta,
 inklusive kombinationen roll och senioritet; till skillnad från en
 löneimport, som aldrig raderar ett fält en fil helt enkelt inte
@@ -34,14 +37,20 @@ anställd kan inte raderas utan att först arkiveras. Se
 
 En lönepanel listar varje registrerad lön, senast först, som en enkel
 lista snarare än en tabell: året, rollen och senioriteten som var aktiva
-vid den tidpunkten, total månadsersättning och fast månadslön därunder.
-Rollen och senioriteten som visas är de personen hade vid postens datum,
-så en senare omklassificering uppdaterar hela deras lönehistorik på en
-gång. "Lägg till lön" registrerar en ny årslön i form av en fast månadslön
-plus eventuella ytterligare komponenter, som rörlig lön, bonus eller
-aktier/optioner, var och en som en typ och ett månadsbelopp; en posts egen
-meny kan ta bort den, vilket tar bort den ur historiken och inte kan
-ångras.
+vid den tidpunkten, total månadsersättning och grundlönen därunder i sin
+egen enhet, till exempel "32 000 kr/mån" för en månadslön eller
+"195 kr/h" för en timlön; totalen visas alltid som månadssiffran, en
+timlön omräknad med de heltidstimmar som gällde vid tillfället. Rollen
+och senioriteten som visas är de personen hade vid postens datum, så en
+senare omklassificering uppdaterar hela deras lönehistorik på en gång.
+"Lägg till lön" börjar med löneformen, Månadslön eller Timlön;
+beloppsfältets etikett följer det valet, och att välja Timlön lägger
+till en rad som visar det härledda månadsbeloppet medan ni skriver, vid
+de heltidstimmar som gäller. Eventuella ytterligare komponenter, som
+rörlig lön, bonus eller aktier/optioner, registreras på samma sätt
+oavsett löneform, var och en som en typ och ett månadsbelopp; en posts
+egen meny kan ta bort löneposten, vilket tar bort den ur historiken och
+inte kan ångras.
 
 ## Lön jämfört med rollen
 

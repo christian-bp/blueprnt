@@ -30,18 +30,23 @@ this has been verified against and how their numbers and dates are read.
    supplement, allowance, equity, benefit in kind, other). For every money
    column, choose whether its values are per month or per year; blueprnt
    guesses a sensible default from the column header, but you can change it,
-   and your choice is remembered for the next time you import.
+   and your choice is remembered for the next time you import. Two further
+   optional columns cover hourly pay: Hourly rate, read as an hourly figure
+   with no per-month/per-year choice of its own, and Full-time hours per
+   month, a person's own value that overrides the organization's default.
 3. **Check**: see how completely the required, recommended, and optional
    fields are covered, then fix any data quality issues. A duplicate
-   employee ID, an unreadable or negative salary value, a row with the wrong
-   number of columns, or an unresolved gender skips that row entirely; an
-   unresolved gender can instead be set here, one row at a time, without
-   changing anything else in the file. Other issues, such as an FTE column
-   read as a fraction and scaled to a percentage, or a date read day-first
-   because it could mean either day or month, are informational only and do
-   not stop the import. If a problem lives in the source file itself, fix it
-   there and choose "Upload a corrected file" to start again from Upload
-   with a clean copy.
+   employee ID, an unreadable or negative salary value, a negative hourly
+   rate, a row with the wrong number of columns, or an unresolved gender
+   skips that row entirely; an unresolved gender can instead be set here,
+   one row at a time, without changing anything else in the file. Other
+   issues, such as an unreadable hourly rate (read as absent, so the row
+   falls back to the salary column's rules), an FTE column read as a
+   fraction and scaled to a percentage, or a date read day-first because it
+   could mean either day or month, are informational only and do not stop
+   the import. If a problem lives in the source file itself, fix it there
+   and choose "Upload a corrected file" to start again from Upload with a
+   clean copy.
 4. **Review**: see exactly what the import will create, update, or leave
    unchanged, for both people and salary entries, before you confirm. A row
    that reuses an existing employee number under a different name is flagged
@@ -52,10 +57,19 @@ this has been verified against and how their numbers and dates are read.
    who are missing from the file. Missing employees stay active unless you
    tick "Archive these N employees"; the box is off by default, so a file
    covering only part of the organization never archives the rest.
+   A row whose employment type is hourly has its salary-column amount read
+   as an hourly rate; the review step lists those rows under "Hourly pay"
+   with the checkbox "Read amounts for hourly-paid people as hourly pay",
+   on by default, so you can switch the reading off for just this import.
+   Three notices worth a look, none of which block anything, flag an
+   hourly rate that looks like a monthly salary, a monthly salary that
+   looks like an hourly rate, and a row that carries both a monthly-salary
+   amount and a dedicated hourly-rate amount.
 
 After you confirm, the import runs and reports live progress, then a final
 count of how many people were created, updated, already up to date, or
-skipped, plus how many were reactivated or archived when that happened.
+skipped, plus how many were reactivated or archived when that happened, and
+how many hourly pay records were saved.
 
 ## After importing
 

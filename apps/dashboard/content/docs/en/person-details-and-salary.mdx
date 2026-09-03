@@ -13,8 +13,11 @@ shows anyone's pay: salary lives only here, on the person's own page.
 ## Identity and classification
 
 The page shows employee number, start date, department, FTE, and the
-person's current role and seniority. Choose "Edit employee" from the actions
-menu to change any of these, including the role and seniority pair; unlike a
+person's current role and seniority; full-time hours per month joins them
+too, but only when the person has a value of their own, set from "Edit
+employee" rather than left to the organization's default. Choose
+"Edit employee" from the actions menu to change any of these, including
+the role and seniority pair; unlike a
 payroll import, which never erases a field a file simply does not mention,
 clearing a field here on purpose does remove its stored value. If the
 seniority shown is still an unconfirmed suggestion, a hint links to
@@ -30,13 +33,20 @@ active employee cannot be deleted without being archived first. See
 
 A salary rail lists every recorded salary, most recent first, as a plain
 list rather than a table: the year, the role and seniority that were
-active at that point in time, total monthly compensation, and basic
-monthly pay underneath. The role and seniority shown are the ones the
-person held on that record's date, so reclassifying someone later updates
-their whole salary history at once. "Add salary" records a new year's
-basic monthly salary plus any additional components, such as variable pay,
-bonus, or equity, each as a kind and a monthly amount; a record's own menu
-can delete it, which removes it from the history and cannot be undone.
+active at that point in time, total monthly compensation, and the base pay
+underneath in its own unit, such as "32 000 kr/mo" for a monthly salary or
+"195 kr/h" for an hourly rate; the total always reads as the monthly
+figure, an hourly rate converted using the full-time hours in force at
+the time. The role and seniority shown are the ones the person held on
+that record's date, so reclassifying someone later updates their whole
+salary history at once. "Add salary" starts with the pay basis, Monthly
+salary or Hourly pay; the amount field's label follows that choice, and
+choosing Hourly pay adds a line showing the derived monthly amount while
+you type, at the full-time hours in force. Any additional components,
+such as variable pay, bonus, or equity, are recorded the same way
+regardless of basis, each as a kind and a monthly amount; a record's own
+menu can delete a salary record, which removes it from the history and
+cannot be undone.
 
 ## Pay compared with the role
 

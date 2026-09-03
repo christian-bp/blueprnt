@@ -32,14 +32,20 @@ leses.
    naturalytelse, annet). For hver lønnskolonne velger dere også om
    verdiene gjelder per måned eller per år; blueprnt gjetter et
    rimelig standardvalg fra kolonneoverskriften, men dere kan endre
-   det, og valget deres huskes til neste gang dere importerer.
+   det, og valget deres huskes til neste gang dere importerer. To
+   flere valgfrie kolonner dekker timelønn: Timelønn, lest som en
+   timesats uten eget valg mellom per måned eller per år, og
+   Heltidstimer per måned, en egen verdi for personen som går foran
+   organisasjonens standard.
 3. **Kontroller**: se hvor godt de obligatoriske, anbefalte og valgfrie
    feltene er dekket, og fiks deretter eventuelle
    datakvalitetsproblemer. En duplisert ansatt-ID, en ulesbar eller
-   negativ lønnsverdi, en rad med feil antall kolonner, eller et uløst
-   kjønn hopper over den raden helt; et uløst kjønn kan i stedet settes
+   negativ lønnsverdi, en negativ timelønn, en rad med feil antall
+   kolonner, eller et uløst kjønn hopper over den raden helt; et uløst kjønn kan i stedet settes
    her, en rad om gangen, uten å endre noe annet i filen. Andre problemer,
-   som en stillingsandelkolonne lest som en andel og skalert til en
+   som en ulesbar timelønnsverdi (som tolkes som manglende, slik at
+   raden faller tilbake på lønnskolonnens regler), en
+   stillingsandelkolonne lest som en andel og skalert til en
    prosentsats, eller en dato lest dag-først fordi den kunne betydd
    enten dag eller måned, er bare informative og stopper ikke importen.
    Hvis et problem ligger i selve kildefilen, fiks det der og velg
@@ -55,11 +61,20 @@ leses.
    filen. De som mangler forblir aktive med mindre dere huker av "Arkiver
    disse N ansatte"; boksen er av som standard, så en fil som bare dekker en
    del av organisasjonen arkiverer aldri resten.
+   En rad hvis ansettelsesform er timelønnet får beløpet i lønnskolonnen
+   lest som en timesats; gjennomgangssteget lister disse radene under
+   "Timelønn" med avkrysningsboksen "Tolk beløp for timelønnede som
+   timelønn", forhåndsvalgt på, slik at dere kan slå av tolkningen for
+   akkurat denne importen. Tre merknader verdt en titt, ingen av dem
+   blokkerende, flagger en timesats som ser ut som en månedslønn, en
+   månedslønn som ser ut som en timesats, og en rad som bærer både et
+   månedslønnbeløp og et eget timelønnbeløp.
 
 Når dere har bekreftet, kjøres importen og rapporterer fremdrift live,
 og deretter et endelig antall for hvor mange personer som ble
 opprettet, oppdatert, allerede var oppdatert eller hoppet over, samt
-hvor mange som ble reaktivert eller arkivert når det skjedde.
+hvor mange som ble reaktivert eller arkivert når det skjedde, og hvor
+mange timelønnsposter som ble lagret.
 
 ## Etter importen
 

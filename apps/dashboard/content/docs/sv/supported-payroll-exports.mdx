@@ -40,6 +40,17 @@ mindre skalar blueprnt om hela kolumnen till en procentsats och visar en
 notering som förklarar att det gjorde det, så att ändringen syns
 istället för att ske tyst.
 
+## En lönekolumn för både månadslön och timlön
+
+Den vanligaste svenska lönelayouten bär en enda "Lön"-kolumn: en
+månadslön för månadsanställda och en timlön för timanställda, med
+löneformen registrerad i en egen anställningsformskolumn. blueprnt läser
+den delade kolumnen efter anställningsform, så en timanställd rads belopp
+läses som en timlön snarare än en månadslön; se
+[Importera medarbetare](/docs/importing-people) för kryssrutan som låter
+er stänga av den tolkningen, och för att mappa en egen
+Timlön-kolumn när er export har en sådan.
+
 ## Format ni behöver justera före importen
 
 Ett antal format läses inte: kalkylbladsfiler (XLSX, XLS, ODS) istället för

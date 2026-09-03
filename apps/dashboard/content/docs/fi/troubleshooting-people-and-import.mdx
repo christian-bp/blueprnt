@@ -87,16 +87,30 @@ se koskee, jotta voitte korjata sen lähdetiedostossa ja ladata uudelleen.
 Ongelmat, jotka estävät tuonnin, kunnes ne on korjattu
 (lähdetiedostossa, tai määrittämättömän sukupuolen tapauksessa,
 määritettynä suoraan sovelluksessa): kahdennettu työntekijä-ID,
-lukukelvoton palkka-arvo, ei-numeerinen tilastokoodi
-(palkkajärjestelmien viennit merkitsevät sarakkeen joskus nimellä
-Occupation Code tai SSYK), sukupuoli, jota ei voitu lukea,
-negatiivinen palkka-arvo, ja rivi, jossa on väärä määrä sarakkeita.
+lukukelvoton tai negatiivinen palkka-arvo, negatiivinen tuntipalkka,
+ei-numeerinen tilastokoodi (palkkajärjestelmien viennit merkitsevät
+sarakkeen joskus nimellä Occupation Code tai SSYK), sukupuoli, jota ei
+voitu lukea, ja rivi, jossa on väärä määrä sarakkeita.
 
 Ongelmat, jotka näkyvät otsikon "Hyvä tietää" alla eivätkä estä
-mitään: nimeen perustuva sukupuoliarvaus, joka on eri mieltä annetun
-arvon kanssa (voi olla virheellinen), työaika-arvo, joka luettiin
-osuutena ja skaalattiin prosenteiksi, ja päivämäärä, jolla ei ole
-yksiselitteistä järjestystä, luettuna muodossa päivä/kuukausi.
+mitään: lukukelvoton tuntipalkka-arvo, joka luetaan puuttuvaksi,
+jolloin rivi noudattaa sen sijaan palkkasarakkeen sääntöjä, nimeen
+perustuva sukupuoliarvaus, joka on eri mieltä annetun arvon kanssa
+(voi olla virheellinen), työaika-arvo, joka luettiin osuutena ja
+skaalattiin prosenteiksi, ja päivämäärä, jolla ei ole yksiselitteistä
+järjestystä, luettuna muodossa päivä/kuukausi.
+
+Kolme muuta huomautusta, listattuna otsikon "Katsomisen arvoista" alla
+tuonnin tarkistusvaiheessa, eivät myöskään koskaan estä mitään:
+tuntipalkka, joka näyttää kuukausipalkalta, kuukausipalkka, joka
+näyttää tuntipalkalta rivillä, joka on merkitty tuntityöksi tai jolta
+puuttuu työsuhdemuoto kokonaan, ja rivi, jolla on summa sekä
+palkkasarakkeessa että omassa Tuntipalkka-sarakkeessa. Tarkistakaa
+työsuhdemuoto-sarake, kun summa näyttää olevan väärää perustetta,
+yhdistäkää oma Tuntipalkka-sarake, kun viennissänne on sellainen, tai
+poistakaa valinta kohdasta "Tulkitse tuntityöntekijöiden summat
+tuntipalkaksi" tarkistusvaiheessa, jos tulkinta on väärä monelle
+riville kerralla.
 
 Puuttuvat pakolliset kentät estävät myös tuonnin, kunnes jokainen
 niistä on yhdistetty sarakkeeseen edellisessä vaiheessa; puuttuvat

@@ -32,19 +32,23 @@ systemer, det er verificeret mod, og hvordan deres tal og datoer læses.
    naturalydelse, andet). For hver lønkolonne vælger I, om værdierne
    er pr. måned eller pr. år; blueprnt gætter en fornuftig standard fra
    kolonneoverskriften, men I kan ændre den, og jeres valg huskes til
-   næste gang, I importerer.
+   næste gang, I importerer. To yderligere valgfrie kolonner dækker
+   timeløn: Timeløn, læst som en timesats uden eget valg mellem
+   pr. måned eller pr. år, og Fuldtidstimer pr. måned, en egen værdi
+   for personen, der går forud for organisationens standard.
 3. **Kontroller**: se, hvor godt de obligatoriske, anbefalede og
    valgfrie felter er dækket, og ret derefter eventuelle
    datakvalitetsproblemer. Et duplikeret medarbejder-ID, en ulæselig
-   eller negativ lønværdi, en række med det forkerte antal kolonner,
-   eller et uafklaret køn springer den række helt over; et uafklaret
+   eller negativ lønværdi, en negativ timeløn, en række med det
+   forkerte antal kolonner, eller et uafklaret køn springer den række helt over; et uafklaret
    køn kan i stedet sættes her, én række ad gangen, uden at ændre
-   noget andet i filen. Andre problemer, som en stillingskolonne læst som
-   en brøkdel og skaleret til en procentdel, eller en dato læst
-   dag-først, fordi den kunne betyde enten dag eller måned, er kun
-   informative og stopper ikke importen. Ligger et problem i selve
-   kildefilen, ret det der, og vælg "Upload en rettet fil" for at
-   starte igen fra Upload med en ren kopi.
+   noget andet i filen. Andre problemer, som en ulæselig timelønsværdi
+   (der læses som manglende, så rækken falder tilbage på lønkolonnens
+   regler), en stillingskolonne læst som en brøkdel og skaleret til en
+   procentdel, eller en dato læst dag-først, fordi den kunne betyde
+   enten dag eller måned, er kun informative og stopper ikke importen.
+   Ligger et problem i selve kildefilen, ret det der, og vælg "Upload
+   en rettet fil" for at starte igen fra Upload med en ren kopi.
 4. **Gennemse**: se præcis, hvad importen vil oprette, opdatere eller
    lade uændret, for både personer og lønposter, før I bekræfter. En
    række, der genbruger et eksisterende medarbejdernummer under et
@@ -57,11 +61,20 @@ systemer, det er verificeret mod, og hvordan deres tal og datoer læses.
    medmindre I sætter kryds ved "Arkivér disse N medarbejdere"; feltet er
    slået fra som standard, så en fil, der kun dækker en del af
    organisationen, arkiverer aldrig resten.
+   En række, hvis ansættelsesform er timelønnet, får beløbet i
+   lønkolonnen læst som en timesats; gennemgangstrinnet lister disse
+   rækker under "Timeløn" med afkrydsningsfeltet "Tolk beløb for
+   timelønnede som timeløn", slået til som standard, så I kan slå
+   fortolkningen fra for netop denne import. Tre bemærkninger værd et kig, ingen af
+   dem blokerende, flager en timesats, der ligner en månedsløn, en
+   månedsløn, der ligner en timesats, og en række, der bærer både et
+   månedslønsbeløb og et eget timelønsbeløb.
 
 Når I har bekræftet, køres importen og rapporterer fremdrift live, og
 derefter en endelig optælling af, hvor mange personer der blev
 oprettet, opdateret, allerede var opdateret eller sprunget over, samt
-hvor mange der blev genaktiveret eller arkiveret, når det skete.
+hvor mange der blev genaktiveret eller arkiveret, når det skete, og
+hvor mange timelønsposter der blev gemt.
 
 ## Efter importen
 
