@@ -1,0 +1,98 @@
+packages/i18n/messages/da.json
+  s_a5a0b8b07c8eab::t_3a8da7e28ebca2 535,546
+  s_a5a0b8b07c8eab::t_92d3ea6f39a4e1 540-544
+  s_a5a0b8b07c8eab::t_be7cb84f911b59 819-820
+  s_a5a0b8b07c8eab::t_6ad93762c7d51b 1261
+  s_a5a0b8b07c8eab::t_ea154ccf81f0d6 416,821
+  s_a5a0b8b07c8eab::t_008b80acddb497 2841
+  s_a5a0b8b07c8eab::t_393abf6845c951 2394,2396-2397
+  s_a5a0b8b07c8eab::t_88afb4fc50d167 346
+  s_a5a0b8b07c8eab::t_3b44391799f38d 492,547,1595
+  s_a5a0b8b07c8eab::t_226aae137a266b 446-457
+  s_a5a0b8b07c8eab::t_0187c484013580 504
+  s_a5a0b8b07c8eab::t_bbc94f7f241109 491
+  s_a5a0b8b07c8eab::t_132732bba92520 521
+  s_a5a0b8b07c8eab::t_69193bb1f3fd40 379,383
+  s_a5a0b8b07c8eab::t_06d5ada0eaba95 2395
+packages/i18n/messages/sv.json
+  s_a5a0b8b07c8eab::t_e7c076f915e129 416,821
+  s_a5a0b8b07c8eab::t_b504a053a14885 2841
+  s_a5a0b8b07c8eab::t_f43517e7ffeec7 540-544
+  s_a5a0b8b07c8eab::t_8d4742e9d393b0 2394,2396-2397
+  s_a5a0b8b07c8eab::t_beae40fd98007a 521
+  s_a5a0b8b07c8eab::t_6d4204424da573 819-820
+  s_a5a0b8b07c8eab::t_88afb4fc50d167 346
+  s_a5a0b8b07c8eab::t_3b44391799f38d 492,547,1595
+  s_a5a0b8b07c8eab::t_89afbf56bfdc22 546
+  s_a5a0b8b07c8eab::t_87219de64ffb46 446-457
+  s_a5a0b8b07c8eab::t_c0c36262409b37 379,383
+  s_a5a0b8b07c8eab::t_73cea436929de3 2395
+  s_a5a0b8b07c8eab::t_81d60d26feb4c3 491
+  s_a5a0b8b07c8eab::t_a1387cbe3d8a00 535
+  s_a5a0b8b07c8eab::t_bd3ed8bd3ae559 1261
+  s_a5a0b8b07c8eab::t_3a82c5b6ef1fe2 504
+packages/i18n/messages/en.json
+  s_a5a0b8b07c8eab::t_5c9315ca2d6f16 504
+  s_a5a0b8b07c8eab::t_e2932109e6662c 521
+  s_a5a0b8b07c8eab::t_14fea6852913b2 819-820
+  s_a5a0b8b07c8eab::t_3b44391799f38d 492,547,1595
+  s_a5a0b8b07c8eab::t_46f5734b58b473 383,387
+  s_a5a0b8b07c8eab::t_1fa6f765add11b 540-544
+  s_a5a0b8b07c8eab::t_39aae8cc907472 450-461
+  s_a5a0b8b07c8eab::t_4179925a7bc19e 535
+  s_a5a0b8b07c8eab::t_a217be12dbc338 420,821
+  s_a5a0b8b07c8eab::t_d4642d6528ac72 546
+  s_a5a0b8b07c8eab::t_62986cc67b8467 2841
+  s_a5a0b8b07c8eab::t_5a61cec5d26fa5 2394-2397
+  s_a5a0b8b07c8eab::t_1eb91b0c929d18 491
+  s_a5a0b8b07c8eab::t_88afb4fc50d167 351
+  s_a5a0b8b07c8eab::t_85a4a7a2d2f80c 1261
+packages/i18n/messages/nb.json
+  s_a5a0b8b07c8eab::t_592f8c0880df9d 2394,2396-2397
+  s_a5a0b8b07c8eab::t_fabdc5aecdceb0 2841
+  s_a5a0b8b07c8eab::t_feca6c41eccb93 379,383
+  s_a5a0b8b07c8eab::t_43f361bfe0d9dd 1261
+  s_a5a0b8b07c8eab::t_7c733fd593c25b 819-820
+  s_a5a0b8b07c8eab::t_e64d8670278982 416,821
+  s_a5a0b8b07c8eab::t_924b230ca56a49 446-457
+  s_a5a0b8b07c8eab::t_4e32b6d1ecdf1d 540-544
+  s_a5a0b8b07c8eab::t_88afb4fc50d167 346
+  s_a5a0b8b07c8eab::t_ac16647a2f22e5 2395
+  s_a5a0b8b07c8eab::t_d0a0b7c5a95114 521
+  s_a5a0b8b07c8eab::t_3b44391799f38d 492,547,1595
+  s_a5a0b8b07c8eab::t_f76695f135d847 535,546
+  s_a5a0b8b07c8eab::t_9212931728af10 504
+  s_a5a0b8b07c8eab::t_747f1e280c36a3 491
+packages/i18n/messages/fi.json
+  s_a5a0b8b07c8eab::t_7b97430915126d 416,821
+  s_a5a0b8b07c8eab::t_a1a4ce56c45445 819-820
+  s_a5a0b8b07c8eab::t_ce9ae71fe2c7e5 1261
+  s_a5a0b8b07c8eab::t_e15dc6f188f7ee 345-346
+  s_a5a0b8b07c8eab::t_08b4a215ec414f 2841
+  s_a5a0b8b07c8eab::t_3b2404633f49c4 535,546
+  s_a5a0b8b07c8eab::t_3b44391799f38d 492,547,1595
+  s_a5a0b8b07c8eab::t_6dd1f619492659 2394
+  s_a5a0b8b07c8eab::t_c337d9750680f0 540-544
+  s_a5a0b8b07c8eab::t_fc2c7bd7babf43 521
+  s_a5a0b8b07c8eab::t_69516dc29ad9a7 379,383
+  s_a5a0b8b07c8eab::t_615ade20e921c6 491
+  s_a5a0b8b07c8eab::t_869c7303c496e0 2395-2397
+  s_a5a0b8b07c8eab::t_4707a49a56bb1f 504
+  s_a5a0b8b07c8eab::t_7a8c75cca0e672 446-457
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "b65e851ed3d9562959857e156ec1964faa662e39",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
