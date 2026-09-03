@@ -3,7 +3,7 @@ import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 import { PEOPLE_ARCHIVE_CHUNK_SIZE } from "@workspace/constants"
 import { api, components, internal } from "../_generated/api"
-import { IMPORT_CHUNK_SIZE } from "./importDiff"
+import { IMPORT_CHUNK_SIZE, PERSON_IMPORT_OPTIONAL_FIELDS } from "./importDiff"
 import { addEditorMember, initConvexTest } from "../testing.helpers"
 
 const BLANK_GENDER_CSV = readFileSync(
@@ -325,7 +325,8 @@ describe("importPayroll (happy path)", () => {
 
       const pay = nilsPayRecords[0]
       if (pay === undefined) throw new Error("pay record not found")
-      expect(pay.basicMonthly).toBe(94500)
+      expect(pay.basis).toBe("monthly")
+      expect(pay.basicAmount).toBe(94500)
       expect(pay.currency).toBe("SEK")
       expect(pay.payYear).toBe(2026)
 
@@ -484,7 +485,8 @@ describe("importPayroll (headerless file, end to end)", () => {
         .collect()
       expect(pays).toHaveLength(4)
       const annaPay = pays.find((pay) => pay.personId === anna?._id)
-      expect(annaPay?.basicMonthly).toBe(52000)
+      expect(annaPay?.basis).toBe("monthly")
+      expect(annaPay?.basicAmount).toBe(52000)
     })
   })
 
@@ -1145,8 +1147,8 @@ describe("previewImport", () => {
     expect(preview.diff?.salary.changedDetails[0]).toMatchObject({
       externalRef: "1",
       payYear: 2026,
-      from: 50000,
-      to: 52000,
+      from: { basis: "monthly", amount: 50000 },
+      to: { basis: "monthly", amount: 52000 },
     })
 
     // The preview cannot lie: the real import produces the same counts.
@@ -1258,7 +1260,8 @@ describe("importPayroll skipExternalRefs", () => {
         (r) => r.personId === anna?._id
       )
       expect(salaries).toHaveLength(1)
-      expect(salaries[0]?.basicMonthly).toBe(50000)
+      expect(salaries[0]?.basis).toBe("monthly")
+      expect(salaries[0]?.basicAmount).toBe(50000)
     })
   })
 })
@@ -1295,7 +1298,8 @@ describe("importPayroll (basis + components + employmentType)", () => {
     await t.run(async (ctx) => {
       const pay = await ctx.db.query("payRecords").collect()
       expect(pay).toHaveLength(1)
-      expect(pay[0]?.basicMonthly).toBe(40000)
+      expect(pay[0]?.basis).toBe("monthly")
+      expect(pay[0]?.basicAmount).toBe(40000)
       const bonus = pay[0]?.components.find((c) => c.kind === "bonus")
       expect(bonus?.monthlyAmount).toBe(10000) // 120000 / 12
 
@@ -1316,7 +1320,8 @@ describe("importPayroll (basis + components + employmentType)", () => {
     })
     await t.run(async (ctx) => {
       const pay = await ctx.db.query("payRecords").collect()
-      expect(pay[0]?.basicMonthly).toBe(40000)
+      expect(pay[0]?.basis).toBe("monthly")
+      expect(pay[0]?.basicAmount).toBe(40000)
     })
   })
 
@@ -1345,7 +1350,8 @@ describe("importPayroll (basis + components + employmentType)", () => {
     await t.run(async (ctx) => {
       const pay = await ctx.db.query("payRecords").collect()
       expect(pay).toHaveLength(1)
-      expect(pay[0]?.basicMonthly).toBe(40000) // 480000 / 12
+      expect(pay[0]?.basis).toBe("monthly")
+      expect(pay[0]?.basicAmount).toBe(40000) // 480000 / 12
     })
   })
 })
@@ -1608,5 +1614,551 @@ describe("importPayroll (leavers and returners)", () => {
       columnMap: SIMPLE_MAP,
     })
     expect(preview.diff?.missingFromFile).toEqual([])
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Hourly pay: a row's base pay gets a basis (monthly or hourly) by pay form
+// ---------------------------------------------------------------------------
+
+describe("importPayroll (hourly pay)", () => {
+  const CSV = [
+    "Anstnr,Kon,Befattning,Anstallningsform,Lon,Heltidstimmar",
+    "H1,Kvinna,Kassabitrade,Timanstalld,195,",
+    "H2,Man,Lagerarbetare,Tillsvidare,31200,",
+    "H3,Kvinna,Butikssaljare,Timanstalld,158.5,150",
+  ].join("\n")
+  const MAP: string[][] = [
+    ["Anstnr", "externalRef"],
+    ["Kon", "gender"],
+    ["Befattning", "title"],
+    ["Anstallningsform", "employmentType"],
+    ["Lon", "basicMonthly"],
+    ["Heltidstimmar", "fullTimeHoursPerMonth"],
+  ]
+
+  it("reads the Lon column as an hourly rate on hourly-typed rows and counts them", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+      importId: "run-hourly-1",
+    })
+
+    expect(result.ok).toBe(true)
+    expect(result.hourlyPay).toBe(2)
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const h1 = people.find((p) => p.externalRef === "H1")
+      const h2 = people.find((p) => p.externalRef === "H2")
+      const h3 = people.find((p) => p.externalRef === "H3")
+      expect(h1?.fullTimeHoursPerMonth).toBeUndefined()
+      expect(h3?.fullTimeHoursPerMonth).toBe(150)
+
+      const pays = await ctx.db
+        .query("payRecords")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const h1Pay = pays.find((p) => p.personId === h1?._id)
+      const h2Pay = pays.find((p) => p.personId === h2?._id)
+      const h3Pay = pays.find((p) => p.personId === h3?._id)
+      expect(h1Pay).toMatchObject({ basis: "hourly", basicAmount: 195 })
+      expect(h2Pay).toMatchObject({ basis: "monthly", basicAmount: 31200 })
+      expect(h3Pay).toMatchObject({ basis: "hourly", basicAmount: 158.5 })
+
+      const importAudit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "people.imported")
+        )
+        .collect()
+      expect(importAudit).toHaveLength(1)
+      const payload = importAudit[0]?.payload as Record<string, unknown>
+      expect(payload.hourlyPay).toBe(2)
+    })
+  })
+
+  it("interpretHourly: false keeps the Lon column monthly and the preview flags the low figures", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const preview = await asAdmin.action(api.people.import.previewImport, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+      interpretHourly: false,
+    })
+    expect(preview.ok).toBe(true)
+    expect(preview.hourlyPay?.interpreted).toEqual([])
+    expect(preview.hourlyPay?.total).toBe(0)
+    expect(preview.hourlyPay?.notices).toContainEqual({
+      code: "monthlyLooksHourly",
+      ref: { externalRef: "H1", displayName: "H1" },
+    })
+    expect(preview.hourlyPay?.notices).toContainEqual({
+      code: "monthlyLooksHourly",
+      ref: { externalRef: "H3", displayName: "H3" },
+    })
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+      interpretHourly: false,
+      importId: "run-hourly-2",
+    })
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const h1 = people.find((p) => p.externalRef === "H1")
+      const pays = await ctx.db
+        .query("payRecords")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const h1Pay = pays.find((p) => p.personId === h1?._id)
+      expect(h1Pay).toMatchObject({ basis: "monthly", basicAmount: 195 })
+    })
+  })
+
+  it("the preview lists the interpreted rows and the own-hours count", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const preview = await asAdmin.action(api.people.import.previewImport, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+    })
+    expect(preview.ok).toBe(true)
+    expect(preview.hourlyPay?.interpreted).toEqual([
+      { externalRef: "H1", displayName: "H1" },
+      { externalRef: "H3", displayName: "H3" },
+    ])
+    expect(preview.hourlyPay?.total).toBe(2)
+    expect(preview.ownHoursCount).toBe(1)
+    expect(preview.hourlyPay?.notices).toEqual([])
+  })
+
+  it("a dedicated Timlon column wins, and both cells on a permanent row stay monthly with a notice", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const csv = [
+      "Anstnr,Kon,Befattning,Anstallningsform,Lon,Timlon",
+      "P1,Man,X,Tillsvidare,30000,180",
+      "P2,Kvinna,Y,Timanstalld,,190",
+      "P3,Kvinna,Z,,,210",
+    ].join("\n")
+    const map: string[][] = [
+      ["Anstnr", "externalRef"],
+      ["Kon", "gender"],
+      ["Befattning", "title"],
+      ["Anstallningsform", "employmentType"],
+      ["Lon", "basicMonthly"],
+      ["Timlon", "hourlyRate"],
+    ]
+
+    const preview = await asAdmin.action(api.people.import.previewImport, {
+      orgId,
+      csvText: csv,
+      columnMap: map,
+    })
+    expect(preview.hourlyPay?.notices).toEqual([
+      {
+        code: "bothBasesPresent",
+        ref: { externalRef: "P1", displayName: "P1" },
+      },
+    ])
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: csv,
+      columnMap: map,
+      importId: "run-hourly-timlon",
+    })
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const p1 = people.find((p) => p.externalRef === "P1")
+      const p2 = people.find((p) => p.externalRef === "P2")
+      const p3 = people.find((p) => p.externalRef === "P3")
+
+      const pays = await ctx.db
+        .query("payRecords")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(pays.find((p) => p.personId === p1?._id)).toMatchObject({
+        basis: "monthly",
+        basicAmount: 30000,
+      })
+      expect(pays.find((p) => p.personId === p2?._id)).toMatchObject({
+        basis: "hourly",
+        basicAmount: 190,
+      })
+      expect(pays.find((p) => p.personId === p3?._id)).toMatchObject({
+        basis: "hourly",
+        basicAmount: 210,
+      })
+    })
+  })
+
+  it("an hourly-typed row with a monthly-sized figure gets hourlyLooksMonthly", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const csv = [
+      "Anstnr,Kon,Befattning,Anstallningsform,Lon,Heltidstimmar",
+      "X1,Kvinna,T,Timanstalld,32000,",
+    ].join("\n")
+
+    const preview = await asAdmin.action(api.people.import.previewImport, {
+      orgId,
+      csvText: csv,
+      columnMap: MAP,
+    })
+    expect(preview.hourlyPay?.notices).toEqual([
+      {
+        code: "hourlyLooksMonthly",
+        ref: { externalRef: "X1", displayName: "X1" },
+      },
+    ])
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: csv,
+      columnMap: MAP,
+      importId: "run-hourly-3",
+    })
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const x1 = people.find((p) => p.externalRef === "X1")
+      const pays = await ctx.db
+        .query("payRecords")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const x1Pay = pays.find((p) => p.personId === x1?._id)
+      // The rule is visible, not silent: it is still stored as hourly.
+      expect(x1Pay).toMatchObject({ basis: "hourly", basicAmount: 32000 })
+    })
+  })
+
+  it("an out-of-range hours cell is ignored", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const csv = [
+      "Anstnr,Kon,Befattning,Anstallningsform,Lon,Heltidstimmar",
+      "X2,Man,T,Tillsvidare,30000,900",
+    ].join("\n")
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: csv,
+      columnMap: MAP,
+      importId: "run-hourly-4",
+    })
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const x2 = people.find((p) => p.externalRef === "X2")
+      expect(x2?.fullTimeHoursPerMonth).toBeUndefined()
+    })
+  })
+
+  it("a salary change shows basis and amount on both sides", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const csvV1 = [
+      "Anstnr,Kon,Befattning,Anstallningsform,Lon,Heltidstimmar",
+      "H1,Kvinna,Kassabitrade,Timanstalld,195,",
+    ].join("\n")
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: csvV1,
+      columnMap: MAP,
+      payYear: 2026,
+      importId: "run-hourly-5",
+    })
+
+    const csvV2 = [
+      "Anstnr,Kon,Befattning,Anstallningsform,Lon,Heltidstimmar",
+      "H1,Kvinna,Kassabitrade,Timanstalld,205,",
+    ].join("\n")
+    const preview = await asAdmin.action(api.people.import.previewImport, {
+      orgId,
+      csvText: csvV2,
+      columnMap: MAP,
+      payYear: 2026,
+    })
+    expect(preview.diff?.salary.changedDetails[0]).toEqual({
+      externalRef: "H1",
+      displayName: "H1",
+      payYear: 2026,
+      from: { basis: "hourly", amount: 195 },
+      to: { basis: "hourly", amount: 205 },
+    })
+  })
+
+  it("a re-import preview of the same file reports no changes (fullTimeHoursPerMonth included in the baseline)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+      importId: "run-hourly-baseline-1",
+    })
+
+    const preview = await asAdmin.action(api.people.import.previewImport, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+    })
+    expect(preview.diff?.people).toEqual({
+      created: 0,
+      updated: 0,
+      unchanged: 3,
+      returning: 0,
+    })
+    expect(preview.diff?.updatedPeople).toEqual([])
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+      importId: "run-hourly-baseline-2",
+    })
+    expect(result.peopleUpdated).toBe(0)
+    expect(result.peopleUnchanged).toBe(3)
+  })
+
+  it("the baseline query returns every PERSON_IMPORT_OPTIONAL_FIELDS key for a person that has all of them set", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedOrg(t)
+
+    await t.run(async (ctx) => {
+      await ctx.db.insert("people", {
+        orgId,
+        publicId: "test-full-baseline",
+        externalRef: "FULL1",
+        displayName: "Full Person",
+        gender: "Kvinna",
+        birthDate: "1990-01-01",
+        employmentStartDate: "2020-01-01",
+        ftePercent: 80,
+        fullTimeHoursPerMonth: 150,
+        country: "SE",
+        isManager: true,
+        statisticalCode: "1234",
+        department: "Sales",
+        title: "Engineer",
+        employmentType: "hourly",
+      })
+    })
+
+    const baseline = await t.query(
+      internal.people.importHelpers.getImportBaseline,
+      { orgId }
+    )
+    const row = baseline.find((p) => p.externalRef === "FULL1")
+    expect(row).toBeDefined()
+    for (const field of PERSON_IMPORT_OPTIONAL_FIELDS) {
+      expect(row).toHaveProperty(field)
+    }
+  })
+
+  it("a re-import of the same hourly file counts hourlyPay as 0 the second time (nothing new was written)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+      importId: "run-hourly-repeat-1",
+    })
+
+    const second = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+      importId: "run-hourly-repeat-2",
+    })
+    expect(second.hourlyPay).toBe(0)
+    expect(second.salariesImported).toBe(0)
+
+    await t.run(async (ctx) => {
+      const audits = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "people.imported")
+        )
+        .collect()
+      const last = audits[audits.length - 1]?.payload as Record<string, unknown>
+      expect(last.hourlyPay).toBe(0)
+    })
+  })
+
+  it("hourlyPay excludes rows skipped via skipExternalRefs", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+      skipExternalRefs: ["H1"],
+      importId: "run-hourly-skip",
+    })
+    expect(result.hourlyPay).toBe(1)
+
+    await t.run(async (ctx) => {
+      const audits = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "people.imported")
+        )
+        .collect()
+      const payload = audits[0]?.payload as Record<string, unknown>
+      expect(payload.hourlyPay).toBe(1)
+    })
+  })
+
+  it("rule 2 ignores the base column's annual basisMap on an hourly-typed row", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+      basisMap: { basicMonthly: "annual" },
+      importId: "run-hourly-annual-basismap",
+    })
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const h1 = people.find((p) => p.externalRef === "H1")
+      const h2 = people.find((p) => p.externalRef === "H2")
+      const pays = await ctx.db
+        .query("payRecords")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(pays.find((p) => p.personId === h1?._id)).toMatchObject({
+        basis: "hourly",
+        basicAmount: 195,
+      })
+      expect(pays.find((p) => p.personId === h2?._id)).toMatchObject({
+        basis: "monthly",
+        basicAmount: 2600,
+      })
+    })
+  })
+
+  it("an hours cell of exactly FULL_TIME_HOURS_MAX is stored; a 0 cell is dropped", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const csv = [
+      "Anstnr,Kon,Befattning,Anstallningsform,Lon,Heltidstimmar",
+      "X3,Kvinna,T,Timanstalld,190,400",
+      "X4,Man,T,Timanstalld,190,0",
+    ].join("\n")
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: csv,
+      columnMap: MAP,
+      importId: "run-hourly-bounds",
+    })
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const x3 = people.find((p) => p.externalRef === "X3")
+      const x4 = people.find((p) => p.externalRef === "X4")
+      expect(x3?.fullTimeHoursPerMonth).toBe(400)
+      expect(x4?.fullTimeHoursPerMonth).toBeUndefined()
+    })
+  })
+
+  it("an unparsable placeholder in the optional hourlyRate column never hard-skips the person; the row falls through to the base-pay rules", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const csv = [
+      "Anstnr,Kon,Befattning,Anstallningsform,Lon,Timlon",
+      "M1,Man,X,Tillsvidare,30000,-",
+      "M2,Kvinna,Y,Tillsvidare,28000,n/a",
+    ].join("\n")
+    const map: string[][] = [
+      ["Anstnr", "externalRef"],
+      ["Kon", "gender"],
+      ["Befattning", "title"],
+      ["Anstallningsform", "employmentType"],
+      ["Lon", "basicMonthly"],
+      ["Timlon", "hourlyRate"],
+    ]
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: csv,
+      columnMap: map,
+      importId: "run-hourly-placeholder",
+    })
+    expect(result.ok).toBe(true)
+    expect(result.skippedRows).toBe(0)
+    expect(result.peopleCreated).toBe(2)
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const m1 = people.find((p) => p.externalRef === "M1")
+      const m2 = people.find((p) => p.externalRef === "M2")
+      expect(m1).toBeDefined()
+      expect(m2).toBeDefined()
+
+      const pays = await ctx.db
+        .query("payRecords")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(pays.find((p) => p.personId === m1?._id)).toMatchObject({
+        basis: "monthly",
+        basicAmount: 30000,
+      })
+      expect(pays.find((p) => p.personId === m2?._id)).toMatchObject({
+        basis: "monthly",
+        basicAmount: 28000,
+      })
+    })
   })
 })

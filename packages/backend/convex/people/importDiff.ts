@@ -1,4 +1,4 @@
-import type { EmploymentType } from "@workspace/constants"
+import type { BasePayBasis, EmploymentType } from "@workspace/constants"
 
 // Pure import-diff logic, shared by the real import (upsert patch, salary
 // idempotency) and the review step's dry-run preview (previewImport), so the
@@ -13,6 +13,7 @@ export const PERSON_IMPORT_OPTIONAL_FIELDS = [
   "birthDate",
   "employmentStartDate",
   "ftePercent",
+  "fullTimeHoursPerMonth",
   "country",
   "isManager",
   "statisticalCode",
@@ -29,6 +30,7 @@ export interface PersonImportValues {
   birthDate?: string
   employmentStartDate?: string
   ftePercent?: number
+  fullTimeHoursPerMonth?: number
   country?: string
   isManager?: boolean
   statisticalCode?: string
@@ -66,7 +68,8 @@ export function personImportPatch(
 
 export interface SalaryValues {
   payYear: number
-  basicMonthly: number
+  basis: BasePayBasis
+  basicAmount: number
   currency: string
   components: Array<{ kind: string; monthlyAmount: number }>
 }
@@ -77,7 +80,8 @@ export interface SalaryValues {
 export function sameSalaryValues(a: SalaryValues, b: SalaryValues): boolean {
   return (
     a.payYear === b.payYear &&
-    a.basicMonthly === b.basicMonthly &&
+    a.basis === b.basis &&
+    a.basicAmount === b.basicAmount &&
     a.currency === b.currency &&
     a.components.length === b.components.length &&
     a.components.every(
@@ -169,8 +173,8 @@ export interface ImportPreviewDiff {
       externalRef: string
       displayName: string
       payYear: number
-      from: number
-      to: number
+      from: { basis: BasePayBasis; amount: number }
+      to: { basis: BasePayBasis; amount: number }
     }>
   }
 }
@@ -261,8 +265,11 @@ export function diffImport(
           externalRef: row.externalRef,
           displayName: row.person.displayName,
           payYear: row.salary.payYear,
-          from: baseline.latestSalary.basicMonthly,
-          to: row.salary.basicMonthly,
+          from: {
+            basis: baseline.latestSalary.basis,
+            amount: baseline.latestSalary.basicAmount,
+          },
+          to: { basis: row.salary.basis, amount: row.salary.basicAmount },
         })
       } else {
         diff.salary.newEntries += 1

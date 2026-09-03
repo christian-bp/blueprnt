@@ -12,6 +12,7 @@ import {
   parseDate,
   parseGender,
   parseMoney,
+  parseNumber,
   parsePercent,
   type RowIssueCode,
   tokenizeCsv,
@@ -19,9 +20,12 @@ import {
 } from "@workspace/import"
 import {
   DEFAULT_BASIS_BY_FIELD,
+  FULL_TIME_HOURS_MAX,
+  HOURLY_NOTICE_CODES,
   PAY_COMPONENT_KINDS,
   PEOPLE_ARCHIVE_CHUNK_SIZE,
   normalizeEmploymentType,
+  plausibilityFor,
   toMonthly,
   type PayBasis,
 } from "@workspace/constants"
@@ -33,9 +37,16 @@ import {
   type BaselinePerson,
   diffImport,
   IMPORT_CHUNK_SIZE,
+  type ImportPersonRef,
   type ImportPreviewDiff,
   type NormalizedImportRow,
 } from "./importDiff"
+import {
+  type HourlyNoticeCode,
+  plausibilityNotice,
+  resolveRowBasis,
+} from "./importHourly"
+import { basePayBasis } from "./tables"
 
 // The full validation object from @workspace/import, returned on both success
 // and failure so the caller can surface warnings + per-row issues. Shared by
@@ -86,14 +97,21 @@ const importResultValidator = v.object({
   // people the file brought back (always).
   peopleArchived: v.number(),
   peopleReactivated: v.number(),
+  // Rows written with the hourly basis (from a dedicated column or by the
+  // pay-form interpretation). Count only.
+  hourlyPay: v.number(),
   validation: validationValidator,
 })
 
 // Row-issue codes that make a row impossible to persist, so the whole row is
 // skipped. Soft codes (fractionScaled, ambiguousDate, nonNumericCode,
-// genderNameMismatch) are informational: the row still imports.
+// genderNameMismatch, unparsableHourlyRate) are informational: the row still
+// imports. unparsableHourlyRate in particular reads as an absent hourly cell
+// (prepareImport's parseMoney call also returns null for it), so the row
+// falls through to the base-pay rules instead of losing the person: the
+// optional column must never hard-skip on a placeholder cell.
 //   - duplicateId:      the same externalRef twice; second write would collide.
-//   - unparsableMoney:  no usable basicMonthly.
+//   - unparsableMoney:  no usable basicMonthly (the required column).
 //   - negativeValue:    negative/parenthesized money is unsupported for V1.
 //   - unresolvedGender: person requires a Man/Kvinna gender to insert.
 //   - raggedRow:        the row's columns do not line up with the header.
@@ -128,6 +146,20 @@ type PrepareArgs = {
   payYear?: number
   genderOverrides?: string[][]
   basisMap?: Record<string, PayBasis>
+  // Whether an hourly-typed row's base-pay cell is read as an hourly rate
+  // when no dedicated hourly-rate column is mapped (resolveRowBasis rule 2).
+  // Defaults on; the review step's checkbox can turn it off.
+  interpretHourly?: boolean
+}
+
+// The row-level hourly-pay signals prepareImport collects alongside the
+// normalized rows: which rows the pay-form rule interpreted, how many rows
+// ended up hourly, and the soft plausibility/both-cells notices. Shared by
+// previewImport's preview and importPayroll's own hourlyPay count.
+type HourlyPaySummary = {
+  interpreted: ImportPersonRef[]
+  total: number
+  notices: Array<{ code: HourlyNoticeCode; ref: ImportPersonRef }>
 }
 
 type PreparedImport =
@@ -142,6 +174,8 @@ type PreparedImport =
       skippedRows: number
       validation: NormalizedValidation
       headers: string[]
+      hourlyPay: HourlyPaySummary
+      ownHoursCount: number
     }
 
 async function prepareImport(
@@ -238,11 +272,20 @@ async function prepareImport(
       .map((i) => i.row)
   )
 
-  // Fetch the org's currency as the fallback when no currency column is mapped.
-  const orgCurrency: string = await ctx.runQuery(
-    internal.people.importHelpers.getOrgCurrency,
+  // The default-on interpretation switch (resolveRowBasis rule 2): an
+  // hourly-typed row's base-pay cell is read as an hourly rate unless the
+  // review step's checkbox turns it off.
+  const interpretHourly = args.interpretHourly ?? true
+
+  // Fetch the org's pay defaults: currency is the fallback when no currency
+  // column is mapped, and it also picks the plausibility bounds the
+  // per-row size notices are judged against.
+  const orgDefaults = await ctx.runQuery(
+    internal.people.importHelpers.getOrgPayDefaults,
     { orgId: args.orgId }
   )
+  const orgCurrency = orgDefaults.currency
+  const bounds = plausibilityFor(orgCurrency)
 
   // Helper: read a cell by canonical field key from the detected mapping.
   const colOf = (key: string): number | undefined =>
@@ -263,6 +306,8 @@ async function prepareImport(
   const titleCol = colOf("title")
   const employmentTypeCol = colOf("employmentType")
   const basicMonthlyCol = colOf("basicMonthly")
+  const hourlyRateCol = colOf("hourlyRate")
+  const fullTimeHoursCol = colOf("fullTimeHoursPerMonth")
   const currencyCol = colOf("currency")
   const payYearCol = colOf("payYear")
 
@@ -316,6 +361,15 @@ async function prepareImport(
     ).trim()
     if (ref) fileExternalRefs.push(ref)
   }
+
+  // Hourly-pay signals accumulated across the row loop: rows the pay-form
+  // rule interpreted, rows that ended up hourly, and the soft notices
+  // (plausibility + both-cells-present). Shared by previewImport's preview
+  // and importPayroll's hourlyPay count.
+  let hourlyTotal = 0
+  let ownHoursCount = 0
+  const interpretedRefs: ImportPersonRef[] = []
+  const notices: Array<{ code: HourlyNoticeCode; ref: ImportPersonRef }> = []
 
   const normalized: NormalizedImportRow[] = []
   for (let rowIdx = 0; rowIdx < rows.length; rowIdx++) {
@@ -374,20 +428,36 @@ async function prepareImport(
     const employmentType =
       normalizeEmploymentType(cell(employmentTypeCol)) ?? undefined
 
-    // Salary fields. An unparsable basicMonthly drops the salary only (the
-    // person still imports). The basis (monthly vs annual) is resolved per
-    // field: the wizard-supplied basisMap takes precedence, falling back to
-    // DEFAULT_BASIS_BY_FIELD, so an annual column is normalized to monthly
-    // before it is stored (payRecords always stores monthly amounts).
-    const basicMonthlyRaw = cell(basicMonthlyCol)
-    const parsedBasic = basicMonthlyRaw ? parseMoney(basicMonthlyRaw) : null
-    const basicMonthly =
-      parsedBasic === null
-        ? null
-        : toMonthly(parsedBasic, basisOf("basicMonthly"))
+    // The person's own full-time hours (overrides the org/country default;
+    // resolveFullTimeHours in fullTimeHours.ts). Out-of-range or non-positive
+    // cells are dropped rather than stored: the person falls back to the
+    // org/country default instead of carrying a bad hours figure.
+    const hoursRaw = cell(fullTimeHoursCol)
+    const parsedHours = hoursRaw ? parseNumber(hoursRaw) : null
+    const fullTimeHoursPerMonth =
+      parsedHours !== null &&
+      parsedHours > 0 &&
+      parsedHours <= FULL_TIME_HOURS_MAX
+        ? parsedHours
+        : undefined
+
+    // Salary fields. An unparsable/absent base pay AND hourly rate drops the
+    // salary only (the person still imports). resolveRowBasis is the single
+    // pure rule for which basis the row's figure is in (dedicated hourly
+    // column, pay-form interpretation, or the base-pay column's own basis);
+    // plausibilityNotice adds the soft size-based review notice on top.
+    const baseRaw = cell(basicMonthlyCol)
+    const hourlyRaw = cell(hourlyRateCol)
+    const resolvedBasis = resolveRowBasis({
+      parsedBase: baseRaw ? parseMoney(baseRaw) : null,
+      parsedHourly: hourlyRaw ? parseMoney(hourlyRaw) : null,
+      employmentType,
+      interpretHourly,
+      baseColumnBasis: basisOf("basicMonthly"),
+    })
 
     let salary: NormalizedImportRow["salary"] = null
-    if (basicMonthly !== null) {
+    if (resolvedBasis !== null) {
       const currencyRaw = cell(currencyCol)
       const currency = currencyRaw
         ? (parseCurrency(currencyRaw) ?? orgCurrency)
@@ -426,8 +496,27 @@ async function prepareImport(
         })
       }
 
-      salary = { payYear, basicMonthly, currency, components }
+      salary = {
+        payYear,
+        basis: resolvedBasis.basis,
+        basicAmount: resolvedBasis.basicAmount,
+        currency,
+        components,
+      }
+      const ref = { externalRef, displayName }
+      if (resolvedBasis.basis === "hourly") hourlyTotal += 1
+      if (resolvedBasis.interpreted) interpretedRefs.push(ref)
+      if (resolvedBasis.notice !== null) {
+        notices.push({ code: resolvedBasis.notice, ref })
+      }
+      const sizeNotice = plausibilityNotice(
+        resolvedBasis,
+        employmentType,
+        bounds
+      )
+      if (sizeNotice !== null) notices.push({ code: sizeNotice, ref })
     }
+    if (fullTimeHoursPerMonth !== undefined) ownHoursCount += 1
 
     normalized.push({
       externalRef,
@@ -437,6 +526,9 @@ async function prepareImport(
         ...(birthDate !== undefined ? { birthDate } : {}),
         ...(employmentStartDate !== undefined ? { employmentStartDate } : {}),
         ...(ftePercent !== undefined ? { ftePercent } : {}),
+        ...(fullTimeHoursPerMonth !== undefined
+          ? { fullTimeHoursPerMonth }
+          : {}),
         ...(country !== undefined ? { country } : {}),
         ...(isManager !== undefined ? { isManager } : {}),
         ...(statisticalCode !== undefined ? { statisticalCode } : {}),
@@ -455,6 +547,8 @@ async function prepareImport(
     skippedRows: skippedRowIndices.size,
     validation: normalizedValidation,
     headers,
+    hourlyPay: { interpreted: interpretedRefs, total: hourlyTotal, notices },
+    ownHoursCount,
   }
 }
 
@@ -508,6 +602,10 @@ export const importPayroll = action({
     basisMap: v.optional(
       v.record(v.string(), v.union(v.literal("monthly"), v.literal("annual")))
     ),
+    // Whether an hourly-typed row's base-pay cell is read as an hourly rate
+    // when no dedicated hourly-rate column is mapped. Defaults on; the
+    // review step's checkbox can turn it off (see resolveRowBasis rule 2).
+    interpretHourly: v.optional(v.boolean()),
   },
   returns: importResultValidator,
   handler: async (ctx, args) => {
@@ -528,6 +626,7 @@ export const importPayroll = action({
         skippedRows: 0,
         peopleArchived: 0,
         peopleReactivated: 0,
+        hourlyPay: 0,
         validation: prepared.validation,
       }
     }
@@ -545,6 +644,10 @@ export const importPayroll = action({
     let salariesImported = 0
     let peopleReactivated = 0
     let peopleArchived = 0
+    // Rows actually written with the hourly basis (counted per chunk, at the
+    // same point salariesImported is: an identical re-import or a skipped
+    // row appends no salary and contributes nothing here).
+    let hourlyPay = 0
 
     // The leaver set is computed BEFORE the rows land so the progress total
     // is known up front. Presence is judged on fileExternalRefs: every
@@ -603,6 +706,7 @@ export const importPayroll = action({
       peopleUnchanged += chunk.peopleUnchanged
       salariesImported += chunk.salariesImported
       peopleReactivated += chunk.peopleReactivated
+      hourlyPay += chunk.hourlyPay
     }
 
     // Leavers, in the same bounded-chunk shape, continuing the progress
@@ -677,6 +781,7 @@ export const importPayroll = action({
       skippedRows,
       peopleArchived,
       peopleReactivated,
+      hourlyPay,
     })
 
     // Run classification suggestions for the freshly imported people
@@ -701,6 +806,7 @@ export const importPayroll = action({
       skippedRows,
       peopleArchived,
       peopleReactivated,
+      hourlyPay,
       validation: prepared.validation,
     }
   },
@@ -733,12 +839,20 @@ const importPersonRefValidator = v.object({
   displayName: v.string(),
 })
 
+// A base-pay figure with its basis, for the salary diff's from/to (replaces
+// a bare number: a raise from an hourly rate to a monthly salary, or vice
+// versa, must show both sides' basis, not just the amount).
+const salaryBasisAmountValidator = v.object({
+  basis: basePayBasis,
+  amount: v.number(),
+})
+
 const salaryChangeDetailValidator = v.object({
   externalRef: v.string(),
   displayName: v.string(),
   payYear: v.number(),
-  from: v.number(),
-  to: v.number(),
+  from: salaryBasisAmountValidator,
+  to: salaryBasisAmountValidator,
 })
 
 const importDiffValidator = v.object({
@@ -760,12 +874,31 @@ const importDiffValidator = v.object({
   }),
 })
 
+const hourlyNoticeCodeValidator = v.union(
+  ...HOURLY_NOTICE_CODES.map((code) => v.literal(code))
+)
+
+const hourlyNoticeValidator = v.object({
+  code: hourlyNoticeCodeValidator,
+  ref: importPersonRefValidator,
+})
+
+const hourlyPayPreviewValidator = v.object({
+  interpreted: v.array(importPersonRefValidator),
+  total: v.number(),
+  notices: v.array(hourlyNoticeValidator),
+})
+
 const importPreviewValidator = v.object({
   ok: v.boolean(),
   validation: validationValidator,
   skippedRows: v.number(),
   // null when the file is blocked (required fields unmapped / unreadable).
   diff: v.union(importDiffValidator, v.null()),
+  // Present only when ok: the row-level hourly-pay signals for the review
+  // step (which rows the pay-form rule interpreted, and the soft notices).
+  hourlyPay: v.optional(hourlyPayPreviewValidator),
+  ownHoursCount: v.optional(v.number()),
 })
 
 // The explicit handler return type: annotating it short-circuits TypeScript's
@@ -775,6 +908,8 @@ type ImportPreview = {
   validation: NormalizedValidation
   skippedRows: number
   diff: ImportPreviewDiff | null
+  hourlyPay?: HourlyPaySummary
+  ownHoursCount?: number
 }
 
 // Dry-runs the import for the review step: the SAME preparation pipeline as
@@ -793,6 +928,10 @@ export const previewImport = action({
     basisMap: v.optional(
       v.record(v.string(), v.union(v.literal("monthly"), v.literal("annual")))
     ),
+    // Whether an hourly-typed row's base-pay cell is read as an hourly rate
+    // when no dedicated hourly-rate column is mapped. Defaults on; the
+    // review step's checkbox can turn it off (see resolveRowBasis rule 2).
+    interpretHourly: v.optional(v.boolean()),
   },
   returns: importPreviewValidator,
   handler: async (ctx, args): Promise<ImportPreview> => {
@@ -835,6 +974,8 @@ export const previewImport = action({
         baselineByRef,
         prepared.fileExternalRefs
       ),
+      hourlyPay: prepared.hourlyPay,
+      ownHoursCount: prepared.ownHoursCount,
     }
   },
 })

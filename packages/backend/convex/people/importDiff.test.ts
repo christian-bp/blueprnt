@@ -53,7 +53,8 @@ describe("personImportPatch", () => {
 describe("sameSalaryValues", () => {
   const base = {
     payYear: 2026,
-    basicMonthly: 50000,
+    basis: "monthly" as const,
+    basicAmount: 50000,
     currency: "SEK",
     components: [{ kind: "variable", monthlyAmount: 2000 }],
   }
@@ -63,7 +64,8 @@ describe("sameSalaryValues", () => {
   })
 
   it("differs on any scalar or component", () => {
-    expect(sameSalaryValues(base, { ...base, basicMonthly: 50001 })).toBe(false)
+    expect(sameSalaryValues(base, { ...base, basicAmount: 50001 })).toBe(false)
+    expect(sameSalaryValues(base, { ...base, basis: "hourly" })).toBe(false)
     expect(sameSalaryValues(base, { ...base, payYear: 2025 })).toBe(false)
     expect(sameSalaryValues(base, { ...base, components: [] })).toBe(false)
     expect(
@@ -78,21 +80,29 @@ describe("sameSalaryValues", () => {
 describe("diffImport salary categories", () => {
   const row = (
     externalRef: string,
-    basicMonthly: number,
+    basicAmount: number,
     payYear: number
   ): NormalizedImportRow => ({
     externalRef,
     person: { displayName: `Person ${externalRef}`, gender: "Man" },
-    salary: { payYear, basicMonthly, currency: "SEK", components: [] },
+    salary: {
+      payYear,
+      basis: "monthly",
+      basicAmount,
+      currency: "SEK",
+      components: [],
+    },
   })
 
   const baseline = (
     displayName: string,
-    latest: { payYear: number; basicMonthly: number } | null
+    latest: { payYear: number; basicAmount: number } | null
   ): BaselinePerson => ({
     stored: { displayName, gender: "Man" },
     latestSalary:
-      latest !== null ? { ...latest, currency: "SEK", components: [] } : null,
+      latest !== null
+        ? { ...latest, basis: "monthly", currency: "SEK", components: [] }
+        : null,
   })
 
   it("categorizes new person, first salary, identical, same-year change, and new year", () => {
@@ -105,14 +115,14 @@ describe("diffImport salary categories", () => {
     ]
     const byRef = new Map<string, BaselinePerson>([
       ["first", baseline("Person first", null)],
-      ["same", baseline("Person same", { payYear: 2026, basicMonthly: 50000 })],
+      ["same", baseline("Person same", { payYear: 2026, basicAmount: 50000 })],
       [
         "raise",
-        baseline("Person raise", { payYear: 2026, basicMonthly: 50000 }),
+        baseline("Person raise", { payYear: 2026, basicAmount: 50000 }),
       ],
       [
         "nextyear",
-        baseline("Person nextyear", { payYear: 2025, basicMonthly: 48000 }),
+        baseline("Person nextyear", { payYear: 2025, basicAmount: 48000 }),
       ],
     ])
 
@@ -132,8 +142,8 @@ describe("diffImport salary categories", () => {
         externalRef: "raise",
         displayName: "Person raise",
         payYear: 2026,
-        from: 50000,
-        to: 52000,
+        from: { basis: "monthly", amount: 50000 },
+        to: { basis: "monthly", amount: 52000 },
       },
     ])
   })

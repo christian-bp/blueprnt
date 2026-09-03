@@ -4,25 +4,27 @@ import { internalMutation, internalQuery } from "../_generated/server"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import type { AuditPayloads } from "../lib/auditPayloads"
 import { orgQuery } from "../lib/functions"
+import { readOrgPayDefaults } from "./fullTimeHours"
 import {
   archivePeopleCore,
   personImportOptionalArgs,
   upsertPersonByExternalRefCore,
 } from "./people"
 import { appendSalaryCore, payComponentValidator } from "./pay"
+import { basePayBasis } from "./tables"
 
-// Returns the org's configured currency, or "SEK" as a safe default.
-// Called by the importPayroll action via ctx.runQuery.
-export const getOrgCurrency = internalQuery({
+// The org's pay defaults (currency, country, org-level full-time hours).
+// Called by the importPayroll/previewImport actions via ctx.runQuery: the
+// import's currency fallback and its plausibility bounds both derive from
+// the currency, so one round trip covers both.
+export const getOrgPayDefaults = internalQuery({
   args: { orgId: v.string() },
-  returns: v.string(),
-  handler: async (ctx, { orgId }) => {
-    const org = await ctx.db
-      .query("organizations")
-      .withIndex("by_org", (q) => q.eq("orgId", orgId))
-      .unique()
-    return org?.currency ?? "SEK"
-  },
+  returns: v.object({
+    currency: v.string(),
+    country: v.optional(v.string()),
+    fullTimeHoursPerMonth: v.optional(v.number()),
+  }),
+  handler: (ctx, { orgId }) => readOrgPayDefaults(ctx, orgId),
 })
 
 // The stored side of previewImport's dry-run diff: every person that carries
@@ -41,6 +43,7 @@ export const getImportBaseline = internalQuery({
       birthDate: v.optional(v.string()),
       employmentStartDate: v.optional(v.string()),
       ftePercent: v.optional(v.number()),
+      fullTimeHoursPerMonth: v.optional(v.number()),
       country: v.optional(v.string()),
       isManager: v.optional(v.boolean()),
       statisticalCode: v.optional(v.string()),
@@ -58,7 +61,8 @@ export const getImportBaseline = internalQuery({
       latestSalary: v.union(
         v.object({
           payYear: v.number(),
-          basicMonthly: v.number(),
+          basis: basePayBasis,
+          basicAmount: v.number(),
           currency: v.string(),
           components: v.array(
             v.object({ kind: v.string(), monthlyAmount: v.number() })
@@ -99,6 +103,9 @@ export const getImportBaseline = internalQuery({
         ...(person.ftePercent !== undefined
           ? { ftePercent: person.ftePercent }
           : {}),
+        ...(person.fullTimeHoursPerMonth !== undefined
+          ? { fullTimeHoursPerMonth: person.fullTimeHoursPerMonth }
+          : {}),
         ...(person.country !== undefined ? { country: person.country } : {}),
         ...(person.isManager !== undefined
           ? { isManager: person.isManager }
@@ -120,7 +127,8 @@ export const getImportBaseline = internalQuery({
           latest !== null
             ? {
                 payYear: latest.payYear,
-                basicMonthly: latest.basicMonthly,
+                basis: latest.basis,
+                basicAmount: latest.basicAmount,
                 currency: latest.currency,
                 components: latest.components,
               }
@@ -164,6 +172,7 @@ export const logImportCompleted = internalMutation({
     skippedRows: v.number(),
     peopleArchived: v.number(),
     peopleReactivated: v.number(),
+    hourlyPay: v.number(),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -175,6 +184,7 @@ export const logImportCompleted = internalMutation({
       skippedRows: args.skippedRows,
       peopleArchived: args.peopleArchived,
       peopleReactivated: args.peopleReactivated,
+      hourlyPay: args.hourlyPay,
     }
     await logAudit(ctx, {
       orgId: args.orgId,
@@ -228,7 +238,8 @@ const importRowValidator = v.object({
     v.null(),
     v.object({
       payYear: v.number(),
-      basicMonthly: v.number(),
+      basis: basePayBasis,
+      basicAmount: v.number(),
       currency: v.string(),
       components: v.array(payComponentValidator),
     })
@@ -262,6 +273,7 @@ export const importChunk = internalMutation({
     peopleUnchanged: v.number(),
     peopleReactivated: v.number(),
     salariesImported: v.number(),
+    hourlyPay: v.number(),
   }),
   handler: async (ctx, args) => {
     let peopleCreated = 0
@@ -269,6 +281,7 @@ export const importChunk = internalMutation({
     let peopleUnchanged = 0
     let peopleReactivated = 0
     let salariesImported = 0
+    let hourlyPay = 0
 
     for (const row of args.rows) {
       const { personId, outcome, reactivated } =
@@ -300,6 +313,9 @@ export const importChunk = internalMutation({
       // Identical re-imports skip the append; count only real inserts.
       if (created) {
         salariesImported += 1
+        if (row.salary.basis === "hourly") {
+          hourlyPay += 1
+        }
       }
     }
 
@@ -316,6 +332,7 @@ export const importChunk = internalMutation({
       peopleUnchanged,
       peopleReactivated,
       salariesImported,
+      hourlyPay,
     }
   },
 })
