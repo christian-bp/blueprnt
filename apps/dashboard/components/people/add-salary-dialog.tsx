@@ -5,7 +5,11 @@ import { Delete02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { PAY_COMPONENT_KINDS } from "@workspace/constants"
+import {
+  BASE_PAY_BASES,
+  normalizedMonthlyBase,
+  PAY_COMPONENT_KINDS,
+} from "@workspace/constants"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -32,12 +36,14 @@ import {
 } from "@workspace/ui/components/select"
 import { useMutation, useQuery } from "convex/react"
 import { CurrencyInput, currencyInputField } from "@/components/currency-input"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { NumberInput } from "@/components/number-input"
 import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { toast } from "@/lib/toast"
 import { z } from "zod"
+import { useMoney } from "@/hooks/use-money"
 import { useOrganization } from "@/components/org-context"
 import { SubmitButton } from "@/components/submit-button"
 import { numberInputField } from "@/lib/number-field"
@@ -48,8 +54,10 @@ import type { ValidationT } from "@/lib/validation"
 // schema as a number (or undefined when the field is cleared, which reads as
 // the required error). Currency is NOT a form field: all of an org's money is
 // in the organization's own currency (enforced by the backend), so the form
-// only displays it. Components are an array of { kind, monthlyAmount } rows
-// matching the payRecords component shape.
+// only displays it. basicAmount is the figure AS ENTERED (a monthly salary or
+// an hourly rate, per basis); the backend derives the normalized monthly
+// figure. Components are an array of { kind, monthlyAmount } rows matching
+// the payRecords component shape.
 function makeSalarySchema(t: ValidationT) {
   return z.object({
     payYear: z
@@ -57,7 +65,8 @@ function makeSalarySchema(t: ValidationT) {
       .int()
       .min(2000)
       .max(2100),
-    basicMonthly: z.number({ error: t("required") }).nonnegative(),
+    basis: z.enum(BASE_PAY_BASES),
+    basicAmount: z.number({ error: t("required") }).nonnegative(),
     components: z.array(
       z.object({
         kind: z.string().min(1, t("required")),
@@ -75,19 +84,21 @@ export type SalaryFormValues = z.infer<ReturnType<typeof makeSalarySchema>>
 // convention. Closing resets the form.
 export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
   const t = useTranslations("dashboard.people.salaryForm")
+  const tHelp = useTranslations("dashboard.help")
   const tValidation = useTranslations("dashboard.validation")
   const tToast = useTranslations("dashboard.toast")
   const { orgId } = useOrganization()
   const setSalary = useMutation(api.people.pay.setSalary)
-  // The org's currency: shown in the amount fields and sent on save. The
-  // backend rejects any currency other than the org's, so we must send the
-  // real one, never a guess. It is undefined until the settings query resolves
-  // (no fallback, or a slow load would silently record the wrong currency);
-  // saving is blocked until then.
-  const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
-    orgId,
-  })
-  const currency = settings?.currency ?? undefined
+  const money = useMoney()
+  // The org's currency and the person's resolved full-time hours (own value,
+  // else the org default, else the country default): the currency shows in
+  // the amount fields and is sent on save (the backend rejects any other
+  // currency, so we must send the real one, never a guess); the hours derive
+  // the monthly line shown under an hourly rate. Both are undefined until the
+  // query resolves; saving is blocked until then.
+  const defaults = useQuery(api.people.pay.getPayDefaults, { orgId, personId })
+  const currency = defaults?.currency
+  const hours = defaults?.hoursPerMonth
 
   const [open, setOpen] = useState(false)
 
@@ -97,7 +108,8 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
     mode: "onTouched",
     defaultValues: {
       payYear: new Date().getFullYear(),
-      basicMonthly: 0,
+      basis: "monthly",
+      basicAmount: 0,
       components: [],
     },
   })
@@ -105,6 +117,8 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
     control: form.control,
     name: "components",
   })
+  const basis = form.watch("basis")
+  const amount = form.watch("basicAmount")
 
   function handleOpenChange(next: boolean) {
     setOpen(next)
@@ -112,15 +126,16 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
   }
 
   async function onSubmit(values: SalaryFormValues) {
-    // The submit button is disabled until settings resolve, so currency is
-    // defined here; this guard also narrows the type for the mutation call.
+    // The submit button is disabled until the defaults resolve, so currency
+    // is defined here; this guard also narrows the type for the mutation call.
     if (currency === undefined) return
     try {
       await setSalary({
         orgId,
         personId,
         payYear: values.payYear,
-        basicMonthly: values.basicMonthly,
+        basis: values.basis,
+        basicAmount: values.basicAmount,
         // Always the org's own currency; the form never lets the user pick one,
         // and the backend rejects any other value.
         currency,
@@ -129,7 +144,10 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
       toast.success(tToast("salarySaved"))
       form.reset({
         payYear: values.payYear,
-        basicMonthly: 0,
+        // The chosen basis carries over: an hourly earner's next entry is
+        // almost always hourly too.
+        basis: values.basis,
+        basicAmount: 0,
         components: [],
       })
       setOpen(false)
@@ -147,11 +165,55 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("addTitle")}</DialogTitle>
+            <div className="flex items-center gap-1.5">
+              <DialogTitle>{t("addTitle")}</DialogTitle>
+              <HelpMorphButton label={tHelp("payBasisLabel")}>
+                {tHelp("payBasisBody")}
+              </HelpMorphButton>
+            </div>
             <DialogDescription>{t("addDescription")}</DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/* The basis choice comes first: it decides what the amount
+                  field below means (a monthly salary or an hourly rate) and
+                  whether the derived monthly line appears. */}
+              <FormField
+                control={form.control}
+                name="basis"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("basis.label")}</FormLabel>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      items={Object.fromEntries(
+                        BASE_PAY_BASES.map((value) => [
+                          value,
+                          t(`basis.${value}`),
+                        ])
+                      )}
+                    >
+                      <FormControl>
+                        <SelectTrigger
+                          aria-label={t("basis.label")}
+                          className="w-full"
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {BASE_PAY_BASES.map((value) => (
+                          <SelectItem key={value} value={value}>
+                            {t(`basis.${value}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -171,22 +233,45 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                 />
                 <FormField
                   control={form.control}
-                  name="basicMonthly"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("basicMonthly")}</FormLabel>
-                      <FormControl>
-                        <CurrencyInput
-                          aria-label={t("basicMonthly")}
-                          currency={currency ?? ""}
-                          {...currencyInputField(field)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  name="basicAmount"
+                  render={({ field }) => {
+                    const amountLabel =
+                      basis === "hourly" ? t("hourlyAmount") : t("basicMonthly")
+                    return (
+                      <FormItem>
+                        <FormLabel>{amountLabel}</FormLabel>
+                        <FormControl>
+                          <CurrencyInput
+                            aria-label={amountLabel}
+                            currency={currency ?? ""}
+                            {...currencyInputField(field)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )
+                  }}
                 />
               </div>
+              {/* Reserved-height slot (min-h-5), full width below the
+                  two-column grid rather than confined to the amount field's
+                  half-width column: the real derived text (e.g. Swedish or
+                  Finnish, with a long amount and the "other" country's
+                  173.33 h default) wraps to two lines at the ~168px half
+                  column, which reflows the footer below on every basis
+                  toggle. At full width it fits every locale on one line, so
+                  the slot's height never changes. */}
+              <p className="min-h-5 text-muted-foreground text-sm">
+                {basis === "hourly" && hours !== undefined && amount > 0
+                  ? t("derivedMonthly", {
+                      amount: money(
+                        normalizedMonthlyBase(amount, "hourly", hours),
+                        currency ?? ""
+                      ),
+                      hours,
+                    })
+                  : null}
+              </p>
 
               {/* Component rows (variable/bonus/etc). Each row is a kind Select
                   plus a monthly amount. Added/removed with the field array so

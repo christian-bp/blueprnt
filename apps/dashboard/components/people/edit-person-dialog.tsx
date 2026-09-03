@@ -29,10 +29,11 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import {
+  FULL_TIME_HOURS_MAX,
   isValidSeniorityForTrack,
   TRACK_SENIORITIES,
 } from "@workspace/constants"
-import { useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -67,6 +68,7 @@ export interface EditablePerson {
   department: string | null
   employmentStartDate: string | null
   ftePercent: number | null
+  fullTimeHoursPerMonth: number | null
 }
 
 // Zod factory (messages via i18n): name and gender stay required; the rest
@@ -85,6 +87,11 @@ function makeEditPersonSchema(t: ValidationT, roles: AssignableRole[]) {
       department: z.string().trim(),
       employmentStartDate: z.string(),
       ftePercent: z.number().min(1).max(100).optional(),
+      fullTimeHoursPerMonth: z
+        .number()
+        .positive()
+        .max(FULL_TIME_HOURS_MAX)
+        .optional(),
     })
     .refine(
       (values) => {
@@ -121,6 +128,7 @@ function toFormValues(
     department: person.department ?? "",
     employmentStartDate: person.employmentStartDate ?? "",
     ftePercent: person.ftePercent ?? undefined,
+    fullTimeHoursPerMonth: person.fullTimeHoursPerMonth ?? undefined,
   }
 }
 
@@ -155,6 +163,15 @@ export function EditPersonDialog({
   const { orgId } = useOrganization()
   const updatePerson = useMutation(api.people.people.updatePerson)
   const assignPerson = useMutation(api.people.assignments.assignPersonToRole)
+  // The org's full-time hours default (own value, else the country default),
+  // shown as the hours field's placeholder: the fallback the pay engine
+  // resolves to when this person carries no hours of their own. Undefined
+  // while the settings query is still loading, so the placeholder is blank
+  // rather than momentarily wrong.
+  const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
+    orgId,
+  })
+  const hours = settings?.fullTimeHoursPerMonth
 
   const [failure, setFailure] = useState(false)
 
@@ -208,6 +225,7 @@ export function EditPersonDialog({
         department: values.department,
         employmentStartDate: values.employmentStartDate,
         ftePercent: values.ftePercent ?? null,
+        fullTimeHoursPerMonth: values.fullTimeHoursPerMonth ?? null,
       })
     } catch (error) {
       if (isPersonRefExistsError(error)) {
@@ -451,6 +469,29 @@ export function EditPersonDialog({
                       <NumberInput
                         min={1}
                         max={100}
+                        {...numberInputField(field)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="fullTimeHoursPerMonth"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{tForm("fullTimeHoursLabel")}</FormLabel>
+                    <FormControl>
+                      <NumberInput
+                        step="0.01"
+                        min={0}
+                        max={FULL_TIME_HOURS_MAX}
+                        placeholder={
+                          hours !== undefined
+                            ? tForm("fullTimeHoursPlaceholder", { hours })
+                            : ""
+                        }
                         {...numberInputField(field)}
                       />
                     </FormControl>

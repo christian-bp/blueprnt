@@ -7,6 +7,9 @@ import { formatMoney } from "@/lib/currency"
 // locale through or re-derive the currency formatting rules.
 export function useMoney() {
   const locale = useLocale()
-  return (value: number, currency: string, options?: { signed?: boolean }) =>
-    formatMoney(value, currency, locale, options)
+  return (
+    value: number,
+    currency: string,
+    options?: { signed?: boolean; minorUnits?: boolean }
+  ) => formatMoney(value, currency, locale, options)
 }

@@ -1,5 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
+import type { Locale } from "@workspace/i18n/routing"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { onQuery } from "@/test/convex-mocks"
@@ -46,6 +47,7 @@ const PERSON = {
   birthDate: null,
   employmentStartDate: "2021-01-01",
   ftePercent: 100,
+  fullTimeHoursPerMonth: null,
   country: "SE",
   isManager: false,
   statisticalCode: null,
@@ -69,7 +71,10 @@ const SALARY = [
     personId: "p1",
     payYear: 2026,
     source: "manual",
+    basis: "monthly",
+    basicAmount: 50000,
     basicMonthly: 50000,
+    hoursPerMonth: 165,
     currency: "SEK",
     components: [],
     totalMonthlyComp: 50000,
@@ -107,9 +112,9 @@ function queryRouter(ref: string): unknown {
   return undefined
 }
 
-function renderDetail() {
+function renderDetail(locale: Locale = "en") {
   return render(
-    <NextIntlClientProvider locale="en" messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages}>
       <PersonDetail publicId="pub-p1" />
     </NextIntlClientProvider>
   )
@@ -129,9 +134,11 @@ describe("PersonDetail", () => {
     expect(screen.getByText("IC3")).toBeDefined()
     // Classification block: role title resolved from listRoles.
     expect(screen.getAllByText("Engineer").length).toBeGreaterThanOrEqual(1)
-    // Salary history: basicMonthly and totalMonthlyComp render as locale-aware
-    // currency (both are 50000 SEK in the fixture; en formats as "SEK 50,000").
-    expect(screen.getAllByText("SEK 50,000")).toHaveLength(2)
+    // Salary history: totalMonthlyComp renders as plain locale-aware currency
+    // ("SEK 50,000"); the base line renders through the unit format, which
+    // appends the basis (a monthly record here: "SEK 50,000/mo").
+    expect(screen.getByText("SEK 50,000")).toBeDefined()
+    expect(screen.getByText("SEK 50,000/mo")).toBeDefined()
     // The record is joined to the role + seniority it was earned under, shown
     // as one "title - seniority" line: the fixture salary predates the
     // promotion to IC3, so it shows IC2.
@@ -205,5 +212,60 @@ describe("PersonDetail", () => {
     expect(
       document.querySelector('[data-slot="empty-icon"] svg')
     ).not.toBeNull()
+  })
+
+  it("renders an hourly record's base line through the unit format", () => {
+    onQuery((ref) => {
+      if (ref === "people.pay.getSalaryHistory") {
+        return [
+          {
+            ...SALARY[0],
+            basis: "hourly",
+            basicAmount: 195,
+            basicMonthly: 32175,
+            totalMonthlyComp: 32175,
+          },
+        ]
+      }
+      return queryRouter(ref)
+    })
+    renderDetail()
+    // "SEK 195" through payUnit.hourly ("{amount}/h").
+    expect(screen.getByText("SEK 195/h")).toBeDefined()
+  })
+
+  it("shows the person's full-time hours when set", () => {
+    onQuery((ref) => {
+      if (ref === "people.people.getPersonByPublicId") {
+        return { ...PERSON, fullTimeHoursPerMonth: 150 }
+      }
+      return queryRouter(ref)
+    })
+    renderDetail()
+    expect(screen.getByText(m.fullTimeHours)).toBeDefined()
+    expect(screen.getByText("150")).toBeDefined()
+  })
+
+  it("renders a fractional full-time hours value through the locale number formatter, not the raw JS number", () => {
+    onQuery((ref) => {
+      if (ref === "people.people.getPersonByPublicId") {
+        return { ...PERSON, fullTimeHoursPerMonth: 162.5 }
+      }
+      return queryRouter(ref)
+    })
+    // Render under "sv" specifically: under "en", 162.5 formats as "162.5",
+    // identical to the raw JS number, so that locale cannot tell the locale
+    // formatter apart from String(162.5). Swedish uses a comma decimal
+    // separator ("162,5"), so this only passes if the value actually goes
+    // through useFormatter().number() rather than a raw String() cast.
+    renderDetail("sv")
+    const expected = new Intl.NumberFormat("sv").format(162.5)
+    expect(screen.getByText(expected)).toBeDefined()
+  })
+
+  it("shows no full-time-hours label when unset", () => {
+    onQuery((ref) => queryRouter(ref))
+    renderDetail()
+    expect(screen.queryByText(m.fullTimeHours)).toBeNull()
   })
 })

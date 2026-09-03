@@ -41,6 +41,7 @@ import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import type { Crumb } from "@/components/page-breadcrumb"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
+import { useBasePayFormat } from "@/hooks/use-base-pay-format"
 import { useMoney } from "@/hooks/use-money"
 import { usePageTitle } from "@/hooks/use-page-title"
 
@@ -108,6 +109,9 @@ export function PersonDetail({ publicId }: { publicId: string }) {
   // "$94,500" for a USD org), which also removes the need for a separate
   // currency column in the narrow rail.
   const money = useMoney()
+  // The salary history's base-pay line shows the figure AS RECORDED (a
+  // monthly salary or an hourly rate) with its unit, never a normalized one.
+  const formatBasePay = useBasePayFormat()
 
   const person = useQuery(api.people.people.getPersonByPublicId, {
     orgId,
@@ -289,6 +293,7 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                   department: person.department,
                   employmentStartDate: person.employmentStartDate,
                   ftePercent: person.ftePercent,
+                  fullTimeHoursPerMonth: person.fullTimeHoursPerMonth,
                 }}
                 roles={roles}
                 currentAssignment={
@@ -324,6 +329,14 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                     {person.ftePercent != null ? `${person.ftePercent}%` : ""}
                   </dd>
                 </div>
+                {person.fullTimeHoursPerMonth != null && (
+                  <div>
+                    <dt className="text-muted-foreground">
+                      {t("fullTimeHours")}
+                    </dt>
+                    <dd>{format.number(person.fullTimeHoursPerMonth)}</dd>
+                  </div>
+                )}
               </dl>
 
               {/* Classification block */}
@@ -441,7 +454,11 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                           <p className="text-muted-foreground text-xs">
                             {t("salaryColumns.basicMonthly")}{" "}
                             <span className="whitespace-nowrap tabular-nums">
-                              {money(record.basicMonthly, record.currency)}
+                              {formatBasePay(
+                                record.basicAmount,
+                                record.basis,
+                                record.currency
+                              )}
                             </span>
                           </p>
                         </div>

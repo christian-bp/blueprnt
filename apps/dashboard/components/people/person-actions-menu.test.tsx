@@ -29,9 +29,23 @@ vi.mock("convex/react", () => ({
     if (ref === "people.people.unarchivePerson") return unarchiveMock
     return vi.fn()
   },
+  // The edit dialog's full-time-hours placeholder reads the org default;
+  // no test here exercises that field, so a fixed shape is enough.
+  useQuery: (ref: unknown) => {
+    if (ref === "accounts.organization.getOrganizationSettings") {
+      return { fullTimeHoursPerMonth: 165, country: "se" }
+    }
+    return undefined
+  },
 }))
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
   api: {
+    accounts: {
+      organization: {
+        getOrganizationSettings:
+          "accounts.organization.getOrganizationSettings",
+      },
+    },
     people: {
       assignments: {
         assignPersonToRole: "people.assignments.assignPersonToRole",
@@ -79,6 +93,7 @@ function renderMenu(
           department: null,
           employmentStartDate: null,
           ftePercent: null,
+          fullTimeHoursPerMonth: null,
         }}
         roles={ROLES}
         currentAssignment={currentAssignment}
