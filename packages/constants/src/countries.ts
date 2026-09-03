@@ -61,3 +61,21 @@ export function countryForLanguage(
   )
   return entry
 }
+
+// The monthly hours that count as full time, per country: the customary
+// collective-agreement divisor for the standard full-time week (SE 40 h with
+// the 165 divisor most Swedish agreements use, NO 37.5 h, DK 37 h, FI 37.5 h,
+// other 40 h x 52 / 12). Seeds the organization's default (editable in
+// settings) and is the last fallback when neither the person nor the
+// organization carries a value, so an hourly rate can always be converted.
+export const FULL_TIME_HOURS_BY_COUNTRY = {
+  se: 165,
+  no: 162.5,
+  dk: 160.33,
+  fi: 162.5,
+  other: 173.33,
+} as const satisfies Record<CountryKey, number>
+
+export function defaultFullTimeHoursFor(country: string | undefined): number {
+  return FULL_TIME_HOURS_BY_COUNTRY[clampCountry(country)]
+}

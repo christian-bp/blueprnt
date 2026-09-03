@@ -7,7 +7,9 @@ import {
   clampCountry,
   countryForLanguage,
   defaultCurrencyFor,
+  defaultFullTimeHoursFor,
   defaultLanguageFor,
+  FULL_TIME_HOURS_BY_COUNTRY,
 } from "./countries"
 
 describe("countries", () => {
@@ -69,6 +71,27 @@ describe("countries", () => {
   it("round-trips with LANGUAGE_BY_COUNTRY", () => {
     for (const country of COUNTRY_KEYS) {
       expect(countryForLanguage(LANGUAGE_BY_COUNTRY[country])).toBe(country)
+    }
+  })
+})
+
+describe("defaultFullTimeHoursFor", () => {
+  it("returns each country's customary full-time divisor", () => {
+    expect(defaultFullTimeHoursFor("se")).toBe(165)
+    expect(defaultFullTimeHoursFor("no")).toBe(162.5)
+    expect(defaultFullTimeHoursFor("dk")).toBe(160.33)
+    expect(defaultFullTimeHoursFor("fi")).toBe(162.5)
+    expect(defaultFullTimeHoursFor("other")).toBe(173.33)
+  })
+
+  it("clamps an unknown or missing country to the 'other' figure", () => {
+    expect(defaultFullTimeHoursFor(undefined)).toBe(173.33)
+    expect(defaultFullTimeHoursFor("xx")).toBe(173.33)
+  })
+
+  it("has a positive figure for every country key", () => {
+    for (const key of COUNTRY_KEYS) {
+      expect(FULL_TIME_HOURS_BY_COUNTRY[key]).toBeGreaterThan(0)
     }
   })
 })
