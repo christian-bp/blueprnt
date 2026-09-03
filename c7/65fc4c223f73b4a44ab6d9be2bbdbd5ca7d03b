@@ -1,0 +1,88 @@
+packages/backend/convex/payMapping/erasure.test.ts
+  s_a5a0b8b07c8eab::t_043d9834b5032d 190-191
+  s_a5a0b8b07c8eab::t_9501c874e0e29e 157-158
+packages/backend/convex/payMapping/tables.ts
+  s_a5a0b8b07c8eab::t_eace8d0de1ec12 40-44
+  s_a5a0b8b07c8eab::t_ab7d3c6afb4cfa 10
+  s_a5a0b8b07c8eab::t_ee92833c6fc97f 129-130,132-137
+packages/backend/convex/payMapping/runs.test.ts
+  s_a5a0b8b07c8eab::t_1fd9254fabe0a4 1121-1127
+  s_a5a0b8b07c8eab::t_ac5d81f58391a9 318-324
+  s_a5a0b8b07c8eab::t_fa913be74cf565 291,315-317,325-332
+  s_a5a0b8b07c8eab::t_c6287a6228a7bb 1233-1239
+  s_a5a0b8b07c8eab::t_0e81e62297c31b 1208
+  s_a5a0b8b07c8eab::t_279f2f1a7e7ac3 2198-2199
+  s_a5a0b8b07c8eab::t_5206736deba147 252-257
+  s_a5a0b8b07c8eab::t_4512d1872a540b 260-290,292-314
+  s_a5a0b8b07c8eab::t_45b717643d929f 209-210,218
+  s_a5a0b8b07c8eab::t_c2a0d83013ead4 1178-1179
+  s_a5a0b8b07c8eab::t_1d84ac3d953cc4 258-259
+packages/backend/convex/payMapping/gap.ts
+  s_a5a0b8b07c8eab::t_a5b22e03e9b447 217-218
+packages/backend/convex/payMapping/report.test.ts
+  s_a5a0b8b07c8eab::t_0bb24d9acdbefd 28
+packages/backend/convex/assistant/insights.test.ts
+  s_a5a0b8b07c8eab::t_6e0758ace42392 57
+  s_a5a0b8b07c8eab::t_9c54e0f6ea7ee9 723-755
+  s_a5a0b8b07c8eab::t_226ac5b07e5b44 123-124,126,138-142,159-160
+  s_a5a0b8b07c8eab::t_6c552b0f5598a0 80-87,104-105
+  s_a5a0b8b07c8eab::t_45d4d2fcde76eb 756-757
+packages/backend/convex/payMapping/actions.test.ts
+  s_a5a0b8b07c8eab::t_925a18b7661efb 120
+  s_a5a0b8b07c8eab::t_45077875a736b9 143-145
+packages/backend/convex/accounts/audit.test.ts
+  s_a5a0b8b07c8eab::t_e4b6e40cd80a16 389
+packages/backend/convex/assistant/insights.ts
+  s_a5a0b8b07c8eab::t_54b3d2b8ddff25 10-13
+  s_a5a0b8b07c8eab::t_a71ed4a86234d4 406-410,417,420-424,427
+  s_a5a0b8b07c8eab::t_96672256bc1cad 1
+packages/backend/convex/payMapping/analyses.test.ts
+  s_a5a0b8b07c8eab::t_84bca752c1b35a 68,74
+  s_a5a0b8b07c8eab::t_9aa3d5dbd19b15 43
+  s_a5a0b8b07c8eab::t_54b3d2b8ddff25 69-73
+packages/backend/convex/payMapping/orgGap.ts
+  s_a5a0b8b07c8eab::t_35603943c0d5b1 1
+  s_a5a0b8b07c8eab::t_21f3354d019f60 23-25,40-41
+packages/backend/convex/payMapping/runs.ts
+  s_a5a0b8b07c8eab::t_74a65f6ac62056 634
+  s_a5a0b8b07c8eab::t_f5bc4479fb03a3 662-666
+  s_a5a0b8b07c8eab::t_f62be7310bf69a 411-417,423
+  s_a5a0b8b07c8eab::t_bbddd872c83bb6 566-570
+  s_a5a0b8b07c8eab::t_3265f4d9601532 594-597
+  s_a5a0b8b07c8eab::t_bf11a5ed811a6e 3
+  s_a5a0b8b07c8eab::t_bbb10dc6fe5053 451,453-459
+  s_a5a0b8b07c8eab::t_42b4641b2d4d93 333-339,351
+  s_a5a0b8b07c8eab::t_58246014e5f4ea 29-32,34
+  s_a5a0b8b07c8eab::t_54b3d2b8ddff25 340-343,418-422
+  s_a5a0b8b07c8eab::t_29a88f77cbebab 344
+packages/backend/convex/accounts/mirrors.test.ts
+  s_a5a0b8b07c8eab::t_e8b3bbfabe75d0 419-420
+packages/backend/convex/payMapping/tables.test.ts
+  s_a5a0b8b07c8eab::t_bd41faaa7f7f7f 63-109
+  s_a5a0b8b07c8eab::t_1a42bddf319807 18,44
+  s_a5a0b8b07c8eab::t_b42e7cd84fd984 110
+packages/backend/convex/payMapping/gap.test.ts
+  s_a5a0b8b07c8eab::t_070a4c7758a69a 47
+  s_a5a0b8b07c8eab::t_7c6175c575e258 865-866,868-914
+  s_a5a0b8b07c8eab::t_2d22b804fce3f2 915-916
+  s_a5a0b8b07c8eab::t_2c98541433ab07 74-80
+  s_a5a0b8b07c8eab::t_0a248a15c98608 867
+  s_a5a0b8b07c8eab::t_ed067fe5bfd0ed 17-18
+  s_a5a0b8b07c8eab::t_dfbb6354de7c51 917
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "c765fc4c223f73b4a44ab6d9be2bbdbd5ca7d03b",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
