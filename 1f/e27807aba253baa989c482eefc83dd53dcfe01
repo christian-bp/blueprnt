@@ -1,0 +1,100 @@
+apps/dashboard/lib/currency.ts
+  s_a5a0b8b07c8eab::t_ff24f314041d59 2-3,5-9,18,24
+apps/dashboard/components/people/add-salary-dialog.tsx
+  s_a5a0b8b07c8eab::t_fa4f26c84f2388 8-12,46
+  s_a5a0b8b07c8eab::t_670b0e12b7350d 87
+  s_a5a0b8b07c8eab::t_45c22ccbbae6a6 239
+  s_a5a0b8b07c8eab::t_bfc809feb3338f 39
+  s_a5a0b8b07c8eab::t_c0f99b93c10420 178-216,236-238,240-253
+  s_a5a0b8b07c8eab::t_bb5bff0ea686d0 256-274
+  s_a5a0b8b07c8eab::t_a1851bc855df2a 57-60,68-69
+  s_a5a0b8b07c8eab::t_3ef1cd418d0d46 168-173
+  s_a5a0b8b07c8eab::t_c6b83ad6970b98 92-101,111-112,120-121,129-130,137-138,147-150
+apps/dashboard/hooks/use-base-pay-format.test.tsx
+  s_a5a0b8b07c8eab::t_c4619f22339680 26-30,34-38
+  s_a5a0b8b07c8eab::t_7b4da040702460 1-20,24-25,31-32,39-40
+  s_a5a0b8b07c8eab::t_8f0bd63ce74e46 21-23,33
+apps/dashboard/components/people/add-salary-dialog.test.tsx
+  s_a5a0b8b07c8eab::t_54a8d92a122bf2 9
+  s_a5a0b8b07c8eab::t_a0a7b82728fba4 116-123
+  s_a5a0b8b07c8eab::t_3c6b3711e26113 181-184
+  s_a5a0b8b07c8eab::t_da2c166f23aad7 113-115,124-128
+  s_a5a0b8b07c8eab::t_477b874e4f1462 166
+  s_a5a0b8b07c8eab::t_45c22ccbbae6a6 27-30
+  s_a5a0b8b07c8eab::t_a6981675e52d5b 10,24-26,49,61-62,68,83-84,97-112,129-145
+  s_a5a0b8b07c8eab::t_22e86aabbbe058 36-41
+  s_a5a0b8b07c8eab::t_fcb381cce6a301 146-147,149-165,167-180,185
+  s_a5a0b8b07c8eab::t_50ad7144eb2c5a 69-71
+  s_a5a0b8b07c8eab::t_ff1b102b44dbae 148
+  s_a5a0b8b07c8eab::t_08c6da0136906b 186
+apps/dashboard/components/people/edit-person-dialog.tsx
+  s_a5a0b8b07c8eab::t_00dcd0e5d52280 71
+  s_a5a0b8b07c8eab::t_628dd1604ce63d 166-173
+  s_a5a0b8b07c8eab::t_709786d1d81029 228
+  s_a5a0b8b07c8eab::t_7e44ff38a9c9c3 174
+  s_a5a0b8b07c8eab::t_935d820f91151d 32,36
+  s_a5a0b8b07c8eab::t_b90cef46049e8a 479-494
+  s_a5a0b8b07c8eab::t_e8e5252bbc89ba 90-94
+  s_a5a0b8b07c8eab::t_c73f5a3063dc3f 131
+  s_e52995251c9695::t_b0571b9940f8e4 495-501
+apps/dashboard/components/people/person-detail.tsx
+  s_a5a0b8b07c8eab::t_3271a5a5d3bb09 112-114
+  s_a5a0b8b07c8eab::t_2baa75255dc5da 44
+  s_a5a0b8b07c8eab::t_b1d9427929ed30 296
+  s_a5a0b8b07c8eab::t_8a9626a4f99c35 332-336,338-339
+  s_a5a0b8b07c8eab::t_b5585ce68cf595 337
+  s_a5a0b8b07c8eab::t_7edb263006ef00 457-461
+apps/dashboard/components/people/edit-person-dialog.test.tsx
+  s_a5a0b8b07c8eab::t_aaa421c024e260 207-209,211-217,219-225,232
+  s_a5a0b8b07c8eab::t_c59ee4939f00ee 168-169,173-179
+  s_a5a0b8b07c8eab::t_0686b418574059 152-154,166-167,170-172,180-206,226-231
+  s_a5a0b8b07c8eab::t_1909e33787dcd9 28-34,39-40,43-44
+  s_a5a0b8b07c8eab::t_bb0260680f6626 11
+  s_a5a0b8b07c8eab::t_906a92984623a0 210,218
+  s_a5a0b8b07c8eab::t_294b2da42755f2 75
+  s_a5a0b8b07c8eab::t_45c22ccbbae6a6 41-42
+  s_a5a0b8b07c8eab::t_316f3004356ee4 233
+apps/dashboard/components/people/person-detail.test.tsx
+  s_a5a0b8b07c8eab::t_526d90ea7c56a6 117
+  s_a5a0b8b07c8eab::t_109373a972fb78 74-75,77
+  s_a5a0b8b07c8eab::t_bee4c339fb7463 3
+  s_a5a0b8b07c8eab::t_cb2f41991f934a 50
+  s_a5a0b8b07c8eab::t_db0c8556cd1741 137-141
+  s_a5a0b8b07c8eab::t_84cf04c9075de8 256-262
+  s_a5a0b8b07c8eab::t_1c492fb3214d11 249-255,263-265,270
+  s_a5a0b8b07c8eab::t_bd62d37ea3e4c0 115
+  s_a5a0b8b07c8eab::t_b0ba4f1b9fee7f 216-248,266-269
+apps/dashboard/hooks/use-money.ts
+  s_a5a0b8b07c8eab::t_6bc1dc3528f584 10-14
+apps/dashboard/hooks/use-base-pay-format.ts
+  s_a5a0b8b07c8eab::t_250b7c074ec570 1-7,11-14,20
+  s_a5a0b8b07c8eab::t_d0a3967f317568 8-10,15-19
+apps/dashboard/components/people/person-actions-menu.test.tsx
+  s_a5a0b8b07c8eab::t_fe666ced492029 96
+  s_a5a0b8b07c8eab::t_45bcf8600797d2 32-39,43-44,47-48
+  s_a5a0b8b07c8eab::t_45c22ccbbae6a6 45-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "1fe27807aba253baa989c482eefc83dd53dcfe01",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_e52995251c9695": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5a26ae0a-c4f7-4d51-be28-e34b82bc7457",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
