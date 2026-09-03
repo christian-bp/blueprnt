@@ -1,0 +1,61 @@
+packages/import/src/parse.ts
+  s_a5a0b8b07c8eab::t_e081d76b88ef99 116-129
+  s_a5a0b8b07c8eab::t_046993c3f7db2f 115
+packages/import/src/validate.test.ts
+  s_a5a0b8b07c8eab::t_183d17928baa85 527,540,549,552-554,556-577
+  s_a5a0b8b07c8eab::t_477da284c8fa2c 528-539,541-548,550-551,555,578-605
+packages/import/src/pipeline.test.ts
+  s_a5a0b8b07c8eab::t_2202c02a904cca 95-107
+packages/import/src/fields.test.ts
+  s_a5a0b8b07c8eab::t_8b200db6526203 234-252,254-299
+  s_a5a0b8b07c8eab::t_16b140c7e3bc31 253
+  s_a5a0b8b07c8eab::t_596e80652a5c52 3
+  s_a5a0b8b07c8eab::t_81547047fceec4 300
+packages/import/src/fields.ts
+  s_a5a0b8b07c8eab::t_03224d20e10a4d 16-18,26-28
+  s_a5a0b8b07c8eab::t_216053bdb23456 362-363
+  s_a5a0b8b07c8eab::t_addcf5072b8443 440-447
+  s_a5a0b8b07c8eab::t_795abecb148015 352-361,364-386
+  s_a5a0b8b07c8eab::t_3d22bb8a8bef7a 448
+packages/import/src/detect.test.ts
+  s_a5a0b8b07c8eab::t_044725dc75d3a5 443-444
+  s_a5a0b8b07c8eab::t_19c3af43a1deb3 441
+  s_a5a0b8b07c8eab::t_3db6979eaa2dac 440,442,445-455
+packages/import/src/parse.test.ts
+  s_a5a0b8b07c8eab::t_86af44b3d59c1f 625-639
+  s_a5a0b8b07c8eab::t_1aa81f97e35845 5
+  s_a5a0b8b07c8eab::t_eb23493ee227c7 640
+packages/import/src/validate.ts
+  s_a5a0b8b07c8eab::t_335ed433a2f4a1 136-143,148-149,165
+  s_a5a0b8b07c8eab::t_52ccaea6b6efaf 292-296
+  s_a5a0b8b07c8eab::t_9e9618e3b44e2a 240
+  s_a5a0b8b07c8eab::t_33f9d6db286d6d 135,144-147,150-164,166-172
+  s_a5a0b8b07c8eab::t_11a3f45b4f10a8 22
+  s_a5a0b8b07c8eab::t_8b65b0422f4208 288-290,297-304
+  s_a5a0b8b07c8eab::t_7d41960ddf5c9c 47-50
+  s_a5a0b8b07c8eab::t_ceef55b3982ba0 134
+packages/import/src/index.ts
+  s_a5a0b8b07c8eab::t_2bd3825aa213ac 29
+  s_a5a0b8b07c8eab::t_58ee0851d15457 3
+packages/import/src/issue-codes.test.ts
+  s_a5a0b8b07c8eab::t_0a0e6beb3ea57d 49
+  s_a5a0b8b07c8eab::t_ec1e7d68f12d8a 15
+packages/import/fixtures/visma-sv-hourly.csv
+  s_a5a0b8b07c8eab::t_931b6ec9246316 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "530e25f48b8035c22db062d069c7191fce6bfd46",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
