@@ -1,0 +1,32 @@
+docs/superpowers/plans/2026-09-02-hourly-pay.md
+  s_a5a0b8b07c8eab::t_e36e4e535de685 1574,1822-1823,1867-1868,1958
+  s_a5a0b8b07c8eab::t_6502cfb703f3c5 1987-2002
+  s_a5a0b8b07c8eab::t_73c0056b0f31e7 353-1573,1575-1821,1824-1866,1869-1957,1959-1986
+  s_a5a0b8b07c8eab::t_daf91bdcab067b 1-352
+docs/superpowers/specs/2026-09-02-hourly-pay-design.md
+  s_a5a0b8b07c8eab::t_703a627c7510cb 1-210,214-244,248-302,306-410
+  s_a5a0b8b07c8eab::t_66b5bd5b24532f 211-213,245-247,303-305
+docs/adr/0029-timlon-en-analysbas-heltidstimmar.md
+  s_a5a0b8b07c8eab::t_3afa04b0550174 11
+  s_a5a0b8b07c8eab::t_6450e9144876b7 1-10,13-17,19-27
+  s_a5a0b8b07c8eab::t_c00dbd9500b81f 18
+  s_a5a0b8b07c8eab::t_2082dd5311d972 12
+docs/lonekartlaggning-rapport-kravbild.md
+  s_a5a0b8b07c8eab::t_9d82965ded6d10 72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "0d1fd9f9bda72fdcee658ce8d58e87281f6cdac7",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
