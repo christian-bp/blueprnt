@@ -1,0 +1,130 @@
+apps/dashboard/content/docs/sv/supported-payroll-exports.mdx
+  s_a5a0b8b07c8eab::t_53c01975944640 43-53
+apps/dashboard/content/docs/fi/glossary.mdx
+  s_a5a0b8b07c8eab::t_515e72cbfdcb97 213
+  s_a5a0b8b07c8eab::t_cf35d01b1fd8d4 207,214
+  s_a5a0b8b07c8eab::t_8106ec1cf3f955 194-206,208-212,215-216
+apps/dashboard/content/docs/da/supported-payroll-exports.mdx
+  s_a5a0b8b07c8eab::t_a0af05abbebd44 45-55
+apps/dashboard/content/docs/sv/glossary.mdx
+  s_a5a0b8b07c8eab::t_3fb60f599215c2 204
+  s_a5a0b8b07c8eab::t_b2ac109e50005f 186-203,205-207
+apps/dashboard/content/docs/en/glossary.mdx
+  s_a5a0b8b07c8eab::t_e5469be317cb4d 181-201
+apps/dashboard/content/docs/nb/glossary.mdx
+  s_a5a0b8b07c8eab::t_c0100c85499d1d 205
+  s_a5a0b8b07c8eab::t_9398ea86c4599f 187-204,206-208
+apps/dashboard/content/docs/nb/person-details-and-salary.mdx
+  s_a5a0b8b07c8eab::t_c70828a6d22789 38-43,45-51
+  s_a5a0b8b07c8eab::t_567a9a4edf8852 17-20
+  s_a5a0b8b07c8eab::t_680d42e2d127bc 44
+apps/dashboard/content/docs/sv/person-details-and-salary.mdx
+  s_a5a0b8b07c8eab::t_d53cfcc1d662d8 40-53
+  s_a5a0b8b07c8eab::t_e4c5253e081e09 17-20
+apps/dashboard/content/docs/nb/pay-mapping-overview.mdx
+  s_a5a0b8b07c8eab::t_b75ada3de78c70 49-50
+  s_a5a0b8b07c8eab::t_4a5094a84f24a1 44-48,51-53
+apps/dashboard/content/docs/en/troubleshooting-people-and-import.mdx
+  s_a5a0b8b07c8eab::t_3a56de02f46534 91-100
+  s_a5a0b8b07c8eab::t_2ece29a7543d98 80-90
+apps/dashboard/content/docs/da/person-details-and-salary.mdx
+  s_a5a0b8b07c8eab::t_1d29acf804a8e3 39-52
+  s_a5a0b8b07c8eab::t_055bd842206019 17-20
+apps/dashboard/content/docs/sv/pay-mapping-overview.mdx
+  s_a5a0b8b07c8eab::t_76c7c4d4739d94 43-52
+apps/dashboard/content/docs/sv/importing-people.mdx
+  s_a5a0b8b07c8eab::t_ed96a3f5793ce2 65
+  s_a5a0b8b07c8eab::t_856868bd8b52a5 34-37,42
+  s_a5a0b8b07c8eab::t_be3134f0c19771 75-76
+  s_a5a0b8b07c8eab::t_c2503051112861 41,44-51
+  s_a5a0b8b07c8eab::t_de1b023c42c79f 63-64,66-70
+apps/dashboard/content/docs/fi/person-details-and-salary.mdx
+  s_a5a0b8b07c8eab::t_08dd14c87d3883 18-21
+  s_a5a0b8b07c8eab::t_bf41b80147b356 42-46,48-56
+apps/dashboard/content/docs/nb/importing-people.mdx
+  s_a5a0b8b07c8eab::t_17399fbc8dc5f7 43-44,46-48
+  s_a5a0b8b07c8eab::t_9addcd85183ee8 77
+  s_a5a0b8b07c8eab::t_e25d8febef52b8 64-71,76
+  s_a5a0b8b07c8eab::t_d74af06f30b577 35-39
+apps/dashboard/content/docs/da/importing-people.mdx
+  s_a5a0b8b07c8eab::t_0c513ac65c95cf 67-68
+  s_a5a0b8b07c8eab::t_103490d85df28b 64-66,69-71,76
+  s_a5a0b8b07c8eab::t_50903ebc514256 42-43,45-51
+  s_a5a0b8b07c8eab::t_4dc0d2682c4a95 77
+  s_a5a0b8b07c8eab::t_ab1d1760668da7 35-38
+apps/dashboard/content/docs/nb/supported-payroll-exports.mdx
+  s_a5a0b8b07c8eab::t_60e79069c1e996 43-44,46-53
+  s_a5a0b8b07c8eab::t_9769709bfa76eb 45
+apps/dashboard/content/docs/da/troubleshooting-people-and-import.mdx
+  s_a5a0b8b07c8eab::t_4b2de540c196f3 85-95
+  s_a5a0b8b07c8eab::t_8b84c295884fc2 96-106
+apps/dashboard/content/docs/sv/organization-settings.mdx
+  s_a5a0b8b07c8eab::t_dc907392015215 57-63
+  s_a5a0b8b07c8eab::t_f316457490dde6 54-56,64-65
+apps/dashboard/content/docs/nb/organization-settings.mdx
+  s_a5a0b8b07c8eab::t_d18cebd3ee91ba 54-57,66
+  s_a5a0b8b07c8eab::t_f9426f4915259c 58-65
+apps/dashboard/content/docs/en/supported-payroll-exports.mdx
+  s_a5a0b8b07c8eab::t_9f951c381d813e 42-52
+apps/dashboard/content/docs/en/organization-settings.mdx
+  s_a5a0b8b07c8eab::t_61a601848190e5 52-54,63
+  s_a5a0b8b07c8eab::t_598076861bbdaa 55-62
+apps/dashboard/content/docs/fi/troubleshooting-people-and-import.mdx
+  s_a5a0b8b07c8eab::t_f76270167ff14d 90,96-101
+  s_a5a0b8b07c8eab::t_78c97e776277e3 91-93,102-113
+apps/dashboard/content/docs/en/pay-mapping-overview.mdx
+  s_a5a0b8b07c8eab::t_5b5d36219725db 40-49
+apps/dashboard/content/docs/en/person-details-and-salary.mdx
+  s_a5a0b8b07c8eab::t_b24a7356da6d9d 16-20
+  s_a5a0b8b07c8eab::t_2ed063167fc961 36-49
+apps/dashboard/content/docs/sv/troubleshooting-people-and-import.mdx
+  s_a5a0b8b07c8eab::t_2baa82e02fa8ca 87-97
+  s_a5a0b8b07c8eab::t_adaaece5808dd7 98-107
+apps/dashboard/content/docs/fi/supported-payroll-exports.mdx
+  s_a5a0b8b07c8eab::t_77142e12079138 47-58
+apps/dashboard/content/docs/en/importing-people.mdx
+  s_a5a0b8b07c8eab::t_6ff72d063bd7e4 72
+  s_a5a0b8b07c8eab::t_06cd039d3c8cf9 60-67,71
+  s_a5a0b8b07c8eab::t_40090c42cd3747 39-49
+  s_a5a0b8b07c8eab::t_e43e08710ac20c 33-36
+apps/dashboard/content/docs/da/organization-settings.mdx
+  s_a5a0b8b07c8eab::t_8b889076183818 56-63
+  s_a5a0b8b07c8eab::t_cc575062161839 52-55,64
+apps/dashboard/content/docs/fi/importing-people.mdx
+  s_a5a0b8b07c8eab::t_f792edf339e40d 84
+  s_a5a0b8b07c8eab::t_8ecd9bdba6f7d0 38-41
+  s_a5a0b8b07c8eab::t_210d5986b8eb37 70-78,83
+  s_a5a0b8b07c8eab::t_1736245b236e52 45-46,49-51
+apps/dashboard/content/docs/fi/organization-settings.mdx
+  s_a5a0b8b07c8eab::t_8d9579930bac5f 60-67
+  s_a5a0b8b07c8eab::t_6cff5952d66da0 56-59,68
+apps/dashboard/content/docs/da/glossary.mdx
+  s_a5a0b8b07c8eab::t_72b42bc06dbdf3 209
+  s_a5a0b8b07c8eab::t_f9dad45ea0766b 190-208,210-212
+apps/dashboard/content/docs/da/pay-mapping-overview.mdx
+  s_a5a0b8b07c8eab::t_84680d06257560 44-48,50-53
+  s_a5a0b8b07c8eab::t_ee27baca00bf01 49
+apps/dashboard/content/docs/fi/pay-mapping-overview.mdx
+  s_a5a0b8b07c8eab::t_b6356eaa54ceb5 50,52
+  s_a5a0b8b07c8eab::t_9d6b445ee9d2d0 51
+  s_a5a0b8b07c8eab::t_f2d69726058777 45-49,53-54
+apps/dashboard/content/docs/nb/troubleshooting-people-and-import.mdx
+  s_a5a0b8b07c8eab::t_a92b700ca6cbc2 86-96
+  s_a5a0b8b07c8eab::t_77521186b4550a 97-106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "5a279de70956ce7e9b6f2e9b3f5671423cbab54b",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
