@@ -348,6 +348,7 @@
           "issue": {
             "duplicateId": "Duplicate employee ID",
             "unparsableMoney": "Unreadable salary value",
+            "unparsableHourlyRate": "Unreadable hourly rate value",
             "nonNumericCode": "Non-numeric statistical code",
             "unresolvedGender": "Gender needs to be assigned",
             "genderNameMismatch": "Gender and name mismatch",
@@ -379,9 +380,11 @@
           "title": "Job title",
           "gender": "Gender",
           "basicMonthly": "Monthly salary",
+          "hourlyRate": "Hourly rate",
           "firstName": "First name",
           "lastName": "Last name",
           "ftePercent": "FTE %",
+          "fullTimeHoursPerMonth": "Full-time hours per month",
           "payYear": "Pay year",
           "birthDate": "Birth date",
           "employmentStartDate": "Employment start date",
@@ -414,6 +417,7 @@
           "skipped": "Rows skipped",
           "reactivated": "Returning people reactivated",
           "archived": "People archived",
+          "hourlyPay": "Hourly pay records saved",
           "goToClassify": "Go to classification"
         },
         "review": {
@@ -443,6 +447,18 @@
             "missingTitle": "Employees missing from the file",
             "missingBody": "These employees are active in the register but not in this file. They stay active unless you archive them below.",
             "archiveMissing": "{count, plural, one {Archive this employee} other {Archive these # employees}}"
+          },
+          "hourly": {
+            "heading": "Hourly pay",
+            "interpreted": "{count, plural, one {# amount is read as hourly pay} other {# amounts are read as hourly pay}}",
+            "interpretToggle": "Read amounts for hourly-paid people as hourly pay",
+            "ownHours": "{count, plural, one {# person gets their own full-time hours} other {# people get their own full-time hours}}",
+            "noticesTitle": "Worth a look",
+            "notice": {
+              "hourlyLooksMonthly": "{count, plural, one {# hourly rate looks like a monthly salary} other {# hourly rates look like monthly salaries}}",
+              "monthlyLooksHourly": "{count, plural, one {# monthly salary looks like an hourly rate} other {# monthly salaries look like hourly rates}}",
+              "bothBasesPresent": "{count, plural, one {# row carries both a monthly salary and an hourly rate} other {# rows carry both a monthly salary and an hourly rate}}"
+            }
           }
         },
         "discard": {
@@ -472,6 +488,8 @@
         "departmentLabel": "Department",
         "startDateLabel": "Start date",
         "fteLabel": "FTE %",
+        "fullTimeHoursLabel": "Full-time hours per month",
+        "fullTimeHoursPlaceholder": "Default: {hours, number}",
         "cancel": "Cancel",
         "rolePlaceholder": "Select a role",
         "seniorityPlaceholder": "Select a seniority"
@@ -483,6 +501,7 @@
         "externalRef": "Employee number",
         "employmentStartDate": "Start date",
         "fte": "FTE",
+        "fullTimeHours": "Full-time hours",
         "department": "Department",
         "notFound": "This employee could not be found.",
         "classificationHeading": "Role and seniority",
@@ -499,7 +518,7 @@
         "deleteSalaryConfirm": "Delete",
         "deleteSalaryCancel": "Cancel",
         "salaryColumns": {
-          "basicMonthly": "Basic monthly"
+          "basicMonthly": "Base pay"
         }
       },
       "payComparison": {
@@ -513,11 +532,19 @@
         "tooltipVariable": "Variable",
         "vsThisPerson": "{diff} vs this person"
       },
+      "payUnit": { "monthly": "{amount}/mo", "hourly": "{amount}/h" },
       "salaryForm": {
         "addTitle": "Add salary",
         "addDescription": "Add a salary record to this employee's history.",
         "payYear": "Salary year",
+        "basis": {
+          "label": "Pay basis",
+          "monthly": "Monthly salary",
+          "hourly": "Hourly pay"
+        },
         "basicMonthly": "Basic monthly salary",
+        "hourlyAmount": "Hourly rate",
+        "derivedMonthly": "= {amount} per month at {hours, number} h",
         "addComponent": "Add component",
         "removeComponent": "Remove component",
         "componentKind": "Type",
@@ -789,6 +816,9 @@
         "isManager": "Manager",
         "statisticalCode": "Statistical code",
         "payYear": "Pay year",
+        "basis": "Pay basis",
+        "fullTimeHoursPerMonth": "Full-time hours per month",
+        "hourlyPay": "Hourly pay records saved",
         "source": "Source",
         "roleId": "Role",
         "seniority": "Seniority",
@@ -1228,6 +1258,7 @@
     "payMapping": {
       "startCta": "Start pay mapping",
       "empty": "No pay mappings yet. Start one to freeze today's pay data for analysis.",
+      "hourlyChip": "Hourly",
       "table": {
         "label": "Name",
         "referenceDate": "Reference date",
@@ -1561,6 +1592,7 @@
         "coverageNote": "Entry conditions: {singletons, plural, one {# single-person group is} other {# single-person groups are}} counted but not listed, {genderPure, plural, one {# single-gender group sits} other {# single-gender groups sit}} outside the within-group comparison (still taking part in the women-dominated comparison), and {reverse, plural, one {# group where women are ahead carries} other {# groups where women are ahead carry}} no documentation duty.",
         "maskingNote": "Averages for groups with fewer than {min} people or fewer than {perGender} per gender are masked in this document ({count, plural, one {# group} other {# groups}}). The masking applies to the export, not to the underlying analysis.",
         "measuresNote": "Pay figures are FTE-adjusted monthly amounts in {currency}. Total compensation (base salary plus recorded pay components) is the primary measure for equal work; base salary is analysed alongside it.",
+        "hourlyNote": "Hourly pay is converted to full-time-equivalent monthly pay using {hours, number} full-time hours per month ({count, plural, =0 {no one} one {# person} other {# people}} with a value of their own).",
         "maskedCell": "–",
         "logFailed": "The export could not be logged, so no file was downloaded. Try again.",
         "orgMedianLine": "The median is {womenMedian} for women and {menMedian} for men, a difference of {gap}.",
@@ -2359,6 +2391,10 @@
       "classifySeniorityBody": "The individual's rank within the role's track, such as Senior or Lead. It is set per person, not on the role, and is used to compare people in equivalent positions.",
       "fteAdjustedLabel": "What does FTE-adjusted mean?",
       "fteAdjustedBody": "Part-time pay is scaled up to its full-time equivalent before comparing. Someone at 80% earning 40,000 a month is shown as 50,000.",
+      "fullTimeHoursLabel": "What are full-time hours per month?",
+      "fullTimeHoursBody": "The monthly hours that count as full time, used to turn hourly pay into a monthly amount. A person's own value replaces the organization's default.",
+      "payBasisLabel": "What is the pay basis?",
+      "payBasisBody": "Whether the figure is a monthly salary or an hourly rate. Hourly pay is compared as rate times full-time hours, so it is not FTE-adjusted again.",
       "payMappingLabel": "What is a pay mapping?",
       "payMappingBody": "A pay mapping (Swedish: lönekartläggning) is a frozen snapshot of pay, roles and demographics. All analysis runs against that copy, never live data, so the numbers cannot shift under you.",
       "referenceDateLabel": "What is the reference date?",
@@ -2802,6 +2838,7 @@
         "languagePlaceholder": "Select a language",
         "industryLabel": "Industry",
         "industryPlaceholder": "Select an industry",
+        "fullTimeHoursLabel": "Full-time hours per month",
         "save": "Save changes",
         "error": "Could not save the organization. Please try again."
       },

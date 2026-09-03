@@ -342,7 +342,8 @@
           "noticesHelp": "Nämä arvot luettiin tulkinnalla, joka kannattaa tarkistaa. Ne eivät estä tuontia.",
           "issue": {
             "duplicateId": "Työntekijä-ID on kahdennettu",
-            "unparsableMoney": "Palkkaarvoa ei voi lukea",
+            "unparsableMoney": "Palkka-arvoa ei voi lukea",
+            "unparsableHourlyRate": "Tuntipalkka-arvoa ei voi lukea",
             "nonNumericCode": "Ei-numeerinen tilastokoodi",
             "unresolvedGender": "Sukupuoli on määritettävä",
             "genderNameMismatch": "Sukupuoli ja nimi eivät täsmää",
@@ -375,9 +376,11 @@
           "title": "Tehtävänimike",
           "gender": "Sukupuoli",
           "basicMonthly": "Kuukausipalkka",
+          "hourlyRate": "Tuntipalkka",
           "firstName": "Etunimi",
           "lastName": "Sukunimi",
           "ftePercent": "Työaika %",
+          "fullTimeHoursPerMonth": "Kokoaikatunnit kuukaudessa",
           "payYear": "Palkkausvuosi",
           "birthDate": "Syntymäaika",
           "employmentStartDate": "Työsuhteen alkamispäivä",
@@ -410,6 +413,7 @@
           "skipped": "Ohitetut rivit",
           "reactivated": "Palanneita henkilöitä palautettu aktiivisiksi",
           "archived": "Henkilöitä arkistoitu",
+          "hourlyPay": "Tuntipalkkatietueita tallennettu",
           "goToClassify": "Siirry luokitteluun"
         },
         "review": {
@@ -439,6 +443,18 @@
             "missingTitle": "Tiedostosta puuttuvat työntekijät",
             "missingBody": "Nämä työntekijät ovat aktiivisia rekisterissä, mutta eivät ole tässä tiedostossa. He pysyvät aktiivisina, ellet arkistoi heitä alla.",
             "archiveMissing": "{count, plural, one {Arkistoi tämä työntekijä} other {Arkistoi nämä # työntekijää}}"
+          },
+          "hourly": {
+            "heading": "Tuntipalkka",
+            "interpreted": "{count, plural, one {# summa tulkitaan tuntipalkaksi} other {# summaa tulkitaan tuntipalkaksi}}",
+            "interpretToggle": "Tulkitse tuntityöntekijöiden summat tuntipalkaksi",
+            "ownHours": "{count, plural, one {# henkilö saa omat kokoaikatunnit} other {# henkilöä saa omat kokoaikatunnit}}",
+            "noticesTitle": "Katsomisen arvoista",
+            "notice": {
+              "hourlyLooksMonthly": "{count, plural, one {# tuntipalkka näyttää kuukausipalkalta} other {# tuntipalkkaa näyttää kuukausipalkalta}}",
+              "monthlyLooksHourly": "{count, plural, one {# kuukausipalkka näyttää tuntipalkalta} other {# kuukausipalkkaa näyttää tuntipalkalta}}",
+              "bothBasesPresent": "{count, plural, one {# rivi sisältää sekä kuukausipalkan että tuntipalkan} other {# riviä sisältää sekä kuukausipalkan että tuntipalkan}}"
+            }
           }
         },
         "discard": {
@@ -472,6 +488,8 @@
         "departmentLabel": "Osasto",
         "startDateLabel": "Aloituspäivä",
         "fteLabel": "Työaika %",
+        "fullTimeHoursLabel": "Kokoaikatunnit kuukaudessa",
+        "fullTimeHoursPlaceholder": "Oletus: {hours, number}",
         "cancel": "Peruuta",
         "rolePlaceholder": "Valitse rooli",
         "seniorityPlaceholder": "Valitse senioriteetti"
@@ -483,6 +501,7 @@
         "externalRef": "Henkilönumero",
         "employmentStartDate": "Aloituspäivä",
         "fte": "Työsuhde",
+        "fullTimeHours": "Kokoaikatunnit",
         "department": "Osasto",
         "notFound": "Tätä työntekijää ei löydy.",
         "classificationHeading": "Rooli ja senioriteetti",
@@ -499,7 +518,7 @@
         "deleteSalaryConfirm": "Poista",
         "deleteSalaryCancel": "Peruuta",
         "salaryColumns": {
-          "basicMonthly": "Kiinteä kuukausipalkka"
+          "basicMonthly": "Peruspalkka"
         }
       },
       "payComparison": {
@@ -513,11 +532,19 @@
         "tooltipVariable": "Muuttuva",
         "vsThisPerson": "{diff} verrattuna tähän henkilöön"
       },
+      "payUnit": { "monthly": "{amount}/kk", "hourly": "{amount}/h" },
       "salaryForm": {
         "addTitle": "Lisää palkka",
         "addDescription": "Lisää palkkatietue työntekijän historiaan.",
         "payYear": "Palkkavuosi",
+        "basis": {
+          "label": "Palkkaperuste",
+          "monthly": "Kuukausipalkka",
+          "hourly": "Tuntipalkka"
+        },
         "basicMonthly": "Kiinteä kuukausipalkka",
+        "hourlyAmount": "Tuntipalkka",
+        "derivedMonthly": "= {amount} kuukaudessa ({hours, number} h)",
         "addComponent": "Lisää komponentti",
         "removeComponent": "Poista komponentti",
         "componentKind": "Tyyppi",
@@ -789,6 +816,9 @@
         "isManager": "Esimies",
         "statisticalCode": "Tilastokoodi",
         "payYear": "Palkkausvuosi",
+        "basis": "Palkkaperuste",
+        "fullTimeHoursPerMonth": "Kokoaikatunnit kuukaudessa",
+        "hourlyPay": "Tuntipalkkatietueita tallennettu",
         "source": "Lähde",
         "roleId": "Rooli",
         "seniority": "Senioriteetti",
@@ -1228,6 +1258,7 @@
     "payMapping": {
       "startCta": "Aloita palkkakartoitus",
       "empty": "Ei palkkakartoituksia vielä. Aloita yksi jäädyttääksesi tämän päivän palkkatiedot analyysiä varten.",
+      "hourlyChip": "Tuntipalkka",
       "table": {
         "label": "Nimi",
         "referenceDate": "Viitepäivä",
@@ -1561,6 +1592,7 @@
         "coverageNote": "Sisäänpääsyehdot: {singletons, plural, one {# yhden hengen ryhmä lasketaan} other {# yhden hengen ryhmää lasketaan}} mutta ei listata, {genderPure, plural, one {# yhden sukupuolen ryhmä on} other {# yhden sukupuolen ryhmää on}} ryhmän sisäisen vertailun ulkopuolella (ne osallistuvat silti naisvaltaisten ryhmien vertailuun), ja {reverse, plural, one {# ryhmä, jossa naiset ovat edellä, ei kanna} other {# ryhmää, joissa naiset ovat edellä, ei kanna}} dokumentointivelvollisuutta.",
         "maskingNote": "Keskiarvot ryhmille, joissa on alle {min} henkilöä tai alle {perGender} henkilöä sukupuolta kohden, peitetään tässä asiakirjassa ({count, plural, one {# ryhmä} other {# ryhmää}}). Peittäminen koskee vientiä, ei taustalla olevaa analyysia.",
         "measuresNote": "Palkkaluvut ovat FTE-korjattuja kuukausisummia valuutassa {currency}. Kokonaiskorvaus (peruspalkka ja kirjatut palkanosat) on saman työn ensisijainen mittari; peruspalkka analysoidaan sen rinnalla.",
+        "hourlyNote": "Tuntipalkka muunnetaan kokoaikaiseksi kuukausipalkaksi käyttäen {hours, number} kokoaikatuntia kuukaudessa ({count, plural, =0 {ei kukaan} one {# henkilö} other {# henkilöä}} omalla arvolla).",
         "maskedCell": "–",
         "logFailed": "Vientiä ei voitu kirjata lokiin, joten tiedostoa ei ladattu. Yritä uudelleen.",
         "orgMedianLine": "Mediaani on naisilla {womenMedian} ja miehillä {menMedian}, ero {gap}.",
@@ -2359,6 +2391,10 @@
       "classifySeniorityBody": "Yksilön asema roolin trackin sisällä, esimerkiksi Senior tai Lead. Se asetetaan henkilölle, ei roolille, ja sitä käytetään vastaavissa tehtävissä olevien vertailuun.",
       "fteAdjustedLabel": "Mitä kokoaikaiseksi muunnettu tarkoittaa?",
       "fteAdjustedBody": "Osa-aikainen palkka muunnetaan kokoaikaiseksi ennen vertailua. 80 prosentin työaika ja 40 000 kuukaudessa näkyy arvona 50 000.",
+      "fullTimeHoursLabel": "Mitä kokoaikatunnit kuukaudessa tarkoittavat?",
+      "fullTimeHoursBody": "Tunnit, jotka lasketaan kokoaikaiseksi, muuttavat tuntipalkan kuukausisummaksi. Henkilön oma arvo korvaa organisaation oletuksen.",
+      "payBasisLabel": "Mikä on palkkaperuste?",
+      "payBasisBody": "Onko summa kuukausipalkka vai tuntipalkka. Tuntipalkkaa verrataan tuntipalkkana kertaa kokoaikatunnit, joten sitä ei FTE-korjata uudelleen.",
       "payMappingLabel": "Mikä on palkkakartoitus?",
       "payMappingBody": "Palkkakartoitus on jäädytetty tilannekuva palkoista, rooleista ja demografiasta. Kaikki analyysi tehdään siitä kopiosta, ei koskaan elävästä datasta, joten luvut eivät voi muuttua altanne.",
       "referenceDateLabel": "Mikä on viitepäivä?",
@@ -2802,6 +2838,7 @@
         "languagePlaceholder": "Valitse kieli",
         "industryLabel": "Toimiala",
         "industryPlaceholder": "Valitse toimiala",
+        "fullTimeHoursLabel": "Kokoaikatunnit kuukaudessa",
         "save": "Tallenna muutokset",
         "error": "Organisaatiota ei voitu tallentaa. Yritä uudelleen."
       },

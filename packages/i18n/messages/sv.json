@@ -343,6 +343,7 @@
           "issue": {
             "duplicateId": "Dubblett av anställnings-ID",
             "unparsableMoney": "Ej läsbart lönvärde",
+            "unparsableHourlyRate": "Ej läsbart timlönvärde",
             "nonNumericCode": "Icke-numerisk statistikkod",
             "unresolvedGender": "Kön behöver anges",
             "genderNameMismatch": "Kön och namn stämmer inte",
@@ -375,9 +376,11 @@
           "title": "Befattning",
           "gender": "Kön",
           "basicMonthly": "Månadslön",
+          "hourlyRate": "Timlön",
           "firstName": "Förnamn",
           "lastName": "Efternamn",
           "ftePercent": "Sysselsättningsgrad",
+          "fullTimeHoursPerMonth": "Heltidstimmar per månad",
           "payYear": "Löneår",
           "birthDate": "Födelsedatum",
           "employmentStartDate": "Anställningsdatum",
@@ -410,6 +413,7 @@
           "skipped": "Överhoppade rader",
           "reactivated": "Återkommande personer återaktiverade",
           "archived": "Personer arkiverade",
+          "hourlyPay": "Timlöneposter sparade",
           "goToClassify": "Gå till klassificering"
         },
         "review": {
@@ -439,6 +443,18 @@
             "missingTitle": "Anställda som saknas i filen",
             "missingBody": "Dessa anställda är aktiva i registret men finns inte i den här filen. De förblir aktiva om du inte arkiverar dem nedan.",
             "archiveMissing": "{count, plural, one {Arkivera den här anställda} other {Arkivera dessa # anställda}}"
+          },
+          "hourly": {
+            "heading": "Timlön",
+            "interpreted": "{count, plural, one {# belopp tolkas som timlön} other {# belopp tolkas som timlön}}",
+            "interpretToggle": "Tolka belopp för timanställda som timlön",
+            "ownHours": "{count, plural, one {# person får egna heltidstimmar} other {# personer får egna heltidstimmar}}",
+            "noticesTitle": "Värt en titt",
+            "notice": {
+              "hourlyLooksMonthly": "{count, plural, one {# timlön ser ut som en månadslön} other {# timlöner ser ut som månadslöner}}",
+              "monthlyLooksHourly": "{count, plural, one {# månadslön ser ut som en timlön} other {# månadslöner ser ut som timlöner}}",
+              "bothBasesPresent": "{count, plural, one {# rad har både månadslön och timlön} other {# rader har både månadslön och timlön}}"
+            }
           }
         },
         "discard": {
@@ -472,6 +488,8 @@
         "departmentLabel": "Avdelning",
         "startDateLabel": "Startdatum",
         "fteLabel": "Sysselsättningsgrad %",
+        "fullTimeHoursLabel": "Heltidstimmar per månad",
+        "fullTimeHoursPlaceholder": "Standard: {hours, number}",
         "cancel": "Avbryt",
         "rolePlaceholder": "Välj en roll",
         "seniorityPlaceholder": "Välj en senioritet"
@@ -483,6 +501,7 @@
         "externalRef": "Anställningsnummer",
         "employmentStartDate": "Startdatum",
         "fte": "Sysselsättningsgrad",
+        "fullTimeHours": "Heltidstimmar",
         "department": "Avdelning",
         "notFound": "Den anställda kunde inte hittas.",
         "classificationHeading": "Roll och senioritet",
@@ -499,7 +518,7 @@
         "deleteSalaryConfirm": "Ta bort",
         "deleteSalaryCancel": "Avbryt",
         "salaryColumns": {
-          "basicMonthly": "Fast månadslön"
+          "basicMonthly": "Grundlön"
         }
       },
       "payComparison": {
@@ -513,11 +532,19 @@
         "tooltipVariable": "Rörligt",
         "vsThisPerson": "{diff} jämfört med denna person"
       },
+      "payUnit": { "monthly": "{amount}/mån", "hourly": "{amount}/h" },
       "salaryForm": {
         "addTitle": "Lägg till lön",
         "addDescription": "Lägg till en lönepost i den anställdas historik.",
         "payYear": "Löneår",
+        "basis": {
+          "label": "Löneform",
+          "monthly": "Månadslön",
+          "hourly": "Timlön"
+        },
         "basicMonthly": "Fast månadslön",
+        "hourlyAmount": "Timlön",
+        "derivedMonthly": "= {amount} per månad vid {hours, number} h",
         "addComponent": "Lägg till komponent",
         "removeComponent": "Ta bort komponent",
         "componentKind": "Typ",
@@ -789,6 +816,9 @@
         "isManager": "Chef",
         "statisticalCode": "Statistikkod",
         "payYear": "Löneår",
+        "basis": "Löneform",
+        "fullTimeHoursPerMonth": "Heltidstimmar per månad",
+        "hourlyPay": "Timlöneposter sparade",
         "source": "Källa",
         "roleId": "Roll",
         "seniority": "Senioritet",
@@ -1228,6 +1258,7 @@
     "payMapping": {
       "startCta": "Starta lönekartläggning",
       "empty": "Inga lönekartläggningar än. Starta en för att frysa dagens lönedata för analys.",
+      "hourlyChip": "Timlön",
       "table": {
         "label": "Namn",
         "referenceDate": "Referensdatum",
@@ -1561,6 +1592,7 @@
         "coverageNote": "Instegsvillkor: {singletons, plural, one {# enpersonsgrupp räknas} other {# enpersonsgrupper räknas}} men listas inte, {genderPure, plural, one {# enkönad grupp står} other {# enkönade grupper står}} utanför jämförelsen inom grupp (deltar ändå i den kvinnodominerade jämförelsen), och {reverse, plural, one {# grupp där kvinnorna ligger före bär} other {# grupper där kvinnorna ligger före bär}} ingen dokumentationsplikt.",
         "maskingNote": "Medelvärden för grupper med färre än {min} personer eller färre än {perGender} per kön maskeras i det här dokumentet ({count, plural, one {# grupp} other {# grupper}}). Maskeringen gäller exporten, inte den underliggande analysen.",
         "measuresNote": "Lönebeloppen är FTE-justerade månadsbelopp i {currency}. Total ersättning (grundlön plus registrerade lönekomponenter) är primärmåttet för lika arbete; grundlönen analyseras parallellt.",
+        "hourlyNote": "Timlön räknas om till heltidsekvivalent månadslön med {hours, number} heltidstimmar per månad ({count, plural, =0 {ingen} one {# person} other {# personer}} med eget värde).",
         "maskedCell": "–",
         "logFailed": "Exporten kunde inte loggas, så ingen fil laddades ner. Försök igen.",
         "orgMedianLine": "Medianen är {womenMedian} för kvinnor och {menMedian} för män, en skillnad på {gap}.",
@@ -2359,6 +2391,10 @@
       "classifySeniorityBody": "Individens placering inom rollens track, till exempel Senior eller Lead. Den anges per person, inte på rollen, och används för att jämföra personer i likvärdiga positioner.",
       "fteAdjustedLabel": "Vad betyder heltidsjusterad?",
       "fteAdjustedBody": "Deltidslön räknas upp till heltid före jämförelsen. Någon på 80% med 40 000 i månadslön visas som 50 000.",
+      "fullTimeHoursLabel": "Vad är heltidstimmar per månad?",
+      "fullTimeHoursBody": "Timmarna som räknas som heltid används för att räkna om timlön till ett månadsbelopp. En persons eget värde ersätter organisationens standard.",
+      "payBasisLabel": "Vad är löneform?",
+      "payBasisBody": "Om beloppet är en månadslön eller en timlön. Timlön jämförs som timlön gånger heltidstimmar och FTE-justeras därför inte igen.",
       "payMappingLabel": "Vad är en lönekartläggning?",
       "payMappingBody": "En lönekartläggning är en fryst ögonblicksbild av löner, roller och demografi. All analys körs mot den kopian, aldrig mot livedata, så siffrorna kan inte ändras under er.",
       "referenceDateLabel": "Vad är referensdatumet?",
@@ -2802,6 +2838,7 @@
         "languagePlaceholder": "Välj ett språk",
         "industryLabel": "Bransch",
         "industryPlaceholder": "Välj en bransch",
+        "fullTimeHoursLabel": "Heltidstimmar per månad",
         "save": "Spara ändringar",
         "error": "Det gick inte att spara organisationen. Försök igen."
       },
