@@ -14,6 +14,8 @@ interface SeedRow {
   seniority: string
   level: number | null
   basicMonthly: number | null
+  basis?: "monthly" | "hourly"
+  basicAmount?: number
   components?: { kind: string; monthlyAmount: number }[]
   ftePercent?: number
   birthDate?: string
@@ -42,6 +44,7 @@ async function seedRun(
       initiatedBy: userId,
       initiatedAt: 1_700_000_000_000,
       systemVersion: "test",
+      fullTimeHoursDefault: 165,
       populationCount: rows.length,
       withPayCount: rows.filter((r) => r.basicMonthly !== null).length,
       womenCount: rows.filter((r) => r.gender === "Kvinna").length,
@@ -68,6 +71,13 @@ async function seedRun(
         level: r.level,
         score: r.level === null ? null : 50,
         basicMonthly: r.basicMonthly,
+        ...(r.basicMonthly !== null
+          ? {
+              basis: r.basis ?? "monthly",
+              basicAmount: r.basicAmount ?? r.basicMonthly,
+              hoursPerMonth: 165,
+            }
+          : {}),
         components: r.components ?? [],
         ...(r.basicMonthly !== null ? { currency: "SEK" } : {}),
       })
@@ -851,6 +861,59 @@ describe("getPayMappingGap", () => {
     expect(assistant?.womenSharePct).toBe(100)
     expect(assistant?.comparisons[0]?.roleTitle).toBe("Tech")
     expect(assistant?.comparisons[0]?.diffSek).toBe(12000)
+  })
+
+  it("compares an hourly row on rate x hours, never divided by its FTE share", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, [
+      // Women hourly: 195 kr/h x 165 h = 32 175, frozen as basicMonthly.
+      {
+        gender: "Kvinna",
+        roleTitle: "Cashier",
+        seniority: "IC1",
+        level: 3,
+        basicMonthly: 32175,
+        basis: "hourly",
+        basicAmount: 195,
+        ftePercent: 50,
+      },
+      {
+        gender: "Kvinna",
+        roleTitle: "Cashier",
+        seniority: "IC1",
+        level: 3,
+        basicMonthly: 32175,
+        basis: "hourly",
+        basicAmount: 195,
+        ftePercent: 50,
+      },
+      // Men monthly at 80 %: 32 000 / 0.8 = 40 000.
+      {
+        gender: "Man",
+        roleTitle: "Cashier",
+        seniority: "IC1",
+        level: 3,
+        basicMonthly: 32000,
+        ftePercent: 80,
+      },
+      {
+        gender: "Man",
+        roleTitle: "Cashier",
+        seniority: "IC1",
+        level: 3,
+        basicMonthly: 32000,
+        ftePercent: 80,
+      },
+    ])
+    const gap = await asHr.query(api.payMapping.gap.getPayMappingGap, {
+      orgId,
+      runId,
+    })
+    const group = gap?.equalWork.find((g) => g.roleTitle === "Cashier")
+    expect(group?.tcc.womenMean).toBe(32175)
+    expect(group?.tcc.menMean).toBe(40000)
+    expect(group?.base.womenMean).toBe(32175)
+    expect(group?.base.menMean).toBe(40000)
   })
 })
 

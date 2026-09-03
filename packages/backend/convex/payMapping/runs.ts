@@ -1,5 +1,6 @@
 import {
   BASE_PRAXIS_AREA_KEYS,
+  normalizedMonthlyBase,
   PRAXIS_AREA_KEYS,
   type PraxisAreaKey,
 } from "@workspace/constants"
@@ -25,7 +26,12 @@ import { AUDIT_EVENTS, resolveActorName } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { uniqueSlug } from "../lib/slug"
+import {
+  readOrgPayDefaults,
+  resolveFullTimeHours,
+} from "../people/fullTimeHours"
 import { payRecordAt } from "../people/pay"
+import { basePayBasis } from "../people/tables"
 import { requiredDocumentationKeys } from "./gap"
 import { orgGap, type PricedRow } from "./orgGap"
 import { payGapFlag, payMappingRunStatus } from "./tables"
@@ -324,12 +330,25 @@ export const startPayMappingRun = orgMutation({
       .collect()
     const active = people.filter((p) => p.archivedAt === undefined)
 
+    // Org pay defaults, read once outside the per-person loop below (never
+    // per person): the currency/country/full-time-hours fallback every
+    // person's hours resolution needs. fullTimeHoursDefault is the org-wide
+    // figure with no person on hand to resolve against, for the run's own
+    // method note; each row still resolves ITS OWN hours through the
+    // person's value first.
+    const orgDefaults = await readOrgPayDefaults(ctx, ctx.orgId)
+    const fullTimeHoursDefault = resolveFullTimeHours(
+      {},
+      orgDefaults
+    ).hoursPerMonth
+
     const runId = await ctx.db.insert("payMappingRuns", {
       orgId: ctx.orgId,
       slug,
       label: trimmed,
       status: "active",
       referenceDate,
+      fullTimeHoursDefault,
       initiatedBy: ctx.authUserId,
       initiatedAt: referenceDate,
       systemVersion: SYSTEM_VERSION,
@@ -389,6 +408,19 @@ export const startPayMappingRun = orgMutation({
       const pay = payRecordAt(payRows, referenceDate)
       if (pay !== null) withPayCount += 1
 
+      // Every row's hours are resolved through the shared rule (person, else
+      // org, else country); normalizedMonthlyBase throws on non-positive
+      // hours, which resolveFullTimeHours never returns.
+      const hours = resolveFullTimeHours(person, orgDefaults)
+      const basicMonthly =
+        pay === null
+          ? null
+          : normalizedMonthlyBase(
+              pay.basicAmount,
+              pay.basis,
+              hours.hoursPerMonth
+            )
+
       const snapshotRow = {
         orgId: ctx.orgId,
         runId,
@@ -416,8 +448,15 @@ export const startPayMappingRun = orgMutation({
         seniority: open.seniority,
         level: result?.level ?? null,
         score: result?.score ?? null,
-        basicMonthly: pay?.basicMonthly ?? null,
+        basicMonthly,
         components: pay?.components ?? [],
+        ...(pay !== null
+          ? {
+              basis: pay.basis,
+              basicAmount: pay.basicAmount,
+              hoursPerMonth: hours.hoursPerMonth,
+            }
+          : {}),
         ...(pay?.currency !== undefined ? { currency: pay.currency } : {}),
         ...(pay?.payYear !== undefined ? { payYear: pay.payYear } : {}),
       }
@@ -524,6 +563,11 @@ const snapshotRowShape = v.object({
   seniority: v.string(),
   level: v.union(v.number(), v.null()),
   basicMonthly: v.union(v.number(), v.null()),
+  // The frozen raw figure, its basis and the full-time hours used to derive
+  // basicMonthly. Present exactly when basicMonthly is non-null.
+  basis: v.optional(basePayBasis),
+  basicAmount: v.optional(v.number()),
+  hoursPerMonth: v.optional(v.number()),
   components: v.array(
     v.object({ kind: v.string(), monthlyAmount: v.number() })
   ),
@@ -547,6 +591,10 @@ export const getPayMappingRunBySlug = orgQuery({
       label: v.string(),
       status: payMappingRunStatus,
       referenceDate: v.number(),
+      // The organization's resolved full-time hours per month at freeze time
+      // (the report's method note). A row's own hoursPerMonth wins when it
+      // differs (a person with a value of their own).
+      fullTimeHoursDefault: v.number(),
       // The frozen headcount, denormalized at freeze time. The overview's
       // population card reads it here rather than counting `rows`, so this
       // run and the one it is compared against (listPayMappingRuns) report
@@ -583,6 +631,7 @@ export const getPayMappingRunBySlug = orgQuery({
       label: run.label,
       status: run.status,
       referenceDate: run.referenceDate,
+      fullTimeHoursDefault: run.fullTimeHoursDefault,
       populationCount: run.populationCount,
       collaboration: run.collaboration ?? null,
       frozenCriteria: [...run.frozenModel.criteria]
@@ -610,6 +659,11 @@ export const getPayMappingRunBySlug = orgQuery({
         seniority: r.seniority,
         level: r.level,
         basicMonthly: r.basicMonthly,
+        ...(r.basis !== undefined ? { basis: r.basis } : {}),
+        ...(r.basicAmount !== undefined ? { basicAmount: r.basicAmount } : {}),
+        ...(r.hoursPerMonth !== undefined
+          ? { hoursPerMonth: r.hoursPerMonth }
+          : {}),
         components: r.components,
         ...(r.currency !== undefined ? { currency: r.currency } : {}),
         ...(r.payYear !== undefined ? { payYear: r.payYear } : {}),

@@ -40,6 +40,7 @@ async function seedRun(
       initiatedBy: userId,
       initiatedAt: 1_700_000_000_000,
       systemVersion: "test",
+      fullTimeHoursDefault: 165,
       populationCount: rows.length,
       withPayCount: rows.filter((r) => r.basicMonthly !== null).length,
       womenCount: rows.filter((r) => r.gender === "Kvinna").length,
@@ -64,6 +65,13 @@ async function seedRun(
         level: r.level,
         score: r.level === null ? null : 50,
         basicMonthly: r.basicMonthly,
+        ...(r.basicMonthly !== null
+          ? {
+              basis: "monthly",
+              basicAmount: r.basicMonthly,
+              hoursPerMonth: 165,
+            }
+          : {}),
         components: [],
         ...(r.basicMonthly !== null ? { currency: "SEK" } : {}),
       })

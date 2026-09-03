@@ -117,6 +117,7 @@ async function seedRun(
       initiatedBy: userId,
       initiatedAt: 1_700_000_000_000,
       systemVersion: "test",
+      fullTimeHoursDefault: 165,
       populationCount: rows.length,
       withPayCount: rows.length,
       womenCount: 1,
@@ -139,6 +140,9 @@ async function seedRun(
         level: r.level,
         score: 50,
         basicMonthly: r.basicMonthly,
+        basis: "monthly",
+        basicAmount: r.basicMonthly,
+        hoursPerMonth: 165,
         components: [],
         currency: "SEK",
       })

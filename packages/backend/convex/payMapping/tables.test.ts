@@ -15,6 +15,7 @@ describe("payMapping schema + slug", () => {
         initiatedBy: "u1",
         initiatedAt: 1,
         systemVersion: "test",
+        fullTimeHoursDefault: 165,
         populationCount: 0,
         womenCount: 0,
         menCount: 0,
@@ -40,6 +41,7 @@ describe("payMapping schema + slug", () => {
         initiatedBy: "u1",
         initiatedAt: 1,
         systemVersion: "test",
+        fullTimeHoursDefault: 165,
         populationCount: 0,
         womenCount: 0,
         menCount: 0,
@@ -57,5 +59,53 @@ describe("payMapping schema + slug", () => {
       expect(slug).not.toBe("lonekartlaggning-2026")
       expect(slug.startsWith("lonekartlaggning-2026")).toBe(true)
     })
+  })
+
+  it("round-trips a snapshot row's frozen basis, raw amount, and hours", async () => {
+    const t = initConvexTest()
+    const rowId = await t.run(async (ctx) => {
+      const runId = await ctx.db.insert("payMappingRuns", {
+        orgId: "org1",
+        slug: "lonekartlaggning-2027",
+        label: "Lönekartläggning 2027",
+        status: "active",
+        referenceDate: 1,
+        fullTimeHoursDefault: 165,
+        initiatedBy: "u1",
+        initiatedAt: 1,
+        systemVersion: "test",
+        populationCount: 1,
+        womenCount: 1,
+        menCount: 0,
+        orgGapPct: null,
+        orgGapFlag: "insufficient",
+        withPayCount: 1,
+        frozenModel: { criteria: [], levelThresholds: [] },
+      })
+      return ctx.db.insert("payMappingSnapshotRows", {
+        orgId: "org1",
+        runId,
+        personPublicId: "p1",
+        displayName: "Person 1",
+        erased: false,
+        gender: "Kvinna",
+        roleTitle: "Cashier",
+        trackKey: "operations",
+        seniority: "IC1",
+        level: 3,
+        score: 50,
+        basicMonthly: 32175,
+        basis: "hourly",
+        basicAmount: 195,
+        hoursPerMonth: 165,
+        components: [],
+        currency: "SEK",
+      })
+    })
+    const row = await t.run(async (ctx) => ctx.db.get(rowId))
+    expect(row?.basis).toBe("hourly")
+    expect(row?.basicAmount).toBe(195)
+    expect(row?.hoursPerMonth).toBe(165)
+    expect(row?.basicMonthly).toBe(32175)
   })
 })

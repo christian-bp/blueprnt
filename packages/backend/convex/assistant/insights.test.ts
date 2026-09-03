@@ -54,6 +54,7 @@ async function seedRun(
       initiatedBy: "hr-user",
       initiatedAt: args.referenceDate,
       systemVersion: "test",
+      fullTimeHoursDefault: 165,
       populationCount: args.populationCount,
       withPayCount: args.populationCount,
       womenCount: args.womenCount,
@@ -76,7 +77,14 @@ async function seedPersonWithPayRecords(
     displayName: string
     gender: "Man" | "Kvinna"
     archivedAt?: number
-    records: { basicMonthly: number; effectiveAt: number }[]
+    // basicMonthly is the raw figure as entered: for a "monthly" record
+    // (the default) that is the monthly amount itself; for an "hourly" one
+    // it is the hourly rate, which payStats must normalize before use.
+    records: {
+      basicMonthly: number
+      effectiveAt: number
+      basis?: "monthly" | "hourly"
+    }[]
   }
 ): Promise<Id<"people">> {
   return t.run(async (ctx) => {
@@ -93,7 +101,8 @@ async function seedPersonWithPayRecords(
         personId,
         payYear: 2026,
         source: "manual",
-        basicMonthly: record.basicMonthly,
+        basis: record.basis ?? "monthly",
+        basicAmount: record.basicMonthly,
         currency: "SEK",
         components: [],
         effectiveAt: record.effectiveAt,
@@ -111,7 +120,10 @@ async function seedPersonWithPay(
     publicId: string
     displayName: string
     gender: "Man" | "Kvinna"
+    // The raw figure as entered: a monthly amount by default, or an hourly
+    // rate when basis is "hourly".
     basicMonthly: number
+    basis?: "monthly" | "hourly"
     archivedAt?: number
     currency?: string
   }
@@ -123,7 +135,11 @@ async function seedPersonWithPay(
       gender: args.gender,
       archivedAt: args.archivedAt,
       records: [
-        { basicMonthly: args.basicMonthly, effectiveAt: BASE_EFFECTIVE_AT },
+        {
+          basicMonthly: args.basicMonthly,
+          effectiveAt: BASE_EFFECTIVE_AT,
+          basis: args.basis,
+        },
       ],
     })
   }
@@ -140,7 +156,8 @@ async function seedPersonWithPay(
       personId,
       payYear: 2026,
       source: "manual",
-      basicMonthly: args.basicMonthly,
+      basis: args.basis ?? "monthly",
+      basicAmount: args.basicMonthly,
       currency: args.currency as string,
       components: [],
       effectiveAt: BASE_EFFECTIVE_AT,
@@ -701,6 +718,41 @@ describe("assistant insights", () => {
     // (40000 + 42000 + 44000) / 3, not the older (30000) or future (99000)
     // record.
     expect(women?.averagePay).toBeCloseTo((40000 + 42000 + 44000) / 3)
+  })
+
+  it("normalizes an hourly record to rate x org hours, never the raw rate", async () => {
+    const t = initConvexTest()
+    // No organizations row is seeded, so the hours resolve to the
+    // country-less "other" default (173.33 h/month): 200 kr/h x 173.33 h =
+    // 34666, the figure the stat must read, never the bare rate (200).
+    await seedPersonWithPay(t, "org1", {
+      publicId: "w1",
+      displayName: "Woman One",
+      gender: "Kvinna",
+      basicMonthly: 200,
+      basis: "hourly",
+    })
+    await seedPersonWithPay(t, "org1", {
+      publicId: "w2",
+      displayName: "Woman Two",
+      gender: "Kvinna",
+      basicMonthly: 40000,
+    })
+    await seedPersonWithPay(t, "org1", {
+      publicId: "w3",
+      displayName: "Woman Three",
+      gender: "Kvinna",
+      basicMonthly: 42000,
+    })
+
+    const stats = await t.query(internal.assistant.insights.payStats, {
+      orgId: "org1",
+      groupBy: "gender",
+      asOf: NOW,
+    })
+    const women = stats.groups.find((g) => g.key === "women")
+    expect(women?.suppressed).toBe(false)
+    expect(women?.averagePay).toBeCloseTo((34666 + 40000 + 42000) / 3)
   })
 
   it("containsEmployeeName flags a full employee name, case-insensitive", async () => {

@@ -25,6 +25,7 @@ async function seedRun(t: ReturnType<typeof initConvexTest>): Promise<{
       initiatedBy: userId,
       initiatedAt: 1_700_000_000_000,
       systemVersion: "test",
+      fullTimeHoursDefault: 165,
       populationCount: 0,
       withPayCount: 0,
       womenCount: 0,

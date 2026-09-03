@@ -386,6 +386,7 @@ describe("accounts.audit.getAuditLogPage (browse)", () => {
         initiatedBy: adminId,
         initiatedAt: 0,
         systemVersion: "test",
+        fullTimeHoursDefault: 165,
         populationCount: 2,
         withPayCount: 2,
         womenCount: 1,

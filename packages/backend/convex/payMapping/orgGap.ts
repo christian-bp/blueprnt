@@ -1,4 +1,4 @@
-import { fteTotalMonthlyComp } from "@workspace/constants"
+import { type BasePayBasis, fteTotalMonthlyComp } from "@workspace/constants"
 import { computeGenderGap, type PayGapFlag } from "@workspace/core"
 
 // The org-level gender pay gap of one pay mapping, and the two rules it
@@ -20,6 +20,9 @@ export interface PricedRow {
   basicMonthly: number | null
   components: { kind: string; monthlyAmount: number }[]
   ftePercent?: number
+  // Absent only on a row without pay (basicMonthly null), which contributes
+  // nothing; a priced row always carries its basis from the freeze.
+  basis?: BasePayBasis
 }
 
 // Only a row with a frozen salary takes part in the gap. A person the
@@ -34,7 +37,8 @@ export function tccComp(row: PricedRow): number {
   return fteTotalMonthlyComp(
     row.basicMonthly ?? 0,
     row.components,
-    row.ftePercent
+    row.ftePercent,
+    row.basis ?? "monthly"
   )
 }
 

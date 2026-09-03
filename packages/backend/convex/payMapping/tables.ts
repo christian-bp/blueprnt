@@ -7,6 +7,7 @@ import {
   modelEvidenceFields,
   zoneProfileRuleShape,
 } from "../evaluationModel/tables"
+import { basePayBasis } from "../people/tables"
 
 // Lifecycle status of a pay-mapping run. Shared by the table definition and
 // every wire shape that carries a run's status (runs.ts), so the 4-literal
@@ -36,6 +37,11 @@ export const payMappingRuns = defineTable({
   label: v.string(),
   status: payMappingRunStatus,
   referenceDate: v.number(), // epoch ms; = createdAt this slice (freeze time)
+  // The organization's resolved full-time hours per month at freeze time,
+  // for the report's method note. Rows carry the hours actually used per
+  // person (hoursPerMonth), which differ from this only for people with a
+  // value of their own.
+  fullTimeHoursDefault: v.number(),
   initiatedBy: v.string(), // actorId
   initiatedAt: v.number(), // UTC epoch ms
   systemVersion: v.string(),
@@ -120,7 +126,15 @@ export const payMappingSnapshotRows = defineTable({
   seniority: v.string(),
   level: v.union(v.number(), v.null()),
   score: v.union(v.number(), v.null()),
+  // The NORMALIZED full-time-equivalent monthly base the engine reads; null
+  // when the person had no pay at the freeze.
   basicMonthly: v.union(v.number(), v.null()),
+  // The frozen raw figure, its basis and the full-time hours used to derive
+  // basicMonthly. All three present exactly when basicMonthly is non-null,
+  // so a run stays evidence when the organization's default changes later.
+  basis: v.optional(basePayBasis),
+  basicAmount: v.optional(v.number()),
+  hoursPerMonth: v.optional(v.number()),
   components: v.array(
     v.object({ kind: v.string(), monthlyAmount: v.number() })
   ),

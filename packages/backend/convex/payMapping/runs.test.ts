@@ -206,7 +206,8 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
       personId: withPay,
       payYear: 2026,
       source: "manual",
-      basicMonthly: 50000,
+      basis: "monthly",
+      basicAmount: 50000,
       currency: "SEK",
       components: [],
       effectiveAt: PAST,
@@ -214,7 +215,7 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
     })
   })
 
-  return { orgId, asHr, userId }
+  return { orgId, asHr, userId, withPay, withoutPay }
 }
 
 describe("startPayMappingRun", () => {
@@ -248,6 +249,87 @@ describe("startPayMappingRun", () => {
     const paid = rows.filter((r) => r.basicMonthly !== null)
     expect(paid).toHaveLength(1)
     expect(paid[0]?.basicMonthly).toBe(50000)
+    // The unpaid row carries none of the raw-figure fields either: they are
+    // only ever set alongside a frozen basicMonthly.
+    const unpaid = rows.find((r) => r.basicMonthly === null)
+    expect(unpaid?.basis).toBeUndefined()
+    expect(unpaid?.basicAmount).toBeUndefined()
+    expect(unpaid?.hoursPerMonth).toBeUndefined()
+  })
+
+  it("freezes the raw figure, basis and hours beside the normalized base", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr, withPay, withoutPay } = await seedForFreeze(t)
+
+    // withPay (Anna, Kvinna) gets her own full-time hours and an hourly
+    // salary record newer than the seed's monthly one, so it is the record
+    // the freeze picks up (payRecordAt selects the greatest effectiveAt).
+    await t.run(async (ctx) => {
+      await ctx.db.patch(withPay, { fullTimeHoursPerMonth: 150 })
+    })
+    await asHr.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId: withPay,
+      payYear: 2026,
+      basis: "hourly",
+      basicAmount: 195,
+      currency: "SEK",
+      components: [],
+    })
+    // withoutPay (Bo, Man) gets a monthly salary; the org's country ("se")
+    // resolves his hours (no person or org override), so he uses 165.
+    await asHr.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId: withoutPay,
+      payYear: 2026,
+      basis: "monthly",
+      basicAmount: 32000,
+      currency: "SEK",
+      components: [],
+    })
+
+    const { runId, slug } = await asHr.mutation(
+      api.payMapping.runs.startPayMappingRun,
+      { orgId, label: "Hourly test" }
+    )
+
+    const run = await t.run((ctx) => ctx.db.get(runId))
+    expect(run?.fullTimeHoursDefault).toBe(165)
+    expect(run?.withPayCount).toBe(2)
+
+    const rows = await t.run((ctx) =>
+      ctx.db
+        .query("payMappingSnapshotRows")
+        .withIndex("by_run", (q) => q.eq("orgId", orgId).eq("runId", runId))
+        .collect()
+    )
+    const woman = rows.find((r) => r.gender === "Kvinna")
+    expect(woman?.basis).toBe("hourly")
+    expect(woman?.basicAmount).toBe(195)
+    expect(woman?.hoursPerMonth).toBe(150)
+    expect(woman?.basicMonthly).toBe(29250)
+
+    const man = rows.find((r) => r.gender === "Man")
+    expect(man?.basis).toBe("monthly")
+    expect(man?.hoursPerMonth).toBe(165)
+
+    // The dashboard chip, scatter mark and method-note count all read these
+    // fields off the wire, not the table directly: pin them there too.
+    const result = await asHr.query(
+      api.payMapping.runs.getPayMappingRunBySlug,
+      {
+        orgId,
+        slug,
+      }
+    )
+    expect(result?.fullTimeHoursDefault).toBe(165)
+    const wireWoman = result?.rows.find((r) => r.gender === "Kvinna")
+    expect(wireWoman).toMatchObject({
+      basis: "hourly",
+      basicAmount: 195,
+      hoursPerMonth: 150,
+      basicMonthly: 29250,
+    })
   })
 
   // The ADR-0023/spec-2.6 freeze: frozenModel is the product's only method
@@ -1036,6 +1118,13 @@ describe("getPayMappingRunBySlug", () => {
     expect(paid[0]?.components).toEqual([])
     expect(paid[0]?.birthDate).toBe("1990-01-01")
     expect(paid[0]?.ftePercent).toBe(100)
+    // The unpaid row carries no basis/basicAmount/hoursPerMonth on the wire
+    // either: only ever set alongside a frozen basicMonthly.
+    const unpaid = (result?.rows ?? []).find((r) => r.basicMonthly === null)
+    expect(unpaid).toBeDefined()
+    expect(unpaid).not.toHaveProperty("basis")
+    expect(unpaid).not.toHaveProperty("basicAmount")
+    expect(unpaid).not.toHaveProperty("hoursPerMonth")
 
     // The report's method section reads the frozen criteria: a name +
     // weightPoints projection of the frozen evidence, in evidence order,
@@ -1086,6 +1175,8 @@ interface SeedRow {
   seniority: string
   level: number | null
   basicMonthly: number | null
+  basis?: "monthly" | "hourly"
+  basicAmount?: number
 }
 
 // Inserts one payMappingRuns row + its snapshot rows directly (bypassing
@@ -1114,6 +1205,7 @@ async function insertRun(
       initiatedBy: userId,
       initiatedAt: referenceDate,
       systemVersion: "test",
+      fullTimeHoursDefault: 165,
       populationCount: rows.length,
       withPayCount: rows.filter((r) => r.basicMonthly !== null).length,
       womenCount: rows.filter((r) => r.gender === "Kvinna").length,
@@ -1138,6 +1230,13 @@ async function insertRun(
         level: r.level,
         score: r.level === null ? null : 50,
         basicMonthly: r.basicMonthly,
+        ...(r.basicMonthly !== null
+          ? {
+              basis: r.basis ?? "monthly",
+              basicAmount: r.basicAmount ?? r.basicMonthly,
+              hoursPerMonth: 165,
+            }
+          : {}),
         components: [],
         ...(r.basicMonthly !== null ? { currency: "SEK" } : {}),
       })
@@ -2096,7 +2195,8 @@ describe("the run's level grouping and exclusion seam", () => {
         personId: unpaid._id,
         payYear: 2026,
         source: "manual",
-        basicMonthly: 52000,
+        basis: "monthly",
+        basicAmount: 52000,
         currency: "SEK",
         components: [],
         effectiveAt: PAST,

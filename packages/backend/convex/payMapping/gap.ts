@@ -214,7 +214,8 @@ function baseComp(row: SnapshotRow): number {
   return fteTotalMonthlyComp(
     row.basicMonthly ?? 0,
     NO_COMPONENTS,
-    row.ftePercent
+    row.ftePercent,
+    row.basis ?? "monthly"
   )
 }
 

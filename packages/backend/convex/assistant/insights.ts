@@ -1,3 +1,4 @@
+import { normalizedMonthlyBase } from "@workspace/constants"
 import { genderStats } from "@workspace/core"
 import type { Infer } from "convex/values"
 import { v } from "convex/values"
@@ -6,6 +7,10 @@ import { internalQuery } from "../_generated/server"
 import { ASSISTANT_MIN_GROUP_SIZE } from "../ai/config"
 import { deriveResults } from "../assessment/compute"
 import { isPriced, tccComp, type PricedRow } from "../payMapping/orgGap"
+import {
+  readOrgPayDefaults,
+  resolveFullTimeHours,
+} from "../people/fullTimeHours"
 import { payRecordAt } from "../people/pay"
 
 // The assistant's entire data surface. Returns are aggregates ONLY: numbers,
@@ -398,17 +403,28 @@ export const payStats = internalQuery({
       else existing.push(row)
     }
 
+    // Org pay defaults, read once outside this per-person loop: the
+    // currency/country/full-time-hours fallback every person's hours
+    // resolution needs.
+    const orgDefaults = await readOrgPayDefaults(ctx, args.orgId)
+
     let currency: string | null = null
     const priced: { gender: "Man" | "Kvinna"; monthly: number }[] = []
     for (const person of active) {
       const rows = rowsByPerson.get(person._id as string) ?? []
       const record = payRecordAt(rows, args.asOf)
       if (record === null) continue
+      const hours = resolveFullTimeHours(person, orgDefaults)
       const row: PricedRow = {
         gender: person.gender,
-        basicMonthly: record.basicMonthly,
+        basicMonthly: normalizedMonthlyBase(
+          record.basicAmount,
+          record.basis,
+          hours.hoursPerMonth
+        ),
         components: record.components,
         ftePercent: person.ftePercent,
+        basis: record.basis,
       }
       if (!isPriced(row)) continue
       priced.push({ gender: person.gender, monthly: tccComp(row) })

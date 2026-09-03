@@ -416,7 +416,8 @@ describe("removeSeededOrganization", () => {
       orgId,
       personId,
       payYear: 2024,
-      basicMonthly: 50000,
+      basis: "monthly",
+      basicAmount: 50000,
       currency: "SEK",
       components: [],
     })
