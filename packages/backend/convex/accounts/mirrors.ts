@@ -1,3 +1,4 @@
+import { defaultFullTimeHoursFor } from "@workspace/constants"
 import type { GenericMutationCtx } from "convex/server"
 import { v } from "convex/values"
 import { components, internal } from "../_generated/api"
@@ -242,11 +243,23 @@ export const seedOrganizationSettings = internalMutation({
       (row === null || typeof row.onboardingCompletedAt !== "number")
     // Hoisted so the patched/inserted value and the audited `to` are identical.
     const completedAt = Date.now()
+    // Same real-value-from-day-one rule as updateOrganizationSettings: seed
+    // the country default the first time this seed stores hours, and never
+    // overwrite an already-stored value on a re-run (the mutation additionally
+    // re-derives the value when the country itself changes; a seed re-run
+    // keeps its country, so that branch never applies here).
+    const seededHours =
+      row?.fullTimeHoursPerMonth === undefined
+        ? defaultFullTimeHoursFor(country)
+        : undefined
     const fields = {
       country,
       currency,
       language,
       industry,
+      ...(seededHours !== undefined
+        ? { fullTimeHoursPerMonth: seededHours }
+        : {}),
       ...(stampCompletion ? { onboardingCompletedAt: completedAt } : {}),
     }
     if (row === null) {
@@ -262,7 +275,15 @@ export const seedOrganizationSettings = internalMutation({
         payload: {
           changes: buildChanges(
             row ?? {},
-            { country, currency, language, industry },
+            {
+              country,
+              currency,
+              language,
+              industry,
+              ...(seededHours !== undefined
+                ? { fullTimeHoursPerMonth: seededHours }
+                : {}),
+            },
             // Shared field list (employeeCount absent from `after` and skipped)
             // so seeded settings diffs cannot drift from the settingsUpdated
             // field set.

@@ -569,6 +569,9 @@ describe("accounts/mirrors.seedOrganizationSettings", () => {
       expect(row?.language).toBe("sv")
       expect(row?.industry).toBe("itTelecom")
       expect(typeof row?.onboardingCompletedAt).toBe("number")
+      // The Swedish default is seeded as a real value alongside the country,
+      // not left unset (defaultFullTimeHoursFor("se")).
+      expect(row?.fullTimeHoursPerMonth).toBe(165)
       stampedAt = row?.onboardingCompletedAt
     })
 
@@ -590,6 +593,8 @@ describe("accounts/mirrors.seedOrganizationSettings", () => {
         .unique()
       expect(row?.onboardingCompletedAt).toBe(stampedAt)
       expect(row?.industry).toBe("manufacturing")
+      // Already-seeded hours are left alone on a re-run.
+      expect(row?.fullTimeHoursPerMonth).toBe(165)
 
       const settingsAudit = await ctx.db
         .query("auditLog")

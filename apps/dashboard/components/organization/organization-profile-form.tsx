@@ -2,7 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { defaultCurrencyFor, defaultLanguageFor } from "@workspace/constants"
+import {
+  defaultCurrencyFor,
+  defaultFullTimeHoursFor,
+  defaultLanguageFor,
+  FULL_TIME_HOURS_MAX,
+} from "@workspace/constants"
 import {
   Form,
   FormControl,
@@ -22,9 +27,11 @@ import { CountrySelect } from "@/components/country-select"
 import { CurrencySelect } from "@/components/currency-select"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { IndustrySelect } from "@/components/industry-select"
+import { NumberInput } from "@/components/number-input"
 import { useOrganization } from "@/components/org-context"
 import { SubmitButton } from "@/components/submit-button"
 import { LanguageSelect } from "@/components/language-select"
+import { numberInputField } from "@/lib/number-field"
 import { SettingsFrame, SettingsRow } from "@/components/settings-frame"
 import {
   makeOrganizationProfileSchema,
@@ -42,6 +49,7 @@ export function OrganizationProfileForm(props: {
     currency: string | null
     language: string | null
     industry: string | null
+    fullTimeHoursPerMonth: number
   }
 }) {
   const t = useTranslations("dashboard.organization.general")
@@ -68,6 +76,7 @@ export function OrganizationProfileForm(props: {
       currency: props.initial.currency ?? "",
       language: props.initial.language ?? "",
       industry: props.initial.industry ?? "",
+      fullTimeHoursPerMonth: props.initial.fullTimeHoursPerMonth,
     },
   })
   // Destructure so isValid and isDirty are both READ every render (RHF's
@@ -87,7 +96,8 @@ export function OrganizationProfileForm(props: {
         (values.country ?? "") !== (props.initial.country ?? "") ||
         (values.currency ?? "") !== (props.initial.currency ?? "") ||
         (values.language ?? "") !== (props.initial.language ?? "") ||
-        (values.industry ?? "") !== (props.initial.industry ?? "")
+        (values.industry ?? "") !== (props.initial.industry ?? "") ||
+        values.fullTimeHoursPerMonth !== props.initial.fullTimeHoursPerMonth
       if (settingsChanged) {
         await updateSettings({
           orgId,
@@ -96,6 +106,7 @@ export function OrganizationProfileForm(props: {
           currency: values.currency || undefined,
           language: values.language || undefined,
           industry: values.industry || undefined,
+          fullTimeHoursPerMonth: values.fullTimeHoursPerMonth,
         })
       }
       form.reset(values)
@@ -152,8 +163,9 @@ export function OrganizationProfileForm(props: {
                     <CountrySelect
                       value={field.value ?? ""}
                       onValueChange={(code) => {
-                        // Deriving currency + language from the country mirrors
-                        // onboarding's country screen.
+                        // Deriving currency, language, and full-time hours
+                        // from the country mirrors onboarding's country
+                        // screen; the hours stay editable afterward.
                         field.onChange(code)
                         form.setValue("currency", defaultCurrencyFor(code), {
                           shouldDirty: true,
@@ -163,6 +175,11 @@ export function OrganizationProfileForm(props: {
                           shouldDirty: true,
                           shouldValidate: true,
                         })
+                        form.setValue(
+                          "fullTimeHoursPerMonth",
+                          defaultFullTimeHoursFor(code),
+                          { shouldDirty: true, shouldValidate: true }
+                        )
                       }}
                       placeholder={t("countryPlaceholder")}
                       aria-label={t("countryLabel")}
@@ -196,6 +213,36 @@ export function OrganizationProfileForm(props: {
                       aria-label={t("currencyLabel")}
                     />
                   </FormControl>
+                </SettingsRow>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="fullTimeHoursPerMonth"
+            render={({ field }) => (
+              <FormItem>
+                <SettingsRow
+                  align="center"
+                  label={
+                    <span className="flex items-center gap-1">
+                      <FormLabel>{t("fullTimeHoursLabel")}</FormLabel>
+                      <HelpMorphButton label={tHelp("fullTimeHoursLabel")}>
+                        {tHelp("fullTimeHoursBody")}
+                      </HelpMorphButton>
+                    </span>
+                  }
+                >
+                  <FormControl>
+                    <NumberInput
+                      step="0.01"
+                      min={0}
+                      max={FULL_TIME_HOURS_MAX}
+                      aria-label={t("fullTimeHoursLabel")}
+                      {...numberInputField(field)}
+                    />
+                  </FormControl>
+                  <FormMessage />
                 </SettingsRow>
               </FormItem>
             )}

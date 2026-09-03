@@ -31,6 +31,7 @@ export default function OrganizationGeneralPage() {
             currency: settings.currency,
             language: settings.language,
             industry: settings.industry,
+            fullTimeHoursPerMonth: settings.fullTimeHoursPerMonth,
           }}
         />
       )}

@@ -1,3 +1,4 @@
+import { FULL_TIME_HOURS_MAX } from "@workspace/constants"
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
@@ -440,6 +441,230 @@ describe("organization settings", () => {
         .withIdentity({ subject: editorId })
         .mutation(api.accounts.organization.completeOnboarding, { orgId })
     ).rejects.toThrow(/errors.adminRequired/)
+  })
+})
+
+describe("updateOrganizationSettings: fullTimeHoursPerMonth", () => {
+  async function setup(role: "admin" | "editor") {
+    const t = initConvexTest()
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "hr@acme.se", name: "HR Person", role }
+    )
+    await t.run(async (ctx) => {
+      await onUserCreate(ctx, {
+        _id: userId,
+        email: "hr@acme.se",
+        name: "HR Person",
+      })
+      await ctx.db.insert("organizations", { orgId })
+    })
+    return { t, orgId, userId }
+  }
+
+  it("stores a positive figure, returns it from getOrganizationSettings, and diffs it", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, fullTimeHoursPerMonth: 160 }
+    )
+    const settings = await asAdmin.query(
+      api.accounts.organization.getOrganizationSettings,
+      { orgId }
+    )
+    expect(settings.fullTimeHoursPerMonth).toBe(160)
+
+    await t.run(async (ctx) => {
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "organization.settingsUpdated")
+        )
+        .collect()
+      expect(audit).toHaveLength(1)
+      const payload = audit[0]?.payload as {
+        changes: Record<string, { from: unknown; to: unknown }>
+      }
+      expect(payload.changes.fullTimeHoursPerMonth).toEqual({
+        from: null,
+        to: 160,
+      })
+    })
+  })
+
+  it("seeds the country default when the country is set and no hours are stored yet", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, country: "se" }
+    )
+    const settings = await asAdmin.query(
+      api.accounts.organization.getOrganizationSettings,
+      { orgId }
+    )
+    expect(settings.fullTimeHoursPerMonth).toBe(165)
+
+    await t.run(async (ctx) => {
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "organization.settingsUpdated")
+        )
+        .collect()
+      const payload = audit[0]?.payload as {
+        changes: Record<string, { from: unknown; to: unknown }>
+      }
+      expect(payload.changes.fullTimeHoursPerMonth).toEqual({
+        from: null,
+        to: 165,
+      })
+    })
+  })
+
+  it("an explicit value wins over the seeded country default", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, country: "se", fullTimeHoursPerMonth: 160 }
+    )
+    const settings = await asAdmin.query(
+      api.accounts.organization.getOrganizationSettings,
+      { orgId }
+    )
+    expect(settings.fullTimeHoursPerMonth).toBe(160)
+  })
+
+  it("re-derives the country default on a later country change", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, country: "se" }
+    )
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, country: "no" }
+    )
+    const settings = await asAdmin.query(
+      api.accounts.organization.getOrganizationSettings,
+      { orgId }
+    )
+    // The backend owns the rule: a country change re-derives the hours for
+    // the new country, the same as currency and language.
+    expect(settings.country).toBe("no")
+    expect(settings.fullTimeHoursPerMonth).toBe(162.5)
+  })
+
+  it("leaves the stored value alone when the same country is sent again", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, country: "se", fullTimeHoursPerMonth: 170 }
+    )
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, country: "se" }
+    )
+    const settings = await asAdmin.query(
+      api.accounts.organization.getOrganizationSettings,
+      { orgId }
+    )
+    // The country did not change from what is stored, so the hand-set 170 is
+    // not silently reset back to the Swedish default.
+    expect(settings.country).toBe("se")
+    expect(settings.fullTimeHoursPerMonth).toBe(170)
+  })
+
+  it("an explicit value in the same call wins over a country change's re-derive", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, country: "se" }
+    )
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, country: "no", fullTimeHoursPerMonth: 170 }
+    )
+    const settings = await asAdmin.query(
+      api.accounts.organization.getOrganizationSettings,
+      { orgId }
+    )
+    expect(settings.country).toBe("no")
+    expect(settings.fullTimeHoursPerMonth).toBe(170)
+  })
+
+  it("an onboarding revisit (se, no, se) ends back at the Swedish default", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, country: "se" }
+    )
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, country: "no" }
+    )
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, country: "se" }
+    )
+    const settings = await asAdmin.query(
+      api.accounts.organization.getOrganizationSettings,
+      { orgId }
+    )
+    expect(settings.country).toBe("se")
+    expect(settings.fullTimeHoursPerMonth).toBe(165)
+  })
+
+  it("rejects zero, negatives and values above FULL_TIME_HOURS_MAX", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const asAdmin = t.withIdentity({ subject: userId })
+    for (const bad of [0, -1, FULL_TIME_HOURS_MAX + 1]) {
+      await expect(
+        asAdmin.mutation(api.accounts.organization.updateOrganizationSettings, {
+          orgId,
+          fullTimeHoursPerMonth: bad,
+        })
+      ).rejects.toThrow(/errors.invalidInput/)
+    }
+
+    const settings = await asAdmin.query(
+      api.accounts.organization.getOrganizationSettings,
+      { orgId }
+    )
+    // Nothing was stored (every attempt was rejected), so the resolver falls
+    // back to the country default; the org has no country either, so that is
+    // the global default.
+    expect(settings.fullTimeHoursPerMonth).toBe(173.33)
+  })
+
+  it("accepts fullTimeHoursPerMonth exactly at FULL_TIME_HOURS_MAX and stores it with one audit row", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, fullTimeHoursPerMonth: FULL_TIME_HOURS_MAX }
+    )
+    const settings = await asAdmin.query(
+      api.accounts.organization.getOrganizationSettings,
+      { orgId }
+    )
+    expect(settings.fullTimeHoursPerMonth).toBe(FULL_TIME_HOURS_MAX)
+
+    await t.run(async (ctx) => {
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "organization.settingsUpdated")
+        )
+        .collect()
+      expect(audit).toHaveLength(1)
+    })
   })
 })
 

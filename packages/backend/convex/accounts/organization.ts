@@ -1,3 +1,7 @@
+import {
+  defaultFullTimeHoursFor,
+  FULL_TIME_HOURS_MAX,
+} from "@workspace/constants"
 import { v } from "convex/values"
 import { components, internal } from "../_generated/api"
 import { action, internalMutation, internalQuery } from "../_generated/server"
@@ -20,6 +24,7 @@ import {
   orgQuery,
   requireOrgAdminAction,
 } from "../lib/functions"
+import { resolveFullTimeHours } from "../people/fullTimeHours"
 
 const settingsShape = v.object({
   orgId: v.string(),
@@ -28,6 +33,9 @@ const settingsShape = v.object({
   language: v.union(v.string(), v.null()),
   employeeCount: v.union(v.number(), v.null()),
   industry: v.union(v.string(), v.null()),
+  // Resolved through resolveFullTimeHours, so callers never re-derive the
+  // country fallback themselves.
+  fullTimeHoursPerMonth: v.number(),
   imageUrl: v.union(v.string(), v.null()),
 })
 
@@ -51,6 +59,7 @@ export const getOrganizationSettings = orgQuery({
       language: settings.language ?? null,
       employeeCount: settings.employeeCount ?? null,
       industry: settings.industry ?? null,
+      fullTimeHoursPerMonth: resolveFullTimeHours({}, settings).hoursPerMonth,
       imageUrl,
     }
   },
@@ -69,17 +78,50 @@ export const updateOrganizationSettings = adminMutation({
     currency: v.optional(v.string()),
     language: v.optional(v.string()),
     industry: v.optional(v.string()),
+    fullTimeHoursPerMonth: v.optional(v.number()),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
+    if (
+      args.fullTimeHoursPerMonth !== undefined &&
+      !(
+        args.fullTimeHoursPerMonth > 0 &&
+        args.fullTimeHoursPerMonth <= FULL_TIME_HOURS_MAX
+      )
+    ) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
     const settings = await ctx.db
       .query("organizations")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .unique()
+    // The org's full-time hours become a real stored value the moment it gets
+    // a country, rather than staying unset until someone edits it: seed it
+    // from the country here, in the same write, whenever this call sets the
+    // country, no hours are stored yet, and the caller did not supply one.
+    // An organization never returns to "unset" once it has a country. The
+    // same derivation also fires when the country CHANGES (an onboarding
+    // revisit, or a later settings edit): the backend owns the rule, so a
+    // country-only call re-derives hours for the new country unless the
+    // caller supplies an explicit value in the same call. A country-only
+    // call that repeats the already-stored country leaves the hours alone.
+    const derivedHours =
+      args.country !== undefined &&
+      args.fullTimeHoursPerMonth === undefined &&
+      (settings?.fullTimeHoursPerMonth === undefined ||
+        settings?.country !== args.country)
+        ? defaultFullTimeHoursFor(args.country)
+        : undefined
+    const after = {
+      ...args,
+      ...(derivedHours !== undefined
+        ? { fullTimeHoursPerMonth: derivedHours }
+        : {}),
+    }
     if (settings === null) {
-      await ctx.db.insert("organizations", { orgId: ctx.orgId, ...args })
+      await ctx.db.insert("organizations", { orgId: ctx.orgId, ...after })
     } else {
-      await ctx.db.patch(settings._id, args)
+      await ctx.db.patch(settings._id, after)
     }
     await ctx.audit.log({
       type: AUDIT_EVENTS.organizationSettingsUpdated,
@@ -87,7 +129,7 @@ export const updateOrganizationSettings = adminMutation({
       // `created` flags the upsert-insert path.
       payload: {
         created: settings === null,
-        changes: buildChanges(settings ?? {}, args, SETTINGS_AUDIT_FIELDS),
+        changes: buildChanges(settings ?? {}, after, SETTINGS_AUDIT_FIELDS),
       },
     })
     return null
