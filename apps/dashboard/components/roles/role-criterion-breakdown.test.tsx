@@ -1,4 +1,10 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
@@ -100,13 +106,35 @@ describe("RoleCriterionBreakdown", () => {
     expect(screen.getByText(labels.notCovered)).toBeTruthy()
   })
 
-  it("renders a criterion's motivation when present", () => {
+  // The raters' words are folded away rather than printed under every bar:
+  // on the surface they made each row a different height, which left the
+  // card's height unknowable until the result arrived.
+  it("folds a criterion's motivation behind a disclosure", async () => {
     renderBreakdown([
       {
         ...(CRITERIA[0] as BreakdownCriterion),
         motivation: "Owns the whole platform.",
       },
     ])
-    expect(screen.getByText("Owns the whole platform.")).toBeTruthy()
+    expect(screen.queryByText("Owns the whole platform.")).toBeNull()
+
+    const trigger = screen.getByRole("button", {
+      name: new RegExp(labels.motivationsLabel),
+    })
+    fireEvent.click(trigger)
+    await waitFor(() => {
+      expect(screen.getByText("Owns the whole platform.")).toBeTruthy()
+    })
+  })
+
+  // No motivation on any criterion means no disclosure at all, so a list of
+  // bare bars carries no empty control.
+  it("renders no disclosure when nothing is motivated", () => {
+    renderBreakdown([{ ...(CRITERIA[0] as BreakdownCriterion) }])
+    expect(
+      screen.queryByRole("button", {
+        name: new RegExp(labels.motivationsLabel),
+      })
+    ).toBeNull()
   })
 })

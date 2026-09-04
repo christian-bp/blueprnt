@@ -7,8 +7,10 @@ import {
   type RatingValue,
   type WeightPoints,
 } from "@workspace/core"
+import { Accordion } from "@workspace/ui/components/accordion"
 import { motion } from "motion/react"
 import { useTranslations } from "next-intl"
+import { AccordionSection } from "@/components/accordion-section"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { FIELD_LABEL_CLASS } from "@/lib/field-label"
 import { SPRING } from "@/lib/motion"
@@ -23,6 +25,36 @@ export interface BreakdownCriterion {
   motivation: string | null
 }
 
+// Whether a criterion carries words worth folding away. One shared predicate
+// so the loading card's reserved disclosure and the rendered one can never
+// disagree about which rows count (an empty string is stored as no
+// motivation at all).
+export function isMotivated(motivation: string | null): boolean {
+  return motivation !== null && motivation.trim() !== ""
+}
+
+// The breakdown's own section label. Exported because the loading skeleton
+// renders the same row: the help button sets the row's height, so a
+// text-only stand-in measures 4px shorter and the card shrinks when the
+// result lands.
+export function BreakdownLabel() {
+  const tHelp = useTranslations("dashboard.help")
+  const tResult = useTranslations("dashboard.rating.result")
+  return (
+    // Section label for the breakdown, at the SAME scale and treatment as
+    // the sheet's other field labels (Purpose, Responsibilities, Role
+    // family). It sat at text-sm, which read as a heading of a different
+    // rank rather than the fourth member of a set. The help sits after it
+    // because this label is the concept's own title.
+    <div className={`flex items-center gap-1.5 ${FIELD_LABEL_CLASS}`}>
+      {tResult("breakdownLabel")}
+      <HelpMorphButton label={tHelp("contributionLabel")}>
+        {tHelp("contributionBody")}
+      </HelpMorphButton>
+    </div>
+  )
+}
+
 // The per-criterion contribution list: each criterion's share of the role's
 // weighting (rating x weight, normalized to the total), sorted
 // biggest-driver-first and animated on reweight. Shared by RoleEvaluationCard
@@ -33,7 +65,6 @@ export function RoleCriterionBreakdown({
 }: {
   criteria: BreakdownCriterion[]
 }) {
-  const tHelp = useTranslations("dashboard.help")
   const tResult = useTranslations("dashboard.rating.result")
 
   // Shares are derived live by the engine (ADR-0002), never stored.
@@ -58,6 +89,12 @@ export function RoleCriterionBreakdown({
       order: index,
     }))
     .sort((a, b) => b.share - a.share || a.order - b.order)
+  // The subset that has anything to fold away, in the same order the bars
+  // are read in.
+  const motivated = rows.filter(
+    (row): row is typeof row & { motivation: string } =>
+      isMotivated(row.motivation)
+  )
   // Bars normalize to the top driver; the printed percentage is the true share.
   const maxShare = rows.reduce((max, row) => Math.max(max, row.share), 0)
 
@@ -65,17 +102,7 @@ export function RoleCriterionBreakdown({
     // space-y-1 so the label hugs its rows like the other section labels
     // (Purpose, Responsibilities, Role family) rather than floating above them.
     <div className="space-y-1">
-      {/* Section label for the breakdown, at the SAME scale and treatment as
-          the sheet's other field labels (Purpose, Responsibilities, Role
-          family). It sat at text-sm, which read as a heading of a different
-          rank rather than the fourth member of a set. The help sits after it
-          because this label is the concept's own title. */}
-      <div className={`flex items-center gap-1.5 ${FIELD_LABEL_CLASS}`}>
-        {tResult("breakdownLabel")}
-        <HelpMorphButton label={tHelp("contributionLabel")}>
-          {tHelp("contributionBody")}
-        </HelpMorphButton>
-      </div>
+      <BreakdownLabel />
       <div className="space-y-3">
         {rows.map((row) => (
           <motion.div
@@ -87,8 +114,19 @@ export function RoleCriterionBreakdown({
             {/* The section is "Contribution", so the contribution share is the
                 row's headline next to the name; the bar shows it relative to the
                 biggest driver. */}
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="text-sm">{row.name}</span>
+            {/* h-5 is the line box a text-sm row occupies once it holds
+                words: the skeleton's bars are shorter than their type, so
+                without it the loading card is 4px per row too short. */}
+            <div className="flex h-5 items-baseline justify-between gap-3">
+              {/* One line, truncating: the rail is narrow enough that a long
+                  criterion name wraps to two or three lines, which makes
+                  every row a different height and leaves the card's height
+                  unknowable until the result lands. The full name is the
+                  element's title, and the model page carries the list in
+                  full. */}
+              <span className="min-w-0 truncate text-sm" title={row.name}>
+                {row.name}
+              </span>
               {/* A criterion the role is not covered by is not part of the
                   weighting at all (scoreRole drops it from both sides), so it
                   says so instead of printing a 0% that would read as
@@ -120,16 +158,34 @@ export function RoleCriterionBreakdown({
                 transition={SPRING}
               />
             </div>
-            {/* The rater's own words: running text a user reads as
-                sentences, so it takes leading-relaxed with its floor. */}
-            {row.motivation !== null && (
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                {row.motivation}
-              </p>
-            )}
           </motion.div>
         ))}
       </div>
+      {/* The raters' own words, folded away rather than printed under every
+          bar. On the surface they made each row a different height, which
+          left the card's height unknowable until the result arrived and
+          moved everything below it; they are also descriptive depth, which
+          belongs in the opt-in layer rather than repeated per row. */}
+      {motivated.length > 0 && (
+        <Accordion className="pt-1">
+          <AccordionSection
+            value="motivations"
+            title={tResult("motivationsLabel")}
+            meta={motivated.length}
+          >
+            <div className="space-y-3 pb-1">
+              {motivated.map((row) => (
+                <div key={row.criterionId} className="space-y-0.5">
+                  <div className="font-medium text-sm">{row.name}</div>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {row.motivation}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </AccordionSection>
+        </Accordion>
+      )}
     </div>
   )
 }

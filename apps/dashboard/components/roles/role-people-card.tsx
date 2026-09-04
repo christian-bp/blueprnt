@@ -2,17 +2,9 @@
 
 import { Medallion } from "@/components/medallion"
 import { UserMultiple02Icon } from "@hugeicons/core-free-icons"
-import NumberFlow from "@number-flow/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { Badge } from "@workspace/ui/components/badge"
 import { buttonVariants } from "@workspace/ui/components/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import {
   Empty,
   EmptyDescription,
@@ -33,9 +25,13 @@ import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { type ReactNode, useState } from "react"
+import {
+  FrameTable,
+  FrameTableFooter,
+  TablePagination,
+} from "@/components/frame-table"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SuggestedRoleBadge } from "@/components/suggested-role-badge"
-import { TablePagination } from "@/components/table-pagination"
 import {
   TableSkeleton,
   type TableSkeletonColumn,
@@ -91,32 +87,36 @@ function RolePeopleTableHeader() {
   )
 }
 
-// The card frame around whichever state the list is in, so the title, the
-// count slot and the padding are declared once. The count is omitted while
-// loading and when the role has no holders.
+// The register frame around whichever state the list is in, so the title, the
+// count slot and the foot are declared once. This one is a register, not a
+// free-form card, so it takes the app's table frame: the title and its live
+// count on the frame ground, the table flush inside the panel, the pager in
+// the foot. `size="sm"` puts it a rank under the two frames it stacks below:
+// they are the role and its evaluation, the page's own subject, and this is
+// the list of who holds it. The count is omitted while loading and when the
+// role has no holders.
 function RolePeopleShell({
   count,
+  footer,
   children,
 }: {
   count?: number
+  footer?: ReactNode
   children: ReactNode
 }) {
   const t = useTranslations("dashboard.roles.detail.people")
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>{t("heading")}</CardTitle>
-        {/* The query is reactive, so a reclassification elsewhere changes
-            this count while it is on screen: NumberFlow rolls the digits
-            instead of swapping them. */}
-        {count !== undefined && count > 0 && (
-          <Badge variant="secondary">
-            <NumberFlow value={count} />
-          </Badge>
-        )}
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-    </Card>
+    <FrameTable
+      size="sm"
+      title={t("heading")}
+      count={count}
+      // A count of people, so the chip carries the person mark; the register
+      // counts above it (roles, families) are counts of something else.
+      countIcon={UserMultiple02Icon}
+      footer={footer}
+    >
+      {children}
+    </FrameTable>
   )
 }
 
@@ -172,7 +172,32 @@ export function RolePeopleCard({
   if (people === undefined) return <RolePeopleCardSkeleton />
 
   return (
-    <RolePeopleShell count={total}>
+    <RolePeopleShell
+      count={total === 0 ? undefined : total}
+      footer={
+        pageCount > 1 ? (
+          <FrameTableFooter
+            page={current}
+            pageSize={PAGE_SIZE}
+            total={total}
+            pager={
+              <TablePagination
+                page={current}
+                pageCount={pageCount}
+                hasMore={false}
+                canPrev={current > 0}
+                canNext={current < pageCount - 1}
+                onPrev={() => setPage(current - 1)}
+                onNext={() => setPage(current + 1)}
+                onSelect={setPage}
+                previousLabel={tToolbar("previous")}
+                nextLabel={tToolbar("next")}
+              />
+            }
+          />
+        ) : undefined
+      }
+    >
       {total === 0 ? (
         <Empty>
           <EmptyHeader>
@@ -196,63 +221,45 @@ export function RolePeopleCard({
           )}
         </Empty>
       ) : (
-        <div className="space-y-4">
-          <Table className="table-fixed">
-            <RolePeopleTableHeader />
-            <TableBody>
-              {pageRows.map((row) => (
-                <TableRow key={row.personId}>
-                  <TableCell className="font-medium">
-                    {/* Name truncates; the suggested badge stays visible
+        <Table className="table-fixed">
+          <RolePeopleTableHeader />
+          <TableBody>
+            {pageRows.map((row) => (
+              <TableRow key={row.personId}>
+                <TableCell className="font-medium">
+                  {/* Name truncates; the suggested badge stays visible
                         beside it. */}
-                    <div className="flex items-center gap-2">
-                      <Link
-                        className="truncate underline-offset-4 hover:underline"
-                        href={`/people/${row.publicId}`}
-                      >
-                        {row.displayName}
-                      </Link>
-                      {row.senioritySource === "suggested" && (
-                        <SuggestedRoleBadge />
-                      )}
-                    </div>
-                  </TableCell>
-                  {/* Block flex wrapper: an inline-flex badge directly in
+                  <div className="flex items-center gap-2">
+                    <Link
+                      className="truncate underline-offset-4 hover:underline"
+                      href={`/people/${row.publicId}`}
+                    >
+                      {row.displayName}
+                    </Link>
+                    {row.senioritySource === "suggested" && (
+                      <SuggestedRoleBadge />
+                    )}
+                  </div>
+                </TableCell>
+                {/* Block flex wrapper: an inline-flex badge directly in
                       the cell sits on the text baseline and inflates the
                       line box, desyncing the row height from the skeleton
                       rows. */}
-                  <TableCell>
-                    <div className="flex items-center">
-                      <SeniorityBadge seniority={row.seniority} />
-                    </div>
-                  </TableCell>
-                  <TableCell className="truncate text-muted-foreground">
-                    {row.department ?? ""}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {row.ftePercent != null ? `${row.ftePercent}%` : ""}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {pageCount > 1 && (
-            <div className="flex justify-center">
-              <TablePagination
-                page={current}
-                pageCount={pageCount}
-                hasMore={false}
-                canPrev={current > 0}
-                canNext={current < pageCount - 1}
-                onPrev={() => setPage(current - 1)}
-                onNext={() => setPage(current + 1)}
-                onSelect={setPage}
-                previousLabel={tToolbar("previous")}
-                nextLabel={tToolbar("next")}
-              />
-            </div>
-          )}
-        </div>
+                <TableCell>
+                  <div className="flex items-center">
+                    <SeniorityBadge seniority={row.seniority} />
+                  </div>
+                </TableCell>
+                <TableCell className="truncate text-muted-foreground">
+                  {row.department ?? ""}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {row.ftePercent != null ? `${row.ftePercent}%` : ""}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </RolePeopleShell>
   )

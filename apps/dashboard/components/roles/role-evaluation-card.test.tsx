@@ -5,6 +5,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react"
+import { LEVEL_COUNT } from "@workspace/core"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -112,6 +113,7 @@ function renderCard(
     profileComplete?: boolean
     ratedCount?: number
     totalCriteria?: number
+    motivatedCount?: number
     anchorRole?: AnchorRoleInfo | null
   } = {}
 ) {
@@ -125,6 +127,7 @@ function renderCard(
         profileComplete={props.profileComplete ?? true}
         ratedCount={props.ratedCount ?? 0}
         totalCriteria={props.totalCriteria ?? 5}
+        motivatedCount={props.motivatedCount ?? 0}
         anchorRole={props.anchorRole ?? null}
       />
     </NextIntlClientProvider>
@@ -365,12 +368,19 @@ describe("RoleEvaluationCard", () => {
     expect(screen.queryByRole("button", { name: detail.manageCta })).toBeNull()
   })
 
-  it("shows the computing placeholder while a fully-rated result is still loading", () => {
+  // The card loads AFTER the page: its own result query leaves a gap, and a
+  // one-line sentence there collapsed the rail and moved everything under
+  // it when the result landed. The gap is now the completed body's own
+  // shape, with its static section label rendered for real.
+  it("holds the completed body's shape while a fully-rated result is still loading", () => {
     setResult(undefined)
-    renderCard({ ratedCount: 3, totalCriteria: 3 })
+    const { container } = renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(
-      screen.getByText(messages.dashboard.rating.result.computing)
+      screen.getByText(messages.dashboard.rating.result.breakdownLabel)
     ).toBeDefined()
+    expect(
+      container.querySelectorAll('[data-slot="skeleton"]').length
+    ).toBeGreaterThan(LEVEL_COUNT)
   })
 
   it("renders no actions menu in the progress state", () => {

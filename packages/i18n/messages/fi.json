@@ -1178,7 +1178,6 @@
         "hideRoles": "Piilota perheen {name} roolit"
       },
       "detail": {
-        "profileHeading": "Tehtäväprofiili",
         "evaluationHeading": "Arviointi",
         "manageCta": "Hallitse",
         "cancelCta": "Peruuta",
@@ -1920,7 +1919,8 @@
         "farFromAnchors": "Tulos on vähintään kaksi vaativuustasoa lähimmästä ankkuriroolista. Validoi arviointi manuaalisesti ennen hyväksyntää.",
         "contributionShare": "{share}%",
         "notCovered": "Ei koske roolia",
-        "breakdownLabel": "Osuus"
+        "breakdownLabel": "Osuus",
+        "motivationsLabel": "Perustelut"
       },
       "lockedExplanation": "Arviointi on lukittu, koska rooli on arkistoitu. Arkistointia ei voi perua, joten luo uusi rooli, jos työ pitää arvioida uudelleen.",
       "modelUnapprovedExplanation": "Arviointimalli on hyväksyttävä ennen kuin rooleja voi arvioida.",

@@ -4,12 +4,6 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -25,7 +19,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { Textarea } from "@workspace/ui/components/textarea"
-import { AiEditingIcon, MoreHorizontalIcon } from "@hugeicons/core-free-icons"
+import { AiEditingIcon, MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
@@ -34,6 +28,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "@/lib/toast"
 import { useState } from "react"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
+import { FrameCard, FrameCardSection } from "@/components/frame-card"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { MorphPopover } from "@/components/morph-popover"
 import { FamilyPicker } from "@/components/roles/family-picker"
@@ -42,6 +37,7 @@ import { RoleAiPanel } from "@/components/roles/role-ai-panel"
 import { onSelectValue } from "@/lib/select"
 import { isDuplicateRoleError } from "@/lib/role-error"
 import type { CreateRoleValues } from "@/lib/role-schemas"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 // Structural subset of getRole used by this card.
 export interface RoleProfile {
@@ -212,247 +208,290 @@ export function RoleProfileCard({
     },
   ]
 
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>{t("profileHeading")}</CardTitle>
-        {!locked && (
-          <div className="flex items-center gap-2">
-            {editing ? (
-              <>
-                {/* AI panel is only available in edit mode so it fills the
-                    draft directly; the user reviews and saves. */}
-                <MorphPopover
-                  triggerLabel={tAi("fillCta")}
-                  triggerIcon={AiEditingIcon}
-                  title={tAi("heading")}
-                  description={t("aiProvenance")}
-                  closeLabel={tAi("closeLabel")}
-                >
-                  {(close) => (
-                    <RoleAiPanel
-                      orgId={orgId}
-                      source={{ kind: "saved", roleId: role.roleId }}
-                      onFilled={({ purpose, responsibilities }) => {
-                        if (purpose.trim()) setField("purpose", purpose)
-                        if (responsibilities.trim())
-                          setField("responsibilities", responsibilities)
-                      }}
-                      onDone={close}
-                    />
-                  )}
-                </MorphPopover>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  disabled={pending}
-                  onClick={cancelEditing}
-                >
-                  {t("cancelCta")}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={pending || duplicate}
-                  onClick={handleSave}
-                >
-                  {t("saveCta")}
-                </Button>
-              </>
-            ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      aria-label={t("manageCta")}
-                      className="shrink-0"
-                    />
-                  }
-                >
-                  <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => startEditing()}>
-                    {t("editCta")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={() => setConfirmArchive(true)}
-                  >
-                    {tArchive("cta")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
+  // The save's own failure, stated once: the live duplicate check and a
+  // rejected save report the same thing.
+  const saveError =
+    duplicate || failure === "duplicate"
+      ? tErrors("roleExists")
+      : failure === "generic"
+        ? t("saveError")
+        : null
+
+  // The card's own actions, on the frame header's right: the manage menu
+  // while reading, the AI draft panel and the save pair while editing. An
+  // archived role has neither.
+  const toolbar = locked ? undefined : editing ? (
+    <>
+      {/* AI panel is only available in edit mode so it fills the draft
+          directly; the user reviews and saves. */}
+      <MorphPopover
+        triggerLabel={tAi("fillCta")}
+        triggerIcon={AiEditingIcon}
+        title={tAi("heading")}
+        description={t("aiProvenance")}
+        closeLabel={tAi("closeLabel")}
+      >
+        {(close) => (
+          <RoleAiPanel
+            orgId={orgId}
+            source={{ kind: "saved", roleId: role.roleId }}
+            onFilled={({ purpose, responsibilities }) => {
+              if (purpose.trim()) setField("purpose", purpose)
+              if (responsibilities.trim())
+                setField("responsibilities", responsibilities)
+            }}
+            onDone={close}
+          />
         )}
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-4 sm:grid-cols-4">
-          {(
-            [
-              ["title", tRole("title"), role.title],
-              ["function", tRole("function"), role.function],
-              ["team", tRole("team"), role.team],
-            ] as const
-          ).map(([key, label, value]) => (
-            <div key={key} className="space-y-1">
+      </MorphPopover>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        disabled={pending}
+        onClick={cancelEditing}
+      >
+        {t("cancelCta")}
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        disabled={pending || duplicate}
+        onClick={handleSave}
+      >
+        {t("saveCta")}
+      </Button>
+    </>
+  ) : (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <ActionsMenuTrigger
+            // icon-sm, not icon: a 32px control sets a frame header's
+            // height on its own, which reads as a taller bar than every
+            // other frame.
+            size="icon-sm"
+            aria-label={t("manageCta")}
+          />
+        }
+      >
+        <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => startEditing()}>
+          {t("editCta")}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => setConfirmArchive(true)}
+        >
+          {tArchive("cta")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+
+  return (
+    <>
+      <FrameCard
+        // The role itself names its own card: the page is about this one
+        // role, and a generic "Job profile" label spent the register-sized
+        // title on a word the reader already knows from the breadcrumb.
+        title={role.title}
+        titleLevel="h2"
+        size="lg"
+        toolbar={toolbar}
+        footer={
+          saveError !== null ? (
+            <p role="alert" className="text-destructive text-sm">
+              {saveError}
+            </p>
+          ) : undefined
+        }
+      >
+        {/* Which role this is: the identity fields and the family it sits in. */}
+        <FrameCardSection>
+          <div className="grid gap-4 sm:grid-cols-4">
+            {/* The family opens the row: it is the group this role sits in,
+                the same order the breadcrumb reads, and the rest of the row
+                is what the role is rather than where it belongs. */}
+            {!editing && (
+              <div className="space-y-1">
+                <div className="flex h-6 items-center gap-1.5">
+                  <Label
+                    htmlFor="profile-family"
+                    className="text-muted-foreground"
+                  >
+                    {tModel("roleFamily")}
+                  </Label>
+                </div>
+                <p id="profile-family" className="text-sm">
+                  {role.familyName === null ? (
+                    tFamily("none")
+                  ) : role.familySlug === null ? (
+                    role.familyName
+                  ) : (
+                    <Link
+                      href={`/roles/families/${role.familySlug}`}
+                      className="underline underline-offset-4"
+                    >
+                      {role.familyName}
+                    </Link>
+                  )}
+                </p>
+              </div>
+            )}
+            {(editing
+              ? ([
+                  ["title", tRole("title"), role.title],
+                  ["function", tRole("function"), role.function],
+                  ["team", tRole("team"), role.team],
+                ] as const)
+              : // The title is the card's own heading in the read view, so
+                // the field returns only when there is something to type it
+                // into.
+                ([
+                  ["function", tRole("function"), role.function],
+                  ["team", tRole("team"), role.team],
+                ] as const)
+            ).map(([key, label, value]) => (
+              <div key={key} className="space-y-1">
+                <div className="flex h-6 items-center gap-1.5">
+                  <Label
+                    htmlFor={`profile-${key}`}
+                    className="text-muted-foreground"
+                  >
+                    {label}
+                  </Label>
+                </div>
+                {editing ? (
+                  <Input
+                    id={`profile-${key}`}
+                    value={draft[key] ?? ""}
+                    onChange={(event) => setField(key, event.target.value)}
+                  />
+                ) : (
+                  <p id={`profile-${key}`} className="text-sm">
+                    {value}
+                  </p>
+                )}
+              </div>
+            ))}
+            <div className="space-y-1">
               <div className="flex h-6 items-center gap-1.5">
                 <Label
-                  htmlFor={`profile-${key}`}
+                  htmlFor="profile-track"
                   className="text-muted-foreground"
                 >
-                  {label}
+                  {tCreate("trackLabel")}
                 </Label>
+                {editing && (
+                  <HelpMorphButton label={tHelp("trackLabel")}>
+                    {tHelp("trackBody")}
+                  </HelpMorphButton>
+                )}
               </div>
               {editing ? (
-                <Input
-                  id={`profile-${key}`}
-                  value={draft[key] ?? ""}
-                  onChange={(event) => setField(key, event.target.value)}
-                />
+                <Select
+                  value={draft.trackKey ?? role.trackKey}
+                  onValueChange={onSelectValue((value: string) =>
+                    setField("trackKey", value)
+                  )}
+                  name="trackKey"
+                  items={Object.fromEntries(
+                    tracks.map((tr) => [tr.key, tr.name])
+                  )}
+                >
+                  <SelectTrigger id="profile-track" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tracks.map((tr) => (
+                      <SelectItem key={tr.key} value={tr.key}>
+                        {tr.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               ) : (
-                <p id={`profile-${key}`} className="text-sm">
-                  {value}
+                <p id="profile-track" className="text-sm">
+                  {role.trackName}
+                </p>
+              )}
+            </div>
+          </div>
+          {/* Editing keeps the family on its own full-width row, where the
+              picker's create-a-family form has room for its input and its
+              two buttons; a quarter-width cell would crush it. */}
+          {editing && (
+            <div className="space-y-1">
+              <Label htmlFor="profile-family" className="text-muted-foreground">
+                {tModel("roleFamily")}
+              </Label>
+              <FamilyPicker
+                orgId={orgId}
+                value={draftFamilyId}
+                onChange={setDraftFamilyId}
+                selectedLabel={role.familyName}
+              />
+            </div>
+          )}
+        </FrameCardSection>
+        {/* The role's own text, which is what the reader scrolls to. */}
+        <FrameCardSection>
+          {textRows.map((row) => (
+            <div key={row.key} className="space-y-1">
+              <Label
+                htmlFor={`profile-${row.key}`}
+                className="text-muted-foreground"
+              >
+                {row.label}
+              </Label>
+              {editing ? (
+                <>
+                  <Textarea
+                    id={`profile-${row.key}`}
+                    value={draft[row.key] ?? ""}
+                    rows={3}
+                    onChange={(event) => setField(row.key, event.target.value)}
+                  />
+                  {/* Responsibilities render one-per-line as a list, so tell the
+                    editor to write one per row. */}
+                  {row.key === "responsibilities" && (
+                    <p className="text-muted-foreground text-sm">
+                      {tForm("responsibilitiesHint")}
+                    </p>
+                  )}
+                </>
+              ) : row.value.trim().length > 0 ? (
+                // Responsibilities are one-per-line, so render them as a real
+                // bulleted list; purpose stays prose in a pre-line paragraph.
+                row.key === "responsibilities" ? (
+                  <ResponsibilitiesList
+                    id={`profile-${row.key}`}
+                    value={row.value}
+                  />
+                ) : (
+                  <p
+                    id={`profile-${row.key}`}
+                    className="whitespace-pre-line text-sm"
+                  >
+                    {row.value}
+                  </p>
+                )
+              ) : (
+                <p
+                  id={`profile-${row.key}`}
+                  className="text-muted-foreground text-sm italic"
+                >
+                  {t("emptyField")}
                 </p>
               )}
             </div>
           ))}
-          <div className="space-y-1">
-            <div className="flex h-6 items-center gap-1.5">
-              <Label htmlFor="profile-track" className="text-muted-foreground">
-                {tCreate("trackLabel")}
-              </Label>
-              {editing && (
-                <HelpMorphButton label={tHelp("trackLabel")}>
-                  {tHelp("trackBody")}
-                </HelpMorphButton>
-              )}
-            </div>
-            {editing ? (
-              <Select
-                value={draft.trackKey ?? role.trackKey}
-                onValueChange={onSelectValue((value: string) =>
-                  setField("trackKey", value)
-                )}
-                name="trackKey"
-                items={Object.fromEntries(
-                  tracks.map((tr) => [tr.key, tr.name])
-                )}
-              >
-                <SelectTrigger id="profile-track" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {tracks.map((tr) => (
-                    <SelectItem key={tr.key} value={tr.key}>
-                      {tr.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <p id="profile-track" className="text-sm">
-                {role.trackName}
-              </p>
-            )}
-          </div>
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="profile-family" className="text-muted-foreground">
-            {tModel("roleFamily")}
-          </Label>
-          {editing ? (
-            <FamilyPicker
-              orgId={orgId}
-              value={draftFamilyId}
-              onChange={setDraftFamilyId}
-              selectedLabel={role.familyName}
-            />
-          ) : role.familyName !== null ? (
-            <p id="profile-family" className="text-sm">
-              {role.familySlug !== null ? (
-                <Link
-                  href={`/roles/families/${role.familySlug}`}
-                  className="underline underline-offset-4"
-                >
-                  {role.familyName}
-                </Link>
-              ) : (
-                role.familyName
-              )}
-            </p>
-          ) : (
-            <p id="profile-family" className="text-sm">
-              {tFamily("none")}
-            </p>
-          )}
-        </div>
-        {textRows.map((row) => (
-          <div key={row.key} className="space-y-1">
-            <Label
-              htmlFor={`profile-${row.key}`}
-              className="text-muted-foreground"
-            >
-              {row.label}
-            </Label>
-            {editing ? (
-              <>
-                <Textarea
-                  id={`profile-${row.key}`}
-                  value={draft[row.key] ?? ""}
-                  rows={3}
-                  onChange={(event) => setField(row.key, event.target.value)}
-                />
-                {/* Responsibilities render one-per-line as a list, so tell the
-                    editor to write one per row. */}
-                {row.key === "responsibilities" && (
-                  <p className="text-muted-foreground text-sm">
-                    {tForm("responsibilitiesHint")}
-                  </p>
-                )}
-              </>
-            ) : row.value.trim().length > 0 ? (
-              // Responsibilities are one-per-line, so render them as a real
-              // bulleted list; purpose stays prose in a pre-line paragraph.
-              row.key === "responsibilities" ? (
-                <ResponsibilitiesList
-                  id={`profile-${row.key}`}
-                  value={row.value}
-                />
-              ) : (
-                <p
-                  id={`profile-${row.key}`}
-                  className="whitespace-pre-line text-sm"
-                >
-                  {row.value}
-                </p>
-              )
-            ) : (
-              <p
-                id={`profile-${row.key}`}
-                className="text-muted-foreground text-sm italic"
-              >
-                {t("emptyField")}
-              </p>
-            )}
-          </div>
-        ))}
-        {duplicate || failure === "duplicate" ? (
-          <p role="alert" className="text-destructive text-sm">
-            {tErrors("roleExists")}
-          </p>
-        ) : failure === "generic" ? (
-          <p role="alert" className="text-destructive text-sm">
-            {t("saveError")}
-          </p>
-        ) : null}
-      </CardContent>
+        </FrameCardSection>
+      </FrameCard>
       <ConfirmDeleteDialog
         open={confirmArchive}
         onOpenChange={setConfirmArchive}
@@ -474,6 +513,6 @@ export function RoleProfileCard({
           }
         }}
       />
-    </Card>
+    </>
   )
 }

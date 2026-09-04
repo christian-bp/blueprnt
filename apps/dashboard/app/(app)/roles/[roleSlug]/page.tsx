@@ -19,6 +19,7 @@ import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { useOrganization } from "@/components/org-context"
 import { TrackBadge } from "@/components/track-badge"
 import { RoleDetailSkeleton } from "@/components/roles/role-detail-skeleton"
+import { isMotivated } from "@/components/roles/role-criterion-breakdown"
 import { RoleEvaluationCard } from "@/components/roles/role-evaluation-card"
 import { RolePeopleCard } from "@/components/roles/role-people-card"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
@@ -43,7 +44,7 @@ export default function RolePage(props: {
   usePageTitle(role?.title)
 
   if (role === undefined || model === undefined) {
-    return <RoleDetailSkeleton />
+    return <RoleDetailSkeleton criteriaCount={model?.criteria.length} />
   }
   if (role === null) {
     return (
@@ -123,6 +124,10 @@ export default function RolePage(props: {
             profileComplete={role.profileComplete}
             ratedCount={role.ratedCount}
             totalCriteria={role.totalCriteria}
+            motivatedCount={
+              role.ratings.filter((rating) => isMotivated(rating.motivation))
+                .length
+            }
             anchorRole={role.anchorRole}
           />
         </div>

@@ -1178,7 +1178,6 @@
         "hideRoles": "Skjul roller i {name}"
       },
       "detail": {
-        "profileHeading": "Jobbprofil",
         "evaluationHeading": "Evaluering",
         "manageCta": "Administrer",
         "cancelCta": "Avbryt",
@@ -1920,7 +1919,8 @@
         "farFromAnchors": "Resultatet ligger minst to nivåer fra nærmeste ankerrolle. Valider vurderingen manuelt før godkjenning.",
         "contributionShare": "{share}%",
         "notCovered": "Omfattes ikke",
-        "breakdownLabel": "Bidrag"
+        "breakdownLabel": "Bidrag",
+        "motivationsLabel": "Begrunnelser"
       },
       "lockedExplanation": "Vurderingen er låst fordi rollen er arkivert. Arkivering kan ikke angres, så opprett en ny rolle hvis arbeidet skal vurderes på nytt.",
       "modelUnapprovedExplanation": "Evalueringsmodellen må godkjennes før roller kan vurderes.",

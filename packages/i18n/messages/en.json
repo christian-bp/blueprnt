@@ -1178,7 +1178,6 @@
         "hideRoles": "Hide roles in {name}"
       },
       "detail": {
-        "profileHeading": "Job profile",
         "evaluationHeading": "Evaluation",
         "manageCta": "Manage",
         "cancelCta": "Cancel",
@@ -1920,7 +1919,8 @@
         "farFromAnchors": "This result is at least two levels from the nearest anchor role. Validate the assessment manually before approving.",
         "contributionShare": "{share}%",
         "notCovered": "Not covered",
-        "breakdownLabel": "Contribution"
+        "breakdownLabel": "Contribution",
+        "motivationsLabel": "Motivations"
       },
       "lockedExplanation": "The rating is locked because the role is archived. Archiving cannot be undone, so create a new role if this work needs to be rated again.",
       "modelUnapprovedExplanation": "The evaluation model needs to be approved before roles can be rated.",
