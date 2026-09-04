@@ -14,6 +14,7 @@ import {
   ACTION_UPDATE_AUDIT_FIELDS,
   ANCHOR_AUDIT_FIELDS,
   ASSIGNMENT_AUDIT_FIELDS,
+  COLLABORATION_AUDIT_FIELDS,
   ERASED_FIELD_VALUE,
   GROUP_ANALYSIS_AUDIT_FIELDS,
   isPersonIdentityField,
@@ -433,7 +434,7 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
     equivalentWorkDone: 2,
   },
   "payMapping.runReopened": { runId: "run-1" },
-  "payMapping.collaborationUpdated": { runId: "run-1" },
+  "payMapping.collaborationUpdated": { runId: "run-1", changes: {} },
   "payMapping.runRenamed": { runId: "run-1", changes: {} },
   "payMapping.runDeleted": {
     runId: "run-1",
@@ -484,10 +485,10 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
     targetKind: "group",
     targetLabel: "SWE · Senior",
   },
-  "payMapping.reportExported": { runId: "run-1" },
   "payMapping.metricsExported": { runId: "run-1" },
-  "payMapping.unionReportExported": { runId: "run-1" },
   "payMapping.archiveExported": { runId: "run-1" },
+  "payMapping.signingReportExported": { runId: "run-1" },
+  "payMapping.detailAppendixExported": { runId: "run-1" },
 }
 
 // The expected subject per fixture above: the canonical primary entity, or
@@ -556,10 +557,10 @@ const EXPECTED_SUBJECTS: { [E in AuditEvent]: AuditSubject | undefined } = {
   "payMapping.noteCreated": { kind: "payMappingRun", id: "run-1" },
   "payMapping.noteUpdated": { kind: "payMappingRun", id: "run-1" },
   "payMapping.noteDeleted": { kind: "payMappingRun", id: "run-1" },
-  "payMapping.reportExported": { kind: "payMappingRun", id: "run-1" },
   "payMapping.metricsExported": { kind: "payMappingRun", id: "run-1" },
-  "payMapping.unionReportExported": { kind: "payMappingRun", id: "run-1" },
   "payMapping.archiveExported": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.signingReportExported": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.detailAppendixExported": { kind: "payMappingRun", id: "run-1" },
 }
 
 describe("subjectForEvent", () => {
@@ -741,6 +742,7 @@ describe("person audit field lists", () => {
       ACTION_AUDIT_FIELDS,
       ACTION_UPDATE_AUDIT_FIELDS,
       NOTE_AUDIT_FIELDS,
+      COLLABORATION_AUDIT_FIELDS,
     }
     for (const [name, fields] of Object.entries(otherFieldSets)) {
       for (const field of fields as readonly string[]) {

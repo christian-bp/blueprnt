@@ -8,6 +8,11 @@ import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { useOrganization } from "@/components/org-context"
 import { exportFileLabel } from "@/lib/export-file-name"
+import {
+  EXPORT_MIN_GROUP_SIZE,
+  EXPORT_MIN_PER_GENDER,
+  exportMasksGenderMeans,
+} from "@/lib/pay-mapping-masking"
 import { toast } from "@/lib/toast"
 import type {
   GapGroup,
@@ -17,9 +22,7 @@ import type {
 } from "./pay-mapping-gap-types"
 import { fteBaseMonthly, fteTotalMonthly } from "./pay-mapping-gap-types"
 import {
-  EXPORT_MIN_GROUP_SIZE,
-  EXPORT_MIN_PER_GENDER,
-  exportMasksGenderMeans,
+  floorVariablePayStats,
   memberRows,
   orgVariablePayStats,
   signedGapPctOf,
@@ -182,7 +185,9 @@ export function assemblePayMappingMetrics(input: {
   const womenStats = womenTotal === null ? null : genderStats(womenTotal)
   const menStats = menTotal === null ? null : genderStats(menTotal)
 
-  const variablePay = orgVariablePayStats(pricedRows)
+  // The workbook leaves the HR context, so the variable-pay figures take the
+  // export floor here; the assembly behind the documents stays raw.
+  const variablePay = floorVariablePayStats(orgVariablePayStats(pricedRows))
 
   const equalWorkGroups = [...gap.equalWork, ...gap.excluded.reverse]
     .map((group) => groupRow(group, pricedRows))

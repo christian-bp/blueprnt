@@ -38,6 +38,7 @@ import { CurrencyInput, currencyInputField } from "@/components/currency-input"
 import { DatePicker } from "@/components/date-picker"
 import { useOrganization } from "@/components/org-context"
 import { SubmitButton } from "@/components/submit-button"
+import { isoToMs, msToIso } from "@/lib/iso-date"
 import { toast } from "@/lib/toast"
 import type { ValidationT } from "@/lib/validation"
 import {
@@ -68,14 +69,6 @@ function makeActionSchema(t: ValidationT) {
 }
 
 export type ActionFormValues = z.infer<ReturnType<typeof makeActionSchema>>
-
-function isoToMs(iso: string): number {
-  return Date.parse(`${iso}T00:00:00.000Z`)
-}
-
-function msToIso(ms: number): string {
-  return new Date(ms).toISOString().slice(0, 10)
-}
 
 interface ActionDialogProps {
   open: boolean

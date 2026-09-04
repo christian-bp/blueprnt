@@ -12,11 +12,16 @@ vi.mock("convex/react", () => ({
 }))
 
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
+  // The export module reaches the criteria library through
+  // lib/audit-constants, whose backend closure builds the audit aggregates
+  // off `components`: the mock has to carry the export even though nothing
+  // here reads it.
+  components: {},
   api: {
     payMapping: {
       report: {
-        logPayMappingReportExport: "report.log",
-        logPayMappingUnionReportExport: "report.logUnion",
+        logPayMappingSigningReportExport: "report.logSigning",
+        logPayMappingDetailAppendixExport: "report.logDetail",
         logPayMappingMetricsExport: "report.logMetrics",
         logPayMappingArchiveExport: "report.logArchive",
       },
@@ -35,7 +40,10 @@ vi.mock("@/lib/toast", () => ({
 // The two render seams are the other hooks' business (each has its own
 // suite); here they hand over known bytes so the zip and the manifest can
 // be verified against them.
-const PDF_BYTES = new TextEncoder().encode("pdf-bytes").buffer as ArrayBuffer
+const SIGNING_BYTES = new TextEncoder().encode("signing-bytes")
+  .buffer as ArrayBuffer
+const DETAIL_BYTES = new TextEncoder().encode("detail-bytes")
+  .buffer as ArrayBuffer
 const XLSX_BYTES = new TextEncoder().encode("xlsx-bytes").buffer as ArrayBuffer
 vi.mock("./pay-mapping-report-export", async () => {
   const actual = await vi.importActual<
@@ -45,9 +53,12 @@ vi.mock("./pay-mapping-report-export", async () => {
     ...actual,
     usePayMappingReportExport: () => ({
       busy: false,
-      exportReport: vi.fn(),
-      renderReport: async () => new Blob([PDF_BYTES]),
-      captureHost: null,
+      exportDocument: vi.fn(),
+      renderDocument: async (
+        _data: unknown,
+        kind: "signing" | "detail"
+      ): Promise<Blob> =>
+        new Blob([kind === "signing" ? SIGNING_BYTES : DETAIL_BYTES]),
     }),
   }
 })
@@ -124,6 +135,7 @@ describe("assembleArchiveManifest", () => {
       referenceDate: makeData().run.referenceDate,
       populationCount: makeData().run.populationCount,
     })
+    expect(ARCHIVE_SCHEMA_VERSION).toBe(2)
     expect(manifest.files).toEqual(files)
     // The register deliberately does not leave the system (owner decision
     // 2026-09-01): no rows, no free text, no names anywhere in the file.
@@ -160,7 +172,7 @@ describe("usePayMappingArchiveExport", () => {
 
     // A fiscal-year label: ordinary input, and jszip would treat its "/" as
     // a folder boundary. The names fold it to a hyphen instead, so the
-    // package keeps its documented flat three-file layout.
+    // package keeps its documented flat four-file layout.
     const data = makeData()
     await result.current.exportArchive({
       ...data,
@@ -173,13 +185,14 @@ describe("usePayMappingArchiveExport", () => {
     const { default: JSZip } = await import("jszip")
     const zip = await JSZip.loadAsync(await blob.arrayBuffer())
     expect(Object.keys(zip.files).sort()).toEqual([
-      "2026-2027-lonekartlaggning.pdf",
+      "2026-2027-detaljbilaga.pdf",
       "2026-2027-nyckeltal.xlsx",
+      "2026-2027-signeringsrapport.pdf",
       "manifest.json",
     ])
   })
 
-  it("zips the three files, logs ONE boundary row before the download, and manifests real checksums", async () => {
+  it("zips the four files, logs ONE boundary row before the download, and manifests real checksums", async () => {
     const createObjectURL = vi.fn((_blob: Blob) => "blob:x")
     globalThis.URL.createObjectURL = createObjectURL
     globalThis.URL.revokeObjectURL = vi.fn()
@@ -205,7 +218,7 @@ describe("usePayMappingArchiveExport", () => {
     const downloadOrder = createObjectURL.mock.invocationCallOrder[0] ?? 0
     expect(logOrder).toBeLessThan(downloadOrder)
 
-    // Read the real zip back: the three files, the documents byte-identical
+    // Read the real zip back: the four files, both documents byte-identical
     // to what the render seams handed over, and the manifest's checksums
     // matching the actual contents.
     const blob = createObjectURL.mock.calls[0]?.[0]
@@ -213,33 +226,47 @@ describe("usePayMappingArchiveExport", () => {
     const { default: JSZip } = await import("jszip")
     const zip = await JSZip.loadAsync(await blob.arrayBuffer())
     expect(Object.keys(zip.files).sort()).toEqual([
-      "Mapping 2026-lonekartlaggning.pdf",
+      "Mapping 2026-detaljbilaga.pdf",
       "Mapping 2026-nyckeltal.xlsx",
+      "Mapping 2026-signeringsrapport.pdf",
       "manifest.json",
     ])
-    const pdfOut = await zip
-      .file("Mapping 2026-lonekartlaggning.pdf")
+    const signingOut = await zip
+      .file("Mapping 2026-signeringsrapport.pdf")
+      ?.async("arraybuffer")
+    const detailOut = await zip
+      .file("Mapping 2026-detaljbilaga.pdf")
       ?.async("arraybuffer")
     const xlsxOut = await zip
       .file("Mapping 2026-nyckeltal.xlsx")
       ?.async("arraybuffer")
-    if (pdfOut === undefined || xlsxOut === undefined)
+    if (
+      signingOut === undefined ||
+      detailOut === undefined ||
+      xlsxOut === undefined
+    )
       throw new Error("unreachable")
-    expect(new Uint8Array(pdfOut)).toEqual(new Uint8Array(PDF_BYTES))
+    expect(new Uint8Array(signingOut)).toEqual(new Uint8Array(SIGNING_BYTES))
+    expect(new Uint8Array(detailOut)).toEqual(new Uint8Array(DETAIL_BYTES))
     expect(new Uint8Array(xlsxOut)).toEqual(new Uint8Array(XLSX_BYTES))
 
     const manifestText = await zip.file("manifest.json")?.async("string")
     if (manifestText === undefined) throw new Error("unreachable")
     const manifest = JSON.parse(manifestText)
-    expect(manifest.schemaVersion).toBe(ARCHIVE_SCHEMA_VERSION)
+    expect(manifest.schemaVersion).toBe(2)
     expect(manifest.notice).toBe(
       messages.dashboard.payMapping.report.archiveNotice
     )
     expect(manifest.files).toEqual([
       {
-        name: "Mapping 2026-lonekartlaggning.pdf",
-        bytes: PDF_BYTES.byteLength,
-        sha256: await sha256Hex(PDF_BYTES),
+        name: "Mapping 2026-signeringsrapport.pdf",
+        bytes: SIGNING_BYTES.byteLength,
+        sha256: await sha256Hex(SIGNING_BYTES),
+      },
+      {
+        name: "Mapping 2026-detaljbilaga.pdf",
+        bytes: DETAIL_BYTES.byteLength,
+        sha256: await sha256Hex(DETAIL_BYTES),
       },
       {
         name: "Mapping 2026-nyckeltal.xlsx",

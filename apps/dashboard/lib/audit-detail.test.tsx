@@ -21,6 +21,7 @@ import {
   SCOPE_VALUE_KEYS,
   SENIORITY_SOURCE_VALUE_KEYS,
   STATUS_VALUE_KEYS,
+  TARGET_KIND_VALUE_KEYS,
   TRACK_VALUE_KEYS,
 } from "./audit-constants"
 import da from "@workspace/i18n/messages/da.json"
@@ -1183,6 +1184,43 @@ describe("formatAuditDetail", () => {
     ).toBe(
       `${PRAXIS_AREA_VALUE_KEYS.payPolicy.toUpperCase()} (Scope: ${SCOPE_VALUE_KEYS.praxis.toUpperCase()}): Finding: ${FINDING_VALUE_KEYS.none.toUpperCase()} → ${FINDING_VALUE_KEYS.found.toUpperCase()}`
     )
+  })
+
+  it("resolves a praxis action's targetLabel (the raw area key) but leaves every other kind's label as written", () => {
+    expect(
+      formatAuditDetail(
+        "payMapping.actionCreated",
+        {
+          runId: "run1",
+          targetKind: "praxis",
+          targetLabel: "payPolicy",
+        },
+        {},
+        labels,
+        fieldLabel,
+        undefined,
+        valueLabel
+      )
+    ).toBe(
+      `${PRAXIS_AREA_VALUE_KEYS.payPolicy.toUpperCase()} (${TARGET_KIND_VALUE_KEYS.praxis.toUpperCase()})`
+    )
+    // A group target's label is display text the backend already composed:
+    // running it through the area map would be wrong, so it passes through.
+    expect(
+      formatAuditDetail(
+        "payMapping.actionCreated",
+        {
+          runId: "run1",
+          targetKind: "group",
+          targetLabel: "Product Manager",
+        },
+        {},
+        labels,
+        fieldLabel,
+        undefined,
+        valueLabel
+      )
+    ).toBe(`Product Manager (${TARGET_KIND_VALUE_KEYS.group.toUpperCase()})`)
   })
 
   it("falls back to the raw scope/groupLabel/reasons codes when no valueLabel is wired", () => {

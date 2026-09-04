@@ -1,21 +1,26 @@
-// Assembly of the statutory lönekartläggning report document (M8): a pure
-// mapping from the run's frozen data + work layer to the typed doc the PDF
-// template renders. Everything display-formatted is formatted HERE through
-// injected formatters (locale-aware money/percent/date), so the template
-// stays layout-only and this step is unit-testable with identity formatters.
+// Assembly of the pay-mapping report content: a pure mapping from the run's
+// frozen data + work layer to the typed doc both PDF documents project
+// from. Everything display-formatted is formatted HERE through injected
+// formatters (locale-aware money/percent/date), so the templates stay
+// layout-only and this step is unit-testable with identity formatters.
 // Engine-agnostic by design (ADR-0026): nothing in this module knows which
 // PDF engine renders the doc.
 //
-// This module is also the ADR-0012 EXPORT BOUNDARY for small-cell masking:
-// in-app views show every group's figures (HR already sees each salary), but
-// a value leaving the HR context is masked below the small-cell minimums.
-// The rule lives here, not in the engine (go-live checklist: "P1 small-cell
-// masking at the export boundary").
+// UNMASKED by design (ADR-0030): this doc never nulls a value for size. It
+// still computes the export-threshold flags (`masked`, `maskedGroupCount`)
+// so the signing projection (signing-report-data.ts, the ONLY place masking
+// exists) can decide what leaves the HR context; the detail appendix prints
+// everything.
 import type { PayGapReason, PraxisAreaKey } from "@workspace/constants"
 import { BASE_PRAXIS_AREA_KEYS } from "@workspace/constants"
 import type { PayGapFlag } from "@workspace/core"
 import { genderStats, percentileOf } from "@workspace/core"
 import type { useTranslations } from "next-intl"
+import {
+  EXPORT_MIN_GROUP_SIZE,
+  exportMasksGenderMeans,
+  exportMasksWholeGroupMean,
+} from "@/lib/pay-mapping-masking"
 import type {
   ActionPriority,
   ActionStatus,
@@ -32,53 +37,81 @@ import type {
   WomenDominatedGroupWire,
 } from "./pay-mapping-gap-types"
 import {
+  COST_UNITS,
   fteBaseMonthly,
   fteTotalMonthly,
   groupLabel,
   isHourlyRow,
   rowInGroup,
   targetGroupLabel,
+  targetMatches,
 } from "./pay-mapping-gap-types"
+import {
+  type AnalysisStatus,
+  comparisonStatus,
+  equalWorkGroupStatus,
+  womenDominatedGroupStatus,
+} from "./analysis-status"
 
-// The export-boundary small-cell minimums (ADR-0012, tillägg 2026-07-16): a
-// PER-GENDER group mean/gap leaves the HR context only when the group has at
-// least this many people in total AND at least this many per gender. A
-// whole-group mean (the women-dominated comparison ranks whole groups, not
-// genders) has no per-gender leg; it masks below the total minimum alone,
-// because a small group's mean approaches an individual's salary. The rule
-// is this product's own conservative disclosure choice: no Swedish statute,
-// DO guidance, or social-partner material prescribes a numeric threshold,
-// and real employer documents commonly list every group unmasked. Never
-// present it as an industry standard.
-export const EXPORT_MIN_GROUP_SIZE = 4
-export const EXPORT_MIN_PER_GENDER = 2
-
-export function exportMasksGenderMeans(group: {
-  womenCount: number
-  menCount: number
-}): boolean {
-  return (
-    group.womenCount + group.menCount < EXPORT_MIN_GROUP_SIZE ||
-    group.womenCount < EXPORT_MIN_PER_GENDER ||
-    group.menCount < EXPORT_MIN_PER_GENDER
-  )
-}
-
-export function exportMasksWholeGroupMean(headcount: number): boolean {
-  return headcount < EXPORT_MIN_GROUP_SIZE
+// The export floor for the organization-level variable-pay figures: a
+// gender with fewer priced people than the group minimum loses every figure
+// (with a tiny gender the share itself attributes a pay component to
+// identifiable individuals), and a gender with fewer receivers than the
+// minimum keeps its share but loses the amounts (a mean over three receivers
+// approaches one person's bonus). The stats themselves stay raw; every
+// surface that leaves the HR context applies this before printing.
+export function floorVariablePayStats(
+  stats: OrgVariablePayStats
+): OrgVariablePayStats {
+  const floor = (
+    priced: number,
+    receivers: number,
+    figures: {
+      sharePct: number | null
+      mean: number | null
+      median: number | null
+    }
+  ) => {
+    if (priced < EXPORT_MIN_GROUP_SIZE) {
+      return { sharePct: null, mean: null, median: null }
+    }
+    if (receivers < EXPORT_MIN_GROUP_SIZE) {
+      return { sharePct: figures.sharePct, mean: null, median: null }
+    }
+    return figures
+  }
+  const women = floor(stats.womenPriced, stats.womenReceivers, {
+    sharePct: stats.womenSharePct,
+    mean: stats.womenMean,
+    median: stats.womenMedian,
+  })
+  const men = floor(stats.menPriced, stats.menReceivers, {
+    sharePct: stats.menSharePct,
+    mean: stats.menMean,
+    median: stats.menMedian,
+  })
+  return {
+    ...stats,
+    womenSharePct: women.sharePct,
+    menSharePct: men.sharePct,
+    womenMean: women.mean,
+    menMean: men.mean,
+    womenMedian: women.median,
+    menMedian: men.median,
+  }
 }
 
 // Locale-aware display formatting, injected so the assembly stays pure. pct
-// takes a 0-100 figure (the wire's unit) and renders unsigned; signedPct
-// keeps the sign (the per-level table is bidirectional, so an unsigned
-// figure would render a level where women are ahead identically to one
-// where they are behind); money renders in the run's currency; date takes
-// epoch ms.
+// takes a 0-100 figure (the wire's unit) and renders unsigned: direction is
+// carried by the section and the status word, never by a lone minus sign
+// that its section does not explain. money renders in the run's currency;
+// date takes epoch ms.
 export interface ReportFormatters {
   money: (value: number) => string
   pct: (value: number) => string
-  signedPct: (value: number) => string
   date: (epochMs: number) => string
+  // Date and time of day, for the extraction instant (the freeze).
+  dateTime: (epochMs: number) => string
   // "/mo" style recurrence suffix for a cost figure; empty for a lump sum,
   // so money(x) + costUnitSuffix(unit) is the one composition everywhere.
   costUnitSuffix: (unit: CostUnit | null) => string
@@ -94,11 +127,20 @@ export interface ReportMetricText {
 
 // The per-gender medians beside the means (professional standard: both
 // measures, per Unionen/Sveriges Ingenjörer and DO-recommended practice in
-// published municipal documents). Masked together with the row's means.
+// published municipal documents).
 export interface ReportMedianText {
   women: string | null
   men: string | null
   gapPct: string | null
+}
+
+// An action cited from a group or comparison row: its number (the id both
+// documents print), the owner and the planned date. The action's own row
+// in the action table carries the rest.
+export interface ReportLinkedAction {
+  number: number
+  ownerName: string
+  plannedDate: string
 }
 
 export interface ReportGroupRow {
@@ -107,7 +149,8 @@ export interface ReportGroupRow {
   level: number | null
   womenCount: number
   menCount: number
-  // Export-boundary masking applied to this row's means/gaps.
+  // The export threshold (signing-report-data.ts) bites this row. A flag
+  // only: the figures below are always present.
   masked: boolean
   // The table's figures: total comp (the primary measure) with its medians,
   // and base salary beside it for the baseDriven meta line.
@@ -123,6 +166,8 @@ export interface ReportGroupRow {
   reasons: PayGapReason[]
   note: string | null
   done: boolean
+  status: AnalysisStatus
+  actions: ReportLinkedAction[]
 }
 
 export interface ReportComparisonRow {
@@ -143,6 +188,8 @@ export interface ReportComparisonRow {
   masked: boolean
   reasons: PayGapReason[]
   note: string | null
+  status: AnalysisStatus
+  actions: ReportLinkedAction[]
 }
 
 export interface ReportWomenDominatedGroup {
@@ -157,6 +204,11 @@ export interface ReportWomenDominatedGroup {
   reasons: PayGapReason[]
   note: string | null
   done: boolean
+  // The group's OWN status, which its comparisons cannot carry: a measure
+  // for a women-dominated group may be anchored on the group or on one of
+  // its members rather than on a single comparison.
+  status: AnalysisStatus
+  actions: ReportLinkedAction[]
   comparisons: ReportComparisonRow[]
 }
 
@@ -173,18 +225,24 @@ export interface ReportGenderPureRow {
 
 export interface ReportActionRow {
   id: string
-  kind: "group" | "person" | "comparison"
+  number: number
+  kind: "group" | "person" | "comparison" | "praxis"
   // Which statutory comparison the measure belongs to: the action table
   // groups by it (a comparison target always belongs to the women-dominated
   // chapter).
-  scope: "equalWork" | "equivalentWork"
+  scope: "equalWork" | "equivalentWork" | "praxis"
   label: string
   problem: string
   plannedAction: string
   reason: PayGapReason | null
   ownerName: string
   plannedDate: string
+  // The raw instant behind plannedDate, for the signing plan's date range.
+  plannedDateMs: number
   cost: string | null
+  // The raw cost and its unit behind `cost`, for per-area roll-ups.
+  costAmount: number | null
+  costUnit: CostUnit | null
   priority: ActionPriority
   status: ActionStatus
   // ADR-0027: erasure-tombstoned row; the template renders the tombstone
@@ -208,6 +266,8 @@ export interface ReportPraxisRow {
   finding: "none" | "found" | null
   note: string | null
   done: boolean
+  // The first non-erased action anchored to the area, or null.
+  action: { number: number; plannedAction: string; plannedDate: string } | null
 }
 
 export interface ReportPreviousEvaluation {
@@ -217,11 +277,7 @@ export interface ReportPreviousEvaluation {
   note: string | null
   actions: {
     id: string
-    // The target kind rides along even though the statutory table does not
-    // print it: the union variant masks a person- or pair-targeted cost in
-    // THIS table exactly like in the current run's (the amount is that
-    // individual's planned adjustment, whichever year it belongs to).
-    kind: "group" | "person" | "comparison"
+    number: number
     label: string
     plannedAction: string
     status: ActionStatus
@@ -232,67 +288,36 @@ export interface ReportPreviousEvaluation {
   }[]
 }
 
-// One gender's population-level pay distribution (FTE-adjusted total
-// compensation): the five-point spread published pay statistics use.
-export interface ReportSpreadRow {
-  p10: string
-  q1: string
-  median: string
-  q3: string
-  p90: string
-}
-
-// The same five points as raw numbers, for the charts (the tables render
-// the formatted twin above; both derive from ONE computation).
-export interface ReportSpreadNums {
-  p10: number
-  q1: number
-  median: number
-  q3: number
-  p90: number
-}
-
 export interface PayMappingReportDoc {
   status: "draft" | "final"
   runLabel: string
   referenceDate: string
   currency: string | null
-  population: { total: number; women: number; men: number; priced: number }
-  // The org-level MEANS stay unmasked at every boundary (a population mean
-  // over the whole workforce is not a small cell, gap.ts's own rule); the
-  // MEDIANS follow the population-spread floor and null for a gender with
-  // fewer than EXPORT_MIN_GROUP_SIZE priced rows.
-  org: {
-    gapPct: string | null
-    flag: PayGapFlag
-    womenMean: string | null
-    menMean: string | null
-    womenMedian: string | null
-    menMedian: string | null
-    medianGapPct: string | null
+  population: {
+    total: number
+    women: number
+    men: number
+    priced: number
+    womenPriced: number
+    menPriced: number
   }
-  // The previous completed kartläggning's org-level figure, for the intro's
-  // year-over-year line.
-  orgPrevious: {
-    runLabel: string
+  // The identity block's raw parts, formatted; the templates compose the
+  // labeled lines.
+  identity: {
+    systemVersion: string
+    approvedAt: string | null
     referenceDate: string
-    gapPct: string
-  } | null
-  quartiles: { women: number; men: number }[]
-  // Population-level spread per gender; a gender masks below the whole-group
-  // minimum (its percentiles approach individual salaries).
-  spread: { women: ReportSpreadRow | null; men: ReportSpreadRow | null }
-  // Raw numbers for the charts, mirroring the formatted fields above: the
-  // org means and the spread points. Null exactly when the formatted twin
-  // is null, so a chart can never show what a table masks.
-  chartData: {
-    means: { women: number; men: number } | null
-    spread: {
-      women: ReportSpreadNums | null
-      men: ReportSpreadNums | null
-    }
+    extractedAt: string
   }
-  collaboration: { participants: string; description: string } | null
+  quartiles: { women: number; men: number }[]
+  collaboration: {
+    participants: string
+    description: string
+    date: string | null
+    // The parties' own samverkanssynpunkter, printed in the appendix's
+    // practice chapter; null when none were recorded.
+    remarks: string | null
+  } | null
   // The base review areas only; previousActions renders as the evaluation
   // section below, never as a praxis row.
   praxis: ReportPraxisRow[]
@@ -303,29 +328,16 @@ export interface PayMappingReportDoc {
   // count by design).
   reverseGroups: ReportGroupRow[]
   genderPureGroups: ReportGenderPureRow[]
-  equivalentWorkLevels: ReportGroupRow[]
   womenDominated: ReportWomenDominatedGroup[]
   actions: ReportActionRow[]
-  // The key-figures the summary page tabulates, all derived from the same
-  // aggregates the sections render.
+  // The two org-level share figures the signing projection reads, derived
+  // from the same aggregates the sections render.
   summary: {
     // Women's mean/median pay as a percent of men's (the professional
-    // template convention; 100 = parity). Median follows the spread floor.
+    // template convention; 100 = parity). The signing projection applies the
+    // org-median floor.
     womenShareOfMenMeanPct: string | null
     womenShareOfMenMedianPct: string | null
-    // The variable-pay pair: the share of each gender receiving any pay
-    // component beyond basic salary, and women's amounts as a percent of
-    // men's among receivers, all under the population per-gender floor.
-    variableShareWomenPct: string | null
-    variableShareMenPct: string | null
-    variableWomenShareOfMenMeanPct: string | null
-    variableWomenShareOfMenMedianPct: string | null
-    equalWorkGroups: number
-    equalWorkRequired: number
-    equalWorkDocumented: number
-    womenDominatedGroups: number
-    comparisonCount: number
-    comparisonsDocumented: number
   }
   actionTotals: {
     count: number
@@ -334,6 +346,12 @@ export interface PayMappingReportDoc {
     inProgress: number
     done: number
   }
+  // The cost roll-up per chapter (the signing plan's per-area figure),
+  // through the same costTotalsText as actionTotals.cost.
+  actionCostByScope: Record<
+    "equalWork" | "equivalentWork" | "praxis",
+    string | null
+  >
   notes: ReportNoteRow[]
   previousEvaluation: ReportPreviousEvaluation | null
   // The run's resolved full-time hours per month at freeze time (the method
@@ -341,45 +359,50 @@ export interface PayMappingReportDoc {
   // the template need not thread the run itself through.
   fullTimeHoursDefault: number
   method: {
-    criteria: { name: string; weightPoints: number; sharePct: string }[]
+    criteria: {
+      name: string
+      dimensionKey: string | null
+      weightPoints: number
+      sharePct: string
+      // The frozen documentation the appendix's method chapter prints under
+      // each criterion; null when the frozen model carried none.
+      purpose: string | null
+      whyRelevant: string | null
+      weightMotivation: string | null
+    }[]
+    // Weight share per dimension, in first-appearance order of the
+    // dimensions among the criteria.
+    dimensionShares: { dimensionKey: string; sharePct: string }[]
     pointBudget: number
+    levelRules: { level: number; minScore: number }[]
+    zoneProfileRules: { zone: string; minStep: number }[]
+    workingConditions: {
+      status: "active" | "testedNotMaterial"
+      motivation: string
+    } | null
+    approvedAt: string | null
     maskedGroupCount: number
     singletonCount: number
     genderPureCount: number
     reverseCount: number
-    // Priced rows paid hourly, and among those, the count whose own
-    // hoursPerMonth differs from the run's full-time default (the method
-    // note's "N people with a value of their own" clause).
     hourlyRowCount: number
     ownHoursCount: number
   }
 }
 
-// `signed` is the per-level table's mode: that table lists every level in
-// BOTH directions (the wire builds it unconditionally, unlike equal work,
-// which routes women-ahead groups to their own labelled list), so only a
-// signed figure can say which gender is ahead. Everywhere else the figures
-// stay unsigned: direction is carried by the section and the status word,
-// never by a lone minus sign that its section does not explain.
+// Every figure renders unsigned: direction is carried by the section and the
+// status word, never by a lone minus sign that its section does not explain.
 function metricText(
   metric: GapMetric,
-  masked: boolean,
-  formatters: ReportFormatters,
-  signed = false
+  formatters: ReportFormatters
 ): ReportMetricText {
-  if (masked) {
-    return { womenMean: null, menMean: null, gapPct: null, gapKr: null }
-  }
-  const pct = signed ? formatters.signedPct : formatters.pct
   return {
     womenMean:
       metric.womenMean === null ? null : formatters.money(metric.womenMean),
     menMean: metric.menMean === null ? null : formatters.money(metric.menMean),
-    gapPct: metric.gapPct === null ? null : pct(metric.gapPct),
+    gapPct: metric.gapPct === null ? null : formatters.pct(metric.gapPct),
     gapKr:
-      metric.gapKr === null
-        ? null
-        : formatters.money(signed ? metric.gapKr : Math.abs(metric.gapKr)),
+      metric.gapKr === null ? null : formatters.money(Math.abs(metric.gapKr)),
   }
 }
 
@@ -398,6 +421,37 @@ function analysisFor(
       row.groupKey === groupKey &&
       row.comparisonKey === comparisonKey
   )
+}
+
+// The non-erased actions matching a predicate, mapped to the citation shape
+// a group or comparison prints. Unsorted: callers combining more than one
+// predicate sort once over the merged result.
+function linkedActionsWhere(
+  actions: PayMappingActionWire[],
+  predicate: (action: PayMappingActionWire) => boolean,
+  formatters: ReportFormatters
+): ReportLinkedAction[] {
+  return actions
+    .filter((action) => !action.erased && predicate(action))
+    .map((action) => ({
+      number: action.number,
+      ownerName: action.ownerName,
+      plannedDate: formatters.date(action.plannedDate),
+    }))
+}
+
+// The non-erased actions anchored to exactly one target, as the citation
+// rows a group or comparison prints, ordered by number.
+function linkedActions(
+  actions: PayMappingActionWire[],
+  target: PayMappingActionWire["target"],
+  formatters: ReportFormatters
+): ReportLinkedAction[] {
+  return linkedActionsWhere(
+    actions,
+    (action) => targetMatches(action.target, target),
+    formatters
+  ).sort((a, b) => a.number - b.number)
 }
 
 // A group's priced frozen members. An equal-work-shaped group (a role title)
@@ -427,15 +481,39 @@ export function signedGapPctOf(
   return ((men - women) / men) * 100
 }
 
+// The cost roll-up of a set of action rows, per recurrence unit: a lump sum
+// and a monthly figure cannot share one total, so the text enumerates the
+// units that occur, in COST_UNITS order. Null when no row carries a cost.
+// Reads the rows' raw parts and the formatter that produced their display
+// text, so a roll-up can never print in a different format than its rows.
+export function costTotalsText(
+  rows: readonly Pick<ReportActionRow, "costAmount" | "costUnit">[],
+  formatters: Pick<ReportFormatters, "money" | "costUnitSuffix">
+): string | null {
+  const byUnit: Record<CostUnit, number> = {
+    oneOff: 0,
+    perMonth: 0,
+    perYear: 0,
+  }
+  let any = false
+  for (const row of rows) {
+    if (row.costAmount === null) continue
+    any = true
+    byUnit[row.costUnit ?? "oneOff"] += row.costAmount
+  }
+  if (!any) return null
+  const parts = COST_UNITS.filter((unit) => byUnit[unit] > 0).map(
+    (unit) => formatters.money(byUnit[unit]) + formatters.costUnitSuffix(unit)
+  )
+  return parts.join(", ") || formatters.money(0)
+}
+
 // The per-gender total-comp medians for a group, computed from the frozen
 // rows through the shared engine statistics (never a second median formula).
 function tccMedianText(
   members: PayMappingSnapshotRow[],
-  masked: boolean,
-  formatters: ReportFormatters,
-  signed = false
+  formatters: ReportFormatters
 ): ReportMedianText {
-  if (masked) return { women: null, men: null, gapPct: null }
   const women = genderStats(
     members.filter((row) => row.gender === "Kvinna").map(fteTotalMonthly)
   )
@@ -446,10 +524,7 @@ function tccMedianText(
   return {
     women: women === null ? null : formatters.money(women.median),
     men: men === null ? null : formatters.money(men.median),
-    gapPct:
-      gap === null
-        ? null
-        : (signed ? formatters.signedPct : formatters.pct)(gap),
+    gapPct: gap === null ? null : formatters.pct(gap),
   }
 }
 
@@ -473,42 +548,65 @@ function spreadSpan(
 
 function groupRow(
   group: GapGroup,
-  analysis: GroupAnalysis | undefined,
-  rows: PayMappingSnapshotRow[],
-  previousGapPct: number | null,
-  formatters: ReportFormatters,
-  signed = false
+  input: {
+    analysis: GroupAnalysis | undefined
+    rows: PayMappingSnapshotRow[]
+    previousGapPct: number | null
+    // The scope the group's actions anchor under; null for the women-ahead
+    // list, which takes no actions and carries no documentation duty.
+    scope: "equalWork" | null
+    analyses: GroupAnalysis[]
+    actions: PayMappingActionWire[]
+    formatters: ReportFormatters
+  }
 ): ReportGroupRow {
-  const masked = exportMasksGenderMeans(group)
-  const pct = signed ? formatters.signedPct : formatters.pct
+  const { analysis, rows, previousGapPct, scope, analyses, actions } = input
+  const { formatters } = input
+  const linked =
+    scope === null
+      ? []
+      : linkedActionsWhere(
+          actions,
+          (action) =>
+            targetMatches(action.target, {
+              kind: "group",
+              scope,
+              groupKey: group.key,
+            }) ||
+            (action.target.kind === "person" &&
+              action.target.scope === scope &&
+              action.target.groupKey === group.key),
+          formatters
+        ).sort((a, b) => a.number - b.number)
   return {
     key: group.key,
     label: groupLabel(group),
     level: group.level,
     womenCount: group.womenCount,
     menCount: group.menCount,
-    masked,
-    tcc: metricText(group.tcc, masked, formatters, signed),
-    tccMedian: tccMedianText(
-      memberRows(rows, group),
-      masked,
-      formatters,
-      signed
-    ),
-    base: metricText(group.base, masked, formatters, signed),
+    masked: exportMasksGenderMeans(group),
+    tcc: metricText(group.tcc, formatters),
+    tccMedian: tccMedianText(memberRows(rows, group), formatters),
+    base: metricText(group.base, formatters),
     flag: group.flag,
     baseDriven: group.baseDriven,
     previousGapPct:
-      masked || previousGapPct === null ? null : pct(previousGapPct),
+      previousGapPct === null ? null : formatters.pct(previousGapPct),
     reasons: analysis?.reasons ?? [],
     note: analysis?.note ?? null,
     done: analysis?.done ?? false,
+    status:
+      scope === "equalWork"
+        ? equalWorkGroupStatus(group, analyses, actions)
+        : "noActionNeeded",
+    actions: linked,
   }
 }
 
 function womenDominatedRow(
   group: WomenDominatedGroupWire,
   analyses: GroupAnalysis[],
+  actions: PayMappingActionWire[],
   rows: PayMappingSnapshotRow[],
   formatters: ReportFormatters
 ): ReportWomenDominatedGroup {
@@ -520,15 +618,21 @@ function womenDominatedRow(
     level: group.level,
     headcount: group.headcount,
     womenSharePct: formatters.pct(group.womenSharePct),
-    meanComp: masked ? null : formatters.money(group.meanComp),
-    spread: masked ? null : spreadSpan(memberRows(rows, group), formatters),
+    meanComp: formatters.money(group.meanComp),
+    spread: spreadSpan(memberRows(rows, group), formatters),
     masked,
     reasons: own?.reasons ?? [],
     note: own?.note ?? null,
     done: own?.done ?? false,
+    status: womenDominatedGroupStatus(group, analyses, actions),
+    actions: linkedActions(
+      actions,
+      { kind: "group", scope: "equivalentWork", groupKey: group.key },
+      formatters
+    ),
     comparisons: group.comparisons.map((comparison) => {
-      // The difference reads against the dominated group's own mean, so it
-      // masks when EITHER side's whole-group mean is masked.
+      // The difference reads against the dominated group's own mean, so the
+      // flag is set when EITHER side's whole-group mean is under the floor.
       const comparisonMasked =
         masked || exportMasksWholeGroupMean(comparison.headcount)
       const row = analysisFor(
@@ -543,55 +647,44 @@ function womenDominatedRow(
         level: comparison.level,
         headcount: comparison.headcount,
         womenSharePct: formatters.pct(comparison.womenSharePct),
-        meanComp: comparisonMasked
-          ? null
-          : formatters.money(comparison.meanComp),
-        spread: comparisonMasked
-          ? null
-          : spreadSpan(memberRows(rows, comparison), formatters),
+        meanComp: formatters.money(comparison.meanComp),
+        spread: spreadSpan(memberRows(rows, comparison), formatters),
         diffPct:
-          comparisonMasked || comparison.diffPct === null
+          comparison.diffPct === null
             ? null
             : formatters.pct(comparison.diffPct),
-        diffKr: comparisonMasked ? null : formatters.money(comparison.diffSek),
+        diffKr: formatters.money(comparison.diffSek),
         masked: comparisonMasked,
         reasons: row?.reasons ?? [],
         note: row?.note ?? null,
+        status: comparisonStatus(group, comparison.key, analyses, actions),
+        actions: linkedActions(
+          actions,
+          {
+            kind: "comparison",
+            groupKey: group.key,
+            comparisonKey: comparison.key,
+          },
+          formatters
+        ),
       }
     }),
   }
 }
 
-// One gender's population five-point spread as raw numbers, or null when
-// that gender's priced count sits under the whole-group minimum (its
-// percentiles approach individual salaries).
-function populationSpreadNums(values: number[]): ReportSpreadNums | null {
-  if (values.length < EXPORT_MIN_GROUP_SIZE) return null
-  const p10 = percentileOf(values, 10)
-  const q1 = percentileOf(values, 25)
-  const median = percentileOf(values, 50)
-  const q3 = percentileOf(values, 75)
-  const p90 = percentileOf(values, 90)
-  if (
-    p10 === null ||
-    q1 === null ||
-    median === null ||
-    q3 === null ||
-    p90 === null
-  ) {
-    return null
-  }
-  return { p10, q1, median, q3, p90 }
-}
-
-// The organization-level variable-pay figures, shared by the report's
-// summary page and the key-figures workbook so the two can never disagree:
-// the share of each gender receiving any pay component beyond basic salary
-// (over that gender's priced headcount), and the mean/median amounts among
-// receivers. Raw numbers; a null is masked under the population per-gender
-// floor (shares included: with a tiny gender the share itself attributes a
-// pay component to identifiable individuals).
+// The organization-level variable-pay figures for the key-figures workbook
+// (floorVariablePayStats applies the export floor there): the share of each
+// gender receiving any pay component beyond basic salary (over that gender's
+// priced headcount), and the mean/median amounts among receivers. UNMASKED
+// (ADR-0030): raw numbers, null only when a gender has no priced rows
+// (sharePct) or no receivers among them (mean/median). The priced and
+// receiver counts ride along so a surface that leaves the HR context can
+// apply floorVariablePayStats without recomputing anything.
 export interface OrgVariablePayStats {
+  womenPriced: number
+  menPriced: number
+  womenReceivers: number
+  menReceivers: number
   womenSharePct: number | null
   menSharePct: number | null
   womenMean: number | null
@@ -608,15 +701,17 @@ export function orgVariablePayStats(
   const gender = (value: "Kvinna" | "Man") =>
     pricedRows.filter((row) => row.gender === value)
   const stats = (rows: PayMappingSnapshotRow[]) => {
-    if (rows.length < EXPORT_MIN_GROUP_SIZE) {
-      return { sharePct: null, mean: null, median: null }
-    }
     const receivers = rows.map(variable).filter((value) => value > 0)
+    const counts = { priced: rows.length, receivers: receivers.length }
+    if (rows.length === 0) {
+      return { ...counts, sharePct: null, mean: null, median: null }
+    }
     const sharePct = (receivers.length / rows.length) * 100
-    if (receivers.length < EXPORT_MIN_GROUP_SIZE) {
-      return { sharePct, mean: null, median: null }
+    if (receivers.length === 0) {
+      return { ...counts, sharePct, mean: null, median: null }
     }
     return {
+      ...counts,
       sharePct,
       mean: receivers.reduce((sum, value) => sum + value, 0) / receivers.length,
       median: percentileOf(receivers, 50),
@@ -625,26 +720,16 @@ export function orgVariablePayStats(
   const women = stats(gender("Kvinna"))
   const men = stats(gender("Man"))
   return {
+    womenPriced: women.priced,
+    menPriced: men.priced,
+    womenReceivers: women.receivers,
+    menReceivers: men.receivers,
     womenSharePct: women.sharePct,
     menSharePct: men.sharePct,
     womenMean: women.mean,
     menMean: men.mean,
     womenMedian: women.median,
     menMedian: men.median,
-  }
-}
-
-function spreadText(
-  nums: ReportSpreadNums | null,
-  formatters: ReportFormatters
-): ReportSpreadRow | null {
-  if (nums === null) return null
-  return {
-    p10: formatters.money(nums.p10),
-    q1: formatters.money(nums.q1),
-    median: formatters.money(nums.median),
-    q3: formatters.money(nums.q3),
-    p90: formatters.money(nums.p90),
   }
 }
 
@@ -667,17 +752,23 @@ export function assemblePayMappingReport(input: {
   notes: PayMappingNoteWire[]
   previous: ReportPreviousInput | null
   formatters: ReportFormatters
+  praxisAreaLabel: (area: PraxisAreaKey) => string
 }): PayMappingReportDoc {
-  const { run, gap, analyses, actions, notes, previous, formatters } = input
+  const {
+    run,
+    gap,
+    analyses,
+    actions,
+    notes,
+    previous,
+    formatters,
+    praxisAreaLabel,
+  } = input
 
   const pricedRows = run.rows.filter((row) => row.basicMonthly !== null)
 
   // The previous run's mean total-comp gap per group key, for the
-  // year-over-year figure on rows whose group existed last time. The wire
-  // value is never export-masked, so the export rule is applied HERE on the
-  // PREVIOUS group's own counts: a gap computed from a below-minimum group
-  // must not leak into a later year's document just because the group has
-  // since grown.
+  // year-over-year figure on rows whose group existed last time.
   const previousGapByKey = new Map<string, number | null>()
   if (previous?.gap) {
     for (const group of [
@@ -685,35 +776,36 @@ export function assemblePayMappingReport(input: {
       ...previous.gap.equivalentWork,
       ...previous.gap.excluded.reverse,
     ]) {
-      previousGapByKey.set(
-        group.key,
-        exportMasksGenderMeans(group) ? null : group.tcc.gapPct
-      )
+      previousGapByKey.set(group.key, group.tcc.gapPct)
     }
   }
   const previousGapFor = (key: string): number | null =>
     previousGapByKey.get(key) ?? null
 
   const equalWork = gap.equalWork.map((group) =>
-    groupRow(
-      group,
-      analysisFor(analyses, "equalWork", group.key),
-      pricedRows,
-      previousGapFor(group.key),
-      formatters
-    )
+    groupRow(group, {
+      analysis: analysisFor(analyses, "equalWork", group.key),
+      rows: pricedRows,
+      previousGapPct: previousGapFor(group.key),
+      scope: "equalWork",
+      analyses,
+      actions,
+      formatters,
+    })
   )
   // Women-ahead groups carry no documentation duty (ADR-0015) but are listed
   // with their figures so the written documentation accounts for every
   // analysed group, not only the flagged ones.
   const reverseGroups = gap.excluded.reverse.map((group) =>
-    groupRow(
-      group,
-      undefined,
-      pricedRows,
-      previousGapFor(group.key),
-      formatters
-    )
+    groupRow(group, {
+      analysis: undefined,
+      rows: pricedRows,
+      previousGapPct: previousGapFor(group.key),
+      scope: null,
+      analyses,
+      actions,
+      formatters,
+    })
   )
   const genderPureGroups: ReportGenderPureRow[] = gap.excluded.genderPure.map(
     (group) => ({
@@ -724,38 +816,20 @@ export function assemblePayMappingReport(input: {
       count: group.count,
     })
   )
-  // The per-level likvärdigt table is context (every level, both
-  // directions); it carries no documentation rows of its own, and BECAUSE it
-  // runs in both directions its figures render signed (see metricText).
-  const equivalentWorkLevels = gap.equivalentWork.map((group) =>
-    groupRow(
-      group,
-      undefined,
-      pricedRows,
-      previousGapFor(group.key),
-      formatters,
-      true
-    )
-  )
   const womenDominated = gap.womenDominated.map((group) =>
-    womenDominatedRow(group, analyses, pricedRows, formatters)
+    womenDominatedRow(group, analyses, actions, pricedRows, formatters)
   )
 
-  // The method section states a document-wide masked-group figure, so the
-  // count must cover every list that renders masked values: the equal-work
-  // table, the women-ahead list, the per-level table, the women-dominated
-  // groups, and comparators masked by their own headcount. Distinct group
-  // KEYS, because the same group can render masked in more than one place
-  // (an equal-work group also appears as a comparator); level keys are bare
-  // numbers and cannot collide with "title|level" keys. A comparison masked
-  // only because its dominated side is masked does not add a group: the
-  // dominated group is the one the rule bit.
+  // The method section states a document-wide figure for the groups the
+  // export threshold bites, so the count must cover every list whose rows
+  // carry the flag: the equal-work table, the women-ahead list, the
+  // women-dominated groups, and comparators flagged by their own headcount.
+  // Distinct group KEYS, because the same group can render masked in more
+  // than one place (an equal-work group also appears as a comparator). A
+  // comparison masked only because its dominated side is masked does not add
+  // a group: the dominated group is the one the rule bit.
   const maskedKeys = new Set<string>()
-  for (const group of [
-    ...equalWork,
-    ...reverseGroups,
-    ...equivalentWorkLevels,
-  ]) {
+  for (const group of [...equalWork, ...reverseGroups]) {
     if (group.masked) maskedKeys.add(group.key)
   }
   for (const group of womenDominated) {
@@ -769,63 +843,62 @@ export function assemblePayMappingReport(input: {
   const maskedGroupCount = maskedKeys.size
 
   // Grouped by comparison type for the action table's scope bands (a
-  // comparison target always belongs to the women-dominated chapter);
-  // stable within each band.
+  // comparison target always belongs to the women-dominated chapter, a
+  // praxis target to the practice review); stable within each band.
   const actionScope = (
     target: PayMappingActionWire["target"]
-  ): "equalWork" | "equivalentWork" =>
-    target.kind === "comparison" ? "equivalentWork" : target.scope
+  ): "equalWork" | "equivalentWork" | "praxis" =>
+    target.kind === "comparison"
+      ? "equivalentWork"
+      : target.kind === "praxis"
+        ? "praxis"
+        : target.scope
+  const scopeRank = (scope: "equalWork" | "equivalentWork" | "praxis") =>
+    scope === "equalWork" ? 0 : scope === "equivalentWork" ? 1 : 2
   const actionRows: ReportActionRow[] = [...actions]
     .sort(
       (a, b) =>
-        (actionScope(a.target) === "equivalentWork" ? 1 : 0) -
-        (actionScope(b.target) === "equivalentWork" ? 1 : 0)
+        scopeRank(actionScope(a.target)) - scopeRank(actionScope(b.target))
     )
     .map((action) => ({
       id: action.actionId,
+      number: action.number,
       kind: action.target.kind,
       scope: actionScope(action.target),
-      label: targetGroupLabel(action.target),
+      label: targetGroupLabel(action.target, praxisAreaLabel),
       problem: action.problem,
       plannedAction: action.plannedAction,
       reason: action.reason,
       ownerName: action.ownerName,
       plannedDate: formatters.date(action.plannedDate),
+      plannedDateMs: action.plannedDate,
       cost:
         action.estimatedCost === null
           ? null
           : formatters.money(action.estimatedCost) +
             formatters.costUnitSuffix(action.estimatedCostUnit),
+      costAmount: action.estimatedCost,
+      costUnit: action.estimatedCostUnit,
       priority: action.priority,
       status: action.status,
       erased: action.erased,
     }))
-  // Costs sum per recurrence unit: a lump sum and a monthly figure cannot
-  // share one total, so the totals line enumerates the units that occur.
-  const costByUnit = { oneOff: 0, perMonth: 0, perYear: 0 }
-  for (const action of actions) {
-    if (action.estimatedCost !== null)
-      costByUnit[action.estimatedCostUnit ?? "oneOff"] += action.estimatedCost
-  }
-  const costParts = (Object.keys(costByUnit) as CostUnit[])
-    .filter((unit) => costByUnit[unit] > 0)
-    .map(
-      (unit) =>
-        formatters.money(costByUnit[unit]) + formatters.costUnitSuffix(unit)
-    )
   const actionTotals = {
     count: actions.length,
-    cost: actions.some((action) => action.estimatedCost !== null)
-      ? costParts.join(", ") || formatters.money(0)
-      : null,
+    cost: costTotalsText(actionRows, formatters),
     notStarted: actions.filter((a) => a.status === "notStarted").length,
     inProgress: actions.filter((a) => a.status === "inProgress").length,
     done: actions.filter((a) => a.status === "done").length,
   }
+  const costForScope = (scope: ReportActionRow["scope"]) =>
+    costTotalsText(
+      actionRows.filter((action) => action.scope === scope),
+      formatters
+    )
 
   const noteRows: ReportNoteRow[] = notes.map((note) => ({
     id: note.noteId,
-    label: targetGroupLabel(note.target),
+    label: targetGroupLabel(note.target, praxisAreaLabel),
     noteType: note.noteType,
     text: note.text,
     authorName: note.createdByName,
@@ -835,11 +908,27 @@ export function assemblePayMappingReport(input: {
 
   const praxis: ReportPraxisRow[] = BASE_PRAXIS_AREA_KEYS.map((key) => {
     const row = analysisFor(analyses, "praxis", key)
+    const action = [...actions]
+      .filter(
+        (candidate) =>
+          !candidate.erased &&
+          candidate.target.kind === "praxis" &&
+          candidate.target.area === key
+      )
+      .sort((a, b) => a.number - b.number)[0]
     return {
       key,
       finding: row?.finding ?? null,
       note: row?.note ?? null,
       done: row?.done ?? false,
+      action:
+        action === undefined
+          ? null
+          : {
+              number: action.number,
+              plannedAction: action.plannedAction,
+              plannedDate: formatters.date(action.plannedDate),
+            },
     }
   })
 
@@ -854,8 +943,8 @@ export function assemblePayMappingReport(input: {
           note: previousRow?.note ?? null,
           actions: previous.actions.map((action) => ({
             id: action.actionId,
-            kind: action.target.kind,
-            label: targetGroupLabel(action.target),
+            number: action.number,
+            label: targetGroupLabel(action.target, praxisAreaLabel),
             plannedAction: action.plannedAction,
             status: action.status,
             plannedDate: formatters.date(action.plannedDate),
@@ -868,7 +957,7 @@ export function assemblePayMappingReport(input: {
           })),
         }
 
-  const totalWeight = run.frozenCriteria.reduce(
+  const totalWeight = run.frozenMethod.criteria.reduce(
     (sum, criterion) => sum + criterion.weightPoints,
     0
   )
@@ -892,28 +981,11 @@ export function assemblePayMappingReport(input: {
   const orgMenValues = pricedRows
     .filter((row) => row.gender === "Man")
     .map(fteTotalMonthly)
-  const womenSpreadNums = populationSpreadNums(orgWomenValues)
-  const menSpreadNums = populationSpreadNums(orgMenValues)
-  // The org medians derive from the SAME masked spread points the intro's
-  // spread table shows, so the median can never print unmasked in the prose
-  // line while the table beside it dashes it. The org MEANS stay unmasked
-  // (documented population-level policy); the medians follow the spread
-  // floor because a small gender's median is closer to an individual salary.
-  const orgWomenMedian = womenSpreadNums?.median ?? null
-  const orgMenMedian = menSpreadNums?.median ?? null
-  const orgMedianGap = signedGapPctOf(orgWomenMedian, orgMenMedian)
-  const variablePay = orgVariablePayStats(pricedRows)
-
-  const orgPrevious =
-    previous !== null &&
-    previous.gap !== null &&
-    previous.gap.org.gapPct !== null
-      ? {
-          runLabel: previous.runLabel,
-          referenceDate: formatters.date(previous.referenceDate),
-          gapPct: formatters.pct(previous.gap.org.gapPct),
-        }
-      : null
+  // Org-level medians over the priced population's total compensation,
+  // unmasked like everything else here; the signing projection applies the
+  // per-gender floor. They feed the summary's two share figures only.
+  const orgWomenMedian = percentileOf(orgWomenValues, 50)
+  const orgMenMedian = percentileOf(orgMenValues, 50)
 
   const shareOfMenPct = (
     women: number | null,
@@ -922,7 +994,25 @@ export function assemblePayMappingReport(input: {
     women === null || men === null || men === 0
       ? null
       : formatters.pct((women / men) * 100)
-  const comparisonRows = womenDominated.flatMap((group) => group.comparisons)
+
+  const sharePct = (points: number): string =>
+    totalWeight === 0
+      ? formatters.pct(0)
+      : formatters.pct((points / totalWeight) * 100)
+  const dimensionOrder: string[] = []
+  const pointsByDimension = new Map<string, number>()
+  for (const criterion of run.frozenMethod.criteria) {
+    if (criterion.dimensionKey === null) continue
+    if (!pointsByDimension.has(criterion.dimensionKey)) {
+      dimensionOrder.push(criterion.dimensionKey)
+      pointsByDimension.set(criterion.dimensionKey, 0)
+    }
+    pointsByDimension.set(
+      criterion.dimensionKey,
+      (pointsByDimension.get(criterion.dimensionKey) ?? 0) +
+        criterion.weightPoints
+    )
+  }
 
   return {
     status: run.status === "completed" ? "final" : "draft",
@@ -934,42 +1024,37 @@ export function assemblePayMappingReport(input: {
       women: gap.population.women,
       men: gap.population.men,
       priced: pricedRows.length,
+      womenPriced: orgWomenValues.length,
+      menPriced: orgMenValues.length,
     },
-    org: {
-      gapPct: gap.org.gapPct === null ? null : formatters.pct(gap.org.gapPct),
-      flag: gap.org.flag,
-      womenMean:
-        gap.org.womenMeanComp === null
+    identity: {
+      systemVersion: run.systemVersion,
+      approvedAt:
+        run.frozenMethod.approvedAt === null
           ? null
-          : formatters.money(gap.org.womenMeanComp),
-      menMean:
-        gap.org.menMeanComp === null
-          ? null
-          : formatters.money(gap.org.menMeanComp),
-      womenMedian:
-        orgWomenMedian === null ? null : formatters.money(orgWomenMedian),
-      menMedian: orgMenMedian === null ? null : formatters.money(orgMenMedian),
-      medianGapPct: orgMedianGap === null ? null : formatters.pct(orgMedianGap),
+          : formatters.date(run.frozenMethod.approvedAt),
+      referenceDate: formatters.date(run.referenceDate),
+      extractedAt: formatters.dateTime(run.referenceDate),
     },
-    orgPrevious,
     quartiles: gap.quartiles,
-    spread: {
-      women: spreadText(womenSpreadNums, formatters),
-      men: spreadText(menSpreadNums, formatters),
-    },
-    chartData: {
-      means:
-        gap.org.womenMeanComp !== null && gap.org.menMeanComp !== null
-          ? { women: gap.org.womenMeanComp, men: gap.org.menMeanComp }
-          : null,
-      spread: { women: womenSpreadNums, men: menSpreadNums },
-    },
-    collaboration: run.collaboration,
+    // Projected explicitly, formatting the samverkan date (null when the
+    // run has none).
+    collaboration:
+      run.collaboration === null
+        ? null
+        : {
+            participants: run.collaboration.participants,
+            description: run.collaboration.description,
+            date:
+              run.collaboration.date === null
+                ? null
+                : formatters.date(run.collaboration.date),
+            remarks: run.collaboration.remarks?.trim() || null,
+          },
     praxis,
     equalWork,
     reverseGroups,
     genderPureGroups,
-    equivalentWorkLevels,
     womenDominated,
     actions: actionRows,
     summary: {
@@ -978,47 +1063,38 @@ export function assemblePayMappingReport(input: {
         gap.org.menMeanComp
       ),
       womenShareOfMenMedianPct: shareOfMenPct(orgWomenMedian, orgMenMedian),
-      variableShareWomenPct:
-        variablePay.womenSharePct === null
-          ? null
-          : formatters.pct(variablePay.womenSharePct),
-      variableShareMenPct:
-        variablePay.menSharePct === null
-          ? null
-          : formatters.pct(variablePay.menSharePct),
-      variableWomenShareOfMenMeanPct: shareOfMenPct(
-        variablePay.womenMean,
-        variablePay.menMean
-      ),
-      variableWomenShareOfMenMedianPct: shareOfMenPct(
-        variablePay.womenMedian,
-        variablePay.menMedian
-      ),
-      equalWorkGroups: equalWork.length,
-      equalWorkRequired: equalWork.filter(
-        (row) => row.flag === "critical" || row.flag === "elevated"
-      ).length,
-      equalWorkDocumented: equalWork.filter((row) => row.done).length,
-      womenDominatedGroups: womenDominated.length,
-      comparisonCount: comparisonRows.length,
-      comparisonsDocumented: comparisonRows.filter(
-        (row) => row.reasons.length > 0 || row.note !== null
-      ).length,
     },
     actionTotals,
+    actionCostByScope: {
+      equalWork: costForScope("equalWork"),
+      equivalentWork: costForScope("equivalentWork"),
+      praxis: costForScope("praxis"),
+    },
     notes: noteRows,
     previousEvaluation,
     fullTimeHoursDefault: run.fullTimeHoursDefault,
     method: {
-      criteria: run.frozenCriteria.map((criterion) => ({
+      criteria: run.frozenMethod.criteria.map((criterion) => ({
         name: criterion.name,
+        dimensionKey: criterion.dimensionKey,
         weightPoints: criterion.weightPoints,
-        sharePct:
-          totalWeight === 0
-            ? formatters.pct(0)
-            : formatters.pct((criterion.weightPoints / totalWeight) * 100),
+        sharePct: sharePct(criterion.weightPoints),
+        purpose: criterion.purpose,
+        whyRelevant: criterion.whyRelevant,
+        weightMotivation: criterion.weightMotivation,
+      })),
+      dimensionShares: dimensionOrder.map((dimensionKey) => ({
+        dimensionKey,
+        sharePct: sharePct(pointsByDimension.get(dimensionKey) ?? 0),
       })),
       pointBudget: totalWeight,
+      levelRules: run.frozenMethod.levelRules,
+      zoneProfileRules: run.frozenMethod.zoneProfileRules,
+      workingConditions: run.frozenMethod.workingConditions,
+      approvedAt:
+        run.frozenMethod.approvedAt === null
+          ? null
+          : formatters.date(run.frozenMethod.approvedAt),
       maskedGroupCount,
       singletonCount: gap.excluded.singletonCount,
       genderPureCount: gap.excluded.genderPure.length,
@@ -1026,36 +1102,6 @@ export function assemblePayMappingReport(input: {
       hourlyRowCount: hourlyRows.length,
       ownHoursCount,
     },
-  }
-}
-
-// The union variant of the assembled document (facklig rapport, DL 3 kap.
-// 11-12 §§; kravbild docs/lonekartlaggning-facklig-rapport-kravbild.md §5):
-// the same statutory content at group level, with the individual-adjacent
-// details taken out at the data layer. A person- or pair-targeted action's
-// cost is in practice that individual's planned adjustment, so it masks per
-// row while the cost roll-up (actionTotals, already computed) keeps it; the
-// SAME rule covers the previous year's evaluation table, whose rows carry
-// their target kind for exactly this. Internal working notes leave the
-// document entirely; the template also skips the notes subsection, and
-// emptying the rows here keeps the doc honest for any consumer that reads
-// data rather than layout. The owner column is a layout concern (the
-// template's union flag drops it).
-export function unionReportDoc(doc: PayMappingReportDoc): PayMappingReportDoc {
-  const maskCost = <T extends { kind: string; cost: string | null }>(
-    action: T
-  ): T => (action.kind === "group" ? action : { ...action, cost: null })
-  return {
-    ...doc,
-    actions: doc.actions.map(maskCost),
-    previousEvaluation:
-      doc.previousEvaluation === null
-        ? null
-        : {
-            ...doc.previousEvaluation,
-            actions: doc.previousEvaluation.actions.map(maskCost),
-          },
-    notes: [],
   }
 }
 
@@ -1075,38 +1121,4 @@ export function hourlyNoteLabel(
     hours: doc.fullTimeHoursDefault,
     count: doc.method.ownHoursCount,
   })
-}
-
-// The continuation-header derivation for the multi-pass render: given where
-// every table row landed (captured by the template's onRowPage), the rows
-// that START a new page within their table get their table's header
-// re-rendered above them. Pure over (doc, rowPages) so the download loop
-// can iterate to a fixed point and tests can pin the derivation.
-export function computeHeaderBreaks(
-  doc: PayMappingReportDoc,
-  rowPages: Record<string, number>
-): Set<string> {
-  const breaks = new Set<string>()
-  const tables: string[][] = [
-    doc.equalWork.map((row) => `equalWork:${row.key}`),
-    doc.reverseGroups.map((row) => `reverse:${row.key}`),
-    doc.equivalentWorkLevels.map((row) => `levels:${row.key}`),
-    ...doc.womenDominated.map((group) =>
-      group.comparisons.map((comparison) => `wd:${group.key}:${comparison.key}`)
-    ),
-    doc.actions.map((action) => `actions:${action.id}`),
-    doc.previousEvaluation?.actions.map(
-      (action) => `prevActions:${action.id}`
-    ) ?? [],
-  ]
-  for (const ids of tables) {
-    let previousPage: number | undefined
-    for (const id of ids) {
-      const page = rowPages[id]
-      if (page === undefined) continue
-      if (previousPage !== undefined && page > previousPage) breaks.add(id)
-      previousPage = page
-    }
-  }
-  return breaks
 }

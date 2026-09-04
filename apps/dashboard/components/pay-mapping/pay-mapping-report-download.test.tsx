@@ -1,5 +1,3 @@
-import { readFileSync } from "node:fs"
-import { join } from "node:path"
 import {
   cleanup,
   fireEvent,
@@ -10,12 +8,12 @@ import {
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
-import type { PayMappingGapResult } from "./pay-mapping-gap-types"
 import { makeGapResult, makeRunDetail } from "@/test/pay-mapping-fixtures"
+import type { ReportWomenDominatedGroup } from "./pay-mapping-report-data"
 
 const toBlob = vi.fn(async () => new Blob(["x"], { type: "application/pdf" }))
-// The last element handed to pdf(): the capture test reads the chartImages
-// prop off it to assert the rasterized charts reached the template.
+// The last element handed to pdf(): the assertions read the labels and the
+// doc off it to tell WHICH document was rendered.
 let lastPdfElement: unknown
 vi.mock("@react-pdf/renderer", () => ({
   pdf: (element: unknown) => {
@@ -29,54 +27,34 @@ vi.mock("@react-pdf/renderer", () => ({
   View: ({ children }: { children: unknown }) => children,
   Text: ({ children }: { children: unknown }) => children,
   Image: () => null,
-}))
-
-// jsdom has no canvas, so the component's rasterization branch would never
-// run in this suite; the flag lets the capture test force it while the
-// other tests keep the skip path. The capture itself is stubbed (its real
-// pipeline is unit-tested in lib/chart-capture.test.ts): this exercises the
-// orchestration around it (host mount, per-slot selection, teardown,
-// plumbing into the template).
-let rasterize = false
-// vi.hoisted: the factory below evaluates this binding while the component
-// module imports, which is before this file's own consts initialize.
-const { captureSvgToPng } = vi.hoisted(() => ({
-  captureSvgToPng: vi.fn(async () => ({
-    src: "data:image/png;base64,x",
-    width: 640,
-    height: 160,
-  })),
-}))
-vi.mock("@/lib/chart-capture", () => ({
-  canRasterizeCharts: () => rasterize,
-  captureSvgToPng,
-  unthrottledDelay: () => Promise.resolve(),
-}))
-
-// The capture host's chart components, stubbed to the marker the selector
-// looks for (recharts' own svg class) without pulling recharts into jsdom.
-vi.mock("./pay-mapping-overview", () => ({
-  WholeSurveyStat: () => (
-    <svg aria-hidden="true" className="recharts-surface" />
-  ),
-  QuartileStat: () => <svg aria-hidden="true" className="recharts-surface" />,
+  Svg: ({ children }: { children: unknown }) => children,
+  G: ({ children }: { children: unknown }) => children,
+  Rect: () => null,
+  Line: () => null,
+  Path: () => null,
+  Defs: ({ children }: { children: unknown }) => children,
+  Pattern: ({ children }: { children: unknown }) => children,
 }))
 
 // One mock per boundary mutation, resolved by the string refs below: the
-// union test must be able to assert WHICH event the export logged.
-const logExport = vi.fn(async () => null)
-const logUnionExport = vi.fn(async () => null)
+// tests must be able to assert WHICH event the export logged.
+const logSigning = vi.fn(async () => null)
+const logDetail = vi.fn(async () => null)
 const logMetricsExport = vi.fn(async () => null)
 const logArchiveExport = vi.fn(async () => null)
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
+  // The export hook reaches the criteria library through lib/audit-constants,
+  // whose backend closure builds the audit aggregates off `components`: the
+  // mock has to carry the export even though nothing here reads it.
+  components: {},
   api: {
     payMapping: {
       runs: { listPayMappingRuns: "runs.list" },
       actions: { listActions: "actions.list" },
       gap: { getPayMappingGap: "gap.get" },
       report: {
-        logPayMappingReportExport: "report.log",
-        logPayMappingUnionReportExport: "report.logUnion",
+        logPayMappingSigningReportExport: "report.logSigning",
+        logPayMappingDetailAppendixExport: "report.logDetail",
         logPayMappingMetricsExport: "report.logMetrics",
         logPayMappingArchiveExport: "report.logArchive",
       },
@@ -84,35 +62,34 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
   },
 }))
 vi.mock("convex/react", () => ({
-  // listPayMappingRuns resolves to an empty org history (no previous run);
-  // the previous-actions query is then skipped and must answer undefined.
   useQuery: (_query: unknown, args: unknown) =>
     args === "skip" ? undefined : [],
   useMutation: (ref: unknown) =>
-    ref === "report.logUnion"
-      ? logUnionExport
+    ref === "report.logDetail"
+      ? logDetail
       : ref === "report.logMetrics"
         ? logMetricsExport
         : ref === "report.logArchive"
           ? logArchiveExport
-          : logExport,
+          : logSigning,
 }))
 
 vi.mock("@/components/org-context", () => ({
-  useOrganization: () => ({ orgId: "org1" }),
+  useOrganization: () => ({ orgId: "org1", name: "Acme AB", role: "admin" }),
 }))
 
-// Mutable per test: the capture test needs quartile tallies so the host
-// mounts its quartile slot.
-let gapOverrides: Partial<PayMappingGapResult> = {}
 vi.mock("./pay-mapping-run-context", () => ({
   usePayMappingRun: () => ({
     run: makeRunDetail({
       status: "completed",
-      collaboration: { participants: "Union rep", description: "Monthly" },
-      frozenCriteria: [{ name: "Knowledge", weightPoints: 3 }],
+      collaboration: {
+        participants: "Union rep",
+        description: "Monthly",
+        date: null,
+        remarks: null,
+      },
     }),
-    gap: makeGapResult(gapOverrides),
+    gap: makeGapResult({}),
     analyses: [],
     actions: [],
     notes: [],
@@ -123,7 +100,6 @@ vi.mock("./pay-mapping-run-context", () => ({
 }))
 
 import { PayMappingReportDownload } from "./pay-mapping-report-download"
-import { CAPTURE_LIGHT_TOKENS } from "./pay-mapping-report-export"
 
 function renderDownload() {
   return render(
@@ -133,145 +109,111 @@ function renderDownload() {
   )
 }
 
+type RenderedProps = {
+  props?: {
+    labels?: {
+      identity?: { docTitle?: string }
+      classification?: string
+      wdGroupLine?: (group: ReportWomenDominatedGroup) => string
+    }
+    doc?: { equalWork?: unknown[]; checklist?: unknown }
+  }
+}
+
 describe("PayMappingReportDownload", () => {
   afterEach(() => {
     cleanup()
     toBlob.mockClear()
-    logExport.mockClear()
-    logUnionExport.mockClear()
+    logSigning.mockClear()
+    logDetail.mockClear()
     logMetricsExport.mockClear()
     logArchiveExport.mockClear()
-    captureSvgToPng.mockClear()
-    rasterize = false
-    gapOverrides = {}
     lastPdfElement = undefined
   })
 
-  it("renders the report as two-pass PDF, logs the export, then downloads", async () => {
+  it("renders the signing report, logs its own export event, then downloads", async () => {
     const createObjectURL = vi.fn(() => "blob:x")
     globalThis.URL.createObjectURL = createObjectURL
     globalThis.URL.revokeObjectURL = vi.fn()
     renderDownload()
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.payMapping.report.downloadReport,
+        name: messages.dashboard.payMapping.report.downloadSigning,
       })
     )
     await waitFor(() => expect(createObjectURL).toHaveBeenCalled())
-    // Two passes: page-ref capture, then the final document.
-    expect(toBlob).toHaveBeenCalledTimes(2)
-    expect(logExport).toHaveBeenCalledWith({ orgId: "org1", runId: "run-1" })
+    expect(logSigning).toHaveBeenCalledWith({ orgId: "org1", runId: "run-1" })
+    expect(logDetail).not.toHaveBeenCalled()
     // The export-boundary audit row is written BEFORE the file is handed
     // over (ADR-0011 p.3): a download the trail missed must not happen.
-    const logOrder = logExport.mock.invocationCallOrder[0] ?? 0
+    const logOrder = logSigning.mock.invocationCallOrder[0] ?? 0
     const downloadOrder = createObjectURL.mock.invocationCallOrder[0] ?? 0
     expect(logOrder).toBeLessThan(downloadOrder)
+    const element = lastPdfElement as RenderedProps
+    expect(element?.props?.labels?.identity?.docTitle).toBe(
+      messages.dashboard.payMapping.signingReport.docTitle
+    )
+    expect(element?.props?.doc?.checklist).toBeDefined()
+    // The signing projection reduces equal work to counts: a per-group list
+    // cannot reach this document.
+    expect(element?.props?.doc?.equalWork).not.toBeInstanceOf(Array)
   })
 
-  it("exports the union variant with its own boundary event, doc transform and cover", async () => {
+  it("renders the detail appendix as a multi-pass PDF with its own event and the classification line", async () => {
     const createObjectURL = vi.fn(() => "blob:x")
     globalThis.URL.createObjectURL = createObjectURL
     globalThis.URL.revokeObjectURL = vi.fn()
     renderDownload()
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.payMapping.report.downloadUnion,
+        name: messages.dashboard.payMapping.report.downloadDetail,
       })
     )
     await waitFor(() => expect(createObjectURL).toHaveBeenCalled())
-    // The union export writes the UNION boundary event, never the
-    // statutory one: the trail must say which document left.
-    expect(logUnionExport).toHaveBeenCalledWith({
-      orgId: "org1",
-      runId: "run-1",
-    })
-    expect(logExport).not.toHaveBeenCalled()
-    // The template renders the union variant of the transformed doc: the
-    // internal notes are gone at the data level and the cover carries the
-    // union identity and purpose.
-    const element = lastPdfElement as {
-      props?: {
-        variant?: string
-        doc?: { notes: unknown[] }
-        labels?: { docTitle?: string; coverPurpose?: string }
-      }
-    }
-    expect(element?.props?.variant).toBe("union")
-    expect(element?.props?.doc?.notes).toEqual([])
-    expect(element?.props?.labels?.docTitle).toBe(
-      messages.dashboard.payMapping.report.unionTitle
+    expect(logDetail).toHaveBeenCalledWith({ orgId: "org1", runId: "run-1" })
+    expect(logSigning).not.toHaveBeenCalled()
+    // At least the page-ref pass and the final render.
+    expect(toBlob.mock.calls.length).toBeGreaterThanOrEqual(2)
+    const element = lastPdfElement as RenderedProps
+    expect(element?.props?.labels?.identity?.docTitle).toBe(
+      messages.dashboard.payMapping.detailAppendix.docTitle
     )
-    expect(element?.props?.labels?.coverPurpose).toContain("21, 22 and 56")
-  })
-
-  it("rasterizes the app charts off-screen and hands them to the template", async () => {
-    rasterize = true
-    gapOverrides = {
-      quartiles: [
-        { women: 2, men: 1 },
-        { women: 1, men: 2 },
-        { women: 1, men: 1 },
-        { women: 0, men: 2 },
-      ],
-    }
-    const createObjectURL = vi.fn(() => "blob:x")
-    globalThis.URL.createObjectURL = createObjectURL
-    globalThis.URL.revokeObjectURL = vi.fn()
-    renderDownload()
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: messages.dashboard.payMapping.report.downloadReport,
-      })
+    expect(element?.props?.labels?.classification).toBe(
+      messages.dashboard.payMapping.detailAppendix.classification
     )
-    // The settle wait is real time, so this export takes over half a second.
-    await waitFor(() => expect(createObjectURL).toHaveBeenCalled(), {
-      timeout: 5000,
+    expect(Array.isArray(element?.props?.doc?.equalWork)).toBe(true)
+    // The women-dominated block's own line carries the group's P10-P90
+    // spread, not only the comparison rows'.
+    const line = element?.props?.labels?.wdGroupLine?.({
+      key: "Nurse|2",
+      label: "Nurse",
+      level: 2,
+      headcount: 5,
+      womenSharePct: "80%",
+      meanComp: "40 000 kr",
+      spread: "38 000-44 000 kr",
+      masked: false,
+      status: "furtherAnalysis",
+      reasons: [],
+      note: null,
+      done: false,
+      actions: [],
+      comparisons: [],
     })
-    // One capture per mounted slot (population and quartiles).
-    expect(captureSvgToPng).toHaveBeenCalledTimes(2)
-    const element = lastPdfElement as {
-      props?: { chartImages?: Record<string, unknown> }
-    }
-    expect(element?.props?.chartImages).toEqual({
-      population: { src: "data:image/png;base64,x", width: 640, height: 160 },
-      quartiles: { src: "data:image/png;base64,x", width: 640, height: 160 },
-    })
-    // The off-screen host is gone again after the export.
-    expect(document.querySelector("[data-chart]")).toBeNull()
-  })
-
-  it("pins the capture host's neutral tokens to the light theme's values", () => {
-    // The host's oklch literals are copies of globals.css's :root values; a
-    // neutral-scale retune must reach both, so this reads the stylesheet
-    // the same way gender-mark.test.tsx guards the gender tokens.
-    const css = readFileSync(
-      join(process.cwd(), "../../packages/ui/src/styles/globals.css"),
-      "utf8"
-    )
-    // Anchored to line starts: ".dark" also occurs earlier in the file
-    // (the Tailwind custom-variant line), which would end the slice before
-    // it begins.
-    const root = css.slice(css.indexOf("\n:root"), css.indexOf("\n.dark"))
-    for (const [token, value] of Object.entries(CAPTURE_LIGHT_TOKENS)) {
-      if (typeof value !== "string" || !value.startsWith("oklch")) continue
-      expect(root, `${token} drifted from globals.css`).toContain(
-        `${token}: ${value};`
-      )
-    }
+    expect(line).toContain("spread 38 000-44 000 kr")
   })
 
   it("aborts the download when the export log fails", async () => {
-    logExport.mockRejectedValueOnce(new Error("offline"))
+    logSigning.mockRejectedValueOnce(new Error("offline"))
     const createObjectURL = vi.fn(() => "blob:x")
     globalThis.URL.createObjectURL = createObjectURL
     renderDownload()
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.payMapping.report.downloadReport,
+        name: messages.dashboard.payMapping.report.downloadSigning,
       })
     )
-    await waitFor(() => expect(logExport).toHaveBeenCalled())
-    await waitFor(() => expect(toBlob).toHaveBeenCalledTimes(2))
+    await waitFor(() => expect(logSigning).toHaveBeenCalled())
     expect(createObjectURL).not.toHaveBeenCalled()
   })
 })

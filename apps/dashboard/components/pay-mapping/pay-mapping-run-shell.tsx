@@ -123,7 +123,12 @@ export function PayMappingRunShell({
         <PageBreadcrumbRow
           segments={[
             { label: tNav("payMapping"), href: "/pay-mappings" },
-            run === undefined ? { skeleton: true } : { label: run.label },
+            // The run's own crumb links at its overview: every crumb before
+            // the last one is a way back, and from a chapter page the
+            // overview is two clicks away otherwise.
+            run === undefined
+              ? { skeleton: true }
+              : { label: run.label, href: `/pay-mappings/${slug}` },
             // On a chapter page the trail ends at the chapter (the sidebar's
             // rows are the nav, so the trail titles what is open), with the
             // Analys crumb linking straight at the first chapter rather than

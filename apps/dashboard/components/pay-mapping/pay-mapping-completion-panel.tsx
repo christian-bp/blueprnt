@@ -16,6 +16,7 @@ import { useMutation } from "convex/react"
 import { ConvexError } from "convex/values"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { FrameCard, FrameCardSection } from "@/components/frame-card"
 import { useOrganization } from "@/components/org-context"
 import { toast } from "@/lib/toast"
 import type { PayMappingRunDetail } from "./pay-mapping-gap-types"
@@ -52,9 +53,14 @@ export function isGateUnmetError(error: unknown): boolean {
 export function PayMappingCompletionPanel({
   queue,
   run,
+  lead,
 }: {
   queue: ReviewQueue
   run: PayMappingRunDetail
+  // A sentence the surface needs stated before the gate itself, passed only
+  // where there is no row to speak for it (an equivalent-work chapter with
+  // nothing to answer).
+  lead?: string
 }) {
   const t = useTranslations("dashboard.payMapping.review")
   const tDoc = useTranslations("dashboard.payMapping.documentation")
@@ -105,29 +111,61 @@ export function PayMappingCompletionPanel({
   }
 
   return (
-    <div className="space-y-4">
-      <p className="text-muted-foreground text-sm">{t("finishActionsNote")}</p>
-      {completed ? (
-        <div className="space-y-2">
-          <p className="text-muted-foreground text-sm">
-            {tDoc("completedNote")}
-          </p>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setReopenOpen(true)}
-          >
-            {tDoc("reopen")}
-          </Button>
-        </div>
-      ) : (
-        <ReviewStepActions
-          primaryLabel={tDoc("complete")}
-          onPrimary={handleComplete}
-          primaryDisabled={!gateMet || completing}
-          hint={gateMet ? undefined : tDoc("remaining", { count: remaining })}
-        />
-      )}
+    // The same frame every step in the journey draws, so finishing reads as
+    // the last station of the ladder rather than as a different kind of
+    // surface: the note in the header, the completion action in the foot
+    // where every other step keeps its primary, and a panel only where the
+    // completed state actually has something to put in one.
+    <>
+      <FrameCard
+        // No title: the completion action names itself, and a heading over a
+        // single line would title the same thing twice. The note says what
+        // completing does NOT cover, stated once before the button runs it.
+        description={
+          lead === undefined ? (
+            t("finishActionsNote")
+          ) : (
+            <>
+              <p>{lead}</p>
+              <p>{t("finishActionsNote")}</p>
+            </>
+          )
+        }
+        {...(completed
+          ? {}
+          : {
+              footer: (
+                <ReviewStepActions
+                  primaryLabel={tDoc("complete")}
+                  onPrimary={handleComplete}
+                  primaryDisabled={!gateMet || completing}
+                  hint={
+                    gateMet
+                      ? undefined
+                      : tDoc("remaining", { count: remaining })
+                  }
+                />
+              ),
+            })}
+      >
+        {completed && (
+          // The completed state has something to hold: what the lock means
+          // and the way out of it. The open state is one line and an action,
+          // which is a header and a foot, not a panel of its own.
+          <FrameCardSection>
+            <p className="text-muted-foreground text-sm">
+              {tDoc("completedNote")}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setReopenOpen(true)}
+            >
+              {tDoc("reopen")}
+            </Button>
+          </FrameCardSection>
+        )}
+      </FrameCard>
       <AlertDialog open={reopenOpen} onOpenChange={setReopenOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -144,6 +182,6 @@ export function PayMappingCompletionPanel({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   )
 }

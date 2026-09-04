@@ -22,6 +22,7 @@ describe("payMapping schema + slug", () => {
         orgGapPct: null,
         orgGapFlag: "insufficient",
         withPayCount: 0,
+        actionCounter: 0,
         frozenModel: { criteria: [], levelThresholds: [] },
       })
     )
@@ -48,6 +49,7 @@ describe("payMapping schema + slug", () => {
         orgGapPct: null,
         orgGapFlag: "insufficient",
         withPayCount: 0,
+        actionCounter: 0,
         frozenModel: { criteria: [], levelThresholds: [] },
       })
       const slug = await uniqueSlug(
@@ -80,6 +82,7 @@ describe("payMapping schema + slug", () => {
         orgGapPct: null,
         orgGapFlag: "insufficient",
         withPayCount: 1,
+        actionCounter: 0,
         frozenModel: { criteria: [], levelThresholds: [] },
       })
       return ctx.db.insert("payMappingSnapshotRows", {

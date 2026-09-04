@@ -1,0 +1,95 @@
+---
+title: Raportit ja lataukset
+description: Allekirjoitusraportti, yksityiskohtaliite, tunnuslukutyökirja ja arkistopaketti, kenelle kukin on tarkoitettu, mitä peitetään missäkin ja miten jokainen lataus kirjataan lokiin.
+section: pay-mapping
+---
+
+Jokaisella palkkakartoituksella on Raportti-välilehti, jolla on neljä
+latausta, kaikki koottu juuri sen kartoituksen jäädytetystä
+tilannekuvasta eikä mistään muusta. Samat neljä löytyvät
+[Palkkakartoitukset](/pay-mappings)-listan rivivalikosta kohdasta "Lataa".
+
+## Allekirjoitusraportti
+
+"Allekirjoitusraportti" on asiakirja, jonka jaatte ammattiliitto-osapuolten
+kanssa ja allekirjoitatte yhdessä: kuudesta kahdeksaan sivua koosteita,
+määriä, tiloja, johtopäätöksiä ja toimintasuunnitelma.
+Ensimmäinen sivu tulostaa, ketkä osallistuivat yhteistoimintaan, miten se
+tapahtui ja luvussa [Yhteistoiminta](/docs/collaboration) kirjatun
+yhteistoiminnan päivän, sekä tyhjät allekirjoitusrivit työnantajalle ja
+ammattiliitto-osapuolelle. Allekirjoitus tapahtuu paperilla; sovelluksessa
+ei ole allekirjoitusta.
+
+Se ei koskaan tulosta ryhmän summaa. Sukupuolittain jaettu luku peitetään,
+kun ryhmässä on alle 4 henkilöä tai alle 2 jompaakumpaa sukupuolta, ja
+koko ryhmän luku, kun ryhmässä on alle 4 henkilöä; raportti kertoo, kuinka
+monella ryhmällä on riittämätön perusta laajaan raportointiin ja että liite
+näyttää ne kokonaisuudessaan. Yhteenvetosivu näyttää naisten
+mediaani- ja keskipalkan prosentteina miesten palkasta, jakauman
+palkkakvartiileittain sekä luvut yhden tilan takana kutakin samaa työtä
+tekevää ryhmää ja kutakin samanarvoisen työn vertailua kohti: toimenpidettä
+ei tarvita, asiallinen peruste dokumentoitu, toimenpide päätetty tai
+jatkoanalyysi. Viimeisellä sivulla on kartoituksesta laskettu
+tarkistuslista ennen allekirjoitusta: kaikki dokumentointia vaativat
+vertailut on arvioitu, perusteet tai toimenpiteet on kytketty,
+yhteistoiminta on dokumentoitu ja molemmat asiakirjat perustuvat samaan
+jäädytettyyn versioon.
+
+## Yksityiskohtaliite
+
+"Yksityiskohtaliite" on täydellinen kirjallinen dokumentaatio: jokainen
+samaa työtä tekevä ryhmä peruspalkan ja kokonaiskorvauksen lukuineen,
+mediaaneineen, tiloineen, perusteineen, merkintöineen ja kytkettyine
+toimenpiteineen; jokainen naisvaltainen ryhmä ja jokainen vertailu;
+jokainen käytäntöalue, yhteistoimintakirjaus, jokainen toimenpide kaikkine
+kenttineen ja jokainen merkintä; sekä jäädytetty menetelmä kriteereineen,
+painoineen, vaativuustaso- ja vyöhykesääntöineen, työolopäätöksineen ja
+kynnysarvoineen. Menetelmäluku myös määrittelee saman ja samanarvoisen
+työn, tulostaa mitä kukin kriteeri mittaa, miksi se on olennainen ja
+miksi se kantaa painoarvonsa, ja kertoo miten ero lasketaan, jotta liite
+voidaan tarkastaa yksinään. Mitään ei peitetä, ja asiakirja sanoo sen.
+
+Kuka tahansa organisaation jäsen voi ladata sen. Roolirajoitusta ei ole:
+jokainen lataus kirjataan [tapahtumalokiin](/docs/audit-log) merkinnällä
+"Yksityiskohtaliite viety", ja loki on valvontakeino. Kansi kertoo, että
+asiakirja on sisäinen, sisältää henkilöön liittyviä palkkatietoja ja on
+tarkoitettu organisaation HR-toiminnolle sekä pyynnöstä
+yhteistoimintaosapuolille.
+
+## Luonnos ja lopullinen
+
+Molemmat asiakirjat merkitsevät itsensä "LUONNOS: kartoitusta ei ole viety
+loppuun", kunnes kartoitus on valmis, ja sen jälkeen "LOPULLINEN"; katso
+[Palkkakartoituksen elinkaari](/docs/run-lifecycle). Molemmissa
+on sama tunnistelohko: organisaatio, kartoituksen nimi, viitepäivä,
+tietojen poimintahetki, menetelmäversio ja luontiaika, joten saman
+kartoituksen allekirjoitusraportti ja yksityiskohtaliite täsmäävät aina.
+
+## Tunnusluvut (Excel)
+
+"Tunnusluvut" on työkirja, jossa ovat organisaation palkkaerot ja
+ryhmäkohtaiset taulukot lukuina jatkoanalyysiä varten muissa työkaluissa.
+Pienet ryhmät peitetään siellä samoilla kynnysarvoilla kuin
+allekirjoitusraportissa, ja työkirjan oma huomautus selittää tyhjät solut.
+
+## Arkistopaketti
+
+"Arkistopaketti" on ZIP-tiedosto, jossa ovat allekirjoitusraportti,
+yksityiskohtaliite, tunnuslukutyökirja ja manifesti, joka luettelee
+jokaisen tiedoston kokoineen ja SHA-256-tarkistussummineen, jotta paketin
+eheys voidaan todentaa myöhemmin. Säilyttäkää se vähintään viisi vuotta.
+
+## Jokainen lataus kirjataan lokiin
+
+Jokainen lataus kirjoittaa oman merkintänsä tapahtumalokiin ennen
+tiedoston luovuttamista: "Allekirjoitusraportti viety",
+"Yksityiskohtaliite viety", "Palkkakartoituksen tunnusluvut viety" tai
+"Arkistopaketti viety". Jos merkintää ei voida kirjoittaa, tiedostoa ei
+ladata, ja sovellus pyytää yrittämään uudelleen.
+
+## Aiheeseen liittyvää
+
+- [Yhteistoiminta](/docs/collaboration)
+- [Toimenpiteet ja merkinnät](/docs/actions-and-notes)
+- [Tapahtumaloki](/docs/audit-log)
+- [Palkkakartoituksen elinkaari](/docs/run-lifecycle)

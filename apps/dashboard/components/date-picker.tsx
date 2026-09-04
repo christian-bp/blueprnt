@@ -42,6 +42,7 @@ export function DatePicker({
   onChange,
   onBlur,
   ariaLabel,
+  disabled = false,
   ref,
 }: {
   // ISO date string, "" when unset.
@@ -49,6 +50,9 @@ export function DatePicker({
   onChange: (value: string) => void
   onBlur?: () => void
   ariaLabel: string
+  // A read-only surface (a completed pay mapping) shows the value but takes
+  // no pick: the trigger disables and the popover never opens.
+  disabled?: boolean
   ref?: React.Ref<HTMLButtonElement>
 }) {
   const t = useTranslations("dashboard.datePicker")
@@ -85,6 +89,11 @@ export function DatePicker({
     onChange(toIsoDate(new Date(month.getFullYear(), month.getMonth(), day)))
   }
 
+  // Locking the surface while the popover stands open closes it for good:
+  // gating `open` alone would leave the state set, so unlocking the surface
+  // would pop the panel back open on its own.
+  if (disabled && open) setOpen(false)
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
@@ -93,6 +102,7 @@ export function DatePicker({
             type="button"
             variant="outline"
             aria-label={ariaLabel}
+            disabled={disabled}
             ref={ref}
             onBlur={onBlur}
             // font-normal: the date is a value, not a button label; muted

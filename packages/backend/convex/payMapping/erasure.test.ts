@@ -252,6 +252,9 @@ describe("erasure tombstones the person's work-layer rows (ADR-0027)", () => {
           .withIndex("by_org", (q) => q.eq("orgId", orgId))
           .first()
         if (run === null) throw new Error("seed: run")
+        // Keep the run's counter consistent with the two numbers inserted
+        // below (direct inserts bypass createAction's own bump).
+        await ctx.db.patch(run._id, { actionCounter: 2 })
         const base = {
           orgId,
           runId: run._id,
@@ -272,6 +275,7 @@ describe("erasure tombstones the person's work-layer rows (ADR-0027)", () => {
             groupKey: "Software Engineer|3",
             personPublicId: publicId,
           },
+          number: 1,
           problem: "Anna Svensson ligger efter sin grupp",
           plannedAction: "Justera Annas lon vid revisionen",
         })
@@ -282,6 +286,7 @@ describe("erasure tombstones the person's work-layer rows (ADR-0027)", () => {
             scope: "equalWork",
             groupKey: "Software Engineer|3",
           },
+          number: 2,
           problem: "Gruppens gap over troskeln",
           plannedAction: "Se over gruppens lonesattning",
         })
@@ -312,6 +317,9 @@ describe("erasure tombstones the person's work-layer rows (ADR-0027)", () => {
     expect(personAction?.erased).toBe(true)
     expect(personAction?.problem).toBe("")
     expect(personAction?.plannedAction).toBe("")
+    // The tombstoned row keeps its number, so a number printed in a document
+    // never shifts after an erasure.
+    expect(personAction?.number).toBe(1)
     // Structure survives: the statutory evaluation of the plan stays truthful.
     expect(personAction?.status).toBe("notStarted")
     expect(personAction?.estimatedCost).toBe(12000)
@@ -359,6 +367,7 @@ describe("erasure tombstones the person's work-layer rows (ADR-0027)", () => {
           groupKey: "Software Engineer|3",
           personPublicId: publicId,
         },
+        number: 1,
         problem: "Namnger Anna Svensson",
         plannedAction: "Justering",
         ownerUserId: "u1",

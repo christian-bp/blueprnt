@@ -71,10 +71,10 @@ export const AUDIT_EVENTS = {
   payMappingNoteCreated: "payMapping.noteCreated",
   payMappingNoteUpdated: "payMapping.noteUpdated",
   payMappingNoteDeleted: "payMapping.noteDeleted",
-  payMappingReportExported: "payMapping.reportExported",
   payMappingMetricsExported: "payMapping.metricsExported",
-  payMappingUnionReportExported: "payMapping.unionReportExported",
   payMappingArchiveExported: "payMapping.archiveExported",
+  payMappingSigningReportExported: "payMapping.signingReportExported",
+  payMappingDetailAppendixExported: "payMapping.detailAppendixExported",
 } as const
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS]
@@ -283,19 +283,19 @@ const AUDIT_SUBJECTS: {
     kind: "payMappingRun",
     id: payload.runId,
   }),
-  "payMapping.reportExported": (payload) => ({
-    kind: "payMappingRun",
-    id: payload.runId,
-  }),
   "payMapping.metricsExported": (payload) => ({
     kind: "payMappingRun",
     id: payload.runId,
   }),
-  "payMapping.unionReportExported": (payload) => ({
+  "payMapping.archiveExported": (payload) => ({
     kind: "payMappingRun",
     id: payload.runId,
   }),
-  "payMapping.archiveExported": (payload) => ({
+  "payMapping.signingReportExported": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.detailAppendixExported": (payload) => ({
     kind: "payMappingRun",
     id: payload.runId,
   }),
@@ -753,6 +753,17 @@ export const ACTION_AUDIT_FIELDS = [
 // The note field diffed on payMapping.noteUpdated: the classification only;
 // the note text itself never enters the trail (same rationale as above).
 export const NOTE_AUDIT_FIELDS = ["noteType"] as const
+
+// The collaboration fields that enter the trail on
+// payMapping.collaborationUpdated: the samverkan day as an ISO date string,
+// and a changed-marker for the parties' remarks. The participants, the
+// description and the remarks TEXT never do (names by design, ADR-0027), so
+// the remarks ride the marker pattern instead: without it an edit that only
+// touched the remarks would write a diff-less row that reads as a no-op.
+export const COLLABORATION_AUDIT_FIELDS = [
+  "collaborationDate",
+  "collaborationRemarksChanged",
+] as const
 
 // Extra diff fields on payMapping.actionUpdated/noteUpdated beyond the
 // structured content: a re-target renders as an arrow (targetKind +

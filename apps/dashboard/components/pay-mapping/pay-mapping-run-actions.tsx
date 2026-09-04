@@ -4,7 +4,6 @@ import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,15 +24,16 @@ import { RenamePayMappingDialog } from "@/components/pay-mapping/rename-pay-mapp
 import { usePayMappingArchiveExport } from "./pay-mapping-archive-export"
 import type { PayMappingRunStatus } from "./pay-mapping-gap-types"
 import { usePayMappingMetricsExport } from "./pay-mapping-metrics-export"
-import type { ReportVariant } from "./pay-mapping-report-doc"
 import {
+  type ReportDocumentKind,
   type ReportExportData,
   usePayMappingReportExport,
 } from "./pay-mapping-report-export"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 // Per-row actions for the pay-mappings list (the row-actions convention: one
 // trailing "..." trigger, a destructive item confirmed via an AlertDialog).
-// Downloading the statutory PDF (the run page's export, reachable from the
+// Downloading the run's documents (the run page's exports, reachable from the
 // list: the data is fetched one-shot on click, never subscribed per row),
 // renaming (any status: the label is the document's title, not part of the
 // frozen evidence) and deleting: a hard delete of the run, its frozen
@@ -61,20 +61,12 @@ export function PayMappingRunActions({
   const completed = status === "completed"
   const convex = useConvex()
   const deleteRun = useMutation(api.payMapping.runs.deletePayMappingRun)
-  const {
-    busy: reportBusy,
-    exportReport,
-    captureHost,
-  } = usePayMappingReportExport()
+  const { busy: reportBusy, exportDocument } = usePayMappingReportExport()
   const { busy: metricsBusy, exportMetrics } = usePayMappingMetricsExport()
-  const {
-    busy: archiveBusy,
-    exportArchive,
-    captureHost: archiveCaptureHost,
-  } = usePayMappingArchiveExport()
+  const { busy: archiveBusy, exportArchive } = usePayMappingArchiveExport()
   // The export hooks report busy only once the export itself runs; the
   // one-shot fetch phase before it would otherwise leave the trigger
-  // enabled, letting a second (possibly different-variant) export start
+  // enabled, letting a second (possibly different-document) export start
   // mid-flight. `exporting` covers the whole span from click to handover.
   const [exporting, setExporting] = useState(false)
   const busy = reportBusy || metricsBusy || archiveBusy || exporting
@@ -84,8 +76,8 @@ export function PayMappingRunActions({
 
   // The same exports the report page runs, fed by one-shot queries instead
   // of the run workspace's subscriptions: the menu is closed by the time
-  // the work runs, so the row's trigger carries the busy spinner. Both PDF
-  // variants and the archive share this fetch: everything the assembly
+  // the work runs, so the row's trigger carries the busy spinner. Both
+  // documents and the archive share this fetch: everything the assembly
   // consumes, by the row's slug and id.
   async function fetchExportData(): Promise<ReportExportData | null> {
     const run = await convex.query(api.payMapping.runs.getPayMappingRunBySlug, {
@@ -132,11 +124,11 @@ export function PayMappingRunActions({
     return { run, gap, analyses, actions, notes, previous }
   }
 
-  async function onDownload(variant: ReportVariant = "statutory") {
+  async function onDownload(kind: ReportDocumentKind) {
     setExporting(true)
     try {
       const data = await fetchExportData()
-      if (data !== null) await exportReport(data, variant)
+      if (data !== null) await exportDocument(data, kind)
     } catch {
       toast.error(tToast("error"))
     } finally {
@@ -185,13 +177,9 @@ export function PayMappingRunActions({
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
+            <ActionsMenuTrigger
               aria-label={t("rowActionsLabel", { label })}
               disabled={busy}
-              className="shrink-0 text-muted-foreground hover:text-foreground"
             />
           }
         >
@@ -209,11 +197,11 @@ export function PayMappingRunActions({
               {tReport("download")}
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              <DropdownMenuItem onClick={() => void onDownload()}>
-                {tReport("downloadReportItem")}
+              <DropdownMenuItem onClick={() => void onDownload("signing")}>
+                {tReport("downloadSigningItem")}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => void onDownload("union")}>
-                {tReport("downloadUnionItem")}
+              <DropdownMenuItem onClick={() => void onDownload("detail")}>
+                {tReport("downloadDetailItem")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onDownloadMetrics}>
                 {tReport("downloadMetricsItem")}
@@ -234,8 +222,6 @@ export function PayMappingRunActions({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      {captureHost}
-      {archiveCaptureHost}
 
       <RenamePayMappingDialog
         orgId={orgId}

@@ -65,7 +65,10 @@ function ReportPanel({
 }) {
   return (
     <FramePanel className="flex flex-row flex-wrap items-center gap-x-4 gap-y-3">
-      <Medallion icon={icon} size="lg" tone="muted" />
+      {/* Brand, not muted: every download here is a document the reader
+          came for, and with the four actions sharing one neutral variant
+          the chip is what carries the page's accent. */}
+      <Medallion icon={icon} size="lg" />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <div className="flex items-center gap-1.5 font-medium text-sm">
           {title}
@@ -80,21 +83,21 @@ function ReportPanel({
   )
 }
 
-// The statutory document's panel: static identity (name, concept help, the
-// one identifying line), with the caller's export button as the action.
-export function ReportDocumentPanel({ action }: { action: ReactNode }) {
+// The signing report's panel: the primary document, its concept explained
+// by its own help.
+export function SigningDocumentPanel({ action }: { action: ReactNode }) {
   const t = useTranslations("dashboard.payMapping.report")
   const tHelp = useTranslations("dashboard.help")
   return (
     <ReportPanel
       icon={Pdf01Icon}
-      title={t("docTitle")}
+      title={t("signingTitle")}
       help={
-        <HelpMorphButton label={tHelp("payMappingReportLabel")}>
-          {tHelp("payMappingReportBody")}
+        <HelpMorphButton label={tHelp("signingReportLabel")}>
+          {tHelp("signingReportBody")}
         </HelpMorphButton>
       }
-      description={t("docDescription")}
+      description={t("signingDescription")}
       action={action}
     />
   )
@@ -113,21 +116,21 @@ export function MetricsDocumentPanel({ action }: { action: ReactNode }) {
   )
 }
 
-// The union report's panel (facklig rapport): the masked samverkan variant
-// of the documentation, its concept explained by its own help.
-export function UnionDocumentPanel({ action }: { action: ReactNode }) {
+// The detail appendix's panel: unmasked and available to every member; the
+// help says so and that every download is recorded (ADR-0030).
+export function DetailDocumentPanel({ action }: { action: ReactNode }) {
   const t = useTranslations("dashboard.payMapping.report")
   const tHelp = useTranslations("dashboard.help")
   return (
     <ReportPanel
       icon={Pdf01Icon}
-      title={t("unionTitle")}
+      title={t("detailTitle")}
       help={
-        <HelpMorphButton label={tHelp("unionReportLabel")}>
-          {tHelp("unionReportBody")}
+        <HelpMorphButton label={tHelp("detailAppendixLabel")}>
+          {tHelp("detailAppendixBody")}
         </HelpMorphButton>
       }
-      description={t("unionDescription")}
+      description={t("detailDescription")}
       action={action}
     />
   )
@@ -157,7 +160,7 @@ export function ArchiveDocumentPanel({ action }: { action: ReactNode }) {
   )
 }
 
-// The archive export: outline like the other secondary documents.
+// The archive export.
 export function ArchiveDownloadButton({
   busy,
   disabled,
@@ -184,34 +187,11 @@ export function ArchiveDownloadButton({
   )
 }
 
-export function ReportDownloadButton({
-  busy,
-  disabled,
-  onClick,
-}: {
-  busy: boolean
-  disabled: boolean
-  onClick?: () => void
-}) {
-  const t = useTranslations("dashboard.payMapping.report")
-  return (
-    <SubmitButton
-      type="button"
-      size={CHAPTER_ACTION_BUTTON_SIZE}
-      isSubmitting={busy}
-      disabled={disabled}
-      aria-label={t("downloadReport")}
-      {...(onClick === undefined ? {} : { onClick })}
-    >
-      <HugeiconsIcon icon={Download01Icon} strokeWidth={2} />
-      {t("download")}
-    </SubmitButton>
-  )
-}
-
-// The union report's export: outline like the key figures, so the statutory
-// document stays the page's one primary action.
-export function UnionDownloadButton({
+// The signing report's export. Every document on this page is a peer: the
+// reader picks the one their errand needs, and a lone primary would read as
+// a recommended path where there is none. The four buttons therefore share
+// one variant.
+export function SigningDownloadButton({
   busy,
   disabled,
   onClick,
@@ -228,7 +208,7 @@ export function UnionDownloadButton({
       size={CHAPTER_ACTION_BUTTON_SIZE}
       isSubmitting={busy}
       disabled={disabled}
-      aria-label={t("downloadUnion")}
+      aria-label={t("downloadSigning")}
       {...(onClick === undefined ? {} : { onClick })}
     >
       <HugeiconsIcon icon={Download01Icon} strokeWidth={2} />
@@ -237,8 +217,34 @@ export function UnionDownloadButton({
   )
 }
 
-// The key-figures export: outline so the statutory document stays the
-// primary read even now that each document has its own panel.
+// The detail appendix's export.
+export function DetailDownloadButton({
+  busy,
+  disabled,
+  onClick,
+}: {
+  busy: boolean
+  disabled: boolean
+  onClick?: () => void
+}) {
+  const t = useTranslations("dashboard.payMapping.report")
+  return (
+    <SubmitButton
+      type="button"
+      variant="outline"
+      size={CHAPTER_ACTION_BUTTON_SIZE}
+      isSubmitting={busy}
+      disabled={disabled}
+      aria-label={t("downloadDetail")}
+      {...(onClick === undefined ? {} : { onClick })}
+    >
+      <HugeiconsIcon icon={Download01Icon} strokeWidth={2} />
+      {t("download")}
+    </SubmitButton>
+  )
+}
+
+// The key-figures export.
 export function MetricsDownloadButton({
   busy,
   disabled,
@@ -273,11 +279,11 @@ export function MetricsDownloadButton({
 function ReportCardShell() {
   return (
     <ReportsFrame>
-      <ReportDocumentPanel
-        action={<ReportDownloadButton busy={false} disabled />}
+      <SigningDocumentPanel
+        action={<SigningDownloadButton busy={false} disabled />}
       />
-      <UnionDocumentPanel
-        action={<UnionDownloadButton busy={false} disabled />}
+      <DetailDocumentPanel
+        action={<DetailDownloadButton busy={false} disabled />}
       />
       <MetricsDocumentPanel
         action={<MetricsDownloadButton busy={false} disabled />}
@@ -301,7 +307,8 @@ const PayMappingReportDownload = dynamic(
 )
 
 // The Report sub-page: the run's downloadable documents as one frame, a
-// panel per document (the statutory PDF, the key-figures workbook).
+// panel per document: the signing report, the detail appendix, the
+// key-figures workbook, the archive package.
 export function PayMappingReport() {
   return <PayMappingReportDownload />
 }

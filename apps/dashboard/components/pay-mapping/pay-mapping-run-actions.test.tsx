@@ -57,12 +57,11 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
   },
 }))
 
-const exportReportMock = vi.fn(async () => {})
+const exportDocumentMock = vi.fn(async () => {})
 vi.mock("@/components/pay-mapping/pay-mapping-report-export", () => ({
   usePayMappingReportExport: () => ({
     busy: false,
-    exportReport: exportReportMock,
-    captureHost: null,
+    exportDocument: exportDocumentMock,
   }),
 }))
 
@@ -79,7 +78,6 @@ vi.mock("@/components/pay-mapping/pay-mapping-archive-export", () => ({
   usePayMappingArchiveExport: () => ({
     busy: false,
     exportArchive: exportArchiveMock,
-    captureHost: null,
   }),
 }))
 
@@ -127,7 +125,7 @@ describe("PayMappingRunActions", () => {
   beforeEach(() => {
     deleteRunMock.mockReset()
     queryMock.mockClear()
-    exportReportMock.mockClear()
+    exportDocumentMock.mockClear()
     exportMetricsMock.mockClear()
     exportArchiveMock.mockClear()
     vi.mocked(toast.success).mockReset()
@@ -141,12 +139,12 @@ describe("PayMappingRunActions", () => {
     await openDownloadSubmenu()
     fireEvent.click(
       screen.getByRole("menuitem", {
-        name: messages.dashboard.payMapping.report.downloadReportItem,
+        name: messages.dashboard.payMapping.report.downloadSigningItem,
       })
     )
 
     await waitFor(() => {
-      expect(exportReportMock).toHaveBeenCalledWith(
+      expect(exportDocumentMock).toHaveBeenCalledWith(
         {
           run: RUN_DETAIL,
           gap: GAP,
@@ -156,7 +154,7 @@ describe("PayMappingRunActions", () => {
           // An empty run history: no earlier completed run to evaluate.
           previous: null,
         },
-        "statutory"
+        "signing"
       )
     })
     // The run detail is fetched by the row's slug (the id is not a route
@@ -168,20 +166,20 @@ describe("PayMappingRunActions", () => {
     expect(vi.mocked(toast.error)).not.toHaveBeenCalled()
   })
 
-  it("downloads the union report through the same fetch with the union variant", async () => {
+  it("downloads the detail appendix through the same fetch with its own kind", async () => {
     renderActions()
     await openRowMenu()
     await openDownloadSubmenu()
     fireEvent.click(
       screen.getByRole("menuitem", {
-        name: messages.dashboard.payMapping.report.downloadUnionItem,
+        name: messages.dashboard.payMapping.report.downloadDetailItem,
       })
     )
 
     await waitFor(() => {
-      expect(exportReportMock).toHaveBeenCalledWith(
+      expect(exportDocumentMock).toHaveBeenCalledWith(
         expect.objectContaining({ run: RUN_DETAIL, gap: GAP }),
-        "union"
+        "detail"
       )
     })
     expect(vi.mocked(toast.error)).not.toHaveBeenCalled()
@@ -231,7 +229,7 @@ describe("PayMappingRunActions", () => {
     await openDownloadSubmenu()
     fireEvent.click(
       screen.getByRole("menuitem", {
-        name: messages.dashboard.payMapping.report.downloadReportItem,
+        name: messages.dashboard.payMapping.report.downloadSigningItem,
       })
     )
 
@@ -240,7 +238,7 @@ describe("PayMappingRunActions", () => {
         messages.dashboard.toast.error
       )
     })
-    expect(exportReportMock).not.toHaveBeenCalled()
+    expect(exportDocumentMock).not.toHaveBeenCalled()
   })
 
   it("opens the delete confirmation dialog from the destructive item, without calling the mutation yet", async () => {

@@ -1,4 +1,4 @@
-import type { PayGapReason } from "@workspace/constants"
+import type { PayGapReason, PraxisAreaKey } from "@workspace/constants"
 import { defineTable } from "convex/server"
 import type { Infer } from "convex/values"
 import { v } from "convex/values"
@@ -47,6 +47,13 @@ export const payMappingRuns = defineTable({
   systemVersion: v.string(),
   populationCount: v.number(),
   withPayCount: v.number(),
+  // The run's action counter: the highest action number ever assigned in
+  // this run. createAction reads it and writes number = actionCounter + 1
+  // back in the same transaction, so two concurrent creates conflict rather
+  // than share a number, and a number is NEVER reused: a hard delete does
+  // not free it and an erasure-tombstoned row keeps it. Seeded 0 at run
+  // creation; pre-launch data is reset, never backfilled.
+  actionCounter: v.number(),
   // The population's gender split, denormalized off the snapshot rows at
   // freeze time exactly as populationCount is. The overview's workforce trend
   // plots one point per run, so reading this from the rows instead would mean
@@ -94,13 +101,22 @@ export const payMappingRuns = defineTable({
     levelThresholds: v.optional(v.array(levelRuleShape)),
   }),
   // The samverkansredogörelse (DL 3 kap. 11-14 §§): who the employer
-  // cooperated with on the kartläggning and how. Cleared (undefined) when
-  // both fields are emptied, never stored as an empty-string object.
-  // Participants are people's names by design (statutory documentation
-  // content on this run document), but must NEVER enter the audit trail
-  // (setPayMappingCollaboration logs a pure { runId } marker).
+  // cooperated with on the kartläggning, how, optionally on which day
+  // (epoch ms, day precision, like plannedDate on actions) and optionally
+  // the parties' own remarks on the mapping (the detail appendix's
+  // samverkanssynpunkter). Cleared (undefined) when both required text
+  // fields are emptied, never stored as an empty-string object.
+  // Participants and remarks are people's words and names by design
+  // (statutory documentation content on this run document), but must NEVER
+  // enter the audit trail (setPayMappingCollaboration diffs the date and a
+  // changed-marker for the remarks, never their text).
   collaboration: v.optional(
-    v.object({ participants: v.string(), description: v.string() })
+    v.object({
+      participants: v.string(),
+      description: v.string(),
+      date: v.optional(v.number()),
+      remarks: v.optional(v.string()),
+    })
   ),
 })
   .index("by_org", ["orgId"])
@@ -188,13 +204,33 @@ export const payComparisonScopeValidator = v.union(
   v.literal("equivalentWork")
 )
 
+// The praxis review areas as a validator, mirroring PRAXIS_AREA_KEYS
+// (@workspace/constants). Spelled out rather than mapped from the constant
+// so the drift guard below can prove the two admit exactly the same keys.
+export const praxisAreaValidator = v.union(
+  v.literal("payPolicy"),
+  v.literal("collectiveAgreements"),
+  v.literal("benefits"),
+  v.literal("payPractices"),
+  v.literal("previousActions")
+)
+type PraxisAreaFromValidator = Infer<typeof praxisAreaValidator>
+type _PraxisAreasExact = PraxisAreaFromValidator extends PraxisAreaKey
+  ? PraxisAreaKey extends PraxisAreaFromValidator
+    ? true
+    : never
+  : never
+const _assertPraxisAreasMatch: _PraxisAreasExact = true
+void _assertPraxisAreasMatch
+
 // What an action or note is anchored to (ADR-0015, Iteration 2 note 5):
-// a whole comparison group, one individual within a group, or ONE
-// comparison a women-dominated group is measured against. Individuals are
-// referenced by personPublicId ONLY (Role != Person): names and pay are
-// never denormalized in; display values resolve from the snapshot row,
-// which the erasure path already pseudonymizes, so an erased person
-// renders as the tombstone with no extra hook.
+// a whole comparison group, one individual within a group, ONE
+// comparison a women-dominated group is measured against, or (actions
+// only) a practice area. Individuals are referenced by personPublicId ONLY
+// (Role != Person): names and pay are never denormalized in; display values
+// resolve from the snapshot row, which the erasure path already
+// pseudonymizes, so an erased person renders as the tombstone with no extra
+// hook.
 //
 // The "comparison" kind exists because 3 kap. 9 § asks whether the
 // difference against EACH equally or lower valued job has a connection to
@@ -227,6 +263,14 @@ export const actionTargetValidator = v.union(
     // the analysis renders it.
     groupKey: v.string(),
     comparisonKey: v.string(),
+  }),
+  // A practice area (DL 3 kap. 8 § p1) whose review found a deficiency: the
+  // action plan's fix for it. No person data rides on this kind, so no
+  // export masking ever applies to it. Allowed only while the area's
+  // finding is "found" (assertPraxisTargetAllowed).
+  v.object({
+    kind: v.literal("praxis"),
+    area: praxisAreaValidator,
   })
 )
 
@@ -236,7 +280,12 @@ export const actionTargetValidator = v.union(
 // literals, and when "pair" became "comparison" the label map kept the dead
 // kind, so the audit log rendered the raw wire code and the drift test passed
 // because its own copy of the list was stale too.
-export const ACTION_TARGET_KINDS = ["group", "person", "comparison"] as const
+export const ACTION_TARGET_KINDS = [
+  "group",
+  "person",
+  "comparison",
+  "praxis",
+] as const
 export type ActionTargetKind = (typeof ACTION_TARGET_KINDS)[number]
 
 // Compile-time drift guard: the list and the validator must admit exactly the
@@ -302,6 +351,10 @@ export const payMappingActions = defineTable({
   orgId: v.string(),
   runId: v.id("payMappingRuns"),
   target: actionTargetValidator,
+  // The action's per-run number, from the run's actionCounter at creation.
+  // Rendered as "#n" in the overview and as the action id column in both
+  // report documents, so it is never reassigned.
+  number: v.number(),
   problem: v.string(),
   plannedAction: v.string(),
   reason: v.optional(payGapReasonValidator),

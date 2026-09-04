@@ -3,6 +3,7 @@ import { createTranslator } from "next-intl"
 import { describe, expect, it } from "vitest"
 import {
   makeExcluded,
+  makeFrozenCriterion,
   makeGapGroup,
   makeGapResult,
   makeRunDetail,
@@ -16,13 +17,10 @@ import type {
 import type { PayMappingSnapshotRow } from "./pay-mapping-gap-types"
 import {
   assemblePayMappingReport,
-  computeHeaderBreaks,
-  exportMasksGenderMeans,
-  exportMasksWholeGroupMean,
+  floorVariablePayStats,
   hourlyNoteLabel,
   orgVariablePayStats,
   type ReportFormatters,
-  unionReportDoc,
 } from "./pay-mapping-report-data"
 
 const tReport = createTranslator({
@@ -32,14 +30,12 @@ const tReport = createTranslator({
 })
 
 // Marker formatters: assertions read the raw figure back out of the marker,
-// so a wrong number and a missing formatting call both fail loudly. The
-// signed marker keeps the raw sign, so a signed cell reads S-8 for a level
-// where women are ahead.
+// so a wrong number and a missing formatting call both fail loudly.
 const formatters: ReportFormatters = {
   money: (value) => `M${value}`,
   pct: (value) => `P${value}`,
-  signedPct: (value) => `S${value}`,
   date: (epochMs) => `D${epochMs}`,
+  dateTime: (epochMs) => `T${epochMs}`,
   costUnitSuffix: (unit) =>
     unit === null || unit === "oneOff" ? "" : `/${unit}`,
 }
@@ -77,7 +73,8 @@ function makeAction(
 ): PayMappingActionWire {
   return {
     actionId: "a1" as PayMappingActionWire["actionId"],
-    target: { kind: "group", scope: "equalWork", groupKey: "SWE|3" },
+    target: { kind: "group", scope: "equalWork", groupKey: "SWE|3|Senior" },
+    number: 1,
     problem: "Unexplained gap",
     plannedAction: "Salary review",
     reason: "experience",
@@ -93,23 +90,6 @@ function makeAction(
     ...overrides,
   }
 }
-
-describe("export-boundary masking (ADR-0012)", () => {
-  it("masks per-gender means below the small-cell minimums", () => {
-    expect(exportMasksGenderMeans({ womenCount: 2, menCount: 2 })).toBe(false)
-    // 1 woman: her "mean" is her salary.
-    expect(exportMasksGenderMeans({ womenCount: 1, menCount: 3 })).toBe(true)
-    expect(exportMasksGenderMeans({ womenCount: 3, menCount: 1 })).toBe(true)
-    // Fewer than 4 in total masks even at 2 per gender by the rule's letter
-    // (unreachable with integers, but the rule is stated as OR).
-    expect(exportMasksGenderMeans({ womenCount: 2, menCount: 1 })).toBe(true)
-  })
-
-  it("masks a whole-group mean only below the total minimum", () => {
-    expect(exportMasksWholeGroupMean(4)).toBe(false)
-    expect(exportMasksWholeGroupMean(3)).toBe(true)
-  })
-})
 
 describe("assemblePayMappingReport", () => {
   const analyses: GroupAnalysis[] = [
@@ -160,15 +140,42 @@ describe("assemblePayMappingReport", () => {
   function assemble(overrides: {
     withPrevious?: boolean
     completed?: boolean
+    extraActions?: PayMappingActionWire[]
+    collaborationDate?: number
   }) {
     return assemblePayMappingReport({
       run: makeRunDetail({
         status: overrides.completed ? "completed" : "active",
-        collaboration: { participants: "Union rep", description: "Monthly" },
-        frozenCriteria: [
-          { name: "Knowledge", weightPoints: 4 },
-          { name: "Responsibility", weightPoints: 2 },
-        ],
+        collaboration: {
+          participants: "Union rep",
+          description: "Monthly",
+          date: overrides.collaborationDate ?? null,
+          remarks: null,
+        },
+        frozenMethod: {
+          criteria: [
+            makeFrozenCriterion({
+              name: "Knowledge",
+              weightPoints: 4,
+              dimensionKey: "competence",
+              purpose: "Depth of professional knowledge",
+              whyRelevant: "The work turns on applied expertise",
+              weightMotivation: "The heaviest demand in this organization",
+            }),
+            makeFrozenCriterion({
+              name: "Responsibility",
+              weightPoints: 2,
+              dimensionKey: "responsibility",
+            }),
+          ],
+          levelRules: [{ level: 1, minScore: 90 }],
+          zoneProfileRules: [{ zone: "A", minStep: 4 }],
+          workingConditions: {
+            status: "testedNotMaterial",
+            motivation: "Tested",
+          },
+          approvedAt: 1_700_000_000_000,
+        },
         rows: [
           {
             personPublicId: "p1",
@@ -212,28 +219,6 @@ describe("assemblePayMappingReport", () => {
           // year-over-year figure must stay masked at the source.
           makeGapGroup({ key: "Dev|1", roleTitle: "Dev", level: 1 }),
         ],
-        // One per-level bucket below the per-gender minimums: it renders
-        // masked dashes in the report's per-level table, so the stated
-        // masked-group count must include it.
-        equivalentWork: [
-          makeGapGroup({
-            key: "2",
-            roleTitle: null,
-            level: 2,
-            womenCount: 1,
-            menCount: 1,
-            flag: "insufficient",
-          }),
-          // A level where WOMEN are ahead: the wire builds the per-level
-          // table in both directions, so its figures must render signed.
-          makeGapGroup({
-            key: "3",
-            roleTitle: null,
-            level: 3,
-            flag: "ok",
-            metric: { gapPct: -8, gapKr: -3000 },
-          }),
-        ],
         womenDominated: [
           makeWomenDominated(),
           // A 3-person dominated group: whole-group mean masks, and so does
@@ -269,6 +254,10 @@ describe("assemblePayMappingReport", () => {
               roleTitle: "UX",
               level: 2,
               flag: "ok",
+              // Women ahead: the only negative figure in the fixture, so the
+              // unsigned-amount rule is exercised in the direction that has
+              // a sign to lose.
+              metric: { gapPct: -8, gapKr: -3000 },
             }),
           ],
         }),
@@ -278,15 +267,17 @@ describe("assemblePayMappingReport", () => {
         makeAction(),
         makeAction({
           actionId: "a2" as PayMappingActionWire["actionId"],
+          number: 2,
           target: {
             kind: "person",
             scope: "equalWork",
-            groupKey: "SWE|3",
+            groupKey: "SWE|3|Senior",
             personPublicId: "p1",
           },
           estimatedCost: null,
           status: "done",
         }),
+        ...(overrides.extraActions ?? []),
       ],
       notes: [
         {
@@ -330,37 +321,43 @@ describe("assemblePayMappingReport", () => {
           }
         : null,
       formatters,
+      praxisAreaLabel: (area) => `Area ${area}`,
     })
   }
 
-  it("keeps figures for compliant groups and masks small cells", () => {
+  it("keeps every group's figures and only FLAGS the export-threshold rows", () => {
     const doc = assemble({ withPrevious: true })
     const [swe, qa] = doc.equalWork
     expect(swe?.masked).toBe(false)
-    // The table's figures are total compensation, the primary measure.
     expect(swe?.tcc.womenMean).toBe("M90000")
     expect(swe?.tcc.gapPct).toBe("P10")
     expect(swe?.reasons).toEqual(["experience", "performance"])
     expect(swe?.done).toBe(true)
-    // 1 woman / 3 men: in-app shows the figures, the export masks them.
+    // 1 woman / 3 men: flagged for the signing projection, but the figures
+    // are all there (the appendix prints them; masking is the projection's
+    // business, never the assembly's).
     expect(qa?.masked).toBe(true)
-    expect(qa?.tcc.womenMean).toBeNull()
-    expect(qa?.tcc.gapPct).toBeNull()
-    // QA (per-gender), level 2 (per-gender, per-level table) and the
-    // 3-person Clerk group (whole-group), counted as distinct group keys.
-    expect(doc.method.maskedGroupCount).toBe(3)
+    expect(qa?.tcc.womenMean).toBe("M90000")
+    expect(qa?.tcc.gapPct).toBe("P10")
+    expect(qa?.base.womenMean).toBe("M90000")
+    // Two distinct groups carry the flag: QA (1 woman / 3 men) and the
+    // 3-person Clerk group, whose whole-group mean sits under the floor.
+    expect(doc.method.maskedGroupCount).toBe(2)
   })
 
-  it("masks whole-group means by total headcount in the women-dominated comparison", () => {
+  it("keeps whole-group means in the women-dominated comparison and flags by total headcount", () => {
     const doc = assemble({ withPrevious: true })
     const [nurse, clerk] = doc.womenDominated
+    expect(nurse?.masked).toBe(false)
     expect(nurse?.meanComp).toBe("M40000")
     expect(nurse?.comparisons[0]?.diffKr).toBe("M5000")
     expect(nurse?.comparisons[0]?.reasons).toEqual(["historicalPay"])
-    expect(clerk?.meanComp).toBeNull()
-    // The comparator has 4 people, but the difference reads against the
-    // masked dominated mean, so it masks too.
-    expect(clerk?.comparisons[0]?.diffKr).toBeNull()
+    expect(clerk?.masked).toBe(true)
+    // The clerk fixture overrides only key, title, level and headcount, so
+    // its mean is makeWomenDominated's default.
+    expect(clerk?.meanComp).toBe("M40000")
+    expect(clerk?.comparisons[0]?.masked).toBe(true)
+    expect(clerk?.comparisons[0]?.diffKr).toBe("M5000")
   })
 
   it("assembles the statutory sections: praxis, samverkan, actions, evaluation", () => {
@@ -369,6 +366,8 @@ describe("assemblePayMappingReport", () => {
     expect(doc.collaboration).toEqual({
       participants: "Union rep",
       description: "Monthly",
+      date: null,
+      remarks: null,
     })
     // Base areas only: previousActions renders as the evaluation section.
     expect(doc.praxis.map((row) => row.key)).toEqual([
@@ -391,21 +390,150 @@ describe("assemblePayMappingReport", () => {
     expect(doc.previousEvaluation?.runLabel).toBe("Pay mapping 2025")
     expect(doc.previousEvaluation?.note).toBe("All carried out")
     expect(doc.previousEvaluation?.actions[0]?.status).toBe("inProgress")
-    expect(doc.population).toEqual({ total: 6, women: 3, men: 3, priced: 1 })
+    expect(doc.population).toEqual({
+      total: 6,
+      women: 3,
+      men: 3,
+      priced: 1,
+      womenPriced: 1,
+      menPriced: 0,
+    })
   })
 
-  it("derives the method section from the frozen criteria", () => {
+  it("derives a status and the linked actions for every group and comparison", () => {
+    const doc = assemble({ withPrevious: true })
+    const [swe, qa] = doc.equalWork
+    // SWE: done with reasons, but two actions (one on the group, one on a
+    // member) target it, so the action wins and both are cited.
+    expect(swe?.status).toBe("actionDecided")
+    expect(swe?.actions).toEqual([
+      { number: 1, ownerName: "HR Person", plannedDate: "D1000" },
+      { number: 2, ownerName: "HR Person", plannedDate: "D1000" },
+    ])
+    // QA: flagged, nothing documented, no action.
+    expect(qa?.status).toBe("furtherAnalysis")
+    expect(qa?.actions).toEqual([])
+    // The reverse list carries no duty.
+    expect(doc.reverseGroups[0]?.status).toBe("noActionNeeded")
+    const [nurse] = doc.womenDominated
+    expect(nurse?.actions).toEqual([])
+    expect(nurse?.comparisons[0]?.status).toBe("objectiveReason")
+    expect(nurse?.comparisons[0]?.actions).toEqual([])
+    // The women-dominated group carries its OWN status too: a measure for it
+    // may be anchored on the group or on a member rather than on a single
+    // comparison, and no comparison row could report that.
+    expect(nurse?.status).toBe("objectiveReason")
+  })
+
+  it("reports a group-anchored equivalent-work measure on the group's own status", () => {
+    const doc = assemble({
+      withPrevious: true,
+      extraActions: [
+        makeAction({
+          actionId: "a8" as PayMappingActionWire["actionId"],
+          number: 8,
+          target: {
+            kind: "group",
+            scope: "equivalentWork",
+            groupKey: "Nurse|2",
+          },
+        }),
+      ],
+    })
+    const [nurse] = doc.womenDominated
+    expect(nurse?.status).toBe("actionDecided")
+    // The comparison rows are untouched: they read comparison targets only.
+    expect(nurse?.comparisons[0]?.status).toBe("objectiveReason")
+  })
+
+  it("joins a praxis action to its area and carries the collaboration date", () => {
+    const doc = assemble({
+      withPrevious: false,
+      extraActions: [
+        makeAction({
+          actionId: "a9" as PayMappingActionWire["actionId"],
+          number: 9,
+          target: { kind: "praxis", area: "payPolicy" },
+          plannedAction: "Rewrite the pay policy",
+          plannedDate: 5000,
+        }),
+      ],
+      collaborationDate: 7000,
+    })
+    expect(doc.praxis[0]?.action).toEqual({
+      number: 9,
+      plannedAction: "Rewrite the pay policy",
+      plannedDate: "D5000",
+    })
+    expect(doc.praxis[1]?.action).toBeNull()
+    expect(doc.collaboration?.date).toBe("D7000")
+    const praxisRow = doc.actions.find((a) => a.kind === "praxis")
+    expect(praxisRow?.scope).toBe("praxis")
+    expect(praxisRow?.label).toBe("Area payPolicy")
+    expect(praxisRow?.number).toBe(9)
+    expect(praxisRow?.plannedDateMs).toBe(5000)
+  })
+
+  it("carries the identity block's raw parts and the frozen method in full", () => {
     const doc = assemble({ withPrevious: false })
     expect(doc.previousEvaluation).toBeNull()
     expect(doc.method.pointBudget).toBe(6)
+    expect(doc.identity).toEqual({
+      systemVersion: "v2-slice1",
+      approvedAt: "D1700000000000",
+      referenceDate: `D${Date.UTC(2026, 6, 1)}`,
+      extractedAt: `T${Date.UTC(2026, 6, 1)}`,
+    })
+    // The frozen criterion documentation travels with the weights: the
+    // appendix has to stand alone, so it prints what each criterion measures
+    // rather than pointing at the live model.
     expect(doc.method.criteria).toEqual([
-      { name: "Knowledge", weightPoints: 4, sharePct: `P${(4 / 6) * 100}` },
+      {
+        name: "Knowledge",
+        dimensionKey: "competence",
+        weightPoints: 4,
+        sharePct: "P66.66666666666666",
+        purpose: "Depth of professional knowledge",
+        whyRelevant: "The work turns on applied expertise",
+        weightMotivation: "The heaviest demand in this organization",
+      },
       {
         name: "Responsibility",
+        dimensionKey: "responsibility",
         weightPoints: 2,
-        sharePct: `P${(2 / 6) * 100}`,
+        sharePct: "P33.33333333333333",
+        purpose: null,
+        whyRelevant: null,
+        weightMotivation: null,
       },
     ])
+    expect(doc.method.dimensionShares).toEqual([
+      { dimensionKey: "competence", sharePct: "P66.66666666666666" },
+      { dimensionKey: "responsibility", sharePct: "P33.33333333333333" },
+    ])
+    expect(doc.method.levelRules).toEqual([{ level: 1, minScore: 90 }])
+    expect(doc.method.zoneProfileRules).toEqual([{ zone: "A", minStep: 4 }])
+    expect(doc.method.workingConditions).toEqual({
+      status: "testedNotMaterial",
+      motivation: "Tested",
+    })
+    expect(doc.method.approvedAt).toBe("D1700000000000")
+    expect(doc.population.womenPriced).toBe(1)
+    expect(doc.population.menPriced).toBe(0)
+  })
+
+  it("carries raw cost parts on every action row and one roll-up per scope", () => {
+    const doc = assemble({})
+    const group = doc.actions.find((a) => a.kind === "group")
+    expect(group?.costAmount).toBe(42000)
+    expect(group?.costUnit).toBe("oneOff")
+    expect(group?.plannedDateMs).toBe(1000)
+    expect(doc.actionCostByScope).toEqual({
+      equalWork: "M42000",
+      equivalentWork: null,
+      praxis: null,
+    })
+    expect(doc.actionTotals.cost).toBe("M42000")
   })
 
   // The method note's conversion-factor line: hourlyRowCount covers every
@@ -444,6 +572,7 @@ describe("assemblePayMappingReport", () => {
       notes: [],
       previous: null,
       formatters,
+      praxisAreaLabel: (area) => `Area ${area}`,
     })
     expect(doc.method.hourlyRowCount).toBe(2)
     expect(doc.method.ownHoursCount).toBe(1)
@@ -459,6 +588,7 @@ describe("assemblePayMappingReport", () => {
       notes: [],
       previous: null,
       formatters,
+      praxisAreaLabel: (area) => `Area ${area}`,
     })
     expect(doc.method.hourlyRowCount).toBe(0)
   })
@@ -472,6 +602,7 @@ describe("assemblePayMappingReport", () => {
       notes: [],
       previous: null,
       formatters,
+      praxisAreaLabel: (area) => `Area ${area}`,
     })
     expect(doc.method.hourlyRowCount).toBe(0)
     expect(hourlyNoteLabel(doc, tReport)).toBeNull()
@@ -510,6 +641,7 @@ describe("assemblePayMappingReport", () => {
       notes: [],
       previous: null,
       formatters,
+      praxisAreaLabel: (area) => `Area ${area}`,
     })
     expect(doc.method.hourlyRowCount).toBe(2)
     expect(doc.method.ownHoursCount).toBe(1)
@@ -518,7 +650,7 @@ describe("assemblePayMappingReport", () => {
     )
   })
 
-  it("carries medians, year-over-year figures, spread and the excluded lists", () => {
+  it("carries medians, year-over-year figures and the excluded lists, unmasked", () => {
     const doc = assemble({ withPrevious: true })
     const swe = doc.equalWork[0]
     // Median computed from the frozen rows through the shared engine stats,
@@ -528,33 +660,18 @@ describe("assemblePayMappingReport", () => {
     expect(swe?.tccMedian.men).toBeNull()
     // The previous run had the same group at a 12% mean gap.
     expect(swe?.previousGapPct).toBe("P12")
-    // The previous run's Dev group was 1W/1M: its gap is masked at the
-    // source and must not leak now that the group is above the minimums.
+    // The previous run's Dev group was 1W/1M: the assembly carries its gap
+    // anyway (the signing projection decides what leaves).
     const dev = doc.equalWork[2]
     expect(dev?.masked).toBe(false)
-    expect(dev?.previousGapPct).toBeNull()
-    // A masked row masks its medians and its year-over-year figure too.
+    expect(dev?.previousGapPct).toBe("P25")
+    // A flagged row keeps its medians; absent figures are null for absence,
+    // never for size (QA has no priced rows in this fixture, and no previous
+    // group).
     const qa = doc.equalWork[1]
+    expect(qa?.masked).toBe(true)
     expect(qa?.tccMedian.women).toBeNull()
     expect(qa?.previousGapPct).toBeNull()
-    // Org-level year-over-year line from the previous gap aggregate.
-    expect(doc.orgPrevious).toEqual({
-      runLabel: "Pay mapping 2025",
-      referenceDate: "D500",
-      gapPct: "P10",
-    })
-    // Charts read raw numbers mirroring the formatted org means.
-    expect(doc.chartData.means).toEqual({ women: 90000, men: 100000 })
-    // One priced woman and no priced men: both genders sit under the
-    // population-spread minimum and mask.
-    expect(doc.spread.women).toBeNull()
-    expect(doc.spread.men).toBeNull()
-    expect(doc.chartData.spread.women).toBeNull()
-    // The org medians follow the population-spread floor, so they mask with
-    // it and can never print a value the spread table dashes.
-    expect(doc.org.womenMedian).toBeNull()
-    expect(doc.org.menMedian).toBeNull()
-    expect(doc.org.medianGapPct).toBeNull()
     // The excluded groups are listed by identity, not only counted.
     expect(doc.reverseGroups.map((group) => group.key)).toEqual(["UX|2"])
     expect(doc.genderPureGroups).toEqual([
@@ -569,44 +686,28 @@ describe("assemblePayMappingReport", () => {
     expect(doc.method.singletonCount).toBe(2)
   })
 
-  it("signs the per-level table's figures and keeps the other tables unsigned", () => {
+  it("keeps every table unsigned", () => {
     const doc = assemble({})
-    // The reversed level keeps its minus in both the percent and the amount:
-    // the per-level table runs in both directions, so an unsigned figure
-    // would render a level where women are ahead identically to one where
-    // they are behind.
-    const reversed = doc.equivalentWorkLevels.find((row) => row.key === "3")
-    expect(reversed?.tcc.gapPct).toBe("S-8")
-    expect(reversed?.tcc.gapKr).toBe("M-3000")
-    // Equal work stays unsigned: direction is carried by the section split
-    // (the women-ahead list), never by a sign.
+    // Direction is carried by the section split (the women-ahead list),
+    // never by a sign.
     expect(doc.equalWork[0]?.tcc.gapPct).toBe("P10")
+    expect(doc.equalWork[0]?.tcc.gapKr).toBe("M10000")
+    // The women-ahead row's amount loses its sign; the percent carries the
+    // wire figure the section already frames.
+    expect(doc.reverseGroups[0]?.tcc.gapKr).toBe("M3000")
+    expect(doc.reverseGroups[0]?.tcc.gapPct).toBe("P-8")
   })
 
   it("derives the summary key figures from the sections they summarize", () => {
     const doc = assemble({})
-    expect(doc.summary.equalWorkGroups).toBe(3)
-    // SWE and Dev are elevated, QA critical: all three require reasons.
-    expect(doc.summary.equalWorkRequired).toBe(3)
-    // Only SWE's analysis row is marked done.
-    expect(doc.summary.equalWorkDocumented).toBe(1)
-    expect(doc.summary.womenDominatedGroups).toBe(2)
-    expect(doc.summary.comparisonCount).toBe(2)
-    // Only the Nurse group's comparison carries reasons.
-    expect(doc.summary.comparisonsDocumented).toBe(1)
     // 90000 / 100000 from the org aggregate, formatted as a percent.
     expect(doc.summary.womenShareOfMenMeanPct).toBe("P90")
-    // The median share follows the population-spread masking floor.
+    // No priced men in this fixture (Erik's basicMonthly is null): a share
+    // against men needs a men figure, which is null here, not masked.
     expect(doc.summary.womenShareOfMenMedianPct).toBeNull()
-    // One priced woman and no priced men: every variable-pay figure sits
-    // under the per-gender floor and masks.
-    expect(doc.summary.variableShareWomenPct).toBeNull()
-    expect(doc.summary.variableShareMenPct).toBeNull()
-    expect(doc.summary.variableWomenShareOfMenMeanPct).toBeNull()
-    expect(doc.summary.variableWomenShareOfMenMedianPct).toBeNull()
   })
 
-  it("orgVariablePayStats: shares over everyone, amounts among receivers, floors per gender", () => {
+  it("orgVariablePayStats: shares over everyone, amounts among receivers, unmasked", () => {
     const row = (
       index: number,
       gender: "Kvinna" | "Man",
@@ -624,7 +725,8 @@ describe("assemblePayMappingReport", () => {
       components: bonus === 0 ? [] : [{ kind: "bonus", monthlyAmount: bonus }],
     })
     const stats = orgVariablePayStats([
-      // Three of five women receive (below the 4-receiver floor).
+      // Three of five women receive; the export floor is the signing
+      // projection's job, not this assembly's (ADR-0030).
       row(0, "Kvinna", 2000),
       row(1, "Kvinna", 2000),
       row(2, "Kvinna", 2000),
@@ -639,108 +741,79 @@ describe("assemblePayMappingReport", () => {
     ])
     expect(stats.womenSharePct).toBe(60)
     expect(stats.menSharePct).toBe(80)
-    expect(stats.womenMean).toBeNull()
-    expect(stats.womenMedian).toBeNull()
+    expect(stats.womenMean).toBe(2000)
+    expect(stats.womenMedian).toBe(2000)
     expect(stats.menMean).toBe(1000)
     expect(stats.menMedian).toBe(1000)
+    // The counts a floor needs ride along with the raw figures.
+    expect(stats.womenPriced).toBe(5)
+    expect(stats.womenReceivers).toBe(3)
+    expect(stats.menPriced).toBe(5)
+    expect(stats.menReceivers).toBe(4)
   })
 
-  it("computeHeaderBreaks marks rows that start a later page, never a table's first row", () => {
-    const doc = assemble({ withPrevious: true })
-    const breaks = computeHeaderBreaks(doc, {
-      // Equal work: the second row lands on a new page.
-      "equalWork:SWE|3|Senior": 5,
-      "equalWork:QA|4": 6,
-      "equalWork:Dev|1": 6,
-      // The women-dominated tables are tracked per group: a page step
-      // inside one group's list breaks there.
-      "wd:Nurse|2:Support|3": 7,
-      "wd:Clerk|4:Support|3": 8,
-      // Actions stay on one page: no break.
-      "actions:a1": 9,
-      "actions:a2": 9,
-    })
-    expect(breaks.has("equalWork:QA|4")).toBe(true)
-    // A later row on the SAME page as the break row adds no second header.
-    expect(breaks.has("equalWork:Dev|1")).toBe(false)
-    // A table's first row never breaks (there is nothing above it to
-    // continue from), and separate wd groups are separate tables.
-    expect(breaks.has("equalWork:SWE|3|Senior")).toBe(false)
-    expect(breaks.has("wd:Nurse|2:Support|3")).toBe(false)
-    expect(breaks.has("wd:Clerk|4:Support|3")).toBe(false)
-    expect(breaks.has("actions:a2")).toBe(false)
-    expect(breaks.size).toBe(1)
-  })
-
-  it("computeHeaderBreaks skips rows with no reported page", () => {
-    const doc = assemble({})
-    // A partial measurement (a row that never reported) must not fabricate
-    // a break from the gap in the sequence.
-    const breaks = computeHeaderBreaks(doc, {
-      "equalWork:SWE|3|Senior": 5,
-      "equalWork:Dev|1": 5,
-    })
-    expect(breaks.size).toBe(0)
-  })
-
-  // The union variant's data-level masking (kravbild
-  // docs/lonekartlaggning-facklig-rapport-kravbild.md §5): individual-adjacent
-  // details leave the doc, the group-level statutory content stays.
-  it("masks person-targeted action costs, drops notes, keeps everything else", () => {
-    const doc = assemble({})
-    // The fixture's person action carries no cost; give every row one so the
-    // per-kind masking is observable.
-    const withCosts = {
-      ...doc,
-      actions: doc.actions.map((action) => ({ ...action, cost: "10 000 kr" })),
+  it("floorVariablePayStats: drops a gender under the priced floor, its amounts under the receiver floor, and keeps the rest", () => {
+    const raw = {
+      womenPriced: 3,
+      menPriced: 5,
+      womenReceivers: 3,
+      menReceivers: 4,
+      womenSharePct: 100,
+      menSharePct: 80,
+      womenMean: 2000,
+      menMean: 1000,
+      womenMedian: 2000,
+      menMedian: 1000,
     }
-    const union = unionReportDoc(withCosts)
-
-    const group = union.actions.find((action) => action.kind === "group")
-    const person = union.actions.find((action) => action.kind === "person")
-    expect(group?.cost).toBe("10 000 kr")
-    // A person-targeted cost is in practice that individual's planned
-    // adjustment: masked per row, carried only by the roll-up.
-    expect(person?.cost).toBeNull()
-    expect(union.actionTotals).toEqual(withCosts.actionTotals)
-
-    // Internal working notes never enter the union document.
-    expect(doc.notes.length).toBeGreaterThan(0)
-    expect(union.notes).toEqual([])
-
-    // The statutory group-level content is untouched.
-    expect(union.equalWork).toEqual(doc.equalWork)
-    expect(union.summary).toEqual(doc.summary)
-    expect(union.collaboration).toEqual(doc.collaboration)
+    // Women: three priced people, under the group minimum: every figure goes.
+    // Men: five priced, four receivers, at the minimum: unchanged.
+    expect(floorVariablePayStats(raw)).toEqual({
+      ...raw,
+      womenSharePct: null,
+      womenMean: null,
+      womenMedian: null,
+    })
+    // Under the receiver floor only: the share stays, the amounts go.
+    expect(
+      floorVariablePayStats({ ...raw, womenPriced: 5, womenReceivers: 3 })
+    ).toEqual({
+      ...raw,
+      womenPriced: 5,
+      womenMean: null,
+      womenMedian: null,
+    })
+    // The raw stats are not mutated.
+    expect(raw.womenMean).toBe(2000)
   })
 
-  it("masks the previous year's person-targeted costs by the same rule", () => {
-    const doc = assemble({ withPrevious: true })
-    const previous = doc.previousEvaluation
-    expect(previous).not.toBeNull()
-    if (previous === null) throw new Error("unreachable")
-    const base = previous.actions[0]
-    if (base === undefined) throw new Error("unreachable")
-    // The fixture's prior action is group-targeted; recast one row per kind
-    // with a cost so the per-kind rule is observable in the OTHER table too
-    // (last year's person cost is still an individual's adjustment).
-    const withKinds = {
-      ...doc,
-      previousEvaluation: {
-        ...previous,
-        actions: [
-          { ...base, kind: "group" as const, cost: "M1000" },
-          {
-            ...base,
-            id: "prev-person",
-            kind: "person" as const,
-            cost: "M2000",
-          },
-        ],
-      },
-    }
-    const union = unionReportDoc(withKinds)
-    expect(union.previousEvaluation?.actions[0]?.cost).toBe("M1000")
-    expect(union.previousEvaluation?.actions[1]?.cost).toBeNull()
+  it("orgVariablePayStats: null only when a gender has no priced rows or no receivers", () => {
+    const row = (
+      index: number,
+      gender: "Kvinna" | "Man",
+      bonus: number
+    ): PayMappingSnapshotRow => ({
+      personPublicId: `p${gender}${index}`,
+      displayName: `Person ${index}`,
+      erased: false,
+      gender,
+      roleTitle: "SWE",
+      trackKey: "ic",
+      seniority: "Senior",
+      level: 3,
+      basicMonthly: 40000,
+      components: bonus === 0 ? [] : [{ kind: "bonus", monthlyAmount: bonus }],
+    })
+    const stats = orgVariablePayStats([
+      // No women at all: sharePct and amounts all null.
+      // Two men, neither receiving: sharePct is a real 0, amounts null.
+      row(0, "Man", 0),
+      row(1, "Man", 0),
+    ])
+    expect(stats.womenSharePct).toBeNull()
+    expect(stats.womenMean).toBeNull()
+    expect(stats.womenMedian).toBeNull()
+    expect(stats.menSharePct).toBe(0)
+    expect(stats.menMean).toBeNull()
+    expect(stats.menMedian).toBeNull()
   })
 })

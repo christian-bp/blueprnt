@@ -411,11 +411,12 @@ export interface AuditPayloads {
   // A rename diffs the run's own display name, which is org content (the pay
   // mapping's title), never person PII.
   "payMapping.runRenamed": { runId: string; changes: Changes }
-  // Pure marker payload (mirrors runReopened): the samverkan (collaboration)
-  // participants are people's names by design (statutory documentation
-  // content), so the trail records ONLY that the field changed, never the
-  // participants/description.
-  "payMapping.collaborationUpdated": { runId: string }
+  // The samverkan (collaboration) participants are people's names and the
+  // remarks are the parties' own words (statutory documentation content), so
+  // the trail records only THAT those fields changed plus the diff of the one
+  // non-identity field, the collaboration date (COLLABORATION_AUDIT_FIELDS:
+  // an ISO day string and the remarks changed-marker).
+  "payMapping.collaborationUpdated": { runId: string; changes: Changes }
   // A hard delete: the run's own display name (org content, never person
   // PII) plus the population count at deletion time, mirroring the
   // runStarted precedent's flat-stat shape. runId is excluded from rendering
@@ -475,21 +476,21 @@ export interface AuditPayloads {
     targetKind: ActionTargetKind
     targetLabel: string
   }
-  // The export-boundary log (ADR-0011 p.3): the trail records THAT the
-  // statutory report left the system, keyed to its run. Pure marker payload
-  // (mirrors runReopened): the document's contents are the frozen run itself,
-  // so nothing else belongs here.
-  "payMapping.reportExported": { runId: string }
-  // The machine-readable key-figures export leaves through the same boundary
-  // as the report and carries the same marker payload: the figures are
-  // derived from the frozen run, so the run id is the whole record.
+  // The machine-readable key-figures export leaves through the export
+  // boundary (ADR-0011 p.3) and carries a pure marker payload: the figures
+  // are derived from the frozen run, so the run id is the whole record.
   "payMapping.metricsExported": { runId: string }
-  // The union report (the masked samverkan variant) leaves through the same
-  // boundary with its own event kind, so the trail says WHICH document left.
-  "payMapping.unionReportExported": { runId: string }
-  // The archive package (ADR-0011 p.4: PDF + workbook + data.json in one
-  // ZIP) is ONE handling and logs one row, not one per inner file.
+  // The archive package (ADR-0011 p.4: the signing report, the detail
+  // appendix, the workbook and manifest.json in one ZIP) is ONE handling and
+  // logs one row, not one per inner file.
   "payMapping.archiveExported": { runId: string }
+  // The export boundary (ADR-0011 p.3): the trail records THAT a document
+  // left the system, keyed to its run, with its own event kind per document
+  // so the trail says WHICH one. Pure marker payload: the document's
+  // contents are the frozen run itself. The detail appendix is unmasked
+  // and downloadable by every member; this row is its only control.
+  "payMapping.signingReportExported": { runId: string }
+  "payMapping.detailAppendixExported": { runId: string }
 }
 
 // Admin audit payloads, keyed 1:1 by every PLATFORM_AUDIT_EVENTS value. Also

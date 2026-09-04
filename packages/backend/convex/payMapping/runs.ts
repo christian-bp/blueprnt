@@ -22,7 +22,13 @@ import { deriveMethodDrift } from "../assessment/results"
 import { buildMethodCheckInput } from "../evaluationModel/approval"
 import { buildModelEvidence } from "../evaluationModel/evidence"
 import { resolveContentLocale } from "../evaluationModel/model"
-import { AUDIT_EVENTS, resolveActorName } from "../lib/audit"
+import { levelRuleShape, zoneProfileRuleShape } from "../evaluationModel/tables"
+import {
+  AUDIT_EVENTS,
+  buildChanges,
+  COLLABORATION_AUDIT_FIELDS,
+  resolveActorName,
+} from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { uniqueSlug } from "../lib/slug"
@@ -35,6 +41,7 @@ import { basePayBasis } from "../people/tables"
 import { requiredDocumentationKeys } from "./gap"
 import { orgGap, type PricedRow } from "./orgGap"
 import { payGapFlag, payMappingRunStatus } from "./tables"
+import { assertAuditDayValid, plannedDateIso } from "./workLayer"
 
 const SYSTEM_VERSION = "v2-slice1"
 
@@ -356,6 +363,7 @@ export const startPayMappingRun = orgMutation({
       // the gap are all derived from the rows this insert precedes.
       populationCount: 0,
       withPayCount: 0,
+      actionCounter: 0,
       womenCount: 0,
       menCount: 0,
       orgGapPct: null,
@@ -602,16 +610,54 @@ export const getPayMappingRunBySlug = orgQuery({
       populationCount: v.number(),
       rows: v.array(snapshotRowShape),
       collaboration: v.union(
-        v.object({ participants: v.string(), description: v.string() }),
+        v.object({
+          participants: v.string(),
+          description: v.string(),
+          date: v.union(v.number(), v.null()),
+          remarks: v.union(v.string(), v.null()),
+        }),
         v.null()
       ),
-      // The frozen model's criteria, name + weight only: the report's method
-      // section cites the method the run was actually computed under
-      // (ADR-0008 reproducibility), never the live model. Ordered as the
-      // frozen evidence orders them.
-      frozenCriteria: v.array(
-        v.object({ name: v.string(), weightPoints: v.number() })
-      ),
+      // The run's own system version: with the frozen approval date it is
+      // the "method version" both report documents print.
+      systemVersion: v.string(),
+      // The frozen model's method (ADR-0008/ADR-0023): both report documents
+      // document the method the run was computed under, never the live one.
+      // Criteria in evidence order. No person data: the decider's and
+      // approver's ids are deliberately absent.
+      frozenMethod: v.object({
+        criteria: v.array(
+          v.object({
+            libraryKey: v.union(v.string(), v.null()),
+            name: v.string(),
+            dimensionKey: v.union(v.string(), v.null()),
+            weightPoints: v.number(),
+            anchorCount: v.number(),
+            order: v.union(v.number(), v.null()),
+            // The frozen documentation of the criterion: what it measures,
+            // why it is relevant and why it carries this weight. The detail
+            // appendix has to stand alone as a review document, so it prints
+            // them rather than pointing at the live model. Null on a frozen
+            // run that never had them (the evidence fields are optional).
+            purpose: v.union(v.string(), v.null()),
+            whyRelevant: v.union(v.string(), v.null()),
+            weightMotivation: v.union(v.string(), v.null()),
+          })
+        ),
+        levelRules: v.array(levelRuleShape),
+        zoneProfileRules: v.array(zoneProfileRuleShape),
+        workingConditions: v.union(
+          v.object({
+            status: v.union(
+              v.literal("active"),
+              v.literal("testedNotMaterial")
+            ),
+            motivation: v.string(),
+          }),
+          v.null()
+        ),
+        approvedAt: v.union(v.number(), v.null()),
+      }),
     })
   ),
   handler: async (ctx, { slug }) => {
@@ -633,17 +679,45 @@ export const getPayMappingRunBySlug = orgQuery({
       referenceDate: run.referenceDate,
       fullTimeHoursDefault: run.fullTimeHoursDefault,
       populationCount: run.populationCount,
-      collaboration: run.collaboration ?? null,
-      frozenCriteria: [...run.frozenModel.criteria]
-        .sort(
-          (a, b) =>
-            (a.order ?? Number.POSITIVE_INFINITY) -
-            (b.order ?? Number.POSITIVE_INFINITY)
-        )
-        .map((criterion) => ({
-          name: criterion.name,
-          weightPoints: criterion.weightPoints,
-        })),
+      collaboration:
+        run.collaboration === undefined
+          ? null
+          : {
+              participants: run.collaboration.participants,
+              description: run.collaboration.description,
+              date: run.collaboration.date ?? null,
+              remarks: run.collaboration.remarks ?? null,
+            },
+      systemVersion: run.systemVersion,
+      frozenMethod: {
+        criteria: [...run.frozenModel.criteria]
+          .sort(
+            (a, b) =>
+              (a.order ?? Number.POSITIVE_INFINITY) -
+              (b.order ?? Number.POSITIVE_INFINITY)
+          )
+          .map((criterion) => ({
+            libraryKey: criterion.libraryKey ?? null,
+            name: criterion.name,
+            dimensionKey: criterion.dimensionKey ?? null,
+            weightPoints: criterion.weightPoints,
+            anchorCount: criterion.anchorCount,
+            order: criterion.order ?? null,
+            purpose: criterion.purpose ?? null,
+            whyRelevant: criterion.whyRelevant ?? null,
+            weightMotivation: criterion.weightMotivation ?? null,
+          })),
+        levelRules: run.frozenModel.levelRules ?? [],
+        zoneProfileRules: run.frozenModel.zoneProfileRules ?? [],
+        workingConditions:
+          run.frozenModel.workingConditions === undefined
+            ? null
+            : {
+                status: run.frozenModel.workingConditions.status,
+                motivation: run.frozenModel.workingConditions.motivation,
+              },
+        approvedAt: run.frozenModel.approval?.approvedAt ?? null,
+      },
       rows: rows.map((r) => ({
         personPublicId: r.personPublicId,
         displayName: r.displayName,
@@ -770,41 +844,76 @@ export const completePayMappingRun = orgMutation({
 })
 
 // The samverkansredogörelse (DL 3 kap. 11-14 §§): who the employer
-// cooperated with and how. Trims both fields; when both are empty after
-// trim, clears the field entirely (never stores an empty-string object).
-// AUDIT PRIVACY: participants are people's names by design (statutory
-// documentation content on this run document), so the trail logs a pure
-// { runId } marker only, mirroring reopenPayMappingRun's precedent; the
-// names themselves must NEVER enter the audit payload/searchText.
+// cooperated with, how, optionally on which day, and optionally the parties'
+// own remarks. Trims every text field; when the two required ones are empty
+// after trim, clears the field entirely (never stores an empty-string
+// object), date and remarks included. Date and remarks are optional and
+// outside the done rule (both required text fields non-empty): the date
+// prints on the signing report's formalities page, the remarks in the detail
+// appendix's practice chapter.
+// AUDIT PRIVACY: participants are people's names by design and the remarks
+// are the parties' own words (statutory documentation content on this run
+// document), so the trail diffs ONLY the date (as an ISO day) plus a
+// changed-marker for the remarks (COLLABORATION_AUDIT_FIELDS); no free text
+// must ever enter the audit payload/searchText.
 export const setPayMappingCollaboration = orgMutation({
   args: {
     runId: v.id("payMappingRuns"),
     participants: v.string(),
     description: v.string(),
+    date: v.optional(v.number()),
+    remarks: v.optional(v.string()),
   },
   returns: v.null(),
-  handler: async (ctx, { runId, participants, description }) => {
+  handler: async (ctx, { runId, participants, description, date, remarks }) => {
     const run = await ctx.db.get(runId)
     if (run === null || run.orgId !== ctx.orgId)
       throw appError(ERROR_CODES.notFound)
     if (run.status === "completed")
       throw appError(ERROR_CODES.payMappingRunCompleted)
+    if (date !== undefined) assertAuditDayValid(date)
 
     const trimmedParticipants = participants.trim()
     const trimmedDescription = description.trim()
-    if (trimmedParticipants === "" && trimmedDescription === "") {
+    const trimmedRemarks = remarks?.trim() ?? ""
+    const cleared = trimmedParticipants === "" && trimmedDescription === ""
+    const nextDate = cleared ? undefined : date
+    // An empty remark is no remark: the key is omitted rather than stored as
+    // an empty string, so the appendix's "not documented" reading is exact.
+    const nextRemarks =
+      cleared || trimmedRemarks === "" ? undefined : trimmedRemarks
+    if (cleared) {
       await ctx.db.patch(runId, { collaboration: undefined })
     } else {
       await ctx.db.patch(runId, {
         collaboration: {
           participants: trimmedParticipants,
           description: trimmedDescription,
+          ...(nextDate !== undefined ? { date: nextDate } : {}),
+          ...(nextRemarks !== undefined ? { remarks: nextRemarks } : {}),
         },
       })
     }
+    const dateView = (value: number | undefined) => ({
+      collaborationDate: value === undefined ? null : plannedDateIso(value),
+    })
+    const remarksChanged =
+      (run.collaboration?.remarks ?? "") !== (nextRemarks ?? "")
     await ctx.audit.log({
       type: AUDIT_EVENTS.payMappingCollaborationUpdated,
-      payload: { runId },
+      payload: {
+        runId,
+        changes: {
+          ...buildChanges(
+            dateView(run.collaboration?.date),
+            dateView(nextDate),
+            COLLABORATION_AUDIT_FIELDS
+          ),
+          ...(remarksChanged
+            ? { collaborationRemarksChanged: { from: null, to: true } }
+            : {}),
+        },
+      },
     })
     return null
   },

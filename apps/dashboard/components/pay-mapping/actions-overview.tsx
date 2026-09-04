@@ -27,8 +27,13 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
-import { CheckListIcon, MoreVerticalIcon } from "@hugeicons/core-free-icons"
+import {
+  CheckListIcon,
+  MoreVerticalIcon,
+  Note01Icon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import type { PraxisAreaKey } from "@workspace/constants"
 import { useMutation } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -48,6 +53,7 @@ import { DocumentationMenu, documentationFor } from "./documentation-controls"
 import {
   type ActionStatus,
   type ActionTargetWire,
+  actionRef,
   COST_UNITS,
   type CostUnit,
   type PayMappingActionWire,
@@ -63,14 +69,21 @@ const DUE_WINDOW_DAYS = 30
 // One shared constant sizes the pager AND the loading skeleton, so the
 // table never grows when the first page arrives.
 const PAGE_SIZE = 25
+// Sizes the number column; table-fixed gives the skeleton the same width
+// from this header.
+const NUMBER_COLUMN_WIDTH = "w-14"
 
-// Whether a record belongs to the lika arbete flow or the women-dominated
-// chapter: the overview's "type of comparison" filter, and the deep link
-// back into the analysis.
-function targetScope(target: ActionTargetWire): "equalWork" | "equivalentWork" {
+// Which chapter a record belongs to: the lika arbete flow, the
+// women-dominated chapter, or the practice review. The overview's "type of
+// comparison" filter and the deep link back into the analysis.
+function targetScope(
+  target: ActionTargetWire
+): "equalWork" | "equivalentWork" | "praxis" {
   // A comparison only ever belongs to the women-dominated chapter: it is
   // one of the jobs a dominated group is measured against.
-  return target.kind === "comparison" ? "equivalentWork" : target.scope
+  if (target.kind === "comparison") return "equivalentWork"
+  if (target.kind === "praxis") return "praxis"
+  return target.scope
 }
 
 // The deep link that opens the record's OWN group in the analysis. Chapters
@@ -88,7 +101,8 @@ function analysisStepHref(
 ): string {
   const scope = targetScope(target)
   const segment = chapterSegment(scope)
-  return `${analysisHref}/${segment}?step=${scope}:${encodeURIComponent(target.groupKey)}`
+  const key = target.kind === "praxis" ? target.area : target.groupKey
+  return `${analysisHref}/${segment}?step=${scope}:${encodeURIComponent(key)}`
 }
 
 // A summary-strip figure: a NumberFlow once the value is known (statuses
@@ -110,6 +124,7 @@ const MENU_PLACEHOLDER = (
 )
 
 const ACTION_SKELETON_COLUMNS: TableSkeletonColumn[] = [
+  { className: "w-8" },
   { className: "h-8" },
   { className: "h-5 w-16 rounded-full" },
   { className: "w-24" },
@@ -141,6 +156,9 @@ export function PayMappingActionsOverview() {
     unit === null || unit === "oneOff" ? "" : t(`costUnitSuffix.${unit}`)
   const tToolbar = useTranslations("dashboard.payMapping.toolbar")
   const tToast = useTranslations("dashboard.toast")
+  const tReview = useTranslations("dashboard.payMapping.review")
+  const praxisAreaLabel = (area: PraxisAreaKey) =>
+    tReview(`praxis.${area}.title`)
   const format = useFormatter()
   const money = useMoney()
   const pathname = usePathname()
@@ -412,14 +430,13 @@ export function PayMappingActionsOverview() {
               </SelectContent>
             </Select>
             <Select
-              // The options are exactly targetScope's range. It used to also
-              // offer the cross-level pair, which no target has resolved to
-              // since comparisons became part of the equivalent-work chapter,
-              // so choosing it silently emptied the list.
+              // The options are exactly targetScope's range: the two
+              // comparison chapters and the practice review.
               items={{
                 all: tOverview("scopeAll"),
                 equalWork: tOverview("scopeEqualWork"),
                 equivalentWork: tOverview("scopeEquivalentWork"),
+                praxis: tOverview("scopePraxis"),
               }}
               value={scopeFilter}
               onValueChange={onSelectValue(filterSetter(setScopeFilter))}
@@ -434,6 +451,9 @@ export function PayMappingActionsOverview() {
                 </SelectItem>
                 <SelectItem value="equivalentWork">
                   {tOverview("scopeEquivalentWork")}
+                </SelectItem>
+                <SelectItem value="praxis">
+                  {tOverview("scopePraxis")}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -482,6 +502,7 @@ export function PayMappingActionsOverview() {
           <FrameTable
             title={tOverview("actionsHeading")}
             count={loading ? undefined : visibleActions.length}
+            countIcon={CheckListIcon}
             footer={
               visibleActions.length > PAGE_SIZE ? (
                 <FrameTableFooter
@@ -512,9 +533,12 @@ export function PayMappingActionsOverview() {
               </p>
             ) : (
               <div className="overflow-x-auto">
-                <Table className="min-w-[60rem] table-fixed">
+                <Table className="min-w-[64rem] table-fixed">
                   <TableHeader>
                     <TableRow>
+                      <TableHead className={NUMBER_COLUMN_WIDTH}>
+                        {t("number")}
+                      </TableHead>
                       <TableHead className="w-36">
                         {tOverview("columns.status")}
                       </TableHead>
@@ -552,6 +576,9 @@ export function PayMappingActionsOverview() {
                         )
                         return (
                           <TableRow key={action.actionId}>
+                            <TableCell className="tabular-nums">
+                              {actionRef(action.number)}
+                            </TableCell>
                             <TableCell>
                               {/* Status moves inline: the follow-up years are
                                   spent here, not back in the analysis. Allowed
@@ -597,8 +624,10 @@ export function PayMappingActionsOverview() {
                                 )}
                                 className="underline underline-offset-4"
                               >
-                                {targetGroupLabel(action.target) ||
-                                  t(`targetKind.${action.target.kind}`)}
+                                {targetGroupLabel(
+                                  action.target,
+                                  praxisAreaLabel
+                                ) || t(`targetKind.${action.target.kind}`)}
                               </Link>
                             </TableCell>
                             <TableCell>
@@ -640,8 +669,10 @@ export function PayMappingActionsOverview() {
                                   runId={run.runId}
                                   target={action.target}
                                   targetLabel={
-                                    targetGroupLabel(action.target) ||
-                                    t(`targetKind.${action.target.kind}`)
+                                    targetGroupLabel(
+                                      action.target,
+                                      praxisAreaLabel
+                                    ) || t(`targetKind.${action.target.kind}`)
                                   }
                                   actions={own.actions}
                                   notes={own.notes}
@@ -664,6 +695,7 @@ export function PayMappingActionsOverview() {
           <FrameTable
             title={tOverview("notesHeading")}
             count={loading ? undefined : visibleNotes.length}
+            countIcon={Note01Icon}
             toolbar={
               totals !== undefined && totals.discussion > 0 ? (
                 <span className="text-muted-foreground text-sm">
@@ -744,7 +776,7 @@ export function PayMappingActionsOverview() {
                               href={analysisStepHref(analysisHref, note.target)}
                               className="underline underline-offset-4"
                             >
-                              {targetGroupLabel(note.target) ||
+                              {targetGroupLabel(note.target, praxisAreaLabel) ||
                                 t(`targetKind.${note.target.kind}`)}
                             </Link>
                           </TableCell>

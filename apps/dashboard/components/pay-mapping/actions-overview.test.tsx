@@ -103,6 +103,7 @@ function action(
   return {
     actionId: "a1" as Id<"payMappingActions">,
     target: { kind: "group", scope: "equalWork", groupKey: "SWE|3" },
+    number: 1,
     problem: "Unexplained gap",
     plannedAction: "Salary review",
     reason: null,
@@ -272,6 +273,51 @@ describe("PayMappingActionsOverview", () => {
     expect(
       screen.getAllByRole("link", { name: "SWE" })[0]?.getAttribute("href")
     ).toBe("/pay-mappings/2026/analysis/equal-work?step=equalWork:SWE%7C3")
+  })
+
+  it("shows each action's number and links a practice action to its area", () => {
+    renderOverview({
+      actions: [
+        action({ number: 7 }),
+        action({
+          actionId: "a2" as Id<"payMappingActions">,
+          number: 8,
+          target: { kind: "praxis", area: "payPolicy" },
+          problem: "Unclear criteria",
+        }),
+      ],
+    })
+    const rows = actionRowTexts()
+    expect(rows[0]).toContain("#7")
+    expect(rows[1]).toContain("#8")
+    expect(rows[1]).toContain(
+      messages.dashboard.payMapping.review.praxis.payPolicy.title
+    )
+    const link = screen.getByRole("link", {
+      name: messages.dashboard.payMapping.review.praxis.payPolicy.title,
+    })
+    expect(link.getAttribute("href")).toBe(
+      "/pay-mappings/2026/analysis/praxis?step=praxis:payPolicy"
+    )
+  })
+
+  it("narrows to practice actions with the scope filter", async () => {
+    renderOverview({
+      actions: [
+        action({ number: 1 }),
+        action({
+          actionId: "a2" as Id<"payMappingActions">,
+          number: 2,
+          target: { kind: "praxis", area: "benefits" },
+          problem: "Bonus rules",
+        }),
+      ],
+    })
+    await pickSelectOption(screen.getByLabelText(mo.scopeAll), mo.scopePraxis)
+    await waitFor(() => {
+      expect(actionRowTexts()).toHaveLength(1)
+    })
+    expect(actionRowTexts()[0]).toContain("Bonus rules")
   })
 
   it("narrows the list by status and says so when nothing matches", async () => {

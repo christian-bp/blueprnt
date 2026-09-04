@@ -1,0 +1,93 @@
+---
+title: Rapporter og downloads
+description: Signeringsrapporten, detaljebilaget, nøgletalsarbejdsbogen og arkivpakken, hvem hvert dokument er til, hvad der maskeres hvor, og hvordan hver download logges.
+section: pay-mapping
+---
+
+Hver lønkortlægning har en fane Rapport med fire downloads, alle bygget
+af netop den kortlægnings frosne øjebliksbillede og intet andet. De samme
+fire ligger bag rækkemenuen på listen
+[Lønkortlægninger](/pay-mappings), under "Hent".
+
+## Signeringsrapporten
+
+"Signeringsrapport" er det dokument, I deler med fagforeningsparterne og
+underskriver sammen: seks til otte sider med aggregater, antal, statusser,
+konklusioner og handlingsplan. Første side udskriver, hvem der deltog i
+samarbejdet, hvordan det foregik, og den samarbejdsdato, der er registreret
+i kapitlet [Samarbejde](/docs/collaboration), med tomme underskriftslinjer
+for arbejdsgiveren og fagforeningsparten. Underskriften sker på papir; der
+findes ingen underskrift i appen.
+
+Den udskriver aldrig en gruppes beløb. Et kønsopdelt tal maskeres, når
+gruppen har færre end 4 personer eller færre end 2 af et køn, og et tal
+for hele gruppen, når gruppen har færre end 4 personer; rapporten angiver,
+hvor mange grupper der har utilstrækkeligt grundlag for bred rapportering,
+og at bilaget viser dem i deres helhed. Sammenfatningssiden viser kvinders
+median- og gennemsnitsløn i procent af mænds, fordelingen per lønkvartil
+og tallene bag én status per gruppe med lige arbejde og per sammenligning
+af ligeværdigt arbejde: intet tiltag nødvendigt, saglig grund
+dokumenteret, tiltag besluttet eller videre analyse. Sidste side bærer en
+tjekliste før underskrift, beregnet ud fra kortlægningen: alle
+sammenligninger, der kræver dokumentation, er vurderet, grunde eller
+tiltag er koblet, samarbejdet er dokumenteret, og begge dokumenter stammer
+fra samme frosne version.
+
+## Detaljebilaget
+
+"Detaljebilag" er den fuldstændige skriftlige dokumentation: hver gruppe
+med lige arbejde med sine tal for grundløn og samlet løn, medianer,
+status, grunde, notat og koblede tiltag; hver kvindedomineret gruppe og
+hver sammenligning; hvert praksisområde, samarbejdsposten, hvert tiltag
+med alle sine felter og hvert notat; samt den frosne metode med
+kriterier, vægte, niveau- og zoneregler, beslutningen om arbejdsforhold og
+tærsklerne. Metodekapitlet definerer også lige og ligeværdigt arbejde,
+udskriver, hvad hvert kriterium måler, hvorfor det er relevant, og hvorfor
+det bærer sin vægt, og angiver, hvordan en forskel beregnes, så bilaget
+kan gennemgås alene. Intet er maskeret, og dokumentet siger det.
+
+Ethvert medlem af organisationen kan downloade det. Der er ingen
+rollespærre: hver download registreres i
+[hændelsesloggen](/docs/audit-log) som "Detaljebilag eksporteret", og
+loggen er kontrollen. Omslaget angiver, at dokumentet er internt,
+indeholder personnære lønoplysninger og er beregnet til organisationens
+HR-funktion og, på anmodning, samarbejdsparterne.
+
+## Udkast og endelig
+
+Begge dokumenter mærker sig selv "UDKAST: kortlægningen er ikke afsluttet",
+indtil kortlægningen er afsluttet, og "ENDELIG" derefter; se
+[Livscyklus og statusser](/docs/run-lifecycle). Begge
+bærer samme identitetsblok: organisation, kortlægningens navn,
+referencedato, tidspunkt for dataudtræk, metodeversion og
+genereringstidspunkt, så en signeringsrapport og et detaljebilag fra samme
+kortlægning altid stemmer overens.
+
+## Nøgletal (Excel)
+
+"Nøgletal" er en arbejdsbog med organisationens løngabstal og tabellerne
+per gruppe, skrevet som tal til videre analyse i andre værktøjer. Små
+grupper maskeres der efter de samme tærskler som i signeringsrapporten, og
+arbejdsbogens egen note forklarer de tomme celler.
+
+## Arkivpakken
+
+"Arkivpakke" er en ZIP med signeringsrapporten, detaljebilaget,
+nøgletalsarbejdsbogen og et manifest, der angiver hver fil med størrelse
+og SHA-256-kontrolsum, så pakkens integritet kan verificeres senere.
+Opbevar den i mindst fem år.
+
+## Hver download logges
+
+Hver download skriver sin egen post i hændelsesloggen, før filen
+udleveres: "Signeringsrapport eksporteret", "Detaljebilag eksporteret",
+"Lønkortlægningens nøgletal eksporteret" eller "Arkivpakke eksporteret".
+Kan posten ikke skrives, downloades ingen fil, og appen beder jer prøve
+igen.
+
+## Relateret
+
+- [Samarbejde](/docs/collaboration)
+- [Handlinger og noter](/docs/actions-and-notes)
+- [Hændelsesloggen](/docs/audit-log)
+- [Livscyklus og statusser](/docs/run-lifecycle)

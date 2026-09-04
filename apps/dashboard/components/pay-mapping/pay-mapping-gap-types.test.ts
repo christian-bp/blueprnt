@@ -4,6 +4,8 @@ import {
   fteTotalMonthly,
   isHourlyRow,
   type PayMappingSnapshotRow,
+  targetGroupLabel,
+  targetMatches,
 } from "./pay-mapping-gap-types"
 
 // A minimal priced row, overridden per test. basis/basicAmount/hoursPerMonth
@@ -91,5 +93,49 @@ describe("isHourlyRow", () => {
     expect(isHourlyRow(makeRow({ basis: "hourly" }))).toBe(true)
     expect(isHourlyRow(makeRow({ basis: "monthly" }))).toBe(false)
     expect(isHourlyRow(makeRow())).toBe(false)
+  })
+})
+
+describe("targetGroupLabel", () => {
+  const praxisLabel = (area: string) => `Area ${area}`
+  it("names a group by its role title, a comparison by the comparator, a praxis target by the injected area label", () => {
+    expect(
+      targetGroupLabel(
+        { kind: "group", scope: "equalWork", groupKey: "SWE|3" },
+        praxisLabel
+      )
+    ).toBe("SWE")
+    expect(
+      targetGroupLabel(
+        { kind: "comparison", groupKey: "Nurse|2", comparisonKey: "Support|3" },
+        praxisLabel
+      )
+    ).toBe("Support")
+    expect(
+      targetGroupLabel({ kind: "praxis", area: "payPolicy" }, praxisLabel)
+    ).toBe("Area payPolicy")
+  })
+})
+
+describe("targetMatches", () => {
+  it("matches praxis targets by area only", () => {
+    expect(
+      targetMatches(
+        { kind: "praxis", area: "payPolicy" },
+        { kind: "praxis", area: "payPolicy" }
+      )
+    ).toBe(true)
+    expect(
+      targetMatches(
+        { kind: "praxis", area: "payPolicy" },
+        { kind: "praxis", area: "benefits" }
+      )
+    ).toBe(false)
+    expect(
+      targetMatches(
+        { kind: "praxis", area: "payPolicy" },
+        { kind: "group", scope: "equalWork", groupKey: "payPolicy" }
+      )
+    ).toBe(false)
   })
 })

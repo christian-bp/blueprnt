@@ -10,12 +10,21 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { DatePicker } from "@/components/date-picker"
 
-function renderPicker(value: string, onChange = vi.fn()) {
-  render(
+function picker(value: string, onChange: () => void, disabled = false) {
+  return (
     <NextIntlClientProvider locale="en" messages={messages}>
-      <DatePicker value={value} onChange={onChange} ariaLabel="Start date" />
+      <DatePicker
+        value={value}
+        onChange={onChange}
+        ariaLabel="Start date"
+        disabled={disabled}
+      />
     </NextIntlClientProvider>
   )
+}
+
+function renderPicker(value: string, onChange = vi.fn()) {
+  render(picker(value, onChange))
   return onChange
 }
 
@@ -66,6 +75,25 @@ describe("DatePicker", () => {
       target: { value: "2019" },
     })
     expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it("a disabled picker does not open", () => {
+    render(picker("2015-08-17", vi.fn(), true))
+    fireEvent.click(screen.getByRole("button", { name: "Start date" }))
+    expect(screen.queryByRole("combobox", { name: /year/i })).toBeNull()
+  })
+
+  it("locking the surface closes an open picker for good", async () => {
+    const onChange = vi.fn()
+    const { rerender } = render(picker("2015-08-17", onChange))
+    await openPicker()
+    rerender(picker("2015-08-17", onChange, true))
+    await waitFor(() => {
+      expect(screen.queryByRole("combobox", { name: /year/i })).toBeNull()
+    })
+    // Reopening the run must not pop the panel back open on its own.
+    rerender(picker("2015-08-17", onChange, false))
+    expect(screen.queryByRole("combobox", { name: /year/i })).toBeNull()
   })
 
   it("clicking a day still commits and closes", async () => {

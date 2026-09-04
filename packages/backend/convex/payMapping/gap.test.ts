@@ -47,6 +47,7 @@ async function seedRun(
       fullTimeHoursDefault: 165,
       populationCount: rows.length,
       withPayCount: rows.filter((r) => r.basicMonthly !== null).length,
+      actionCounter: 0,
       womenCount: rows.filter((r) => r.gender === "Kvinna").length,
       menCount: rows.filter((r) => r.gender === "Man").length,
       orgGapPct: null,

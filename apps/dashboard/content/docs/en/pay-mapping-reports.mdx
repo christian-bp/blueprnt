@@ -1,0 +1,91 @@
+---
+title: Reports and downloads
+description: The signing report, the detail appendix, the key-figures workbook and the archive package, who each is for, what is masked where, and how every download is logged.
+section: pay-mapping
+---
+
+Every pay mapping has a Report tab with four downloads, all built from
+that mapping's frozen snapshot and nothing else. The same four sit behind
+the row menu on the [pay mappings](/pay-mappings) list, under "Download".
+
+## The signing report
+
+"Signing report" is the document you share with the union parties and
+sign together: six to eight pages of aggregates, counts, statuses,
+conclusions and the action plan. Its first page prints who took part in
+the collaboration, how it happened and the collaboration date recorded in
+the [Collaboration](/docs/collaboration) chapter, with blank signature
+lines for the employer and the union party. Signing happens on paper;
+there is no in-app signing.
+
+It never prints a group's amount. A gender-split figure is masked when the
+group has fewer than 4 people or fewer than 2 of either gender, and a
+whole-group figure when the group has fewer than 4 people; the report
+states how many groups have insufficient basis for broad reporting and
+that the appendix shows them in full. The summary page shows women's
+median and average pay as a share of men's, the pay-quartile
+distribution, and the counts behind one status per equal-work group and
+equivalent-work comparison: no action needed, objective reason documented,
+action decided, or further analysis. The last page carries a pre-signing
+checklist computed from the mapping: every comparison requiring
+documentation is assessed, reasons or actions are linked, collaboration is
+documented, and both documents derive from the same frozen version.
+
+## The detail appendix
+
+"Detail appendix" is the complete written documentation: every equal-work
+group with its base salary and total compensation figures, medians,
+status, reasons, note and linked actions; every women-dominated group and
+every comparison; every practice area, the collaboration record, every
+action with all its fields and every note; and the frozen method with
+criteria, weights, level and zone rules, the working-conditions decision
+and the thresholds. Its method chapter also defines equal and equivalent
+work, prints what each criterion measures, why it is relevant and why it
+carries its weight, and states how a difference is computed, so the
+appendix can be reviewed on its own. Nothing is masked, and the document
+says so.
+
+Any member of the organization can download it. There is no role gate:
+every download is recorded in the [audit log](/docs/audit-log) as
+"Detail appendix exported", and the log is the control. The cover states
+that the document is internal, contains person-near pay data and is
+intended for the organization's HR function and, on request, the
+collaboration parties.
+
+## Draft and final
+
+Both documents label themselves "DRAFT: the pay mapping is not yet
+completed" until the mapping is completed and "FINAL" afterwards; see
+[Pay mapping lifecycle and statuses](/docs/run-lifecycle). Both carry the
+same identity block: organization, mapping name, reference date, data
+extraction time, method version and generation time, so a signing report
+and a detail appendix from the same mapping always match.
+
+## Key figures (Excel)
+
+"Key figures" is a workbook with the organization's pay-gap figures and
+the per-group tables, written as numbers for further analysis in other
+tools. Small groups are masked there under the same thresholds as the
+signing report, and the sheet's own note explains the empty cells.
+
+## The archive package
+
+"Archive package" is a ZIP holding the signing report, the detail
+appendix, the key-figures workbook and a manifest that lists each file
+with its size and SHA-256 checksum, so the package's integrity can be
+verified later. Keep it for at least five years.
+
+## Every download is logged
+
+Each download writes its own entry in the audit log before the file is
+handed over: "Signing report exported", "Detail appendix exported", "Pay
+mapping key figures exported" or "Archive package exported". If the entry
+cannot be written, no file is downloaded and the app asks you to try
+again.
+
+## Related
+
+- [Collaboration](/docs/collaboration)
+- [Actions and notes](/docs/actions-and-notes)
+- [Audit log](/docs/audit-log)
+- [Pay mapping lifecycle and statuses](/docs/run-lifecycle)

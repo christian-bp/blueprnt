@@ -53,6 +53,7 @@ const TARGET: ActionTargetWire = {
 const EXISTING: PayMappingActionWire = {
   actionId: "a1" as Id<"payMappingActions">,
   target: TARGET,
+  number: 1,
   problem: "Unexplained gap",
   plannedAction: "Salary review",
   reason: "experience",

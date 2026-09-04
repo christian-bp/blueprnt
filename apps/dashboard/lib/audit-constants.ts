@@ -134,6 +134,7 @@ export const TARGET_KIND_VALUE_KEYS: Record<ActionTargetKind, string> = {
   group: "payMapping.actions.targetKind.group",
   person: "payMapping.actions.targetKind.person",
   comparison: "payMapping.actions.targetKind.comparison",
+  praxis: "payMapping.actions.targetKind.praxis",
 }
 
 // assignment.set `senioritySource`: the same concept the people register's
@@ -376,6 +377,10 @@ const CODED_FIELD_DOMAINS: Record<string, Record<string, string>> = {
   scope: SCOPE_VALUE_KEYS,
   finding: FINDING_VALUE_KEYS,
   groupLabel: PRAXIS_AREA_VALUE_KEYS,
+  // payMapping.action* `targetLabel` when the record anchors to a practice
+  // area (the raw area key); a group-targeted record's targetLabel is a role
+  // title and resolves to nothing here, so it renders as written.
+  targetLabel: PRAXIS_AREA_VALUE_KEYS,
   senioritySource: SENIORITY_SOURCE_VALUE_KEYS,
   role: MEMBER_ROLE_VALUE_KEYS,
   status: STATUS_VALUE_KEYS,
@@ -494,10 +499,11 @@ export const AUDIT_DATE_FIELDS: ReadonlySet<string> = new Set([
 ])
 
 // ISO-date-string payload fields (person employmentStartDate, birthDate,
-// action plannedDate): localized through the same dateLabel, so one sheet
-// never mixes "2024-01-15" with "Jan 15, 2024".
+// action plannedDate, the run's collaborationDate): localized through the
+// same dateLabel, so one sheet never mixes "2024-01-15" with "Jan 15, 2024".
 export const AUDIT_ISO_DATE_FIELDS: ReadonlySet<string> = new Set([
   "employmentStartDate",
   "birthDate",
   "plannedDate",
+  "collaborationDate",
 ])

@@ -11,16 +11,16 @@ import { usePayMappingMetricsExport } from "./pay-mapping-metrics-export"
 import {
   ArchiveDocumentPanel,
   ArchiveDownloadButton,
+  DetailDocumentPanel,
+  DetailDownloadButton,
   MetricsDocumentPanel,
   MetricsDownloadButton,
-  ReportDocumentPanel,
-  ReportDownloadButton,
   ReportsFrame,
-  UnionDocumentPanel,
-  UnionDownloadButton,
+  SigningDocumentPanel,
+  SigningDownloadButton,
 } from "./pay-mapping-report"
-import type { ReportVariant } from "./pay-mapping-report-doc"
 import {
+  type ReportDocumentKind,
   type ReportExportData,
   usePayMappingReportExport,
 } from "./pay-mapping-report-export"
@@ -64,13 +64,9 @@ export function PayMappingReportDownload() {
       ? "skip"
       : { orgId, runId: previousRun.runId }
   )
-  const { busy, exportReport, captureHost } = usePayMappingReportExport()
+  const { busy, exportDocument } = usePayMappingReportExport()
   const { busy: metricsBusy, exportMetrics } = usePayMappingMetricsExport()
-  const {
-    busy: archiveBusy,
-    exportArchive,
-    captureHost: archiveCaptureHost,
-  } = usePayMappingArchiveExport()
+  const { busy: archiveBusy, exportArchive } = usePayMappingArchiveExport()
 
   const ready =
     run !== undefined &&
@@ -83,9 +79,10 @@ export function PayMappingReportDownload() {
       (previousActions !== undefined && previousGap !== undefined))
 
   const final = run !== undefined && run.status === "completed"
-  // Which PDF variant is mid-export: the hook's busy covers both, so the
+  // Which document is mid-export: the hook's busy covers both, so the
   // spinner needs its own record of whose button was pressed.
-  const [activeVariant, setActiveVariant] = useState<ReportVariant | null>(null)
+  const [activeDocument, setActiveDocument] =
+    useState<ReportDocumentKind | null>(null)
   // One export at a time: the renders are heavy and each button shows its
   // own spinner, so every other action waits.
   const anyBusy = busy || metricsBusy || archiveBusy
@@ -119,14 +116,14 @@ export function PayMappingReportDownload() {
     }
   }
 
-  async function onExport(variant: ReportVariant) {
+  async function onExport(kind: ReportDocumentKind) {
     const data = collectExportData()
     if (data === null) return
-    setActiveVariant(variant)
+    setActiveDocument(kind)
     try {
-      await exportReport(data, variant)
+      await exportDocument(data, kind)
     } finally {
-      setActiveVariant(null)
+      setActiveDocument(null)
     }
   }
 
@@ -137,59 +134,55 @@ export function PayMappingReportDownload() {
   }
 
   return (
-    <>
-      {/* The DRAFT caveat is the frame's only status word, worn as the
-          header's chip (the runs list's status-badge convention). */}
-      <ReportsFrame
-        status={
-          run !== undefined && !final ? (
-            <Badge variant="outline">{t("cardDraft")}</Badge>
-          ) : undefined
+    /* The DRAFT caveat is the frame's only status word, worn as the
+       header's chip (the runs list's status-badge convention). */
+    <ReportsFrame
+      status={
+        run !== undefined && !final ? (
+          <Badge variant="outline">{t("cardDraft")}</Badge>
+        ) : undefined
+      }
+    >
+      <SigningDocumentPanel
+        action={
+          <SigningDownloadButton
+            busy={busy && activeDocument === "signing"}
+            disabled={!ready || anyBusy}
+            onClick={() => void onExport("signing")}
+          />
         }
-      >
-        <ReportDocumentPanel
-          action={
-            <ReportDownloadButton
-              busy={busy && activeVariant === "statutory"}
-              disabled={!ready || anyBusy}
-              onClick={() => void onExport("statutory")}
-            />
-          }
-        />
-        <UnionDocumentPanel
-          action={
-            <UnionDownloadButton
-              busy={busy && activeVariant === "union"}
-              disabled={!ready || anyBusy}
-              onClick={() => void onExport("union")}
-            />
-          }
-        />
-        <MetricsDocumentPanel
-          action={
-            <MetricsDownloadButton
-              busy={metricsBusy}
-              disabled={run === undefined || gap === undefined || anyBusy}
-              onClick={() => {
-                if (run !== undefined && gap !== undefined) {
-                  void exportMetrics({ run, gap })
-                }
-              }}
-            />
-          }
-        />
-        <ArchiveDocumentPanel
-          action={
-            <ArchiveDownloadButton
-              busy={archiveBusy}
-              disabled={!ready || anyBusy}
-              onClick={() => void onExportArchive()}
-            />
-          }
-        />
-      </ReportsFrame>
-      {captureHost}
-      {archiveCaptureHost}
-    </>
+      />
+      <DetailDocumentPanel
+        action={
+          <DetailDownloadButton
+            busy={busy && activeDocument === "detail"}
+            disabled={!ready || anyBusy}
+            onClick={() => void onExport("detail")}
+          />
+        }
+      />
+      <MetricsDocumentPanel
+        action={
+          <MetricsDownloadButton
+            busy={metricsBusy}
+            disabled={run === undefined || gap === undefined || anyBusy}
+            onClick={() => {
+              if (run !== undefined && gap !== undefined) {
+                void exportMetrics({ run, gap })
+              }
+            }}
+          />
+        }
+      />
+      <ArchiveDocumentPanel
+        action={
+          <ArchiveDownloadButton
+            busy={archiveBusy}
+            disabled={!ready || anyBusy}
+            onClick={() => void onExportArchive()}
+          />
+        }
+      />
+    </ReportsFrame>
   )
 }

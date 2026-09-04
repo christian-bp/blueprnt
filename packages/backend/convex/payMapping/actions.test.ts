@@ -120,6 +120,7 @@ async function seedRun(
       fullTimeHoursDefault: 165,
       populationCount: rows.length,
       withPayCount: rows.length,
+      actionCounter: 0,
       womenCount: 1,
       menCount: 3,
       orgGapPct: null,
@@ -645,6 +646,217 @@ describe("payMapping actions", () => {
       runId,
     })
     expect(list).toEqual([])
+  })
+
+  it("accepts a praxis target only when the area's finding is found, labels it by the area key, and refuses it on notes", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, runId, asHr } = await seedRun(t)
+
+    // No praxis row yet: no finding, so no action.
+    await expect(
+      asHr.mutation(api.payMapping.actions.createAction, {
+        orgId,
+        runId,
+        ...baseAction(userId),
+        target: { kind: "praxis", area: "payPolicy" },
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+
+    await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+      orgId,
+      runId,
+      scope: "praxis",
+      groupKey: "payPolicy",
+      reasons: [],
+      note: "Criteria are unclear to managers.",
+      done: false,
+      finding: "found",
+    })
+    const actionId = await asHr.mutation(api.payMapping.actions.createAction, {
+      orgId,
+      runId,
+      ...baseAction(userId),
+      target: { kind: "praxis", area: "payPolicy" },
+    })
+    const list = await asHr.query(api.payMapping.actions.listActions, {
+      orgId,
+      runId,
+    })
+    expect(list.find((a) => a.actionId === actionId)?.target).toEqual({
+      kind: "praxis",
+      area: "payPolicy",
+    })
+
+    const audits = await t.run((ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "payMapping.actionCreated")
+        )
+        .collect()
+    )
+    const payload = audits[0]?.payload as Record<string, unknown>
+    expect(payload.targetKind).toBe("praxis")
+    // The raw area key, as the praxis analysis rows already log it; the
+    // audit log resolves it to the area's title.
+    expect(payload.targetLabel).toBe("payPolicy")
+
+    // A finding of "none" carries nothing to act on.
+    await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+      orgId,
+      runId,
+      scope: "praxis",
+      groupKey: "benefits",
+      reasons: [],
+      done: false,
+      finding: "none",
+    })
+    await expect(
+      asHr.mutation(api.payMapping.actions.createAction, {
+        orgId,
+        runId,
+        ...baseAction(userId),
+        target: { kind: "praxis", area: "benefits" },
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+
+    // The finding gate guards a NEW anchor, not an existing action: once the
+    // area is reviewed clear again, the action created while it was "found"
+    // stays editable in its other fields.
+    await asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+      orgId,
+      runId,
+      scope: "praxis",
+      groupKey: "payPolicy",
+      reasons: [],
+      note: "Criteria were clarified.",
+      done: false,
+      finding: "none",
+    })
+    await asHr.mutation(api.payMapping.actions.updateAction, {
+      orgId,
+      actionId,
+      ...baseAction(userId),
+      target: { kind: "praxis", area: "payPolicy" },
+      problem: "Rewritten problem description",
+    })
+    // Re-targeting to an area with no finding is still refused.
+    await expect(
+      asHr.mutation(api.payMapping.actions.updateAction, {
+        orgId,
+        actionId,
+        ...baseAction(userId),
+        target: { kind: "praxis", area: "benefits" },
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+
+    // Notes never anchor to a practice area.
+    await expect(
+      asHr.mutation(api.payMapping.notes.createNote, {
+        orgId,
+        runId,
+        target: { kind: "praxis", area: "payPolicy" },
+        text: "A note",
+        noteType: "discussionNeeded",
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+
+    // An unknown area never passes the validator (a literal union, not a
+    // free string).
+    await expect(
+      asHr.mutation(api.payMapping.actions.createAction, {
+        orgId,
+        runId,
+        ...baseAction(userId),
+        // The cast is the point: the wire type refuses it, and so must the
+        // runtime validator.
+        target: { kind: "praxis", area: "nope" } as unknown as {
+          kind: "praxis"
+          area: "payPolicy"
+        },
+      })
+    ).rejects.toThrow()
+  })
+
+  it("numbers actions from the run's counter, never reuses a number, and restarts at 1 in another run", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, runId, asHr } = await seedRun(t)
+
+    const first = await asHr.mutation(api.payMapping.actions.createAction, {
+      orgId,
+      runId,
+      ...baseAction(userId),
+    })
+    const second = await asHr.mutation(api.payMapping.actions.createAction, {
+      orgId,
+      runId,
+      ...baseAction(userId),
+    })
+    let list = await asHr.query(api.payMapping.actions.listActions, {
+      orgId,
+      runId,
+    })
+    expect(list.find((a) => a.actionId === first)?.number).toBe(1)
+    expect(list.find((a) => a.actionId === second)?.number).toBe(2)
+
+    // The run's counter only ever climbs: a hard-deleted action does not free
+    // its number, so deleting #2 and creating again yields #3, and a number
+    // printed in a document can never point at a different action later.
+    await asHr.mutation(api.payMapping.actions.deleteAction, {
+      orgId,
+      actionId: second,
+    })
+    const third = await asHr.mutation(api.payMapping.actions.createAction, {
+      orgId,
+      runId,
+      ...baseAction(userId),
+    })
+    list = await asHr.query(api.payMapping.actions.listActions, {
+      orgId,
+      runId,
+    })
+    expect(list.find((a) => a.actionId === third)?.number).toBe(3)
+    const storedRun = await t.run((ctx) => ctx.db.get(runId))
+    expect(storedRun?.actionCounter).toBe(3)
+
+    // A second run starts at 1.
+    const otherRunId = await t.run(async (ctx) => {
+      const original = await ctx.db.get(runId)
+      if (original === null) throw new Error("unreachable")
+      const { _id, _creationTime, ...fields } = original
+      // A fresh run starts its counter at zero, whatever the clone source
+      // had counted.
+      const id = await ctx.db.insert("payMappingRuns", {
+        ...fields,
+        slug: "other-run",
+        actionCounter: 0,
+      })
+      const rows = await ctx.db
+        .query("payMappingSnapshotRows")
+        .withIndex("by_run", (q) => q.eq("orgId", orgId).eq("runId", runId))
+        .collect()
+      for (const row of rows) {
+        const { _id: _rowId, _creationTime: _rowCreated, ...rowFields } = row
+        await ctx.db.insert("payMappingSnapshotRows", {
+          ...rowFields,
+          runId: id,
+        })
+      }
+      return id
+    })
+    const otherFirst = await asHr.mutation(
+      api.payMapping.actions.createAction,
+      {
+        orgId,
+        runId: otherRunId,
+        ...baseAction(userId),
+      }
+    )
+    const otherList = await asHr.query(api.payMapping.actions.listActions, {
+      orgId,
+      runId: otherRunId,
+    })
+    expect(otherList.find((a) => a.actionId === otherFirst)?.number).toBe(1)
   })
 })
 

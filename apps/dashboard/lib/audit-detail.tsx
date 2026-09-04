@@ -1110,7 +1110,14 @@ export function formatAuditDetail(
       const rawLabel = typeof p.targetLabel === "string" ? p.targetLabel : ""
       const rawKind = typeof p.targetKind === "string" ? p.targetKind : ""
       const kind = valueLabel?.("targetKind", rawKind) ?? rawKind
-      const base = rawKind ? `${rawLabel} (${kind})` : rawLabel
+      // A praxis target logs the AREA KEY, not display text: the area's title
+      // is i18n, so the label resolves here. Every other kind already carries
+      // display text and must pass through untouched.
+      const label =
+        rawKind === "praxis"
+          ? (valueLabel?.("targetLabel", rawLabel) ?? rawLabel)
+          : rawLabel
+      const base = rawKind ? `${label} (${kind})` : label
       // noteCreated has no diff: its classification is a flat field.
       const rawNoteType = typeof p.noteType === "string" ? p.noteType : ""
       const noteType = valueLabel?.("noteType", rawNoteType) ?? rawNoteType

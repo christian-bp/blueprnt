@@ -3,8 +3,9 @@ import {
   type BasePayBasis,
   fteTotalMonthlyComp,
   type PayGapReason,
+  type PraxisAreaKey,
 } from "@workspace/constants"
-import type { GenderTally, PayGapFlag } from "@workspace/core"
+import type { GenderTally, PayGapFlag, ZoneKey } from "@workspace/core"
 
 // Re-exported for the overview widgets.
 export type { GenderTally } from "@workspace/core"
@@ -150,9 +151,10 @@ export interface GroupAnalysis {
 }
 
 // What an action or note is anchored to (ADR-0015): a whole comparison
-// group, one individual within a group, or a tvärnivå pair. Individuals are
-// referenced by personPublicId only (Role != Person); display values come
-// from the snapshot row.
+// group, one individual within a group, a women-dominated comparison, or
+// (actions only) a practice area whose review found a deficiency.
+// Individuals are referenced by personPublicId only (Role != Person);
+// display values come from the snapshot row.
 export type ActionTargetWire =
   | { kind: "group"; scope: "equalWork" | "equivalentWork"; groupKey: string }
   | {
@@ -162,6 +164,7 @@ export type ActionTargetWire =
       personPublicId: string
     }
   | { kind: "comparison"; groupKey: string; comparisonKey: string }
+  | { kind: "praxis"; area: PraxisAreaKey }
 
 export type ActionStatus = "notStarted" | "inProgress" | "done"
 export type ActionPriority = "high" | "medium" | "low"
@@ -188,6 +191,9 @@ void _assertCostUnits
 export interface PayMappingActionWire {
   actionId: Id<"payMappingActions">
   target: ActionTargetWire
+  // The per-run number the action is cited by ("#3"), stable for the row's
+  // whole life (an erased row keeps it).
+  number: number
   problem: string
   plannedAction: string
   reason: PayGapReason | null
@@ -242,6 +248,9 @@ export function targetMatches(
       target.personPublicId === match.personPublicId
     )
   }
+  if (target.kind === "praxis" && match.kind === "praxis") {
+    return target.area === match.area
+  }
   return false
 }
 
@@ -288,18 +297,29 @@ export function groupLabel(group: {
     .join(" · ")
 }
 
-// The group a work-layer record is anchored to, as display text. A
-// person-targeted record still reads by its GROUP (the group key is the only
-// display value the target carries; the person's own name lives in the
-// detail view, never denormalized here). A comparison reads by the job it
-// compares AGAINST: that is the row the reader documented. Shared by the
-// actions overview and the report assembly so the derivation cannot drift.
-export function targetGroupLabel(target: ActionTargetWire): string {
+// The thing a work-layer record is anchored to, as display text. A
+// person-targeted record still reads by its GROUP (the person's own name
+// lives in the detail view, never denormalized here). A comparison reads by
+// the job it compares AGAINST: that is the row the reader documented. A
+// practice area reads by its localized title, which only the caller's
+// translator can produce, so it is injected. Shared by the actions overview
+// and the report assembly so the derivation cannot drift.
+export function targetGroupLabel(
+  target: ActionTargetWire,
+  praxisAreaLabel: (area: PraxisAreaKey) => string
+): string {
+  if (target.kind === "praxis") return praxisAreaLabel(target.area)
   const key =
     target.kind === "comparison" ? target.comparisonKey : target.groupKey
   // A group key is roleTitle|level (ADR-0017), so the title alone names it.
   const [roleTitle] = key.split("|")
   return groupLabel({ roleTitle: roleTitle ?? null, seniority: null })
+}
+
+// How an action is cited wherever it is referenced by its per-run number:
+// the overview's table, the detail appendix's two action tables.
+export function actionRef(number: number): string {
+  return `#${number}`
 }
 
 // Whether a frozen row's base pay was entered as an hourly rate: the one
@@ -404,12 +424,45 @@ export interface PayMappingRunDetail {
   // population card compares like with like across mappings.
   populationCount: number
   rows: PayMappingSnapshotRow[]
-  // The samverkansredogörelse (who the employer cooperated with and how);
-  // null until set. Participant names are statutory documentation content
-  // on the run, never audited (see setPayMappingCollaboration).
-  collaboration: { participants: string; description: string } | null
-  // The frozen model's criteria (name + weight points, evidence order): the
-  // report's method section cites the method the run was computed under,
-  // never the live model (ADR-0008).
-  frozenCriteria: { name: string; weightPoints: number }[]
+  // The samverkansredogörelse (who the employer cooperated with, how,
+  // optionally on which day, epoch ms, and optionally the parties' own
+  // remarks); null until set. Participant names and remarks are statutory
+  // documentation content on the run, never audited as text (see
+  // setPayMappingCollaboration).
+  collaboration: {
+    participants: string
+    description: string
+    date: number | null
+    remarks: string | null
+  } | null
+  // The run's system version; with frozenMethod.approvedAt it is the method
+  // version both report documents print.
+  systemVersion: string
+  // The frozen model's method (ADR-0008): the report documents cite the
+  // method the run was computed under, never the live model. Criteria in
+  // evidence order. No person data.
+  frozenMethod: {
+    criteria: {
+      libraryKey: string | null
+      name: string
+      dimensionKey: string | null
+      weightPoints: number
+      anchorCount: number
+      order: number | null
+      // The frozen documentation of the criterion (what it measures, why it
+      // is relevant, why this weight): the detail appendix prints them so it
+      // stands alone as a review document. Null when the frozen model
+      // carried none.
+      purpose: string | null
+      whyRelevant: string | null
+      weightMotivation: string | null
+    }[]
+    levelRules: { level: number; minScore: number }[]
+    zoneProfileRules: { zone: ZoneKey; minStep: number }[]
+    workingConditions: {
+      status: "active" | "testedNotMaterial"
+      motivation: string
+    } | null
+    approvedAt: number | null
+  }
 }

@@ -57,6 +57,7 @@ async function seedRun(
       fullTimeHoursDefault: 165,
       populationCount: args.populationCount,
       withPayCount: args.populationCount,
+      actionCounter: 0,
       womenCount: args.womenCount,
       menCount: args.menCount,
       orgGapPct: args.orgGapPct,

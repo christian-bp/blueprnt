@@ -20,8 +20,10 @@ import {
 import {
   assertActionNumbersValid,
   assertOwnerIsMember,
+  assertPraxisTargetAllowed,
   plannedDateIso,
   resolveTargetLabel,
+  sameTarget,
   snapshotRowsForRun,
   targetLabelFromRows,
   validateTarget,
@@ -46,6 +48,7 @@ function auditView(action: {
 const actionShape = v.object({
   actionId: v.id("payMappingActions"),
   target: actionTargetValidator,
+  number: v.number(),
   problem: v.string(),
   plannedAction: v.string(),
   reason: v.union(payGapReasonValidator, v.null()),
@@ -86,6 +89,7 @@ export const listActions = orgQuery({
     return actions.map((a) => ({
       actionId: a._id,
       target: a.target,
+      number: a.number,
       problem: a.problem,
       plannedAction: a.plannedAction,
       reason: a.reason ?? null,
@@ -150,20 +154,33 @@ export const createAction = orgMutation({
       throw appError(ERROR_CODES.invalidInput)
     assertActionNumbersValid(content)
 
-    const rows = await snapshotRowsForRun(ctx, ctx.orgId, runId)
+    // A praxis target validates against the area's finding, never the
+    // frozen rows: no snapshot read for it.
+    const rows =
+      content.target.kind === "praxis"
+        ? []
+        : await snapshotRowsForRun(ctx, ctx.orgId, runId)
     const { targetLabel } = validateTarget(rows, content.target, {
       allowExcludedGroups: false,
+      allowPraxis: true,
     })
+    await assertPraxisTargetAllowed(ctx, ctx.orgId, runId, content.target)
     const members: { userId: string }[] = await ctx.runQuery(
       components.betterAuth.provisioning.listMembers,
       { organizationId: ctx.orgId }
     )
     assertOwnerIsMember(members, content.ownerUserId)
 
+    // The counter lives on the run doc already fetched above; bumping it in
+    // the same transaction is what makes the number unique and monotonic.
+    const number = run.actionCounter + 1
+    await ctx.db.patch(runId, { actionCounter: number })
+
     const doc = {
       orgId: ctx.orgId,
       runId,
       target: content.target,
+      number,
       problem: content.problem.trim(),
       plannedAction: content.plannedAction.trim(),
       ...(content.reason !== undefined ? { reason: content.reason } : {}),
@@ -224,10 +241,27 @@ export const updateAction = orgMutation({
       throw appError(ERROR_CODES.invalidInput)
     assertActionNumbersValid(content)
 
-    const rows = await snapshotRowsForRun(ctx, ctx.orgId, action.runId)
+    // A praxis target validates against the area's finding, never the
+    // frozen rows: no snapshot read for it.
+    const rows =
+      content.target.kind === "praxis"
+        ? []
+        : await snapshotRowsForRun(ctx, ctx.orgId, action.runId)
     const { targetLabel } = validateTarget(rows, content.target, {
       allowExcludedGroups: false,
+      allowPraxis: true,
     })
+    // The finding gate stops a NEW anchor on an area with no deficiency; it
+    // must not freeze an action that was legitimately created and whose area
+    // has since been reviewed clear, so it runs only on a re-target.
+    if (!sameTarget(action.target, content.target)) {
+      await assertPraxisTargetAllowed(
+        ctx,
+        ctx.orgId,
+        action.runId,
+        content.target
+      )
+    }
     const members: { userId: string }[] = await ctx.runQuery(
       components.betterAuth.provisioning.listMembers,
       { organizationId: ctx.orgId }

@@ -1,0 +1,95 @@
+---
+title: Rapporter og nedlastinger
+description: Signeringsrapporten, detaljvedlegget, nøkkeltallsarbeidsboken og arkivpakken, hvem hvert dokument er for, hva som maskeres hvor, og hvordan hver nedlasting logges.
+section: pay-mapping
+---
+
+Hver lønnskartlegging har en fane Rapport med fire nedlastinger, alle
+bygget fra akkurat den kartleggingens fryste øyeblikksbilde og ingenting
+annet. De samme fire ligger bak radmenyen på listen
+[Lønnskartlegginger](/pay-mappings), under "Last ned".
+
+## Signeringsrapporten
+
+"Signeringsrapport" er dokumentet dere deler med fagforeningspartene og
+signerer sammen: seks til åtte sider med aggregater, antall, statuser,
+konklusjoner og handlingsplan. Første side skriver ut hvem som deltok i
+samarbeidet, hvordan det foregikk og samarbeidsdatoen som er registrert i
+kapittelet [Samarbeid](/docs/collaboration), med tomme signaturlinjer for
+arbeidsgiveren og fagforeningsparten. Signeringen skjer på papir; det
+finnes ingen signering i appen.
+
+Den skriver aldri ut en gruppes beløp. Et kjønnsdelt tall maskeres når
+gruppen har færre enn 4 personer eller færre enn 2 av et kjønn, og et tall
+for hele gruppen når gruppen har færre enn 4 personer; rapporten oppgir
+hvor mange grupper som har utilstrekkelig grunnlag for bred rapportering,
+og at vedlegget viser dem i sin helhet. Sammendragssiden viser kvinners
+median- og gjennomsnittslønn i prosent av menns, fordelingen per
+lønnskvartil og tallene bak én status per gruppe med likt arbeid og per
+sammenligning av likeverdig arbeid: ingen tiltak nødvendig, saklig grunn
+dokumentert, tiltak besluttet eller videre analyse. Siste side bærer en
+sjekkliste før signering, beregnet fra kartleggingen: alle sammenligninger
+som krever dokumentasjon er vurdert, grunner eller tiltak er koblet,
+samarbeidet er dokumentert, og begge dokumentene stammer fra samme fryste
+versjon.
+
+## Detaljvedlegget
+
+"Detaljvedlegg" er den fullstendige skriftlige dokumentasjonen: hver
+gruppe med likt arbeid med sine tall for grunnlønn og total kompensasjon,
+medianer, status, grunner, notat og koblede tiltak; hver kvinnedominerte
+gruppe og hver sammenligning; hvert praksisområde, samarbeidsposten, hvert
+tiltak med alle sine felt og hvert notat; samt den fryste metoden med
+kriterier, vekter, nivå- og soneregler, beslutningen om arbeidsforhold og
+tersklene. Metodekapittelet definerer også likt og likeverdig arbeid,
+skriver ut hva hvert kriterium måler, hvorfor det er relevant og hvorfor
+det bærer vekten sin, og angir hvordan en forskjell regnes ut, slik at
+vedlegget kan granskes på egen hånd. Ingenting er maskert, og dokumentet
+sier det.
+
+Ethvert medlem av organisasjonen kan laste det ned. Det finnes ingen
+rollesperre: hver nedlasting registreres i
+[hendelsesloggen](/docs/audit-log) som "Detaljvedlegg eksportert", og
+loggen er kontrollen. Omslaget oppgir at dokumentet er internt, inneholder
+personnære lønnsopplysninger og er ment for organisasjonens HR-funksjon
+og, på forespørsel, samarbeidspartene.
+
+## Utkast og endelig
+
+Begge dokumentene merker seg selv "UTKAST: kartleggingen er ikke fullført"
+til kartleggingen er fullført og "ENDELIG" deretter; se
+[Livssyklus og statuser](/docs/run-lifecycle). Begge
+bærer samme identitetsblokk: organisasjon, kartleggingens navn,
+referansedato, tidspunkt for datauttrekk, metodeversjon og
+genereringstidspunkt, slik at en signeringsrapport og et detaljvedlegg fra
+samme kartlegging alltid stemmer overens.
+
+## Nøkkeltall (Excel)
+
+"Nøkkeltall" er en arbeidsbok med organisasjonens lønnsgapstall og
+tabellene per gruppe, skrevet som tall for videre analyse i andre verktøy.
+Små grupper maskeres der etter de samme tersklene som i
+signeringsrapporten, og arbeidsbokens egen merknad forklarer de tomme
+cellene.
+
+## Arkivpakken
+
+"Arkivpakke" er en ZIP med signeringsrapporten, detaljvedlegget,
+nøkkeltallsarbeidsboken og et manifest som oppgir hver fil med størrelse
+og SHA-256-kontrollsum, slik at pakkens integritet kan verifiseres senere.
+Oppbevar den i minst fem år.
+
+## Hver nedlasting logges
+
+Hver nedlasting skriver sin egen oppføring i hendelsesloggen før filen
+leveres ut: "Signeringsrapport eksportert", "Detaljvedlegg eksportert",
+"Lønnskartleggingens nøkkeltall eksportert" eller "Arkivpakke
+eksportert". Kan oppføringen ikke skrives, lastes ingen fil ned, og appen
+ber dere prøve igjen.
+
+## Relatert
+
+- [Samarbeid](/docs/collaboration)
+- [Tiltak og notater](/docs/actions-and-notes)
+- [Hendelseslogg](/docs/audit-log)
+- [Livssyklus og statuser](/docs/run-lifecycle)

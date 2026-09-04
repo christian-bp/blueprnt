@@ -71,12 +71,11 @@ vi.mock("@/components/org-context", () => ({
 }))
 
 // The row menu's exports: stubbed so a list test never mounts the export
-// machinery (recharts capture host, react-pdf) just to render rows.
+// machinery (react-pdf, exceljs, jszip) just to render rows.
 vi.mock("@/components/pay-mapping/pay-mapping-report-export", () => ({
   usePayMappingReportExport: () => ({
     busy: false,
-    exportReport: vi.fn(),
-    captureHost: null,
+    exportDocument: vi.fn(),
   }),
 }))
 vi.mock("@/components/pay-mapping/pay-mapping-metrics-export", () => ({
@@ -89,7 +88,6 @@ vi.mock("@/components/pay-mapping/pay-mapping-archive-export", () => ({
   usePayMappingArchiveExport: () => ({
     busy: false,
     exportArchive: vi.fn(),
-    captureHost: null,
   }),
 }))
 

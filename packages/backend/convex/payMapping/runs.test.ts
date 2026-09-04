@@ -1126,27 +1126,104 @@ describe("getPayMappingRunBySlug", () => {
     expect(unpaid).not.toHaveProperty("basicAmount")
     expect(unpaid).not.toHaveProperty("hoursPerMonth")
 
-    // The report's method section reads the frozen criteria: a name +
-    // weightPoints projection of the frozen evidence, in evidence order,
-    // with no other evidence field leaking onto the wire.
+    // The report's method chapter documents the run's own frozen method,
+    // never the live model: criteria (identity, weight, anchor count,
+    // order), the ladder and zone gates, the working-conditions decision
+    // and the approval date. No person data: the decider's and approver's
+    // user ids stay off the wire.
     const storedRun = await t.run(async (ctx) =>
       ctx.db
         .query("payMappingRuns")
         .withIndex("by_org_slug", (q) => q.eq("orgId", orgId).eq("slug", slug))
         .first()
     )
-    const evidence = [...(storedRun?.frozenModel.criteria ?? [])].sort(
+    if (storedRun === null || storedRun === undefined)
+      throw new Error("unreachable")
+    expect(result?.systemVersion).toBe(storedRun.systemVersion)
+    const evidence = [...storedRun.frozenModel.criteria].sort(
       (a, b) =>
         (a.order ?? Number.POSITIVE_INFINITY) -
         (b.order ?? Number.POSITIVE_INFINITY)
     )
     expect(evidence.length).toBeGreaterThan(0)
-    expect(result?.frozenCriteria).toEqual(
+    // The frozen criterion documentation rides along: the detail appendix
+    // stands alone as a review document, so it prints what each criterion
+    // measures instead of pointing at the live model. Absent evidence fields
+    // come back as null rather than missing.
+    expect(result?.frozenMethod.criteria).toEqual(
       evidence.map((criterion) => ({
+        libraryKey: criterion.libraryKey ?? null,
         name: criterion.name,
+        dimensionKey: criterion.dimensionKey ?? null,
         weightPoints: criterion.weightPoints,
+        anchorCount: criterion.anchorCount,
+        order: criterion.order ?? null,
+        purpose: criterion.purpose ?? null,
+        whyRelevant: criterion.whyRelevant ?? null,
+        weightMotivation: criterion.weightMotivation ?? null,
       }))
     )
+    for (const criterion of result?.frozenMethod.criteria ?? []) {
+      expect(criterion).toHaveProperty("purpose")
+      expect(criterion).toHaveProperty("whyRelevant")
+      expect(criterion).toHaveProperty("weightMotivation")
+    }
+    expect(result?.frozenMethod.levelRules).toEqual(
+      storedRun.frozenModel.levelRules
+    )
+    expect(result?.frozenMethod.zoneProfileRules).toEqual(
+      storedRun.frozenModel.zoneProfileRules
+    )
+    expect(result?.frozenMethod.workingConditions).toEqual({
+      status: storedRun.frozenModel.workingConditions?.status,
+      motivation: storedRun.frozenModel.workingConditions?.motivation,
+    })
+    expect(result?.frozenMethod.approvedAt).toBe(
+      storedRun.frozenModel.approval?.approvedAt ?? null
+    )
+    expect(JSON.stringify(result?.frozenMethod)).not.toContain("decidedBy")
+    expect(JSON.stringify(result?.frozenMethod)).not.toContain("approvedBy")
+  })
+
+  it("carries the frozen criterion documentation on the wire", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr } = await seedForFreeze(t)
+    const { runId, slug } = await asHr.mutation(
+      api.payMapping.runs.startPayMappingRun,
+      { orgId, label: "Documented" }
+    )
+
+    await t.run(async (ctx) => {
+      const run = await ctx.db.get(runId)
+      if (run === null) throw new Error("unreachable")
+      const [first, ...rest] = run.frozenModel.criteria
+      if (first === undefined) throw new Error("unreachable")
+      await ctx.db.patch(runId, {
+        frozenModel: {
+          ...run.frozenModel,
+          criteria: [
+            {
+              ...first,
+              purpose: "Djup i yrkeskunskapen",
+              whyRelevant: "Arbetet vilar pa tillampad expertis",
+              weightMotivation: "Tyngsta kravet i verksamheten",
+            },
+            ...rest,
+          ],
+        },
+      })
+    })
+
+    const result = await asHr.query(
+      api.payMapping.runs.getPayMappingRunBySlug,
+      { orgId, slug }
+    )
+    const documented = result?.frozenMethod.criteria.find(
+      (criterion) => criterion.purpose !== null
+    )
+    expect(documented?.purpose).toBe("Djup i yrkeskunskapen")
+    expect(documented?.whyRelevant).toBe("Arbetet vilar pa tillampad expertis")
+    expect(documented?.weightMotivation).toBe("Tyngsta kravet i verksamheten")
   })
 
   it("returns null for an unknown slug", async () => {
@@ -1208,6 +1285,7 @@ async function insertRun(
       fullTimeHoursDefault: 165,
       populationCount: rows.length,
       withPayCount: rows.filter((r) => r.basicMonthly !== null).length,
+      actionCounter: 0,
       womenCount: rows.filter((r) => r.gender === "Kvinna").length,
       menCount: rows.filter((r) => r.gender === "Man").length,
       orgGapPct: null,
@@ -1741,6 +1819,8 @@ describe("setPayMappingCollaboration", () => {
     expect(result?.collaboration).toEqual({
       participants: "Fackligt ombud Anna Persson",
       description: "Kvartalsvisa moten med de fackliga representanterna.",
+      date: null,
+      remarks: null,
     })
   })
 
@@ -1810,7 +1890,7 @@ describe("setPayMappingCollaboration", () => {
     ).rejects.toThrow(/errors.notFound/)
   })
 
-  it("writes exactly one payMapping.collaborationUpdated audit row carrying only runId, never the participant name", async () => {
+  it("writes exactly one payMapping.collaborationUpdated audit row carrying runId and the date diff, never the participant name", async () => {
     const t = initConvexTest()
     const { orgId, runId, asHr } = await seedRun(t, noRequiredGroupRows)
 
@@ -1831,9 +1911,240 @@ describe("setPayMappingCollaboration", () => {
     )
     expect(audits).toHaveLength(1)
     const payload = audits[0]?.payload as Record<string, unknown>
-    expect(Object.keys(payload)).toEqual(["runId"])
+    // The marker plus the one diffable field: nothing else, ever.
+    expect(Object.keys(payload).sort()).toEqual(["changes", "runId"])
     expect(payload.runId).toBe(runId)
+    // A text-only save changes no diffable field.
+    expect(payload.changes).toEqual({})
     expect(JSON.stringify(payload)).not.toContain("Anna Persson")
+  })
+
+  it("stores an optional samverkan date, reads it back, and clears it when omitted", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, noRequiredGroupRows)
+
+    await asHr.mutation(api.payMapping.runs.setPayMappingCollaboration, {
+      orgId,
+      runId,
+      participants: "Fackligt ombud",
+      description: "Beskrivning",
+      date: Date.UTC(2026, 8, 15),
+    })
+    let result = await asHr.query(api.payMapping.runs.getPayMappingRunBySlug, {
+      orgId,
+      slug: "test-run",
+    })
+    expect(result?.collaboration).toEqual({
+      participants: "Fackligt ombud",
+      description: "Beskrivning",
+      date: Date.UTC(2026, 8, 15),
+      remarks: null,
+    })
+
+    // Saving without a date clears it: the date is optional and the pair
+    // of text fields is what the done rule reads.
+    await asHr.mutation(api.payMapping.runs.setPayMappingCollaboration, {
+      orgId,
+      runId,
+      participants: "Fackligt ombud",
+      description: "Beskrivning",
+    })
+    result = await asHr.query(api.payMapping.runs.getPayMappingRunBySlug, {
+      orgId,
+      slug: "test-run",
+    })
+    expect(result?.collaboration).toEqual({
+      participants: "Fackligt ombud",
+      description: "Beskrivning",
+      date: null,
+      remarks: null,
+    })
+  })
+
+  it("diffs the date as an ISO day in the audit row and never the participant text", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, noRequiredGroupRows)
+
+    await asHr.mutation(api.payMapping.runs.setPayMappingCollaboration, {
+      orgId,
+      runId,
+      participants: "Fackligt ombud Anna Persson",
+      description: "Beskrivning",
+      date: Date.UTC(2026, 8, 15),
+    })
+    const audits = await t.run((ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "payMapping.collaborationUpdated")
+        )
+        .collect()
+    )
+    expect(audits).toHaveLength(1)
+    expect(audits[0]?.payload).toEqual({
+      runId,
+      changes: { collaborationDate: { from: null, to: "2026-09-15" } },
+    })
+    expect(JSON.stringify(audits[0]?.payload)).not.toContain("Anna")
+    expect(audits[0]?.searchText).not.toContain("anna")
+  })
+
+  it("rejects a non-finite date", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, noRequiredGroupRows)
+    await expect(
+      asHr.mutation(api.payMapping.runs.setPayMappingCollaboration, {
+        orgId,
+        runId,
+        participants: "Fackligt ombud",
+        description: "Beskrivning",
+        date: Number.NaN,
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+  })
+
+  it("clears the date along with the text fields even when a date is still supplied", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, noRequiredGroupRows)
+
+    await asHr.mutation(api.payMapping.runs.setPayMappingCollaboration, {
+      orgId,
+      runId,
+      participants: "Fackligt ombud",
+      description: "Beskrivning",
+      date: Date.UTC(2026, 8, 15),
+    })
+
+    // Both text fields are whitespace-only: the collaboration clears
+    // entirely, date included, even though a date is still passed.
+    await asHr.mutation(api.payMapping.runs.setPayMappingCollaboration, {
+      orgId,
+      runId,
+      participants: "   ",
+      description: "\n\t",
+      date: Date.UTC(2026, 8, 15),
+    })
+
+    const result = await asHr.query(
+      api.payMapping.runs.getPayMappingRunBySlug,
+      {
+        orgId,
+        slug: "test-run",
+      }
+    )
+    expect(result?.collaboration).toBeNull()
+
+    const audits = await t.run((ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "payMapping.collaborationUpdated")
+        )
+        .collect()
+    )
+    expect(audits).toHaveLength(2)
+    expect(audits[1]?.payload).toEqual({
+      runId,
+      changes: { collaborationDate: { from: "2026-09-15", to: null } },
+    })
+  })
+
+  it("stores optional remarks trimmed, reads them back, and clears them when omitted", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, noRequiredGroupRows)
+
+    await asHr.mutation(api.payMapping.runs.setPayMappingCollaboration, {
+      orgId,
+      runId,
+      participants: "Fackligt ombud",
+      description: "Beskrivning",
+      remarks: "  Facket vill folja upp QA-gruppen.  ",
+    })
+    let result = await asHr.query(api.payMapping.runs.getPayMappingRunBySlug, {
+      orgId,
+      slug: "test-run",
+    })
+    expect(result?.collaboration).toEqual({
+      participants: "Fackligt ombud",
+      description: "Beskrivning",
+      date: null,
+      remarks: "Facket vill folja upp QA-gruppen.",
+    })
+
+    // Saving without remarks clears them: the field is optional and outside
+    // the done rule, exactly like the date.
+    await asHr.mutation(api.payMapping.runs.setPayMappingCollaboration, {
+      orgId,
+      runId,
+      participants: "Fackligt ombud",
+      description: "Beskrivning",
+    })
+    result = await asHr.query(api.payMapping.runs.getPayMappingRunBySlug, {
+      orgId,
+      slug: "test-run",
+    })
+    expect(result?.collaboration?.remarks).toBeNull()
+  })
+
+  it("keeps remarks out of the audit trail and records only that they changed", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, noRequiredGroupRows)
+
+    await asHr.mutation(api.payMapping.runs.setPayMappingCollaboration, {
+      orgId,
+      runId,
+      participants: "Fackligt ombud",
+      description: "Beskrivning",
+      remarks: "Anna Persson invander mot loneutfallet.",
+    })
+    // A second save with the same remarks changes nothing.
+    await asHr.mutation(api.payMapping.runs.setPayMappingCollaboration, {
+      orgId,
+      runId,
+      participants: "Fackligt ombud",
+      description: "Beskrivning",
+      remarks: "Anna Persson invander mot loneutfallet.",
+    })
+
+    const audits = await t.run((ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "payMapping.collaborationUpdated")
+        )
+        .collect()
+    )
+    expect(audits).toHaveLength(2)
+    expect(audits[0]?.payload).toEqual({
+      runId,
+      changes: { collaborationRemarksChanged: { from: null, to: true } },
+    })
+    expect(audits[1]?.payload).toEqual({ runId, changes: {} })
+    for (const audit of audits) {
+      expect(JSON.stringify(audit.payload)).not.toContain("Anna")
+      expect(audit.searchText).not.toContain("anna")
+    }
+  })
+
+  it("rejects editing remarks on a completed run with payMappingRunCompleted", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, noRequiredGroupRows)
+    await setCollaboration(asHr, orgId, runId)
+    await markPraxisAreasDone(asHr, orgId, runId, BASE_PRAXIS_AREA_KEYS)
+    await asHr.mutation(api.payMapping.runs.completePayMappingRun, {
+      orgId,
+      runId,
+    })
+
+    await expect(
+      asHr.mutation(api.payMapping.runs.setPayMappingCollaboration, {
+        orgId,
+        runId,
+        participants: "Fackligt ombud",
+        description: "Beskrivning",
+        remarks: "Sent tillagd synpunkt",
+      })
+    ).rejects.toThrow(/errors.payMappingRunCompleted/)
   })
 })
 

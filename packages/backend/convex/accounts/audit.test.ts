@@ -389,6 +389,7 @@ describe("accounts.audit.getAuditLogPage (browse)", () => {
         fullTimeHoursDefault: 165,
         populationCount: 2,
         withPayCount: 2,
+        actionCounter: 0,
         womenCount: 1,
         menCount: 1,
         orgGapPct: null,

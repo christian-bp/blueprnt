@@ -66,7 +66,35 @@ export function makeRunDetail(
     populationCount: 6,
     rows: [],
     collaboration: null,
-    frozenCriteria: [],
+    systemVersion: "v2-slice1",
+    frozenMethod: {
+      criteria: [],
+      levelRules: [],
+      zoneProfileRules: [],
+      workingConditions: null,
+      approvedAt: null,
+    },
+    ...overrides,
+  }
+}
+
+// A frozen criterion with the evidence fields a report cites; tests that
+// only care about name and weight pass those.
+export function makeFrozenCriterion(
+  overrides: Partial<PayMappingRunDetail["frozenMethod"]["criteria"][number]> &
+    Pick<
+      PayMappingRunDetail["frozenMethod"]["criteria"][number],
+      "name" | "weightPoints"
+    >
+): PayMappingRunDetail["frozenMethod"]["criteria"][number] {
+  return {
+    libraryKey: null,
+    dimensionKey: null,
+    anchorCount: 3,
+    order: null,
+    purpose: null,
+    whyRelevant: null,
+    weightMotivation: null,
     ...overrides,
   }
 }

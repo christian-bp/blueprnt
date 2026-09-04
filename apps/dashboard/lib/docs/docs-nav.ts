@@ -68,6 +68,7 @@ export const DOCS_NAV: DocsSection[] = [
     pages: [
       "what-is-pay-mapping",
       "starting-a-pay-mapping",
+      "pay-mapping-reports",
       "pay-mapping-overview",
       "collaboration",
       "rules-and-practice",

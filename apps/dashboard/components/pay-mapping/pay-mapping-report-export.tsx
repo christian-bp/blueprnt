@@ -5,106 +5,59 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import type { PraxisAreaKey } from "@workspace/constants"
 import { useMutation } from "convex/react"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
-import { type CSSProperties, type ReactNode, useRef, useState } from "react"
+import { useState } from "react"
 import { useOrganization } from "@/components/org-context"
-import {
-  canRasterizeCharts,
-  type CapturedChart,
-  captureSvgToPng,
-  unthrottledDelay,
-} from "@/lib/chart-capture"
+import type { IdentityLabels } from "@/components/pdf/identity-block"
+import { computeHeaderBreaks } from "@/components/pdf/pdf-table"
+import { resolveCriteriaLibraryValue } from "@/lib/audit-constants"
 import { formatMoney } from "@/lib/currency"
 import { exportFileLabel } from "@/lib/export-file-name"
-import { percentText, signedPercentText } from "@/lib/percent"
+import { percentText } from "@/lib/percent"
 import { toast } from "@/lib/toast"
+import {
+  type DetailAppendixLabels,
+  DetailAppendixPdf,
+  detailAppendixTables,
+} from "./detail-appendix-doc"
 import type {
-  GenderTally,
   GroupAnalysis,
   PayMappingActionWire,
   PayMappingGapResult,
   PayMappingNoteWire,
   PayMappingRunDetail,
 } from "./pay-mapping-gap-types"
-import { QuartileStat, WholeSurveyStat } from "./pay-mapping-overview"
-import {
-  PDF_MAN_INK,
-  PDF_WOMAN_EDGE,
-  PDF_WOMAN_INK,
-} from "./pay-mapping-report-charts"
 import {
   assemblePayMappingReport,
-  computeHeaderBreaks,
-  EXPORT_MIN_GROUP_SIZE,
-  EXPORT_MIN_PER_GENDER,
   hourlyNoteLabel,
+  type PayMappingReportDoc,
   type ReportPreviousInput,
-  unionReportDoc,
 } from "./pay-mapping-report-data"
 import {
-  PayMappingReportPdf,
-  type PayMappingReportLabels,
-  type ReportChartImages,
-  type ReportVariant,
-} from "./pay-mapping-report-doc"
+  detailAppendixDoc,
+  type SigningActionArea,
+  type SigningReportDoc,
+  signingReportDoc,
+} from "./signing-report-data"
+import {
+  type SigningReportLabels,
+  SigningReportPdf,
+} from "./signing-report-doc"
 
-// The capture host pins the LIGHT theme's chart tokens (globals.css :root)
-// as inline overrides, so an export made from a dark-themed session still
-// rasterizes light charts for the light document. The gender inks are the
-// PDF's own constants (the same light-token conversions the vector charts
-// use); the neutrals are the :root values verbatim, and a neutral-scale
-// retune must update them too.
-export const CAPTURE_LIGHT_TOKENS = {
-  "--gender-woman": PDF_WOMAN_INK,
-  "--gender-woman-edge": PDF_WOMAN_EDGE,
-  "--gender-man": PDF_MAN_INK,
-  "--background": "oklch(1 0 0)",
-  "--foreground": "oklch(0.145 0 0)",
-  "--muted-foreground": "oklch(0.556 0 0)",
-  "--border": "oklch(0.922 0 0)",
-} as CSSProperties
-
-// The host's charts mount with animation OFF (its rAF never fires in a
-// hidden tab, which would capture the empty first frame); this wait covers
-// ResponsiveContainer's measurement pass. Waited through unthrottledDelay,
-// because a hidden tab throttles plain timers up to a minute per tick.
-const CHART_SETTLE_MS = 600
-
-// One chart out of the host, by its data-chart key. Per-chart best effort: a
-// failed capture yields undefined and that slot falls back to the vector
-// chart, never blocking the export.
-async function captureHostChart(
-  host: HTMLElement,
-  key: string
-): Promise<CapturedChart | undefined> {
-  const svg = host.querySelector<SVGSVGElement>(
-    `[data-chart="${key}"] svg.recharts-surface`
-  )
-  if (svg === null) return undefined
-  try {
-    return await captureSvgToPng(svg)
-  } catch {
-    return undefined
-  }
-}
-
-// A population stat row's value: the count with its share of the total,
-// "48 (41 %)". Figures and punctuation only, so it composes outside i18n.
-function populationShare(
-  count: number,
-  total: number,
-  format: ReturnType<typeof useFormatter>
-): string {
-  if (total === 0) return format.number(count)
-  return `${format.number(count)} (${percentText((count / total) * 100, format)})`
-}
+// Which of the two documents an export produces (ADR-0030). The signing
+// report is the masked samverkan document; the detail appendix the
+// unmasked complete documentation.
+export type ReportDocumentKind = "signing" | "detail"
 
 // The standalone download's file name, shared with the archive package so
 // the bundled document and the standalone one can never drift apart.
-export function reportFileName(label: string, variant: ReportVariant): string {
+export function reportFileName(
+  label: string,
+  kind: ReportDocumentKind
+): string {
   const safe = exportFileLabel(label)
-  return variant === "union"
-    ? `${safe}-facklig-rapport.pdf`
-    : `${safe}-lonekartlaggning.pdf`
+  return kind === "signing"
+    ? `${safe}-signeringsrapport.pdf`
+    : `${safe}-detaljbilaga.pdf`
 }
 
 // Everything one export consumes; the caller owns the fetching (the report
@@ -119,411 +72,690 @@ export interface ReportExportData {
   previous: ReportPreviousInput | null
 }
 
-// The statutory documentation export (M8), shared by the report page's card
-// and the runs list's row menu: assembles the frozen run + work layer into
-// the report doc, rasterizes the app's own charts off-screen, renders the
-// document with the multi-pass pagination, logs the export in the audit
-// trail (ADR-0011 p.3: the boundary where data leaves the system) and hands
-// the browser the file. The caller must render `captureHost` somewhere in
-// its tree, or the chart capture silently falls back to the vector charts.
+// The multi-pass cap for the appendix's continuation headers. Convergence
+// is NOT monotone (an inserted header can push the previous page's last row
+// forward, MOVING a break rather than adding one), so there is no guaranteed
+// fixed point: typical documents settle in 2 passes, measured
+// comparison-heavy ones have needed up to 13. When the cap is hit, the final
+// render ships the LAST RENDERED set together with the page refs measured
+// under it, never an unrendered guess.
+const MAX_PASSES = 16
+
+// The two document exports, shared by the report page's panels and the runs
+// list's row menu: assemble the frozen run + work layer once (unmasked),
+// project it into the requested document, render it, log the export in the
+// audit trail (ADR-0011 p.3: the boundary where data leaves the system) and
+// hand the browser the file.
 export function usePayMappingReportExport(): {
   busy: boolean
-  exportReport: (
+  exportDocument: (
     data: ReportExportData,
-    variant?: ReportVariant
+    kind: ReportDocumentKind
   ) => Promise<void>
   // The document alone, without the boundary log and the download: the
-  // archive package renders the SAME statutory PDF through this seam, so
-  // the bundled document can never diverge from the standalone one. The
+  // archive package renders the SAME documents through this seam, so the
+  // bundled documents can never diverge from the standalone ones. The
   // caller owns busy state and its own boundary event.
-  renderReport: (
+  renderDocument: (
     data: ReportExportData,
-    variant?: ReportVariant
+    kind: ReportDocumentKind
   ) => Promise<Blob>
-  captureHost: ReactNode
 } {
   const t = useTranslations("dashboard.payMapping.report")
+  const tSigning = useTranslations("dashboard.payMapping.signingReport")
+  const tDetail = useTranslations("dashboard.payMapping.detailAppendix")
   const tGap = useTranslations("dashboard.payMapping.gap")
   const tActions = useTranslations("dashboard.payMapping.actions")
-  const tActionsOverview = useTranslations(
-    "dashboard.payMapping.actionsOverview"
-  )
   const tReasons = useTranslations("dashboard.payMapping.reasons")
   const tReview = useTranslations("dashboard.payMapping.review")
+  const tStatus = useTranslations("dashboard.payMapping.analysisStatus")
   // The document-shared labels the metodbilaga already owns (contents,
   // generated-on, criteria table columns): reused, not duplicated.
   const tAppendix = useTranslations("dashboard.model.methodAppendix")
   const format = useFormatter()
   const locale = useLocale()
-  const { orgId } = useOrganization()
-  const logExport = useMutation(api.payMapping.report.logPayMappingReportExport)
-  const logUnionExport = useMutation(
-    api.payMapping.report.logPayMappingUnionReportExport
+  const { orgId, name: organizationName } = useOrganization()
+  const logSigning = useMutation(
+    api.payMapping.report.logPayMappingSigningReportExport
+  )
+  const logDetail = useMutation(
+    api.payMapping.report.logPayMappingDetailAppendixExport
   )
   const [busy, setBusy] = useState(false)
-  // While set, the off-screen capture host renders the app's own charts
-  // with this data so the export can rasterize them.
-  const [captureData, setCaptureData] = useState<{
-    population: GenderTally
-    quartiles: GenderTally[]
-  } | null>(null)
-  const captureHostRef = useRef<HTMLDivElement | null>(null)
 
-  async function renderReport(
-    data: ReportExportData,
-    variant: ReportVariant = "statutory"
-  ): Promise<Blob> {
+  const praxisAreaLabel = (area: PraxisAreaKey) =>
+    tReview(`praxis.${area}.title`)
+  const dash = t("maskedCell")
+
+  function assemble(data: ReportExportData): PayMappingReportDoc {
     const { run, gap, analyses, actions, notes, previous } = data
     const currency = gap.currency
     const money = (value: number) =>
       currency === null
         ? format.number(Math.round(value))
         : formatMoney(value, currency, locale)
-    const assembled = assemblePayMappingReport({
+    return assemblePayMappingReport({
       run,
       gap,
       analyses,
       actions,
       notes,
       previous,
+      praxisAreaLabel,
       formatters: {
         money,
         pct: (value) => percentText(value, format),
-        signedPct: (value) => signedPercentText(value, format),
         date: (epochMs) =>
           format.dateTime(new Date(epochMs), { dateStyle: "medium" }),
+        dateTime: (epochMs) =>
+          format.dateTime(new Date(epochMs), {
+            dateStyle: "medium",
+            timeStyle: "short",
+          }),
         costUnitSuffix: (unit) =>
           unit === null || unit === "oneOff"
             ? ""
             : tActions(`costUnitSuffix.${unit}`),
       },
     })
-    // The union variant's data-level masking (person-targeted action
-    // costs, notes) happens on the assembled doc, so both variants share
-    // one assembly and can never diverge in their figures.
-    const doc = variant === "union" ? unionReportDoc(assembled) : assembled
+  }
 
-    // The app's own shadcn charts (the population donut and the quartile
-    // stack), rasterized off-screen: the capture host mounts with the
-    // frozen figures, recharts' mount animation settles, and each SVG is
-    // captured as a PNG. Best effort per chart: any failure leaves its
-    // slot undefined and the template draws the vector fallback, so the
-    // statutory export never depends on rasterization.
-    let chartImages: ReportChartImages = {}
-    // A fully hidden tab suspends the rendering steps recharts needs to
-    // draw at all, so the capture is skipped outright there (the vector
-    // fallback carries the document); a user-initiated export runs in a
-    // visible tab.
-    if (canRasterizeCharts() && document.visibilityState === "visible") {
-      try {
-        setCaptureData({
-          population: {
-            women: doc.population.women,
-            men: doc.population.men,
-          },
-          quartiles: gap.quartiles,
-        })
-        await unthrottledDelay(CHART_SETTLE_MS)
-        const host = captureHostRef.current
-        if (host !== null) {
-          const population = await captureHostChart(host, "population")
-          const quartiles = await captureHostChart(host, "quartiles")
-          chartImages = {
-            ...(population === undefined ? {} : { population }),
-            ...(quartiles === undefined ? {} : { quartiles }),
-          }
-        }
-      } finally {
-        setCaptureData(null)
-      }
-    }
-
-    const quartileLabels = [
-      t("quartile1"),
-      t("quartile2"),
-      t("quartile3"),
-      t("quartile4"),
-    ]
-    const union = variant === "union"
-    const labels: PayMappingReportLabels = {
-      docTitle: union ? t("unionTitle") : t("docTitle"),
-      footer: union ? t("unionTitle") : t("docTitle"),
-      // The union cover states its legal ground and purpose: no
-      // individual-level data, separate disclosure under MBL
-      // tystnadsplikt when needed, and the masking thresholds (stated as
-      // this tool's own conservative choice, never a standard).
-      ...(union
-        ? {
-            coverSubtitle: t("unionSubtitle"),
-            coverPurpose: t("unionPurpose", {
-              min: EXPORT_MIN_GROUP_SIZE,
-              perGender: EXPORT_MIN_PER_GENDER,
+  function identityLabels(
+    doc: Pick<PayMappingReportDoc, "identity" | "runLabel" | "status">,
+    docTitle: string
+  ): IdentityLabels {
+    return {
+      docTitle,
+      // The organization's own name, as stored: a pass-through i18n key
+      // would only launder a value that needs no translation.
+      organizationName,
+      runLabel: doc.runLabel,
+      referenceDateLine: t("referenceDateLine", {
+        date: doc.identity.referenceDate,
+      }),
+      extractedAtLine: t("extractedAtLine", {
+        dateTime: doc.identity.extractedAt,
+      }),
+      methodVersionLine:
+        doc.identity.approvedAt === null
+          ? t("methodVersionUnapproved", {
+              version: doc.identity.systemVersion,
+            })
+          : t("methodVersionLine", {
+              version: doc.identity.systemVersion,
+              date: doc.identity.approvedAt,
             }),
-          }
-        : {}),
-      contentsTitle: tAppendix("contentsTitle"),
-      statusTag: doc.status === "final" ? t("tagFinal") : t("tagDraft"),
       generatedOn: tAppendix("generatedOn", {
         date: format.dateTime(new Date(), { dateStyle: "medium" }),
       }),
-      referenceDateLine: t("referenceDateLine", {
-        date: doc.referenceDate,
-      }),
-      populationTotal: format.number(doc.population.total),
-      populationWomen: populationShare(
-        doc.population.women,
-        doc.population.total,
-        format
-      ),
-      populationMen: populationShare(
-        doc.population.men,
-        doc.population.total,
-        format
-      ),
-      populationPriced: format.number(doc.population.priced),
-      summaryTitle: t("summaryTitle"),
-      summaryEmployees: t("summaryEmployees"),
-      summaryWomen: t("summaryWomen"),
-      summaryMen: t("summaryMen"),
-      summaryPriced: t("summaryPriced"),
-      summaryWomenShareMean: t("summaryWomenShareMean"),
-      summaryWomenShareMedian: t("summaryWomenShareMedian"),
-      summaryVariableShareWomen: t("summaryVariableShareWomen"),
-      summaryVariableShareMen: t("summaryVariableShareMen"),
-      summaryVariableWomenShareMean: t("summaryVariableWomenShareMean"),
-      summaryVariableWomenShareMedian: t("summaryVariableWomenShareMedian"),
-      summaryGroupsShown: t("summaryGroupsShown"),
-      summaryGroupsRequired: t("summaryGroupsRequired"),
-      summaryGroupsDocumented: t("summaryGroupsDocumented"),
-      summarySingletons: t("summarySingletons"),
-      summaryWdGroups: t("summaryWdGroups"),
-      summaryComparisons: t("summaryComparisons"),
-      summaryComparisonsDocumented: t("summaryComparisonsDocumented"),
-      summaryActionsCount: t("summaryActionsCount"),
-      summaryCost: tActions("estimatedCost"),
-      introTitle: t("introTitle"),
-      introBody: t("introBody"),
-      orgGapLine:
-        doc.org.gapPct === null ||
-        doc.org.womenMean === null ||
-        doc.org.menMean === null
-          ? t("orgGapUnmeasurable")
-          : t("orgGapLine", {
-              womenMean: doc.org.womenMean,
-              menMean: doc.org.menMean,
-              gap: doc.org.gapPct,
-            }),
-      orgMedianLine:
-        doc.org.womenMedian !== null &&
-        doc.org.menMedian !== null &&
-        doc.org.medianGapPct !== null
-          ? t("orgMedianLine", {
-              womenMedian: doc.org.womenMedian,
-              menMedian: doc.org.menMedian,
-              gap: doc.org.medianGapPct,
+      statusTag: doc.status === "final" ? t("tagFinal") : t("tagDraft"),
+    }
+  }
+
+  const quartileLabels = [
+    t("quartile1"),
+    t("quartile2"),
+    t("quartile3"),
+    t("quartile4"),
+  ]
+
+  function signingLabels(doc: SigningReportDoc): SigningReportLabels {
+    const docTitle = tSigning("docTitle")
+    const share = (value: string | null) => value ?? dash
+    const areaLabel = (area: SigningActionArea) =>
+      area === "equalWork"
+        ? tSigning("areaEqualWork")
+        : area === "equivalentWork"
+          ? tSigning("areaEquivalentWork")
+          : tSigning("areaPraxis")
+    const observationLabel = (area: SigningActionArea, count: number) =>
+      area === "equalWork"
+        ? tSigning("observationEqualWork", { count })
+        : area === "equivalentWork"
+          ? tSigning("observationEquivalentWork", { count })
+          : tSigning("observationPraxis", { count })
+    // The action plan's responsible cell is a FUNCTION, never a person: the
+    // signing report prints no owner names (the appendix carries them), and
+    // the value is a constant of the area, like the observation label.
+    const responsibleLabel = (area: SigningActionArea) =>
+      area === "praxis"
+        ? tSigning("responsiblePraxis")
+        : tSigning("responsibleWork")
+    const conclusion = (finding: "none" | "found" | null, done: boolean) =>
+      !done || finding === null
+        ? tSigning("conclusionPending")
+        : finding === "found"
+          ? tSigning("conclusionReview")
+          : tSigning("conclusionClear")
+    const collaborationDocumented = doc.checklist.collaborationDocumented
+    const nextStep =
+      doc.openItems.openAnalyses > 0
+        ? tSigning("nextStepOpen")
+        : doc.openItems.actionsInProgress > 0
+          ? tSigning("nextStepActions", {
+              count: doc.openItems.actionsInProgress,
             })
-          : null,
-      orgPreviousLine:
-        doc.orgPrevious === null
-          ? null
-          : t("orgPreviousLine", {
-              run: doc.orgPrevious.runLabel,
-              date: doc.orgPrevious.referenceDate,
-              gap: doc.orgPrevious.gapPct,
-            }),
-      chartMeansCaption: t("chartMeansCaption"),
-      chartSpreadCaption: t("chartSpreadCaption"),
-      chartQuartilesCaption: t("chartQuartilesCaption"),
-      quartilesTitle: t("quartilesTitle"),
-      quartileRow: (index) => quartileLabels[index] ?? "",
-      spreadTitle: t("spreadTitle"),
-      colP10: t("colP10"),
-      colQ1: t("colQ1"),
-      colMedian: t("colMedian"),
-      colQ3: t("colQ3"),
-      colP90: t("colP90"),
-      colWomen: tGap("columns.women"),
-      colMen: tGap("columns.men"),
-      collaborationTitle: tReview("collaborationTitle"),
+          : tSigning("nextStepDone")
+    return {
+      footer: docTitle,
+      identity: identityLabels(doc, docTitle),
+      formalitiesTitle: tSigning("formalitiesTitle"),
+      collaborationDateLine:
+        doc.collaboration === null || doc.collaboration.date === null
+          ? tSigning("collaborationDateMissing")
+          : tSigning("collaborationDateLine", { date: doc.collaboration.date }),
       participantsLabel: tReview("collaborationParticipants"),
       descriptionLabel: tReview("collaborationDescription"),
       notDocumented: t("notDocumented"),
-      praxisTitle: t("praxisTitle"),
-      praxisIntro: t("praxisIntro"),
-      praxisAreaTitle: (key: PraxisAreaKey) => tReview(`praxis.${key}.title`),
-      findingLabel: (finding) =>
-        finding === "none"
-          ? t("findingNone")
-          : finding === "found"
-            ? t("findingFound")
-            : t("findingPending"),
-      equalWorkTitle: t("equalWorkTitle"),
-      equalWorkIntro: t("equalWorkIntro"),
-      equalWorkStatusLine:
-        doc.summary.equalWorkGroups === 0
-          ? null
-          : t("equalWorkStatusLine", {
-              total: doc.summary.equalWorkGroups,
-              required: doc.summary.equalWorkRequired,
-              documented: doc.summary.equalWorkDocumented,
-            }),
-      wdStatusLine:
-        doc.summary.womenDominatedGroups === 0
-          ? null
-          : t("wdStatusLine", {
-              groups: doc.summary.womenDominatedGroups,
-              comparisons: doc.summary.comparisonCount,
-              documented: doc.summary.comparisonsDocumented,
-            }),
+      appendixReference: tSigning("appendixReference"),
+      signature: {
+        employer: tSigning("signatureEmployer"),
+        union: tSigning("signatureUnion"),
+        name: tSigning("signatureName"),
+        signature: tSigning("signatureSignature"),
+        place: tSigning("signaturePlace"),
+        date: tSigning("signatureDate"),
+      },
+      summaryTitle: tSigning("summaryTitle"),
+      boxes: [
+        {
+          title: tSigning("boxPayPosition"),
+          rows: [
+            {
+              label: tSigning("payPositionMedian"),
+              value: share(doc.payPosition.womenShareOfMenMedianPct),
+            },
+            {
+              label: tSigning("payPositionMean"),
+              value: share(doc.payPosition.womenShareOfMenMeanPct),
+            },
+          ],
+        },
+        {
+          title: tSigning("boxRepresentation"),
+          rows: doc.quartiles.map((quartile, index) => ({
+            label: quartileLabels[index] ?? "",
+            value:
+              quartile.women + quartile.men === 0
+                ? dash
+                : tSigning("representationRow", {
+                    share: percentText(
+                      (quartile.women / (quartile.women + quartile.men)) * 100,
+                      format
+                    ),
+                  }),
+          })),
+        },
+        {
+          title: tSigning("boxEqualWork"),
+          rows: [
+            {
+              label: tSigning("groupsCompared"),
+              value: String(doc.equalWork.groups),
+            },
+            {
+              label: tSigning("assessmentsCompleted"),
+              value: tSigning("countOf", {
+                done: doc.equalWork.assessed,
+                total: doc.equalWork.required,
+              }),
+            },
+            {
+              label: tSigning("objectiveReasons"),
+              value: String(doc.equalWork.objectiveReasons),
+            },
+            {
+              label: tSigning("actionsDecided"),
+              value: String(doc.equalWork.actionsDecided),
+            },
+          ],
+        },
+        {
+          title: tSigning("boxEquivalentWork"),
+          rows: [
+            {
+              label: tSigning("wdInScope"),
+              value: String(doc.equivalentWork.womenDominatedGroups),
+            },
+            {
+              label: tSigning("relevantComparisons"),
+              value: String(doc.equivalentWork.comparisons),
+            },
+            {
+              label: tSigning("comparisonsAssessed"),
+              value: tSigning("countOf", {
+                done: doc.equivalentWork.comparisonsAssessed,
+                total: doc.equivalentWork.comparisons,
+              }),
+            },
+            {
+              label: tSigning("objectiveReasons"),
+              value: String(doc.equivalentWork.objectiveReasons),
+            },
+            {
+              label: tSigning("actionsDecided"),
+              value: String(doc.equivalentWork.actionsDecided),
+            },
+          ],
+        },
+      ],
+      quartilesTitle: t("quartilesTitle"),
+      quartileRow: (index) => quartileLabels[index] ?? "",
+      colWomen: tGap("columns.women"),
+      colMen: tGap("columns.men"),
+      chartQuartilesCaption: t("chartQuartilesCaption"),
+      closingSentences: [
+        tSigning("stateSentence", {
+          groups: doc.equalWork.groups,
+          comparisons: doc.equivalentWork.comparisons,
+          open: doc.openItems.openAnalyses,
+        }),
+        nextStep,
+        tSigning("indicatorNote"),
+      ],
+      scopeTitle: tSigning("scopeTitle"),
+      scopeRows: [
+        {
+          label: tSigning("scopeReferenceDate"),
+          value: doc.identity.referenceDate,
+        },
+        {
+          label: tSigning("scopePopulation"),
+          value: tSigning("populationValue", {
+            total: doc.population.total,
+            women: doc.population.women,
+            men: doc.population.men,
+            priced: doc.population.priced,
+          }),
+        },
+        {
+          label: tSigning("scopePayElements"),
+          value: tSigning("payElementsValue"),
+        },
+        {
+          label: tSigning("scopeExclusions"),
+          value: tSigning("exclusionsValue", {
+            withoutPay: doc.exclusions.withoutPay,
+            singletons: doc.exclusions.singletonCount,
+            genderPure: doc.exclusions.genderPureCount,
+          }),
+        },
+      ],
+      confidentialityNote: tSigning("confidentialityNote", {
+        count: doc.exclusions.maskedGroupCount,
+      }),
+      praxisTitle: tSigning("praxisTitle"),
+      colArea: tSigning("colArea"),
+      colConclusion: tSigning("colConclusion"),
+      colFollowUp: tSigning("colFollowUp"),
+      praxisRows: [
+        ...doc.praxis.map((area) => ({
+          area: praxisAreaLabel(area.key),
+          conclusion: conclusion(area.finding, area.done),
+          followUp:
+            area.action === null
+              ? dash
+              : tSigning("praxisAction", {
+                  number: area.action.number,
+                  action: area.action.plannedAction,
+                  date: area.action.plannedDate,
+                }),
+        })),
+        {
+          area: tSigning("collaborationRow"),
+          conclusion: collaborationDocumented
+            ? tSigning("collaborationPerformed")
+            : tSigning("collaborationInProgress"),
+          followUp: doc.collaboration?.date ?? dash,
+        },
+      ],
+      equalWorkTitle: tSigning("equalWorkTitle"),
+      equalWorkRows: [
+        {
+          label: tSigning("groupsCompared"),
+          value: String(doc.equalWork.groups),
+        },
+        // The direction split, right under the total the two directions are
+        // merged into: the conclusion below states that both are counted, so
+        // the reader has to be able to separate them.
+        {
+          label: tSigning("womenAhead"),
+          value: String(doc.equalWork.womenAhead),
+        },
+        {
+          label: tSigning("assessmentsCompleted"),
+          value: tSigning("countOf", {
+            done: doc.equalWork.assessed,
+            total: doc.equalWork.required,
+          }),
+        },
+        {
+          label: tSigning("objectiveReasons"),
+          value: String(doc.equalWork.objectiveReasons),
+        },
+        {
+          label: tSigning("actionsDecided"),
+          value: String(doc.equalWork.actionsDecided),
+        },
+        {
+          label: tSigning("insufficientBasis"),
+          value: String(doc.equalWork.insufficientBasis),
+        },
+      ],
+      equalWorkConclusion: tSigning("equalWorkConclusion"),
+      equivalentTitle: tSigning("equivalentTitle"),
+      chainLine: tSigning("chainLine"),
+      equivalentRows: [
+        {
+          label: tSigning("wdInScope"),
+          value: String(doc.equivalentWork.womenDominatedGroups),
+        },
+        {
+          label: tSigning("relevantComparisons"),
+          value: String(doc.equivalentWork.comparisons),
+        },
+        {
+          label: tSigning("comparisonsAssessed"),
+          value: tSigning("countOf", {
+            done: doc.equivalentWork.comparisonsAssessed,
+            total: doc.equivalentWork.comparisons,
+          }),
+        },
+        {
+          label: tSigning("objectiveReasons"),
+          value: String(doc.equivalentWork.objectiveReasons),
+        },
+        {
+          label: tSigning("actionsDecided"),
+          value: String(doc.equivalentWork.actionsDecided),
+        },
+      ],
+      actionPlanTitle: tSigning("actionPlanTitle"),
+      colObservation: tSigning("colObservation"),
+      colActions: tSigning("colActions"),
+      colStatusSplit: tSigning("colStatusSplit"),
+      colResponsible: tSigning("colResponsible"),
+      colCost: tActions("estimatedCost"),
+      colDates: tSigning("colDates"),
+      // Every area keeps its row, whether or not a measure has been decided
+      // for it: the statutory table's action cell reads "a measure or
+      // continued assessment", so an area still under analysis reports that
+      // rather than vanishing from the plan.
+      actionPlanRows: doc.actionPlan.map((row) => ({
+        area: areaLabel(row.area),
+        observation: observationLabel(row.area, row.observations),
+        actions: String(row.count),
+        statusSplit:
+          row.count > 0
+            ? tSigning("statusSplit", {
+                notStarted: row.notStarted,
+                inProgress: row.inProgress,
+                done: row.done,
+              })
+            : row.observations > 0
+              ? tSigning("continuedAssessment")
+              : dash,
+        responsible: responsibleLabel(row.area),
+        cost: row.cost ?? dash,
+        dates:
+          row.earliest === null || row.latest === null
+            ? dash
+            : row.earliest === row.latest
+              ? row.earliest
+              : tSigning("dateRange", {
+                  earliest: row.earliest,
+                  latest: row.latest,
+                }),
+      })),
+      noActions: t("noActions"),
+      methodTitle: tSigning("methodTitle"),
+      methodLines: [
+        tSigning("methodEqualWork"),
+        tSigning("methodEquivalentWork", {
+          criteria: doc.method.criteria
+            .map((criterion) =>
+              tSigning("criterionWithWeight", {
+                name: criterion.name,
+                points: criterion.weightPoints,
+              })
+            )
+            .join(", "),
+        }),
+        tSigning("methodPayElements", { currency: doc.currency ?? dash }),
+        tSigning("methodAppendixReference"),
+      ],
+      checklistTitle: tSigning("checklistTitle"),
+      checklistRows: [
+        {
+          label: tSigning("checkAssessed"),
+          done: doc.checklist.allRequiredAssessed,
+        },
+        {
+          label: tSigning("checkLinked"),
+          done: doc.checklist.reasonsOrActionsLinked,
+        },
+        {
+          label: tSigning("checkCollaboration"),
+          done: doc.checklist.collaborationDocumented,
+        },
+        {
+          label: tSigning("checkSameVersion"),
+          done: doc.checklist.sameFrozenVersion,
+        },
+      ],
+      checklistDone: tSigning("checklistDone"),
+      checklistOpen: tSigning("checklistOpen"),
+      maskedCell: dash,
+    }
+  }
+
+  function detailLabels(doc: PayMappingReportDoc): DetailAppendixLabels {
+    const docTitle = tDetail("docTitle")
+    // The same resolver the audit log uses for a dimension key: the
+    // criteria library's own localized name in the viewer's locale.
+    const dimensionLabel = (key: string) =>
+      resolveCriteriaLibraryValue("dimensionKey", key, locale) ?? key
+    const workingConditionsLine =
+      doc.method.workingConditions === null
+        ? tDetail("wcNone")
+        : tDetail(
+            doc.method.workingConditions.status === "active"
+              ? "wcMaterial"
+              : "wcNotMaterial",
+            { motivation: doc.method.workingConditions.motivation }
+          )
+    return {
+      footer: docTitle,
+      identity: identityLabels(doc, docTitle),
+      classification: tDetail("classification"),
+      contentsTitle: tAppendix("contentsTitle"),
+      equalWorkTitle: tDetail("equalWorkTitle"),
+      equivalentTitle: tDetail("equivalentTitle"),
+      equivalentChainLine: tSigning("chainLine"),
+      praxisTitle: tDetail("praxisTitle"),
+      methodTitle: tDetail("methodTitle"),
       colGroup: tGap("columns.group"),
       colLevel: tGap("columns.level"),
-      colWomenMean: t("colWomenMean"),
-      colMenMean: t("colMenMean"),
-      colGapPct: t("colGapPct"),
-      colGapKr: t("colGapKr"),
+      colWomen: tGap("columns.women"),
+      colMen: tGap("columns.men"),
+      colTccWomen: tDetail("colTccWomen"),
+      colTccMen: tDetail("colTccMen"),
+      colTccGapKr: tDetail("colTccGapKr"),
+      colTccGapPct: tDetail("colTccGapPct"),
       colStatus: t("colStatus"),
-      flagLabel: (flag) => tGap(`flag.${flag}`),
-      levelText: (level) => (level === null ? "-" : String(level)),
-      levelRowLabel: (level) =>
-        level === null ? "-" : tGap("levelLabel", { level }),
-      baseDrivenMarker: "*",
-      baseLine: (metric) =>
-        t("baseLine", {
-          womenMean: metric.womenMean ?? t("maskedCell"),
-          menMean: metric.menMean ?? t("maskedCell"),
-          gapPct: metric.gapPct ?? t("maskedCell"),
-          gapKr: metric.gapKr ?? t("maskedCell"),
+      medianLine: (median) =>
+        tDetail("medianLine", {
+          women: median.women ?? dash,
+          men: median.men ?? dash,
+          gap: median.gapPct ?? dash,
         }),
-      medianShort: t("medianShort"),
+      baseLine: (base) =>
+        tDetail("baseLine", {
+          women: base.womenMean ?? dash,
+          men: base.menMean ?? dash,
+          gap: base.gapPct ?? dash,
+        }),
+      flagLabel: (flag) => tGap(`flag.${flag}`),
+      statusLabel: (status) => tStatus(status),
+      baseDrivenMarker: "*",
+      baseDrivenNote: tDetail("baseDrivenNote"),
       prevYearLine: (gapPct) => t("prevYearLine", { gap: gapPct }),
       reasonsLabel: t("reasonsLabel"),
       noteLabel: t("noteLabel"),
+      actionsLabel: tDetail("actionsLabel"),
       reasonLabel: (reason) => tReasons(reason),
+      linkedActionLine: (action) =>
+        tDetail("linkedAction", {
+          number: action.number,
+          owner: action.ownerName,
+          date: action.plannedDate,
+        }),
       undocumented: t("undocumented"),
+      levelText: (level) => (level === null ? dash : String(level)),
       emptyEqualWork: t("emptyEqualWork"),
       reverseTitle: t("reverseTitle"),
       genderPureTitle: t("genderPureTitle"),
       genderPureRow: (row) =>
         t("genderPureRow", {
           group: row.label,
-          level: row.level ?? "-",
+          level: row.level ?? dash,
           count: row.count,
           gender: row.gender === "Kvinna" ? t("wordWomen") : t("wordMen"),
         }),
-      equivalentTitle: t("equivalentTitle"),
-      equivalentIntro: t("equivalentIntro"),
-      levelsTitle: t("levelsTitle"),
-      levelsSignNote: t("levelsSignNote"),
-      womenDominatedTitle: t("womenDominatedTitle"),
-      womenDominatedIntro: t("womenDominatedIntro"),
       wdGroupLine: (group) =>
         t("wdGroupLine", {
           group: group.label,
           level: group.level,
           headcount: group.headcount,
           share: group.womenSharePct,
-          mean: group.meanComp ?? t("maskedCell"),
+          mean: group.meanComp ?? dash,
+          spread: group.spread ?? dash,
         }),
       colComparator: t("colComparator"),
-      colSpread: t("colSpread"),
       colHeadcount: tGap("columns.headcount"),
       colWomenShare: tGap("columns.womenShare"),
       colMean: tGap("columns.mean"),
+      colSpread: t("colSpread"),
       colDiffPct: tGap("columns.diffPct"),
       colDiffKr: tGap("columns.diffSek"),
       noComparators: tGap("noComparators"),
       emptyWomenDominated: t("emptyWomenDominated"),
+      praxisAreaTitle: praxisAreaLabel,
+      findingLabel: (finding) =>
+        finding === "none"
+          ? t("findingNone")
+          : finding === "found"
+            ? t("findingFound")
+            : t("findingPending"),
+      praxisActionLine: (action) =>
+        tDetail("praxisAction", {
+          number: action.number,
+          action: action.plannedAction,
+          date: action.plannedDate,
+        }),
+      previousEvaluationTitle:
+        doc.previousEvaluation === null
+          ? ""
+          : tDetail("previousEvaluationTitle", {
+              run: doc.previousEvaluation.runLabel,
+              date: doc.previousEvaluation.referenceDate,
+            }),
+      noPreviousActions: t("noPreviousActions"),
+      collaborationTitle: tReview("collaborationTitle"),
+      participantsLabel: tReview("collaborationParticipants"),
+      descriptionLabel: tReview("collaborationDescription"),
+      collaborationDateLabel: tReview("collaborationDate"),
+      collaborationRemarksLabel: tReview("collaborationRemarks"),
+      notDocumented: t("notDocumented"),
       actionsTitle: t("actionsTitle"),
-      actionsIntro: t("actionsIntro"),
-      actionScopeLabel: (scope) =>
-        scope === "equalWork"
-          ? tActionsOverview("scopeEqualWork")
-          : tActionsOverview("scopeEquivalentWork"),
-      colAction: t("colAction"),
+      colNumber: tActions("number"),
+      colTarget: tDetail("colTarget"),
+      colProblem: t("colAction"),
+      colReason: tActions("reason"),
       colOwner: tActions("owner"),
       colDate: tActions("plannedDate"),
       colCost: tActions("estimatedCost"),
       colPriority: tActions("priorityLabel"),
       colActionStatus: t("colStatus"),
       targetKindLabel: (kind) => tActions(`targetKind.${kind}`),
-      erasedContent: tActions("erasedContent"),
-      statusLabel: (status) => tActions(`status.${status}`),
+      actionStatusLabel: (status) => tActions(`status.${status}`),
       priorityLabel: (priority) => tActions(`priority.${priority}`),
-      actionTotalsLine:
-        doc.actionTotals.cost === null
-          ? t("actionTotalsNoCost", { count: doc.actionTotals.count })
-          : t("actionTotals", {
-              count: doc.actionTotals.count,
-              cost: doc.actionTotals.cost,
-            }),
+      erasedContent: tActions("erasedContent"),
       noActions: t("noActions"),
       notesTitle: t("notesTitle"),
       noteTypeLabel: (type) => tActions(`noteType.${type}`),
       noNotes: t("noNotes"),
-      evaluationTitle: t("evaluationTitle"),
-      evaluationIntro:
-        doc.previousEvaluation === null
-          ? ""
-          : t("evaluationIntro", {
-              run: doc.previousEvaluation.runLabel,
-              date: doc.previousEvaluation.referenceDate,
-            }),
-      evaluationStatusNote: t("evaluationStatusNote"),
-      noPreviousActions: t("noPreviousActions"),
-      methodTitle: t("methodTitle"),
-      methodBody: t("methodBody"),
+      definitionsTitle: tDetail("definitionsTitle"),
+      // The signing report's own sentence: one wording for "equal work" in
+      // both documents. Equivalent work takes the appendix's own string
+      // instead, because the signing one inlines the criteria list that the
+      // table right below already prints.
+      defEqualWork: tSigning("methodEqualWork"),
+      defEquivalentWork: tDetail("defEquivalentWork"),
       criteriaTitle: t("criteriaTitle"),
+      criterionPurpose: tDetail("criterionPurpose"),
+      criterionRelevance: tDetail("criterionRelevance"),
+      criterionWeightMotivation: tDetail("criterionWeightMotivation"),
       colCriterion: tAppendix("colCriterion"),
+      colDimension: tDetail("colDimension"),
       colWeight: tAppendix("colWeight"),
       colShare: tAppendix("colShare"),
-      pointBudgetLine: t("pointBudgetLine", {
-        points: doc.method.pointBudget,
+      dimensionLabel,
+      pointBudgetLine: t("pointBudgetLine", { points: doc.method.pointBudget }),
+      dimensionSharesTitle: tDetail("dimensionSharesTitle"),
+      levelRulesTitle: tDetail("levelRulesTitle"),
+      colMinScore: tDetail("colMinScore"),
+      zoneRulesTitle: tDetail("zoneRulesTitle"),
+      zoneRuleLine: (rule) =>
+        tDetail("zoneRule", { zone: rule.zone, step: rule.minStep }),
+      workingConditionsLine,
+      scaleNote: tDetail("scaleNote"),
+      differenceNote: tDetail("differenceNote"),
+      measuresNote: t("measuresNote", { currency: doc.currency ?? dash }),
+      thresholdsNote: tDetail("thresholdsNote"),
+      hourlyDefaultLine: tDetail("hourlyDefaultLine", {
+        hours: doc.fullTimeHoursDefault,
       }),
-      scopeNote: t("scopeNote"),
-      individualNote: t("individualNote"),
-      statisticsNote: t("statisticsNote"),
+      hourlyNote: hourlyNoteLabel(doc, t),
       coverageNote: t("coverageNote", {
         singletons: doc.method.singletonCount,
         genderPure: doc.method.genderPureCount,
         reverse: doc.method.reverseCount,
       }),
-      maskingNote: t("maskingNote", {
-        count: doc.method.maskedGroupCount,
-        min: EXPORT_MIN_GROUP_SIZE,
-        perGender: EXPORT_MIN_PER_GENDER,
-      }),
-      measuresNote: t("measuresNote", {
-        currency: doc.currency ?? "-",
-      }),
-      hourlyNote: hourlyNoteLabel(doc, t),
-      maskedCell: t("maskedCell"),
+      unmaskedNote: tDetail("unmaskedNote"),
+      maskedCell: dash,
     }
+  }
 
+  async function renderDocument(
+    data: ReportExportData,
+    kind: ReportDocumentKind
+  ): Promise<Blob> {
+    const full = assemble(data)
+    if (kind === "signing") {
+      // Six to eight pages, no long tables and no contents page: one pass.
+      const doc = signingReportDoc(full)
+      return await pdf(
+        <SigningReportPdf doc={doc} labels={signingLabels(doc)} />
+      ).toBlob()
+    }
+    const doc = detailAppendixDoc(full)
+    const labels = detailLabels(doc)
     // Multi-pass render: each pass records where every section and table
-    // row lands; from that the rows that start a new page get their
-    // table's header re-rendered above them (continuation headers), and
-    // because an inserted header can itself move later rows, the loop
-    // repeats until the layout is stable. Convergence is NOT monotone
-    // (an inserted header can push the previous page's last row forward,
-    // MOVING a break rather than adding one), so there is no guaranteed
-    // fixed point: typical documents settle in 2 passes, but measured
-    // comparison-heavy documents have needed up to 13. The cap is a
-    // safety stop; when it is hit, the final render ships the LAST
-    // RENDERED set together with the page refs measured under it, never
-    // an unrendered guess, so the contents page always matches the
-    // document even if a continuation header then sits imperfectly.
-    const maxPasses = 16
+    // row lands; from that the rows that start a new page get their table's
+    // header re-rendered above them (continuation headers), and because an
+    // inserted header can itself move later rows, the loop repeats until the
+    // layout is stable (or MAX_PASSES is hit, see above).
     let headerBreaks = new Set<string>()
     let pageRefs: Record<string, number> = {}
-    for (let pass = 0; pass < maxPasses; pass++) {
+    const tables = detailAppendixTables(doc)
+    for (let pass = 0; pass < MAX_PASSES; pass++) {
       const rowPages: Record<string, number> = {}
       const refs: Record<string, number> = {}
       await pdf(
-        <PayMappingReportPdf
+        <DetailAppendixPdf
           doc={doc}
           labels={labels}
-          variant={variant}
-          chartImages={chartImages}
           headerBreaks={headerBreaks}
           onResolvePage={(id, page) => {
             refs[id] = page
@@ -534,51 +766,46 @@ export function usePayMappingReportExport(): {
         />
       ).toBlob()
       pageRefs = refs
-      const next = computeHeaderBreaks(doc, rowPages)
+      const next = computeHeaderBreaks(tables, rowPages)
       const stable =
         next.size === headerBreaks.size &&
         [...next].every((id) => headerBreaks.has(id))
-      if (stable || pass === maxPasses - 1) break
+      if (stable || pass === MAX_PASSES - 1) break
       headerBreaks = next
     }
     return await pdf(
-      <PayMappingReportPdf
+      <DetailAppendixPdf
         doc={doc}
         labels={labels}
-        variant={variant}
-        chartImages={chartImages}
         pageRefs={pageRefs}
         headerBreaks={headerBreaks}
       />
     ).toBlob()
   }
 
-  async function exportReport(
+  async function exportDocument(
     data: ReportExportData,
-    variant: ReportVariant = "statutory"
+    kind: ReportDocumentKind
   ): Promise<void> {
-    const union = variant === "union"
     setBusy(true)
     try {
-      const blob = await renderReport(data, variant)
-
+      const blob = await renderDocument(data, kind)
       // The export-boundary audit row (ADR-0011 p.3) is written BEFORE the
       // file is handed over: a download the trail does not know about must
       // not happen. Generation stayed local; nothing has left the browser
       // yet.
       try {
-        await (union
-          ? logUnionExport({ orgId, runId: data.run.runId })
-          : logExport({ orgId, runId: data.run.runId }))
+        await (kind === "signing"
+          ? logSigning({ orgId, runId: data.run.runId })
+          : logDetail({ orgId, runId: data.run.runId }))
       } catch {
         toast.error(t("logFailed"))
         return
       }
-
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = reportFileName(data.run.label, variant)
+      a.download = reportFileName(data.run.label, kind)
       document.body.appendChild(a)
       a.click()
       a.remove()
@@ -588,39 +815,5 @@ export function usePayMappingReportExport(): {
     }
   }
 
-  // The off-screen capture host: mounted only during an export, fixed
-  // outside the viewport (not display:none, recharts must measure and draw
-  // for real), pinned to the light chart tokens. Each chart sits under a
-  // data-chart key the capture selects by.
-  const captureHost =
-    captureData === null ? null : (
-      <div
-        ref={captureHostRef}
-        aria-hidden
-        style={{
-          position: "fixed",
-          left: -10000,
-          top: 0,
-          width: 640,
-          ...CAPTURE_LIGHT_TOKENS,
-        }}
-      >
-        {captureData.population.women + captureData.population.men > 0 && (
-          <div data-chart="population" style={{ width: 240 }}>
-            <WholeSurveyStat
-              population={captureData.population}
-              countLabel={t("summaryEmployees")}
-              animate={false}
-            />
-          </div>
-        )}
-        {captureData.quartiles.length > 0 && (
-          <div data-chart="quartiles">
-            <QuartileStat quartiles={captureData.quartiles} animate={false} />
-          </div>
-        )}
-      </div>
-    )
-
-  return { busy, exportReport, renderReport, captureHost }
+  return { busy, exportDocument, renderDocument }
 }

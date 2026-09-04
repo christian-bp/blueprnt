@@ -396,6 +396,10 @@ in the same change.
   formats: the XLSX/JSON archive package and any Art. 9 filing must log at
   their own boundaries the same way (new event keys, same pattern); per-view
   logging stays deliberately unbuilt per the ADR's 2026-07-13 update.
+  (ADR-0030 replaced the event with `payMapping.signingReportExported` and
+  `payMapping.detailAppendixExported`, logged by
+  `logPayMappingSigningReportExport` / `logPayMappingDetailAppendixExport`;
+  the archive package logs `payMapping.archiveExported`.)
 
 - [ ] **Wire `bun run docs:sync` into the production deploy flow.** The docs
   search index (the `@convex-dev/rag` component, ADR-0020) is populated by

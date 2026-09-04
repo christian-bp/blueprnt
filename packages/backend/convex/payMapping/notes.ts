@@ -83,6 +83,7 @@ export const createNote = orgMutation({
     // so excluded group keys are valid here.
     const { targetLabel } = validateTarget(rows, target, {
       allowExcludedGroups: true,
+      allowPraxis: false,
     })
 
     const noteId = await ctx.db.insert("payMappingNotes", {
