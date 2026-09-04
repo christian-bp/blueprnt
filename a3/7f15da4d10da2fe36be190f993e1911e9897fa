@@ -1,0 +1,52 @@
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_a5a0b8b07c8eab::t_a891652690875a 12,20-22,25-30
+  s_a5a0b8b07c8eab::t_aed383b07613d6 45
+  s_a5a0b8b07c8eab::t_743957795ece04 85-88,100-101,108-158
+  s_a5a0b8b07c8eab::t_cb5977fedca27f 102-106
+  s_a5a0b8b07c8eab::t_4a201307062e4d 311-339
+apps/dashboard/lib/rate-column.ts
+  s_a5a0b8b07c8eab::t_48bc5b9e8638f9 12-25
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_a5a0b8b07c8eab::t_e55baeb35c77dc 13-22,30
+  s_a5a0b8b07c8eab::t_d0fa77c485d9c7 35
+  s_a5a0b8b07c8eab::t_55c3acb1ad4271 608-610
+  s_a5a0b8b07c8eab::t_fc8c7d49930710 345-359
+  s_a5a0b8b07c8eab::t_999b42ae47f4e4 482-486
+  s_a5a0b8b07c8eab::t_6c77d42b1f91fe 531-539
+  s_a5a0b8b07c8eab::t_01225fe9a28df9 388-404,406-407,409-418,425-447,449-458,479-481,487-527,530,540,543-545,552,554-561,564,566,573-578,583-592,603-604,606-607,643,645,647,650,652-654
+  s_a5a0b8b07c8eab::t_d51ee5c942d385 179-189,196,198-202,208-209
+  s_a5a0b8b07c8eab::t_7d6f650ae428b2 342-343,419-424,448
+  s_a5a0b8b07c8eab::t_9fc670e5619c5b 657
+apps/dashboard/components/rating/rating-result.tsx
+  s_a5a0b8b07c8eab::t_f811cbfc0ee6d6 9,15,25,29-34,65-70,83-88,112-115,124-128,173-174
+apps/dashboard/components/rating/rating-stepper.test.tsx
+  s_a5a0b8b07c8eab::t_2c6d298ed0d7aa 587-588,621-622,637-638
+  s_a5a0b8b07c8eab::t_a81ef3fa4d0eb9 245-247
+  s_a5a0b8b07c8eab::t_df62d53e8e8f1d 144
+  s_a5a0b8b07c8eab::t_e92c7e1e330b1d 256,258
+  s_a5a0b8b07c8eab::t_3473f25169502b 436-447
+  s_a5a0b8b07c8eab::t_8e25be5a59a2d2 229
+  s_a5a0b8b07c8eab::t_8a09306ee072ce 121-131
+  s_a5a0b8b07c8eab::t_a8c6c6e72977a8 366
+  s_a5a0b8b07c8eab::t_8ac47a4567b473 346
+  s_a5a0b8b07c8eab::t_6c25f5e331ea3f 306-311
+  s_a5a0b8b07c8eab::t_07d625d3934bf3 374-383
+  s_a5a0b8b07c8eab::t_4a53095f5c757f 384-385
+  s_a5a0b8b07c8eab::t_070ce2cc5072d1 448-449
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "a37f15da4d10da2fe36be190f993e1911e9897fa",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
