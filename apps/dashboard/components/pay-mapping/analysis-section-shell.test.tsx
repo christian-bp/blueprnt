@@ -60,11 +60,13 @@ describe("AnalysisSectionShell", () => {
     expect(header.contains(bar)).toBe(true)
     expect(bar.getAttribute("aria-valuenow")).toBe("39")
     // The chapter's statutory duty rides the trail, beside the crumb that
-    // names the chapter, rather than repeating on each of its steps.
+    // names the chapter, rather than repeating on each of its steps. The
+    // trigger is named for what it opens; the duty itself is the panel's
+    // first line, not the button's name.
     expect(
       header.contains(
         screen.getByRole("button", {
-          name: messages.dashboard.payMapping.analysis.duty.equalWork,
+          name: messages.dashboard.payMapping.analysis.dutyLabel,
         })
       )
     ).toBe(true)

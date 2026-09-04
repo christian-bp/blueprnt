@@ -1451,6 +1451,7 @@
         "filterRemaining": "Jäljellä",
         "filterLabel": "Näytä",
         "equivalentWorkClear": "Mikään samanarvoinen tai alempi ryhmä ei ole naisvaltaista ryhmää paremmin palkattu.",
+        "dutyLabel": "Mitä laki edellyttää",
         "duty": {
           "start": "Laki edellyttää, että työnantaja tekee palkkakartoituksen yhdessä työntekijöiden kanssa, tavallisesti ammattiliiton kautta.",
           "praxis": "Laki edellyttää, että käytte läpi palkkaa koskevat määräykset ja käytännöt ja dokumentoitte sen, mikä osoittautuu epätasa-arvoiseksi.",

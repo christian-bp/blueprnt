@@ -1451,6 +1451,7 @@
         "filterRemaining": "Kvarvarande",
         "filterLabel": "Visa",
         "equivalentWorkClear": "Ingen likvärdig eller lägre värderad grupp är högre betald än någon kvinnodominerad grupp.",
+        "dutyLabel": "Vad lagen kräver",
         "duty": {
           "start": "Lagen kräver att arbetsgivaren genomför lönekartläggningen tillsammans med arbetstagarna, normalt genom facket.",
           "praxis": "Lagen kräver att ni går igenom de bestämmelser och den praxis ni tillämpar för löner, och dokumenterar det som visar sig vara ojämställt.",

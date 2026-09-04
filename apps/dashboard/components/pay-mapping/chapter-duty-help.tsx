@@ -24,9 +24,16 @@ export function ChapterDutyHelp({ chapter }: { chapter: AnalysisChapter }) {
       ? tIntro(`${chapter}.body`)
       : t(`dutyHelp.${chapter}`)
 
+  // The panel's own title is a NAME, not the duty sentence: HelpMorphButton
+  // renders the label as the panel's heading and as the trigger's accessible
+  // name, so passing the sentence printed it twice and made the icon button's
+  // name a whole sentence.
   return (
-    <HelpMorphButton label={t(`duty.${chapter}`)}>
-      {`${t(`duty.${chapter}`)} ${method}`}
+    <HelpMorphButton label={t("dutyLabel")}>
+      <span className="space-y-2">
+        <span className="block">{t(`duty.${chapter}`)}</span>
+        <span className="block">{method}</span>
+      </span>
     </HelpMorphButton>
   )
 }

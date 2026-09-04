@@ -1451,6 +1451,7 @@
         "filterRemaining": "Resterende",
         "filterLabel": "Vis",
         "equivalentWorkClear": "Ingen ligeværdig eller lavere værdisat gruppe er højere lønnet end nogen kvindedomineret gruppe.",
+        "dutyLabel": "Hvad loven kræver",
         "duty": {
           "start": "Loven kræver, at arbejdsgiveren gennemfører lønkortlægningen sammen med medarbejderne, normalt gennem fagforeningen.",
           "praxis": "Loven kræver, at I gennemgår de bestemmelser og den praksis, I anvender for løn, og dokumenterer det, der viser sig at være ulige.",
