@@ -99,8 +99,9 @@ describe("RolesTable", () => {
     expect(engineering.getAttribute("href")).toBe("/roles/families/engineering")
     expect(screen.getByRole("link", { name: "Sales" })).toBeDefined()
     expect(screen.getByText(messages.dashboard.roles.family.none)).toBeDefined()
-    // Counts per group. next-intl renders the ICU plural: 2 -> "2 roles".
-    expect(screen.getByText("2 roles")).toBeDefined()
+    // The group's size rides in the register's own count chip, beside the
+    // family name, so it is the bare number on that row.
+    expect(engineering.closest("tr")?.textContent).toContain("2")
   })
 
   // The same guard the family page carries, for the same reason, but here the
@@ -209,7 +210,13 @@ describe("RolesTable", () => {
         profileComplete: false,
       }),
     ])
-    expect(screen.getByText("3")).toBeDefined()
+    // Scoped to the row: the register's own count chip carries a number too,
+    // and a bare getByText would match whichever of the two came first.
+    const doneRow = screen
+      .getByRole("link", { name: "Done Role" })
+      .closest("tr")
+    if (doneRow === null) throw new Error("row not found")
+    expect(within(doneRow).getByText("3")).toBeDefined()
     // A ready-but-unrated role carries the act itself: the register is the
     // one-press way into the rate flow.
     const rateLink = screen.getByRole("link", {
@@ -221,5 +228,28 @@ describe("RolesTable", () => {
     // never a dead link.
     const marker = screen.getByText(messages.dashboard.roles.notEvaluated)
     expect(marker.closest("tr")?.textContent).toContain("Bare Role")
+  })
+
+  // The register's size rides on the title's line, the way every other
+  // register in the app carries it, and follows the filter rather than the
+  // total.
+  it("counts the rows it is showing next to the title", () => {
+    renderTable([
+      row({ roleId: "r1", title: "Alpha" }),
+      row({ roleId: "r2", slug: "beta", title: "Beta" }),
+      row({ roleId: "r3", slug: "gamma", title: "Gamma" }),
+    ])
+    const header = screen.getByRole("heading", {
+      name: messages.dashboard.nav.roles,
+    }).parentElement
+    expect(header?.textContent).toContain("3")
+
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        messages.dashboard.roles.toolbar.searchPlaceholder
+      ),
+      { target: { value: "Alpha" } }
+    )
+    expect(header?.textContent).toContain("1")
   })
 })

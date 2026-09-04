@@ -9,6 +9,12 @@ import { pickSelectOption } from "@/test/select"
 const useQueryMock = vi.fn()
 onQuery((ref, args) => useQueryMock(ref, args))
 
+// The register's count chip animates through NumberFlow, whose custom
+// element does not exist in jsdom.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}))
+
 vi.mock(
   "convex/react",
   async () => (await import("@/test/convex-mocks")).convexReactModule

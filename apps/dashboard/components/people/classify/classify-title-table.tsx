@@ -750,6 +750,7 @@ export function ClassifyTitleTable({
       <FrameTable
         title={tTabs("classify")}
         count={0}
+        countIcon={Tag01Icon}
         toolbar={<ClassifyBulkToolbar />}
       >
         <Empty>
@@ -770,6 +771,7 @@ export function ClassifyTitleTable({
       <FrameTable
         title={tTabs("classify")}
         count={groups.length}
+        countIcon={Tag01Icon}
         toolbar={
           <ClassifyBulkToolbar
             selection={{

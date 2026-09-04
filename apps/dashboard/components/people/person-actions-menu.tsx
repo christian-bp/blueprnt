@@ -2,7 +2,6 @@
 
 import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +18,7 @@ import {
 } from "@/components/people/edit-person-dialog"
 import { ErasePersonControl } from "@/components/people/erase-person-control"
 import { useOrganization } from "@/components/org-context"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 // The person page's unified actions menu: a single "..." trigger in the
 // employee card's header (same anatomy as FamilyActionsMenu) holding the
@@ -60,15 +60,7 @@ export function PersonActionsMenu({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger
-          render={
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              aria-label={t("detail.actionsMenu")}
-              className="shrink-0"
-            />
-          }
+          render={<ActionsMenuTrigger aria-label={t("detail.actionsMenu")} />}
         >
           <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
         </DropdownMenuTrigger>

@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
+import { ArrowRight01Icon, Briefcase01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   columnFilteringFeature,
@@ -30,6 +30,7 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { type ReactNode, useEffect, useMemo, useState } from "react"
+import { CountChip } from "@/components/count-chip"
 import { FrameTable } from "@/components/frame-table"
 import { NoMatchesEmpty } from "@/components/no-matches-empty"
 import {
@@ -48,11 +49,7 @@ import {
   RoleTrackCell,
 } from "@/components/roles/role-table-row"
 import { TableSkeleton } from "@/components/table-skeleton"
-import {
-  FAMILY_COUNT_CLASS,
-  FAMILY_NAME_CLASS,
-  FAMILY_ROW_CLASS,
-} from "@/lib/role-family-row"
+import { FAMILY_NAME_CLASS, FAMILY_ROW_CLASS } from "@/lib/role-family-row"
 import { groupByFamily } from "@/lib/role-groups"
 
 // The role register as ONE grouped data table (shadcn data table recipe on
@@ -186,8 +183,8 @@ export function RolesTableSkeleton({ actions }: { actions?: ReactNode }) {
   const tNav = useTranslations("dashboard.nav")
   return (
     <FrameTable
-      size="sm"
       title={tNav("roles")}
+      countIcon={Briefcase01Icon}
       toolbar={actions}
       filters={<RoleTableToolbar tracks={[]} />}
     >
@@ -210,7 +207,6 @@ export function RolesTable({
 }) {
   // The no-matches title is the page's nav label, matching the page heading.
   const tNav = useTranslations("dashboard.nav")
-  const tRoles = useTranslations("dashboard.roles")
   const tToolbar = useTranslations("dashboard.roles.toolbar")
   const tFamily = useTranslations("dashboard.roles.family")
   const router = useRouter()
@@ -262,13 +258,6 @@ export function RolesTable({
 
   const shown = table.getFilteredRowModel().rows.length
   const visibleColumnCount = table.getVisibleLeafColumns().length
-  const familyCount = useMemo(
-    () =>
-      new Set(roles.filter((r) => r.familyId !== null).map((r) => r.familyId))
-        .size,
-    [roles]
-  )
-
   function clearFilters() {
     setGlobalFilter("")
     setColumnFilters([])
@@ -280,16 +269,15 @@ export function RolesTable({
 
   return (
     <FrameTable
-      size="sm"
       title={tNav("roles")}
-      description={
-        familyCount > 0
-          ? tRoles("familySummary", {
-              roles: roles.length,
-              families: familyCount,
-            })
-          : tFamily("roleCount", { count: roles.length })
-      }
+      // The register's own size, on the title's line, the way every other
+      // register in the app carries it: a sentence under the title that says
+      // the same number in words is a subtitle doing a chip's work.
+      count={shown}
+      // What the number counts, the same mark the surface carries everywhere
+      // else (the nav item, its empty state). The family bands inside the
+      // table stay bare numbers: the header already said the unit.
+      countIcon={Briefcase01Icon}
       toolbar={actions}
       filters={
         <RoleTableToolbar
@@ -377,11 +365,12 @@ export function RolesTable({
                             {tFamily("none")}
                           </span>
                         )}
-                        <span
-                          className={cn(FAMILY_COUNT_CLASS, "ml-auto shrink-0")}
-                        >
-                          {tFamily("roleCount", { count: row.subRows.length })}
-                        </span>
+                        {/* The same chip the register's own title carries,
+                            beside the name it counts. */}
+                        <CountChip
+                          value={row.subRows.length}
+                          icon={Briefcase01Icon}
+                        />
                       </div>
                     </TableCell>
                   </TableRow>

@@ -4,7 +4,6 @@ import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +17,7 @@ import { useState } from "react"
 import { toast } from "@/lib/toast"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { RenameFamilyDialog } from "@/components/roles/rename-family-dialog"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 // The family lifecycle menu: Rename (a dialog) and Delete (a confirmed hard
 // delete that unfiles the family's roles into the "No family" group). The
@@ -45,15 +45,7 @@ export function FamilyActionsMenu({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger
-          render={
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              aria-label={tFamily("actionsMenu")}
-              className="shrink-0"
-            />
-          }
+          render={<ActionsMenuTrigger aria-label={tFamily("actionsMenu")} />}
         >
           <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
         </DropdownMenuTrigger>

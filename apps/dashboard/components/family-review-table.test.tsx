@@ -8,9 +8,15 @@ import {
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { MAX_FAMILY_NAME, MAX_ROLE_TITLE } from "@workspace/constants"
 import messages from "@workspace/i18n/messages/en.json"
-import { createTranslator, NextIntlClientProvider } from "next-intl"
+import { NextIntlClientProvider } from "next-intl"
 import { useRef, useState } from "react"
-import { afterEach, describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
+
+// The count chip animates through NumberFlow, whose custom element does not
+// exist in jsdom.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}))
 
 import {
   type ReviewAnnotations,
@@ -22,14 +28,6 @@ import { openMenu } from "@/test/menu"
 
 const t = messages.dashboard.familyTable
 
-// roleCount is an ICU plural, so its rendered text is formatted from the
-// message file rather than restated here.
-const formatFamily = createTranslator({
-  locale: "en",
-  messages,
-  namespace: "dashboard.roles.family",
-})
-const roleCount = (count: number) => formatFamily("roleCount", { count })
 const familyLabel = messages.dashboard.roles.family.nameLabel
 const titleLabel = messages.dashboard.roles.create.titleLabel
 const trackLabel = messages.dashboard.roles.create.trackLabel
@@ -184,13 +182,14 @@ describe("FamilyReviewTable structure", () => {
   it("counts the roles a family already has, and none on one being created", () => {
     render(<Harness />)
     const engineering = rowOf(screen.getByText("Engineering"))
-    // The register fixture gives Engineering two roles and Finance one.
-    expect(within(engineering).getByText(roleCount(2))).toBeTruthy()
+    // The register fixture gives Engineering two roles and Finance one. The
+    // count rides in the register's own chip, so it is the bare number.
+    expect(within(engineering).getByText("2")).toBeTruthy()
     const finance = rowOf(screen.getByText("Finance"))
-    expect(within(finance).getByText(roleCount(1))).toBeTruthy()
+    expect(within(finance).getByText("1")).toBeTruthy()
     // Legal is created by this import: a name, and no count beside it.
     const legal = rowOf(screen.getByText("Legal"))
-    expect(within(legal).queryByText(/\d+\s+role/)).toBeNull()
+    expect(within(legal).queryByText(/^\d+$/)).toBeNull()
   })
 
   it("keeps a rule under each family's last row, except the table's own", () => {

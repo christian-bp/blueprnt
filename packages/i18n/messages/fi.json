@@ -1169,7 +1169,6 @@
         "error": "Jokin meni pieleen. Yritä uudelleen.",
         "rolesEmpty": "Ei vielä rooleja tässä perheessä.",
         "notFound": "Tätä perhettä ei ole olemassa.",
-        "roleCount": "{count, plural, =1 {1 rooli} other {# roolia}}",
         "actionsMenu": "Perheen toiminnot",
         "renameDialogTitle": "Nimeä perhe uudelleen",
         "renameDialogDescription": "Anna perheelle uusi nimi.",
@@ -1254,8 +1253,7 @@
         "resultCount": "{shown}/{total} roolia",
         "noMatches": "Yksikään rooli ei vastaa hakua tai suodattimia.",
         "clearFilters": "Tyhjennä suodattimet"
-      },
-      "familySummary": "{roles, plural, =1 {1 rooli} other {# roolia}} {families, plural, =1 {1 perheessä} other {# perheessä}}"
+      }
     },
     "payMapping": {
       "startCta": "Aloita palkkakartoitus",

@@ -10,7 +10,6 @@ import {
   AvatarImage,
 } from "@workspace/ui/components/avatar"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,6 +41,7 @@ import { TableSearchField } from "@/components/table-search-field"
 import { FrameTable } from "@/components/frame-table"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { initialsOf } from "@/lib/initials"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 export function OrganizationsSection() {
   const t = useTranslations("dashboard.admin.orgs")
@@ -74,6 +74,7 @@ export function OrganizationsSection() {
       <FrameTable
         title={tTabs("organizations")}
         count={orgs === undefined ? undefined : filtered.length}
+        countIcon={Building01Icon}
         toolbar={<CreateOrganizationDialog />}
         filters={
           <TableSearchField
@@ -145,12 +146,8 @@ export function OrganizationsSection() {
                       <DropdownMenu>
                         <DropdownMenuTrigger
                           render={
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
+                            <ActionsMenuTrigger
                               aria-label={t("rowActions", { name: org.name })}
-                              className="shrink-0 text-muted-foreground hover:text-foreground"
                             />
                           }
                         >

@@ -31,6 +31,7 @@ import { RenameConversationDialog } from "@/components/assistant/rename-conversa
 import { useAssistantThreads } from "@/hooks/use-assistant-threads"
 import { relativeDayBucket } from "@/lib/relative-day"
 import { toast } from "@/lib/toast"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 // Row count for the loading skeleton, not the list's own page size: the list
 // is unpaginated and never grows past ASSISTANT_THREAD_LIST_LIMIT, so this
@@ -234,15 +235,11 @@ function AssistantHistoryThreadRow({
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
+            <ActionsMenuTrigger
               disabled={busy}
               aria-label={t("rowActionsLabel", {
                 title: thread.title ?? t("untitled"),
               })}
-              className="shrink-0 text-muted-foreground hover:text-foreground"
             />
           }
         >

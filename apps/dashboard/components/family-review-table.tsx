@@ -9,6 +9,7 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import {
   Add01Icon,
+  Briefcase01Icon,
   DragDropVerticalIcon,
   MoreVerticalIcon,
 } from "@hugeicons/core-free-icons"
@@ -45,12 +46,10 @@ import { RemoveConfirm } from "@/components/remove-confirm"
 import { TrackBadge } from "@/components/track-badge"
 import { useFamilyDnd } from "@/hooks/use-family-dnd"
 import type { DraftFamily, DraftRole } from "@/lib/family-dnd"
-import {
-  FAMILY_COUNT_CLASS,
-  FAMILY_NAME_CLASS,
-  FAMILY_ROW_CLASS,
-} from "@/lib/role-family-row"
+import { FAMILY_NAME_CLASS, FAMILY_ROW_CLASS } from "@/lib/role-family-row"
 import { onSelectValue } from "@/lib/select"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
+import { CountChip } from "@/components/count-chip"
 
 interface TrackOption {
   trackKey: string
@@ -480,11 +479,10 @@ function FamilyGroup({
                     rather than as the absence of one. The roles being added
                     are the rows directly below either way. */}
                 {registerFamily !== null && (
-                  <span className={cn("shrink-0", FAMILY_COUNT_CLASS)}>
-                    {tFamily("roleCount", {
-                      count: registerFamily.roles.length,
-                    })}
-                  </span>
+                  <CountChip
+                    value={registerFamily.roles.length}
+                    icon={Briefcase01Icon}
+                  />
                 )}
               </span>
             ) : (
@@ -580,15 +578,12 @@ function FamilyGroup({
               >
                 <DropdownMenuTrigger
                   render={
-                    <Button
-                      type="button"
-                      variant="ghost"
+                    <ActionsMenuTrigger
                       size="icon-xs"
                       // The menu repeats once per family, so its accessible
                       // name carries the family: forty identical triggers are
                       // indistinguishable in a screen reader's element list.
                       aria-label={t("familyActions", { name: displayName })}
-                      className="text-muted-foreground hover:text-foreground"
                     />
                   }
                 >

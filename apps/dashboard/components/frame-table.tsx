@@ -1,6 +1,5 @@
 "use client"
 
-import { Badge } from "@workspace/ui/components/badge"
 import {
   Frame,
   FrameDescription,
@@ -16,10 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import type { IconSvgElement } from "@hugeicons/react"
 import { Separator } from "@workspace/ui/components/separator"
-import NumberFlow from "@number-flow/react"
 import { useTranslations } from "next-intl"
 import type { ReactNode } from "react"
+import { CountChip } from "@/components/count-chip"
 import { TablePagination } from "@/components/table-pagination"
 import { onSelectValue } from "@/lib/select"
 
@@ -43,6 +43,7 @@ const FRAME_TABLE_EDGE =
 export function FrameTable({
   title,
   count,
+  countIcon,
   description,
   toolbar,
   filters,
@@ -53,6 +54,10 @@ export function FrameTable({
   // ReactNode so a loading surface can stand a skeleton bar in for a
   // data-driven title (the family page's name arrives with the data).
   title: ReactNode
+  // What the count counts: people, roles, entries. Required even on a frame
+  // whose count is still loading, because the unit is a property of the
+  // register rather than of its data.
+  countIcon: IconSvgElement
   // The register's CURRENT (filtered) size; hidden while undefined (loading).
   // Live, so it rolls when filtering narrows the register (NumberFlow rule).
   count?: number
@@ -78,9 +83,7 @@ export function FrameTable({
               <FrameTitle className="truncate">{title}</FrameTitle>
             )}
             {count !== undefined && (
-              <Badge variant="outline" className="rounded-full tabular-nums">
-                <NumberFlow value={count} />
-              </Badge>
+              <CountChip value={count} icon={countIcon} />
             )}
           </div>
           {description !== undefined && (

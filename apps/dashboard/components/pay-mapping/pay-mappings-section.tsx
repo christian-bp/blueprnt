@@ -328,6 +328,7 @@ export function PayMappingsSection() {
       <FrameTable
         title={tNav("payMapping")}
         count={loading ? undefined : shown}
+        countIcon={ChartColumnIcon}
         toolbar={startDialog}
         filters={toolbar}
       >

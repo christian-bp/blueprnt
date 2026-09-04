@@ -52,6 +52,7 @@ function action(
   return {
     actionId: "a1" as Id<"payMappingActions">,
     target: GROUP_TARGET,
+    number: 1,
     problem: "Gap",
     plannedAction: "Review",
     reason: null,

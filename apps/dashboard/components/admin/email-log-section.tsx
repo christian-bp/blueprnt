@@ -174,6 +174,7 @@ export function EmailLogSection() {
       <FrameTable
         title={tTabs("emailLog")}
         count={loadingFirst ? undefined : rows.length}
+        countIcon={Mail01Icon}
         filters={
           <div className="flex flex-wrap items-center gap-2">
             <TableSearchField

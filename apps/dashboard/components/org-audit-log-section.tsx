@@ -413,6 +413,7 @@ export function OrgAuditLogSection() {
       <FrameTable
         title={tDashboard("nav.auditLog")}
         count={loadingFirst ? undefined : view.total}
+        countIcon={Audit02Icon}
         // The whole toolbar is filters (search, category, date range): the log
         // has no primary action, so the title row's right side stays empty.
         filters={

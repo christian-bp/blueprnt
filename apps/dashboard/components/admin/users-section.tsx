@@ -1,7 +1,11 @@
 "use client"
 
 import { Medallion } from "@/components/medallion"
-import { MoreVerticalIcon, UserMultipleIcon } from "@hugeicons/core-free-icons"
+import {
+  MoreVerticalIcon,
+  UserMultiple02Icon,
+  UserMultipleIcon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
@@ -10,7 +14,6 @@ import {
   AvatarImage,
 } from "@workspace/ui/components/avatar"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,6 +46,7 @@ import { FrameTable } from "@/components/frame-table"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { authClient } from "@/lib/auth-client"
 import { initialsOf } from "@/lib/initials"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 export function UsersSection() {
   const t = useTranslations("dashboard.admin.users")
@@ -96,6 +100,7 @@ export function UsersSection() {
       <FrameTable
         title={tTabs("users")}
         count={users === undefined ? undefined : filtered.length}
+        countIcon={UserMultiple02Icon}
         toolbar={<CreateUserDialog />}
         filters={
           <TableSearchField
@@ -176,12 +181,8 @@ export function UsersSection() {
                       <DropdownMenu>
                         <DropdownMenuTrigger
                           render={
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
+                            <ActionsMenuTrigger
                               aria-label={t("rowActions", { name: user.name })}
-                              className="shrink-0 text-muted-foreground hover:text-foreground"
                             />
                           }
                         >

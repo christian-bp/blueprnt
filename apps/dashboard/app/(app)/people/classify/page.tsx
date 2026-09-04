@@ -1,5 +1,6 @@
 "use client"
 
+import { Tag01Icon } from "@hugeicons/core-free-icons"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Table } from "@workspace/ui/components/table"
 import { useMutation, useQuery } from "convex/react"
@@ -72,7 +73,11 @@ export default function ClassifyPage() {
             { label: tTabs("classify") },
           ]}
         />
-        <FrameTable title={tTabs("classify")} toolbar={<ClassifyBulkToolbar />}>
+        <FrameTable
+          title={tTabs("classify")}
+          countIcon={Tag01Icon}
+          toolbar={<ClassifyBulkToolbar />}
+        >
           <Table className="table-fixed">
             <ClassifyTableHeader />
             <TableSkeleton columns={CLASSIFY_SKELETON_COLUMNS} rows={5} />

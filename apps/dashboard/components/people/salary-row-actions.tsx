@@ -4,7 +4,6 @@ import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +16,7 @@ import { useState } from "react"
 import { toast } from "@/lib/toast"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { useOrganization } from "@/components/org-context"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 // Per-row actions for the salary history table (the row-actions convention:
 // one trailing "..." trigger, destructive item confirms via AlertDialog).
@@ -40,15 +40,7 @@ export function SalaryRowActions({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger
-          render={
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label={t("salaryRowActions")}
-              className="shrink-0 text-muted-foreground hover:text-foreground"
-            />
-          }
+          render={<ActionsMenuTrigger aria-label={t("salaryRowActions")} />}
         >
           <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
         </DropdownMenuTrigger>

@@ -19,7 +19,3 @@ export const FAMILY_ROW_CLASS = "bg-muted/50 hover:bg-muted/50"
 // while scanning without the band needing colour or size to carry it (the
 // reference's segment rows do the same).
 export const FAMILY_NAME_CLASS = "font-semibold text-sm"
-
-// The role count beside the name, and the placeholder that stands in for a name
-// (an unnamed new family in the review, the family-less group in the register).
-export const FAMILY_COUNT_CLASS = "text-muted-foreground text-xs"

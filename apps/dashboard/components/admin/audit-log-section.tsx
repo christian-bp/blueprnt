@@ -285,6 +285,7 @@ export function AuditLogSection() {
       <FrameTable
         title={tTabs("auditLog")}
         count={loadingFirst ? undefined : rows.length}
+        countIcon={Audit02Icon}
         filters={
           <div className="flex flex-wrap items-center gap-2">
             <TableSearchField

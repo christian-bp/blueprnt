@@ -54,6 +54,7 @@ import {
 import { onSelectValue } from "@/lib/select"
 import { FORM_DIALOG_CONTENT } from "@/lib/dialog-style"
 import { initialsOf } from "@/lib/initials"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 export function ManageUserOrganizationsDialog(props: {
   user: { authId: string; name: string; email: string }
@@ -188,12 +189,8 @@ export function ManageUserOrganizationsDialog(props: {
                     <DropdownMenu>
                       <DropdownMenuTrigger
                         render={
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
+                          <ActionsMenuTrigger
                             aria-label={t("memberActions", { name: m.name })}
-                            className="shrink-0 text-muted-foreground hover:text-foreground"
                           />
                         }
                       >

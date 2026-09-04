@@ -1,5 +1,6 @@
 "use client"
 
+import { SparklesIcon } from "@hugeicons/core-free-icons"
 import {
   columnFilteringFeature,
   createColumnHelper,
@@ -282,7 +283,11 @@ export function AiUsageTable({
 
   if (loading) {
     return (
-      <FrameTable title={tPage("heading")} filters={toolbar}>
+      <FrameTable
+        title={tPage("heading")}
+        countIcon={SparklesIcon}
+        filters={toolbar}
+      >
         <Table className="table-fixed">
           <AiUsageTableHeadings sorting={sorting} onToggle={toggleSort} />
           <TableSkeleton rows={PAGE_SIZE} columns={AI_USAGE_SKELETON_COLUMNS} />
@@ -307,6 +312,7 @@ export function AiUsageTable({
       <FrameTable
         title={tPage("heading")}
         count={shown}
+        countIcon={SparklesIcon}
         filters={toolbar}
         footer={
           shown > 0 && pageCount > 1 ? (

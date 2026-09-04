@@ -47,6 +47,7 @@ import {
 } from "@/components/roles/role-table-row"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { usePageTitle } from "@/hooks/use-page-title"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 // Per-family progression: the family's roles in one table with a track column,
 // ordered by track (track order) then title. Level outcomes appear only for
@@ -118,20 +119,18 @@ export default function FamilyPage(props: {
           ]}
         />
         <FrameTable
-          size="sm"
-          title={<Skeleton className="h-5 w-40" />}
+          title={
+            <span className="flex h-7 items-center">
+              <Skeleton className="h-5 w-40" />
+            </span>
+          }
+          countIcon={Briefcase01Icon}
           toolbar={
             <>
               <Button type="button">{t("newCta")}</Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                aria-label={tFamily("actionsMenu")}
-                className="shrink-0"
-              >
+              <ActionsMenuTrigger aria-label={tFamily("actionsMenu")}>
                 <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
-              </Button>
+              </ActionsMenuTrigger>
             </>
           }
           filters={
@@ -229,9 +228,9 @@ export default function FamilyPage(props: {
     <div className="space-y-4">
       <PageBreadcrumbRow segments={familyCrumbs} />
       <FrameTable
-        size="sm"
         title={family.name}
-        description={tFamily("roleCount", { count: familyRoles.length })}
+        count={shownRoles.length}
+        countIcon={Briefcase01Icon}
         toolbar={familyActions}
         filters={
           familyRoles.length > 0 ? (

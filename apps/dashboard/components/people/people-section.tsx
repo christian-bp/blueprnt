@@ -681,6 +681,8 @@ export function PeopleSection() {
       <FrameTable
         title={tTabs("people")}
         count={loading ? undefined : shown}
+        // A count of people, so the chip carries the person mark.
+        countIcon={UserMultiple02Icon}
         toolbar={headerActions}
         filters={toolbar}
         footer={

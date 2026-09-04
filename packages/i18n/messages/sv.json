@@ -1169,7 +1169,6 @@
         "error": "Något gick fel. Försök igen.",
         "rolesEmpty": "Inga roller i den här familjen än.",
         "notFound": "Den här familjen finns inte.",
-        "roleCount": "{count, plural, =1 {1 roll} other {# roller}}",
         "actionsMenu": "Familjeåtgärder",
         "renameDialogTitle": "Byt namn på familjen",
         "renameDialogDescription": "Ge familjen ett nytt namn.",
@@ -1254,8 +1253,7 @@
         "resultCount": "{shown} av {total} roller",
         "noMatches": "Inga roller matchar sökningen eller filtren.",
         "clearFilters": "Rensa filtren"
-      },
-      "familySummary": "{roles, plural, =1 {1 roll} other {# roller}} i {families, plural, =1 {1 familj} other {# familjer}}"
+      }
     },
     "payMapping": {
       "startCta": "Starta lönekartläggning",

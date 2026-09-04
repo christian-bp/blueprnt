@@ -1169,7 +1169,6 @@
         "error": "Something went wrong. Try again.",
         "rolesEmpty": "No roles in this family yet.",
         "notFound": "This family does not exist.",
-        "roleCount": "{count, plural, =1 {1 role} other {# roles}}",
         "actionsMenu": "Family actions",
         "renameDialogTitle": "Rename family",
         "renameDialogDescription": "Give the family a new name.",
@@ -1254,8 +1253,7 @@
         "resultCount": "{shown} of {total} roles",
         "noMatches": "No roles match the search or filters.",
         "clearFilters": "Clear filters"
-      },
-      "familySummary": "{roles, plural, =1 {1 role} other {# roles}} in {families, plural, =1 {1 family} other {# families}}"
+      }
     },
     "payMapping": {
       "startCta": "Start pay mapping",

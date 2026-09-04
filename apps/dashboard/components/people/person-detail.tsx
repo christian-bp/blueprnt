@@ -44,6 +44,7 @@ import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
 import { useBasePayFormat } from "@/hooks/use-base-pay-format"
 import { useMoney } from "@/hooks/use-money"
 import { usePageTitle } from "@/hooks/use-page-title"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 // The salary list's loading state: the same stacked-item wrappers as the
 // loaded list (year + role lines left, total + basic lines right, the row
@@ -150,15 +151,9 @@ export function PersonDetail({ publicId }: { publicId: string }) {
               <CardTitle>{t("identityHeading")}</CardTitle>
               {/* The real actions trigger (static chrome, enabled no-op:
                   the load is brief and disabling would just flash gray). */}
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                aria-label={t("actionsMenu")}
-                className="shrink-0"
-              >
+              <ActionsMenuTrigger aria-label={t("actionsMenu")}>
                 <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
-              </Button>
+              </ActionsMenuTrigger>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* The dt labels and the section heading are static i18n text,

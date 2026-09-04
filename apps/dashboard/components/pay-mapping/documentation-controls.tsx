@@ -5,7 +5,6 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +27,7 @@ import {
   type PayMappingNoteWire,
   targetMatches,
 } from "./pay-mapping-gap-types"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 // The action-status chip's tint, following PayGapFlagBadge's precedent (the
 // same dedicated flag-* tokens rather than the shared Badge text tokens,
@@ -152,12 +152,8 @@ export function DocumentationMenu({
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
+            <ActionsMenuTrigger
               aria-label={t("menuLabel", { target: targetLabel })}
-              className="shrink-0 text-muted-foreground hover:text-foreground"
             />
           }
         >

@@ -1,7 +1,11 @@
 "use client"
 
 import { Medallion } from "@/components/medallion"
-import { MoreVerticalIcon, UserMultipleIcon } from "@hugeicons/core-free-icons"
+import {
+  MoreVerticalIcon,
+  UserMultiple02Icon,
+  UserMultipleIcon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
@@ -50,6 +54,7 @@ import { toast } from "@/lib/toast"
 import { useOrganization } from "@/components/org-context"
 import { authClient } from "@/lib/auth-client"
 import { initialsOf } from "@/lib/initials"
+import { ActionsMenuTrigger } from "@/components/actions-menu-trigger"
 
 type ListResult = Awaited<
   ReturnType<typeof authClient.organization.listInvitations>
@@ -187,6 +192,7 @@ export function OrganizationMembersSection(props: {
       <FrameTable
         title={tTabs("members")}
         count={members === undefined ? undefined : list.length + pending.length}
+        countIcon={UserMultiple02Icon}
         toolbar={props.toolbar}
       >
         {members === undefined ? (
@@ -255,14 +261,10 @@ export function OrganizationMembersSection(props: {
                         <DropdownMenu>
                           <DropdownMenuTrigger
                             render={
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
+                              <ActionsMenuTrigger
                                 aria-label={t("memberActions", {
                                   name: m.name,
                                 })}
-                                className="shrink-0 text-muted-foreground hover:text-foreground"
                               />
                             }
                           >
@@ -330,14 +332,10 @@ export function OrganizationMembersSection(props: {
                       <DropdownMenu>
                         <DropdownMenuTrigger
                           render={
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
+                            <ActionsMenuTrigger
                               aria-label={ti("invitationActions", {
                                 email: inv.email,
                               })}
-                              className="shrink-0 text-muted-foreground hover:text-foreground"
                             />
                           }
                         >

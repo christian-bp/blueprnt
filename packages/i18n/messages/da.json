@@ -1169,7 +1169,6 @@
         "error": "Noget gik galt. Prøv igen.",
         "rolesEmpty": "Ingen roller i denne familie endnu.",
         "notFound": "Denne familie findes ikke.",
-        "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
         "actionsMenu": "Familiehandlinger",
         "renameDialogTitle": "Omdøb familien",
         "renameDialogDescription": "Giv familien et nyt navn.",
@@ -1254,8 +1253,7 @@
         "resultCount": "{shown} af {total} roller",
         "noMatches": "Ingen roller matcher søgningen eller filtrene.",
         "clearFilters": "Ryd filtrene"
-      },
-      "familySummary": "{roles, plural, =1 {1 rolle} other {# roller}} i {families, plural, =1 {1 familie} other {# familier}}"
+      }
     },
     "payMapping": {
       "startCta": "Start lønkortlægning",
