@@ -1,3 +1,25 @@
+// The step's own number, which is also the key that picks it AND the option's
+// selection mark: it stands where the radio dot stood, because a dot beside a
+// number is two marks for one answer and the number is the one that says which
+// step this is. Pale brand while the step is unchosen, solid once it is, so
+// the mark reads the same way the radio's own filled state did.
+export const RATE_STEP_MARK_CLASS = [
+  // Where the radio dot sat: the row's top-left, nudged the same half step
+  // the vendor's own indicator takes when the option carries a description,
+  // so the mark rides the first line rather than the option's middle.
+  "flex size-5 shrink-0 translate-y-0.5 items-center justify-center rounded-md",
+  "bg-brand/10 font-mono text-brand text-xs tabular-nums",
+  "group-data-checked/questionnaire-choice:bg-brand",
+  "group-data-checked/questionnaire-choice:text-primary-foreground",
+].join(" ")
+
+// The vendored choice draws its own radio indicator as a fixed child. The
+// number replaces it, so the indicator is hidden at the call site rather than
+// forked in the vendor file; it is aria-hidden either way, and the choice's
+// real input is untouched.
+export const RATE_CHOICE_CLASS =
+  "[&>[data-slot=questionnaire-choice-indicator]]:hidden"
+
 // The Enter keycap inside the rate flow's filled Next button, shared by the
 // live stepper and the loading state's stand-in so the two can never drift in
 // size or ink. Two deliberate steps off the vendored Kbd, both because the
@@ -6,15 +28,6 @@
 // the button's own foreground instead of the opaque muted chip, which is
 // exactly how upstream's Kbd already adapts to its one filled surface (the
 // tooltip: bg-background/20 in that surface's ink).
-// The step's own number, which doubles as the key that picks it. Outlined
-// rather than the filled slab Kbd defaults to: five grey blocks down the
-// scale read as chrome rather than as the scale's own numbering, and on the
-// selected option's pale brand wash the fill sat on top of it as a separate
-// object. Same geometry as the questionnaire's own shortcut key, so the two
-// keycaps in this flow match.
-export const RATE_STEP_KBD_CLASS =
-  "h-5 min-w-5 rounded-md border border-input bg-background font-mono text-muted-foreground"
-
 export const RATE_NEXT_KBD_CLASS =
   "h-4 min-w-4 translate-x-0.5 bg-primary-foreground/20 px-1 text-primary-foreground"
 

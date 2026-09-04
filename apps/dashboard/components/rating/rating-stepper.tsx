@@ -35,7 +35,8 @@ import { SPRING } from "@/lib/motion"
 import {
   RATE_NEXT_KBD_CLASS,
   RATE_PREVIOUS_SLOT,
-  RATE_STEP_KBD_CLASS,
+  RATE_CHOICE_CLASS,
+  RATE_STEP_MARK_CLASS,
 } from "@/lib/rate-column"
 import { toast } from "@/lib/toast"
 
@@ -562,7 +563,23 @@ export function RatingStepper({
                         // wash the medallion and the status chips use (the
                         // dark step is heavier because the unselected
                         // options already carry a pale wash there).
-                        className="data-checked:bg-brand/10 dark:data-checked:bg-brand/20"
+                        className={cn(
+                          "data-checked:bg-brand/10 dark:data-checked:bg-brand/20",
+                          // Hover in the same ink the option answers in, a
+                          // step below the chosen wash: the vendored neutral
+                          // grey was the last piece of the row that did not
+                          // belong to the scale. A chosen row keeps its own
+                          // wash under the pointer instead of greying over.
+                          "hover:bg-brand/5 dark:hover:bg-brand/10",
+                          "data-checked:hover:bg-brand/10 dark:data-checked:hover:bg-brand/20",
+                          // The edge follows the wash: a neutral outline
+                          // around a brand-tinted row reads as two different
+                          // hover states on one control. A step below the
+                          // chosen border, and a chosen row keeps its own.
+                          "hover:border-brand/25",
+                          "data-checked:hover:border-primary/40",
+                          RATE_CHOICE_CLASS
+                        )}
                         // Frozen while the step is saving, so a click cannot
                         // change the selection out from under the in-flight
                         // write.
@@ -574,27 +591,35 @@ export function RatingStepper({
                           }))
                         }
                       >
-                        <span className="flex items-center gap-2">
-                          <Kbd className={RATE_STEP_KBD_CLASS}>
+                        {/* The number leads the row where the radio dot did,
+                            on the option's first line, so the five of them
+                            read as the scale itself down the margin. */}
+                        <span className="flex w-full items-start gap-3">
+                          <span
+                            aria-hidden="true"
+                            className={RATE_STEP_MARK_CLASS}
+                          >
                             {anchor.step}
-                          </Kbd>
-                          {scaleStep === undefined ? (
-                            <span>{anchor.text}</span>
-                          ) : (
-                            <span className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
-                              {scaleStep.name}
-                            </span>
-                          )}
+                          </span>
+                          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                            {scaleStep === undefined ? (
+                              <span>{anchor.text}</span>
+                            ) : (
+                              <span className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+                                {scaleStep.name}
+                              </span>
+                            )}
+                            {scaleStep === undefined ? null : (
+                              // The card's own ink, not the vendored muted
+                              // description: the anchor is the sentence the
+                              // reader chooses BY, and muted on the selected
+                              // brand wash measures 4.1:1.
+                              <QuestionnaireChoiceDescription className="text-foreground">
+                                {anchor.text}
+                              </QuestionnaireChoiceDescription>
+                            )}
+                          </span>
                         </span>
-                        {scaleStep === undefined ? null : (
-                          // The card's own ink, not the vendored muted
-                          // description: the anchor is the sentence the
-                          // reader chooses BY, and muted on the selected
-                          // brand wash measures 4.1:1.
-                          <QuestionnaireChoiceDescription className="text-foreground">
-                            {anchor.text}
-                          </QuestionnaireChoiceDescription>
-                        )}
                       </QuestionnaireChoice>
                     )
                   })}
