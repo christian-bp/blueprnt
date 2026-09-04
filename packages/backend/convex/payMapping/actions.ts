@@ -309,6 +309,7 @@ export const updateAction = orgMutation({
       payload: {
         runId: action.runId,
         actionId,
+        targetKind: content.target.kind,
         targetLabel,
         changes: {
           ...changes,
@@ -342,6 +343,10 @@ export const setActionStatus = orgMutation({
       payload: {
         runId: action.runId,
         actionId,
+        // The kind travels with the label because a praxis target's label IS
+        // its area code: without the kind the log has no way to know it owes
+        // that value a localized label, and prints the raw slug.
+        targetKind: action.target.kind,
         targetLabel: resolveTargetLabel(action.target),
         changes: { status: { from: action.status, to: status } },
       },

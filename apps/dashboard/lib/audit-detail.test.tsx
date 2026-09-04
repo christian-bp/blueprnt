@@ -1223,6 +1223,33 @@ describe("formatAuditDetail", () => {
     ).toBe(`Product Manager (${TARGET_KIND_VALUE_KEYS.group.toUpperCase()})`)
   })
 
+  // The status move and the edit carry the kind for the same reason the
+  // create does: a praxis target's label IS its area code, so a payload
+  // without the kind would print the raw slug in the log's own cell.
+  it("resolves a praxis area on the events that only change an action", () => {
+    for (const event of [
+      "payMapping.actionStatusChanged",
+      "payMapping.actionUpdated",
+    ] as const) {
+      expect(
+        formatAuditDetail(
+          event,
+          {
+            runId: "run1",
+            targetKind: "praxis",
+            targetLabel: "payPolicy",
+            changes: {},
+          },
+          {},
+          labels,
+          fieldLabel,
+          undefined,
+          valueLabel
+        )
+      ).toContain(PRAXIS_AREA_VALUE_KEYS.payPolicy.toUpperCase())
+    }
+  })
+
   it("falls back to the raw scope/groupLabel/reasons codes when no valueLabel is wired", () => {
     // Guards that a caller which omits valueLabel (there should be none
     // left in the app, but the parameter is optional) degrades to the raw

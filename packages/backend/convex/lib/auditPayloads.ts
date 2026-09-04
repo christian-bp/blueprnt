@@ -442,12 +442,14 @@ export interface AuditPayloads {
   "payMapping.actionUpdated": {
     runId: string
     actionId: string
+    targetKind: ActionTargetKind
     targetLabel: string
     changes: Changes
   }
   "payMapping.actionStatusChanged": {
     runId: string
     actionId: string
+    targetKind: ActionTargetKind
     targetLabel: string
     changes: Changes
   }

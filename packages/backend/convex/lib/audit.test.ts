@@ -451,12 +451,14 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
   "payMapping.actionUpdated": {
     runId: "run-1",
     actionId: "action-1",
+    targetKind: "group",
     targetLabel: "SWE · Senior",
     changes: {},
   },
   "payMapping.actionStatusChanged": {
     runId: "run-1",
     actionId: "action-1",
+    targetKind: "group",
     targetLabel: "SWE · Senior",
     changes: {},
   },
