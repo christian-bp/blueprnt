@@ -1,0 +1,188 @@
+apps/dashboard/components/pay-mapping/analysis-section-shell.tsx
+  s_a5a0b8b07c8eab::t_04122c0240436a 91-101
+  s_a5a0b8b07c8eab::t_dbb015660f9a05 22
+  s_a5a0b8b07c8eab::t_587daa879cc96c 19
+  s_a5a0b8b07c8eab::t_c416fdd311ff2d 77-79
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.test.tsx
+  s_a5a0b8b07c8eab::t_8437b3dfeadd7d 222
+  s_a5a0b8b07c8eab::t_d4075dcd924f80 221
+apps/dashboard/components/pay-mapping/analysis-status.test.ts
+  s_a5a0b8b07c8eab::t_69187ea9875b12 1-185,189-212
+  s_a5a0b8b07c8eab::t_53d950fc020d67 186-188
+apps/dashboard/components/pay-mapping/analysis-status.ts
+  s_a5a0b8b07c8eab::t_6e9921e66509c1 1-159
+apps/dashboard/components/pay-mapping/review-step-actions.tsx
+  s_a5a0b8b07c8eab::t_93a271e189b3c7 18-36,48
+  s_a5a0b8b07c8eab::t_0b84a83b75ffe6 60-64
+  s_a5a0b8b07c8eab::t_ccf95898b7e700 97-103
+  s_a5a0b8b07c8eab::t_3b4f9393b454cc 37
+  s_a5a0b8b07c8eab::t_6b7430266e6905 104-105
+apps/dashboard/components/pay-mapping/review-praxis-step.tsx
+  s_a5a0b8b07c8eab::t_2780988509f90b 66-67,78,84
+  s_a5a0b8b07c8eab::t_585f455489499f 7
+  s_a5a0b8b07c8eab::t_caebf62320d607 293-294,298,300
+  s_a5a0b8b07c8eab::t_9564b6abf8d69c 426-430,432-434,436
+  s_a5a0b8b07c8eab::t_b284e6cb754679 30,301-307,322-323,325-327
+  s_a5a0b8b07c8eab::t_86709ac7ca1069 18,27
+  s_a5a0b8b07c8eab::t_8a614478557b21 100
+  s_a5a0b8b07c8eab::t_f17525c8861c97 79-83
+  s_a5a0b8b07c8eab::t_3f81a32e58def0 91-93
+  s_a5a0b8b07c8eab::t_bc87d09d60c28d 375
+  s_a5a0b8b07c8eab::t_4f882a2da206a7 431
+  s_a5a0b8b07c8eab::t_fb10b545b6322f 330-331,377-380,399
+  s_a5a0b8b07c8eab::t_9887ba8c24d57f 70,87-90
+  s_a5a0b8b07c8eab::t_b99b4cbe16ede9 424-425,437
+  s_a5a0b8b07c8eab::t_18eb1d3f029455 376,381-398,400-423
+  s_a5a0b8b07c8eab::t_34a1a501ab29e3 19,332-333
+  s_a5a0b8b07c8eab::t_e002a4a6cf9482 311-320,324,328,334
+  s_a5a0b8b07c8eab::t_a7701ea325501e 22,24-26
+  s_a5a0b8b07c8eab::t_d3e26161cad22d 6,12,20,23
+  s_a5a0b8b07c8eab::t_8197181bbd1b89 104
+  s_a5a0b8b07c8eab::t_1455c83f969304 116
+  s_a5a0b8b07c8eab::t_88e8e480a797d8 295,297
+  s_a5a0b8b07c8eab::t_625fc69fde96ea 296,299
+  s_a5a0b8b07c8eab::t_442b3c30f0b61c 21,308-309
+apps/dashboard/components/pay-mapping/review-start-step.tsx
+  s_a5a0b8b07c8eab::t_60ee9e0e9d730f 113-114,120
+  s_a5a0b8b07c8eab::t_df5f2bc158ca38 51-55,58
+  s_a5a0b8b07c8eab::t_48a669a1fbabd8 12
+  s_a5a0b8b07c8eab::t_18eb1d3f029455 263-264,266-283,285-300,302,320,322-338
+  s_a5a0b8b07c8eab::t_210102e70af342 133,140,144-149
+  s_a5a0b8b07c8eab::t_646649c9ac136a 161,167,175,186,188
+  s_a5a0b8b07c8eab::t_95792e38d1815a 56-57
+  s_a5a0b8b07c8eab::t_bccd7c58b8398f 232-233,242-245,248,252,254-262
+  s_a5a0b8b07c8eab::t_6b1db7bd7d7ad8 64-66
+  s_a5a0b8b07c8eab::t_957854121f8d1b 219-221,234-241
+  s_a5a0b8b07c8eab::t_bee2a41795e956 123-127,132,134,141,143
+  s_a5a0b8b07c8eab::t_b8fcbbfc0c3343 32-38
+  s_a5a0b8b07c8eab::t_593b6e0b74f1c1 19,223-230,246-247,249-251
+  s_a5a0b8b07c8eab::t_9887ba8c24d57f 31
+  s_a5a0b8b07c8eab::t_ace9cc61956af9 92
+  s_a5a0b8b07c8eab::t_1d7d1351e59a4f 44,60-63
+  s_a5a0b8b07c8eab::t_b3c06f53a5198c 97-98,104,106-108,115-116,121
+  s_a5a0b8b07c8eab::t_98468a2b312195 83,91,95,99,103
+  s_a5a0b8b07c8eab::t_1be41456bf2223 162,168,174,176,185,187
+  s_a5a0b8b07c8eab::t_928590e9a0cca9 321
+  s_a5a0b8b07c8eab::t_f2a7e6146aba8e 340-341
+  s_a5a0b8b07c8eab::t_21298e70589629 303-317,319
+  s_a5a0b8b07c8eab::t_5c0db48765acf2 11,15,25-29
+  s_a5a0b8b07c8eab::t_3a33167e2a0f9b 30
+  s_a5a0b8b07c8eab::t_58a12c735df59f 222
+apps/dashboard/components/pay-mapping/review-praxis-step.test.tsx
+  s_a5a0b8b07c8eab::t_6ff75452f64934 66
+  s_a5a0b8b07c8eab::t_7fb701cccdd35d 53,69,429-439
+  s_a5a0b8b07c8eab::t_56ae2c2e1e2f50 65
+  s_a5a0b8b07c8eab::t_c307936df876c4 477-487
+  s_a5a0b8b07c8eab::t_ff7ea4ce9aceb2 85-86
+  s_a5a0b8b07c8eab::t_26ab4a39549e12 31-34,36
+  s_a5a0b8b07c8eab::t_e5dc1f8c8a226a 529-532,535-540
+  s_a5a0b8b07c8eab::t_1c19e91c5acff7 440,450-476,488-528,533-534,542-562
+  s_a5a0b8b07c8eab::t_bc7abdebbd8ba0 442-443
+  s_a5a0b8b07c8eab::t_4be18f8bb4fa3e 541
+  s_a5a0b8b07c8eab::t_1d5c24c9f1e7f8 51
+  s_a5a0b8b07c8eab::t_be0df79d8a3691 441
+apps/dashboard/components/pay-mapping/group-member-table.tsx
+  s_a5a0b8b07c8eab::t_48d5679504cd17 285
+  s_a5a0b8b07c8eab::t_6617f6ebfcfa2e 291-296
+apps/dashboard/components/pay-mapping/evidence-disclosure.tsx
+  s_a5a0b8b07c8eab::t_3c5c7d867f9a3c 3-4,8,20-27,35-38,42-73
+apps/dashboard/components/pay-mapping/chapter-duty-help.tsx
+  s_a5a0b8b07c8eab::t_2467cbc9eeeece 1-32
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.tsx
+  s_a5a0b8b07c8eab::t_64c6f1cbf76613 894-901,903,905-922
+  s_a5a0b8b07c8eab::t_80c57febfe5772 232-236
+  s_a5a0b8b07c8eab::t_fda7874789f263 42
+  s_a5a0b8b07c8eab::t_44239b68da516f 588-589
+  s_a5a0b8b07c8eab::t_4dd55c33effd4c 679-680,684-690
+  s_a5a0b8b07c8eab::t_3fa4794e7f2283 295-305,307-309
+  s_a5a0b8b07c8eab::t_55a5773425c112 36-40,554,575,592,623
+  s_a5a0b8b07c8eab::t_7e72bf14b7d5ea 902,904
+  s_a5a0b8b07c8eab::t_cad292e5e65144 923
+apps/dashboard/components/pay-mapping/equal-work-detail.tsx
+  s_a5a0b8b07c8eab::t_569e845aa20c7b 8
+  s_a5a0b8b07c8eab::t_b921388a05a021 193-195,197-201,203-207,209-236,238,240,244,247
+  s_a5a0b8b07c8eab::t_06f7765d1d986c 196
+  s_a5a0b8b07c8eab::t_b112bf472d23a4 29-32,38-41,51-54,77-78,83,88,90,94-96,98,123-125,128
+  s_a5a0b8b07c8eab::t_65ffc4424b2d4f 34-37,50,57
+  s_a5a0b8b07c8eab::t_ef149d11a9f238 208
+  s_a5a0b8b07c8eab::t_8cb7f0ff715ffa 303
+  s_a5a0b8b07c8eab::t_d84c3a8d1667b8 3,42,44,47,249
+apps/dashboard/components/pay-mapping/review-group-step.tsx
+  s_a5a0b8b07c8eab::t_0656d591d07380 44
+  s_a5a0b8b07c8eab::t_07fa1a0048bf85 85-88,161
+  s_a5a0b8b07c8eab::t_f62655d4828308 523-542,544-564,566-569
+  s_a5a0b8b07c8eab::t_a2fcb79f0562ff 322-338,406-407,409-411
+  s_a5a0b8b07c8eab::t_678d995230296d 89-91
+  s_a5a0b8b07c8eab::t_1039097c5fbdb3 444-450,452-456
+  s_a5a0b8b07c8eab::t_6363893b26a5d8 340-365,408,414-418,426-443,451
+  s_a5a0b8b07c8eab::t_b2fc323d403efe 366-368
+  s_a5a0b8b07c8eab::t_efd7b2f2c462a7 11
+  s_a5a0b8b07c8eab::t_d776469933e45d 369
+  s_a5a0b8b07c8eab::t_18eb1d3f029455 457-522
+  s_a5a0b8b07c8eab::t_0cf58478582a29 565
+  s_a5a0b8b07c8eab::t_bcd67bc7e5377b 412
+apps/dashboard/components/pay-mapping/analysis-section-shell.test.tsx
+  s_a5a0b8b07c8eab::t_f5629b21b83318 62-63
+  s_a5a0b8b07c8eab::t_1759b82d0b5d4a 67
+apps/dashboard/components/pay-mapping/review-group-step.test.tsx
+  s_a5a0b8b07c8eab::t_2c7163c01beb45 187,218,901-912
+  s_a5a0b8b07c8eab::t_bc7abdebbd8ba0 914-915
+  s_a5a0b8b07c8eab::t_7fb701cccdd35d 170
+  s_a5a0b8b07c8eab::t_a40b89af9caac9 913
+apps/dashboard/components/frame-card.tsx
+  s_a5a0b8b07c8eab::t_7970706a867b1b 37-40
+  s_a5a0b8b07c8eab::t_97664ac845fd8e 1-27,29-36,41-43,50-64,70-71,84,105,109,114,117-153
+  s_a5a0b8b07c8eab::t_29d1fc571ef27d 65-69
+  s_a5a0b8b07c8eab::t_27f8dbc2957137 44-49
+  s_a5a0b8b07c8eab::t_38e80e44a06792 72-77
+  s_a5a0b8b07c8eab::t_101273a630b6cd 78-83,89-98,100,102-104,106-108,110-113,115-116
+  s_a5a0b8b07c8eab::t_d1299945685353 28
+  s_a5a0b8b07c8eab::t_4691dd888148af 85-88
+  s_a5a0b8b07c8eab::t_906b72d51e8394 99,101
+apps/dashboard/components/pay-mapping/analysis-chapters.test.ts
+  s_a5a0b8b07c8eab::t_1996f21ad6222f 1-69
+apps/dashboard/components/pay-mapping/review-start-step.test.tsx
+  s_a5a0b8b07c8eab::t_0a56531de449c9 141,240,320-371,384
+  s_a5a0b8b07c8eab::t_543c93dd8ad7c8 232-239
+  s_a5a0b8b07c8eab::t_f2a9bdc1aeac3d 51-52,54
+  s_a5a0b8b07c8eab::t_a13f40fc076a7b 114-116,118-126
+  s_a5a0b8b07c8eab::t_7301320de1c720 48-50,53,55
+  s_a5a0b8b07c8eab::t_6f23409d19c30f 30
+  s_a5a0b8b07c8eab::t_46084a3716f0c8 57,65,79,86
+  s_a5a0b8b07c8eab::t_b6c3532e877d81 72-76
+  s_a5a0b8b07c8eab::t_b52b65a1c6ca10 64,69-71,77
+  s_a5a0b8b07c8eab::t_9cd21d641efa2d 295-319,372-383
+  s_a5a0b8b07c8eab::t_9a3b67fe4e0b0b 101,111-113,117,127-140
+  s_a5a0b8b07c8eab::t_bc7abdebbd8ba0 392-393
+  s_a5a0b8b07c8eab::t_681a0d8245f7cb 142
+  s_a5a0b8b07c8eab::t_6e31c796fea4b9 241
+  s_a5a0b8b07c8eab::t_c2d0479f8a8ba5 385
+apps/dashboard/components/pay-mapping/analysis-chapters.ts
+  s_a5a0b8b07c8eab::t_5a3043e3871235 84-104
+packages/i18n/messages/da.json
+  s_a5a0b8b07c8eab::t_1bd6c47320ed3a 1650-1651,1656,1758-1763
+packages/i18n/messages/en.json
+  s_a5a0b8b07c8eab::t_ae9816534999ba 1650-1651,1656,1758-1763
+packages/i18n/messages/fi.json
+  s_a5a0b8b07c8eab::t_3643a026a5874b 1650-1651,1656,1758-1763
+packages/i18n/messages/nb.json
+  s_a5a0b8b07c8eab::t_1609d9c3772089 1650-1651,1656,1758-1763
+packages/i18n/messages/sv.json
+  s_a5a0b8b07c8eab::t_0df828dcc6ca17 1650-1651,1656,1758-1763
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "423564e8704e860fad65775cc29561ca874b2e20",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
