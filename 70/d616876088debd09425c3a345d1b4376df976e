@@ -1,0 +1,107 @@
+packages/i18n/messages/en.json
+  s_a5a0b8b07c8eab::t_09ac926a7e2d49 1922-1923
+packages/i18n/messages/fi.json
+  s_a5a0b8b07c8eab::t_09ac926a7e2d49 1922-1923
+packages/i18n/messages/sv.json
+  s_a5a0b8b07c8eab::t_09ac926a7e2d49 1922-1923
+apps/dashboard/components/roles/role-criterion-breakdown.test.tsx
+  s_a5a0b8b07c8eab::t_abad4c6d48ebe2 109-112,119-121,123-135,137-138
+  s_a5a0b8b07c8eab::t_1c07d8ebe42215 1-7,122,136
+apps/dashboard/components/roles/role-people-card.tsx
+  s_a5a0b8b07c8eab::t_72eb04e27131ec 109-117
+  s_a5a0b8b07c8eab::t_225843d1b4e889 94-97
+  s_a5a0b8b07c8eab::t_e742806af1aaa8 227-230,232-244,248-262
+  s_a5a0b8b07c8eab::t_e2f5f89eec9904 28-32
+  s_a5a0b8b07c8eab::t_64d1cdef13cfd7 224-226
+  s_a5a0b8b07c8eab::t_b7ad5f89ecb2a7 90-93,100,104,118-119
+  s_a5a0b8b07c8eab::t_dae78907a982c1 175-200
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_a5a0b8b07c8eab::t_3b50c826a06e23 211-223
+  s_a5a0b8b07c8eab::t_e32a6797e72b4f 440-442
+  s_a5a0b8b07c8eab::t_f13adc140d9a9a 22,279
+  s_a5a0b8b07c8eab::t_316990abeb535b 493-494
+  s_a5a0b8b07c8eab::t_dfe85bbd06d9c6 31
+  s_a5a0b8b07c8eab::t_ba7b8c6e7408f0 427-430
+  s_a5a0b8b07c8eab::t_27ff553004731b 424-426
+  s_a5a0b8b07c8eab::t_895d867af2e421 225-226
+  s_a5a0b8b07c8eab::t_9b20d0b859dfbc 516
+  s_a5a0b8b07c8eab::t_3a7b84c8ebbaa9 298-303,345-357
+  s_a5a0b8b07c8eab::t_76ee171dd07823 274
+  s_a5a0b8b07c8eab::t_d80fc634eff5ce 224,227-265,267-269,275-278,280-292,315,358-381,384,387,389-393,396-416,418-419,423,432-437,443-459,461-480,482,486,488,490-492
+  s_a5a0b8b07c8eab::t_2c2530a088f135 266
+  s_a5a0b8b07c8eab::t_7491d8a4cbe25d 270-273
+  s_a5a0b8b07c8eab::t_137c12642013b6 40
+  s_a5a0b8b07c8eab::t_28b5de7f3e2fd1 293-294,296-297,304-314
+  s_a5a0b8b07c8eab::t_d10b6ef80e391b 316-324,326-343
+packages/i18n/messages/da.json
+  s_a5a0b8b07c8eab::t_09ac926a7e2d49 1922-1923
+apps/dashboard/app/(app)/roles/[roleSlug]/page.tsx
+  s_a5a0b8b07c8eab::t_d16b8a00ac67a2 47
+  s_a5a0b8b07c8eab::t_fd927c96b1163b 127-130
+  s_a5a0b8b07c8eab::t_35190e304e2e1e 22
+apps/dashboard/components/roles/role-evaluation-skeleton.tsx
+  s_a5a0b8b07c8eab::t_2fc28eaf6cc744 50-54,56,86-95
+  s_a5a0b8b07c8eab::t_0f23902d4caa33 3,21-26,37-38,41-42,55,58-61
+  s_a5a0b8b07c8eab::t_e44b9060a8ab6c 40
+  s_a5a0b8b07c8eab::t_23ce8cf5f0fc38 28-33,35
+  s_a5a0b8b07c8eab::t_d8400da7aab42f 103-104,107-108,110-112
+  s_a5a0b8b07c8eab::t_13f95701166d27 4,7-8,39,49,99-101,105-106,114-118,120-123,135-136,138-148
+  s_a5a0b8b07c8eab::t_d78c635ea669bb 34,36,43-48,62-63,72,119,124-134,137
+  s_a5a0b8b07c8eab::t_a052d4707b9e58 1-2,5-6,9-20,27,57,64-71,73-85,96-98,102,109,113,149-152
+apps/dashboard/components/roles/role-criterion-breakdown.tsx
+  s_a5a0b8b07c8eab::t_38407af2cfc2d8 10,13,92-94,97,164-188
+  s_a5a0b8b07c8eab::t_ba5d8463f78c11 121-129
+  s_a5a0b8b07c8eab::t_101ffcf6e7f235 28-57,95-96,105,117-120
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_a5a0b8b07c8eab::t_85ca2c6cd985f3 202-204
+  s_a5a0b8b07c8eab::t_f2d7dae5a03c67 120-122,126,135-163
+  s_a5a0b8b07c8eab::t_1980d532c490af 169-172,177-199,201,205-214
+  s_a5a0b8b07c8eab::t_d16b8a00ac67a2 43-46,269
+  s_a5a0b8b07c8eab::t_d42d8022450959 164-168
+  s_a5a0b8b07c8eab::t_0cabb2b89e79a7 352,354,362
+  s_a5a0b8b07c8eab::t_df221a00ed28d5 123-125,127-134
+  s_a5a0b8b07c8eab::t_2bbdc3a110c58a 18
+  s_a5a0b8b07c8eab::t_5234a2be6e0f7d 66,76-79,243-245,247
+  s_a5a0b8b07c8eab::t_f13adc140d9a9a 9
+  s_a5a0b8b07c8eab::t_a8d8f3d6106990 36
+  s_a5a0b8b07c8eab::t_3a7b84c8ebbaa9 220-221
+  s_a5a0b8b07c8eab::t_7491d8a4cbe25d 173-176
+  s_a5a0b8b07c8eab::t_e68c87d5cc7406 251-258
+  s_a5a0b8b07c8eab::t_0a4e7526faf472 238-239,248-250,259-268,270-350
+  s_a5a0b8b07c8eab::t_25ae6e3748c6f4 215-219,222-226,228-230,237
+  s_a5a0b8b07c8eab::t_137c12642013b6 48
+  s_a5a0b8b07c8eab::t_2fc28eaf6cc744 246
+  s_a5a0b8b07c8eab::t_bca304685359f7 240-242
+apps/dashboard/components/roles/role-detail-skeleton.tsx
+  s_a5a0b8b07c8eab::t_7491d8a4cbe25d 87
+  s_a5a0b8b07c8eab::t_7e5369a4c482f3 145
+  s_a5a0b8b07c8eab::t_137c12642013b6 12,89,147
+  s_a5a0b8b07c8eab::t_1f39dcc5871a2c 37-41,78-80
+  s_a5a0b8b07c8eab::t_59ae2b97ca7110 20-30,81-83,142-143
+  s_a5a0b8b07c8eab::t_d4caa8e59db758 8,15-16,60,77,84-86,90-94,103-106,108-109,129-130,140-141,149-150,152-153,156
+  s_a5a0b8b07c8eab::t_d16b8a00ac67a2 49-56,133-139,144,146,148,151
+  s_a5a0b8b07c8eab::t_bca304685359f7 10
+  s_a5a0b8b07c8eab::t_ce74c7e5ab0b4e 3,88
+  s_a5a0b8b07c8eab::t_d10b6ef80e391b 95-97
+packages/i18n/messages/nb.json
+  s_a5a0b8b07c8eab::t_09ac926a7e2d49 1922-1923
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_a5a0b8b07c8eab::t_876439634f804a 8,371-375,377,379,381-383
+  s_a5a0b8b07c8eab::t_cff766bf81b3a6 116,130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "70d616876088debd09425c3a345d1b4376df976e",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
