@@ -6,6 +6,15 @@
 // the button's own foreground instead of the opaque muted chip, which is
 // exactly how upstream's Kbd already adapts to its one filled surface (the
 // tooltip: bg-background/20 in that surface's ink).
+// The step's own number, which doubles as the key that picks it. Outlined
+// rather than the filled slab Kbd defaults to: five grey blocks down the
+// scale read as chrome rather than as the scale's own numbering, and on the
+// selected option's pale brand wash the fill sat on top of it as a separate
+// object. Same geometry as the questionnaire's own shortcut key, so the two
+// keycaps in this flow match.
+export const RATE_STEP_KBD_CLASS =
+  "h-5 min-w-5 rounded-md border border-input bg-background font-mono text-muted-foreground"
+
 export const RATE_NEXT_KBD_CLASS =
   "h-4 min-w-4 translate-x-0.5 bg-primary-foreground/20 px-1 text-primary-foreground"
 

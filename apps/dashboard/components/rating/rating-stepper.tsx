@@ -32,7 +32,11 @@ import { HelpMorphButton } from "@/components/help-morph-button"
 import { useEffect, useId, useRef, useState } from "react"
 import { assessmentErrorMessage } from "@/lib/assessment-error"
 import { SPRING } from "@/lib/motion"
-import { RATE_NEXT_KBD_CLASS, RATE_PREVIOUS_SLOT } from "@/lib/rate-column"
+import {
+  RATE_NEXT_KBD_CLASS,
+  RATE_PREVIOUS_SLOT,
+  RATE_STEP_KBD_CLASS,
+} from "@/lib/rate-column"
 import { toast } from "@/lib/toast"
 
 export interface StepperCriterion {
@@ -571,7 +575,9 @@ export function RatingStepper({
                         }
                       >
                         <span className="flex items-center gap-2">
-                          <Kbd>{anchor.step}</Kbd>
+                          <Kbd className={RATE_STEP_KBD_CLASS}>
+                            {anchor.step}
+                          </Kbd>
                           {scaleStep === undefined ? (
                             <span>{anchor.text}</span>
                           ) : (
