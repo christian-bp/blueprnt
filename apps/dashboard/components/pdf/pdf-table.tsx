@@ -2,8 +2,12 @@ import { StyleSheet, Text, View } from "@react-pdf/renderer"
 import type { ComponentProps } from "react"
 import { BRAND } from "./branded-document"
 
-// The kit's table vocabulary, shared by every document that prints a table
-// (the two pay-mapping documents, the method appendix's criteria table).
+// The kit's table vocabulary, shared by the two pay-mapping documents.
+//
+// Not by the method appendix: its table is two columns of criterion text and
+// its contents list is nested and unnumbered, so the only piece it could
+// share is the row rule itself. Pulling it onto this vocabulary would couple
+// a document with different columns to every change these two need.
 // Rows follow the flex-row pattern; lineHeight stays off table rows (the
 // fixed-footer landmine, see branded-document.tsx).
 

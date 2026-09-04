@@ -24,6 +24,6 @@ Rapportfliken erbjöd en maskerad dokumentations-PDF, en maskerad facklig PDF by
 
 ## Konsekvenser
 
-- Tabell-, identitets- och signaturprimitiverna ligger i `components/pdf/` (ADR-0026:s kit) och delas av båda dokumenten och metodbilagan.
+- Tabell-, identitets- och signaturprimitiverna ligger i `components/pdf/` (ADR-0026:s kit) och delas av de två rapporterna. Metodbilagan behåller sin egen tabell: den har två kolumner kriterietext och en nästlad, onumrerad innehållsförteckning, så det enda den kunde dela är radlinjen.
 - Arkivpaketets `schemaVersion` är 2 och listar båda PDF:erna; kravbilden `lonekartlaggning-rapport-kravbild.md` avsnitt 9 mappar dokumentationsplikten på de två dokumenten.
 - Rasteriseringen av appens diagram (`lib/chart-capture.ts`) hade ingen konsument kvar: signeringsrapportens enda diagram är den befintliga vektorkvartilen. Modulen är borttagen; ADR-0026:s tillägg om chart-sömmen beskriver därmed en möjlighet, inte en byggd väg.

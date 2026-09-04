@@ -1,8 +1,9 @@
 // Reusable branded PDF kit built on @react-pdf/renderer. This is the app-wide
 // foundation for exportable documents; per-document templates (e.g. the
 // metodbilaga) compose these primitives. All strings are passed in as props so
-// this layer stays i18n-free. Charts: rasterized PNGs of the app's own
-// charts with hand-drawn SVG fallbacks (see the pay-mapping report).
+// this layer stays i18n-free. Charts are drawn as vectors on react-pdf's own
+// SVG primitives (see pay-mapping-report-charts.tsx): a document renders the
+// same on every machine, and nothing has to rasterize the app's live charts.
 import {
   Document,
   Font,
