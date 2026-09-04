@@ -1,0 +1,110 @@
+packages/backend/convex/evaluationModel/criteriaLibrary.content.fi.ts
+  s_a5a0b8b07c8eab::t_f6faf82b998c61 331,333,335,339,341,343,345,351
+  s_a5a0b8b07c8eab::t_e2ed2d19067684 328-330,332,334,336-338,340,342,344,346-350,352
+  s_a5a0b8b07c8eab::t_a43e433845df97 23
+docs/contexts/evaluation-model/CONTEXT.md
+  s_a5a0b8b07c8eab::t_ef6fbac477f1ef 54
+apps/dashboard/content/docs/fi/criteria-library.mdx
+  s_a5a0b8b07c8eab::t_471a19d7b0aa24 74
+  s_a5a0b8b07c8eab::t_5c154d797e3448 3
+  s_a5a0b8b07c8eab::t_d61f04a9e44d1a 7
+  s_a5a0b8b07c8eab::t_67e6b6833b9a86 33
+docs/adr/0021-konstitution-dimensioner-kriteriebibliotek.md
+  s_a5a0b8b07c8eab::t_2e15fe54f049d4 14
+packages/backend/convex/schema.test.ts
+  s_a5a0b8b07c8eab::t_13ea959cdc52ee 5,9-10
+packages/backend/convex/evaluationModel/criteriaLibrary.content.en.ts
+  s_a5a0b8b07c8eab::t_9aabee51f3b364 387
+  s_a5a0b8b07c8eab::t_6b3e4cf37a6905 59
+  s_a5a0b8b07c8eab::t_d661da22662b6f 364-374,376-386,388
+  s_a5a0b8b07c8eab::t_fc4f573314f14e 375
+apps/dashboard/content/docs/nb/criteria-and-scale.mdx
+  s_a5a0b8b07c8eab::t_26b35ac89a2b93 16
+apps/dashboard/lib/docs/docs-guards.test.ts
+  s_a5a0b8b07c8eab::t_9af0b53477d495 758-813,817-819,823-864
+  s_a5a0b8b07c8eab::t_7f55f397761751 12-13
+  s_a5a0b8b07c8eab::t_30e31ae85494f6 814-816,820-822
+apps/dashboard/content/docs/sv/criteria-and-scale.mdx
+  s_a5a0b8b07c8eab::t_c8508315bf7280 16
+packages/backend/convex/evaluationModel/tables.ts
+  s_a5a0b8b07c8eab::t_f412e562fae038 208
+  s_a5a0b8b07c8eab::t_1d4cf68cb86021 27
+packages/backend/convex/assistant/knowledge.ts
+  s_a5a0b8b07c8eab::t_83a2b03548b7e5 336
+apps/dashboard/content/docs/nb/criteria-library.mdx
+  s_a5a0b8b07c8eab::t_37633fe3bac46f 34
+  s_a5a0b8b07c8eab::t_cc78260a4ee49e 7
+  s_a5a0b8b07c8eab::t_ab23abcd839f3e 75
+  s_a5a0b8b07c8eab::t_0141f3a5b3c50a 3
+apps/dashboard/content/docs/da/criteria-and-scale.mdx
+  s_a5a0b8b07c8eab::t_5209f8420a1d7b 16
+packages/backend/convex/evaluationModel/criteriaLibrary.content.sv.ts
+  s_a5a0b8b07c8eab::t_47573469d0cbbf 7
+  s_a5a0b8b07c8eab::t_81af095fc8b1e2 37
+  s_a5a0b8b07c8eab::t_2ab9032811b05a 342-366
+docs/kriteriebibliotek-forfining-2026-08-24.md
+  s_a5a0b8b07c8eab::t_ba525f4f0013ed 1090
+  s_a5a0b8b07c8eab::t_ac64fd9c23ba61 508-553
+  s_a5a0b8b07c8eab::t_082c53c417bc4a 5
+apps/dashboard/content/docs/sv/criteria-library.mdx
+  s_a5a0b8b07c8eab::t_74eb8bebccd7b5 7
+  s_a5a0b8b07c8eab::t_9a57881e7e94cb 3
+  s_a5a0b8b07c8eab::t_95c6179e8dc0cb 34
+  s_a5a0b8b07c8eab::t_afff3a293242e8 75
+packages/backend/convex/evaluationModel/criteriaLibrary.test.ts
+  s_a5a0b8b07c8eab::t_524e42860450b1 34-35,47
+  s_a5a0b8b07c8eab::t_e2262467ecce64 187-189
+  s_a5a0b8b07c8eab::t_b07ce9f36fedc3 193
+apps/dashboard/content/docs/da/criteria-library.mdx
+  s_a5a0b8b07c8eab::t_eac96618315b6d 75
+  s_a5a0b8b07c8eab::t_33b24113980947 7
+  s_a5a0b8b07c8eab::t_ffa66c7d5196c1 34
+  s_a5a0b8b07c8eab::t_0acfa4b8775c46 3
+packages/backend/convex/evaluationModel/criteriaLibrary.content.da.ts
+  s_a5a0b8b07c8eab::t_3cb028ec05ccb3 352
+  s_a5a0b8b07c8eab::t_0ace36a800eeb4 342
+  s_a5a0b8b07c8eab::t_3ddfe866ea294c 329-333,335-341,343-351,353
+  s_a5a0b8b07c8eab::t_f87c72c3cb72a7 334
+  s_a5a0b8b07c8eab::t_f694996ad1b87c 23
+apps/dashboard/content/docs/fi/criteria-and-scale.mdx
+  s_a5a0b8b07c8eab::t_3e16a771d380bc 16
+apps/dashboard/content/docs/en/criteria-and-scale.mdx
+  s_a5a0b8b07c8eab::t_d3eaf7812b02ba 17
+apps/dashboard/content/docs/en/criteria-library.mdx
+  s_a5a0b8b07c8eab::t_75eac28d2113a6 75
+  s_a5a0b8b07c8eab::t_37483d93d3d1a4 34
+  s_a5a0b8b07c8eab::t_27ff10d1aa24fd 7
+  s_a5a0b8b07c8eab::t_6e3761e3468acb 3
+docs/rollvardering-masterdokument.md
+  s_a5a0b8b07c8eab::t_86e319b9815cb5 177
+  s_a5a0b8b07c8eab::t_f56c162ff75351 270
+  s_a5a0b8b07c8eab::t_160987d0c98371 215,218
+  s_a5a0b8b07c8eab::t_3593615152745f 279
+  s_a5a0b8b07c8eab::t_4109eda4a3dfe8 1048
+packages/backend/convex/evaluationModel/criteriaLibrary.content.nb.ts
+  s_a5a0b8b07c8eab::t_eab5a9d4e0bb50 23
+  s_a5a0b8b07c8eab::t_42fa653257bed9 334
+  s_a5a0b8b07c8eab::t_bf6026e32cb020 342
+  s_a5a0b8b07c8eab::t_aaf04801facc1f 329-333,335-341,343-351,353
+  s_a5a0b8b07c8eab::t_b446f1830ae3b8 352
+packages/backend/convex/evaluationModel/criteriaLibrary.ts
+  s_a5a0b8b07c8eab::t_3db4cb9b1d9790 59
+  s_a5a0b8b07c8eab::t_f1c3e9ae709883 14,18-20,32
+  s_a5a0b8b07c8eab::t_cda02825739375 110-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "a186a77a66a4c6da78c46cebddee2eb64d2b85df",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
