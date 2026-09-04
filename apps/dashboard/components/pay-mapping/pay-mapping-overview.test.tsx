@@ -33,6 +33,7 @@ import {
   makeRunDetail,
   makeRunSummary,
 } from "@/test/pay-mapping-fixtures"
+import { quartileBarRadius } from "./pay-mapping-overview"
 import type {
   GapGroup,
   GroupAnalysis,
@@ -298,5 +299,21 @@ describe("PayMappingOverview", () => {
       expect(screen.getByText(m.overview.clockNote)).toBeDefined()
       expect(screen.getByText(m.overview.populationNote)).toBeDefined()
     })
+  })
+})
+
+describe("quartileBarRadius", () => {
+  // A stacked bar rounds only the end its own series owns, so the seam
+  // between the two genders stays square.
+  it("rounds only its own end while both genders are present", () => {
+    expect(quartileBarRadius("men", false)).toEqual([6, 0, 0, 6])
+    expect(quartileBarRadius("women", false)).toEqual([0, 6, 6, 0])
+  })
+
+  // A quartile holding one gender has no second segment to round the far
+  // end, so the segment that is there rounds the whole bar.
+  it("rounds both ends when the row holds a single gender", () => {
+    expect(quartileBarRadius("women", true)).toEqual([6, 6, 6, 6])
+    expect(quartileBarRadius("men", true)).toEqual([6, 6, 6, 6])
   })
 })

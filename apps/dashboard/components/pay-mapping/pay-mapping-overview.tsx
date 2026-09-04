@@ -12,7 +12,17 @@ import { type ChartConfig, ChartTooltip } from "@workspace/ui/components/chart"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useFormatter, useTranslations } from "next-intl"
 import type { ReactNode } from "react"
-import { Bar, BarChart, Cell, Pie, PieChart, XAxis, YAxis } from "recharts"
+import {
+  Bar,
+  BarChart,
+  Cell,
+  Pie,
+  PieChart,
+  Rectangle,
+  XAxis,
+  YAxis,
+} from "recharts"
+import type { Props as RectangleProps } from "recharts/types/shape/Rectangle"
 import {
   GenderHatch,
   GenderMenIcon,
@@ -211,19 +221,12 @@ function ClockStat({ org }: { org: OrgAggregate | undefined }) {
 // The whole frozen population: the standard shadcn gender donut with the
 // prominent headcount and count/share rows beside it. Every frozen row has a
 // gender, so the donut total IS the survey population.
-// Exported (like QuartileStat) because the PDF export mounts it off-screen
-// and captures its SVG, so the document shows the app's own chart.
-// `animate` exists for that capture: recharts' mount animation runs on
-// requestAnimationFrame, which never fires in a hidden or minimized tab, so
-// an animated chart captured there would still be at its empty first frame.
-export function WholeSurveyStat({
+function WholeSurveyStat({
   population,
   countLabel,
-  animate = true,
 }: {
   population: GenderTally | undefined
   countLabel: string
-  animate?: boolean
 }) {
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
   const marks = useGenderMarks()
@@ -291,7 +294,6 @@ export function WholeSurveyStat({
             dataKey="value"
             nameKey="key"
             innerRadius={expanded ? 80 : 40}
-            isAnimationActive={animate}
           >
             {data.map((d) => (
               <Cell key={d.key} fill={d.fill} {...genderMarkBorder(d.swatch)} />
@@ -320,15 +322,37 @@ export function WholeSurveyStat({
 // the standard shadcn horizontal stacked bar chart, the upper quartile on
 // top. Headcounts only, so no masking applies; exact counts on hover, the
 // concept lives in the widget's help.
-// `animate` mirrors WholeSurveyStat's: off only for the PDF export's
-// off-screen capture, where the animation's rAF never fires.
-export function QuartileStat({
-  quartiles,
-  animate = true,
-}: {
-  quartiles: GenderTally[] | undefined
-  animate?: boolean
+// One stacked segment's corner radii (recharts order: [tl, tr, br, bl]).
+// `series` owns one end of the bar (men the left, women the right);
+// `alone` says the other series is absent from this row, so this segment is
+// the whole bar and rounds both ends.
+export function quartileBarRadius(
+  series: "women" | "men",
+  alone: boolean
+): [number, number, number, number] {
+  if (alone) return [BAR_RADIUS, BAR_RADIUS, BAR_RADIUS, BAR_RADIUS]
+  return series === "men"
+    ? [BAR_RADIUS, 0, 0, BAR_RADIUS]
+    : [0, BAR_RADIUS, BAR_RADIUS, 0]
+}
+
+// The stack's segment shape. A radius set on the Bar applies to every row,
+// which rounds the seam between the two segments as soon as one row holds a
+// single gender; the radius has to be decided per row, and recharts decides
+// per row only inside a custom shape.
+function QuartileSegment({
+  series,
+  payload,
+  ...rest
+}: RectangleProps & {
+  series: "women" | "men"
+  payload?: { women: number; men: number }
 }) {
+  const alone = series === "men" ? payload?.women === 0 : payload?.men === 0
+  return <Rectangle {...rest} radius={quartileBarRadius(series, alone)} />
+}
+
+function QuartileStat({ quartiles }: { quartiles: GenderTally[] | undefined }) {
   const expanded = useWidgetExpanded()
   const t = useTranslations("dashboard.payMapping.overview.quartiles")
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
@@ -392,22 +416,23 @@ export function QuartileStat({
           />
           {/* Outer corners rounded on each end of the stack: the base (men)
             segment carries the left radius, the top (women) segment the
-            right (recharts radius order: [tl, tr, br, bl]). */}
+            right (recharts radius order: [tl, tr, br, bl]). A quartile
+            holding only one gender has no second segment to carry the far
+            end, so that segment rounds BOTH of its ends; per row, because a
+            radius set on the series would round the shared seam too. */}
           <Bar
             dataKey="men"
             stackId="a"
             fill={marks.men}
             {...genderMarkBorder("men")}
-            radius={[BAR_RADIUS, 0, 0, BAR_RADIUS]}
-            isAnimationActive={animate}
+            shape={<QuartileSegment series="men" />}
           />
           <Bar
             dataKey="women"
             stackId="a"
             fill={marks.women}
             {...genderMarkBorder("women")}
-            radius={[0, BAR_RADIUS, BAR_RADIUS, 0]}
-            isAnimationActive={animate}
+            shape={<QuartileSegment series="women" />}
           />
         </BarChart>
       </ChartCanvas>
