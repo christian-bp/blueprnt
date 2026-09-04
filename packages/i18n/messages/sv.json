@@ -1156,6 +1156,7 @@
       },
       "family": {
         "none": "Ingen familj",
+        "roleCount": "{count, plural, =1 {1 roll} other {# roller}}",
         "all": "Alla familjer",
         "createNew": "Ny familj",
         "nameLabel": "Familjens namn",
@@ -1179,7 +1180,8 @@
       },
       "detail": {
         "evaluationHeading": "Utvärdering",
-        "manageCta": "Hantera",
+        "profileActions": "Åtgärder för jobbprofilen",
+        "evaluationActions": "Åtgärder för värderingen",
         "cancelCta": "Avbryt",
         "editCta": "Redigera",
         "saveCta": "Spara",

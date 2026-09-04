@@ -482,6 +482,9 @@ function FamilyGroup({
                   <CountChip
                     value={registerFamily.roles.length}
                     icon={Briefcase01Icon}
+                    label={tFamily("roleCount", {
+                      count: registerFamily.roles.length,
+                    })}
                   />
                 )}
               </span>

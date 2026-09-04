@@ -135,7 +135,9 @@ function renderCard(
 }
 
 function openManageMenu() {
-  return openMenu(screen.getByRole("button", { name: detail.manageCta }))
+  return openMenu(
+    screen.getByRole("button", { name: detail.evaluationActions })
+  )
 }
 
 describe("RoleEvaluationCard", () => {
@@ -365,7 +367,9 @@ describe("RoleEvaluationCard", () => {
     renderCard({ archived: true, ratedCount: 5, totalCriteria: 5 })
     expect(screen.getByText(roles.evaluated)).toBeDefined()
     expect(screen.queryByRole("link")).toBeNull()
-    expect(screen.queryByRole("button", { name: detail.manageCta })).toBeNull()
+    expect(
+      screen.queryByRole("button", { name: detail.evaluationActions })
+    ).toBeNull()
   })
 
   // The card loads AFTER the page: its own result query leaves a gap, and a
@@ -385,6 +389,8 @@ describe("RoleEvaluationCard", () => {
 
   it("renders no actions menu in the progress state", () => {
     renderCard({ ratedCount: 2, totalCriteria: 5 })
-    expect(screen.queryByRole("button", { name: detail.manageCta })).toBeNull()
+    expect(
+      screen.queryByRole("button", { name: detail.evaluationActions })
+    ).toBeNull()
   })
 })

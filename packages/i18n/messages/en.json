@@ -1156,6 +1156,7 @@
       },
       "family": {
         "none": "No family",
+        "roleCount": "{count, plural, =1 {1 role} other {# roles}}",
         "all": "All families",
         "createNew": "New family",
         "nameLabel": "Family name",
@@ -1179,7 +1180,8 @@
       },
       "detail": {
         "evaluationHeading": "Evaluation",
-        "manageCta": "Manage",
+        "profileActions": "Job profile actions",
+        "evaluationActions": "Evaluation actions",
         "cancelCta": "Cancel",
         "editCta": "Edit",
         "saveCta": "Save",

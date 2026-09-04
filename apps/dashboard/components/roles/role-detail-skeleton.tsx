@@ -84,7 +84,10 @@ export function RoleDetailSkeleton({
             toolbar={
               // The real actions trigger (static chrome, enabled no-op: the
               // load is brief and disabling would just flash gray).
-              <ActionsMenuTrigger size="icon-sm" aria-label={t("manageCta")}>
+              <ActionsMenuTrigger
+                size="icon-sm"
+                aria-label={t("profileActions")}
+              >
                 <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
               </ActionsMenuTrigger>
             }
@@ -142,7 +145,10 @@ export function RoleDetailSkeleton({
             titleLevel="h2"
             size="lg"
             toolbar={
-              <ActionsMenuTrigger size="icon-sm" aria-label={t("manageCta")}>
+              <ActionsMenuTrigger
+                size="icon-sm"
+                aria-label={t("evaluationActions")}
+              >
                 <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
               </ActionsMenuTrigger>
             }

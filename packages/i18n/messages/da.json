@@ -1156,6 +1156,7 @@
       },
       "family": {
         "none": "Ingen familie",
+        "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
         "all": "Alle familier",
         "createNew": "Ny familie",
         "nameLabel": "Familiens navn",
@@ -1179,7 +1180,8 @@
       },
       "detail": {
         "evaluationHeading": "Evaluering",
-        "manageCta": "Administrer",
+        "profileActions": "Handlinger for jobprofilen",
+        "evaluationActions": "Handlinger for vurderingen",
         "cancelCta": "Annuller",
         "editCta": "Rediger",
         "saveCta": "Gem",

@@ -272,7 +272,7 @@ export function RoleProfileCard({
             // height on its own, which reads as a taller bar than every
             // other frame.
             size="icon-sm"
-            aria-label={t("manageCta")}
+            aria-label={t("profileActions")}
           />
         }
       >

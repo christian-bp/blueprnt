@@ -85,7 +85,7 @@ function renderCard(
 }
 
 function openManageMenu() {
-  return openMenu(screen.getByRole("button", { name: labels.manageCta }))
+  return openMenu(screen.getByRole("button", { name: labels.profileActions }))
 }
 
 // Read mode -> manage menu -> Edit -> edit mode (fields become inputs).
@@ -140,7 +140,7 @@ describe("RoleProfileCard", () => {
     // Back to read mode: the manage trigger returns.
     await waitFor(() => {
       expect(
-        screen.getByRole("button", { name: labels.manageCta })
+        screen.getByRole("button", { name: labels.profileActions })
       ).toBeDefined()
     })
   })
@@ -234,7 +234,9 @@ describe("RoleProfileCard", () => {
 
   it("hides the manage menu entirely for archived roles", () => {
     renderCard(makeRole({ archived: true }))
-    expect(screen.queryByRole("button", { name: labels.manageCta })).toBeNull()
+    expect(
+      screen.queryByRole("button", { name: labels.profileActions })
+    ).toBeNull()
   })
 
   it("hides the AI draft button in read mode and shows it in edit mode", async () => {
@@ -266,7 +268,9 @@ describe("RoleProfileCard", () => {
     // Cancel without saving.
     fireEvent.click(screen.getByRole("button", { name: labels.cancelCta }))
     // Back in read mode: the manage trigger returns, no inputs remain.
-    expect(screen.getByRole("button", { name: labels.manageCta })).toBeDefined()
+    expect(
+      screen.getByRole("button", { name: labels.profileActions })
+    ).toBeDefined()
     expect(
       screen.queryByRole("textbox", { name: roleLabels.purpose })
     ).toBeNull()

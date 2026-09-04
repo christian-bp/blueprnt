@@ -1156,6 +1156,7 @@
       },
       "family": {
         "none": "Ei perhettä",
+        "roleCount": "{count, plural, =1 {1 tehtävä} other {# tehtävää}}",
         "all": "Kaikki perheet",
         "createNew": "Uusi perhe",
         "nameLabel": "Perheen nimi",
@@ -1179,7 +1180,8 @@
       },
       "detail": {
         "evaluationHeading": "Arviointi",
-        "manageCta": "Hallitse",
+        "profileActions": "Tehtäväprofiilin toiminnot",
+        "evaluationActions": "Arvioinnin toiminnot",
         "cancelCta": "Peruuta",
         "editCta": "Muokkaa",
         "saveCta": "Tallenna",

@@ -370,6 +370,12 @@ export function RolesTable({
                         <CountChip
                           value={row.subRows.length}
                           icon={Briefcase01Icon}
+                          // A band's number sits beside a family name, not a
+                          // heading that names the unit, so it carries the
+                          // phrase for a reader who cannot see the mark.
+                          label={tFamily("roleCount", {
+                            count: row.subRows.length,
+                          })}
                         />
                       </div>
                     </TableCell>
