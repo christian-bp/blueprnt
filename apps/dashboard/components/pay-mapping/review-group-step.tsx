@@ -8,8 +8,8 @@ import { ConvexError } from "convex/values"
 import { useFormatter, useTranslations } from "next-intl"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "@/lib/toast"
+import { FrameCard, FrameCardSection } from "@/components/frame-card"
 import { useOrganization } from "@/components/org-context"
-import { ScreenShell } from "@/components/screen-shell"
 import { Badge } from "@workspace/ui/components/badge"
 import { GenderDotIcon } from "@/components/gender-mark"
 import { LevelBadge } from "@/components/level-badge"
@@ -41,7 +41,7 @@ import { EqualWorkDetail } from "./equal-work-detail"
 import { EvidenceDisclosure } from "./evidence-disclosure"
 import { GroupMemberTable } from "./group-member-table"
 import { WomenDominatedScatter } from "./women-dominated-underlying-data"
-import { ReviewStepActions } from "./review-step-actions"
+import { hasStepActions, ReviewStepActions } from "./review-step-actions"
 
 // Distinguishes the one reachable backend rejection from this step (marking
 // done without documentation) from transient failures, so the toast can name
@@ -82,12 +82,13 @@ interface ReviewGroupStepCommonProps {
   // presentational component with no subscription of its own.
   actions: PayMappingActionWire[] | undefined
   notes: PayMappingNoteWire[] | undefined
-  // Threaded from the surface: the wizard reveals the heading/content (true),
-  // the summary's master-detail pane swaps instantly (false). See ScreenShell.
-  animated: boolean
-  // Threaded from the surface the same way `animated` is: the wizard mounts
-  // at the top of its own page (h1, the default), the summary's pane sits
-  // under the page's h2 and the summary's own h3 (h4). See ScreenShell.
+  // Whether the analysis section is already showing this chapter's
+  // continuation link (chapterContinuationShown): the step then drops its own
+  // primary, so one destination never carries two controls.
+  continuationShown?: boolean
+  // Threaded from the surface: the step mounts at the top of its own page
+  // (h1, the default), or under the analysis pane's own h2/h3 (h4), so the
+  // document's heading order stays unbroken either way.
   headingLevel?: "h1" | "h4"
   onNext: () => void
   onPrevious?: () => void
@@ -157,7 +158,7 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
     requiresDocumentation,
     actions,
     notes,
-    animated,
+    continuationShown = false,
     headingLevel = "h1",
     onNext,
     onPrevious,
@@ -318,13 +319,54 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
   }
   const docs = documentationFor(groupTarget, props.actions, props.notes)
 
+  const stepActions = {
+    onPrevious,
+    onSkip,
+    // Stated in words rather than only disabling the button: the app's rule
+    // is that a flow names its precondition.
+    hint:
+      props.scope === "equivalentWork" && unexplainedComparisons > 0
+        ? t("comparisonsMissing", {
+            missing: unexplainedComparisons,
+            total: props.group.comparisons.length,
+          })
+        : undefined,
+    primaryLabel: continuationShown ? undefined : t("markDoneNext"),
+    onPrimary: continuationShown ? undefined : handleMarkDone,
+    primaryDisabled: locked || blocked,
+    onUndo: done && !blocked && !locked ? handleUndo : undefined,
+  }
   return (
-    <ScreenShell
-      heading={props.group.roleTitle ?? label}
-      animated={animated}
-      headingLevel={headingLevel}
-      align="start"
-      headingExtra={
+    // The step IS the frame: its header carries the group's own title, the
+    // badges that describe it, the chapter's statutory duty as the help
+    // beside them and the group's documentation menu as the toolbar, and
+    // every block below sits on the frame's ground instead of floating on a
+    // white card with nothing between the sections.
+    <FrameCard
+      size="lg"
+      title={props.group.roleTitle ?? label}
+      titleLevel={headingLevel}
+      // The figures live in EqualWorkDetail's badges below, next to the plot
+      // that shows the same gap. A sentence restating them put the same
+      // percentage on screen four times (here, in the figures, on the plot's
+      // own gap label, and in the flag badge).
+      //
+      // The exception is a group with no measurable difference: there are no
+      // figures to badge, so words are the only way to say that nothing was
+      // found. Skipping this would leave the step's most reassuring result as
+      // a blank space.
+      {...(props.scope === "equalWork" && hasNoMeasurableGap(props.group)
+        ? {
+            description: tFinding("none", {
+              women: props.group.womenCount,
+              men: props.group.menCount,
+            }),
+          }
+        : {})}
+      // The header's right edge carries the group's STATE and the menu that
+      // acts on it, so a long role title is never pushed onto a second line
+      // by chips. The title row itself stays the title alone.
+      toolbar={
         <>
           {props.scope === "equalWork" && (
             <PayGapFlagBadge flag={props.group.flag} />
@@ -349,11 +391,6 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
               })}
             </Badge>
           )}
-          {/* The group's own documentation control belongs on the heading
-              row, beside the badges that describe the same group. It used
-              to sit in its own right-aligned strip further down, where a
-              lone "..." read as an orphan hovering over the figures rather
-              than as this group's action. */}
           <DocumentationBadges actions={docs.actions} notes={docs.notes} />
           <DocumentationMenu
             runId={props.runId}
@@ -366,149 +403,19 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
           />
         </>
       }
+      // An empty action row still holds its footer's height, so the footer
+      // is passed only when the row would draw something.
+      footer={
+        hasStepActions(stepActions) ? (
+          <ReviewStepActions {...stepActions} />
+        ) : undefined
+      }
     >
-      <div className="w-full space-y-4">
-        <div className="space-y-2">
-          {props.scope === "equalWork" ? (
-            // The figures live in EqualWorkDetail's badges below, next to
-            // the plot that shows the same gap. A sentence restating them
-            // put the same percentage on screen four times (here, in the
-            // figures, on the plot's own gap label, and in the flag badge).
-            //
-            // The exception is a group with no measurable difference:
-            // there are no figures to badge, so words are the only way to
-            // say that nothing was found. Skipping this would leave the
-            // step's most reassuring result as a blank space.
-            hasNoMeasurableGap(props.group) ? (
-              <p className="text-base text-muted-foreground">
-                {tFinding("none", {
-                  women: props.group.womenCount,
-                  men: props.group.menCount,
-                })}
-              </p>
-            ) : null
-          ) : (
-            // No lead sentences. "X is women-dominated (100% women)" became
-            // the share badge on the heading, and "16 equally or lower
-            // valued jobs earn more on average" restated the table directly
-            // below it, which lists exactly those jobs with the difference
-            // in its own column. A group with no comparator never reaches
-            // this step: nothing out-earns it, so it owes no answer, and
-            // the chapter lists only groups that do (the report states the
-            // result).
-            <>
-              <ComparatorTable
-                baseline={props.group}
-                comparisons={props.group.comparisons}
-                currency={currency}
-                selectedKey={selectedComparison}
-                onSelect={setSelectedComparison}
-                // The answer opens INSIDE the selected row: the finding and
-                // the answer are then the same object, instead of the reader
-                // having to carry "which row was I answering for" past a
-                // chart to a panel at the bottom of the page.
-                renderExpanded={(comparisonKey) => (
-                  <ComparisonReasonsPanel
-                    runId={runId}
-                    groupKey={props.group.key}
-                    comparisonKey={comparisonKey}
-                    // The same label the table and the answer card show for
-                    // this comparison, from the same helper: three names for
-                    // one row is three things to reconcile.
-                    comparisonLabel={comparisonLabelFor(comparisonKey)}
-                    groupLabel={label}
-                    analysis={comparisonRows.find(
-                      (row) => row.comparisonKey === comparisonKey
-                    )}
-                    locked={locked}
-                    // The OTHER comparisons still owing an answer, never this
-                    // one: the bulk control's label counts what it is about to
-                    // fill, and this row is the one being answered.
-                    remainingCount={
-                      comparisons.filter(
-                        (comparison) =>
-                          comparison.key !== comparisonKey &&
-                          !explainedComparisons.has(comparison.key)
-                      ).length
-                    }
-                    groupDone={done}
-                    onGroupReopened={() => setDone(false)}
-                  />
-                )}
-                notesByComparison={
-                  new Map(
-                    comparisonRows.flatMap((row) =>
-                      row.comparisonKey === null || row.note === null
-                        ? []
-                        : [[row.comparisonKey, row.note] as const]
-                    )
-                  )
-                }
-                reasonsByComparison={
-                  new Map(
-                    comparisonRows.flatMap((row) =>
-                      row.comparisonKey === null
-                        ? []
-                        : [[row.comparisonKey, row.reasons] as const]
-                    )
-                  )
-                }
-                {...(props.runId === undefined
-                  ? {}
-                  : {
-                      documentation: {
-                        runId: props.runId,
-                        groupKey: props.group.key,
-                        actions: props.actions,
-                        notes: props.notes,
-                        locked,
-                      },
-                    })}
-              />
-              {/* The individuals, right under the table of averages.
-                      Averages say WHETHER there is a gap; the plot is
-                      where a documenter can see whether something like
-                      length of service explains it, which is the
-                      objective ground they have to weigh. */}
-              <WomenDominatedScatter
-                group={props.group}
-                rows={rows}
-                currency={currency}
-                referenceDateMs={referenceDateMs}
-                highlightComparisonKey={selectedComparison}
-              />
-              {/* The group's own roster, collapsed under the plot exactly
-                  as under equal work: the person a documenter decides to
-                  act on is found HERE, and the per-row menu is where the
-                  action goes. Its members only: the comparators' people
-                  are on the plot above, and this group is compared with
-                  them, not within itself, so the table carries no in-group
-                  difference column. */}
-              <EvidenceDisclosure
-                label={tGap("groupMembers")}
-                count={props.group.headcount}
-              >
-                <GroupMemberTable
-                  group={props.group}
-                  rows={rows}
-                  currency={currency}
-                  documentation={{
-                    runId,
-                    scope: "equivalentWork",
-                    actions,
-                    notes,
-                    locked,
-                  }}
-                />
-              </EvidenceDisclosure>
-            </>
-          )}
-        </div>
-
-        {/* The detail view leads (Iteration 2 note 3): summary strip, the
-            scatter, then the individual member table, all before the
-            documentation form. */}
-        {props.scope === "equalWork" && (
+      {props.scope === "equalWork" ? (
+        <>
+          {/* The detail view leads (Iteration 2 note 3): the figures in
+              their own panel, then the scatter and the member roster as the
+              bounded objects they already are. */}
           <EqualWorkDetail
             group={props.group}
             rows={rows}
@@ -516,52 +423,149 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
             referenceDateMs={referenceDateMs}
             documentation={{ runId, actions, notes, locked }}
           />
-        )}
-
-        {props.scope === "equivalentWork" &&
-          props.group.comparisons.length > 0 &&
-          selectedComparison === null && (
-            // The table alone does not say that answering is the task, so the
-            // step says it once. The answer itself opens inside the row.
-            <p className="text-muted-foreground text-sm">
-              {t("selectComparison")}
-            </p>
-          )}
-
-        {/* Equal work only. Equivalent work documents each comparison in its
-            own row (reasons and the deepened analysis both), so this form
-            would render an empty box there. */}
-        {props.scope === "equalWork" && (
-          <PayMappingGroupAnalysisForm
-            ref={formRef}
-            runId={runId}
-            scope={props.scope}
-            groupKey={props.group.key}
-            requiresDocumentation={requiresDocumentation}
-            locked={locked}
-            analysis={analysis}
-            onDocumentationChange={setDoc}
+          {/* The block the reader writes in, in its own panel. No section
+              title, because the form already names its two parts (the
+              objective reasons and the deepened analysis) and a panel title
+              above them would name the same section a third time. */}
+          <FrameCardSection>
+            <PayMappingGroupAnalysisForm
+              ref={formRef}
+              runId={runId}
+              scope={props.scope}
+              groupKey={props.group.key}
+              requiresDocumentation={requiresDocumentation}
+              locked={locked}
+              analysis={analysis}
+              onDocumentationChange={setDoc}
+            />
+          </FrameCardSection>
+        </>
+      ) : (
+        // No lead sentences. "X is women-dominated (100% women)" became the
+        // share badge on the title row, and "16 equally or lower valued jobs
+        // earn more on average" restated the table directly below it, which
+        // lists exactly those jobs with the difference in its own column. A
+        // group with no comparator never reaches this step: nothing
+        // out-earns it, so it owes no answer, and the chapter lists only
+        // groups that do (the report states the result).
+        <>
+          {/* The comparators and the instruction that follows from them are
+              one panel: the table is the finding, and the sentence under it
+              names the act the reader owes each row. */}
+          <FrameCardSection>
+            <ComparatorTable
+              baseline={props.group}
+              comparisons={props.group.comparisons}
+              currency={currency}
+              selectedKey={selectedComparison}
+              onSelect={setSelectedComparison}
+              // The answer opens INSIDE the selected row: the finding and
+              // the answer are then the same object, instead of the reader
+              // having to carry "which row was I answering for" past a
+              // chart to a panel at the bottom of the page.
+              renderExpanded={(comparisonKey) => (
+                <ComparisonReasonsPanel
+                  runId={runId}
+                  groupKey={props.group.key}
+                  comparisonKey={comparisonKey}
+                  // The same label the table and the answer card show for
+                  // this comparison, from the same helper: three names for
+                  // one row is three things to reconcile.
+                  comparisonLabel={comparisonLabelFor(comparisonKey)}
+                  groupLabel={label}
+                  analysis={comparisonRows.find(
+                    (row) => row.comparisonKey === comparisonKey
+                  )}
+                  locked={locked}
+                  // The OTHER comparisons still owing an answer, never this
+                  // one: the bulk control's label counts what it is about to
+                  // fill, and this row is the one being answered.
+                  remainingCount={
+                    comparisons.filter(
+                      (comparison) =>
+                        comparison.key !== comparisonKey &&
+                        !explainedComparisons.has(comparison.key)
+                    ).length
+                  }
+                  groupDone={done}
+                  onGroupReopened={() => setDone(false)}
+                />
+              )}
+              notesByComparison={
+                new Map(
+                  comparisonRows.flatMap((row) =>
+                    row.comparisonKey === null || row.note === null
+                      ? []
+                      : [[row.comparisonKey, row.note] as const]
+                  )
+                )
+              }
+              reasonsByComparison={
+                new Map(
+                  comparisonRows.flatMap((row) =>
+                    row.comparisonKey === null
+                      ? []
+                      : [[row.comparisonKey, row.reasons] as const]
+                  )
+                )
+              }
+              {...(props.runId === undefined
+                ? {}
+                : {
+                    documentation: {
+                      runId: props.runId,
+                      groupKey: props.group.key,
+                      actions: props.actions,
+                      notes: props.notes,
+                      locked,
+                    },
+                  })}
+            />
+            {props.group.comparisons.length > 0 &&
+              selectedComparison === null && (
+                // The table alone does not say that answering is the task, so
+                // the step says it once. The answer opens inside the row.
+                <p className="text-muted-foreground text-sm">
+                  {t("selectComparison")}
+                </p>
+              )}
+          </FrameCardSection>
+          {/* The individuals, right under the table of averages. Averages
+              say WHETHER there is a gap; the plot is where a documenter can
+              see whether something like length of service explains it, which
+              is the objective ground they have to weigh. */}
+          <WomenDominatedScatter
+            group={props.group}
+            rows={rows}
+            currency={currency}
+            referenceDateMs={referenceDateMs}
+            highlightComparisonKey={selectedComparison}
           />
-        )}
-      </div>
-      <ReviewStepActions
-        onPrevious={onPrevious}
-        onSkip={onSkip}
-        // Stated in words rather than only disabling the button: the app's
-        // rule is that a flow names its precondition.
-        {...(props.scope === "equivalentWork" && unexplainedComparisons > 0
-          ? {
-              hint: t("comparisonsMissing", {
-                missing: unexplainedComparisons,
-                total: props.group.comparisons.length,
-              }),
-            }
-          : {})}
-        primaryLabel={t("markDoneNext")}
-        onPrimary={handleMarkDone}
-        primaryDisabled={locked || blocked}
-        onUndo={done && !blocked && !locked ? handleUndo : undefined}
-      />
-    </ScreenShell>
+          {/* The group's own roster, collapsed under the plot exactly as
+              under equal work: the person a documenter decides to act on is
+              found HERE, and the per-row menu is where the action goes. Its
+              members only: the comparators' people are on the plot above,
+              and this group is compared with them, not within itself, so the
+              table carries no in-group difference column. */}
+          <EvidenceDisclosure
+            label={tGap("groupMembers")}
+            count={props.group.headcount}
+          >
+            <GroupMemberTable
+              group={props.group}
+              rows={rows}
+              currency={currency}
+              documentation={{
+                runId,
+                scope: "equivalentWork",
+                actions,
+                notes,
+                locked,
+              }}
+            />
+          </EvidenceDisclosure>
+        </>
+      )}
+    </FrameCard>
   )
 }

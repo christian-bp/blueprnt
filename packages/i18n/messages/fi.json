@@ -1453,7 +1453,6 @@
         "filterAll": "Kaikki",
         "filterRemaining": "Jäljellä",
         "filterLabel": "Näytä",
-        "chapterOf": "Luku {position}/{total} · {chapter}",
         "equivalentWorkClear": "Mikään samanarvoinen tai alempi ryhmä ei ole naisvaltaista ryhmää paremmin palkattu.",
         "duty": {
           "start": "Laki edellyttää, että työnantaja tekee palkkakartoituksen yhdessä työntekijöiden kanssa, tavallisesti ammattiliiton kautta.",
@@ -1644,16 +1643,17 @@
         "continue": "Jatka",
         "markDoneNext": "Merkitse valmiiksi ja jatka",
         "introTitle": "Aloitetaan",
-        "introBody": "Palkkakartoitus kartoittaa palkat, roolit ja väestötiedot, jotta epäasialliset naisten ja miesten väliset palkkaerot löydetään ja korjataan. Tämä prosessi käy läpi lain edellyttämät vaiheet ja tuottaa dokumentaation, joka palkkakartoituksen on säilytettävä.",
-        "autosaveHint": "Kaikki syöttämäsi tiedot tallentuvat automaattisesti.",
         "collaborationTitle": "Yhteistoiminta",
         "collaborationParticipants": "Ketkä osallistuvat yhteistoimintaan?",
         "collaborationDescription": "Miten yhteistoiminta tapahtuu?",
         "collaborationHint": "Palkkakartoitusta ei voi viimeistellä, ennen kuin molemmat yhteistoimintakentät on täytetty.",
+        "collaborationRemarks": "Osapuolten huomiot",
+        "collaborationDate": "Yhteistoiminnan päivä",
         "findingNone": "Puutteita ei löytynyt",
         "findingFound": "Puutteita tai epäselvyyksiä löytyi",
         "praxisNoteLabel": "Kuvaus",
         "praxisNoteHelper": "Kuvaa, mitä löysitte ja mitä pitäisi muuttaa.",
+        "praxisActionMeta": "{owner} · {date}",
         "undoDone": "Peru valmiiksi merkitseminen",
         "finding": {
           "none": "Tämän ryhmän naisten ja miesten välillä ei ole mitattavaa palkkaeroa ({women} naista · {men} miestä).",
@@ -1713,7 +1713,6 @@
           "done": "valmis"
         },
         "finishActionsNote": "Palkkakorjaukset, kustannusarvio ja kolmen vuoden aikataulu lisätään toimintasuunnitelmaan.",
-        "cycleBody": "Palkkakartoitus noudattaa vuosittaista kiertoa: selvitä palkat, analysoi erot, toimi havaintojen perusteella ja seuraa tilannetta seuraavana vuonna. Tämä prosessi kattaa selvittämisen ja analysoinnin; itse toimenpiteet kootaan jälkeenpäin toimintasuunnitelmaan.",
         "chaptersShort": {
           "start": "Yhteistoiminta",
           "praxis": "Käytäntö",
@@ -1755,6 +1754,12 @@
           "created": "Lisätty"
         },
         "noNotesYet": "Ei vielä merkintöjä."
+      },
+      "analysisStatus": {
+        "noActionNeeded": "Toimenpidettä ei tarvita",
+        "objectiveReason": "Asiallinen peruste dokumentoitu",
+        "actionDecided": "Toimenpide päätetty",
+        "furtherAnalysis": "Jatkoanalyysi"
       },
       "signingReport": {
         "docTitle": "Allekirjoitusraportti",
@@ -2488,8 +2493,6 @@
       "payGapScatterBody": "Jokainen piste on yksi henkilö iän tai palvelusajan ja kokoaikaistetun palkan mukaan. Katso siitä, onko erolle asiallinen selitys, ja hajonta, jota laki vertaa keskiarvojen lisäksi.",
       "collaborationLabel": "Mitä yhteistoiminta tarkoittaa?",
       "collaborationBody": "Yhteistoimintaa työntekijöiden ja heidän luottamusmiestensä kanssa koko palkkakartoituksen ajan. Työehtosopimuksen piirissä he voivat myös vaatia tarvitsemansa tiedot.",
-      "analysisProgressLabel": "Mitä tässä lasketaan?",
-      "analysisProgressBody": "Vaiheet, jotka on dokumentoitava ennen palkkakartoituksen valmistumista: yhteistoiminta, palkkakäytäntöjen arviointi ja jokainen ryhmä, jonka palkkaero vaatii perustelun. Muuta ei lasketa.",
       "modelProgressLabel": "Mitä malli tarvitsee?",
       "methodAppendixLabel": "Mikä on menetelmäliite?",
       "methodAppendixBody": "PDF, jossa on mallin täydellinen dokumentaatio: metodiikka, asteikko, kriteerit protokollineen ja ankkureineen, tasot, vyöhykkeet ja olennaisuustesti. Luonnos kunnes jokainen kriteeri on tarkastettu ja hyväksytty.",

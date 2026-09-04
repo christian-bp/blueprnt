@@ -1453,7 +1453,6 @@
         "filterAll": "All",
         "filterRemaining": "Remaining",
         "filterLabel": "Show",
-        "chapterOf": "Chapter {position} of {total} · {chapter}",
         "equivalentWorkClear": "No equally or lower valued group out-earns a women-dominated one.",
         "duty": {
           "start": "The law requires the employer to carry out the pay mapping together with the employees, normally through the union.",
@@ -1644,16 +1643,17 @@
         "continue": "Continue",
         "markDoneNext": "Mark done and continue",
         "introTitle": "Get started",
-        "introBody": "A pay mapping maps your pay, roles and demographics to find and address unjustified pay differences between women and men. This journey walks through the steps the law requires and produces the documentation your pay mapping must keep on file.",
-        "autosaveHint": "Everything you enter is saved automatically.",
         "collaborationTitle": "Collaboration",
         "collaborationParticipants": "Who takes part in the collaboration?",
         "collaborationDescription": "How does the collaboration happen?",
         "collaborationHint": "The pay mapping cannot be completed until both collaboration fields are filled in.",
+        "collaborationRemarks": "Remarks from the parties",
+        "collaborationDate": "Collaboration date",
         "findingNone": "No deficiencies found",
         "findingFound": "Deficiencies or unclarities found",
         "praxisNoteLabel": "Description",
         "praxisNoteHelper": "Describe what you found and what should change.",
+        "praxisActionMeta": "{owner} · {date}",
         "undoDone": "Undo mark as done",
         "finding": {
           "none": "There is no measurable pay difference between the women and the men in this group ({women} women · {men} men).",
@@ -1713,7 +1713,6 @@
           "done": "done"
         },
         "finishActionsNote": "Pay adjustments, cost estimate and the three-year time plan are added in the action plan.",
-        "cycleBody": "A pay mapping runs on an annual cycle: investigate the pay, analyze the differences, act on what you find, and follow up next year. This journey covers investigate and analyze; the actions themselves are gathered in the action plan afterward.",
         "chaptersShort": {
           "start": "Collaboration",
           "praxis": "Practice",
@@ -1755,6 +1754,12 @@
           "created": "Added"
         },
         "noNotesYet": "No notes yet."
+      },
+      "analysisStatus": {
+        "noActionNeeded": "No action needed",
+        "objectiveReason": "Objective reason documented",
+        "actionDecided": "Action decided",
+        "furtherAnalysis": "Further analysis"
       },
       "signingReport": {
         "docTitle": "Signing report",
@@ -2488,8 +2493,6 @@
       "payGapScatterBody": "Each dot is one person, plotted by age or tenure against FTE-adjusted pay. Use it to spot an objective pattern behind a gap, and to see spread, which the law compares as well as averages.",
       "collaborationLabel": "What is collaboration?",
       "collaborationBody": "Cooperating with employees and union representatives through the whole pay mapping (Diskrimineringslagen 3 kap. 11 §). Under a collective agreement they may also require the information (12 §).",
-      "analysisProgressLabel": "What is counted here?",
-      "analysisProgressBody": "The steps that must be documented before the pay mapping can be completed: collaboration, the pay-practice review, and every group whose pay difference needs a reason. Nothing else is counted.",
       "modelProgressLabel": "What does the model need?",
       "methodAppendixLabel": "What is the method appendix?",
       "methodAppendixBody": "A PDF with the model’s complete documentation: methodology, scale, criteria with protocols and anchors, levels, zones and the materiality test. Draft until every criterion is reviewed and approved.",

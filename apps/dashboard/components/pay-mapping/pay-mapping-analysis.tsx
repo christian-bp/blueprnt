@@ -33,9 +33,13 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import type { ReactNode } from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { type AnalysisChapter, chapterHref } from "./analysis-chapters"
+import {
+  type AnalysisChapter,
+  chapterContinuationShown,
+  chapterHref,
+} from "./analysis-chapters"
 import { PayMappingCompletionPanel } from "./pay-mapping-completion-panel"
-import { ChapterBar } from "./chapter-bar"
+import { FrameCard, FrameCardSection } from "@/components/frame-card"
 import { TableSearchField } from "@/components/table-search-field"
 import {
   chapterMeta,
@@ -225,7 +229,11 @@ export function PayMappingAnalysis({
                 step.scope === "equivalentWork" &&
                 step.group.key === key
             ) ?? null)
-          : null
+          : scope === "praxis"
+            ? (queue.steps.find(
+                (step) => step.kind === "praxis" && step.area === key
+              ) ?? null)
+            : null
     if (target === null) return
     // Open the chapter too, or a deep link would select a row inside a
     // collapsed chapter (rung 1 is single-open).
@@ -284,14 +292,21 @@ export function PayMappingAnalysis({
               ))}
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="space-y-4">
-              <Skeleton className="h-4 w-40" />
-              <Skeleton className="h-5 w-64 max-w-full" />
+          {/* The step's own shape: a frame whose header stands in for the
+              kicker and the question, one panel for what the reader fills
+              in, and the action row in the foot. A white card here reflowed
+              into a muted frame the moment the data landed. */}
+          <FrameCard
+            size="lg"
+            kicker={<Skeleton className="h-4 w-32" />}
+            title={<Skeleton className="h-5 w-64 max-w-full" />}
+            footer={<Skeleton className="h-8 w-32 rounded-md" />}
+          >
+            <FrameCardSection>
               <Skeleton className="h-4 w-full max-w-md" />
-              <Skeleton className="h-8 w-32 rounded-md" />
-            </CardContent>
-          </Card>
+              <Skeleton className="h-20 w-full" />
+            </FrameCardSection>
+          </FrameCard>
         </div>
       </div>
     )
@@ -536,6 +551,7 @@ export function PayMappingAnalysis({
           analysis={analysis}
           runId={currentRun.runId}
           locked={locked}
+          continuationShown={continuationShown}
           rows={currentRun.rows}
           currency={currency}
           referenceDateMs={currentRun.referenceDate}
@@ -544,7 +560,6 @@ export function PayMappingAnalysis({
           requiresDocumentation={equalWorkGroupRequiresDocumentation(
             group.flag
           )}
-          animated={false}
           headingLevel="h4"
           onNext={() => advanceAfter(open)}
         />
@@ -557,7 +572,7 @@ export function PayMappingAnalysis({
             runId={currentRun.runId}
             collaboration={collaboration}
             locked={locked}
-            animated={false}
+            continuationShown={continuationShown}
             headingLevel="h4"
             onNext={() => advanceAfter(open)}
           />
@@ -570,9 +585,11 @@ export function PayMappingAnalysis({
           <ReviewPraxisStep
             area={open.area}
             analysis={analysis}
+            actions={actions}
+            currency={currency}
             runId={currentRun.runId}
             locked={locked}
-            animated={false}
+            continuationShown={continuationShown}
             headingLevel="h4"
             onNext={() => advanceAfter(open)}
           />
@@ -603,6 +620,7 @@ export function PayMappingAnalysis({
               analysis={analysis}
               runId={currentRun.runId}
               locked={locked}
+              continuationShown={continuationShown}
               rows={currentRun.rows}
               currency={currency}
               referenceDateMs={currentRun.referenceDate}
@@ -611,7 +629,6 @@ export function PayMappingAnalysis({
               requiresDocumentation={equalWorkGroupRequiresDocumentation(
                 open.group.flag
               )}
-              animated={false}
               headingLevel="h4"
               onNext={() => advanceAfter(open)}
             />
@@ -634,7 +651,6 @@ export function PayMappingAnalysis({
             requiresDocumentation={womenDominatedGroupRequiresDocumentation(
               open.group.comparisons.length
             )}
-            animated={false}
             headingLevel="h4"
             onNext={() => advanceAfter(open)}
           />
@@ -660,10 +676,18 @@ export function PayMappingAnalysis({
     allSections.find((section) => section.rows.some((row) => row.id === rowId))
       ?.key
 
-  // The open step's own chapter, for the bar above it.
+  // The open step's own chapter, for the phone's position line and for the
+  // continuation rule below.
   const openChapterForStep = (
     openStep === null ? undefined : chapterKeyForRowId(openStepId(openStep))
   ) as AnalysisChapter | undefined
+  // The section already offers the way on once this chapter is finished, so
+  // the open step drops its own primary: one destination, one control. The
+  // same derivation the section shell uses for the link itself.
+  const continuationShown = chapterContinuationShown(
+    currentQueue,
+    openChapterForStep
+  )
 
   // Opening a step pins the checklist to that step's own chapter, so it
   // stays where the user is working: closing the step again (or advancing
@@ -867,46 +891,36 @@ export function PayMappingAnalysis({
                   </Sheet>
                 </div>
               )}
-              <Card>
-                <CardContent>
-                  {openStep !== null ? (
-                    <div className="space-y-3">
-                      {/* Which chapter this step belongs to, with the
-                          statutory duty one click away, restated where the
-                          duty is actually discharged. */}
-                      {openChapterForStep !== undefined && (
-                        <ChapterBar chapter={openChapterForStep} />
-                      )}
-                      {renderOpenStep(openStep)}
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {/* Stated in words, because there is no row to speak
-                          for it: an equivalent-work chapter with nothing
-                          to answer is the compliance-positive result, and
-                          a pane holding only the completion panel would
-                          read as a chapter that failed to load. */}
-                      {chapter === "equivalentWork" &&
-                        chapterRows.length === 0 && (
-                          <p className="text-base text-muted-foreground">
-                            {tAnalysis("equivalentWorkClear")}
-                          </p>
-                        )}
-                      {/* Reached by advancing past the last remaining row
-                          in this chapter: the in-flow way to finish, so the
-                          user who has just documented the last thing does
-                          not have to go looking for the button. The run's
-                          Overview carries the same panel as the reliable
-                          home, which is where someone who is not mid-flow
-                          will look. */}
-                      <PayMappingCompletionPanel
-                        queue={currentQueue}
-                        run={currentRun}
-                      />
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              {/* Every pane state draws its own FrameCard, whose muted
+                  ground is what separates its sections: a white card around
+                  that would put a frame inside a card, which is what made
+                  the sections read as one undifferentiated field. The
+                  chapter each step belongs to is named by the breadcrumb,
+                  the sidebar and the progress instrument already; the
+                  statutory duty it used to carry rides on the step's own
+                  title now, where the duty is actually discharged. */}
+              {openStep !== null ? (
+                renderOpenStep(openStep)
+              ) : (
+                // Reached by advancing past the last remaining row in this
+                // chapter: the in-flow way to finish, so the user who has
+                // just documented the last thing does not have to go looking
+                // for the button. The run's Overview carries the same panel
+                // as the reliable home, which is where someone who is not
+                // mid-flow will look.
+                <PayMappingCompletionPanel
+                  queue={currentQueue}
+                  run={currentRun}
+                  // Stated in words, because there is no row to speak for
+                  // it: an equivalent-work chapter with nothing to answer is
+                  // the compliance-positive result, and a pane holding only
+                  // the completion panel would read as a chapter that failed
+                  // to load.
+                  {...(chapter === "equivalentWork" && chapterRows.length === 0
+                    ? { lead: tAnalysis("equivalentWorkClear") }
+                    : {})}
+                />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>

@@ -167,8 +167,8 @@ type StepOverrides = Partial<{
   comparisonAnalyses: GroupAnalysis[]
   rows: PayMappingSnapshotRow[]
   locked: boolean
+  continuationShown: boolean
   requiresDocumentation: boolean
-  animated: boolean
   onNext: () => void
   onPrevious: () => void
   onSkip: () => void
@@ -184,13 +184,13 @@ function renderEqualWorkStep(group: GapGroup, overrides: StepOverrides = {}) {
         analysis={overrides.analysis}
         runId={RUN_ID}
         locked={overrides.locked ?? false}
+        continuationShown={overrides.continuationShown ?? false}
         rows={overrides.rows ?? ROWS}
         currency="SEK"
         referenceDateMs={Date.UTC(2026, 6, 1)}
         actions={[]}
         notes={[]}
         requiresDocumentation={overrides.requiresDocumentation ?? true}
-        animated={overrides.animated ?? true}
         onNext={onNext}
         onPrevious={overrides.onPrevious}
         onSkip={overrides.onSkip}
@@ -215,13 +215,13 @@ function renderWdStep(
         comparisonAnalyses={overrides.comparisonAnalyses ?? []}
         runId={RUN_ID}
         locked={overrides.locked ?? false}
+        continuationShown={overrides.continuationShown ?? false}
         rows={overrides.rows ?? ROWS}
         currency="SEK"
         referenceDateMs={Date.UTC(2026, 6, 1)}
         actions={[]}
         notes={[]}
         requiresDocumentation={overrides.requiresDocumentation ?? true}
-        animated={overrides.animated ?? true}
         onNext={onNext}
         onPrevious={overrides.onPrevious}
         onSkip={overrides.onSkip}
@@ -898,8 +898,21 @@ describe("ReviewGroupStep", () => {
     expect(screen.queryByRole("button", { name: t.skip })).toBeNull()
   })
 
-  it("renders a plain heading with the content immediately interactive when animated is false (the summary pane)", () => {
-    renderEqualWorkStep(GROUP_LESS, { animated: false })
+  // One control per destination: the section itself links on to the next
+  // chapter once this one is finished, so the step drops its own primary
+  // rather than putting two ways forward on one screen.
+  it("drops the primary action while the section is showing the chapter continuation", () => {
+    renderEqualWorkStep(GROUP_LESS, { continuationShown: true })
+    expect(screen.queryByRole("button", { name: t.markDoneNext })).toBeNull()
+  })
+
+  it("keeps the primary action while the section is not showing the continuation", () => {
+    renderEqualWorkStep(GROUP_LESS, { continuationShown: false })
+    expect(screen.getByRole("button", { name: t.markDoneNext })).toBeDefined()
+  })
+
+  it("renders a plain heading with the content immediately interactive", () => {
+    renderEqualWorkStep(GROUP_LESS)
     const heading = screen.getByRole("heading", { name: "SWE" })
     expect(heading.querySelector(".sr-only")).toBeNull()
     expect(

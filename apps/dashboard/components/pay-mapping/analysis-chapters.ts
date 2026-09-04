@@ -81,3 +81,24 @@ export function chapterProgress(
     return { done: queue.progress.collaborationDone ? 1 : 0, total: 1 }
   return queue.progress[chapter]
 }
+
+// Whether the analysis section ends this chapter with a link on to the next
+// one: the chapter's own work is finished and a next chapter exists.
+//
+// Shared, because a step's primary action has to disappear exactly when that
+// link appears. Two controls for one destination read as two decisions, and
+// the two used to be derived in two places from the same state, which is how
+// they drifted apart.
+export function chapterContinuationShown(
+  queue: ReviewQueue | null | undefined,
+  chapter: AnalysisChapter | undefined
+): boolean {
+  if (queue === null || queue === undefined || chapter === undefined)
+    return false
+  const index = ANALYSIS_CHAPTERS.indexOf(chapter)
+  // The last chapter has nowhere to continue to, so its steps keep their
+  // own primary action to the end.
+  if (index === -1 || ANALYSIS_CHAPTERS[index + 1] === undefined) return false
+  const { done, total } = chapterProgress(queue, chapter)
+  return total > 0 && done === total
+}

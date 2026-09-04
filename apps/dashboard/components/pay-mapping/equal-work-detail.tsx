@@ -1,10 +1,11 @@
 "use client"
 
-import { Coins01Icon, UserMultiple02Icon } from "@hugeicons/core-free-icons"
+import { UserMultiple02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { flagWomenBehind, type PayGapFlag } from "@workspace/core"
 import { cn } from "@workspace/ui/lib/utils"
 import { useFormatter, useTranslations } from "next-intl"
+import { FrameCardSection } from "@/components/frame-card"
 import { GenderDotIcon, type GenderSeries } from "@/components/gender-mark"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useMoney } from "@/hooks/use-money"
@@ -25,34 +26,35 @@ import {
 } from "./pay-mapping-gap-types"
 import { PayMappingScatter } from "./pay-mapping-scatter"
 
-// One metric's compact "Kv. medel · M. medel · gap" line for the summary
-// strip; null means when a side is missing render nothing (the entry
-// conditions make that unreachable for shown groups, kept total anyway).
-// Exported: the per-level likvärdigt analysis renders the same line.
-// A small two-line figure card. Line one names WHAT the figure is about
-// (the series, or the gap); line two carries the money. The one-line form
-// this replaces read "1 · 53 859 kr", which needs the reader to already
-// know that the first number is a headcount and the second a mean.
+// One figure in the stat row: its label above, its value below. The label is
+// a field label over a larger value, which is the reserved compact slot, not
+// running text; the value is what the reader scans for, so it carries the
+// weight.
 //
-// The icons do the labelling the compact form could not: a people mark for
-// the count, a coins mark for the money, both already used elsewhere in the
-// app for exactly these. The gender mark ties the card to its own series in
-// the plot below, and the series is NAMED as well as marked, because
-// identity is never left to a mark alone.
-function FigureCard({
+// One panel each, on the frame's own ground, exactly like the chart and the
+// people panel below them: two levels, never three. They used to be ad-hoc
+// `rounded-md border` tiles, which gave the same values a different edge,
+// radius and shadow from every other panel in the step.
+//
+// The gender mark ties each figure to its own series in the plot below, and
+// the series is NAMED as well as marked, because identity is never left to a
+// mark alone.
+function Figure({
   children,
-  title,
+  label,
 }: {
   children: ReactNode
-  title: ReactNode
+  label: ReactNode
 }) {
   return (
-    <div className="flex min-w-0 flex-col gap-0.5 rounded-md border px-2.5 py-1.5">
-      <div className="flex items-center gap-1.5 text-sm">{title}</div>
-      <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+    <FrameCardSection className="flex min-w-0 flex-col gap-0.5">
+      <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+        {label}
+      </div>
+      <div className="flex items-baseline gap-1.5 font-semibold text-base tabular-nums">
         {children}
       </div>
-    </div>
+    </FrameCardSection>
   )
 }
 
@@ -72,36 +74,28 @@ function MeanCard({
   const money = useMoney()
   if (mean === null) return null
   return (
-    <FigureCard
-      title={
+    <Figure
+      label={
         <>
           <span aria-hidden="true" className="size-3 shrink-0">
             <GenderDotIcon series={series} />
           </span>
-          <span className="font-medium">
-            {tGap(series === "women" ? "women" : "men")}
-          </span>
+          <span>{tGap(series === "women" ? "women" : "men")}</span>
           <HugeiconsIcon
             icon={UserMultiple02Icon}
             strokeWidth={2}
             aria-hidden="true"
-            className="ml-1 size-3.5 shrink-0 text-muted-foreground"
+            className="ml-1 size-3.5 shrink-0"
           />
-          <span className="text-muted-foreground tabular-nums">{count}</span>
+          <span className="tabular-nums">{count}</span>
         </>
       }
     >
-      <HugeiconsIcon
-        icon={Coins01Icon}
-        strokeWidth={2}
-        aria-hidden="true"
-        className="size-3.5 shrink-0"
-      />
-      <span className="text-foreground tabular-nums">
-        {money(mean, currency)}
+      <span>{money(mean, currency)}</span>
+      <span className="font-normal text-muted-foreground text-xs">
+        {t("meanSuffix")}
       </span>
-      <span>{t("meanSuffix")}</span>
-    </FigureCard>
+    </Figure>
   )
 }
 
@@ -126,16 +120,12 @@ function GapCard({
   const money = useMoney()
   if (metric.gapKr === null || metric.gapPct === null) return null
   return (
-    <FigureCard
-      title={<span className="font-medium">{prefix ?? t("gapLabel")}</span>}
-    >
-      <span className="text-foreground tabular-nums">
-        {money(-metric.gapKr, currency, { signed: true })}
-      </span>
-      <span className={cn("tabular-nums", FLAG_TEXT_CLASSNAME[flag])}>
+    <Figure label={<span>{prefix ?? t("gapLabel")}</span>}>
+      <span>{money(-metric.gapKr, currency, { signed: true })}</span>
+      <span className={cn("text-sm", FLAG_TEXT_CLASSNAME[flag])}>
         ({percentText(metric.gapPct, format)})
       </span>
-    </FigureCard>
+    </Figure>
   )
 }
 
@@ -200,57 +190,63 @@ export function EqualWorkDetail({
       Math.sign(secondary.gapPct) !== Math.sign(primary.gapPct))
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-0.5">
-        {/* The figures as badges rather than three sentences. Everything
-            the plot below already shows (the gap's size, where the means
-            sit, the spread) is not repeated here; what a plot cannot give
-            is the exact means and the headcount when points overlap, so
-            that is what these carry. The gender marks tie each badge to
-            its own series in the plot.
+    // Children of the step's own FrameCard, never one wrapper of their own:
+    // the figures are panels, and the plot and the roster carry their own
+    // chrome already, so a panel around either would be a card in a card.
+    <>
+      {/* Everything the plot below already shows (the gap's size, where the
+          means sit, the spread) is not repeated here; what a plot cannot
+          give is the exact means and the headcount when points overlap, so
+          that is what these carry. The gender marks tie each figure to its
+          own series in the plot.
 
-            The secondary metric appears ONLY when it changes the picture
-            (see secondaryMatters). Base and total comp usually differ by a
-            percentage point because the base is larger, not because
-            anything different is happening, and a second row of near
-            identical numbers is the noise this replaces. */}
-        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-          <MeanCard
-            series="women"
-            count={group.womenCount}
-            mean={primary.womenMean}
-            currency={currency}
-          />
-          <MeanCard
-            series="men"
-            count={group.menCount}
-            mean={primary.menMean}
-            currency={currency}
-          />
+          The secondary metric appears ONLY when it changes the picture (see
+          secondaryMatters). Base and total comp usually differ by a
+          percentage point because the base is larger, not because anything
+          different is happening, and a second row of near identical numbers
+          is the noise this replaces.
+
+          A transparent row, so the four panels sit beside each other on the
+          frame's ground instead of stacking as its direct children would:
+          two columns while the pane is narrow, four across from sm up. The
+          gap is the frame's own token, so the row can never drift from the
+          spacing the panels below it keep. */}
+      <div className="grid grid-cols-2 gap-(--frame-gap) sm:grid-cols-4">
+        <MeanCard
+          series="women"
+          count={group.womenCount}
+          mean={primary.womenMean}
+          currency={currency}
+        />
+        <MeanCard
+          series="men"
+          count={group.menCount}
+          mean={primary.menMean}
+          currency={currency}
+        />
+        <GapCard
+          metric={primary}
+          currency={currency}
+          flag={flagWomenBehind(
+            group.womenCount,
+            group.menCount,
+            primary.gapPct
+          )}
+        />
+        {secondaryMatters && (
           <GapCard
-            metric={primary}
+            metric={secondary}
             currency={currency}
+            prefix={secondaryPrefix}
             flag={flagWomenBehind(
               group.womenCount,
               group.menCount,
-              primary.gapPct
+              secondary.gapPct
             )}
           />
-          {secondaryMatters && (
-            <GapCard
-              metric={secondary}
-              currency={currency}
-              prefix={secondaryPrefix}
-              flag={flagWomenBehind(
-                group.womenCount,
-                group.menCount,
-                secondary.gapPct
-              )}
-            />
-          )}
-        </div>
+        )}
       </div>
-      {/* This group's members only, drawn on the SAME measure the badges
+      {/* This group's members only, drawn on the SAME measure the figures
           above state (total comp, or base salary for a baseDriven group)
           with that measure's own averages as the two reference lines. All
           three have to agree: a card reading "SEK 84,000 on average" over a
@@ -304,6 +300,6 @@ export function EqualWorkDetail({
           />
         </div>
       </EvidenceDisclosure>
-    </div>
+    </>
   )
 }

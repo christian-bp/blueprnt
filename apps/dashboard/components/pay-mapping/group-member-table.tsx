@@ -282,13 +282,18 @@ export function GroupMemberTable({
           nothing. The table keeps a readable minimum and scrolls inside its
           own container instead, per the wide-content rule. */}
       <div className="overflow-x-auto">
-        <Table className="min-w-[46rem] table-fixed">
+        <Table className="min-w-[49rem] table-fixed">
           <TableHeader>
             <TableRow>
               {sortableHead("name", t("columns.name"))}
               {sortableHead("gender", t("columns.gender"), "w-20")}
               {sortableHead("base", t("columns.basePay"), "w-28 text-right")}
-              {sortableHead("tcc", t("columns.totalComp"), "w-28 text-right")}
+              {/* Wider than its neighbours: "Total compensation" and its
+                  Nordic equivalents are two long words, and at w-28 the
+                  heading overflowed a table-fixed cell into the column
+                  beside it (a fixed cell does not grow, and the heading
+                  does not wrap on its own). */}
+              {sortableHead("tcc", t("columns.totalComp"), "w-40 text-right")}
               {/* One combined difference column: two separate ones pushed
                   the documentation control past the analysis pane's visible
                   width, and the kr and percent read better together. */}

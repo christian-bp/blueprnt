@@ -1453,7 +1453,6 @@
         "filterAll": "Alle",
         "filterRemaining": "Resterende",
         "filterLabel": "Vis",
-        "chapterOf": "Kapitel {position} af {total} · {chapter}",
         "equivalentWorkClear": "Ingen ligeværdig eller lavere værdisat gruppe er højere lønnet end nogen kvindedomineret gruppe.",
         "duty": {
           "start": "Loven kræver, at arbejdsgiveren gennemfører lønkortlægningen sammen med medarbejderne, normalt gennem fagforeningen.",
@@ -1644,16 +1643,17 @@
         "continue": "Fortsæt",
         "markDoneNext": "Markér udført og gå videre",
         "introTitle": "Kom godt i gang",
-        "introBody": "En lønkortlægning kortlægger løn, roller og demografi for at finde og rette usaglige lønforskelle mellem kvinder og mænd. Denne gennemgang tager dig igennem de trin, loven kræver, og skaber den dokumentation, lønkortlægningen skal opbevare.",
-        "autosaveHint": "Alt du udfylder gemmes automatisk.",
         "collaborationTitle": "Samarbejde",
         "collaborationParticipants": "Hvem deltager i samarbejdet?",
         "collaborationDescription": "Hvordan foregår samarbejdet?",
         "collaborationHint": "Lønkortlægningen kan ikke afsluttes, før begge samarbejdsfelter er udfyldt.",
+        "collaborationRemarks": "Bemærkninger fra parterne",
+        "collaborationDate": "Samarbejdsdato",
         "findingNone": "Ingen mangler fundet",
         "findingFound": "Mangler eller uklarheder fundet",
         "praxisNoteLabel": "Beskrivelse",
         "praxisNoteHelper": "Beskriv hvad I har fundet, og hvad der bør ændres.",
+        "praxisActionMeta": "{owner} · {date}",
         "undoDone": "Fortryd udført-markering",
         "finding": {
           "none": "Der er ikke noget målbart løngab mellem kvinderne og mændene i denne gruppe ({women} kvinder · {men} mænd).",
@@ -1713,7 +1713,6 @@
           "done": "udført"
         },
         "finishActionsNote": "Lønjusteringer, omkostningsberegning og den treårige tidsplan tilføjes i handlingsplanen.",
-        "cycleBody": "En lønkortlægning følger en årlig cyklus: undersøg lønnen, analyser forskellene, handl på det, du finder, og følg op næste år. Denne gennemgang dækker undersøg og analyser; selve handlingerne samles i handlingsplanen bagefter.",
         "chaptersShort": {
           "start": "Samarbejde",
           "praxis": "Praksis",
@@ -1755,6 +1754,12 @@
           "created": "Tilføjet"
         },
         "noNotesYet": "Ingen notater endnu."
+      },
+      "analysisStatus": {
+        "noActionNeeded": "Intet tiltag nødvendigt",
+        "objectiveReason": "Saglig grund dokumenteret",
+        "actionDecided": "Tiltag besluttet",
+        "furtherAnalysis": "Videre analyse"
       },
       "signingReport": {
         "docTitle": "Signeringsrapport",
@@ -2488,8 +2493,6 @@
       "payGapScatterBody": "Hvert punkt er én person, placeret efter alder eller anciennitet mod fuldtidsjusteret løn. Brug den til at se, om et gab har en saglig forklaring, og til spredningen, som loven sammenligner ud over gennemsnit.",
       "collaborationLabel": "Hvad er samarbejde?",
       "collaborationBody": "At samarbejde med medarbejderne og deres tillidsrepræsentanter gennem hele lønkortlægningen (ligebehandlingsloven). Ved overenskomst kan de også kræve informationen.",
-      "analysisProgressLabel": "Hvad tælles her?",
-      "analysisProgressBody": "De trin, der skal dokumenteres, før lønkortlægningen kan afsluttes: samarbejdet, gennemgangen af lønpraksis, og hver gruppe hvis lønforskel kræver en begrundelse. Intet andet tælles med.",
       "modelProgressLabel": "Hvad skal modellen have?",
       "methodAppendixLabel": "Hvad er metodebilaget?",
       "methodAppendixBody": "En PDF med modellens fuldstændige dokumentation: metodik, skala, kriterier med protokoller og ankre, niveauer, zoner og væsentlighedstesten. Udkast indtil hvert kriterium er gennemgået og godkendt.",

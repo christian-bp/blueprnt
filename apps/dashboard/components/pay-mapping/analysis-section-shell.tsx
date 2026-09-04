@@ -11,14 +11,15 @@ import {
   FloatingStack,
   FloatingStackProvider,
 } from "@/components/floating-stack"
-import { HelpMorphButton } from "@/components/help-morph-button"
 import {
   BreadcrumbAdornment,
   BreadcrumbAside,
 } from "@/components/page-breadcrumb-slots"
 import { SegmentedProgress } from "@/components/segmented-progress"
+import { ChapterDutyHelp } from "./chapter-duty-help"
 import {
   ANALYSIS_CHAPTERS,
+  chapterContinuationShown,
   chapterHref,
   chapterProgress,
   currentChapter,
@@ -41,7 +42,6 @@ import { usePayMappingRun } from "./pay-mapping-run-context"
 // copy of it above five pages was weight without a job.
 export function AnalysisSectionShell({ children }: { children: ReactNode }) {
   const t = useTranslations("dashboard.payMapping.analysis")
-  const tHelp = useTranslations("dashboard.help")
   const tJourney = useTranslations("dashboard.payMapping.journey")
   const tReview = useTranslations("dashboard.payMapping.review")
   const pathname = usePathname()
@@ -72,17 +72,11 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
   // is real, so a still-loading chapter never flashes it.
   const activeIndex =
     active === undefined ? -1 : ANALYSIS_CHAPTERS.indexOf(active)
-  const activeProgress =
-    activeIndex === -1 || chapters === undefined
-      ? undefined
-      : chapters[activeIndex]
   const nextChapter =
     activeIndex === -1 ? undefined : ANALYSIS_CHAPTERS[activeIndex + 1]
-  const showContinuation =
-    activeProgress !== undefined &&
-    activeProgress.total > 0 &&
-    activeProgress.done === activeProgress.total &&
-    nextChapter !== undefined
+  // The one derivation, shared with the steps themselves: an open step drops
+  // its own primary action exactly when this link appears.
+  const showContinuation = chapterContinuationShown(queue, active)
 
   return (
     // No chapter-action machinery here: unlike the model section, none of the
@@ -94,12 +88,17 @@ export function AnalysisSectionShell({ children }: { children: ReactNode }) {
               it said "Documented", which named the section's SUBJECT beside a
               page already titled Analysis and left the reader two headings
               for one thing. Its concept help and its instrument move up to
-              that page title, which is what they were always about. */}
-        <BreadcrumbAdornment>
-          <HelpMorphButton label={tHelp("analysisProgressLabel")}>
-            {tHelp("analysisProgressBody")}
-          </HelpMorphButton>
-        </BreadcrumbAdornment>
+              that page title, which is what they were always about.
+
+              The chapter's statutory duty rides HERE rather than on each
+              step: the duty is the same for every step of a chapter, so on
+              the steps it was the same popover repeated five times, and the
+              trail's last crumb is the chapter it explains. */}
+        {active !== undefined && (
+          <BreadcrumbAdornment>
+            <ChapterDutyHelp chapter={active} />
+          </BreadcrumbAdornment>
+        )}
         <BreadcrumbAside>
           <SegmentedProgress
             activeSegment={active}

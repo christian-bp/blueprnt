@@ -218,6 +218,8 @@ function groupDone(
 const COLLABORATION_FILLED = {
   participants: "Union reps",
   description: "Meets monthly",
+  date: null,
+  remarks: null,
 }
 
 const ANALYSES_ALL_DONE: GroupAnalysis[] = [

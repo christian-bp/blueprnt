@@ -1453,7 +1453,6 @@
         "filterAll": "Alla",
         "filterRemaining": "Kvarvarande",
         "filterLabel": "Visa",
-        "chapterOf": "Kapitel {position} av {total} · {chapter}",
         "equivalentWorkClear": "Ingen likvärdig eller lägre värderad grupp är högre betald än någon kvinnodominerad grupp.",
         "duty": {
           "start": "Lagen kräver att arbetsgivaren genomför lönekartläggningen tillsammans med arbetstagarna, normalt genom facket.",
@@ -1644,16 +1643,17 @@
         "continue": "Fortsätt",
         "markDoneNext": "Klarmarkera och gå till nästa",
         "introTitle": "Kom igång",
-        "introBody": "En lönekartläggning kartlägger löner, roller och demografi för att hitta och åtgärda osakliga löneskillnader mellan kvinnor och män. Den här genomgången går igenom de steg som lagen kräver och tar fram den dokumentation som lönekartläggningen ska bevara.",
-        "autosaveHint": "Allt du fyller i sparas automatiskt.",
         "collaborationTitle": "Samverkan",
         "collaborationParticipants": "Vilka deltar i samverkan?",
         "collaborationDescription": "Hur sker samverkan?",
         "collaborationHint": "Lönekartläggningen kan inte slutföras förrän båda samverkansfälten är ifyllda.",
+        "collaborationRemarks": "Synpunkter från parterna",
+        "collaborationDate": "Samverkansdatum",
         "findingNone": "Inga brister funna",
         "findingFound": "Brister eller otydligheter funna",
         "praxisNoteLabel": "Beskrivning",
         "praxisNoteHelper": "Beskriv vad ni har hittat och vad som bör ändras.",
+        "praxisActionMeta": "{owner} · {date}",
         "undoDone": "Ångra klarmarkering",
         "finding": {
           "none": "Det finns ingen mätbar löneskillnad mellan kvinnorna och männen i den här gruppen ({women} kvinnor · {men} män).",
@@ -1713,7 +1713,6 @@
           "done": "klar"
         },
         "finishActionsNote": "Löneåtgärder, kostnadsberäkning och den treåriga tidsplanen läggs till i handlingsplanen.",
-        "cycleBody": "En lönekartläggning följer en årlig cykel: undersök lönerna, analysera skillnaderna, åtgärda det ni hittar och följ upp nästa år. Den här genomgången täcker undersök och analysera; själva åtgärderna samlas i handlingsplanen efteråt.",
         "chaptersShort": {
           "start": "Samverkan",
           "praxis": "Praxis",
@@ -1755,6 +1754,12 @@
           "created": "Tillagd"
         },
         "noNotesYet": "Inga noteringar ännu."
+      },
+      "analysisStatus": {
+        "noActionNeeded": "Ingen åtgärd behövs",
+        "objectiveReason": "Sakligt skäl dokumenterat",
+        "actionDecided": "Åtgärd beslutad",
+        "furtherAnalysis": "Fortsatt analys"
       },
       "signingReport": {
         "docTitle": "Signeringsrapport",
@@ -2488,8 +2493,6 @@
       "payGapScatterBody": "Varje punkt är en person, placerad efter ålder eller anställningstid mot heltidsjusterad lön. Använd den för att se om ett gap har en saklig förklaring, och för spridningen, som lagen jämför utöver medelvärden.",
       "collaborationLabel": "Vad är samverkan?",
       "collaborationBody": "Att samverka med arbetstagarna och deras fackliga representanter genom hela lönekartläggningen (diskrimineringslagen 3 kap. 11 §). Vid kollektivavtal kan de också begära informationen (12 §).",
-      "analysisProgressLabel": "Vad räknas här?",
-      "analysisProgressBody": "Stegen som måste dokumenteras innan lönekartläggningen kan slutföras: samverkan, granskningen av lönepraxis, och varje grupp vars löneskillnad kräver en förklaring. Inget annat räknas.",
       "modelProgressLabel": "Vad behöver modellen?",
       "methodAppendixLabel": "Vad är metodbilagan?",
       "methodAppendixBody": "En PDF med modellens fullständiga dokumentation: metodik, skala, kriterier med protokoll och ankare, nivåer, zoner och väsentlighetsprövningen. Utkast tills varje kriterium är granskat och godkänt.",

@@ -3,20 +3,31 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import type { PraxisAreaKey } from "@workspace/constants"
+import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation } from "convex/react"
 import { ConvexError } from "convex/values"
-import { useTranslations } from "next-intl"
+import { useFormatter, useTranslations } from "next-intl"
 import { useEffect, useId, useRef, useState } from "react"
 import { toast } from "@/lib/toast"
 import { useOrganization } from "@/components/org-context"
 import { OptionCard } from "@/components/option-card"
-import { ScreenShell } from "@/components/screen-shell"
 import { isRunCompletedError } from "@/lib/pay-mapping-errors"
-import type { GroupAnalysis } from "./pay-mapping-gap-types"
+import { ActionDialog } from "./action-dialog"
+import { FrameCard, FrameCardSection } from "@/components/frame-card"
+import { ActionStatusBadge } from "./documentation-controls"
+import {
+  type ActionTargetWire,
+  actionRef,
+  type GroupAnalysis,
+  type PayMappingActionWire,
+  targetMatches,
+} from "./pay-mapping-gap-types"
 import {
   REVIEW_NOTE_FIELD_CLASS,
+  hasStepActions,
   ReviewStepActions,
 } from "./review-step-actions"
 
@@ -52,9 +63,11 @@ function isDocumentationRequiredError(error: unknown): boolean {
 export function ReviewPraxisStep({
   area,
   analysis,
+  actions,
+  currency,
   runId,
   locked,
-  animated,
+  continuationShown = false,
   headingLevel = "h1",
   onNext,
   onPrevious,
@@ -62,23 +75,33 @@ export function ReviewPraxisStep({
 }: {
   area: PraxisAreaKey
   analysis: GroupAnalysis | undefined
+  // The run's actions and currency, for the "Create action" affordance a
+  // found deficiency offers (a praxis-targeted action, ADR-0030). Undefined
+  // while the actions query is still loading, like ReviewGroupStep's own
+  // prop: the affordance waits rather than offering a create that would
+  // duplicate an action already anchored to this area.
+  actions: PayMappingActionWire[] | undefined
+  currency: string
   runId: Id<"payMappingRuns">
   locked: boolean
-  // Threaded from the surface: the wizard reveals the heading/content (true),
-  // the summary's master-detail pane swaps instantly (false). See ScreenShell.
-  animated: boolean
-  // Threaded from the surface the same way `animated` is: the wizard mounts
-  // at the top of its own page (h1, the default), the summary's pane sits
-  // under the page's h2 and the summary's own h3 (h4). See ScreenShell.
+  // Whether the analysis section is already showing this chapter's
+  // continuation link (chapterContinuationShown): the step then drops its own
+  // primary, so one destination never carries two controls.
+  continuationShown?: boolean
+  // Threaded from the surface: the step mounts at the top of its own page
+  // (h1, the default), or under the analysis pane's own h2/h3 (h4), so the
+  // document's heading order stays unbroken either way.
   headingLevel?: "h1" | "h4"
   onNext: () => void
   onPrevious?: () => void
   onSkip?: () => void
 }) {
   const t = useTranslations("dashboard.payMapping.review")
+  const tActions = useTranslations("dashboard.payMapping.actions")
   const tForm = useTranslations("dashboard.payMapping.analysisForm")
   const tToast = useTranslations("dashboard.toast")
   const tErrors = useTranslations("errors")
+  const format = useFormatter()
   const { orgId } = useOrganization()
   const upsertGroupAnalysis = useMutation(
     api.payMapping.analyses.upsertGroupAnalysis
@@ -90,6 +113,7 @@ export function ReviewPraxisStep({
   )
   const [note, setNote] = useState(() => analysis?.note ?? "")
   const [done, setDone] = useState(() => analysis?.done ?? false)
+  const [actionOpen, setActionOpen] = useState(false)
   const noteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const noteRef = useRef<HTMLTextAreaElement | null>(null)
   const lastSavedNoteRef = useRef((analysis?.note ?? "").trim())
@@ -266,23 +290,48 @@ export function ReviewPraxisStep({
     }
   }
 
+  // The first non-erased action anchored to this area: a found deficiency
+  // offers ONE action to create or edit, never a second create.
+  const praxisTarget: ActionTargetWire = { kind: "praxis", area }
+  const existingAction = actions?.find(
+    (action) => !action.erased && targetMatches(action.target, praxisTarget)
+  )
+  const offersAction = finding === "found" && !locked && actions !== undefined
+
+  const stepActions = {
+    onPrevious,
+    onSkip,
+    primaryLabel: continuationShown ? undefined : t("markDoneNext"),
+    onPrimary: continuationShown ? undefined : handleMarkDone,
+    primaryDisabled: locked || !canMarkDone,
+    onUndo: done && !locked ? handleUndo : undefined,
+  }
+
   return (
-    // The area kicker sits above the heading, outside ScreenShell: it is not
-    // part of the reveal/description anatomy, just a small label. Left-
-    // aligned like the step itself (align="start": a long question wrapping
-    // over two lines reads ragged when centered).
-    <div className="flex flex-col items-start gap-2">
-      <p className="text-muted-foreground text-sm">
-        {t(`praxis.${area}.title`)}
-      </p>
-      <ScreenShell
-        heading={t(`praxis.${area}.question`)}
+    // The step IS the frame: its header carries the area's name as the
+    // kicker, the question as the title, the chapter's statutory duty as the
+    // help beside it and the guidance line as the description, so nothing
+    // about the step floats above its own container.
+    <>
+      <FrameCard
+        size="lg"
+        kicker={t(`praxis.${area}.title`)}
+        title={t(`praxis.${area}.question`)}
+        titleLevel={headingLevel}
         description={t(`praxis.${area}.helper`)}
-        animated={animated}
-        headingLevel={headingLevel}
-        align="start"
+        // An empty action row still holds its footer's height, so the footer
+        // is passed only when the row would draw something.
+        footer={
+          hasStepActions(stepActions) ? (
+            <ReviewStepActions {...stepActions} />
+          ) : undefined
+        }
       >
-        <div className="w-full space-y-4">
+        {/* The verdict, its description and the action it leads to are one
+            bounded section: what the reader fills in for this area, inside
+            its own panel on the frame's ground, with the step's actions in
+            the frame's foot under it. */}
+        <FrameCardSection>
           {locked && (
             <p className="text-muted-foreground text-sm">
               {tForm("lockedHint")}
@@ -323,16 +372,68 @@ export function ReviewPraxisStep({
               {t("praxisNoteHelper")}
             </p>
           </div>
-        </div>
-        <ReviewStepActions
-          onPrevious={onPrevious}
-          onSkip={onSkip}
-          primaryLabel={t("markDoneNext")}
-          onPrimary={handleMarkDone}
-          primaryDisabled={locked || !canMarkDone}
-          onUndo={done && !locked ? handleUndo : undefined}
+
+          {/* The linked action reads as the record it is: its number as the
+              leading chip, the planned measure as the body, owner and
+              planned day as muted meta, and its follow-up status beside the
+              edit control. A bare sentence with a button after it read as
+              debris. */}
+          {existingAction !== undefined && (
+            <div className="flex items-start gap-3 rounded-lg border p-3">
+              <Badge variant="secondary" className="shrink-0 tabular-nums">
+                {actionRef(existingAction.number)}
+              </Badge>
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <p className="text-sm leading-relaxed">
+                  {existingAction.plannedAction}
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  {t("praxisActionMeta", {
+                    owner: existingAction.ownerName,
+                    date: format.dateTime(
+                      new Date(existingAction.plannedDate),
+                      { dateStyle: "medium" }
+                    ),
+                  })}
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <ActionStatusBadge status={existingAction.status} />
+                {offersAction && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setActionOpen(true)}
+                  >
+                    {tActions("editTitle")}
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+          {offersAction && existingAction === undefined && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setActionOpen(true)}
+            >
+              {tActions("createTitle")}
+            </Button>
+          )}
+        </FrameCardSection>
+      </FrameCard>
+      {actionOpen && (
+        <ActionDialog
+          open
+          onOpenChange={setActionOpen}
+          runId={runId}
+          target={praxisTarget}
+          targetLabel={t(`praxis.${area}.title`)}
+          action={existingAction}
+          currency={currency}
         />
-      </ScreenShell>
-    </div>
+      )}
+    </>
   )
 }

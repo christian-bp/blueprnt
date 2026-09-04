@@ -15,6 +15,26 @@ import { useTranslations } from "next-intl"
 // three lines of the field's own text, up from the vendored two-line floor.
 export const REVIEW_NOTE_FIELD_CLASS = "field-sizing-fixed h-24"
 
+// Whether a step's action row would draw anything. A step whose work is
+// finished can end up with no primary, no undo and no hint, and an empty
+// row still occupies its footer's height: callers pass the footer only when
+// this says there is something in it.
+export function hasStepActions(props: {
+  onPrevious?: () => void
+  onSkip?: () => void
+  primaryLabel?: string
+  hint?: string
+  onUndo?: () => void
+}): boolean {
+  return (
+    props.onPrevious !== undefined ||
+    props.onSkip !== undefined ||
+    props.primaryLabel !== undefined ||
+    props.hint !== undefined ||
+    props.onUndo !== undefined
+  )
+}
+
 // The review journey's shared action row: every step card (start, praxis,
 // group, chapter intro, finish) ends with this same anatomy, so the wizard
 // reads consistently across chapters. Previous/Skip are optional and hidden
@@ -25,6 +45,7 @@ export const REVIEW_NOTE_FIELD_CLASS = "field-sizing-fixed h-24"
 // The hint sits above the buttons, muted, so the gating requirement is
 // stated in words rather than a silently disabled button (the app's
 // guidance rule): the caller passes it only while the primary is pending.
+
 export function ReviewStepActions({
   onPrevious,
   onSkip,
@@ -36,8 +57,11 @@ export function ReviewStepActions({
 }: {
   onPrevious?: () => void
   onSkip?: () => void
-  primaryLabel: string
-  onPrimary: () => void
+  // Omitted once the step's own work is finished and its only remaining act
+  // is to move on: the chapter's continuation below the card already offers
+  // that, and two buttons for one destination read as two decisions.
+  primaryLabel?: string
+  onPrimary?: () => void
   primaryDisabled?: boolean
   hint?: string
   // Un-marks a done step: a ghost button right beside the primary, passed
@@ -70,9 +94,15 @@ export function ReviewStepActions({
               {t("undoDone")}
             </Button>
           )}
-          <Button type="button" disabled={primaryDisabled} onClick={onPrimary}>
-            {primaryLabel}
-          </Button>
+          {primaryLabel !== undefined && onPrimary !== undefined && (
+            <Button
+              type="button"
+              disabled={primaryDisabled}
+              onClick={onPrimary}
+            >
+              {primaryLabel}
+            </Button>
+          )}
         </div>
       </div>
     </div>

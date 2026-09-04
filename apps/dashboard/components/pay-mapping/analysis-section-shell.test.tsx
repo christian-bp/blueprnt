@@ -59,11 +59,12 @@ describe("AnalysisSectionShell", () => {
     })
     expect(header.contains(bar)).toBe(true)
     expect(bar.getAttribute("aria-valuenow")).toBe("39")
-    // The section's concept help, beside that title rather than floating.
+    // The chapter's statutory duty rides the trail, beside the crumb that
+    // names the chapter, rather than repeating on each of its steps.
     expect(
       header.contains(
         screen.getByRole("button", {
-          name: messages.dashboard.help.analysisProgressLabel,
+          name: messages.dashboard.payMapping.analysis.duty.equalWork,
         })
       )
     ).toBe(true)

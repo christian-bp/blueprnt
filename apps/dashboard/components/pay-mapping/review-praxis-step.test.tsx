@@ -28,9 +28,12 @@ vi.mock("@/components/org-context", () => ({
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { ConvexError } from "convex/values"
 import { toast } from "@/lib/toast"
-import type { GroupAnalysis } from "@/components/pay-mapping/pay-mapping-gap-types"
+import type {
+  GroupAnalysis,
+  PayMappingActionWire,
+} from "@/components/pay-mapping/pay-mapping-gap-types"
 import { ReviewPraxisStep } from "@/components/pay-mapping/review-praxis-step"
-import { mockMutation } from "@/test/convex-mocks"
+import { mockMutation, onQuery } from "@/test/convex-mocks"
 
 const upsertMock = mockMutation("payMapping.analyses.upsertGroupAnalysis")
 
@@ -45,8 +48,9 @@ const AREA = "payPolicy" as const
 function renderStep(
   overrides: Partial<{
     analysis: GroupAnalysis | undefined
+    actions: PayMappingActionWire[] | undefined
     locked: boolean
-    animated: boolean
+    continuationShown: boolean
     onNext: () => void
     onPrevious: () => void
     onSkip: () => void
@@ -58,9 +62,11 @@ function renderStep(
       <ReviewPraxisStep
         area={AREA}
         analysis={overrides.analysis}
+        actions={"actions" in overrides ? overrides.actions : []}
+        currency="SEK"
         runId={RUN_ID}
         locked={overrides.locked ?? false}
-        animated={overrides.animated ?? true}
+        continuationShown={overrides.continuationShown ?? false}
         onNext={onNext}
         onPrevious={overrides.onPrevious}
         onSkip={overrides.onSkip}
@@ -76,6 +82,8 @@ describe("ReviewPraxisStep", () => {
     upsertMock.mockResolvedValue(null)
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
+    // The action dialog's owner select reads listActionOwners.
+    onQuery(() => [])
   })
 
   afterEach(() => {
@@ -418,12 +426,138 @@ describe("ReviewPraxisStep", () => {
     expect(screen.queryByRole("button", { name: t.skip })).toBeNull()
   })
 
-  it("renders a plain heading with the content immediately interactive when animated is false (the summary pane)", () => {
-    renderStep({ animated: false })
+  // One control per destination: the section itself links on to the next
+  // chapter once this one is finished, so the step drops its own primary
+  // rather than putting two ways forward on one screen.
+  it("drops the primary action while the section is showing the chapter continuation", () => {
+    renderStep({ continuationShown: true })
+    expect(screen.queryByRole("button", { name: t.markDoneNext })).toBeNull()
+  })
+
+  it("keeps the primary action while the section is not showing the continuation", () => {
+    renderStep({ continuationShown: false })
+    expect(screen.getByRole("button", { name: t.markDoneNext })).toBeDefined()
+  })
+
+  it("renders a plain heading with the content immediately interactive", () => {
+    renderStep()
     const heading = screen.getByRole("heading", {
       name: t.praxis.payPolicy.question,
     })
     expect(heading.querySelector(".sr-only")).toBeNull()
     expect(screen.getByRole("button", { name: t.findingNone })).toBeDefined()
+  })
+
+  const found: GroupAnalysis = {
+    scope: "praxis",
+    groupKey: AREA,
+    comparisonKey: null,
+    reasons: [],
+    note: "Criteria are unclear",
+    done: false,
+    finding: "found",
+  }
+
+  it("offers an action only when the area's finding is found", () => {
+    renderStep({ analysis: { ...found, finding: "none" } })
+    expect(
+      screen.queryByRole("button", {
+        name: messages.dashboard.payMapping.actions.createTitle,
+      })
+    ).toBeNull()
+    cleanup()
+    renderStep({ analysis: found })
+    expect(
+      screen.getByRole("button", {
+        name: messages.dashboard.payMapping.actions.createTitle,
+      })
+    ).toBeDefined()
+  })
+
+  // The actions query has not landed yet, so whether the area already has an
+  // action is unknown: offering Create here would offer a duplicate.
+  it("offers no action while the run's actions are still loading", () => {
+    renderStep({ analysis: found, actions: undefined })
+    expect(
+      screen.queryByRole("button", {
+        name: messages.dashboard.payMapping.actions.createTitle,
+      })
+    ).toBeNull()
+  })
+
+  it("opens the action dialog preset to the practice area", async () => {
+    renderStep({ analysis: found })
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: messages.dashboard.payMapping.actions.createTitle,
+      })
+    )
+    expect(await screen.findByRole("dialog")).toBeDefined()
+    expect(
+      screen.getByText(
+        messages.dashboard.payMapping.actions.linkedTo.replace(
+          "{target}",
+          t.praxis.payPolicy.title
+        )
+      )
+    ).toBeDefined()
+  })
+
+  it("cites an existing praxis action and offers to edit it, never a second create", () => {
+    renderStep({
+      analysis: found,
+      actions: [
+        {
+          actionId: "a3" as Id<"payMappingActions">,
+          number: 3,
+          target: { kind: "praxis", area: AREA },
+          problem: "Managers read the policy differently",
+          plannedAction: "Rewrite the pay policy",
+          reason: null,
+          ownerUserId: "u1",
+          ownerName: "HR Person",
+          plannedDate: Date.UTC(2026, 11, 1),
+          estimatedCost: null,
+          estimatedCostUnit: null,
+          priority: "medium",
+          status: "notStarted",
+          erased: false,
+          createdAt: 1,
+        },
+      ],
+    })
+    // The linked record as a panel, not a sentence: the number chip, the
+    // planned measure, the owner/date meta and the follow-up status.
+    expect(screen.getByText("#3")).toBeDefined()
+    expect(screen.getByText("Rewrite the pay policy")).toBeDefined()
+    expect(
+      screen.getByText(
+        t.praxisActionMeta
+          .replace("{owner}", "HR Person")
+          .replace("{date}", "Dec 1, 2026")
+      )
+    ).toBeDefined()
+    expect(
+      screen.getByText(messages.dashboard.payMapping.actions.status.notStarted)
+    ).toBeDefined()
+    expect(
+      screen.getByRole("button", {
+        name: messages.dashboard.payMapping.actions.editTitle,
+      })
+    ).toBeDefined()
+    expect(
+      screen.queryByRole("button", {
+        name: messages.dashboard.payMapping.actions.createTitle,
+      })
+    ).toBeNull()
+  })
+
+  it("hides the action button on a locked run", () => {
+    renderStep({ analysis: found, locked: true })
+    expect(
+      screen.queryByRole("button", {
+        name: messages.dashboard.payMapping.actions.createTitle,
+      })
+    ).toBeNull()
   })
 })
