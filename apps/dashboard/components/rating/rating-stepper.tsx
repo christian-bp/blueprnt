@@ -8,15 +8,18 @@ import {
 } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import { type DimensionKey, NOT_COVERED } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import { Kbd } from "@workspace/ui/components/kbd"
 import { Label } from "@workspace/ui/components/label"
+import {
+  Questionnaire,
+  QuestionnaireActions,
+  QuestionnaireChoice,
+  QuestionnaireChoiceDescription,
+  QuestionnaireChoices,
+  QuestionnaireError,
+  QuestionnaireItem,
+  QuestionnaireSubmit,
+} from "@workspace/ui/components/questionnaire"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation } from "convex/react"
@@ -24,11 +27,12 @@ import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { DisclosureToggle } from "@/components/disclosure-toggle"
+import { FrameCard, FrameCardSection } from "@/components/frame-card"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useEffect, useId, useRef, useState } from "react"
 import { assessmentErrorMessage } from "@/lib/assessment-error"
 import { SPRING } from "@/lib/motion"
-import { RATE_NEXT_KBD_CLASS } from "@/lib/rate-column"
+import { RATE_NEXT_KBD_CLASS, RATE_PREVIOUS_SLOT } from "@/lib/rate-column"
 import { toast } from "@/lib/toast"
 
 export interface StepperCriterion {
@@ -172,29 +176,37 @@ export function RatingStepper({
 
   // Keyboard shortcuts for the blind rating flow: press a digit (an anchor
   // step, 1-5, or 0 on a workingConditions criterion) to choose it, Enter to
-  // save and continue. Editable fields (the motivation textarea)
-  // keep their own typing, and Enter on a focused button (Next/Back/anchor)
-  // is left to that button's native activation so we never advance twice.
-  // The Next button carries the matching Enter hint (Kbd).
+  // save and continue. This handler is the flow's single keyboard authority:
+  // the option list's own numbering runs 1..n over the rendered options, which
+  // cannot express the 0 step, so the digit shown on each option's keycap is
+  // the step itself and this is what listens for it.
+  //
+  // Editable fields (the motivation textarea) keep their own typing. An
+  // option's radio is NOT one of them: it is a control, and the digit that
+  // picks an option must keep working once one holds focus. Enter is left to
+  // whatever already answers it: a focused button activates natively, and a
+  // focused option hands its form the same submit. The primary button carries
+  // the matching Enter hint (Kbd).
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       const keys = keysRef.current
       if (keys === null) return
       if (event.ctrlKey || event.metaKey || event.altKey) return
       const target = event.target
+      const element = target instanceof HTMLElement ? target : null
       if (
-        target instanceof HTMLElement &&
-        (target.isContentEditable ||
-          target.tagName === "INPUT" ||
-          target.tagName === "TEXTAREA" ||
-          target.tagName === "SELECT")
+        element !== null &&
+        (element.isContentEditable ||
+          element.tagName === "TEXTAREA" ||
+          element.tagName === "SELECT" ||
+          (element instanceof HTMLInputElement && element.type !== "radio"))
       ) {
         return
       }
       if (event.key === "Enter") {
         if (
-          target instanceof HTMLElement &&
-          target.closest("button") !== null
+          element !== null &&
+          (element.closest("button") !== null || element.tagName === "INPUT")
         ) {
           return
         }
@@ -327,14 +339,25 @@ export function RatingStepper({
     },
   }
 
+  const lastStep = index === criteria.length - 1
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <span className="flex items-center gap-1.5 text-muted-foreground text-sm">
+    // The step IS a questionnaire item: the design system's own question
+    // anatomy carries the option list, its checked state and the submit, and
+    // this flow keeps the parts it owns itself (which criterion is on screen,
+    // and the save that has to land before the next one opens).
+    <Questionnaire
+      onSubmit={(event) => {
+        event.preventDefault()
+        void handleNext()
+      }}
+    >
+      {/* Where the reader is, above the step rather than inside it: the
+          position on the left, the rail on the right. min-h-5 holds the row
+          at one text line so nothing shifts between steps. */}
+      <div className="flex min-h-5 items-center justify-between gap-3">
+        <span className="text-muted-foreground text-sm">
           {t("progress", { current: index + 1, total: criteria.length })}
-          <HelpMorphButton label={tHelp("blindRatingLabel")}>
-            {tHelp("blindRatingBody")}
-          </HelpMorphButton>
         </span>
         <div className="flex gap-1" aria-hidden>
           {criteria.map((criterion, dotIndex) => (
@@ -362,77 +385,77 @@ export function RatingStepper({
           animate="center"
           exit="exit"
         >
-          <Card>
-            <CardHeader>
-              <CardTitle>{current.name}</CardTitle>
-              <CardDescription>{current.question}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Collapsible measures/notMeasures context: the trigger is
-                  always present (no layout shift from hover/state), and
-                  expanding animates new content below it, a legitimate enter
-                  (docs/ui-animation.md). */}
-              <div>
-                <DisclosureToggle
-                  label={t("contextToggleLabel")}
-                  open={contextOpen}
-                  panelId={contextPanelId}
-                  onToggle={() =>
-                    setContextOpenFor((openFor) =>
-                      openFor === current.criterionId
-                        ? null
-                        : current.criterionId
-                    )
-                  }
-                />
-                <AnimatePresence initial={false}>
-                  {contextOpen && (
-                    <motion.div
-                      id={contextPanelId}
-                      key="context"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={SPRING}
-                      className="overflow-hidden"
+          <QuestionnaireItem name={current.criterionId}>
+            <FrameCard
+              title={current.name}
+              titleLevel="h3"
+              description={current.question}
+              extra={
+                <HelpMorphButton label={tHelp("blindRatingLabel")}>
+                  {tHelp("blindRatingBody")}
+                </HelpMorphButton>
+              }
+              footer={
+                <div className="flex w-full flex-col gap-2">
+                  {failed && (
+                    <QuestionnaireError
+                      hidden={false}
+                      role="alert"
+                      className="mt-0"
                     >
-                      <div className="space-y-1.5 pt-2 text-muted-foreground text-sm leading-relaxed">
-                        <p>
-                          <span className="font-medium text-foreground">
-                            {`${t("measuresLabel")}: `}
-                          </span>
-                          {current.measures}
-                        </p>
-                        <p>
-                          <span className="font-medium text-foreground">
-                            {`${t("notMeasuresLabel")}: `}
-                          </span>
-                          {current.notMeasures}
-                        </p>
-                      </div>
-                    </motion.div>
+                      {t("saveError")}
+                    </QuestionnaireError>
                   )}
-                </AnimatePresence>
-              </div>
-
-              {/* The shared scale names itself before its steps: the same
-                  1-5 steps frame every criterion, and the criterion's own
-                  anchors say what each step means here.
-
-                  THE MEANINGS LIVE IN THE HELP, not in a disclosure of their
-                  own. They were a standing toggle beside this title, which
-                  made the scale the one concept on the surface explained in
-                  two places: a morph for what the scale IS and a panel for
-                  what its steps mean. The morph layer is where this app puts
-                  read-only depth, so the panel folds into it.
-
-                  Structured content rather than a prose wall, on the zone
-                  morph's precedent (a bolded name, then its lines). Spans
-                  rather than divs because the panel wraps its children in a
-                  paragraph. */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-1.5">
-                  <h3 className="font-medium text-sm">{t("scale.title")}</h3>
+                  {completeError !== null && (
+                    <QuestionnaireError
+                      hidden={false}
+                      role="alert"
+                      className="mt-0"
+                    >
+                      {completeError}
+                    </QuestionnaireError>
+                  )}
+                  {/* What the ending DOES, in one sentence, where the
+                        ending is. It is not framing prose: it states the
+                        consequence of the press the reader is about to make,
+                        on the one step that carries it, which is the guidance
+                        the flow owes them. The sentence used to live on a
+                        completion screen of its own; the screen went, the
+                        sentence had to stay. */}
+                  {lastStep && (
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {t("completeExplanation")}
+                    </p>
+                  )}
+                  <QuestionnaireActions>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={index === 0 || pending}
+                      onClick={handleBack}
+                      className={RATE_PREVIOUS_SLOT}
+                    >
+                      {t("backCta")}
+                    </Button>
+                    <QuestionnaireSubmit
+                      disabled={selected === undefined || pending}
+                    >
+                      {lastStep ? t("completeCta") : t("nextCta")}
+                      <Kbd
+                        data-icon="inline-end"
+                        aria-hidden="true"
+                        className={RATE_NEXT_KBD_CLASS}
+                      >
+                        ⏎
+                      </Kbd>
+                    </QuestionnaireSubmit>
+                  </QuestionnaireActions>
+                </div>
+              }
+            >
+              <FrameCardSection
+                title={t("scale.title")}
+                help={
                   <HelpMorphButton label={tHelp("sharedScaleLabel")}>
                     <span className="space-y-2">
                       <span className="block">{tHelp("sharedScaleBody")}</span>
@@ -453,73 +476,120 @@ export function RatingStepper({
                       </span>
                     </span>
                   </HelpMorphButton>
+                }
+              >
+                {/* Collapsible measures/notMeasures context: the trigger is
+                      always present (no layout shift from hover/state), and
+                      expanding animates new content below it, a legitimate
+                      enter (docs/ui-animation.md). It sits above the options
+                      because it is what a reader needs in order to pick
+                      one. */}
+                <div>
+                  <DisclosureToggle
+                    label={t("contextToggleLabel")}
+                    open={contextOpen}
+                    panelId={contextPanelId}
+                    onToggle={() =>
+                      setContextOpenFor((openFor) =>
+                        openFor === current.criterionId
+                          ? null
+                          : current.criterionId
+                      )
+                    }
+                  />
+                  <AnimatePresence initial={false}>
+                    {contextOpen && (
+                      <motion.div
+                        id={contextPanelId}
+                        key="context"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={SPRING}
+                        className="overflow-hidden"
+                      >
+                        <div className="space-y-1.5 pt-2 text-muted-foreground text-sm leading-relaxed">
+                          <p>
+                            <span className="font-medium text-foreground">
+                              {`${t("measuresLabel")}: `}
+                            </span>
+                            {current.measures}
+                          </p>
+                          <p>
+                            <span className="font-medium text-foreground">
+                              {`${t("notMeasuresLabel")}: `}
+                            </span>
+                            {current.notMeasures}
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
-                <div
+                {/* The step's number leads its option as the KEY it is: the
+                      digit was already printed there, and a keycap says that
+                      pressing it picks the option. It is the step itself, not
+                      a position in the list, so it stays truthful for the 0
+                      an active workingConditions criterion adds.
+
+                      The scale's own name is the option's label and the
+                      criterion's anchor its description: the app's
+                      scanned-label treatment (uppercase, text-xs, tracked) is
+                      the reading floor's own eyebrow exception. */}
+                <QuestionnaireChoices
                   role="radiogroup"
                   aria-label={t("anchorGroupLabel", { name: current.name })}
-                  className="space-y-2"
+                  aria-describedby={
+                    isWorkingConditions ? notCoveredExplanationId : undefined
+                  }
                 >
                   {displayAnchors.map((anchor) => {
-                    const isSelected = selected === anchor.step
-                    const isNotCovered = anchor.step === NOT_COVERED
                     const scaleStep = scaleSteps.find(
                       (entry) => entry.step === anchor.step
                     )
                     return (
-                      // biome-ignore lint/a11y/useSemanticElements: the anchor text is the option label; full-width styled cards with rich text use the radiogroup/radio ARIA pattern, not a native radio input
-                      <button
+                      <QuestionnaireChoice
                         key={anchor.step}
-                        type="button"
-                        role="radio"
-                        aria-checked={isSelected}
-                        aria-describedby={
-                          isNotCovered ? notCoveredExplanationId : undefined
-                        }
+                        value={String(anchor.step)}
+                        checked={selected === anchor.step}
+                        // The app tints its selected choice with the brand
+                        // rather than the vendored neutral, in the same
+                        // wash the medallion and the status chips use (the
+                        // dark step is heavier because the unselected
+                        // options already carry a pale wash there).
+                        className="data-checked:bg-brand/10 dark:data-checked:bg-brand/20"
                         // Frozen while the step is saving, so a click cannot
                         // change the selection out from under the in-flight
-                        // write. Deliberately no disabled styling: the save is
-                        // brief, and greying every anchor for it would flash.
-                        // enabled: keeps the hover cue off while locked, so a
-                        // locked anchor never looks clickable.
+                        // write.
                         disabled={pending}
-                        className={cn(
-                          "flex w-full items-baseline gap-3 rounded-md border p-3 text-left text-sm transition-colors",
-                          isSelected
-                            ? "border-brand bg-brand/5"
-                            : "enabled:hover:bg-muted/50"
-                        )}
-                        onClick={() =>
+                        onChange={() =>
                           setValues((currentValues) => ({
                             ...currentValues,
                             [current.criterionId]: anchor.step,
                           }))
                         }
                       >
-                        <span
-                          className={cn(
-                            "font-medium tabular-nums",
-                            isSelected ? "text-brand" : "text-muted-foreground"
-                          )}
-                        >
-                          {anchor.step}
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          {/* The app's scanned-label treatment: uppercase,
-                              text-xs, tracked, which is the reading floor's
-                              own eyebrow exception. Written out here like the
-                              app's other scanned labels (the approval card,
-                              the compliance dialog, the level-rules panel);
-                              it briefly lived in a shared constant beside the
-                              stage eyebrows, and outlived them. */}
-                          {scaleStep === undefined ? null : (
-                            <span className="mb-0.5 block font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+                        <span className="flex items-center gap-2">
+                          <Kbd>{anchor.step}</Kbd>
+                          {scaleStep === undefined ? (
+                            <span>{anchor.text}</span>
+                          ) : (
+                            <span className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
                               {scaleStep.name}
                             </span>
                           )}
-                          <span className="block">{anchor.text}</span>
                         </span>
-                      </button>
+                        {scaleStep === undefined ? null : (
+                          // The card's own ink, not the vendored muted
+                          // description: the anchor is the sentence the
+                          // reader chooses BY, and muted on the selected
+                          // brand wash measures 4.1:1.
+                          <QuestionnaireChoiceDescription className="text-foreground">
+                            {anchor.text}
+                          </QuestionnaireChoiceDescription>
+                        )}
+                      </QuestionnaireChoice>
                     )
                   })}
                   {isWorkingConditions ? (
@@ -530,14 +600,14 @@ export function RatingStepper({
                       {t("notCoveredExplanation")}
                     </p>
                   ) : null}
-                </div>
-              </div>
+                </QuestionnaireChoices>
+              </FrameCardSection>
 
-              <div className="space-y-2">
-                {/* The rule stands beside the label BEFORE any step is chosen:
-                    enforced only as an error after the fact, it read as the
-                    app demanding motivations at random, because which steps
-                    require one was nowhere on the surface. */}
+              <FrameCardSection className="space-y-2">
+                {/* The rule stands beside the label BEFORE any step is
+                      chosen: enforced only as an error after the fact, it
+                      read as the app demanding motivations at random, because
+                      which steps require one was nowhere on the surface. */}
                 <div className="flex flex-wrap items-baseline gap-x-2">
                   <Label htmlFor="rating-motivation">
                     {t("motivationLabel")}
@@ -570,70 +640,20 @@ export function RatingStepper({
                   }
                 />
                 {showMotivationError && motivationMissing && (
-                  <p
+                  <QuestionnaireError
                     id={motivationErrorId}
+                    hidden={false}
                     role="alert"
-                    className="text-destructive text-sm"
+                    className="mt-0"
                   >
                     {t("motivationRequiredError")}
-                  </p>
+                  </QuestionnaireError>
                 )}
-              </div>
-
-              {failed && (
-                <p role="alert" className="text-destructive text-sm">
-                  {t("saveError")}
-                </p>
-              )}
-
-              {completeError !== null && (
-                <p role="alert" className="text-destructive text-sm">
-                  {completeError}
-                </p>
-              )}
-
-              {/* What the ending DOES, in one sentence, where the ending is.
-                  It is not framing prose: it states the consequence of the
-                  press the reader is about to make, on the one step that
-                  carries it, which is the guidance the flow owes them. The
-                  sentence used to live on a completion screen of its own; the
-                  screen went, the sentence had to stay. */}
-              {index === criteria.length - 1 && (
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {t("completeExplanation")}
-                </p>
-              )}
-
-              <div className="flex items-center justify-between">
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={index === 0 || pending}
-                  onClick={handleBack}
-                >
-                  {t("backCta")}
-                </Button>
-                <Button
-                  type="button"
-                  disabled={selected === undefined || pending}
-                  onClick={handleNext}
-                >
-                  {index === criteria.length - 1
-                    ? t("completeCta")
-                    : t("nextCta")}
-                  <Kbd
-                    data-icon="inline-end"
-                    aria-hidden="true"
-                    className={RATE_NEXT_KBD_CLASS}
-                  >
-                    ⏎
-                  </Kbd>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </FrameCardSection>
+            </FrameCard>
+          </QuestionnaireItem>
         </motion.div>
       </AnimatePresence>
-    </div>
+    </Questionnaire>
   )
 }

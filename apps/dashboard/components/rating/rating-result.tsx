@@ -2,21 +2,17 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
+import type { ReactNode } from "react"
 import {
   CalibratedBadge,
   CompletedIncompleteNotice,
   MethodDriftBadge,
 } from "@/components/assessment-status"
+import { FrameCard, FrameCardSection } from "@/components/frame-card"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SPRING } from "@/lib/motion"
 
@@ -26,9 +22,16 @@ import { SPRING } from "@/lib/motion"
 export function RatingResult({
   orgId,
   roleId,
+  footer,
 }: {
   orgId: string
   roleId: string
+  // The reveal's onward row (the next role, re-evaluate, back to the role),
+  // in the frame's foot where every surface in the app keeps its actions.
+  // Rendered in every state, including the two that show no result: the way
+  // out of the reveal must not disappear while a query resolves or when a
+  // later criterion leaves the result incomplete.
+  footer?: ReactNode
 }) {
   const t = useTranslations("dashboard.rating.result")
   const tHelp = useTranslations("dashboard.help")
@@ -59,9 +62,12 @@ export function RatingResult({
     !result.completed
   ) {
     return (
-      <main className="flex items-center justify-center p-6">
-        <Spinner aria-label={t("computing")} />
-      </main>
+      <div className="flex w-full flex-col gap-4">
+        <main className="flex items-center justify-center p-6">
+          <Spinner aria-label={t("computing")} />
+        </main>
+        {footer}
+      </div>
     )
   }
 
@@ -74,9 +80,12 @@ export function RatingResult({
   // computation that will not start until the new criterion is rated.
   if (!result.complete || result.level === null) {
     return (
-      <main className="w-full">
-        <CompletedIncompleteNotice />
-      </main>
+      <div className="flex w-full flex-col gap-4">
+        <main className="w-full">
+          <CompletedIncompleteNotice />
+        </main>
+        {footer}
+      </div>
     )
   }
 
@@ -100,10 +109,10 @@ export function RatingResult({
         animate={{ opacity: 1, y: 0 }}
         transition={SPRING}
       >
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex flex-wrap items-center gap-2">
-              {t("heading")}
+        <FrameCard
+          title={t("heading")}
+          extra={
+            <>
               {/* The same status vocabulary the role page and the sheet use.
                   The reveal is where a result is read most closely, so a role
                   rated under a superseded method has to say so here too. */}
@@ -112,9 +121,11 @@ export function RatingResult({
               <HelpMorphButton label={tHelp("scoreLabel")}>
                 {tHelp("scoreBody")}
               </HelpMorphButton>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
+            </>
+          }
+          footer={footer}
+        >
+          <FrameCardSection className="space-y-6">
             <div className="flex items-end gap-8">
               <div>
                 <p className="text-muted-foreground text-sm">
@@ -159,8 +170,8 @@ export function RatingResult({
                 )}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </FrameCardSection>
+        </FrameCard>
       </motion.div>
     </div>
   )

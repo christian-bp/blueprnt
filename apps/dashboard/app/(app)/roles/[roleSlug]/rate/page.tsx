@@ -2,7 +2,6 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
-import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 import {
   Empty,
   EmptyDescription,
@@ -10,6 +9,7 @@ import {
   EmptyTitle,
 } from "@workspace/ui/components/empty"
 import { Kbd } from "@workspace/ui/components/kbd"
+import { QuestionnaireActions } from "@workspace/ui/components/questionnaire"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
@@ -17,9 +17,17 @@ import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { use } from "react"
+import { DisclosureToggle } from "@/components/disclosure-toggle"
+import { FrameCard, FrameCardSection } from "@/components/frame-card"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import { PageBreadcrumbRow } from "@/components/page-breadcrumb-row"
-import { RATE_COLUMN, RATE_NEXT_KBD_CLASS } from "@/lib/rate-column"
+import {
+  RATE_COLUMN,
+  RATE_NEXT_KBD_CLASS,
+  RATE_PREVIOUS_SLOT,
+  RATE_PRIMARY_SLOT,
+} from "@/lib/rate-column"
 import { resolveAnchorSteps } from "@/lib/anchors"
 import { groupByFamily } from "@/lib/role-groups"
 import { usePageTitle } from "@/hooks/use-page-title"
@@ -34,6 +42,7 @@ export default function RatePage(props: {
   const { roleSlug } = use(props.params)
   const t = useTranslations("dashboard.rating")
   const tNav = useTranslations("dashboard.nav")
+  const tHelp = useTranslations("dashboard.help")
   const tDetail = useTranslations("dashboard.roles.detail")
   const { orgId } = useOrganization()
   const locale = useLocale()
@@ -73,9 +82,10 @@ export default function RatePage(props: {
   usePageTitle([role?.title, t("title")])
 
   if (role === undefined || model === undefined) {
-    // Content-shaped loading state mirroring the stepper's layout: heading,
-    // the step-progress line, then the criterion card with its 1-5 anchor
-    // options and the nav row, so nothing reflows when the data arrives.
+    // Content-shaped loading state mirroring the stepper's own frame: the
+    // real title of the shared scale, the real context toggle and the real
+    // nav row, with bars only where the criterion's own words go, so nothing
+    // reflows when the data arrives.
     return (
       <div className={RATE_COLUMN}>
         {/* The ancestor crumbs are static i18n text; only the role title is
@@ -87,46 +97,65 @@ export default function RatePage(props: {
             { label: t("title") },
           ]}
         />
-        <div className="space-y-4">
-          {/* The role-title heading's own silhouette (text-lg line box). */}
-          <Skeleton className="h-7 w-56 max-w-full" />
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-4 w-28" />
-            <Skeleton className="h-1.5 w-20 rounded-full" />
-          </div>
-          <Card>
-            <CardHeader className="space-y-2">
-              <Skeleton className="h-5 w-48 max-w-full" />
-              <Skeleton className="h-4 w-3/4" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                {[1, 2, 3, 4, 5].map((step) => (
-                  <Skeleton key={step} className="h-12 w-full rounded-md" />
-                ))}
-              </div>
-              {/* The real nav buttons (static i18n chrome). Disabled is the
-                  truthful state here, not a loading effect: the loaded
-                  stepper opens with Back disabled on step 1 and Next
-                  disabled until an anchor is picked. */}
-              <div className="flex items-center justify-between">
-                <Button type="button" variant="outline" disabled>
-                  {t("backCta")}
-                </Button>
-                <Button type="button" disabled>
-                  {t("nextCta")}
-                  <Kbd
-                    data-icon="inline-end"
-                    aria-hidden="true"
-                    className={RATE_NEXT_KBD_CLASS}
-                  >
-                    ⏎
-                  </Kbd>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        {/* The role-title heading's own silhouette (text-lg line box). */}
+        <Skeleton className="h-7 w-56 max-w-full" />
+        {/* The position row the flow opens with: how many criteria there are
+            is data, so both its halves are bars. */}
+        <div className="flex min-h-5 items-center justify-between gap-3">
+          <Skeleton className="h-4 w-28" />
+          <Skeleton className="h-1.5 w-20 rounded-full" />
         </div>
+        <FrameCard
+          title={<Skeleton className="h-5 w-48 max-w-full" />}
+          titleLevel="h3"
+          description={<Skeleton className="h-4 w-3/4" />}
+          extra={
+            <HelpMorphButton label={tHelp("blindRatingLabel")}>
+              {tHelp("blindRatingBody")}
+            </HelpMorphButton>
+          }
+          footer={
+            // The real nav buttons (static i18n chrome). Disabled is the
+            // truthful state here, not a loading effect: the loaded stepper
+            // opens with Back disabled on step 1 and the primary disabled
+            // until an anchor is picked.
+            <QuestionnaireActions>
+              <Button
+                type="button"
+                variant="outline"
+                disabled
+                className={RATE_PREVIOUS_SLOT}
+              >
+                {t("backCta")}
+              </Button>
+              <Button type="button" disabled className={RATE_PRIMARY_SLOT}>
+                {t("nextCta")}
+                <Kbd
+                  data-icon="inline-end"
+                  aria-hidden="true"
+                  className={RATE_NEXT_KBD_CLASS}
+                >
+                  ⏎
+                </Kbd>
+              </Button>
+            </QuestionnaireActions>
+          }
+        >
+          <FrameCardSection title={t("scale.title")}>
+            <div>
+              <DisclosureToggle
+                label={t("contextToggleLabel")}
+                open={false}
+                onToggle={() => undefined}
+              />
+            </div>
+            <div className="grid gap-2">
+              {[1, 2, 3, 4, 5].map((step) => (
+                <Skeleton key={step} className="h-14 w-full rounded-lg" />
+              ))}
+            </div>
+          </FrameCardSection>
+        </FrameCard>
       </div>
     )
   }
@@ -279,30 +308,35 @@ export default function RatePage(props: {
           <p className="text-muted-foreground text-sm">
             {t("alreadyCompletedExplanation")}
           </p>
-          <RatingResult orgId={orgId} roleId={role.roleId} />
-          <div className="flex flex-wrap items-center gap-2">
-            {/* The session's continuation leads the row, filled: rating an
-                org is a run of these flows, and the run's next step should
-                not cost a register round-trip. Silent when nothing ratable
-                remains. */}
-            {nextRole !== undefined && (
-              <Link
-                href={`/roles/${nextRole.slug}/rate`}
-                className={cn(buttonVariants(), "max-w-full")}
-              >
-                <span className="truncate">
-                  {t("result.nextRoleCta", { title: nextRole.title })}
-                </span>
-              </Link>
-            )}
-            <ReopenAssessmentButton orgId={orgId} roleId={role.roleId} />
-            <Link
-              href={`/roles/${role.slug}`}
-              className={cn(buttonVariants({ variant: "outline" }))}
-            >
-              {t("result.backToRole")}
-            </Link>
-          </div>
+          <RatingResult
+            orgId={orgId}
+            roleId={role.roleId}
+            footer={
+              <div className="flex flex-wrap items-center gap-2">
+                {/* The session's continuation leads the row, filled: rating an
+                    org is a run of these flows, and the run's next step should
+                    not cost a register round-trip. Silent when nothing ratable
+                    remains. */}
+                {nextRole !== undefined && (
+                  <Link
+                    href={`/roles/${nextRole.slug}/rate`}
+                    className={cn(buttonVariants(), "max-w-full")}
+                  >
+                    <span className="truncate">
+                      {t("result.nextRoleCta", { title: nextRole.title })}
+                    </span>
+                  </Link>
+                )}
+                <ReopenAssessmentButton orgId={orgId} roleId={role.roleId} />
+                <Link
+                  href={`/roles/${role.slug}`}
+                  className={cn(buttonVariants({ variant: "outline" }))}
+                >
+                  {t("result.backToRole")}
+                </Link>
+              </div>
+            }
+          />
         </div>
       </div>
     )

@@ -9,6 +9,20 @@
 export const RATE_NEXT_KBD_CLASS =
   "h-4 min-w-4 translate-x-0.5 bg-primary-foreground/20 px-1 text-primary-foreground"
 
+// Where the two controls sit in the questionnaire's action row, shared so the
+// live step and the loading state's stand-in cannot drift.
+//
+// The row is the design system's own QuestionnaireActions grid, but its
+// Previous button shows itself only for a multi-item form, which this flow is
+// not (it owns one item at a time and its own step index). The back control is
+// therefore an ordinary Button wearing Previous's own slot; the primary
+// control is the questionnaire's Submit, which already carries the second of
+// these, so only the loading state's stand-in has to name it.
+export const RATE_PREVIOUS_SLOT =
+  "col-start-1 row-start-1 min-h-11 justify-self-start sm:min-h-0"
+export const RATE_PRIMARY_SLOT =
+  "col-start-3 row-start-1 min-h-11 justify-self-end sm:min-h-0"
+
 // The rating route's reading column.
 //
 // ONE container for the whole route, breadcrumb row included, because the two

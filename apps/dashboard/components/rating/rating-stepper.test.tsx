@@ -118,6 +118,17 @@ describe("RatingStepper", () => {
     cleanup()
   })
 
+  // Each option is the design system's questionnaire choice: a label wrapping
+  // a real radio input. An option is therefore reached by its radio role and
+  // its state read from that input's own `checked`, while what the option
+  // PRINTS is read from the label box around it.
+  const anchor = (text: string) =>
+    screen.getByRole("radio", {
+      name: (accessibleName: string) => accessibleName.includes(text),
+    }) as HTMLInputElement
+  const anchorBox = (text: string) =>
+    screen.getByText(text).closest("label") as HTMLElement
+
   // OPENS AT THE BEGINNING, whatever is already answered (owner ruling
   // 2026-08-25). It used to resume at the first gap, and at the LAST
   // criterion once everything was answered, which showed a reader the final
@@ -130,12 +141,7 @@ describe("RatingStepper", () => {
     expect(screen.queryByText("Risk")).toBeNull()
     // And it opens with the saved answer already chosen, so walking forward
     // over answered ground costs a press rather than a re-read.
-    expect(
-      screen
-        .getByText("Scope anchor 2")
-        .closest("button")
-        ?.getAttribute("aria-checked")
-    ).toBe("true")
+    expect(anchor("Scope anchor 2").checked).toBe(true)
   })
 
   it("opens at the first criterion when every criterion is answered", () => {
@@ -220,8 +226,7 @@ describe("RatingStepper", () => {
     renderStepper()
     for (const step of [1, 2, 3, 4, 5] as const) {
       const name = SCALE[`${step}`].name
-      const option = screen.getByText(`Scope anchor ${step}`).closest("button")
-      expect(option?.textContent).toContain(name)
+      expect(anchorBox(`Scope anchor ${step}`).textContent).toContain(name)
     }
   })
 
@@ -237,10 +242,9 @@ describe("RatingStepper", () => {
   it("renders the library's own grade names, not a second copy", () => {
     renderStepper()
     for (const step of [1, 2, 3, 4, 5] as const) {
-      const option = screen
-        .getByText(`Scope anchor ${step}`)
-        .closest("button") as HTMLElement
-      expect(option.textContent).toContain(SCALE[`${step}`].name)
+      expect(anchorBox(`Scope anchor ${step}`).textContent).toContain(
+        SCALE[`${step}`].name
+      )
     }
     // And the message file no longer carries them at all.
     const scale = messages.dashboard.rating.scale as Record<string, unknown>
@@ -249,11 +253,9 @@ describe("RatingStepper", () => {
 
   it("leaves the not-covered option ungraded", () => {
     renderStepper({ criteria: WC_CRITERIA })
-    const notCovered = screen
-      .getByText(labels.notCoveredOption)
-      .closest("button")
+    const notCovered = anchorBox(labels.notCoveredOption)
     for (const step of [1, 2, 3, 4, 5] as const) {
-      expect(notCovered?.textContent).not.toContain(SCALE[`${step}`].name)
+      expect(notCovered.textContent).not.toContain(SCALE[`${step}`].name)
     }
   })
 
@@ -301,7 +303,12 @@ describe("RatingStepper", () => {
   // while staying the app's Kbd rather than a hand-rolled span.
   it("wears the enter hint smaller and in the button's own ink", () => {
     renderStepper()
-    const cap = document.querySelector('[data-slot="kbd"]') as HTMLElement
+    // Read from the primary button itself: every option now carries a keycap
+    // of its own for the digit that picks it, so the first one in the
+    // document is no longer this hint.
+    const cap = screen
+      .getByRole("button", { name: labels.nextCta })
+      .querySelector('[data-slot="kbd"]') as HTMLElement
     expect(cap).not.toBeNull()
     expect(cap.tagName).toBe("KBD")
     // The shared class, token by token on the rendered element: sized down
@@ -336,12 +343,7 @@ describe("RatingStepper", () => {
   it("selects an anchor by its number key and advances on Enter", async () => {
     renderStepper()
     fireEvent.keyDown(document.body, { key: "3" })
-    expect(
-      screen
-        .getByText("Scope anchor 3")
-        .closest("button")
-        ?.getAttribute("aria-checked")
-    ).toBe("true")
+    expect(anchor("Scope anchor 3").checked).toBe(true)
     fireEvent.keyDown(document.body, { key: "Enter" })
     await waitFor(() => {
       expect(setRatingMock).toHaveBeenCalledWith({
@@ -361,17 +363,24 @@ describe("RatingStepper", () => {
     fireEvent.keyDown(screen.getByLabelText(labels.motivationLabel), {
       key: "3",
     })
-    expect(
-      screen
-        .getByText("Scope anchor 3")
-        .closest("button")
-        ?.getAttribute("aria-checked")
-    ).toBe("false")
+    expect(anchor("Scope anchor 3").checked).toBe(false)
     expect(
       screen
         .getByRole("button", { name: labels.nextCta })
         .hasAttribute("disabled")
     ).toBe(true)
+  })
+
+  // An option is a real radio, and a focused radio must not swallow the digit
+  // shortcuts the way a text field does: picking one option leaves focus on
+  // it, and the next digit still has to reach the flow.
+  it("still selects by number key while an option holds focus", () => {
+    renderStepper()
+    const chosen = anchor("Scope anchor 2")
+    chosen.focus()
+    fireEvent.keyDown(chosen, { key: "4" })
+    expect(anchor("Scope anchor 4").checked).toBe(true)
+    expect(anchor("Scope anchor 2").checked).toBe(false)
   })
 
   it("ignores Enter until an anchor is selected", () => {
@@ -422,6 +431,20 @@ describe("RatingStepper", () => {
   it("states the motivation rule beside the field before any step is chosen", () => {
     renderStepper()
     expect(screen.getByText(labels.motivationRule)).toBeDefined()
+  })
+
+  // The error lines are the design system's questionnaire error, whose own
+  // visibility follows the item's validity state. This surface supplies that
+  // state itself (a missing motivation is not "the chosen option is wrong",
+  // and marking the item invalid would outline every option in destructive
+  // ink), so a rendered line has to actually show.
+  it("shows the motivation-required message rather than rendering it hidden", () => {
+    renderStepper()
+    fireEvent.click(screen.getByText("Scope anchor 4"))
+    fireEvent.click(screen.getByRole("button", { name: labels.nextCta }))
+    const message = screen.getByText(labels.motivationRequiredError)
+    expect(message.hasAttribute("hidden")).toBe(false)
+    expect(message.getAttribute("role")).toBe("alert")
   })
 
   it("lets 1, 4 and 5 advance once a motivation is given", async () => {
@@ -550,10 +573,6 @@ describe("RatingStepper", () => {
     return () => release()
   }
 
-  function anchor(name: string) {
-    return screen.getByText(name).closest("button") as HTMLButtonElement
-  }
-
   it("ignores a number key pressed while the step is saving", async () => {
     const release = holdSave()
     renderStepper()
@@ -565,8 +584,8 @@ describe("RatingStepper", () => {
 
     // Mid-save: the digit must not move the selection.
     fireEvent.keyDown(document.body, { key: "4" })
-    expect(anchor("Scope anchor 3").getAttribute("aria-checked")).toBe("true")
-    expect(anchor("Scope anchor 4").getAttribute("aria-checked")).toBe("false")
+    expect(anchor("Scope anchor 3").checked).toBe(true)
+    expect(anchor("Scope anchor 4").checked).toBe(false)
 
     release()
     await waitFor(() => {
@@ -599,8 +618,8 @@ describe("RatingStepper", () => {
     await waitFor(() => {
       expect(screen.getByText("Scope")).toBeDefined()
     })
-    expect(anchor("Scope anchor 3").getAttribute("aria-checked")).toBe("true")
-    expect(anchor("Scope anchor 4").getAttribute("aria-checked")).toBe("false")
+    expect(anchor("Scope anchor 3").checked).toBe(true)
+    expect(anchor("Scope anchor 4").checked).toBe(false)
   })
 
   it("ignores an anchor click while the step is saving", async () => {
@@ -615,8 +634,8 @@ describe("RatingStepper", () => {
     // The anchors are disabled mid-save, so the click cannot land.
     expect(anchor("Scope anchor 4").hasAttribute("disabled")).toBe(true)
     fireEvent.click(anchor("Scope anchor 4"))
-    expect(anchor("Scope anchor 3").getAttribute("aria-checked")).toBe("true")
-    expect(anchor("Scope anchor 4").getAttribute("aria-checked")).toBe("false")
+    expect(anchor("Scope anchor 3").checked).toBe(true)
+    expect(anchor("Scope anchor 4").checked).toBe(false)
 
     release()
     await waitFor(() => {
