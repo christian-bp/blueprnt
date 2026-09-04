@@ -9,6 +9,7 @@ import {
   EmptyTitle,
 } from "@workspace/ui/components/empty"
 import { Kbd } from "@workspace/ui/components/kbd"
+import { Label } from "@workspace/ui/components/label"
 import { QuestionnaireActions } from "@workspace/ui/components/questionnaire"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Spinner } from "@workspace/ui/components/spinner"
@@ -141,7 +142,18 @@ export default function RatePage(props: {
             </QuestionnaireActions>
           }
         >
-          <FrameCardSection title={t("scale.title")}>
+          {/* Both of the step's panels, at their real sizes: the loaded step
+              carries the motivation field under the scale, and standing in
+              with the scale alone dropped the foot's own row by the height of
+              that panel the moment the criteria arrived. */}
+          <FrameCardSection
+            title={t("scale.title")}
+            help={
+              <HelpMorphButton label={tHelp("sharedScaleLabel")}>
+                {tHelp("sharedScaleBody")}
+              </HelpMorphButton>
+            }
+          >
             <div>
               <DisclosureToggle
                 label={t("contextToggleLabel")}
@@ -149,11 +161,27 @@ export default function RatePage(props: {
                 onToggle={() => undefined}
               />
             </div>
+            {/* An option card is its anchor text: two lines on most criteria,
+                three on the long ones, so its height is not knowable before
+                the model arrives. The bar stands at the height they average
+                to, which lands the panel within a line of where it settles
+                instead of a hundred pixels short. */}
             <div className="grid gap-2">
               {[1, 2, 3, 4, 5].map((step) => (
-                <Skeleton key={step} className="h-14 w-full rounded-lg" />
+                <Skeleton key={step} className="h-18 w-full rounded-lg" />
               ))}
             </div>
+          </FrameCardSection>
+          <FrameCardSection className="space-y-2">
+            {/* The label and its rule are static i18n text, so they render
+                for real; only the field the rater types into is a bar. */}
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <Label htmlFor="rating-motivation">{t("motivationLabel")}</Label>
+              <span className="text-muted-foreground text-sm">
+                {t("motivationRule")}
+              </span>
+            </div>
+            <Skeleton className="h-16 w-full rounded-md" />
           </FrameCardSection>
         </FrameCard>
       </div>
