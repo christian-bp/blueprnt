@@ -301,8 +301,10 @@ export function ReviewPraxisStep({
   const stepActions = {
     onPrevious,
     onSkip,
-    primaryLabel: continuationShown ? undefined : t("markDoneNext"),
-    onPrimary: continuationShown ? undefined : handleMarkDone,
+    // Same rule the group steps keep: the chapter's continuation stands in
+    // for this button only once the step itself is done.
+    primaryLabel: continuationShown && done ? undefined : t("markDoneNext"),
+    onPrimary: continuationShown && done ? undefined : handleMarkDone,
     primaryDisabled: locked || !canMarkDone,
     onUndo: done && !locked ? handleUndo : undefined,
   }

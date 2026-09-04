@@ -899,11 +899,34 @@ describe("ReviewGroupStep", () => {
   })
 
   // One control per destination: the section itself links on to the next
-  // chapter once this one is finished, so the step drops its own primary
-  // rather than putting two ways forward on one screen.
-  it("drops the primary action while the section is showing the chapter continuation", () => {
-    renderEqualWorkStep(GROUP_LESS, { continuationShown: true })
+  // chapter once this one is finished, so a step that is already done drops
+  // its own primary rather than putting two ways forward on one screen.
+  it("drops the primary action on a done step while the section shows the continuation", () => {
+    renderEqualWorkStep(GROUP_LESS, {
+      continuationShown: true,
+      analysis: {
+        scope: "equalWork",
+        groupKey: GROUP_LESS.key,
+        comparisonKey: null,
+        reasons: ["experience"],
+        note: "Documented already.",
+        done: true,
+        finding: null,
+      },
+    })
     expect(screen.queryByRole("button", { name: t.markDoneNext })).toBeNull()
+  })
+
+  // The chapter's progress counts only the groups that owe an explanation, so
+  // a group with nothing to explain can sit open and unmarked while the
+  // continuation is showing. Dropping its primary there left the step with no
+  // control anywhere that could mark it done.
+  it("keeps the primary action on an unmarked step even while the continuation shows", () => {
+    renderEqualWorkStep(GROUP_LESS, {
+      continuationShown: true,
+      requiresDocumentation: false,
+    })
+    expect(screen.getByRole("button", { name: t.markDoneNext })).toBeDefined()
   })
 
   it("keeps the primary action while the section is not showing the continuation", () => {

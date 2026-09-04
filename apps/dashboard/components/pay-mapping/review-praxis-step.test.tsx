@@ -427,11 +427,28 @@ describe("ReviewPraxisStep", () => {
   })
 
   // One control per destination: the section itself links on to the next
-  // chapter once this one is finished, so the step drops its own primary
-  // rather than putting two ways forward on one screen.
-  it("drops the primary action while the section is showing the chapter continuation", () => {
-    renderStep({ continuationShown: true })
+  // chapter once this one is finished, so a step that is already done drops
+  // its own primary rather than putting two ways forward on one screen. An
+  // unmarked step keeps it, or the reader is left with no way to mark it.
+  it("drops the primary action on a done step while the section shows the continuation", () => {
+    renderStep({
+      continuationShown: true,
+      analysis: {
+        scope: "praxis",
+        groupKey: AREA,
+        comparisonKey: null,
+        reasons: [],
+        note: "Documented already.",
+        done: true,
+        finding: "found",
+      },
+    })
     expect(screen.queryByRole("button", { name: t.markDoneNext })).toBeNull()
+  })
+
+  it("keeps the primary action on an unmarked step even while the continuation shows", () => {
+    renderStep({ continuationShown: true })
+    expect(screen.getByRole("button", { name: t.markDoneNext })).toBeDefined()
   })
 
   it("keeps the primary action while the section is not showing the continuation", () => {

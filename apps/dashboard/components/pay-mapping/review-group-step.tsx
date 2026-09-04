@@ -331,8 +331,13 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
             total: props.group.comparisons.length,
           })
         : undefined,
-    primaryLabel: continuationShown ? undefined : t("markDoneNext"),
-    onPrimary: continuationShown ? undefined : handleMarkDone,
+    // The chapter's own continuation replaces this button only for a step
+    // that is already done. A group the queue never listed (an equal-work
+    // group with nothing to explain) can still be open and unmarked while
+    // every flagged group around it is finished, and dropping its primary
+    // there left the step with no control that could mark it done at all.
+    primaryLabel: continuationShown && done ? undefined : t("markDoneNext"),
+    onPrimary: continuationShown && done ? undefined : handleMarkDone,
     primaryDisabled: locked || blocked,
     onUndo: done && !blocked && !locked ? handleUndo : undefined,
   }
