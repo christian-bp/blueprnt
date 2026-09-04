@@ -1,0 +1,27 @@
+apps/dashboard/components/pay-mapping/review-praxis-step.test.tsx
+  s_a5a0b8b07c8eab::t_6919544b65e6ac 430-445,449-451
+  s_a5a0b8b07c8eab::t_d88313ee495e47 452-453
+apps/dashboard/components/pay-mapping/review-group-step.tsx
+  s_a5a0b8b07c8eab::t_a339282214313b 334-340
+apps/dashboard/components/pay-mapping/review-praxis-step.tsx
+  s_a5a0b8b07c8eab::t_a339282214313b 304-307
+apps/dashboard/components/pay-mapping/review-group-step.test.tsx
+  s_a5a0b8b07c8eab::t_7f9d5ccefce3b0 902-916,920-929
+  s_a5a0b8b07c8eab::t_322615d9451e3b 930-931
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "f5bef75a5904730332a794abc52cd62a07dcf7ac",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
