@@ -1,0 +1,22 @@
+apps/dashboard/lib/rate-column.ts
+  s_a5a0b8b07c8eab::t_9b3f79e084fb84 9-17
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_a5a0b8b07c8eab::t_9b3f79e084fb84 578-580
+  s_a5a0b8b07c8eab::t_6f828e4f19d2a3 35-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "0aae283063d4e68980207798b1ddb39a6d41ed65",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
