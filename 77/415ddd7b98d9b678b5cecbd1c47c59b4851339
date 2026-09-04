@@ -1,0 +1,22 @@
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_a5a0b8b07c8eab::t_8c9b18b9992446 12
+  s_a5a0b8b07c8eab::t_c2b809f7a03cf3 145-156,175-184
+  s_a5a0b8b07c8eab::t_b1772f833f7e2a 164-168,171
+  s_a5a0b8b07c8eab::t_df0ed23b879b73 185
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "77415ddd7b98d9b678b5cecbd1c47c59b4851339",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
