@@ -1,0 +1,23 @@
+apps/dashboard/components/pdf/pdf-table.tsx
+  s_a5a0b8b07c8eab::t_81cec46634482d 5-10
+docs/adr/0030-tva-rapporter-fran-en-fryst-kartlaggning.md
+  s_a5a0b8b07c8eab::t_126817528f32f8 27
+apps/dashboard/components/pdf/branded-document.tsx
+  s_a5a0b8b07c8eab::t_f628ebf9f66cea 4-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "00e9e2dbc7b3056191a791e1c8364f497c48d885",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
