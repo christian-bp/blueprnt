@@ -51,7 +51,7 @@ En av metodens fyra fasta värderingsdimensioner (kompetens, ansträngning och k
 _Undvik_: Kriterium (ett kriterium tillhör en dimension, det är inte en)
 
 **Kriteriebibliotek** *(kod: Criteria library)* (ersatte Mall/Template, ADR-0021):
-Den kontrollerade katalogen med 21 kriterier som varje organisation väljer sina 6 till 8 ur, under dimensionstaken 2/2/3/1. Definition, ankare och kontrollfråga är bibliotekets och identiska i varje organisation. Det finns ingen förkonfigurerad startmodell längre: en ny organisation börjar tom och bygger genom att välja.
+Den kontrollerade katalogen med 22 kriterier som varje organisation väljer sina 6 till 8 ur, under dimensionstaken 2/2/3/1. Definition, ankare och kontrollfråga är bibliotekets och identiska i varje organisation. Det finns ingen förkonfigurerad startmodell längre: en ny organisation börjar tom och bygger genom att välja.
 _Undvik_: Mall (utgången term, ADR-0021)
 
 **Zon** *(kod: Zone)* (ADR-0022):

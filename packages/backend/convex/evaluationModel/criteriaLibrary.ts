@@ -11,13 +11,13 @@ import { criteriaLibraryContentFi } from "./criteriaLibrary.content.fi"
 import { clampLocale, type ProductContentLocale } from "./localize"
 
 // The controlled criteria library (the masterdokument's sections 7-10): a
-// menu of 21 defined criteria the method builder selects from. Structure
+// menu of 22 defined criteria the method builder selects from. Structure
 // lives here so it cannot drift between locales; prose lives in the
 // per-locale content modules. Source: docs/rollvardering-masterdokument.md.
 
-// Order follows the masterdokument's section order (7.1-7.5, 8.1-8.5,
-// 9.1-9.7, 10.1-10.4): 5 competence, 5 effort, 7 responsibility, 4 working
-// conditions, 21 total.
+// Order follows the masterdokument's section order (7.1-7.5, 8.1-8.6,
+// 9.1-9.7, 10.1-10.4): 5 competence, 6 effort, 7 responsibility, 4 working
+// conditions, 22 total.
 export const CRITERIA_LIBRARY_KEYS = [
   "knowledge-depth",
   "knowledge-breadth",
@@ -29,6 +29,7 @@ export const CRITERIA_LIBRARY_KEYS = [
   "communication-effort",
   "operational-intensity",
   "physical-sensory",
+  "cognitive-endurance",
   "scope-impact",
   "autonomy-mandate",
   "risk-consequence",
@@ -55,6 +56,7 @@ export const LIBRARY_DIMENSION: Record<CriteriaLibraryKey, DimensionKey> = {
   "communication-effort": "effort",
   "operational-intensity": "effort",
   "physical-sensory": "effort",
+  "cognitive-endurance": "effort",
   "scope-impact": "responsibility",
   "autonomy-mandate": "responsibility",
   "risk-consequence": "responsibility",
@@ -105,6 +107,9 @@ export const LIBRARY_OVERLAP_PAIRS: readonly (readonly [
   ["people-leadership", "resource-capacity"],
   ["scope-impact", "business-customer"],
   ["on-call", "irregularity-mobility"],
+  // The analytical work itself versus the sustained concentration and focus
+  // load it is carried out under over continuous periods.
+  ["analytical-effort", "cognitive-endurance"],
 ]
 
 // Picker chips per onboarding industry (masterdokument sections 7-10

@@ -2,7 +2,7 @@
 
 ## Syfte och avgränsning
 
-Detta dokument är en ren arbetsversion av de befintliga 21 kriterierna. Det bygger på originaltexterna, men är omskrivet manuellt utifrån följande gemensamma principer:
+Detta dokument är en ren arbetsversion av de befintliga 22 kriterierna. Det bygger på originaltexterna, men är omskrivet manuellt utifrån följande gemensamma principer:
 
 - **Dimensionerna, kriterierna, skalan och poängsättningen ligger fast.**
 - Texterna ska hjälpa företaget att välja ett **begränsat antal kriterier** som ska få betydelse i synen på likvärdighet.
@@ -502,6 +502,52 @@ Ska återkommande fysisk belastning, precision eller uthållig koncentration få
 **3:** Återkommande fysisk belastning, precisionsmoment eller sensorisk koncentration som en etablerad del av området.
 
 **5:** Mycket krävande och uthållig fysisk eller sensorisk ansträngning där precision och konsekvent utförande är avgörande.
+
+---
+
+## 8.6 Kognitiv uthållighet och fokusbelastning
+
+**Teknisk nyckel:** `cognitive-endurance`
+
+### Kort UI-text
+
+Krav på uthållig mental koncentrationsförmåga och djup fokusbelastning.
+
+### Fullständig definition
+
+Omfattar behovet av att upprätthålla djup mental koncentration, bearbeta stora mängder komplex information eller hålla ihop invecklade logiska strukturer under längre sammanhängande perioder utan avbrott. Kriteriet avser den mentala uthålligheten och fokusbelastningen i arbetsuppgifterna. Det avser inte problemets inneboende svårighetsgrad, stress orsakad av resursbrist eller tillfälliga avbrott.
+
+### Mäter
+
+- Uthållig mental koncentration
+- Bearbetning av krävande informationsmängder under tid
+- Förmåga att upprätthålla djup fokusbelastning i komplexa tankeprocesser
+
+### Mäter inte
+
+- Problemets komplexitet i sig
+- Stress på grund av resursbrist eller dålig planering
+- Fysisk eller sensorisk ansträngning
+
+### Passar när
+
+Välj när kravet på uthållig mental koncentration och djup fokusbelastning har stor betydelse för rollens utförande, exempelvis inom arkitektur, avancerad analys eller systemutveckling.
+
+### Passar inte när
+
+Välj inte när arbetet präglas av korta, avbrytande moment och löpande växling mellan enklare uppgifter utan krav på djupare sammanhängande koncentration.
+
+### Kontrollfråga
+
+Ska krav på uthållig mental koncentration och djup fokusbelastning få genomslag i synen på likvärdighet?
+
+### Ankartexter
+
+**1:** Arbete som medger regelbundna avbrott och där arbetsuppgifterna präglas av korta, avgränsade perioder av koncentration.
+
+**3:** Arbete som kräver återkommande, sammanhängande mental koncentration och bearbetning av information under betydande delar av arbetstiden.
+
+**5:** Arbete som ställer krav på oavbruten, djupt uthållig mental fokusbelastning för att hantera omfattande och invecklade sakfrågor där avbrott direkt påverkar leveransen.
 
 ---
 
@@ -1041,6 +1087,7 @@ Analysen nedan bygger på de aktuella texterna, inklusive de reviderade kriterie
 | Deklarerat överlapp                | 7.1 Kunskapsdjup / 7.4 Domänkunskap                                 | Yrkes- och specialistkunskap                              | Kunskap om bransch, produkt, kund eller regelverkskontext                | **Fackkunskap** skiljs från **kunskap om sammanhanget där verksamheten bedrivs**.                                                                                                                        |
 | Deklarerat överlapp                | 7.1 Kunskapsdjup / 7.5 Rådgivning och omdöme                        | Kunskap och metod                                         | Omdöme och rådgivning baserad på underlag                                | **Vad som kan bedömas och lösas** skiljs från **hur underlag omsätts i råd för andras vägval**.                                                                                                          |
 | Deklarerat överlapp                | 8.1 Komplexitet / 8.2 Analytisk ansträngning                        | Problemets otydlighet och svårighetsgrad                  | Det systematiska analysarbetet som behövs                                | **Problemets karaktär** skiljs från **analysinsatsen**.                                                                                                                                                  |
+| Deklarerat överlapp                | 8.2 Analytisk ansträngning / 8.6 Kognitiv uthållighet                | Det systematiska analysarbetet som behövs                 | Den uthålliga mentala koncentrationen och fokusbelastningen över tid     | **Analysinsatsen i sig** skiljs från **den uthålliga koncentrationen och fokusbelastningen den bärs under**.                                                                                             |
 | Deklarerat överlapp                | 8.5 Fysisk eller sensorisk ansträngning / 10.1 Exponering           | Belastning, precision och sinneskoncentration             | Riskmiljö, exponering och skyddsåtgärder                                 | **Krav på kropp och sinnen** skiljs från **förhållanden i arbetsmiljön**.                                                                                                                                |
 | Nytt bevakningspar                 | 9.1 Scope och påverkan / 9.2 Autonomi och beslutsmandat             | Hur långt resultat och påverkan når                       | Utrymme att välja, prioritera och fatta beslut                           | **Var effekten märks** skiljs från **mandatet att fatta beslut**. Ett stort mandat behöver inte ha bred påverkan, och bred påverkan kan uppstå utan eget mandat.                                         |
 | Deklarerat överlapp – ändrad gräns | 9.1 Scope och påverkan / 9.4 Lednings- och personalansvar           | Räckvidd för resultat och påverkan                        | Ansvar för att leda människor eller verksamhetsdelar genom andra         | **Hur långt resultatet når** skiljs från **ansvaret att skapa resultat genom andra**. 9.4 är inte längre begränsat till formellt personalansvar.                                                         |

@@ -174,7 +174,7 @@ Dimensionerna är modellens fasta huvudområden. De är **inte** samma sak som k
 | Dimension | Grundfråga | Varför den behövs |
 |---|---|---|
 | **A. Kompetens** | Vilka kunskaper, färdigheter, erfarenheter och kvalifikationer kräver rollen? | Skyddar specialist-, professions- och kvalifikationskrävande roller från att undervärderas. |
-| **B. Ansträngning och komplexitet** | Hur svår, otydlig, analytiskt, kommunikativt eller fysiskt krävande är rollen? | Synliggör krävande arbete även när rollen saknar formell chefsmakt. |
+| **B. Ansträngning och komplexitet** | Hur svår, otydlig, analytiskt, kommunikativt, fysiskt eller koncentrationskrävande är rollen? | Synliggör krävande arbete även när rollen saknar formell chefsmakt. |
 | **C. Ansvar och påverkan** | Vilken räckvidd, vilket mandat och vilka konsekvenser har rollen? | Fångar ansvar för beslut, resultat, risk, människor, kvalitet och verksamhet. |
 | **D. Arbetsförhållanden** | Finns särskilda objektiva och varaktiga arbetsvillkor som påverkar kraven? | Synliggör exempelvis beredskap, exponering, säkerhetskrav och oregelbundna förhållanden. |
 
@@ -212,10 +212,10 @@ Företagets viktning = den lokala värdelogiken
 | Dimension | Tillgängliga alternativ | Normalt antal som väljs | Högsta antal utan särskilt beslut |
 |---|---:|---:|---:|
 | Kompetens | 5 | 1–2 | 2 |
-| Ansträngning och komplexitet | 5 | 1–2 | 2 |
+| Ansträngning och komplexitet | 6 | 1–2 | 2 |
 | Ansvar och påverkan | 7 | 2–3 | 3 |
 | Arbetsförhållanden | 4 | 0–1 | 1 |
-| **Hela modellen** | **21** | **6–8** | **8** |
+| **Hela modellen** | **22** | **6–8** | **8** |
 
 ### 6.2 Urvalsregler
 
@@ -267,7 +267,7 @@ När ett kriterium väljs ska systemet lagra:
 
 ### Dimensionens fråga
 
-> Hur svåra, otydliga, analytiskt krävande, kommunikativt krävande eller fysiskt krävande är arbetsuppgifterna som rollen normalt hanterar?
+> Hur svåra, otydliga, analytiskt krävande, kommunikativt krävande, fysiskt krävande eller koncentrationskrävande är arbetsuppgifterna som rollen normalt hanterar?
 
 | Kriterium | När det är lämpligt | Vad det mäter | Vad det inte mäter | Överlappningsregel |
 |---|---|---|---|---|
@@ -276,6 +276,7 @@ När ett kriterium väljs ska systemet lagra:
 | **3. Kommunikations- och relationskrävande arbete** | Kundnära, förhandlande, rådgivande eller konflikthanterande verksamheter där detta är ett centralt arbete. | Krav på avancerad kommunikation, förhandling, påverkan, konflikthantering eller översättning mellan intressen. | Antal intressenter eller organisatorisk påverkan. | Mäts som kommunikativ ansträngning, inte som nätverkets storlek. |
 | **4. Operativ intensitet och simultankrav** | Drift, kundservice, logistik eller övervakning med varaktiga krav på flera samtidiga flöden och snabba prioriteringar. | Uppmärksamhet, simultanförmåga och kontinuerlig prioritering i normalläget. | Tillfälliga toppar, underbemanning eller dålig planering. | Får inte användas för att belöna arbetsmängd som uppstår genom resursbrist. |
 | **5. Fysisk eller sensorisk ansträngning** | Industri, vård, lager, produktion, fältservice eller laboratorier. | Återkommande fysisk belastning, precision, ergonomiskt krävande moment eller sensorisk koncentration. | Säkerhetsrisk eller fysisk exponering. | Riskmiljö och exponering hör normalt till Arbetsförhållanden. |
+| **6. Kognitiv uthållighet och fokusbelastning** | Arkitektur, avancerad analys, systemutveckling eller andra roller där kravet på uthållig mental koncentration och djup fokusbelastning har stor betydelse för rollens utförande. | Uthållig mental koncentration, bearbetning av krävande informationsmängder under tid och förmåga att upprätthålla djup fokusbelastning i komplexa tankeprocesser. | Problemets komplexitet i sig, stress på grund av resursbrist eller dålig planering, eller fysisk eller sensorisk ansträngning. | Deklarerat överlapp med Analytisk och problemlösande ansträngning (8.2): analysinsatsen i sig skiljs från den uthålliga koncentrationen och fokusbelastningen den bärs under. |
 
 ### Exempel på lämpliga kombinationer
 
@@ -1044,7 +1045,7 @@ Varje förändring ska dokumentera:
 
 ### Fas 2 — gör kriteriebiblioteket tillgängligt
 
-- [ ] Lägg in samtliga 21 kriteriealternativ med definitioner, avgränsningar och överlappningsvarningar.
+- [ ] Lägg in samtliga 22 kriteriealternativ med definitioner, avgränsningar och överlappningsvarningar.
 - [ ] Implementera kriteriekort och vägledd urvalsprocess.
 - [ ] Implementera kontrollfrågor och obligatoriska motiveringar.
 - [ ] Implementera varningar för dubbelräkning och överskridna dimensionstak.

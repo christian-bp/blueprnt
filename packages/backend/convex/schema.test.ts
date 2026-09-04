@@ -2,12 +2,12 @@ import { describe, expect, it } from "vitest"
 import { CRITERIA_LIBRARY_KEYS } from "./evaluationModel/criteriaLibrary"
 import { initConvexTest } from "./testing.helpers"
 
-// Sanity check: the criteria library has exactly 21 keys (the controlled set
+// Sanity check: the criteria library has exactly 22 keys (the controlled set
 // from the masterdokument sections 7-10). Compile-time guard in
 // evaluationModel/tables.ts asserts the validator stays in sync.
 describe("criteria library key-set", () => {
-  it("CRITERIA_LIBRARY_KEYS has exactly 21 entries", () => {
-    expect(CRITERIA_LIBRARY_KEYS).toHaveLength(21)
+  it("CRITERIA_LIBRARY_KEYS has exactly 22 entries", () => {
+    expect(CRITERIA_LIBRARY_KEYS).toHaveLength(22)
   })
 })
 

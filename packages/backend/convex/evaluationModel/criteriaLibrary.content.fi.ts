@@ -20,7 +20,7 @@ export const criteriaLibraryContentFi: CriteriaLibraryContent = {
     effort: {
       name: "Ponnistus ja monimutkaisuus",
       question:
-        "Kuinka vaikea, epäselvä, analyyttisesti, viestinnällisesti tai fyysisesti vaativa rooli on?",
+        "Kuinka vaikea, epäselvä, analyyttisesti, viestinnällisesti, fyysisesti tai keskittymistä vaativa rooli on?",
       why: "Tekee vaativan työn näkyväksi myös silloin, kun roolilla ei ole muodollista esihenkilövaltaa.",
     },
     responsibility: {
@@ -324,6 +324,31 @@ export const criteriaLibraryContentFi: CriteriaLibraryContent = {
         "Toistuvaa fyysistä kuormitusta, tarkkuutta vaativia vaiheita tai aistikeskittymistä vakiintuneena osana aluetta.",
       anchor5:
         "Erittäin vaativaa ja pitkäkestoista fyysistä tai aistinvaraista rasitusta, jossa tarkkuus ja johdonmukainen suoritus ovat ratkaisevia.",
+    },
+    "cognitive-endurance": {
+      name: "Kognitiivinen kestävyys ja keskittymiskuormitus",
+      shortUiText:
+        "Vaatimus pitkäkestoisesta henkisestä keskittymiskyvystä ja syvästä keskittymiskuormituksesta.",
+      fullDefinition:
+        "Kattaa tarpeen ylläpitää syvää henkistä keskittymistä, käsitellä suuria määriä monimutkaista tietoa tai pitää koossa monimutkaisia loogisia rakenteita pitkien, keskeytymättömien jaksojen ajan. Kriteeri koskee pitkäkestoista henkistä keskittymistä ja keskittymiskuormitusta työtehtävissä. Se ei koske ongelman sisäistä vaikeusastetta, resurssipulasta johtuvaa stressiä eikä tilapäisiä keskeytyksiä.",
+      measures:
+        "Pitkäkestoisen henkisen keskittymisen ylläpito, vaativien tietomäärien käsittely ajan mittaan, kyky ylläpitää syvää keskittymiskuormitusta monimutkaisissa ajatteluprosesseissa.",
+      notMeasures:
+        "Ongelman monimutkaisuus sinänsä, resurssipulasta tai huonosta suunnittelusta johtuva stressi, fyysinen tai aistinvarainen rasitus.",
+      whenSuitable:
+        "Valitse, kun pitkäkestoinen henkinen keskittyminen ja syvä keskittymiskuormitus ovat erityisen tärkeitä roolin suorittamiselle, esimerkiksi arkkitehtuurissa, vaativassa analyysissa tai ohjelmistokehityksessä.",
+      whenNotSuitable:
+        "Älä valitse, kun työtä leimaavat lyhyet, keskeytyvät työjaksot ja jatkuva vaihtelu yksinkertaisempien tehtävien välillä ilman vaatimusta syvemmästä yhtenäisestä keskittymisestä.",
+      controlQuestion:
+        "Halutaanko pitkäkestoisen henkisen keskittymisen ja syvän keskittymiskuormituksen vaikuttaa samanarvoisuuden arviointiin?",
+      assessmentQuestion:
+        "Millaista pitkäkestoista henkistä keskittymistä ja keskittymiskuormitusta rooli normaalisti ja pysyvästi kantaa?",
+      anchor1:
+        "Työtä, joka mahdollistaa säännölliset keskeytykset ja jossa työtehtäviä leimaavat lyhyet, rajatut keskittymisjaksot.",
+      anchor3:
+        "Työtä, joka edellyttää toistuvaa, yhtenäistä henkistä keskittymistä ja tiedon käsittelyä merkittävän osan työajasta.",
+      anchor5:
+        "Työtä, joka edellyttää keskeytymätöntä, syvästi pitkäkestoista henkistä keskittymiskuormitusta, jotta voidaan hoitaa laajoja ja monimutkaisia asiakokonaisuuksia, joissa keskeytykset vaikuttavat suoraan toimitukseen.",
     },
     "scope-impact": {
       name: "Vaikutusala ja vaikuttavuus",

@@ -20,7 +20,7 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
     effort: {
       name: "Innsats og kompleksitet",
       question:
-        "Hvor vanskelig, uklar, analytisk, kommunikativt eller fysisk krevende er rollen?",
+        "Hvor vanskelig, uklar, analytisk, kommunikativt, fysisk eller konsentrasjonskrevende er rollen?",
       why: "Synliggjør krevende arbeid selv når rollen mangler formell ledermakt.",
     },
     responsibility: {
@@ -325,6 +325,31 @@ export const criteriaLibraryContentNb: CriteriaLibraryContent = {
         "Tilbakevendende fysisk belastning, presisjonsmomenter eller sensorisk konsentrasjon som en etablert del av området.",
       anchor5:
         "Svært krevende og utholdende fysisk eller sensorisk anstrengelse der presisjon og konsekvent utførelse er avgjørende.",
+    },
+    "cognitive-endurance": {
+      name: "Kognitiv utholdenhet og fokusbelastning",
+      shortUiText:
+        "Krav til utholdende mental konsentrasjonsevne og dyp fokusbelastning.",
+      fullDefinition:
+        "Omfatter behovet for å opprettholde dyp mental konsentrasjon, bearbeide store mengder kompleks informasjon eller holde styr på innviklede logiske strukturer over lengre sammenhengende perioder uten avbrudd. Kriteriet gjelder den mentale utholdenheten og fokusbelastningen i arbeidsoppgavene. Det gjelder ikke problemets iboende vanskelighetsgrad, stress forårsaket av ressursmangel eller midlertidige avbrudd.",
+      measures:
+        "Utholdende mental konsentrasjon, bearbeiding av krevende informasjonsmengder over tid, evnen til å opprettholde dyp fokusbelastning i komplekse tankeprosesser.",
+      notMeasures:
+        "Problemets kompleksitet i seg selv, stress på grunn av ressursmangel eller dårlig planlegging, fysisk eller sensorisk anstrengelse.",
+      whenSuitable:
+        "Velg når kravet til utholdende mental konsentrasjon og dyp fokusbelastning har stor betydning for hvordan rollen utføres, for eksempel innen arkitektur, avansert analyse eller systemutvikling.",
+      whenNotSuitable:
+        "Velg ikke når arbeidet preges av korte, oppstykkede oppgaver og løpende veksling mellom enklere oppgaver uten krav til dypere sammenhengende konsentrasjon.",
+      controlQuestion:
+        "Skal krav til utholdende mental konsentrasjon og dyp fokusbelastning ha betydning i synet på likeverdighet?",
+      assessmentQuestion:
+        "Hvilken grad av utholdende mental konsentrasjon og fokusbelastning bærer rollen normalt og varig?",
+      anchor1:
+        "Arbeid som gir rom for jevnlige avbrudd, og der arbeidsoppgavene preges av korte, avgrensede perioder med konsentrasjon.",
+      anchor3:
+        "Arbeid som krever tilbakevendende, sammenhengende mental konsentrasjon og bearbeiding av informasjon i betydelige deler av arbeidstiden.",
+      anchor5:
+        "Arbeid som stiller krav til uavbrutt, dypt utholdende mental fokusbelastning for å håndtere omfattende og innviklede problemstillinger der avbrudd direkte påvirker leveransen.",
     },
     "scope-impact": {
       name: "Omfang og påvirkning",

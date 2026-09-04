@@ -24,7 +24,7 @@ export const trackKeyValidator = v.union(
   v.literal("M")
 )
 
-// The 21 criteria library keys as a validator. MUST stay in sync with
+// The 22 criteria library keys as a validator. MUST stay in sync with
 // CRITERIA_LIBRARY_KEYS in criteriaLibrary.ts (compile-time guard below asserts
 // the bijection). Built from the key list so drift is impossible.
 export const libraryKeyValidator = v.union(
@@ -205,7 +205,7 @@ export const models = defineTable({
 export const criteria = defineTable({
   orgId: v.string(),
   modelId: v.id("models"),
-  // Which of the 21 library criteria this row instantiates. Required: every
+  // Which of the 22 library criteria this row instantiates. Required: every
   // row is a library selection, never a custom criterion.
   libraryKey: libraryKeyValidator,
   // 1-5 weight points under the point budget (criteria count x 3, exact sum;

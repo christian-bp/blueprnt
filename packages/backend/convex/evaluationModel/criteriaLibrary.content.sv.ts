@@ -4,7 +4,7 @@ import type { CriteriaLibraryContent } from "./criteriaLibrary.content.en"
 // locales are derived from.
 //
 // Every field the author's refinement defines is verbatim from
-// docs/kriteriebibliotek-forfining-2026-08-24.md: the 21 criteria's names,
+// docs/kriteriebibliotek-forfining-2026-08-24.md: the 22 criteria's names,
 // shortUiText, fullDefinition, measures, notMeasures, whenSuitable,
 // whenNotSuitable, controlQuestion and anchors 1/3/5, plus the shared scale's
 // five grade names and meanings. Two deviations, both deliberate: the
@@ -34,7 +34,7 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
     effort: {
       name: "Ansträngning och komplexitet",
       question:
-        "Hur svår, otydlig, analytiskt, kommunikativt eller fysiskt krävande är rollen?",
+        "Hur svår, otydlig, analytiskt, kommunikativt, fysiskt eller koncentrationskrävande är rollen?",
       why: "Synliggör krävande arbete även när rollen saknar formell chefsmakt.",
     },
     responsibility: {
@@ -338,6 +338,31 @@ export const criteriaLibraryContentSv: CriteriaLibraryContent = {
         "Återkommande fysisk belastning, precisionsmoment eller sensorisk koncentration som en etablerad del av området.",
       anchor5:
         "Mycket krävande och uthållig fysisk eller sensorisk ansträngning där precision och konsekvent utförande är avgörande.",
+    },
+    "cognitive-endurance": {
+      name: "Kognitiv uthållighet och fokusbelastning",
+      shortUiText:
+        "Krav på uthållig mental koncentrationsförmåga och djup fokusbelastning.",
+      fullDefinition:
+        "Omfattar behovet av att upprätthålla djup mental koncentration, bearbeta stora mängder komplex information eller hålla ihop invecklade logiska strukturer under längre sammanhängande perioder utan avbrott. Kriteriet avser den mentala uthålligheten och fokusbelastningen i arbetsuppgifterna. Det avser inte problemets inneboende svårighetsgrad, stress orsakad av resursbrist eller tillfälliga avbrott.",
+      measures:
+        "Uthållig mental koncentration, bearbetning av krävande informationsmängder under tid, förmåga att upprätthålla djup fokusbelastning i komplexa tankeprocesser.",
+      notMeasures:
+        "Problemets komplexitet i sig, stress på grund av resursbrist eller dålig planering, fysisk eller sensorisk ansträngning.",
+      whenSuitable:
+        "Välj när kravet på uthållig mental koncentration och djup fokusbelastning har stor betydelse för rollens utförande, exempelvis inom arkitektur, avancerad analys eller systemutveckling.",
+      whenNotSuitable:
+        "Välj inte när arbetet präglas av korta, avbrytande moment och löpande växling mellan enklare uppgifter utan krav på djupare sammanhängande koncentration.",
+      controlQuestion:
+        "Ska krav på uthållig mental koncentration och djup fokusbelastning få genomslag i synen på likvärdighet?",
+      assessmentQuestion:
+        "Vilken grad av uthållig mental koncentration och fokusbelastning bär rollen normalt och varaktigt?",
+      anchor1:
+        "Arbete som medger regelbundna avbrott och där arbetsuppgifterna präglas av korta, avgränsade perioder av koncentration.",
+      anchor3:
+        "Arbete som kräver återkommande, sammanhängande mental koncentration och bearbetning av information under betydande delar av arbetstiden.",
+      anchor5:
+        "Arbete som ställer krav på oavbruten, djupt uthållig mental fokusbelastning för att hantera omfattande och invecklade sakfrågor där avbrott direkt påverkar leveransen.",
     },
     "scope-impact": {
       name: "Scope och påverkan",

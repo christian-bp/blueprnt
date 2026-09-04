@@ -31,8 +31,8 @@ const SECTION_13_5_KEYS: readonly CriteriaLibraryKey[] = [
 ]
 
 describe("library structure", () => {
-  it("has 21 criteria distributed 5/5/7/4 across the dimensions", () => {
-    expect(CRITERIA_LIBRARY_KEYS).toHaveLength(21)
+  it("has 22 criteria distributed 5/6/7/4 across the dimensions", () => {
+    expect(CRITERIA_LIBRARY_KEYS).toHaveLength(22)
     const counts = {
       competence: 0,
       effort: 0,
@@ -44,7 +44,7 @@ describe("library structure", () => {
     }
     expect(counts).toEqual({
       competence: 5,
-      effort: 5,
+      effort: 6,
       responsibility: 7,
       workingConditions: 4,
     })
@@ -184,10 +184,13 @@ describe("library content", () => {
     ] as const) {
       expect(has(a, b), `${a}/${b}`).toBe(true)
     }
+    expect(has("analytical-effort", "cognitive-endurance"), "8.2/8.6").toBe(
+      true
+    )
     // ONE class: the document separates declared overlaps from new watch
     // pairs, but both mean the same thing to the company and to the
     // checklist, so the list stays flat.
-    expect(LIBRARY_OVERLAP_PAIRS).toHaveLength(15)
+    expect(LIBRARY_OVERLAP_PAIRS).toHaveLength(16)
     // Every key in every pair is a real library key.
     for (const pair of LIBRARY_OVERLAP_PAIRS) {
       for (const key of pair) {

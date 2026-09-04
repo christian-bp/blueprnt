@@ -9,6 +9,8 @@ import {
 import {
   CRITERIA_LIBRARY_KEYS,
   criteriaLibraryContent,
+  type CriteriaLibraryKey,
+  LIBRARY_OVERLAP_PAIRS,
   REGISTERED_LIBRARY_LOCALES,
 } from "@workspace/backend/convex/evaluationModel/criteriaLibrary"
 import da from "@workspace/i18n/messages/da.json"
@@ -751,5 +753,112 @@ describe("guard 12: the criteria library reference names every criterion", () =>
       }
     }
     expect(strays).toEqual([])
+  })
+})
+
+describe("guard 13: the criteria library reference states every declared overlap", () => {
+  // The overlap-pairs list is prose ("<name A> <conjunction> <name B>"),
+  // not guard 12's bold-lead entry form, so it needs its own parser. A
+  // criterion's own name can itself contain the locale's conjunction word
+  // (e.g. "Analytical and problem-solving effort"), so a bullet is resolved
+  // by testing every occurrence of the conjunction as a candidate split
+  // point against the locale's own criterion names, rather than by
+  // splitting on the first or last one. Nothing else notices when
+  // LIBRARY_OVERLAP_PAIRS gains, loses or changes a pair: the page would
+  // simply go quietly out of date in five locales.
+  const CONJUNCTION: Record<string, string> = {
+    en: "and",
+    sv: "och",
+    nb: "og",
+    da: "og",
+    fi: "ja",
+  }
+
+  // Plain bullets that are neither guard 12's bold-lead entry form nor a
+  // markdown link bullet (the Related section's reading list) are the
+  // overlap list's own bullets, wherever its heading falls.
+  const overlapBulletLines = (locale: string): string[] =>
+    rawOf(locale, "criteria-library")
+      .split("\n")
+      .filter(
+        (line) =>
+          line.startsWith("- ") &&
+          !/^- \*\*(.+?)\.\*\* /.test(line) &&
+          !line.startsWith("- [")
+      )
+      .map((line) => line.slice(2).trim())
+
+  // Resolves one bullet to the pair of library keys it names, or null when
+  // it does not resolve to exactly one pair of the locale's own names.
+  const resolveBullet = (
+    locale: string,
+    line: string
+  ): [CriteriaLibraryKey, CriteriaLibraryKey] | null => {
+    const content = criteriaLibraryContent(locale)
+    const nameToKey = new Map<string, CriteriaLibraryKey>(
+      CRITERIA_LIBRARY_KEYS.map((key) => [content.criteria[key].name, key])
+    )
+    const conjunction = ` ${CONJUNCTION[locale]} `
+    const matches: [CriteriaLibraryKey, CriteriaLibraryKey][] = []
+    let from = 0
+    for (;;) {
+      const at = line.indexOf(conjunction, from)
+      if (at === -1) break
+      const leftKey = nameToKey.get(line.slice(0, at))
+      const rightKey = nameToKey.get(line.slice(at + conjunction.length))
+      if (leftKey !== undefined && rightKey !== undefined) {
+        matches.push([leftKey, rightKey])
+      }
+      from = at + 1
+    }
+    return matches.length === 1
+      ? (matches[0] as (typeof matches)[number])
+      : null
+  }
+
+  const pairId = (a: string, b: string) => [a, b].sort().join("/")
+  const declaredIds = new Set(
+    LIBRARY_OVERLAP_PAIRS.map(([a, b]) => pairId(a, b))
+  )
+
+  it("every declared overlap pair has exactly one bullet, in every locale", () => {
+    const offenders: string[] = []
+    for (const locale of routing.locales) {
+      const counts = new Map<string, number>()
+      for (const line of overlapBulletLines(locale)) {
+        const pair = resolveBullet(locale, line)
+        if (pair === null) continue
+        const id = pairId(pair[0], pair[1])
+        counts.set(id, (counts.get(id) ?? 0) + 1)
+      }
+      for (const [a, b] of LIBRARY_OVERLAP_PAIRS) {
+        const count = counts.get(pairId(a, b)) ?? 0
+        if (count !== 1) {
+          offenders.push(`${locale}: ${a}/${b} has ${count} bullet(s)`)
+        }
+      }
+    }
+    expect(offenders).toEqual([])
+  })
+
+  it("the page names no overlap the library does not declare", () => {
+    // The reverse direction: a bullet whose pair was removed from
+    // LIBRARY_OVERLAP_PAIRS, or that never resolved to two real names in
+    // the first place, must not survive unnoticed.
+    const offenders: string[] = []
+    for (const locale of routing.locales) {
+      for (const line of overlapBulletLines(locale)) {
+        const pair = resolveBullet(locale, line)
+        if (pair === null) {
+          offenders.push(`${locale}: unresolved overlap bullet "${line}"`)
+          continue
+        }
+        const id = pairId(pair[0], pair[1])
+        if (!declaredIds.has(id)) {
+          offenders.push(`${locale}: undeclared overlap ${pair[0]}/${pair[1]}`)
+        }
+      }
+    }
+    expect(offenders).toEqual([])
   })
 })

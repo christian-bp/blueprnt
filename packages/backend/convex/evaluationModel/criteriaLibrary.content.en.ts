@@ -56,7 +56,7 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
     effort: {
       name: "Effort and complexity",
       question:
-        "How difficult, ambiguous, analytically, communicatively or physically demanding is the role?",
+        "How difficult, ambiguous, analytically, communicatively, physically or concentration-demanding is the role?",
       why: "Makes demanding work visible even when the role has no formal managerial power.",
     },
     responsibility: {
@@ -360,6 +360,31 @@ export const criteriaLibraryContentEn: CriteriaLibraryContent = {
         "Recurring physical load, precision elements or sensory concentration as an established part of the area.",
       anchor5:
         "Very demanding and sustained physical or sensory effort where precision and consistent execution are decisive.",
+    },
+    "cognitive-endurance": {
+      name: "Cognitive endurance and focus load",
+      shortUiText:
+        "Requirements for sustained mental concentration and deep focus load.",
+      fullDefinition:
+        "Covers the need to sustain deep mental concentration, process large volumes of complex information or hold together intricate logical structures over extended, uninterrupted periods. The criterion concerns the mental endurance and focus load in the work. It does not concern the problem's inherent difficulty, stress caused by a shortage of resources, or occasional interruptions.",
+      measures:
+        "Sustained mental concentration, processing demanding volumes of information over time, maintaining deep focus load in complex thought processes.",
+      notMeasures:
+        "The problem's complexity in itself, stress caused by a shortage of resources or poor planning, physical or sensory effort.",
+      whenSuitable:
+        "Choose this when the requirement for sustained mental concentration and deep focus load matters greatly to how the role is performed, for example in architecture, advanced analysis or software development.",
+      whenNotSuitable:
+        "Do not choose it when the work is characterised by short, interrupting moments and continuous switching between simpler tasks, with no requirement for deeper, sustained concentration.",
+      controlQuestion:
+        "Should the requirement for sustained mental concentration and deep focus load carry weight in your view of equivalence?",
+      assessmentQuestion:
+        "What degree of sustained mental concentration and focus load does this role normally and lastingly carry?",
+      anchor1:
+        "Work that allows for regular interruptions and where the tasks are characterised by short, bounded periods of concentration.",
+      anchor3:
+        "Work that requires recurring, sustained mental concentration and the processing of information during significant parts of the working time.",
+      anchor5:
+        "Work that demands uninterrupted, deeply sustained mental concentration to handle extensive and intricate matters where an interruption directly affects delivery.",
     },
     "scope-impact": {
       name: "Scope and impact",
