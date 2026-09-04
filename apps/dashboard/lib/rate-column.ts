@@ -4,11 +4,16 @@
 // step this is. Pale brand while the step is unchosen, solid once it is, so
 // the mark reads the same way the radio's own filled state did.
 export const RATE_STEP_MARK_CLASS = [
-  // Where the radio dot sat: the row's top-left, nudged the same half step
-  // the vendor's own indicator takes when the option carries a description,
-  // so the mark rides the first line rather than the option's middle.
-  "flex size-5 shrink-0 translate-y-0.5 items-center justify-center rounded-md",
-  "bg-brand/10 font-mono text-brand text-xs tabular-nums",
+  // Where the radio dot sat: the row's top-left, with no nudge of its own.
+  // The mark is exactly one text-sm line tall, so top-aligning it puts it on
+  // the option's first line: an option that is a single sentence (the
+  // not-covered step) then reads level with its own words instead of half a
+  // step above them.
+  "flex size-5 shrink-0 items-center justify-center rounded-md",
+  // The app's own digits, not a monospace face: the number is the scale's
+  // own numbering rather than a key cap, and tabular is what keeps the five
+  // of them the same width.
+  "bg-brand/10 font-medium text-brand text-xs tabular-nums",
   "group-data-checked/questionnaire-choice:bg-brand",
   "group-data-checked/questionnaire-choice:text-primary-foreground",
 ].join(" ")
