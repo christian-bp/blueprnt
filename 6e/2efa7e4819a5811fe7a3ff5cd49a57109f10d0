@@ -1,0 +1,85 @@
+apps/dashboard/components/overview/overview-widgets.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 11,13-14,20-25,32,39-42,50-52,54-55,69-70,75-79,101-110,147-156
+apps/dashboard/components/action-card.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 66-68
+apps/dashboard/components/gender-mark.test.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 6,40-45,47-50,53-62,69,76-85,104-105,217,222-230,237-238,242-244,246,249-252,256,258-261,366-369,373-380,383-384,389-400,418-420,424,428-433,441-444
+apps/dashboard/app/(app)/page.test.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 268-271,274-278
+apps/dashboard/app/(app)/page.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 11-12,49-52,90-91
+apps/dashboard/components/pay-mapping/pay-mapping-overview.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 16,30,55-57,68-73,83,95-97,105,112,117,122-152,268-272,412-416,425-429,435-446,482-505,568-582,585-589,592,594,597-598
+apps/dashboard/lib/percent.ts
+  s_a5a0b8b07c8eab::t_15f3295fb60237 30-53
+apps/dashboard/components/pay-mapping/pay-mapping-report-charts.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 9-30,41,47-58,91-94,104-106,115,123-148,234,236
+apps/dashboard/components/widget-card.test.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 23-27,29,31-36,39-61,64-68,71-77,80-84,87-89,92-114,123-124,126-128,136,160-164,169-173,179,191-192
+apps/dashboard/components/pay-mapping/pay-mapping-scatter.test.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 344-350
+apps/dashboard/components/widget-card.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 20,32-37,39-42,44-49,52,54-57,59-60,66-96,105-107,140-149,151,172,182-191,195-211,214-229,231-246,249-258,260-307,318-336
+apps/dashboard/lib/percent.test.ts
+  s_a5a0b8b07c8eab::t_15f3295fb60237 1-42
+apps/dashboard/components/gender-mark.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 5,14-23,25-27,29-31,36-43,53-57,59-62,68,70,76-91,96-97,101-106,114-118,134,136,206-207,221-223,225-230,233,247-249,252-261,266-269,271-293,353,424-426,428-430,433-435,438-441,445-446,450,453-455,458-461,465-466
+apps/dashboard/components/pay-mapping/pay-mapping-trends.ts
+  s_a5a0b8b07c8eab::t_15f3295fb60237 37-40,48-51,53-58,64,78-81,89-93,99,104
+apps/dashboard/components/overview/overview-widgets.test.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 6-7,44-45,58-61,86-89,91-92,94-114,138-144
+apps/dashboard/components/sparkline.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 1-216
+apps/dashboard/components/pay-mapping/pay-mapping-overview.test.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 131,144,237-238,241,267-271,273,276,278,283,299-313
+packages/i18n/messages/fi.json
+  s_a5a0b8b07c8eab::t_15f3295fb60237 1049,1055,1060,1472-1473,1483-1486,1492-1495
+CLAUDE.md
+  s_a5a0b8b07c8eab::t_15f3295fb60237 82
+apps/dashboard/components/people/pay-comparison-section.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 60,123
+apps/dashboard/components/pay-mapping/pay-mapping-population-card.test.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 72-76,78,87,96-98,101-106,121
+packages/i18n/messages/da.json
+  s_a5a0b8b07c8eab::t_15f3295fb60237 1049,1055,1060,1472-1473,1483-1486,1492-1495
+apps/dashboard/components/panel-card.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 3,34-41,44-65
+packages/i18n/messages/sv.json
+  s_a5a0b8b07c8eab::t_15f3295fb60237 1049,1055,1060,1472-1473,1483-1486,1492-1495
+apps/dashboard/components/medallion.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 17-29,31,39,52-55,65
+apps/dashboard/components/assistant/assistant-chart-part.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 29-39
+apps/dashboard/components/sparkline.test.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 1-104
+packages/i18n/messages/en.json
+  s_a5a0b8b07c8eab::t_15f3295fb60237 1049,1055,1060,1472-1473,1483-1486,1492-1495
+packages/ui/src/styles/globals.css
+  s_a5a0b8b07c8eab::t_15f3295fb60237 72-76,78-81,83-85,87-111,149-171,226-231,236-239,284-285,293
+apps/dashboard/components/pay-mapping/pay-mapping-population-card.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 3-5,15-20,22-24,28,37,42,49-68
+apps/dashboard/components/assistant/assistant-chart-part.test.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 38,89,94-106
+apps/dashboard/components/pay-mapping/pay-mapping-scatter.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 450,466,520-522,524,529
+apps/dashboard/components/pay-mapping/pay-mapping-report-charts.test.tsx
+  s_a5a0b8b07c8eab::t_15f3295fb60237 1-110
+packages/i18n/messages/nb.json
+  s_a5a0b8b07c8eab::t_15f3295fb60237 1049,1055,1060,1472-1473,1483-1486,1492-1495
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "6e2efa7e4819a5811fe7a3ff5cd49a57109f10d0",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
