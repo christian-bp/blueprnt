@@ -36,6 +36,7 @@ export const ERROR_CODES = {
   payMappingPreconditionsUnmet: "errors.payMappingPreconditionsUnmet",
   assistantBusy: "errors.assistantBusy",
   assistantRateLimited: "errors.assistantRateLimited",
+  assistantOverloaded: "errors.assistantOverloaded",
   assistantInvalidMessage: "errors.assistantInvalidMessage",
   assistantPersonalData: "errors.assistantPersonalData",
   methodBlocked: "errors.methodBlocked",

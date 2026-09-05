@@ -3072,6 +3072,7 @@
     "payMappingPreconditionsUnmet": "People or roles are missing classification or evaluation, so the pay mapping cannot start yet.",
     "assistantBusy": "Blueprnt AI is still answering. Wait for it to finish or stop it.",
     "assistantRateLimited": "You have sent many messages in a short time. Try again in a little while.",
+    "assistantOverloaded": "Blueprnt AI is busy right now. Try again in a moment.",
     "assistantInvalidMessage": "Write a message before sending.",
     "assistantPersonalData": "The message seems to include an employee's personal details. Remove them and ask again in general terms.",
     "dimensionCapExceeded": "This dimension already has its maximum number of criteria.",

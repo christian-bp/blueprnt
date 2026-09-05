@@ -20,6 +20,12 @@ export interface StreamOutcome {
   recordUsage: boolean
 }
 
+// A PROVIDER rate limit, which is not the same condition as the reader
+// sending too much: it is the model refusing us, on a message that may be
+// their first. The two used to share one code, so a 429 from the provider
+// told the reader they had sent many messages in a short time. Our own cap
+// keeps assistantRateLimited; this path reports assistantOverloaded.
+//
 // A provider rate limit reaches us in more than one shape: the raw
 // AI_APICallError carrying statusCode 429, or an AI_RetryError wrapping it
 // after the SDK's attempts are spent, in which case only the wrapper's
@@ -59,7 +65,7 @@ function failure(error: unknown): StreamOutcome {
   return {
     status: "failed",
     errorCode: isRateLimitError(error)
-      ? ERROR_CODES.assistantRateLimited
+      ? ERROR_CODES.assistantOverloaded
       : ERROR_CODES.aiGenerationFailed,
     recordUsage: true,
   }

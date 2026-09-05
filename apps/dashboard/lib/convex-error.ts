@@ -12,6 +12,7 @@ const ASSISTANT_PERSONAL_DATA_KEY = "assistantPersonalData" as const
 export const ASSISTANT_ERROR_KEYS = [
   "assistantBusy",
   "assistantRateLimited",
+  "assistantOverloaded",
   "assistantInvalidMessage",
   ASSISTANT_PERSONAL_DATA_KEY,
 ] as const

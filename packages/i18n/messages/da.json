@@ -3072,6 +3072,7 @@
     "payMappingPreconditionsUnmet": "Personer eller roller mangler klassificering eller vurdering, så lønkortlægningen kan ikke startes endnu.",
     "assistantBusy": "Blueprnt AI svarer stadig. Vent til den er færdig, eller stop den.",
     "assistantRateLimited": "Du har sendt mange beskeder på kort tid. Prøv igen om lidt.",
+    "assistantOverloaded": "Blueprnt AI er optaget lige nu. Prøv igen om lidt.",
     "assistantInvalidMessage": "Skriv en besked, før du sender.",
     "assistantPersonalData": "Beskeden ser ud til at indeholde en medarbejders personoplysninger. Fjern dem, og stil spørgsmålet mere generelt.",
     "dimensionCapExceeded": "Denne dimension har allerede sit maksimale antal kriterier.",

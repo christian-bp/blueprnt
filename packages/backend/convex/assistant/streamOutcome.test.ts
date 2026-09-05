@@ -104,7 +104,11 @@ describe("classifyStreamOutcome", () => {
   // logs: the SDK surfaces the bare call error when it gives up immediately
   // and an AI_RetryError wrapping it once the retries are spent, which is the
   // shape that actually reached the user as a generic failure.
-  it("maps a provider rate limit to the rate-limited code, not a generic failure", () => {
+  // The PROVIDER refusing us is not the reader sending too much: the two
+  // conditions carry different codes, because they carry different copy.
+  // They shared one, and a 429 on a reader's first message told them they had
+  // sent many messages in a short time.
+  it("maps a provider rate limit to the overloaded code, not to our own cap", () => {
     const apiError = Object.assign(new Error("Rate limit exceeded"), {
       name: "AI_APICallError",
       statusCode: 429,
@@ -113,7 +117,7 @@ describe("classifyStreamOutcome", () => {
       classifyStreamOutcome({ terminal: "errorPart", error: apiError })
     ).toEqual({
       status: "failed",
-      errorCode: ERROR_CODES.assistantRateLimited,
+      errorCode: ERROR_CODES.assistantOverloaded,
       recordUsage: true,
     })
 
@@ -129,7 +133,7 @@ describe("classifyStreamOutcome", () => {
       })
     ).toEqual({
       status: "failed",
-      errorCode: ERROR_CODES.assistantRateLimited,
+      errorCode: ERROR_CODES.assistantOverloaded,
       recordUsage: true,
     })
   })

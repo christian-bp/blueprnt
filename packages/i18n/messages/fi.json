@@ -3072,6 +3072,7 @@
     "payMappingPreconditionsUnmet": "Henkilöiltä tai rooleilta puuttuu luokittelu tai arviointi, joten palkkakartoitusta ei voi vielä aloittaa.",
     "assistantBusy": "Blueprnt AI vastaa vielä. Odota, että se on valmis, tai pysäytä se.",
     "assistantRateLimited": "Olet lähettänyt monta viestiä lyhyessä ajassa. Yritä hetken kuluttua uudelleen.",
+    "assistantOverloaded": "Blueprnt AI on juuri nyt varattu. Yritä hetken kuluttua uudelleen.",
     "assistantInvalidMessage": "Kirjoita viesti ennen lähettämistä.",
     "assistantPersonalData": "Viesti näyttää sisältävän työntekijän henkilötietoja. Poista ne ja kysy yleisemmällä tasolla.",
     "dimensionCapExceeded": "Tällä ulottuvuudella on jo enimmäismäärä kriteerejä.",
