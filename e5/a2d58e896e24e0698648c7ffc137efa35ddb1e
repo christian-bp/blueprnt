@@ -1,0 +1,28 @@
+apps/dashboard/components/widget-card.tsx
+  s_a5a0b8b07c8eab::t_59f0a8a0496778 205-222,225-233,242-246,248-251,253-269,279-313,324-325,329-340
+  s_a5a0b8b07c8eab::t_69407455d14dba 62-69,183,203-204,341-351
+apps/dashboard/components/widget-card.test.tsx
+  s_a5a0b8b07c8eab::t_3b271c93abcaec 281-343
+apps/dashboard/components/pay-mapping/equal-work-detail.tsx
+  s_a5a0b8b07c8eab::t_406a9b82862fb6 262-264
+apps/dashboard/components/pay-mapping/pay-mapping-scatter.tsx
+  s_a5a0b8b07c8eab::t_45d908ede5113c 277,302-304,454-459,475-480,543
+apps/dashboard/components/pay-mapping/women-dominated-underlying-data.tsx
+  s_a5a0b8b07c8eab::t_822d2eb5ce0c19 72-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "e5a2d58e896e24e0698648c7ffc137efa35ddb1e",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
