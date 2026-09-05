@@ -417,6 +417,10 @@ export interface AuditPayloads {
   // non-identity field, the collaboration date (COLLABORATION_AUDIT_FIELDS:
   // an ISO day string and the remarks changed-marker).
   "payMapping.collaborationUpdated": { runId: string; changes: Changes }
+  // The action plan's responsible functions. Text that is meant to name a
+  // function but could name a person, so the trail carries only the marker
+  // that it changed (RESPONSIBLE_FUNCTIONS_AUDIT_FIELDS), never the words.
+  "payMapping.responsibleFunctionsUpdated": { runId: string; changes: Changes }
   // A hard delete: the run's own display name (org content, never person
   // PII) plus the population count at deletion time, mirroring the
   // runStarted precedent's flat-stat shape. runId is excluded from rendering

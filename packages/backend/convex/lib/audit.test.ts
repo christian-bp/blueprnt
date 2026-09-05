@@ -435,6 +435,7 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
   },
   "payMapping.runReopened": { runId: "run-1" },
   "payMapping.collaborationUpdated": { runId: "run-1", changes: {} },
+  "payMapping.responsibleFunctionsUpdated": { runId: "run-1", changes: {} },
   "payMapping.runRenamed": { runId: "run-1", changes: {} },
   "payMapping.runDeleted": {
     runId: "run-1",
@@ -550,6 +551,10 @@ const EXPECTED_SUBJECTS: { [E in AuditEvent]: AuditSubject | undefined } = {
   "payMapping.runCompleted": { kind: "payMappingRun", id: "run-1" },
   "payMapping.runReopened": { kind: "payMappingRun", id: "run-1" },
   "payMapping.collaborationUpdated": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.responsibleFunctionsUpdated": {
+    kind: "payMappingRun",
+    id: "run-1",
+  },
   "payMapping.runRenamed": { kind: "payMappingRun", id: "run-1" },
   "payMapping.runDeleted": { kind: "payMappingRun", id: "run-1" },
   "payMapping.actionCreated": { kind: "payMappingRun", id: "run-1" },

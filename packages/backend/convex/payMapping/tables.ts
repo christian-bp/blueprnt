@@ -118,6 +118,20 @@ export const payMappingRuns = defineTable({
       remarks: v.optional(v.string()),
     })
   ),
+  // Who carries the action plan in each area, in the organization's own
+  // words: the signing report's "responsible function" column, which is the
+  // "av vem" the statutory plan owes (DL 3 kap. 13 §). A FUNCTION, never a
+  // person: the signing report is the masked document and names no
+  // individuals (the appendix carries the actions' owners). An area left
+  // empty prints the template label the report has always used, so a run
+  // that never touches this reads exactly as before.
+  responsibleFunctions: v.optional(
+    v.object({
+      equalWork: v.optional(v.string()),
+      equivalentWork: v.optional(v.string()),
+      praxis: v.optional(v.string()),
+    })
+  ),
 })
   .index("by_org", ["orgId"])
   .index("by_org_slug", ["orgId", "slug"])

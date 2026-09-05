@@ -919,6 +919,67 @@ export const setPayMappingCollaboration = orgMutation({
   },
 })
 
+// The action plan's responsible functions, one per area of the plan (DL 3
+// kap. 13 §'s "av vem"). Written as a whole rather than field by field, the
+// way the samverkan record is: the three belong to one document section and
+// an operator edits them together.
+//
+// Locked once the run is completed, for the same reason the samverkan record
+// is: both are printed in the signed document.
+export const setPayMappingResponsibleFunctions = orgMutation({
+  args: {
+    runId: v.id("payMappingRuns"),
+    equalWork: v.string(),
+    equivalentWork: v.string(),
+    praxis: v.string(),
+  },
+  returns: v.null(),
+  handler: async (ctx, { runId, equalWork, equivalentWork, praxis }) => {
+    const run = await ctx.db.get(runId)
+    if (run === null || run.orgId !== ctx.orgId)
+      throw appError(ERROR_CODES.notFound)
+    if (run.status === "completed")
+      throw appError(ERROR_CODES.payMappingRunCompleted)
+
+    // An empty area is no value at all, never an empty string: the report
+    // falls back to its template label on absence, and a stored "" would
+    // print as a blank cell in a statutory document.
+    const next = {
+      equalWork: equalWork.trim(),
+      equivalentWork: equivalentWork.trim(),
+      praxis: praxis.trim(),
+    }
+    const cleared =
+      next.equalWork === "" && next.equivalentWork === "" && next.praxis === ""
+    await ctx.db.patch(runId, {
+      responsibleFunctions: cleared
+        ? undefined
+        : {
+            ...(next.equalWork !== "" ? { equalWork: next.equalWork } : {}),
+            ...(next.equivalentWork !== ""
+              ? { equivalentWork: next.equivalentWork }
+              : {}),
+            ...(next.praxis !== "" ? { praxis: next.praxis } : {}),
+          },
+    })
+    const before = run.responsibleFunctions
+    const changed =
+      (before?.equalWork ?? "") !== next.equalWork ||
+      (before?.equivalentWork ?? "") !== next.equivalentWork ||
+      (before?.praxis ?? "") !== next.praxis
+    if (changed) {
+      await ctx.audit.log({
+        type: AUDIT_EVENTS.payMappingResponsibleFunctionsUpdated,
+        payload: {
+          runId,
+          changes: { responsibleFunctionsChanged: { from: null, to: true } },
+        },
+      })
+    }
+    return null
+  },
+})
+
 // Rename a pay mapping. The run is route-exposed, so the slug is regenerated
 // from the new label (CLAUDE.md: routes resolve by (orgId, slug), never a raw
 // id) and any open link to the old slug stops resolving; the run's _id, and so

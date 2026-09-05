@@ -62,6 +62,8 @@ export const AUDIT_EVENTS = {
   payMappingRunCompleted: "payMapping.runCompleted",
   payMappingRunReopened: "payMapping.runReopened",
   payMappingCollaborationUpdated: "payMapping.collaborationUpdated",
+  payMappingResponsibleFunctionsUpdated:
+    "payMapping.responsibleFunctionsUpdated",
   payMappingRunRenamed: "payMapping.runRenamed",
   payMappingRunDeleted: "payMapping.runDeleted",
   payMappingActionCreated: "payMapping.actionCreated",
@@ -244,6 +246,10 @@ const AUDIT_SUBJECTS: {
     id: payload.runId,
   }),
   "payMapping.collaborationUpdated": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.responsibleFunctionsUpdated": (payload) => ({
     kind: "payMappingRun",
     id: payload.runId,
   }),
@@ -763,6 +769,15 @@ export const NOTE_AUDIT_FIELDS = ["noteType"] as const
 export const COLLABORATION_AUDIT_FIELDS = [
   "collaborationDate",
   "collaborationRemarksChanged",
+] as const
+
+// The action plan's responsible functions ride the same marker pattern the
+// samverkan remarks do, and for the same reason: the field is meant to name a
+// FUNCTION, but nothing stops an operator typing a person into it, and text
+// that may be a name must not enter a trail that cannot scrub it (ADR-0027).
+// The marker is what keeps an edit from writing a diff-less row.
+export const RESPONSIBLE_FUNCTIONS_AUDIT_FIELDS = [
+  "responsibleFunctionsChanged",
 ] as const
 
 // Extra diff fields on payMapping.actionUpdated/noteUpdated beyond the

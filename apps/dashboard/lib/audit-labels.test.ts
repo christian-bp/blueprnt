@@ -10,6 +10,7 @@ import {
   GROUP_ANALYSIS_AUDIT_FIELDS,
   NOTE_AUDIT_FIELDS,
   PERSON_IDENTITY_AUDIT_FIELDS,
+  RESPONSIBLE_FUNCTIONS_AUDIT_FIELDS,
   MODEL_AUDIT_FIELDS,
   PAY_AUDIT_FIELDS,
   PERSON_AUDIT_FIELDS,
@@ -278,6 +279,7 @@ const ALL_AUDIT_FIELDS = [
     ...ACTION_UPDATE_AUDIT_FIELDS,
     ...NOTE_AUDIT_FIELDS,
     ...COLLABORATION_AUDIT_FIELDS,
+    ...RESPONSIBLE_FUNCTIONS_AUDIT_FIELDS,
     // model.restored: the per-criterion and model-level diff fields the ONE
     // restore diff builder emits (evaluationModel/evidence.ts), which the
     // confirm dialog and the audit payload both render.
