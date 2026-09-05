@@ -1,7 +1,12 @@
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
-import { PDF_GENDER_INKS, pairedBarsHeight } from "./pay-mapping-report-charts"
+import { STATUS_RAMP } from "@/lib/pdf/palette"
+import {
+  inkedSegments,
+  PDF_GENDER_INKS,
+  pairedBarsHeight,
+} from "./pay-mapping-report-charts"
 
 // The report's marks are hand-drawn in sRGB hex, because a PDF cannot read a
 // CSS variable. That makes the stylesheet and the report two copies of one
@@ -106,5 +111,52 @@ describe("report chart inks", () => {
   it("keeps every wash a step off its own ink", () => {
     expect(PDF_GENDER_INKS.womanFill).not.toBe(PDF_GENDER_INKS.womanInk)
     expect(PDF_GENDER_INKS.manFill).not.toBe(PDF_GENDER_INKS.manInk)
+  })
+})
+
+describe("inkedSegments", () => {
+  const segments = [
+    { label: "noActionNeeded", value: 3 },
+    { label: "objectiveReason", value: 2 },
+    { label: "actionDecided", value: 1 },
+    { label: "furtherAnalysis", value: 1 },
+  ]
+
+  it("drops a segment with no count", () => {
+    expect(inkedSegments(segments).map((s) => s.label)).toEqual(
+      segments.map((s) => s.label)
+    )
+    const withHole = segments.map((s) =>
+      s.label === "objectiveReason" ? { ...s, value: 0 } : s
+    )
+    expect(inkedSegments(withHole).map((s) => s.label)).toEqual([
+      "noActionNeeded",
+      "actionDecided",
+      "furtherAnalysis",
+    ])
+  })
+
+  // The equivalent-work bar can never carry a noActionNeeded segment (every
+  // comparison owes documentation), and it prints directly under an
+  // equal-work bar that usually does. Colouring by position among the
+  // SURVIVING segments made the same status two different weights on those
+  // two bars, which on an ordered ramp is the scale going wrong.
+  it("keeps one status on one ink whatever else the bar is missing", () => {
+    const inkOf = (rows: { label: string; value: number }[], label: string) =>
+      inkedSegments(rows).find((s) => s.label === label)?.fill
+    const holed = segments.map((s) =>
+      s.label === "noActionNeeded" ? { ...s, value: 0 } : s
+    )
+    for (const label of [
+      "objectiveReason",
+      "actionDecided",
+      "furtherAnalysis",
+    ]) {
+      expect(inkOf(holed, label)).toBe(inkOf(segments, label))
+    }
+  })
+
+  it("darkens monotonically down the list", () => {
+    expect(inkedSegments(segments).map((s) => s.fill)).toEqual([...STATUS_RAMP])
   })
 })
