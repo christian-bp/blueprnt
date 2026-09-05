@@ -20,7 +20,7 @@ vi.mock("@react-pdf/renderer", () => ({
     lastPdfElement = element
     return { toBlob }
   },
-  Font: { registerHyphenationCallback: () => {} },
+  Font: { registerHyphenationCallback: () => {}, register: () => {} },
   StyleSheet: { create: (s: unknown) => s },
   Document: ({ children }: { children: unknown }) => children,
   Page: ({ children }: { children: unknown }) => children,
@@ -112,7 +112,7 @@ function renderDownload() {
 type RenderedProps = {
   props?: {
     labels?: {
-      identity?: { docTitle?: string }
+      identity?: { coverTitle?: string; footLabel?: string }
       classification?: string
       wdGroupLine?: (group: ReportWomenDominatedGroup) => string
     }
@@ -150,7 +150,12 @@ describe("PayMappingReportDownload", () => {
     const downloadOrder = createObjectURL.mock.invocationCallOrder[0] ?? 0
     expect(logOrder).toBeLessThan(downloadOrder)
     const element = lastPdfElement as RenderedProps
-    expect(element?.props?.labels?.identity?.docTitle).toBe(
+    // The cover's big line names the SUBJECT both documents share; the kind
+    // of document rides the foot label under it.
+    expect(element?.props?.labels?.identity?.coverTitle).toBe(
+      messages.dashboard.payMapping.report.coverTitle
+    )
+    expect(element?.props?.labels?.identity?.footLabel).toBe(
       messages.dashboard.payMapping.signingReport.docTitle
     )
     expect(element?.props?.doc?.checklist).toBeDefined()
@@ -175,7 +180,10 @@ describe("PayMappingReportDownload", () => {
     // At least the page-ref pass and the final render.
     expect(toBlob.mock.calls.length).toBeGreaterThanOrEqual(2)
     const element = lastPdfElement as RenderedProps
-    expect(element?.props?.labels?.identity?.docTitle).toBe(
+    expect(element?.props?.labels?.identity?.coverTitle).toBe(
+      messages.dashboard.payMapping.report.coverTitle
+    )
+    expect(element?.props?.labels?.identity?.footLabel).toBe(
       messages.dashboard.payMapping.detailAppendix.docTitle
     )
     expect(element?.props?.labels?.classification).toBe(

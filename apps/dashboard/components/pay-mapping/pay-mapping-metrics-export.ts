@@ -456,7 +456,12 @@ export function usePayMappingMetricsExport(): {
     ]
     const workbook = await buildMetricsWorkbook(metrics, {
       sheetTitle: t("metricsSheetTitle"),
-      statusTag: metrics.status === "final" ? t("tagFinal") : t("tagDraft"),
+      // The tag is one word; a draft's row carries the sentence that says
+      // what its figures are worth, exactly as the two PDFs' covers do.
+      statusTag:
+        metrics.status === "final"
+          ? t("tagFinal")
+          : `${t("tagDraft")}: ${t("draftNote")}`,
       referenceDateLine: t("referenceDateLine", {
         date: format.dateTime(new Date(metrics.referenceDate), {
           dateStyle: "medium",

@@ -14,10 +14,10 @@ const DOC: SigningReportDoc = {
   runLabel: "Pay mapping 2026",
   currency: "SEK",
   identity: {
-    systemVersion: "v2-slice1",
     approvedAt: "12 Jun 2026",
     referenceDate: "1 Jul 2026",
     extractedAt: "1 Jul 2026, 09:12",
+    year: "2026",
   },
   population: {
     total: 13,
@@ -30,6 +30,8 @@ const DOC: SigningReportDoc = {
   payPosition: {
     womenShareOfMenMeanPct: "79%",
     womenShareOfMenMedianPct: "81%",
+    womenShareOfMenMean: 79,
+    womenShareOfMenMedian: 81,
     masked: false,
   },
   quartiles: [
@@ -147,14 +149,23 @@ const DOC: SigningReportDoc = {
 const LABELS: SigningReportLabels = {
   footer: "Signing report",
   identity: {
-    docTitle: "Signing report",
+    coverTitle: "Pay mapping",
     organizationName: "Acme AB",
-    runLabel: "Pay mapping 2026",
-    referenceDateLine: "Reference date 1 Jul 2026",
-    extractedAtLine: "Data extracted 1 Jul 2026, 09:12",
-    methodVersionLine: "Method version v2-slice1, model approved 12 Jun 2026",
-    generatedOn: "Generated on 3 Sep 2026",
-    statusTag: "DRAFT",
+    referenceDateLine: "1 Jul 2026",
+    extractedAtLine: "1 Jul 2026, 09:12",
+    methodUpdatedLine: "12 Jun 2026",
+    generatedOn: "3 Sep 2026",
+    draftMarker: "DRAFT",
+    year: "2026",
+    footLabel: "Report",
+    statusNote:
+      "This pay mapping is not yet completed; the figures may still change.",
+    factLabels: {
+      referenceDate: "Reference date",
+      extractedAt: "Data extracted",
+      methodUpdated: "Method last updated",
+      generatedOn: "Generated",
+    },
   },
   formalitiesTitle: "Formalities and signing",
   collaborationDateLine: "Collaboration date: 15 Sep 2026",
@@ -172,41 +183,39 @@ const LABELS: SigningReportLabels = {
     date: "Date",
   },
   summaryTitle: "Summary and result picture",
-  boxes: [
+  payPositionTitle: "Overall pay position",
+  payPositionCaption:
+    "Women's pay as a share of men's; the line marks men's level.",
+  payPositionRows: [
     {
-      title: "Overall pay position",
-      rows: [
-        { label: "Women's median pay as a share of men's", value: "81%" },
-        { label: "Women's average pay as a share of men's", value: "79%" },
-      ],
+      label: "Average pay",
+      share: 79,
+      text: "79%",
     },
-    {
-      title: "Representation",
-      rows: [
-        { label: "Quartile 1 (lowest paid)", value: "100% women" },
-        { label: "Quartile 4 (highest paid)", value: "25% women" },
-      ],
-    },
+    { label: "Median pay", share: 81, text: "81%" },
+  ],
+  statusTitle: "Analysis status",
+  statusBars: [
     {
       title: "Equal work",
-      rows: [
-        { label: "Groups compared", value: "3" },
-        { label: "Assessments completed", value: "1 of 1" },
-        { label: "Objective reasons documented", value: "0" },
-        { label: "Actions decided", value: "1" },
+      segments: [
+        { label: "No action needed", value: 2 },
+        { label: "Objective reason documented", value: 0 },
+        { label: "Action decided", value: 1 },
+        { label: "Further analysis", value: 0 },
       ],
     },
     {
       title: "Equivalent work",
-      rows: [
-        { label: "Women-dominated groups in scope", value: "1" },
-        { label: "Relevant comparisons", value: "2" },
-        { label: "Comparisons assessed", value: "2 of 2" },
-        { label: "Objective reasons documented", value: "1" },
-        { label: "Actions decided", value: "1" },
+      segments: [
+        { label: "No action needed", value: 1 },
+        { label: "Objective reason documented", value: 1 },
+        { label: "Action decided", value: 0 },
+        { label: "Further analysis", value: 1 },
       ],
     },
   ],
+  statusEmpty: "No comparisons in scope.",
   quartilesTitle: "Distribution per pay quartile",
   quartileRow: (index) => `Quartile ${index + 1}`,
   colWomen: "Women",
@@ -269,6 +278,12 @@ const LABELS: SigningReportLabels = {
     { label: "Actions decided", value: "1" },
   ],
   actionPlanTitle: "Action plan and follow-up",
+  actionStatusTitle: "How the plan stands",
+  actionStatusSegments: [
+    { label: "Done", value: 1 },
+    { label: "In progress", value: 1 },
+    { label: "Not started", value: 2 },
+  ],
   colObservation: "Observation",
   colActions: "Actions",
   colStatusSplit: "Status",
@@ -335,7 +350,7 @@ describe("SigningReportPdf (real render)", () => {
     expect(blob.size).toBeGreaterThan(1000)
   })
 
-  it("captures every section's page number, in document order, within eight pages", async () => {
+  it("captures every section's page number, in document order, after the cover", async () => {
     const pageRefs: Record<string, number> = {}
     await pdf(
       <SigningReportPdf
@@ -351,13 +366,58 @@ describe("SigningReportPdf (real render)", () => {
       expect(pageRefs[id], id).toBeGreaterThanOrEqual(previous)
       previous = pageRefs[id] ?? 0
     }
-    expect(pageRefs.formalities).toBe(1)
-    expect(pageRefs.method).toBeLessThanOrEqual(8)
+    // The cover holds page 1; the first section opens the page after it, and
+    // the last one closes the document inside its page budget.
+    expect(pageRefs.formalities).toBe(2)
+    expect(pageRefs.method).toBeLessThanOrEqual(9)
   })
 
   // Every measure counts what its label says, in the unit the statutory
   // table draws. The blob is compressed, so the assertion reads the element
   // tree the component builds.
+  // The summary answers its four questions as pictures: the pay position as
+  // a share against men's level, the analysis as a status bar per area, and
+  // representation as the quartile chart. The representation BOX that used
+  // to sit above that chart printed the same shares in words.
+  it("draws the summary rather than tabulating it", () => {
+    const text = renderedText(
+      SigningReportPdf({ doc: DOC, labels: LABELS }) as ReactNode
+    )
+    expect(text).toContain("Overall pay position")
+    expect(text).toContain("Analysis status")
+    // The status legend names each status with its count.
+    expect(text).toContain("No action needed: 2")
+    expect(text).toContain("Action decided: 1")
+    // A zero-count status draws no segment and no legend row.
+    expect(
+      text.some((part) => part.includes("Objective reason documented: 0"))
+    ).toBe(false)
+    // Representation is the chart, not a box of shares above it.
+    expect(text).not.toContain("100% women")
+  })
+
+  // The document's own budget: the specification asks for six to eight
+  // pages, and the summary is the page that grew when its boxes became
+  // charts. A section that overflows onto a second page pushes every section
+  // after it, so the last section's page number IS the page count.
+  it("keeps every section on its own page, inside the page budget", async () => {
+    const pages: Partial<Record<string, number>> = {}
+    await pdf(
+      <SigningReportPdf
+        doc={DOC}
+        labels={LABELS}
+        onResolvePage={(id, page) => {
+          pages[id] = page
+        }}
+      />
+    ).toBlob()
+    // Page 1 is the cover, so the eight sections run 2 through 9. A section
+    // that overflows pushes every section after it, which is why the whole
+    // sequence is asserted rather than the last page alone.
+    const ordered = SIGNING_SECTIONS.map((id) => pages[id] ?? 0)
+    expect(ordered).toEqual([2, 3, 4, 5, 6, 7, 8, 9])
+  })
+
   it("prints both directions, the x-of-y completion rows and the responsible function", () => {
     const text = renderedText(
       SigningReportPdf({ doc: DOC, labels: LABELS }) as ReactNode
@@ -365,11 +425,14 @@ describe("SigningReportPdf (real render)", () => {
     // Section 5: the compared total and the direction split under it.
     expect(text).toContain("Comparable groups")
     expect(text).toContain("Of which groups where women are ahead")
-    // Both completion rows read as "x of y", in the unit their label names.
+    // Each count is printed ONCE, in the section that owns it. The summary
+    // used to repeat these rows in a box above, which put the same figures
+    // on two pages and made the summary a table of numbers rather than a
+    // picture of them.
     expect(text.filter((part) => part === "Comparisons assessed")).toHaveLength(
-      2
+      1
     )
-    expect(text.filter((part) => part === "2 of 2")).toHaveLength(2)
+    expect(text.filter((part) => part === "2 of 2")).toHaveLength(1)
     // Section 7's responsible cell is a function, never an owner name.
     expect(text).toContain("Responsible function")
     expect(text).toContain("HR and line management")

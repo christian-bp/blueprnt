@@ -1,43 +1,49 @@
 import { StyleSheet, Text, View } from "@react-pdf/renderer"
 import {
-  BRAND,
   BrandedDocument,
   BrandedPage,
-  Cover,
   Section,
 } from "@/components/pdf/branded-document"
+import { CoverPage } from "@/components/pdf/cover-page"
+import { PROSE_LINE_HEIGHT, PROSE_MEASURE_EM } from "@/components/pdf/pdf-table"
+import {
+  INK,
+  INK_BODY,
+  INK_MUTED,
+  INK_SECONDARY,
+  RULE,
+} from "@/lib/pdf/palette"
 import type { MethodAppendixDoc } from "@/lib/pdf/method-appendix-data"
 
 const s = StyleSheet.create({
   row: {
     flexDirection: "row",
     borderBottomWidth: 0.5,
-    borderBottomColor: "#ddd",
+    borderBottomColor: RULE,
     paddingVertical: 3,
   },
   cellName: { flex: 3 },
   cellNum: { flex: 1, textAlign: "right" },
-  // lineHeight lives on prose styles (not the page) so it is not inherited by
-  // the fixed footer, which vanishes in the browser build under a page-level
-  // lineHeight.
-  para: { marginBottom: 3, lineHeight: 1.4 },
+  // Leading is set per style and never on the page; see pdf-table.tsx for the
+  // measurement and for why the page style must stay free of it.
+  para: { marginBottom: 3, lineHeight: PROSE_LINE_HEIGHT },
   label: { fontFamily: "Helvetica-Bold" },
   // Per-criterion detail page. The criterion name is the page's heading; the
-  // eyebrow above it names the section, and a short brand rule anchors both.
+  // eyebrow above it names the section, and a hairline anchors both.
   criterionEyebrow: {
     fontSize: 8,
     fontFamily: "Helvetica-Bold",
-    color: BRAND,
+    color: INK_MUTED,
     textTransform: "uppercase",
     letterSpacing: 0.6,
     marginBottom: 4,
   },
-  criterionTitle: { fontSize: 18, fontFamily: "Helvetica-Bold", color: "#111" },
-  // Full-width rule under the criterion title (spans the content width, not a
-  // short stub at the start).
+  criterionTitle: { fontSize: 18, fontFamily: "Helvetica-Bold", color: INK },
+  // Full-width hairline under the criterion title (spans the content width,
+  // not a short stub at the start).
   criterionRule: {
-    borderBottomWidth: 2,
-    borderBottomColor: BRAND,
+    borderBottomWidth: 0.75,
+    borderBottomColor: RULE,
     marginTop: 8,
     marginBottom: 16,
   },
@@ -46,10 +52,20 @@ const s = StyleSheet.create({
     fontFamily: "Helvetica-Bold",
     fontSize: 10,
     marginBottom: 2,
-    color: "#111",
+    color: INK,
   },
-  fieldValue: { fontSize: 10, color: "#333", lineHeight: 1.4 },
-  approval: { fontSize: 9, color: "#666", marginTop: 6 },
+  fieldValue: {
+    fontSize: 10,
+    color: INK_BODY,
+    lineHeight: PROSE_LINE_HEIGHT,
+    maxWidth: PROSE_MEASURE_EM * 10,
+  },
+  approval: {
+    fontSize: 9,
+    color: INK_SECONDARY,
+    marginTop: 6,
+    lineHeight: PROSE_LINE_HEIGHT,
+  },
   // Cover "Contents" list (a page-numbered table of contents): the label on the
   // left, its page number right-aligned. Page numbers come from a first render
   // pass (see the download component's two-pass render).
@@ -57,7 +73,7 @@ const s = StyleSheet.create({
   contentsTitle: {
     fontSize: 8,
     fontFamily: "Helvetica-Bold",
-    color: BRAND,
+    color: INK_MUTED,
     textTransform: "uppercase",
     letterSpacing: 0.6,
     marginBottom: 8,
@@ -70,7 +86,13 @@ const s = StyleSheet.create({
   tocRowSub: { marginLeft: 14, marginBottom: 3 },
   tocLabel: { fontSize: 11 },
   cellStep: { width: 16 },
-  note: { fontSize: 9, color: "#555", marginTop: 4, lineHeight: 1.4 },
+  note: {
+    fontSize: 9,
+    color: INK_SECONDARY,
+    marginTop: 4,
+    lineHeight: PROSE_LINE_HEIGHT,
+    maxWidth: PROSE_MEASURE_EM * 9,
+  },
   zoneBlock: { marginBottom: 12 },
   zoneHeading: {
     fontSize: 10,
@@ -78,17 +100,34 @@ const s = StyleSheet.create({
     marginBottom: 3,
   },
   anchorRow: { flexDirection: "row", marginBottom: 3 },
-  anchorText: { flex: 1, fontSize: 10, color: "#333", lineHeight: 1.4 },
-  tocLabelSub: { fontSize: 10, color: "#555" },
-  tocPage: { fontSize: 10, color: "#555" },
+  anchorText: {
+    flex: 1,
+    fontSize: 10,
+    color: INK_BODY,
+    lineHeight: PROSE_LINE_HEIGHT,
+    maxWidth: PROSE_MEASURE_EM * 10,
+  },
+  tocLabelSub: { fontSize: 10, color: INK_SECONDARY },
+  tocPage: { fontSize: 10, color: INK_SECONDARY },
 })
 
 export type MethodAppendixLabels = {
   docTitle: string
+  // The organization the appendix belongs to, above its name on the cover.
+  eyebrow: string
+  // The cover's label column, one per fact.
+  footLabel: string
+  factLabels: { model: string; generatedOn: string }
   contentsTitle: string
   generatedOn: string
   model: string
-  statusTag: string
+  // Present only while the appendix is a draft; it rides in the cover's
+  // band beside the logo.
+  draftMarker?: string
+  // The sentence a draft owes its reader, under the cover's colophon: the
+  // band's marker says the state, this says what the state means for the
+  // figures.
+  statusNote?: string
   methodologyTitle: string
   methodologyBody: string
   scaleTitle: string
@@ -162,12 +201,22 @@ export function MethodAppendix({
 }) {
   return (
     <BrandedDocument>
-      <BrandedPage footerLeft={labels.footer}>
-        <Cover
-          docTitle={labels.docTitle}
-          metaLines={[labels.model, labels.generatedOn]}
-          statusTag={labels.statusTag}
-        />
+      {/* The kit's cover, the same one both pay-mapping documents open
+          with. Its contents list starts on the page after it. */}
+      <CoverPage
+        title={labels.docTitle}
+        subtitle={labels.eyebrow}
+        markLabel={labels.draftMarker}
+        facts={[
+          { label: labels.factLabels.model, value: labels.model },
+          { label: labels.factLabels.generatedOn, value: labels.generatedOn },
+        ]}
+        {...(labels.statusNote === undefined
+          ? {}
+          : { notes: [labels.statusNote] })}
+        footLabel={labels.footLabel}
+      />
+      <BrandedPage footerLeft={labels.footer} runningHeader>
         <View style={s.contents}>
           <Text style={s.contentsTitle}>{labels.contentsTitle}</Text>
           <TocRow

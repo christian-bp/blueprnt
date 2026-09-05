@@ -112,6 +112,10 @@ export interface ReportFormatters {
   date: (epochMs: number) => string
   // Date and time of day, for the extraction instant (the freeze).
   dateTime: (epochMs: number) => string
+  // The year alone, for the cover's band label: the run's own label is free
+  // text an organization types, so the period the document covers is derived
+  // from the reference date rather than parsed back out of that label.
+  year: (epochMs: number) => string
   // "/mo" style recurrence suffix for a cost figure; empty for a lump sum,
   // so money(x) + costUnitSuffix(unit) is the one composition everywhere.
   costUnitSuffix: (unit: CostUnit | null) => string
@@ -304,10 +308,10 @@ export interface PayMappingReportDoc {
   // The identity block's raw parts, formatted; the templates compose the
   // labeled lines.
   identity: {
-    systemVersion: string
     approvedAt: string | null
     referenceDate: string
     extractedAt: string
+    year: string
   }
   quartiles: { women: number; men: number }[]
   collaboration: {
@@ -336,8 +340,15 @@ export interface PayMappingReportDoc {
     // Women's mean/median pay as a percent of men's (the professional
     // template convention; 100 = parity). The signing projection applies the
     // org-median floor.
+    //
+    // Formatted AND numeric: the report draws the share as a bar against
+    // men's level, and a chart cannot read "86%" back out of a localised
+    // string. One computation, two shapes, so the drawing and the printed
+    // value can never disagree.
     womenShareOfMenMeanPct: string | null
     womenShareOfMenMedianPct: string | null
+    womenShareOfMenMean: number | null
+    womenShareOfMenMedian: number | null
   }
   actionTotals: {
     count: number
@@ -987,13 +998,19 @@ export function assemblePayMappingReport(input: {
   const orgWomenMedian = percentileOf(orgWomenValues, 50)
   const orgMenMedian = percentileOf(orgMenValues, 50)
 
+  const shareOfMen = (
+    women: number | null,
+    men: number | null
+  ): number | null =>
+    women === null || men === null || men === 0 ? null : (women / men) * 100
+
   const shareOfMenPct = (
     women: number | null,
     men: number | null
-  ): string | null =>
-    women === null || men === null || men === 0
-      ? null
-      : formatters.pct((women / men) * 100)
+  ): string | null => {
+    const share = shareOfMen(women, men)
+    return share === null ? null : formatters.pct(share)
+  }
 
   const sharePct = (points: number): string =>
     totalWeight === 0
@@ -1028,13 +1045,13 @@ export function assemblePayMappingReport(input: {
       menPriced: orgMenValues.length,
     },
     identity: {
-      systemVersion: run.systemVersion,
       approvedAt:
         run.frozenMethod.approvedAt === null
           ? null
           : formatters.date(run.frozenMethod.approvedAt),
       referenceDate: formatters.date(run.referenceDate),
       extractedAt: formatters.dateTime(run.referenceDate),
+      year: formatters.year(run.referenceDate),
     },
     quartiles: gap.quartiles,
     // Projected explicitly, formatting the samverkan date (null when the
@@ -1063,6 +1080,11 @@ export function assemblePayMappingReport(input: {
         gap.org.menMeanComp
       ),
       womenShareOfMenMedianPct: shareOfMenPct(orgWomenMedian, orgMenMedian),
+      womenShareOfMenMean: shareOfMen(
+        gap.org.womenMeanComp,
+        gap.org.menMeanComp
+      ),
+      womenShareOfMenMedian: shareOfMen(orgWomenMedian, orgMenMedian),
     },
     actionTotals,
     actionCostByScope: {

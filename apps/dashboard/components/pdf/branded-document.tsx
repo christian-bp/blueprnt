@@ -14,6 +14,11 @@ import {
   View,
 } from "@react-pdf/renderer"
 import type { ReactNode } from "react"
+// Imported for its side effect: registering the kit's typefaces. Every
+// document reaches the renderer through this module, so this is the one place
+// that has to remember.
+import "@/lib/pdf/fonts"
+import { INK, INK_MUTED, INK_SECONDARY } from "@/lib/pdf/palette"
 import { WORDMARK_DATA_URI } from "@/lib/pdf/wordmark"
 
 // No hyphenation, in any document built on this kit: the default splits
@@ -22,47 +27,24 @@ import { WORDMARK_DATA_URI } from "@/lib/pdf/wordmark"
 // every string these documents carry.
 Font.registerHyphenationCallback((word) => [word])
 
-export const BRAND = "#f43f5e"
-
 const styles = StyleSheet.create({
   page: {
     paddingTop: 64,
     paddingBottom: 56,
     paddingHorizontal: 48,
     fontSize: 10,
-    color: "#111",
+    color: INK,
     fontFamily: "Helvetica",
     // NOTE: no page-level lineHeight. A lineHeight here is inherited by the
     // `fixed` footer/header and makes the footer vanish in the browser build
     // (auto-height absolute + inherited lineHeight). Set lineHeight on the
     // specific prose text styles instead (see method-appendix `para`/`fieldValue`).
   },
-  cover: {
-    marginBottom: 24,
-    borderBottomWidth: 3,
-    borderBottomColor: BRAND,
-    paddingBottom: 12,
-  },
-  coverRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginTop: 16,
-  },
-  coverTitleCol: { flex: 1, paddingRight: 16 },
-  coverMeta: { alignItems: "flex-end" },
-  docTitle: { fontSize: 18, fontFamily: "Helvetica-Bold" },
-  meta: { fontSize: 9, color: "#666", marginTop: 4, textAlign: "right" },
-  statusTag: {
-    fontSize: 9,
-    color: BRAND,
-    fontFamily: "Helvetica-Bold",
-    marginTop: 6,
-  },
   // Chapter typography: at most three heading levels in a document, each a
   // clear size step above the next (16 / 12 / 10 against 10pt body), with
-  // more space before a heading than after it. The chapter number is the
-  // one brand accent (a transition marker, not title text).
+  // more space before a heading than after it. The chapter number recedes to
+  // the muted ink: it is a transition marker rather than title text, and the
+  // documents carry no accent colour of their own (see lib/pdf/palette).
   sectionTitleRow: {
     flexDirection: "row",
     gap: 8,
@@ -74,7 +56,7 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica-Bold",
   },
   sectionNumber: {
-    color: BRAND,
+    color: INK_MUTED,
   },
   footer: {
     position: "absolute",
@@ -82,7 +64,7 @@ const styles = StyleSheet.create({
     left: 48,
     right: 48,
     fontSize: 9,
-    color: "#555",
+    color: INK_SECONDARY,
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -110,7 +92,7 @@ export function BrandedPage({
     // break drop a full-width line straight through the wordmark.
     <Page
       size="A4"
-      style={runningHeader ? [styles.page, { paddingTop: 88 }] : styles.page}
+      style={[styles.page, ...(runningHeader ? [{ paddingTop: 88 }] : [])]}
     >
       {/* Running header: a small wordmark top-right on every page of this Page.
           Enabled for content pages; the cover is a separate Page without it so
@@ -144,37 +126,6 @@ function BlueprntWordmark({ width = 132 }: { width?: number }) {
   return <Image src={WORDMARK_DATA_URI} style={{ width }} />
 }
 
-export function Cover({
-  docTitle,
-  metaLines,
-  statusTag,
-}: {
-  docTitle: string
-  metaLines: string[]
-  statusTag: string
-}) {
-  return (
-    <View style={styles.cover}>
-      <BlueprntWordmark />
-      {/* Two columns: the document identity (title + status) on the left, the
-          metadata (model, generated date) right-aligned on the right. */}
-      <View style={styles.coverRow}>
-        <View style={styles.coverTitleCol}>
-          <Text style={styles.docTitle}>{docTitle}</Text>
-          <Text style={styles.statusTag}>{statusTag}</Text>
-        </View>
-        <View style={styles.coverMeta}>
-          {metaLines.map((line) => (
-            <Text key={line} style={styles.meta}>
-              {line}
-            </Text>
-          ))}
-        </View>
-      </View>
-    </View>
-  )
-}
-
 export function Section({
   title,
   number,
@@ -182,7 +133,7 @@ export function Section({
   children,
 }: {
   title: string
-  // Chapter number, shown before the title in the brand ink. A separate
+  // Chapter number, shown before the title in the muted ink. A separate
   // Text (not part of the title string) because the title renders through a
   // render prop, which must return a plain string.
   number?: string

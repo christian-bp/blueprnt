@@ -47,6 +47,7 @@ const FORMATTERS: ReportFormatters = {
   pct: (value) => `${value}%`,
   date: (epochMs) => new Date(epochMs).toISOString().slice(0, 10),
   dateTime: (epochMs) => new Date(epochMs).toISOString(),
+  year: (epochMs) => String(new Date(epochMs).getUTCFullYear()),
   costUnitSuffix: (unit) =>
     unit === null || unit === "oneOff" ? "" : `/${unit}`,
 }
@@ -58,7 +59,8 @@ const PRAXIS_AREA_LABEL = (area: string) => `Area ${area}`
 // past a page.
 function buildDoc(
   problemText = "Unexplained gap",
-  praxisNote = "Unclear criteria"
+  praxisNote = "Unclear criteria",
+  plannedActionText = "Rewrite the pay policy"
 ) {
   return detailAppendixDoc(
     assemblePayMappingReport({
@@ -198,7 +200,7 @@ function buildDoc(
           number: 3,
           target: { kind: "praxis", area: "payPolicy" },
           problem: "Managers read the policy differently",
-          plannedAction: "Rewrite the pay policy",
+          plannedAction: plannedActionText,
           reason: null,
           ownerUserId: "u1",
           ownerName: "HR Person",
@@ -326,14 +328,20 @@ const DOC = buildDoc()
 const LABELS: DetailAppendixLabels = {
   footer: "Detail appendix",
   identity: {
-    docTitle: "Detail appendix",
+    coverTitle: "Pay mapping",
     organizationName: "Acme AB",
-    runLabel: "Pay mapping 2026",
-    referenceDateLine: "Reference date 2026-07-01",
-    extractedAtLine: "Data extracted 2026-07-01T00:00:00.000Z",
-    methodVersionLine: "Method version v2-slice1, model approved 2023-07-22",
-    generatedOn: "Generated on 2026-09-03",
-    statusTag: "FINAL",
+    referenceDateLine: "2026-07-01",
+    extractedAtLine: "2026-07-01T00:00:00.000Z",
+    methodUpdatedLine: "2023-07-22",
+    generatedOn: "2026-09-03",
+    year: "2026",
+    footLabel: "Report",
+    factLabels: {
+      referenceDate: "Reference date",
+      extractedAt: "Data extracted",
+      methodUpdated: "Method last updated",
+      generatedOn: "Generated",
+    },
   },
   classification:
     "Internal document. Contains person-near pay data. Every download is logged.",
@@ -487,16 +495,40 @@ describe("DetailAppendixPdf (real render)", () => {
 
   it("flows a page-exceeding action text instead of clipping it (wrap fallback)", async () => {
     const short = await pageCount(DOC)
-    const long = await pageCount(buildDoc("word ".repeat(2400).trim()))
+    const long = await pageCount(buildDoc("word ".repeat(3600).trim()))
     expect(long).toBeGreaterThan(short + 1)
   })
 
   it("flows a page-exceeding praxis note instead of clipping it (wrap fallback)", async () => {
     const short = await pageCount(DOC)
     const long = await pageCount(
-      buildDoc(undefined, "word ".repeat(2400).trim())
+      buildDoc(undefined, "word ".repeat(3600).trim())
     )
     expect(long).toBeGreaterThan(short + 1)
+  })
+
+  // A praxis area draws its linked action's planned measure inside the same
+  // unbreakable block as its note, and that text has no length cap anywhere.
+  // Bounding the note alone read "short, stay atomic" while the block
+  // carried an unbounded action, and the words past the page edge were lost
+  // with nothing but a console warning.
+  it("keeps a praxis area whose linked action carries long text on the page", async () => {
+    const overflow = vi.spyOn(console, "warn").mockImplementation(() => {})
+    await pdf(
+      <DetailAppendixPdf
+        doc={buildDoc(
+          "Unexplained gap",
+          "Unclear criteria",
+          "word ".repeat(3600).trim()
+        )}
+        labels={LABELS}
+      />
+    ).toBlob()
+    const dropped = overflow.mock.calls.filter((call) =>
+      String(call[0]).includes("bigger than available page height")
+    )
+    overflow.mockRestore()
+    expect(dropped).toEqual([])
   })
 
   it("renders the reverse table and the single-gender list", async () => {
@@ -607,6 +639,11 @@ describe("DetailAppendixPdf (real render)", () => {
 
   // A model that documents several criteria produces more sub-lines than one
   // page holds; the criteria block must flow rather than be dropped whole.
+  //
+  // This one only measures growth, which is the weaker half of the contract:
+  // an oversized unbreakable block REDUCES the page count while dropping
+  // words, so growth alone cannot see that failure. The test below it is the
+  // half that can, and the two travel together.
   it("flows a fully documented criteria table onto further pages", async () => {
     const long = "word ".repeat(400).trim()
     const documented = detailAppendixDoc(
@@ -647,6 +684,59 @@ describe("DetailAppendixPdf (real render)", () => {
     expect(pages).toBeGreaterThan(await pageCount(DOC))
   })
 
+  // Each of a criterion's three free-text fields is capped at 2,000
+  // characters by the backend, so 6,000 characters on one criterion is a
+  // document the product can actually produce. It used to be the one
+  // unbreakable block in the kit with no length bound, and at that size it
+  // ran off the page edge and dropped words with nothing but a console
+  // warning to show for it.
+  it("keeps a criterion documented to the backend's own cap on the page", async () => {
+    const atCap = "word ".repeat(400).trim().padEnd(2000, ".")
+    const overflow = vi.spyOn(console, "warn").mockImplementation(() => {})
+    const documented = detailAppendixDoc(
+      assemblePayMappingReport({
+        run: makeRunDetail({
+          status: "completed",
+          rows: ROWS,
+          frozenMethod: {
+            criteria: Array.from({ length: 3 }, (_, index) =>
+              makeFrozenCriterion({
+                name: `Criterion ${index}`,
+                weightPoints: 3,
+                purpose: atCap,
+                whyRelevant: atCap,
+                weightMotivation: atCap,
+              })
+            ),
+            levelRules: [],
+            zoneProfileRules: [],
+            workingConditions: null,
+            approvedAt: null,
+          },
+        }),
+        gap: makeGapResult(),
+        analyses: [],
+        actions: [],
+        notes: [],
+        previous: null,
+        formatters: FORMATTERS,
+        praxisAreaLabel: PRAXIS_AREA_LABEL,
+      })
+    )
+    // The block must actually CARRY the text, or the guard asserts nothing.
+    expect(
+      renderedText(
+        DetailAppendixPdf({ doc: documented, labels: LABELS }) as ReactNode
+      ).join(" ")
+    ).toContain(atCap)
+    await pdf(<DetailAppendixPdf doc={documented} labels={LABELS} />).toBlob()
+    const dropped = overflow.mock.calls.filter((call) =>
+      String(call[0]).includes("bigger than available page height")
+    )
+    overflow.mockRestore()
+    expect(dropped).toEqual([])
+  })
+
   it("renders every empty state when nothing is recorded yet", async () => {
     const blob = await pdf(
       <DetailAppendixPdf doc={buildBareDoc()} labels={LABELS} />
@@ -669,12 +759,72 @@ describe("DetailAppendixPdf (real render)", () => {
     for (const ids of tables) {
       for (const id of ids) expect(rowPages[id], id).toBeGreaterThan(1)
     }
-    const breaks = computeHeaderBreaks(tables, rowPages)
-    // A table whose rows share a page never asks for a continuation header.
-    expect(tables[0]?.some((id) => breaks.has(id))).toBe(false)
-    // The action table is the one that spills onto a second page in this
-    // fixture, and exactly its first row there carries the re-rendered
-    // header on the next pass.
-    expect([...breaks]).toEqual([expect.stringMatching(/^actions:/)])
+    // Every table in THIS fixture fits on one page, so nothing asks for a
+    // continuation header. Asserted as an empty set rather than looped over:
+    // a loop over an empty set passes whatever the derivation does, which is
+    // a guard that cannot fail. The derivation itself is unit-tested against
+    // computeHeaderBreaks in pdf-primitives-render.test.tsx; what this test
+    // owns is the render contract that feeds it, that every row reports the
+    // page it landed on.
+    expect([...computeHeaderBreaks(tables, rowPages)]).toEqual([])
+  })
+
+  // A criteria table long enough to spill re-renders its column header on
+  // the continuation page. Without it the reader meets four unlabelled
+  // columns, two of which are a bare weight in POINTS and a bare share in
+  // PERCENT: the one pair in this model that must never be confused.
+  it("repeats the criteria header on the page the table continues onto", async () => {
+    const purpose = "word ".repeat(60).trim()
+    const doc = detailAppendixDoc(
+      assemblePayMappingReport({
+        run: makeRunDetail({
+          status: "completed",
+          rows: ROWS,
+          frozenMethod: {
+            criteria: Array.from({ length: 10 }, (_, index) =>
+              makeFrozenCriterion({
+                name: `Criterion ${index}`,
+                weightPoints: 3,
+                purpose,
+                whyRelevant: purpose,
+              })
+            ),
+            levelRules: [],
+            zoneProfileRules: [],
+            workingConditions: null,
+            approvedAt: null,
+          },
+        }),
+        gap: makeGapResult(),
+        analyses: [],
+        actions: [],
+        notes: [],
+        previous: null,
+        formatters: FORMATTERS,
+        praxisAreaLabel: PRAXIS_AREA_LABEL,
+      })
+    )
+    const rowPages: Record<string, number> = {}
+    await pdf(
+      <DetailAppendixPdf
+        doc={doc}
+        labels={LABELS}
+        onRowPage={(id, page) => {
+          rowPages[id] = page
+        }}
+      />
+    ).toBlob()
+    const criteria = doc.method.criteria.map((c) => `criteria:${c.name}`)
+    // The fixture has to actually spill, or the guard below is vacuous.
+    const pages = new Set(criteria.map((id) => rowPages[id]))
+    expect(pages.size).toBeGreaterThan(1)
+    const breaks = computeHeaderBreaks(detailAppendixTables(doc), rowPages)
+    const continuation = criteria.filter((id) => breaks.has(id))
+    expect(continuation.length).toBeGreaterThan(0)
+    // The header goes above the FIRST criterion on the continuation page.
+    for (const id of continuation) {
+      const first = criteria.find((other) => rowPages[other] === rowPages[id])
+      expect(first, `${id} is not the first criterion on its page`).toBe(id)
+    }
   })
 })

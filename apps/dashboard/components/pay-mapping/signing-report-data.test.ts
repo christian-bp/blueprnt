@@ -32,6 +32,7 @@ const formatters: ReportFormatters = {
   pct: (value) => `P${value}`,
   date: (epochMs) => `D${epochMs}`,
   dateTime: (epochMs) => `T${epochMs}`,
+  year: (epochMs) => `Y${epochMs}`,
   costUnitSuffix: (unit) =>
     unit === null || unit === "oneOff" ? "" : `/${unit}`,
 }

@@ -1,4 +1,5 @@
 import { Text, View } from "@react-pdf/renderer"
+import { INK_SECONDARY } from "@/lib/pdf/palette"
 import type { PayGapReason, PraxisAreaKey } from "@workspace/constants"
 import {
   equalWorkGroupRequiresDocumentation,
@@ -10,7 +11,7 @@ import {
   Section,
 } from "@/components/pdf/branded-document"
 import {
-  IdentityBlock,
+  IdentityCover,
   type IdentityLabels,
 } from "@/components/pdf/identity-block"
 import {
@@ -63,7 +64,7 @@ export type AppendixSectionId = (typeof APPENDIX_SECTIONS)[number]
 
 // The subordinate face inside a cell: a secondary line under the cell's
 // first read (the planned measure under the problem, a note's author line).
-const mutedText = [s.tableText, { color: "#555" }]
+const mutedText = [s.tableText, { color: INK_SECONDARY }]
 // The action tables' number column, shared by the header cell and the body
 // cells: a header whose alignment drifts from the column below it reads as
 // a different column.
@@ -196,6 +197,26 @@ export type DetailAppendixLabels = {
 
 // The row-id lists every table reports through onRowPage, in document
 // order, for computeHeaderBreaks.
+// The criteria table's column header, drawn once at the top and again on
+// every page the table continues onto. Without it a continuation page shows
+// four unlabelled columns, two of which are a bare weight in POINTS and a
+// bare share in PERCENT: the one pair in this model a reader must never
+// confuse.
+function CriteriaTableHeader({ labels }: { labels: DetailAppendixLabels }) {
+  return (
+    <View style={s.headerRow}>
+      <Text style={[s.cellGroup, s.label, s.tableText]}>
+        {labels.colCriterion}
+      </Text>
+      <Text style={[s.cellMoney, s.label, s.tableText]}>
+        {labels.colDimension}
+      </Text>
+      <Text style={[s.cellNum, s.label, s.tableText]}>{labels.colWeight}</Text>
+      <Text style={[s.cellNum, s.label, s.tableText]}>{labels.colShare}</Text>
+    </View>
+  )
+}
+
 export function detailAppendixTables(doc: DetailAppendixDoc): string[][] {
   return [
     doc.equalWork.map((row) => `equalWork:${row.key}`),
@@ -207,6 +228,7 @@ export function detailAppendixTables(doc: DetailAppendixDoc): string[][] {
       (action) => `prevActions:${action.id}`
     ) ?? [],
     doc.actions.map((action) => `actions:${action.id}`),
+    doc.method.criteria.map((criterion) => `criteria:${criterion.name}`),
   ]
 }
 
@@ -473,6 +495,22 @@ function PrevActionsHeader({ labels }: { labels: DetailAppendixLabels }) {
   )
 }
 
+// The free text one criterion draws, for the unbreakable-block bound. All
+// three fields render inside the same block, so all three have to count: the
+// backend caps each at 2,000 characters, and a criterion written to that
+// length is exactly the case that used to fall off the page edge.
+function criterionTextLength(criterion: {
+  purpose: string | null
+  whyRelevant: string | null
+  weightMotivation: string | null
+}): number {
+  return (
+    (criterion.purpose?.length ?? 0) +
+    (criterion.whyRelevant?.length ?? 0) +
+    (criterion.weightMotivation?.length ?? 0)
+  )
+}
+
 export function DetailAppendixPdf({
   doc,
   labels,
@@ -499,12 +537,15 @@ export function DetailAppendixPdf({
 
   return (
     <BrandedDocument>
-      {/* 1. Cover: identity block, classification line, contents. */}
-      <BrandedPage footerLeft={labels.footer}>
-        <IdentityBlock
-          labels={labels.identity}
-          classification={labels.classification}
-        />
+      {/* The cover: the document's name, the version being read and who may
+          read it. */}
+      <IdentityCover
+        labels={labels.identity}
+        classification={labels.classification}
+      />
+
+      {/* The contents, on the page after the cover. */}
+      <BrandedPage footerLeft={labels.footer} runningHeader>
         <View style={s.contents}>
           <Text style={s.contentsTitle}>{labels.contentsTitle}</Text>
           <TocRow
@@ -707,13 +748,20 @@ export function DetailAppendixPdf({
           onRenderPage={resolve("praxis")}
         >
           {doc.praxis.map((area) => (
-            // An area travels atomically while its note is BOUNDED; a longer
-            // note gives up unbreakability, because react-pdf draws an
-            // oversized wrap={false} block off the page edge and the
-            // overflow is silently lost.
+            // An area travels atomically while the free text it DRAWS is
+            // bounded; past the bound it gives up unbreakability, because
+            // react-pdf draws an oversized wrap={false} block off the page
+            // edge and the overflow is silently lost. The action's planned
+            // measure counts toward the bound because it renders inside this
+            // same block: bounding the note alone read "short, stay atomic"
+            // while the block carried an unbounded action.
             <View
               key={area.key}
-              wrap={(area.note?.length ?? 0) > BREAKABLE_ROW_TEXT_LENGTH}
+              wrap={
+                (area.note?.length ?? 0) +
+                  (area.action?.plannedAction.length ?? 0) >
+                BREAKABLE_ROW_TEXT_LENGTH
+              }
             >
               <Text style={s.groupHeading}>
                 {labels.praxisAreaTitle(area.key)}
@@ -929,26 +977,33 @@ export function DetailAppendixPdf({
               criterion keeps its own row and sub-lines together instead. */}
           <View>
             <Text style={s.subHeading}>{labels.criteriaTitle}</Text>
-            <View style={s.headerRow}>
-              <Text style={[s.cellGroup, s.label, s.tableText]}>
-                {labels.colCriterion}
-              </Text>
-              <Text style={[s.cellMoney, s.label, s.tableText]}>
-                {labels.colDimension}
-              </Text>
-              <Text style={[s.cellNum, s.label, s.tableText]}>
-                {labels.colWeight}
-              </Text>
-              <Text style={[s.cellNum, s.label, s.tableText]}>
-                {labels.colShare}
-              </Text>
-            </View>
+            <CriteriaTableHeader labels={labels} />
             {doc.method.criteria.map((criterion) => (
-              <View key={criterion.name} wrap={false}>
-                <View style={s.row}>
-                  <Text style={[s.cellGroup, s.tableText]}>
-                    {criterion.name}
-                  </Text>
+              // A criterion travels atomically while its documentation is
+              // BOUNDED, and gives up unbreakability once the three free-text
+              // fields together pass the bound: react-pdf draws an oversized
+              // wrap={false} block off the page edge and the overflow is
+              // silently lost, with no error and a page count that FALLS as
+              // content grows. This was the one unbreakable block in the kit
+              // without a bound, and each of its three fields is capped at
+              // 2,000 characters by the backend, so a criterion written to
+              // the length the product itself allows lost text.
+              <View
+                key={criterion.name}
+                wrap={
+                  criterionTextLength(criterion) > BREAKABLE_ROW_TEXT_LENGTH
+                }
+              >
+                {headerBreaks?.has(`criteria:${criterion.name}`) && (
+                  <CriteriaTableHeader labels={labels} />
+                )}
+                <View style={s.rowOpen}>
+                  <CapturedText
+                    style={[s.cellGroup, s.tableText]}
+                    id={`criteria:${criterion.name}`}
+                    onRowPage={onRowPage}
+                    text={criterion.name}
+                  />
                   <Text style={[s.cellMoney, s.tableText]}>
                     {criterion.dimensionKey === null
                       ? dash

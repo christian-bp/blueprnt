@@ -105,10 +105,13 @@ const DOC: MethodAppendixDoc = {
 
 const LABELS = {
   docTitle: "Method appendix",
+  eyebrow: "Acme AB",
+  factLabels: { model: "Model", generatedOn: "Generated" },
   contentsTitle: "Contents",
   generatedOn: "Generated on 2 July 2026",
   model: "Model: Standardmodell",
-  statusTag: "DRAFT",
+  draftMarker: "DRAFT",
+  footLabel: "Report",
   methodologyTitle: "Methodology",
   methodologyBody: "Roles are evaluated criterion by criterion.",
   scaleTitle: "The shared assessment scale",

@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "@react-pdf/renderer"
+import { INK, INK_SECONDARY } from "@/lib/pdf/palette"
 
 // The signing report's signature block: one column per signing party, each
 // with a labeled line for name, signature, place and date. Lines are ruled
@@ -19,8 +20,8 @@ const s = StyleSheet.create({
     marginBottom: 10,
   },
   line: { marginBottom: 16 },
-  lineLabel: { fontSize: 8, color: "#555", marginBottom: 14 },
-  rule: { borderBottomWidth: 0.5, borderBottomColor: "#111" },
+  lineLabel: { fontSize: 8, color: INK_SECONDARY, marginBottom: 14 },
+  rule: { borderBottomWidth: 0.5, borderBottomColor: INK },
 })
 
 export function SignatureBlock({

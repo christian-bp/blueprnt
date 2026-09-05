@@ -106,6 +106,9 @@ export interface SigningReportDoc {
   payPosition: {
     womenShareOfMenMeanPct: string | null
     womenShareOfMenMedianPct: string | null
+    // The same two shares as numbers, for the bar the summary draws them as.
+    womenShareOfMenMean: number | null
+    womenShareOfMenMedian: number | null
     // True when a gender has fewer priced rows than EXPORT_MIN_GROUP_SIZE.
     masked: boolean
   }
@@ -257,6 +260,10 @@ export function signingReportDoc(full: PayMappingReportDoc): SigningReportDoc {
       womenShareOfMenMedianPct: payMasked
         ? null
         : full.summary.womenShareOfMenMedianPct,
+      womenShareOfMenMean: payMasked ? null : full.summary.womenShareOfMenMean,
+      womenShareOfMenMedian: payMasked
+        ? null
+        : full.summary.womenShareOfMenMedian,
       masked: payMasked,
     },
     quartiles: full.quartiles,

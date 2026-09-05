@@ -5,7 +5,7 @@ import {
   Section,
 } from "@/components/pdf/branded-document"
 import {
-  IdentityBlock,
+  IdentityCover,
   type IdentityLabels,
 } from "@/components/pdf/identity-block"
 import {
@@ -17,7 +17,12 @@ import {
   SignatureBlock,
   type SignatureLabels,
 } from "@/components/pdf/signature-block"
-import { PairedBarsChart, PdfGenderLegend } from "./pay-mapping-report-charts"
+import {
+  PairedBarsChart,
+  PdfGenderLegend,
+  ShareBarsChart,
+  StatusBarChart,
+} from "./pay-mapping-report-charts"
 import type { SigningReportDoc } from "./signing-report-data"
 
 // The signing report (signeringsrapport, ADR-0030): six to eight pages
@@ -97,10 +102,20 @@ export type SigningReportLabels = {
   notDocumented: string
   appendixReference: string
   signature: SignatureLabels & { employer: string; union: string }
-  // 2. Summary and result picture: four boxes, the quartile chart, the
-  // closing sentences.
+  // 2. Summary and result picture: the four questions the section answers,
+  // each as its own picture. The boxes of counts these replaced said the
+  // same things in figures the reader had to assemble, and the
+  // representation box repeated the quartile chart underneath it outright.
   summaryTitle: string
-  boxes: { title: string; rows: LabeledRow[] }[]
+  payPositionTitle: string
+  payPositionRows: { label: string; share: number | null; text: string }[]
+  payPositionCaption: string
+  statusTitle: string
+  statusBars: {
+    title: string
+    segments: { label: string; value: number }[]
+  }[]
+  statusEmpty: string
   quartilesTitle: string
   quartileRow: (index: number) => string
   colWomen: string
@@ -127,6 +142,11 @@ export type SigningReportLabels = {
   equivalentRows: LabeledRow[]
   // 7. Action plan and follow-up.
   actionPlanTitle: string
+  actionStatusTitle: string
+  // How the whole plan stands, above the table that details it: the counts
+  // are in the table's status column too, but spread over one row per area,
+  // which is not a shape the reader can add up at a glance.
+  actionStatusSegments: { label: string; value: number }[]
   colObservation: string
   colActions: string
   colStatusSplit: string
@@ -194,10 +214,13 @@ export function SigningReportPdf({
 
   return (
     <BrandedDocument>
-      {/* 1. Formalities and signing: the identity block, the samverkan
-          record and the signature lines, on the cover page itself. */}
-      <BrandedPage footerLeft={labels.footer}>
-        <IdentityBlock labels={labels.identity} />
+      {/* The cover: the document's name and the version being read, nothing
+          else. Its sections start on the page after it. */}
+      <IdentityCover labels={labels.identity} />
+
+      {/* 1. Formalities and signing: the samverkan record and the signature
+          lines. */}
+      <BrandedPage footerLeft={labels.footer} runningHeader>
         <Section
           title={labels.formalitiesTitle}
           number={num("formalities")}
@@ -229,20 +252,24 @@ export function SigningReportPdf({
           number={num("summary")}
           onRenderPage={resolve("summary")}
         >
-          <View style={s.boxGrid}>
-            {labels.boxes.map((box) => (
-              <View key={box.title} style={s.box} wrap={false}>
-                <Text style={s.boxTitle}>{box.title}</Text>
-                {box.rows.map((row) => (
-                  <View key={row.label} style={s.boxRow}>
-                    <Text style={[s.tableText, { flex: 3 }]}>{row.label}</Text>
-                    {/* The box is 48% of the page, so its value column is
-                        the wide one: a short phrase ("100% women") wraps in
-                        the narrow count cell, and every locale runs longer
-                        than English here. */}
-                    <Text style={[s.tableText, s.cellSpread]}>{row.value}</Text>
-                  </View>
-                ))}
+          {/* Women's pay against men's, as the shape it is: how far short
+              the figure falls, and what it falls short of. */}
+          <View wrap={false} style={s.chartBlock}>
+            <Text style={s.subHeading}>{labels.payPositionTitle}</Text>
+            <ShareBarsChart width={CHART_WIDTH} rows={labels.payPositionRows} />
+            <Text style={s.note}>{labels.payPositionCaption}</Text>
+          </View>
+          {/* What is analysed and what is left, one bar per area. */}
+          <View wrap={false} style={s.chartBlock}>
+            <Text style={s.subHeading}>{labels.statusTitle}</Text>
+            {labels.statusBars.map((bar) => (
+              <View key={bar.title} style={{ marginTop: 8 }}>
+                <Text style={s.fieldLabel}>{bar.title}</Text>
+                <StatusBarChart
+                  width={CHART_WIDTH}
+                  segments={bar.segments}
+                  emptyLabel={labels.statusEmpty}
+                />
               </View>
             ))}
           </View>
@@ -321,7 +348,7 @@ export function SigningReportPdf({
           onRenderPage={resolve("equalWork")}
         >
           <LabeledRows rows={labels.equalWorkRows} />
-          <View style={[s.box, { width: "100%", marginTop: 16 }]} wrap={false}>
+          <View style={[s.box, { marginTop: 16 }]} wrap={false}>
             <Text style={s.docText}>{labels.equalWorkConclusion}</Text>
           </View>
         </Section>
@@ -352,6 +379,14 @@ export function SigningReportPdf({
             <Text style={s.para}>{labels.noActions}</Text>
           ) : (
             <View>
+              <View wrap={false} style={s.chartBlock}>
+                <Text style={s.subHeading}>{labels.actionStatusTitle}</Text>
+                <StatusBarChart
+                  width={CHART_WIDTH}
+                  segments={labels.actionStatusSegments}
+                  emptyLabel={labels.noActions}
+                />
+              </View>
               <View style={s.headerRow}>
                 <Text style={bolded(actionAreaCell)}>{labels.colArea}</Text>
                 <Text style={bolded(actionObservationCell)}>

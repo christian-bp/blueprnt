@@ -5,7 +5,7 @@ import {
   BrandedPage,
   Section,
 } from "@/components/pdf/branded-document"
-import { IdentityBlock } from "@/components/pdf/identity-block"
+import { IdentityCover } from "@/components/pdf/identity-block"
 import {
   CapturedText,
   computeHeaderBreaks,
@@ -15,14 +15,22 @@ import {
 import { SignatureBlock } from "@/components/pdf/signature-block"
 
 const IDENTITY = {
-  docTitle: "Signing report",
+  factLabels: {
+    referenceDate: "Reference date",
+    extractedAt: "Data extracted",
+    methodUpdated: "Method last updated",
+    generatedOn: "Generated",
+  },
+  coverTitle: "Pay mapping",
   organizationName: "Acme AB",
   runLabel: "Pay mapping 2026",
-  referenceDateLine: "Reference date 1 Jul 2026",
-  extractedAtLine: "Data extracted 1 Jul 2026, 09:12",
-  methodVersionLine: "Method version v2-slice1, model approved 12 Jun 2026",
-  generatedOn: "Generated on 3 Sep 2026",
-  statusTag: "DRAFT",
+  referenceDateLine: "1 Jul 2026",
+  extractedAtLine: "1 Jul 2026, 09:12",
+  methodUpdatedLine: "12 Jun 2026",
+  generatedOn: "3 Sep 2026",
+  draftMarker: "DRAFT",
+  year: "2026",
+  footLabel: "Report",
 }
 
 describe("pdf primitives (real render)", () => {
@@ -30,11 +38,11 @@ describe("pdf primitives (real render)", () => {
     const rowPages: Record<string, number> = {}
     const blob = await pdf(
       <BrandedDocument>
+        <IdentityCover
+          labels={IDENTITY}
+          classification="Internal document. Every download is logged."
+        />
         <BrandedPage footerLeft="Footer">
-          <IdentityBlock
-            labels={IDENTITY}
-            classification="Internal document. Every download is logged."
-          />
           <TocRow number="1" label="Formalities" page={2} />
           <Section title="Table" number="1">
             <View style={s.headerRow}>
@@ -66,7 +74,8 @@ describe("pdf primitives (real render)", () => {
       </BrandedDocument>
     ).toBlob()
     expect(blob.size).toBeGreaterThan(1000)
-    expect(rowPages["t:row1"]).toBe(1)
+    // Page 1 is the kit's cover; the table sits on the page after it.
+    expect(rowPages["t:row1"]).toBe(2)
   })
 })
 

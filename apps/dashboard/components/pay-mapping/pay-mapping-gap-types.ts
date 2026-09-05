@@ -435,8 +435,11 @@ export interface PayMappingRunDetail {
     date: number | null
     remarks: string | null
   } | null
-  // The run's system version; with frozenMethod.approvedAt it is the method
-  // version both report documents print.
+  // The engine version the run was frozen under. Kept as the run's own
+  // record and never printed: a method is a model of criteria and weights,
+  // and a version string on a document invited a reader to check it against
+  // something they have no way to look up. What the covers state instead is
+  // the DATE the method was last settled.
   systemVersion: string
   // The frozen model's method (ADR-0008): the report documents cite the
   // method the run was computed under, never the live model. Criteria in

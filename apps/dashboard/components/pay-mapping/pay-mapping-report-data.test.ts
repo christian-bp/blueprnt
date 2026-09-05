@@ -36,6 +36,7 @@ const formatters: ReportFormatters = {
   pct: (value) => `P${value}`,
   date: (epochMs) => `D${epochMs}`,
   dateTime: (epochMs) => `T${epochMs}`,
+  year: (epochMs) => `Y${epochMs}`,
   costUnitSuffix: (unit) =>
     unit === null || unit === "oneOff" ? "" : `/${unit}`,
 }
@@ -479,10 +480,10 @@ describe("assemblePayMappingReport", () => {
     expect(doc.previousEvaluation).toBeNull()
     expect(doc.method.pointBudget).toBe(6)
     expect(doc.identity).toEqual({
-      systemVersion: "v2-slice1",
       approvedAt: "D1700000000000",
       referenceDate: `D${Date.UTC(2026, 6, 1)}`,
       extractedAt: `T${Date.UTC(2026, 6, 1)}`,
+      year: `Y${Date.UTC(2026, 6, 1)}`,
     })
     // The frozen criterion documentation travels with the weights: the
     // appendix has to stand alone, so it prints what each criterion measures

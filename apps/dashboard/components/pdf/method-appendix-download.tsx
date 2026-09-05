@@ -25,6 +25,7 @@ import {
 } from "@/components/pdf/method-appendix"
 import { CHAPTER_ACTION_BUTTON_SIZE } from "@/components/chapter-action-slot"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { useOrganization } from "@/components/org-context"
 import { SubmitButton } from "@/components/submit-button"
 import { assembleMethodAppendix } from "@/lib/pdf/method-appendix-data"
 
@@ -34,6 +35,10 @@ export function MethodAppendixDownload({ orgId }: { orgId: string }) {
   const tButton = useTranslations("dashboard.model.method")
   const tLevels = useTranslations("dashboard.levels")
   const tHelp = useTranslations("dashboard.help")
+  const tReport = useTranslations("dashboard.payMapping.report")
+  // The organization's own name, as stored: the cover's eyebrow, the same
+  // one the pay-mapping documents carry.
+  const { name: organizationName } = useOrganization()
   const format = useFormatter()
   const locale = useLocale()
   const data = useQuery(api.evaluationModel.method.getMethodModel, {
@@ -81,9 +86,26 @@ export function MethodAppendixDownload({ orgId }: { orgId: string }) {
       const labels: MethodAppendixLabels = {
         docTitle: t("docTitle"),
         contentsTitle: t("contentsTitle"),
-        generatedOn: t("generatedOn", { date: now }),
-        model: t("model", { name: data.modelName }),
-        statusTag: doc.status === "final" ? t("final") : t("draft"),
+        // Bare values on the cover: it names each fact in its own label
+        // column, so a value repeating the label would print it twice.
+        generatedOn: now,
+        model: data.modelName,
+        eyebrow: organizationName,
+        factLabels: {
+          model: tReport("coverModel"),
+          generatedOn: tReport("coverGeneratedOn"),
+        },
+        // Only a draft is marked: a band label reading FINAL on every
+        // finished document says nothing the reader did not assume. The
+        // marker is one word, so the sentence that says what a draft's
+        // figures are worth travels with it.
+        ...(doc.status === "final"
+          ? {}
+          : {
+              draftMarker: tReport("tagDraft"),
+              statusNote: tReport("draftNote"),
+            }),
+        footLabel: tReport("coverFootLabel"),
         methodologyTitle: t("methodologyTitle"),
         methodologyBody: t("methodologyBody"),
         scaleTitle: t("scaleTitle"),

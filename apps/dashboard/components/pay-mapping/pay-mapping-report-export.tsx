@@ -32,6 +32,7 @@ import {
   type PayMappingReportDoc,
   type ReportPreviousInput,
 } from "./pay-mapping-report-data"
+import { ANALYSIS_STATUSES, type AnalysisStatus } from "./analysis-status"
 import {
   detailAppendixDoc,
   type SigningActionArea,
@@ -152,6 +153,8 @@ export function usePayMappingReportExport(): {
             dateStyle: "medium",
             timeStyle: "short",
           }),
+        year: (epochMs) =>
+          format.dateTime(new Date(epochMs), { year: "numeric" }),
         costUnitSuffix: (unit) =>
           unit === null || unit === "oneOff"
             ? ""
@@ -165,30 +168,38 @@ export function usePayMappingReportExport(): {
     docTitle: string
   ): IdentityLabels {
     return {
-      docTitle,
+      coverTitle: t("coverTitle"),
+      // The kind of document, on the cover's foot label: the title above it
+      // names the subject, which both documents share.
+      footLabel: docTitle,
       // The organization's own name, as stored: a pass-through i18n key
       // would only launder a value that needs no translation.
       organizationName,
-      runLabel: doc.runLabel,
-      referenceDateLine: t("referenceDateLine", {
-        date: doc.identity.referenceDate,
-      }),
-      extractedAtLine: t("extractedAtLine", {
-        dateTime: doc.identity.extractedAt,
-      }),
-      methodVersionLine:
+      // Bare values, not sentences: the cover names each fact in its own
+      // label column, so a value that repeated the label would print it
+      // twice.
+      referenceDateLine: doc.identity.referenceDate,
+      extractedAtLine: doc.identity.extractedAt,
+      // The DATE the method was last settled, not an engine version: a model
+      // of criteria and weights has no name a reader could check against
+      // anything.
+      methodUpdatedLine:
         doc.identity.approvedAt === null
-          ? t("methodVersionUnapproved", {
-              version: doc.identity.systemVersion,
-            })
-          : t("methodVersionLine", {
-              version: doc.identity.systemVersion,
-              date: doc.identity.approvedAt,
-            }),
-      generatedOn: tAppendix("generatedOn", {
-        date: format.dateTime(new Date(), { dateStyle: "medium" }),
-      }),
-      statusTag: doc.status === "final" ? t("tagFinal") : t("tagDraft"),
+          ? t("coverMethodNotApproved")
+          : doc.identity.approvedAt,
+      generatedOn: format.dateTime(new Date(), { dateStyle: "medium" }),
+      year: doc.identity.year,
+      // Only a draft is marked: a band label reading FINAL on every finished
+      // document says nothing the reader did not assume.
+      ...(doc.status === "final"
+        ? {}
+        : { draftMarker: t("tagDraft"), statusNote: t("draftNote") }),
+      factLabels: {
+        referenceDate: t("coverReferenceDate"),
+        extractedAt: t("coverExtractedAt"),
+        methodUpdated: t("coverMethodUpdated"),
+        generatedOn: t("coverGeneratedOn"),
+      },
     }
   }
 
@@ -198,6 +209,27 @@ export function usePayMappingReportExport(): {
     t("quartile3"),
     t("quartile4"),
   ]
+
+  // The four statuses in ANALYSIS_STATUSES order on every bar, so the same
+  // status keeps the same place across the two areas and the reader compares
+  // shapes rather than re-reading a legend.
+  function statusSegments(
+    statuses: Record<AnalysisStatus, number>
+  ): { label: string; value: number }[] {
+    return ANALYSIS_STATUSES.map((status) => ({
+      label: tStatus(status),
+      value: statuses[status],
+    }))
+  }
+
+  // The plan's own three states, summed over the areas: the table below
+  // splits them per area, which is the detail, not the reading.
+  function totals(
+    doc: SigningReportDoc,
+    key: "done" | "inProgress" | "notStarted"
+  ): number {
+    return doc.actionPlan.reduce((sum, area) => sum + area[key], 0)
+  }
 
   function signingLabels(doc: SigningReportDoc): SigningReportLabels {
     const docTitle = tSigning("docTitle")
@@ -257,88 +289,32 @@ export function usePayMappingReportExport(): {
         date: tSigning("signatureDate"),
       },
       summaryTitle: tSigning("summaryTitle"),
-      boxes: [
+      payPositionTitle: tSigning("boxPayPosition"),
+      payPositionRows: [
         {
-          title: tSigning("boxPayPosition"),
-          rows: [
-            {
-              label: tSigning("payPositionMedian"),
-              value: share(doc.payPosition.womenShareOfMenMedianPct),
-            },
-            {
-              label: tSigning("payPositionMean"),
-              value: share(doc.payPosition.womenShareOfMenMeanPct),
-            },
-          ],
+          label: tSigning("payPositionMeanShort"),
+          share: doc.payPosition.womenShareOfMenMean,
+          text: share(doc.payPosition.womenShareOfMenMeanPct),
         },
         {
-          title: tSigning("boxRepresentation"),
-          rows: doc.quartiles.map((quartile, index) => ({
-            label: quartileLabels[index] ?? "",
-            value:
-              quartile.women + quartile.men === 0
-                ? dash
-                : tSigning("representationRow", {
-                    share: percentText(
-                      (quartile.women / (quartile.women + quartile.men)) * 100,
-                      format
-                    ),
-                  }),
-          })),
+          label: tSigning("payPositionMedianShort"),
+          share: doc.payPosition.womenShareOfMenMedian,
+          text: share(doc.payPosition.womenShareOfMenMedianPct),
         },
+      ],
+      payPositionCaption: tSigning("payPositionCaption"),
+      statusTitle: tSigning("statusTitle"),
+      statusBars: [
         {
           title: tSigning("boxEqualWork"),
-          rows: [
-            {
-              label: tSigning("groupsCompared"),
-              value: String(doc.equalWork.groups),
-            },
-            {
-              label: tSigning("assessmentsCompleted"),
-              value: tSigning("countOf", {
-                done: doc.equalWork.assessed,
-                total: doc.equalWork.required,
-              }),
-            },
-            {
-              label: tSigning("objectiveReasons"),
-              value: String(doc.equalWork.objectiveReasons),
-            },
-            {
-              label: tSigning("actionsDecided"),
-              value: String(doc.equalWork.actionsDecided),
-            },
-          ],
+          segments: statusSegments(doc.equalWork.statuses),
         },
         {
           title: tSigning("boxEquivalentWork"),
-          rows: [
-            {
-              label: tSigning("wdInScope"),
-              value: String(doc.equivalentWork.womenDominatedGroups),
-            },
-            {
-              label: tSigning("relevantComparisons"),
-              value: String(doc.equivalentWork.comparisons),
-            },
-            {
-              label: tSigning("comparisonsAssessed"),
-              value: tSigning("countOf", {
-                done: doc.equivalentWork.comparisonsAssessed,
-                total: doc.equivalentWork.comparisons,
-              }),
-            },
-            {
-              label: tSigning("objectiveReasons"),
-              value: String(doc.equivalentWork.objectiveReasons),
-            },
-            {
-              label: tSigning("actionsDecided"),
-              value: String(doc.equivalentWork.actionsDecided),
-            },
-          ],
+          segments: statusSegments(doc.equivalentWork.statuses),
         },
       ],
+      statusEmpty: tSigning("statusEmpty"),
       quartilesTitle: t("quartilesTitle"),
       quartileRow: (index) => quartileLabels[index] ?? "",
       colWomen: tGap("columns.women"),
@@ -471,6 +447,18 @@ export function usePayMappingReportExport(): {
         },
       ],
       actionPlanTitle: tSigning("actionPlanTitle"),
+      actionStatusTitle: tSigning("actionStatusTitle"),
+      actionStatusSegments: [
+        { label: tSigning("actionDone"), value: totals(doc, "done") },
+        {
+          label: tSigning("actionInProgress"),
+          value: totals(doc, "inProgress"),
+        },
+        {
+          label: tSigning("actionNotStarted"),
+          value: totals(doc, "notStarted"),
+        },
+      ],
       colObservation: tSigning("colObservation"),
       colActions: tSigning("colActions"),
       colStatusSplit: tSigning("colStatusSplit"),
