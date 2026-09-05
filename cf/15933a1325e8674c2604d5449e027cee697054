@@ -1,0 +1,33 @@
+apps/dashboard/lib/pdf/palette.ts
+  s_a5a0b8b07c8eab::t_d52e9d5350b0c9 1-57
+apps/dashboard/components/pay-mapping/pay-mapping-report-charts.test.tsx
+  s_a5a0b8b07c8eab::t_70755651bc6fbe 4-9,116-161
+  s_a5a0b8b07c8eab::t_2f0f414e3c6a59 162
+apps/dashboard/components/pay-mapping/pay-mapping-report-charts.tsx
+  s_a5a0b8b07c8eab::t_a4c2be9643cbab 2
+  s_a5a0b8b07c8eab::t_80afbb1dd87035 367,400-401,405-406,434-444,446-447,449-450,452-454,456-459,480-494,499-506
+  s_a5a0b8b07c8eab::t_4a0001676f8d0d 1,368-399,402-404,460-479,495-498
+  s_a5a0b8b07c8eab::t_724a22209a6a7c 38-46,314,319,348,355
+  s_a5a0b8b07c8eab::t_71835db5f6f418 292-313,315-318,321,334-341,343-347,349-354,356,358-366
+  s_a5a0b8b07c8eab::t_737277d9998f37 407-409,411-414,416-417,429-433
+  s_a5a0b8b07c8eab::t_05de62c25bc974 410,415,451,455
+  s_a5a0b8b07c8eab::t_23b367e937d7ac 181,217,256,269,282,342,357,448
+  s_a5a0b8b07c8eab::t_70755651bc6fbe 418-428,445
+  s_a5a0b8b07c8eab::t_3cb3b88a8d5f9e 320,322-333
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "cf15933a1325e8674c2604d5449e027cee697054",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
