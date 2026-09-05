@@ -1,0 +1,45 @@
+packages/i18n/messages/nb.json
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 3075
+apps/dashboard/content/docs/nb/troubleshooting-model-and-evaluation.mdx
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 303-313
+apps/dashboard/content/docs/en/troubleshooting-model-and-evaluation.mdx
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 291-301
+apps/dashboard/lib/convex-error.ts
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 15
+packages/backend/convex/lib/errors.ts
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 39
+packages/i18n/messages/sv.json
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 3075
+packages/backend/convex/assistant/streamOutcome.ts
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 23-28,68
+packages/i18n/messages/en.json
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 3075
+apps/dashboard/content/docs/da/troubleshooting-model-and-evaluation.mdx
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 300-310
+apps/dashboard/content/docs/fi/troubleshooting-model-and-evaluation.mdx
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 312-322
+packages/backend/convex/assistant/streamOutcome.test.ts
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 107-111,120,136
+apps/dashboard/content/docs/sv/troubleshooting-model-and-evaluation.mdx
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 306-316
+packages/i18n/messages/da.json
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 3075
+packages/i18n/messages/fi.json
+  s_a5a0b8b07c8eab::t_ba9bf54c4d6bf2 3075
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "99b3283b6c99d04d64b9375c9cea7310a4482bef",
+  "prompts": {},
+  "sessions": {
+    "s_a5a0b8b07c8eab": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77bbcc8d-cc61-4906-af85-f0d44d7e4e0e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
