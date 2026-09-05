@@ -278,3 +278,66 @@ describe("WidgetCard", () => {
     expect(classes).toContain("overflow-y-auto")
   })
 })
+
+// A widget dropped into a surface that already owns a frame draws a second
+// muted ground inside the first, which reads as a card in a card. Section
+// mode is what the two pay-mapping plots use to stand on the analysis step's
+// own frame instead of bringing one of their own.
+describe("WidgetCard as a section", () => {
+  it("keeps its frame by default and drops it as a section", () => {
+    const { container: card } = renderCard(
+      <WidgetCard title="Pay positions">
+        <p>plot</p>
+      </WidgetCard>
+    )
+    expect(card.querySelector('[data-slot="frame"]')).not.toBeNull()
+    expect(card.querySelector('[data-slot="frame-panel"]')).not.toBeNull()
+
+    cleanup()
+    const { container: section } = renderCard(
+      <WidgetCard title="Pay positions" section>
+        <p>plot</p>
+      </WidgetCard>
+    )
+    expect(section.querySelector('[data-slot="frame"]')).toBeNull()
+    // The panel survives: a section is still one panel, it just stands on
+    // the frame it is already inside.
+    expect(section.querySelector('[data-slot="frame-panel"]')).not.toBeNull()
+  })
+
+  // The caller's class names the widget's OUTER box (a grid span, a width),
+  // so it has to follow whichever element that is in either mode.
+  it("puts the caller's class on whichever element is outermost", () => {
+    const { container: card } = renderCard(
+      <WidgetCard title="Pay positions" className="col-span-2">
+        <p>plot</p>
+      </WidgetCard>
+    )
+    expect(card.querySelector('[data-slot="frame"]')?.className).toContain(
+      "col-span-2"
+    )
+
+    cleanup()
+    const { container: section } = renderCard(
+      <WidgetCard title="Pay positions" section className="col-span-2">
+        <p>plot</p>
+      </WidgetCard>
+    )
+    expect(
+      section.querySelector('[data-slot="frame-panel"]')?.className
+    ).toContain("col-span-2")
+  })
+
+  it("still carries its title, its content and the expand control", () => {
+    renderCard(
+      <WidgetCard title="Pay positions" section expandable>
+        <p>plot</p>
+      </WidgetCard>
+    )
+    expect(screen.getByText("Pay positions")).toBeTruthy()
+    expect(screen.getByText("plot")).toBeTruthy()
+    expect(
+      screen.getByRole("button", { name: messages.dashboard.widgetCard.expand })
+    ).toBeTruthy()
+  })
+})

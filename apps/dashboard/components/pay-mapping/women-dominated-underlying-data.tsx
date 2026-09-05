@@ -69,6 +69,8 @@ export function WomenDominatedScatter({
         )
   return (
     <PayMappingScatter
+      // A section of the step's own frame; see EqualWorkDetail's plot.
+      section
       highlightGroupLabel={
         highlighted === undefined || highlighted === null
           ? null

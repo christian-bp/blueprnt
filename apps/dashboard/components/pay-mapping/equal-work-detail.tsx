@@ -259,6 +259,9 @@ export function EqualWorkDetail({
         yMetric={group.baseDriven ? "base" : "total"}
         means={{ women: primary.womenMean, men: primary.menMean }}
         title={tScatter("titleEqualWork")}
+        // A section of the step's own frame: a widget card here would draw a
+        // second muted ground inside the first.
+        section
       />
       {/* The roster, collapsed under the plot. The chart is what this step
           is FOR: it shows the gap and whether age or tenure explains it, at a

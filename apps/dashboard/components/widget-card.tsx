@@ -59,6 +59,14 @@ interface WidgetCardBase {
   // An extra control on the head line, right-aligned: a delta chip, a
   // severity badge, a scope chip. Never interactive on a linked card.
   headerExtra?: ReactNode
+  // Renders the widget as a SECTION of the frame it is already inside, rather
+  // than as a card with a frame of its own. A widget dropped into an analysis
+  // step or a settings surface otherwise draws a second muted ground inside
+  // the first, which reads as a card in a card: the same defect the mean and
+  // gap panels on that surface avoid by being FrameCardSections. The panel
+  // takes its radius, padding and ground from the surrounding Frame's own
+  // tokens, so a section is the same object as every other panel on it.
+  section?: boolean
   className?: string
   children?: ReactNode
 }
@@ -172,6 +180,7 @@ export function WidgetCard({
   trailing,
   href,
   expandable = false,
+  section = false,
   className,
   children,
 }: WidgetCardProps) {
@@ -191,38 +200,37 @@ export function WidgetCard({
     </Button>
   )
 
-  return (
-    // EXPERIMENT: the widget on the app's frame anatomy, a muted ground
-    // carrying one white panel, so a tile reads as the same object as a
-    // register or an analysis step instead of a lone flat card.
-    <Frame className={cn("w-full", className)}>
-      <FramePanel
-        // The card parts inside (CardTitle, CardDescription) size themselves
-        // off the card group's own data-size, so the panel carries it: the
-        // figure keeps its step-up now that the Card element is gone.
-        data-size="sm"
-        className={cn(
-          // A floor height so a strip of tiles is one band whatever each
-          // carries, and the rows spaced by the reference's own step.
-          "group/card @container/card flex min-h-28 flex-col gap-5",
-          href !== undefined &&
-            "group/widget relative transition-colors hover:bg-accent/40"
-        )}
-      >
-        {stat ? (
-          <>
-            {/* The tile's name on its own line, with the mark that identifies
+  const panel = (
+    <FramePanel
+      // The card parts inside (CardTitle, CardDescription) size themselves
+      // off the card group's own data-size, so the panel carries it: the
+      // figure keeps its step-up now that the Card element is gone.
+      data-size="sm"
+      className={cn(
+        // A floor height so a strip of tiles is one band whatever each
+        // carries, and the rows spaced by the reference's own step.
+        "group/card @container/card flex min-h-28 flex-col gap-5",
+        href !== undefined &&
+          "group/widget relative transition-colors hover:bg-accent/40",
+        // The caller's class lands on whichever element is the widget's
+        // OUTER one, so a grid span or a width still applies in both modes.
+        section && className
+      )}
+    >
+      {stat ? (
+        <>
+          {/* The tile's name on its own line, with the mark that identifies
                 it and whatever the caller puts on the right (a delta chip, a
                 scope chip). */}
-            <div className="flex items-center gap-3">
-              {icon !== undefined && <Medallion icon={icon} size="sm" />}
-              <span className="min-w-0 flex-1 truncate font-semibold text-sm">
-                {title}
-              </span>
-              {headerExtra}
-              {expandable && expandButton}
-            </div>
-            {/* The figure with its one qualifying line above it, and the
+          <div className="flex items-center gap-3">
+            {icon !== undefined && <Medallion icon={icon} size="sm" />}
+            <span className="min-w-0 flex-1 truncate font-semibold text-sm">
+              {title}
+            </span>
+            {headerExtra}
+            {expandable && expandButton}
+          </div>
+          {/* The figure with its one qualifying line above it, and the
                 figure's own history beside it. The line sits ABOVE rather
                 than below, so the number is the last thing read on the row
                 and the two tiles beside it line their numbers up on the same
@@ -231,34 +239,34 @@ export function WidgetCard({
                 pb-2 lifts the pair off the bottom edge, where the strip's
                 own fill runs out: without it the figure reads as sitting
                 lower than the curve it belongs to. */}
-            <div className="flex items-end justify-between gap-2.5">
-              <div className="flex min-w-0 flex-col gap-px pb-2">
-                {note !== undefined && (
-                  <span className="truncate whitespace-nowrap text-muted-foreground text-xs">
-                    {note}
-                  </span>
-                )}
-                <span className="truncate font-semibold text-foreground text-xl tabular-nums tracking-tight">
-                  {value}
+          <div className="flex items-end justify-between gap-2.5">
+            <div className="flex min-w-0 flex-col gap-px pb-2">
+              {note !== undefined && (
+                <span className="truncate whitespace-nowrap text-muted-foreground text-xs">
+                  {note}
                 </span>
-              </div>
-              {trailing}
+              )}
+              <span className="truncate font-semibold text-foreground text-xl tabular-nums tracking-tight">
+                {value}
+              </span>
             </div>
-          </>
-        ) : (
-          <CardHeader>
-            <CardTitle className="truncate text-muted-foreground">
-              {title}
-            </CardTitle>
-            <CardAction className="flex items-center gap-2">
-              {headerExtra}
-              {icon !== undefined && <Medallion icon={icon} />}
-              {expandable && expandButton}
-            </CardAction>
-          </CardHeader>
-        )}
-        {children !== undefined && <CardContent>{children}</CardContent>}
-        {/* The qualifier under a chart card, one line, clipped rather than
+            {trailing}
+          </div>
+        </>
+      ) : (
+        <CardHeader>
+          <CardTitle className="truncate text-muted-foreground">
+            {title}
+          </CardTitle>
+          <CardAction className="flex items-center gap-2">
+            {headerExtra}
+            {icon !== undefined && <Medallion icon={icon} />}
+            {expandable && expandButton}
+          </CardAction>
+        </CardHeader>
+      )}
+      {children !== undefined && <CardContent>{children}</CardContent>}
+      {/* The qualifier under a chart card, one line, clipped rather than
           wrapped: a card's height cannot depend on how long a sentence
           happens to be in the reader's language, or a strip grows by a line
           in the locales where the same note wraps. The copy is written to
@@ -268,43 +276,41 @@ export function WidgetCard({
           that ARE a distinct band (a frame's pagination foot), which reads
           as a broken seam here. Neutralized, and pt-0 restores the column
           rhythm the card had before the footer slot went tonal. */}
-        {!stat && (footer !== undefined || note !== undefined) && (
-          <CardFooter className="mt-auto flex-col items-start gap-0.5 border-t-0 bg-transparent pt-0 text-sm">
-            {footer !== undefined && (
-              <div className="flex w-full min-w-0 items-center gap-1.5 font-medium">
-                <span className="truncate">{footer}</span>
-                {footerIcon !== undefined && (
-                  <HugeiconsIcon
-                    icon={footerIcon}
-                    size={16}
-                    strokeWidth={2}
-                    aria-hidden="true"
-                    className="shrink-0"
-                  />
-                )}
-              </div>
-            )}
-            {note !== undefined && (
-              <div className="w-full truncate text-muted-foreground">
-                {note}
-              </div>
-            )}
-          </CardFooter>
-        )}
-        {href !== undefined && (
-          <>
-            <CardOverlayLink href={href} label={title} />
-            <HugeiconsIcon
-              icon={ArrowRight01Icon}
-              strokeWidth={2}
-              aria-hidden="true"
-              className="pointer-events-none absolute right-(--card-spacing) bottom-(--card-spacing) size-4 text-muted-foreground opacity-0 transition-opacity group-hover/widget:opacity-100"
-            />
-          </>
-        )}
-        {expandable && (
-          <Dialog open={open} onOpenChange={setOpen}>
-            {/* Sized to the SCREEN, not to a fixed step. The dialog used to cap
+      {!stat && (footer !== undefined || note !== undefined) && (
+        <CardFooter className="mt-auto flex-col items-start gap-0.5 border-t-0 bg-transparent pt-0 text-sm">
+          {footer !== undefined && (
+            <div className="flex w-full min-w-0 items-center gap-1.5 font-medium">
+              <span className="truncate">{footer}</span>
+              {footerIcon !== undefined && (
+                <HugeiconsIcon
+                  icon={footerIcon}
+                  size={16}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                  className="shrink-0"
+                />
+              )}
+            </div>
+          )}
+          {note !== undefined && (
+            <div className="w-full truncate text-muted-foreground">{note}</div>
+          )}
+        </CardFooter>
+      )}
+      {href !== undefined && (
+        <>
+          <CardOverlayLink href={href} label={title} />
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            strokeWidth={2}
+            aria-hidden="true"
+            className="pointer-events-none absolute right-(--card-spacing) bottom-(--card-spacing) size-4 text-muted-foreground opacity-0 transition-opacity group-hover/widget:opacity-100"
+          />
+        </>
+      )}
+      {expandable && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          {/* Sized to the SCREEN, not to a fixed step. The dialog used to cap
               at 5xl (1024px), which is narrower than the page behind it on any
               large monitor: expanding a chart there made it smaller. It keeps
               a cap all the same, because a plot stretched across 2500px
@@ -315,24 +321,33 @@ export function WidgetCard({
               The height cap plus a scrolling body is what lets the chart
               inside ask for a tall canvas without the dialog growing past the
               viewport and taking its own header off screen. */}
-            <DialogContent className="max-h-[calc(100dvh-4rem)] overflow-y-auto sm:max-w-[min(96rem,calc(100vw-4rem))]">
-              {/* The same heading and controls the card carries. The dialog
+          <DialogContent className="max-h-[calc(100dvh-4rem)] overflow-y-auto sm:max-w-[min(96rem,calc(100vw-4rem))]">
+            {/* The same heading and controls the card carries. The dialog
                 is where the reader actually works with the chart, and a mode
                 toggle that only exists in the small version means expanding
                 costs you the controls. */}
-              <DialogHeader className="flex-row items-center justify-between gap-4 space-y-0 pr-8">
-                <DialogTitle>{title}</DialogTitle>
-                {headerExtra !== undefined && (
-                  <div className="flex items-center gap-2">{headerExtra}</div>
-                )}
-              </DialogHeader>
-              <WidgetExpandedContext.Provider value={true}>
-                {children}
-              </WidgetExpandedContext.Provider>
-            </DialogContent>
-          </Dialog>
-        )}
-      </FramePanel>
-    </Frame>
+            <DialogHeader className="flex-row items-center justify-between gap-4 space-y-0 pr-8">
+              <DialogTitle>{title}</DialogTitle>
+              {headerExtra !== undefined && (
+                <div className="flex items-center gap-2">{headerExtra}</div>
+              )}
+            </DialogHeader>
+            <WidgetExpandedContext.Provider value={true}>
+              {children}
+            </WidgetExpandedContext.Provider>
+          </DialogContent>
+        </Dialog>
+      )}
+    </FramePanel>
+  )
+
+  // The widget on the app's frame anatomy: a muted ground carrying one white
+  // panel, so a tile reads as the same object as a register or an analysis
+  // step instead of a lone flat card. A section skips the ground, because it
+  // is already standing on one.
+  return section ? (
+    panel
+  ) : (
+    <Frame className={cn("w-full", className)}>{panel}</Frame>
   )
 }

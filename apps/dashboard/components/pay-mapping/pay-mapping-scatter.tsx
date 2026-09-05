@@ -274,6 +274,7 @@ export function PayMappingScatter({
   yMetric = "total",
   means,
   roleOrder,
+  section = false,
 }: {
   rows: PayMappingSnapshotRow[] | undefined
   currency: string
@@ -298,6 +299,9 @@ export function PayMappingScatter({
   // fixes each job's hue: filtering the table must never repaint the jobs
   // that remain. Only the first six get a hue; the rest share the neutral.
   roleOrder?: readonly string[]
+  // Renders as a section of the frame the plot already sits in (an analysis
+  // step), rather than as a card with a ground of its own.
+  section?: boolean
 }) {
   const t = useTranslations("dashboard.payMapping.scatter")
   const tGender = useTranslations("dashboard.people.gender")
@@ -447,7 +451,12 @@ export function PayMappingScatter({
 
   if (rows === undefined) {
     return (
-      <WidgetCard title={title} headerExtra={toggle} expandable>
+      <WidgetCard
+        title={title}
+        headerExtra={toggle}
+        expandable
+        section={section}
+      >
         <ChartCanvasSkeleton collapsed={COLLAPSED_HEIGHT} />
       </WidgetCard>
     )
@@ -463,7 +472,12 @@ export function PayMappingScatter({
 
   if (points.length === 0) {
     return (
-      <WidgetCard title={title} headerExtra={toggle} expandable>
+      <WidgetCard
+        title={title}
+        headerExtra={toggle}
+        expandable
+        section={section}
+      >
         <p className="text-muted-foreground text-sm">
           {xMode === "age" ? t("emptyAge") : t("emptyTenure")}
         </p>
@@ -526,7 +540,7 @@ export function PayMappingScatter({
   } satisfies ChartConfig
 
   return (
-    <WidgetCard title={title} headerExtra={toggle} expandable>
+    <WidgetCard title={title} headerExtra={toggle} expandable section={section}>
       <div className="space-y-1">
         <ChartCanvas config={config} collapsed={COLLAPSED_HEIGHT}>
           <ScatterChart
