@@ -20,90 +20,61 @@ function renderCard(ui: React.ReactElement) {
 afterEach(cleanup)
 
 describe("WidgetCard", () => {
-  // The two shapes the one card takes. With a figure it is a stat tile and
-  // the title demotes to the figure's label; without one it is a chart card
-  // and the title stays the heading.
-  it("labels the figure with the title when there is a value", () => {
+  // The two shapes the one card takes. With a figure it is a stat tile: the
+  // title takes the first line on its own and the figure sits on the row
+  // below with its qualifying line above it. Without a figure it is a chart
+  // card and the title stays the heading.
+  it("names the tile on the first line and prints the figure on the row below", () => {
     const { container } = renderCard(
-      <WidgetCard title="Workforce" value={118} footer="All classified" />
+      <WidgetCard title="Workforce" value={118} note="All classified" />
     )
-    expect(
-      container.querySelector('[data-slot="card-description"]')?.textContent
-    ).toBe("Workforce")
-    expect(
-      container.querySelector('[data-slot="card-title"]')?.textContent
-    ).toBe("118")
-    expect(
-      container.querySelector('[data-slot="card-footer"]')?.textContent
-    ).toBe("All classified")
+    const panel = container.querySelector('[data-slot="frame-panel"]')
+    expect(panel?.children).toHaveLength(2)
+    expect(panel?.children[0]?.textContent).toBe("Workforce")
+    // The line qualifies the figure, so it travels with it rather than with
+    // the name: label above, number below, on the same row.
+    expect(panel?.children[1]?.textContent).toBe("All classified118")
   })
 
-  // The footer is two lines: the statement (how the figure moved, or what
-  // state it is in) in foreground weight, then the muted line saying what the
-  // figure covers. A delta belongs in the statement, spelled out, not in a
-  // pill beside the identity chip.
-  it("stacks the statement over its muted note", () => {
-    const { container } = renderCard(
-      <WidgetCard
-        title="People included"
-        value={95}
-        footer="25 people fewer than 2026"
-        note="Everyone included in this pay mapping"
-      />
-    )
-    const footer = container.querySelector('[data-slot="card-footer"]')
-    const lines = footer?.children
-    expect(lines).toHaveLength(2)
-    expect(lines?.[0]?.textContent).toBe("25 people fewer than 2026")
-    expect(lines?.[1]?.textContent).toBe(
-      "Everyone included in this pay mapping"
-    )
-    // The statement reads at foreground weight, the note is muted.
-    expect(lines?.[0]?.className).toContain("font-medium")
-    expect(lines?.[1]?.className).toContain("text-muted-foreground")
+  // ONE qualifying line, and it is meta rather than running text: the
+  // standing explainer of what a figure is belongs in the tile's help.
+  it("reads the qualifying line as muted meta under the label", () => {
+    renderCard(<WidgetCard title="Pay gap" value="3.5%" note="vs 2025" />)
+    const note = screen.getByText("vs 2025")
+    expect(note.className).toContain("text-muted-foreground")
+    // Clipped to one line: a tile's height cannot depend on how long the
+    // same phrase happens to be in the reader's language, and the same note
+    // fits one line in Swedish and took two in English and Finnish at the
+    // width a 1280px window leaves.
+    expect(note.className).toContain("truncate")
   })
 
-  it("renders a note without a statement, and a statement without a note", () => {
-    const { container: noteOnly } = renderCard(
-      <WidgetCard title="Pay gap" value="3.5%" note="Women vs men" />
-    )
-    expect(
-      noteOnly.querySelector('[data-slot="card-footer"]')?.textContent
-    ).toBe("Women vs men")
-    cleanup()
-    const { container: statementOnly } = renderCard(
-      <WidgetCard title="Roles" value={42} footer="12 need a level" />
-    )
-    expect(
-      statementOnly.querySelector('[data-slot="card-footer"]')?.textContent
-    ).toBe("12 need a level")
-  })
-
-  it("omits the footer entirely when there is neither line", () => {
+  it("omits the line entirely when the tile has none", () => {
     const { container } = renderCard(<WidgetCard title="Roles" value={42} />)
-    expect(container.querySelector('[data-slot="card-footer"]')).toBeNull()
+    const head = container.querySelector('[data-slot="frame-panel"]')
+      ?.children[0]
+    expect(head?.textContent).toBe("Roles")
   })
 
-  // The arrow repeats a direction the statement already spells out, so it is
-  // decorative: it exists to survive a glance and greyscale, not to carry the
-  // reading.
-  it("draws the direction arrow decoratively beside the statement", () => {
+  // One reading per row: how the figure moved sits on the name line, and the
+  // figure's own history sits beside the figure.
+  it("puts the movement on the name line and the history beside the figure", () => {
     const { container } = renderCard(
       <WidgetCard
-        title="People included"
-        value={95}
-        footer="25 people fewer than 2026"
-        footerIcon={UserGroupIcon}
-        note="Everyone in this mapping"
+        title="Pay gap"
+        value="13.7%"
+        note="vs 2025"
+        headerExtra={<span data-testid="chip">-0.5 pp</span>}
+        trailing={<span data-testid="spark" />}
       />
     )
-    const statement = container.querySelector('[data-slot="card-footer"]')
-      ?.children[0]
-    const svg = statement?.querySelector("svg")
-    expect(svg).not.toBeNull()
-    expect(svg?.getAttribute("aria-hidden")).toBe("true")
-    // The arrow adds no text, so the statement still reads as one sentence.
-    expect(statement?.textContent).toBe("25 people fewer than 2026")
+    const panel = container.querySelector('[data-slot="frame-panel"]')
+    expect(
+      panel?.children[0]?.querySelector('[data-testid="chip"]')
+    ).not.toBeNull()
+    expect(
+      panel?.children[1]?.querySelector('[data-testid="spark"]')
+    ).not.toBeNull()
   })
 
   it("keeps the title as the heading when there is no figure", () => {
@@ -112,11 +83,57 @@ describe("WidgetCard", () => {
         <div data-testid="chart" />
       </WidgetCard>
     )
-    expect(container.querySelector('[data-slot="card-description"]')).toBeNull()
     expect(
       container.querySelector('[data-slot="card-title"]')?.textContent
     ).toBe("Age distribution")
     expect(screen.getByTestId("chart")).toBeDefined()
+  })
+
+  // A chart card keeps a footer, because what qualifies a picture is a
+  // statement rather than a label: the statement in foreground weight, then
+  // the muted line under it.
+  it("stacks a chart card's statement over its muted note", () => {
+    const { container } = renderCard(
+      <WidgetCard
+        title="Pay gap over time"
+        footer="Down from 4.8% in 2025"
+        note="Average pay difference, women vs men"
+      >
+        <div />
+      </WidgetCard>
+    )
+    const lines = container.querySelector('[data-slot="card-footer"]')?.children
+    expect(lines).toHaveLength(2)
+    expect(lines?.[0]?.textContent).toBe("Down from 4.8% in 2025")
+    expect(lines?.[0]?.className).toContain("font-medium")
+    expect(lines?.[1]?.className).toContain("text-muted-foreground")
+    // Each line is one line, clipped: same reason as the stat tile's note.
+    expect(lines?.[0]?.querySelector(".truncate")?.textContent).toBe(
+      "Down from 4.8% in 2025"
+    )
+    expect(lines?.[1]?.className).toContain("truncate")
+  })
+
+  // The arrow repeats a direction the statement already spells out, so it is
+  // decorative: it exists to survive a glance and greyscale, not to carry the
+  // reading.
+  it("draws the direction arrow decoratively beside the statement", () => {
+    const { container } = renderCard(
+      <WidgetCard
+        title="Pay gap over time"
+        footer="Down from 4.8% in 2025"
+        footerIcon={UserGroupIcon}
+      >
+        <div />
+      </WidgetCard>
+    )
+    const statement = container.querySelector('[data-slot="card-footer"]')
+      ?.children[0]
+    const svg = statement?.querySelector("svg")
+    expect(svg).not.toBeNull()
+    expect(svg?.getAttribute("aria-hidden")).toBe("true")
+    // The arrow adds no text, so the statement still reads as one sentence.
+    expect(statement?.textContent).toBe("Down from 4.8% in 2025")
   })
 
   // The whole card is the target, and its accessible name is the title. An
@@ -140,22 +157,26 @@ describe("WidgetCard", () => {
     const { container } = renderCard(
       <WidgetCard title="Workforce" icon={UserGroupIcon} value={118} />
     )
-    const chip = container.querySelector('[data-slot="card-action"] span')
-    expect(chip?.getAttribute("aria-hidden")).toBe("true")
+    const chip = container.querySelector(
+      '[data-slot="frame-panel"] span[aria-hidden="true"]'
+    )
+    expect(chip?.querySelector("svg")).not.toBeNull()
+    expect(screen.getAllByText("Workforce")).toHaveLength(1)
   })
 
   // A bar's own height is not the slot's height. The wrapper is a flex
   // container, which sizes to its content and has no line box of its own, so
-  // without the strut a figure sat in 28px instead of 45 and each footer line
-  // in 16 instead of 20: a strip of tiles stood 25px short and everything
-  // under it moved when the figures arrived. Measured in headless Chrome,
-  // which is the only place it shows, so the test guards the mechanism.
+  // without the strut a figure sat in a 28px bar's height instead of its
+  // type's 28px line box and the note in 16 instead of its own: a strip of
+  // tiles stood short and everything under it moved when the figures
+  // arrived. Measured in headless Chrome, which is the only place it shows,
+  // so the test guards the mechanism.
   it("stands a loading bar in the line box its own type would have made", () => {
     const { container } = renderCard(
       <WidgetCard
         title="Workforce"
         value={<StatBar className="h-7 w-16" />}
-        footer={<StatBar className="h-4 w-28" />}
+        note={<StatBar className="h-4 w-28" />}
       />
     )
     const bars = container.querySelectorAll('[data-slot="skeleton"]')
@@ -167,38 +188,10 @@ describe("WidgetCard", () => {
       // A non-breaking space: an empty box makes no line box at all.
       expect(strut?.textContent).toBe("\u00a0")
       // No type of its own: it has to INHERIT the size and leading of the slot
-      // it sits in, which is what lets one bar fit a 45px figure and a 20px
-      // footer line.
+      // it sits in, which is what lets one bar fit the figure and the next
+      // fit the note line.
       expect(strut?.className).not.toMatch(/\btext-|\bleading-/)
     }
-  })
-
-  // A tile's height cannot depend on how long a sentence happens to be in the
-  // reader's language. The same note fits one line in Swedish and took two in
-  // English and Finnish at the width a 1280px window leaves, which grew the
-  // strip by 20px in those locales the moment its figures landed. Both lines
-  // are one line, clipped; the copy is written to fit, so the ellipsis is the
-  // guard rather than the normal state.
-  it("holds each footer line to one line", () => {
-    const { container } = renderCard(
-      <WidgetCard
-        title="Pay gap"
-        value="4.2%"
-        footer="Down from 4.8% in 2025"
-        footerIcon={UserGroupIcon}
-        note="Average pay difference, women vs men"
-      />
-    )
-    const footer = container.querySelector('[data-slot="card-footer"]')
-    const statement = footer?.children[0]
-    const note = footer?.children[1]
-    // The statement clips its TEXT, not the row: the direction icon sits
-    // outside the clipped box so it cannot be eaten by a long sentence.
-    expect(statement?.querySelector(".truncate")?.textContent).toBe(
-      "Down from 4.8% in 2025"
-    )
-    expect(statement?.querySelector("svg")).not.toBeNull()
-    expect(note?.className).toContain("truncate")
   })
 
   it("opens the expanded view from the header control", () => {

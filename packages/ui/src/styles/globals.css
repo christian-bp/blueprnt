@@ -69,43 +69,46 @@
     --chart-4: oklch(0.511 0.096 186.391);
     --chart-5: oklch(0.437 0.078 188.216);
     /* Gender data-viz ink, reused by EVERY chart that splits people by
-       gender. The two series are told apart REDUNDANTLY: by hue here, and by
-       mark in components/gender-mark.tsx (women solid, men a diagonal hatch;
-       women a triangle, men a circle). Hue is the fast channel, the mark is
-       the robust one, so the split still survives greyscale and print where
-       hue is gone.
+       gender. Hue is the whole channel on area marks now: the men's hatch is
+       off by decision, so a bar, an arc and a quartile row are told apart by
+       colour alone and every surface drawing them names its series in a
+       legend, a stat row or the tooltip. Point marks keep their second
+       channel (women a triangle, men a square), which no hue change touches.
 
-       Blue and orange, because that opposition is the only one that holds
-       under all three dichromacies: it rides the blue-yellow axis, which is
-       the axis every type keeps. Cool/cool pairs measured far better on
-       screen and then collapsed into a single colour under simulated
-       deuteranopia. Neither is the brand rose, so a chart never competes
-       with the CTA and title colour sitting beside it, and neither is pink,
-       which no pay-equity chart should put on "women".
+       What that costs: printed in black and white the two washes are one
+       grey. What it buys, and why this pair rather than the last: violet and
+       sky are further apart than anything this app has carried, in normal
+       vision and under simulated dichromacy alike.
 
-       Softened towards the pairing the category is used to (a muted denim
-       and a terracotta orange) rather than a saturated cobalt and gold.
-       Both still clear 3:1 against the card, which the familiar soft blue
-       does NOT (it measures 2.96), and the men's series is drawn hatched on
-       top of that, so it needs the headroom.
+       Neither is the brand rose, so a chart never competes with the CTA and
+       title colour sitting beside it, and neither is pink, which no
+       pay-equity chart should put on "women".
 
-       Orange sits at 52deg, clear of --flag-elevated at 78deg. Lighter and
-       less red than the first pass, towards the softer orange this category
-       tends to use, but still clearing 3:1 against the card ON ITS OWN: the
-       darker edge below carries plenty of boundary contrast, and a fill that
-       leans on it entirely would vanish anywhere the edge is not drawn. */
-    --gender-woman: oklch(0.67 0.135 52);
-    --gender-man: oklch(0.60 0.12 250);
-    /* The women's mark needs its own edge ink; the men's does not. A hatch
-       is a pale wash under stripes, so the ink itself already reads as a
-       contour against it. A solid fill outlined in the same ink has no edge
-       at all, which left the two series looking differently CONSTRUCTED:
-       the men's bars drawn, the women's merely filled. This is a darker step
-       of the same hue, never a second hue. It is deliberately a smaller step
-       than the men's edge-to-interior contrast (3.26): that one sits against
-       an almost-white wash, and the same jump against a saturated fill reads
-       as a heavy frame rather than a contour. */
-    --gender-woman-edge: oklch(0.48 0.14 46);
+       Each series is TWO tokens rather than one: the INK (saturated, what
+       identifies the series) and the FILL (a wash of it, what large areas are
+       painted with).
+
+       A solid saturated fill is heavy to look at once it covers a bar, an arc
+       or a whole quartile row; the same ink as a 1px contour around a wash
+       reads as the same series without shouting. Small marks take the ink
+       directly, because a wash at 8px is a smudge.
+
+       Measured: the two inks are ΔE 72.6 apart normally and 24.9 in the worst
+       dichromacy, the widest separation any pair in this app has had; the two
+       washes hold 43.0 / 11.5 on their own. The inks clear 3:1 against the
+       card (4.97 and 4.52) and the washes do not have to, because the ink
+       contours them, which is the same construction the men's hatch used
+       before the texture came off.
+
+       Ink and wash move TOGETHER. The wash carries the weight a reader sees
+       (2.58 and 2.11 against the card), and the ink has to stay far enough
+       from its own fill for the contour to read as a separate line: at 1.9
+       to 2.1 it does, and darkening a wash without taking its ink with it is
+       what closes that gap. */
+    --gender-woman: oklch(0.57 0.23 293);
+    --gender-woman-fill: oklch(0.72 0.13 293);
+    --gender-man: oklch(0.55 0.15 233);
+    --gender-man-fill: oklch(0.76 0.10 232);
     /* The role palette: hue carries WHICH JOB a point belongs to, on the
        surfaces where that is the question (the equivalent-work scatter's role
        mode). Hue alone, every point the same circle: shape is left to the
@@ -143,6 +146,29 @@
     --role-5: #e69f00;
     --role-6: #cc79a7;
     --role-other: oklch(0.55 0.02 260);
+    /* The trend strip's ink: the one colour a widget carries, on the
+       sparkline's curve and its fill and nowhere else. The mark, the type and
+       the figure stay neutral.
+
+       ONE ink for every strip, not one per figure. A strip carries no
+       category, the tile's title does, so three hues said "these are three
+       kinds of thing", which is a claim nothing else on the surface makes.
+       Colour per tile also teaches nothing: a hue that means "pay gap"
+       appears once and is gone.
+
+       A pastel of the brand rose, because it is the only hue in the app not
+       spent on an encoding: gender is violet and sky, the flags are red,
+       amber and green, and the roles hold the Okabe-Ito six. Green and red
+       stay out for that reason, and the saturated rose stays out too because
+       it is what a reader can click. This is far enough off it to be a
+       different object (ΔE 29.9, and a 2px line is not a filled button)
+       while staying the house colour.
+
+       Pastel, and this pale on purpose: at full chroma a strip competes with
+       the figure it belongs to. The floor is legibility rather than contrast
+       policy, since it encodes nothing: under about 2:1 against the card a
+       2px line stops reading, and this sits at 2.63. */
+    --spark: oklch(0.72 0.13 16);
     --radius: 0.625rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
@@ -197,13 +223,20 @@
        plane (see :root), lifted in lightness: the light-plane pair is darker
        than the dark card it would sit on. Both land near 7:1 there, well
        past the 3:1 a graphical object needs. */
-    --gender-woman: oklch(0.76 0.125 52);
-    --gender-man: oklch(0.70 0.12 250);
-    --gender-woman-edge: oklch(0.58 0.13 46);
+    /* Inverted on the dark card: the wash goes dark instead of pale, and the
+       ink steps up so it still contours it. */
+    --gender-woman: oklch(0.72 0.19 293);
+    --gender-woman-fill: oklch(0.50 0.14 293);
+    --gender-man: oklch(0.75 0.14 232);
+    --gender-man-fill: oklch(0.52 0.11 232);
     /* The six role steps passed the validator against the dark surface too,
        so they are not re-stepped here. Only the neutral has to lift off the
        darker card. */
     --role-other: oklch(0.68 0.02 260);
+    /* Unchanged on the dark card: a pastel rose already clears it by a wide
+       margin (6.83), and stepping it up would take it past the line weight
+       the light plane sets. */
+    --spark: oklch(0.72 0.13 16);
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
     --sidebar-primary: var(--brand);
@@ -248,7 +281,8 @@
     --color-chart-5: var(--chart-5);
     --color-gender-man: var(--gender-man);
     --color-gender-woman: var(--gender-woman);
-    --color-gender-woman-edge: var(--gender-woman-edge);
+    --color-gender-woman-fill: var(--gender-woman-fill);
+    --color-gender-man-fill: var(--gender-man-fill);
     --color-role-1: var(--role-1);
     --color-role-2: var(--role-2);
     --color-role-3: var(--role-3);
@@ -256,6 +290,7 @@
     --color-role-5: var(--role-5);
     --color-role-6: var(--role-6);
     --color-role-other: var(--role-other);
+    --color-spark: var(--spark);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);

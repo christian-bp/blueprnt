@@ -3,10 +3,10 @@ import { join } from "node:path"
 import { cleanup, render } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
 import {
+  GenderHatch,
   genderMarkBorder,
   GenderPointHitArea,
   GenderPointMark,
-  GenderHatch,
   GenderMenIcon,
   orderGenderPayload,
   genderFillStyle,
@@ -37,26 +37,50 @@ describe("gender marks", () => {
     )
   }
 
-  it("paints the men series with a pattern, not a second color", () => {
+  // An area mark is painted with the WASH, not the ink: a saturated fill is
+  // heavy once it covers a bar or an arc, and the ink comes back as the
+  // contour around it (genderMarkBorder). The women's mark carries stripes of
+  // that same ink OVER its wash, which is the channel that survives greyscale,
+  // print and a reader who cannot separate the two hues.
+  it("hatches the women series and leaves the men's wash flat", () => {
     const { getByTestId } = render(<Probe />)
-    expect(getByTestId("men").getAttribute("fill")).toMatch(/^url\(#/)
+    expect(getByTestId("women").getAttribute("fill")).toMatch(/^url\(#/)
+    expect(getByTestId("men").getAttribute("fill")).toBe(
+      "var(--gender-man-fill)"
+    )
   })
 
-  it("paints the women series with its own ink", () => {
-    const { getByTestId } = render(<Probe />)
-    expect(getByTestId("women").getAttribute("fill")).toBe(
+  // The stripes sit ON the wash rather than on the card: the pattern paints
+  // its own background first, so the mark keeps the colour the men's mark is
+  // compared against.
+  it("paints the wash inside the pattern, under the stripes", () => {
+    const { container } = render(<Probe />)
+    const pattern = container.querySelector("pattern")
+    expect(pattern?.querySelector("rect")?.getAttribute("fill")).toBe(
+      "var(--gender-woman-fill)"
+    )
+    expect(pattern?.querySelector("line")?.getAttribute("stroke")).toBe(
       "var(--gender-woman)"
     )
   })
 
   it("defines the pattern it references", () => {
     const { container, getByTestId } = render(<Probe />)
-    const id = getByTestId("men")
+    const id = getByTestId("women")
       .getAttribute("fill")
       ?.replace(/^url\(#/, "")
       .replace(/\)$/, "")
-    expect(id).toBeDefined()
     expect(container.querySelector(`pattern[id="${id}"]`)).not.toBeNull()
+  })
+
+  // One direction for every surface: the chart's pattern, the CSS bars and
+  // the key chip all run the same way, or one series reads as two textures.
+  it("runs the chart's stripes the same way the key's do", () => {
+    const { container } = render(<Probe />)
+    expect(
+      container.querySelector("pattern")?.getAttribute("patternTransform")
+    ).toBe("rotate(45)")
+    expect(genderFillStyle("women").backgroundImage).toContain("-45deg")
   })
 
   it("gives two charts on one page different pattern ids", () => {
@@ -67,7 +91,6 @@ describe("gender marks", () => {
       </>
     )
     const ids = [...container.querySelectorAll("pattern")].map((p) => p.id)
-    expect(ids).toHaveLength(2)
     expect(new Set(ids).size).toBe(2)
   })
 
@@ -78,8 +101,8 @@ describe("gender marks", () => {
   // could only stand in for.
   it("separates point marks by SHAPE, not by colour or by fill", () => {
     // Shape carries the whole distinction on a point mark: two overlapping
-    // marks differing only in fill cannot be counted, and a hatch cannot
-    // survive a mark narrower than its pattern tile.
+    // marks differing only in fill cannot be counted, and a texture cannot
+    // survive a mark narrower than its own tile.
     const { container } = render(
       <svg aria-label="marks">
         <GenderPointMark cx={20} cy={20} series="women" />
@@ -191,51 +214,51 @@ describe("gender marks", () => {
     // women's bar in the men's blue, which is worse than no border: it states
     // the wrong series. Taking a required argument is what makes that a
     // compile error rather than a thing to notice in a screenshot.
-    expect(genderMarkBorder("women").stroke).toBe("var(--gender-woman-edge)")
+    expect(genderMarkBorder("women").stroke).toBe("var(--gender-woman)")
     expect(genderMarkBorder("men").stroke).toBe("var(--gender-man)")
     expect(genderMarkBorder("women").strokeWidth).toBeGreaterThan(0)
   })
 
-  it("edges the solid series in a DARKER step of its own ink", () => {
-    // The men's mark is a pale wash under stripes, so their ink already
-    // contours it. A solid fill outlined in its own colour has no visible
-    // edge at all, which left the two series looking differently
-    // constructed rather than differently filled.
-    expect(genderMarkBorder("women").stroke).not.toBe("var(--gender-woman)")
-    expect(genderMarkBorder("women").stroke).toContain("--gender-woman")
-    // The hatched series needs no separate edge ink, and inventing one would
-    // be a second value to keep in step with nothing.
-    expect(genderMarkBorder("men").stroke).toBe("var(--gender-man)")
+  it("contours every wash in its own INK, never in the wash itself", () => {
+    // A wash outlined in the wash has no visible edge at all, and the contour
+    // is what lets the fill stay pale: it carries the mark's boundary
+    // contrast against the card so the fill does not have to.
+    for (const series of ["women", "men"] as const) {
+      const token = series === "women" ? "woman" : "man"
+      expect(genderMarkBorder(series).stroke).toBe(`var(--gender-${token})`)
+      expect(genderMarkBorder(series).stroke).not.toContain("-fill")
+    }
   })
 
   it("borders an HTML mark in its own ink too", () => {
     // Same defect, other family: genderKeyStyle and genderFillStyle both hard
     // coded the men's token for the border of BOTH series.
     for (const style of [genderKeyStyle, genderFillStyle]) {
-      expect(style("women").border).toContain("--gender-woman-edge")
-      expect(style("men").border).toContain("--gender-man")
+      expect(style("women").border).toContain("--gender-woman)")
+      expect(style("men").border).toContain("--gender-man)")
     }
   })
 
-  it("gives the men mark a stripe at both scales, women none", () => {
+  // An HTML mark carries the same encoding as the SVG one: the women's wash
+  // under stripes of its ink, the men's wash flat.
+  it("hatches the women mark at both scales, over its own wash", () => {
     for (const style of [genderKeyStyle, genderFillStyle]) {
-      expect(style("men").backgroundImage).toContain(
+      expect(style("women").backgroundImage).toContain(
         "repeating-linear-gradient"
       )
-      expect(style("women").backgroundImage).toBeUndefined()
+      expect(style("women").backgroundImage).toContain("--gender-woman")
+      expect(style("women").backgroundColor).toContain("--gender-woman-fill")
+      expect(style("men").backgroundImage).toBeUndefined()
+      expect(style("men").backgroundColor).toContain("--gender-man-fill")
     }
   })
 
-  it("draws a key stripe heavier than a full-size bar's", () => {
-    // A 10px chip washes out at the chart hatch's weight; a full-width bar at
-    // the chip's weight reads denser than the charts beside it.
-    expect(genderKeyStyle("men").backgroundImage).toContain("1.4px")
-    expect(genderFillStyle("men").backgroundImage).toContain("60%")
-  })
-
-  it("renders a legend icon carrying stripes", () => {
+  it("renders a legend icon as the wash with its own contour", () => {
     const { container } = render(<GenderMenIcon />)
-    expect(container.querySelectorAll("line").length).toBeGreaterThan(1)
+    expect(container.querySelectorAll("line")).toHaveLength(0)
+    const rects = [...container.querySelectorAll("rect")]
+    expect(rects[0]?.getAttribute("fill")).toBe("var(--gender-man-fill)")
+    expect(rects[1]?.getAttribute("stroke")).toBe("var(--gender-man)")
   })
 
   it("lists women before men in the hover, matching the legend", () => {
@@ -340,22 +363,38 @@ describe("gender ChartConfigs", () => {
     expect(offenders).toEqual([])
   })
 
-  it("gives every men series a hatched key", () => {
+  // An AREA surface is one that defines the hatch pattern. Its config entries
+  // carry the matching key chips, or a legend and a hover show flat swatches
+  // for a chart that draws one series textured.
+  it("gives every area chart's series its own key chip", () => {
     const offenders: string[] = []
     for (const [path, source] of files) {
-      // Test fixtures build throwaway configs that never render a legend or a
-      // tooltip; the guard is about the configs the app ships.
       if (path.includes("gender-mark") || path.includes(".test.")) continue
-      // Each `men:`/`man:` config entry that names the gender token must also
-      // name the icon that carries the hatch into legends and tooltips.
-      const entries = source.matchAll(
+      if (!source.includes("<GenderHatch")) continue
+      const women = source.matchAll(
+        /\b(?:women|woman):\s*\{[^}]*var\(--gender-woman\)[^}]*\}/g
+      )
+      for (const [entry] of women) {
+        if (!entry.includes("GenderWomenIcon")) offenders.push(`${path} women`)
+      }
+      const men = source.matchAll(
         /\b(?:men|man):\s*\{[^}]*var\(--gender-man\)[^}]*\}/g
       )
-      for (const [entry] of entries) {
-        if (!entry.includes("GenderMenIcon")) {
-          offenders.push(path)
-        }
+      for (const [entry] of men) {
+        if (!entry.includes("GenderMenIcon")) offenders.push(`${path} men`)
       }
+    }
+    expect(offenders).toEqual([])
+  })
+
+  // And the other way: a POINT surface encodes gender by shape, so an area
+  // chip there is a square standing in for a triangle.
+  it("keeps the area key chips off the point surfaces", () => {
+    const offenders: string[] = []
+    for (const [path, source] of files) {
+      if (path.includes("gender-mark") || path.includes(".test.")) continue
+      if (source.includes("<GenderHatch")) continue
+      if (/GenderWomenIcon|GenderMenIcon/.test(source)) offenders.push(path)
     }
     expect(offenders).toEqual([])
   })
@@ -376,17 +415,22 @@ describe("gender tokens", () => {
     )
 
   it("declares both series in the light and the dark plane", () => {
-    expect(declarations("woman")).toHaveLength(2)
-    expect(declarations("man")).toHaveLength(2)
-    expect(declarations("woman-edge")).toHaveLength(2)
+    for (const name of ["woman", "man", "woman-fill", "man-fill"]) {
+      expect(declarations(name)).toHaveLength(2)
+    }
   })
 
   it("registers every gender token in @theme, or the build drops it", () => {
-    // Found the hard way: --gender-woman-edge resolved to nothing in the
+    // Found the hard way: a second gender token resolved to nothing in the
     // browser while --gender-woman right above it worked. A custom property
     // that no @theme entry references is stripped from the compiled CSS, so
     // a new token is invisible until it is registered here too.
-    for (const name of ["gender-man", "gender-woman", "gender-woman-edge"]) {
+    for (const name of [
+      "gender-man",
+      "gender-woman",
+      "gender-woman-fill",
+      "gender-man-fill",
+    ]) {
       expect(css).toContain(`--color-${name}: var(--${name});`)
     }
   })
@@ -394,7 +438,10 @@ describe("gender tokens", () => {
   it("gives the two series different ink in every plane", () => {
     const women = declarations("woman")
     const men = declarations("man")
-    expect(women).not.toEqual(declarations("woman-edge"))
+    // The wash is a step off the ink, never the same value: painting a bar in
+    // its own ink is the heaviness this construction exists to avoid.
+    expect(women).not.toEqual(declarations("woman-fill"))
+    expect(men).not.toEqual(declarations("man-fill"))
     for (const [i, w] of women.entries()) {
       expect(w).not.toBe(men[i])
     }

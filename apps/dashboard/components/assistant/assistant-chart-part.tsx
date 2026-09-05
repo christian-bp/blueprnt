@@ -26,16 +26,17 @@ import { hasTrendShape } from "@/lib/pay-gap-trend"
 // figures in words, so the chart IS the content a screen reader needs to
 // reach.
 
-// The reference design's chart-card recipe (one plain 1px border, no ring,
-// no shadow, content inset by the card's padding): the border must be the
-// ONLY frame stroke. The Card's default ring and shadow are box-shadows,
-// and inside the message thread's composited scroll container box-shadows
-// paint patchily, mostly at the corners (verified empirically: a solid red
-// 2px test box-shadow lost its straight edges in place while border and
-// outline painted whole). Leaving them under a real border reads as an
-// uneven, sometimes-double line; removing them leaves one even border that
-// always paints.
-const CHART_CARD_FRAME_CLASS = "border border-border ring-0 shadow-none"
+// The chart card in chat carries the app's frame anatomy like every other
+// panel, with one exception: its BORDERS are the only strokes. Inside the
+// message thread's composited scroll container box-shadows paint patchily,
+// mostly at the corners (verified empirically: a solid red 2px test
+// box-shadow lost its straight edges in place while border and outline
+// painted whole), so a shadow under a real border reads as an uneven,
+// sometimes-double line. The frame's own shadow and the panel's (both its
+// shadow-xs and the inset one it paints through ::before) are zeroed here;
+// the borders always paint.
+const CHART_CARD_FRAME_CLASS =
+  "shadow-none *:data-[slot=frame-panel]:shadow-none *:data-[slot=frame-panel]:before:shadow-none"
 
 export function AssistantChartPart(props: { chart: AssistantChartKind }) {
   const { orgId } = useOrganization()

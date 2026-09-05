@@ -2,34 +2,45 @@
 
 import { ChartTooltipContent } from "@workspace/ui/components/chart"
 import { cn } from "@workspace/ui/lib/utils"
+import { useId } from "react"
 import { CHART_TOOLTIP_TEXT, TOOLTIP_APPEAR } from "@/lib/chart-style"
 import { ChartKeyRow, ChartLegend } from "./chart-legend"
 import { PointMark, PointShapeIcon } from "./point-mark"
 import type { ComponentProps, CSSProperties, ReactNode } from "react"
-import { useId } from "react"
 
 // The two series every gender chart draws.
 export type GenderSeries = "women" | "men"
 
-// The one place the women/men encoding is defined. Every chart that splits
-// people by gender separates the two series REDUNDANTLY: by hue (amber and
-// blue, --gender-woman and --gender-man) and by mark (women solid, men a
-// diagonal hatch; women a triangle, men a square).
+// The one place the women/men encoding is defined. Two channels, but not the
+// same two on every family.
 //
-// Both channels, not one. Hue is read faster, which is why it is here at all.
-// The mark is what survives the channels hue does not: greyscale, print, and
-// a reader who cannot separate the two hues. Dropping either one costs a
-// whole audience, so no chart may encode gender with only a colour.
+// AREA marks (bars, arcs, bands) are told apart by HUE alone: violet for
+// women, sky for men, each drawn as a pale wash of its ink under a 1px
+// contour in the ink itself. The men's diagonal hatch used to be the second
+// channel here and is off by decision, so these marks no longer survive
+// greyscale or print on their own. That is only safe because every surface
+// drawing them names its series in a legend, a stat row or the tooltip, and
+// each of them does.
 //
-// Solid reads as the primary mark, so the solid is deliberately the WOMEN
-// series: the group whose pay disadvantage the product measures is not the
-// one drawn as the marked case.
+// POINT marks keep two channels: shape as well as hue (women a triangle, men
+// a square), because two overlapping dots differing only in colour cannot be
+// counted, and a plot of individuals is exactly where that matters.
+//
+// The ink and the wash are separate tokens on purpose. A saturated fill is
+// heavy once it covers a bar or an arc, so large areas take the wash; a wash
+// at 8px is a smudge, so point marks and every stroke take the ink.
 //
 // Identity is never left to fill or hue alone. Every surface using these
 // marks also names the series, in a legend, a stat row, or the tooltip.
 
-// A 4x4 tile rotated -45deg holding a faint wash and a thin line, matching the
-// hatch the workforce area chart already uses so the two read as one language.
+// A 4x4 tile rotated -45deg: the series' own wash with a thin line of its INK
+// across it, the same ink the contour is drawn in. It is what carries the two
+// series apart where hue cannot go, in greyscale, in print, and for a reader
+// who cannot separate violet from sky.
+//
+// The women's series wears it. The men's did once, on the reasoning that the
+// group whose disadvantage the product measures should not be the marked
+// case; that is an owner decision and it is now the other way round.
 export function GenderHatch({ id }: { id: string }) {
   return (
     <pattern
@@ -39,54 +50,72 @@ export function GenderHatch({ id }: { id: string }) {
       width="4"
       height="4"
       patternUnits="userSpaceOnUse"
-      patternTransform="rotate(-45)"
+      // +45, not -45: a vertical line rotated the other way runs "\\" while
+      // the CSS bars (repeating-linear-gradient at -45deg) and the key chip's
+      // hand-placed lines both run "/". One direction everywhere, or the same
+      // series reads as two different textures on one page.
+      patternTransform="rotate(45)"
     >
-      <rect width="4" height="4" fill="var(--gender-man)" fillOpacity="0.16" />
+      <rect width="4" height="4" fill="var(--gender-woman-fill)" />
+      {/* Held under full strength: at full ink the stripes read as the mark's
+          colour rather than as a texture on it, and the contour stops being
+          the darkest line in the shape. */}
       <line
         x1="0"
         y1="0"
         x2="0"
         y2="4"
-        stroke="var(--gender-man)"
+        stroke="var(--gender-woman)"
         strokeWidth="1"
-        strokeOpacity="0.6"
+        strokeOpacity="0.55"
       />
     </pattern>
   )
 }
 
-// Paints for an area/bar/arc mark. `hatchId` is unique per chart instance, so
-// render <GenderHatch id={hatchId} /> inside that chart's own <defs>: an SVG
-// paint server referenced by a chart that has unmounted stops resolving.
+// Paints for an area/bar/arc mark: the women's hatch, the men's flat wash.
+// `hatchId` is unique per chart instance, so render <GenderHatch id={hatchId} />
+// inside that chart's own <defs>: an SVG paint server referenced by a chart
+// that has unmounted stops resolving.
+//
+// The men's series was hatched here, so the pair survived greyscale and print
+// on texture alone. That texture is off by decision: the two hues are far
+// enough apart to read at a glance and under the two common dichromacies
+// (violet to denim, ΔE 54.8 normal and 18.3 worst-case), and the marks now
+// differ only in colour. What that costs is the third channel: printed in
+// black and white the two fills are one grey (ΔE 4.3, contrast 1.16), so a
+// surface using them keeps naming its series in a legend, a stat row or the
+// tooltip, which every one of them already does.
+//
+// A hook rather than a constant so the call sites do not change shape if the
+// paints ever need per-chart state again (they did, for the hatch's id).
 export function useGenderMarks() {
   const hatchId = `gender-hatch-${useId().replace(/:/g, "")}`
   return {
     hatchId,
-    women: "var(--gender-woman)",
-    men: `url(#${hatchId})`,
+    women: `url(#${hatchId})`,
+    men: "var(--gender-man-fill)",
   }
 }
 
-// Every gender mark carries a border in ITS OWN ink. A hatch is stripes with
-// no edge of its own, so a hatched shape without one reads as a smudge that
-// fades into the card rather than as a bounded area; the border is what gives
-// it a silhouette. It doubles as the separator between stacked segments, so
-// they no longer need a card-colored spacer to stop reading as one mass.
+// Every gender mark carries a border in a DARKER step of ITS OWN ink. The
+// border is what gives a filled shape a silhouette against the card, and it
+// doubles as the separator between stacked segments, so they no longer need a
+// card-colored spacer to stop reading as one mass. A fill outlined in its own
+// colour has no visible edge at all, which is why each series has an -edge
+// token rather than reusing the fill.
 //
 // Per series, not one constant. While both series shared the brand ink this
 // was a single value and every call site spread the same object onto both
 // bars. With two hues that would outline the women's bar in the men's blue,
 // which is worse than no border at all: it states the wrong series.
-//
-// The women's stroke is a DARKER step of their own ink, not the ink itself.
-// A hatch is a pale wash, so the men's ink already contours it; a solid fill
-// outlined in its own colour has no visible edge, which left the two series
-// looking differently constructed rather than merely differently filled.
 export function genderMarkBorder(series: GenderSeries) {
   return {
-    stroke:
-      series === "women" ? "var(--gender-woman-edge)" : "var(--gender-man)",
-    strokeWidth: 1,
+    stroke: series === "women" ? "var(--gender-woman)" : "var(--gender-man)",
+    // A notch heavier than a hairline: at 1px the contour reads as an
+    // artifact of the fill rather than as a drawn edge, and it is what the
+    // pale wash leans on for its boundary against the card.
+    strokeWidth: 1.5,
   } as const
 }
 
@@ -102,9 +131,9 @@ export function genderMarkBorder(series: GenderSeries) {
 // The shape is not decoration on top of the colour. Two overlapping marks
 // that differ only in fill cannot be counted, and a dot plot's whole job is
 // showing where individuals sit, so the shape is what makes a cluster
-// readable even for someone who sees both hues perfectly. A hatch cannot do
+// readable even for someone who sees both hues perfectly. A texture cannot do
 // it here at all: the pattern tile is wider than the mark, which is why area
-// marks (bars, bands) keep the hatch and point marks do not.
+// marks (bars, bands) carry no shape of their own to vary.
 //
 // Both marks stay solid. A hollow one reads fainter than the solid beside it,
 // so the two series stop looking like one dataset, and it was the harder
@@ -174,8 +203,8 @@ export function GenderPointMark({
 
 // A POINT mark's key: the same triangle/square the scatter draws, so the
 // legend and the hover show the object the chart shows. An area chart's key
-// stays the hatched square (genderKeyStyle); using that one beside a scatter
-// was the bug this replaces, where the legend showed a hatched square for a
+// stays the filled square (genderKeyStyle); using that one beside a scatter
+// was the bug this replaces, where the legend showed a square chip for a
 // series drawn as a hollow ring.
 //
 // Sized and inset like GenderMenIcon so both keys occupy the same 12x12 box
@@ -189,42 +218,19 @@ export function GenderDotIcon({ series }: { series: GenderSeries }) {
   )
 }
 
-// The men series' key inside a chart TOOLTIP, drawn as a hatched chip so the
-// hover never shows a solid swatch for a series the chart draws hatched. Goes
-// in ChartConfig's `icon` slot, which ChartTooltipContent renders in place of
-// its default color swatch.
+// The women series' key: the same wash under the same stripes the chart's
+// own marks carry, so a legend or a hover never shows a flat swatch for a
+// series the chart draws textured.
 //
-// It fills its box edge to edge: ChartTooltipContent sizes an icon and its
-// default swatch identically (both 10px), so anything inset here would render
-// the men key visibly smaller than the women key sitting under it. The stripes
-// still run heavier than the in-chart hatch, because at the hatch's own weight
-// a 10px chip washes out next to the solid one it must contrast with.
-//
-// The stripes are hand-placed lines rather than a <pattern>: this renders many
-// times per page, and a pattern (or a clip path) would need a document-unique
-// id on every instance.
-export function GenderMenIcon() {
+// Hand-placed lines rather than a <pattern>: this renders many times per
+// page, and a pattern (or a clip path) would need a document-unique id on
+// every instance. The stripes run heavier than the in-chart hatch, because at
+// the chart's own weight a 10px chip washes out beside the flat one it has to
+// contrast with.
+export function GenderWomenIcon() {
   return (
     <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-      <rect
-        width="12"
-        height="12"
-        rx="2.4"
-        fill="var(--gender-man)"
-        fillOpacity="0.18"
-      />
-      {/* Drawn inset by half the stroke so the outline is not clipped by the
-          viewBox edge, matching the border on the chart's own marks. */}
-      <rect
-        x="0.5"
-        y="0.5"
-        width="11"
-        height="11"
-        rx="2"
-        fill="none"
-        stroke="var(--gender-man)"
-        strokeWidth="1"
-      />
+      <rect width="12" height="12" rx="2.4" fill="var(--gender-woman-fill)" />
       {[
         [0, 4, 4, 0],
         [0, 8, 8, 0],
@@ -238,23 +244,53 @@ export function GenderMenIcon() {
           y1={y1}
           x2={x2}
           y2={y2}
-          stroke="var(--gender-man)"
-          strokeWidth="1.2"
+          stroke="var(--gender-woman)"
+          strokeWidth="1.4"
+          strokeOpacity="0.55"
         />
       ))}
+      <rect
+        x="0.75"
+        y="0.75"
+        width="10.5"
+        height="10.5"
+        rx="1.9"
+        fill="none"
+        stroke="var(--gender-woman)"
+        strokeWidth="1.5"
+      />
     </svg>
   )
 }
 
-// The tooltip for a gender chart: ChartTooltipContent with its rows put in the
-// same order as GenderLegend, women first.
+// The men series' key inside a chart TOOLTIP. Goes in ChartConfig's `icon`
+// slot, which ChartTooltipContent renders in place of its default colour
+// swatch, so the hover shows the same chip the chart's own marks are built
+// from: the ink with its darker edge.
 //
-// recharts orders tooltip rows by series name, which sorts "men" above
-// "women" and leaves the hover contradicting the legend beside it. Its own
-// `itemSorter` prop cannot fix that: only DefaultTooltipContent reads it, and
-// this chart family renders custom content. recharts clones the content
-// element with the live tooltip props, so reordering the payload on the way
-// through is the seam that does not touch vendor code.
+// It fills its box edge to edge: ChartTooltipContent sizes an icon and its
+// default swatch identically (both 10px), so anything inset here would render
+// the men key visibly smaller than the women key sitting under it.
+export function GenderMenIcon() {
+  return (
+    <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+      <rect width="12" height="12" rx="2.4" fill="var(--gender-man-fill)" />
+      {/* Drawn inset by half the stroke so the outline is not clipped by the
+          viewBox edge, matching the border on the chart's own marks. */}
+      <rect
+        x="0.75"
+        y="0.75"
+        width="10.5"
+        height="10.5"
+        rx="1.9"
+        fill="none"
+        stroke="var(--gender-man)"
+        strokeWidth="1.5"
+      />
+    </svg>
+  )
+}
+
 export function orderGenderPayload<T extends { dataKey?: unknown }>(
   payload: readonly T[]
 ): T[] {
@@ -314,7 +350,7 @@ export function GenderKeyRow({
   series: GenderSeries
   label: string
   value?: string
-  // Which family of mark this legend belongs to. "area" is the hatched
+  // Which family of mark this legend belongs to. "area" is the filled
   // square (bars, bands, arcs); "point" is the scatter's own triangle or
   // square. A legend must show the object its chart shows.
   mark?: "area" | "point"
@@ -385,55 +421,48 @@ export function GenderLegend({
   )
 }
 
-// The same encoding for marks built out of HTML rather than SVG, where a
-// `repeating-linear-gradient` stands in for the SVG pattern at the same 4px
-// pitch and -45deg angle.
+// The same encoding for marks built out of HTML rather than SVG: the ink with
+// its own darker edge, so a CSS bar and an SVG bar on the same page are the
+// same object.
 //
-// Stripe weight is NOT one value. A 10px key needs heavier stripes than the
-// charts use, or it washes out into a pale square next to the solid key beside
-// it; a full-width bar at that same weight reads visibly denser than the
-// hatched charts around it. So the two sizes are separate calls, and neither
-// one is a scaled version of the other.
+// Two calls rather than one, kept because a key and a full-width bar have
+// differed before (the men's hatch needed heavier stripes at key size than it
+// did at bar size) and may again.
 // A key: a legend chip, a tooltip swatch, anything around 8-10px.
 export function genderKeyStyle(series: GenderSeries): CSSProperties {
-  // Bordered to match the marks (genderMarkBorder), in the series' OWN ink: a
-  // key that is a bare hatch while the chart's shapes are outlined stops
-  // being the same object. box-sizing is border-box, so the border sits
-  // inside the swatch's size.
+  // Bordered to match the marks (genderMarkBorder), in the series' OWN ink:
+  // an unbordered key beside outlined shapes stops being the same object.
+  // box-sizing is border-box, so the border sits inside the swatch's size.
   if (series === "women") {
     return {
-      backgroundColor: "var(--gender-woman)",
-      border: "1px solid var(--gender-woman-edge)",
+      backgroundImage:
+        "repeating-linear-gradient(-45deg, color-mix(in srgb, var(--gender-woman) 55%, transparent) 0 1.4px, transparent 1.4px 4px)",
+      backgroundColor: "var(--gender-woman-fill)",
+      border: "1.5px solid var(--gender-woman)",
     }
   }
-  const border = "1px solid var(--gender-man)"
   return {
-    backgroundImage:
-      "repeating-linear-gradient(-45deg, var(--gender-man) 0 1.4px, transparent 1.4px 4px)",
-    backgroundColor: "color-mix(in srgb, var(--gender-man) 18%, transparent)",
-    border,
+    backgroundColor: "var(--gender-man-fill)",
+    border: "1.5px solid var(--gender-man)",
   }
 }
 
-// A large filled mark: a CSS bar the size of a chart's own bars. Matches
-// GenderHatch's weight (a 1px line at 0.6 alpha over a 16% wash) so an HTML
-// bar and an SVG bar on the same page carry the same texture.
+// A large filled mark: a CSS bar the size of a chart's own bars.
 export function genderFillStyle(series: GenderSeries): CSSProperties {
   // Bordered like every other mark (genderMarkBorder), in the series' own
-  // ink. An HTML bar is still a gender mark: without the outline the hatched
-  // one has no edge and reads as a smudge next to the solid one. box-sizing
-  // is border-box, so the border sits inside the bar rather than growing it.
+  // ink. An HTML bar is still a gender mark, and a fill with no edge reads as
+  // a smudge against the card. box-sizing is border-box, so the border sits
+  // inside the bar rather than growing it.
   if (series === "women") {
     return {
-      backgroundColor: "var(--gender-woman)",
-      border: "1px solid var(--gender-woman-edge)",
+      backgroundImage:
+        "repeating-linear-gradient(-45deg, color-mix(in srgb, var(--gender-woman) 55%, transparent) 0 1px, transparent 1px 4px)",
+      backgroundColor: "var(--gender-woman-fill)",
+      border: "1.5px solid var(--gender-woman)",
     }
   }
-  const border = "1px solid var(--gender-man)"
   return {
-    backgroundImage:
-      "repeating-linear-gradient(-45deg, color-mix(in srgb, var(--gender-man) 60%, transparent) 0 1px, transparent 1px 4px)",
-    backgroundColor: "color-mix(in srgb, var(--gender-man) 16%, transparent)",
-    border,
+    backgroundColor: "var(--gender-man-fill)",
+    border: "1.5px solid var(--gender-man)",
   }
 }

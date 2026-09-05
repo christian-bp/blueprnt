@@ -1,6 +1,6 @@
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react"
-import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
+import { Frame, FramePanel } from "@workspace/ui/components/frame"
 import { cn } from "@workspace/ui/lib/utils"
 import Link from "next/link"
 import type { ReactNode } from "react"
@@ -31,30 +31,37 @@ export function PanelCard({
   children: ReactNode
 }) {
   return (
-    <Card size="sm" className={cn("gap-3", className)}>
-      <CardHeader className="flex flex-row items-center gap-3">
-        {icon !== undefined && <Medallion icon={icon} size="sm" />}
-        {/* A heading, not a paragraph: these panels are the page's sections,
+    // The app's frame anatomy, like every widget and every register: a muted
+    // ground carrying one white panel, so a section panel reads as the same
+    // object as the tiles above it rather than as a flat card of its own.
+    <Frame className={cn("w-full", className)}>
+      <FramePanel className="flex flex-col gap-3">
+        <div className="flex flex-row items-center gap-3">
+          {icon !== undefined && <Medallion icon={icon} size="sm" />}
+          {/* A heading, not a paragraph: these panels are the page's sections,
             and a screen-reader user browsing by heading would otherwise find
             nothing below the first one. */}
-        <h3 className="min-w-0 flex-1 truncate font-medium text-sm">{title}</h3>
-        {meta}
-        {action !== undefined && (
-          <Link
-            href={action.href}
-            className="group/panel flex shrink-0 items-center gap-1 text-muted-foreground text-xs underline-offset-4 hover:underline"
-          >
-            {action.label}
-            <HugeiconsIcon
-              icon={ArrowRight01Icon}
-              strokeWidth={2}
-              aria-hidden="true"
-              className="size-3.5 transition-transform group-hover/panel:translate-x-0.5"
-            />
-          </Link>
-        )}
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-    </Card>
+          <h3 className="min-w-0 flex-1 truncate font-medium text-sm">
+            {title}
+          </h3>
+          {meta}
+          {action !== undefined && (
+            <Link
+              href={action.href}
+              className="group/panel flex shrink-0 items-center gap-1 text-muted-foreground text-xs underline-offset-4 hover:underline"
+            >
+              {action.label}
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                strokeWidth={2}
+                aria-hidden="true"
+                className="size-3.5 transition-transform group-hover/panel:translate-x-0.5"
+              />
+            </Link>
+          )}
+        </div>
+        <div>{children}</div>
+      </FramePanel>
+    </Frame>
   )
 }

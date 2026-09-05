@@ -3,6 +3,8 @@ import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import { OverviewWidgets } from "@/components/overview/overview-widgets"
+import type { HeadcountPoint } from "@/lib/headcount-trend"
+import type { PayGapPoint } from "@/lib/pay-gap-trend"
 import type { PayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
 import type { LevelOverview } from "@/lib/level-overview"
 import type { OverviewStats } from "@/lib/todo"
@@ -39,6 +41,8 @@ function renderStrip(
     stats?: OverviewStats | undefined
     levelOverview?: LevelOverview | undefined | null
     payMappingHeadline?: PayMappingHeadline | undefined | null
+    headcountTrend?: HeadcountPoint[] | undefined | null
+    payGapTrend?: PayGapPoint[] | undefined | null
   } = {}
 ) {
   return render(
@@ -51,6 +55,10 @@ function renderStrip(
         payMappingHeadline={
           "payMappingHeadline" in options ? options.payMappingHeadline : null
         }
+        headcountTrend={
+          "headcountTrend" in options ? options.headcountTrend : null
+        }
+        payGapTrend={"payGapTrend" in options ? options.payGapTrend : null}
       />
     </NextIntlClientProvider>
   )
@@ -75,9 +83,35 @@ describe("OverviewWidgets", () => {
 
   // A tile is one number: the trend charts live in the assistant now, so
   // nothing in the strip mounts a chart.
-  it("carries no charts", () => {
+  // The strips ARE charts, so the old "no charts here" guard is now about
+  // where they may appear: a tile carries at most its own trend, never a
+  // plotted panel, and a tile with no history carries nothing at all.
+  it("draws a trend only where the figure has a history", () => {
     const { container } = renderStrip()
+    // No runs yet: nothing to trend against, and no panel-shaped chart on a
+    // strip of one-figure tiles either.
     expect(container.querySelectorAll('[data-slot="chart"]')).toHaveLength(0)
+    expect(
+      container.querySelectorAll(".recharts-responsive-container")
+    ).toHaveLength(0)
+  })
+
+  // Roles are not snapshotted over time, so that tile never gets a strip
+  // however much history the other two have.
+  it("gives the workforce and the gap a strip, and the roles none", () => {
+    const { container } = renderStrip({
+      headcountTrend: [
+        { date: 1, runLabel: "2025", women: 3, men: 4 },
+        { date: 2, runLabel: "2026", women: 5, men: 5 },
+      ],
+      payGapTrend: [
+        { date: 1, runLabel: "2025", gapPct: 5.2 },
+        { date: 2, runLabel: "2026", gapPct: 4.1 },
+      ],
+    })
+    expect(
+      container.querySelectorAll(".recharts-responsive-container")
+    ).toHaveLength(2)
   })
 
   it("shows the headcount with its unclassified caption", () => {
@@ -101,12 +135,13 @@ describe("OverviewWidgets", () => {
     expect(screen.getByText("Across 2 levels")).toBeDefined()
   })
 
-  // Every tile carries two lines: the statement, then what the figure counts.
-  it("says what each figure counts under its statement", () => {
-    renderStrip()
-    expect(screen.getByText(t.workforce.note)).toBeDefined()
-    expect(screen.getByText(t.roles.note)).toBeDefined()
-    expect(screen.getByText(t.gap.note)).toBeDefined()
+  // ONE line per tile, and it is the live one. The standing explainer of
+  // what each figure counts ("Employees in your register") was a second line
+  // on every tile that said what the label already says.
+  it("carries the live state as each tile's only line", () => {
+    const { container } = renderStrip()
+    expect(container.textContent).not.toContain("in your register")
+    expect(container.textContent).not.toContain("Roles you have created")
   })
 
   it("shows the roles empty state with no level overview", () => {

@@ -14,10 +14,21 @@ const SIZES = {
   lg: "size-10 [&_svg]:size-6",
 } as const
 
-// Brand is the default and means "this concerns you". Muted is for a card
-// that is only a way in, with nothing waiting behind it: it lets one row
-// hold both without a second heading to separate them.
+// The default is the design system's own item chip: a muted tile with the
+// app's ink on the icon. Not the brand tint it carried before, because the
+// mark identifies a surface and does not ask to be acted on, while the rose
+// is what the links and the primary button speak with; a page of rose chips
+// spent the CTA colour on decoration.
+//
+// Muted keeps the quieter icon for a card that is only a way in, with
+// nothing waiting behind it: it lets one row hold both without a second
+// heading to separate them.
+//
+// Brand survives for ONE surface: the to-do cards, where the tint says
+// something is waiting. There the chip belongs to the card's own state
+// rather than to the app's furniture, so it keeps the rose it always had.
 const TONES = {
+  default: "bg-muted text-accent-foreground",
   brand: "bg-brand/10 text-brand dark:bg-brand/20",
   muted: "bg-muted text-muted-foreground",
 } as const
@@ -25,7 +36,7 @@ const TONES = {
 export function Medallion({
   icon,
   size = "md",
-  tone = "brand",
+  tone = "default",
   ring = true,
 }: {
   icon: IconSvgElement
@@ -38,7 +49,10 @@ export function Medallion({
 }) {
   return (
     <span aria-hidden="true" className={medallionClass(size, tone, ring)}>
-      <HugeiconsIcon icon={icon} strokeWidth={2} />
+      {/* A finer line than the app's usual 2: the chip's ink went from the
+          brand rose to near-black, and the same stroke against that much
+          contrast reads as a heavier icon than it did on the tint. */}
+      <HugeiconsIcon icon={icon} strokeWidth={1.5} />
     </span>
   )
 }
@@ -48,7 +62,7 @@ export function Medallion({
 // measure identically in both states.
 export function medallionClass(
   size: keyof typeof SIZES = "md",
-  tone: keyof typeof TONES = "brand",
+  tone: keyof typeof TONES = "default",
   ring = true
 ) {
   return cn(

@@ -63,6 +63,9 @@ export function ActionCard({
           : "hover:bg-accent/40"
       )}
     >
+      {/* The to-do card is the one surface whose chip follows the card: the
+          tint is what says something is waiting, and a neutral chip inside a
+          tinted card reads as furniture that wandered in. */}
       <Medallion icon={icon} tone={tone} ring={false} />
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium text-sm">{title}</p>

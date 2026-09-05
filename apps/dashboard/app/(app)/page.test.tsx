@@ -265,10 +265,17 @@ describe("OverviewPage", () => {
     expect(page?.className).toContain("gap-4")
 
     // Each band that lays widgets out in a grid, plus the to-do section's own
-    // heading-to-cards stack. None may carry a different gap.
+    // heading-to-cards stack. None may carry a different gap. A grid INSIDE a
+    // card is that card's own anatomy (a stat tile lays its figure out beside
+    // its sparkline), not a band of the page, so the frames are excluded
+    // rather than the rule loosened.
     const bands = [
       ...(page?.querySelectorAll("div.grid, section") ?? []),
-    ].filter((el) => !el.className.includes("card-header"))
+    ].filter(
+      (el) =>
+        !el.className.includes("card-header") &&
+        el.closest('[data-slot="frame"]') === null
+    )
     expect(bands.length).toBeGreaterThanOrEqual(3)
     for (const band of bands) {
       expect(band.className).toContain("gap-4")

@@ -26,7 +26,6 @@ import { RoleLegend } from "@/components/role-mark"
 import {
   GenderDotIcon,
   GenderLegend,
-  GenderMenIcon,
   GenderPointHitArea,
   GenderPointMark,
   type GenderSeries,
@@ -301,7 +300,6 @@ export function PayMappingScatter({
   roleOrder?: readonly string[]
 }) {
   const t = useTranslations("dashboard.payMapping.scatter")
-  const tHelp = useTranslations("dashboard.help")
   const tGender = useTranslations("dashboard.people.gender")
   const money = useMoney()
   const [xMode, setXMode] = useState<ScatterXMode>("age")
@@ -419,17 +417,6 @@ export function PayMappingScatter({
       )
     }
 
-  const help = {
-    label: tHelp("payGapScatterLabel"),
-    // The averages exist only on the surfaces that pass them, so their
-    // sentence is appended rather than folded into the shared body. Two whole
-    // sentences joined by a space share no grammar across the join, so every
-    // locale keeps its own wording on both sides of it.
-    body:
-      means === undefined
-        ? tHelp("payGapScatterBody")
-        : `${tHelp("payGapScatterBody")} ${tHelp("payGapScatterMeansBody")}`,
-  }
   const toggle = (
     <div className="flex flex-wrap items-center gap-2">
       {/* Offered only where a role order exists to colour by (the
@@ -460,7 +447,7 @@ export function PayMappingScatter({
 
   if (rows === undefined) {
     return (
-      <WidgetCard title={title} help={help} headerExtra={toggle} expandable>
+      <WidgetCard title={title} headerExtra={toggle} expandable>
         <ChartCanvasSkeleton collapsed={COLLAPSED_HEIGHT} />
       </WidgetCard>
     )
@@ -476,7 +463,7 @@ export function PayMappingScatter({
 
   if (points.length === 0) {
     return (
-      <WidgetCard title={title} help={help} headerExtra={toggle} expandable>
+      <WidgetCard title={title} headerExtra={toggle} expandable>
         <p className="text-muted-foreground text-sm">
           {xMode === "age" ? t("emptyAge") : t("emptyTenure")}
         </p>
@@ -530,20 +517,16 @@ export function PayMappingScatter({
     (series) => drawnGenders.has(series) && !hiddenGenders.has(series)
   ).length
 
-  // A hatch cannot survive on a scatter dot, so the men series is the same
-  // ink drawn as an outline instead; the legend icon keeps the
-  // key honest about which mark belongs to which series.
+  // No mark in the config: this is a POINT surface, where gender rides on
+  // SHAPE, and every key and hover here draws GenderDotIcon. An area chip in
+  // the config would be a square standing for a triangle.
   const config = {
-    man: {
-      label: tGender("Man"),
-      color: "var(--gender-man)",
-      icon: GenderMenIcon,
-    },
+    man: { label: tGender("Man"), color: "var(--gender-man)" },
     woman: { label: tGender("Kvinna"), color: "var(--gender-woman)" },
   } satisfies ChartConfig
 
   return (
-    <WidgetCard title={title} help={help} headerExtra={toggle} expandable>
+    <WidgetCard title={title} headerExtra={toggle} expandable>
       <div className="space-y-1">
         <ChartCanvas config={config} collapsed={COLLAPSED_HEIGHT}>
           <ScatterChart

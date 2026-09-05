@@ -69,21 +69,22 @@ describe("PayMappingPopulationCard", () => {
   })
 
   // The comparison is ONE visible sentence carrying its own amount, not a
-  // pill in the corner plus a "vs 2025" fragment that only meant something
-  // together with it (and so needed a screen-reader-only rewrite).
-  it("states the change with its amount and names the mapping it is measured against", () => {
+  // pill in the corner plus a fragment that only meant something together
+  // with it (and so needed a screen-reader-only rewrite). The earlier
+  // mapping is not named: a tile is read at a glance, and the run it means
+  // is the one directly before this one.
+  it("states the change with its amount, measured against the last mapping", () => {
     renderCard({ runsList: [PREVIOUS_2025] })
-    expect(screen.getByText("3 people more than 2025")).toBeDefined()
+    expect(screen.getByText("3 people more since the last one")).toBeDefined()
     // No delta pill, and no fragment left over from one.
     expect(screen.queryByText("+3")).toBeNull()
-    expect(screen.queryByText("vs 2025")).toBeNull()
   })
 
   it("states a shrinking population as fewer", () => {
     renderCard({
       runsList: [makeRunSummary({ label: "2025", populationCount: 130 })],
     })
-    expect(screen.getByText("9 people fewer than 2025")).toBeDefined()
+    expect(screen.getByText("9 people fewer since the last one")).toBeDefined()
     expect(screen.queryByText("-9")).toBeNull()
   })
 
@@ -92,12 +93,17 @@ describe("PayMappingPopulationCard", () => {
   // of it in the tree.
   it("renders the comparison once, not as a visible half plus a hidden sentence", () => {
     renderCard({ runsList: [PREVIOUS_2025] })
-    expect(screen.getAllByText("3 people more than 2025")).toHaveLength(1)
+    expect(
+      screen.getAllByText("3 people more since the last one")
+    ).toHaveLength(1)
   })
 
-  it("says what the figure covers under the comparison", () => {
-    renderCard({ runsList: [PREVIOUS_2025] })
-    expect(screen.getByText(m.overview.populationNote)).toBeDefined()
+  // ONE qualifying line, and it is the live one. The standing explainer of
+  // what the figure covers is what the tile's help is for; on the tile it
+  // was a second line every mapping carried and nobody read twice.
+  it("carries the comparison as its only line under the title", () => {
+    const { container } = renderCard({ runsList: [PREVIOUS_2025] })
+    expect(container.textContent).not.toContain("Everyone included")
   })
 
   it("says first mapping instead of a delta when there is no earlier run", () => {
@@ -112,7 +118,7 @@ describe("PayMappingPopulationCard", () => {
     renderCard({
       runsList: [makeRunSummary({ label: "2025", populationCount: 121 })],
     })
-    expect(screen.getByText("Unchanged vs 2025")).toBeDefined()
+    expect(screen.getByText(m.overview.deltaUnchanged)).toBeDefined()
     expect(screen.queryByText(m.overview.populationFirstRun)).toBeNull()
   })
 

@@ -6,16 +6,28 @@ import { G, Line, Rect, Svg, Text, View } from "@react-pdf/renderer"
 // transforms): the kit's wordmark taught us the browser build rejects
 // viewBox transforms ("unsupported number").
 //
-// The gender encoding mirrors the app's chart rules (CLAUDE.md): women in
-// the terracotta ink, men in the denim ink, and never colour alone: the
-// men's mark is hatched with a border in its own ink, the women's solid
-// with its darker edge, and every bar prints its value. Inks are the LIGHT
-// theme's --gender-* tokens (packages/ui/src/styles/globals.css) converted
-// to sRGB hex, since a PDF cannot read CSS variables; a token retune must
-// update these too.
-const PDF_WOMAN_INK = "#d57b3e"
-const PDF_WOMAN_EDGE = "#9a3d00"
-const PDF_MAN_INK = "#4284c5"
+// The gender encoding mirrors the app's chart rules (CLAUDE.md), mark for
+// mark: each series is a WASH contoured in its own INK, the women's carrying
+// diagonal stripes of that ink and the men's flat, and every bar prints its
+// value so the reading never rests on colour. The stripes matter more on
+// paper than anywhere else: a report is the one surface guaranteed to be
+// printed, and in black and white the two washes are one grey.
+//
+// Inks are the LIGHT theme's --gender-* tokens (packages/ui/src/styles/
+// globals.css) converted to sRGB hex, since a PDF cannot read CSS variables.
+// A token retune must update these four, and there is a test that fails when
+// they drift from the stylesheet.
+export const PDF_GENDER_INKS = {
+  womanInk: "#824cef",
+  womanFill: "#a894ee",
+  manInk: "#007cb1",
+  manFill: "#6abce6",
+} as const
+
+const PDF_WOMAN_INK = PDF_GENDER_INKS.womanInk
+const PDF_WOMAN_FILL = PDF_GENDER_INKS.womanFill
+const PDF_MAN_INK = PDF_GENDER_INKS.manInk
+const PDF_MAN_FILL = PDF_GENDER_INKS.manFill
 
 // Sized to the longest shipped row label (fi "Kvartiili 1 (matalin palkka)"
 // measures ~91pt in Helvetica 8) plus headroom: SVG text has no clipping or
@@ -26,11 +38,24 @@ const VALUE_WIDTH = 78
 const BAR_HEIGHT = 11
 const ROW_GAP = 7
 const FONT = 8
+const ROW_HEIGHT = BAR_HEIGHT * 2 + 2 + ROW_GAP
 // The app's marks are rounded (BAR_RADIUS 6 on ~28px bars); at this bar
 // height the proportional radius is 2. The hatch is computed on the square
 // bounds, so at a larger radius its corner segments would visibly cross the
 // rounded outline.
 const BAR_CORNER_RADIUS = 2
+// The bars' outline, centred on the shape's edge, so half of it falls
+// OUTSIDE the rect. The drawing is inset by that half and the canvas grown by
+// the whole, or the top row's outline is clipped by the Svg's own edge, which
+// is what printed the first bar with a flat top.
+const BAR_EDGE = 0.8
+const EDGE_PAD = BAR_EDGE / 2
+
+// The canvas a set of rows needs, its own drawing plus the outline the top
+// and bottom rows hang over.
+export function pairedBarsHeight(rowCount: number): number {
+  return rowCount * ROW_HEIGHT + BAR_EDGE
+}
 
 // 45-degree hatch segments clipped to a rectangle, drawn as explicit lines
 // because react-pdf's SVG has no pattern fills.
@@ -63,17 +88,35 @@ function WomanBar({
   width: number
   height: number
 }) {
+  // A zero draws NOTHING. Given a minimum width it printed as a stub with an
+  // outline, which reads as a mark for a series that has no one in the row;
+  // the value beside it already says 0.
+  if (width <= 0) return null
+  const w = Math.max(width, 0.5)
   return (
-    <Rect
-      x={x}
-      y={y}
-      rx={BAR_CORNER_RADIUS}
-      width={Math.max(width, 0.5)}
-      height={height}
-      fill={PDF_WOMAN_INK}
-      stroke={PDF_WOMAN_EDGE}
-      strokeWidth={0.8}
-    />
+    <>
+      <Rect
+        x={x}
+        y={y}
+        rx={BAR_CORNER_RADIUS}
+        width={w}
+        height={height}
+        fill={PDF_WOMAN_FILL}
+        stroke={PDF_WOMAN_INK}
+        strokeWidth={BAR_EDGE}
+      />
+      {hatchSegments(x, y, w, height).map((segment) => (
+        <Line
+          key={`${segment.x1}-${segment.y1}`}
+          x1={segment.x1}
+          y1={segment.y1}
+          x2={segment.x2}
+          y2={segment.y2}
+          stroke={PDF_WOMAN_INK}
+          strokeWidth={0.7}
+        />
+      ))}
+    </>
   )
 }
 
@@ -88,31 +131,18 @@ function ManBar({
   width: number
   height: number
 }) {
-  const w = Math.max(width, 0.5)
+  if (width <= 0) return null
   return (
-    <>
-      <Rect
-        x={x}
-        y={y}
-        rx={BAR_CORNER_RADIUS}
-        width={w}
-        height={height}
-        fill="#ffffff"
-        stroke={PDF_MAN_INK}
-        strokeWidth={0.8}
-      />
-      {hatchSegments(x, y, w, height).map((segment) => (
-        <Line
-          key={`${segment.x1}-${segment.y1}`}
-          x1={segment.x1}
-          y1={segment.y1}
-          x2={segment.x2}
-          y2={segment.y2}
-          stroke={PDF_MAN_INK}
-          strokeWidth={0.7}
-        />
-      ))}
-    </>
+    <Rect
+      x={x}
+      y={y}
+      rx={BAR_CORNER_RADIUS}
+      width={Math.max(width, 0.5)}
+      height={height}
+      fill={PDF_MAN_FILL}
+      stroke={PDF_MAN_INK}
+      strokeWidth={BAR_EDGE}
+    />
   )
 }
 
@@ -199,13 +229,11 @@ export function PairedBarsChart({
   if (rows.length === 0) return null
   const barArea = width - LABEL_WIDTH - VALUE_WIDTH
   const max = Math.max(...rows.map((row) => Math.max(row.women, row.men)), 1)
-  const rowHeight = BAR_HEIGHT * 2 + 2 + ROW_GAP
-  const chartHeight = rows.length * rowHeight
   const scale = (value: number) => (value / max) * barArea
   return (
-    <Svg width={width} height={chartHeight}>
+    <Svg width={width} height={pairedBarsHeight(rows.length)}>
       {rows.map((row, index) => {
-        const top = index * rowHeight
+        const top = EDGE_PAD + index * ROW_HEIGHT
         const womenY = top
         const menY = top + BAR_HEIGHT + 2
         return (

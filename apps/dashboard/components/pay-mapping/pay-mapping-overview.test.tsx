@@ -128,22 +128,20 @@ describe("PayMappingOverview", () => {
     })
   })
 
-  it("orders the KPI strip, then the finding, then the statistics heading and chart titles", () => {
+  it("orders the KPI strip, then the finding, then the chart titles", () => {
     renderOverview(gap())
     const text = document.body.textContent ?? ""
     const populationAt = text.indexOf(m.detail.population)
     const gapAt = text.indexOf(m.overview.headlineGapLabel)
     const clockAt = text.indexOf(m.clock.label)
     const findingAt = text.indexOf(m.overview.meanComparisonTitle)
-    const statsAt = text.indexOf(m.overview.statisticsHeading)
     const chartsAt = text.indexOf(m.overview.wholeSurveyTitle)
 
     expect(populationAt).toBeGreaterThan(-1)
     expect(gapAt).toBeGreaterThan(populationAt)
     expect(clockAt).toBeGreaterThan(gapAt)
     expect(findingAt).toBeGreaterThan(clockAt)
-    expect(statsAt).toBeGreaterThan(findingAt)
-    expect(chartsAt).toBeGreaterThan(statsAt)
+    expect(chartsAt).toBeGreaterThan(findingAt)
 
     expect(screen.getByText(m.overview.quartileTitle)).toBeDefined()
     // Twice: the population card's headline figure and the donut's total.
@@ -222,7 +220,6 @@ describe("PayMappingOverview", () => {
     renderOverview(undefined)
     expect(screen.getByText(m.detail.population)).toBeDefined()
     expect(screen.getByText(m.overview.headlineGapLabel)).toBeDefined()
-    expect(screen.getByText(m.overview.statisticsHeading)).toBeDefined()
     expect(screen.getByText(m.overview.wholeSurveyTitle)).toBeDefined()
     expect(screen.getByText(m.overview.quartileTitle)).toBeDefined()
     // Static chrome renders real during loading: the clock's digit-box
@@ -237,9 +234,11 @@ describe("PayMappingOverview", () => {
   // landed, which is the same defect as coming up short, read backwards.
   it("holds one sentence line, not two, while the finding loads", () => {
     const { container } = renderOverview(undefined)
+    // The panel is the app's frame anatomy now: a muted ground carrying one
+    // white panel, so the enclosing element is the frame, not a card.
     const panel = screen
       .getByText(m.overview.meanComparisonTitle)
-      .closest('[data-slot="card"]')
+      .closest('[data-slot="frame"]')
     const bars = panel?.querySelectorAll('[data-slot="skeleton"]') ?? []
     // One sentence bar over the two mean-comparison rows.
     expect(bars).toHaveLength(3)
@@ -265,19 +264,23 @@ describe("PayMappingOverview", () => {
         orgGapPct,
       })
 
-    it("says the gap came down, quoting the earlier mapping's own gap", () => {
+    // The movement is a step in POINTS on the tile's own line, with the
+    // mapping it is measured against named in the same breath: as a chip in
+    // the corner the amount and its other end sat in two places that only
+    // meant something together.
+    it("states the movement in points when the gap came down", () => {
       renderOverview(gap({ gapPct: 10 }), { runsList: [earlier(14)] })
-      expect(screen.getByText("Down from 14% in 2025")).toBeDefined()
+      expect(screen.getByText("Down 4 pp since the last one")).toBeDefined()
     })
 
-    it("says the gap went up when it widened", () => {
+    it("states the movement in points when the gap widened", () => {
       renderOverview(gap({ gapPct: 10 }), { runsList: [earlier(6)] })
-      expect(screen.getByText("Up from 6% in 2025")).toBeDefined()
+      expect(screen.getByText("Up 4 pp since the last one")).toBeDefined()
     })
 
     it("distinguishes an unchanged gap from having nothing to compare", () => {
       renderOverview(gap({ gapPct: 10 }), { runsList: [earlier(10)] })
-      expect(screen.getByText("Unchanged vs 2025")).toBeDefined()
+      expect(screen.getByText(m.overview.deltaUnchanged)).toBeDefined()
       expect(screen.queryByText(m.overview.gapNoComparison)).toBeNull()
     })
 
@@ -293,11 +296,21 @@ describe("PayMappingOverview", () => {
       expect(screen.getByText(m.overview.gapNoComparison)).toBeDefined()
     })
 
-    it("says what each KPI figure covers under its statement", () => {
-      renderOverview(gap({ gapPct: 10 }), { runsList: [earlier(14)] })
-      expect(screen.getByText(m.overview.gapNote)).toBeDefined()
-      expect(screen.getByText(m.overview.clockNote)).toBeDefined()
-      expect(screen.getByText(m.overview.populationNote)).toBeDefined()
+    // The standing explainers of what each figure covers are gone from the
+    // tiles: a tile is its name, its figure and the one live line.
+    it("carries no standing explainer under either figure", () => {
+      const { container } = renderOverview(gap({ gapPct: 10 }), {
+        runsList: [earlier(14)],
+      })
+      expect(container.textContent).not.toContain("Average pay difference")
+      expect(container.textContent).not.toContain("8-hour working day")
+    })
+
+    // Two orgs with mirrored gaps must not read identically, and the clock's
+    // full sentence is read only by assistive tech.
+    it("says which gender the clock is counting", () => {
+      renderOverview(gap({ gapPct: 10 }), { runsList: [] })
+      expect(screen.getByText(m.clock.womenBehindShort)).toBeDefined()
     })
   })
 })

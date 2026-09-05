@@ -1046,21 +1046,18 @@
           "allClassified": "Alle klassifisert",
           "importPrompt": "Importer for å komme i gang",
           "trendLabel": "Ansatte",
-          "trendTitle": "Bemanning over tid",
-          "note": "Ansatte i registeret deres"
+          "trendTitle": "Bemanning over tid"
         },
         "gap": {
           "label": "Lønnsgap",
           "notStarted": "Ikke startet",
           "prompt": "Start din første lønnskartlegging",
-          "insufficientValue": "Ikke nok data",
-          "note": "Fra deres siste lønnskartlegging"
+          "insufficientValue": "Ikke nok data"
         },
         "roles": {
           "label": "Roller",
           "caption": "På tvers av {count, plural, one {# nivå} other {# nivåer}}",
-          "empty": "Vurder roller for å se dem her",
-          "note": "Roller dere har opprettet"
+          "empty": "Vurder roller for å se dem her"
         },
         "gapTrend": {
           "title": "Lønnsgap over tid",
@@ -1472,10 +1469,9 @@
         "headlineGapLabel": "Lønnsgap",
         "insufficient": "Utilstrekkelig grunnlag for et lønnsgap på organisasjonsnivå.",
         "populationFirstRun": "Første lønnskartlegging",
-        "populationDeltaMore": "{count, plural, one {# person flere enn {label}} other {# personer flere enn {label}}}",
-        "populationDeltaFewer": "{count, plural, one {# person færre enn {label}} other {# personer færre enn {label}}}",
+        "populationDeltaMore": "{count, plural, one {# person flere} other {# flere personer}} siden forrige",
+        "populationDeltaFewer": "{count, plural, one {# person færre} other {# færre personer}} siden forrige",
         "meanComparisonTitle": "Gjennomsnittslønn per kjønn",
-        "statisticsHeading": "Statistikk",
         "wholeSurveyTitle": "Hele kartleggingen",
         "quartileTitle": "Kjønnsfordeling etter lønnsnivå",
         "quartiles": {
@@ -1484,19 +1480,19 @@
           "lowerMiddle": "Nedre midtre",
           "lower": "Nedre kvartil"
         },
-        "deltaUnchanged": "Uendret mot {label}",
-        "populationNote": "Alle som inngår i denne lønnskartleggingen",
-        "gapDeltaNarrowed": "Ned fra {previous} i {label}",
-        "gapDeltaWidened": "Opp fra {previous} i {label}",
-        "gapNoComparison": "Ingenting å sammenligne med ennå",
-        "gapNote": "Gjennomsnittlig lønnsforskjell, kvinner mot menn",
-        "clockNote": "Regnet på en 8-timers arbeidsdag"
+        "deltaUnchanged": "Uendret siden forrige",
+        "gapDeltaDown": "Ned {amount} %-poeng siden forrige",
+        "gapDeltaUp": "Opp {amount} %-poeng siden forrige",
+        "gapNoComparison": "Ingenting å sammenligne med ennå"
       },
       "clock": {
         "label": "Likestillingsklokke",
         "womenBehind": "Kvinner arbeider i praksis så lenge ubetalt hver arbeidsdag.",
         "menBehind": "Menn arbeider i praksis så lenge ubetalt hver arbeidsdag.",
-        "noGap": "Ingen målbar lønnsforskjell."
+        "noGap": "Ingen målbar lønnsforskjell.",
+        "womenBehindShort": "Kvinner arbeider så lenge ubetalt",
+        "menBehindShort": "Menn arbeider så lenge ubetalt",
+        "noGapShort": "Ingen målbar lønnsforskjell"
       },
       "report": {
         "cardDraft": "Utkast",
@@ -2470,8 +2466,6 @@
       "workingConditionsDecisionBody": "Testet, ikke vesentlig betyr at dere har vurdert arbeidsforhold og ikke funnet noe vesentlig nok til å vurderes. Velg Aktivt for å legge til ett: det gjelder da hver rolle, der 0 betyr at rollen ikke er dekket.",
       "classifySeniorityLabel": "Hva er senioritet?",
       "classifySeniorityBody": "Individets plassering innen rollens track, for eksempel Senior eller Lead. Det angis per person, ikke på rollen, og brukes til å sammenligne personer i tilsvarende stillinger.",
-      "fteAdjustedLabel": "Hva betyr heltidsjustert?",
-      "fteAdjustedBody": "Deltidslønn regnes opp til heltid før sammenligningen. Noen på 80% med 40 000 i månedslønn vises som 50 000.",
       "fullTimeHoursLabel": "Hva er heltidstimer per måned?",
       "fullTimeHoursBody": "Timene som regnes som heltid brukes til å regne om timelønn til et månedsbeløp. En persons egen verdi erstatter organisasjonens standard.",
       "payBasisLabel": "Hva er lønnsform?",
@@ -2480,25 +2474,16 @@
       "payMappingBody": "En lønnskartlegging er et fryst øyeblikksbilde av lønn, roller og demografi. All analyse kjøres mot den kopien, aldri mot livedata, slik at tallene ikke kan endre seg under dere.",
       "referenceDateLabel": "Hva er referansedatoen?",
       "referenceDateBody": "Datoen øyeblikksbildet representerer. Det settes til i dag når du starter kartleggingen.",
-      "equalityClockLabel": "Likestillingsklokke",
-      "equalityClockBody": "Lønnsgapet vist som tid: andelen av en 8-timers dag det lavere lønnede kjønnet jobber uten tilsvarende lønn. Det utledes av gjennomsnittsgapet, ikke av noen timeplan.",
-      "headlineGapLabel": "Lønnsgap på organisasjonsnivå",
-      "headlineGapBody": "Det gjennomsnittlige heltidsjusterte lønnsgapet mellom alle kvinner og alle menn i kartleggingen; positivt betyr at kvinner tjener mindre. Det dekker hele populasjonen og vises også ved små grupper.",
-      "payQuartilesLabel": "Lønnsnivåkvartiler",
-      "payQuartilesBody": "Alle med lønn rangeres etter lønn og deles i fire like store grupper. At kvinner samler seg i de lavere kvartilene og menn i de øvre er en ujevn fordeling, glasstakmønsteret.",
       "payGapReasonsLabel": "Saklige grunner",
       "payGapReasonsBody": "Loven krever en saklig begrunnelse for hver lønnsforskjell mellom sammenlignbare grupper. Velg faktorene som gjelder og utdyp i tekstfeltet.",
       "payGapMemberDiffLabel": "Hva betyr 'mot mennenes gjennomsnitt'?",
       "payGapMemberDiffBody": "Personens heltidsjusterte lønn minus mennenes gjennomsnitt i gruppen, på gruppens primære mål. Negativt betyr at personen tjener mindre enn det gjennomsnittet, positivt mer.",
-      "payGapScatterLabel": "Hva viser diagrammet?",
-      "payGapScatterBody": "Hvert punkt er én person, plassert etter alder eller ansiennitet mot heltidsjustert lønn. Bruk den til å se om et gap har en saklig forklaring, og til spredningen, som loven sammenligner i tillegg til gjennomsnitt.",
       "collaborationLabel": "Hva er samarbeid?",
       "collaborationBody": "Å samarbeide med de ansatte og deres tillitsvalgte gjennom hele lønnskartleggingen (diskrimineringsloven 3 kap. 11 §). Ved tariffavtale kan de også kreve informasjonen (12 §).",
       "modelProgressLabel": "Hva trenger modellen?",
       "methodAppendixLabel": "Hva er metodevedlegget?",
       "methodAppendixBody": "En PDF med modellens fullstendige dokumentasjon: metodikk, skala, kriterier med protokoller og ankere, nivåer, soner og vesentlighetstesten. Utkast til hvert kriterium er gjennomgått og godkjent.",
       "modelProgressBody": "Beslutningene modellen trenger før godkjenning: hvilke kriterier roller vurderes mot, hvor mye hvert av dem teller, dokumentasjonen og selve godkjenningen.",
-      "payGapScatterMeansBody": "De stiplede linjene er hvert kjønns gjennomsnittslønn i gruppen, så du ser hvem som ligger over og under sitt eget gjennomsnitt.",
       "weightMotivationLabel": "Hva er en vektbegrunnelse?",
       "weightMotivationBody": "Den dokumenterte grunnen til at en dimensjon kan veie så mye som den gjør. Den begrunner vektingen, ikke 0-5-skalaen: si hva ved arbeidet som veier mer, aldri hvem som utfører det.",
       "sharedScaleLabel": "Hva er den felles skalaen?",

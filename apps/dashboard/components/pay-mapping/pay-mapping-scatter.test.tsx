@@ -14,7 +14,6 @@ import {
 const m = messages.dashboard.payMapping.scatter
 const mGender = messages.dashboard.people.gender
 const mDetail = messages.dashboard.payMapping.detail
-const mHelp = messages.dashboard.help
 
 const REF = Date.UTC(2026, 6, 1)
 
@@ -342,25 +341,13 @@ describe("PayMappingScatter", () => {
     expect(screen.getByText(m.menMean)).toBeDefined()
   })
 
-  // The averages sentence is appended only where the lines exist, or the help
-  // would describe two lines that are not on screen.
-  it("explains the averages only on the surface that draws them", () => {
-    const { unmount } = renderScatter({ means: { women: 1, men: 2 } })
-    fireEvent.click(
-      screen.getByRole("button", { name: mHelp.payGapScatterLabel })
-    )
-    expect(
-      screen.getByText(new RegExp(mHelp.payGapScatterMeansBody.slice(0, 40)))
-    ).toBeDefined()
-    unmount()
-
-    renderScatter()
-    fireEvent.click(
-      screen.getByRole("button", { name: mHelp.payGapScatterLabel })
-    )
-    expect(
-      screen.queryByText(new RegExp(mHelp.payGapScatterMeansBody.slice(0, 40)))
-    ).toBeNull()
+  // A widget carries no explaining popover of its own any more: the tile is
+  // its title, its picture and its controls, and the concept behind it is
+  // explained where it is worked with.
+  it("puts no help control on the chart card", () => {
+    const { container } = renderScatter({ means: { women: 1, men: 2 } })
+    // The help trigger is the only round icon button a card ever carried.
+    expect(container.querySelector('button[class*="rounded-full"]')).toBeNull()
   })
 
   it("shows the empty age precondition when nothing is plottable", () => {

@@ -34,6 +34,10 @@ export interface PopulationTrend {
   // Signed: positive = this mapping covers more people. Null when there is
   // no earlier mapping to compare against.
   delta: number | null
+  // Every mapping's frozen headcount, oldest first, up to this one, for the
+  // tile's sparkline. Every frozen run has a headcount, so unlike the gap's
+  // readings none of them can be missing.
+  points: number[]
 }
 
 export function populationTrend(
@@ -41,13 +45,23 @@ export function populationTrend(
   runs: PayMappingRunSummary[]
 ): PopulationTrend {
   const previous = previousRun(current, runs)
+  const points = [...runs]
+    .sort((a, b) => a.referenceDate - b.referenceDate)
+    .filter((run) => run.referenceDate <= current.referenceDate)
+    .map((run) => run.populationCount)
   if (previous === null) {
-    return { count: current.populationCount, previous: null, delta: null }
+    return {
+      count: current.populationCount,
+      previous: null,
+      delta: null,
+      points,
+    }
   }
   return {
     count: current.populationCount,
     previous: { label: previous.label, count: previous.populationCount },
     delta: current.populationCount - previous.populationCount,
+    points,
   }
 }
 
@@ -61,6 +75,10 @@ export interface GapTrend {
   // Signed, in percentage POINTS: negative = the gap narrowed. Null whenever
   // `previous` is, or when this run has no measurable gap of its own.
   delta: number | null
+  // Every measurable reading the org has, oldest first, for the tile's
+  // sparkline. A run whose gap could not be measured is left out rather than
+  // drawn as a zero, which would show a fall to nothing that never happened.
+  points: number[]
 }
 
 export function gapTrend(
@@ -68,15 +86,21 @@ export function gapTrend(
   runs: PayMappingRunSummary[]
 ): GapTrend {
   const previous = previousRun(current, runs)
+  const points = [...runs]
+    .sort((a, b) => a.referenceDate - b.referenceDate)
+    .filter((run) => run.referenceDate <= current.referenceDate)
+    .map((run) => run.orgGapPct)
+    .filter((pct): pct is number => pct !== null)
   if (
     previous === null ||
     previous.orgGapPct === null ||
     current.gapPct === null
   ) {
-    return { previous: null, delta: null }
+    return { previous: null, delta: null, points }
   }
   return {
     previous: { label: previous.label, gapPct: previous.orgGapPct },
     delta: current.gapPct - previous.orgGapPct,
+    points,
   }
 }

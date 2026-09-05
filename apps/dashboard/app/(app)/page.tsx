@@ -8,6 +8,8 @@ import { OverviewStatusLine } from "@/components/overview/overview-status-line"
 import { TodoActions } from "@/components/overview/todo-actions"
 import { WelcomeGreeting } from "@/components/overview/welcome-greeting"
 import { useOrganization } from "@/components/org-context"
+import { useHeadcountTrend } from "@/hooks/use-headcount-trend"
+import { usePayGapTrend } from "@/hooks/use-pay-gap-trend"
 import { useLevelOverview } from "@/hooks/use-level-overview"
 import { useOverviewStats } from "@/hooks/use-overview-stats"
 import { usePageTitle } from "@/hooks/use-page-title"
@@ -44,6 +46,10 @@ export default function OverviewPage() {
   const stats = useOverviewStats(orgId, locale)
   const levelOverview = useLevelOverview(orgId, locale)
   const payMappingHeadline = usePayMappingHeadline(orgId)
+  // Both derive from the run list the headline above already subscribes to,
+  // so the strips on two of the tiles cost no extra query.
+  const headcountTrend = useHeadcountTrend(orgId)
+  const payGapTrend = usePayGapTrend(orgId)
 
   // Whether the page is done arriving. The To do row's arrival burst waits for
   // this rather than for its own query: the queries land in separate batches,
@@ -81,6 +87,8 @@ export default function OverviewPage() {
       </div>
       <TodoActions todo={todo} pageLoaded={pageLoaded} />
       <OverviewWidgets
+        headcountTrend={headcountTrend}
+        payGapTrend={payGapTrend}
         stats={stats}
         levelOverview={levelOverview}
         payMappingHeadline={payMappingHeadline}

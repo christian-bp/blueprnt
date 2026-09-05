@@ -21,7 +21,6 @@ import {
   GenderPointHitArea,
   GenderPointMark,
   GenderLegend,
-  GenderMenIcon,
 } from "@/components/gender-mark"
 import { useOrganization } from "@/components/org-context"
 import { ChartCanvas, ChartCanvasSkeleton } from "@/components/chart-canvas"
@@ -57,17 +56,8 @@ function ScopeChip() {
 // reflow the column.
 export function PayComparisonSectionSkeleton() {
   const t = useTranslations("dashboard.people.payComparison")
-  const tHelp = useTranslations("dashboard.help")
   return (
-    <WidgetCard
-      title={t("heading")}
-      help={{
-        label: tHelp("fteAdjustedLabel"),
-        body: tHelp("fteAdjustedBody"),
-      }}
-      headerExtra={<ScopeChip />}
-      expandable
-    >
+    <WidgetCard title={t("heading")} headerExtra={<ScopeChip />} expandable>
       <Skeleton className="h-48 w-full" />
     </WidgetCard>
   )
@@ -91,7 +81,6 @@ export function PayComparisonSection({
   trackKey: string | undefined
 }) {
   const t = useTranslations("dashboard.people.payComparison")
-  const tHelp = useTranslations("dashboard.help")
   const { orgId } = useOrganization()
   const comparison = useQuery(api.people.pay.getRolePayComparison, {
     orgId,
@@ -131,15 +120,7 @@ export function PayComparisonSection({
     )
 
   return (
-    <WidgetCard
-      title={t("heading")}
-      help={{
-        label: tHelp("fteAdjustedLabel"),
-        body: tHelp("fteAdjustedBody"),
-      }}
-      headerExtra={<ScopeChip />}
-      expandable
-    >
+    <WidgetCard title={t("heading")} headerExtra={<ScopeChip />} expandable>
       {content()}
     </WidgetCard>
   )
@@ -309,7 +290,6 @@ function PayComparisonChart({
     man: {
       label: tGender("Man"),
       color: "var(--gender-man)",
-      icon: GenderMenIcon,
     },
     woman: { label: tGender("Kvinna"), color: "var(--gender-woman)" },
   } satisfies ChartConfig

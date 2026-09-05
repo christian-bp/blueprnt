@@ -1,13 +1,10 @@
 "use client"
 
 import {
-  ArrowDownRight01Icon,
-  ArrowUpRight01Icon,
   ChartAverageIcon,
   Clock01Icon,
   JusticeScale01Icon,
 } from "@hugeicons/core-free-icons"
-import type { IconSvgElement } from "@hugeicons/react"
 import { type ChartConfig, ChartTooltip } from "@workspace/ui/components/chart"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useFormatter, useTranslations } from "next-intl"
@@ -16,6 +13,7 @@ import {
   Bar,
   BarChart,
   Cell,
+  LabelList,
   Pie,
   PieChart,
   Rectangle,
@@ -29,6 +27,7 @@ import {
   genderMarkBorder,
   GenderLegend,
   GenderTooltipContent,
+  GenderWomenIcon,
   useGenderMarks,
 } from "@/components/gender-mark"
 import { ChartCanvas } from "@/components/chart-canvas"
@@ -53,7 +52,9 @@ import type {
   PayMappingGapResult,
 } from "./pay-mapping-gap-types"
 import { BAR_RADIUS, CHART_TOOLTIP_MOTION } from "@/lib/chart-style"
-import { percentText } from "@/lib/percent"
+import { clockUnits, equalityClock } from "@/lib/equality-clock"
+import { Sparkline } from "@/components/sparkline"
+import { percentText, pointAmount, shownPercent } from "@/lib/percent"
 
 // The unadjusted org-level gap as a KPI figure: the unsigned percent, and
 // nothing else. The severity flag used to sit beside it as a chip, which put
@@ -64,11 +65,12 @@ import { percentText } from "@/lib/percent"
 // An org too small to measure has no figure at all, so the tile says so in
 // words where the figure would be.
 //
-// Under the figure sit the same two lines every widget carries: how the gap
-// moved since the mapping before it, then what the figure measures. The
-// movement is quoted from the earlier mapping's own frozen gap ("down from
-// 4.1% in 2025") rather than as a bare point difference, because "0.6" means
-// nothing without both ends of it.
+// The tile's one line names what the figure is measured against, and the
+// movement itself rides on the chip and the sparkline. It used to be spelled
+// out as a sentence ("down from 4.1% in 2025") under a standing explainer of
+// what a pay gap is; the explainer is what the tile's help is for, and the
+// sentence said in words what the chip, the strip and the figure already say
+// together.
 function gapStat(
   org: OrgAggregate | undefined,
   trend: GapTrend | null,
@@ -78,8 +80,7 @@ function gapStat(
   format: ReturnType<typeof useFormatter>
 ): {
   value: ReactNode
-  footer?: ReactNode
-  footerIcon?: IconSvgElement
+  trailing?: ReactNode
   note?: ReactNode
 } {
   if (org === undefined) {
@@ -88,11 +89,12 @@ function gapStat(
     // lands.
     return {
       value: <StatBar className="h-7 w-20" />,
-      footer: <StatBar className="h-4 w-36" />,
       note: <StatBar className="h-4 w-28" />,
     }
   }
-  const note = tOverview("gapNote")
+  // Too small to measure is also "nothing to compare with": there is no
+  // figure at either end of the comparison.
+  const noComparison = tOverview("gapNoComparison")
   if (org.flag === "insufficient" || org.gapPct === null) {
     return {
       value: (
@@ -100,31 +102,54 @@ function gapStat(
           {tOverview("insufficient")}
         </span>
       ),
-      note,
+      note: noComparison,
     }
   }
   const value = percentText(org.gapPct, format)
   // No earlier mapping, or an earlier mapping whose own gap could not be
   // measured: both are "there is no second end to this comparison".
   if (trend === null || trend.previous === null || trend.delta === null) {
-    return { value, footer: tOverview("gapNoComparison"), note }
+    return { value, note: noComparison }
   }
   if (trend.delta === 0) {
     return {
       value,
-      footer: tOverview("deltaUnchanged", { label: trend.previous.label }),
-      note,
+      note: tOverview("deltaUnchanged"),
     }
   }
-  const widened = trend.delta > 0
   return {
     value,
-    footer: tOverview(widened ? "gapDeltaWidened" : "gapDeltaNarrowed", {
-      previous: percentText(trend.previous.gapPct, format),
-      label: trend.previous.label,
-    }),
-    footerIcon: widened ? ArrowUpRight01Icon : ArrowDownRight01Icon,
-    note,
+    // The movement in words on the tile's own line: which way it went, how
+    // far, and that it is measured against the mapping before this one. The
+    // earlier mapping is not NAMED here, because a tile is read at a glance
+    // and "since the last one" is the whole of what a reader needs; the run
+    // it means is the one directly before this in the same list.
+    //
+    // Derived from the two figures AS SHOWN, not from the raw readings: 14.2
+    // to 13.7 is half a point on screen, and a line that said 0.4 (the
+    // unrounded truth) would leave the tile's own arithmetic not adding up in
+    // front of the reader.
+    note: tOverview(
+      shownPercent(org.gapPct) < shownPercent(trend.previous.gapPct)
+        ? "gapDeltaDown"
+        : "gapDeltaUp",
+      {
+        amount: pointAmount(
+          shownPercent(org.gapPct) - shownPercent(trend.previous.gapPct),
+          format
+        ),
+      }
+    ),
+    // The readings behind the figure, oldest first: the gap's own shape at
+    // the size of a word.
+    trailing: (
+      <Sparkline
+        values={trend.points}
+        variant="area"
+        label={tOverview("headlineGapLabel")}
+        formatValue={(pct) => percentText(pct, format)}
+      />
+    ),
   }
 }
 
@@ -240,7 +265,11 @@ function WholeSurveyStat({
   const men = population.men
   const total = women + men
   const config = {
-    women: { label: tGap("women"), color: "var(--gender-woman)" },
+    women: {
+      label: tGap("women"),
+      color: "var(--gender-woman)",
+      icon: GenderWomenIcon,
+    },
     men: {
       label: tGap("men"),
       color: "var(--gender-man)",
@@ -380,7 +409,11 @@ function QuartileStat({ quartiles }: { quartiles: GenderTally[] | undefined }) {
       color: "var(--gender-man)",
       icon: GenderMenIcon,
     },
-    women: { label: tGap("women"), color: "var(--gender-woman)" },
+    women: {
+      label: tGap("women"),
+      color: "var(--gender-woman)",
+      icon: GenderWomenIcon,
+    },
   } satisfies ChartConfig
   // Wire order is lower -> upper; display the upper quartile on top.
   const labels = ["lower", "lowerMiddle", "upperMiddle", "upper"] as const
@@ -389,12 +422,28 @@ function QuartileStat({ quartiles }: { quartiles: GenderTally[] | undefined }) {
       label: t(labels[index] ?? "lower"),
       women: tally.women,
       men: tally.men,
+      // How many people the row holds. Every quartile is a quarter of the
+      // population by definition, so the bars are near enough the same
+      // length to read as equal; the count is what says how many people a
+      // segment's share is actually of.
+      total: tally.women + tally.men,
     }))
     .reverse()
   return (
     <div className="space-y-2">
       <ChartCanvas config={config} collapsed="h-40">
-        <BarChart accessibilityLayer layout="vertical" data={data}>
+        {/* Room at the right for the row totals, which sit outside the
+            plot: without it the last digits are clipped by the chart's own
+            box. */}
+        <BarChart
+          accessibilityLayer
+          layout="vertical"
+          data={data}
+          margin={{ right: 32 }}
+        >
+          <defs>
+            <GenderHatch id={marks.hatchId} />
+          </defs>
           <XAxis type="number" hide />
           <YAxis
             type="category"
@@ -403,9 +452,6 @@ function QuartileStat({ quartiles }: { quartiles: GenderTally[] | undefined }) {
             axisLine={false}
             width={expanded ? 148 : 100}
           />
-          <defs>
-            <GenderHatch id={marks.hatchId} />
-          </defs>
           <ChartTooltip
             {...CHART_TOOLTIP_MOTION}
             content={
@@ -433,7 +479,30 @@ function QuartileStat({ quartiles }: { quartiles: GenderTally[] | undefined }) {
             fill={marks.women}
             {...genderMarkBorder("women")}
             shape={<QuartileSegment series="women" />}
-          />
+          >
+            {/* On the top segment, because it is the one drawn at the end of
+                the stack: the label then sits past the whole bar rather than
+                past the men's part of it. No fontSize, so it grows with the
+                canvas when the card is expanded.
+
+                In the foreground ink at medium weight, not muted: this is a
+                headcount, the same kind of thing as the figure on a tile,
+                and at tick weight beside a saturated bar it read as chrome
+                the eye skips. The offset keeps it off the bar's own edge.
+
+                A step up in em rather than a fixed size: em is relative to
+                whatever the canvas inherits, so the number stays a fifth
+                larger than the row labels in the card AND in the expanded
+                dialog. A fixed class (or a fontSize prop) beats inheritance
+                and would pin this one label while everything around it grew,
+                which is the same defect the axis rule in CLAUDE.md names. */}
+            <LabelList
+              dataKey="total"
+              position="right"
+              offset={10}
+              className="fill-foreground font-medium text-[1.2em]"
+            />
+          </Bar>
         </BarChart>
       </ChartCanvas>
       <GenderLegend
@@ -464,7 +533,6 @@ export function PayMappingOverview({
   const t = useTranslations("dashboard.payMapping")
   const tOverview = useTranslations("dashboard.payMapping.overview")
   const tClock = useTranslations("dashboard.payMapping.clock")
-  const tHelp = useTranslations("dashboard.help")
   const format = useFormatter()
   const org = gap?.org
   // The gap tile compares against the previous mapping's own frozen gap, so
@@ -492,43 +560,42 @@ export function PayMappingOverview({
         <WidgetCard
           title={tOverview("headlineGapLabel")}
           icon={JusticeScale01Icon}
-          help={{
-            label: tHelp("headlineGapLabel"),
-            body: tHelp("headlineGapBody"),
-          }}
           {...gapStat(org, trend, tOverview, format)}
         />
         <WidgetCard
           title={tClock("label")}
           icon={Clock01Icon}
-          help={{
-            label: tHelp("equalityClockLabel"),
-            body: tHelp("equalityClockBody"),
-          }}
-          // Which way the reading goes. Without it the tile is identical for
-          // two orgs with mirrored gaps.
-          //
-          // The slot is held while loading, the way the population tile
-          // beside it does: dropping the footer entirely made the tile a
-          // footer's height shorter than its final self, so the whole KPI
-          // strip grew when the gap landed.
-          footer={
-            org === undefined ? (
-              <StatBar className="h-4 w-36" />
-            ) : org.gapPct === null ? undefined : (
-              tClock(equalityClockDirection(org.gapPct))
+          // The clock's own readings, oldest first: the same mappings the
+          // gap tile trends, converted through the same helper that turns
+          // this one's gap into time, so the strip is the clock's history
+          // rather than the gap's drawn twice.
+          trailing={
+            trend === null ? undefined : (
+              <Sparkline
+                values={trend.points.map((pct) => equalityClock(pct).seconds)}
+                variant="area"
+                label={tClock("label")}
+                formatValue={(seconds) => {
+                  const { hours, minutes } = clockUnits(seconds)
+                  return `${hours}:${minutes}`
+                }}
+              />
             )
           }
+          // Which way the reading goes, as the tile's one line. Without it
+          // the tile is identical for two orgs with mirrored gaps, and the
+          // clock's own sentence is read only by assistive tech. The short
+          // form, because the line is clipped: the full sentence is in the
+          // digits' own sr-only reading.
           note={
             org === undefined ? (
-              <StatBar className="h-4 w-28" />
+              <StatBar className="h-4 w-36" />
             ) : (
-              tOverview("clockNote")
+              tClock(`${equalityClockDirection(org.gapPct)}Short`)
             )
           }
-        >
-          <ClockStat org={org} />
-        </WidgetCard>
+          value={<ClockStat org={org} />}
+        />
       </div>
       {/* The finding in words, under the numbers it explains. */}
       <PanelCard
@@ -537,9 +604,6 @@ export function PayMappingOverview({
       >
         <GapFinding org={org} currency={gap?.currency ?? null} />
       </PanelCard>
-      <h2 className="font-semibold text-lg">
-        {tOverview("statisticsHeading")}
-      </h2>
       {/* Distribution charts, each expandable to a large dialog: the donut
           keeps a single column, the quartile chart takes the remaining two. */}
       <div className="grid gap-4 md:grid-cols-3">
@@ -552,10 +616,6 @@ export function PayMappingOverview({
         <WidgetCard
           className="md:col-span-2"
           title={tOverview("quartileTitle")}
-          help={{
-            label: tHelp("payQuartilesLabel"),
-            body: tHelp("payQuartilesBody"),
-          }}
           expandable
         >
           <QuartileStat quartiles={gap?.quartiles} />

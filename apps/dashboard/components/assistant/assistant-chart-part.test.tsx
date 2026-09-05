@@ -35,7 +35,7 @@ function renderChart(chart: "headcountTrend" | "payGapTrend") {
 }
 
 function panelFor(title: string) {
-  return screen.getByText(title).closest('[data-slot="card"]')
+  return screen.getByText(title).closest('[data-slot="frame-panel"]')
 }
 
 const TWO_RUNS: HeadcountPoint[] = [
@@ -86,21 +86,24 @@ describe("AssistantChartPart (headcountTrend)", () => {
     expect(panel?.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 
-  it("frames the card with one plain border and no box-shadow strokes", () => {
+  it("frames the card with borders only, never a box-shadow stroke", () => {
     useHeadcountTrendMock.mockReturnValue(TWO_RUNS)
     usePayGapTrendMock.mockReturnValue(undefined)
     renderChart("headcountTrend")
     const panel = panelFor(t.workforce.trendTitle)
-    // The border must be the ONLY frame stroke: the Card's default ring and
-    // shadow are box-shadows, which paint patchily inside the thread's
-    // composited scroll container and read as an uneven, sometimes-double
-    // line under a real border. The plot sits inset (no bleed, so no pb-0).
-    const card = panel?.closest('[class*="group/card"]') ?? panel
-    expect(card?.className).toContain("border-border")
-    expect(card?.className).toMatch(/(^|\s)border(\s|$)/)
-    expect(card?.className).toContain("ring-0")
-    expect(card?.className).toContain("shadow-none")
-    expect(card?.className.split(/\s+/)).not.toContain("pb-0")
+    // A border must be the ONLY stroke on either layer of the frame: a
+    // box-shadow paints patchily inside the thread's composited scroll
+    // container and reads as an uneven, sometimes-double line under a real
+    // border. The plot sits inset (no bleed, so no pb-0).
+    const frame = panel?.closest('[data-slot="frame"]')
+    expect(frame?.className).toContain("border")
+    expect(frame?.className).toContain("shadow-none")
+    // The panel's own shadow-xs and its inset ::before shadow, both off.
+    expect(frame?.className).toContain("*:data-[slot=frame-panel]:shadow-none")
+    expect(frame?.className).toContain(
+      "*:data-[slot=frame-panel]:before:shadow-none"
+    )
+    expect(panel?.className.split(/\s+/)).not.toContain("pb-0")
   })
 })
 

@@ -1046,21 +1046,18 @@
           "allClassified": "All classified",
           "importPrompt": "Import to get started",
           "trendLabel": "Employees",
-          "trendTitle": "Workforce over time",
-          "note": "Employees in your register"
+          "trendTitle": "Workforce over time"
         },
         "gap": {
           "label": "Pay gap",
           "notStarted": "Not started",
           "prompt": "Start your first pay mapping",
-          "insufficientValue": "Not enough data",
-          "note": "From your latest pay mapping"
+          "insufficientValue": "Not enough data"
         },
         "roles": {
           "label": "Roles",
           "caption": "Across {count, plural, one {# level} other {# levels}}",
-          "empty": "Evaluate roles to see them here",
-          "note": "Roles you have created"
+          "empty": "Evaluate roles to see them here"
         },
         "gapTrend": {
           "title": "Pay gap over time",
@@ -1472,10 +1469,9 @@
         "headlineGapLabel": "Pay gap",
         "insufficient": "Not enough data for an organization-level gap.",
         "populationFirstRun": "First pay mapping",
-        "populationDeltaMore": "{count, plural, one {# person more than {label}} other {# people more than {label}}}",
-        "populationDeltaFewer": "{count, plural, one {# person fewer than {label}} other {# people fewer than {label}}}",
+        "populationDeltaMore": "{count, plural, one {# person more} other {# people more}} since the last one",
+        "populationDeltaFewer": "{count, plural, one {# person fewer} other {# people fewer}} since the last one",
         "meanComparisonTitle": "Average pay by gender",
-        "statisticsHeading": "Statistics",
         "wholeSurveyTitle": "The whole survey",
         "quartileTitle": "Gender split by pay level",
         "quartiles": {
@@ -1484,19 +1480,19 @@
           "lowerMiddle": "Lower middle",
           "lower": "Lower quartile"
         },
-        "deltaUnchanged": "Unchanged vs {label}",
-        "populationNote": "Everyone included in this pay mapping",
-        "gapDeltaNarrowed": "Down from {previous} in {label}",
-        "gapDeltaWidened": "Up from {previous} in {label}",
-        "gapNoComparison": "Nothing to compare with yet",
-        "gapNote": "Average pay difference, women vs men",
-        "clockNote": "Across an 8-hour working day"
+        "deltaUnchanged": "Unchanged since the last one",
+        "gapDeltaDown": "Down {amount} pp since the last one",
+        "gapDeltaUp": "Up {amount} pp since the last one",
+        "gapNoComparison": "Nothing to compare with yet"
       },
       "clock": {
         "label": "Equality clock",
         "womenBehind": "Women effectively work this long unpaid each working day.",
         "menBehind": "Men effectively work this long unpaid each working day.",
-        "noGap": "No measurable pay gap."
+        "noGap": "No measurable pay gap.",
+        "womenBehindShort": "Women work this long unpaid",
+        "menBehindShort": "Men work this long unpaid",
+        "noGapShort": "No measurable pay gap"
       },
       "report": {
         "cardDraft": "Draft",
@@ -2470,8 +2466,6 @@
       "workingConditionsDecisionBody": "Tested, not material means you reviewed working conditions and found none material enough to rate. Choose Active to add one: it then applies to every role, where 0 means the role isn't covered.",
       "classifySeniorityLabel": "What is seniority?",
       "classifySeniorityBody": "The individual's rank within the role's track, such as Senior or Lead. It is set per person, not on the role, and is used to compare people in equivalent positions.",
-      "fteAdjustedLabel": "What does FTE-adjusted mean?",
-      "fteAdjustedBody": "Part-time pay is scaled up to its full-time equivalent before comparing. Someone at 80% earning 40,000 a month is shown as 50,000.",
       "fullTimeHoursLabel": "What are full-time hours per month?",
       "fullTimeHoursBody": "The monthly hours that count as full time, used to turn hourly pay into a monthly amount. A person's own value replaces the organization's default.",
       "payBasisLabel": "What is the pay basis?",
@@ -2480,25 +2474,16 @@
       "payMappingBody": "A pay mapping (Swedish: lönekartläggning) is a frozen snapshot of pay, roles and demographics. All analysis runs against that copy, never live data, so the numbers cannot shift under you.",
       "referenceDateLabel": "What is the reference date?",
       "referenceDateBody": "The date the snapshot represents. It is set to today when you start the mapping.",
-      "equalityClockLabel": "Equality clock",
-      "equalityClockBody": "The pay gap shown as time: the share of an 8-hour day the lower-paid gender works without matching pay. It is derived from the average gap, not from any schedule.",
-      "headlineGapLabel": "Organization pay gap",
-      "headlineGapBody": "The average FTE-adjusted pay gap between all women and all men in the survey; a positive value means women earn less. It covers the whole population, so it shows even when groups are small.",
-      "payQuartilesLabel": "Pay level quartiles",
-      "payQuartilesBody": "Everyone with a salary ranked by pay and split into four equal groups. Women clustering in the lower quartiles and men in the upper is an uneven distribution, the glass-ceiling pattern.",
       "payGapReasonsLabel": "Objective reasons",
       "payGapReasonsBody": "Swedish law requires an objective reason for every pay difference between comparable groups. Pick the factors that apply and explain them in the text field.",
       "payGapMemberDiffLabel": "What does 'vs men's average' mean?",
       "payGapMemberDiffBody": "This person's FTE-adjusted pay minus the men's average in the group, on its primary measure. Negative means they earn less than that average, positive means more.",
-      "payGapScatterLabel": "What does this chart show?",
-      "payGapScatterBody": "Each dot is one person, plotted by age or tenure against FTE-adjusted pay. Use it to spot an objective pattern behind a gap, and to see spread, which the law compares as well as averages.",
       "collaborationLabel": "What is collaboration?",
       "collaborationBody": "Cooperating with employees and union representatives through the whole pay mapping (Diskrimineringslagen 3 kap. 11 §). Under a collective agreement they may also require the information (12 §).",
       "modelProgressLabel": "What does the model need?",
       "methodAppendixLabel": "What is the method appendix?",
       "methodAppendixBody": "A PDF with the model’s complete documentation: methodology, scale, criteria with protocols and anchors, levels, zones and the materiality test. Draft until every criterion is reviewed and approved.",
       "modelProgressBody": "The decisions the model needs before approval: which criteria roles are evaluated against, how much each one counts, its documentation, and the approval itself.",
-      "payGapScatterMeansBody": "The dashed lines are each gender's average pay in the group, so you can see who sits above and below their own average.",
       "weightMotivationLabel": "What is a weight motivation?",
       "weightMotivationBody": "The recorded reason a dimension may weigh as much as it does. It motivates the weighting, not the 0-5 scale: say what about the work weighs more, never who does it.",
       "sharedScaleLabel": "What is the shared scale?",
